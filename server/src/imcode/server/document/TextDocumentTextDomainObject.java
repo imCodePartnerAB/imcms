@@ -1,4 +1,4 @@
-package imcode.server ;
+package imcode.server.document ;
 
 import imcode.util.* ;
 
@@ -9,7 +9,7 @@ import imcode.util.* ;
    It's up to View-classes using this to
    format the text correctly for the target view themselves.
 **/
-public class IMCText {
+public class TextDocumentTextDomainObject {
 
     protected String text ;
     protected int type ;
@@ -27,7 +27,7 @@ public class IMCText {
        @param text The text
        @param type The type of the text. Either
     **/
-    public IMCText (String text, int type) {
+    public TextDocumentTextDomainObject (String text, int type) {
 	setText(text) ;
 	setType(type) ;
     }

@@ -5,6 +5,7 @@ import java.util.* ;
 
 import imcode.server.parser.ParserParameters ;
 import imcode.server.user.UserDomainObject;
+import imcode.server.document.TextDocumentTextDomainObject;
 
 import imcode.readrunner.* ;
 
@@ -30,13 +31,13 @@ public interface IMCServiceInterface {
     /**
        Save a text field
     **/
-    void saveText(UserDomainObject user,int meta_id,int txt_no,IMCText text, String text_type)
+    void saveText(UserDomainObject user,int meta_id,int txt_no,TextDocumentTextDomainObject text, String text_type)
 	;
 
     /**
        Retrieve a text-field
     **/
-    IMCText getText(int meta_id,int txt_no)
+    TextDocumentTextDomainObject getText(int meta_id,int txt_no)
 	;
 
     String parsePage(DocumentRequest docReq, int flags, ParserParameters paramsToParse) throws IOException ;
@@ -355,7 +356,7 @@ public interface IMCServiceInterface {
     /**
        Retrieve the texts for a internalDocument
        @param meta_id The id of the internalDocument.
-       @return A Map (Integer -> IMCText) with all the  texts in the internalDocument.
+       @return A Map (Integer -> TextDocumentTextDomainObject) with all the  texts in the internalDocument.
     **/
     public Map getTexts(int meta_id);
 

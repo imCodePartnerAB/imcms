@@ -6,6 +6,7 @@ import imcode.readrunner.ReadrunnerUserData;
 import imcode.server.*;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
+import imcode.server.document.TextDocumentTextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.shop.ShoppingOrderSystem;
@@ -43,10 +44,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return false;
    }
 
-   public void saveText( UserDomainObject user, int meta_id, int txt_no, IMCText text, String text_type ) {
+   public void saveText( UserDomainObject user, int meta_id, int txt_no, TextDocumentTextDomainObject text, String text_type ) {
    }
 
-   public IMCText getText( int meta_id, int txt_no ) {
+   public TextDocumentTextDomainObject getText( int meta_id, int txt_no ) {
       return null;
    }
 

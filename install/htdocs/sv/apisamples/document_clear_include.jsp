@@ -6,12 +6,9 @@
     int documentId = 1001 ;
     TextDocument document = documentService.getTextDocument(documentId) ;
 
-    int textFieldIndexInDocument = 1;
-    String newHtmlText = "";
-    document.setHtmlTextField( textFieldIndexInDocument, newHtmlText ) ;
+    int includeIndexInDocument = 1;
 
-    textFieldIndexInDocument = 2;
-    String newPlainText = "";
-    document.setPlainTextField( textFieldIndexInDocument, newPlainText ) ;
+    document.setInclude(includeIndexInDocument,null) ;
+
 %>
 Done.

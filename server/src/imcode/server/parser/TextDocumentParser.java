@@ -131,7 +131,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 includemode = (flags & PERM_DT_TEXT_EDIT_INCLUDES) != 0 && (user_set_id == 0 || (user_perm_set & PERM_DT_TEXT_EDIT_INCLUDES) != 0);
             }
 
-            Vector included_docs = DocumentMapper.sprocGetIncludes( dbc, meta_id );
+            String[] included_docs = DocumentMapper.sprocGetIncludes( serverObject, meta_id );
 
             String template_id = "" + myDoc.getTemplate().getId();
             String simple_name = myDoc.getTemplate().getSimple_name();
@@ -568,7 +568,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             ReadrunnerFilter readrunnerFilter = new ReadrunnerFilter();
             MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( documentRequest, menus, menumode, tags );
             HashTagSubstitution hashtagsubstitution = new imcode.server.parser.HashTagSubstitution( tags, numberedtags );
-            ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, documentRequest, templatePath, included_docs, includemode, includelevel, includePath, textMap, textmode, imageMap, imagemode, paramsToParse, readrunnerFilter );
+            ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, documentRequest, templatePath, Arrays.asList(included_docs), includemode, includelevel, includePath, textMap, textmode, imageMap, imagemode, paramsToParse, readrunnerFilter );
 
             LinkedList parse = new LinkedList();
             perl5util.split( parse, "/(<!--\\/?IMSCRIPT-->)/", template );

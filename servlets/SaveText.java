@@ -3,6 +3,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.util.* ;
 import imcode.server.* ;
+import imcode.server.document.TextDocumentTextDomainObject;
 
 /**
    Save text in a internalDocument.
@@ -57,7 +58,7 @@ public class SaveText extends HttpServlet {
 		text_type = "";
 	}
 
-	IMCText text = new IMCText(text_string,text_format) ;
+	TextDocumentTextDomainObject text = new TextDocumentTextDomainObject(text_string,text_format) ;
 
 	user.put("flags",new Integer(imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_TEXTS)) ;
 

@@ -1,5 +1,6 @@
 import imcode.server.parser.* ;
 import imcode.server.* ;
+import imcode.server.document.TextDocumentTextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.* ;
 import imcode.readrunner.* ;
@@ -307,7 +308,7 @@ public class Readrunner extends HttpServlet {
 		    try {
 			int textNo = Integer.parseInt(keyStr) ;
 			// Fetch text from database
-			IMCText imcText = imcref.getText(metaId,textNo) ;
+			TextDocumentTextDomainObject imcText = imcref.getText(metaId,textNo) ;
 			if (null != imcText) {
 			    result = imcText.toHtmlString() ;
 			    // Cache the result for future requests.

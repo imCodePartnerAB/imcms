@@ -6,6 +6,7 @@ import imcode.server.db.DBConnect;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
+import imcode.server.document.TextDocumentTextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
@@ -350,7 +351,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     Store the given IMCText in the DB.
+     Store the given TextDocumentTextDomainObject in the DB.
      @param user		The user
      @param meta_id		The id of the page
      @param txt_no		The id of the text in the page.
@@ -386,7 +387,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
      **/
 
-    public void saveText( UserDomainObject user, int meta_id, int txt_no, IMCText text, String text_type ) {
+    public void saveText( UserDomainObject user, int meta_id, int txt_no, TextDocumentTextDomainObject text, String text_type ) {
         documentMapper.saveText( text, meta_id, txt_no, user, text_type );
     }
 
@@ -396,7 +397,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      @param no      The id of the text in the page.
      @return The text from the db, or null if there was none.
      **/
-    public IMCText getText( int meta_id, int no ) {
+    public TextDocumentTextDomainObject getText( int meta_id, int no ) {
         return documentMapper.getText( meta_id, no );
     }
 
@@ -2431,7 +2432,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      Retrieve the texts for a internalDocument
      @param meta_id The id of the internalDocument.
-     @return A Map (Integer -> IMCText) with all the  texts in the internalDocument.
+     @return A Map (Integer -> TextDocumentTextDomainObject) with all the  texts in the internalDocument.
      **/
     public Map getTexts( int meta_id ) {
 
@@ -2445,7 +2446,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                 String txt_no = (String)it.next();
                 int txt_type = Integer.parseInt( (String)it.next() );
                 String value = (String)it.next();
-                textMap.put( txt_no, new IMCText( value, txt_type ) );
+                textMap.put( txt_no, new TextDocumentTextDomainObject( value, txt_type ) );
             } catch( NumberFormatException e ) {
                 log.error( "SProc 'GetTexts " + meta_id + "' returned a non-number where a number was expected.", e );
                 return null;

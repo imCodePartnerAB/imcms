@@ -25,14 +25,14 @@ public class DocumentService {
     public TextDocument getTextDocument( int documentId ) throws NoPermissionException {
         securityChecker.hasDocumentRights( documentId );
         imcode.server.document.DocumentDomainObject doc = documentMapper.getDocument( documentId );
-        TextDocument result = new TextDocument( securityChecker, doc, documentMapper, documentPermissionSetMapper );
+        TextDocument result = new TextDocument( securityChecker, this, doc, documentMapper, documentPermissionSetMapper );
         return result;
     }
 
     public TextDocument createNewTextDocument( int parentId, int parentMenuNumber ) {
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
         DocumentDomainObject newDoc = documentMapper.createNewTextDocument( user, parentId, parentMenuNumber );
-        TextDocument result = new TextDocument( securityChecker, newDoc, documentMapper, documentPermissionSetMapper );
+        TextDocument result = new TextDocument( securityChecker, this, newDoc, documentMapper, documentPermissionSetMapper );
         return result;
     }
 

@@ -2,7 +2,6 @@
                  javax.servlet.http.HttpServletResponse,
                  javax.servlet.ServletException,
                  java.io.IOException,
-                 com.imcode.imcms.*,
                  imcode.server.WebAppGlobalConstants,
                  com.imcode.imcms.api.*"%>
 <%!

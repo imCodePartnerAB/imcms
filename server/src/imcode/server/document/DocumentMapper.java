@@ -86,7 +86,7 @@ public class DocumentMapper {
         return user_doc_types;
     }
 
-    private static void sprocUpdateInsertText( IMCService service, int meta_id, int txt_no, IMCText text, String textstring ) {
+    private static void sprocUpdateInsertText( IMCService service, int meta_id, int txt_no, TextDocumentTextDomainObject text, String textstring ) {
         String[] params = new String[]{"" + meta_id, "" + txt_no, "" + text.getType(), textstring};
         service.sqlUpdateProcedure( SPROC_INSERT_TEXT, params );
     }
@@ -107,10 +107,8 @@ public class DocumentMapper {
         imcref.sqlUpdateProcedure( SPROC_SECTION_ADD_CROSSREF + " " + meta_id + ", " + section_id );
     }
 
-    public static Vector sprocGetIncludes( DBConnect dbc, int meta_id ) {
-        dbc.setProcedure( sprocGetIncludes, String.valueOf( meta_id ) );
-        Vector included_docs = dbc.executeProcedure();
-        dbc.clearResultSet();
+    public static String[] sprocGetIncludes( IMCServiceInterface imcref, int meta_id ) {
+        String[] included_docs = imcref.sqlProcedure( sprocGetIncludes, new String[] { String.valueOf( meta_id ) } );
         return included_docs;
     }
 
@@ -210,6 +208,17 @@ public class DocumentMapper {
         Date date = new Date();
         SimpleDateFormat dateformat = new SimpleDateFormat( DateHelper.DATE_TIME_SECONDS_FORMAT_STRING );
         service.sqlUpdateQuery( "update meta set date_modified = '" + dateformat.format( date ) + "' where meta_id = " + meta_id );
+    }
+
+    public Map getIncludedDocuments( DocumentDomainObject textDocument ) {
+        Map result = new HashMap();
+        String[] includedMetaIds = sprocGetIncludes( service, textDocument.getMetaId() );
+        for ( int i = 0; i< includedMetaIds.length; i+=2 ) {
+            int include_id = Integer.parseInt(includedMetaIds[i]);
+            int included_meta_id = Integer.parseInt(includedMetaIds[i+1]);
+            result.put( new Integer(include_id), new Integer(included_meta_id));
+        }
+        return result;
     }
 
     public DocumentDomainObject getDocument( int metaId ) {
@@ -320,11 +329,11 @@ public class DocumentMapper {
         return result;
     }
 
-    public IMCText getTextField( DocumentDomainObject document, int textFieldIndexInDocument ) {
+    public TextDocumentTextDomainObject getTextField( DocumentDomainObject document, int textFieldIndexInDocument ) {
         return service.getText( document.getMetaId(), textFieldIndexInDocument );
     }
 
-    public IMCText getText( int meta_id, int no ) {
+    public TextDocumentTextDomainObject getText( int meta_id, int no ) {
         try {
             String[] results = sprocGetText( meta_id, no );
 
@@ -337,7 +346,7 @@ public class DocumentMapper {
             String text = results[0];
             int type = Integer.parseInt( results[1] );
 
-            return new IMCText( text, type );
+            return new TextDocumentTextDomainObject( text, type );
 
         } catch( NumberFormatException ex ) {
             /* There was no text, but we shouldn't come here unless the db returned something wrong. */
@@ -346,7 +355,7 @@ public class DocumentMapper {
         }
     }
 
-    public void saveText( IMCText text, int meta_id, int txt_no, UserDomainObject user, String text_type ) {
+    public void saveText( TextDocumentTextDomainObject text, int meta_id, int txt_no, UserDomainObject user, String text_type ) {
         String textstring = text.getText();
 
         // update text
@@ -649,6 +658,22 @@ public class DocumentMapper {
             inout_document.setMenuSortOrder( sort_order );
             inout_document.setTemplateGroupId( group_id );
         }
+    }
+
+    public void setInclude(int includingMetaId, int includeIndex, int includedMetaId) {
+        sprocSetInclude(service,includingMetaId,includeIndex,includedMetaId);
+    }
+
+    public static void sprocSetInclude( IMCServiceInterface imcref, int including_meta_id, int include_id, int included_meta_id ) {
+        imcref.sqlUpdateProcedure("SetInclude "+including_meta_id+","+include_id+","+included_meta_id) ;
+    }
+
+    public void removeInclusion( int includingMetaId, int includeIndex ) {
+        sprocDeleteInclude(service,includingMetaId,includeIndex);
+    }
+
+    public static void sprocDeleteInclude( IMCServiceInterface imcref, int including_meta_id, int include_id ) {
+        imcref.sqlUpdateProcedure("DeleteInclude "+including_meta_id+","+include_id) ;
     }
 
 }

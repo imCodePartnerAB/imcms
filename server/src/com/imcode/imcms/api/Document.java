@@ -12,12 +12,14 @@ import java.util.Set;
 
 public class Document {
     SecurityChecker securityChecker;
+    DocumentService documentService;
     DocumentDomainObject internalDocument;
     DocumentMapper documentMapper;
-    private DocumentPermissionSetMapper documentPermissionMapper;
+    DocumentPermissionSetMapper documentPermissionMapper;
 
-    public Document( SecurityChecker securityChecker, DocumentDomainObject document, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
+    public Document( SecurityChecker securityChecker, DocumentService documentService, DocumentDomainObject document, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
         this.securityChecker = securityChecker;
+        this.documentService = documentService;
         this.internalDocument = document;
         this.documentMapper = documentMapper;
         this.documentPermissionMapper = permissionSetMapper;

@@ -9,6 +9,7 @@ import org.apache.oro.text.regex.* ;
 import imcode.server.* ;
 import imcode.server.util.DateHelper;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.TextDocumentTextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.* ;
 
@@ -313,13 +314,13 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	}
 	// Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
 	String noStr = attributes.getProperty("no") ;
-	IMCText text = null ;
+	TextDocumentTextDomainObject text = null ;
 	if (null != noStr) {
 	    noStr = noStr.trim() ;
-	    text = (IMCText)textMap.get(noStr) ;
+	    text = (TextDocumentTextDomainObject)textMap.get(noStr) ;
 	    implicitTextNumber = Integer.parseInt(noStr) + 1 ;
 	} else {
-	    text = (IMCText)textMap.get(noStr = String.valueOf(implicitTextNumber++)) ;
+	    text = (TextDocumentTextDomainObject)textMap.get(noStr = String.valueOf(implicitTextNumber++)) ;
 	}
 	String result ;
 	if (text == null) {

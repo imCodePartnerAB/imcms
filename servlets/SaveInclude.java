@@ -2,6 +2,7 @@ import javax.servlet.* ;
 import javax.servlet.http.* ;
 
 import imcode.server.* ;
+import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 
 import imcode.util.Check ;
@@ -58,8 +59,8 @@ public class SaveInclude extends HttpServlet {
 	String include_id = req.getParameter("include_id") ;
 	if (included_meta_id != null && include_id != null) {
 	    if ("".equals(included_meta_id.trim())) {
-		imcref.sqlUpdateProcedure("DeleteInclude "+meta_id_str+","+include_id) ;
-		 mainLog.info(dateFormat.format(new java.util.Date())+"Include nr [" + include_id +	"] on ["+meta_id_str+"] removed by user: [" +user.getFullName() + "]");
+            DocumentMapper.sprocDeleteInclude( imcref, meta_id, Integer.parseInt(include_id) );
+            mainLog.info(dateFormat.format(new java.util.Date())+"Include nr [" + include_id +	"] on ["+meta_id_str+"] removed by user: [" +user.getFullName() + "]");
 
 	    } else {
 		try {
@@ -67,8 +68,8 @@ public class SaveInclude extends HttpServlet {
 
 		    // Make sure the user has permission to share the included internalDocument
 		    if (imcref.checkUserDocSharePermission(user,included_meta_id_int)) {
-			imcref.sqlUpdateProcedure("SetInclude "+meta_id_str+","+include_id+","+included_meta_id) ;
-		    mainLog.info(dateFormat.format(new java.util.Date())+"Include nr [" +include_id  +	"] on ["+meta_id_str+"] changed to ["+ included_meta_id+ "]  by user: [" +user.getFullName() + "]");
+                DocumentMapper.sprocSetInclude( imcref, meta_id, Integer.parseInt(include_id), included_meta_id_int);
+                mainLog.info(dateFormat.format(new java.util.Date())+"Include nr [" +include_id  +	"] on ["+meta_id_str+"] changed to ["+ included_meta_id+ "]  by user: [" +user.getFullName() + "]");
 			} else {
 			sendPermissionDenied(imcref,out,meta_id,user) ;
 			return ;

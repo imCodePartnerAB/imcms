@@ -9,6 +9,7 @@ import org.apache.oro.text.regex.* ;
 
 import imcode.util.* ;
 import imcode.server.* ;
+import imcode.server.document.TextDocumentTextDomainObject;
 /**
    Edit text in a internalDocument.
 */
@@ -74,10 +75,10 @@ public class ChangeText extends HttpServlet {
 	    return ;
 	}
 
-	IMCText text = imcref.getText(meta_id,txt_no) ;
+	TextDocumentTextDomainObject text = imcref.getText(meta_id,txt_no) ;
 	
 	if ( null == text) {
-	    text = new IMCText("",IMCText.TEXT_TYPE_PLAIN) ;
+	    text = new TextDocumentTextDomainObject("",TextDocumentTextDomainObject.TEXT_TYPE_PLAIN) ;
 	}
 
 	String[] tags = {
@@ -88,7 +89,7 @@ public class ChangeText extends HttpServlet {
 	String text_string = Parser.parseDoc(text.getText(),tags) ;
 
 	Vector vec = new Vector() ;
-	if ( text.getType() == IMCText.TEXT_TYPE_HTML ) {
+	if ( text.getType() == TextDocumentTextDomainObject.TEXT_TYPE_HTML ) {
 	    vec.add("#html#") ;
 	    vec.add("checked") ;
 	    vec.add("#!html#") ;
