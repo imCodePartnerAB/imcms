@@ -27,17 +27,20 @@
 	<form method="GET" action="ListDocuments">
 	<tr>
 		<td><? imcms/lang/jsp/document_list.jsp/1003 ?></td>
-		<td>&nbsp;</td>
+		<td>&nbsp;&nbsp;</td>
 		<td><input type="text" name="<%= ListDocuments.PARAMETER__LIST_START %>" value="<%= formData.selectedRange.getMinimumInteger() %>" size="6"></td>
-		<td>&nbsp;</td>
+		<td>&nbsp;&nbsp;</td>
 		<td><? imcms/lang/jsp/document_list.jsp/1004 ?></td>
-		<td>&nbsp;</td>
+		<td>&nbsp;&nbsp;</td>
 		<td><input type="text" name="<%= ListDocuments.PARAMETER__LIST_END %>" value="<%= formData.selectedRange.getMaximumInteger() %>" size="6"></td>
-		<td>&nbsp;</td>
+		<td>&nbsp;&nbsp;</td>
 		<td><input type="submit" class="imcmsFormBtnSmall" name="<%= ListDocuments.PARAMETER_BUTTON__LIST %>" value=" <? imcms/lang/jsp/document_list.jsp/2002 ?> "></td>
 	</tr>
 	</form>
 	</table></td>
+</tr>
+<tr>
+	<td>#gui_hr( "blue" )</td>
 </tr>
 </table><%
 
@@ -45,10 +48,10 @@ if (null != formData.documentsIterator) { %>
 
 <table border="0" cellspacing="0" cellpadding="2" width="680">
 <tr>
-	<td><b><? web/imcms/lang/jsp/heading_type ?></b></td>
+	<td><b><? web/imcms/lang/jsp/heading_status ?>&nbsp;</b></td>
 	<td><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
+	<td><b><? web/imcms/lang/jsp/heading_type ?></b></td>
 	<td><b><? web/imcms/lang/jsp/heading_references ?></b></td>
-	<td><b><? web/imcms/lang/jsp/heading_status ?></b></td>
 	<td>&nbsp; <b><? imcms/lang/jsp/document_list.jsp/heading_child_documents ?></b></td>
 </tr><%
 
@@ -63,11 +66,12 @@ if (null != formData.documentsIterator) { %>
 	<td colspan="5"><img src="$contextPath/imcms/$language/images/admin/1x1_cccccc.gif" width="100%" height="1"></td>
 </tr>
 <tr valign="top">
-	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
-	<%= StringEscapeUtils.escapeHtml((String)documentTypes.get(new Integer( document.getDocumentTypeId() )))%>&nbsp;</td>
+	<td align="center"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
 	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
 	<a name="<%= document.getId() %>" href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>"><%=
 		document.getId() %> - <%= StringEscapeUtils.escapeHtml( document.getHeadline() ) %></a></td>
+	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+	<%= StringEscapeUtils.escapeHtml((String)documentTypes.get(new Integer( document.getDocumentTypeId() )))%>&nbsp;</td>
 	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br><%
 		if (documentMenuPairsContainingDocument.length > 0 ) {
 			String backUrl = "ListDocuments?" + ObjectUtils.defaultIfNull(request.getQueryString(),"") ;
@@ -77,7 +81,6 @@ if (null != formData.documentsIterator) { %>
 		if (documentMenuPairsContainingDocument.length > 0 ) {
 			%></a><%
 		} %></td>
-	<td align="center"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
 	<td><%
 		if (document instanceof TextDocumentDomainObject) {
 			TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document ;
@@ -99,6 +102,14 @@ if (null != formData.documentsIterator) { %>
 		} %></td>
 </tr><%
 	} %>
+<tr>
+	<td colspan="5">#gui_hr( "blue" )</td>
+</tr>
+<form method="get" action="AdminManager">
+<tr>
+	<td colspan="5" align="right"><input type="submit" class="imcmsFormBtn" name="" value="<? global/cancel ?>"></td>
+</tr>
+</form>
 </table><%
 } %>
 #gui_end_of_page()
