@@ -30,7 +30,7 @@ if ( @listMod = 1) begin
    join doc_types dt
       on m.doc_type = dt.doc_type
    where m.doc_type = @doc_type and activate = 1 and dt.lang_prefix = @lang_prefix
-   order by m.date_created
+   order by m.date_created desc
   end
   else begin
    select m.meta_id, dt.type, m.meta_headline, m.date_created
@@ -39,7 +39,7 @@ if ( @listMod = 1) begin
    join doc_types dt
       on m.doc_type = dt.doc_type
    where m.doc_type = @doc_type and m.date_created <= @endDate and activate = 1 and dt.lang_prefix = @lang_prefix
-   order by m.date_created
+   order by m.date_created desc
   end
  end
  else if ( @startDate != '0' ) begin
@@ -50,7 +50,7 @@ if ( @listMod = 1) begin
    join doc_types dt
       on m.doc_type = dt.doc_type
    where m.doc_type = @doc_type and m.date_created >= @startDate and activate = 1 and dt.lang_prefix = @lang_prefix
-   order by m.date_created
+   order by m.date_created desc
   end
   else
   begin
@@ -60,7 +60,7 @@ if ( @listMod = 1) begin
    join doc_types dt
       on m.doc_type = dt.doc_type
    where m.doc_type = @doc_type and m.date_created <= @endDate and m.date_created >= @startDate and activate = 1 and dt.lang_prefix = @lang_prefix
-   order by m.date_created
+   order by m.date_created desc
   end
  end
 end
@@ -74,7 +74,7 @@ else begin
    join doc_types dt
       on m.doc_type = dt.doc_type
    where m.doc_type = @doc_type and activate = 1 and m.date_modified != m.date_created and dt.lang_prefix = @lang_prefix
-   order by m.date_modified
+   order by m.date_modified desc
   end
   else begin
    select m.meta_id, dt.type, m.meta_headline, m.date_modified
@@ -83,7 +83,7 @@ else begin
    join doc_types dt
       on m.doc_type = dt.doc_type
    where m.doc_type = @doc_type and m.date_modified <= @endDate and activate = 1 and m.date_modified != m.date_created and dt.lang_prefix = @lang_prefix
-   order by m.date_modified
+   order by m.date_modified desc
   end
  end
  else if ( @startDate != '0' ) begin
@@ -94,7 +94,7 @@ else begin
    join doc_types dt
       on m.doc_type = dt.doc_type
    where m.doc_type = @doc_type and m.date_modified >= @startDate and activate = 1 and m.date_modified != m.date_created and dt.lang_prefix = @lang_prefix
-   order by m.date_modified
+   order by m.date_modified desc
   end
   else
   begin
@@ -104,7 +104,7 @@ else begin
    join doc_types dt
       on m.doc_type = dt.doc_type
    where m.doc_type = @doc_type and m.date_modified <= @endDate and m.date_modified >= @startDate and activate = 1 and m.date_modified != m.date_created and dt.lang_prefix = @lang_prefix
-   order by m.date_modified
+   order by m.date_modified desc
   end
  end
 end
