@@ -519,7 +519,14 @@ function toggleFontSize() {
 			} %>
 <%= fileSrc %></textarea><%
 			if (isTempl && !(isMac && (isNS || isIE))) { %>
-		<div align="center"><span style="font: <% if (isNS) { %>10<% } else { %>9<% } %>px Verdana"><? sv/jsp/FileAdmin_edit.jsp/1004 ?></div><%
+		<div align="center"><span style="font: <% if (isNS) { %>10<% } else { %>9<% } %>px Verdana"><? sv/jsp/FileAdmin_edit.jsp/1004/1 ?>&nbsp;
+			<a href="javascript: imScriptCount('<? sv/jsp/FileAdmin_edit.jsp/1004/2 ?>');"><? sv/jsp/FileAdmin_edit.jsp/1004/2 ?></a> |
+			<a href="javascript: imScriptCount('<? sv/jsp/FileAdmin_edit.jsp/1004/3 ?>');"><? sv/jsp/FileAdmin_edit.jsp/1004/3 ?></a> |
+			<a href="javascript: imScriptCount('<? sv/jsp/FileAdmin_edit.jsp/1004/4 ?>');"><? sv/jsp/FileAdmin_edit.jsp/1004/4 ?></a> |
+			<a href="javascript: imScriptCount('<? sv/jsp/FileAdmin_edit.jsp/1004/5 ?>');"><? sv/jsp/FileAdmin_edit.jsp/1004/5 ?></a> |
+			<a href="javascript: imScriptCount('<? sv/jsp/FileAdmin_edit.jsp/1004/6 ?>');"><? sv/jsp/FileAdmin_edit.jsp/1004/6 ?></a> |
+			<a href="javascript: imScriptCount('bradgard');"><? sv/jsp/FileAdmin_edit.jsp/1004/7 ?></a> |
+			<a href="javascript: imScriptCount('<? sv/jsp/FileAdmin_edit.jsp/1004/8 ?>');"><? sv/jsp/FileAdmin_edit.jsp/1004/8 ?></a></div><%
 			} %></td>
 	</tr>
 	</form>

@@ -64,7 +64,16 @@ if (directEditEnabled) {
 <tr bgcolor="#333366">
 	<td height="20" style="font: 11px Verdana,Geneva,Arial,Helvetica,sans-serif; color:#FFFFFF">
 <script language="JavaScript">
-<? sv/htmleditor/editor/editor.html/2 ?>
+<!--
+document.write('<img src="images/1x1.gif" width="10" height="1">');
+document.write('<? sv/htmleditor/editor/editor.html/2/1 ?> <b style="font-size:12px">' + txtNr + '</b>');
+if (sLabel != '' && sLabel != undefined) {
+	sLabel = sLabel.replace(/%20/gi, ' ');
+	sLabel = sLabel.replace(/[^\w\xc4\xc5\xd6\xe4\xe5\xf6 _\-\/\(\)#]*/gi, '');// strip all but A-Ö0-9_,-/()# and space
+	document.write(" [" + sLabel.substring(0,60) + ((sLabel.length > 60) ? "..." : "") + "]");
+}
+document.write(' <? sv/htmleditor/editor/editor.html/2/2 ?> <b style="font-size:12px">' + metaId + '</b>');
+//-->
 </script>
 </td>
 	<td align="right">
@@ -72,7 +81,17 @@ if (directEditEnabled) {
 	<tr>
 		<td height="16">
 <SCRIPT LANGUAGE="JavaScript">
-<? sv/htmleditor/editor/editor.html/3 ?>
+<!--
+if (showHelpFullBtn) {
+	document.writeln('<a href="javascript:void(0)" onClick="showHelp(\'all\');"><SPAN STYLE="font: bold 10px; color:white; text-decoration:none"><? sv/htmleditor/editor/editor.html/3/1 ?></SPAN></a>');
+}
+if (showHelpFullBtn && showHelpSubjectBtn) {
+	document.writeln('</td>\n<td><img src="images/1x1.gif" width="10" height="1"></td>\n<td>');
+}
+if (showHelpSubjectBtn) {
+	document.writeln('<a href="javascript:void(0)" onClick="showHelpSubjects();"><img src="images/btn_help_subject.gif" width="16" height="16" alt="" border="0"></a>');
+}
+//-->
 </SCRIPT></td>
 		<td><img src="images/1x1.gif" width="10" height="1"></td>
 	</tr>
@@ -391,7 +410,16 @@ document.write('</select>');
 <tr>
 	<td>
 <SCRIPT LANGUAGE="JavaScript1.2">
-<? sv/htmleditor/editor/editor.html/40 ?>
+<!--
+var iCount = 0;
+var sChecked='';
+document.write('<select name="createListCssTemp" unselectable="On" style="width:140" onChange="document.forms[0].createListCss.value = this.options[this.selectedIndex].value; this.selectedIndex = 0">');
+document.write('	<option value=""><? sv/htmleditor/editor/editor.html/40/1 ?></option>');
+for (var i=0; i<arrAllClass.length; i++){
+	document.write('	<option value="' + arrAllClass[i] + '">' + arrAllClass[i] + '</option>');
+}
+document.write('</select>');
+//-->
 </SCRIPT></td>
 </tr>
 <tr>
@@ -667,7 +695,16 @@ for (var i=0; i<arrFavClass.length; i++){
 <tr>
 	<td colspan="2"><? sv/htmleditor/editor/editor.html/81 ?>
 <SCRIPT LANGUAGE="JavaScript1.2">
-<? sv/htmleditor/editor/editor.html/82 ?>
+<!--
+var iCount = 0;
+var sChecked='';
+document.write('<select name="useClassTemp" unselectable="On" style="width:140" onChange="document.forms[0].useClass11.value = this.options[this.selectedIndex].value\; document.forms[0].useClass[10].checked = 1\; this.selectedIndex = 0">');
+document.write('	<option value=""><? sv/htmleditor/editor/editor.html/82/1 ?></option>\n');
+for (var i=0; i<arrAllClass.length; i++){
+	document.write('	<option value="' + arrAllClass[i] + '">' + arrAllClass[i] + '</option>\n');
+}
+document.write('</select>\n');
+//-->
 </SCRIPT></td>
 </tr>
 <tr>
