@@ -1,10 +1,4 @@
-/*
- * Created by IntelliJ IDEA.
- * User: kreiger
- * Date: 2004-feb-27
- * Time: 16:03:00
- */
-package imcode.util;
+package com.imcode.util;
 
 import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.collections.MultiMap;
@@ -26,7 +20,7 @@ public class MultipartHttpServletRequest extends HttpServletRequestWrapper {
         super( request );
         if ( FileUploadBase.isMultipartContent( request ) ) {
             FileUpload fileUpload = new FileUpload( new DefaultFileItemFactory() );
-            List fileItems = null;
+            List fileItems ;
             try {
                 fileItems = fileUpload.parseRequest( request );
             } catch ( FileUploadException e ) {
@@ -147,7 +141,7 @@ public class MultipartHttpServletRequest extends HttpServletRequestWrapper {
 
         FileItem fileItem;
 
-        public FileItemWrapper( FileItem fileItem ) {
+        private FileItemWrapper( FileItem fileItem ) {
             this.fileItem = fileItem;
         }
 

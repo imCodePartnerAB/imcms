@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import com.imcode.util.MultipartHttpServletRequest;
+
 public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 
     public static final String REQUEST_PARAMETER__FILE_DOC__FILE = "file";

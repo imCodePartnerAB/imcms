@@ -2,7 +2,7 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.Page;
 import imcode.server.WebAppGlobalConstants;
-import imcode.util.MultipartHttpServletRequest;
+import com.imcode.util.MultipartHttpServletRequest;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
