@@ -526,11 +526,17 @@ public class DocumentMapper {
     }
 
     public boolean hasPermissionToSearchDocument( UserDomainObject searchingUser, DocumentDomainObject document ) {
-        final boolean searchingUserHasPermissionToFindDocument;
-        if ( document.isPublished() ) {
-            searchingUserHasPermissionToFindDocument = hasAtLeastDocumentReadPermission( searchingUser, document );
+        boolean searchingUserHasPermissionToFindDocument = false ;
+        if ( document.isSearchDisabled() ) {
+            if (searchingUser.hasRole( RoleDomainObject.SUPERADMIN )) {
+                searchingUserHasPermissionToFindDocument = true ;
+            }
         } else {
-            searchingUserHasPermissionToFindDocument = hasEditPermission( searchingUser, document );
+            if ( document.isPublished() ) {
+                searchingUserHasPermissionToFindDocument = hasAtLeastDocumentReadPermission( searchingUser, document );
+            } else {
+                searchingUserHasPermissionToFindDocument = hasEditPermission( searchingUser, document );
+            }
         }
         return searchingUserHasPermissionToFindDocument;
     }

@@ -67,8 +67,8 @@ public class DocumentIndex {
 
     public Query parseLucene( String queryString ) throws ParseException {
         return QueryParser.parse( queryString,
-                                            "default",
-                                            new WhitespaceLowerCaseAnalyzer() );
+                                  "default",
+                                  new WhitespaceLowerCaseAnalyzer() );
 
     }
 
@@ -79,26 +79,25 @@ public class DocumentIndex {
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
             String[] documentIds = getAllDocumentIds( imcref );
-            log.info( "Building index of all " + documentIds.length + " documents" );
+            int numberOfDocuments = documentIds.length;
+            log.info( "Building index of all " + numberOfDocuments + " documents" );
             DocumentMapper documentMapper = imcref.getDocumentMapper();
             int nextIndexLogTime = INDEX_LOG_TIME_STEP;
             StopWatch indexingStopWatch = new StopWatch();
-            StopWatch getDocumentStopWatch = new StopWatch();
             indexingStopWatch.start();
-            for ( int i = 0; i < documentIds.length; i++ ) {
+            StopWatch getDocumentStopWatch = new StopWatch();
+            for ( int i = 0; i < numberOfDocuments; i++ ) {
                 int documentId = Integer.parseInt( documentIds[i] );
                 DocumentDomainObject document = getDocument( getDocumentStopWatch, documentMapper, documentId );
                 addDocumentToIndex( document, indexWriter );
                 if ( indexingStopWatch.getTime() >= nextIndexLogTime ) {
-                    int indexPercentageCompleted = (int)( i * ( 100F / documentIds.length ) );
-                    log.info( "Completed " + indexPercentageCompleted + "% of the index." );
+                    logIndexingProgress( i, numberOfDocuments );
                     nextIndexLogTime += INDEX_LOG_TIME_STEP;
                 }
             }
             indexingStopWatch.stop();
-            log.info( "Completed index of " + documentIds.length + " documents in " + indexingStopWatch.getTime()
-                      + "ms" );
-            logGetDocumentsStopWatch( getDocumentStopWatch, documentIds.length );
+            logIndexingCompleted( numberOfDocuments, indexingStopWatch );
+            logGetDocumentsStopWatch( getDocumentStopWatch, numberOfDocuments );
             optimizeIndex( indexWriter );
             closeIndexWriter();
         } catch ( Exception e ) {
@@ -106,6 +105,16 @@ public class DocumentIndex {
         } finally {
             NDC.pop();
         }
+    }
+
+    private void logIndexingCompleted( int numberOfDocuments, StopWatch indexingStopWatch ) {
+        log.info( "Completed index of " + numberOfDocuments + " documents in " + indexingStopWatch.getTime()
+                  + "ms" );
+    }
+
+    private void logIndexingProgress( int i, int numberOfDocuments ) {
+        int indexPercentageCompleted = (int)( i * ( 100F / numberOfDocuments ) );
+        log.info( "Completed " + indexPercentageCompleted + "% of the index." );
     }
 
     private String[] getAllDocumentIds( IMCServiceInterface imcref ) {
@@ -160,20 +169,19 @@ public class DocumentIndex {
     }
 
     private synchronized void addDocumentToIndex( DocumentDomainObject document, IndexWriter indexWriter ) throws IOException {
-        if ( !document.isSearchDisabled() ) {
-            Document indexDocument = createIndexDocument( document );
-            indexWriter.addDocument( indexDocument );
-        }
+        Document indexDocument = createIndexDocument( document );
+        indexWriter.addDocument( indexDocument );
     }
 
     private Document createIndexDocument( DocumentDomainObject document ) {
         Document indexDocument = new Document();
 
-        indexDocument.add( Field.Keyword( "meta_id", "" + document.getId() ) );
+        int documentId = document.getId();
+        indexDocument.add( Field.Keyword( "meta_id", "" + documentId ) );
         indexDocument.add( Field.UnStored( "meta_headline", document.getHeadline() ) );
-        indexDocument.add( Field.UnStored( "default" , document.getHeadline())) ;
+        indexDocument.add( Field.UnStored( "default", document.getHeadline() ) );
         indexDocument.add( Field.UnStored( "meta_text", document.getMenuText() ) );
-        indexDocument.add( Field.UnStored( "default" , document.getMenuText())) ;
+        indexDocument.add( Field.UnStored( "default", document.getMenuText() ) );
         indexDocument.add( unStoredKeyword( "doc_type_id", "" + document.getDocumentTypeId() ) );
         SectionDomainObject[] sections = document.getSections();
         for ( int i = 0; i < sections.length; i++ ) {
@@ -181,33 +189,30 @@ public class DocumentIndex {
             indexDocument.add( unStoredKeyword( "section", section.getName().toLowerCase() ) );
         }
         if ( null != document.getCreatedDatetime() ) {
-            indexDocument.add( unStoredKeyword( "created_datetime", document.getCreatedDatetime() ) );
-        }
-        if ( null != document.getModifiedDatetime() ) {
-            indexDocument.add( unStoredKeyword( "modified_datetime", document.getModifiedDatetime() ) );
-        }
-        if ( null != document.getPublicationStartDatetime() ) {
-            indexDocument.add( unStoredKeyword( "activated_datetime", document.getPublicationStartDatetime() ) );
-            indexDocument.add( unStoredKeyword( "publication_start_datetime", document.getPublicationStartDatetime() ) );
-        }
-        if ( null != document.getPublicationEndDatetime() ) {
-            indexDocument.add( unStoredKeyword( "publication_end_datetime", document.getPublicationEndDatetime() ) );
-        }
-        if ( null != document.getArchivedDatetime() ) {
-            indexDocument.add( unStoredKeyword( "archived_datetime", document.getArchivedDatetime() ) );
+            try {
+                indexDocument.add( unStoredKeyword( "created_datetime", document.getCreatedDatetime() ) );
+            } catch ( RuntimeException re ) {
+                log.warn( "Indexing document " + documentId, re ) ;
+            }
         }
 
-        indexDocument.add( unStoredKeyword( "status", ""+document.getStatus() ) );
+        addDateField( documentId, indexDocument, "modified_datetime", document.getModifiedDatetime() );
+        addDateField( documentId, indexDocument, "activated_datetime", document.getPublicationStartDatetime() );
+        addDateField( documentId, indexDocument, "publication_start_datetime", document.getPublicationStartDatetime() );
+        addDateField( documentId, indexDocument, "publication_end_datetime", document.getPublicationEndDatetime() );
+        addDateField( documentId, indexDocument, "archived_datetime", document.getArchivedDatetime() );
+
+        indexDocument.add( unStoredKeyword( "status", "" + document.getStatus() ) );
 
         Iterator textsIterator = ApplicationServer.getIMCServiceInterface().getDocumentMapper()
-                .getTexts( document.getId() ).entrySet().iterator();
+                .getTexts( documentId ).entrySet().iterator();
         while ( textsIterator.hasNext() ) {
             Map.Entry textEntry = (Map.Entry)textsIterator.next();
             String textIndexString = (String)textEntry.getKey();
             TextDocumentTextDomainObject text = (TextDocumentTextDomainObject)textEntry.getValue();
             indexDocument.add( Field.UnStored( "text", text.getText() ) );
             indexDocument.add( Field.UnStored( "text" + textIndexString, text.getText() ) );
-            indexDocument.add( Field.UnStored( "default" , text.getText())) ;
+            indexDocument.add( Field.UnStored( "default", text.getText() ) );
         }
 
         CategoryDomainObject[] categories = document.getCategories();
@@ -220,7 +225,7 @@ public class DocumentIndex {
         for ( int i = 0; i < documentKeywords.length; i++ ) {
             String documentKeyword = documentKeywords[i];
             indexDocument.add( unStoredKeyword( "keyword", documentKeyword ) );
-            indexDocument.add( unStoredKeyword( "default" , documentKeyword )) ;
+            indexDocument.add( unStoredKeyword( "default", documentKeyword ) );
         }
 
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
@@ -233,6 +238,16 @@ public class DocumentIndex {
         }
 
         return indexDocument;
+    }
+
+    private void addDateField( int documentId, Document indexDocument, String fieldName, Date date ) {
+        if ( null != date ) {
+            try {
+                indexDocument.add( unStoredKeyword( fieldName, date ) );
+            } catch ( RuntimeException re ) {
+                log.warn( "Indexing field "+fieldName+" of document " + documentId, re ) ;
+            }
+        }
     }
 
     private synchronized void deleteDocumentFromIndex( DocumentDomainObject document ) throws IOException {

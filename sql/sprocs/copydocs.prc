@@ -304,7 +304,6 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 	INSERT INTO childs (meta_id, to_meta_id, menu_sort, manual_sort_order, tree_sort_index) VALUES(@parent_id, @copy_id, @menu_id, @child_max, '')
 	FETCH NEXT FROM documents_cursor
 	INTO	@meta_id,
- 		@description,
 		@doc_type,
 		@meta_headline,
 		@meta_text,
@@ -312,23 +311,17 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 		@owner_id,
 		@permissions,
 		@shared,
-		@expand,
 		@show_meta,
-		@help_text_id,
-		@archive,
-		@status_id,
 		@lang_prefix,
-		@classification,
 		@date_created,
 		@date_modified,
-		@sort_position,
-		@menu_position,
 		@disable_search,
-		@activated_datetime,
 		@archived_datetime,
 		@target,
-		@frame_name,
-		@activate
+		@activate,
+		@status,
+		@publication_start_datetime,
+		@publication_end_datetime
 END --WHILE
 CLOSE documents_cursor
 DEALLOCATE documents_cursor

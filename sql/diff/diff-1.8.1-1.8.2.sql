@@ -358,18 +358,22 @@ COMMIT
 -- 2004-02-26 /Hasse
 
 DELETE FROM browsers WHERE browser_id = 0
+GO
 
 -- 2004-03-01 Kreiger
 
 UPDATE meta SET archived_datetime = GETDATE() WHERE archive = 1 AND (archived_datetime IS NULL OR GETDATE() < archived_datetime )
+GO
 
 ALTER TABLE meta ADD
         status INT NOT NULL DEFAULT 0,
         publication_start_datetime DATETIME NULL,
         publication_end_datetime DATETIME NULL
+GO
 
 UPDATE meta SET status = 2
 UPDATE meta SET publication_start_datetime = activated_datetime
+GO
 
 ALTER TABLE meta DROP
         COLUMN description,
@@ -382,5 +386,15 @@ ALTER TABLE meta DROP
         COLUMN frame_name,
         COLUMN status_id,
         COLUMN activated_datetime
+GO
 
 -- 2004-03-03 Kreiger
+
+DROP PROCEDURE AddBrowserStatistics
+DROP PROCEDURE AddScreenStatistics
+DROP PROCEDURE Classification_Get_All
+DROP PROCEDURE Classification_convert
+DROP PROCEDURE Classification_fix
+DROP PROCEDURE ClassificationAdd
+
+-- 2004-03-05 Kreiger
