@@ -1,14 +1,12 @@
 <%@ page import="com.imcode.imcms.servlet.superadmin.AdminManager,
                  imcode.server.document.DocumentDomainObject,
                  imcode.util.Utility,
-                 java.util.Date,
                  java.text.DateFormat,
                  java.text.SimpleDateFormat,
                  imcode.util.DateConstants,
-                 java.util.List,
                  imcode.server.document.DocumentMapper,
-                 java.util.HashMap,
-                 imcode.server.Imcms"%>
+                 imcode.server.Imcms,
+                 java.util.*"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 
 <%! private String IMG_PATH;
@@ -133,8 +131,9 @@ String formatDatetime(Date datetime) {
 
 <%@include file="admin_manager_inc_subreport_header.jsp"%>
     <!-- list changed documents  -->
-   <% for (int i = 0; i < documents_new.size() && i < AdminManager.DEFAULT_DOCUMENTS_PER_LIST; i++) {
-        expand = i < 2 || expand_listMap.get(LIST_TYPE).toString().equals("expand") ? true : false;
+   <%
+       for (int i = 0; i < documents_changed.size() && i < AdminManager.DEFAULT_DOCUMENTS_PER_LIST; i++) {
+        expand = i < 2 || expand_listMap.get(LIST_TYPE).toString().equals("expand") ;
         document = (DocumentDomainObject) documents_changed.get(i); %>
          <%@include file="admin_manager_inc_list_item.jsp"%>
     <!-- / list item -->
