@@ -60,7 +60,7 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 		String text  = "";
 
 		if (req.getParameter("save")!=null)	{	
-		
+			System.out.println("rockar det fett");
 			addLineToList(req,lines);			
 
 			String readFile = (String)session.getAttribute("file");

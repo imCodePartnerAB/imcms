@@ -45,7 +45,7 @@ public class QuoteWriter {
 
 	// Get and prepare the text.
 	String text = Parser.parseDoc(theQuote.getText(),replacements) ;
-
+	
 	writer.write(startDateString+"#"+endDateString+"#"+text+"#"+eol) ;
     }
 

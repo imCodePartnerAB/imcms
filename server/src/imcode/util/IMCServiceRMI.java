@@ -626,14 +626,23 @@ public class IMCServiceRMI {
     }
 	
 	public static List getQuoteList(String server, String quoteListName) throws IOException {
-	IMCServiceInterface imc = getInterface( server ) ;
-	
+	IMCServiceInterface imc = getInterface( server ) ;	
 	return imc.getQuoteList(quoteListName);
 	}
 	
 	public static void setQuoteList(String server, String quoteListName, List quoteList) throws IOException {
 		IMCServiceInterface imc = getInterface( server ) ;
-		imc. setQuoteList(quoteListName, quoteList);
+		imc.setQuoteList(quoteListName, quoteList);
 	}
+	
+	public static List getPollList(String server,String pollListName) throws IOException {
+		IMCServiceInterface imc = getInterface( server ) ;
+		return imc.getPollList(pollListName);		
+	}
+
+    public static void setPollList(String server, String pollListName, List pollList) throws IOException  {
+		IMCServiceInterface imc = getInterface( server ) ;
+		imc.setPollList(pollListName, pollList);			
+    }
 
 }

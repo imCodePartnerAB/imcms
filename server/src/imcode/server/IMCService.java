@@ -2866,10 +2866,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     **/
     public List getQuoteList(String quoteListName) throws IOException {
 	List theList = new LinkedList() ;
-	QuoteReader quoteReader = new QuoteReader(new StringReader(getFortune(quoteListName))) ;
+	StringReader reader = new StringReader(getFortune(quoteListName));
+	QuoteReader quoteReader = new QuoteReader(reader) ;
 	for (Quote quote; null != (quote = quoteReader.readQuote()) ; ) {
 	    theList.add(quote) ;
 	}
+	reader.close();
 	return theList ;
     }
 
@@ -2880,11 +2882,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        @param quoteList     The quote-List
     **/
     public void setQuoteList(String quoteListName, List quoteList) throws IOException {
-	QuoteWriter quoteWriter = new QuoteWriter(new FileWriter(new File(m_FortunePath,quoteListName))) ;
+	FileWriter writer = new FileWriter(new File(m_FortunePath,quoteListName));
+	QuoteWriter quoteWriter = new QuoteWriter(writer) ;
 	Iterator quotesIterator = quoteList.iterator() ;
 	while (quotesIterator.hasNext()) {
 	    quoteWriter.writeQuote((Quote)quotesIterator.next()) ;
+		writer.flush();
 	}
+		writer.close();
     }
 
 
@@ -2893,10 +2898,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     **/
     public List getPollList(String pollListName) throws IOException {
 	List theList = new LinkedList() ;
-	PollReader pollReader = new PollReader(new StringReader(getFortune(pollListName))) ;
+	StringReader reader = new StringReader(getFortune(pollListName));
+	PollReader pollReader = new PollReader(reader) ;
 	for (Poll poll; null != (poll = pollReader.readPoll()) ; ) {
 	    theList.add(poll) ;
 	}
+	reader.close();
 	return theList ;
     }
 
@@ -2907,11 +2914,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        @param pollList     The poll-List
     **/
     public void setPollList(String pollListName, List pollList) throws IOException {
-	PollWriter pollWriter = new PollWriter(new FileWriter(new File(m_FortunePath,pollListName))) ;
+	FileWriter writer =  new FileWriter(new File(m_FortunePath,pollListName));
+	PollWriter pollWriter = new PollWriter(writer) ;
 	Iterator pollIterator = pollList.iterator() ;
 	while (pollIterator.hasNext()) {
 	    pollWriter.writePoll((Poll)pollIterator.next()) ;
+		writer.flush();
 	}
+	writer.close();
     }
 
     /**
