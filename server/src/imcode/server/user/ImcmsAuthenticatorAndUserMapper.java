@@ -251,8 +251,8 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     public void deleteRole( String roleName ) {
         int roleId = callSprocRoleFindName( roleName );
-        boolean roleNotExists = (-1 == roleId);
-        if( roleNotExists ) {
+        boolean roleExists = -1 != roleId;
+        if( roleExists ) {
             databaseService.sproc_RoleDelete( roleId );
         }
     }
