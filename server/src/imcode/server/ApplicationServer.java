@@ -104,6 +104,7 @@ public class ApplicationServer {
         String jdbcDriver = props.getProperty( "JdbcDriver" );
         String jdbcUrl = props.getProperty( "Url" );
         String host = props.getProperty( "Host" );
+        String databaseName = props.getProperty( "DatabaseName" );
         String port = props.getProperty( "Port" );
         String user = props.getProperty( "User" );
         String password = props.getProperty( "Password" );
@@ -129,7 +130,7 @@ public class ApplicationServer {
                                       host, port, databaseName,
                                       user, password, "30");
             */
-            String serverUrl = jdbcUrl + host + ":" + port;
+            String serverUrl = jdbcUrl + host + "\\" + ":" + port + ";DatabaseName=" + databaseName;
             result = new NonPoolingDriverDBConnectionManager( servername, jdbcDriver, serverUrl, user, password, maxConnectionCount );
             result.testConnection();
 
