@@ -47,10 +47,10 @@ B { font-weight: bold; }
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
 		<td id="adminPanelTd1_1" width="25%" nowrap>
-		<font face="Verdana, Arial, Helvetica, sans-serif" size="2" class="adminPanelLogo"><? templates/sv/adminbuttons/adminbuttons.html/1 ?> &nbsp;</font></td>
+		<font face="Verdana, Arial, Helvetica, sans-serif" size="2" class="adminPanelLogo" onDblClick="window.open('http://www.imcms.net/')"><? templates/sv/adminbuttons/adminbuttons.html/1 ?> &nbsp;</font></td>
 		<td id="adminPanelTd1_2" width="50%" align="center" nowrap>
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="2" class="adminPanelText">
-		<b>Id:</b> <%= document.getId() %> &nbsp; <b><? templates/sv/adminbuttons/adminbuttons.html/1001 ?>:</b> <%= document.getDocumentTypeName().toLocalizedString( request ) %> &nbsp;</font></td>
+		<span title="<? web/imcms/lang/jsp/admin/adminbuttons.jsp/title_id ?>"><b>Id:</b> <%= document.getId() %></span> &nbsp; <span title="<? web/imcms/lang/jsp/admin/adminbuttons.jsp/title_type ?>"><b><? templates/sv/adminbuttons/adminbuttons.html/1001 ?>:</b> <%= document.getDocumentTypeName().toLocalizedString( request ) %></span> &nbsp;</font></td>
 		<td id="adminPanelTd1_3" width="25%" align="right"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
 	</tr>
 	</table></td>
