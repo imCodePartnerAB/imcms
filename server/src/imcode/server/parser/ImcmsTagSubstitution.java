@@ -11,14 +11,10 @@ import imcode.server.util.DateHelper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.* ;
-import java.text.DateFormatSymbols;
 
 import org.apache.log4j.Category;
 
 public class ImcmsTagSubstitution implements Substitution, IMCConstants {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-
     private static Pattern HTML_PREBODY_PATTERN  = null ;
     private static Pattern HTML_POSTBODY_PATTERN  = null ;
     private static Pattern IMCMS_TAG_ATTRIBUTES_PATTERN  = null ;
@@ -164,7 +160,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    } catch (IOException ex) {
 		return "<!-- imcms:include file failed: "+ex+" -->" ;
 	    }
-	} else if (null != (attributevalue = attributes.getProperty("internalDocument"))) { // If we have the attribute internalDocument="meta-id"
+	} else if (null != (attributevalue = attributes.getProperty("document"))) { // If we have the attribute document="meta-id"
 	    try {
 		if (includeLevel>0) {
 		    int included_meta_id = Integer.parseInt(attributevalue) ;
@@ -182,11 +178,11 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		}
 	    }
 	    catch (NumberFormatException ex) {
-		return "<!-- imcms:include internalDocument failed: "+ex+" -->" ;
+		return "<!-- imcms:include document failed: "+ex+" -->" ;
 	    } catch (IOException ex) {
-		return "<!-- imcms:include internalDocument failed: "+ex+" -->" ;
+		return "<!-- imcms:include document failed: "+ex+" -->" ;
 	    } catch (RuntimeException ex) {
-		return "<!-- imcms:include internalDocument failed: "+ex+" -->" ;
+		return "<!-- imcms:include document failed: "+ex+" -->" ;
 	    }
 	    return "" ;
 	} else if (null != (attributevalue = attributes.getProperty("url"))) { // If we have an attribute of the form url="url:url"
@@ -235,7 +231,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    } catch (RuntimeException ex) {
 		return "<!-- imcms:include url failed: "+ex+" -->" ;
 	    }
-	} else { // If we have none of the attributes no, file, url, or internalDocument
+	} else { // If we have none of the attributes no, file, url, or document
 	    no = implicitIncludeNumber++ ; // Implicitly use the next number.
 	}
 	try {
@@ -279,7 +275,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
        @param patMat     A pattern matcher.
 
        attributes:
-	- no	( int )   text number in internalDocument
+	- no	( int )   text number in document
 	- label ( String ) lable to show in write mode
 	- mode  ( read | write )
 	- filter ( String )
@@ -287,12 +283,12 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
 	Supported text_types is:
 
-	pollquestion-n	#where n represent the questíon number in this internalDocument
+	pollquestion-n	#where n represent the questíon number in this document
 
-	pollanswer-n-m		#where n represent the questíon number in this internalDocument
+	pollanswer-n-m		#where n represent the questíon number in this document
 	                         and m represent the answer number in question number n
 
-	pollpointanswer-n-m     #where n represent the questíon number in this internalDocument
+	pollpointanswer-n-m     #where n represent the questíon number in this document
 				 and m represent the answer number in question number n
 
 	pollparameter-popup_frequency
