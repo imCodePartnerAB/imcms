@@ -67,3 +67,7 @@ ALTER TABLE menus ADD CONSTRAINT UQ__menus__meta_id_menu_index UNIQUE (meta_id, 
 ALTER TABLE roles ALTER COLUMN role_name VARCHAR(30) NOT NULL
 
 -- 2004-04-05 Kreiger
+
+UPDATE roles SET role_name = RTRIM(role_name)
+
+-- 2004-04-06 Kreiger
