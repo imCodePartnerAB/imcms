@@ -20,6 +20,7 @@ import java.util.*;
 public class MetaDataParser {
 
     public final static String SECTION_MSG_TEMPLATE = "sections/admin_section_no_one_msg.html";
+    public final static String PUBLISHER_NONE_MSG_TEMPLATE = "docinfo/publisher_no_one_msg.html";
 
     private final static Logger log = Logger.getLogger("imcode.util.MetaDataParser");
     private static final String ADVANCED_CHANGE_DOCINFO_TEMPLATE = "docinfo/adv_change_meta.html";
@@ -327,7 +328,7 @@ public class MetaDataParser {
 
         addLanguageRelatedTagsForDocInfoPageToParseList(vec, hash, imcref, user);
 
-        addPublisherRelatedTagsForDocInfoPageToParseList(vec, hash, imcref );
+        addPublisherRelatedTagsForDocInfoPageToParseList(vec, hash, imcref, lang_prefix );
 
         vec.add("#categories#");
         vec.add(createHtmlListBoxesOfCategoriesForEachCategoryType(imcref.getDocumentMapper(), Integer.parseInt(meta_id),imcref,user));
@@ -414,7 +415,7 @@ public class MetaDataParser {
         vec.add(option_list);
     }
 
-    public static void addPublisherRelatedTagsForDocInfoPageToParseList( Vector vec, Hashtable hash, IMCServiceInterface imcref ) {
+    public static void addPublisherRelatedTagsForDocInfoPageToParseList( Vector vec, Hashtable hash, IMCServiceInterface imcref, String lang_prefix ) {
         ImcmsAuthenticatorAndUserMapper userAndRoleMapper = imcref.getUserAndRoleMapper();
 
         String publisherIdStr = ((String[])hash.get("publisher_id"))[0];
@@ -427,7 +428,7 @@ public class MetaDataParser {
         if( null != publisher ) {
             vec.add( publisher.getLastName() + ", " + publisher.getFirstName() );
         } else {
-            vec.add("");
+            vec.add(imcref.parseDoc(null, PUBLISHER_NONE_MSG_TEMPLATE, lang_prefix));
         }
 
         UserDomainObject[] users = userAndRoleMapper.getAllUsers();

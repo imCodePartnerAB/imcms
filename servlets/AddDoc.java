@@ -147,7 +147,9 @@ public class AddDoc extends HttpServlet {
             "meta_image", null,
             "frame_name", null,
             "target", null,
-            "lang_prefix", null};
+            "lang_prefix", null,
+            "publisher_id", null,
+        };
 
         int metatabletype[] = {CHECKBOX,
                                CHECKBOX,
@@ -157,10 +159,12 @@ public class AddDoc extends HttpServlet {
                                NORMAL,
                                NORMAL,
                                OPTION,
-                               OTHER};
+                               OTHER,
+                               OTHER,
+        };
 
         // Lets get the meta information
-        String sqlStr = "select * from meta where meta_id = " + meta_id;
+        String sqlStr = "select * from meta where meta_id = " + meta_id; // todo: change select * from meta ...
         Hashtable hash = imcref.sqlQueryHash( sqlStr );
 
         // Lets get the html template file
@@ -284,6 +288,8 @@ public class AddDoc extends HttpServlet {
         }
 
         MetaDataParser.addLanguageRelatedTagsForDocInfoPageToParseList(vec,hash,imcref,user);
+
+        MetaDataParser.addPublisherRelatedTagsForDocInfoPageToParseList(vec, hash, imcref, lang_prefix );
 
         //lets build the option list used when the admin whants to breake the inherit chain
         String[] all_sections = imcref.sqlProcedure( "SectionGetAll" );

@@ -71,7 +71,9 @@ public class SaveNewMeta extends HttpServlet {
             "meta_text", null,
             "meta_image", null,
             "frame_name", "",
-            "target", null};
+            "target", null,
+            "publisher_id", null,
+        };
 
         Properties metaprops = new Properties();
         // Loop through all meta-table-properties
