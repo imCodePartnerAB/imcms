@@ -1372,3 +1372,62 @@ print ''
 print '2. Kopiera poll templates från mappen /poll/templates till WEB-INF/templates/text'
 print 'och byt namn på dem enligt anvisningar, se tidigare print utskrift i detta resultat:'
 GO
+
+BEGIN TRANSACTION
+ALTER TABLE dbo.childs
+	DROP CONSTRAINT FK_childs_meta1
+GO
+COMMIT
+BEGIN TRANSACTION
+CREATE TABLE dbo.Tmp_childs
+	(
+	meta_id int NOT NULL,
+	to_meta_id int NOT NULL,
+	menu_sort int NOT NULL,
+	manual_sort_order int NOT NULL,
+	tree_sort_index varchar(64) NOT NULL DEFAULT ''
+	)  ON [PRIMARY]
+GO
+IF EXISTS(SELECT * FROM dbo.childs)
+	 EXEC('INSERT INTO dbo.Tmp_childs (meta_id, to_meta_id, menu_sort, manual_sort_order)
+		SELECT meta_id, to_meta_id, menu_sort, manual_sort_order FROM dbo.childs TABLOCKX')
+GO
+DROP TABLE dbo.childs
+GO
+EXECUTE sp_rename N'dbo.Tmp_childs', N'childs', 'OBJECT'
+GO
+CREATE CLUSTERED INDEX childs_meta_id ON dbo.childs
+	(
+	meta_id
+	) ON [PRIMARY]
+GO
+ALTER TABLE dbo.childs ADD CONSTRAINT
+	PK_childs PRIMARY KEY NONCLUSTERED
+	(
+	meta_id,
+	to_meta_id,
+	menu_sort
+	) ON [PRIMARY]
+
+GO
+ALTER TABLE dbo.childs WITH NOCHECK ADD CONSTRAINT
+	FK_childs_meta1 FOREIGN KEY
+	(
+	meta_id
+	) REFERENCES dbo.meta
+	(
+	meta_id
+	)
+GO
+COMMIT
+
+
+-- 2003-10-29 Hasse / Kreiger
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[AddPhoneNr]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[AddPhoneNr]
+GO
+-- 2003-11-28 Lennart
+
+print' OBS!!!  Glöm inte att du MÅSTE köra hela sprocs.sql efter detta script vid uppgradering  OBS!!'
+

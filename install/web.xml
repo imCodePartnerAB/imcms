@@ -30,31 +30,39 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-   <servlet>
-      <servlet-name>init</servlet-name>
-      <servlet-class>MainInitServlet</servlet-class>
-      <load-on-startup>1</load-on-startup>
-   </servlet>
+    <servlet>
+        <servlet-name>init</servlet-name>
+        <servlet-class>MainInitServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
-   <servlet>
-      <servlet-name>RD</servlet-name>
-      <servlet-class>ReDirecter</servlet-class>
-   </servlet>
+    <servlet>
+        <servlet-name>RD</servlet-name>
+        <servlet-class>ReDirecter</servlet-class>
+    </servlet>
 
-   <servlet-mapping>
-      <servlet-name>RD</servlet-name>
-      <url-pattern>/RD/*</url-pattern>
-   </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RD</servlet-name>
+        <url-pattern>/RD/*</url-pattern>
+    </servlet-mapping>
 
-   <session-config>
-      <session-timeout>
-         30
-      </session-timeout>
-   </session-config>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
 
-   <welcome-file-list>
-      <welcome-file>index.jsp</welcome-file>
-      <welcome-file>index.htm</welcome-file>
-      <welcome-file>index.html</welcome-file>
-   </welcome-file-list>
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>index.htm</welcome-file>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+    <error-page>
+        <exception-type>java.lang.Throwable</exception-type>
+        <location>/jsp/internalerrorpage.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/jsp/internalerrorpage.jsp</location>
+    </error-page>
 </web-app>
