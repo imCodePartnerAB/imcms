@@ -21,9 +21,19 @@ public class MultipartHttpServletRequest extends HttpServletRequestWrapper {
     private MultiMap fileItemMap;
 
     public MultipartHttpServletRequest( HttpServletRequest request ) throws IOException {
+        this(request,-1) ;
+    }
+
+    /**
+        Constructor used to specify a size limit for uploads.
+
+        @param sizeLimit The maximum size for an upload, in bytes.
+     **/
+    public MultipartHttpServletRequest( HttpServletRequest request, long sizeLimit ) throws IOException {
         super( request );
         if ( FileUploadBase.isMultipartContent( request ) ) {
             FileUpload fileUpload = new FileUpload( new DefaultFileItemFactory() );
+            fileUpload.setSizeMax( sizeLimit );
             List fileItems ;
             try {
                 fileItems = fileUpload.parseRequest( request );
