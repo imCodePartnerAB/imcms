@@ -1480,36 +1480,18 @@ public class DocumentMapper {
         MenuItemDomainObject[] menuItems = menu.getMenuItems();
         for ( int i = 0; i < menuItems.length; i++ ) {
             MenuItemDomainObject menuItem = menuItems[i];
-            insertTextDocumentMenuItem( menu, menuItem );
+            sqlInsertMenuItem( menu, menuItem );
         }
     }
 
-    private void insertTextDocumentMenuItem( MenuDomainObject menu, MenuItemDomainObject menuItem ) {
-        Integer sortKey = menuItem.getSortKey();
-        if ( null == sortKey ) {
-            Integer maxSortKey = getMaxSortKeyForMenu( menu );
-            sortKey = null == maxSortKey
-                    ? new Integer( MenuDomainObject.DEFAULT_SORT_KEY ) : new Integer( maxSortKey.intValue() + 10 );
-            menuItem.setSortKey( sortKey );
-        }
-        sqlInsertMenuItem( menu, menuItem, sortKey.intValue() );
-    }
-
-    private void sqlInsertMenuItem( MenuDomainObject menu, MenuItemDomainObject menuItem, int sortKey ) {
+    private void sqlInsertMenuItem( MenuDomainObject menu, MenuItemDomainObject menuItem ) {
         String sqlInsertMenuItem = "INSERT INTO childs (menu_id, to_meta_id, manual_sort_order, tree_sort_index) VALUES(?,?,?,?)";
         service.sqlUpdateQuery( sqlInsertMenuItem, new String[]{
-            "" + menu.getId(), "" + menuItem.getDocument().getId(), "" + sortKey, "" + menuItem.getTreeSortKey()
+            "" + menu.getId(),
+            "" + menuItem.getDocument().getId(),
+            "" + menuItem.getSortKey().intValue(),
+            "" + menuItem.getTreeSortKey()
         } );
-    }
-
-    private Integer getMaxSortKeyForMenu( MenuDomainObject menu ) {
-        String sqlSelectMaxSortKey = "SELECT MAX(manual_sort_order) FROM childs WHERE menu_id = ?";
-        String maxSortKeyString = service.sqlQueryStr( sqlSelectMaxSortKey, new String[]{"" + menu.getId()} );
-        if ( null == maxSortKeyString ) {
-            return null;
-        }
-        Integer maxSortKey = Integer.valueOf( maxSortKeyString );
-        return maxSortKey;
     }
 
     private void sqlInsertMenu( TextDocumentDomainObject textDocument, int menuIndex,
