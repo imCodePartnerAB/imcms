@@ -12,7 +12,6 @@ import imcode.server.util.DateHelper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.DocumentMapper;
-import imcode.server.document.TemplateDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.db.DBConnect;
@@ -135,7 +134,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             Vector included_docs = DocumentMapper.sprocGetIncludes( dbc, meta_id );
 
             String template_id = "" + myDoc.getTemplate().getId();
-            String simple_name = myDoc.getTemplate().getName();
+            String simple_name = myDoc.getTemplate().getSimple_name();
             int sort_order = myDoc.getMenuSortOrder();
             String group_id = "" + myDoc.getTemplateGroupId();
 
@@ -148,7 +147,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                         int temp_template = Integer.parseInt( (String)vectT.get( 0 ) );
                         if( temp_template > 0 ) {
                             template_id = temp_template + "";
-                            documentRequest.getDocument().setTemplate( new TemplateDomainObject( temp_template, template_name ) );
+                            documentRequest.getDocument().setTemplate( TemplateMapper.getTemplate( (IMCService)serverObject, Integer.parseInt(template_id) ) );
                         }
                     } catch( NumberFormatException nfe ) {
                         //do nothing, we keep the original template

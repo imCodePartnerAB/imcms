@@ -637,14 +637,15 @@ public class DocumentMapper {
         String[] textdoc_data = textdoc_data1;
         if( textdoc_data.length >= 4 ) {
             int template_id = Integer.parseInt( textdoc_data[0] );
-            String simple_name = textdoc_data[1];
+            //String simple_name = textdoc_data[1];
             int sort_order = Integer.parseInt( textdoc_data[2] );
             int group_id = Integer.parseInt( textdoc_data[3] );
-            TemplateDomainObject template = new TemplateDomainObject( template_id, simple_name );
+            TemplateDomainObject template = TemplateMapper.getTemplate( service, template_id );
             inout_document.setTemplate( template );
             inout_document.setMenuSortOrder( sort_order );
             inout_document.setTemplateGroupId( group_id );
         }
     }
+
 }
 

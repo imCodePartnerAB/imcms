@@ -2,28 +2,25 @@ package imcode.server.document;
 
 public class TemplateDomainObject {
     private int id;
-    private String name;
+    private String simple_name;
+    private String template_name;
 
-    /**
-     Constructor.
-     */
-    public TemplateDomainObject( int id, String name ) {
+    public TemplateDomainObject( int id, String template_name, String simple_name ) {
         this.id = id;
-        this.name = name;
+        this.simple_name = simple_name;
+        this.template_name = template_name;
     }
 
-    /**
-     Get template id.
-     */
     public int getId() {
         return id;
     }
 
-    /**
-     Get template name.
-     */
-    public String getName() {
-        return name;
+    public String getSimple_name() {
+        return simple_name;
+    }
+
+    public String getTemplate_name() {
+        return template_name;
     }
 
     public boolean equals( Object o ) {
@@ -36,17 +33,11 @@ public class TemplateDomainObject {
 
         if( id != templateDomainObject.id )
             return false;
-        if( name != null ? !name.equals( templateDomainObject.name ) : templateDomainObject.name != null )
-            return false;
 
         return true;
     }
 
     public int hashCode() {
-        int result;
-        result = id;
-        result = 29 * result + (name != null ? name.hashCode() : 0);
-        return result;
+        return id;
     }
 }
-

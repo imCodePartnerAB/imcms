@@ -3,26 +3,27 @@
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
     DocumentService documentService = imcmsSystem.getDocumentService();
     int docId = 1001;
-    TextDocument document = (TextDocument)documentService.getTextDocument(docId);
+    TextDocument document = documentService.getTextDocument(docId);
     Template docTemplate = document.getTemplate();
 %>
 
 <h3>Current template</h3>
-TextDocument <%=document.getId()%> is shown with the template <%= docTemplate.getName() %>
+TextDocument <%=document.getId()%> is shown with the template named "<%= docTemplate.getName() %>" <br>
 
-<h4>All possible templtates to play with this document (for the current logged in user)</h4>
+<h4>All possible templates to play with this document (for the current logged in user)</h4>
 <%
     TemplateService templateService = imcmsSystem.getTemplateService();
     TemplateGroup[] templateGroups = templateService.getTemplatesGroups( document );
     for( int i = 0; i < templateGroups.length; i++ ) {
         TemplateGroup templateGroup = templateGroups[i];%>
-        <%= templateGroup.getName() %> has the following templates:<br><%
+        Template group "<%= templateGroup.getName() %>" has the following templates:<br>
+        <ul><%
         Template[] templates = templateService.getTemplates( templateGroup );
         for( int k = 0; k < templates.length; k++ ) {
             Template template = templates[k];%>
-            <%=template.getName()%><br><%
+            <li><%=template.getName()%></li><%
         }%>
-        <br><%
+        </ul><%
     }
 
 %>

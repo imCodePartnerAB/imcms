@@ -87,10 +87,12 @@ public class TemplateMapper {
         Iterator iterator = templates.iterator();
         int noOfColumns = 2;
         TemplateDomainObject[] result = new TemplateDomainObject[templates.size()/noOfColumns];
-        for( int k=0; iterator.hasNext(); k++ ) {
-            String templateId = (String)iterator.next();
-            String templateName = (String)iterator.next();
-            result[k] = new TemplateDomainObject( Integer.parseInt(templateId), templateName );
+        if( templates.size() > 0 ){
+            for( int k=0; iterator.hasNext(); k++ ) {
+                String templateIdStr = (String)iterator.next();
+                String templateNameStr = (String)iterator.next();
+                result[k] = getTemplate( service, Integer.parseInt(templateIdStr) );
+            }
         }
         return result;
     }
@@ -118,5 +120,20 @@ public class TemplateMapper {
         }
 
         dbc.closeConnection();
+    }
+
+    public static TemplateDomainObject getTemplate( IMCService service, int template_id ) {
+        String sqlStr = "select template_id,template_name,simple_name from templates where template_id = " + template_id;
+        DBConnect dbc = new DBConnect( service.getConnectionPool() );
+        dbc.getConnection();
+        dbc.setSQLString( sqlStr );
+        dbc.createStatement();
+        Vector queryResult = dbc.executeQuery();
+        dbc.closeConnection();
+        int templateId = Integer.parseInt((String)queryResult.elementAt(0));
+        String templateName = (String)queryResult.elementAt(1);
+        String simpleName = (String)queryResult.elementAt(2);
+        TemplateDomainObject result = new TemplateDomainObject( templateId, templateName, simpleName );
+        return result;
     }
 }

@@ -10,7 +10,7 @@ public class Template {
     }
 
     public String getName() {
-        return internalTemplate.getName();
+        return internalTemplate.getSimple_name();
     }
 
     public int getId() {
@@ -37,5 +37,9 @@ public class Template {
 
     TemplateDomainObject getInternal() {
         return internalTemplate;
+    }
+
+    public String toString() {
+        return getName() + "(id = " + getId() + ")";
     }
 }

@@ -9,7 +9,7 @@
     document.setMenuText( "Test menu text");
     document.setMenuImageURL("Test menu image url");
 
-    // don't forget to save your changes!!!
+    // don't forget to save your changes!
     documentService.saveChanges( document );
 %>
 Done.

@@ -1,14 +1,14 @@
 package com.imcode.imcms;
 
 import imcode.server.IMCText;
-import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetMapper;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.TemplateDomainObject;
 
 public class TextDocument extends Document {
 
-    TextDocument( SecurityChecker securityChecker,  imcode.server.document.DocumentDomainObject document, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
+    TextDocument( SecurityChecker securityChecker, DocumentDomainObject document, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
         super( securityChecker, document, documentMapper, permissionSetMapper );
     }
 
@@ -40,11 +40,14 @@ public class TextDocument extends Document {
     }
 
     public Template getTemplate() {
-        return new Template(internalDocument.getTemplate());
+        TemplateDomainObject template = internalDocument.getTemplate();
+        Template result = new Template(template);
+        return result;
     }
 
     public void setTemplate( Template newTemplate ) {
-       internalDocument.setTemplate( newTemplate.getInternal() );
+        TemplateDomainObject internalTemplate = newTemplate.getInternal();
+        internalDocument.setTemplate( internalTemplate );
     }
 
     public static class TextField {
