@@ -3570,6 +3570,47 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	}
     }
 
+	/**
+       Gets the users most privileged permission_set for the document.
+       @param meta_id      	The document-id
+       @param user_id		The user_id
+	   @return the most privileged permission_set a user has for the document.
+       
+    */
+    public int getUserHighestPermissionSet (int meta_id, int user_id)
+	{
+		try{
+			DBConnect dbc = new DBConnect(m_conPool) ;
+			dbc.getConnection() ;
+			String sqlStr = "GetUserPermissionSet (?,?)" ;
+			String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user_id)} ;
+			dbc.setProcedure(sqlStr,sqlAry) ;
+			Vector perms = (Vector)dbc.executeProcedure() ;
+			dbc.clearResultSet() ;
+			dbc.closeConnection() ;
+
+			if (perms.size() == 0){
+				return IMCConstants.DOC_PERM_SET_NONE ;//nothing was returned so give no rights at all.
+			}
+
+			int set_id = Integer.parseInt((String)perms.elementAt(0)) ;
+
+			if (set_id == IMCConstants.DOC_PERM_SET_FULL){
+				return	IMCConstants.DOC_PERM_SET_FULL;	// User has full permission for this document
+			}else if (set_id == IMCConstants.DOC_PERM_SET_RESTRICTED_1){
+				return	IMCConstants.DOC_PERM_SET_RESTRICTED_1;	// User has restricted 1 permission for this document
+			}else if (set_id == IMCConstants.DOC_PERM_SET_RESTRICTED_2){
+				return	IMCConstants.DOC_PERM_SET_RESTRICTED_2;	// User has restricted 2 permission for this document
+			}else if (set_id == IMCConstants.DOC_PERM_SET_READ){
+				return	IMCConstants.DOC_PERM_SET_READ;	// User has only read permission for this document
+			}else{
+				return DOC_PERM_SET_NONE; //the user has no permission at all for this document
+			}
+		} catch (RuntimeException ex){
+			log.log(Log.ERROR, "Exception in getUserHighestPermissionSet(int,int)",ex) ;
+			throw ex ;
+		}
+	}
 
     /**
        save template to disk
