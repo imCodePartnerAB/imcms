@@ -132,6 +132,7 @@
             <tr>
                 <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/file_id_label ?></th>
                 <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/filename_label ?></th>
+                <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/size_label ?></th>
                 <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/mime_type_label ?></th>
                 <% if (!creatingNewDocument) { %>
                 <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/link_label ?></th>
@@ -155,6 +156,7 @@
                                 name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__NEW_FILE_ID_PREFIX + escapedFileId %>"
                                 value="<%= escapedFileId %>"></td>
                         <td><%= StringEscapeUtils.escapeHtml(file.getFilename()) %></td>
+                        <td><%= file.getInputStreamSource().getSize() %></td>
                         <td><%= StringEscapeUtils.escapeHtml(file.getMimeType()) %></td>
                         <% if (!creatingNewDocument) { %>
                         <td><%= StringEscapeUtils.escapeHtml(request.getContextPath()) %>/servlet/GetDoc?meta_id=<%= document.getId() %>&<%= GetDoc.REQUEST_PARAMETER__FILE_ID %>=<%= escapedFileId %></td>
