@@ -174,8 +174,8 @@ public class SaveMeta extends HttpServlet {
 				// IMCServiceRMI.sqlUpdateProcedure(imcserver, "SetRoleDocPermissionSetId "+role_id+","+meta_id+","+new_set_id) ;
 				temp_permission_settings.setProperty(String.valueOf(role_id),String.valueOf(new_set_id)) ;
 			} else {
-				log ("User with set_id "+user_set_id+" and permission_set "+user_perm_set+" denied permission to change set_id for role "
-					+role_id+" from "+role_set_id+" to "+new_set_id) ;
+				log ("User "+user.getInt("user_id")+" with set_id "+user_set_id+" and permission_set "+user_perm_set+" was denied permission to change set_id for role "
+					+role_id+" from "+role_set_id+" to "+new_set_id+" on meta_id "+meta_id) ;
 			}
 		}
 
@@ -268,10 +268,13 @@ public class SaveMeta extends HttpServlet {
 				sqlStr += ", " ;
 			}
 		}
-		Enumeration enum_temp_settings = temp_permission_settings.propertyNames() ;
-		while ( enum_temp_settings.hasMoreElements() ) {
-			String role_id = (String)enum_temp_settings.nextElement() ;
+
+		for (int i=0; i<role_permissions.length; ++i) {
+			String role_id = (String)role_permissions[i][0] ;
 			String new_set_id = temp_permission_settings.getProperty(role_id) ;
+			if (new_set_id == null) {
+			    new_set_id = "4" ; // Delete it.
+			}
 			IMCServiceRMI.sqlUpdateProcedure(imcserver, "SetRoleDocPermissionSetId "+role_id+","+meta_id+","+new_set_id) ;
 		}
 		
