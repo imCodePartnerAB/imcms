@@ -1,9 +1,6 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentPermissionSetDomainObject;
-import imcode.server.document.DocumentPermissionSetMapper;
+import imcode.server.document.*;
 import imcode.server.IMCConstants;
 import imcode.server.user.UserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
@@ -164,6 +161,25 @@ public class Document {
     public Language getLanguage() throws NoPermissionException {
         securityChecker.hasDocumentPermission(this);
         return Language.getLanguageByISO639_2(internalDocument.getLanguageIso639_2()) ;
+    }
+
+    public void addCategory( Category category ) {
+        internalDocument.addCategory(category.getInternal()) ;
+    }
+
+    public void removeCategory( Category category ) {
+        internalDocument.removeCategory(category.getInternal()) ;
+    }
+
+    public Category[] getCategories() {
+        CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategories() ;
+        Category[] categories = new Category[categoryDomainObjects.length] ;
+
+        for ( int i = 0 ; i < categories.length ; i++ ) {
+            CategoryDomainObject categoryDomainObject = categoryDomainObjects[i];
+            categories[i] = new Category(categoryDomainObject) ;
+        }
+        return categories ;
     }
 
     public void setPermissionSetForRole( String roleName, int permissionSet ) throws NoSuchRoleException, NoPermissionException {

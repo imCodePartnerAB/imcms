@@ -65,7 +65,6 @@ public class DocumentPermissionSetDomainObject {
 
     public String toString() {
         StringBuffer buff = new StringBuffer();
-
         buff.append( getType() ) ;
         switch ( permissionType ) {
             case RESTRICTED_1:

@@ -11,8 +11,13 @@
 
     //Language english = Language.getLanguageByISO639_1( "en" );
     Language english = Language.getLanguageByISO639_2( "eng" );
-
     document.setLanguage( english );
+
+    final String categoryTypeName = "Subject";
+    final String categoryName = "Legal";
+    Category legalSubjectCategory = documentService.getCategory(categoryTypeName, categoryName) ;
+
+    document.addCategory(legalSubjectCategory) ;
 
     // don't forget to save your changes!
     documentService.saveChanges( document );

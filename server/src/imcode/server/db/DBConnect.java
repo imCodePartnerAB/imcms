@@ -367,9 +367,7 @@ public class DBConnect {
         for( Iterator it = params.iterator() ; it.hasNext() ; ) {
             String param = (String)it.next();
             try {
-                if ( null != param ) {
-                    stmt.setString( ++i, param );
-                }
+                stmt.setString( ++i, param );
             } catch(SQLException se) {
                 log.error("Failed to set parameter "+i+" of statement "+stmt.toString()+" to "+param,se) ;
                 throw se ;

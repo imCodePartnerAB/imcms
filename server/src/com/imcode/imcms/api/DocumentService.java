@@ -45,4 +45,8 @@ public class DocumentService {
         documentMapper.saveTextDocument( document.getInternal() );
     }
 
+    public Category getCategory(String categoryTypeName, String categoryName) {
+        return new Category(documentMapper.getCategory(categoryTypeName,categoryName)) ;
+    }
+
 }
