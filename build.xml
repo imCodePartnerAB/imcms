@@ -377,11 +377,11 @@
     </target>
 
 
-    <target name="tomcat-reload" depends="install, tomcat-noinstall-reload"
+    <target name="install-tomcat-reload" depends="install, tomcat-reload"
         description="install and reload the web app in tomcat"/>
 
 
-    <target name="tomcat-noinstall-reload" description="reloads the web app in tomcat">
+    <target name="tomcat-reload" description="reloads the web app in tomcat">
         <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" classpathref="libraries"/>
          <reload url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
             path="/${webappname}"/>
