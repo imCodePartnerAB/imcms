@@ -6,17 +6,7 @@ import org.apache.log4j.spi.LoggingEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-import java.text.SimpleDateFormat;
-import java.text.DateFormat;
 
-/**
- * Created by IntelliJ IDEA.
- * User: kreiger
- * Date: 2003-sep-12
- * Time: 11:24:48
- * To change this template use Options | File Templates.
- */
 public class TestDailyRollingFileAppender extends TestCase {
 
     private static final String DATE_PATTERN = ".yyyy-MM-dd-HH-mm";
@@ -58,7 +48,6 @@ public class TestDailyRollingFileAppender extends TestCase {
         assertTrue("Checking that rolled over file '"+rolledOverFile.getPath()+"' exists",rolledOverFile.exists()) ;
         assertTrue("Checking that rolled over file '"+rolledOverFile.getPath()+"' is non-empty",rolledOverFile.length() > 0) ;
     }
-    */
 
     private static File getRolledOverFile( File tempFile ) {
         DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN) ;
@@ -74,6 +63,7 @@ public class TestDailyRollingFileAppender extends TestCase {
         int secondsOfMinute = gregorianCalendar.get(Calendar.SECOND) ;
         Thread.sleep((60-secondsOfMinute)*1000);
     }
+    */
 
     private LoggingEvent getLoggingEvent() {
         return new LoggingEvent(MockLogger.class.getName(),new MockLogger("mock"),Priority.DEBUG,"Test",null);

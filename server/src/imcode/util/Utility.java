@@ -5,25 +5,20 @@ import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.collections.SetUtils;
 import org.apache.commons.collections.MultiMap;
-import org.apache.commons.collections.MultiHashMap;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.SetUtils;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang.StringUtils;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import javax.servlet.http.*;
 import javax.servlet.ServletException;
+import javax.servlet.http.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.text.*;
 
 public class Utility {
 
@@ -58,6 +53,7 @@ public class Utility {
     public static void setNoCache( HttpServletResponse res ) {
         res.setHeader( "Cache-Control", "no-cache; must-revalidate;" );
         res.setHeader( "Pragma", "no-cache;" );
+        res.setDateHeader( "Expires", 0 );
     }
 
     public static UserDomainObject getLoggedOnUser( HttpServletRequest req ) {
@@ -99,28 +95,6 @@ public class Utility {
         }
     }
 
-    public static String getQueryStringExcludingParameter( HttpServletRequest request, String parameterNameToExclude ) {
-
-        MultiMap requestParameters = new MultiHashMap();
-        Map parameterMap = request.getParameterMap();
-        convertArrayValuedMapToMultiMap( parameterMap, requestParameters );
-
-        requestParameters.remove( parameterNameToExclude );
-        return createQueryStringFromParameterMultiMap( requestParameters );
-    }
-
-    private static void convertArrayValuedMapToMultiMap( Map map, MultiMap multiMap ) {
-        for ( Iterator iterator = map.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)iterator.next();
-            Object name = entry.getKey();
-            Object[] values = (Object[])entry.getValue();
-            for ( int i = 0; i < values.length; i++ ) {
-                Object value = values[i];
-                multiMap.put( name, value ) ;
-            }
-        }
-    }
-
     public static String createQueryStringFromParameterMultiMap( MultiMap requestParameters ) {
         Set requestParameterStrings = SetUtils.orderedSet( new HashSet() );
         for ( Iterator iterator = requestParameters.entrySet().iterator(); iterator.hasNext(); ) {
@@ -146,58 +120,6 @@ public class Utility {
         SortedSet sortedSet = new TreeSet( comparator );
         sortedSet.addAll( set );
         return sortedSet.iterator().next();
-    }
-
-    public static ImageSize getImageSize( InputStream inputStream ) throws IOException {
-        ImageInputStream imageInputStream = ImageIO.createImageInputStream( inputStream );
-        Iterator imageReadersIterator = ImageIO.getImageReaders( imageInputStream );
-        if ( !imageReadersIterator.hasNext() ) {
-            throw new IOException( "Can't read image format." ) ;
-        }
-        ImageReader imageReader = (ImageReader)imageReadersIterator.next();
-        imageReader.setInput( imageInputStream, true, true );
-        int width = imageReader.getWidth( 0 );
-        int height = imageReader.getHeight( 0 );
-        imageReader.dispose();
-        return new ImageSize( width, height );
-    }
-
-    public static String getHumanReadableSize(long size, String separator) {
-        double displaySize = size ;
-        DecimalFormat df = new DecimalFormat( "#.#" );
-        DecimalFormatSymbols decimalFormatSymbols = df.getDecimalFormatSymbols();
-        decimalFormatSymbols.setDecimalSeparator( '.' );
-        df.setDecimalFormatSymbols( decimalFormatSymbols );
-        String sizeSuffix = "B";
-        if ( displaySize >= ( 1024 * 1024 ) ) {
-            displaySize /= ( 1024 * 1024 );
-            sizeSuffix = "MB";
-        } else if ( displaySize >= 1024 ) {
-            displaySize /= 1024;
-            sizeSuffix = "kB";
-        }
-        return df.format(displaySize)+separator+sizeSuffix ;
-    }
-
-    public static String getHumanReadableTimeLength(long milliseconds) {
-        long ms = milliseconds ;
-        TimeLengthSuffixPair[] pairs = new TimeLengthSuffixPair[] {
-            new TimeLengthSuffixPair( DateUtils.MILLIS_IN_HOUR, "h" ),
-            new TimeLengthSuffixPair( DateUtils.MILLIS_IN_MINUTE, "m" ),
-            new TimeLengthSuffixPair( DateUtils.MILLIS_IN_SECOND, "s" ),
-            new TimeLengthSuffixPair( 1, "ms" ),
-        };
-        List resultList = new ArrayList() ;
-        for ( int i = 0; i < pairs.length; i++ ) {
-            TimeLengthSuffixPair pair = pairs[i];
-            long timeLength = pair.timeLength;
-            if ( ms >= timeLength ) {
-                long unitTime = ms / timeLength;
-                ms %= timeLength;
-                resultList.add( unitTime + pair.suffix );
-            }
-        }
-        return StringUtils.join( resultList.iterator(), ", " ) ;
     }
 
     public static boolean parameterIsSet( HttpServletRequest request, String parameter ) {
@@ -227,16 +149,6 @@ public class Utility {
         DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
         String formattedDate = dateFormat.format( oneWeekAgo );
         return formattedDate;
-    }
-
-    private static class TimeLengthSuffixPair {
-        long timeLength;
-        String suffix;
-
-        TimeLengthSuffixPair( long timeLength, String suffix ) {
-            this.timeLength = timeLength;
-            this.suffix = suffix;
-        }
     }
 
     public static String formatUser( UserDomainObject user ) {

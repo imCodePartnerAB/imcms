@@ -2,6 +2,8 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.*;
 import com.imcode.imcms.servlet.DocumentFinder;
+import com.imcode.util.ImageSize;
+import com.imcode.util.HumanReadable;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
@@ -336,7 +338,7 @@ public class ChangeImage extends HttpServlet {
                 InputStream inputStream = inputStreamSource.getInputStream();
                 fileSize = inputStreamSource.getSize();
                 try {
-                    imageSize = Utility.getImageSize( inputStream );
+                    imageSize = ImageSize.fromInputStream( inputStream );
                 } catch ( IOException ignored ) {
                 }
             } catch ( IOException ioe ) {
@@ -346,7 +348,7 @@ public class ChangeImage extends HttpServlet {
             List values = Arrays.asList( new Object[]{
                 "imageUrl", "GetDoc?meta_id=" + document.getId(),
                 "imageSize", imageSize,
-                "fileSize", Utility.getHumanReadableSize( fileSize, "&nbsp;" ),
+                "fileSize", HumanReadable.getHumanReadableByteSize( fileSize ).replaceAll( " ", "&nbsp;"),
             } );
             return Imcms.getServices().getAdminTemplate( "images/thumbnail.frag", user, values );
         }

@@ -1,11 +1,11 @@
 package imcode.server.document.index;
 
+import com.imcode.util.HumanReadable;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IntervalSchedule;
-import imcode.util.Utility;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
@@ -171,7 +171,7 @@ class DirectoryIndex implements DocumentIndex {
 
     private void logIndexingCompleted( int numberOfDocuments, StopWatch indexingStopWatch ) {
         long time = indexingStopWatch.getTime();
-        String humanReadableTime = Utility.getHumanReadableTimeLength( time ) ;
+        String humanReadableTime = HumanReadable.getHumanReadableTimeLength( time ) ;
         long timePerDocument = time/numberOfDocuments ;
         log.info( "Completed index of " + numberOfDocuments + " documents in " + humanReadableTime+". "+timePerDocument+"ms per document." );
     }

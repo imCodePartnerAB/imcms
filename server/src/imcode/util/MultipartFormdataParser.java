@@ -1,6 +1,5 @@
 package imcode.util;
 
-import javax.servlet.http.HttpServletRequestWrapper;
 import java.util.LinkedList;
 
 /**
@@ -10,19 +9,6 @@ public class MultipartFormdataParser {
 
     private MultipartParser mp ;
 	private String[] names ;
-
-    /**
-     Parses the multipartdata into parts.
-     @param data The multipartdata.
-     @param contenttype The MIME-header "Content-Type" for the data. Must contain a 'boundary=" "' parameter.
-     */
-    public MultipartFormdataParser( String data, String contenttype ) {
-        mp = new MultipartParser( data, contenttype );
-        names = new String[mp.countParts()];
-        for ( int i = 0; i < mp.countParts(); i++ ) {
-            names[i] = mp.getHeaderParams( i, "content-disposition" ).getProperty( "name" );
-        }
-    }
 
     /**
      Parses the multipartdata into parts.
@@ -39,7 +25,7 @@ public class MultipartFormdataParser {
 
     /**
      Returns the values of the specified parameter for the request as an array of strings, or null if the named parameter does not exist.
-     @param name the name of the parameter whose value is required. 
+     @param name the name of the parameter whose value is required.
      @return An array of strings, or null if the named parameter does not exist.
      */
     public String[] getParameterValues( String name ) {
@@ -61,7 +47,7 @@ public class MultipartFormdataParser {
 
     /**
      Returns the value of the specified parameter, or null if the named parameter does not exist.
-     @param name the name of the parameter whose value is required. 
+     @param name the name of the parameter whose value is required.
      @return An array of strings, or null if the named parameter does not exist.
      */
     public String getParameter( String name ) {

@@ -21,14 +21,6 @@ public class VariableManager {
         }
         return "" ;
     }
-    
-    public List getAllProps(){
-        return tags ;
-    }
-    
-    public List getAllValues(){
-        return data ;
-    }
 
     public List getTagsAndData() {
         List tagsAndData = new ArrayList(tags.size()*2) ;
@@ -40,7 +32,7 @@ public class VariableManager {
     }
 
     public String toString() {
-        
+
         String tmp = "" ;
         String aProp = "" ;
         String aVal = "" ;

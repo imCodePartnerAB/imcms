@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.util.HumanReadable;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
@@ -749,7 +750,7 @@ public class FileAdmin extends HttpServlet {
 
         for ( int i = 0; null != filelist && i < filelist.length; i++ ) {
 
-            String formatedFileSize = Utility.getHumanReadableSize( filelist[i].length(), " ");
+            String formatedFileSize = HumanReadable.getHumanReadableByteSize( filelist[i].length() );
             String fileNameAndSize = filelist[i].getName() + " [" + formatedFileSize + "]";
             optionlist.append( "<option value=\"" ).append( filelist[i].getName() ).append( "\">" ).append( fileNameAndSize ).append( "</option>" );
         }

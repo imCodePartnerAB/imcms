@@ -15,7 +15,8 @@
           java.util.*,
           com.imcode.imcms.servlet.GetDoc,
 	        java.text.DecimalFormat,
-            java.text.DecimalFormatSymbols"
+            java.text.DecimalFormatSymbols,
+            com.imcode.util.HumanReadable"
 
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
@@ -162,7 +163,7 @@ if (!files.isEmpty()) { %>
 		} else { %>
 			<td><%= StringEscapeUtils.escapeHtml(file.getFilename()) %></td><%
 		} %>
-			<td align="right" nowrap><%= Utility.getHumanReadableSize( file.getInputStreamSource().getSize(), "&nbsp;" ) %>&nbsp;</td>
+			<td align="right" nowrap><%= HumanReadable.getHumanReadableByteSize( file.getInputStreamSource().getSize() ).replaceAll( " ", "&nbsp;" ) %>&nbsp;</td>
 			<td><%= StringEscapeUtils.escapeHtml(file.getMimeType()) %></td><%
 		if (allowChoiceOfDefault) { %>
 			<td align="center"><input type="radio" name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__DEFAULT_FILE %>" value="<%=

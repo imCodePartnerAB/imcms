@@ -1,9 +1,10 @@
 package imcode.util;
 
+import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;

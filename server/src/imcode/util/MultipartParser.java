@@ -32,16 +32,6 @@ class MultipartParser {
         }
     }
 
-    /**
-     * Parses the multipartdata into parts.
-     *
-     * @param data        The multipartdata.
-     * @param contenttype The MIME-header "Content-Type" for the data. Must contain a 'boundary=" "' parameter.
-     */
-    MultipartParser( String data, String contenttype ) {
-        parse( data, contenttype );
-    }
-
     private void parse( String data, String contenttype ) {
         int boundaryindex = contenttype.indexOf( "boundary=" );
         if ( boundaryindex == -1 || contenttype.indexOf( "multipart" ) == -1 ) {

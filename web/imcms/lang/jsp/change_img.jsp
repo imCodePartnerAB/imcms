@@ -1,5 +1,5 @@
-<%@ page 
-  
+<%@ page
+
   import="imcode.server.document.textdocument.ImageDomainObject,
           com.imcode.imcms.servlet.admin.ChangeImage,
           org.apache.commons.lang.StringUtils,
@@ -15,10 +15,11 @@
           imcode.server.document.DocumentDomainObject,
           imcode.util.ImcmsImageUtils,
           imcode.server.document.FileDocumentDomainObject,
-          imcode.util.ImageSize"
-  
+          com.imcode.util.ImageSize,
+          com.imcode.util.ImageSize"
+
 	contentType="text/html"
-  
+
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
 
@@ -279,7 +280,7 @@ function checkLinkOnBlur() {<%
 		<tr>
 			<td colspan="2" align="center">
 			<table>
-			<tr><% 
+			<tr><%
 				if (!fromEditor) {
 					if (user.canCreateDocumentOfTypeIdFromParent( DocumentDomainObject.DOCTYPE_FILE.getId(), document )) { %>
 				<td><input type="submit" <%
@@ -332,7 +333,7 @@ function checkLinkOnBlur() {<%
 						<td>&nbsp;</td>
 						<td><? templates/sv/change_img.html/18 ?></td>
 						<td>&nbsp;</td>
-						<td><? templates/sv/change_img.html/19 ?></td><% 
+						<td><? templates/sv/change_img.html/19 ?></td><%
 						if (!fromEditor) { %>
 						<td>&nbsp;</td>
 						<td>&nbsp;</td><%
@@ -362,12 +363,12 @@ function checkLinkOnBlur() {<%
 						<td><input type="text" <%
 						%>name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_BORDER %>" <%
 						%>id="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_BORDER %>" <%
-						%>size="4" maxlength="4" value="<%= (image != null) ? image.getBorder() : 0 %>"></td><% 
+						%>size="4" maxlength="4" value="<%= (image != null) ? image.getBorder() : 0 %>"></td><%
 						if (!fromEditor) { %>
 						<td>&nbsp;</td>
 						<td><? templates/sv/change_img.html/size_explanation ?></td><%
 						} %>
-					</tr><% 
+					</tr><%
 					if (!fromEditor) { %>
 					<tr>
 						<td height="20">&nbsp;<%= (realImageSize != null) ? realImageSize.getWidth() + "" : "" %></td>

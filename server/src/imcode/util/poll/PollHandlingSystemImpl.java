@@ -245,41 +245,4 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 		return sql_data;
 	}
 
-
-	/**
-		Get one questions for a poll
-		returns parameter from db as String
-			@id
-			@poll_id
-			@question_number
-			@text_id
-	*/
-	public String[] getPollQuestion( String poll_id, String question_no){
-
-		//Get question
-		String[] sql_data =  imcref.sqlProcedure( "Poll_GetQuestion ", new String[] { poll_id, question_no	} );
-		return sql_data;
-	}
-
-
-	/**
-		Get all polls from db
-		return parameter
-			@id int
-			@name varchar (100) (store only text_id)
-			@description varchar (100) (store only text_id)
-			@meta_id int
-			@popup_freq int
-			@set_cookie bit
-			@hide_result bit
-			@confirmation_text int
-			@email_recipients int
-			@email_from int
-			@email_subject int
-			@result_template int
-	*/
-	public String[][] getAllPolls(){
-		return imcref.sqlProcedureMulti( "Poll_GetAll ", new String[] {} );
-	}
-
 }

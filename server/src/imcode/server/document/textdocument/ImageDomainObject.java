@@ -1,11 +1,13 @@
 package imcode.server.document.textdocument;
 
+import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.DocumentReference;
 import imcode.server.document.DocumentDomainObject;
-import imcode.util.*;
+import imcode.server.document.DocumentReference;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.util.FileInputStreamSource;
+import imcode.util.InputStreamSource;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -219,7 +221,7 @@ public class ImageDomainObject implements Serializable {
         }
 
         ImageSize getNonCachedImageSize() throws IOException {
-            return Utility.getImageSize( getInputStreamSource().getInputStream() );
+            return ImageSize.fromInputStream( getInputStreamSource().getInputStream() );
         }
     }
 

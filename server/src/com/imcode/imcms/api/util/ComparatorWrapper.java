@@ -1,23 +1,13 @@
-/*
- * Created by IntelliJ IDEA.
- * User: kreiger
- * Date: 2004-feb-18
- * Time: 13:17:01
- */
 package com.imcode.imcms.api.util;
 
 import java.util.Comparator;
-import java.io.Serializable;
 
-public class ComparatorWrapper extends ChainableReversibleNullComparator implements Serializable {
-
-    Comparator wrappedComparator;
+/**
+    @deprecated Use {@link com.imcode.util.ComparatorWrapper} instead. Will be removed in imCMS 3.0 or later.
+**/
+public class ComparatorWrapper extends com.imcode.util.ComparatorWrapper {
 
     public ComparatorWrapper(Comparator comparator) {
-        this.wrappedComparator = comparator;
-    }
-
-    public int compare( Object o1, Object o2 ) {
-        return wrappedComparator.compare( o1,o2 ) ;
+        super(comparator);
     }
 }

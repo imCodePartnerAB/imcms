@@ -262,6 +262,7 @@
         <javadoc sourcepath="server/src/" destdir="${apidocs}" windowtitle="imCMS API" classpathref="libraries" >
             <packageset dir="server/src/" defaultexcludes="yes">
                 <include name="com/imcode/imcms/api/**"/>
+                <include name="com/imcode/util/**"/>
             </packageset>
         </javadoc>
     </target>
