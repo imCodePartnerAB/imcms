@@ -151,7 +151,7 @@ public class Document {
 
     public User getCreator() throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission( this );
-        return new User( internalDocument.getCreator() );
+        return new User( internalDocument.getCreator(), userAndRoleMapper, securityChecker );
     }
 
     DocumentDomainObject getInternal() {
@@ -219,7 +219,7 @@ public class Document {
         securityChecker.hasAtLeastDocumentReadPermission( this );
         UserDomainObject publisher = internalDocument.getPublisher();
         if( null != publisher ) {
-            return new User( publisher );
+            return new User( publisher, userAndRoleMapper, securityChecker );
         } else {
             return null;
         }

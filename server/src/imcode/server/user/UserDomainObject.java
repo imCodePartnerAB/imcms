@@ -396,4 +396,30 @@ public class UserDomainObject extends Hashtable {
     public RoleDomainObject[] getRoles() {
         return (RoleDomainObject[])roles.toArray( new RoleDomainObject[roles.size()]) ;
     }
+
+    public boolean equals( Object o ) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( !( o instanceof UserDomainObject ) ) {
+            return false;
+        }
+        if ( !super.equals( o ) ) {
+            return false;
+        }
+
+        final UserDomainObject userDomainObject = (UserDomainObject)o;
+
+        if ( userId != userDomainObject.userId ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 29 * result + userId;
+        return result;
+    }
 }

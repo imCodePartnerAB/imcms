@@ -43,13 +43,6 @@ class SecurityChecker {
         }
     }
 
-    void isSuperAdminOrIsUserAdminOrIsSameUser( User userBean ) throws NoPermissionException {
-        boolean isSameUser = userBean.getLoginName().equalsIgnoreCase( accessingUser.getLoginName() );
-        if( !isSuperAdmin && !isUserAdmin && !isSameUser ) {
-            throw new NoPermissionException( "User is not superadmin, useradmin nor the same user." );
-        }
-    }
-
     void hasEditPermission( int documentId ) throws NoPermissionException {
         if( !docMapper.hasEditPermission( accessingUser, docMapper.getDocument( documentId ) ) ) {
             throw new NoPermissionException("The logged in user does not have permission to edit document " + documentId );
@@ -77,6 +70,12 @@ class SecurityChecker {
     void hasSharePermission( Document document ) throws NoPermissionException {
         if (!docMapper.hasSharePermission(accessingUser, document.getId())) {
             throw new NoPermissionException("The logged in user does not have permission to share document "+document.getId()) ;
+        }
+    }
+
+    void isSuperAdminOrSameUser(User user) throws NoPermissionException {
+        if (!isSuperAdmin && !user.getInternalUser().equals( accessingUser )) {
+            throw new NoPermissionException( "Must be the same user or " + SUPERADMIN_ROLE );
         }
     }
 

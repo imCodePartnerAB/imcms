@@ -20,7 +20,7 @@ public class UserService {
         User[] result = new User[internalUsers.length];
         for( int i = 0; i < result.length; i++ ) {
             imcode.server.user.UserDomainObject internalUser = internalUsers[i];
-            result[i] = new User( internalUser );
+            result[i] = new User( internalUser, internalMapper, securityChecker );
         }
         return result;
     }
@@ -29,7 +29,7 @@ public class UserService {
         securityChecker.isUserAdmin();
 
         UserDomainObject internalUser = internalMapper.getUser( userLoginName );
-        User result = new User( internalUser );
+        User result = new User( internalUser, internalMapper, securityChecker );
         return result;
     }
 
@@ -47,7 +47,7 @@ public class UserService {
     }
 
     public void setUserRoles( User user, String[] roleNames ) throws NoPermissionException {
-        securityChecker.isSuperAdminOrIsUserAdminOrIsSameUser( user );
+        securityChecker.isSuperAdmin();
 
         User userImpl = user;
         internalMapper.setUserRoles( userImpl.getInternalUser(), roleNames );
@@ -66,7 +66,7 @@ public class UserService {
         User[] result = new User[internalUsersWithRole.length];
         for( int i = 0; i < internalUsersWithRole.length; i++ ) {
             imcode.server.user.UserDomainObject user = internalUsersWithRole[i];
-            result[i] = new User( user );
+            result[i] = new User( user, internalMapper, securityChecker );
         }
 
         return result;
@@ -77,4 +77,5 @@ public class UserService {
 
         internalMapper.deleteRole( role );
     }
+
 }

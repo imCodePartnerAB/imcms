@@ -15,15 +15,14 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
     private User currentUser;
 
     public DefaultContentManagementSystem( IMCServiceInterface service, UserDomainObject accessor ) {
-        currentUser = new User( accessor );
         DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
 
         ImcmsAuthenticatorAndUserMapper imcmsAAUM = new ImcmsAuthenticatorAndUserMapper( service );
         String[] roleNames = imcmsAAUM.getRoleNames( accessor );
-
         DocumentMapper documentMapper = new DocumentMapper( service, imcmsAAUM );
-
         SecurityChecker securityChecker = new SecurityChecker( documentMapper, accessor, roleNames );
+
+        currentUser = new User( accessor, imcmsAAUM, securityChecker );
 
         userService = new UserService( securityChecker, imcmsAAUM );
         documentService = new DocumentService( securityChecker, documentMapper, documentPermissionSetMapper, imcmsAAUM );
