@@ -69,6 +69,15 @@ function enableMouseClick(){
 }
 function RRinit() {
 	if (document.URL.indexOf('flags') == -1 || document.URL.indexOf('SaveText') == -1) {
+		if (document.URL.indexOf('readrunner_no_') == -1) { // if there are no parameters - check if there should be...
+			var doNotParseStop = RRcheckCookieForPauses()[0];
+			var doNotParseDiv = RRcheckCookieForPauses()[1];
+			var theURL = document.URL;
+			if (doNotParseStop) theURL += '&readrunner_no_stops=1';
+			if (doNotParseDiv) theURL += '&readrunner_no_separators=1';
+			if (doNotParseStop || doNotParseDiv) document.location = theURL;
+			//alert('StopAv: ' + doNotParseStop + ' / DivAv: ' + doNotParseDiv + '\n\nURL: ' + theURL);
+		}
 		var itemX,itemY
 		preloadImages();
 		
@@ -443,6 +452,24 @@ function RRgetCookies() {
 		//f.blnOpacity.checked = (arrSettings[7] == 'true') ? 1 : 0;
 		f.RRopacityLevel.value = (arrSettings[8] >= 0) ? arrRROpacityLevels[arrSettings[8]] : arrRROpacityLevels[0];
 	}
+}
+
+function RRcheckCookieForPauses() {
+	var retStop = 0;
+	var retDiv = 0;
+	var f = document.forms.form1;
+	var theCookieSettings = unescape(getCookie('RRsettings'));
+	if (theCookieSettings.indexOf('/') != -1) {
+		arrSettings = theCookieSettings.split(",")
+		var StopCheck = (arrSettings[1].split("/")[0] == 'true') ? 1 : 0;
+		var StopVal = (arrSettings[1].split("/")[1] >= 0) ? parseFloat(arrSettings[1].split("/")[1]) : parseFloat(iDefaultPausStop);
+		var DivCheck = (arrSettings[2].split("/")[0] == 'true') ? 1 : 0;
+		var DivVal = (arrSettings[2].split("/")[1] >= 0) ? parseFloat(arrSettings[2].split("/")[1]) : parseFloat(iDefaultPausDiv);
+		retStop = (StopCheck == 0 || StopVal == 0) ? 1 : 0;
+		retDiv = (DivCheck == 0 || DivVal == 0) ? 1 : 0;
+	}
+	arrRet = new Array(retStop,retDiv)
+	return arrRet;
 }
 
 
