@@ -23,7 +23,7 @@ public class Readrunner extends HttpServlet {
     private final static String EXPIRED_USES_MAIL = "readrunner/expired_uses_mail.txt" ;
 
     /** The number of milliseconds in one day **/
-    private final int ONE_DAY = 86400000 ;
+    private final long ONE_DAY = 86400000 ;
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
 
@@ -153,19 +153,24 @@ public class Readrunner extends HttpServlet {
 
     private void sendWarningMail(IMCServiceInterface imcref, User user, String host, ReadrunnerUserData rrUserData) {
 	int max_uses_warning_threshold = rrUserData.getMaxUses() - (int)(rrUserData.getMaxUsesWarningThreshold() * rrUserData.getMaxUses() * 0.01 ) ;
+	Date expiry_date_warning_threshold =
+	    null != rrUserData.getExpiryDate() && 0 != rrUserData.getExpiryDateWarningThreshold()
+	    ? new Date(rrUserData.getExpiryDate().getTime() - (ONE_DAY * rrUserData.getExpiryDateWarningThreshold()))
+	    : null ;
 	String theMailTemplate = null ;
 	if (0 != max_uses_warning_threshold && rrUserData.getUses() > max_uses_warning_threshold) {
 	    theMailTemplate = EXPIRED_USES_MAIL ;
-	} else if (null != rrUserData.getExpiryDate() && 0 != rrUserData.getExpiryDateWarningThreshold()) {
-	    int threshold_millis = ONE_DAY * rrUserData.getExpiryDateWarningThreshold() ;
-	    Date expiry_date_warning_threshold = new Date(rrUserData.getExpiryDate().getTime()-threshold_millis) ;
-	    if (new Date().after(expiry_date_warning_threshold)) {
+	} else if (null != expiry_date_warning_threshold && new Date().after(expiry_date_warning_threshold)) {
 		theMailTemplate = EXPIRED_DATE_MAIL ;
-	    }
 	}
 
 	if (null == theMailTemplate) {
-	    log.info("No need to send warning-mail. Uses: "+rrUserData.getUses()+" Max-uses: "+rrUserData.getMaxUses()+" Uses-threshold: "+max_uses_warning_threshold) ;
+	    log.info("No need to send warning-mail. Uses: "+rrUserData.getUses()+
+		     " Max-uses: "+rrUserData.getMaxUses()+
+		     " Uses-threshold: "+max_uses_warning_threshold+
+		     " Expiry-date: "+new SimpleDateFormat("yyyy-MM-dd").format(rrUserData.getExpiryDate())+
+		     " Date-threshold: "+new SimpleDateFormat("yyyy-MM-dd").format(expiry_date_warning_threshold)
+		     ) ;
 	    return ;
 	}
 
