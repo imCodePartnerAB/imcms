@@ -28,6 +28,7 @@ public class SaveImage extends HttpServlet {
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
 		String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
 		String image_url			= Utility.getDomainPref( "image_url",host ) ;
+		String image_path			= Utility.getDomainPref( "image_path",host ) ;
 
 		imcode.server.User user ;
 		String htmlStr = "" ;
@@ -96,8 +97,8 @@ public class SaveImage extends HttpServlet {
 			image.setImageWidth( 0 ) ;
 		}
 		
-// ****************************** keepAspectRatio
-		if(keepAspectRatio && req.getParameter("ok") != null) {
+// ****************************** Här börjar Mårtens lilla lekstuga
+		if(keepAspectRatio && (req.getParameter("ok") != null || req.getParameter("show_img") != null)) {
 		    int iHeight = 0 ;
 		    try {
 			iHeight = Integer.parseInt(image_height); // form width
@@ -188,13 +189,6 @@ public class SaveImage extends HttpServlet {
 
 		// get imageref
 		String image_ref = req.getParameter( "imageref" ) ;
-		if ( image_ref.length() > 0 ) {
-		    if (image_ref.indexOf(image_url)==0) {
-			image_ref = image_ref.substring(image_url.length()) ;
-		    } else if (image_ref.indexOf("/")!=-1) {
-			image_ref = image_ref.substring(image_ref.lastIndexOf("/")) ;
-		    }
-		}
 		image.setImageRef( image_ref ) ;
 
 		// get image_name
@@ -272,24 +266,23 @@ public class SaveImage extends HttpServlet {
 		} else if( req.getParameter( "show_img" )!=null ) {
 					String imagePath = Utility.getDomainPref( "image_path",host );
 		//****************************************************************
-			// Delete relative path if there...
-			String imageName = (image_ref.lastIndexOf("/") != -1)?image_ref.substring(image_ref.lastIndexOf("/") +1):image_ref;	
-			//ImageIcon icon = new ImageIcon(imagePath + imageName);
-			log("IP: " + imagePath + " / " + imageName);
-			File file = new File(imagePath + imageName);
-			ImageFileMetaData imFMD = new ImageFileMetaData(file);
-			int width = imFMD.getWidth();
-			int height = imFMD.getHeight();
+
+			ImageFileMetaData imagefile = new ImageFileMetaData(new File(image_path,image_ref)) ;
+					
+			int width = imagefile.getWidth() ;
+			int height = imagefile.getHeight() ;
 		//****************************************************************
 			Vector vec = new Vector () ;
+			vec.add("#imgUrl#") ;
+			vec.add(image_url) ;
 			vec.add("#imgName#") ;
 			vec.add(image_name) ;
 			vec.add("#imgRef#") ;
-			vec.add(image_url+image_ref) ;
+			vec.add(image_ref) ;
 			vec.add("#imgWidth#") ;
-			vec.add(image_width) ;
+			vec.add("0".equals(image_width)?""+width:image_width) ;
 			vec.add("#imgHeight#") ;
-			vec.add(image_height) ;
+			vec.add("0".equals(image_height)?""+height:image_height) ;
 			
 			vec.add("#origW#");
 			vec.add("" + width);
@@ -366,6 +359,8 @@ public class SaveImage extends HttpServlet {
 			return ;
 		} else if ( req.getParameter("delete") != null ) {
 			Vector vec = new Vector () ;
+			vec.add("#imgUrl#") ;
+			vec.add("") ;
 			vec.add("#imgName#") ;
 			vec.add("") ;
 			vec.add("#imgRef#") ;
