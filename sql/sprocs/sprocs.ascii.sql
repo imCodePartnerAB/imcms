@@ -1,7 +1,3 @@
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[ExistingDocsGetSelectedMetaIds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[ExistingDocsGetSelectedMetaIds]
-GO
-
 if exists (select * from sysobjects where id = object_id(N'[dbo].[AddBrowserStatistics]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[AddBrowserStatistics]
 GO
@@ -72,6 +68,10 @@ GO
 
 if exists (select * from sysobjects where id = object_id(N'[dbo].[DelUserRoles]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[DelUserRoles]
+GO
+
+if exists (select * from sysobjects where id = object_id(N'[dbo].[ExistingDocsGetSelectedMetaIds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[ExistingDocsGetSelectedMetaIds]
 GO
 
 if exists (select * from sysobjects where id = object_id(N'[dbo].[FindMetaId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -891,6 +891,87 @@ AS
  DELETE 
  FROM user_roles_crossref
  WHERE user_id = @aUserId
+
+GO
+SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+GO
+
+SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
+GO
+
+CREATE PROCEDURE ExistingDocsGetSelectedMetaIds
+		@string varchar(1024) 
+AS
+
+/*
+Creates a table with the meta id:s we are looking for.
+ImcServices function ExistingDocsGetSelectedMetaIds is using this method
+*/
+
+SET NOCOUNT ON
+
+-- Lets create the table where we gonna put the found products
+CREATE TABLE #wanted_meta_id (
+	meta_id INT PRIMARY KEY
+)
+
+
+DECLARE @substring VARCHAR(50)
+DECLARE @index INT
+DECLARE @endindex INT
+
+IF LEN(@string) > 0 BEGIN
+	SET @index = 1
+	WHILE @index <= LEN(@string) BEGIN
+		SET @endindex = CHARINDEX(',',@string,@index+1)
+		IF @endindex = 0 BEGIN
+			SET @endindex = LEN(@string)+1
+		END -- IF
+		SET @substring = SUBSTRING(@string,@index,@endindex-@index)
+		SET @subString =  LTRIM (  RTRIM(@subString) )
+		
+		-- Lets check if the meta id already exists in the table
+		DECLARE @foundMetaId int
+		SET @foundMetaId = 0
+
+		DECLARE @tmpId int
+		SELECT @tmpId = CAST( @subString AS INT)
+
+		SELECT @foundMetaId = meta_id 
+		FROM #wanted_meta_id 
+		WHERE #wanted_meta_id.meta_id  = @tmpId
+		
+		-- Lets insert the meta id:s into table
+		IF ( @foundMetaId = 0 )
+			INSERT INTO #wanted_meta_id  (meta_id ) VALUES (  @subString  ) 
+		SET @index = @endindex + 1
+	END -- WHILE
+END -- IF
+
+
+--SELECT * 
+--FROM #wanted_meta_id
+
+SELECT 	meta_id,
+		doc_type,
+		meta_headline,
+		meta_text,
+		date_created,
+		date_modified,
+		ISNULL(CONVERT(VARCHAR,NULLIF(activated_date,''''),121),'''') AS date_activated,
+		ISNULL(CONVERT(VARCHAR,NULLIF(archived_date,''''),121),'''') AS date_archived,
+		archive,
+		shared,
+		show_meta,
+		disable_search
+--		' + STR(@doc_count) + ' AS doc_count
+FROM meta
+WHERE meta_id IN 
+	(	SELECT meta_id
+		FROM #wanted_meta_id
+	)
+
+DROP TABLE #wanted_meta_id
 
 GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
@@ -2091,14 +2172,16 @@ SELECT  @new_meta_id,
 FROM   new_doc_permission_sets ndps
 WHERE ndps.meta_id = @parent_meta_id
 
-IF @doc_type != 2 BEGIN
-	IF 1 IN (SELECT set_id FROM doc_permission_sets_ex WHERE meta_id = @parent_meta_id AND permission_id = 8 AND permission_data = @doc_type) BEGIN
-		UPDATE doc_permission_sets SET permission_id = (permission_id & 65535) | 65536 WHERE meta_id = @new_meta_id AND set_id = 1
-	END
-	IF 2 IN (SELECT set_id FROM doc_permission_sets_ex WHERE meta_id = @parent_meta_id AND permission_id = 8 AND permission_data = @doc_type) BEGIN
-		UPDATE doc_permission_sets SET permission_id = (permission_id & 65535) | 65536 WHERE meta_id = @new_meta_id AND set_id = 2
-	END
-END
+IF @doc_type = 2 BEGIN
+
+/* Inherit permissions for new documents in the new document to the new document */
+INSERT INTO new_doc_permission_sets
+SELECT @new_meta_id,
+  ndps.set_id,
+  ndps.permission_id
+FROM  new_doc_permission_sets ndps
+WHERE ndps.meta_id = @parent_meta_id
+ AND @doc_type = 2
 
 /* Inherit permissions for new documents in the parent to the new document */
 INSERT INTO doc_permission_sets_ex
@@ -2111,15 +2194,6 @@ WHERE ndpse.meta_id = @parent_meta_id
  AND @doc_type = 2
 
 /* Inherit permissions for new documents in the new document to the new document */
-INSERT INTO new_doc_permission_sets
-SELECT @new_meta_id,
-  ndps.set_id,
-  ndps.permission_id
-FROM  new_doc_permission_sets ndps
-WHERE ndps.meta_id = @parent_meta_id
- AND @doc_type = 2
-
-/* Inherit permissions for new documents in the new document to the new document */
 INSERT INTO new_doc_permission_sets_ex
 SELECT @new_meta_id,
   ndpse.set_id,
@@ -2129,10 +2203,39 @@ FROM  new_doc_permission_sets_ex ndpse
 WHERE ndpse.meta_id = @parent_meta_id
  AND @doc_type = 2
 
+END ELSE BEGIN
+
+	DECLARE @permission1 INT
+	DECLARE @permission2 INT
+
+	SELECT @permission1 = (65535 & dps.permission_id) FROM doc_permission_sets dps WHERE dps.meta_id = @new_meta_id AND dps.set_id = 1
+	SELECT @permission2 = (65535 & dps.permission_id) FROM doc_permission_sets dps WHERE dps.meta_id = @new_meta_id AND dps.set_id = 2
+
+	DELETE FROM doc_permission_sets WHERE meta_id = @new_meta_id
+
+	IF @permission1 IS NULL BEGIN
+		SET @permission1 = 0
+	END
+
+	IF @permission2 IS NULL BEGIN
+		SET @permission2 = 0
+	END
+
+	IF (@permission1 != 0) OR 1 IN (SELECT set_id FROM doc_permission_sets_ex WHERE meta_id = @parent_meta_id AND permission_id = 8 AND permission_data = @doc_type) BEGIN
+		INSERT INTO doc_permission_sets VALUES(@new_meta_id, 1, 65536|@permission1)
+	END
+
+	IF (@permission2 != 0) OR 2 IN (SELECT set_id FROM doc_permission_sets_ex WHERE meta_id = @parent_meta_id AND permission_id = 8 AND permission_data = @doc_type) BEGIN
+		INSERT INTO doc_permission_sets VALUES(@new_meta_id, 2, 65536|@permission2)
+	END
+
+END
+
 INSERT INTO roles_rights
 SELECT role_id, @new_meta_id, set_id
 FROM  roles_rights
 WHERE meta_id = @parent_meta_id
+
 
 
 
@@ -3446,92 +3549,4 @@ UPDATE sys_data SET value = @wmaddress WHERE type_id = 7
 GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
 GO
-
-
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-CREATE PROCEDURE ExistingDocsGetSelectedMetaIds
-		@string varchar(1024) 
-AS
-
-/*
-Creates a table with the meta id:s we are looking for.
-ImcServices function ExistingDocsGetSelectedMetaIds is using this method
-*/
-
-SET NOCOUNT ON
-
--- Lets create the table where we gonna put the found products
-CREATE TABLE #wanted_meta_id (
-	meta_id INT PRIMARY KEY
-)
-
-
-DECLARE @substring VARCHAR(50)
-DECLARE @index INT
-DECLARE @endindex INT
-
-IF LEN(@string) > 0 BEGIN
-	SET @index = 1
-	WHILE @index <= LEN(@string) BEGIN
-		SET @endindex = CHARINDEX(',',@string,@index+1)
-		IF @endindex = 0 BEGIN
-			SET @endindex = LEN(@string)+1
-		END -- IF
-		SET @substring = SUBSTRING(@string,@index,@endindex-@index)
-		SET @subString =  LTRIM (  RTRIM(@subString) )
-		
-		-- Lets check if the meta id already exists in the table
-		DECLARE @foundMetaId int
-		SET @foundMetaId = 0
-
-		DECLARE @tmpId int
-		SELECT @tmpId = CAST( @subString AS INT)
-
-		SELECT @foundMetaId = meta_id 
-		FROM #wanted_meta_id 
-		WHERE #wanted_meta_id.meta_id  = @tmpId
-		
-		-- Lets insert the meta id:s into table
-		IF ( @foundMetaId = 0 )
-			INSERT INTO #wanted_meta_id  (meta_id ) VALUES (  @subString  ) 
-		SET @index = @endindex + 1
-	END -- WHILE
-END -- IF
-
-
---SELECT * 
---FROM #wanted_meta_id
-
-SELECT 	meta_id,
-		doc_type,
-		meta_headline,
-		meta_text,
-		date_created,
-		date_modified,
-		ISNULL(CONVERT(VARCHAR,NULLIF(activated_date,''''),121),'''') AS date_activated,
-		ISNULL(CONVERT(VARCHAR,NULLIF(archived_date,''''),121),'''') AS date_archived,
-		archive,
-		shared,
-		show_meta,
-		disable_search
---		' + STR(@doc_count) + ' AS doc_count
-FROM meta
-WHERE meta_id IN ( SELECT meta_id
-			 FROM #wanted_meta_id
-		)
-
-
--- SELECT * FROM #wanted_meta_id
-DROP TABLE #wanted_meta_id
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
 
