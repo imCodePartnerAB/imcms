@@ -18,7 +18,10 @@ INSERT INTO roles VALUES(1, 'Users',1)
 INSERT INTO user_roles_crossref VALUES(1,0)
 INSERT INTO user_roles_crossref VALUES(2,1)
 
-INSERT INTO meta VALUES (1001, '', 2, 'Startsidan', '','', 1, 0, 0, 1, 0, 1, 0, 1, 'se','', GETDATE(), GETDATE(), 1, 1, 0,'2001-01-01','00:00','','','_self','', 1)
+SET IDENTITY_INSERT meta ON
+INSERT INTO meta (meta_id, description, doc_type, meta_headline, meta_text, meta_image, owner_id, permissions, shared, expand, show_meta, help_text_id, archive, status_id, lang_prefix, classification, date_created, date_modified, sort_position, menu_position, disable_search, activated_date, activated_time, archived_date, archived_time, target,  frame_name, activate)
+VALUES           (1001,    '',          2,        'Startsidan',  '',        '',         1,        0,           0,      1,      0,         1,            0,       1,         'se',        '',             GETDATE(),    GETDATE(),     1,             1,             0,              '2001-01-01',   '00:00',        '',            '',            '_self', '',         1)
+SET IDENTITY_INSERT meta OFF
 
 INSERT INTO templates VALUES (1,'start.html', 'Start', 'se', 1,1,1)
 
