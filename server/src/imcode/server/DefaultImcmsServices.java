@@ -14,10 +14,7 @@ import imcode.util.poll.PollHandlingSystem;
 import imcode.util.poll.PollHandlingSystemImpl;
 import imcode.util.shop.ShoppingOrderSystem;
 import imcode.util.shop.ShoppingOrderSystemImpl;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.ConvertUtils;
-import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.beanutils.*;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -29,10 +26,7 @@ import org.apache.velocity.app.VelocityEngine;
 
 import java.beans.PropertyDescriptor;
 import java.io.*;
-import java.text.Collator;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.text.*;
 import java.util.*;
 
 final public class DefaultImcmsServices implements ImcmsServices {
@@ -442,11 +436,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public SMTP getSMTP() {
-        try {
-            return new SMTP( config.getSmtpServer(), config.getSmtpPort(), 30000 );
-        } catch ( IOException e ) {
-            return null;
-        }
+        return new SMTP( config.getSmtpServer(), config.getSmtpPort() );
     }
 
     public ImcmsAuthenticatorAndUserMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
@@ -500,7 +490,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
                     String key = (String)iterator.next();
                     Object value = iterator.next();
                     context.put( key, value );
-                    boolean isVelocityVariable = StringUtils.isAlpha( key ) || !( value instanceof String ) ;
+                    boolean isVelocityVariable = StringUtils.isAlpha( key ) || !( value instanceof String );
                     if ( !isVelocityVariable ) {
                         parseDocVariables.add( key );
                         parseDocVariables.add( value );
@@ -1133,18 +1123,18 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public Properties getLanguageProperties( UserDomainObject user ) {
         String languageIso639_2 = user.getLanguageIso639_2();
-        Properties languageProperties = (Properties)languagePropertiesMap.get( languageIso639_2 ) ;
-        if (null == languageProperties) {
+        Properties languageProperties = (Properties)languagePropertiesMap.get( languageIso639_2 );
+        if ( null == languageProperties ) {
             String propertiesFilename = languageIso639_2 + ".properties";
             try {
                 languageProperties = Prefs.getProperties( propertiesFilename );
-                languagePropertiesMap.put( languageIso639_2, languageProperties) ;
+                languagePropertiesMap.put( languageIso639_2, languageProperties );
             } catch ( IOException e ) {
                 log.fatal( "Failed to read language properties from " + propertiesFilename, e );
-                throw new UnhandledException( e ) ;
+                throw new UnhandledException( e );
             }
         }
-        return languageProperties ;
+        return languageProperties;
     }
 
     public File getFilePath() {

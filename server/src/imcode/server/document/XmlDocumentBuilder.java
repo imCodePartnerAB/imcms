@@ -82,7 +82,7 @@ public class XmlDocumentBuilder {
         private Element createTextElement( Integer textIndex, TextDomainObject text ) {
             Element textElement = xmlDocument.createElement( "text" );
             textElement.setAttribute( "index", "" + textIndex );
-            textElement.setAttribute( "type", 0 == text.getType() ? "text" : "html" );
+            textElement.setAttribute( "type", TextDomainObject.TEXT_TYPE_PLAIN == text.getType() ? "text" : "html" );
             Text textNode = xmlDocument.createTextNode( text.getText() );
             textElement.appendChild( textNode );
             return textElement;
