@@ -72,6 +72,12 @@
             </p>
             <bug id="2888"/>
         </change>
+        <change>
+            <p>
+                Updated jTDS to version 1.0.
+            </p>
+            <bug id="2883"/>
+        </change>
     </changes>
 
     <changes for="API-using developers">
