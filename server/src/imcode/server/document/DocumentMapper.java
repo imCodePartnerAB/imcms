@@ -55,7 +55,7 @@ public class DocumentMapper {
 
     private static final int DOCUMENT_CACHE_MAX_SIZE = 100;
 
-    private DocumentCache documentCache = new DocumentCache( new LRUMap( DOCUMENT_CACHE_MAX_SIZE ), this ) ;
+    private DocumentCache documentCache = new DocumentCache( new LRUMap( DOCUMENT_CACHE_MAX_SIZE ), this );
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
     private Clock clock;
     private ImcmsServices services;
@@ -65,17 +65,17 @@ public class DocumentMapper {
                            DocumentPermissionSetMapper documentPermissionSetMapper, DocumentIndex documentIndex,
                            Clock clock ) {
         this.database = database;
-        this.clock = clock ;
-        this.services = services ;
-        this.userAndRoleMapper = userRegistry ;
+        this.clock = clock;
+        this.services = services;
+        this.userAndRoleMapper = userRegistry;
         this.documentPermissionSetMapper = documentPermissionSetMapper;
-        this.documentIndex = documentIndex ;
+        this.documentIndex = documentIndex;
     }
 
     public DocumentDomainObject createDocumentOfTypeFromParent( int documentTypeId, final DocumentDomainObject parent,
                                                                 UserDomainObject user ) {
         if ( !user.canCreateDocumentOfTypeIdFromParent( documentTypeId, parent ) ) {
-            throw new SecurityException( "User can't create documents from document "+parent.getId() ) ;
+            throw new SecurityException( "User can't create documents from document " + parent.getId() );
         }
         DocumentDomainObject newDocument;
         try {
@@ -89,11 +89,11 @@ public class DocumentMapper {
                 int permissionSetId = user.getPermissionSetIdFor( parent );
                 TemplateDomainObject template = null;
                 if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == permissionSetId ) {
-                    template = ((TextDocumentPermissionSetDomainObject)newTextDocument.getPermissionSetForRestrictedOneForNewDocuments()).getDefaultTemplate();
+                    template = ( (TextDocumentPermissionSetDomainObject)newTextDocument.getPermissionSetForRestrictedOneForNewDocuments() ).getDefaultTemplate();
                 } else if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == permissionSetId ) {
                     template = ( (TextDocumentPermissionSetDomainObject)newTextDocument.getPermissionSetForRestrictedTwoForNewDocuments() ).getDefaultTemplate();
                 } else if ( parent instanceof TextDocumentDomainObject ) {
-                    template = ((TextDocumentDomainObject)parent).getDefaultTemplate() ;
+                    template = ( (TextDocumentDomainObject)parent ).getDefaultTemplate();
                 }
                 if ( null != template ) {
                     newTextDocument.setTemplate( template );
@@ -114,7 +114,7 @@ public class DocumentMapper {
     }
 
     private void makeDocumentLookNew( DocumentDomainObject document, UserDomainObject user ) {
-        Date now = new Date() ;
+        Date now = new Date();
         makeDocumentLookCreated( document, user, now );
         document.setPublicationStartDatetime( now );
         document.setArchivedDatetime( null );
@@ -183,7 +183,7 @@ public class DocumentMapper {
             String sectionName = sqlRows[i][1];
             allSections[i] = new SectionDomainObject( sectionId, sectionName );
         }
-        Arrays.sort(allSections, new SectionNameComparator()) ;
+        Arrays.sort( allSections, new SectionNameComparator() );
         return allSections;
     }
 
@@ -304,10 +304,10 @@ public class DocumentMapper {
     public DocumentDomainObject getDocument( int metaId ) {
         NDC.push( "getDocument" );
 
-        DocumentDomainObject document ;
+        DocumentDomainObject document;
         try {
             document = (DocumentDomainObject)documentCache.get( new Integer( metaId ) );
-            if (null != document) {
+            if ( null != document ) {
                 document = (DocumentDomainObject)document.clone();
             }
         } catch ( CloneNotSupportedException e ) {
@@ -319,7 +319,7 @@ public class DocumentMapper {
     }
 
     public DocumentReference getDocumentReference( DocumentDomainObject document ) {
-        return getDocumentReference( document.getId() ) ;
+        return getDocumentReference( document.getId() );
     }
 
     DocumentReference getDocumentReference( int childId ) {
@@ -335,7 +335,7 @@ public class DocumentMapper {
         DocumentDomainObject document = null;
         if ( 0 != result.length ) {
             document = getDocumentFromSqlResultRow( result );
-            initDocumentAttributes( document ) ;
+            initDocumentAttributes( document );
             initDocumentCategories( document );
             initRolesMappedToDocumentPermissionSetIds( document );
 
@@ -367,13 +367,15 @@ public class DocumentMapper {
 
     public void initRolesMappedToDocumentPermissionSetIds( DocumentDomainObject document ) {
 
-        String[][] sprocResult = database.sqlQueryMulti( "SELECT "+ImcmsAuthenticatorAndUserAndRoleMapper.SQL_ROLES_COLUMNS+", rr.set_id\n"
-                                                        + "FROM  roles, roles_rights AS rr\n"
-                                                        + "WHERE rr.role_id = roles.role_id AND rr.meta_id = ?",
-                                                        new String[]{"" + document.getId()} );
+        String[][] sprocResult = database.sqlQueryMulti( "SELECT "
+                                                         + ImcmsAuthenticatorAndUserAndRoleMapper.SQL_ROLES_COLUMNS
+                                                         + ", rr.set_id\n"
+                                                         + "FROM  roles, roles_rights AS rr\n"
+                                                         + "WHERE rr.role_id = roles.role_id AND rr.meta_id = ?",
+                                                         new String[]{"" + document.getId()} );
 
         for ( int i = 0; i < sprocResult.length; ++i ) {
-            RoleDomainObject role = userAndRoleMapper.getRoleFromSqlResult(sprocResult[i]) ;
+            RoleDomainObject role = userAndRoleMapper.getRoleFromSqlResult( sprocResult[i] );
 
             int rolePermissionSetId = Integer.parseInt( sprocResult[i][4] );
             document.setPermissionSetIdForRole( role, rolePermissionSetId );
@@ -383,7 +385,7 @@ public class DocumentMapper {
 
     public SectionDomainObject getSectionById( int sectionId ) {
         String sectionName = database.sqlQueryStr( "SELECT section_name FROM sections WHERE section_id = ?",
-                                                  new String[]{"" + sectionId} );
+                                                   new String[]{"" + sectionId} );
         if ( null == sectionName ) {
             return null;
         }
@@ -392,7 +394,7 @@ public class DocumentMapper {
 
     public SectionDomainObject getSectionByName( String name ) {
         String[] sectionSqlRow = database.sqlQuery( "SELECT section_id, section_name FROM sections WHERE section_name = ?",
-                                                   new String[]{name} );
+                                                    new String[]{name} );
         if ( 0 == sectionSqlRow.length ) {
             return null;
         }
@@ -406,7 +408,7 @@ public class DocumentMapper {
      */
     private SectionDomainObject[] getSections( int meta_id ) {
         String[][] sectionData = database.sqlProcedureMulti( SPROC_SECTION_GET_INHERIT_ID,
-                                                            new String[]{String.valueOf( meta_id )} );
+                                                             new String[]{String.valueOf( meta_id )} );
 
         SectionDomainObject[] sections = new SectionDomainObject[sectionData.length];
 
@@ -558,12 +560,14 @@ public class DocumentMapper {
     }
 
     void updateDocumentRolePermissions( DocumentDomainObject document, UserDomainObject user,
-                                                DocumentDomainObject oldDocument ) {
-        Set rolesMappedToPermissionsForOldDocument = oldDocument.getRolesMappedToPermissionSetIds().keySet() ;
-        Map rolesMappedtoPermissionSetIds = new HashMap() ;
-        for ( Iterator iterator = rolesMappedToPermissionsForOldDocument.iterator(); iterator.hasNext(); ) {
-            RoleDomainObject role = (RoleDomainObject)iterator.next();
-            rolesMappedtoPermissionSetIds.put( role, new Integer( DocumentPermissionSetDomainObject.TYPE_ID__NONE ) ) ;
+                                        DocumentDomainObject oldDocument ) {
+        Map rolesMappedtoPermissionSetIds = new HashMap();
+        if ( null != oldDocument ) {
+            Set rolesMappedToPermissionsForOldDocument = oldDocument.getRolesMappedToPermissionSetIds().keySet();
+            for ( Iterator iterator = rolesMappedToPermissionsForOldDocument.iterator(); iterator.hasNext(); ) {
+                RoleDomainObject role = (RoleDomainObject)iterator.next();
+                rolesMappedtoPermissionSetIds.put( role, new Integer( DocumentPermissionSetDomainObject.TYPE_ID__NONE ) );
+            }
         }
         rolesMappedtoPermissionSetIds.putAll( document.getRolesMappedToPermissionSetIds() );
         for ( Iterator it = rolesMappedtoPermissionSetIds.entrySet().iterator(); it.hasNext(); ) {
@@ -571,8 +575,10 @@ public class DocumentMapper {
             RoleDomainObject role = (RoleDomainObject)rolePermissionTuple.getKey();
             int permissionSetId = ( (Integer)rolePermissionTuple.getValue() ).intValue();
 
-            if ( null == oldDocument || user.canSetPermissionSetIdForRoleOnDocument( permissionSetId, role, oldDocument ) ) {
-                database.sqlUpdateProcedure( SPROC_SET_PERMISSION_SET_ID_FOR_ROLE_ON_DOCUMENT, new String[]{"" + role.getId(), "" + document.getId(), "" + permissionSetId} );
+            if ( null == oldDocument
+                 || user.canSetPermissionSetIdForRoleOnDocument( permissionSetId, role, oldDocument ) ) {
+                database.sqlUpdateProcedure( SPROC_SET_PERMISSION_SET_ID_FOR_ROLE_ON_DOCUMENT, new String[]{
+                    "" + role.getId(), "" + document.getId(), "" + permissionSetId} );
             }
         }
     }
@@ -605,7 +611,7 @@ public class DocumentMapper {
     private void addCategoryToDocument( CategoryDomainObject category, DocumentDomainObject document ) {
         int categoryId = category.getId();
         database.sqlUpdateQuery( "INSERT INTO document_categories (meta_id, category_id) VALUES(?,?)",
-                                new String[]{"" + document.getId(), "" + categoryId} );
+                                 new String[]{"" + document.getId(), "" + categoryId} );
     }
 
     public String[] getAllDocumentsOfOneCategory( CategoryDomainObject category ) {
@@ -618,12 +624,12 @@ public class DocumentMapper {
 
     private void removeAllCategoriesFromDocument( DocumentDomainObject document ) {
         database.sqlUpdateQuery( "DELETE FROM document_categories WHERE meta_id = ?",
-                                new String[]{"" + document.getId()} );
+                                 new String[]{"" + document.getId()} );
     }
 
     public void deleteOneCategoryFromDocument( DocumentDomainObject document, CategoryDomainObject category ) {
         database.sqlUpdateQuery( "DELETE FROM document_categories WHERE meta_id = ? and category_id = ?",
-                                new String[]{document.getId() + "", category.getId() + ""} );
+                                 new String[]{document.getId() + "", category.getId() + ""} );
     }
 
     private void sqlUpdateMeta( DocumentDomainObject document ) {
@@ -666,12 +672,12 @@ public class DocumentMapper {
         sqlStr.append( " where meta_id = ?" );
         sqlUpdateValues.add( "" + document.getId() );
         database.sqlUpdateQuery( sqlStr.toString(),
-                                (String[])sqlUpdateValues.toArray( new String[sqlUpdateValues.size()] ) );
+                                 (String[])sqlUpdateValues.toArray( new String[sqlUpdateValues.size()] ) );
     }
 
     public void setInclude( int includingMetaId, int includeIndex, int includedMetaId ) {
         database.sqlUpdateProcedure( "SetInclude",
-                                   new String[]{"" + includingMetaId, "" + includeIndex, "" + includedMetaId} );
+                                     new String[]{"" + includingMetaId, "" + includeIndex, "" + includedMetaId} );
     }
 
     public void deleteInclude( int including_meta_id, int include_id ) {
@@ -697,12 +703,12 @@ public class DocumentMapper {
             keyword
         } ) );
         database.sqlUpdateQuery( "INSERT INTO meta_classification (meta_id, class_id) VALUES(?,?)",
-                                new String[]{"" + meta_id, "" + keywordId} );
+                                 new String[]{"" + meta_id, "" + keywordId} );
     }
 
     private void deleteUnusedKeywords() {
         database.sqlUpdateQuery( "DELETE FROM classification WHERE class_id NOT IN (SELECT class_id FROM meta_classification)",
-                                new String[0] );
+                                 new String[0] );
     }
 
     private void addKeyword( String keyword ) {
@@ -720,13 +726,13 @@ public class DocumentMapper {
 
     private void addCategoriesFromDatabaseToDocument( DocumentDomainObject document ) {
         String[][] categories = database.sqlQueryMulti( "SELECT categories.category_id, categories.name, categories.image, categories.description, category_types.category_type_id, category_types.name, category_types.max_choices"
-                                                       + " FROM document_categories"
-                                                       + " JOIN categories"
-                                                       + "  ON document_categories.category_id = categories.category_id"
-                                                       + " JOIN category_types"
-                                                       + "  ON categories.category_type_id = category_types.category_type_id"
-                                                       + " WHERE document_categories.meta_id = ?",
-                                                       new String[]{"" + document.getId()} );
+                                                        + " FROM document_categories"
+                                                        + " JOIN categories"
+                                                        + "  ON document_categories.category_id = categories.category_id"
+                                                        + " JOIN category_types"
+                                                        + "  ON categories.category_type_id = category_types.category_type_id"
+                                                        + " WHERE document_categories.meta_id = ?",
+                                                        new String[]{"" + document.getId()} );
         for ( int i = 0; i < categories.length; i++ ) {
             String[] categoryArray = categories[i];
 
@@ -1032,7 +1038,7 @@ public class DocumentMapper {
     }
 
     public int getLowestDocumentId() {
-        return Integer.parseInt(database.sqlQueryStr( "SELECT MIN(meta_id) FROM meta", new String[0] )) ;
+        return Integer.parseInt( database.sqlQueryStr( "SELECT MIN(meta_id) FROM meta", new String[0] ) );
     }
 
     public int getHighestDocumentId() {
@@ -1040,7 +1046,7 @@ public class DocumentMapper {
     }
 
     public void copyDocument( DocumentDomainObject selectedChild,
-                                     UserDomainObject user ) {
+                              UserDomainObject user ) {
         ImcmsServices services = Imcms.getServices();
         String copyHeadlineSuffix = services.getAdminTemplate( COPY_HEADLINE_SUFFIX_TEMPLATE, user, null );
         selectedChild.setHeadline( selectedChild.getHeadline() + copyHeadlineSuffix );
@@ -1151,19 +1157,19 @@ public class DocumentMapper {
 
         public Object get( Object key ) {
 
-            SoftReference[] documentSoftReferenceArray = (SoftReference[])map.get( key ) ;
-            DocumentDomainObject document = null ;
-            if (null != documentSoftReferenceArray ) {
-                document = (DocumentDomainObject)documentSoftReferenceArray[0].get() ;
+            SoftReference[] documentSoftReferenceArray = (SoftReference[])map.get( key );
+            DocumentDomainObject document = null;
+            if ( null != documentSoftReferenceArray ) {
+                document = (DocumentDomainObject)documentSoftReferenceArray[0].get();
             }
-            if (null == document) {
+            if ( null == document ) {
                 int documentId = ( (Integer)key ).intValue();
-                documentSoftReferenceArray = new SoftReference[1] ;
-                map.put(key, documentSoftReferenceArray) ;
+                documentSoftReferenceArray = new SoftReference[1];
+                map.put( key, documentSoftReferenceArray );
                 document = documentMapper.getDocumentFromDb( documentId );
                 documentSoftReferenceArray[0] = new SoftReference( document );
             }
-            return document ;
+            return document;
         }
 
     }
@@ -1173,7 +1179,7 @@ public class DocumentMapper {
         public int compare( Object o1, Object o2 ) {
             SectionDomainObject section1 = (SectionDomainObject)o1;
             SectionDomainObject section2 = (SectionDomainObject)o2;
-            return section1.getName().compareToIgnoreCase( section2.getName() ) ;
+            return section1.getName().compareToIgnoreCase( section2.getName() );
         }
     }
 }

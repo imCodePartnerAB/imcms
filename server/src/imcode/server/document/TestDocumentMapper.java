@@ -80,4 +80,8 @@ public class TestDocumentMapper extends TestCase {
         assertEquals( 1, database.getSqlCallCount() );
     }
 
+    public void testUpdateDocumentRolePermissionsAllowsNullOldDocument() throws Exception {
+        documentMapper.updateDocumentRolePermissions( document, user, null );
+    }
+
 }
