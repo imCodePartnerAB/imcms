@@ -101,9 +101,14 @@ public class AdminManager extends Administrator {
 	    url += "AdminListDocs" ;
 	} else if( whichButton.equalsIgnoreCase("AdminConference")) { 
 	    url += "AdminConference" ;
-	} else if( whichButton.equalsIgnoreCase("AdminFortunes")) { 
-	    url += "AdminFortunes" ;
-	}else if( whichButton.equalsIgnoreCase("AdminSection")) { 
+
+	} else if( whichButton.equalsIgnoreCase("AdminRandomTexts")) { 
+	    url += "AdminRandomTexts" ;
+	} else if( whichButton.equalsIgnoreCase("AdminQuestions")) { 
+	    url += "AdminQuestions" ;
+	/*} else if( whichButton.equalsIgnoreCase("AdminImSlice")) { 
+	    url += "AdminImSlice" ;*/
+		}else if( whichButton.equalsIgnoreCase("AdminSection")) { 
 	    url += "AdminSection" ;
 	} else {
 	    // Ok, were came here cause no valid argument was sent to us
