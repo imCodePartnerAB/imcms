@@ -127,13 +127,17 @@ public class SearchDocumentsPage extends OkCancelPage {
         if ( null != startDateParameter ) {
             try {
                 startDate = dateFormat.parse( startDateParameter );
-            } catch ( java.text.ParseException ignored ) {}
+            } catch ( java.text.ParseException pe ) {
+                startDate = null;
+            }
         }
         String endDateParameter = request.getParameter( REQUEST_PARAMETER__END_DATE );
         if ( null != endDateParameter ) {
             try {
                 endDate = dateFormat.parse( endDateParameter );
-            } catch ( java.text.ParseException ignored ) {}
+            } catch ( java.text.ParseException ignored ) {
+                endDate = null;
+            }
         }
 
         sortOrder = request.getParameter( REQUEST_PARAMETER__SORT_ORDER );
@@ -199,7 +203,10 @@ public class SearchDocumentsPage extends OkCancelPage {
             newQuery.add( publishedByUserQuery, true, false );
         }
 
-        if ( null != startDate ) {
+        if ( null != startDate || null != endDate ) {
+            Date calculatedStartDate = null == startDate ? new Date( 0 ) : startDate;
+            Date calculatedEndDate = null == endDate ? new Date( 1000L * 365 * 24 * 60 * 60 * 1000 ) : new Date( endDate.getTime() + DateUtils.MILLIS_IN_DAY );
+
             String dateField;
             switch ( dateTypeRestriction ) {
                 case DATE_TYPE__PUBLICATION_END:
@@ -220,10 +227,7 @@ public class SearchDocumentsPage extends OkCancelPage {
                     break;
             }
 
-            Date calculatedEndDate = null == endDate
-                                     ? new Date() : new Date( endDate.getTime() + DateUtils.MILLIS_IN_DAY );
-
-            Term lowerTerm = new Term( dateField, DateField.dateToString( startDate ) );
+            Term lowerTerm = new Term( dateField, DateField.dateToString( calculatedStartDate ) );
             Term upperTerm = new Term( dateField, DateField.dateToString( calculatedEndDate ) );
             Query publicationStartedQuery = new RangeQuery( lowerTerm, upperTerm, true );
             newQuery.add( publicationStartedQuery, true, false );

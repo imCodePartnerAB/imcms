@@ -29,6 +29,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 
 public class AdminManager extends Administrator {
@@ -93,16 +94,8 @@ public class AdminManager extends Administrator {
             } else {
                 int documentTypeId = Integer.parseInt( createDocumentAction );
 
-                DocumentPageFlow.SaveDocumentCommand saveNewDocumentCommand = new DocumentPageFlow.SaveDocumentCommand() {
-                    public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
-                        documentMapper.saveNewDocument( document, user );
-                    }
-                };
-                DispatchCommand returnCommand = new DispatchCommand() {
-                    public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                        createAndShowAdminManagerPage( request, response );
-                    }
-                };
+                DocumentPageFlow.SaveDocumentCommand saveNewDocumentCommand = new SaveNewDocumentCommand();
+                DispatchCommand returnCommand = new ShowAdminManagerPageCommand();
 
                 AddDoc.DocumentCreator documentCreator = new AddDoc.DocumentCreator( saveNewDocumentCommand, returnCommand, getServletContext() );
                 documentCreator.createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument, request, response );
@@ -299,7 +292,7 @@ public class AdminManager extends Administrator {
         }
     }
 
-    public static class AdminManagerPage {
+    public static class AdminManagerPage implements Serializable {
 
         LocalizedMessage heading;
         String tabName;
@@ -351,10 +344,13 @@ public class AdminManager extends Administrator {
 
     }
 
-    private Date getDate( int days ) {
+    private Date getDateTruncated( int days ) {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime( new Date() );
         calendar.add( Calendar.DATE, days );
+        calendar.set( Calendar.HOUR_OF_DAY, 0 );
+        calendar.set( Calendar.MINUTE, 0) ;
+        calendar.set( Calendar.SECOND, 0) ;
+        calendar.set( Calendar.MILLISECOND, 0) ;
         return calendar.getTime();
     }
 
@@ -363,10 +359,10 @@ public class AdminManager extends Administrator {
                                                        List documents_publication_end_less_then_one_week,
                                                        List documents_not_changed_in_six_month, List modifiedDocuments,
                                                        List newDocuments ) {
-        Date now = new Date();
-        Date oneWeekAhead = getDate( +7 );
-        Date oneWeekAgo = getDate(-7) ;
-        Date sixMonthAgo = getDate( -182 );
+        Date now = getDateTruncated( 0 ) ;
+        Date oneWeekAhead = getDateTruncated( +8 );
+        Date oneWeekAgo = getDateTruncated(-7) ;
+        Date sixMonthAgo = getDateTruncated( -182 );
 
         for ( int i = 0; i < documentsFound.length; i++ ) {
             DocumentDomainObject document = documentsFound[i];
@@ -377,13 +373,13 @@ public class AdminManager extends Administrator {
             Date createdDatetime = document.getCreatedDatetime();
 
             if ( null != archivedDatetime
-                 && archivedDatetime.after( now )
+                 && !archivedDatetime.before( now )
                  && archivedDatetime.before( oneWeekAhead ) ) {
                 documents_archived_less_then_one_week.add( document );
             }
 
             if ( null != publicationEndDatetime
-                 && publicationEndDatetime.after( now )
+                 && !publicationEndDatetime.before( now )
                  && publicationEndDatetime.before( oneWeekAhead ) ) {
                 documents_publication_end_less_then_one_week.add( document );
             }
@@ -392,12 +388,12 @@ public class AdminManager extends Administrator {
                 documents_not_changed_in_six_month.add( document );
             }
 
-            boolean createdInPastWeek = createdDatetime.after( oneWeekAgo );
+            boolean createdInPastWeek = !createdDatetime.before( oneWeekAgo );
             if (createdInPastWeek) {
                 newDocuments.add( document );
             }
 
-            boolean modifiedInPastWeek = modifiedDatetime.after( oneWeekAgo );
+            boolean modifiedInPastWeek = !modifiedDatetime.before( oneWeekAgo );
             if ( modifiedInPastWeek && !createdInPastWeek ) {
                 modifiedDocuments.add( document );
             }
@@ -473,4 +469,17 @@ public class AdminManager extends Administrator {
 
     }
 
+    private static class SaveNewDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
+
+        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
+            Imcms.getServices().getDocumentMapper().saveNewDocument( document, user );
+        }
+    }
+
+    private class ShowAdminManagerPageCommand implements DispatchCommand {
+
+        public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+            createAndShowAdminManagerPage( request, response );
+        }
+    }
 } // End of class
