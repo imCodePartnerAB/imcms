@@ -84,7 +84,7 @@ public class SearchDocuments extends HttpServlet {
 		java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(format);
 
 		//ok the rest of params we need to set up search sql
-		String doctypes		= "2,5,6,7,8";
+		String doctypes		= "2,5,6,7,8,102,103,104,107";
 		String created_start	= "";
 		String create_stop		= formatter.format(date);
 		String changed_start	= "";

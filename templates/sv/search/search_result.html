@@ -45,10 +45,10 @@ function openSearchHelp(id) {
 
 <!-- tag @sectionArry@ contains a formated string with all sections ex. #sectionArry# -->
 
-<body bgcolor="#ffffff">
+<body bgcolor="#ffffff" onLoad="document.forms[0].question_field.focus()">
 
 
-<form method="post" action="SearchDocuments">
+<form method="post" action="SearchDocuments" >
 <input type="hidden" name="fromDoc" value="1001">
 <input type="hidden" name="toDoc" value="-1">
 <input type="hidden" name="template" value="search_result.html">
