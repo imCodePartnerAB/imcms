@@ -126,7 +126,11 @@ public class IMCServiceRMI {
 
 	    imc.saveFrameset(meta_id,user,doc) ;
     }
-
+	
+	/**
+		@depricated use getTemplateHome(String, String) or parseExternalDoc(String.Vector,String.String,String)
+		//instead of this method
+	*/
     public static File getExternalTemplateFolder( String server, int meta_id ) throws IOException {
 	IMCServiceInterface imc = getInterface( server ) ;
 
@@ -381,6 +385,13 @@ public class IMCServiceRMI {
 	    return imc.parseDoc(variables,file_name,lang_prefix) ;
     }
 
+	public String parseExternalDoc(String server,Vector variables, String external_template_name, String lang_prefix, String doc_type) throws IOException  {
+		IMCServiceInterface imc = getInterface( server ) ;
+		
+		return imc.parseExternalDoc(variables,external_template_name, lang_prefix, doc_type);
+	
+	}
+	
     public static File getTemplateHome ( String server ) throws IOException {
 	IMCServiceInterface imc = getInterface( server ) ;
 
@@ -591,5 +602,10 @@ public class IMCServiceRMI {
     public static String getFortune(String server,String path) throws IOException {
 	IMCServiceInterface imc = getInterface( server ) ;
 	return imc.getFortune(path) ;
+    }
+	
+	public static String getSearchTemplate(String server,String template) throws IOException {
+	IMCServiceInterface imc = getInterface( server ) ;
+	return imc.getSearchTemplate(template) ;
     }
 }

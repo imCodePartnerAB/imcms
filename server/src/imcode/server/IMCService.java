@@ -32,6 +32,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private File m_TemplateHome ;           // template home
     private File m_IncludePath ;
     private File m_FortunePath ;
+	private File m_SearchTemplatePath;
     private int m_DefaultHomePage ;        // default home page
     private String m_ServletUrl  ;			   // servlet url
     private String m_ImageFolder ;            // image folder
@@ -70,6 +71,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	String fortunePathString = props.getProperty("FortunePath").trim() ;
 	m_FortunePath       = imcode.util.Utility.getAbsolutePathFromString(fortunePathString) ;
 	log.log(Log.INFO, "FortunePath: " + m_IncludePath) ;
+	
+	String searchTemplatePathString = props.getProperty("SearchTemplatePath").trim() ;
+	m_SearchTemplatePath = imcode.util.Utility.getAbsolutePathFromString(searchTemplatePathString) ;
+	log.log(Log.INFO, "SearchTemplatePath: " + m_SearchTemplatePath) ;
 	    
 	try {
 	    m_DefaultHomePage   = Integer.parseInt(props.getProperty("StartDocument").trim()) ;    //FIXME: Get from DB
@@ -1559,12 +1564,32 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    return "" ;
 	}
     }
-    
-    
 
 
     /**
-     * <p>Return the external doctypes templates folder.
+       Parse doc replace variables with data , use template
+    */
+    public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type) {
+	try {
+	    String htmlStr = fileCache.getCachedFileString(new File(m_TemplateHome,lang_prefix+"/"+doc_type+"/"+external_template_name)) ;
+	    if (variables == null) {
+		return htmlStr ;
+	    }
+	    String[] foo = new String[variables.size()] ;
+	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
+	} catch ( RuntimeException e ) {
+	    log.log(Log.ERROR,"parseExternalDoc(Vector, String, String, String): RuntimeException", e );
+	    throw e ;
+	} catch ( IOException e ) {
+	    log.log(Log.ERROR,"parseExternalDoc(Vector, String, String, String): IOException", e );
+	    return "" ;
+	}
+    }
+
+
+    /**
+     	@deprecated Ugly use parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)
+		//or something else instead.
      */
     public File getExternalTemplateFolder(int meta_id) {
 	Vector data = new Vector() ;
@@ -2735,9 +2760,16 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String getFortune(String path) throws IOException {
 	return fileCache.getCachedFileString(new File(m_FortunePath,path)) ;
     }
-
+	
+	/**
+       Return a file relative to the search_template-path.
+    **/
+    public String getSearchTemplate(String path) throws IOException {
+	return fileCache.getCachedFileString(new File(m_SearchTemplatePath,path)) ;
+    }
+	
     /**
-     * <p>Get internal template folder.
+     	@deprecated Ugly use something else.
      */
     public File getInternalTemplateFolder(int meta_id) {
 	Vector data = new Vector() ;

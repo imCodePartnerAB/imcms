@@ -256,6 +256,10 @@ public interface IMCServiceInterface {
 	// parsedoc use template
 	public String  parseDoc(java.util.Vector variables,String admin_template_name,
 		String lang_prefix)  ;
+	
+	// parseExternaldoc use template
+	public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)
+	 ;
 
 
 	// get templatehome
@@ -384,7 +388,9 @@ public interface IMCServiceInterface {
     public String getInclude(String path) throws IOException ;
 
     public String getFortune(String path) throws IOException ;
-    
+	
+	public String getSearchTemplate(String path) throws IOException ;
+	
     public File getInternalTemplateFolder(int meta_id) ;
 
 }
