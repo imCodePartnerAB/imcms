@@ -736,10 +736,13 @@ public class AdminUserProps extends Administrator {
         // isUseradmin and not is going to change his own data
         // then we have to take care of userroles
         if ( null == req.getParameter( "userTemplate" )
-             && ( ( user.isSuperAdmin() || user.isUserAdmin() && user.getId() != userFromDatabase.getId() ) ) ) {
+             && ( user.isSuperAdmin() || user.isUserAdmin() && user.getId() != userFromDatabase.getId() ) ) {
 
             // Lets get the roles from htmlpage
             int[] roleIdsFromRequest = this.getRoleIdsFromRequest( "roles", req, res, imcref, user );
+            if (null == roleIdsFromRequest) {
+                return ;
+            }
 
             // Lets add the new users roles. but first, delete users current Roles
             // and then add the new ones
@@ -756,8 +759,9 @@ public class AdminUserProps extends Administrator {
                     imcref.sqlUpdateProcedure( "DelUserRoles", new String[]{"" + userToChangeId, rolesArr[i]} );
                 }
             }
+
             boolean useradminRoleIsSelected = false;
-            for ( int i = 0; null != roleIdsFromRequest && i < roleIdsFromRequest.length; i++ ) {
+            for ( int i = 0; i < roleIdsFromRequest.length; i++ ) {
                 int roleId = roleIdsFromRequest[i];
                 RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapperAndRole.getRoleById( roleId );
                 userFromRequest.addRole( role );
@@ -803,8 +807,6 @@ public class AdminUserProps extends Administrator {
             password2 = req.getParameter( "new_pwd2" );
         }
 
-        int[] roleIdsFromRequest = adminUserProps.getRoleIdsFromRequest( "roles", req, res, imcref, user );
-
         // Lets validate the password
         if ( !verifyPassword( userFromRequest.getPassword(), password2, req, res ) ) {
             return;
@@ -837,6 +839,11 @@ public class AdminUserProps extends Administrator {
 
         //Lets get phonenumbers from the session if we have a session Attribute
         Vector phonesV = (Vector)session.getAttribute( "Ok_phoneNumbers" );
+
+        int[] roleIdsFromRequest = adminUserProps.getRoleIdsFromRequest( "roles", req, res, imcref, user );
+        if (null == roleIdsFromRequest) {
+            return;
+        }
 
         boolean useradminRoleIsSelected = false;
         for ( int i = 0; i < roleIdsFromRequest.length; i++ ) {
@@ -1155,8 +1162,8 @@ public class AdminUserProps extends Administrator {
     private int[] getRoleIdsFromRequest( String name, HttpServletRequest req, HttpServletResponse res,
                                          ImcmsServices imcref, UserDomainObject user ) throws IOException {
         // Lets get the roles
-        String[] roleIdStrings = ( req.getParameterValues( name ) == null )
-                                 ? new String[0] : ( req.getParameterValues( name ) );
+        String[] roleIdStrings = req.getParameterValues( name ) == null
+                                 ? new String[0] : req.getParameterValues( name );
 
         Vector rolesV = new Vector( java.util.Arrays.asList( roleIdStrings ) );
         if ( rolesV.size() == 0 && name.equals( "roles" ) ) { // user must get at least one user role

@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serializable;
 
 public class UserFinder extends WebComponent {
 
@@ -73,7 +74,7 @@ public class UserFinder extends WebComponent {
         this.headline = headline;
     }
 
-    public static interface SelectUserCommand {
+    public static interface SelectUserCommand extends Serializable {
 
         void selectUser( UserDomainObject selectedUser, HttpServletRequest request,
                                 HttpServletResponse response ) throws ServletException, IOException ;
