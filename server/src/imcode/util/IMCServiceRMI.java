@@ -296,10 +296,10 @@ public class IMCServiceRMI {
 	imc.archiveChilds(meta_id,user,childsThisMenu) ;
     }
 
-    public static void copyDocs( String server, int meta_id, int doc_menu_no,  User user, String[] childsThisMenu, String copyPrefix) throws IOException {
+    public static String[] copyDocs( String server, int meta_id, int doc_menu_no,  User user, String[] childsThisMenu, String copyPrefix) throws IOException {
 	IMCServiceInterface imc = getInterface( server ) ;
 
-	imc.copyDocs(meta_id,doc_menu_no,user,childsThisMenu,copyPrefix) ;
+	return imc.copyDocs(meta_id,doc_menu_no,user,childsThisMenu,copyPrefix) ;
     }
 
     public static Vector searchDocs( String server, int meta_id, User user, String question_str, String search_type, String string_match, String search_area ) throws IOException {
@@ -645,4 +645,8 @@ public class IMCServiceRMI {
 		imc.setPollList(pollListName, pollList);			
     }
 
+    public static imcode.server.parser.Document getDocument(String server, int meta_id) throws IOException {
+		IMCServiceInterface imc = getInterface( server ) ;
+		return imc.getDocument(meta_id) ;
+    }
 }

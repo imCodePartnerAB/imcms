@@ -80,7 +80,7 @@ public interface IMCServiceInterface {
 	;
 
     /** Copy documents and insert them in a new textdocument and menu **/
-    void copyDocs( int meta_id, int doc_menu_no,  User user, String[] childsThisMenu, String copyPrefix)  ;
+    String[] copyDocs( int meta_id, int doc_menu_no,  User user, String[] childsThisMenu, String copyPrefix)  ;
 
     // save textdoc
     public void saveTextDoc(int meta_id,imcode.server.User user,imcode.server.Table doc)
@@ -356,5 +356,7 @@ public interface IMCServiceInterface {
     public List getPollList(String pollListName) throws IOException ;
 
     public void setPollList(String pollListName, List pollList) throws IOException ;
+
+    public imcode.server.parser.Document getDocument(int meta_id) throws IOException ;
 
 }
