@@ -21,7 +21,7 @@ public class AdminManager extends Administrator {
 	String no_permission_url 	= Utility.getDomainPref( "no_permission_url",host ) ;
 	int start_doc         		= Integer.parseInt( Utility.getDomainPref( "start_doc", host ) ) ;
 	String servlet_url       	= Utility.getDomainPref( "servlet_url",host ) ;
-	String file_path 			= Utility.getDomainPref( "file_path", host ) ;
+	File file_path 			= Utility.getDomainPrefPath( "file_path", host ) ;
     }
 
 

@@ -204,10 +204,6 @@ public interface IMCServiceInterface {
 	String getExternalTemplateFolder(int meta_id)
 	 ;
 
-
-	// get internal template folder
-	String getInternalTemplateFolder(int meta_id)  ;
-
 	// increment session counter
 	int incCounter()  ;
 
@@ -266,7 +262,7 @@ public interface IMCServiceInterface {
 	throws java.io.IOException ;
 
 	// get templatehome
-	public String getTemplateHome()
+	public java.io.File getTemplateHome()
 	 ;
 
 	// get imagehome
@@ -386,4 +382,6 @@ public interface IMCServiceInterface {
 
     public String getInclude(String path) throws java.io.IOException ;
     
+    public String getInternalTemplateFolder(int meta_id) ;
+
 }

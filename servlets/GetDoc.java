@@ -80,12 +80,8 @@ public class GetDoc extends HttpServlet {
 
 			String host				= req.getHeader("Host") ;
 			String imcserver			= Utility.getDomainPref("userserver",host) ;
-			String start_url	= Utility.getDomainPref( "start_url",host ) ;
-			String no_permission_url	= Utility.getDomainPref( "no_permission_url",host ) ;
 			int start_doc				= IMCServiceRMI.getDefaultHomePage(imcserver) ;
-			String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
-			String file_path			= Utility.getDomainPref( "file_path", host ) ;
-		
+
 			HttpSession session = req.getSession( true );
 
 			String htmlStr = "" ;
@@ -128,7 +124,7 @@ public class GetDoc extends HttpServlet {
 		String no_permission_url	= Utility.getDomainPref( "no_permission_url",host ) ;
 		int start_doc					= IMCServiceRMI.getDefaultHomePage(imcserver) ;
 		String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
-		String file_path			= Utility.getDomainPref( "file_path", host ) ;
+		File file_path			= Utility.getDomainPrefPath( "file_path", host ) ;
 
 		String scheme = req.getScheme( ) ;
 		String serverName = req.getServerName( ) ;

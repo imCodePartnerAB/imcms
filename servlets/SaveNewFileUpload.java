@@ -20,7 +20,7 @@ public class SaveNewFileUpload extends HttpServlet {
 		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
 		String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
-		File file_path 				= new File(Utility.getDomainPref( "file_path", host ));
+		File file_path 				= Utility.getDomainPrefPath( "file_path", host );
 
 		imcode.server.User user ; 
 

@@ -30,7 +30,7 @@ public class SaveImage extends HttpServlet {
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
 		String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
 		String image_url			= Utility.getDomainPref( "image_url",host ) ;
-		String image_path			= Utility.getDomainPref( "image_path",host ) ;
+		File image_path			= Utility.getDomainPrefPath( "image_path",host ) ;
 
 		imcode.server.User user ;
 		String htmlStr = "" ;
@@ -266,7 +266,6 @@ public class SaveImage extends HttpServlet {
 			return ;
 
 		} else if( req.getParameter( "show_img" )!=null ) {
-					String imagePath = Utility.getDomainPref( "image_path",host );
 		//****************************************************************
 
 			ImageFileMetaData imagefile = new ImageFileMetaData(new File(image_path,image_ref)) ;

@@ -191,7 +191,7 @@ public class HtmlGenerator {
         //	retStr += "String + TablePrefsFile: " + path + aTablePrefsFile + "\n";
 
         // Ok, Lets get the values from the file into a vector
-        SettingsAccessor mySetAcc = new SettingsAccessor(tablePath + aTablePrefsFile);
+        SettingsAccessor mySetAcc = new SettingsAccessor( new File(tablePath,aTablePrefsFile));
         synchronized (mySetAcc) {
             mySetAcc.loadSettings();
         }

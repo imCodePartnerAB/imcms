@@ -29,9 +29,8 @@ public class ImageUpload extends HttpServlet {
 		String host 				= req.getHeader("Host") ;
 		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
-		File file_path 				= new File(Utility.getDomainPref( "image_path", host ));
+		File file_path 				= Utility.getDomainPrefPath( "image_path", host );
 		String image_url			= Utility.getDomainPref( "image_url",host ) ;
-		String image_path			= Utility.getDomainPref( "image_path",host ) ;
 			
 		imcode.server.User user ; 
 
@@ -81,7 +80,7 @@ public class ImageUpload extends HttpServlet {
 		
 				
 		File fn = new File(filename) ;
-		fn = new File (file_path+folder,fn.getName()) ;
+		fn = new File (new File(file_path,folder),fn.getName()) ;
 
 		if (file.length() > 0) {
 			if ( fn.exists() ) {
@@ -111,7 +110,7 @@ public class ImageUpload extends HttpServlet {
 		//String htmlStr = IMCServiceRMI.interpretAdminTemplate(imcserver,meta_id,user,"change_img.html",img_no,0,0,0) ;
 		//out.println(htmlStr) ;
 		String image_ref = fn.getName() ;
-		ImageFileMetaData imagefile = new ImageFileMetaData(new File(image_path,image_ref)) ;
+		ImageFileMetaData imagefile = new ImageFileMetaData(new File(file_path,image_ref)) ;
 		int width = imagefile.getWidth() ;
 		int height = imagefile.getHeight() ;
 		Vector vec = new Vector() ;

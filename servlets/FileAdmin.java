@@ -48,11 +48,11 @@ public class FileAdmin extends HttpServlet {
 
 			switch (st.countTokens()) {
 				default:
-					fd1 = new File(st.nextToken()) ;
-					fd2 = new File(st.nextToken()) ;
+					fd1 = Utility.getAbsolutePathFromString(st.nextToken()) ;
+					fd2 = Utility.getAbsolutePathFromString(st.nextToken()) ;
 					break ;
 				case 1:
-					fd1 = new File(st.nextToken()) ;
+					fd1 = Utility.getAbsolutePathFromString(st.nextToken()) ;
 					fd2 = fd1 ;
 				case 0:
 			} 
@@ -120,7 +120,8 @@ public class FileAdmin extends HttpServlet {
 			StringTokenizer st = new StringTokenizer(rootpaths,File.pathSeparator) ;
 			roots = new File[st.countTokens()] ;
 			for ( int i=0 ; i<roots.length ; i++ ) {
-				roots[i] = new File(st.nextToken()) ;
+			    String oneRoot = st.nextToken().trim() ;
+			    roots[i] = Utility.getAbsolutePathFromString(oneRoot) ;
 			}
 		}
 		File dir1 = new File(mp.getParameter("dir1")) ;
@@ -797,7 +798,8 @@ public class FileAdmin extends HttpServlet {
 			StringTokenizer st = new StringTokenizer(rootpaths,File.pathSeparator) ;
 			rootlist = new File[st.countTokens()] ;
 			for ( int i = 0 ; i<rootlist.length && st.hasMoreTokens() ; i++ ) {
-				rootlist[i] = new File(st.nextToken()) ;
+			    String oneRoot = st.nextToken().trim() ;
+			    rootlist[i] = Utility.getAbsolutePathFromString(oneRoot) ;
 			}
 		}
 		DirectoryFilter dirfilt = new DirectoryFilter() ;

@@ -10,6 +10,7 @@
 */
 
 import java.util.Vector;
+import java.io.File;
 import java.io.IOException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -145,10 +146,10 @@ public class ErrorMessageGenerator {
 		String errorMessage = "";
 		try {	
 			// Lets get the path to the template library
-			String errorTemplatePath = IMCServiceRMI.getTemplateHome( server );
+			File errorTemplatePath = IMCServiceRMI.getTemplateHome( server );
 		
 			// Lets get the error code	
-			SettingsAccessor setObj = new SettingsAccessor( errorTemplatePath + languagePrefix + "/admin/" + ErrorMessageGenerator.ERROR_CODE_FILE ) ;
+			SettingsAccessor setObj = new SettingsAccessor( new java.io.File(errorTemplatePath, languagePrefix + "/admin/" + ErrorMessageGenerator.ERROR_CODE_FILE) ) ;
 			setObj.setDelimiter("=") ;
 			setObj.loadSettings() ;
 			errorMessage = setObj.getSetting("" + errCode) ;

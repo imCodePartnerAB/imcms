@@ -7,11 +7,11 @@ public class SettingsAccessor extends DataAccessor {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
     
-    protected String FILE_NAME ;
+    protected File FILE_NAME ;
     protected Properties settingsTable ;
     protected String delimiter ;
     
-    public SettingsAccessor(String fileName) {
+    public SettingsAccessor(File fileName) {
         super() ;
         // load the data into the table
         FILE_NAME = fileName ;
@@ -149,7 +149,7 @@ public class SettingsAccessor extends DataAccessor {
             
             // create a file writer for the file "music.db" and set append to true
             //	boolean append = true;
-            FileWriter myFileWriter = new FileWriter(FILE_NAME, false);
+            FileWriter myFileWriter = new FileWriter(FILE_NAME);
             
             // create a print writer based on fileWriter and set autoflush to true
             boolean autoFlush = true;

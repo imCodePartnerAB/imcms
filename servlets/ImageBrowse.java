@@ -23,7 +23,6 @@ public class ImageBrowse extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException
 	{
 		super.init(config) ;
-		System.out.println("init i ImageBrowse");
 	}
 
 	/**
@@ -60,12 +59,11 @@ public class ImageBrowse extends HttpServlet {
 
 	public static String getPage(HttpServletRequest req, HttpServletResponse res) throws ServletException,IOException
 	{
-		System.out.println("hhhhhhhhh");
 		String host 				= req.getHeader("Host") ;
 		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
 		String servlet_url       	= Utility.getDomainPref( "servlet_url",host ) ;
 		String image_url                = Utility.getDomainPref( "image_url", host ) ;
-		File file_path = new File(Utility.getDomainPref( "image_path", host ));
+		File file_path                  = Utility.getDomainPrefPath( "image_path", host );
 			
 		// Get the session
 		HttpSession session = req.getSession(false);
@@ -284,8 +282,6 @@ public class ImageBrowse extends HttpServlet {
 			{
 				imagePath = buff.toString()+token.nextToken();
 			}	
-			
-			System.out.println("imagePath: "+imagePath);
 			
 			File urlFile = new File(filePath) ;
 			String fileName = urlFile.getName() ;

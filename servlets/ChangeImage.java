@@ -57,7 +57,7 @@ public class ChangeImage extends HttpServlet {
 		String imcserver 		= Utility.getDomainPref("adminserver",host) ;
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
 		String image_url                = Utility.getDomainPref( "image_url",host ) ;
-		String image_path               = Utility.getDomainPref( "image_path",host ) ;
+		File image_path               = Utility.getDomainPrefPath( "image_path",host ) ;
 		imcode.server.User user ; 
 		String htmlStr = "" ;     
 		int meta_id ;
@@ -121,7 +121,7 @@ public class ChangeImage extends HttpServlet {
 		
 		
 		//*lets get some path we need later on
-		File file_path = new File(image_path);
+		File file_path = image_path ;
 		String canon_path = file_path.getCanonicalPath();//ex: C:\Tomcat3\webapps\imcms\images
 		String root_dir_parent = file_path.getParent();//ex: c:\Tomcat3\webapps\imcms
 		String root_dir_name = canon_path.substring(root_dir_parent.length());

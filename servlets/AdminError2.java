@@ -126,7 +126,7 @@ public String getErrorMessage(HttpServletRequest req, HttpServletResponse res,in
 
 	// Lets get the error code
 	
-		SettingsAccessor setObj = new SettingsAccessor(folder + "ADMINERRMSG.INI") ;
+		SettingsAccessor setObj = new SettingsAccessor( new File(folder, "ADMINERRMSG.INI")) ;
 		setObj.setDelimiter("=") ;
 		setObj.loadSettings() ;
 		myErrorMessage = setObj.getSetting("" + errCode) ;

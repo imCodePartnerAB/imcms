@@ -40,7 +40,28 @@ public class Utility {
     private Utility () {
 		
     }
+
+    /**
+       Takes a path-string and returns a file. The path is prepended with the webapp dir if the path is relative.
+    **/
+    public static File getAbsolutePathFromString(String pathString) {
+	File path = new File(pathString) ;
+	if (!path.isAbsolute()) {
+	    path = new File(imcode.server.WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath(), pathString) ;
+	}
+	return path ;
+    }
 	
+    /**
+       Fetches a preference from the config file for a domain,
+       as a File representing an absolute path, with the webapp dir prepended if the path is relative.
+       @param pref The name of the preference to fetch.
+       @param domain The domain, as it appears in the main domain-config-file.
+    */
+    public static File getDomainPrefPath(String pref, String domain) throws IOException {
+	return getAbsolutePathFromString(getDomainPref(pref,domain)) ;
+    }
+
     /**
        Fetches a preference from the config file for a domain.
        @param pref The name of the preference to fetch.

@@ -381,7 +381,7 @@ public class IMCServiceRMI {
 	    return imc.parseDoc(variables,file_name,lang_prefix) ;
     }
 
-    public static String getTemplateHome ( String server ) throws IOException {
+    public static File getTemplateHome ( String server ) throws IOException {
 	IMCServiceInterface imc = getInterface( server ) ;
 
 	    return imc.getTemplateHome() ;

@@ -163,7 +163,7 @@ public class Administrator extends HttpServlet {
 		// Lets get the users language id. Use the langid to get the lang prefix from db.
 	    String langId = user.getString("lang_id") ;
 		String langPrefix = rmi.execSqlProcedureStr(server, "GetLangPrefixFromId " + langId) ;
-		templateLib += langPrefix + "/admin/" ;
+		templateLib += "/" + langPrefix + "/admin/" ;
 		 //this.log("lang_id:" + langId) ;
 	    //this.log("langPrefix:" + langPrefix) ;
 	    //this.log("InternalTemplatePath:" + templateLib) ;

@@ -48,7 +48,7 @@ public class UrlDocTest extends HttpServlet {
 
 		out.print(IMCServiceRMI.parseDoc(imcserver,null,"UrlDocTestHead.html",lang_prefix)) ;
 		out.flush() ;
-		for ( int i = 0; i<meta_id.length ; i++ ) {
+		for ( int i = 0; meta_id != null && i<meta_id.length ; i++ ) {
 			String found = "green", reached = "green", ok = "red" ;
 			String tmp = url_ref[i] ;
 			URL url = null ;

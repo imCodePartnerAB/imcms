@@ -55,7 +55,7 @@
     <jar jarfile="${wardist}"
          basedir="build"/>
 
-    <echo> Done packaging distribution. </echo>
+    <echo> Done packaging distribution 'imcms.war'. </echo>
 
   </target>
 
@@ -63,7 +63,7 @@
     <copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
   </target>
 
-  <target name="install" depends="build" description="Copies the webapp directly into the deployroot.">
+  <target name="install" depends="build" description="Copies the webapp directly into the webapp-directory in the deployroot.">
     <copy todir="${webapproot}">
       <fileset dir="${build}"/>
     </copy>
@@ -80,15 +80,12 @@
 
     <copy file="install/web.xml" todir="${WEB-INF}"/>
 
-    <echo> Done build. </echo>
-
   </target>
 
   <target name="server"
 	  depends="init,dir"
           description="Builds the server and utility classes.">
 
-    <echo> Building the server and the utility classes. </echo>
     <mkdir dir="${classes}"/>
     <javac srcdir="server/src" destdir="${classes}" debug="${debug}">
       <classpath>
@@ -99,15 +96,12 @@
       </classpath>
     </javac>
 
-    <echo> Done building the server and the utility classes. </echo>
-
   </target>
 
   <target name="servlets" 
           depends="init,server"
           description="Builds the servlets.">
 
-    <echo> Building the servlets. </echo>
     <mkdir dir="${classes}"/>
     <javac srcdir="servlets"
            destdir="${classes}"
@@ -123,7 +117,6 @@
       </classpath>
 
     </javac>
-    <echo> Done building the servlets. </echo>
 
   </target>
 
@@ -145,8 +138,6 @@
         <exclude name="policy"/>
       </fileset>
       <filterset>
-
-        <filter token="webapproot" value="${webapproot}"/>
 
         <filter token="servleturl" value="${servleturl}"/>
         <filter token="loginurl" value="${loginurl}"/>

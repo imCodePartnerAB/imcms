@@ -29,8 +29,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private final imcode.server.InetPoolManager m_conPool ; // inet pool of connections
     private TextDocumentParser textDocParser ;
     
-    private String m_TemplateHome ;           // template home
-    private String m_IncludePath ;
+    private File m_TemplateHome ;           // template home
+    private File m_IncludePath ;
     private int m_DefaultHomePage ;        // default home page
     private String m_ServletUrl  ;			   // servlet url
     private String m_ImageFolder ;            // image folder
@@ -57,11 +57,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	m_conPool    = conPool ;
 	    
 	sysData = getSystemDataFromDb() ;
-	    
-	m_TemplateHome      = props.getProperty("TemplatePath").trim() ;
+
+	String templatePathString = props.getProperty("TemplatePath").trim() ;
+	m_TemplateHome      = imcode.util.Utility.getAbsolutePathFromString(templatePathString) ;
 	log.log(Log.INFO, "TemplatePath: " + m_TemplateHome) ;
 	    
-	m_IncludePath       = props.getProperty("IncludePath").trim() ;
+	String includePathString = props.getProperty("IncludePath").trim() ;
+	m_IncludePath       = imcode.util.Utility.getAbsolutePathFromString(includePathString) ;
 	log.log(Log.INFO, "IncludePath: " + m_IncludePath) ;
 	    
 	try {
@@ -120,10 +122,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	log.log(Log.INFO, "SessionCounterDate: "+m_SessionCounterDate) ;
 	//log.log(Log.INFO, "TemplateCount: "+m_NoOfTemplates) ;
 
-	textDocParser = new TextDocumentParser(this, m_conPool,new File(m_TemplateHome),new File(m_IncludePath),m_ImageFolder,m_ServletUrl) ;
+	textDocParser = new TextDocumentParser(this, m_conPool,m_TemplateHome,m_IncludePath,m_ImageFolder,m_ServletUrl) ;
     }
-    
-    
+
     public int getSessionCounter() {
 	return m_SessionCounter ;
     }
@@ -267,13 +268,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    // Replace #getMetaId# with meta_id
 	    String doctype = dbc.sqlQueryStr("select type from doc_types where doc_type = "+doc_type) ;
 
-	    imcode.util.AdminButtonParser doc_tags = new imcode.util.AdminButtonParser(m_TemplateHome + lang_prefix + "/admin/adminbuttons/adminbutton"+doc_type+"_", ".html",user_permission_set_id,user_permission_set) ;
+	    imcode.util.AdminButtonParser doc_tags = new imcode.util.AdminButtonParser(new File(m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton"+doc_type+"_").toString(), ".html",user_permission_set_id,user_permission_set) ;
 
 	    doc_tags.put("getMetaId",meta_id) ;
 
 	    imcode.util.Parser.parseTags(tempbuffer,'#'," <>\n\r\t",(Map)doc_tags,true,1) ;
 
-	    imcode.util.AdminButtonParser tags = new imcode.util.AdminButtonParser(m_TemplateHome + lang_prefix + "/admin/adminbuttons/adminbutton_", ".html",user_permission_set_id,user_permission_set) ;
+	    imcode.util.AdminButtonParser tags = new imcode.util.AdminButtonParser( new File(m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton_").toString(), ".html",user_permission_set_id,user_permission_set) ;
 
 	    tags.put("getMetaId",meta_id) ;
 	    tags.put("doc_buttons",tempbuffer.toString()) ;
@@ -1589,7 +1590,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * <p>Return  templatehome.
      */
-    public String getTemplateHome() {
+    public File getTemplateHome() {
 	return m_TemplateHome ;
     }
 
@@ -1608,37 +1609,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String getLanguage() {
 	return m_Language ;
     }
-
-
-
-
-
-    /**
-     * <p>Get internal template folder.
-     */
-    public String getInternalTemplateFolder(int meta_id) {
-	Vector data = new Vector() ;
-	String folder = "" ;
-
-	if ( meta_id != -1 ) {
-	    DBConnect dbc = new DBConnect(m_conPool) ;
-	    String sqlStr = "select doc_type,lang_prefix from meta where meta_id = " + meta_id ;
-	    dbc.setSQLString(sqlStr) ;
-	    dbc.getConnection() ;
-	    dbc.createStatement() ;
-	    data = (Vector)dbc.executeQuery() ;
-
-	    dbc.clearResultSet() ;
-	    dbc.closeConnection() ;
-	    dbc = null ;
-	    folder = m_TemplateHome + data.elementAt(1).toString() + "/" ;
-
-	} else
-	    folder = m_TemplateHome ;
-
-	return folder ;
-    }
-
 
     /**
      * <p>Increment session counter.
@@ -2316,8 +2286,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	for(int i=0;i<=5;i++)
 	    { // Looking for a template with one of six suffixes
-		String path = m_TemplateHome + "/text/demo/" + template_id + "." + suffixList[i];
-		File fileObj = new File(path);
+		File fileObj = new File(m_TemplateHome, "/text/demo/" + template_id + "." + suffixList[i]);
 		long date = 0;
 		long fileDate = fileObj.lastModified();
 		if (fileObj.exists() && fileDate>date)
@@ -2758,5 +2727,31 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String getInclude(String path) throws IOException {
 	return fileCache.getCachedFileString(new File(m_IncludePath,path)) ;
     }
+
+    /**
+     * <p>Get internal template folder.
+     */
+    public String getInternalTemplateFolder(int meta_id) {
+	Vector data = new Vector() ;
+
+	if ( meta_id != -1 ) {
+	    DBConnect dbc = new DBConnect(m_conPool) ;
+	    String sqlStr = "select doc_type,lang_prefix from meta where meta_id = " + meta_id ;
+	    dbc.setSQLString(sqlStr) ;
+	    dbc.getConnection() ;
+	    dbc.createStatement() ;
+	    data = (Vector)dbc.executeQuery() ;
+
+	    dbc.clearResultSet() ;
+	    dbc.closeConnection() ;
+	    dbc = null ;
+	    return (new File(m_TemplateHome, data.elementAt(1).toString() + "/")).toString() ;
+
+	} else {
+	    return m_TemplateHome.toString() ;
+	}
+    }
+
+
 
 } // END CLASS IMCService

@@ -345,11 +345,6 @@ public class AdminSystemInfo extends Administrator {
 	    while (initParams.hasMoreElements()) {
 		System.err.println(initParams.nextElement());
 	    }
-	    System.err.println("The filepath was not set. Default path will be used");
-	    FILE_PATH = "C:\\IMCSERVER\\" ;
-	    // throw new UnavailableException (this,
-	    // "Not given a path to serverhome library") ;
-
 	}
 	
 	log("Serverhome:" + getInitParameter("file_path")) ;

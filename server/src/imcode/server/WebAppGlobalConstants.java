@@ -1,5 +1,7 @@
 package imcode.server;
 
+import java.io.File ;
+
 /*
 * Uggly, uggly. But ther's so much static object creation all around the app
 * so I realy have no choice.../Hasse
@@ -14,7 +16,7 @@ public class WebAppGlobalConstants {
 	* This must be called before any other method is called.
 	* When the first Servlet is loaded.
 	*/
-	public static void init( String webAppRealPath ) 
+	public static void init( File webAppRealPath ) 
 	{
 		singletonInstance = new WebAppGlobalConstants( webAppRealPath );
 	}
@@ -24,15 +26,15 @@ public class WebAppGlobalConstants {
 		return singletonInstance;
 	}
 	
-	public String getAbsoluteWebAppPath() 
+	public File getAbsoluteWebAppPath() 
 	{
 		return WEB_APP_ABSOLUTE_ROOT;
 	}
 	
-	private String WEB_APP_ABSOLUTE_ROOT;
-	private WebAppGlobalConstants( String webAppRealPath ) 
+	private File WEB_APP_ABSOLUTE_ROOT;
+
+	private WebAppGlobalConstants( File webAppRealPath ) 
 	{
 		WEB_APP_ABSOLUTE_ROOT = webAppRealPath;
-		WEB_APP_ABSOLUTE_ROOT = WEB_APP_ABSOLUTE_ROOT.replace('\\', '/');
 	}
 }
