@@ -3971,22 +3971,33 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	}
 
 
+    final static FileFilter DEMOTEMPLATEFILTER = new FileFilter () {
+	    public boolean accept (File file) {
+		return file.length() > 0 ;
+	    }
+	} ;
+
 
 	// get demotemplates
 	public String[] getDemoTemplateList() {
 		File demoDir = new File(m_TemplateHome  + "/text/demo/" ) ;
 
-		String file_list[] = demoDir.list() ;
+		File[] file_list = demoDir.listFiles(DEMOTEMPLATEFILTER) ;
 
+		String[] name_list = new String[file_list.length] ;
+		
 		if (file_list != null) {
-			for(int i = 0 ; i < file_list.length ; i++)
-				file_list[i] = file_list[i].substring(0,file_list[i].indexOf(".")) ;
+		    for(int i = 0 ; i < name_list.length ; i++) {
+			String filename = file_list[i].getName() ;
+			int dot = filename.indexOf(".") ;
+			name_list[i] = dot > -1 ? filename.substring(0,dot) : filename ;
+		    }
 		} else {
 			return new String[0];
 
 		}
 
-		return file_list;
+		return name_list;
 
 	}
 
@@ -4012,6 +4023,8 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		as argument. Will return null if something goes wrong.
                 Example: If the language id number for swedish is 1. then the call
                 myObject.getLanguage("1") will return 'se'
+		That is, provided that the prefix for swedish is 'se', which it isn't.
+		Or rather, it shouldn't be.
 	*/
 	public String getLanguage(String lang_id) {
 		return sqlProcedureStr("GetLangPrefixFromId " + lang_id) ;
