@@ -103,8 +103,8 @@
         <tstamp/>
 
         <dependset>
-            <srcfileset dir="." file="build.xml" />
-            <targetfileset dir="${build}" />
+            <srcfileset file="${basedir}/build.xml"/>
+            <targetfileset dir="${build}"/>
         </dependset>
 
     </target>
@@ -1040,12 +1040,12 @@
         <antcall target="html-editor-lang">
             <param name="srclanguage" value="sv"/>
             <param name="language" value="se"/>
-              <param name="htmleditorurl" value="${webroot}/htmleditor"/>
+            <param name="htmleditorurl" value="${webroot}/htmleditor"/>
         </antcall>
     </target>
 
     <target name="html-editor-lang"
-        depends="init, global-filters,language-properties"
+        depends="language-properties,global-filters"
         description="Copies files for html-editor.">
 
         <mkdir dir="${htmleditorurl}"/>
