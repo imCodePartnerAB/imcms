@@ -16,7 +16,7 @@
   <property name="lib"            value="${WEB-INF}/lib"/>
   <property name="templates"      value="${WEB-INF}/templates"/>
   <property name="includes"       value="${WEB-INF}/includes"/>
-  <property name="fortunes"       value="${WEB-INF}/includes"/>
+  <property name="fortunes"       value="${WEB-INF}/fortunes"/>
   <property name="uploads"        value="${WEB-INF}/uploads"/>
   <property name="logs"           value="${WEB-INF}/logs"/>
 
@@ -29,6 +29,7 @@
   <property name="conference-templates" value="${languagetemplates}/102"/>
   <property name="chat-templates"       value="${languagetemplates}/103"/>
   <property name="billboard-templates"  value="${languagetemplates}/104"/>
+  <property name="postcard-templates"   value="${languagetemplates}/105"/>
 
   <property name="admintemplates" value="${languagetemplates}/admin"/>
   <property name="texttemplates"  value="${templates}/text"/>
@@ -109,7 +110,7 @@
   </target>
 
   <target name="build"
-          depends="server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard"
+          depends="server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard"
 	  description="Builds everything.">
 
     <copy file="install/web.xml" todir="${WEB-INF}"/>
@@ -336,18 +337,18 @@
 
   <target name="conference-templates"
           depends="init"
-	  description="Copies the conference-templates">
+	  description="Copies the conference-templates.">
     <copy todir="${conference-templates}">
-      <fileset dir="templates/${srclanguage}/conf"/>
+      <fileset dir="templates/${srclanguage}/conf" excludes="original/images/"/>
     </copy>
   </target>
 
   <target name="conference-images"
           depends="init,conference-templates"
-	  description="Copies the conference-images">
-    <move todir="${images}/${language}/102/original">
-      <fileset dir="${conference-templates}/original/images"/>
-    </move>
+	  description="Copies the conference-images.">
+    <copy todir="${images}/${language}/102/original">
+      <fileset dir="templates/${srclanguage}/conf/original/images" includes="*"/>
+    </copy>
   </target>
 
   <target name="chat"
@@ -377,14 +378,13 @@
 
   <target name="chat-templates"
           depends="init"
-	  description="Copies the chat-templates">
-    <copy todir="${chat-templates}">
-      <fileset dir="templates/${srclanguage}/chat"/>
+	  description="Copies the chat-templates.">
+    <copy todir="${chat-templates}/original">
+      <fileset dir="templates/${srclanguage}/chat/orginal"/>
     </copy>
-
-    <move todir="${chat-templates}/original">
-      <fileset dir="${chat-templates}/orginal"/>
-    </move>
+    <copy todir="${chat-templates}">
+      <fileset dir="templates/${srclanguage}/chat" excludes="orginal/"/>
+    </copy>
   </target>
 
   <target name="billboard"
@@ -414,18 +414,33 @@
 
   <target name="billboard-templates"
           depends="init"
-	  description="Copies the billboard-templates">
+	  description="Copies the billboard-templates.">
+    <copy todir="${billboard-templates}/original">
+      <fileset dir="templates/${srclanguage}/billBoard/ORIGINAL" excludes="images/"/>
+    </copy>
     <copy todir="${billboard-templates}">
-      <fileset dir="templates/${srclanguage}/conf"/>
+      <fileset dir="templates/${srclanguage}/billBoard" excludes="ORIGINAL/"/>
     </copy>
   </target>
 
   <target name="billboard-images"
           depends="init,billboard-templates"
-	  description="Copies the billboard-images">
-    <move todir="${images}/${language}/104/original">
-      <fileset dir="${billboard-templates}/original/images"/>
-    </move>
+	  description="Copies the billboard-images.">
+    <copy todir="${images}/${language}/104/original">
+      <fileset dir="templates/${srclanguage}/billBoard/ORIGINAL/images" includes="*"/>
+    </copy>
+  </target>
+
+  <target name="postcard"
+          depends="init,postcard-templates"
+	  description="Builds the postcard."/>
+
+  <target name="postcard-templates"
+          depends="init"
+	  description="Copies the postcard-templates.">
+    <copy todir="${postcard-templates}">
+      <fileset dir="templates/${srclanguage}/postcard"/>
+    </copy>
   </target>
 
 </project>
