@@ -307,7 +307,9 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		label = redbar+label ;
 	    }
 	    finalresult = label+redbar+"&nbsp;"+finalresult+"<a href=\"ChangeText?meta_id="+meta_id+"&txt="+noStr+labelparam+"\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
-	} else if (!"".equals(result)) { // Else, we're not in textmode, and do we have something other than the empty string?
+	}
+
+	if (!"".equals(result)) { // Else, we're not in textmode, and do we have something other than the empty string?
 	    String tempAtt = null ;
 	    if ((tempAtt = attributes.getProperty("pre")) != null) {
 		finalresult = tempAtt + finalresult ;
@@ -345,16 +347,16 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	if (result == null) {
 	    result = "" ;
 	}
-	String finalresult = result ;
-	// FIXME: Remove this html-crap.
-	String redbar = "<img src=\""+imageUrl+"red.gif\" border=\"0\">" ;
-
 	String label = attributes.getProperty("label","") ;
 	String labelparam = "" ;
 	if (!"".equals(label)) {
+	    // FIXME: Remove this html-crap.
+	    String redbar = "<img src=\""+imageUrl+"red.gif\" border=\"0\">" ;
 	    labelparam = "&label="+java.net.URLEncoder.encode(label) ;
 	    label = redbar+label ;
 	}
+
+	String finalresult = result ;
 	if (imageMode && "".equals(result)) { // If imageMode, and no data in the db-field.
 	    // FIXME: Remove this html-crap.
 	    finalresult = label +
@@ -366,7 +368,9 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    finalresult = label + finalresult +
 		"<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+labelparam+"\">" +
 		"<img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
-	} else if(!"".equals(result)) {                              // Else, if we have something other than the empty string...
+	}
+
+	if(!"".equals(result)) { // Else, if we have something other than the empty string...
 	    String tempAtt = null ;
 	    if ((tempAtt = attributes.getProperty("pre")) != null) {
 		finalresult = tempAtt + finalresult ;   // Prepend the contents of the 'pre'-attribute.
