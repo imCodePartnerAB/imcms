@@ -58,7 +58,7 @@ sub load {
 
     my $current_property = '';
     while (<$fh>) {
-        my $line_continues = /(\\+)$/ && (1 & length($1));
+        my $line_continues = /(\\+)$/ && (1 & length($1)) && !eof($fh);
         if ( my $entryline = /^\s*[^#!\s]\S*/ .. !$line_continues ) {
             chomp;
             s!^\s*!!;
@@ -130,7 +130,7 @@ sub escape_value {
     s!\t!\\t!g ;
     s!\A !\\ ! ;
     s!([\x00-\x09\x0b-\x1f\x{0100}-\x{ffff}])!sprintf('\\u%04x',ord $1)!ge ;
-    s/\n([^\n\S]*)(?=(\S?))/ $2 ? "\\n$1\\\n\t\t" : "\\n" /ge and s/(?!<\s)\\\n\t\t\z// ;
+    s/\n([^\n\S]*)(?=(\S|\n|))/ $2 ? "\\n$1\\\n\t\t" : "\\n" /ge and s/(?!<\s)\\\n\t\t\z// ;
     #s/^(\s*)([#!])/$1\\$2/mg ;
 
     return $_ ;
