@@ -45,98 +45,113 @@
 <!--gui_head -->
 #gui_head( "<? web/imcms/lang/jsp/admin/admin_manager.jsp/1 ?> - <%= adminManagerPage.getHeading().toLocalizedString( request ) %>" )
 <!-- /gui_head -->
-
-    <table  border="0" cellspacing="0" cellpadding="0" width="100%">
-        <tr>
-            <td colspan="4" id="adm">
-                <table border="0" cellspacing="0" cellpadding="0">
-                    <form method="post" action="AdminManager" name="AdminManager">
-                         <% if ( null != adminManagerPage.getHtmlAdminPart() ) { %>
-                            <tr>
-                                <td><%= adminManagerPage.getHtmlAdminPart() %></td>
-                                <td>&nbsp; &nbsp;</td>
-                                <td><input type="submit" class="imcmsFormBtnSmall" name="submit" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/2 ?>"></td>
-                            </tr>
-                        <% }else { %>
-                            <tr><td colspan="3">&nbsp;</td></tr>
-                        <%}%>
-                    </form>
-                </table></td>
-                <form action="StartDoc">
-            <td colspan="2" align="right"><input type="submit" class="imcmsFormBtnSmall" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/3 ?>">
-                &nbsp;&nbsp;<input type="button" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/4 ?>" title="<? web/imcms/lang/jsp/admin/admin_manager.jsp/5 ?>" class="imcmsFormBtnSmall" onClick="openHelpW(28)"></td>
-                </form>
-        </tr>
-    </table>
+		<table border="0" cellspacing="0" cellpadding="0" width="656">
+		<tr>
+			<td id="adm">
+			<table border="0" cellspacing="0" cellpadding="0">
+			<form method="post" action="AdminManager" name="AdminManager"><%
+			if ( null != adminManagerPage.getHtmlAdminPart() ) { %>
+			<tr>
+				<td><%= adminManagerPage.getHtmlAdminPart() %></td>
+				<td>&nbsp; &nbsp;</td>
+				<td><input type="submit"<%
+				%> class="imcmsFormBtnSmall" <%
+				%>name="submit"<%
+				%> value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/2 ?>"></td>
+			</tr><%
+			} else { %>
+			<tr>
+				<td>&nbsp;</td>
+			</tr><%
+			} %>
+			</form>
+			</table></td>
+			<form action="StartDoc">
+			<td colspan="2" align="right"><input type="submit"<%
+			%> class="imcmsFormBtnSmall"<%
+			%> value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/3 ?>">
+			&nbsp;&nbsp;<input type="button"<%
+			%> value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/4 ?>"<%
+			%> title="<? web/imcms/lang/jsp/<%
+			%>admin/admin_manager.jsp/5 ?>"<%
+			%> class="imcmsFormBtnSmall"<%
+			%> onClick="openHelpW(28)"></td>
+		</form>
+		</tr>
+		</table>
 #gui_mid_tabs1()
 <%= tabString %>
-#gui_mid_tabs2()
-<% if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabName())) { %>
-    <% if (null != adminManagerPage.getErrorMessage()) {
-        %><div style="color: red"><%= StringEscapeUtils.escapeHtml( adminManagerPage.getErrorMessage().toLocalizedString(request) )%></div><%
-    } %>
-    <form method="POST" action="AdminManager">
-    <input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__SHOW %>" value="<%= adminManagerPage.getTabName() %>">
-    <% if (AdminManager.PARAMETER_VALUE__SHOW_NEW.equals( adminManagerPage.getTabName() ) ) { %>
-       #gui_heading( "<? web/imcms/lang/jsp/admin/admin_manager.jsp/heading_create_new ?>" )
-        <%
-            DocumentTypeDomainObject[] documentTypes = {
-                DocumentDomainObject.DOCTYPE_TEXT,
-                DocumentDomainObject.DOCTYPE_URL,
-                DocumentDomainObject.DOCTYPE_FILE,
-            } ;
-        %>
-        <? web/imcms/lang/jsp/admin/admin_manager.jsp/create_new ?>
-        <select name="<%= AdminManager.REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION %>">
-            <%
-                for ( int i = 0; i < documentTypes.length; i++ ) {
-                    DocumentTypeDomainObject documentType = documentTypes[i];
-                    %><option value="<%= documentType.getId() %>"><%= documentType.getName().toLocalizedString( request ) %></option><%
-                }
-            %>
-            <option value="<%= AdminManager.REQUEST_PARAMETER__ACTION__COPY %>"><? global/Copy ?></option>
-        </select>
-        <? web/imcms/lang/jsp/admin/admin_manager.jsp/based_on ?>
-        <input type="text" name="<%= AdminManager.REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID %>" value="" size="5">
-        <input type="submit" name="<%= AdminManager.REQUEST_PARAMETER__CREATE_NEW_DOCUMENT %>" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/create_button ?>">
-    <% } %>
-
-        <%
-          List subreports = adminManagerPage.getSubreports() ;
-          for ( Iterator iterator = subreports.iterator(); iterator.hasNext(); ) {
-              AdminManagerSubreport subreport = (AdminManagerSubreport)iterator.next();
-              request.setAttribute( "subreport", subreport );
-              %><jsp:include page="admin_manager_subreport.jsp"/><%
-          }
-        %>
-    </form>
-    <% } else { %>
-
-    <table border="0" cellspacing="0" cellpadding="2" width="656" align="center">
-        <tr>
-            <td colspan="2"><img src="<%= imagesPath %>/1x1.gif" width="1" height="25"></td>
-        </tr>
-        <tr>
-            <td colspan="2" height="22"><span class="imcmsAdmHeading"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/1 ?></span></td>
-        </tr>
-        <tr>
-            <td colspan="2"><img src="<%= imagesPath %>/1x1_20568d.gif" width="100%" height="1" vspace="8"></td>
-        </tr>
-        <tr>
-            <td colspan="2">
-
-                <form method="GET" action="SearchDocuments">
-                    <input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__FROMPAGE %>" value="<%= AdminManager.PAGE_SEARCH %>">
-                    <jsp:include page="../search_documents_form.jsp" />
-                    <jsp:include page="../search_documents_results.jsp" />
-                </form>
-
-            </td>
-
-        </tr>
-    </table>
-<% } %>
-
+#gui_mid_tabs2()<%
+if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabName())) {
+	if (null != adminManagerPage.getErrorMessage()) { %>
+	<div style="color: red"><%=
+		StringEscapeUtils.escapeHtml( adminManagerPage.getErrorMessage().toLocalizedString(request) )
+		%></div><%
+	} %>
+	<table border="0" cellspacing="0" cellpadding="2" width="656">
+	<form method="POST" action="AdminManager">
+	<input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__SHOW %>" value="<%= adminManagerPage.getTabName() %>"><%
+	if (AdminManager.PARAMETER_VALUE__SHOW_NEW.equals( adminManagerPage.getTabName() ) ) { %>
+	<tr>
+		<td><img src="<%= imagesPath %>/1x1.gif" width="1" height="26"></td>
+	</tr>
+	<tr>
+		<td colspan="2" height="22"><span class="imcmsAdmHeading"><? web/imcms/lang/jsp/admin/admin_manager.jsp/heading_create_new ?></span></td>
+	</tr>
+	<tr>
+		<td colspan="2"><img src="<%= imagesPath %>/1x1_20568d.gif" width="100%" height="1" vspace="8"></td>
+	</tr>
+	<tr>
+		<td>
+		<? web/imcms/lang/jsp/admin/admin_manager.jsp/create_new ?>
+		<select name="<%= AdminManager.REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION %>"><%
+			DocumentTypeDomainObject[] documentTypes = {
+				DocumentDomainObject.DOCTYPE_TEXT,
+				DocumentDomainObject.DOCTYPE_URL,
+				DocumentDomainObject.DOCTYPE_FILE,
+			} ;
+			
+			for ( int i = 0; i < documentTypes.length; i++ ) {
+				DocumentTypeDomainObject documentType = documentTypes[i] ; %>
+			<option value="<%= documentType.getId() %>"><%= documentType.getName().toLocalizedString( request ) %></option><%
+			} %>
+			<option value="<%= AdminManager.REQUEST_PARAMETER__ACTION__COPY %>"><? global/Copy ?></option>
+		</select>
+		&nbsp;<? web/imcms/lang/jsp/admin/admin_manager.jsp/based_on ?>&nbsp;
+		<input type="text" name="<%= AdminManager.REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID %>" value="" size="5">&nbsp;
+		<input type="submit" name="<%= AdminManager.REQUEST_PARAMETER__CREATE_NEW_DOCUMENT %>" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/create_button ?>" class="imcmsFormBtnSmall"></td>
+	</tr>
+	</table><%
+	}
+	
+	List subreports = adminManagerPage.getSubreports() ;
+	for ( Iterator iterator = subreports.iterator(); iterator.hasNext(); ) {
+		AdminManagerSubreport subreport = (AdminManagerSubreport)iterator.next();
+		request.setAttribute( "subreport", subreport );
+		%><jsp:include page="admin_manager_subreport.jsp"/><%
+	} %>
+	</form><%
+} else { %>
+	<table border="0" cellspacing="0" cellpadding="2" width="656">
+	<tr>
+		<td colspan="2"><img src="<%= imagesPath %>/1x1.gif" width="1" height="25"></td>
+	</tr>
+	<tr>
+		<td colspan="2" height="22"><span class="imcmsAdmHeading"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/1 ?></span></td>
+	</tr>
+	<tr>
+		<td colspan="2"><img src="<%= imagesPath %>/1x1_20568d.gif" width="100%" height="1" vspace="8"></td>
+	</tr>
+	<tr>
+		<td colspan="2">
+		<form method="GET" action="SearchDocuments">
+			<input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__FROMPAGE %>" value="<%= AdminManager.PAGE_SEARCH %>">
+			<jsp:include page="../search_documents_form.jsp" />
+			<jsp:include page="../search_documents_results.jsp" />
+		</form></td>
+	</tr>
+	</table><%
+} %>
 #gui_end_of_page()
 
 </vel:velocity>
