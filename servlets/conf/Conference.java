@@ -872,17 +872,19 @@ public class Conference extends HttpServlet {
 			VariableManager adminLinkVM = new VariableManager();
 			adminLinkVM.addProperty( "SERVLET_URL", adminButtonVM.getProperty( "SERVLET_URL" ) );
 			String adminLinkFile = adminButtonVM.getProperty( "ADMIN_LINK_HTML" );
-
+			
 			//lets create adminbuttonhtml
 			String templateLib = this.getExternalTemplateFolder( req );
 			HtmlGenerator htmlObj = new HtmlGenerator( templateLib, this.ADMIN_BUTTON_TEMPLATE );
 			String adminBtn = htmlObj.createHtmlString( adminButtonVM, req );
-
+	
 			//lets create adminlink
 			adminLinkVM.addProperty( "ADMIN_BUTTON", adminBtn );
-			HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, adminLinkFile );
-			adminLink = linkHtmlObj.createHtmlString( adminLinkVM, req );
-
+			if ( !adminLinkFile.equals(""))
+			{
+				HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, adminLinkFile );
+				adminLink = linkHtmlObj.createHtmlString( adminLinkVM, req );
+			}
 		}
 		//log("After getAdminRights") ;
 		return adminLink ;
@@ -920,8 +922,12 @@ public class Conference extends HttpServlet {
 
 			//lets create unadminlink
 			unAdminLinkVM.addProperty( "UNADMIN_BUTTON", unAdminBtn );
-			HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, unAdminLinkFile );
-			unAdminLink = linkHtmlObj.createHtmlString( unAdminLinkVM, req );
+			if ( !unAdminLinkFile.equals(""))
+			{
+				HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, unAdminLinkFile );
+				unAdminLink = linkHtmlObj.createHtmlString( unAdminLinkVM, req );
+			}
+			
 		}
 		return unAdminLink ;
 	} // End CreateAdminHtml
