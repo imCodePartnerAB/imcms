@@ -198,6 +198,9 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		if (null != attributes.getProperty("sendsessionid")) {
 		    urlConnection.setRequestProperty("Cookie","JSESSIONID="+sessionId) ;
 		}
+		if (null != attributes.getProperty("sendmetaid")) {
+		    urlConnection.setRequestProperty("X-Meta-Id",""+document.getMetaId()) ;
+		}
 		InputStreamReader urlInput = new InputStreamReader(urlConnection.getInputStream()) ;
 		int charsRead = -1 ;
 		final int URL_BUFFER_LEN = 16384 ;
