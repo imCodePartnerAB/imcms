@@ -1,6 +1,7 @@
 .cvsignore
 install/**
 lib/*.jar
+lib/noinstall/*.jar
 server/**
 servlets/**/*.java
 server/**/*.java
