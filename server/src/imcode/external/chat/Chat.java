@@ -69,11 +69,18 @@ public class Chat
 		
 		for(int i=0;i<groups.size();i+=2)
 		{
+		/*	String temp = (String)groups.get(i+1);
+			
 			//create group
-			ChatGroup tempGroup = new ChatGroup( ((Integer)groups.get(i)).intValue(),(String)groups.get(i+1) );
+			ChatGroup tempGroup = new ChatGroup( Integer.parseInt( temp  ) , temp );
 			_roomCounter.increment();
 			//add group to grouplist
-			_chatGroups.put( (Integer)groups.get(i) ,tempGroup );
+			_chatGroups.put( (Integer)groups.get(i) ,tempGroup );*/
+			
+			ChatGroup temp = (ChatGroup)groups.get(i);
+			int groupId = temp.getGroupId();
+			Integer grId = new Integer(groupId);
+			_chatGroups.put( grId ,temp );
 			
 		}
 		
@@ -174,6 +181,11 @@ public class Chat
 	{
 		String groupNumberString = String.valueOf(groupNumber);
 		return (ChatGroup) _chatGroups.get(groupNumberString);	
+	}
+	
+	public String toString()
+	{
+		return "ChatId: " + _chatId + " ChatName: " + _name;
 	}
 
 
