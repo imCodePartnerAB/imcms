@@ -2146,7 +2146,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     public PollHandlingSystem getPollHandlingSystem() {
-        return new PollHandlingSystemImpl( this );
+        return new PollHandlingSystemImpl( this, m_databaseService );
     }
 
     public ShoppingOrderSystem getShoppingOrderSystem() {

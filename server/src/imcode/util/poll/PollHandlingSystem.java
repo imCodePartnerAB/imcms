@@ -33,7 +33,7 @@ public interface PollHandlingSystem {
 				@email_subject int ,
 				@result_template int
 	*/
-	public String[] getPollParameters(String meta_id);
+	public imcode.server.db.DatabaseService.Table_polls getPollParameters(int meta_id);
 
 	/**
 		Get all questions for a poll
@@ -87,6 +87,6 @@ public interface PollHandlingSystem {
 			@email_subject int
 			@result_template int 
 	*/
-	public String[][] getAllPolls();
+	public imcode.server.db.DatabaseService.Table_polls[] getAllPolls();
 
 }

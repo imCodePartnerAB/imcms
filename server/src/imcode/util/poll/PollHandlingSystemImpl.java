@@ -4,6 +4,7 @@ import java.util.* ;
 import java.text.* ;
 
 import imcode.server.* ;
+import imcode.server.db.DatabaseService;
 
 import org.apache.log4j.* ;
 
@@ -12,9 +13,11 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
     private IMCServiceInterface imcref ;
 
     private static Logger log = Logger.getLogger( PollHandlingSystemImpl.class.getName() ) ;
+    private DatabaseService databaseService;
 
-    public PollHandlingSystemImpl(IMCServiceInterface imcref) {
-	this.imcref = imcref ;
+    public PollHandlingSystemImpl(IMCServiceInterface imcref, DatabaseService databaseService ) {
+    	this.imcref = imcref ;
+        this.databaseService = databaseService ;
     }
 
 
@@ -210,9 +213,8 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 				@email_subject int ,
 				@result_template int
 	*/
-	public String[] getPollParameters(String meta_id){
-		String[] poll_data = imcref.sqlProcedure( "Poll_GetOne ", new String[] { meta_id } ) ; 
-		return poll_data;
+	public DatabaseService.Table_polls getPollParameters(int meta_id){
+		return databaseService.sproc_Poll_GetOne( meta_id ) ;
 	}
 	
 	/**
@@ -278,8 +280,9 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 			@email_subject int
 			@result_template int 
 	*/
-	public String[][] getAllPolls(){
-		return imcref.sqlProcedureMulti( "Poll_GetAll ", new String[] {} );
+	public DatabaseService.Table_polls[] getAllPolls(){
+		DatabaseService.Table_polls[] polls = databaseService.sproc_Poll_GetAll() ;
+        return polls ;
 	}
 
 }

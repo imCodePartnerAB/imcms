@@ -2806,8 +2806,8 @@ public abstract class DatabaseService {
         int id;
         int name;
         int description;
-        int meta_id;
-        int popup_freq;
+        public int meta_id;
+        public int popup_freq;
         int set_cookie;
         int hide_result;
         int confirmation_text;
@@ -2923,7 +2923,7 @@ public abstract class DatabaseService {
     /*
     * Get all data for a poll by meta_id
     */
-    Table_polls sproc_Poll_GetOne( int meta_id ) {
+    public Table_polls sproc_Poll_GetOne( int meta_id ) {
         String sql = "SELECT id, name, description, meta_id, popup_freq, set_cookie, hide_result, confirmation_text, email_recipients, result_template FROM polls WHERE meta_id = ? ";
         Object[] paramValues = new Object[]{ new Integer( meta_id ) };
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {

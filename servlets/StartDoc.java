@@ -7,6 +7,7 @@ import java.rmi.* ;
 import imcode.util.* ;
 import imcode.util.poll.* ;
 import imcode.server.* ;
+import imcode.server.db.DatabaseService;
 import imcode.server.user.UserDomainObject;
 
 /**
@@ -148,23 +149,20 @@ public class StartDoc extends HttpServlet {
 		}
 		
 		// check if we have to push out a popup window to the client
-		// one reason to do so is if we have a poll with a frequence variable > 0  
+		// one reason to do so is if we have a pollSystem with a frequence variable > 0
 		
 		// Get a new PollHandlingSystem 
-		PollHandlingSystem poll = imcref.getPollHandlingSystem();
+		PollHandlingSystem pollSystem = imcref.getPollHandlingSystem();
 		
-		// Get all meta_id that have a poll included
+		// Get all meta_id that have a pollSystem included
 		HttpSession session = req.getSession( true );
-		String[][] polls = poll.getAllPolls();
+		DatabaseService.Table_polls[] polls = pollSystem.getAllPolls();
 		for ( int i=0; polls != null && i < polls.length; i++){ 
-			//Get PollParameters from db
-			String[] poll_param = poll.getPollParameters(polls[i][3]); 
-			int set_cookie = Integer.parseInt( poll_param[5] );
-			int popupFrequency = Integer.parseInt( poll_param[4] ); 
+			int popupFrequency = polls[i].popup_freq ;
 			int sessionCounter = imcref.getSessionCounter() ;
 			
 			if (popupFrequency > 0 && sessionCounter % popupFrequency == 0) {
-			    session.setAttribute("open poll popup", polls[i][3]) ;
+			    session.setAttribute("open pollSystem popup", ""+polls[i].meta_id) ;
 			}
 		}
     }
