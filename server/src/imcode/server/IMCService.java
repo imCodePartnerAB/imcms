@@ -603,14 +603,20 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    String admin_start = "" ;
 	    String admin_stop = "" ;
 	    if ( menumode ) {
+		String sortBox = "<input type=\"text\" name=\""+child_meta_id+"\" value=\""+child_manual_sort_order+"\" size=\"4\" maxlength=\"4\">" ;
+		String archiveDelBox = "<input type=\"checkbox\" name=\"archiveDelBox\" value=\""+child_meta_id+"\">" ;
+
+		props.setProperty("#sortBox#",sortBox) ;
+		props.setProperty("#archiveDelBox#",archiveDelBox) ;
+
 		if ( "0".equals(child_admin) ) {
 		    admin_stop+="&nbsp;<a href=\"AdminDoc?meta_id="+child_meta_id+"\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>" ;
 		}
 
 		if (sort_order == 2) {
-		    admin_start += "<input type=\"text\" name=\""+child_meta_id+"\" value=\""+child_manual_sort_order+"\" size=\"4\" maxlength=\"4\">" ;
+		    admin_start += sortBox ;
 		}
-		admin_start += "<input type=\"checkbox\" name=\"archiveDelBox\" value=\""+child_meta_id+"\">" ;
+		admin_start += archiveDelBox ;
 
 	    }
 
@@ -628,9 +634,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    }
 
 	    //props.setProperty("#adminStart#",admin_start) ;
-	    //props.setProperty("#adminStop#",admin_stop) ;
-	    props.setProperty("#sortBox#","") ;
-	    props.setProperty("#archiveDelBox#","") ;
+	    props.setProperty("#adminStop#",admin_stop) ;
 	    //props.setProperty("#to_meta_id#",to_meta_id) ;
 	    //props.setProperty("#manual_sort_order#",child_manual_sort_order) ;
 	    if ( "_other".equals(child_target) ) {
@@ -1200,26 +1204,26 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	// Now we need to check if it starts with <tr> or <td>
 	// and do something about it.
 	// These patterns are supposed to match <(/)tr whatever> and <(/)td whatever> at end and beginning of the string.
-	String trstart = "<tr>" ;   // Html-tag for start of tablerow (menurow)
-	String trstop = "</tr>" ;   // Html-tag for end of tablerow (menurow)
-	String tdstart = "<td valign=\"top\">" ;    // Html-tag for start of table-cell (menuelement)
-	String tdstop = "</td>" ;   // Html-tag for end of table-cell (menuelement)
+	String trstart = "\r\n<!-- tr --><tr>" ;   // Html-tag for start of tablerow (menurow)
+	String trstop = "</tr><!-- /tr -->\r\n" ;   // Html-tag for end of tablerow (menurow)
+	String tdstart = "\r\n<!-- td --><td valign=\"top\">" ;    // Html-tag for start of table-cell (menuelement)
+	String tdstop = "</td><!-- /td -->\r\n" ;   // Html-tag for end of table-cell (menuelement)
 
 	/** Added 010212 **/
 	if ( patMat.contains(menurowstr,TR_START_PATTERN) ) {
-	    trstart = patMat.getMatch().group(1) ;
+	    trstart = "\r\n<!-- t tr -->"+patMat.getMatch().group(1) ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TR_START_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 	if ( patMat.contains(menurowstr,TR_STOP_PATTERN) ) {
-	    trstop = patMat.getMatch().group(1) ;
+	    trstop = patMat.getMatch().group(1) + "<!-- t /tr -->\r\n" ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TR_STOP_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 	if ( patMat.contains(menurowstr,TD_START_PATTERN) ) {
-	    tdstart = patMat.getMatch().group(1) ;
+	    tdstart = "\r\n<!-- t td -->"+patMat.getMatch().group(1) ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TD_START_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 	if ( patMat.contains(menurowstr,TD_STOP_PATTERN) ) {
-	    tdstop = patMat.getMatch().group(1) ;
+	    tdstop = patMat.getMatch().group(1)+"<!-- t /td -->\r\n" ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TD_STOP_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 
@@ -1247,22 +1251,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
 	    mapsubstitution.setMap(props, true) ;
 	    String menurow = org.apache.oro.text.regex.Util.substitute(patMat,HASHTAG_PATTERN,mapsubstitution,menurowstr,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
-	    /*
-	    Enumeration propenum = props.propertyNames() ;
-	    while ( propenum.hasMoreElements() ) {		// While we have more menutags to replace...
-	    String tag = (String)propenum.nextElement() ;	// Retrieve tag.
-	    int tagindex = 0 ;
-	    String tagdata = props.getProperty(tag) ;	// Retrieve data for tag.
-	    if ( tagdata == null ) {
-	    tagdata = "" ;
-	    }
-	    
-	    while ( (tagindex = menurow.toString().indexOf(tag,tagindex))!=-1 ) {	// Find all instances of tag
-	    menurow.replace(tagindex,tagindex+tag.length(),tagdata) ;	// And replace them
-	    }
-	    
-	    }
-	*/
+
 	    menubuff.append(menurow+tdstop) ;    // OK... one row done. Append it to the menubuffer and end the cell.
 	    ++rowcount ;    // And, of course... increase the rowcount.
 	    if ( rowcount%menu_param[2]==0 ) {	// If next row is a new tablerow...
@@ -1272,7 +1261,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	String menubuff_str = menubuff.toString() ;
 
 	if (menumode) {
-	    menubuff_str = "<tr><td>"+getMenuModePrefix(patMat,menu_param[0],tags)+"</td></tr>"+menubuff_str+"<tr><td>"+getMenuModeSuffix(tags)+"</td></tr>" ;
+	    menubuff_str = "<tr><td>"+getMenuModePrefix(patMat,menu_param[0],tags)+"</td></tr><!-- menu -->"+menubuff_str+"<!-- /menu --><tr><td>"+getMenuModeSuffix(tags)+"</td></tr>" ;
 	}
 	// Yay! One menu done. Insert into the pagebuffer...
 	sb.replace( menurowsindex, sbindex,menubuff_str) ;
