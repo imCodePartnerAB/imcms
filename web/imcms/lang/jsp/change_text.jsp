@@ -46,7 +46,7 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><input type="SUBMIT" value="Back" name="cancel" class="imcmsFormBtn"></td><%
+		<td><input type="SUBMIT" value="<? global/back ?>" name="cancel" class="imcmsFormBtn"></td><%
 		if (isHtmlAreaSupported && showModeEditor) { %>
 		<td style="color:#ffffff;" nowrap><span id="editorOpenText" style="display:none">&nbsp; &nbsp; <? install/htdocs/sv/htmleditor/editor/editor.jsp/3000 ?> &nbsp;</span></td>
 		<td><span id="editorOpenBtn" style="display:none"><%
