@@ -24,7 +24,7 @@ public abstract class ContentManagementSystem {
         ImcmsServices imcref;
         imcref = Imcms.getServices();
         UserDomainObject user = imcref.verifyUser( userName, password );
-        ContentManagementSystem cms = new DefaultContentManagementSystem( imcref, user );
+        ContentManagementSystem cms = DefaultContentManagementSystem.create( imcref, user );
         return cms;
     }
 

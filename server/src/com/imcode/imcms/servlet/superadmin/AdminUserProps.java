@@ -782,7 +782,7 @@ public class AdminUserProps extends Administrator {
         }
 
         userFromRequest.setId(userFromDatabase.getId()) ;
-        imcmsAuthenticatorAndUserAndRoleMapperAndRole.updateUser( userFromRequest );
+        imcmsAuthenticatorAndUserAndRoleMapperAndRole.saveUser( userFromRequest, user );
 
         this.goNext( req, res, session );
     }
@@ -847,7 +847,7 @@ public class AdminUserProps extends Administrator {
             }
         }
 
-        imcmsAuthenticatorAndUserAndRoleMapperAndRole.addUser( userFromRequest );
+        imcmsAuthenticatorAndUserAndRoleMapperAndRole.addUser( userFromRequest, user );
 
         if ( useradminRoleIsSelected ) {
             // Lets get the useradmin_roles from htmlpage

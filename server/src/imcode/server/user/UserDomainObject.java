@@ -42,7 +42,13 @@ public class UserDomainObject extends Hashtable {
     private String faxPhone = "";
     private String otherPhone = "";
 
-    private Set roles = new HashSet();
+    Set roles = new HashSet();
+
+    public Object clone() {
+        UserDomainObject clone = (UserDomainObject)super.clone() ;
+        clone.roles = new HashSet( roles ) ;
+        return clone ;
+    }
 
     /**
      * FIXME - Kludge to get context path into template methods *

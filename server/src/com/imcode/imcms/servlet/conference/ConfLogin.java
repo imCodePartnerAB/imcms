@@ -319,13 +319,11 @@ public class ConfLogin extends Conference {
             newUser.setWorkPhone(userParams.getProperty( "phone" ));
 
             // Add new user to db
-            UserMapper userRegistry = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
-            userRegistry.addUser( newUser );
+            UserMapper userMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
+            userMapper.addUser( newUser, user );
 
             // Ok, Lets add the users roles into db, first get the role his in the system with
-            String userId = "" + user.getId();
-
-            String[] usersRoles = imcref.sqlProcedure( "GetUserRolesIDs", new String[]{userId} );
+            String[] usersRoles = imcref.sqlProcedure( "GetUserRolesIDs", new String[]{"" + user.getId()} );
 
             if ( usersRoles != null ) {
                 for ( int i = 0; i < usersRoles.length; i += 2 ) {

@@ -1,0 +1,130 @@
+package com.imcode.imcms.api;
+
+import imcode.server.ImcmsServices;
+import imcode.server.MockImcmsServices;
+import imcode.server.user.UserDomainObject;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import junit.framework.TestCase;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.ArrayUtils;
+
+import java.util.regex.Pattern;
+
+public class TestUserService extends TestCase {
+
+    private UserService userService ;
+    private MockContentManagementSystem contentManagementSystem;
+    private MockImcmsServices mockImcmsServices;
+
+    protected void setUp() throws Exception {
+        super.setUp();
+        contentManagementSystem = new MockContentManagementSystem();
+        mockImcmsServices = new MockImcmsServices();
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( mockImcmsServices );
+        mockImcmsServices.setImcmsAuthenticatorAndUserAndRoleMapper( imcmsAuthenticatorAndUserAndRoleMapper );
+        contentManagementSystem.setInternal(mockImcmsServices) ;
+        userService = new UserService(contentManagementSystem);
+    }
+
+    public void testUserCanEditSelf() throws SaveException, NoPermissionException {
+        User user = contentManagementSystem.getCurrentUser() ;
+
+        assertEquals( "firstName", user.getFirstName() );
+        user.setFirstName( "testuser" );
+        userService.saveUser( user );
+        assertTrue( "User can update contents of users table.", containsSqlCall( new UpdateTableSqlCallPredicate( "users", "testuser" ) )) ;
+        assertFalse( "First name changed.", containsSqlCall( new UpdateTableSqlCallPredicate( "users", "firstName" ) ) );
+        assertFalse( "User can not change own roles.", containsSqlCall( new SqlCallStringPredicate( "role" ) ) );
+    }
+
+    private boolean containsSqlCall( Predicate predicate ) {
+        return CollectionUtils.exists( mockImcmsServices.getSqlCalls(), predicate);
+    }
+
+    private static class MockContentManagementSystem extends ContentManagementSystem {
+
+        private ImcmsServices imcmsServices;
+
+        SecurityChecker getSecurityChecker() {
+            return new SecurityChecker( this );
+        }
+
+        public UserService getUserService() {
+            return null;  // TODO
+        }
+
+        public DocumentService getDocumentService() {
+            return null;  // TODO
+        }
+
+        public User getCurrentUser() {
+            UserDomainObject user = new UserDomainObject() ;
+            user.setId(3) ;
+            user.setLoginName( "loginName" );
+            user.setFirstName( "firstName" );
+            user.setLastName( "lastName" );
+            return new User( user);
+        }
+
+        public DatabaseService getDatabaseService() {
+            return null;  // TODO
+        }
+
+        public TemplateService getTemplateService() {
+            return null;  // TODO
+        }
+
+        public MailService getMailService() {
+            return null;  // TODO
+        }
+
+        ImcmsServices getInternal() {
+            return imcmsServices ;
+        }
+
+        public void setInternal(ImcmsServices imcmsServices) {
+            this.imcmsServices = imcmsServices ;
+        }
+    }
+
+    private abstract static class SqlCallPredicate implements Predicate {
+
+        public boolean evaluate( Object object ) {
+            return evaluateSqlCall((MockImcmsServices.SqlCall)object) ;
+        }
+
+        abstract boolean evaluateSqlCall( MockImcmsServices.SqlCall sqlCall ) ;
+
+    }
+
+    private static class UpdateTableSqlCallPredicate extends SqlCallPredicate {
+
+        private String tableName;
+        private String parameter;
+
+        UpdateTableSqlCallPredicate( String tableName, String parameter ) {
+            this.tableName = tableName;
+            this.parameter = parameter;
+        }
+
+        boolean evaluateSqlCall( MockImcmsServices.SqlCall sqlCall ) {
+            boolean stringMatchesUpdateTableName = Pattern.compile( "^update\\s+" + Pattern.quote( tableName ) ).matcher( sqlCall.getString().toLowerCase() ).find();
+            boolean parametersContainsParameter = ArrayUtils.contains( sqlCall.getParameters(), parameter );
+            return stringMatchesUpdateTableName && parametersContainsParameter;
+        }
+    }
+
+    private static class SqlCallStringPredicate extends SqlCallPredicate {
+
+        private String string;
+
+        SqlCallStringPredicate( String string ) {
+            this.string = string;
+        }
+
+        boolean evaluateSqlCall( MockImcmsServices.SqlCall sqlCall ) {
+            return Pattern.compile( Pattern.quote( string ) ).matcher( sqlCall.getString().toLowerCase() ).find();
+        }
+    }
+}

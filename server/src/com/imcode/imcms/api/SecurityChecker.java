@@ -49,4 +49,9 @@ class SecurityChecker {
         }
     }
 
+    void isNotDefaultUser() throws NoPermissionException {
+        if (getCurrentUser().getInternal().isDefaultUser()) {
+            throw new NoPermissionException( "Can't be the default user." );
+        }
+    }
 }

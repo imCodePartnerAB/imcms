@@ -2,7 +2,7 @@ package imcode.server.user;
 
 public interface UserMapper {
 
-    void addUser( UserDomainObject newUser );
+    void addUser( UserDomainObject user, UserDomainObject currentUser );
 
     void initUserRoles( UserDomainObject user );
 

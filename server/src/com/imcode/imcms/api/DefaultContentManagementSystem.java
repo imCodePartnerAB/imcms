@@ -1,7 +1,7 @@
 package com.imcode.imcms.api;
 
-import imcode.server.ImcmsServices;
 import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 
 public class DefaultContentManagementSystem extends ContentManagementSystem {
@@ -11,23 +11,28 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
     private TemplateService templateService;
     private DatabaseService databaseService;
     private MailService mailService;
-    private User currentUser;
+    private UserDomainObject currentUser;
     protected ImcmsServices service;
     protected SecurityChecker securityChecker;
 
     public DefaultContentManagementSystem( ImcmsServices service, UserDomainObject accessor ) {
         this.service = service ;
-        init( accessor );
+        currentUser = accessor;
     }
 
-    private void init( UserDomainObject accessor ) {
+    static DefaultContentManagementSystem create( ImcmsServices service, UserDomainObject accessor ) {
+        DefaultContentManagementSystem contentManagementSystem = DefaultContentManagementSystem.create( service, accessor );
+        contentManagementSystem.init();
+        return contentManagementSystem ;
+    }
+
+    private void init() {
         securityChecker = new SecurityChecker( this );
-        currentUser = new User( accessor );
         userService = new UserService( this );
         documentService = new DocumentService( this ) ;
         templateService = new TemplateService( this );
         databaseService = new DatabaseService( Imcms.getApiConnectionPool() );
-        mailService = new MailService(service.getSMTP()) ;
+        mailService = new MailService(this.service.getSMTP()) ;
     }
 
     public UserService getUserService(){
@@ -39,7 +44,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
     }
 
     public User getCurrentUser() {
-        return currentUser;
+        return new User((UserDomainObject)currentUser.clone()) ;
     }
 
     public DatabaseService getDatabaseService() {

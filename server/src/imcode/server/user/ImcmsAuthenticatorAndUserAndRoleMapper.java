@@ -160,14 +160,14 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         return service.sqlQuery( sqlStr, new String[]{"" + userId} );
     }
 
-    public void updateUser( String loginName, UserDomainObject tempUser ) {
+    public void saveUser( String loginName, UserDomainObject tempUser, UserDomainObject currentUser ) {
         UserDomainObject imcmsUser = getUser( loginName );
         tempUser.setId( imcmsUser.getId() );
         tempUser.setLoginName( loginName );
-        updateUser( tempUser );
+        saveUser( tempUser, currentUser );
     }
 
-    public void updateUser( UserDomainObject user ) {
+    public void saveUser( UserDomainObject user, UserDomainObject currentUser ) {
         String[] params = {
             user.getLoginName(),
             null == user.getPassword() ? "" : user.getPassword(),
@@ -204,12 +204,14 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
                                 + "language = ?\n"
                                 + "WHERE user_id = ?", params );
 
-        sqlUpdateUserRoles( user );
+        if (!user.equals( currentUser )) {
+            sqlUpdateUserRoles( user );
+        }
         removePhoneNumbers( user );
         addPhoneNumbers( user );
     }
 
-    public synchronized void addUser( UserDomainObject user ) {
+    public synchronized void addUser( UserDomainObject user, UserDomainObject currentUser ) {
         String newUserId = service.sqlProcedureStr( SPROC_GET_HIGHEST_USER_ID, new String[]{} );
         int newIntUserId = Integer.parseInt( newUserId );
         user.setId( newIntUserId );
@@ -231,6 +233,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
                                     user.isImcmsExternal() ? "1" : "0", user.isActive() ? "1" : "0",
                                     user.getLanguageIso639_2()
                                 }) ;
+        if (!user.equals( currentUser )) {
+            sqlAddRolesToUser( user.getRoles(), user );
+        }
         addPhoneNumbers( user );
     }
 
@@ -505,14 +510,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     private void saveExistingRole( RoleDomainObject role ) {
         int unionOfRolePermissionIds = getUnionOfRolePermissionIds( role );
         service.sqlUpdateQuery( "UPDATE roles SET role_name = ?, permissions = ? WHERE role_id = ?", new String[] { role.getName(), ""+unionOfRolePermissionIds, ""+role.getId() } ) ;
-    }
-
-    public void saveUser( UserDomainObject user ) {
-        if (0 == user.getId()) {
-            addUser(user) ;
-        } else {
-            updateUser(user) ;
-        }
     }
 
     public String[][] getUserPhoneNumbers( int userToChangeId ) {

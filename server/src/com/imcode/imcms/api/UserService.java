@@ -168,9 +168,15 @@ public class UserService {
         if (null == user) {
             return ;
         }
-        getSecurityChecker().isSuperAdmin();
+        getSecurityChecker().isSuperAdminOrSameUser(user);
+        getSecurityChecker().isNotDefaultUser();
         try {
-            getMapper().saveUser(user.getInternal()) ;
+            ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = getMapper();
+            if (0 == user.getId()) {
+                imcmsAuthenticatorAndUserAndRoleMapper.addUser(user.getInternal(), contentManagementSystem.getCurrentUser().getInternal()) ;
+            } else {
+                imcmsAuthenticatorAndUserAndRoleMapper.saveUser(user.getInternal(), contentManagementSystem.getCurrentUser().getInternal() );
+            }
         } catch ( IntegrityConstraintViolationSQLException icvse ) {
             throw new UserAlreadyExistsException( "A user with the login name \""+user.getLoginName()+"\" already exists." ) ;
         }
