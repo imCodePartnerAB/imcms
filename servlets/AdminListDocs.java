@@ -16,7 +16,7 @@ import imcode.server.ApplicationServer;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 import imcode.util.Utility;
-import imcode.util.DateHelper;
+import imcode.util.DateConstants;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -262,7 +262,7 @@ public class AdminListDocs extends Administrator {
     private boolean isDateInRightFormat( String date ) {
 
         // Format the current time.
-        SimpleDateFormat formatter = new SimpleDateFormat( DateHelper.DATE_FORMAT_STRING );
+        SimpleDateFormat formatter = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
 
         try {
             formatter.parse( date );

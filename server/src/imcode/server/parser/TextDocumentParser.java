@@ -6,7 +6,7 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.document.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
-import imcode.util.DateHelper;
+import imcode.util.DateConstants;
 import imcode.util.FileCache;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -244,7 +244,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             HashMap menus = new HashMap();	// Map to contain all the menus on the page.
             Menu currentMenu = null;
             int old_menu = -1;
-            SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateHelper.DATETIME_SECONDS_FORMAT_STRING );
+            SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
 
             Iterator childIt = Arrays.asList( childs ).iterator();
 

@@ -7,7 +7,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 import imcode.server.user.UserDomainObject;
-import imcode.util.DateHelper;
+import imcode.util.DateConstants;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.text.Format;
 import java.text.DateFormat;
 import java.util.*;
 
@@ -113,7 +112,7 @@ public class SaveNewMeta extends HttpServlet {
         String activated_time = req.getParameter( "activated_time" );
         String activated_datetime;
 
-        final DateFormat dateFormat = new SimpleDateFormat( DateHelper.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING );
+        final DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING );
         if( activated_date != null && activated_time != null ) {
             activated_datetime = activated_date + ' ' + ("".equals(activated_time) ? "00:00" : activated_time);
             try {
@@ -214,10 +213,14 @@ public class SaveNewMeta extends HttpServlet {
             }
 
             // Lets update the parents created_date
-
             String dateModifiedStr = metaprops.getProperty( "date_modified" );
+            Date dateModified = null;
+            try {
+                dateModified = dateFormat.parse( dateModifiedStr );
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
-            Date dateModified = DateHelper.createDateObjectFromString( dateModifiedStr );
             DocumentMapper.sqlUpdateModifiedDate( imcref, parentMetaId, dateModified );
 
             //lets log to mainLog the stuff done

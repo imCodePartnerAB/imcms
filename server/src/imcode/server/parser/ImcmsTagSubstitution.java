@@ -6,7 +6,7 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.LanguageMapper;
 import imcode.server.document.*;
 import imcode.server.user.UserDomainObject;
-import imcode.util.DateHelper;
+import imcode.util.DateConstants;
 import imcode.util.FileCache;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -499,7 +499,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
      **/
     public String tagDatetime( Properties attributes ) {
-        String format = attributes.getProperty( "format" ) == null ? DateHelper.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING : attributes.getProperty( "format" );
+        String format = attributes.getProperty( "format" ) == null ? DateConstants.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING : attributes.getProperty( "format" );
         String type = attributes.getProperty( "type" );
         String lang = attributes.getProperty( "lang" );
 

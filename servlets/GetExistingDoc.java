@@ -7,7 +7,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentIndex;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
-import imcode.util.DateHelper;
+import imcode.util.DateConstants;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -102,7 +102,7 @@ public class GetExistingDoc extends HttpServlet {
             String docTypes[] = req.getParameterValues( "doc_type" );
             addDocTypesToQuery( docTypes, query );
 
-            DateFormat dateFormat = new SimpleDateFormat( DateHelper.DATE_FORMAT_STRING );
+            DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
             Date startDate = null;
             Date endDate = null;
             try {
@@ -452,7 +452,7 @@ public class GetExistingDoc extends HttpServlet {
         for ( int i = 0; i < searchResultDocuments.length; i++ ) {
             DocumentDomainObject document = searchResultDocuments[i];
 
-            DateFormat dateFormat = new SimpleDateFormat( DateHelper.DATETIME_SECONDS_FORMAT_STRING );
+            DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
             String[] data = {
                 "#meta_id#", String.valueOf( document.getMetaId() ),
                 "#doc_type#", (String)docTypesHash.get( "" + document.getDocumentType() ),

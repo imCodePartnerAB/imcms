@@ -8,7 +8,7 @@ import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.DateHelper;
+import imcode.util.DateConstants;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -793,13 +793,13 @@ public class DocumentMapper {
     }
 
     public static void sqlUpdateModifiedDate( IMCServiceInterface service, int meta_id, Date date ) {
-        String dateModifiedStr = new SimpleDateFormat( DateHelper.DATETIME_SECONDS_FORMAT_STRING ).format( date );
+        String dateModifiedStr = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING ).format( date );
         service.sqlUpdateQuery( "update meta set date_modified = ? where meta_id = ?",
                                 new String[]{dateModifiedStr, "" + meta_id} );
     }
 
     public void sqlUpdateModifiedDatesOnDocumentAndItsParent( int meta_id, Date dateTime ) {
-        String modifiedDateTimeStr = new SimpleDateFormat( DateHelper.DATETIME_SECONDS_FORMAT_STRING ).format( dateTime );
+        String modifiedDateTimeStr = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING ).format( dateTime );
         service.sqlUpdateQuery( "update meta set date_modified = ? where meta_id = ?",
                                 new String[]{modifiedDateTimeStr, "" + meta_id} );
         // Update the date_modified for all parents.
@@ -910,7 +910,7 @@ public class DocumentMapper {
 
     private static void makeDateSQL( String columnName, Date date, List sqlUpdateColumns, List sqlUpdateValues ) {
         if ( null != date ) {
-            String dateStr = new SimpleDateFormat( DateHelper.DATETIME_SECONDS_FORMAT_STRING ).format( date );
+            String dateStr = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING ).format( date );
             makeStringSQL( columnName, dateStr, sqlUpdateColumns, sqlUpdateValues );
         } else {
             makeStringSQL( columnName, null, sqlUpdateColumns, sqlUpdateValues );
@@ -1013,7 +1013,7 @@ public class DocumentMapper {
         document.setCreator( imcmsAAUM.getUser( Integer.parseInt( result[6] ) ) );
         document.setArchivedFlag( "0".equals( result[12] ) ? false : true );
         document.setLanguageIso639_2( LanguageMapper.getAsIso639_2OrDefaultLanguage( result[14], service ) );
-        DateFormat dateFormat = new SimpleDateFormat( DateHelper.DATETIME_SECONDS_FORMAT_STRING );
+        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
         document.setCreatedDatetime( parseDateFormat( dateFormat, result[16] ) );
         document.setModifiedDatetime( parseDateFormat( dateFormat, result[17] ) );
         document.setSearchDisabled( "0".equals( result[20] ) ? false : true );
@@ -1094,7 +1094,7 @@ public class DocumentMapper {
     }
 
     private void sqlUpdateCreatedDate( int metaId, Date dateTime ) {
-        String dateTimeStr = new SimpleDateFormat( DateHelper.DATETIME_SECONDS_FORMAT_STRING ).format( dateTime );
+        String dateTimeStr = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING ).format( dateTime );
         service.sqlUpdateQuery( "update meta set date_created = ? where meta_id = ?",
                                 new String[]{dateTimeStr, "" + metaId} );
     }

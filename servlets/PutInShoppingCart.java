@@ -16,7 +16,7 @@ import imcode.util.net.SMTP;
 
 import imcode.server.parser.* ;
 import imcode.server.* ;
-import imcode.util.DateHelper;
+import imcode.util.DateConstants;
 import imcode.server.user.UserDomainObject;
 
 public class PutInShoppingCart extends HttpServlet {
@@ -292,7 +292,7 @@ public class PutInShoppingCart extends HttpServlet {
 	    mailItems.append(mailItem) ;
 	}
 
-	DateFormat dateFormat = new SimpleDateFormat( DateHelper.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING );
+	DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING );
 
 	HashMap mailStringMap = new HashMap() ;
 	mailStringMap.put("#items#",               mailItems.toString()) ;

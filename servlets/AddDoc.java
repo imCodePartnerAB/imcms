@@ -7,7 +7,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.MetaDataParser;
 import imcode.util.Parser;
 import imcode.util.Utility;
-import imcode.util.DateHelper;
+import imcode.util.DateConstants;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -239,7 +239,7 @@ public class AddDoc extends HttpServlet {
         vec.add(sessionData.doc_menu_no);
 
         // Lets get todays date
-        SimpleDateFormat formatter = new SimpleDateFormat(DateHelper.DATE_FORMAT_STRING);
+        SimpleDateFormat formatter = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
         Date toDay = new Date();
         vec.add( "#start_date#" );
         vec.add( null );
