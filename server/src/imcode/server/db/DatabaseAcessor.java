@@ -2,20 +2,25 @@ package imcode.server.db;
 
 import java.sql.*;
 import java.io.*;
-import java.util.StringTokenizer;
+import java.util.Vector;
+import java.util.Iterator;
 
 public class DatabaseAcessor {
 
-    private final static String FILE_PATH = "E:/backuppas/projekt/imcode2003/imCMS/1.3/sql/tables/";
+    private final static String FILE_PATH = "E:/backuppas/projekt/imcode2003/imCMS/1.3/sql/";
+    private static final char END_OF_COMMAND = ';';
 
     public static void main( String[] args ) throws Exception {
         DatabaseAcessor accessor = new DatabaseAcessor();
 
-        accessor.executeCommandsFromFile( SQL_SERVER, "drop.sql" );
-        accessor.executeCommandsFromFile( SQL_SERVER, "create.sql" );
+        accessor.executeCommandsFromFile( SQL_SERVER, "tables/drop.sql" );
+        accessor.executeCommandsFromFile( SQL_SERVER, "tables/create.sql" );
+        accessor.executeCommandsFromFile( SQL_SERVER, "data/types.new.sql" );
 
-        accessor.executeCommandsFromFile( MIMER, "drop.sql" );
-        accessor.executeCommandsFromFile( MIMER, "create.sql" );
+        accessor.executeCommandsFromFile( MIMER, "tables/drop.sql" );
+        accessor.executeCommandsFromFile( MIMER, "tables/create.sql" );
+        accessor.executeCommandsFromFile( MIMER, "data/types.new.sql" );
+
     }
 
     private final static int MIMER = 0;
@@ -28,17 +33,56 @@ public class DatabaseAcessor {
     private SQLProcessor sqlProcessor = new SQLProcessor();
 
     private void executeCommandsFromFile( int databaseServer, String fileName ) throws Exception {
-        Connection conn = getConnectionPool( databaseServer );
-        File sqlScriptingFile = new File( FILE_PATH + fileName );
-
-        String allFileContent = static_readFile( sqlScriptingFile );
+        Vector commands = readCommandsFromFile( fileName );
 
         if( databaseServer == SQL_SERVER ) {
-            allFileContent = static_changeSQLServerTimestampType( allFileContent );
+            commands = changeSQLSpecificDateTimeDataType( commands );
         }
-        String[] result = static_getAllCommands( allFileContent );
-        String[] dropCommands = result;
-        executeCommands( conn, dropCommands );
+
+        executeCommands( databaseServer, commands );
+    }
+
+    private Vector changeSQLSpecificDateTimeDataType( Vector commands ) {
+        Vector modifiedCommands = new Vector();
+        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
+            String command = (String)iterator.next();
+            String modifiedCommand = static_changeSQLServerTimestampType( command );
+            modifiedCommands.add( modifiedCommand );
+        }
+        return modifiedCommands;
+    }
+
+    private void executeCommands( int databaseServer, Vector commands ) throws Exception {
+        Connection conn = getConnectionPool( databaseServer );
+        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
+            String command = (String)iterator.next();
+            System.out.println( command.length() < 25 ? command : command.substring( 0, 25 ) );
+            sqlProcessor.executeUpdate( conn, command, null );
+        }
+    }
+
+    private Vector readCommandsFromFile( String fileName ) throws IOException {
+        File sqlScriptingFile = new File( FILE_PATH + fileName );
+
+        BufferedReader reader = new BufferedReader( new FileReader( sqlScriptingFile ) );
+        StringBuffer commandBuff = new StringBuffer();
+        Vector commands = new Vector();
+        String aLine;
+        do {
+            aLine = reader.readLine();
+            if( null != aLine && !aLine.equals( "" ) ) {
+                commandBuff.append( aLine );
+                int lastCharPos = aLine.length() - 1;
+                char endChar = aLine.charAt( lastCharPos );
+                if( END_OF_COMMAND == endChar ) {
+                    commandBuff.deleteCharAt( commandBuff.length() - 1 );
+                    String command = commandBuff.toString();
+                    commands.add( command );
+                    commandBuff.setLength( 0 );
+                }
+            }
+        } while( null != aLine );
+        return commands;
     }
 
     private Connection getConnectionPool( int databaseServer ) throws Exception {
@@ -68,43 +112,9 @@ public class DatabaseAcessor {
         return conn;
     }
 
-    private void executeCommands( Connection conn, String[] commands ) {
-        for( int i = 0; i < commands.length; i++ ) {
-            String command = commands[i];
-            System.out.println( command.length()<25?command:command.substring(0,25) );
-            sqlProcessor.executeUpdate( conn, command, null );
-        }
-    }
-
-    private static String static_changeSQLServerTimestampType( String createCommand ){
+    private static String static_changeSQLServerTimestampType( String createCommand ) {
         String result = createCommand.replaceAll( SQL92_TYPE_TIMESTAMP, SQL_SERVER_TIMESTAMP_TYPE );
         return result;
-    }
-
-    private static String[] static_getAllCommands( String allFileContent ) {
-        StringTokenizer tokenizer = new StringTokenizer( allFileContent, ";" );
-        String[] result = new String[tokenizer.countTokens()];
-        int i = 0;
-        while( tokenizer.hasMoreTokens() ) {
-            String temp = tokenizer.nextToken();
-            result[i] = temp;
-            i++;
-        }
-        return result;
-    }
-
-    private static String static_readFile( File sqlScriptingFile ) throws IOException {
-        BufferedReader reader = new BufferedReader( new FileReader( sqlScriptingFile ) );
-        String aLine;
-        StringBuffer allFileContent = new StringBuffer();
-        do {
-            aLine = reader.readLine();
-            if( null != aLine ) {
-                allFileContent.append( aLine );
-            }
-        } while( null != aLine );
-        reader.close();
-        return allFileContent.toString();
     }
 
     private static String static_getMimerUrl() {
