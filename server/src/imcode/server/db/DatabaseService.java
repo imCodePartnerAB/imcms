@@ -9,9 +9,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.Date;
 
 /**
  * STOP! Before changing anyting in this class, make sure to run (all) the test in class TestDatabaseService.
@@ -1915,9 +1914,9 @@ public abstract class DatabaseService {
         }
     }
 
-    private void insertInto_meta_section( SQLTransaction transaction, Table_meta_section tableData ) {
+    private void insertInto_meta_section( SQLTransaction transaction, int meta_id, int section_id ) {
         String sql = "INSERT INTO meta_section ( meta_id, section_id ) VALUES ( ?, ? )";
-        Object[] paramValues = new Object[]{new Integer( tableData.meta_id ), new Integer( tableData.section_id )};
+        Object[] paramValues = new Object[]{new Integer( meta_id ), new Integer( section_id )};
         transaction.executeUpdate( sql, paramValues );
     }
 
@@ -2021,8 +2020,9 @@ public abstract class DatabaseService {
 
                 Table_meta_section metaSectionToBeCopied = selectFrom_meta_section( meta_id );
                 if( null != metaSectionToBeCopied ) {
-                    metaSectionToBeCopied.meta_id = nextFreeMetaId.intValue();
-                    insertInto_meta_section( transaction, metaSectionToBeCopied );
+                    int meta_id = nextFreeMetaId.intValue();
+                    int section_id = metaSectionToBeCopied.section_id;
+                    insertInto_meta_section( transaction, meta_id, section_id );
                 }
             }
         } );
@@ -2433,11 +2433,9 @@ public abstract class DatabaseService {
         final SQLTransaction transaction = noTransactionSqlProcessor.createNewTransaction( Connection.TRANSACTION_SERIALIZABLE, defaultTransactionRetries );
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                Integer oldSectionId = new Integer( old_section_id );
-                Integer newSectionId = new Integer( new_section_id );
-                deleteFrom_section( transaction, oldSectionId );
+                deleteFrom_section( transaction, old_section_id );
                 String sql = "UPDATE meta_section SET section_id = ? WHERE section_id = ? ";
-                Object[] paramValues = new Object[]{newSectionId, oldSectionId};
+                Object[] paramValues = new Object[]{new Integer( new_section_id ), new Integer( old_section_id )};
                 transaction.executeUpdate( sql, paramValues );
             }
         } );
@@ -2490,31 +2488,30 @@ public abstract class DatabaseService {
         return ((Integer)queryResult.get( 0 )).intValue();
     }
 
-    public int sproc_SectionDelete( final int section_id ) {
+    public int sproc_SectionDelete( final int sectionId ) {
         final SQLTransaction transaction = noTransactionSqlProcessor.createNewTransaction( Connection.TRANSACTION_SERIALIZABLE, defaultTransactionRetries );
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                Integer sectionId = new Integer( section_id );
                 deleteFrom_section( transaction, sectionId );
             }
         } );
         return transaction.getRowCount();
     }
 
-    private void deleteFrom_section( SQLTransaction transaction, Integer sectionId ) {
+    private void deleteFrom_section( SQLTransaction transaction, int sectionId ) {
         deleteFrom_meta_section( transaction, sectionId );
         deleteFrom_sections( transaction, sectionId );
     }
 
-    private void deleteFrom_meta_section( SQLTransaction transaction, Integer sectionId ) {
+    private void deleteFrom_meta_section( SQLTransaction transaction, int sectionId ) {
         String sql = "DELETE FROM meta_section WHERE section_id = ? ";
-        Object[] paramValues = new Object[]{sectionId};
+        Object[] paramValues = new Object[]{ new Integer(sectionId) };
         transaction.executeUpdate( sql, paramValues );
     }
 
-    private void deleteFrom_sections( SQLTransaction transaction, Integer sectionId ) {
+    private void deleteFrom_sections( SQLTransaction transaction, int sectionId ) {
         String sql = "DELETE FROM sections WHERE section_id = ? ";
-        Object[] paramValues = new Object[]{sectionId};
+        Object[] paramValues = new Object[]{ new Integer(sectionId) };
         transaction.executeUpdate( sql, paramValues );
     }
 
@@ -2538,7 +2535,7 @@ public abstract class DatabaseService {
         final SQLTransaction transaction = noTransactionSqlProcessor.createNewTransaction( Connection.TRANSACTION_SERIALIZABLE, defaultTransactionRetries );
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                Table_section textDocsToBeCopied = selectFrom_section( transaction, new Integer( sectionData.section_id ) );
+                Table_section textDocsToBeCopied = selectFrom_section(  transaction, sectionData.section_id );
                 if( null == textDocsToBeCopied ) {
                     insertInto_sections( transaction, sectionData );
                 } else {
@@ -2549,9 +2546,9 @@ public abstract class DatabaseService {
         return transaction.getRowCount();
     }
 
-    private Table_section selectFrom_section( SQLTransaction transaction, Integer section_id ) throws SQLException {
+    public Table_section selectFrom_section( SQLTransaction transaction, int sectionId ) throws SQLException {
         String sql = "SELECT section_id, section_name FROM sections WHERE section_id = ? ";
-        Object[] paramValues = new Object[]{section_id};
+        Object[] paramValues = new Object[]{ new Integer(sectionId)};
         ArrayList queryResult = transaction.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
                 return new Table_section( rs );
@@ -2575,12 +2572,12 @@ public abstract class DatabaseService {
      * Lets insert the crossreferences but first we deleta all oldones for this meta_id
      * @return
      */
-    public int sproc_SectionAddCrossref( final Table_meta_section tableData ) {
+    public int sproc_SectionAddCrossref(  final int meta_id, final int section_id  ) {
         final SQLTransaction transaction = noTransactionSqlProcessor.createNewTransaction( Connection.TRANSACTION_SERIALIZABLE, defaultTransactionRetries );
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                deleteFrom_meta_section( transaction, new Integer( tableData.meta_id ) );
-                insertInto_meta_section( transaction, tableData );
+                deleteFrom_meta_section( transaction, meta_id );
+                insertInto_meta_section( transaction, meta_id, section_id );
             }
         } );
         return transaction.getRowCount();
@@ -3232,5 +3229,52 @@ public abstract class DatabaseService {
             }
         } );
         return ((Integer)queryResult.get( 0 )).intValue();
+    }
+
+    public int update_meta( final int meta_id, final Date activatedDatetime, final Date archivedDateTime, final Date createdDatetime, final String headline, final String image, final Date modifiedDateTime, final String target, final String text, final boolean isArchived ) {
+        final SQLTransaction transaction = noTransactionSqlProcessor.createNewTransaction( Connection.TRANSACTION_SERIALIZABLE, defaultTransactionRetries );
+        transaction.executeAndCommit( new TransactionContent() {
+            public void execute() throws SQLException {
+                String sql = "UPDATE meta SET activated_datetime = ?, archived_datetime = ?, date_created = ?, meta_headline = ?, meta_image = ?, date_modified = ?, target = ?, meta_text = ?, archive = ? WHERE meta_id = ?";
+
+                Object activatedTimeStamp = null;
+                if( null == activatedDatetime ) {
+                    activatedTimeStamp = new SQLTypeNull(Types.TIMESTAMP);
+                } else {
+                    activatedTimeStamp = new Timestamp(activatedDatetime.getTime());
+                }
+
+                Object archivedTimeStamp = null;
+                if( null == archivedDateTime ) {
+                    archivedTimeStamp = new SQLTypeNull(Types.TIMESTAMP);
+                } else {
+                    archivedTimeStamp = new Timestamp(archivedDateTime.getTime());
+                }
+
+                Object[] paramValues = new Object[]{ activatedTimeStamp,
+                                                     archivedTimeStamp,
+                                                     new Timestamp(createdDatetime.getTime()), headline, image,
+                                                     new Timestamp(modifiedDateTime.getTime()), target, text,
+                                                     new Boolean(isArchived), new Integer(meta_id) };
+                transaction.executeUpdate( sql, paramValues );
+            }
+        } );
+        return transaction.getRowCount();
+    }
+
+    public Integer selectFrom_section_getSectionIdFromSectionName( String section ) {
+        String sql = "SELECT section_id FROM sections WHERE section_name = ?";
+        Object[] paramValues = new Object[]{ section };
+        ArrayList queryResult = noTransactionSqlProcessor.executeQuery( sql, paramValues , new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                int section_id = rs.getInt( "section_id" );
+                return new Integer( section_id );
+            }
+        } );
+        if( queryResult.isEmpty() ) {
+            return null;
+        } else {
+            return (Integer)queryResult.get( 0 );
+        }
     }
 }

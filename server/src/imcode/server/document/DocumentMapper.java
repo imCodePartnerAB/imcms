@@ -2,25 +2,23 @@ package imcode.server.document;
 
 import imcode.server.*;
 import imcode.server.db.DatabaseService;
-import imcode.server.util.DateHelper;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class DocumentMapper {
     private Logger log = Logger.getLogger( DocumentMapper.class );
     private final IMCService service;
+    private final DatabaseService databaseService;
     private final ImcmsAuthenticatorAndUserMapper imcmsAAUM;
 
     public DocumentMapper( IMCService service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
         this.service = service;
+        this.databaseService = service.getDatabaseService();
         this.imcmsAAUM = imcmsAAUM;
     }
 
@@ -34,7 +32,6 @@ public class DocumentMapper {
                 throw new IndexOutOfBoundsException( "No such document: " + metaId );
             }
 
-            DateFormat dateform = new SimpleDateFormat( DateHelper.DATE_TIME_SECONDS_FORMAT_STRING );
             //ok lets set all the document stuff
             try {
                 document = new DocumentDomainObject();
@@ -242,8 +239,12 @@ public class DocumentMapper {
         String text = document.text;
         boolean archived = document.archived;
 
-        DatabaseAccessor.sqlUpdateMeta( service, document.getMetaId(), activatedDatetime, archivedDatetime, createdDatetime, headline, image, modifiedDatetime, target, text, archived );
-        static_updateSection( service, document, section );
+        databaseService.update_meta( document.getMetaId(), activatedDatetime, archivedDatetime, createdDatetime, headline, image, modifiedDatetime, target, text, archived);
+
+        if( null != section ) {
+            Integer sectionId = databaseService.selectFrom_section_getSectionIdFromSectionName( section );
+            databaseService.sproc_SectionAddCrossref( document.getMetaId(), sectionId.intValue() );
+        }
 
         // Restricted One and Two
         // todo: Save the restriction for a page.
@@ -275,11 +276,6 @@ public class DocumentMapper {
             }
         }
         return classification;
-    }
-
-    private static void static_updateSection( IMCService service, DocumentDomainObject document, String section ) {
-        int sectionId = DatabaseAccessor.sqlGetSectionId( service, section );
-        DatabaseAccessor.sprocSectionAddCrossref( service, document.getMetaId(), sectionId );
     }
 
     private void static_inheritSection( int from_parentId, int to_metaId ) {

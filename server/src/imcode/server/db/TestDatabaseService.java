@@ -4,6 +4,7 @@ import imcode.server.test.Log4JConfiguredTestCase;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.*;
 
 public class TestDatabaseService extends Log4JConfiguredTestCase {
 
@@ -68,9 +69,9 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     private void createDatabasesWithDefaultData() {
         databaseServices = new DatabaseService[]{
-            //DatabaseTestInitializer.static_initSqlServer(),
+            DatabaseTestInitializer.static_initSqlServer(),
             DatabaseTestInitializer.static_initMySql(),
-            //DatabaseTestInitializer.static_initMimer(),
+            DatabaseTestInitializer.static_initMimer(),
         };
     }
 
@@ -173,7 +174,13 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_getMenuDocChilds( databaseService );
             test_sproc_GetTexts( databaseService ) ;
             testIsFileDoc( databaseService );
+            test_selectFrom_section_getSectionIdFromSectionName( databaseService );
         }
+    }
+
+    private void test_selectFrom_section_getSectionIdFromSectionName( DatabaseService databaseService ) {
+        Integer sectionId = databaseService.selectFrom_section_getSectionIdFromSectionName( SECTION_TEST_NAME );
+        assertEquals( SECTION_TEST_ID, sectionId.intValue());
     }
 
     // todo, add testdata and fix more assertions
@@ -693,12 +700,9 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     public void test_sproc_SectionAddCrossref() {
-        DatabaseService.Table_meta_section metaSectionData = new DatabaseService.Table_meta_section();
-        metaSectionData.meta_id = DOC_TEST_SECOND_ID;
-        metaSectionData.section_id = SECTION_TEST_ID;
         for( int i = 0; i < databaseServices.length; i++ ) {
             DatabaseService databaseService = databaseServices[i];
-            assertEquals(1, databaseService.sproc_SectionAddCrossref(metaSectionData) );
+            assertEquals(1, databaseService.sproc_SectionAddCrossref(DOC_TEST_SECOND_ID, SECTION_TEST_ID) );
         }
     }
 
@@ -800,9 +804,39 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         }
     }
 
+    public void test_update_meta() {
+        Calendar now = Calendar.getInstance();
+        now.set( 2001, 2, 31, 12, 45, 12 );
+
+        String newHeadline = "New headline";
+        String newImage = "New image";
+        String newTarget = "new target";
+        String newtext = "new text";
+        boolean isArchived = true;
+
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            databaseService.update_meta( DOC_FIRST_PAGE_ID, null, null, now.getTime(), newHeadline, newImage, now.getTime(), newTarget, newtext, isArchived );
+
+            DatabaseService.Table_meta documentData = databaseService.sproc_GetDocumentInfo( DOC_FIRST_PAGE_ID );
+            assertNull( documentData.activated_datetime );
+            assertNull( documentData.archived_datetime );
+            assertEquals( 12, documentData.date_created.getHours() );
+            assertEquals( newHeadline, documentData.meta_headline );
+            assertEquals( newHeadline, documentData.meta_headline );
+            assertEquals( newImage, documentData.meta_image );
+            assertEquals( 45, documentData.date_modified.getMinutes() );
+            assertEquals( newTarget , documentData.target);
+            assertEquals( newtext, documentData.meta_text);
+            assertEquals( isArchived, documentData.archive );
+        }
+    }
+
     // Below is helper functions to more than one test.
     private static DatabaseService.Table_users static_createDummyUser() {
         DatabaseService.Table_users user = new DatabaseService.Table_users( USER_NEXT_FREE_ID, "test login name", "test password", "First name", "Last name", "Titel", "Company", "Adress", "City", "Zip", "Country", "Country council", "Email adress", false, DOC_FIRST_PAGE_ID, 0, 1, 1, true, new Timestamp( new java.util.Date().getTime() ) );
         return user;
     }
+
+
 }

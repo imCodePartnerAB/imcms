@@ -44,27 +44,6 @@ public class DatabaseAccessor {
     // All checked for now!
     // Add new sprocs here.
 
-    private static String makeBooleanSQL( String columnName, boolean field_isArchived ) {
-        String str = columnName + " = " + (field_isArchived ? 1 : 0);
-        return str;
-    }
-
-    private static String makeDateSQL( String columnName, Date date ) {
-        if( null != date ) {
-            String dateStr = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( date );
-            return makeStringSQL( columnName, dateStr );
-        }
-        else {
-            return makeStringSQL( columnName, null );
-        }
-    }
-
-    private static String makeStringSQL( String columnName, Object value ) {
-        String s = (value!=null?"'" + value + "'":"NULL");
-        String str = columnName + " = " + s + ", ";
-        return str;
-    }
-
     /** @return the filename for a fileupload-document, or null if the document isn't a fileupload-docuemnt. **/
     static String sprocGetFilename( IMCService service, int meta_id ) {
         String[] params = new String[]{String.valueOf( meta_id )};
@@ -244,35 +223,6 @@ public class DatabaseAccessor {
         return queryResult;
     }
 
-
-    static int sqlGetSectionId( IMCService service, String section ) {
-        String sql = "select section_id from sections where section_name = '" + section + "'";
-        String[] querryResult = service.sqlQuery( sql );
-        int sectionId = Integer.parseInt(querryResult[0]);
-        return sectionId;
-    }
-
-    static void sqlUpdateMeta( IMCService service, int meta_id, Date activatedDatetime, Date archivedDateTime, Date createdDatetime, String headline, String image, Date modifiedDateTime, String target, String text, boolean isArchived ) {
-
-        StringBuffer sqlStr = new StringBuffer( "update meta set " );
-
-        sqlStr.append( makeDateSQL("activated_datetime", activatedDatetime )  );
-        sqlStr.append( makeDateSQL("archived_datetime", archivedDateTime)  );
-        sqlStr.append( makeDateSQL("date_created", createdDatetime)  );
-        sqlStr.append( makeStringSQL("meta_headline", headline)  );
-        sqlStr.append( makeStringSQL("meta_image", image)  );
-        sqlStr.append( makeDateSQL("date_modified", modifiedDateTime)  );
-        sqlStr.append( makeStringSQL("target", target)  );
-        sqlStr.append( makeStringSQL("meta_text", text)  );
-        String str = makeBooleanSQL( "archive", isArchived );
-
-        sqlStr.append( str );
-        // todo: Remove from the meta table all collumns that are not used.
-        // Candidates: All not used above.
-
-        sqlStr.append( " where meta_id = " + meta_id );
-        service.sqlUpdateQuery( sqlStr.toString() );
-    }
 
     static String[] sprocGetText( IMCService service, int meta_id, int no ) {
         String[] params = new String[]{"" + meta_id, "" + no};
