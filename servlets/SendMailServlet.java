@@ -46,6 +46,7 @@ public class SendMailServlet extends HttpServlet {
 	private final static String SUBJECT_TEMPLATE = "mail_subject.html";
 	private final static String BODY_TEMPLATE = "mail_body.html";
 	private final static String BODY_TEMPLATE_TO_ADMIN = "mail_body_to_admin.html";
+	private final static String BODY_TEMPLATE_SHOP = "mail_body_shop.html";
 
 	public void init(ServletConfig config) throws ServletException{
 
@@ -66,11 +67,11 @@ public class SendMailServlet extends HttpServlet {
 	*   process submit
 	*/
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException{
-		System.out.println("start doPost");
-		java.util.Enumeration enum = req.getParameterNames();
-		while (enum.hasMoreElements()){
-			log((String)enum.nextElement());
-		}
+		
+		//params to use to check if its a shop-mail or not
+		String metaId = req.getParameter("metaid");
+		String param = req.getParameter("param");
+		
 		/* server info */
 		String host = req.getHeader("Host") ;
 		String imcserver = Utility.getDomainPref( "adminserver", host );
@@ -119,25 +120,35 @@ public class SendMailServlet extends HttpServlet {
 			System.out.println(((String)enum2.nextElement()));
 		}
 		
-		 String mailBody;
-		//ok lets see if we got a subject or not
-		if (mailSubject != null){
+		String mailBody;
+		//ok lets see if its a shop-mail or not
+		if (param != null)
+		{//its a shop-mail so lets get the mailTo adress from texts100
+			String sql = "Select text from texts \n where name = 100 \n and meta_id = "+ metaId;
+			mailTo = IMCServiceRMI.sqlQueryStr( imcserver, sql ) ;
+			mailTextV.add("#mailTo#"); mailTextV.add(mailTo);
+			mailTextV.add("#mailFrom#"); mailTextV.add(mailFrom);
+			mailBody = IMCServiceRMI.parseDoc(imcserver, mailTextV, BODY_TEMPLATE_SHOP, lang_prefix) ;			 
+		}else
+		{
+			//ok lets see if we got a subject or not
+			if (mailSubject != null){
 			//its a mail to the system
-			mailTo = webmaster;	
-			mailTextV.add("#mailTo#"); mailTextV.add(mailTo);
-			mailTextV.add("#mailFrom#"); mailTextV.add(mailFrom);
-			mailBody = IMCServiceRMI.parseDoc(imcserver, mailTextV, BODY_TEMPLATE_TO_ADMIN, lang_prefix) ;	
-		}else{
-			//its a mail from the system
-			mailFrom = webmaster;
-			mailTextV.add("#mailTo#"); mailTextV.add(mailTo);
-			mailTextV.add("#mailFrom#"); mailTextV.add(mailFrom);
-			//it also means that we must parse the subject line thrue SUBJECT_TEMPLATE so lets rock
-			mailSubject = IMCServiceRMI.parseDoc(imcserver, mailTextV, SUBJECT_TEMPLATE, lang_prefix) ;
-			//ok lets parse the mailbody into a string
-        	mailBody = IMCServiceRMI.parseDoc(imcserver, mailTextV, BODY_TEMPLATE, lang_prefix) ;	
+				mailTo = webmaster;	
+				mailTextV.add("#mailTo#"); mailTextV.add(mailTo);
+				mailTextV.add("#mailFrom#"); mailTextV.add(mailFrom);
+				mailBody = IMCServiceRMI.parseDoc(imcserver, mailTextV, BODY_TEMPLATE_TO_ADMIN, lang_prefix) ;	
+			}else{
+				//its a mail from the system
+				mailFrom = webmaster;
+				mailTextV.add("#mailTo#"); mailTextV.add(mailTo);
+				mailTextV.add("#mailFrom#"); mailTextV.add(mailFrom);
+				//it also means that we must parse the subject line thrue SUBJECT_TEMPLATE so lets rock
+				mailSubject = IMCServiceRMI.parseDoc(imcserver, mailTextV, SUBJECT_TEMPLATE, lang_prefix) ;
+				//ok lets parse the mailbody into a string
+        		mailBody = IMCServiceRMI.parseDoc(imcserver, mailTextV, BODY_TEMPLATE, lang_prefix) ;	
+			}
 		}
-		
 		//a simple check that @ symbol exists 		
 		if( !this.validateEmail(mailFrom) || !this.validateEmail(mailTo) ){
 			if (mailError != null){
