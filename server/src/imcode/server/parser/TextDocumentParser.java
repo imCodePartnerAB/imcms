@@ -275,7 +275,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		log.error("parsePage: SectionGetInheritId returned null") ;
 		return ("SectionGetInheritId returned null") ;
 	    } else if (section_data.size() < 2) {
-		section_name = serverObject.parseDoc(null, SECTION_MSG_TEMPLATE, lang_prefix) ;
+		section_name = "" ;
 	    } else {
 		section_name = (String)section_data.get(1) ;
 	    }
