@@ -163,10 +163,11 @@ public class DocumentComposer extends HttpServlet {
             addObjectToSessionAndSetSessionAttributeNameInRequest( "newDocument", newDocument, request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
             forwardToDocinfoPage( request, response, user );
         } else if ( ACTION__PROCESS_NEW_DOCUMENT_INFORMATION.equalsIgnoreCase( action ) ) {
-            if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+            if ( null == request.getParameter( PARAMETER_BUTTON__OK ) || document instanceof TextDocumentDomainObject ) {
+                redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
+            } else {
                 processNewDocumentInformation( newDocumentParentInformation, request, response, user );
             }
-            redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
         } else if ( ACTION__CREATE_NEW_URL_DOCUMENT.equalsIgnoreCase( action ) ) {
             if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
 
