@@ -80,11 +80,11 @@ public class AdminSection extends Administrator {
 				String new_section = req.getParameter("new_section_name")==null ? "":req.getParameter("new_section_name").trim();
 				if ( !new_section.equals("") ) {
 					//ok we have a new name lets save it to db, but only if it's not exists in db
-					IMCServiceRMI.sqlUpdateProcedure(imcserver, "add_section "+new_section);					 
+					IMCServiceRMI.sqlUpdateProcedure(imcserver, "SectionAdd "+new_section);					 
 				}
 			
 				//now we needs a list of the created ones in db
-				String[][] section_arr = IMCServiceRMI.sqlProcedureMulti(imcserver, "get_all_sections_count");			
+				String[][] section_arr = IMCServiceRMI.sqlProcedureMulti(imcserver, "SectionGetAllCount");			
 				Vector vec = new Vector();
 				vec.add("#section_list#"); vec.add(createOptionList(req, section_arr, lang_prefix, null)); 
 				//ok lets parse the page with right template
@@ -99,11 +99,11 @@ public class AdminSection extends Administrator {
 				String section_id = req.getParameter("section_list")==null ? "-1":req.getParameter("section_list");
 				if ( (!new_section.equals("")) && (!section_id.equals("-1")) ) {
 					//ok we have a new name lets save it to db, but only if it's not exists in db
-					IMCServiceRMI.sqlUpdateProcedure(imcserver, "change_section_name "+section_id+", '"+new_section+"'");					 
+					IMCServiceRMI.sqlUpdateProcedure(imcserver, "SectionChangeName "+section_id+", '"+new_section+"'");					 
 				}
 			
 				//now we needs a list of the created ones in db
-				String[][] section_arr = IMCServiceRMI.sqlProcedureMulti(imcserver, "get_all_sections_count");		
+				String[][] section_arr = IMCServiceRMI.sqlProcedureMulti(imcserver, "SectionGetAllCount");		
 				Vector vec = new Vector();
 				vec.add("#section_list#"); vec.add(createOptionList(req, section_arr, lang_prefix, null)); 
 				//ok lets parse the page with right template
@@ -131,10 +131,10 @@ public class AdminSection extends Administrator {
 				}
 				if (new_sections.equals("-1")) {
 					//ok the admin wants to get rid of all the section connections
-					IMCServiceRMI.sqlUpdateProcedure(imcserver, "delete_section "+del_section );						
+					IMCServiceRMI.sqlUpdateProcedure(imcserver, "SectionDelete "+del_section );						
 				}else {
 					//ok the admin wants to conect a nother section and then delete the one						
-					IMCServiceRMI.sqlUpdateProcedure(imcserver, "change_and_delete_section_crossrefs "+new_sections+", "+ del_section);	
+					IMCServiceRMI.sqlUpdateProcedure(imcserver, "SectionChangeAndDeleteCrossref "+new_sections+", "+ del_section);	
 				}			
 			}
 			
@@ -144,7 +144,7 @@ public class AdminSection extends Administrator {
 				String section_id = req.getParameter("section_list")==null ? "-1":req.getParameter("section_list");
 				if ( !section_id.equals("-1") ) {
 					//ok we have a request for delete lets se if there is any docs connected to that section_id					
-					String doc_nrs = IMCServiceRMI.sqlProcedureStr(imcserver, "get_sections_count "+section_id);
+					String doc_nrs = IMCServiceRMI.sqlProcedureStr(imcserver, "SectionCount "+section_id);
 					int doc_int = 0;
 					if (doc_nrs != null) {
 						try {
@@ -157,7 +157,7 @@ public class AdminSection extends Administrator {
 					
 					if (doc_int > 0 ) {
 						//ok we have documents connected to that section id so lets get a page to handle that
-						String[][] section_arr = IMCServiceRMI.sqlProcedureMulti(imcserver, "get_all_sections_count");						
+						String[][] section_arr = IMCServiceRMI.sqlProcedureMulti(imcserver, "SectionGetAllCount");						
 						Vector vec = new Vector();
 						vec.add("#section_list#"); 	vec.add(createOptionList(req, section_arr, lang_prefix,section_id));
 						vec.add("#docs#");			vec.add(doc_nrs) ;
@@ -173,7 +173,7 @@ public class AdminSection extends Administrator {
 				
 				if ( ! got_confirm_page ) {
 					//now we needs a list of the created ones in db
-					String[][] section_arr = IMCServiceRMI.sqlProcedureMulti(imcserver, "get_all_sections_count");						
+					String[][] section_arr = IMCServiceRMI.sqlProcedureMulti(imcserver, "SectionGetAllCount");						
 					Vector vec = new Vector();
 					vec.add("#section_list#"); vec.add(createOptionList(req, section_arr, lang_prefix, null)); 
 					//ok lets parse the page with right template
