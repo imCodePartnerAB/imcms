@@ -140,10 +140,6 @@ public class MockImcmsServices implements ImcmsServices {
         return false;
     }
 
-    public boolean checkDocAdminRightsAny( int meta_id, UserDomainObject user, int permissions ) {
-        return false;
-    }
-
     // save demo template
     public void saveDemoTemplate( int template_id, byte[] data, String suffix ) throws IOException {
 
@@ -285,7 +281,7 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public void executeTransaction( DatabaseCommand databaseCommand ) {
-
+        database.executeTransaction( databaseCommand );
     }
 
     public TemplateMapper getTemplateMapper() {

@@ -266,7 +266,10 @@ public class BillBoard extends HttpServlet {
 
         //log("before getAdminRights") ;
         //lets generat adminbutton if user has administrator rights and rights to edit
-        if ( userHasAdminRights( imcref, metaId, user ) ) {
+
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( metaId );
+        if ( user.canEdit( document ) ) {
 
             //lets save tags we need later
             VariableManager adminLinkVM = new VariableManager();
@@ -300,7 +303,10 @@ public class BillBoard extends HttpServlet {
         int metaId = getMetaId( req );
 
         //lets generat unadminbutton if user has administrator rights and rights to edit
-        if ( userHasAdminRights( imcref, metaId, user ) ) {
+
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( metaId );
+        if ( user.canEdit( document ) ) {
             //lets save tags we need later
             VariableManager unAdminLinkVM = new VariableManager();
             unAdminLinkVM.addProperty( "SERVLET_URL", unAdminButtonVM.getProperty( "SERVLET_URL" ) );
@@ -408,34 +414,6 @@ public class BillBoard extends HttpServlet {
         }
 
         return authorized;
-    }
-
-    /**
-     * check if user has right to edit
-     *
-     * @param imcref imCMS ImcmsServices instance
-     * @param metaId metaId for conference
-     * @param user
-     */
-    boolean userHasRightToEdit( ImcmsServices imcref, int metaId,
-                                imcode.server.user.UserDomainObject user ) {
-
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument( metaId );
-        return user.canAccess( document )
-               && imcref.checkDocAdminRights( metaId, user );
-    }
-
-    /**
-     * check if user is admin and has rights to edit
-     *
-     * @param imcref imCMS ImcmsServices instance
-     * @param metaId metaId for conference
-     * @param user
-     */
-    boolean userHasAdminRights( ImcmsServices imcref, int metaId,
-                                imcode.server.user.UserDomainObject user ) {
-        return imcref.checkDocAdminRights( metaId, user ) && imcref.checkDocAdminRights( metaId, user, 65536 );
     }
 
     /**

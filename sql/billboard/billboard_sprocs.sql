@@ -1,171 +1,171 @@
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_AddNewBill]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_AddNewBill]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_AddNewBillBoard]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_AddNewBillBoard]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_AddNewSection]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_AddNewSection]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_AddNewTemplateLib]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_AddNewTemplateLib]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_AddReply]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_AddReply]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_AddTemplateLib]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_AddTemplateLib]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_AdminStatistics1]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_AdminStatistics1]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_ChangeSection]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_ChangeSection]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_DeleteBill]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_DeleteBill]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_DeleteSection]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_DeleteSection]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_FindMetaId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_FindMetaId]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_FindSectionName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_FindSectionName]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_FindTemplateLib]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_FindTemplateLib]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetAdminBill]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetAdminBill]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetAllBillsInSection]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetAllBillsInSection]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetAllBillsToShow]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetAllBillsToShow]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetAllNbrOfDaysToShow]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetAllNbrOfDaysToShow]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetAllNbrOfDiscsToShow]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetAllNbrOfDiscsToShow]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetAllOldBills]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetAllOldBills]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetAllSection]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetAllSection]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetAllTemplateLibs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetAllTemplateLibs]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetBillHeader]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetBillHeader]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetCurrentBill]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetCurrentBill]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetEmail]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetEmail]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetFirstSection]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetFirstSection]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetLastDiscussionId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetLastDiscussionId]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetNbrOfDiscs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetNbrOfDiscs]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetNbrOfDiscsToShow]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetNbrOfDiscsToShow]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetSectionName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetSectionName]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetStartSubjectString]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetStartSubjectString]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetSubjectStr]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetSubjectStr]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetTemplateIdFromName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetTemplateIdFromName]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetTemplateLib]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetTemplateLib]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetTime]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetTime]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_LinkSectionToBillBoard]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_LinkSectionToBillBoard]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_RenameSection]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_RenameSection]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_SearchText]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_SearchText]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_SetNbrOfDaysToShow]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_SetNbrOfDaysToShow]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_SetNbrOfDiscsToShow]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_SetNbrOfDiscsToShow]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_SetTemplateLib]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_SetTemplateLib]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_UpdateBill]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_UpdateBill]
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_AddNewBill
 /*
@@ -196,16 +196,16 @@ SET replies.parent_id = @thisDiscussionId
 WHERE replies.reply_id = @firstReplyId
 */
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_AddNewBillBoard
 /* Lets add a new BillBoard.*/
@@ -227,16 +227,16 @@ INSERT INTO B_billboard (meta_id, name,subject)
 VALUES (@meta_id, @billBoardName, @subject)
 -- Lets create the templates library path as well
 EXEC B_AddNewTemplateLib @meta_id
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_AddNewSection
 /*
@@ -256,16 +256,16 @@ DECLARE @newSectionId int
 SELECT @newSectionId  = @@identity
 EXEC B_LinkSectionToBillBoard @meta_id, @newSectionId
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_AddNewTemplateLib 
 /*
@@ -285,16 +285,16 @@ SELECT  @thisTemplateId = @@identity
 INSERT INTO B_billboard_templates ( billboard_id , template_id )
 VALUES (@meta_id, @thisTemplateId )
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER ON 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_AddReply
 /*
@@ -312,16 +312,16 @@ AS
 INSERT INTO B_replies (ip_adress,create_date, headline, text, parent_id, user_id, email )
 VALUES (@ipadr, getdate(), @headline, @text, @bill_id, @user_id, @epost	)
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_AddTemplateLib
 /*
@@ -332,16 +332,16 @@ AS
 INSERT INTO B_templates (template_lib)
 VALUES  ( @newTemplateLib)
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_AdminStatistics1
 	@meta_id int,
@@ -376,16 +376,16 @@ IF( @listMode = 1 ) BEGIN
 	GROUP BY B_section.section_id, B_section.section_name
 END
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_ChangeSection
 /*
@@ -398,16 +398,16 @@ UPDATE B_bill
 SET B_bill.section_id = @section_id
 WHERE B_bill.bill_id = @bill_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_DeleteBill
 	@aBillId int
@@ -424,16 +424,16 @@ WHERE B_replies.parent_id = @aBillId
 DELETE FROM B_bill
 WHERE B_bill.bill_id = @aBillId
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_DeleteSection
 /*
@@ -449,16 +449,16 @@ AS
  FROM B_section
  WHERE section_id = @aSectionId
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_FindMetaId
 /*
@@ -476,16 +476,16 @@ WHERE meta_id = @newMetaId
 SELECT @returnVal = ISNULL(@returnVal, 1) 
 SELECT @returnVal AS 'FoundMetaId'
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_FindSectionName
 /*
@@ -505,16 +505,16 @@ AND bs.billboard_id = @meta_id
 SELECT @returnVal =  ISNULL(@returnVal, -1) 
 SELECT @returnVal AS 'section'
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_FindTemplateLib
 /*
@@ -531,16 +531,16 @@ WHERE template_lib = @newLibName
 SELECT @returnVal =  ISNULL(@returnVal, -1) 
 SELECT @returnVal AS 'TemplateLib'
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetAdminBill
 /*
@@ -553,16 +553,16 @@ SELECT B_bill.bill_id, B_bill.headline, text, (select count(reply_id)   from B_r
 FROM B_bill
 WHERE B_bill.bill_id=@bill_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetAllBillsInSection
 /*
@@ -576,16 +576,16 @@ SELECT b.bill_id
 FROM B_bill b
 WHERE b.section_id = @aSectionId
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetAllBillsToShow
 /*
@@ -603,16 +603,16 @@ AND B_section.section_id=@section_id
 AND DATEDIFF(dy,B_bill.create_date, GETDATE()) < B_section.days_to_show
 order by B_bill.bill_id desc
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetAllNbrOfDaysToShow
 /*
@@ -626,16 +626,16 @@ FROM B_section s,  B_billboard_section bs
 WHERE s.section_id = bs.section_id
 AND bs.billboard_id = @meta_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetAllNbrOfDiscsToShow
 /*
@@ -649,16 +649,16 @@ FROM B_section s,  B_billboard_section bs
 WHERE s.section_id = bs.section_id
 AND bs.billboard_id = @meta_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetAllOldBills
 /*
@@ -682,16 +682,16 @@ AND B_bill.bill_id not in(SELECT B_bill.bill_id
 			AND DATEDIFF(dy,B_bill.create_date, GETDATE()) < B_section.days_to_show)
 order by B_bill.bill_id desc
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER ON 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetAllSection 
 /*
@@ -706,16 +706,16 @@ WHERE B_billboard_section.billboard_id = @meta_id
 AND B_billboard_section.section_id  = B_section.section_id 
 ORDER BY B_section.section_name
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetAllTemplateLibs  AS
 /*
@@ -726,16 +726,16 @@ to create the list where the admin can choose among current templatelibs
 SELECT DISTINCT t.template_lib , t.template_lib
 FROM B_templates t
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetBillHeader
 /*
@@ -748,16 +748,16 @@ SELECT B_bill.headline
 FROM B_bill
 WHERE B_bill.bill_id=@bill_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetCurrentBill
 /*
@@ -770,16 +770,16 @@ SELECT B_bill.bill_id, B_bill.headline, text, (select count(reply_id)   from B_r
 FROM B_bill
 WHERE B_bill.bill_id=@bill_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER ON 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetEmail
 /*
@@ -792,16 +792,16 @@ SELECT B_bill.email
 FROM B_bill
 WHERE B_bill.bill_id=@bill_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetFirstSection
 /*
@@ -821,16 +821,16 @@ IF ( @@ROWCOUNT =  0 ) BEGIN
 	SELECT -1 AS 'FirstSectionId'
 END
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetLastDiscussionId
 /*
@@ -851,16 +851,16 @@ AND B_section.section_id = B_bill.section_id
 SELECT @returnVal =  ISNULL(@returnVal, -1) 
 SELECT @returnVal AS 'LastBillId'
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetNbrOfDiscs 
 /*
@@ -873,16 +873,16 @@ SELECT COUNT (DISTINCT bill_id)
 FROM B_bill
 WHERE B_bill.section_id = @section_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetNbrOfDiscsToShow
 /*
@@ -898,16 +898,16 @@ WHERE s.section_id = @section_id
 SELECT @returnVal =  ISNULL(@returnVal, 20) 
 SELECT @returnVal AS 'FirstSectionId'
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetSectionName
 /*
@@ -923,16 +923,16 @@ WHERE s.section_id = @section_id
 SELECT @returnVal =  ISNULL(@returnVal, 'Not found') 
 SELECT @returnVal AS 'Section_name'
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetStartSubjectString 
 /*
@@ -944,16 +944,16 @@ AS
 SELECT subject
 FROM B_billboard
 WHERE meta_id = @meta_id
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetSubjectStr
 /*
@@ -969,16 +969,16 @@ WHERE B_bill.bill_id=@bill_id
 AND B_section.section_id=@section_id
 AND B_billboard.meta_id=@meta_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetTemplateIdFromName
 /*
@@ -995,16 +995,16 @@ WHERE t.template_lib = @aTemplateLibName
 SELECT @returnVal = ISNULL(  @returnVal , -1 )
 SELECT @returnVal AS 'TemplateId'
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_GetTemplateLib
 /*
@@ -1022,16 +1022,16 @@ AND b.meta_id = @meta_id
 SELECT @returnVal =  ISNULL(@returnVal, 'original') 
 SELECT @returnVal AS 'TemplateLib'
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 
 
@@ -1040,16 +1040,16 @@ GO
 CREATE PROCEDURE B_GetTime AS
 
 SELECT SUBSTRING( CONVERT(char(10),GETDATE(),20),1, 20) AS 'Now'
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_LinkSectionToBillBoard
 /* Links a section to a billboard. Used when a section is created
@@ -1060,16 +1060,16 @@ AS
 INSERT INTO B_billboard_section (billboard_id, section_id)
 VALUES  (@billboard_id, @section_id)
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_RenameSection
 /*
@@ -1082,16 +1082,16 @@ UPDATE B_section
 SET B_section.section_name = @section_name
 WHERE B_section.section_id = @section_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_SearchText
 /* OBS OBS category 0 and 1 searches among all bills but category 2 only search among active ones OBS OBS
@@ -1150,16 +1150,16 @@ BEGIN
 	--Lets only check the aktive ones
 	AND DATEDIFF(dy,bill.create_date, GETDATE()) < B_section.days_to_show
 END
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_SetNbrOfDaysToShow
 /*
@@ -1172,16 +1172,16 @@ UPDATE B_section
 SET days_to_show = @newNbrToShow
 WHERE section_id = @section_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_SetNbrOfDiscsToShow
 /*
@@ -1194,16 +1194,16 @@ UPDATE B_section
 SET discs_to_show = @newNbrToShow
 WHERE section_id = @section_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_SetTemplateLib
 /*
@@ -1220,16 +1220,16 @@ WHERE t.template_id = bt.template_id
 AND bt.billboard_id = b.meta_id
 AND b.meta_id = @meta_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 CREATE PROCEDURE B_UpdateBill
 /*
@@ -1244,9 +1244,9 @@ UPDATE B_bill
 	SET headline = @header , text = @text, email=@email
 WHERE B_bill.bill_id = @bill_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 

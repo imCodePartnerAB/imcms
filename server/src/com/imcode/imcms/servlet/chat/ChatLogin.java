@@ -4,6 +4,8 @@ import com.imcode.imcms.servlet.BackDoc;
 import imcode.external.chat.*;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 
 import javax.servlet.ServletContext;
@@ -113,8 +115,9 @@ public class ChatLogin extends ChatBase {
         // Lets build the Responsepage to the loginpage
 
         //get chatname, we are using meta_headline as chatname
-        Map docInfo = imcref.sqlProcedureHash( "getDocumentInfo", new String[]{"" + meta_id} );
-        String[] chatName = (String[])( docInfo.get( "meta_headline" ) );
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( meta_id ) ;
+        String chatName = document.getHeadline() ;
 
         //ok lets add a alias error msg
         String error_msg = "";
@@ -132,7 +135,7 @@ public class ChatLogin extends ChatBase {
         tags.add( "#userName#" );
         tags.add( userName );
         tags.add( "#chatName#" );
-        tags.add( chatName[0] );
+        tags.add( chatName );
         tags.add( "#parent_meta_id#" );
         tags.add( "" + parentMetaId );
         tags.add( "#IMAGE_URL#" );

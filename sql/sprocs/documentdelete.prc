@@ -1,12 +1,12 @@
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 /****** Object:  Stored Procedure dbo.DocumentDelete    Script Date: 2002-10-18 12:05:21 ******/
 if exists (select * from sysobjects where id = object_id('dbo.DocumentDelete') and sysstat & 0xf = 4)
 	drop procedure dbo.DocumentDelete
-GO
+;
 
 
 
@@ -52,9 +52,9 @@ BEGIN
 	ROLLBACK TRAN
 END
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 

@@ -1,11 +1,11 @@
-	<table name="poll_answers" idMethod="null" skipSql="false" abstract="false">
-        <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" inheritance="false" />
-        <column name="question_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
-        <column name="text_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
-        <column name="option_number" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
-        <column default="0" name="answer_count" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
-        <column name="option_point" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
-        <foreign-key foreignTable="poll_questions" onUpdate="none" onDelete="none">
+	<table name="poll_answers">
+        <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="question_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
+        <column name="text_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
+        <column name="option_number" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
+        <column default="0" name="answer_count" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
+        <column name="option_point" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
+        <foreign-key foreignTable="poll_questions">
             <reference foreign="id" local="question_id" />
         </foreign-key>
         <unique>

@@ -1,11 +1,11 @@
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[getMenuDocChilds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[getMenuDocChilds]
-GO
+;
 
 
 CREATE PROCEDURE getMenuDocChilds @meta_id int, @user_id int AS
@@ -31,9 +31,9 @@ WHERE m.activate = 1
 ORDER BY to_meta_id
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 

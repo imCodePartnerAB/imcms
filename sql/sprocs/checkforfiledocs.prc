@@ -1,12 +1,12 @@
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 /****** Object:  Stored Procedure dbo.CheckForFileDocs    Script Date: 2002-09-24 12:08:20 ******/
 if exists (select * from sysobjects where id = object_id('dbo.CheckForFileDocs') and sysstat & 0xf = 4)
 	drop procedure dbo.CheckForFileDocs
-GO
+;
 
 
 
@@ -19,9 +19,9 @@ CREATE     PROCEDURE CheckForFileDocs @documents_string VARCHAR(200) AS
 CREATE TABLE #documents (
   meta_id INT
 )
-DECLARE @substring VARCHAR(30);
-DECLARE @index INT;
-DECLARE @endindex INT;
+DECLARE @substring VARCHAR(30)
+DECLARE @index INT
+DECLARE @endindex INT
 IF LEN(@documents_string) > 0 BEGIN
  SET @index = 1
  WHILE @index <= LEN(@documents_string) BEGIN
@@ -40,15 +40,15 @@ SELECT meta.meta_id FROM meta
 JOIN #documents
 ON meta.meta_id = #documents.meta_id
 WHERE doc_type = 8
-ORDER BY meta.meta_headline;
+ORDER BY meta.meta_headline
 
 drop table #documents;
 
 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 

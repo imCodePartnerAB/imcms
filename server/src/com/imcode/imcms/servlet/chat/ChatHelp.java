@@ -4,6 +4,8 @@ import imcode.external.chat.ChatBase;
 import imcode.external.chat.ChatError;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +41,9 @@ public class ChatHelp extends ChatBase {
 			//lets see if user has adminrights
 			int metaId = getMetaId( req );
             ImcmsServices imcref = Imcms.getServices() ;
-			if ( userHasAdminRights( imcref, metaId, user ) ) {
+            DocumentMapper documentMapper = imcref.getDocumentMapper();
+            DocumentDomainObject document = documentMapper.getDocument(metaId);
+            if ( user.canEdit( document ) ) {
 				file = ADMIN_TEMPLATE ;
 				if( params.getProperty("HELP_AREA").equalsIgnoreCase("TEMPLATESPEC") ) {
 					file = ADMIN_TEMPLATE2;

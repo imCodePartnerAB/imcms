@@ -1,6 +1,6 @@
-	<table name="browsers" idMethod="null" skipSql="false" abstract="false">
-        <column name="browser_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
-        <column name="name" required="true" size="50" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
-        <column name="user_agent" required="true" size="50" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
-        <column default="1" name="value" required="true" type="TINYINT" primaryKey="false" autoIncrement="false" inheritance="false" />
+	<table name="browsers">
+        <column name="browser_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
+        <column name="name" required="true" size="50" type="VARCHAR" primaryKey="false" autoIncrement="false" />
+        <column name="user_agent" required="true" size="50" type="VARCHAR" primaryKey="false" autoIncrement="false" />
+        <column default="1" name="value" required="true" type="TINYINT" primaryKey="false" autoIncrement="false" />
     </table>

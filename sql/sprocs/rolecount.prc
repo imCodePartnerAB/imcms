@@ -1,11 +1,11 @@
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleCount]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleCount]
-GO
+;
 
 
 CREATE PROCEDURE RoleCount
@@ -24,9 +24,9 @@ SELECT @returnVal = ISNULL(  @returnVal , 0 )
 SELECT @returnVal AS 'Number_of_roles'
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 

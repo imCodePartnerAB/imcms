@@ -125,7 +125,7 @@ public class AdminDoc extends HttpServlet {
             }
         }
 
-        if ( !imcref.checkDocAdminRights( meta_id, user, flags ) ) {
+        if ( !user.canEdit( document ) ) {
             return GetDoc.getDoc( meta_id, req, res );
         }
 

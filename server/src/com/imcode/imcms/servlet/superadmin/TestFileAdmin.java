@@ -6,16 +6,18 @@ import java.io.File;
 
 public class TestFileAdmin extends TestCase {
 
+    File dir = new File( "tmp/TestFileAdmin" );
+
     public void setUp() {
-        deleteRecursively(new File( "/tmp/TestFileAdmin" ) );
-        new File( "/tmp/TestFileAdmin" ).mkdirs();
+        deleteRecursively(dir );
+        dir.mkdirs();
     }
 
     public void testFindUniqueFilename() {
         File[] testFiles = new File[202] ;
-        testFiles[0] = new File( "/tmp/TestFileAdmin/test" ) ;
+        testFiles[0] = new File( dir, "test" ) ;
         for ( int i = 1; i < testFiles.length; i++ ) {
-            testFiles[i] = new File( "/tmp/TestFileAdmin/test."+i ) ;
+            testFiles[i] = new File( dir, "test."+i ) ;
         }
 
         assertEquals(testFiles[0], FileAdmin.findUniqueFilename(testFiles[0]));

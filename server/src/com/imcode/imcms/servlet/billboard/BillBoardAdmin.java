@@ -3,6 +3,8 @@ package com.imcode.imcms.servlet.billboard;
 import imcode.external.diverse.*;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
 
@@ -102,7 +104,10 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
         ImcmsServices imcref = Imcms.getServices();
 
         // Lets check that the user is an administrator
-        if ( userHasAdminRights( imcref, Integer.parseInt( params.getProperty( "META_ID" ) ), user ) == false ) {
+
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( Integer.parseInt( params.getProperty( "META_ID" ) ) );
+        if ( user.canEdit( document ) == false ) {
             String header = "BillBoardAdmin servlet. ";
             new BillBoardError( req, res, header, 6, user.getLanguageIso639_2(), user );
             return;
@@ -477,7 +482,10 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
         ImcmsServices imcref = Imcms.getServices();
 
         // Lets check that the user is an administrator
-        if ( super.userHasAdminRights( imcref, Integer.parseInt( params.getProperty( "META_ID" ) ), user ) == false ) {
+
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( Integer.parseInt( params.getProperty( "META_ID" ) ) );
+        if ( user.canEdit( document ) == false ) {
             String header = "BillBoardAdmin servlet. ";
             new BillBoardError( req, res, header, 6, user.getLanguageIso639_2(), user );
             log( "nu small det i BillBoardAdmin doGet super.getAdminRights" );

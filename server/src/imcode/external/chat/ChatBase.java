@@ -397,20 +397,6 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         return authorized;
     }
 
-    /**
-     * check if user is admin and has rights to edit
-     *
-     * @param imcref imCMS ImcmsServices instance
-     * @param metaId metaId for conference
-     * @param user
-     */
-    protected boolean userHasAdminRights( ImcmsServices imcref, int metaId,
-                                          UserDomainObject user ) {
-        return ( imcref.checkDocAdminRights( metaId, user ) &&
-                imcref.checkDocAdminRights( metaId, user, 65536 ) );
-
-    }
-
     //**************** does the setup for chatboard  **********************
     //lets get the settings for the chat and convert them
     //and add them into HashTable and add it into the session

@@ -1,11 +1,11 @@
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[getDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[getDocs]
-GO
+;
 
 
 CREATE PROCEDURE getDocs @user_id int, @start int, @end int AS
@@ -34,9 +34,9 @@ GROUP BY  m.meta_id,m.meta_headline,m.doc_type,c.to_meta_id
 ORDER BY  m.meta_id
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 

@@ -4,6 +4,8 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -27,7 +29,12 @@ public final class SaveText extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( imcref.checkDocAdminRights( meta_id, user, imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS )
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id );
+
+        TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
+
+        if ( permissionSet.getEditTexts()
              && req.getParameter( "ok" ) != null ) {
             // get text_no
             int txt_no = Integer.parseInt( req.getParameter( "txt_no" ) );
@@ -43,9 +50,6 @@ public final class SaveText extends HttpServlet {
             }
 
             TextDomainObject text = new TextDomainObject( text_string, text_format );
-
-            DocumentMapper documentMapper = imcref.getDocumentMapper();
-            TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id );
 
             saveText( documentMapper, text, document, txt_no, text_type, imcref, meta_id, user );
         }

@@ -98,7 +98,7 @@ public class TestUserService extends TestCase {
 
     public void testCreateNewRole() throws SaveException, NoPermissionException {
         internalUser.addRole( RoleDomainObject.SUPERADMIN );
-        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( ImcmsAuthenticatorAndUserAndRoleMapper.SQL_INSERT_INTO_ROLES ), "3" );
+        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( ImcmsAuthenticatorAndUserAndRoleMapper.SQL_INSERT_INTO_ROLES ), new Integer(3) );
         String roleName = "test role";
         Role newRole = userService.createNewRole( roleName ) ;
         userService.saveRole( newRole );

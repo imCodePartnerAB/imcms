@@ -13,8 +13,24 @@ public class DocumentPermissionSetMapper {
     /**
      * Stored procedure names used in this class
      */
-    static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "GetTemplateGroupsWithPermissions";
-    static final String SPROC_GET_TEMPLATE_GROUPS_WITH_NEW_PERMISSIONS = "GetTemplateGroupsWithNewPermissions";
+    static final String SQL_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "SELECT group_id,group_name\n"
+                                                                     + "FROM   templategroups tg\n"
+                                                                     + "JOIN doc_permission_sets_ex dpse\n"
+                                                                     + "       ON dpse.permission_data = tg.group_id\n"
+                                                                     + "       AND dpse.meta_id = ?\n"
+                                                                     + "       AND dpse.set_id = ?\n"
+                                                                     + "       AND dpse.permission_id = 524288\n"
+                                                                     + "ORDER  BY group_name" ;
+
+    static final String SQL_GET_TEMPLATE_GROUPS_WITH_NEW_PERMISSIONS = "SELECT group_id,group_name\n"
+                                                                       + "FROM   templategroups tg\n"
+                                                                       + "JOIN new_doc_permission_sets_ex dpse\n"
+                                                                       + "       ON dpse.permission_data = tg.group_id\n"
+                                                                       + "       AND dpse.meta_id = ?\n"
+                                                                       + "       AND dpse.set_id = ?\n"
+                                                                       + "       AND dpse.permission_id = 524288\n"
+                                                                       + "ORDER  BY group_name";
+
     static final String SPROC_SET_DOC_PERMISSION_SET = "SetDocPermissionSet";
     private static final String SPROC_SET_NEW_DOC_PERMISSION_SET = "SetNewDocPermissionSet";
     static final String SQL_SELECT_PERMISSON_DATA__PREFIX = "SELECT permission_data FROM ";
@@ -260,17 +276,14 @@ public class DocumentPermissionSetMapper {
                         String.valueOf( metaId ), String.valueOf( documentPermissionSet.getTypeId() )
                 };
         String sproc = forNewDocuments
-                        ? SPROC_GET_TEMPLATE_GROUPS_WITH_NEW_PERMISSIONS : SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS;
-        String[][] sprocResult = database.sqlProcedureMulti( sproc, params );
+                        ? SQL_GET_TEMPLATE_GROUPS_WITH_NEW_PERMISSIONS : SQL_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS;
+        String[][] sprocResult = database.sqlQueryMulti( sproc, params );
         List templateGroups = new ArrayList();
         for ( int i = 0; i < sprocResult.length; i++ ) {
             int groupId = Integer.parseInt( sprocResult[i][0] );
             String groupName = sprocResult[i][1];
-            boolean hasPermission = -1 != Integer.parseInt( sprocResult[i][2] );
-            if ( hasPermission ) {
-                TemplateGroupDomainObject templateGroup = new TemplateGroupDomainObject( groupId, groupName );
-                templateGroups.add( templateGroup );
-            }
+            TemplateGroupDomainObject templateGroup = new TemplateGroupDomainObject( groupId, groupName );
+            templateGroups.add( templateGroup );
         }
         return (TemplateGroupDomainObject[])templateGroups.toArray( new TemplateGroupDomainObject[templateGroups.size()] );
     }

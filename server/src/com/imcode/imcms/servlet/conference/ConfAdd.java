@@ -1,6 +1,8 @@
 package com.imcode.imcms.servlet.conference;
 
 import imcode.server.*;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 import java.io.*;
@@ -34,7 +36,10 @@ public class ConfAdd extends Conference {
         ImcmsServices imcref = Imcms.getServices();
 
         int metaId = Integer.parseInt(params.getProperty("META_ID"));
-        if (userHasRightToEdit(imcref, metaId, user)) {
+
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument(metaId);
+        if (user.canEdit( document )) {
 
             // ********* CANCEL ********
             if (req.getParameter("CANCEL") != null || req.getParameter("CANCEL.x") != null) {
@@ -144,7 +149,10 @@ public class ConfAdd extends Conference {
         ImcmsServices imcref = Imcms.getServices();
 
         int metaId = Integer.parseInt(params.getProperty("META_ID"));
-        if (userHasRightToEdit(imcref, metaId, user)) {
+
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument(metaId);
+        if (user.canEdit( document )) {
             // Lets Get the session user id
             // Ok, Lets get the last discussion in that forum
             String loginUserId = "";

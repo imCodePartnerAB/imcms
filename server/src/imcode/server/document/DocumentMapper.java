@@ -40,10 +40,8 @@ public class DocumentMapper {
 
     // Stored procedure names used in this class
     // todo make sure all these is only used in one sprocMethod
-    private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
-    static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo";
     private static final String SPROC_GET_TEXT = "GetText";
-    private static final String SPROC_SECTION_GET_ALL = "SectionGetAll";
+    private static final String SQL_GET_ALL_SECTIONS = "SELECT section_id, section_name FROM sections";
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
     static final String SPROC_SET_PERMISSION_SET_ID_FOR_ROLE_ON_DOCUMENT = "SetRoleDocPermissionSetId";
 
@@ -67,6 +65,32 @@ public class DocumentMapper {
                       + "ON categories.category_type_id = category_types.category_type_id\n"
                       + "WHERE category_types.name = ?\n"
                       + "AND categories.name = ?";
+    public static final String SQL_GET_DOCUMENT = "SELECT meta_id,\n"
+    + "doc_type,\n"
+    + "meta_headline,\n"
+    + "meta_text,\n"
+    + "meta_image,\n"
+    + "owner_id,\n"
+    + "permissions,\n"
+    + "shared,\n"
+    + "show_meta,\n"
+    + "lang_prefix,\n"
+    + "date_created,\n"
+    + "date_modified,\n"
+    + "disable_search,\n"
+    + "target,\n"
+    + "archived_datetime,\n"
+    + "publisher_id,\n"
+    + "status,\n"
+    + "publication_start_datetime,\n"
+    + "publication_end_datetime\n"
+    + "FROM meta\n"
+    + "WHERE meta_id = ?";
+    public static final String SQL_GET_SECTIONS_FOR_DOCUMENT = "SELECT s.section_id, s.section_name\n"
+                                                         + " FROM sections s, meta_section ms, meta m\n"
+                                                         + "where m.meta_id=ms.meta_id\n"
+                                                         + "and m.meta_id=?\n"
+                                                         + "and ms.section_id=s.section_id";
 
     public DocumentMapper( ImcmsServices services, Database database,
                            ImcmsAuthenticatorAndUserAndRoleMapper userRegistry,
@@ -182,7 +206,7 @@ public class DocumentMapper {
     }
 
     public SectionDomainObject[] getAllSections() {
-        String[][] sqlRows = database.sqlProcedureMulti( SPROC_SECTION_GET_ALL, new String[0] );
+        String[][] sqlRows = database.sqlQueryMulti( SQL_GET_ALL_SECTIONS, new String[0] );
         SectionDomainObject[] allSections = new SectionDomainObject[sqlRows.length];
         for ( int i = 0; i < sqlRows.length; i++ ) {
             int sectionId = Integer.parseInt( sqlRows[i][0] );
@@ -410,7 +434,7 @@ public class DocumentMapper {
      * @return the sections for a document, empty array if there is none.
      */
     private SectionDomainObject[] getSections( int meta_id ) {
-        String[][] sectionData = database.sqlProcedureMulti( SPROC_SECTION_GET_INHERIT_ID,
+        String[][] sectionData = database.sqlQueryMulti( SQL_GET_SECTIONS_FOR_DOCUMENT,
                                                              new String[]{String.valueOf( meta_id )} );
 
         SectionDomainObject[] sections = new SectionDomainObject[sectionData.length];
@@ -814,8 +838,7 @@ public class DocumentMapper {
     }
 
     private String[] sprocGetDocumentInfo( int metaId ) {
-        String[] result = database.sqlProcedure( SPROC_GET_DOCUMENT_INFO, new String[]{String.valueOf( metaId )} );
-        return result;
+        return database.sqlQuery( SQL_GET_DOCUMENT, new String[]{String.valueOf( metaId )} );
     }
 
     private DocumentDomainObject getDocumentFromSqlResultRow( String[] result ) {

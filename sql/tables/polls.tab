@@ -1,14 +1,14 @@
-	<table name="polls" idMethod="null" skipSql="false" abstract="false">
-        <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" inheritance="false" />
-        <column name="name" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
-        <column name="description" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
-        <column name="meta_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
-        <column default="0" name="popup_freq" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
-        <column default="0" name="set_cookie" required="true" type="BIT" primaryKey="false" autoIncrement="false" inheritance="false" />
-        <column default="0" name="hide_result" required="true" type="BIT" primaryKey="false" autoIncrement="false" inheritance="false" />
-        <column name="confirmation_text" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
-        <column name="email_recipients" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
-        <column name="email_from" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
-        <column name="email_subject" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
-        <column name="result_template" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+	<table name="polls">
+        <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="name" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
+        <column name="description" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
+        <column name="meta_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
+        <column default="0" name="popup_freq" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
+        <column default="0" name="set_cookie" required="true" type="BIT" primaryKey="false" autoIncrement="false" />
+        <column default="0" name="hide_result" required="true" type="BIT" primaryKey="false" autoIncrement="false" />
+        <column name="confirmation_text" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
+        <column name="email_recipients" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
+        <column name="email_from" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
+        <column name="email_subject" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
+        <column name="result_template" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
     </table>

@@ -3,6 +3,9 @@ package com.imcode.imcms.servlet.admin;
 import com.imcode.imcms.servlet.GetDoc;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -35,7 +38,11 @@ public class ChangeExternalDoc2 extends HttpServlet {
 		meta_id = Integer.parseInt( req.getParameter( "meta_id" ) ) ;
 
 		UserDomainObject user=Utility.getLoggedOnUser( req );
-		if ( !imcref.checkDocAdminRights(meta_id,user,65536 ) ) {	// Checking to see if user may edit this
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( meta_id );
+        DocumentPermissionSetDomainObject permissionSet = user.getPermissionSetFor( document );
+
+        if ( permissionSet.getEdit() ) {
 			String output = AdminDoc.adminDoc(meta_id, user,req,res) ;
 			if ( output != null ) {
 				out.write(output) ;

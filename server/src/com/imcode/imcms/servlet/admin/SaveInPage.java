@@ -55,7 +55,7 @@ public class SaveInPage extends HttpServlet {
         }
 
         // Check if user has write rights
-        if ( !services.checkDocAdminRights( documentId, user, imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE )
+        if ( !textDocumentPermissionSet.getEditTemplates()
              || !requestedTemplateIsAllowed
              || !requestedTemplateGroupIsAllowed ) {	// Checking to see if user may edit this
             Utility.setDefaultHtmlContentType( res );

@@ -1,10 +1,10 @@
-	<table name="A_conf_templates" idMethod="null" skipSql="false" abstract="false">
-        <column name="conf_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
-        <column name="template_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
-        <foreign-key foreignTable="A_templates" onUpdate="none" onDelete="none">
+	<table name="A_conf_templates">
+        <column name="conf_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
+        <column name="template_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
+        <foreign-key foreignTable="A_templates">
             <reference foreign="template_id" local="template_id" />
         </foreign-key>
-        <foreign-key foreignTable="A_conference" onUpdate="none" onDelete="none">
+        <foreign-key foreignTable="A_conference">
             <reference foreign="meta_id" local="conf_id" />
         </foreign-key>
     </table>

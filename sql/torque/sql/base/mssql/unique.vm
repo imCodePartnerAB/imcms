@@ -1,5 +1,0 @@
-#foreach ($unique in $table.Unices)
-    CONSTRAINT $table.Name#foreach( $column in $unique.Columns )
-__$column#end
-__UQ UNIQUE ($unique.ColumnList),
-#end

@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.sql.Connection;
 
 public class MockDatabase implements Database {
 
@@ -70,7 +71,7 @@ public class MockDatabase implements Database {
     }
 
     public void executeTransaction( DatabaseCommand databaseCommand ) {
-        // TODO
+        databaseCommand.executeOn( new MockDatabaseConnection(this) );
     }
 
     public void addExpectedSqlCall( final SqlCallPredicate sqlCallPredicate, final Object result ) {
@@ -103,8 +104,8 @@ public class MockDatabase implements Database {
         return sqlCalls.size();
     }
 
-    private Object getResultForSqlCall( String procedure, String[] params ) {
-        SqlCall sqlCall = new SqlCall( procedure, params );
+    private Object getResultForSqlCall( String sql, String[] params ) {
+        SqlCall sqlCall = new SqlCall( sql, params );
         sqlCalls.add( sqlCall );
         Object result = null;
         if ( !expectedSqlCalls.isEmpty() ) {
@@ -370,6 +371,27 @@ public class MockDatabase implements Database {
 
         String getFailureMessage() {
             return super.getFailureMessage() + " with parameters "+ArrayUtils.toString( parameters );
+        }
+    }
+
+    public static class MockDatabaseConnection implements DatabaseConnection {
+
+        private MockDatabase database;
+
+        public MockDatabaseConnection( MockDatabase mockDatabase ) {
+            this.database = mockDatabase ;
+        }
+
+        public Number executeUpdateAndGetGeneratedKey( String sql, String[] parameters ) {
+            return (Number)database.getResultForSqlCall( sql, parameters ) ;
+        }
+
+        public String executeUpdateAndSelectString( String sql, String[] parameters ) {
+            return null;  // TODO
+        }
+
+        public void executeUpdateQuery( String sql, String[] parameters ) {
+            // TODO
         }
     }
 }

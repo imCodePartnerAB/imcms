@@ -1,11 +1,11 @@
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleDelete]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleDelete]
-GO
+;
 
 
 CREATE PROCEDURE RoleDelete
@@ -18,9 +18,9 @@ DELETE FROM user_roles_crossref WHERE role_id =@roleId
 DELETE FROM ROLES WHERE role_id = @roleId
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 

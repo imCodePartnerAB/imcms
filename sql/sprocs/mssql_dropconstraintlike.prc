@@ -1,11 +1,11 @@
 SET QUOTED_IDENTIFIER ON 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[MSSQL_DropConstraintLike]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[MSSQL_DropConstraintLike]
-GO
+;
 
 CREATE PROCEDURE MSSQL_DropConstraintLike @table VARCHAR(255), @like VARCHAR(255) AS
 
@@ -19,8 +19,8 @@ WHERE c.constid = constraints.id AND c.id = tables.id
 
 EXEC ('ALTER TABLE '+@table+' DROP CONSTRAINT '+@constraint)
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;

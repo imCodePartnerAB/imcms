@@ -1,4 +1,4 @@
-	<table name="C_msg_type" idMethod="null" skipSql="false" abstract="false">
-        <column autoIncrement="true" name="msg_id" primaryKey="true" required="true" type="INTEGER" inheritance="false" />
-        <column name="msg_string" required="true" size="25" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+	<table name="C_msg_type">
+        <column autoIncrement="true" name="msg_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="msg_string" required="true" size="25" type="VARCHAR" primaryKey="false" autoIncrement="false" />
     </table>

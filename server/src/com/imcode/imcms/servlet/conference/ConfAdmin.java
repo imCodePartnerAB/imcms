@@ -4,6 +4,8 @@ import com.imcode.imcms.servlet.superadmin.Administrator;
 import imcode.external.diverse.*;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
@@ -46,7 +48,10 @@ public class ConfAdmin extends Conference {
         ImcmsServices imcref = Imcms.getServices();
 
         // Lets check that the user is an administrator
-        if (super.userHasAdminRights(imcref, Integer.parseInt(params.getProperty("META_ID")), user) == false) {
+
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument(Integer.parseInt( params.getProperty( "META_ID" ) ));
+        if (user.canEdit( document ) == false) {
             String header = "ConfAdmin servlet. ";
             new ConfError(req, res, header, 6, user );
             return;
@@ -344,7 +349,10 @@ public class ConfAdmin extends Conference {
         ImcmsServices imcref = Imcms.getServices();
 
         // Lets check that the user is an administrator
-        if (super.userHasAdminRights(imcref, Integer.parseInt(params.getProperty("META_ID")), user) == false) {
+
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument(Integer.parseInt( params.getProperty( "META_ID" ) ));
+        if (user.canEdit( document ) == false) {
             String header = "ConfAdmin servlet. ";
             new ConfError(req, res, header, 6, user );
             return;

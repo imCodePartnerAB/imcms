@@ -1,10 +1,10 @@
-	<table name="C_chatParameters" idMethod="null" skipSql="false" abstract="false">
-        <column name="chatId" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
-        <column default="30" name="updateTime" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
-        <column default="2" name="reload" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
-        <column default="2" name="inOut" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
-        <column default="2" name="privat" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
-        <column default="2" name="publik" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
-        <column default="2" name="dateTime" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
-        <column default="2" name="font" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+	<table name="C_chatParameters">
+        <column name="chatId" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
+        <column default="30" name="updateTime" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
+        <column default="2" name="reload" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
+        <column default="2" name="inOut" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
+        <column default="2" name="privat" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
+        <column default="2" name="publik" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
+        <column default="2" name="dateTime" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
+        <column default="2" name="font" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
     </table>

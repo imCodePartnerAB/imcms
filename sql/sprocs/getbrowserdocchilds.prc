@@ -1,11 +1,11 @@
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[getBrowserDocChilds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[getBrowserDocChilds]
-GO
+;
 
 
 CREATE PROCEDURE getBrowserDocChilds @meta_id int, @user_id int AS
@@ -30,9 +30,9 @@ WHERE m.activate = 1
 ORDER BY to_meta_id
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 

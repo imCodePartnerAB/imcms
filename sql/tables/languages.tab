@@ -1,5 +1,5 @@
-	<table name="languages" idMethod="null" skipSql="false" abstract="false">
-        <column name="lang_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" autoIncrement="false" inheritance="false" />
-        <column name="user_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" autoIncrement="false" inheritance="false" />
-        <column name="language" size="30" type="VARCHAR" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+	<table name="languages">
+        <column name="lang_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" autoIncrement="false" />
+        <column name="user_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" autoIncrement="false" />
+        <column name="language" size="30" type="VARCHAR" primaryKey="false" required="false" autoIncrement="false" />
     </table>

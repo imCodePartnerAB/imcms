@@ -29,9 +29,17 @@ db-user =
 db-pass =
 db-maxconnections = 20
 
+# For MSSQL
+db-target = mssql
 db-driver = net.sourceforge.jtds.jdbc.Driver
 db-url-without-db-name = jdbc:jtds:sqlserver://${db-host}:${db-port}/;AppName=imCMS
 db-url = ${db-url-without-db-name};DatabaseName=${db-name}
+
+# For MySQL
+#db-target = mysql
+#db-driver = com.mysql.jdbc.Driver
+#db-url-without-db-name = jdbc:mysql://${db-host}:${db-port}/
+#db-url = ${db-url-without-db-name}${db-name}
 
 
 external-authenticator =

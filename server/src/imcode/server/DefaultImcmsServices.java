@@ -167,7 +167,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private Date getSessionCounterDateFromDb() {
         try {
             DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
-            return dateFormat.parse( this.sqlProcedureStr( "GetCurrentSessionCounterDate", new String[0] ) );
+            return dateFormat.parse( this.sqlQueryStr( "SELECT value FROM sys_data WHERE type_id = 2", new String[0] ) );
         } catch ( ParseException ex ) {
             log.fatal( "Failed to get SessionCounterDate from db.", ex );
             throw new UnhandledException( ex );
@@ -175,7 +175,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private int getSessionCounterFromDb() {
-        return Integer.parseInt( this.sqlProcedureStr( "GetCurrentSessionCounter", new String[0] ) );
+        return Integer.parseInt( this.sqlQueryStr( "SELECT value FROM sys_data WHERE type_id = 1", new String[0] ) );
     }
 
     private void initDocumentMapper() {
@@ -255,8 +255,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public synchronized void incrementSessionCounter() {
-        sqlUpdateProcedure( "IncSessionCounter", new String[0] );
-        sessionCounter = getSessionCounterFromDb();
+        sessionCounter++ ;
+        sqlUpdateQuery( "UPDATE sys_data SET value = ? WHERE type_id = 1", new String[] { ""+sessionCounter } );
     }
 
     private UserAndRoleRegistry initExternalUserAndRoleMapper( String externalUserAndRoleMapperName,
@@ -639,68 +639,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return user.canEdit( documentMapper.getDocument( meta_id ) );
     }
 
-    /**
-     * Checks to see if a user has any permission of a particular set of permissions for a document.
-     *
-     * @param meta_id    The document-id
-     * @param user       The user
-     * @param permission A bitmap containing the permissions.
-     */
-    public boolean checkDocAdminRightsAny( int meta_id, UserDomainObject user, int permission ) {
-        try {
-            String[] perms = sqlProcedure( "GetUserPermissionSet",
-                                           new String[]{String.valueOf( meta_id ), String.valueOf( user.getId() )} );
-
-            int set_id = Integer.parseInt( perms[0] );
-            int set = Integer.parseInt( perms[1] );
-
-            boolean userHasFullPermission = set_id == 0;
-            if ( perms.length > 0
-                 && userHasFullPermission		// User has full permission for this document
-                 || set_id < 3 && ( set & permission ) > 0	// User has at least one of the permissions given.
-            ) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch ( RuntimeException ex ) {
-            log.error( "Exception in checkDocAdminRightsAny(int,User,int)", ex );
-            throw ex;
-        }
-    }
-
-    /**
-     * Checks to see if a user has a particular set of permissions for a document.
-     *
-     * @param meta_id    The document-id
-     * @param user       The user
-     * @param permission A bitmap containing the permissions.
-     */
-    public boolean checkDocAdminRights( int meta_id, UserDomainObject user, int permission ) {
-        try {
-            String[] perms = sqlProcedure( "GetUserPermissionSet",
-                                           new String[]{String.valueOf( meta_id ), String.valueOf( user.getId() )} );
-
-            if ( perms.length == 0 ) {
-                return false;
-            }
-
-            int set_id = Integer.parseInt( perms[0] );
-            int set = Integer.parseInt( perms[1] );
-
-            if ( set_id == 0		// User has full permission for this document
-                 || ( set_id < 3 && ( ( set & permission ) == permission ) )	// User has all the permissions given.
-            ) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch ( RuntimeException ex ) {
-            log.error( "Exception in checkDocAdminRights(int,User,int)", ex );
-            throw ex;
-        }
-    }
-
     public int saveTemplate( String name, String file_name, byte[] template, boolean overwrite, String lang_prefix ) {
         String sqlStr;
         // check if template exists
@@ -862,32 +800,25 @@ final public class DefaultImcmsServices implements ImcmsServices {
      */
     private SystemData getSystemDataFromDb() {
 
-        /** Fetch everything from the DB */
-        String startDocument = sqlProcedureStr( "StartDocGet", new String[0] );
-        String[] serverMaster = sqlProcedure( "ServerMasterGet", new String[0] );
-        String[] webMaster = sqlProcedure( "WebMasterGet", new String[0] );
-        String systemMessage = sqlProcedureStr( "SystemMessageGet", new String[0] );
-
-        /** Create a new SystemData object */
         SystemData sd = new SystemData();
 
-        /** Store everything in the object */
-
+        String startDocument = sqlQueryStr( "SELECT value FROM sys_data WHERE sys_id = 0", new String[0] );
         sd.setStartDocument( startDocument == null ? DEFAULT_STARTDOCUMENT : Integer.parseInt( startDocument ) );
+
+        String systemMessage = sqlQueryStr( "SELECT value FROM sys_data WHERE type_id = 3", new String[0] );
         sd.setSystemMessage( systemMessage );
 
-        if ( serverMaster.length > 0 ) {
-            sd.setServerMaster( serverMaster[0] );
-            if ( serverMaster.length > 1 ) {
-                sd.setServerMasterAddress( serverMaster[1] );
-            }
-        }
-        if ( webMaster.length > 0 ) {
-            sd.setWebMaster( webMaster[0] );
-            if ( webMaster.length > 1 ) {
-                sd.setWebMasterAddress( webMaster[1] );
-            }
-        }
+        String serverMasterName = sqlQueryStr( "SELECT value FROM sys_data WHERE type_id = 4", new String[0] );
+        sd.setServerMaster( serverMasterName );
+
+        String serverMasterAddress = sqlQueryStr( "SELECT value FROM sys_data WHERE type_id = 5", new String[0] );
+        sd.setServerMasterAddress( serverMasterAddress );
+
+        String webMasterName = sqlQueryStr( "SELECT value FROM sys_data WHERE type_id = 6", new String[0] );
+        sd.setWebMaster( webMasterName );
+
+        String webMasterAddress = sqlQueryStr( "SELECT value FROM sys_data WHERE type_id = 7", new String[0] );
+        sd.setWebMasterAddress( webMasterAddress );
 
         return sd;
     }

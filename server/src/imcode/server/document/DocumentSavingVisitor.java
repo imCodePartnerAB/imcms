@@ -1,8 +1,6 @@
 package imcode.server.document;
 
-import imcode.server.db.Database;
-import imcode.server.db.DatabaseCommand;
-import imcode.server.db.DatabaseConnection;
+import imcode.server.db.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.log4j.Logger;

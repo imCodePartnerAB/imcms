@@ -1,8 +1,8 @@
 package imcode.server.document;
 
 import imcode.server.Imcms;
-import imcode.server.db.Database;
 import imcode.server.db.DatabaseConnection;
+import imcode.server.db.*;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FileInputStreamSource;

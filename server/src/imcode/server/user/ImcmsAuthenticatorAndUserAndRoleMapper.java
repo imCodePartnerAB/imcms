@@ -2,7 +2,7 @@ package imcode.server.user;
 
 import com.imcode.imcms.api.RoleConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.db.Database;
+import imcode.server.db.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -38,8 +38,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     public static final String SQL_SELECT_ROLE_BY_NAME = SQL_SELECT_ALL_ROLES + " WHERE role_name = ?";
     private static final String SQL_SELECT_ROLE_BY_ID = SQL_SELECT_ALL_ROLES + " WHERE role_id = ?";
 
-    public static final String SQL_INSERT_INTO_ROLES = "INSERT INTO roles (role_name, permissions, admin_role) VALUES(?,?,0) "
-                       + "SELECT @@IDENTITY";
+    public static final String SQL_INSERT_INTO_ROLES = "INSERT INTO roles (role_name, permissions, admin_role) VALUES(?,?,0)";
     private ImcmsServices service;
 
     public ImcmsAuthenticatorAndUserAndRoleMapper( Database database, ImcmsServices service ) {
@@ -83,7 +82,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
                                                    + "language,\n"
                                                    + "active,\n"
                                                    + "create_date,\n"
-                                                   + "[external]\n"
+                                                   + "external\n"
                                                    + "FROM users\n"
                                                    +"WHERE login_name = ?",
                                                new String[]{loginName.trim()} );
@@ -368,10 +367,15 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         return role ;
     }
 
-    void addRole( RoleDomainObject role ) {
-        int unionOfPermissionSetIds = getUnionOfRolePermissionIds( role );
-        int newRoleId = Integer.parseInt( database.sqlQueryStr( SQL_INSERT_INTO_ROLES, new String[] { role.getName(), ""+unionOfPermissionSetIds } ) ) ;
-        role.setId( newRoleId );
+    void addRole( final RoleDomainObject role ) {
+        final int unionOfPermissionSetIds = getUnionOfRolePermissionIds( role );
+        final int[] newRoleId = new int[1];
+        database.executeTransaction( new DatabaseCommand() {
+            public void executeOn( DatabaseConnection connection ) {
+                newRoleId[0] = connection.executeUpdateAndGetGeneratedKey(SQL_INSERT_INTO_ROLES, new String[] { role.getName(), ""+unionOfPermissionSetIds } ).intValue() ;
+            }
+        } );
+        role.setId( newRoleId[0] );
     }
 
     private int getUnionOfRolePermissionIds( RoleDomainObject role ) {

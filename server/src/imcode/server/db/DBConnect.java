@@ -25,7 +25,7 @@ class DBConnect {
         try {
             connection = conPool.getConnection();
         } catch ( SQLException e ) {
-            getException( e );
+            getException( null, e );
         }
     }
 
@@ -52,7 +52,7 @@ class DBConnect {
             }
         } catch ( SQLException ex ) {
             log.error( "Error in executeQuery()", ex );
-            throw getException( ex );
+            throw getException( null, ex );
         } finally {
             closeConnection();
         }
@@ -60,7 +60,7 @@ class DBConnect {
         return results;
     }
 
-    private RuntimeException getException( SQLException ex ) {
+    private RuntimeException getException( String message, SQLException ex ) {
         String sqlState = ex.getSQLState();
         if ("23000".equals( sqlState )) {
             return new IntegrityConstraintViolationSQLException(ex) ;
@@ -69,7 +69,7 @@ class DBConnect {
         } else {
             log.debug( "SQLException with SQLState "+sqlState) ;
         }
-        return new RuntimeException( ex );
+        return new RuntimeException( message+": "+ex.getMessage(), ex );
     }
 
     int executeUpdateQuery() {
@@ -77,7 +77,7 @@ class DBConnect {
             return preparedStatement.executeUpdate();
         } catch ( SQLException ex ) {
             log.error( "Error in executeUpdateQuery()", ex );
-            throw getException( ex );
+            throw getException( null, ex );
         } finally {
             closeConnection();
         }
@@ -103,7 +103,7 @@ class DBConnect {
             }
         } catch ( SQLException ex ) {
             log.error( "Error in executeProcedure()", ex );
-            throw getException( ex );
+            throw getException( null, ex );
         } finally {
             closeConnection();
         }
@@ -116,7 +116,7 @@ class DBConnect {
             res = callableStatement.executeUpdate();
         } catch ( SQLException ex ) {
             log.error( "Error in executeUpdateProcedure()", ex );
-            throw getException( ex );
+            throw getException( null, ex );
         } finally {
             closeConnection();
         }
@@ -159,7 +159,7 @@ class DBConnect {
             setParameters( callableStatement, params );
         } catch ( SQLException ex ) {
             log.error( "Error in prepareProcedureStatementAndSetParameters()", ex );
-            throw getException( ex );
+            throw getException( procedure, ex );
         }
     }
 
@@ -205,7 +205,7 @@ class DBConnect {
             setParameters( preparedStatement, params );
         } catch ( SQLException ex ) {
             log.error( "Error in prepareQueryStatementAndSetParameters()", ex );
-            throw getException( ex );
+            throw getException( null, ex );
         }
     }
 

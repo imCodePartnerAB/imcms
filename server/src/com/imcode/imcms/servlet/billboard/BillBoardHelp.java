@@ -4,6 +4,8 @@ import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -50,7 +52,10 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
 
                 //lets see if user has adminrights
                 int metaId = getMetaId( req );
-                if ( userHasAdminRights( imcref, metaId, user ) ) {
+
+                DocumentMapper documentMapper = imcref.getDocumentMapper();
+                DocumentDomainObject document = documentMapper.getDocument( metaId );
+                if ( user.canEdit( document ) ) {
                     file = ADMIN_TEMPLATE;
                     if ( params.getProperty( "HELP_AREA" ).equalsIgnoreCase( "TEMPLATESPEC" ) ) {
                         file = ADMIN_TEMPLATE2;

@@ -292,8 +292,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
             int intMetaId = Integer.parseInt( metaId );
             DocumentMapper documentMapper = imcref.getDocumentMapper();
             DocumentDomainObject document = documentMapper.getDocument( intMetaId );
-            if ( user.canAccess( document )
-                 && imcref.checkDocAdminRights( intMetaId, user ) ) {
+            if ( user.canEdit( document ) ) {
 
                 VariableManager vmButtons = new VariableManager();
                 vmButtons.addProperty( "#SERVLET_URL#", "" );
@@ -411,9 +410,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
         //lets show newdiscbutton if user has more than readrights
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( metaId );
-        if ( user.canAccess( document )
-             && imcref.checkDocAdminRights( metaId, user ) ) {
-
+        if ( user.canEdit( document ) ) {
             newDiscButton = getTemplate( NEW_DISC_TEMPLATE, user, vmButtons.getTagsAndData() );
         }
 

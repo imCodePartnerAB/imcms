@@ -1,11 +1,11 @@
 SET QUOTED_IDENTIFIER ON 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[Poll_GetQuestion]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[Poll_GetQuestion]
-GO
+;
 
 
 
@@ -27,9 +27,9 @@ AS
 	FROM 	poll_questions 
 	WHERE poll_id = @poll_id and
 		question_number = @question_no
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 

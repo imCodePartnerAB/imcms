@@ -1,11 +1,11 @@
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS OFF 
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[UnsetUserFlag]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[UnsetUserFlag]
-GO
+;
 
 CREATE PROCEDURE UnsetUserFlag @user_id INT, @flag_name VARCHAR(64) AS
 
@@ -17,9 +17,9 @@ WHERE		user_id = @user_id
 				FROM 		user_flags
 				WHERE 	name = @flag_name
 			)
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 

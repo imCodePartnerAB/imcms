@@ -131,12 +131,12 @@ public class TestDocumentMapper extends TestCase {
         documentResultRow[1] = ""+textDocument.getDocumentTypeId() ;
         documentResultRow[5] = ""+user.getId() ;
         documentResultRow[16] = ""+textDocument.getStatus() ;
-        database.addExpectedSqlCall( new MockDatabase.ProcedureSqlCallPredicate( DocumentMapper.SPROC_GET_DOCUMENT_INFO ), documentResultRow );
+        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( DocumentMapper.SQL_GET_DOCUMENT ), documentResultRow );
         String[] textDocsResultRow = new String[] { "1","1","1","1","1" } ;
         database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "FROM text_docs"), textDocsResultRow );
         assertNotNull( documentMapper.getDocument( textDocument.getId() ) ) ;
         documentMapper.deleteDocument( textDocument, user );
-        database.addExpectedSqlCall( new MockDatabase.ProcedureSqlCallPredicate( DocumentMapper.SPROC_GET_DOCUMENT_INFO ), new String[0] );
+        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( DocumentMapper.SQL_GET_DOCUMENT ), new String[0] );
         assertNull( documentMapper.getDocument( textDocument.getId() ) ) ;
     }
 

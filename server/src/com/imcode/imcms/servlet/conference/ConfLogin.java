@@ -104,7 +104,10 @@ public class ConfLogin extends Conference {
         // Lets generate the adduser page
         if ( loginType.equalsIgnoreCase( "ADMIN_USER" ) ) {
             // Lets check that the user is an administrator
-            if ( super.userHasAdminRights( imcref, Integer.parseInt( "" + params.getMetaId() ), user ) == false ) {
+
+            DocumentMapper documentMapper = imcref.getDocumentMapper();
+            DocumentDomainObject document = documentMapper.getDocument(Integer.parseInt( "" + params.getMetaId() ));
+            if ( user.canEdit( document ) == false ) {
                 String header = "ConfAdmin servlet. ";
                 new ConfError( req, res, header, 6, user );
                 return;
@@ -359,7 +362,10 @@ public class ConfLogin extends Conference {
         // ******* CHANGE_USER **********
         if ( req.getParameter( "CHANGE_USER" ) != null ) {
             // Lets check that the user is an administrator
-            if ( super.userHasAdminRights( imcref, Integer.parseInt( "" + params.getMetaId() ), user ) == false ) {
+
+            DocumentMapper documentMapper = imcref.getDocumentMapper();
+            DocumentDomainObject document = documentMapper.getDocument(Integer.parseInt( "" + params.getMetaId() ));
+            if ( user.canEdit( document ) == false ) {
                 String header = "ConfAdmin servlet. ";
                 new ConfError( req, res, header, 6, user );
                 return;
@@ -417,7 +423,10 @@ public class ConfLogin extends Conference {
         if ( req.getParameter( "SAVE_USER" ) != null ) {
             // log("Ok , lets save an existing user") ;
             // Lets check that the user is an administrator
-            if ( super.userHasAdminRights( imcref, Integer.parseInt( "" + params.getMetaId() ), user ) == false ) {
+
+            DocumentMapper documentMapper = imcref.getDocumentMapper();
+            DocumentDomainObject document = documentMapper.getDocument(Integer.parseInt( "" + params.getMetaId() ));
+            if ( user.canEdit( document ) == false ) {
                 String header = "ConfAdmin servlet. ";
                 new ConfError( req, res, header, 6, user );
                 return;

@@ -1,11 +1,11 @@
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[CheckAdminRights]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[CheckAdminRights]
-GO
+;
 
 
 CREATE PROCEDURE CheckAdminRights
@@ -22,9 +22,9 @@ FROM users INNER JOIN
 WHERE roles.role_id = 0 AND users.user_id = @aUserId
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 

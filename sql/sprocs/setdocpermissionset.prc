@@ -1,11 +1,11 @@
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SetDocPermissionSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SetDocPermissionSet]
-GO
+;
 
 
 CREATE PROCEDURE SetDocPermissionSet @meta_id INT, @set_id INT, @permission_id INT AS
@@ -21,9 +21,9 @@ INSERT INTO doc_permission_sets
 VALUES (@meta_id,@set_id,@permission_id)
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 

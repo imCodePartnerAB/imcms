@@ -5,6 +5,8 @@ import imcode.external.diverse.VariableManager;
 import imcode.server.HTMLConv;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -116,7 +118,9 @@ public class ChatControl extends ChatBase {
 
         ImcmsServices imcref = Imcms.getServices();
 
-        if (userHasAdminRights(imcref, meta_Id, user)) {
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument(meta_Id);
+        if (user.canEdit( document )) {
             chatAdminLink = createAdminButton(req, ADMIN_BUTTON, metaId, chatName, user);
             //lets set up the kick out button OBS fixa detta
             adminButtonKickOut = createAdminButton(req, ADMIN_GET_RID_OF_A_SESSION, metaId, "", user);
@@ -206,12 +210,16 @@ public class ChatControl extends ChatBase {
             return;
         } else if (req.getParameter("logOut") != null) {
             logOut(session, res, imcref );
-        } else if (req.getParameter("kickOut") != null && userHasAdminRights(imcref, meta_Id, user)) {
-            kickOut(req, myChat, myGroup, imcref, user, metaId, res);
-            return;
         } else {
-            log.error("Fallthrough in ChatControl");
-            throw new RuntimeException("Fallthrough in ChatControl");
+            DocumentMapper documentMapper = imcref.getDocumentMapper();
+            DocumentDomainObject document = documentMapper.getDocument(meta_Id);
+            if (req.getParameter("kickOut") != null && user.canEdit( document )) {
+                kickOut(req, myChat, myGroup, imcref, user, metaId, res);
+                return;
+            } else {
+                log.error("Fallthrough in ChatControl");
+                throw new RuntimeException("Fallthrough in ChatControl");
+            }
         }
     } // DoPost
 

@@ -1,12 +1,12 @@
 SET QUOTED_IDENTIFIER ON 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 
 /****** Object:  Stored Procedure StartDocSet    Script Date: 2002-09-25 14:10:32 ******/
 if exists (select * from sysobjects where id = object_id('dbo.StartDocSet') and sysstat & 0xf = 4)
 	drop procedure dbo.StartDocSet
-GO
+;
 
 CREATE PROCEDURE StartDocSet @meta_id INT AS
 /**
@@ -25,10 +25,10 @@ IF @@ROWCOUNT = 0 BEGIN
 END
 
 
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF 
-GO
+;
 SET ANSI_NULLS ON 
-GO
+;
 

@@ -1,11 +1,11 @@
-	<table name="roles_rights" idMethod="null" skipSql="false" abstract="false">
-        <column name="role_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
-        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
-        <column name="set_id" required="true" type="TINYINT" primaryKey="false" autoIncrement="false" inheritance="false" />
-        <foreign-key foreignTable="roles" onUpdate="none" onDelete="none">
+	<table name="roles_rights">
+        <column name="role_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
+        <column name="set_id" required="true" type="TINYINT" primaryKey="false" autoIncrement="false" />
+        <foreign-key foreignTable="roles">
             <reference foreign="role_id" local="role_id" />
         </foreign-key>
-        <foreign-key foreignTable="meta" onUpdate="none" onDelete="none">
+        <foreign-key foreignTable="meta">
             <reference foreign="meta_id" local="meta_id" />
         </foreign-key>
     </table>

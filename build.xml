@@ -49,6 +49,7 @@
     <property name="templates" value="${WEB-INF}/templates"/>
     <property name="sql" value="${WEB-INF}/sql"/>
     <property name="sql-diff" value="${sql}/diff"/>
+    <property name="sql-sprocs" value="${sql}/sprocs"/>
 
     <!-- Paths for other templates -->
     <property name="texttemplates" value="${templates}/text"/>
@@ -178,19 +179,23 @@
     <target name="database-create" depends="init,sql">
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
-            userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${create-sql}"/>
+            userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" src="${create-sql}"/>
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
-            userid="${db-user}" password="${db-pass}" delimiter="GO" delimitertype="row" onerror="abort" src="${sql}/imcms${versionfilesuffix}-${defaultlanguage}.sql"/>
+            userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort">
+            <transaction src="${sql}/imcms${versionfilesuffix}-${defaultlanguage}.sql"/>
+        </sql>
 
     </target>
 
     <target name="database-drop" depends="init,sql">
 
-        <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
-            userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${drop-sql}"/>
+        <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
+            userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" src="${drop-sql}"/>
 
     </target>
+
+    <target name="database-recreate" depends="init,database-drop,database-create"/>
 
     <target name="install" depends="init,check-deployroot" description="Install files already built, without running 'build' first.">
         <copy todir="${webapproot}">
@@ -319,12 +324,9 @@
     </target>
 
     <target name="ddl.sql" depends="init,ddl.xml">
-        <taskdef name="torque-sql" classname="org.apache.torque.task.TorqueSQLTask" classpathref="libraries"/>
-
+        <taskdef name="ddl" classname="org.apache.commons.sql.task.DDLTask" classpathref="libraries"/>
         <mkdir dir="${tmp}"/>
-        <torque-sql xmlfile="${tmp}/ddl.xml" outputfile="ddl.sql" targetdatabase="mssql"
-                    templatepath="sql/torque/" basepathtodbprops="sql/base/" controlTemplate="sql/base/Control.vm"
-                    outputdirectory="${tmp}"/>
+        <ddl xmlfile="${tmp}/ddl.xml" output="${tmp}/ddl.sql" targetdatabase="${db-target}" dodrops="false"/>
     </target>
 
     <!-- Copies the libraries (jar-files) needed for building. -->
@@ -340,24 +342,32 @@
 
         <mkdir dir="${tmp}"/>
 
+        <cat destfile="${sprocs-sql}" orderby="path" filtering="true">
+            <fileset file="sql/conf/conf_sprocs.sql"/>
+            <fileset file="sql/billboard/billboard_sprocs.sql"/>
+            <fileset file="sql/chat/chat_sprocs.sql"/>
+            <fileset dir="sql/sprocs" includes="*.prc"/>
+        </cat>
+
         <cat destfile="${tmp}/imcms.sql" orderby="path" filtering="true">
             <fileset file="${tmp}/ddl.sql"/>
-            <fileset dir="sql/sprocs" includes="*.prc"/>
-
-            <fileset file="sql/conf/conf_sprocs.sql"/>
-
-            <fileset file="sql/billboard/billboard_sprocs.sql"/>
-
-            <fileset file="sql/chat/chat_sprocs.sql"/>
-            <fileset file="sql/chat/chat_newdb.sql"/>
-
             <fileset file="sql/data/types.sql"/>
+            <fileset file="sql/chat/chat_newdb.sql"/>
             <fileset file="sql/data/newdb.sql"/>
         </cat>
 
-        <cat destfile="${sprocs-sql}" orderby="path" filtering="true">
-            <fileset dir="sql/sprocs" includes="*.prc"/>
-        </cat>
+        <replace file="${tmp}/imcms.sql" token="-- ${db-target}"/>
+
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="libraries"/>
+
+        <if>
+            <equals arg1="${db-target}" arg2="mssql"/>
+            <then>
+                <concat append="true" destfile="${tmp}/imcms.sql">
+                    <fileset file="${sprocs-sql}"/>
+                </concat>
+            </then>
+        </if>
 
         <copy file="sql/delete_db.sql" tofile="${drop-sql}" filtering="true"/>
 

@@ -2,9 +2,7 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -35,9 +33,11 @@ public class SaveInclude extends HttpServlet {
         int meta_id = Integer.parseInt( meta_id_str );
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id );
 
-        // Check if user has permission to edit includes for this document
-        if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) ) {	// Checking to see if user may edit this
+        TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
+        if ( !permissionSet.getEditIncludes() ) {	// Checking to see if user may edit this
             sendPermissionDenied( imcref, out, meta_id, user );
             return;
         }
@@ -49,8 +49,6 @@ public class SaveInclude extends HttpServlet {
             included_meta_id = included_meta_id.trim();
             include_id = include_id.trim();
             if ( "".equals( included_meta_id ) ) {
-                DocumentMapper documentMapper = imcref.getDocumentMapper();
-                TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id );
                 document.removeInclude( Integer.parseInt(include_id) );
                 documentMapper.saveDocument( document, user );
                 imcref.updateMainLog( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id + "] on ["
@@ -70,11 +68,9 @@ public class SaveInclude extends HttpServlet {
                         return;
                     }
 
-                    DocumentMapper documentMapper = imcref.getDocumentMapper();
                     // Make sure the user has permission to share the included document
                     DocumentDomainObject includedDocument = documentMapper.getDocument( included_meta_id_int );
                     if ( user.canAddDocumentToAnyMenu( includedDocument ) ) {
-                        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id ) ;
                         document.setInclude( Integer.parseInt(include_id), includedDocument.getId() );
                         documentMapper.saveDocument( document, user );
                         documentMapper.setInclude( meta_id, Integer.parseInt( include_id ), included_meta_id_int );

@@ -1,2 +1,1 @@
-USE [MASTER]
-DROP DATABASE [@db-name@]
+DROP DATABASE @db-name@

@@ -1,6 +1,8 @@
 package com.imcode.imcms.servlet.conference;
 
 import imcode.server.*;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 import java.io.*;
@@ -45,7 +47,10 @@ public class ConfHelp extends Conference {
 
                 //lets see if user has adminrights
                 int metaId = getMetaId(req);
-                if (userHasAdminRights(imcref, metaId, user)) {
+
+                DocumentMapper documentMapper = imcref.getDocumentMapper();
+                DocumentDomainObject document = documentMapper.getDocument(metaId);
+                if (user.canEdit( document )) {
                     file = ADMIN_TEMPLATE;
                     if (params.getProperty("HELP_AREA").equalsIgnoreCase("TEMPLATESPEC")) {
                         file = ADMIN_TEMPLATE2;

@@ -1,271 +1,271 @@
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_AddNewConf]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_AddNewConf]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_AddNewDisc]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_AddNewDisc]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_AddNewForum]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_AddNewForum]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_AddNewTemplateLib]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_AddNewTemplateLib]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_AddReply]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_AddReply]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_AddTemplateLib]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_AddTemplateLib]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_AdminStatistics1]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_AdminStatistics1]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_AdminStatistics2]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_AdminStatistics2]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_CheckUserId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_CheckUserId]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_ConfUsersAdd]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_ConfUsersAdd]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_ConfUsersGetReplyDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_ConfUsersGetReplyDate]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_ConfUsersGetReplyOrder]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_ConfUsersGetReplyOrder]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_ConfUsersGetReplyOrderSel]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_ConfUsersGetReplyOrderSel]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_ConfUsersGetUserLevel]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_ConfUsersGetUserLevel]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_ConfUsersSetReplyOrder]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_ConfUsersSetReplyOrder]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_ConfUsersSetUserLevel]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_ConfUsersSetUserLevel]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_ConfUsersUpdate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_ConfUsersUpdate]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_ConfUsersUpdateLoginDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_ConfUsersUpdateLoginDate]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_ConvertReplyDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_ConvertReplyDate]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_DelForum]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_DelForum]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_DeleteDiscussion]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_DeleteDiscussion]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_DeleteForum]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_DeleteForum]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_DeleteReply]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_DeleteReply]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_FindForumName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_FindForumName]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_FindMetaId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_FindMetaId]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_FindTemplateLib]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_FindTemplateLib]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetAllConfUsersInList]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetAllConfUsersInList]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetAllDiscsInForum]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetAllDiscsInForum]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetAllDiscussions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetAllDiscussions]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetAllForum]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetAllForum]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetAllNbrOfDiscsToShow]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetAllNbrOfDiscsToShow]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetAllNewDiscussions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetAllNewDiscussions]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetAllOldDiscussions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetAllOldDiscussions]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetAllRepliesInDisc]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetAllRepliesInDisc]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetAllRepliesInDiscAdmin]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetAllRepliesInDiscAdmin]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetAllTemplateLibs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetAllTemplateLibs]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetAllUsersInList]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetAllUsersInList]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetConfLoginNames]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetConfLoginNames]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetDiscussionDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetDiscussionDate]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetDiscussionHeader]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetDiscussionHeader]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetFirstForum]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetFirstForum]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetForumName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetForumName]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetLastDiscussionId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetLastDiscussionId]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetLastLoginDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetLastLoginDate]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetLastLoginDate2]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetLastLoginDate2]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetNbrOfDiscs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetNbrOfDiscs]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetNbrOfDiscsToShow]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetNbrOfDiscsToShow]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetTemplateIdFromName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetTemplateIdFromName]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetTemplateLib]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetTemplateLib]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetTemplateLibName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetTemplateLibName]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetTime]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetTime]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_GetUserNames]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_GetUserNames]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_InsertFirstReply]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_InsertFirstReply]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_LinkForumToConf]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_LinkForumToConf]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_MemberInConf]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_MemberInConf]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_RenameForum]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_RenameForum]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_SearchText]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_SearchText]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_SelfRegRoles_AddNew]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_SelfRegRoles_AddNew]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_SelfRegRoles_Delete]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_SelfRegRoles_Delete]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_SelfRegRoles_GetAll]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_SelfRegRoles_GetAll]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_SelfRegRoles_GetAll2]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_SelfRegRoles_GetAll2]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_SetNbrOfDiscsToShow]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_SetNbrOfDiscsToShow]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_SetTemplateLib]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_SetTemplateLib]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_TestConfDb]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_TestConfDb]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_UpdateDiscussionModifyDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_UpdateDiscussionModifyDate]
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_UpdateReply]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[A_UpdateReply]
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -310,16 +310,16 @@ EXEC A_AddNewTemplateLib @meta_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER ON
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -373,16 +373,16 @@ WHERE A_replies.reply_id = @firstReplyId
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -427,16 +427,16 @@ EXEC A_linkForumToConf @meta_id, @newForumId
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -478,16 +478,16 @@ VALUES (@meta_id, @thisTemplateId )
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -528,16 +528,16 @@ WHERE A_discussion.discussion_id = @theDiscussionId
 EXEC A_UpdateDiscussionModifyDate @theDiscussionId
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -562,16 +562,16 @@ VALUES  ( @newTemplateLib)
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS OFF
-GO
+;
 
 
 
@@ -678,16 +678,16 @@ END
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS OFF
-GO
+;
 
 
 
@@ -786,16 +786,16 @@ END
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -830,16 +830,16 @@ WHERE usr.user_id = @wanted_user_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 /*
@@ -900,16 +900,16 @@ VALUES ( @conf_id, @user_id,  @lastLoginDate )
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -926,16 +926,16 @@ SELECT * FROM A_conf_users
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -974,16 +974,16 @@ return @retVal
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1022,16 +1022,16 @@ SELECT @retVal AS 'UserLevel'
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1074,16 +1074,16 @@ SELECT @returnVal AS 'UserLevel'
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1118,16 +1118,16 @@ AND A_conf_users_crossref.conf_id = @meta_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1186,16 +1186,16 @@ AND cf.conf_id  = @meta_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1246,16 +1246,16 @@ AND A_conf_users_crossref.conf_id = @meta_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1306,16 +1306,16 @@ AND A_conference.meta_id = @meta_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1368,16 +1368,16 @@ SELECT @year +'-'+ @month +'-'+ @day + ' ' +@hh + ':' + @mm + ':' + @ss
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1414,16 +1414,16 @@ conference and forum, that link must be removed before the forum can be deleted
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1460,16 +1460,16 @@ WHERE A_replies.parent_id = @aDiscId
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1504,16 +1504,16 @@ AS
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1592,16 +1592,16 @@ END
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1644,16 +1644,16 @@ SELECT @returnVal AS 'forum'
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1692,16 +1692,16 @@ SELECT @returnVal AS 'FoundMetaId'
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1738,16 +1738,16 @@ SELECT @returnVal AS 'TemplateLib'
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1780,16 +1780,16 @@ ORDER BY last_name
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1820,16 +1820,16 @@ WHERE d.forum_id = @aForumId
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1899,16 +1899,16 @@ ORDER BY disc.discussion_id DESC
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1943,16 +1943,16 @@ ORDER BY A_forum.forum_name
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -1983,16 +1983,16 @@ AND cf.conf_id = @meta_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2049,16 +2049,16 @@ ORDER BY disc.create_date DESC
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2109,16 +2109,16 @@ ORDER BY disc.create_date DESC
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2283,16 +2283,16 @@ END
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2377,16 +2377,16 @@ END
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2411,16 +2411,16 @@ FROM A_templates t
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2441,16 +2441,16 @@ ORDER BY last_name
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2531,16 +2531,16 @@ END
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2583,16 +2583,16 @@ SELECT @year +'-'+ @month +'-'+ @day + ' ' +@hh + ':' + @mm + ':' + @ss
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2644,16 +2644,16 @@ END
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2752,16 +2752,16 @@ SELECT @returnVal AS 'FirstForumId'
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2796,16 +2796,16 @@ SELECT @returnVal AS 'Forum_name'
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2852,16 +2852,16 @@ SELECT @returnVal AS 'LastDiscussionId'
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2904,16 +2904,16 @@ AND crossref.conf_id = @meta_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2956,16 +2956,16 @@ AND crossref.conf_id = @meta_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -2994,16 +2994,16 @@ WHERE A_discussion.forum_id = @forum_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3038,16 +3038,16 @@ SELECT @returnVal AS 'FirstForumId'
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3084,16 +3084,16 @@ SELECT @returnVal AS 'TemplateId'
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3132,16 +3132,16 @@ SELECT @returnVal AS 'TemplateLib'
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3176,16 +3176,16 @@ AND c.meta_id = @meta_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS OFF
-GO
+;
 
 
 
@@ -3201,16 +3201,16 @@ SELECT SUBSTRING( CONVERT(char(20),GETDATE(),20),1, 20) AS 'Now'
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3259,16 +3259,16 @@ SELECT @returnVal AS 'UserName'
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3319,16 +3319,16 @@ RETURN @returnReplyId
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3352,16 +3352,16 @@ VALUES  (@conf_id, @forum_id, 1 )
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3400,16 +3400,16 @@ AND crossref.conf_id = @meta_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3438,16 +3438,16 @@ WHERE A_forum.forum_id = @forum_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3666,16 +3666,16 @@ END
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3758,16 +3758,16 @@ END
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3814,16 +3814,16 @@ WHERE A_selfreg_roles.selfreg_id = @selfRegId
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3854,16 +3854,16 @@ AND c.meta_id = @theMetaId
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3898,16 +3898,16 @@ AND c.meta_id = @theMetaId
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3936,16 +3936,16 @@ WHERE forum_id = @forum_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3972,16 +3972,16 @@ SET template_id= @new_lib_id
 
 WHERE conf_id = @meta_id
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -3996,16 +3996,16 @@ select 'Hurra Conferensen db svarar!'
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -4042,16 +4042,16 @@ WHERE A_discussion.discussion_id =  @theDiscussionId
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 
 
@@ -4086,9 +4086,9 @@ WHERE rep.reply_id = @reply_id
 
 
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 

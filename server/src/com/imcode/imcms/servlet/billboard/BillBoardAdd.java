@@ -5,6 +5,8 @@ import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.HTMLConv;
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
 
@@ -73,7 +75,10 @@ public class BillBoardAdd extends BillBoard {
         ImcmsServices imcref = Imcms.getServices();
 
         int metaId = Integer.parseInt( params.getProperty( "META_ID" ) );
-        if ( userHasRightToEdit( imcref, metaId, user ) ) {
+
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( metaId );
+        if ( user.canEdit( document ) ) {
 
             // ********* CANCEL ********
             if ( req.getParameter( "CANCEL" ) != null || req.getParameter( "CANCEL.x" ) != null ) {
@@ -342,7 +347,10 @@ public class BillBoardAdd extends BillBoard {
         ImcmsServices imcref = Imcms.getServices();
 
         int metaId = Integer.parseInt( params.getProperty( "META_ID" ) );
-        if ( userHasRightToEdit( imcref, metaId, user ) ) {
+
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( metaId );
+        if ( user.canEdit( document ) ) {
             // Lets Get the session user id
             // Ok, Lets get the last discussion in that forum
             HttpSession session = req.getSession( false );

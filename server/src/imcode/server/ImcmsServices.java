@@ -99,12 +99,6 @@ public interface ImcmsServices extends Database, Clock {
     Object[] getDemoTemplate(int template_id)
 	throws IOException ;
 
-    boolean checkDocAdminRights(int meta_id, UserDomainObject user, int permissions)
-	;
-
-    boolean checkDocAdminRightsAny(int meta_id, UserDomainObject user, int permissions)
-	;
-
     // save demo template
     void saveDemoTemplate(int template_id,byte [] data, String suffix) throws IOException
     ;

@@ -1,11 +1,11 @@
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[AddUserRole]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[AddUserRole]
-GO
+;
 
 
 CREATE PROCEDURE AddUserRole
@@ -27,9 +27,9 @@ IF @@rowcount  = 0 BEGIN
  VALUES( @aUser_id , @aRole_id)
 END
 
-GO
+;
 SET QUOTED_IDENTIFIER OFF
-GO
+;
 SET ANSI_NULLS ON
-GO
+;
 

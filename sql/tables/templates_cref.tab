@@ -1,10 +1,10 @@
-	<table name="templates_cref" idMethod="null" skipSql="false" abstract="false">
-        <column name="group_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
-        <column name="template_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
-        <foreign-key foreignTable="templategroups" onUpdate="none" onDelete="none">
+	<table name="templates_cref">
+        <column name="group_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
+        <column name="template_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
+        <foreign-key foreignTable="templategroups">
             <reference foreign="group_id" local="group_id" />
         </foreign-key>
-        <foreign-key foreignTable="templates" onUpdate="none" onDelete="none">
+        <foreign-key foreignTable="templates">
             <reference foreign="template_id" local="template_id" />
         </foreign-key>
     </table>

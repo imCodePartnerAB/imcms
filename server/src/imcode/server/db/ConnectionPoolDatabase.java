@@ -21,7 +21,7 @@ public class ConnectionPoolDatabase implements Database {
             Connection connection = connectionPool.getConnection();
             try {
                 connection.setAutoCommit( false );
-                databaseCommand.executeOn( new DatabaseConnection( connection ) );
+                databaseCommand.executeOn( new DefaultDatabaseConnection( connection ) );
                 connection.commit();
             } catch ( Throwable t ) {
                 connection.rollback();

@@ -1,7 +1,7 @@
 package imcode.server.db;
 
-public abstract class DatabaseCommand {
+public interface DatabaseCommand {
 
-    public abstract void executeOn( DatabaseConnection connection ) ;
+    void executeOn( DatabaseConnection connection ) ;
 
 }

@@ -77,7 +77,7 @@ public class TestDailyRollingFileAppender extends TestCase {
     }
 
     private static File getTempFile() {
-        String tmpDir = System.getProperty("java.io.tmpdir") ;
+        String tmpDir = "tmp" ;
         File filePath = new File(tmpDir, TestDailyRollingFileAppender.class.getName()+".test") ;
         return filePath;
     }

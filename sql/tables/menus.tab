@@ -1,9 +1,9 @@
-	<table name="menus" idMethod="null" skipSql="false" abstract="false">
-        <column autoIncrement="true" name="menu_id" primaryKey="true" required="true" type="INTEGER" inheritance="false" />
-        <column name="meta_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
-        <column name="menu_index" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
-        <column name="sort_order" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
-        <foreign-key foreignTable="meta" onUpdate="none" onDelete="none">
+	<table name="menus">
+        <column autoIncrement="true" name="menu_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="meta_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
+        <column name="menu_index" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
+        <column name="sort_order" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
+        <foreign-key foreignTable="meta">
             <reference foreign="meta_id" local="meta_id" />
         </foreign-key>
         <unique>
