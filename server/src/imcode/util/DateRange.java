@@ -70,4 +70,14 @@ public class DateRange {
     public boolean equals(DateRange dateRange) {
 	return this.startDate.equals(dateRange.startDate) && this.endDate.equals(dateRange.endDate) ;
     }
+	
+    /**
+       Compares this DateRange to another.
+
+       @return true If and only if the ranges overlap.
+    **/
+    public boolean overlap(DateRange dateRange) {
+    return this.contains(dateRange.startDate) || this.contains(dateRange.endDate) ;
+    }
+			
 }

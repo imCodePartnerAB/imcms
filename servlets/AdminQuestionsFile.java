@@ -111,21 +111,26 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	    boolean ok = true;
 	    if( !checkDate(date1) )	
 		{
-		date1=errMsgDate;
-		ok = false;
+			date1=errMsgDate;
+			ok = false;
 	    }
 
 	    if( !checkDate(date2) )	
 		{
-		date2=errMsgDate;
-		ok = false;
-	    }
-		
-		if( !checkDates(req,date1,date2) )	
-		{
-			date1=errMsgDate; date2=errMsgDate;
+			date2=errMsgDate;
 			ok = false;
 	    }
+		
+		try 
+		{
+			DateRange range = new DateRange(dateForm.parse(date1), dateForm.parse(date2));
+			if( !checkDates(req,range) )	
+			{
+				date1=errMsgDate; date2=errMsgDate;
+				ok = false;
+	    	}
+	    }
+		catch(ParseException ignored) { }			
 		
 	    if( text.length()<1 )
 		{
@@ -264,7 +269,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	return true;
     }
 	
-	private boolean checkDates(HttpServletRequest req, String date1Str, String date2Str)
+	private boolean checkDates(HttpServletRequest req, DateRange range)
 	{
 		HttpSession session = req.getSession();
 		List questionList = (List)session.getAttribute("lines");
@@ -273,17 +278,8 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 		while ( qIterator.hasNext() ) 
 		{
 	    	Poll aPollQuestion = (Poll)qIterator.next() ;
-			try
-	    	{
-				if( aPollQuestion.getDateRange().contains(dateForm.parse(date1Str)) || aPollQuestion.getDateRange().contains(dateForm.parse(date2Str)) ) 
-				{
-					return false ;
-	    		}
-			}
-			catch(java.text.ParseException pe)
-			{
-				return false;
-	    	}
+			
+			if( (range).overlap(aPollQuestion.getDateRange()) ) {return false ;	}
 		}
 		
 		return true;
@@ -315,7 +311,6 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	DateRange dateRange = new DateRange(new Date(0),new Date(0)) ;
 	newPollList.add(new Poll("",dateRange)) ;
 	return newPollList ;
-
-    }
+	}
 
 } // End of class
