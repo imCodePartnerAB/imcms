@@ -34,6 +34,7 @@ function doClear(){
 function setDef() {
 	var f = document.forms.imgProp;
 	if (!isNS && f.imageref.value == "") f.image_align.selectedIndex = 0;
+	changeLinkType(1) ;
 }
 
 function checkFileName() {
@@ -61,17 +62,33 @@ function checkFileName() {
 		return true;
 	}
 }
+
+function changeLinkType(val) {
+	var defVals = new Array("meta_id","http://") ;
+	var f = document.forms.imgProp ;
+	var rad = f.linkType ;
+	var url = f.imageref_link ;
+	if (url.value == "" || url.value == "meta_id" || url.value == "http://") {
+		url.value = defVals[val] ;
+		rad[val].checked = 1 ;
+	}
+}
+
+function checkLinkType() {
+	var f = document.forms.imgProp ;
+	var url = f.imageref_link ;
+	if (url.value == "meta_id" || url.value == "http://") {
+		url.value = "" ;
+	}
+	return true ;
+}
 //-->
 </script>
 
-<!-- script src="/javascript/imcms.js" type="text/javascript"></script -->
-
 </head>
-<body bgcolor="#FFFFFF" onLoad="focusField('ImageUploadForm','file'); setDef();"
->
-<!--
-<body bgcolor="#FFFFFF" onLoad="focusField('ImageUpload','file'); setDef(); openImageHelp();" onUnLoad="closeImageHelp();">
- -->
+<body bgcolor="#FFFFFF" onLoad="focusField('ImageUploadForm','file'); setDef();">
+
+
 <script>
 imcmsGui("outer_start", null);
 imcmsGui("head", null);
@@ -137,7 +154,7 @@ writeFormField("FILE","file\" id=\"theFile",54,null,null,null);
 	</table></td>
 </tr>
 </form>
-<form name="imgProp" method="POST" action="SaveImage">
+<form name="imgProp" method="POST" action="SaveImage" onSubmit="return checkLinkType(); return false">
 <input type="HIDDEN" name="meta_id" value="#getMetaId#">
 <input type="HIDDEN" name="img_no" value="#img_no#">
 <input type="HIDDEN" name="origW" value="#origW#">
@@ -270,7 +287,18 @@ writeFormField("TEXT","alt_text",92,255,"100%","#imgAltText#");
 	<td colspan="2">&nbsp;<br><script>imcHeading("<? sv/change_img.html/43/1 ?>","656");</script></td>
 </tr>
 <tr>
-	<td nowrap><? sv/change_img.html/44 ?></td>
+	<td nowrap>
+	<table border="0" cellspacing="0" cellpadding="0" width="100%">
+	<tr>
+		<td rowspan="2" nowrap><? sv/change_img.html/44 ?></td>
+		<td><input type="radio" name="linkType" id="linkType0" value="0" onClick="changeLinkType(0);"></td>
+		<td><label for="linkType0"><? sv/change_img.html/4000 ?></label></td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="linkType" id="linkType1" value="1" onClick="changeLinkType(1);"></td>
+		<td><label for="linkType1"><? sv/change_img.html/4001 ?></label></td>
+	</tr>
+	</table></td>
 	<td><script>
 writeFormField("TEXT","imageref_link",92,255,"100%","#imgRefLink#");
 </script></td>
