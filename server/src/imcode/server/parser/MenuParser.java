@@ -329,8 +329,8 @@ class MenuParser {
         String imageUrl = document.getMenuImage();
         String imageTag = imageUrl != null && imageUrl.length() > 0
                           ? "<img src=\"" + StringEscapeUtils.escapeHtml( imageUrl ) + "\" border=\"0\">" : "";
-        String headline = StringEscapeUtils.escapeHtml( document.getHeadline() );
-        if ( headline.length() == 0 ) {
+        String headline = document.getHeadline() ;
+        if ( StringUtils.isBlank( headline ) ) {
             headline = "&nbsp;";
         } else {
             if ( !document.isPublished() ) {
