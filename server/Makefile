@@ -6,7 +6,7 @@ PACKAGES = \
            imcode.external.diverse
 
 JAVA_DEV_ROOT   = .
-INCLUDES	= /usr/local/java/Opta2000.jar:/usr/local/java/jakarta-oro-2.0.2-dev-2.jar
+INCLUDES	= /usr/local/lib/java/Opta2000.jar:/usr/local/lib/java/jakarta-oro-2.0.2-dev-2.jar:/usr/local/lib/java/jsdk.jar
 
 export
     
