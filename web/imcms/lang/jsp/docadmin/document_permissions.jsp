@@ -215,6 +215,12 @@
 <form>
 #gui_bottom()
 #gui_outer_end()
+<%
+    String adminButtons = Html.getAdminButtons( user, document, request, response ) ;
+    if (!"".equals( adminButtons )) {
+        %><center><%= adminButtons %></center><%
+    }
+%>
 </body>
 </html>
 </vel:velocity>
