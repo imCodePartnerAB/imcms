@@ -33,13 +33,12 @@ public class LogOut extends HttpServlet {
 			res.sendRedirect(start_url) ;              
 			return ;
 		}
-		String lang_pf = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
 		Vector vec = new Vector() ;
 		vec.add("#start#") ;
 		vec.add(start_url) ;
 		vec.add("#login#") ;
 		vec.add(login_url) ;
-		String htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"logged_out.html",lang_pf) ;
+		String htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"logged_out.html",user.getLangPrefix()) ;
 		session.invalidate() ;
 		out.print(htmlStr) ;
 	}

@@ -1743,6 +1743,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public	int incCounter() {
 	m_SessionCounter += 1 ;
+	sqlUpdateProcedure( "IncSessionCounter" ) ;
 	return m_SessionCounter ;
     }
 
@@ -1760,7 +1761,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public	int setCounter(int value) {
 	m_SessionCounter = value ;
-	this.sqlProcedure("SetSessionCounterValue '" + value +"'");
+	this.sqlUpdateProcedure("SetSessionCounterValue '" + value +"'");
 	return m_SessionCounter ;
     }
 

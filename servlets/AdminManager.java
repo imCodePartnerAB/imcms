@@ -116,16 +116,15 @@ public class AdminManager extends Administrator {
 	    this.doGet(req,res) ;
 	    return ;
 	}
-	
-		res.setContentType("text/html");
-		PrintWriter out = res.getWriter();
-		out.println("url" +url);
-	
+
+	res.setContentType("text/html");
+	PrintWriter out = res.getWriter();
+	out.println("url" +url);
+
 	// Ok, Lets redirect the user to the right adminservlet	
 	this.log("redirects + to:" + url) ;		
  	res.sendRedirect(url) ;
-    } 
-	
+    }
 
     /**
        Init: Detects paths and filenames.

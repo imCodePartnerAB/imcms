@@ -132,14 +132,8 @@ public class GetDoc extends HttpServlet {
 		value = "" ;
 	    }
 	    session.setAttribute("browser_id",value) ;
-	    if ( !( user.getString("login_name").equals("user") && user.getString("login_password").equals("user") && req.getParameter("no_count")!=null)) {
-		//ok its not user user whith param no_count so lets increment the sessioncounter
-		IMCServiceRMI.incCounter(imcserver) ;
-		IMCServiceRMI.sqlUpdateProcedure( imcserver, "IncSessionCounter" ) ;
-	    }
-	    // No logon.isDone means he hasn't logged in.
-	    // Save the request URL as the true target and redirect to the login page.
-	    //log (HttpUtils.getRequestURL(req).toString()+"?"+req.getQueryString()) ;
+
+	    StartDoc.incrementSessionCounter(imcserver,user,req) ;
 	}
 
 	String[] emp_ary = req.getParameterValues("emp") ;
@@ -150,10 +144,7 @@ public class GetDoc extends HttpServlet {
 	String sqlStr = "select doc_type from meta where meta_id = " + meta_id;
 	String doc_type_str = null ;
 	if( (doc_type_str = IMCServiceRMI.sqlQueryStr( imcserver,sqlStr )) == null ) {
-	    //		if ( imc.sqlQueryStr(sqlStr) == null ) {
-	    //			htmlStr = imc.parseDoc( null,"no_page.html","se" ) ;
-	    String lang_pf = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
-	    return IMCServiceRMI.parseDoc( imcserver, null,"no_page.html",lang_pf ) ;
+	    return IMCServiceRMI.parseDoc( imcserver, null,"no_page.html",user.getLangPrefix() ) ;
 	}
 
 	// FIXME: One of the places that need fixing. Number one, we should put the no-permission-page
@@ -206,7 +197,7 @@ public class GetDoc extends HttpServlet {
 	    return null ;
 
 	case 6:	//browser-doc
-	    String br_id = (String)req.getSession(false).getValue("browser_id") ;
+	    String br_id = (String)session.getAttribute("browser_id") ;
 	    sqlStr = "select top 1 to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = "+meta_id+" and '"+br_id+"' like user_agent order by value desc" ;
 	    String tmp = IMCServiceRMI.sqlQueryStr(imcserver,sqlStr) ;
 	    if ( tmp != null && (!"".equals(tmp)) ) {
