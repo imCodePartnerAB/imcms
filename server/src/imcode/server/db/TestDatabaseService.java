@@ -309,6 +309,12 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertFalse( mimer.sproc_FindMetaId(66666) );
     }
 
+    public void test_sproc_getDocs() {
+        assertEquals( 1, sqlServer.sproc_getDocs(1, 1, 10000).length );
+        assertEquals( 1, mySql.sproc_getDocs(1, 1, 10000).length );
+        assertEquals( 1, mimer.sproc_getDocs(1, 1, 10000).length );
+    }
+
     // Below is helper functions to more than one test.
 
     private static DatabaseService.Table_users static_createDummyUser( int nextFreeUserId ) {

@@ -556,13 +556,13 @@ public class DatabaseService {
         } );
     }
 
-    // todo döp om denna till, userExists eller nåt och ändra signaturen
     /**
      * Because different databses treats upper/lower case differently this method makes a
      * ignoreCases  match.
      * @param userName
      * @return
      */
+    // todo döp om denna till, userExists eller nåt
     boolean sproc_FindUserName( String userName ) {
         String sql = "SELECT login_name FROM users WHERE LOWER(login_name) = ? ";
         Object[] paramValues = new Object[]{userName.toLowerCase()};
@@ -730,6 +730,7 @@ public class DatabaseService {
         return rowCount;
     }
 
+    // todo: Döp om till documentExixts eller nåt...
     boolean sproc_FindMetaId( int meta_id ) {
         String sql = "SELECT meta_id FROM meta WHERE meta_id = ?";
         Object[] paramValues = new Object[]{ new Integer( meta_id )};
@@ -740,5 +741,100 @@ public class DatabaseService {
             }
         } );
         return queryResult.size() == 1;
+    }
+
+    /**
+     *
+     * @param meta_id Document that will have the link
+     * @param existing_meta_id Document that will be linked to
+     * @param doc_menu_no Menu number in meta_id
+     * @return 0 if already exists, 1 if new link was added.
+     */
+    // todo: Testa denna!!! Och gå igenom nogrannt!!!
+    int sproc_AddExistingDocToMenu( int meta_id, int existing_meta_id, int doc_menu_no ) {
+        // test if this is the first child
+        String sqlLinksCount = "select count(*) from childs where meta_id = ?  and menu_sort = ? ";
+        Object[] paramValuesLinksCount = new Object[]{ new Integer( meta_id ), new Integer( doc_menu_no )};
+        ArrayList countResult = sqlProcessor.executeQuery( sqlLinksCount, paramValuesLinksCount, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Integer(rs.getInt(1));
+            }
+        } );
+        Integer countItem = (Integer)countResult.get(0);
+
+        Integer manualSortOrder = null;
+        if( countItem.intValue() > 0 ) {// update manual_sort_order
+            String sqlSortOrder = "select max(manual_sort_order) from childs where meta_id = ? and menu_sort = ?";
+            Object[] paramValuesSortOrder = new Object[]{ new Integer( meta_id ), new Integer( doc_menu_no )};
+            ArrayList sortOrderResult = sqlProcessor.executeQuery( sqlSortOrder, paramValuesSortOrder, new SQLProcessor.ResultProcessor() {
+                Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                    return new Integer(rs.getInt(1));
+                }
+            } );
+            manualSortOrder = (Integer)sortOrderResult.get(0);
+        } else {
+            manualSortOrder = new Integer(500);
+        }
+
+        //- test if child already exist in this menu. If not, then we will add the child to the menu.
+        String sqlThisLinksCount = "select count(*) from childs where meta_id = ? and to_meta_id = ? and menu_sort = ?";
+        Object[] paramValuesThisLinksCount = new Object[]{ new Integer( meta_id), new Integer( existing_meta_id ), new Integer(doc_menu_no ) } ;
+        ArrayList queryResult = sqlProcessor.executeQuery( sqlThisLinksCount, paramValuesThisLinksCount, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Integer(rs.getInt(1));
+            }
+        } );
+
+        Integer thisCountItem = (Integer)queryResult.get(0);
+        if( thisCountItem.intValue() == 0 ) {
+            String sql = "insert into childs( meta_id, to_meta_id, menu_sort, manual_sort_order) values( ?, ?, ?, ? )";
+            Object[] paramValues = new Object[]{ new Integer( meta_id ), new Integer( existing_meta_id ), new Integer(doc_menu_no), manualSortOrder };
+            return sqlProcessor.executeUpdate( sql, paramValues );
+        } else {
+            return 0;
+        }
+    }
+
+    static class View_DocumentForUser {
+        public View_DocumentForUser( int meta_id, int parentcount, String meta_headline, int doc_type ) {
+            this.meta_id = meta_id;
+            this.parentcount = parentcount;
+            this.meta_headline = meta_headline;
+            this.doc_type = doc_type;
+        }
+
+        int meta_id;
+        int parentcount;
+        String meta_headline;
+        int doc_type;
+    }
+    /**
+     * Lists documents user is allowed to see.
+     * @param user_id
+     * @param start
+     * @param end
+     * @return
+     */
+    // todo: döp om till getDocsForUser eller nåt.
+    // todo: Tog bort i första raden ett DISTINCT från COUNT(DISTINCT c.meta_id) till COUNT(c.meta_id), fundera igenom om det gör något?
+    View_DocumentForUser[] sproc_getDocs( int user_id, int start, int end ) {
+        String sql = "SELECT DISTINCT m.meta_id, COUNT(c.meta_id) parentcount, meta_headline, doc_type FROM meta m " +
+            "LEFT JOIN childs c ON c.to_meta_id = m.meta_id " +
+            "LEFT JOIN roles_rights rr  ON rr.meta_id = m.meta_id AND rr.set_id < 4 " +
+            "JOIN user_roles_crossref urc ON urc.user_id = ? AND ( urc.role_id = 0 OR ( urc.role_id = rr.role_id ) OR m.shared = 1 ) " +
+            "WHERE m.activate = 1 AND m.meta_id > (?-1) AND m.meta_id < (?+1) " +
+            "GROUP BY m.meta_id,m.meta_headline,m.doc_type,c.to_meta_id " +
+            "ORDER BY m.meta_id";
+        Object[] paramValues = new Object[]{ new Integer( user_id ), new Integer( start ), new Integer( end )};
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                int meta_id = rs.getInt("meta_id");
+                int parentcount = rs.getInt("parentcount");
+                String meta_headline = rs.getString("meta_headline");
+                int doc_type = rs.getInt("doc_type");
+                return new View_DocumentForUser(meta_id, parentcount, meta_headline, doc_type);
+            }
+        } );
+        return (View_DocumentForUser[])queryResult.toArray( new View_DocumentForUser[ queryResult.size() ]);
     }
 }
