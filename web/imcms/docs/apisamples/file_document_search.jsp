@@ -18,14 +18,23 @@ java.util.*,
         FileDocument.FileDocumentFile[] files = fileDocument.getFiles() ;
         Arrays.sort( files, new FileDocumentFileSizeComparator() );
         %>
-        <%= fileDocument.getId() %><ul><%
+        <%= fileDocument.getId() %>
+        <ul><%
             for ( int j = 0; j < files.length; j++ ) {
                 FileDocument.FileDocumentFile file = files[j];
-
-                BufferedImage image = ImageIO.read(file.getInputStreamSource().getInputStream()) ;
-                %><li><%= file.getId() %>: <%= file.getFilename() %> - <%= file.getMimeType() %> - <%= file.getInputStreamSource().getSize() %><% if (null != image) { %> - Image-size: <%= image.getWidth() %>x<%=image.getHeight()%><% } %></li><%
-            }
-        %></ul><%
+                boolean isDefault = fileDocument.getDefaultFileId().equals( file.getId() ) ;
+                BufferedImage image = ImageIO.read(file.getInputStreamSource().getInputStream()) ; %>
+                <li>
+                    <% if (isDefault) { %><strong><%}%>
+                    <%= file.getId() %>:
+                    <%= file.getFilename() %> - <%= file.getMimeType() %> - <%= file.getInputStreamSource().getSize() %>
+                    <% if (null != image) { %>
+                        - Image-size: <%= image.getWidth() %>x<%=image.getHeight()%>
+                    <% } %>
+                    <% if (isDefault) { %></strong><%}%>
+                </li>
+            <% } %>
+        </ul><%
     } %>
     </body>
 </html>
