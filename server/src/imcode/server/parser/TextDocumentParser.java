@@ -493,7 +493,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 break;
             case IMCConstants.MENU_SORT_BY_HEADLINE:
             default:
-                childsComparator = new MenuItemHeadlineComparator( lang_prefix );
+                childsComparator = new MenuItemHeadlineComparator( service.getDefaultLanguageAsIso639_2() );
         }
 
         Collections.sort( currentMenu, childsComparator );
@@ -504,12 +504,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         private Collator collator;
 
         private MenuItemHeadlineComparator( String lang ) {
-            Locale locale = null ;
+            Locale locale = Locale.ENGLISH ;
             try {
                 locale = new Locale( LanguageMapper.convert639_2to639_1( lang ) );
-            } catch ( LanguageMapper.LanguageNotSupportedException e ) {
-                locale = Locale.ENGLISH ;
-            }
+            } catch ( LanguageMapper.LanguageNotSupportedException ignored ) {}
             collator = Collator.getInstance( locale );
         }
 
