@@ -8,7 +8,6 @@ import imcode.util.DateHelper;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.collections.comparators.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -27,6 +26,9 @@ public class DocumentMapper {
     private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
     private static final int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
+
+    private static final int META_HEADLINE_MAX_LENGTH = 255;
+    private static final int META_TEXT_MAX_LENGTH = 1000;
 
     public DocumentMapper(IMCServiceInterface service, ImcmsAuthenticatorAndUserMapper imcmsAAUM) {
         this.service = service;
@@ -572,11 +574,13 @@ public class DocumentMapper {
         makeDateSQL( "activated_datetime", activatedDatetime, sqlUpdateColumns, sqlUpdateValues ) ;
         makeDateSQL( "archived_datetime", archivedDateTime, sqlUpdateColumns, sqlUpdateValues );
         makeDateSQL( "date_created", createdDatetime, sqlUpdateColumns, sqlUpdateValues );
-        makeStringSQL( "meta_headline", headline, sqlUpdateColumns, sqlUpdateValues );
+        String headlineThatFitsInDB = headline.substring(0, Math.min( headline.length(), META_HEADLINE_MAX_LENGTH-1 ) );
+        makeStringSQL( "meta_headline", headlineThatFitsInDB, sqlUpdateColumns, sqlUpdateValues );
         makeStringSQL( "meta_image", image, sqlUpdateColumns, sqlUpdateValues );
         makeDateSQL( "date_modified", modifiedDateTime, sqlUpdateColumns, sqlUpdateValues );
         makeStringSQL( "target", target, sqlUpdateColumns, sqlUpdateValues );
-        makeStringSQL( "meta_text", text, sqlUpdateColumns, sqlUpdateValues );
+        String textThatFitsInDB = text.substring(0, Math.min( text.length(), META_TEXT_MAX_LENGTH-1 ) );
+        makeStringSQL( "meta_text", textThatFitsInDB, sqlUpdateColumns, sqlUpdateValues );
         makeStringSQL( "lang_prefix", language, sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSQL( "archive", isArchived, sqlUpdateColumns, sqlUpdateValues );
         makeIntSQL( "publisher_id", (publisher == null ? null : new Integer(publisher.getUserId())), sqlUpdateColumns, sqlUpdateValues) ;
