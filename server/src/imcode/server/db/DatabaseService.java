@@ -210,7 +210,7 @@ public class DatabaseService {
         SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int id = rs.getInt( "role_id" );
-                String name = rs.getString( "role_name" ).trim();
+                String name = rs.getString( "role_name" );
 
                 Table_roles result = null;
                 if( !name.equalsIgnoreCase( "users" ) ) { // all roles but user should be mapped.

@@ -38,6 +38,11 @@ Förändringar mot newdb.sql
 * Ändrade getDate() till CURRENT_TIMESTAMP och droppade formateringen i sys_data! Kolla upp vart denna används, id = 2
 * Ändrade getDate() till CURRENT_TIMESTAMP i meta
 
+För att slippa göra trim på strängar i koden ändrade jag de (få) ställena med char till varchar
+* CREATE TABLE lang_prefixes, lang_prefix char (3),
+* CREATE TABLE roles, role_name char (25) NOT NULL
+* CREATE TABLE user_types, type_name char (30) och lang_prefix char (3) NOT NULL ,
+
 Sparar help.sql tills jag vet mer hur detta skapats.
 
 Nästa steg

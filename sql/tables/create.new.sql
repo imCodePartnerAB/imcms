@@ -82,7 +82,7 @@ CREATE TABLE ip_accesses (
 
 CREATE TABLE lang_prefixes (
 	lang_id int NOT NULL ,
-	lang_prefix char (3),
+	lang_prefix varchar (3),
 	PRIMARY KEY (lang_id)
 );
 
@@ -132,7 +132,7 @@ CREATE TABLE readrunner_user_data (
 
 CREATE TABLE roles (
 	role_id int NOT NULL ,
-	role_name char (25) NOT NULL ,
+	role_name varchar (25) NOT NULL ,
 	permissions int NOT NULL ,
 	admin_role int NOT NULL ,
 	PRIMARY KEY (role_id)
@@ -204,8 +204,8 @@ CREATE TABLE user_flags (
 
 CREATE TABLE user_types (
 	user_type int NOT NULL ,
-	type_name char (30) ,
-	lang_prefix char (3) NOT NULL ,
+	type_name varchar (30) ,
+	lang_prefix varchar (3) NOT NULL ,
 	PRIMARY KEY (user_type,lang_prefix)
 );
 
