@@ -133,8 +133,8 @@ INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(11,'Zip-fi
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(12,'AVI-film (video/x-msvideo)','video/x-msvideo','se')
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(13,'Quicktime-film (video/quicktime)','video/quicktime','se')
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(14,'MPEG-film (video/mpeg)','video/mpeg','se')
-INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(15,'Microsoft Word-dokument (application/msword)','application/msword','se')
-INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(16,'Microsoft Excel-dokument (application/vnd.ms-excel)','application/vnd.ms-excel','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(15,'MS Word-dokument (application/msword)','application/msword','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(16,'MS Excel-dokument (application/vnd.ms-excel)','application/vnd.ms-excel','se')
 SET IDENTITY_INSERT mime_types OFF
 
 SET IDENTITY_INSERT mime_types ON
@@ -153,8 +153,8 @@ INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(11,'Zip-fi
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(12,'AVI-movie (video/x-msvideo)','video/x-msvideo','en')
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(13,'Quicktime-movie (video/quicktime)','video/quicktime','en')
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(14,'MPEG-movie (video/mpeg)','video/mpeg','en')
-INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(15,'Microsoft Word-document (application/msword)','application/msword','en')
-INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(16,'Microsoft Excel-document (application/vnd.ms-excel)','application/vnd.ms-excel','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(15,'MS Word-document (application/msword)','application/msword','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(16,'MS Excel-document (application/vnd.ms-excel)','application/vnd.ms-excel','en')
 SET IDENTITY_INSERT mime_types OFF
 
 SET IDENTITY_INSERT SORT_BY ON
