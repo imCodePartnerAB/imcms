@@ -84,6 +84,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		ParserParameters parse_params = paramsToParse;
 		String template_name = parse_params.getTemplate();
 		String param_value = parse_params.getParameter();
+		String extparam_value = parse_params.getExternalParameter();
 
 	    DBConnect dbc = new DBConnect(connPool) ;
 	    dbc.getConnection() ;
@@ -584,6 +585,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    tags.setProperty("#saveSortStop*#","") ;
 		
 	    tags.setProperty("#param#", param_value);
+		tags.setProperty("#externalparam#",extparam_value);
 
 	    // Give the user a row of buttons if he is privileged enough.
 	    if ( serverObject.checkDocAdminRights(meta_id,user) && flags >= 0 ) {

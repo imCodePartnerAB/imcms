@@ -8,6 +8,7 @@ import imcode.util.log.* ;
 public class ParserParameters {
 	private String _template; 	//used to store the template if not default is wanted
 	private String _param;		//used to store the parameter param
+	private String _externalParam; //used to store the param prodused from external class.
 	
 	public ParserParameters(){
 	}
@@ -21,6 +22,11 @@ public class ParserParameters {
 		_param = param;
 	}
 	
+	public ParserParameters(String template, String param, String externalParam){
+		_template = template;
+		_param = param;
+		_externalParam = externalParam;
+	}
 	
 	// set methods
 	public void setTemplate(String template)
@@ -33,6 +39,10 @@ public class ParserParameters {
 		_param = param;
 	}
 	
+	public void setExternalParameter(String externalparam)
+	{
+		_externalParam = externalparam;
+	}
 	// get methods
 	public String getTemplate()
 	{
@@ -42,5 +52,10 @@ public class ParserParameters {
 	public String getParameter()
 	{
 		return	_param == null ? "":_param;
+	}
+	
+	public String getExternalParameter()
+	{
+		return	_externalParam == null ? "":_externalParam;;
 	}
 }
