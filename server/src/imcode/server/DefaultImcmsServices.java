@@ -84,8 +84,12 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initKeyStore() {
+        String keyStoreType = config.getKeyStoreType();
+        if (StringUtils.isBlank( keyStoreType ) ) {
+            keyStoreType = KeyStore.getDefaultType() ;
+        }
         try {
-            keyStore = KeyStore.getInstance( KeyStore.getDefaultType() ) ;
+            keyStore = KeyStore.getInstance( keyStoreType ) ;
             keyStore.load( null, null );
         } catch ( GeneralSecurityException e ) {
             throw new UnhandledException( e );
@@ -93,7 +97,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             throw new UnhandledException( e );
         }
         String keyStoreUrlString = config.getKeyStoreUrl();
-        if ( null != keyStoreUrlString ) {
+        if ( StringUtils.isNotBlank(keyStoreUrlString) ) {
             try {
                 URL keyStoreUrl = new URL( keyStoreUrlString );
                 keyStore.load( keyStoreUrl.openStream(), null );

@@ -1,6 +1,9 @@
 package imcode.server;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.io.File;
+import java.security.KeyStore;
 
 public class Config {
 
@@ -20,6 +23,7 @@ public class Config {
     private String documentPathPrefix;
     private int documentCacheMaxSize = 100 ;
     private String keyStoreUrl;
+    private String keyStoreType ;
 
     public void setTemplatePath( File templatePath ) {
         this.templatePath = templatePath;
@@ -155,4 +159,16 @@ public class Config {
     public void setKeyStoreUrl( String keyStoreUrl ) {
         this.keyStoreUrl = keyStoreUrl;
     }
+
+    public String getKeyStoreType() {
+        return keyStoreType;
+    }
+
+    public void setKeyStoreType( String keyStoreType ) {
+        if (StringUtils.isBlank(keyStoreType)) {
+            keyStoreType = KeyStore.getDefaultType() ;
+        }
+        this.keyStoreType = keyStoreType;
+    }
+
 }
