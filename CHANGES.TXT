@@ -67,7 +67,7 @@ Version 2.0.0
       Trying to remove them will now give a rather nasty error message instead of failing silently.
       This still needs improvement. (Bug 2442)
     * The link checker is now multithreaded, and one can choose to list only broken links. (Bug 2587)
-      Also, one can specify a range of document ids to check.  (Bug 2789)
+      Also, one can specify a range of document ids to check. (Bug 2789)
     * Use a default value of 1440 (24 hours) for "IndexingSchedulePeriodInMinutes"
       if missing from "server.properties". (Bug 2786)
 
@@ -153,7 +153,7 @@ Version 2.0.0
     * Fixed hardcoded urls to the documentation site in the default template. (Bug 2718)
     * Removed table "roles_permissions", no longer needed. (Bug 2705)
     * All users are now always considered to have the "Users" role regardless of what the database says. (Bug 2770)
-    * Made an ant-target "distcheck" for verifying that the source distribution is buildable.
+    * Made an ant-target "distcheck" for verifying that the source distribution is buildable. (Bug 2774)
 
 
 Version 1.11.1
