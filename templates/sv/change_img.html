@@ -13,15 +13,15 @@
 						<center>
 							<table border="1" width="450" align="center" cellpadding="3" cellspacing="0">
 								<tr bgcolor="#333366" valign="middle">
-									<td colspan="2">&nbsp;<font color="#000000"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Add picture</font></b></font></td>
+									<td colspan="2">&nbsp;<font color="#000000"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">L&auml;gg till bild</font></b></font></td>
 								</tr>
 								<tr>
-									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Picture:</font></td>
+									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Bild:</font></td>
 									<td bgcolor="#BABABA" valign="middle">&nbsp;&nbsp; <input type="file" name="file" size="50"></td>
 								</tr>
 								<tr>
 									<td align="center" valign="top" bgcolor="#BABABA" colspan="2">
-										<input type="submit" name="ok" value="Add">
+										<input type="submit" name="ok" value="L&auml;gg till">
 										<input type="HIDDEN" name="meta_id" value="#getMetaId#"> <input type="HIDDEN" name="img_no" value="#img_no#"></td>
 								</tr>
 							</table>
@@ -30,7 +30,7 @@
 						</form>
 				<form name="imgbr" action="/servlet/ImageBrowse">
 				
-          <input type="submit" name="browse_images" value="Bildbibliotek">
+          <input type="submit" name="browse_images" value="Bildarkiv">
          		<INPUT TYPE=HIDDEN NAME=meta_id VALUE=#getMetaId#>
         		<INPUT TYPE=HIDDEN NAME=img_no VALUE=#img_no#>
           
@@ -39,7 +39,7 @@
 						<center>
 							<table border="1" align="center" width="450" cellpadding="3" cellspacing="0">
 								<tr bgcolor="#333366">
-									<td colspan="2">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Change picturedata</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> </font></b></td>
+									<td colspan="2">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Ändra bilddata</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> </font></b></td>
 								</tr>
 								<tr bgcolor="#333366">
 									<td valign="middle" colspan="2">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">MetaId</font><font color="#FFFFFF">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">#getMetaId#</font></font></td>
@@ -52,12 +52,12 @@
 									<td bgcolor="#BABABA" valign="middle">&nbsp;&nbsp; 
                   <input type="TEXT" name="imageref" value="#imgRef#" size="40" maxlength="255">
                   <br>
-										&nbsp;&nbsp;&nbsp;<input type="SUBMIT" value="Show pic." name="show_img">
+										&nbsp;&nbsp;&nbsp;<input type="SUBMIT" value="Förhandsgranska bilden" name="show_img">
                   <font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                   </font></td>
 								</tr>
 								<tr>
-									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Picturename</font></td>
+									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Bildnamn</font></td>
 									<td valign="middle" bgcolor="#BABABA">&nbsp;&nbsp;
                   <input type="TEXT" name="image_name" size="40" maxlength="255" value="#imgName#">
                 </td>
@@ -67,12 +67,12 @@
 									
                 <td bgcolor="#BABABA" valign="middle" align="center"> 
                   <p><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Originalstorlek: 
-                    (#origW# x #origH#)</font></p>
-                  <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Width:&nbsp;</font> 
+                    (#origW# x #origH#)<br>Om Du anv&auml;nder sk&auml;rmuppl&ouml;sning 800 x 600 kommer <br>400 x 300 pixlar att ta upp 25% av Din sk&auml;rm.</font></p>
+                  <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Bredd:&nbsp;</font> 
                     <input type="TEXT" name="image_width" size="4" maxlength="4" value="#imgWidth#">
-                    &nbsp; <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Height:</font>&nbsp; 
+                    &nbsp; <font face="Verdana, Arial, Helvetica, sans-serif" size="2">H&ouml;jd:</font>&nbsp; 
                     <input type="TEXT" name="image_height" size="4" maxlength="4" value="#imgHeight#">
-                    &nbsp; <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Border:</font>&nbsp; 
+                    &nbsp; <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Kant:</font>&nbsp; 
                     <input type="TEXT" name="image_border" size="4" maxlength="4" value="#imgBorder#">
                   </p>
                   <p> 
@@ -82,50 +82,50 @@
                 </td>
 								</tr>
 								<tr>
-									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Align</font></td>
+									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">N&auml;sta <br>textf&auml;lts <br>placering</font></td>
 									<td valign="middle" bgcolor="#BABABA">&nbsp; <select name="image_align" size="1">
-											<option value="none" #none_selected#>None
-											<option value="baseline" #baseline_selected#>Baseline
-											<option value="top" #top_selected#>Top
-											<option value="middle" #middle_selected#>Middle
-											<option value="bottom" #bottom_selected#>Bottom
-											<option value="texttop" #texttop_selected#>Texttop
-											<option value="absmiddle" #absmiddle_selected#>Absmiddle
-											<option value="absbottom" #absbottom_selected#>Absbottom
-											<option value="left" #left_selected#>Left
-											<option value="right" #right_selected#>Right 
+											<option value="none" #none_selected#>Ingen
+											<option value="baseline" #baseline_selected#>Baslinje
+											<option value="top" #top_selected#>Toppen
+											<option value="middle" #middle_selected#>Mitten
+											<option value="bottom" #bottom_selected#>Botten
+											<option value="texttop" #texttop_selected#>Texttoppen
+											<option value="absmiddle" #absmiddle_selected#>Exakt mitten
+											<option value="absbottom" #absbottom_selected#>L&auml;ngst ner
+											<option value="left" #left_selected#>Bild v&auml;nster
+											<option value="right" #right_selected#>Bild h&ouml;ger
 										</select></td>
 								</tr>
 								<tr>
-									<td bgcolor="#BABABA" valign="middle">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Alt text</font></td>
+									<td bgcolor="#BABABA" valign="middle">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Bildtext under uppladdning</font></td>
 									<td bgcolor="#BABABA" valign="middle">&nbsp;&nbsp;<input type="TEXT" name="alt_text" size="50" maxlength="255" value="#imgAltText#"></td>
 								</tr>
 								<tr>
-									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Low scr</font></td>
+									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Alt bild under uppladdning</font></td>
 									<td valign="middle" bgcolor="#BABABA">&nbsp;&nbsp;<input type="TEXT" name="low_scr" size="50" maxlength="255" value="#imgLowScr#"></td>
 								</tr>
 								<tr>
-									<td bgcolor="#BABABA" valign="middle">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Spacing</font></td>
-									<td bgcolor="#BABABA" align="center" valign="middle"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Vertical Space:</font>&nbsp; <input type="TEXT" name="v_space" size="4" maxlength="4" value="#imgVerticalSpace#"> &nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Horizontal Space:</font>&nbsp; <input type="TEXT" name="h_space" size="4" maxlength="4" value="#imgHorizontalSpace#"> &nbsp;</td>
+									<td bgcolor="#BABABA" valign="middle">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">"Luft" kring bilden</font></td>
+									<td bgcolor="#BABABA" align="center" valign="middle"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Vertikalt utrymme:</font>&nbsp; <input type="TEXT" name="v_space" size="4" maxlength="4" value="#imgVerticalSpace#"> &nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2"> <br>Horisontellt utrymme:</font>&nbsp; <input type="TEXT" name="h_space" size="4" maxlength="4" value="#imgHorizontalSpace#"> &nbsp;</td>
 								</tr>
 								<tr>
-									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Linked to<b></b></font></td>
+									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">L&auml;nkad till www<b></b></font></td>
 									<td valign="middle" bgcolor="#BABABA">&nbsp;&nbsp;<input type="TEXT" name="imageref_link" value="#imgRefLink#" size="50" maxlength="255"></td>
 								</tr>
 								<tr>
-									<td bgcolor="#BABABA" valign="middle">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Target</font></td>
+									<td bgcolor="#BABABA" valign="middle">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">L&auml;nk &ouml;ppnas i</font></td>
 									<td bgcolor="#BABABA" valign="middle">&nbsp; <select name="target" size="1">
-											<option value="_top" #top_checked#>Top
-											<option value="_blank" #blank_checked#>Blank
-											<option value="_parent" #parent_checked#>Parent
-											<option value="_self" #self_checked#>Self
-											<option value="_other" #other_checked#>Own name 
+											<option value="_top" #top_checked#>Aktuellt f&ouml;nster
+											<option value="_blank" #blank_checked#>Nytt f&ouml;nster
+											<option value="_parent" #parent_checked#>Moderram
+											<option value="_self" #self_checked#>Samma ram
+											<option value="_other" #other_checked#>Annan ram 
 										</select> &nbsp;&nbsp;&nbsp;<input type="TEXT" name="target_name" value="#target_name#"></td>
 								</tr>
 								<tr>
 									<td bgcolor="#BABABA" colspan="2">
 										<center>
-											<input type="SUBMIT" value="OK" name="ok"> <input type="RESET" value="Reset"> <input type="SUBMIT" value="Cancel" name="cancel"></center>
+											<input type="SUBMIT" value="OK" name="ok"> <input type="RESET" value="Rensa"> <input type="SUBMIT" value="Avbryt" name="cancel"></center>
 									</td>
 								</tr>
 								<input type="HIDDEN" name="meta_id" value="#getMetaId#"> <input type="HIDDEN" name="img_no" value="#img_no#">
