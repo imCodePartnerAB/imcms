@@ -200,7 +200,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public Map getRolesMappedToPermissionSetIds() {
-        return Collections.unmodifiableMap( getLazilyLoadedDocumentAttributes().rolesMappedToPermissionSetIds );
+        return Collections.unmodifiableMap( getLazilyLoadedRolesMappedToDocumentPermissionSetIds().rolesMappedToDocumentPermissionSetIds );
     }
 
     public SectionDomainObject[] getSections() {
@@ -348,7 +348,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public abstract void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user );
 
     public void setPermissionSetIdForRole( RoleDomainObject role, int permissionSetId ) {
-        getLazilyLoadedDocumentAttributes().rolesMappedToPermissionSetIds.put( role, new Integer( permissionSetId ) );
+        getLazilyLoadedRolesMappedToDocumentPermissionSetIds().rolesMappedToDocumentPermissionSetIds.put( role, new Integer( permissionSetId ) );
     }
 
     private boolean isPublishedAtTime( Date date ) {
@@ -419,6 +419,15 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return attributes.lazilyLoadedDocumentCategories ;
     }
 
+    public synchronized Attributes.LazilyLoadedRolesMappedToDocumentPermissionSetIds getLazilyLoadedRolesMappedToDocumentPermissionSetIds() {
+        if (null ==attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds) {
+            attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds = new Attributes.LazilyLoadedRolesMappedToDocumentPermissionSetIds();
+            DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+            documentMapper.initLazilyLoadedRolesMappedToDocumentPermissionSetIds( this ) ;
+        }
+        return attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds ;
+    }
+
     public abstract void initDocument( DocumentMapper documentMapper );
 
     public static class Attributes implements Cloneable, Serializable {
@@ -444,6 +453,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
         private LazilyLoadedDocumentAttributes lazilyLoadedDocumentAttributes = null;
         private LazilyLoadedDocumentCategories lazilyLoadedDocumentCategories = null;
+        private LazilyLoadedRolesMappedToDocumentPermissionSetIds lazilyLoadedRolesMappedToDocumentPermissionSetIds = null ;
 
         public Object clone() throws CloneNotSupportedException {
             Attributes clone = (Attributes)super.clone();
@@ -480,7 +490,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private static class LazilyLoadedDocumentAttributes implements Cloneable, Serializable {
 
             private Set keywords = new HashSet();
-            private Map rolesMappedToPermissionSetIds = new HashMap();
             private Set sections = new HashSet();
             private DocumentPermissionSetDomainObject permissionSetForRestrictedOne;
             private DocumentPermissionSetDomainObject permissionSetForRestrictedTwo;
@@ -490,7 +499,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             public Object clone() throws CloneNotSupportedException {
                 LazilyLoadedDocumentAttributes clone = (LazilyLoadedDocumentAttributes)super.clone();
                 clone.keywords = new HashSet( keywords );
-                clone.rolesMappedToPermissionSetIds = new HashMap( rolesMappedToPermissionSetIds );
                 clone.sections = new HashSet( sections );
                 return clone;
             }
@@ -502,6 +510,16 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             public Object clone() throws CloneNotSupportedException {
                 LazilyLoadedDocumentCategories clone = (LazilyLoadedDocumentCategories)super.clone();
                 clone.categories = new HashSet( categories );
+                return clone;
+            }
+        }
+
+        private static class LazilyLoadedRolesMappedToDocumentPermissionSetIds implements Cloneable, Serializable {
+            private Map rolesMappedToDocumentPermissionSetIds = new HashMap();
+
+            public Object clone() throws CloneNotSupportedException {
+                LazilyLoadedRolesMappedToDocumentPermissionSetIds clone = (LazilyLoadedRolesMappedToDocumentPermissionSetIds)super.clone();
+                clone.rolesMappedToDocumentPermissionSetIds = new HashMap( rolesMappedToDocumentPermissionSetIds );
                 return clone;
             }
         }

@@ -503,6 +503,23 @@ public class DocumentMapper {
 
         document.setKeywords( getKeywords( document.getId() ) );
 
+        DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
+        document.setPermissionSetForRestrictedOne( documentPermissionSetMapper.getPermissionSetRestrictedOne( document ) );
+        document.setPermissionSetForRestrictedTwo( documentPermissionSetMapper.getPermissionSetRestrictedTwo( document ) );
+
+        document.setPermissionSetForRestrictedOneForNewDocuments( documentPermissionSetMapper.getPermissionSetRestrictedOneForNewDocuments( document ) );
+        document.setPermissionSetForRestrictedTwoForNewDocuments( documentPermissionSetMapper.getPermissionSetRestrictedTwoForNewDocuments( document ) );
+
+    }
+
+    public void initLazilyLoadedDocumentCategories( DocumentDomainObject document ) {
+
+        addCategoriesFromDatabaseToDocument( document );
+
+    }
+
+    public void initLazilyLoadedRolesMappedToDocumentPermissionSetIds( DocumentDomainObject document ) {
+
         String[][] sprocResult = service.sqlQueryMulti( "SELECT  r.role_id, r.role_name, r.admin_role, rr.set_id\n"
                                                         + "FROM  roles AS r, roles_rights AS rr\n"
                                                         + "WHERE rr.role_id = r.role_id AND rr.meta_id = ?",
@@ -517,19 +534,6 @@ public class DocumentMapper {
             int rolePermissionSetId = Integer.parseInt( sprocResult[i][3] );
             document.setPermissionSetIdForRole( role, rolePermissionSetId );
         }
-
-        DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
-        document.setPermissionSetForRestrictedOne( documentPermissionSetMapper.getPermissionSetRestrictedOne( document ) );
-        document.setPermissionSetForRestrictedTwo( documentPermissionSetMapper.getPermissionSetRestrictedTwo( document ) );
-
-        document.setPermissionSetForRestrictedOneForNewDocuments( documentPermissionSetMapper.getPermissionSetRestrictedOneForNewDocuments( document ) );
-        document.setPermissionSetForRestrictedTwoForNewDocuments( documentPermissionSetMapper.getPermissionSetRestrictedTwoForNewDocuments( document ) );
-
-    }
-
-    public void initLazilyLoadedDocumentCategories( DocumentDomainObject document ) {
-
-        addCategoriesFromDatabaseToDocument( document );
 
     }
 
