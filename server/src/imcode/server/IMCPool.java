@@ -301,14 +301,18 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
     public String[] sqlQueryExt(String sqlQuery) {
 
 	Vector data = new Vector() ;
-	Vector meta = new Vector() ;
+	// Vector meta = new Vector() ;
+        String[] meta = new String[0] ;
 
 	DBConnect dbc = new DBConnect(m_conPool,sqlQuery) ;
 	dbc.getConnection() ;
 	dbc.createStatement() ;
-	data = (Vector)dbc.executeQuery().clone() ;
+        data = (Vector)dbc.executeQuery();
+        meta = dbc.getMetaData() ;
 
-	meta = (Vector)dbc.getMetaData().clone() ;
+        //meta = (Vector)dbc.getMetaData().clone() ;
+	//data = (Vector)dbc.executeQuery().clone() ;
+	//meta = (Vector)dbc.getMetaData().clone() ;
 
 	if ( data.size() > 0 ) {
 	    String result[] = new String[data.size() + dbc.getColumnCount() + 1] ;
@@ -319,7 +323,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 	    // meta
 	    int i = 0 ;
 	    for ( i = 0 ; i < dbc.getColumnCount() ; i++ )
-		result[i+1] = meta.elementAt(i).toString() ;
+		result[i+1] = meta[i] ;
 
 	    // data
 	    for ( int j = 0 ; j < data.size() ; j++ )
@@ -358,7 +362,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 
 
 	data = (Vector)dbc.executeProcedure() ;
-	meta = (String[]) dbc.getMetaData() ;
+	meta =  dbc.getMetaData() ;
 
 	if ( data != null && data.size() > 0 ) {
 
@@ -407,15 +411,17 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
     public Hashtable sqlQueryHash(String sqlQuery) {
 
 	Vector data = new Vector() ;
-	Vector meta = new Vector() ;
-
+	//Vector meta = new Vector() ;
+        String[] meta = new String[0] ;
 
 	DBConnect dbc = new DBConnect(m_conPool,sqlQuery) ;
 	dbc.getConnection() ;
 	dbc.createStatement() ;
 	data = (Vector)dbc.executeQuery().clone() ;
-	meta = (Vector)dbc.getMetaData().clone() ;
-	int columns = dbc.getColumnCount() ;
+	//meta = (Vector)dbc.getMetaData().clone() ;
+
+        meta = dbc.getMetaData() ;
+        int columns = dbc.getColumnCount() ;
 
 	Hashtable result = new Hashtable(columns,0.5f) ;
 
@@ -434,7 +440,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 		for ( int j =  i ; j < data.size()  ; j+=columns )
 		    temp_str[counter++] = data.elementAt(j).toString() ;;
 
-		result.put(meta.elementAt(i).toString(),temp_str) ;
+		result.put(meta[i] ,temp_str) ;
 	    }
 
 
@@ -455,17 +461,14 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
     public Hashtable sqlProcedureHash(String procedure) {
 
 	Vector data = new Vector() ;
-	Vector meta = new Vector() ;
-
+	String[] meta = new String[0] ;
 
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
 	dbc.setProcedure(procedure) ;
 
-
-
 	data = (Vector)dbc.executeProcedure().clone() ;
-	meta = (Vector)dbc.getMetaData().clone() ;
+	meta = dbc.getMetaData() ;
 	int columns = dbc.getColumnCount() ;
 
 
@@ -487,7 +490,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 
 
 
-		result.put(meta.elementAt(i).toString(),temp_str) ;
+		result.put(meta[i],temp_str) ;
 	    }
 
 
