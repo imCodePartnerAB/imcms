@@ -124,7 +124,7 @@ public class FileManager{
             for(int i = 0 ; i < fileList.length ; i++) {
                 tmpFile = fileList[i] ;
                 //log("TmpFile: " + tmpFile) ;
-                okFlag = writeFileCopy2(srcPath + tmpFile, targPath + tmpFile) ;
+                okFlag = writeFileCopy2(new File(srcPath , tmpFile).toString(), new File(targPath , tmpFile).toString()) ;
                 // log("Såhär gick det") ;
             }
             
