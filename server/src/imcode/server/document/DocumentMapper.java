@@ -136,38 +136,47 @@ public class DocumentMapper {
 
     public static void copyTemplateData( IMCServiceInterface imcref, UserDomainObject user, String parent_meta_id,
                                          String meta_id ) {
-        //ok now lets see what to do with the templates
-        String[] temp = sqlSelectTemplateInfoFromTextDocs( imcref, parent_meta_id );
-
         //lets get the users greatest permission_set for this dokument
         final int perm_set = imcref.getUserHighestPermissionSet( Integer.parseInt( meta_id ), user.getId() );
         //ok now we have to setup the template too use
+
+        String[] templateData = imcref.sqlQuery( "select template_id, group_id, default_template_1, default_template_2 from text_docs where meta_id = ?",
+                                         new String[]{parent_meta_id} );
+
+        String templateIdStr = templateData[0];
+        String groupIdStr = templateData[1];
+        String defaultTemplate1Str = templateData[2];
+        String defaultTemplate2Str = templateData[3];
 
         if ( perm_set == IMCConstants.DOC_PERM_SET_RESTRICTED_1 ) {
             //ok restricted_1 permission lets see if we have a default template fore this one
             //and if so lets put it as the orinary template instead of the parents
             try {
-                int tempInt = Integer.parseInt( temp[3] );
-                if ( tempInt >= 0 ) {
-                    temp[0] = String.valueOf( tempInt );
+                int defaultTemplate = Integer.parseInt( defaultTemplate1Str );
+                if ( defaultTemplate >= 0 ) {
+                    templateIdStr = defaultTemplate1Str;
                 }
             } catch ( NumberFormatException nfe ) {
-
                 //there wasn't a number but we dont care, we just catch the exeption and moves on.
             }
         } else if ( perm_set == IMCConstants.DOC_PERM_SET_RESTRICTED_2 ) { //ok we have a restricted_2 permission lets see if we have default template fore this one
             //and if soo lets put it as ordinary instead of the parents
             try {
-                int tempInt = Integer.parseInt( temp[4] );
-                if ( tempInt >= 0 ) {
-                    temp[0] = String.valueOf( tempInt );
+                int defaultTemplate2 = Integer.parseInt( defaultTemplate2Str );
+                if ( defaultTemplate2 >= 0 ) {
+                    templateIdStr = defaultTemplate2Str;
                 }
             } catch ( NumberFormatException nfe ) {
                 //there wasn't a number but we dont care, we just catch the exeption and moves on.
             }
         }
         //ok were set, lets update db
-        sqlInsertTemplateInfoIntoTextDocs( imcref, meta_id, temp );
+        String sqlStr = "insert into text_docs (meta_id,template_id,group_id,default_template_1,default_template_2)\n"
+                        + "values (?, ?, ?, ?, ?)";
+        imcref.sqlUpdateQuery( sqlStr,
+                               new String[]{
+                                   meta_id, templateIdStr, groupIdStr, defaultTemplate1Str, defaultTemplate2Str
+                               } );
     }
 
     public boolean userCanCreateDocumentOfTypeIdFromParent( UserDomainObject user, int documentTypeId,
@@ -1454,34 +1463,12 @@ public class DocumentMapper {
         return Integer.parseInt( metaId );
     }
 
-    private static void sqlInsertTemplateInfoIntoTextDocs( IMCServiceInterface imcref, String meta_id,
-                                                           String[] temp ) {
-        String templateId = temp[0];
-        String sortOrder = temp[1];
-        String groupId = temp[2];
-        String defaultTemplate1 = temp[3];
-        String defaultTemplate2 = temp[4];
-
-        String sqlStr = "insert into text_docs (meta_id,template_id,sort_order,group_id,default_template_1,default_template_2)\n"
-                        + "values (?, ?, ?, ?, ?, ?)";
-        imcref.sqlUpdateQuery( sqlStr,
-                               new String[]{
-                                   meta_id, templateId, sortOrder, groupId, defaultTemplate1, defaultTemplate2
-                               } );
-    }
-
     public String[] getKeywords( int meta_id ) {
         String sqlStr;
         sqlStr =
         "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = ?";
         String[] keywords = service.sqlQuery( sqlStr, new String[]{"" + meta_id} );
         return keywords;
-    }
-
-    private static String[] sqlSelectTemplateInfoFromTextDocs( IMCServiceInterface imcref, String parent_meta_id ) {
-        String[] temp = imcref.sqlQuery( "select template_id, sort_order,group_id,default_template_1,default_template_2 from text_docs where meta_id = ?",
-                                         new String[]{parent_meta_id} );
-        return temp;
     }
 
     private void sqlUpdateCreatedDate( int metaId, Date dateTime ) {
