@@ -246,173 +246,175 @@ public class MetaDataParser {
        getRolesFromDb collects the information for a certain meta_id regarding the
        rolesrights and parses the information into the assigned htmlFile.
     */
-	static public void getRolesFromDb( String meta_id, User user, String host, Vector vec	) throws IOException	{
+    static public void getRolesFromDb( String meta_id, User user, String host, Vector vec	) throws IOException {
 
-		final String imcserver = Utility.getDomainPref("adminserver",host) ;
+	final String imcserver = Utility.getDomainPref("adminserver",host) ;
 
-		// Lets get the langprefix
-		final String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+	// Lets get the langprefix
+	final String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
 
-		// Lets get the roles_rights_table_header template file
-		StringBuffer roles_rights = new StringBuffer(IMCServiceRMI.parseDoc(imcserver,null,"roles_rights_table_head.html",lang_prefix )) ;
+	// Lets get the roles_rights_table_header template file
+	StringBuffer roles_rights = new StringBuffer(IMCServiceRMI.parseDoc(imcserver,null,"roles_rights_table_head.html",lang_prefix )) ;
 
-		// Get the info from the user object.
-		// "temp_perm_settings" is an array containing a stringified meta-id, a hashtable of meta-info (column=value), 
-		// and a hashtable of roles and their corresponding set_id for this page (role_id=set_id).
-		// This array comes from selecting the permissionpage. People set a lot of stuff in the page,
-		// and then they forget to press "Save" before pressing another button.
-		// If they press another button, this array will be put in the user-object, to remember their settings.
-		Object[] temp_perm_settings = (Object[])user.remove("temp_perm_settings") ;
+	// Get the info from the user object.
+	// "temp_perm_settings" is an array containing a stringified meta-id, a hashtable of meta-info (column=value), 
+	// and a hashtable of roles and their corresponding set_id for this page (role_id=set_id).
+	// This array comes from selecting the permissionpage. People set a lot of stuff in the page,
+	// and then they forget to press "Save" before pressing another button.
+	// If they press another button, this array will be put in the user-object, to remember their settings.
+	Object[] temp_perm_settings = (Object[])user.remove("temp_perm_settings") ;
 
-		Hashtable temp_perm_hash = null ;
-		String[] temp_default_templates = null;
+	Hashtable temp_perm_hash = null ;
+	String[] temp_default_templates = null;
 
-		if (temp_perm_settings != null && meta_id.equals(temp_perm_settings[0])){		// Make sure this is the right document.
-			temp_perm_hash = (Hashtable)temp_perm_settings[2] ;
-			temp_default_templates = (String[])temp_perm_settings[3] ;
+	if (temp_perm_settings != null && meta_id.equals(temp_perm_settings[0])) {		// Make sure this is the right document.
+	    temp_perm_hash = (Hashtable)temp_perm_settings[2] ;
+		temp_default_templates = (String[])temp_perm_settings[3] ;
+	}
+
+
+	// Hey, hey! Watch as i fetch the permission-set set (pun intended) for each role!
+	String[][] role_permissions = IMCServiceRMI.sqlProcedureMulti(imcserver, "GetUserRolesDocPermissions "+meta_id+","+user.getInt("user_id")) ;
+
+	// Now watch as i fetch the permission_set for the user...
+	String[] current_permissions = IMCServiceRMI.sqlProcedure(imcserver, "GetUserPermissionSet "+meta_id+", "+user.getInt("user_id")) ;
+	int user_set_id = Integer.parseInt(current_permissions[0]) ;
+	int currentdoc_perms = Integer.parseInt(current_permissions[2]) ;		// A bitvector containing the permissions for this document. (For example if Set-id 1 is more privileged than Set-id 2 (bit 0))
+
+	StringBuffer roles_no_rights = new StringBuffer() ;
+	for ( int i=0 ; i<role_permissions.length  ; ++i ) {
+	    // Get role_id and set_id for role.
+	    int role_set_id 	= Integer.parseInt(role_permissions[i][2]) ;
+	    String role_name 	= role_permissions[i][1] ;
+	    String role_id 	= role_permissions[i][0] ;
+	    // Check if we have a temporary setting saved, and then set the role_set_id to it.
+	    if (temp_perm_hash != null) {
+		String temp_role_set_id = (String)temp_perm_hash.get(role_id) ;
+		if ( temp_role_set_id!=null ) {
+		    role_set_id = Integer.parseInt(temp_role_set_id) ;
+		} else {
+		    // This has a permission in the db, but is currently about to be disabled.
+		    role_set_id = IMCConstants.DOC_PERM_SET_NONE ;
 		}
-
-		// Hey, hey! Watch as i fetch the permission-set set (pun intended) for each role!
-		String[][] role_permissions = IMCServiceRMI.sqlProcedureMulti(imcserver, "GetUserRolesDocPermissions "+meta_id+","+user.getInt("user_id")) ;
-
-		// Now watch as i fetch the permission_set for the user...
-		String[] current_permissions = IMCServiceRMI.sqlProcedure(imcserver, "GetUserPermissionSet "+meta_id+", "+user.getInt("user_id")) ;
-		int user_set_id = Integer.parseInt(current_permissions[0]) ;
-		int currentdoc_perms = Integer.parseInt(current_permissions[2]) ;		// A bitvector containing the permissions for this document. (For example if Set-id 1 is more privileged than Set-id 2 (bit 0))
-
-		StringBuffer roles_no_rights = new StringBuffer() ;
-		for ( int i=0 ; i<role_permissions.length  ; ++i ) {
-			// Get role_id and set_id for role.
-			int role_set_id 	= Integer.parseInt(role_permissions[i][2]) ;
-			String role_name 	= role_permissions[i][1] ;
-			String role_id 	= role_permissions[i][0] ;
-			// Check if we have a temporary setting saved, and then set the role_set_id to it.
-			if (temp_perm_hash != null)	{
-				String temp_role_set_id = (String)temp_perm_hash.get(role_id) ;
-				if ( temp_role_set_id!=null ){
-					role_set_id = Integer.parseInt(temp_role_set_id) ;
-				}else{
-					// This has a permission in the db, but is currently about to be disabled.
-					role_set_id = IMCConstants.DOC_PERM_SET_NONE ;
-				}
-			}
-			// If the role has no permissions for this document, we put it away in a special html-optionlist.
-			if (role_set_id == IMCConstants.DOC_PERM_SET_NONE){
-				roles_no_rights.append("<option value=\""+role_id+"\">"+role_name+"</option>") ;
-				roles_rights.append("<input type=\"hidden\" name=\"role_"+role_id+"\" value=\"4\">") ;
+	    }
+	    // If the role has no permissions for this document, we put it away in a special html-optionlist.
+	    if (role_set_id == IMCConstants.DOC_PERM_SET_NONE) {
+		roles_no_rights.append("<option value=\""+role_id+"\">"+role_name+"</option>") ;
+		roles_rights.append("<input type=\"hidden\" name=\"role_"+role_id+"\" value=\"4\">") ;
 				// So... it's put away for later... we don't need it now.
-				continue ;
-			}
-			Vector vec2 = new Vector() ;
-			vec2.add("#role_name#") ;
-			vec2.add(role_name) ;
-			vec2.add("#user_role#") ;
-			vec2.add(String.valueOf(IMCConstants.DOC_PERM_SET_FULL).equals(role_permissions[i][3]) ? "" : "*") ;
+		continue ;
+	    }
+	    Vector vec2 = new Vector() ;
+	    vec2.add("#role_name#") ;
+	    vec2.add(role_name) ;
+	    vec2.add("#user_role#") ;
+	    vec2.add(String.valueOf(IMCConstants.DOC_PERM_SET_FULL).equals(role_permissions[i][3]) ? "" : "*") ;
 
-			// // As we all know... 0 is full, 3 is read, 4 is none, and 1 and 2 are "other"
-			// // Btw, 'none' doesn't really have a value, but is rather the absence of a value.
-			// // I just use 4 here because i have to distinguish the absence of a value from a value that is about to be removed.
-			// // FIXME: Hire the mafia to force me to put these as constants in an interface.
+	    // // As we all know... 0 is full, 3 is read, 4 is none, and 1 and 2 are "other"
+	    // // Btw, 'none' doesn't really have a value, but is rather the absence of a value.
+	    // // I just use 4 here because i have to distinguish the absence of a value from a value that is about to be removed.
+	    // // FIXME: Hire the mafia to force me to put these as constants in an interface.
 
-			// Update: Hey, hey! After finding a horse's head in my bed, i decided to create imcode.server.IMCConstants...
+	    // Update: Hey, hey! After finding a horse's head in my bed, i decided to create imcode.server.IMCConstants...
 
-			for ( int j = IMCConstants.DOC_PERM_SET_FULL ; j <= IMCConstants.DOC_PERM_SET_NONE ; ++j ){ // From DOC_PERM_SET_FULL to DOC_PERM_SET_NONE (0 to 4)
-				vec2.add("#"+j+"#") ;
-				if ( user_set_id <= role_set_id 		// User has more privileged set_id than role
-					&& (user_set_id <= j && (user_set_id != IMCConstants.DOC_PERM_SET_RESTRICTED_1 || j != IMCConstants.DOC_PERM_SET_RESTRICTED_2 || (currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2) != 0))			// User has more privileged set_id than this set_id
-					&& (user_set_id != IMCConstants.DOC_PERM_SET_RESTRICTED_1 || role_set_id != IMCConstants.DOC_PERM_SET_RESTRICTED_2 || (currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2) != 0) ) 	// User has set_id 1, and may modify set_id 2?
-				{
-					vec2.add("<input type=\"radio\" name=\"role_"+role_id+"\" value=\""+j+"\" "+((j == role_set_id) ? "checked>" : ">")) ;
-				}else{
-					vec2.add( (j == role_set_id) ? "*" : "O") ;
-				}
-			}
-			roles_rights.append(IMCServiceRMI.parseDoc(imcserver,vec2,"roles_rights_table_row.html",lang_prefix )) ;
+	    for ( int j = IMCConstants.DOC_PERM_SET_FULL ; j <= IMCConstants.DOC_PERM_SET_NONE ; ++j ) { // From DOC_PERM_SET_FULL to DOC_PERM_SET_NONE (0 to 4)
+		vec2.add("#"+j+"#") ;
+		if ( user_set_id <= role_set_id 		// User has more privileged set_id than role
+		     && (user_set_id <= j && (user_set_id != IMCConstants.DOC_PERM_SET_RESTRICTED_1 || j != IMCConstants.DOC_PERM_SET_RESTRICTED_2 || (currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2) != 0))			// User has more privileged set_id than this set_id
+		     && (user_set_id != IMCConstants.DOC_PERM_SET_RESTRICTED_1 || role_set_id != IMCConstants.DOC_PERM_SET_RESTRICTED_2 || (currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2) != 0) ) 	// User has set_id 1, and may modify set_id 2?
+		    {
+			vec2.add("<input type=\"radio\" name=\"role_"+role_id+"\" value=\""+j+"\" "+((j == role_set_id) ? "checked>" : ">")) ;
+		    } else {
+			vec2.add( (j == role_set_id) ? "*" : "O") ;
+		    }
+	    }
+	    roles_rights.append(IMCServiceRMI.parseDoc(imcserver,vec2,"roles_rights_table_row.html",lang_prefix )) ;
 
+	}
+	vec.add("#roles_no_rights#") ;
+	vec.add(roles_no_rights.toString()) ;
+		
+	roles_rights.append(IMCServiceRMI.parseDoc(imcserver,null,"roles_rights_table_tail.html",lang_prefix )) ;
+	vec.add("#roles_rights#") ;
+	vec.add(roles_rights.toString()) ;
+
+	if (user_set_id < 2) {
+	    // If the permission_set_id of the user is 0 (full) or 1 (level 1 admin)
+	    // We want the buttons for defining permissionsets.
+		    
+	    /*
+	      // Yes, yes, very cool, neat, dandy, and all, but completely illegible!
+	      // This stupidity should earn yours truly a C- in obfuscation.
+	      // Just Read The Fscking Files!
+
+	      FileTagReplacer ftr = new FileTagReplacer ("permissions/","_button.html") { 
+	      protected StringBuffer getContent(String name) throws IOException {
+	      return new StringBuffer(IMCServiceRMI.parseDoc(imcserver,null,name,lang_prefix)) ;
+	      }
+	      } ;
+	    */
+	    Vector ftr = new Vector() ;
+			
+	    StringBuffer define_sets = new StringBuffer() ;
+		
+	    int doc_type = IMCServiceRMI.getDocType(imcserver,Integer.parseInt(meta_id)) ;
+		String default_templates = "";//the string containing default-templates-option-list
+		
+
+	    if (user_set_id == IMCConstants.DOC_PERM_SET_FULL) {
+		Vector perm_vec = new Vector() ;
+		if ((currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2) != 0) {
+		    perm_vec.add("#permissions#") ;
+		    perm_vec.add("checked") ;
 		}
-		vec.add("#roles_no_rights#") ;
-		vec.add(roles_no_rights.toString()) ;
-
-		roles_rights.append(IMCServiceRMI.parseDoc(imcserver,null,"roles_rights_table_tail.html",lang_prefix )) ;
-		vec.add("#roles_rights#") ;
-		vec.add(roles_rights.toString()) ;
-
-		if (user_set_id < 2){
-			// If the permission_set_id of the user is 0 (full) or 1 (level 1 admin)
-			// We want the buttons for defining permissionsets.
-
-			/*
-			      // Yes, yes, very cool, neat, dandy, and all, but completely illegible!
-			      // This stupidity should earn yours truly a C- in obfuscation.
-			      // Just Read The Fscking Files!
-
-			      FileTagReplacer ftr = new FileTagReplacer ("permissions/","_button.html") { 
-			      protected StringBuffer getContent(String name) throws IOException {
-			      return new StringBuffer(IMCServiceRMI.parseDoc(imcserver,null,name,lang_prefix)) ;
-			      }
-			      } ;
-			    */
-			Vector ftr = new Vector() ;
-
-			StringBuffer define_sets = new StringBuffer() ;
-
-			int doc_type = IMCServiceRMI.getDocType(imcserver,Integer.parseInt(meta_id)) ;
-			String default_templates = "";//the string containing default-templates-option-list
-
-
-			if (user_set_id == IMCConstants.DOC_PERM_SET_FULL){				
-				Vector perm_vec = new Vector() ;
-				if ((currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2) != 0){
-					perm_vec.add("#permissions#") ;
-					perm_vec.add("checked") ;
-				}
-				String sets_precedence = IMCServiceRMI.parseDoc(imcserver,perm_vec,"permissions/sets_precedence.html",lang_prefix ) ;
-				ftr.add("#sets_precedence#") ;     ftr.add(sets_precedence) ;
-				ftr.add("#set_1#") ;               ftr.add(IMCServiceRMI.parseDoc(imcserver,null,"permissions/set_1_button.html",lang_prefix)) ;
-				ftr.add("#set_2#") ;               ftr.add(IMCServiceRMI.parseDoc(imcserver,null,"permissions/set_2_button.html",lang_prefix)) ;
-				if (doc_type == IMCConstants.DOCTYPE_TEXT){			
-					ftr.add("#new_set_1#") ;       ftr.add(IMCServiceRMI.parseDoc(imcserver,null,"permissions/new_set_1_button.html",lang_prefix)) ;
-					ftr.add("#new_set_2#") ;       ftr.add(IMCServiceRMI.parseDoc(imcserver,null,"permissions/new_set_2_button.html",lang_prefix)) ;
-
-					//ok lets setup the default_template-option-lists for restricted 1 & 2
-					default_templates = getDefaultTemplateOptionList(imcserver, user, temp_default_templates, meta_id, lang_prefix, true );
-					ftr.add("#default_templates#");ftr.add(default_templates);	
-
-				}else{
-
-					ftr.add("#new_set_1#") ;       ftr.add("") ;
-					ftr.add("#new_set_2#") ;       ftr.add("") ;
-					ftr.add("#default_templates#");ftr.add("");	
-				}
-				vec.add("#define_sets#") ;
-				vec.add(IMCServiceRMI.parseDoc(imcserver,ftr,"permissions/define_sets.html",lang_prefix )) ;
-
-			}else if ( (currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2) != 0){
-				ftr.add("#sets_precedence#") ; ftr.add("") ;
-				ftr.add("#set_1#") ;           ftr.add("") ;
-				ftr.add("#new_set_1#") ;       ftr.add("") ;
-				ftr.add("#set_2#") ;           ftr.add(IMCServiceRMI.parseDoc(imcserver,null,"permissions/set_2_button.html",lang_prefix)) ;
-				if (doc_type == IMCConstants.DOCTYPE_TEXT){
-					ftr.add("#new_set_2#") ;   ftr.add(IMCServiceRMI.parseDoc(imcserver,null,"permissions/new_set_2_button.html",lang_prefix)) ;
-
-					//ok lets set up the default_template-option-list for restricted_2
-					default_templates = getDefaultTemplateOptionList(imcserver, user, temp_default_templates, meta_id, lang_prefix, false );
-					ftr.add("#default_templates#");ftr.add(default_templates);
-				}else{
-					ftr.add("#new_set_2#") ;   ftr.add("") ;
-				}
-				vec.add(IMCServiceRMI.parseDoc(imcserver,ftr,"permissions/define_sets.html",lang_prefix )) ;
-			}else{
-				vec.add("#define_sets#") ;     vec.add("") ;
-			}
-
-		}else{
-			vec.add("#define_sets#") ;
-			vec.add("") ;	
+		String sets_precedence = IMCServiceRMI.parseDoc(imcserver,perm_vec,"permissions/sets_precedence.html",lang_prefix ) ;
+		ftr.add("#sets_precedence#") ;     ftr.add(sets_precedence) ;
+		ftr.add("#set_1#") ;               ftr.add(IMCServiceRMI.parseDoc(imcserver,null,"permissions/set_1_button.html",lang_prefix)) ;
+		ftr.add("#set_2#") ;               ftr.add(IMCServiceRMI.parseDoc(imcserver,null,"permissions/set_2_button.html",lang_prefix)) ;
+		if (doc_type == IMCConstants.DOCTYPE_TEXT) {
+		    ftr.add("#new_set_1#") ;       ftr.add(IMCServiceRMI.parseDoc(imcserver,null,"permissions/new_set_1_button.html",lang_prefix)) ;
+		    ftr.add("#new_set_2#") ;       ftr.add(IMCServiceRMI.parseDoc(imcserver,null,"permissions/new_set_2_button.html",lang_prefix)) ;
+			//ok lets setup the default_template-option-lists for restricted 1 & 2
+			
+			default_templates = getDefaultTemplateOptionList(imcserver, user, temp_default_templates, meta_id, lang_prefix, true );
+			ftr.add("#default_templates#");ftr.add(default_templates);	
+		} else {
+		    ftr.add("#new_set_1#") ;       ftr.add("") ;
+		    ftr.add("#new_set_2#") ;       ftr.add("") ;
+			ftr.add("#default_templates#");ftr.add("");	
 		}
+		vec.add("#define_sets#") ;
+		vec.add(IMCServiceRMI.parseDoc(imcserver,ftr,"permissions/define_sets.html",lang_prefix )) ;
 
-	} // End of getRolesFromDb
+	    } else if ( (currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2) != 0) {
+		
+		ftr.add("#sets_precedence#") ; ftr.add("") ;
+		ftr.add("#set_1#") ;           ftr.add("") ;
+		ftr.add("#new_set_1#") ;       ftr.add("") ;
+		ftr.add("#set_2#") ;           ftr.add(IMCServiceRMI.parseDoc(imcserver,null,"permissions/set_2_button.html",lang_prefix)) ;
+		if (doc_type == IMCConstants.DOCTYPE_TEXT) {
+			default_templates = getDefaultTemplateOptionList(imcserver, user, temp_default_templates, meta_id, lang_prefix, false );
+	
+		    ftr.add("#new_set_2#") ;   ftr.add(IMCServiceRMI.parseDoc(imcserver,null,"permissions/new_set_2_button.html",lang_prefix)) ;
+		} else {
+			System.out.println("### 90");
+		    ftr.add("#new_set_2#") ;   ftr.add("") ;
+		}
+		ftr.add("#default_templates#");ftr.add(default_templates);	
+		vec.add("#define_sets#") ;
+		vec.add(IMCServiceRMI.parseDoc(imcserver,ftr,"permissions/define_sets.html",lang_prefix )) ;
+	    } else {
+		vec.add("#define_sets#") ;     vec.add("") ;
+	    }
 
+	} else {
+		System.out.println("### 92");
+	    vec.add("#define_sets#") ;
+	    vec.add("") ;
+	}
+
+    } // End of getRolesFromDb
+	
 	private static synchronized String getDefaultTemplateOptionList(String server, imcode.server.User user, String[] def_templates, String meta_id, String lang_prefix, boolean restr_1 )throws IOException
 	{
 		String returnValue = "";
@@ -422,6 +424,7 @@ public class MetaDataParser {
 		{ //if we dont already have the ones to mark as selected
 			def_templates = IMCServiceRMI.sqlQuery(server,"SELECT default_template_1,default_template_2 FROM text_docs WHERE meta_id="+meta_id) ;
 		}
+
 		// We allocate a string to contain the default-template-option-list
 		String options_templates_1 = "" ;
 		if (restr_1)
@@ -638,6 +641,32 @@ public class MetaDataParser {
 	    }
 	}
 	vec.put("templategroups", options_templategroups) ;
+	
+	//--------------------- Get all templates and add to variable "templates" --------------------------------------------------------------		
+		
+		// Now we get the templategroups the set-id we are editing may use.
+		String[] templates = IMCServiceRMI.sqlProcedure(imcserver,"GetTemplates ") ;
+				
+		// We allocate a string to contain the option-list
+		String options_templates = "" ;
+		
+		for ( int i=0 ; i<templates.length ; i+=2 ) 
+		{
+		// Check if the current user may set this templategroup for any set-id (May he use it himself?)
+	    	
+		//	if ( user_set_id == 0 )			// If current user has full rights,		 	    ) 
+		//	{
+	    //	}
+	    	options_templates += "<option value=\"2097152_" + templates[i] + "\">" + templates[i+1]+"</option>" ;
+			
+		}
+		
+		
+		
+		vec.put("templates", options_templates) ;
+
+//----------------------------------------------------------------------------------------
+
 
 	vec.put("set_id", String.valueOf(set_id)) ;
 
