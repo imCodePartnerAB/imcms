@@ -264,6 +264,16 @@ public class DocumentIndex {
     }
 
     private Field unStoredKeyword( String fieldName, Date fieldValue ) {
-        return new Field( fieldName, DateField.dateToString( fieldValue ), false, true, false );
+        Date truncatedDate = truncateDateToMinutePrecision( fieldValue );
+        return new Field( fieldName, DateField.dateToString( truncatedDate ), false, true, false );
+    }
+
+    private Date truncateDateToMinutePrecision( Date fieldValue ) {
+        Calendar calendar = Calendar.getInstance() ;
+        calendar.setTime( fieldValue );
+        calendar.set( Calendar.MILLISECOND, 0 );
+        calendar.set( Calendar.SECOND, 0 );
+        Date roundedDate = calendar.getTime();
+        return roundedDate;
     }
 }
