@@ -33,7 +33,6 @@ public class XmlDoc extends HttpServlet {
         } else {
             XmlDocumentBuilder xmlDocumentBuilder = new XmlDocumentBuilder();
             xmlDocumentBuilder.addDocument( document );
-            xmlDocumentBuilder.addDocument( document );
             Document xmlDocument = xmlDocumentBuilder.getXmlDocument() ;
             outputXmlDocument( response, xmlDocument );
         }
