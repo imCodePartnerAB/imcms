@@ -82,3 +82,22 @@ deprecation = on
 
 log4j-config = log4j-nodebug.xml
 
+
+# Comment out this if you don't want to generate a version.xml
+# that will contain the version of the release and checksum of all files.
+# Without this, the Version-servlet won't work properly.
+
+generate-xmlversion
+
+
+# Which components to build.
+# Comment out any you don't want to build.
+
+build-billboard
+build-calender
+build-chat
+build-conference
+build-fortune
+build-postcard
+build-readrunner
+

@@ -241,7 +241,8 @@
   <!-- Create an xml-file representing the release. -->
   <target name="xmlversion"
 	  depends="tools"
-	  description="Creates an XML-file representing the release.">
+	  description="Creates an XML-file representing the release."
+	  if="generate-xmlversion">
     <taskdef name="xmlversion" classname="imcode.anttasks.XmlVersionTask">
 	<classpath>
 	    <pathelement path="build/WEB-INF/classes"/>
@@ -612,16 +613,17 @@
     <mkdir dir="${logs}"/>
   </target>
 
-<!-- Builds the 'calender'-plugin. -->
+  <!-- Builds the 'calender'-plugin. -->
   <target name="calender"
 	  depends="init,calender-servlets,calender-templates,calender-images"
-	  description="Builds the calender."/>
+	  description="Builds the calender."
+	  if="build-calender"/>
 
- <!-- The calender-servlets. -->
+  <!-- The calender-servlets. -->
   <target name="calender-servlets"
-
 	  depends="init,server"
-	  description="Builds the calender-servlets.">
+	  description="Builds the calender-servlets."
+	  if="build-calender">
 
     <mkdir dir="${classes}"/>
     <javac srcdir="servlets/calender"
@@ -644,7 +646,8 @@
   <!-- The calender-templates. -->
   <target name="calender-templates"
 	  depends="init"
-	  description="Copies the calender-templates.">
+	  description="Copies the calender-templates."
+	  if="build-calender">
 
     <antcall target="calender-templates-lang">
       <param name="srclanguage" value="sv"/>
@@ -662,7 +665,8 @@
   <!-- The calender-templates. -->
   <target name="calender-templates-lang"
 	  depends="language-properties,global-filters"
-	  description="Copies the calender-templates for one language.">
+	  description="Copies the calender-templates for one language."
+	  if="build-calender">
 
     <copy todir="${calender-templates}" filtering="true">
       <fileset dir="templates/${srclanguage}/calender" excludes="images/"/>
@@ -673,7 +677,8 @@
   <!-- The calender-images. -->
   <target name="calender-images"
 	  depends="init,calender-templates"
-	  description="Copies the calender-images.">
+	  description="Copies the calender-images."
+	  if="build-calender">
 
     <antcall target="calender-images-lang">
       <param name="srclanguage" value="sv"/>
@@ -691,7 +696,8 @@
   <!-- The calender-images. -->
   <target name="calender-images-lang"
 	  depends="language-properties"
-	  description="Copies the calender-images for one language.">
+	  description="Copies the calender-images for one language."
+	  if="build-calender">
 
     <copy todir="${images}/${language}/107">
       <fileset dir="templates/${srclanguage}/calender/images" includes="*"/>
@@ -700,19 +706,18 @@
   </target>
 
 
-
-
   <!-- Builds the 'conference'-plugin. -->
   <target name="conference"
 	  depends="init,conference-servlets,conference-templates,conference-images"
-	  description="Builds the conference."/>
+	  description="Builds the conference."
+	  if="build-conference"/>
 
 
   <!-- The conference-servlets. -->
   <target name="conference-servlets"
-
-	  depends="init,server"
-	  description="Builds the conference-servlets.">
+	  depends="init,server,servlets"
+	  description="Builds the conference-servlets."
+	  if="build-conference">
 
     <mkdir dir="${classes}"/>
     <javac srcdir="servlets/conf"
@@ -737,7 +742,8 @@
   <!-- The conference-templates. -->
   <target name="conference-templates"
 	  depends="init"
-	  description="Copies the conference-templates.">
+	  description="Copies the conference-templates."
+	  if="build-conference">
 
     <antcall target="conference-templates-lang">
       <param name="srclanguage" value="sv"/>
@@ -755,7 +761,8 @@
   <!-- The conference-templates. -->
   <target name="conference-templates-lang"
 	  depends="language-properties,global-filters"
-	  description="Copies the conference-templates for one language.">
+	  description="Copies the conference-templates for one language."
+	  if="build-conference">
 
     <copy todir="${conference-templates}" filtering="true">
       <fileset dir="templates/${srclanguage}/conf" excludes="original/images/"/>
@@ -767,7 +774,8 @@
   <!-- The conference-images. -->
   <target name="conference-images"
 	  depends="init,conference-templates"
-	  description="Copies the conference-images.">
+	  description="Copies the conference-images."
+	  if="build-conference">
 
     <antcall target="conference-images-lang">
       <param name="srclanguage" value="sv"/>
@@ -785,7 +793,8 @@
   <!-- The conference-images. -->
   <target name="conference-images-lang"
 	  depends="language-properties"
-	  description="Copies the conference-images for one language.">
+	  description="Copies the conference-images for one language."
+	  if="build-conference">
 
     <copy todir="${images}/${language}/102/original">
       <fileset dir="templates/${srclanguage}/conf/original/images" includes="*"/>
@@ -797,13 +806,15 @@
   <!-- Builds the 'chat'-plugin. -->
   <target name="chat"
 	  depends="init,chat-servlets,chat-templates"
-	  description="Builds the chat."/>
+	  description="Builds the chat."
+	  if="build-chat"/>
 
 
   <!-- The chat-servlets -->
   <target name="chat-servlets"
-	  depends="init,server"
-	  description="Builds the chat-servlets.">
+	  depends="init,server,servlets"
+	  description="Builds the chat-servlets."
+	  if="build-chat">
 
     <mkdir dir="${classes}"/>
     <javac srcdir="servlets/chat"
@@ -828,7 +839,8 @@
   <!-- The chat-templates. -->
   <target name="chat-templates"
 	  depends="init"
-	  description="Copies the chat-templates.">
+	  description="Copies the chat-templates."
+	  if="build-chat">
 
     <antcall target="chat-templates-lang">
       <param name="srclanguage" value="sv"/>
@@ -846,7 +858,8 @@
   <!-- The chat-templates for one language. -->
   <target name="chat-templates-lang"
 	  depends="language-properties,global-filters"
-	  description="Copies the chat-templates for one language.">
+	  description="Copies the chat-templates for one language."
+	  if="build-chat">
 
     <copy todir="${chat-templates}/original" filtering="true">
       <fileset dir="templates/${srclanguage}/chat/original"/>
@@ -861,13 +874,15 @@
   <!-- Builds the 'billboard'-plugin. -->
   <target name="billboard"
 	  depends="init,billboard-servlets,billboard-templates,billboard-images"
-	  description="Builds the billboard."/>
+	  description="Builds the billboard."
+	  if="build-billboard"/>
 
 
   <!-- The billboard-servlets. -->
   <target name="billboard-servlets"
-	  depends="init,server"
-	  description="Builds the billboard-servlets.">
+	  depends="init,server,servlets"
+	  description="Builds the billboard-servlets."
+	  if="build-billboard">
 
     <mkdir dir="${classes}"/>
     <javac srcdir="servlets/billBoard"
@@ -892,7 +907,8 @@
   <!-- The billboard-templates. -->
   <target name="billboard-templates"
 	  depends="init"
-	  description="Copies the billboard-templates.">
+	  description="Copies the billboard-templates."
+	  if="build-billboard">
 
     <antcall target="billboard-templates-lang">
       <param name="srclanguage" value="sv"/>
@@ -910,7 +926,8 @@
   <!-- The billboard-templates for one language. -->
   <target name="billboard-templates-lang"
 	  depends="language-properties,global-filters"
-	  description="Copies the billboard-templates for one language.">
+	  description="Copies the billboard-templates for one language."
+	  if="build-billboard">
 
     <copy todir="${billboard-templates}/original" filtering="true">
       <fileset dir="templates/${srclanguage}/billboard/original" excludes="images/"/>
@@ -925,7 +942,8 @@
   <!-- The billboard-images. -->
   <target name="billboard-images"
 	  depends="init,billboard-templates"
-	  description="Copies the billboard-images.">
+	  description="Copies the billboard-images."
+	  if="build-billboard">
 
     <antcall target="billboard-images-lang">
       <param name="srclanguage" value="sv"/>
@@ -943,23 +961,28 @@
   <!-- The billboard-images for one language. -->
   <target name="billboard-images-lang"
 	  depends="language-properties"
-	  description="Copies the billboard-images for one language.">
+	  description="Copies the billboard-images for one language."
+	  if="build-billboard">
+
     <copy todir="${images}/${language}/104/original">
       <fileset dir="templates/${srclanguage}/billboard/original/images" includes="*"/>
     </copy>
+
   </target>
 
 
   <!-- Builds the 'postcard'-plugin. -->
   <target name="postcard"
 	  depends="init,postcard-templates"
-	  description="Builds the postcard."/>
+	  description="Builds the postcard."
+	  if="build-postcard"/>
 
 
   <!-- The postcard-templates. -->
   <target name="postcard-templates"
 	  depends="init"
-	  description="Copies the postcard-templates.">
+	  description="Copies the postcard-templates."
+	  if="build-postcard">
 
     <antcall target="postcard-templates-lang">
       <param name="srclanguage" value="sv"/>
@@ -977,7 +1000,8 @@
   <!-- The postcard-templates for one language. -->
   <target name="postcard-templates-lang"
 	  depends="language-properties,global-filters"
-	  description="Copies the postcard-templates for one language.">
+	  description="Copies the postcard-templates for one language."
+	  if="build-postcard">
 
     <copy todir="${postcard-templates}" filtering="true">
       <fileset dir="templates/${srclanguage}/postcard"/>
@@ -1023,7 +1047,8 @@
   <!-- Copies the files for the 'fortune'-plugin. -->
   <target name="fortune"
           depends="init,fortune-templates"
-          description="Copies the files for the 'fortune'-plugin.">
+          description="Copies the files for the 'fortune'-plugin."
+	  if="build-fortune">
 
     <mkdir dir="${fortunes}"/>
 
@@ -1036,7 +1061,8 @@
   <!-- The fortune-templates.-->
   <target name="fortune-templates"
 	depends="init,web"
-	description="Copies the fortune-templates.">
+	description="Copies the fortune-templates."
+	if="build-fortune">
 
     <antcall target="fortune-templates-lang">
       <param name="srclanguage" value="sv"/>
@@ -1054,7 +1080,8 @@
   <!-- The fortune-templates for one language.-->
   <target name="fortune-templates-lang"
 	depends="language-properties,global-filters"
-	description="Copies the fortune-templates for one language.">
+	description="Copies the fortune-templates for one language."
+	if="build-fortune">
 
 	<copy todir="${fortune-templates}" filtering="true">
 	  <fileset dir="templates/${srclanguage}/fortunes"/>
@@ -1066,7 +1093,8 @@
   <!-- Copies the files for readrunner -->
   <target name="readrunner"
           depends="init,global-filters"
-	  description="Copies the files for readrunner.">
+	  description="Copies the files for readrunner."
+	  if="build-readrunner">
 
 	  <!-- First the images, since they aren't to be filtered. -->
 	  <copy todir="${readrunner}/images">
