@@ -67,7 +67,7 @@ public class DocumentMapper {
         File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
         File indexDirectory = new File( webAppPath, "WEB-INF/index" );
 
-        this.documentIndex = new AutorebuildingDirectoryIndex( indexDirectory );
+        this.documentIndex = new AutorebuildingDirectoryIndex( indexDirectory, service.getConfig().getIndexingSchedulePeriodInMinutes() );
     }
 
     private boolean userCanCreateDocumentOfTypeIdFromParent( UserDomainObject user, int documentTypeId,
