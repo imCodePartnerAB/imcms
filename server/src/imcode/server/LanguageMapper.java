@@ -2,11 +2,9 @@ package imcode.server;
 
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
-import imcode.util.Html;
+import org.apache.log4j.Logger;
 
 import java.util.*;
-
-import org.apache.log4j.Logger;
 
 /**
  * @author kreiger
@@ -72,7 +70,7 @@ public class LanguageMapper {
         List languagesInOptionList = new ArrayList();
         for ( int i = 0 ; i < languages.length ; i++ ) {
             String langStr = languages[i][0];
-            langStr = getAsIso639_2OrDefaultLanguage( langStr, service );
+            langStr = getAsIso639_2OrDefaultLanguage( langStr, service.getDefaultLanguage() );
             String userLangPrefix = languages[i][1];
             String languageNameInUserLanguage = languages[i][2];
             if ( userLangPrefix.equalsIgnoreCase( user.getLanguageIso639_2() ) ) {
@@ -83,16 +81,15 @@ public class LanguageMapper {
         return languagesInOptionList;
     }
 
-    public static String getAsIso639_2OrDefaultLanguage( String langStr, ImcmsServices service ) {
+    public static String getAsIso639_2OrDefaultLanguage( String langStr, String defaultLanguage ) {
         try {
-            langStr = getAsIso639_2(langStr);
+            return getAsIso639_2(langStr);
         } catch ( LanguageNotSupportedException e ) {
             log.error( "Unsupported language '"
                        + langStr
                        + "' found in database. Using default.", e );
-            langStr = service.getDefaultLanguageAsIso639_2() ;
+            return defaultLanguage ;
         }
-        return langStr;
     }
 
     /**

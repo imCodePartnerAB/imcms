@@ -12,10 +12,11 @@ public class DocumentPermissionSetMapper {
     /**
      * Stored procedure names used in this class
      */
-    private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "GetTemplateGroupsWithPermissions";
-    private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_NEW_PERMISSIONS = "GetTemplateGroupsWithNewPermissions";
+    static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "GetTemplateGroupsWithPermissions";
+    static final String SPROC_GET_TEMPLATE_GROUPS_WITH_NEW_PERMISSIONS = "GetTemplateGroupsWithNewPermissions";
     private static final String SPROC_SET_DOC_PERMISSION_SET = "SetDocPermissionSet";
     private static final String SPROC_SET_NEW_DOC_PERMISSION_SET = "SetNewDocPermissionSet";
+    static final String SQL_SELECT_PERMISSON_DATA__PREFIX = "SELECT permission_data FROM ";
 
     private static class PermissionPair {
 
@@ -238,7 +239,7 @@ public class DocumentPermissionSetMapper {
                                                  DocumentPermissionSetDomainObject documentPermissionSet,
                                                  boolean forNewDocuments ) {
         String table = getExtendedPermissionsTable( forNewDocuments );
-        String sqlStr = "SELECT permission_data FROM " + table
+        String sqlStr = SQL_SELECT_PERMISSON_DATA__PREFIX + table
                         + " WHERE meta_id = ? AND set_id = ? AND permission_id = "
                         + ImcmsConstants.PERM_CREATE_DOCUMENT;
         String[] documentTypeIdStrings = database.sqlQuery( sqlStr, new String[]{

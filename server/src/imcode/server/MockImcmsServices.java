@@ -8,6 +8,7 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Clock;
 import imcode.util.net.SMTP;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.shop.ShoppingOrderSystem;
@@ -23,8 +24,7 @@ public class MockImcmsServices implements ImcmsServices {
 
     private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
 
-    private List sqlCalls = new ArrayList() ;
-    private Map expectedSqlCalls = new HashMap() ;
+    private Database database ;
 
     public UserDomainObject verifyUser( String login, String password ) {
         return null;
@@ -48,8 +48,7 @@ public class MockImcmsServices implements ImcmsServices {
 
     // Send a procedure to the database and return a string array
     public String[] sqlProcedure( String procedure, String[] params ) {
-        sqlCalls.add( new SqlCall(procedure, params) ) ;
-        return null ;
+        return database.sqlProcedure( procedure, params ) ;
     }
 
     // get external template folder
@@ -249,54 +248,40 @@ public class MockImcmsServices implements ImcmsServices {
         return imcmsAuthenticatorAndUserAndRoleMapper ;
     }
 
-    public String getDefaultLanguageAsIso639_2() {
+    public String getDefaultLanguage() {
         return null;
     }
 
     public Map sqlProcedureHash( String procedure, String[] params ) {
-        sqlCalls.add( new SqlCall( procedure, params ) );
-        return null;
+        return database.sqlProcedureHash( procedure, params ) ;
     }
 
     public int sqlUpdateProcedure( String procedure, String[] params ) {
-        sqlCalls.add( new SqlCall( procedure, params ) );
-        return 0;
+        return database.sqlUpdateProcedure( procedure, params ) ;
     }
 
     public String sqlProcedureStr( String procedure, String[] params ) {
-        return (String)getSqlCall( procedure, params ).getResult() ;
-    }
-
-    private SqlCall getSqlCall( String procedure, String[] params ) {
-        SqlCall sqlCall = (SqlCall)expectedSqlCalls.remove( procedure ) ;
-        if ( null == sqlCall ) {
-            sqlCall = new SqlCall( procedure, params ) ;
-        } else {
-            sqlCall.setParameters(params) ;
-        }
-        sqlCalls.add( sqlCall );
-        return sqlCall;
+        return database.sqlProcedureStr( procedure, params ) ;
     }
 
     public int sqlUpdateQuery( String sqlStr, String[] params ) {
-        sqlCalls.add( new SqlCall( sqlStr, params ) );
-        return 0;
+        return database.sqlUpdateQuery( sqlStr, params ) ;
     }
 
     public String[][] sqlProcedureMulti( String procedure, String[] params ) {
-        return (String[][])getSqlCall( procedure, params ).getResult();
+        return database.sqlProcedureMulti( procedure, params );
     }
 
     public String[] sqlQuery( String sqlStr, String[] params ) {
-        return (String[])getSqlCall( sqlStr, params ).getResult();
+        return database.sqlQuery( sqlStr, params ) ;
     }
 
     public String sqlQueryStr( String sqlStr, String[] params ) {
-        return (String)getSqlCall( sqlStr, params ).getResult() ;
+        return database.sqlQueryStr( sqlStr, params ) ;
     }
 
     public String[][] sqlQueryMulti( String sqlstr, String[] params ) {
-        return (String[][])getSqlCall( sqlstr, params ).getResult();
+        return database.sqlQueryMulti( sqlstr, params ) ;
     }
 
     public void executeTransaction( DatabaseCommand databaseCommand ) {
@@ -336,6 +321,14 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public Database getDatabase() {
+        return database;
+    }
+
+    public Clock getClock() {
+        return null;
+    }
+
+    public File getRealContextPath() {
         return null;
     }
 
@@ -344,53 +337,8 @@ public class MockImcmsServices implements ImcmsServices {
         this.imcmsAuthenticatorAndUserAndRoleMapper = imcmsAuthenticatorAndUserAndRoleMapper;
     }
 
-    public List getSqlCalls() {
-        return sqlCalls;
+    public void setDatabase( Database database ) {
+        this.database = database;
     }
 
-    public void addExpectedSqlCall( SqlCall sqlCall ) {
-        expectedSqlCalls.put(sqlCall.getString(), sqlCall) ;
-    }
-
-    public void verifyExpectedSqlCalls() {
-        if (!expectedSqlCalls.isEmpty()) {
-            throw new junit.framework.AssertionFailedError( "Remaining expected sql calls: "+ expectedSqlCalls.values().toString() );
-        }
-    }
-
-    public static class SqlCall {
-        private String string ;
-        private String[] parameters ;
-        private Object result;
-
-        public SqlCall( String string, String[] parameters ) {
-            this.string = string ;
-            this.parameters = parameters ;
-        }
-
-        public SqlCall( String string, String[] parameters, Object result ) {
-            this(string, parameters) ;
-            this.result = result ;
-        }
-
-        public String getString() {
-            return string;
-        }
-
-        public String[] getParameters() {
-            return parameters;
-        }
-
-        public Object getResult() {
-            return result;
-        }
-
-        public String toString() {
-            return getString() ;
-        }
-
-        public void setParameters( String[] parameters ) {
-            this.parameters = parameters;
-        }
-    }
 }

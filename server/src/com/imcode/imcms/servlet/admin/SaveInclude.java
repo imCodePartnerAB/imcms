@@ -76,7 +76,7 @@ public class SaveInclude extends HttpServlet {
                         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id ) ;
                         document.setInclude( Integer.parseInt(include_id), includedDocument.getId() );
                         documentMapper.saveDocument( document, user );
-                        DocumentMapper.sprocSetInclude( imcref, meta_id, Integer.parseInt( include_id ), included_meta_id_int );
+                        documentMapper.setInclude( meta_id, Integer.parseInt( include_id ), included_meta_id_int );
                         imcref.updateMainLog( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id
                                       + "] on ["
                                       + meta_id_str

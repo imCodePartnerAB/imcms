@@ -60,7 +60,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public static final int ID_NEW = 0;
 
-    private Attributes attributes;
+    protected Attributes attributes;
     private static Logger log = Logger.getLogger( DocumentDomainObject.class );
 
     protected DocumentDomainObject() {
@@ -489,10 +489,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private Set categories = new HashSet();
         private Set keywords = new HashSet();
         private Set sections = new HashSet();
-        private DocumentPermissionSetDomainObject permissionSetForRestrictedOne;
-        private DocumentPermissionSetDomainObject permissionSetForRestrictedTwo;
-        private DocumentPermissionSetDomainObject permissionSetForRestrictedOneForNewDocuments;
-        private DocumentPermissionSetDomainObject permissionSetForRestrictedTwoForNewDocuments;
+        public DocumentPermissionSetDomainObject permissionSetForRestrictedOne = new DocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
+        public DocumentPermissionSetDomainObject permissionSetForRestrictedTwo = new DocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 );
+        public DocumentPermissionSetDomainObject permissionSetForRestrictedOneForNewDocuments = new DocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
+        public DocumentPermissionSetDomainObject permissionSetForRestrictedTwoForNewDocuments = new DocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 ); ;
 
         private Map rolesMappedToDocumentPermissionSetIds = new HashMap();
 

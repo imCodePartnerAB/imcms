@@ -7,6 +7,7 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Clock;
 import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -16,7 +17,7 @@ import java.io.IOException;
 import java.text.Collator;
 import java.util.*;
 
-public interface ImcmsServices extends Database {
+public interface ImcmsServices extends Database, Clock {
 
     /** Verify a Internet/Intranet user. Data from any SQL Database. **/
     UserDomainObject verifyUser(String login, String password)
@@ -170,7 +171,7 @@ public interface ImcmsServices extends Database {
 
     ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper();
 
-    String getDefaultLanguageAsIso639_2();
+    String getDefaultLanguage();
 
     TemplateMapper getTemplateMapper();
 
@@ -189,4 +190,8 @@ public interface ImcmsServices extends Database {
     Config getConfig();
 
     Database getDatabase();
+
+    Clock getClock();
+
+    File getRealContextPath();
 }

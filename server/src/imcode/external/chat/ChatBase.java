@@ -326,7 +326,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
-        String lang_prefix = imcref.getDefaultLanguageAsIso639_2();
+        String lang_prefix = imcref.getDefaultLanguage();
         if(user != null){
             lang_prefix = user.getLanguageIso639_2();
         }

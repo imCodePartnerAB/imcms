@@ -117,7 +117,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         user.setCountry( sqlResult[10] );
         user.setCountyCouncil( sqlResult[11] );
         user.setEmailAddress( sqlResult[12] );
-        user.setLanguageIso639_2( (String)ObjectUtils.defaultIfNull( sqlResult[13], service.getDefaultLanguageAsIso639_2() ) );
+        user.setLanguageIso639_2( (String)ObjectUtils.defaultIfNull( sqlResult[13], service.getDefaultLanguage() ) );
         user.setActive( 0 != Integer.parseInt( sqlResult[14] ) );
         user.setCreateDate( sqlResult[15] );
         user.setImcmsExternal( 0 != Integer.parseInt( sqlResult[16] ) );

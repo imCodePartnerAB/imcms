@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serializable;
 
 public class ImageBrowser extends WebComponent {
 
@@ -36,7 +37,7 @@ public class ImageBrowser extends WebComponent {
         this.nullSelectable = nullSelectable;
     }
 
-    public static interface SelectImageUrlCommand {
+    public static interface SelectImageUrlCommand extends Serializable {
         void selectImageUrl(String imageUrl, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException;
     }
 }

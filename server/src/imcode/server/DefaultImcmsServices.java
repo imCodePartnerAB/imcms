@@ -1,9 +1,9 @@
 package imcode.server;
 
 import imcode.server.db.*;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.TemplateMapper;
+import imcode.server.document.*;
+import imcode.server.document.index.AutorebuildingDirectoryIndex;
+import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
@@ -150,7 +150,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initDocumentMapper() {
-        documentMapper = new DocumentMapper( this );
+        File indexDirectory = new File( getRealContextPath(), "WEB-INF/index" );
+        DocumentIndex documentIndex = new AutorebuildingDirectoryIndex( indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes() );
+        documentMapper = new DocumentMapper( this, this.getDatabase(), this.getImcmsAuthenticatorAndUserAndRoleMapper(), new DocumentPermissionSetMapper( this ), documentIndex, this.getClock() );
     }
 
     private void initTemplateMapper() {
@@ -188,7 +190,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         imcmsAuthenticatorAndUserMapperAndRole = new ImcmsAuthenticatorAndUserAndRoleMapper( this, this );
         externalizedImcmsAuthAndMapper =
         new ExternalizedImcmsAuthenticatorAndUserRegistry( imcmsAuthenticatorAndUserMapperAndRole, externalAuthenticator,
-                                                           externalUserAndRoleRegistry, getDefaultLanguageAsIso639_2() );
+                                                           externalUserAndRoleRegistry, getDefaultLanguage() );
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
     }
 
@@ -487,6 +489,14 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return database;
     }
 
+    public Clock getClock() {
+        return this ;
+    }
+
+    public File getRealContextPath() {
+        return WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
+    }
+
     /**
      * @deprecated Ugly use {@link ImcmsServices#getTemplateFromDirectory(String,imcode.server.user.UserDomainObject,java.util.List,String)}
      *             or something else instead.
@@ -520,8 +530,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return config.getImcmsPath();
     }
 
-    public String getDefaultLanguageAsIso639_2() {
-        return config.getDefaultLanguage();
+    public String getDefaultLanguage() {
+        return getConfig().getDefaultLanguage();
     }
 
     public String getLanguagePrefixByLangId( int lang_id ) {
@@ -531,7 +541,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     // get language prefix for user
     public String getUserLangPrefixOrDefaultLanguage( UserDomainObject user ) {
-        String lang_prefix = this.getDefaultLanguageAsIso639_2();
+        String lang_prefix = this.getDefaultLanguage();
         if ( user != null ) {
             return user.getLanguageIso639_2();
         } else {

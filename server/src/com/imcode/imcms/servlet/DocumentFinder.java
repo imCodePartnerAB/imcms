@@ -103,7 +103,7 @@ public class DocumentFinder extends WebComponent {
         this.documentComparator = documentComparator;
     }
 
-    public interface SelectDocumentCommand {
+    public interface SelectDocumentCommand extends Serializable {
 
         void selectDocument( DocumentDomainObject document, HttpServletRequest request,
                              HttpServletResponse response ) throws IOException, ServletException;
