@@ -13,10 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Vector;
 
 /**
@@ -109,7 +106,7 @@ public class ImageUpload extends HttpServlet {
         String image_ref = fn.getCanonicalPath();
         image_ref = image_ref.substring( file_path.getCanonicalPath().length() + 1 );
         image_ref = image_ref.replace( '\\', '/' );
-        ImageFileMetaData imagefile = new ImageFileMetaData( new File( file_path, image_ref ) );
+        ImageFileMetaData imagefile = new ImageFileMetaData( new FileInputStream( new File( file_path, image_ref ) ), image_ref );
         int width = imagefile.getWidth();
         int height = imagefile.getHeight();
 

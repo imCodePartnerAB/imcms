@@ -46,23 +46,19 @@ public class ImageFileMetaData {
     /** The height of the image * */
     private int height;
 
-    /** The image-file * */
-    private File file;
-
     /** The type of the image i.e. GIF87a, GIF89a, JFIF * */
     private String type;
 
     private final static Logger log = Logger.getLogger( "imcode.util.ImageFileMetaData" );
 
-    public ImageFileMetaData( File _file ) {
-        file = _file;
+    public ImageFileMetaData( InputStream fileStream, String fileName ) {
         width = 0;
         height = 0;
         type = "";
 
         try {
-            DataInputStream dis = new DataInputStream( new BufferedInputStream( new FileInputStream( file ) ) );
-            if ( file.getName().toLowerCase().endsWith( ".gif" ) ) // ****************** A GIF-File
+            DataInputStream dis = new DataInputStream( new BufferedInputStream( fileStream ) );
+            if ( fileName.toLowerCase().endsWith( ".gif" ) ) // ****************** A GIF-File
             {
                 byte[] t = new byte[6];
                 dis.readFully( t );
@@ -73,7 +69,7 @@ public class ImageFileMetaData {
                 width = ( dis.read() + ( dis.read() << 8 ) );
                 height = ( dis.read() + ( dis.read() << 8 ) );
                 dis.close();
-            } else if ( file.getName().toLowerCase().endsWith( ".jpg" ) || file.getName().toLowerCase().endsWith( ".jpeg" ) ) { // FIXME: Move into a separate (protected?) method. Preferably one that takes just a File
+            } else if ( fileName.toLowerCase().endsWith( ".jpg" ) || fileName.toLowerCase().endsWith( ".jpeg" ) ) { // FIXME: Move into a separate (protected?) method. Preferably one that takes just a File
                 if ( dis.read() != MARKER || dis.read() != SOI ) {
                     throw( new UnsupportedOperationException( "Unsupported jpeg-type" ) );
                 }
@@ -91,7 +87,7 @@ public class ImageFileMetaData {
                         case SOF3: // SOF3 Start of frame 3
                             int precision = dis.read();
                             if ( precision != 0x08 ) {
-                                log.warn( "Trying to read jpeg with unsupported precision (0x" + Integer.toHexString( precision ) + ")" + file.getCanonicalPath() );
+                                log.warn( "Trying to read jpeg with unsupported precision (0x" + Integer.toHexString( precision ) + ")" +  fileName );
                             }
                             height = ( dis.read() << 8 ) + dis.read();
                             width = ( dis.read() << 8 ) + dis.read();
@@ -105,7 +101,7 @@ public class ImageFileMetaData {
                             dis.readFully( t );
                             type = new String( t, "8859_1" );
                             if ( !type.equals( "JFIF\0" ) ) {
-                                log.warn( "Trying to read jpeg with unsupported type (" + type + ")" + file.getCanonicalPath() );
+                                log.warn( "Trying to read jpeg with unsupported type (" + type + ")" + fileName);
                             }
                             dis.skipBytes( lengthOfBlock - 7 );
                             break;
@@ -119,7 +115,7 @@ public class ImageFileMetaData {
                             }
                     }
                 }
-            } else if ( file.getName().toLowerCase().endsWith( ".png" ) ) // ***************** A PNG-File
+            } else if ( fileName.toLowerCase().endsWith( ".png" ) ) // ***************** A PNG-File
             {
                 // PNG starts with 8 bytes (here in decimal): 137 80 78 71 13 10 26 10
                 //  indicating this is a PNG-file

@@ -364,6 +364,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.ImageArchive</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.ImageArchive</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.ImageUpload</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.ImageUpload</servlet-class>
     </servlet>
@@ -856,6 +861,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.GetExistingDoc</servlet-name>
         <url-pattern>/servlet/GetExistingDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.ImageArchive</servlet-name>
+        <url-pattern>/servlet/ImageArchive</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

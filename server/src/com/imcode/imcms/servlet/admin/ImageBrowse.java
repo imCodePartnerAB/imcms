@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.admin;
 
-import imcode.external.diverse.HtmlGenerator;
 import imcode.external.diverse.VariableManager;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
@@ -142,9 +141,7 @@ public class ImageBrowse extends HttpServlet {
         prevButtonVm.addProperty("img_no", img_no);
         prevButtonVm.addProperty("img_curr_max", Integer.toString(counter + max));
         prevButtonVm.addProperty("SERVLET_URL", "");
-        //lets get the teplatePath to the buttons
-        File templatePath = ImageBrowse.getAdminTemplateFolder(imcref, user);
-        //now we have to find out what buttons to show
+
         if (counter > 0) {
             previousButton = imcref.getAdminTemplate( ImageBrowse.IMG_PREVIOUS_LIST_TEMPLATE, user, prevButtonVm.getTagsAndData() );
         }
@@ -292,22 +289,6 @@ public class ImageBrowse extends HttpServlet {
             log.error("Error while dispatching: " + ex.getMessage(), ex);
         }
 
-    }
-
-    /**
-     * GetAdminTemplateFolder. Takes the userobject as argument to detect the language
-     * from the user and and returns the base path to the internal folder, hangs on the
-     * language prefix and an "/admin/" string afterwards...
-     * <p/>
-     */
-    private static File getAdminTemplateFolder(IMCServiceInterface imcref, imcode.server.user.UserDomainObject user) {
-
-        // Since our templates are located into the admin folder, we'll have to hang on admin
-        File templateLib = imcref.getTemplatePath();
-        // Lets get the users language id. Use the langid to get the lang prefix from db.
-        String langPrefix = user.getLanguageIso639_2();
-        templateLib = new File(templateLib, langPrefix + "/admin");
-        return templateLib;
     }
 
     public static String getImageUri(HttpServletRequest req) {

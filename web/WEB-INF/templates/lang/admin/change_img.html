@@ -143,51 +143,72 @@ function checkLinkOnBlur() {
 	</form>
 	</table></td>
 	<td>&nbsp;</td>
-	<td>
-	<table border="0" cellspacing="0" cellpadding="0">
-	<form name="imgbr" method="get" action="ImageBrowse">
-	<input type="hidden" name="caller" value="ChangeImage">
-	<input type="hidden" name="meta_id" value="#getMetaId#">
-	<input type="hidden" name="img_no" value="#img_no#">
-	<input type="hidden" name="label" value="#label#">
-	<tr>
-		<td><input type="submit" class="imcmsFormBtn" value="<? templates/sv/change_img.html/2004 ?>"></td>
-	</tr>
-	</form>
-	</table></td>
 </tr>
 </table>
 #gui_mid()
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+    <tr>
+        <td colspan="2">#gui_heading( "Nya bildarkivet" )</td>
+    </tr>
+    <tr>
+        <td>
+            <form action="ChangeImage" method="POST">
+                <input type="HIDDEN" name="meta_id" value="#getMetaId#">
+                <input type="HIDDEN" name="img_no" value="#img_no#">
+                <input type="hidden" name="label" value="#label#">
+                <input type="submit" name="GotoImageArchive" class="imcmsFormBtnSmall" value="Hämta från det nya bildarkivet" >
+            </form>
+        </td>
+        <td>
+            #imageFileDocumentId#
+        </td>
+    </tr>
+    <tr><td>&nbsp;</td></tr>
+
 <form name="ImageUploadForm" action="ImageUpload" enctype="multipart/form-data" method="POST" onSubmit="return (checkFileName()); return false">
-<input type="HIDDEN" name="meta_id" value="#getMetaId#">
-<input type="HIDDEN" name="img_no" value="#img_no#">
-<input type="hidden" name="label" value="#label#">
-<tr>
-	<td colspan="2">#gui_heading( "<? templates/sv/change_img.html/4/1 ?>" )</td>
-</tr>
-<tr>
-	<td><? templates/sv/change_img.html/5 ?></td>
-	<td>
-        <input type="file" name="file" id="theFile" size="54">
-    </td>
-</tr>
-<tr>
-	<td><? templates/sv/change_img.html/7 ?></td>
-	<td>
-	<table border="0" cellspacing="0" cellpadding="0" width="100%">
-	<tr>
-		<td>
-		<select name="folder" size="1">
-			#folders#
-		</select></td>
-		<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="ok" value="<? templates/sv/change_img.html/2005 ?>" style="width:110"></td>
-	</tr>
-	</table></td>
-</tr>
+    <input type="HIDDEN" name="meta_id" value="#getMetaId#">
+    <input type="HIDDEN" name="img_no" value="#img_no#">
+    <input type="hidden" name="label" value="#label#">
+    <tr>
+        <td colspan="2">#gui_heading( "<? templates/sv/change_img.html/4/1 ?>" )</td>
+    </tr>
+    <tr>
+        <td><? templates/sv/change_img.html/5 ?></td>
+        <td>
+            <input type="file" name="file" id="theFile" size="54">
+        </td>
+    </tr>
+    <tr>
+        <td><? templates/sv/change_img.html/7 ?></td>
+        <td>
+            <table border="0" cellspacing="0" cellpadding="0" width="100%">
+            <tr>
+                <td>
+                    <select name="folder" size="1">#folders#</select>
+                </td>
+                <td align="right">
+    <input type="submit" class="imcmsFormBtnSmall" name="ok" value="<? templates/sv/change_img.html/2005 ?>" style="width:110">
+                </td>
+            </tr>
 </form>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>
+            <form name="imgbr" method="get" action="ImageBrowse">
+                <input type="hidden" name="caller" value="ChangeImage">
+                <input type="hidden" name="meta_id" value="#getMetaId#">
+                <input type="hidden" name="img_no" value="#img_no#">
+                <input type="hidden" name="label" value="#label#">
+                <input type="submit" class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/2004 ?>">
+            </form>
+         </td>
+    </tr>
 <form name="imgProp" method="POST" action="SaveImage" onSubmit="return checkLinkType(); return false">
+<input type="HIDDEN" name="imageDocumentFileId" value="#imageFileDocumentId#">
 <input type="HIDDEN" name="meta_id" value="#getMetaId#">
 <input type="HIDDEN" name="img_no" value="#img_no#">
 <input type="HIDDEN" name="origW" value="#origW#">
@@ -195,10 +216,10 @@ function checkLinkOnBlur() {
 <input type="HIDDEN" name="oldW" value="#imgWidth#">
 <input type="HIDDEN" name="oldH" value="#imgHeight#">
 <input type="hidden" name="label" value="#label#">
-<tr>
-	<td colspan="2">&nbsp;<br>
-	#gui_heading( "<? templates/sv/change_img.html/9/1 ?>" )<div id="theLabel" class="imcmsAdmText"><i>#label#</i></div></td>
-</tr>
+    <tr>
+        <td colspan="2">&nbsp;<br>
+        #gui_heading( "<? templates/sv/change_img.html/9/1 ?> #img_no# <? templates/sv/change_img.html/9/2 ?> #getMetaId#" )<div id="theLabel" class="imcmsAdmText"><i>#label#</i></div></td>
+    </tr>
 <tr>
 	<td colspan="2">
 <script language="JavaScript">
@@ -245,17 +266,17 @@ document.write(str);
 		<td><? templates/sv/change_img.html/19 ?></td>
 		<td colspan="3">&nbsp;</td>
 	<tr>
-		<td height="20">&nbsp;<? templates/sv/change_img.html/1001 ?></td>
-		<td>&nbsp;<? templates/sv/change_img.html/1002 ?>&nbsp;</td>
-		<td>&nbsp;<? templates/sv/change_img.html/1003 ?></td>
+		<td height="20">&nbsp;#origW#</td>
+		<td>&nbsp;X&nbsp;</td>
+		<td>&nbsp;#origH#</td>
 		<td>&nbsp;</td>
-		<td>&nbsp;<? templates/sv/change_img.html/1004 ?></td>
+		<td>&nbsp;#imgBorder#</td>
 		<td>&nbsp;</td>
-		<td colspan="2"><? templates/sv/change_img.html/20 ?></td>
+		<td colspan="2">X</td>
 	</tr>
 	<tr>
 		<td><input type="text" name="image_width" size="4" maxlength="4" value="#imgWidth#"></td>
-		<td>&nbsp;<? templates/sv/change_img.html/1005 ?>&nbsp;</td>
+		<td>&nbsp;X&nbsp;</td>
 		<td><input type="text" name="image_height" size="4" maxlength="4" value="#imgHeight#"></td>
 		<td>&nbsp;</td>
 		<td><input type="text" name="image_border" size="4" maxlength="4" value="#imgBorder#"></td>

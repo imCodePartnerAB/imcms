@@ -27,10 +27,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Search documents
- */
 public class SearchDocuments extends HttpServlet {
+
+    public final static String PARAM_DOCUMENT_TYPE = "documentType";
 
     //the templates we uses as default they are stored in template/admin/original folder
     private final static String SEARCH_PAGE_TEMPLATE = "search/search_documents.html";
@@ -44,31 +43,98 @@ public class SearchDocuments extends HttpServlet {
     private final static String NAV_INACTIVE = "search/search_nav_inactive.html";
     private final static String NAV_AHREF = "search/search_nav_ahref.html";
 
-    private final static Logger log = Logger.getLogger( com.imcode.imcms.servlet.SearchDocuments.class.getName() );
+    private final static Logger log = Logger.getLogger(com.imcode.imcms.servlet.SearchDocuments.class.getName());
 
-    /**
-     * doPost()
-     */
-    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+
+        Utility.setDefaultHtmlContentType(res);
+        ServletOutputStream out = res.getOutputStream();
+
+        // Lets get the html file we use as template
+        List tags = new ArrayList();
+        tags.add("#document_type#");
+        tags.add(getDocumentTypeString(req));
+        tags.add("#search_hit_list#");
+        tags.add("");
+        tags.add("#section_list#");
+        tags.add(createSectionOptionList(imcref, req));
+        tags.add("#noofhits_list#");
+        tags.add(createNoOfHitsOptionList(getNoOfHits(req)));
+
+        //ok lets see what folder to get the search-templates from.
+        // @show = parameter with the folder name. If we get no parameter lets use folder original.
+        UserDomainObject user = Utility.getLoggedOnUser(req);
+        String templateStr = imcref.getAdminTemplate(SEARCH_PAGE_TEMPLATE, user, null);
+
+        out.print(Parser.parseDoc(templateStr, (String[]) tags.toArray(new String[tags.size()])));
+        out.flush();
+        out.close();
+    }
+
+    private String getDocumentTypeString(HttpServletRequest req) {
+        String documentTypeToSearch = req.getParameter(PARAM_DOCUMENT_TYPE);
+        documentTypeToSearch = null == documentTypeToSearch ? "" : documentTypeToSearch;
+        return documentTypeToSearch;
+    }
+
+    private String createSectionOptionList(IMCServiceInterface imcref, HttpServletRequest req) {
+        String selected;
+        String[] all_sections = imcref.sqlProcedure("SectionGetAll", new String[0]);
+        String section_option_list = "";
+        selected = req.getParameter("section");
+        if (all_sections != null) {
+            List onlyTemp = new ArrayList();
+            for (int i = 0; i < all_sections.length; i++) {
+
+                onlyTemp.add(all_sections[i]);
+            }
+            section_option_list = Html.createOptionList(selected, onlyTemp);
+        }
+        return section_option_list;
+    }
+
+    private String createNoOfHitsOptionList(String selected) {
+        String noofhits_option_list = "";
+        for (int i = 10; i < 101; i += 10) {
+            noofhits_option_list += "<option value=\"" + i + "\" "
+                    + (i == Integer.parseInt(selected) ? "selected" : "")
+                    + ">"
+                    + i
+                    + "</option>";
+        }
+        return noofhits_option_list;
+    }
+
+    private String getNoOfHits(HttpServletRequest req) {
+        String GET_PARAM_NO_OF_HITS = "no_of_hits";
+        String selected = req.getParameter(GET_PARAM_NO_OF_HITS);
+        if (selected == null) {
+            selected = "10";
+        }
+        return selected;
+    }
+
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         //this is the params we can get from the browser
-        String searchString = req.getParameter( "question_field" ) == null ? "" : req.getParameter( "question_field" );
-        String startNr = req.getParameter( "starts" ) == null ? "0" : req.getParameter( "starts" );
-        String hitsAtTime = req.getParameter( "no_of_hits" ) == null ? "15" : req.getParameter( "no_of_hits" );
-        String prev_search = req.getParameter( "prev_search" ) == null ? "" : req.getParameter( "prev_search" );
+        String searchString = req.getParameter("question_field") == null ? "" : req.getParameter("question_field");
+        String startNr = req.getParameter("starts") == null ? "0" : req.getParameter("starts");
+        String hitsAtTime = req.getParameter("no_of_hits") == null ? "15" : req.getParameter("no_of_hits");
+        String prev_search = req.getParameter("prev_search") == null ? "" : req.getParameter("prev_search");
 
-        String sectionParameter = req.getParameter( "section" );
+        String sectionParameter = req.getParameter("section");
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         SectionDomainObject section = sectionParameter == null
-                                      ? null
-                                      : imcref.getDocumentMapper().getSectionById(
-                                              Integer.parseInt( sectionParameter ) );
+                ? null
+                : imcref.getDocumentMapper().getSectionById(Integer.parseInt(sectionParameter));
 
         // Lets save searchstring typed by user
         String originalSearchString = searchString;
 
         // If user hit navigation button lets save prev settings
-        if ( req.getParameter( "hitsNo" ) != null ) {
+        if (req.getParameter("hitsNo") != null) {
             originalSearchString = prev_search;
         }
 
@@ -78,46 +144,43 @@ public class SearchDocuments extends HttpServlet {
         //the counter to tell vere in the hitarr to start
         int startNrInt = 0;
         try {
-            startNrInt = Integer.parseInt( startNr );
-        } catch ( NumberFormatException nfe ) {
+            startNrInt = Integer.parseInt(startNr);
+        } catch (NumberFormatException nfe) {
             //do nothing lets start at 0
         }
 
         //the counter to tell how many hits to show
         int noOfHit = 1000;
         try {
-            noOfHit = Integer.parseInt( hitsAtTime );
-        } catch ( NumberFormatException nfe ) {
+            noOfHit = Integer.parseInt(hitsAtTime);
+        } catch (NumberFormatException nfe) {
             //do nothing lets start at 0
         }
 
-        UserDomainObject user = Utility.getLoggedOnUser( req );
+        UserDomainObject user = Utility.getLoggedOnUser(req);
         HttpSession session = req.getSession();
 
         //check if nex or prev butons was selected or if we must do a new search i db
-        if ( req.getParameter( "next_button" ) != null ) {
-            noOfHit = Integer.parseInt( req.getParameter( "hitsNo" ) );
-            startNrInt = Integer.parseInt( req.getParameter( "startNr" ) );
-            searchResults = (DocumentDomainObject[])session.getAttribute( "search_hit_list" );
-            if ( searchResults == null ) {
-                res.sendRedirect( "StartDoc" );
+        if (req.getParameter("next_button") != null) {
+            noOfHit = Integer.parseInt(req.getParameter("hitsNo"));
+            startNrInt = Integer.parseInt(req.getParameter("startNr"));
+            searchResults = (DocumentDomainObject[]) session.getAttribute("search_hit_list");
+            if (searchResults == null) {
+                res.sendRedirect("StartDoc");
             }
-        } else if ( req.getParameter( "prev_button" ) != null ) {
-            noOfHit = Integer.parseInt( req.getParameter( "hitsNo" ) );
-            startNrInt = Integer.parseInt( req.getParameter( "startNr" ) ) - ( noOfHit + noOfHit );
-            searchResults = (DocumentDomainObject[])session.getAttribute( "search_hit_list" );
-            if ( searchResults == null ) {
-                res.sendRedirect( "StartDoc" );
+        } else if (req.getParameter("prev_button") != null) {
+            noOfHit = Integer.parseInt(req.getParameter("hitsNo"));
+            startNrInt = Integer.parseInt(req.getParameter("startNr")) - (noOfHit + noOfHit);
+            searchResults = (DocumentDomainObject[]) session.getAttribute("search_hit_list");
+            if (searchResults == null) {
+                res.sendRedirect("StartDoc");
             }
         } else {
-
-            searchResults = searchDocuments( searchString,
-                                             section,
-                                             user );
-            session.setAttribute( "search_hit_list", searchResults );
+            searchResults = searchDocuments(searchString, section, getDocumentTypeString(req), user);
+            session.setAttribute("search_hit_list", searchResults);
         }
 
-        if ( searchResults != null ) {
+        if (searchResults != null) {
             hits = searchResults.length;
         }
 
@@ -125,46 +188,46 @@ public class SearchDocuments extends HttpServlet {
 
         //the no_of_hits list
         String noofhits_option_list = "";
-        String selected_hitsToShow = req.getParameter( "no_of_hits" );
-        if ( selected_hitsToShow == null ) {
+        String selected_hitsToShow = req.getParameter("no_of_hits");
+        if (selected_hitsToShow == null) {
             selected_hitsToShow = "10";
         }
-        if ( req.getParameter( "hitsNo" ) != null ) {
-            selected_hitsToShow = req.getParameter( "prev_hitsToShow" );
+        if (req.getParameter("hitsNo") != null) {
+            selected_hitsToShow = req.getParameter("prev_hitsToShow");
         }
 
-        for ( int i = 10; i <= 1000; i *= 10 ) {
+        for (int i = 10; i <= 1000; i *= 10) {
             noofhits_option_list += "<option value=\"" + i + "\" "
-                                    + ( i == Integer.parseInt( selected_hitsToShow ) ? "selected" : "" )
-                                    + ">"
-                                    + i
-                                    + "</option>";
+                    + (i == Integer.parseInt(selected_hitsToShow) ? "selected" : "")
+                    + ">"
+                    + i
+                    + "</option>";
         }
 
 
         //the sections list
-        String[] all_sections = imcref.sqlProcedure( "SectionGetAll", new String[0] );
+        String[] all_sections = imcref.sqlProcedure("SectionGetAll", new String[0]);
         String section_option_list = "";
-        String selected_sectionToShow = req.getParameter( "section" );
+        String selected_sectionToShow = req.getParameter("section");
         String strSectionArry = "\'";
 
-        for ( int i = 0; i < all_sections.length; i += 2 ) {
+        for (int i = 0; i < all_sections.length; i += 2) {
             strSectionArry += all_sections[i + 1];
-            if ( i < all_sections.length - 2 ) {
+            if (i < all_sections.length - 2) {
                 strSectionArry += "\',\'";
             }
         }
         strSectionArry += "\'";
 
-        if ( req.getParameter( "hitsNo" ) != null ) {
-            selected_sectionToShow = req.getParameter( "prev_sectionToShow" );
+        if (req.getParameter("hitsNo") != null) {
+            selected_sectionToShow = req.getParameter("prev_sectionToShow");
         }
-        if ( all_sections != null ) {
+        if (all_sections != null) {
             List onlyTemp = new ArrayList();
-            for ( int i = 0; i < all_sections.length; i++ ) {
-                onlyTemp.add( all_sections[i] );
+            for (int i = 0; i < all_sections.length; i++) {
+                onlyTemp.add(all_sections[i]);
             }
-            section_option_list = Html.createOptionList( selected_sectionToShow, onlyTemp );
+            section_option_list = Html.createOptionList(selected_sectionToShow, onlyTemp);
         }
 
 
@@ -174,210 +237,156 @@ public class SearchDocuments extends HttpServlet {
         // @show = parameter with the folder name. If we get no parameter lets use folder original.
         String oneRecHtmlSrc, resultHtmlSrc, noHitHtmlStr, returnStr;
 
-        String nextTextTemplate = imcref.getAdminTemplate( NAV_NEXT_BUTTON, user, null );
-        String prevTextTemplate = imcref.getAdminTemplate( NAV_PREV_BUTTON, user, null );
-        String activeTemplate = imcref.getAdminTemplate( NAV_ACTIVE, user, null );
-        String inActiveTemplate = imcref.getAdminTemplate( NAV_INACTIVE, user, null );
-        String ahrefTemplate = imcref.getAdminTemplate( NAV_AHREF, user, null );
-        oneRecHtmlSrc = imcref.getAdminTemplate( HIT_LINE_TEMPLATE, user, null );
-        resultHtmlSrc = imcref.getAdminTemplate( HIT_PAGE_TEMPLATE, user, null );
-        noHitHtmlStr = imcref.getAdminTemplate( NO_HIT_PAGE_TEMPLATE, user, null );
+        String nextTextTemplate = imcref.getAdminTemplate(NAV_NEXT_BUTTON, user, null);
+        String prevTextTemplate = imcref.getAdminTemplate(NAV_PREV_BUTTON, user, null);
+        String activeTemplate = imcref.getAdminTemplate(NAV_ACTIVE, user, null);
+        String inActiveTemplate = imcref.getAdminTemplate(NAV_INACTIVE, user, null);
+        String ahrefTemplate = imcref.getAdminTemplate(NAV_AHREF, user, null);
+        oneRecHtmlSrc = imcref.getAdminTemplate(HIT_LINE_TEMPLATE, user, null);
+        resultHtmlSrc = imcref.getAdminTemplate(HIT_PAGE_TEMPLATE, user, null);
+        noHitHtmlStr = imcref.getAdminTemplate(NO_HIT_PAGE_TEMPLATE, user, null);
 
         //lets set up the <-prev- 1 2 .. -next-> stuff
         boolean nextButtonOn = false;
         boolean prevButtonOn = false;
         int hitPages;
-        StringBuffer buttonsSetupHtml = new StringBuffer( "" );
+        StringBuffer buttonsSetupHtml = new StringBuffer("");
 
-        if ( hits > 0 ) {
-            if ( startNrInt + noOfHit < hits ) {
+        if (hits > 0) {
+            if (startNrInt + noOfHit < hits) {
                 //ok we need to light the nextButton
                 nextButtonOn = true;
             }
-            if ( startNrInt - noOfHit >= 0 ) {
+            if (startNrInt - noOfHit >= 0) {
                 //ok we need the prev button
                 prevButtonOn = true;
             }
             //now we need to count the number of hit-pages
             hitPages = hits / noOfHit;
-            if ( hits % noOfHit != 0 ) {
+            if (hits % noOfHit != 0) {
                 hitPages++;
             }
 
 
             //ok this is a tricky part to set up the html for the next button and so on
             //lets start with the prev button
-            if ( prevButtonOn ) {
+            if (prevButtonOn) {
                 String[] prevArrOn = {
                     "#nexOrPrev#", "0", "#startNr#", startNrInt - noOfHit + "", "#value#", prevTextTemplate
                 };
-                buttonsSetupHtml.append( Parser.parseDoc( ahrefTemplate, prevArrOn ) + "\n" );
+                buttonsSetupHtml.append(Parser.parseDoc(ahrefTemplate, prevArrOn) + "\n");
             } else {
                 String[] prevArrOff = {"#value#", prevTextTemplate};
-                buttonsSetupHtml.append( Parser.parseDoc( inActiveTemplate, prevArrOff ) + "\n" );
+                buttonsSetupHtml.append(Parser.parseDoc(inActiveTemplate, prevArrOff) + "\n");
             }
             //ok now we must do some looping to add all the hit page numbers
-            for ( int y = 0; y < hitPages; y++ ) {
+            for (int y = 0; y < hitPages; y++) {
                 //lets see if its the choosen one
-                if ( ( y * noOfHit ) == startNrInt ) {
-                    String[] pageActive = {"#value#", ( y + 1 ) + ""};
-                    buttonsSetupHtml.append( Parser.parseDoc( activeTemplate, pageActive ) + "\n" );
+                if ((y * noOfHit) == startNrInt) {
+                    String[] pageActive = {"#value#", (y + 1) + ""};
+                    buttonsSetupHtml.append(Parser.parseDoc(activeTemplate, pageActive) + "\n");
                 } else {
                     String[] pageInactive = {
-                        "#nexOrPrev#", "1", "#startNr#", ( y * noOfHit ) + "", "#value#", ( y + 1 ) + ""
+                        "#nexOrPrev#", "1", "#startNr#", (y * noOfHit) + "", "#value#", (y + 1) + ""
                     };
-                    buttonsSetupHtml.append( Parser.parseDoc( ahrefTemplate, pageInactive ) + "\n" );
+                    buttonsSetupHtml.append(Parser.parseDoc(ahrefTemplate, pageInactive) + "\n");
                 }
             }
             //lets do the nextButton
-            if ( nextButtonOn ) {
+            if (nextButtonOn) {
                 String[] nextArrOn = {
-                    "#nexOrPrev#", "1", "#startNr#", ( startNrInt + noOfHit ) + "", "#value#", nextTextTemplate
+                    "#nexOrPrev#", "1", "#startNr#", (startNrInt + noOfHit) + "", "#value#", nextTextTemplate
                 };
-                buttonsSetupHtml.append( Parser.parseDoc( ahrefTemplate, nextArrOn ) + "\n" );
+                buttonsSetupHtml.append(Parser.parseDoc(ahrefTemplate, nextArrOn) + "\n");
             } else {
                 String[] nextArrOff = {"#value#", nextTextTemplate};
-                buttonsSetupHtml.append( Parser.parseDoc( inActiveTemplate, nextArrOff ) + "\n" );
+                buttonsSetupHtml.append(Parser.parseDoc(inActiveTemplate, nextArrOff) + "\n");
             }
         }//end (hits > 0)
 
-        StringBuffer buff = SearchDocuments.parseSearchResults( oneRecHtmlSrc, searchResults, startNrInt, noOfHit );
+        StringBuffer buff = SearchDocuments.parseSearchResults(oneRecHtmlSrc, searchResults, startNrInt, noOfHit);
         //if there isnt any hitts lets add the no hit message
-        if ( buff.length() == 0 ) {
-            buff.append( noHitHtmlStr );
+        if (buff.length() == 0) {
+            buff.append(noHitHtmlStr);
         }
         List tags = new ArrayList();
-        tags.add( "#search_list#" );
-        tags.add( buff.toString() );
-        tags.add( "#nrhits#" );
-        tags.add( "" + hits );
-        tags.add( "#searchstring#" );
-        tags.add( originalSearchString );
-        tags.add( "#page_buttons#" );
-        tags.add( buttonsSetupHtml.toString() );
-        tags.add( "#hitsNo#" );
-        tags.add( noOfHit + "" );
-        tags.add( "#section_list#" );
-        tags.add( section_option_list );
-        tags.add( "#noofhits_list#" );
-        tags.add( noofhits_option_list );
-        tags.add( "#hitsToShow#" );
-        tags.add( selected_hitsToShow );
-        tags.add( "#sectionToShow#" );
-        tags.add( selected_sectionToShow );
-        tags.add( "#sectionArry#" );
-        tags.add( strSectionArry );
+        tags.add("#document_type#");
+        tags.add(getDocumentTypeString(req));
+        tags.add("#search_list#");
+        tags.add(buff.toString());
+        tags.add("#nrhits#");
+        tags.add("" + hits);
+        tags.add("#searchstring#");
+        tags.add(originalSearchString);
+        tags.add("#page_buttons#");
+        tags.add(buttonsSetupHtml.toString());
+        tags.add("#hitsNo#");
+        tags.add(noOfHit + "");
+        tags.add("#section_list#");
+        tags.add(section_option_list);
+        tags.add("#noofhits_list#");
+        tags.add(noofhits_option_list);
+        tags.add("#hitsToShow#");
+        tags.add(selected_hitsToShow);
+        tags.add("#sectionToShow#");
+        tags.add(selected_sectionToShow);
+        tags.add("#sectionArry#");
+        tags.add(strSectionArry);
 
-        returnStr = Parser.parseDoc( resultHtmlSrc, (String[])tags.toArray( new String[tags.size()] ) );
+        returnStr = Parser.parseDoc(resultHtmlSrc, (String[]) tags.toArray(new String[tags.size()]));
 
 
 
         //now lets send it to browser
-        Utility.setDefaultHtmlContentType( res );
+        Utility.setDefaultHtmlContentType(res);
         ServletOutputStream out = res.getOutputStream();
-        out.print( returnStr );
+        out.print(returnStr);
         out.flush();
         out.close();
     } // End of doPost
 
-    private DocumentDomainObject[] searchDocuments( String searchString,
-                                                    SectionDomainObject section, UserDomainObject user )
-            throws IOException {
+    private DocumentDomainObject[] searchDocuments(String searchString, SectionDomainObject section,
+                                                   String documentType, UserDomainObject user) throws IOException {
+
         DocumentIndex reindexingIndex = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentIndex();
         BooleanQuery query = new BooleanQuery();
-        if ( null != searchString && !"".equals( searchString.trim() ) ) {
+        if (null != searchString && !"".equals(searchString.trim())) {
             try {
-                Query textQuery = reindexingIndex.parseLucene( searchString );
-                query.add( textQuery, true, false );
-            } catch ( ParseException e ) {
-                log.warn( e.getMessage() + " in search-string " + searchString );
+                Query textQuery = reindexingIndex.parseLucene(searchString);
+                query.add(textQuery, true, false);
+            } catch (ParseException e) {
+                log.warn(e.getMessage() + " in search-string " + searchString);
             }
         }
 
-        if ( null != section ) {
-            Query sectionQuery = new TermQuery( new Term( "section", section.getName().toLowerCase() ) );
-            query.add( sectionQuery, true, false );
+        if (null != section) {
+            Query sectionQuery = new TermQuery(new Term("section", section.getName().toLowerCase()));
+            query.add(sectionQuery, true, false);
         }
 
-        return reindexingIndex.search( query, user );
+        if ( !"".equals(documentType)) {
+            Query sectionQuery = new TermQuery(new Term("doc_type_id", documentType));
+            query.add(sectionQuery, true, false);
+        }
+
+        return reindexingIndex.search(query, user);
     }
 
-    /**
-     * doGet()
-     */
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        Utility.setDefaultHtmlContentType( res );
-        ServletOutputStream out = res.getOutputStream();
 
-        //ok lets see what folder to get the search-templates from.
-        // @show = parameter with the folder name. If we get no parameter lets use folder original.
-        UserDomainObject user = Utility.getLoggedOnUser( req );
-
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String templateStr = imcref.getAdminTemplate( SEARCH_PAGE_TEMPLATE, user, null );
-
-
-        //the no_of_hits list
-        String noofhits_option_list = "";
-        String selected = req.getParameter( "no_of_hits" );
-        if ( selected == null ) {
-            selected = "10";
-        }
-
-        for ( int i = 10; i < 101; i += 10 ) {
-            noofhits_option_list += "<option value=\"" + i + "\" "
-                                    + ( i == Integer.parseInt( selected ) ? "selected" : "" )
-                                    + ">"
-                                    + i
-                                    + "</option>";
-        }
-
-        //the sections list
-        String[] all_sections = imcref.sqlProcedure( "SectionGetAll", new String[0] );
-        String section_option_list = "";
-        selected = req.getParameter( "section" );
-        if ( all_sections != null ) {
-            List onlyTemp = new ArrayList();
-            for ( int i = 0; i < all_sections.length; i++ ) {
-
-                onlyTemp.add( all_sections[i] );
-            }
-            section_option_list = Html.createOptionList( selected, onlyTemp );
-        }
-
-
-        //	String originalSearchString = req.getParameter("question_field") == null? "":req.getParameter("question_field") ;
-
-        // Lets get the html file we use as template
-        List tags = new ArrayList();
-        tags.add( "#search_hit_list#" );
-        tags.add( "" );
-        tags.add( "#section_list#" );
-        tags.add( section_option_list );
-        tags.add( "#noofhits_list#" );
-        tags.add( noofhits_option_list );
-        //	tags.add("#searchstring#");		tags.add(originalSearchString);
-
-
-        out.print( Parser.parseDoc( templateStr, (String[])tags.toArray( new String[tags.size()] ) ) );
-        out.flush();
-        out.close();
-    } // End of doGet
-
-    private static StringBuffer parseSearchResults( String oneRecHtmlSrc,
-                                                    DocumentDomainObject[] searchResults, int startValue,
-                                                    int numberToParse ) {
-        StringBuffer htmlSearchResults = new StringBuffer( "" );
+    private static StringBuffer parseSearchResults(String oneRecHtmlSrc,
+                                                   DocumentDomainObject[] searchResults, int startValue,
+                                                   int numberToParse) {
+        StringBuffer htmlSearchResults = new StringBuffer("");
         int stop = startValue + numberToParse;
-        if ( stop >= searchResults.length ) {
+        if (stop >= searchResults.length) {
             stop = searchResults.length;
         }
         // Lets parse the searchresults
-        for ( int i = startValue; i < stop; i++ ) {
+        for (int i = startValue; i < stop; i++) {
             DocumentDomainObject document = searchResults[i];
-            String[] oneHitTags = SearchDocuments.getSearchHitTags( i, document );
+            String[] oneHitTags = SearchDocuments.getSearchHitTags(i, document);
 
-            htmlSearchResults.append( Parser.parseDoc( oneRecHtmlSrc, oneHitTags ) );
+            htmlSearchResults.append(Parser.parseDoc(oneRecHtmlSrc, oneHitTags));
         }
         return htmlSearchResults;
     }
@@ -386,22 +395,22 @@ public class SearchDocuments extends HttpServlet {
      * Returns all possible variables that might be used when parse the oneRecLine to the
      * search page
      */
-    private static String[] getSearchHitTags( int searchHitIndex, DocumentDomainObject document ) {
+    private static String[] getSearchHitTags(int searchHitIndex, DocumentDomainObject document) {
         return new String[]{
             "#meta_id#", "" + document.getId(),
             "#doc_type#", "" + document.getDocumentTypeId(),
             "#meta_headline#", document.getHeadline(),
             "#meta_text#", document.getMenuText(),
-            "#date_created#", "" + ObjectUtils.defaultIfNull( document.getCreatedDatetime(), "&nbsp;" ),
-            "#date_modified#", "" + ObjectUtils.defaultIfNull( document.getModifiedDatetime(), "&nbsp;" ),
-            "#date_activated#", "" + ObjectUtils.defaultIfNull( document.getPublicationStartDatetime(), "&nbsp;" ),
-            "#date_archived#", "" + ObjectUtils.defaultIfNull( document.getArchivedDatetime(), "&nbsp;" ),
+            "#date_created#", "" + ObjectUtils.defaultIfNull(document.getCreatedDatetime(), "&nbsp;"),
+            "#date_modified#", "" + ObjectUtils.defaultIfNull(document.getModifiedDatetime(), "&nbsp;"),
+            "#date_activated#", "" + ObjectUtils.defaultIfNull(document.getPublicationStartDatetime(), "&nbsp;"),
+            "#date_archived#", "" + ObjectUtils.defaultIfNull(document.getArchivedDatetime(), "&nbsp;"),
             "#archive#", document.isArchived() ? "1" : "0",
             "#shared#", "0",
             "#show_meta#", "0",
             "#disable_search#", "1",
             "#meta_image#", document.getMenuImage(),
-            "#hit_nbr#", "" + ( 1 + searchHitIndex )
+            "#hit_nbr#", "" + (1 + searchHitIndex)
         };
     }
 

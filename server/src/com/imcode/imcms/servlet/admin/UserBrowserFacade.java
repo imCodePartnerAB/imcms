@@ -8,12 +8,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class UserBrowserFacade {
+import com.imcode.imcms.servlet.ServletFacade;
+
+public class UserBrowserFacade extends ServletFacade {
 
     private boolean userSelected;
     private UserDomainObject selectedUser;
     private boolean usersAddable;
-    private String forwardReturnUrl;
     private String searchString;
     private int selectButton;
     private boolean nullSelectable = true ;
@@ -41,17 +42,9 @@ public class UserBrowserFacade {
         this.usersAddable = usersAddable;
     }
 
-    public void setForwardReturnUrl( String forwardReturnUrl ) {
-        this.forwardReturnUrl = forwardReturnUrl;
-    }
-
     public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         HttpSessionUtils.addObjectToSessionAndSetSessionAttributeNameInRequest( this, request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
         UserBrowser.forwardToJsp( request, response, new UserBrowser.FormData() );
-    }
-
-    public String getForwardReturnUrl() {
-        return forwardReturnUrl;
     }
 
     public void setSelectedUser( UserDomainObject selectedUser ) {

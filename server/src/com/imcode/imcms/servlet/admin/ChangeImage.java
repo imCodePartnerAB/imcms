@@ -4,8 +4,7 @@ import imcode.server.ApplicationServer;
 import imcode.server.HTMLConv;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentMapper;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.GetImages;
@@ -20,15 +19,20 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.FileInputStream;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import com.imcode.imcms.servlet.ImageArchiveFacade;
+import org.apache.log4j.Logger;
+
 /**
  * Edit imageref  - upload image to server.
  */
 public class ChangeImage extends HttpServlet {
+    private Logger log = Logger.getLogger(  ChangeImage.class );
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         if ( req.getParameter( "preview" ) == null ) {
@@ -41,175 +45,68 @@ public class ChangeImage extends HttpServlet {
         return;
     }
 
-    /**
-     * doGet()
-     */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
-        Utility.setDefaultHtmlContentType( res );
-        PrintWriter out = res.getWriter();
-
         String metaIdStr = req.getParameter( "meta_id" );
         int meta_id = Integer.parseInt( metaIdStr );
 
-        String label = req.getParameter( "label" );
-        if ( label == null ) {
-            label = "";
-        }
-
         UserDomainObject user = Utility.getLoggedOnUser( req );
         // Check if user has write rights
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         if ( !imcref.checkDocAdminRights( meta_id, user ) ) {
             Utility.redirectToStartDocument( req, res );
             return;
         }
 
+        int widthFromFile = 0;
+        int heightFromFile = 0;
 
-        //*lets get some path we need later on
+        boolean fileImageDocumentChoosen = false;
+        String fileDocumentIdStr = "dummy text";
+        String gotoImageArchive = req.getParameter( "GotoImageArchive");
+        if( null != gotoImageArchive ) {
+            ImageArchiveFacade imageArhiveFacade = ImageArchiveFacade.getInstance( req );
+            if ( !imageArhiveFacade.isImageSelected() ) {
+                imageArhiveFacade.setForwardReturnUrl( "ChangeImage?meta_id=" + req.getParameter("meta_id") + "&img=" + req.getParameter( "img" ) + "&label=" + req.getParameter( "label" ) );
+                imageArhiveFacade.forward( req, res );
+            } else {
+                FileDocumentDomainObject imageFileDocument = imageArhiveFacade.getSelectedImage();
+                if( null != imageFileDocument ) {
+                    fileImageDocumentChoosen = true;
+                    fileDocumentIdStr = ""+imageFileDocument.getId();
+                    ImageFileMetaData imageFileMetaData = new ImageFileMetaData( imageFileDocument.getInputStreamSource().getInputStream(), imageFileDocument.getFilename() );
+                    widthFromFile = imageFileMetaData.getWidth();
+                    heightFromFile = imageFileMetaData.getHeight();
+                }
+            }
+        }
+
         File image_path = Utility.getDomainPrefPath( "image_path" );
-
-
-        //*lets get the dirlist, and add the rootdir to it
         List imageFolders = GetImages.getImageFolders( image_path, true );
         imageFolders.add( 0, image_path );
 
-        //*the StringBuffers to save the image directories list html-code in
-        StringBuffer folderOptions = createImageFolderOptionList(imageFolders,image_path);
-
         HttpSession session = req.getSession( true );
+        StringBuffer folderOptions = createImageFolderOptionList(imageFolders,image_path);
         session.setAttribute( "imageFolderOptionList", folderOptions.toString() );
 
-        String imgNoStr = ( req.getParameter( "img_no" ) != null ) ? req.getParameter( "img_no" ) : req.getParameter( "img" );
-        int img_no = Integer.parseInt( imgNoStr );
-
         DocumentMapper documentMapper = imcref.getDocumentMapper() ;
-        ImageDomainObject image = documentMapper.getDocumentImage( meta_id, img_no );
+        ImageDomainObject imageDomainObject = documentMapper.getDocumentImage( meta_id, getImageNumberParam( req ) );
 
-        // Check if ChangeImage is invoked by ImageBrowse, hence containing
-        // an image filename as option value.
-        String paramCancel = req.getParameter( ImageBrowse.PARAMETER_BUTTON__CANCEL );
-        String imageListParam = "";
-        if( null == paramCancel ) {
-            imageListParam = req.getParameter( "imglist" );
-        }
-        String browsedImageUrl = ( imageListParam == null ) ? "" : URLDecoder.decode( imageListParam );
+        String browsedImageUrl = getChoosenImageFromImageBrowse( req );
 
-        String imageUrl = ( "".equals( browsedImageUrl ) && null != image ? image.getUrl() : browsedImageUrl ); // selected OPTION or ""
+        String imageUrl = ( "".equals( browsedImageUrl ) && null != imageDomainObject ? imageDomainObject.getUrl() : browsedImageUrl ); // selected OPTION or ""
 
-        //****************************************************************
         File imageFile = new File( image_path, imageUrl );
-        int widthFromFile = 0;
-        int heightFromFile = 0;
         if (imageFile.isFile()) {
-            ImageFileMetaData imageFileMetaData = new ImageFileMetaData( imageFile );
+            ImageFileMetaData imageFileMetaData = new ImageFileMetaData( new FileInputStream(imageFile), imageUrl );
             widthFromFile = imageFileMetaData.getWidth();
             heightFromFile = imageFileMetaData.getHeight();
         }
-        //****************************************************************
 
         Vector vec = new Vector();
-        if ( null != image ) {
-            int current_width = 0;
-            try {
-                current_width = "".equals( browsedImageUrl ) ? image.getWidth() : widthFromFile;
-            } catch ( NumberFormatException ex ) {
+        boolean useFileData = null == imageDomainObject;
 
-            }
-            int current_height = 0;
-            try {
-                current_height = "".equals( browsedImageUrl ) ? image.getHeight() : heightFromFile;
-            } catch ( NumberFormatException ex ) {
-
-            }
-            int aspect = 0;
-            if ( current_width * current_height != 0 ) {
-                aspect = 100 * current_width / current_height;
-            }
-
-            String keepAspect = "checked";
-
-            if ( widthFromFile * heightFromFile != 0 && aspect != ( 100 * widthFromFile / heightFromFile ) ) {
-                keepAspect = "";
-            }
-
-            vec.add( "#imgName#" );
-            vec.add( HTMLConv.toHTMLSpecial(image.getName()));
-            vec.add( "#imgRef#" );
-            vec.add( HTMLConv.toHTMLSpecial(imageUrl));
-            vec.add( "#imgWidth#" );
-            vec.add( current_width != 0 ? "" + current_width : "" + widthFromFile );
-            vec.add( "#origW#" ); // original imageWidth
-            vec.add( "" + widthFromFile );
-            vec.add( "#imgHeight#" );
-            vec.add( current_height != 0 ? "" + current_height : "" + heightFromFile );
-            vec.add( "#origH#" );
-            vec.add( "" + heightFromFile ); // original imageHeight
-
-            vec.add( "#keep_aspect#" );
-            vec.add( keepAspect );
-
-            vec.add( "#imgBorder#" );
-            vec.add( ""+image.getBorder() );
-            vec.add( "#imgVerticalSpace#" );
-            vec.add( ""+image.getVerticalSpace() );
-            vec.add( "#imgHorizontalSpace#" );
-            vec.add( ""+image.getHorizontalSpace() );
-            if ( "_top".equals( image.getTarget() ) ) {
-                vec.add( "#target_name#" );
-                vec.add( "" );
-                vec.add( "#top_checked#" );
-            } else if ( "_self".equals( image.getTarget() ) ) {
-                vec.add( "#target_name#" );
-                vec.add( "" );
-                vec.add( "#self_checked#" );
-            } else if ( "_blank".equals( image.getTarget() ) ) {
-                vec.add( "#target_name#" );
-                vec.add( "" );
-                vec.add( "#blank_checked#" );
-            } else if ( "_parent".equals( image.getTarget() ) ) {
-                vec.add( "#target_name#" );
-                vec.add( "" );
-                vec.add( "#blank_checked#" );
-            } else {
-                vec.add( "#target_name#" );
-                vec.add( image.getTarget() );
-                vec.add( "#other_checked#" );
-            }
-            vec.add( "selected" );
-
-            if ( "baseline".equals( image.getAlign() ) ) {
-                vec.add( "#baseline_selected#" );
-            } else if ( "top".equals( image.getAlign() ) ) {
-                vec.add( "#top_selected#" );
-            } else if ( "middle".equals( image.getAlign() ) ) {
-                vec.add( "#middle_selected#" );
-            } else if ( "bottom".equals( image.getAlign() ) ) {
-                vec.add( "#bottom_selected#" );
-            } else if ( "texttop".equals( image.getAlign() ) ) {
-                vec.add( "#texttop_selected#" );
-            } else if ( "absmiddle".equals( image.getAlign() ) ) {
-                vec.add( "#absmiddle_selected#" );
-            } else if ( "absbottom".equals( image.getAlign() ) ) {
-                vec.add( "#absbottom_selected#" );
-            } else if ( "left".equals( image.getAlign() ) ) {
-                vec.add( "#left_selected#" );
-            } else if ( "right".equals( image.getAlign() ) ) {
-                vec.add( "#right_selected#" );
-            } else {
-                vec.add( "#none_selected#" );
-            }
-            vec.add( "selected" );
-
-            vec.add( "#imgAltText#" );
-            vec.add( image.getAlternateText());
-            vec.add( "#imgLowScr#" );
-            vec.add( image.getLowResolutionUrl() );
-            vec.add( "#imgRefLink#" );
-            vec.add( image.getLinkUrl() );
-        } else {
-
-            vec.add( "#imgName#" );
+        if ( useFileData ) {
+                     vec.add( "#imgName#" );
             vec.add( "" );
             vec.add( "#imgRef#" );
             vec.add( imageUrl );
@@ -241,22 +138,151 @@ public class ChangeImage extends HttpServlet {
             vec.add( "" );
             vec.add( "#imgRefLink#" );
             vec.add( "" );
+        } else {
+            int current_width = 0;
+            try {
+                current_width = "".equals( browsedImageUrl ) ? imageDomainObject.getWidth() : widthFromFile;
+            } catch ( NumberFormatException ex ) {
 
+            }
+            int current_height = 0;
+            try {
+                current_height = "".equals( browsedImageUrl ) ? imageDomainObject.getHeight() : heightFromFile;
+            } catch ( NumberFormatException ex ) {
+
+            }
+            int aspect = 0;
+            if ( current_width * current_height != 0 ) {
+                aspect = 100 * current_width / current_height;
+            }
+
+            String keepAspect = "checked";
+
+            if ( widthFromFile * heightFromFile != 0 && aspect != ( 100 * widthFromFile / heightFromFile ) ) {
+                keepAspect = "";
+            }
+
+            vec.add( "#imgName#" );
+            vec.add( HTMLConv.toHTMLSpecial(imageDomainObject.getName()));
+            vec.add( "#imgRef#" );
+            vec.add( HTMLConv.toHTMLSpecial(imageUrl));
+            vec.add( "#imgWidth#" );
+            vec.add( current_width != 0 ? "" + current_width : "" + widthFromFile );
+            vec.add( "#origW#" ); // original imageWidth
+            vec.add( "" + widthFromFile );
+            vec.add( "#imgHeight#" );
+            vec.add( current_height != 0 ? "" + current_height : "" + heightFromFile );
+            vec.add( "#origH#" );
+            vec.add( "" + heightFromFile ); // original imageHeight
+
+            vec.add( "#keep_aspect#" );
+            vec.add( keepAspect );
+
+            vec.add( "#imgBorder#" );
+            vec.add( ""+imageDomainObject.getBorder() );
+            vec.add( "#imgVerticalSpace#" );
+            vec.add( ""+imageDomainObject.getVerticalSpace() );
+            vec.add( "#imgHorizontalSpace#" );
+            vec.add( ""+imageDomainObject.getHorizontalSpace() );
+            if ( "_top".equals( imageDomainObject.getTarget() ) ) {
+                vec.add( "#target_name#" );
+                vec.add( "" );
+                vec.add( "#top_checked#" );
+            } else if ( "_self".equals( imageDomainObject.getTarget() ) ) {
+                vec.add( "#target_name#" );
+                vec.add( "" );
+                vec.add( "#self_checked#" );
+            } else if ( "_blank".equals( imageDomainObject.getTarget() ) ) {
+                vec.add( "#target_name#" );
+                vec.add( "" );
+                vec.add( "#blank_checked#" );
+            } else if ( "_parent".equals( imageDomainObject.getTarget() ) ) {
+                vec.add( "#target_name#" );
+                vec.add( "" );
+                vec.add( "#blank_checked#" );
+            } else {
+                vec.add( "#target_name#" );
+                vec.add( imageDomainObject.getTarget() );
+                vec.add( "#other_checked#" );
+            }
+            vec.add( "selected" );
+
+            if ( "baseline".equals( imageDomainObject.getAlign() ) ) {
+                vec.add( "#baseline_selected#" );
+            } else if ( "top".equals( imageDomainObject.getAlign() ) ) {
+                vec.add( "#top_selected#" );
+            } else if ( "middle".equals( imageDomainObject.getAlign() ) ) {
+                vec.add( "#middle_selected#" );
+            } else if ( "bottom".equals( imageDomainObject.getAlign() ) ) {
+                vec.add( "#bottom_selected#" );
+            } else if ( "texttop".equals( imageDomainObject.getAlign() ) ) {
+                vec.add( "#texttop_selected#" );
+            } else if ( "absmiddle".equals( imageDomainObject.getAlign() ) ) {
+                vec.add( "#absmiddle_selected#" );
+            } else if ( "absbottom".equals( imageDomainObject.getAlign() ) ) {
+                vec.add( "#absbottom_selected#" );
+            } else if ( "left".equals( imageDomainObject.getAlign() ) ) {
+                vec.add( "#left_selected#" );
+            } else if ( "right".equals( imageDomainObject.getAlign() ) ) {
+                vec.add( "#right_selected#" );
+            } else {
+                vec.add( "#none_selected#" );
+            }
+            vec.add( "selected" );
+
+            vec.add( "#imgAltText#" );
+            vec.add( imageDomainObject.getAlternateText());
+            vec.add( "#imgLowScr#" );
+            vec.add( imageDomainObject.getLowResolutionUrl() );
+            vec.add( "#imgRefLink#" );
+            vec.add( imageDomainObject.getLinkUrl() );
         }
         vec.add( "#imgUrl#" );
         vec.add( imcref.getImageUrl() );
         vec.add( "#getMetaId#" );
         vec.add( String.valueOf( meta_id ) );
         vec.add( "#img_no#" );
-        vec.add( String.valueOf( img_no ) );
+        vec.add( String.valueOf( getImageNumberParam( req ) ) );
         vec.add( "#folders#" );
         vec.add( folderOptions.toString() );
+
         vec.add( "#label#" );
-        vec.add( label );
+        vec.add( getLabelParam( req ) );
+        vec.add( "#imageFileDocumentId#" );
+        vec.add( fileDocumentIdStr );
 
         String htmlStr = imcref.getAdminTemplate( "change_img.html", user, vec );
+        Utility.setDefaultHtmlContentType( res );
+        PrintWriter out = res.getWriter();
         out.print( htmlStr );
 
+    }
+
+    private String getChoosenImageFromImageBrowse( HttpServletRequest req ) {
+        // Check if ChangeImage is invoked by ImageBrowse, hence containing
+        // an image filename as option value.
+        String paramCancel = req.getParameter( ImageBrowse.PARAMETER_BUTTON__CANCEL );
+        String imageListParam = "";
+        if( null == paramCancel ) {
+            imageListParam = req.getParameter( "imglist" );
+        }
+
+        String browsedImageUrl = ( imageListParam == null ) ? "" : URLDecoder.decode( imageListParam );
+        return browsedImageUrl;
+    }
+
+    private int getImageNumberParam( HttpServletRequest req ) {
+        String imgNoStr = ( req.getParameter( "img_no" ) != null ) ? req.getParameter( "img_no" ) : req.getParameter( "img" );
+        int img_no = Integer.parseInt( imgNoStr );
+        return img_no;
+    }
+
+    private String getLabelParam( HttpServletRequest req ) {
+        String label = req.getParameter( "label" );
+        if ( label == null ) {
+            label = "";
+        }
+        return label;
     }
 
 
