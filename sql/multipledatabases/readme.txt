@@ -25,7 +25,7 @@ Kvar att undersöka/göra
 Sproc:ar kvar att flytta in i koden:
 (Ta bort den du håller på med)
 classification_fix.prc
-copydocs.prc
+Hasse: copydocs.prc
 deleteinclude.prc
 deletenewdocpermissionsetex.prc
 deleteuseradminpermissibleroles.prc
@@ -35,7 +35,6 @@ getbrowserdocchilds.prc
 getcategoryusers.prc
 getcurrentsessioncounter.prc
 getcurrentsessioncounterdate.prc
-
 getdoctypesforuser.prc
 getdoctypeswithnewpermissions.prc
 getdoctypeswithpermissions.prc
