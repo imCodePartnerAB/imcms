@@ -8,6 +8,8 @@ public class DateHelper {
     /** start using theses instead in all places suitable */
     private static final String DATE_FORMAT_STRING = "yyyy-MM-dd";
     private static final String TIME_FORMAT_STRING = "HH:mm";
+    public static final String DATE_TIME_SECONDS_FORMAT_STRING = "yyyy-MM-dd HH:mm:ss";
+
     public final static String DATETIME_FORMAT_STRING = DATE_FORMAT_STRING + " " + TIME_FORMAT_STRING ;
     public static final SimpleDateFormat DATE_TIME_FORMAT_IN_DATABASE = new SimpleDateFormat( DATETIME_FORMAT_STRING );
     public static final SimpleDateFormat LOG_DATE_TIME_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSS " );

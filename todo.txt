@@ -24,7 +24,7 @@ Hillar, prioritera
 (?) Duplicering av APIet i Servletarna
 
 API:et (prio)
-(2) Skapa nytt textdokument i valfri meny på valfri sida (AdminDoc->SaveNewMeta)
+(2) Skapa nytt textdokument i valfri meny på valfri sida (AdminDoc->SaveNewMeta), kvar: avdelning och sökorden
 (2) Skapa behörighet på viss sida
 (2) Ange formatmall och format-grupp för valfri sida
 (2) Ange documentnummer för valfri sida och valfri includ tag

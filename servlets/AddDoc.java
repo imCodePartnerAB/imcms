@@ -50,9 +50,9 @@ public class AddDoc extends HttpServlet {
         }
         String lang_prefix = user.getLangPrefix();
 
-        HashSet user_doc_types = DocumentMapper.sprocGetDocTypesForUser( imcref, user, meta_id, lang_prefix );
+        boolean userHasRights = DocumentMapper.checkUsersRights( imcref, user, meta_id, lang_prefix, doc_type );
 
-        if( !"0".equals( item_selected ) && !user_doc_types.contains( item_selected ) ) {
+        if( !"0".equals( item_selected ) && !userHasRights ) {
             String output = AdminDoc.adminDoc( meta_id_int, meta_id_int, user, req, res );
             if( output != null ) {
                 out.write( output );

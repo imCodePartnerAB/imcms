@@ -140,10 +140,10 @@ public class SaveNewMeta extends HttpServlet {
         }
         String lang_prefix = user.getLangPrefix();
 
-        HashSet user_doc_types = DocumentMapper.sprocGetDocTypesForUser( imcref, user, parent_meta_id, lang_prefix );
+        boolean userHasRights = DocumentMapper.checkUsersRights( imcref, user, parent_meta_id, lang_prefix, doc_type );
 
         // So... if the user may not create this particular doc-type... he's outta here!
-        if( !user_doc_types.contains( doc_type ) ) {
+        if( !userHasRights ) {
             String output = AdminDoc.adminDoc( parent_int, parent_int, user, req, res );
             if( output != null ) {
                 out.write( output );
@@ -168,17 +168,17 @@ public class SaveNewMeta extends HttpServlet {
             // Lets add a new meta to the db
         } else if( req.getParameter( "ok" ) != null ) {
 
-            String meta_id = DocumentMapper.sqlInsertIntoMeta_allDockTypes( imcref, doc_type, activated_datetime, archived_datetime, metaprops );
+            String meta_id = DocumentMapper.sqlInsertIntoMeta( imcref, doc_type, activated_datetime, archived_datetime, metaprops );
 
             // Save the classifications to the db
             if( classification != null ) {
-                DocumentMapper.sprocSaveClassification_allDockTypes( imcref, meta_id, classification );
+                DocumentMapper.sprocSaveClassification( imcref, meta_id, classification );
             }
 
             DocumentMapper.sprocInheritPermissions( imcref, Integer.parseInt(meta_id), Integer.parseInt(parent_meta_id), Integer.parseInt(doc_type) );
 
             // Lets add the sortorder to the parents childlist
-            DocumentMapper.sqlAddSortorderToParentsChildList_allDocTypes( imcref, parent_meta_id, meta_id, doc_menu_no );
+            DocumentMapper.sqlAddSortorderToParentsChildList( imcref, parent_meta_id, meta_id, doc_menu_no );
             log( meta_id );
 
             // Lets update the parents created_date
@@ -313,7 +313,7 @@ public class SaveNewMeta extends HttpServlet {
 
                 // TEXT DOCUMENT
             } else if( doc_type.equals( "2" ) ) {
-                DocumentMapper.sqlCopyTemplateData_textDockType( imcref, user, parent_meta_id, meta_id );
+                DocumentMapper.sqlCopyTemplateData( imcref, user, parent_meta_id, meta_id );
 
                 // Lets check if we should copy the metaheader and meta text into text1 and text2.
                 // There are 2 types of texts. 1= html text. 0= plain text. By
@@ -326,7 +326,7 @@ public class SaveNewMeta extends HttpServlet {
                     String mHeadline = Parser.parseDoc( metaprops.getProperty( "meta_headline" ), vp );
                     String mText = Parser.parseDoc( metaprops.getProperty( "meta_text" ), vp );
 
-                    DocumentMapper.sqlInsertIntoTexts_textDocType( imcref, meta_id, mHeadline, mText );
+                    DocumentMapper.sqlInsertIntoTexts( imcref, meta_id, mHeadline, mText );
                 }
 
                 // Lets activate the textfield
