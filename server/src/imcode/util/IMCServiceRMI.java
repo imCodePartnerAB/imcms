@@ -392,6 +392,13 @@ public class IMCServiceRMI {
 	
 	}
 	
+	public static String parseExternalDoc(String server,Vector variables, String external_template_name, String lang_prefix, String doc_type, String templateSet) throws IOException  {
+		IMCServiceInterface imc = getInterface( server ) ;
+		
+		return imc.parseExternalDoc(variables,external_template_name, lang_prefix, doc_type, templateSet);
+	
+	}
+	
     public static File getTemplateHome ( String server ) throws IOException {
 	IMCServiceInterface imc = getInterface( server ) ;
 
