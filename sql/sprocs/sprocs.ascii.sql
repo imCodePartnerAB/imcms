@@ -1198,7 +1198,7 @@ GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
 GO
 
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
 GO
 
 CREATE PROCEDURE GetCategoryUsers
@@ -1207,10 +1207,13 @@ Used from servlet AdminUser
 */
  @category int
 AS
-SELECT user_id, last_name + ', ' + first_name
+SELECT user_id, last_name + ', ' + first_name + ' ['+LTRIM(RTRIM(login_name))+']'
 FROM users
 WHERE user_type = @category
 ORDER BY last_name
+
+
+
 
 GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
