@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.flow.Page;
+import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.superadmin.AdminManager;
 
 import javax.servlet.ServletException;
@@ -19,6 +20,11 @@ public class SearchDocuments extends HttpServlet {
             SearchDocumentsPage searchDocumentsPage = new SearchDocumentsPage() ;
             DocumentFinder documentFinder = new DocumentFinder(searchDocumentsPage);
             documentFinder.addExtraSearchResultColumn( new AdminManager.DatesSummarySearchResultColumn());
+            documentFinder.setCancelCommand( new DispatchCommand() {
+                public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+                    request.getRequestDispatcher( "BackDoc" ).forward( request, response );
+                }
+            } );
             searchDocumentsPage.updateFromRequest( request );
             documentFinder.forward(request, response);
         }
