@@ -110,6 +110,13 @@
             </p>
             <bug id="2883"/>
         </change>
+        <change>
+            <p>
+                Fixed a problem where references to removed documents
+                were retained in menus, causing NullPointerExceptions.
+            </p>
+            <bug id="2894"/>
+        </change>
     </changes>
 
     <changes for="API-using developers">
