@@ -9,9 +9,6 @@ import imcode.external.diverse.*;
 import imcode.util.*;
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
-import com.imcode.imcms.servlet.superadmin.AdminError;
-import com.imcode.imcms.servlet.superadmin.Administrator;
-import com.imcode.imcms.servlet.superadmin.Administrator;
 
 public class AdminSystemInfo extends Administrator {
 
@@ -49,10 +46,6 @@ public class AdminSystemInfo extends Administrator {
 
         this.sendHtml(req, res, vm, HTML_TEMPLATE);
     } // End doGet
-
-    /**
-     * POST
-     */
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {

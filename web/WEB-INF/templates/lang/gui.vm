@@ -58,7 +58,7 @@
 
 #macro( gui_head_help_and_back_buttons $help_id $formAction $formName $cancelButtonName )
 <table border="0" cellspacing="0" cellpadding="0">
-    <form metod="post" action="$formAction" name="$formName">
+    <form metod="post" action="$formAction">
         <tr>
             <td><input type="submit"  class="imcmsFormBtn" name="$cancelButtonName" value="<? global/back ?>"></td>
             <td>&nbsp;</td>
