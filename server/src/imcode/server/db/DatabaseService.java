@@ -412,7 +412,7 @@ public class DatabaseService {
         return (Table_users[])result.toArray(new Table_users[result.size()]);
     }
 
-    class ViewTemplateGroup {
+    static class ViewTemplateGroup {
         private int id;
         private String simpleName;
 
@@ -438,7 +438,7 @@ public class DatabaseService {
         }
     }
 
-    ViewTemplateGroup sprocGetTemplatesInGroup( int groupId ) {
+    ViewTemplateGroup[] sprocGetTemplatesInGroup( int groupId ) {
         String sql = "SELECT t.template_id,simple_name FROM  templates t JOIN templates_cref c ON  t.template_id = c.template_id " +
             "WHERE c.group_id = ? " +
             "ORDER BY simple_name";
@@ -455,7 +455,7 @@ public class DatabaseService {
         };
 
         ArrayList result = executeQuery( sql, paramValues, resultProcessor );
-        return (ViewTemplateGroup)result.get(0);
+        return (ViewTemplateGroup[])result.toArray( new ViewTemplateGroup[result.size()] );
     }
 
     // todo, ska man behöva stoppa in userId här? Kan man inte bara få ett unikt?
