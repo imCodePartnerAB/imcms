@@ -20,11 +20,12 @@ Building:
 Setting up the database:
     * Create a new empty database with collation "Finnish_Swedish_CI_AS".
       This can be done with the SQL statement
-      "CREATE DATABASE <databasename> COLLATE Finnish_Swedish_CI_AS",
-      where <databasename> is the name you want for your database.
+          "CREATE DATABASE [<databasename>] COLLATE Finnish_Swedish_CI_AS",
+      where <databasename> is the name you want for your database. You can use the script create_db.sql
+      and run it against the master databse of your MS SQL installation.
 
     * To set up the imCMS-database run "imcms.sql" on the empty database.
-    
+
     * If you'd like to set up any of the extra features "conference", "chat", or "billboard",
       download the imCMS source code, and run the corresponding files in the "sql" directory.
 
@@ -32,12 +33,12 @@ Setting up the database:
 Setting up Tomcat:
     * In Tomcat's web.xml in the "tomcat/conf" directory,
       uncomment the "/servlet/*" mapping for the "invoker" servlet:
-      
+
       <servlet-mapping>
           <servlet-name>invoker</servlet-name>
           <url-pattern>/servlet/*</url-pattern>
       </servlet-mapping>
-        
+
 
 Installing imCMS:
     * Install the file "imcms.war" in the "tomcat/webapps" directory.

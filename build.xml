@@ -8,9 +8,9 @@
     <property name="cvsname"    value="$$Name$"/>
 
     <!-- versionnumber : imCMS version without sufix, only the number ( 1.7.4) -->
-    <property name="version" value=""/>
-    <property name="versionnumber" value=""/>
-    <property name="versionfilesuffix" value=""/>
+    <property name="version"            value=""/>
+    <property name="versionnumber"      value=""/>
+    <property name="versionfilesuffix"  value=""/>
 
 
     <!-- Read in 'build.properties' and set the properties therein. -->
@@ -21,8 +21,9 @@
     <!-- Paths. Later ones are built on earlier ones. -->
 
     <!-- The directory to build in. -->
-    <property name="build" value="${basedir}/build"/>
-    <property name="dist" value="${basedir}/dist"/>
+    <property name="build"          value="${basedir}/build"/>
+    <property name="dist"           value="${basedir}/dist"/>
+    <property name="sql.temp.dir"   value="${basedir}/slqtemp"/>
 
     <!-- Where to put generated documentation -->
     <property name="doc" value="${basedir}/doc"/>
@@ -333,6 +334,7 @@
 
         <delete dir="${build}"/>
         <delete dir="${dist}"/>
+        <delete dir="${sql.temp.dir}"/>
         <ant dir="tools" target="clean"/>
 
     </target>
@@ -441,7 +443,11 @@
 
     <!-- Generates the sql-scripts -->
     <target name="sql" depends="init,check-webappname,tools" description="Concatenates the SQL-scripts into one large script.">
-        <cat destfile="${java.io.tmpdir}/imcms${versionfilesuffix}.sql" orderby="path" filtering="true">
+
+        <delete dir="${sql.temp.dir}" includeEmptyDirs="true"/>
+        <mkdir dir="${sql.temp.dir}" />
+
+        <cat destfile="${sql.temp.dir}/imcms${versionfilesuffix}.sql" orderby="path" filtering="true">
             <fileset dir="sql/tables" includes="tables.ascii.sql"/>
             <fileset dir="sql/sprocs"/>
             <fileset dir="sql/data" includes="types.sql"/>
@@ -452,10 +458,12 @@
             <fileset dir="sql/sprocs"/>
         </cat>
 
+        <copy file="sql/tables/create_db.sql" todir="${dist}" filtering="true" />
+
         <imtranslate bundle="sql/imcms" bundlelanguage="${defaultlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${dist}" filtering="true">
-            <fileset dir="${java.io.tmpdir}" includes="imcms${versionfilesuffix}.sql"/>
+            <fileset dir="${sql.temp.dir}" includes="imcms${versionfilesuffix}.sql"/>
         </imtranslate>
     </target>
 
