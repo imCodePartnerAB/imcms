@@ -135,7 +135,8 @@
   <target name="sql" depends="tools" description="Concatenates the SQL-scripts into one large script.">
     <taskdef name="cat" classname="Cat" classpath="tools"/>
     <cat destfile="${dist-sql}" orderby="path">
-      <fileset dir="sql/tables"/>
+	<fileset dir="sql/index"/>
+      <fileset dir="sql/tables" includes="tables.ascii.sql"/>
       <fileset dir="sql/sprocs"/>
       <fileset dir="sql/data" includes="types.sql"/>
       <fileset dir="sql/data" includes="newdb.sql"/>
