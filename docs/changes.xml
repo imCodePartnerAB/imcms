@@ -45,6 +45,12 @@
             </p>
             <bug id="2892"/>
         </change>
+        <change>
+            <p>
+                Made enter submit a text field when using "<attr>rows</attr>='<value>1</value>'".
+            </p>
+            <bug id="2881"/>
+        </change>
     </changes>
 
     <changes for="administrators">
