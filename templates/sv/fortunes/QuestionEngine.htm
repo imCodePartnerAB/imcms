@@ -2,42 +2,42 @@
      <tr align="center" valign="top" bgcolor="#999966"> 
          <td colspan="3"><img src="@imageurl@/te_veckans.gif" width="135" height="46"></td>
      </tr>
-	<form name="weeklyQ" style="background-color:#999966">
+
+	<form name="weeklyQ" method="GET" action="@servleturl@/QuestionResult" target="_blank" style="background-color:#999966" onSubmit="checkChecked(); return false">
+			  <script language="JavaScript">
+				<!--
+				function checkChecked() {
+				  var f = document.forms.weeklyQ;
+				  var text = f.question.value;
+				  var thefile = f.infile.value;
+				  for (var i = 0 ; i < f.answer.length ; ++i) {
+				    if ( f.answer[i].checked ) {
+  				      window.open('@servleturl@/QuestionResult?answer=' + f.answer[i].value + '&file=' + thefile ,'visa','width=250,height=300');
+				      return ;
+				    }
+				  }
+				  alert('Du glömde välja!') ;
+				  return ;
+				}
+				//-->
+			  </script>
 	<tr align="left" valign="top" bgcolor="#999966"> 
          <td><img src="@imageurl@/transpix.gif" width="6" height="6"></td>
          <td> <p><span class="vitbrodtext">#question#<br></span></p>
 			  <input type="hidden" name="question" value="#question#">
 			  <input type="hidden" name="infile" value="#file#">
-			  <script language="JavaScript">
-				<!--
-				function checkChecked(){
-				var f = document.forms.weeklyQ;
-				var text = f.question.value;
-				var thefile = f.infile.value;
-  				if(f.fraga[0].checked){
-  					answer = 1;
-  				} else if(f.fraga[1].checked){
-  					answer = 0;
-  				}
-				else {
-
-    alert('Du glömde välja!') ;}
-  				window.open('@servleturl@/QuestionResult?answer=' + answer + '&file=' + thefile ,'visa','width=250,height=300');
-				}
-				//-->
-			  </script>
               <table width="100" border="0" cellspacing="0" cellpadding="0">
                 	<tr align="left" valign="top"> 
                     	<td><span class="vitbrodtext">ja</span>&nbsp; 
-                        	<input type="radio" name="fraga" value="ja" style="background-color:#999966">
+                        	<input type="radio" name="answer" value="yes" style="background-color:#999966">
                       	</td>
                         <td> <span class="vitbrodtext">nej</span> 
-                          	<input type="radio" name="fraga" value="nej" style="background-color:#999966">
+                          	<input type="radio" name="answer" value="no" style="background-color:#999966">
                       	</td>
                     </tr>
 			   </table>
                <br>
-               <a href="javascript:checkChecked()"><img src="@imageurl@/kn_visa_resultat.gif" width="104" height="15" border="0" alt="Visa resultat"></a> 
+               <input type="image" src="@imageurl@/kn_visa_resultat.gif" width="104" height="15" border="0" alt="Visa resultat"> 
          </td>
          <td><img src="@imageurl@/transpix.gif" width="6" height="6"></td>
     </tr>

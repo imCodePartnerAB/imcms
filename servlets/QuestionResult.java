@@ -5,6 +5,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.external.diverse.*;
 import imcode.util.*;
+import imcode.util.fortune.* ;
+
+import org.apache.log4j.Category ;
 
 /**
  * @author  Monika Hurtig
@@ -12,97 +15,81 @@ import imcode.util.*;
  * Date : 2001-09-05
  */
 
-public class QuestionResult extends HttpServlet 
+public class QuestionResult extends HttpServlet
 {
-	String resultTemplate = "QuestionResult.htm";
-		
-	
+    private final static String RESULTTEMPLATE = "QuestionResult.htm";
+
+    private static Category log = Category.getInstance(imcode.server.IMCConstants.ERROR_LOG) ;
+
+
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException 
+	throws ServletException, IOException
 	{
 		String host = req.getHeader("Host");
-		String imcServer = Utility.getDomainPref("userserver",host);
-		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
-		
+		String imcserver = Utility.getDomainPref("userserver",host);
+
 		//get answer
 		String file = req.getParameter("file");
 		String answer = req.getParameter("answer");
-		
-		//gets the filecontent 
-		String resFile = IMCServiceRMI.getFortune(imcServer,file + ".current.txt");
-				
-		StringTokenizer tokens = new StringTokenizer(resFile,"#");
-		
-		String date1 = tokens.nextToken();
-		String date2 = tokens.nextToken();
-		String question = tokens.nextToken();
-		
-		int yes = Integer.parseInt( ( (tokens.nextToken() ).substring(3) ).trim() );
-		int no = Integer.parseInt( ( (tokens.nextToken() ).substring(4) ).trim() );
 
-		//save the answer to the file
-		if (Integer.parseInt(answer)==1) 
-		{
-			yes = yes + 1;
-		} 
-		else 
-		{
-			no = no + 1;
+		if (file == null) {
+		    file = "poll" ;
 		}
-	
-		String newFileContent =date1 + "#" + date2 + "#"  + question + "#ja: " + yes + "#nej: " + no + "#";
-	
-		BufferedWriter fileW = new BufferedWriter( new FileWriter(fortune_path.getCanonicalPath() + "/" + file + ".current.txt" ) );
-		fileW.write(newFileContent);
-		fileW.flush();
-		fileW.close();
-		
-		//get the total number of answers
-		int total = yes+no;
-		
-		//get the %
-		double yesDiv = (yes==0) ? 0 : ((double)yes/(double)total);
-		double noDiv = (no==0) ? 0 : ((double)no/(double)total);
-		
+
+		if (answer == null) {
+		    // FIXME: What to do?
+		    return ;
+		}
+
+		List currentPollList = IMCServiceRMI.getPollList(imcserver,file+".current.txt") ;
+
+		if (currentPollList.isEmpty()) {
+		    log.error("QuestionResult: No current poll!") ;
+		    return ;
+		}
+
+		// So... the Poll.
+		Poll thePoll = (Poll) currentPollList.get(0) ;
+
+		thePoll.addAnswer(answer) ;
+
+		IMCServiceRMI.setPollList(imcserver,file+".current.txt",currentPollList) ;
+
+		double totalAnswerCount = thePoll.getTotalAnswerCount() ;
+
+		double yesRatio = (double) thePoll.getAnswerCount("yes") / (double) totalAnswerCount ;
+		double noRatio =  (double) thePoll.getAnswerCount("no")  / (double) totalAnswerCount ;
+
 		NumberFormat pf = NumberFormat.getPercentInstance();
 		pf.setMaximumFractionDigits(0);
-		
-		String yesProcent = pf.format(yesDiv);
-		String noProcent = pf.format(noDiv);
-		
+
+		String yesProcent = pf.format(yesRatio);
+		String noProcent = pf.format(noRatio);
+
 		//Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
-		Vector values = new Vector();
+		Vector values = new Vector(8);
 		values.add("#question#");
-		values.add(question);
+		values.add(thePoll.getQuestion());
 		values.add("#yesProcent#");
 		values.add(yesProcent);
 		values.add("#noProcent#");
 		values.add(noProcent);
 		values.add("#total#");
-		values.add(Integer.toString(total));
-		
-		
-		String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, resultTemplate , "se", "106");
-		
+		values.add(""+(int)totalAnswerCount);
+
+		String parsed = IMCServiceRMI.parseExternalDoc(imcserver, values, RESULTTEMPLATE, IMCServiceRMI.getLanguage(imcserver), "106");
+
 		res.setContentType("text/html");
-		PrintWriter out = res.getWriter();
-		out.println(parsed);
-		
+		Writer out = res.getWriter();
+		out.write(parsed);
+
 		return ;
 
 	} // End doGet
 
-	
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+	doGet(req,res) ;
+    }
 
-	public void doPost(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException 
-	{
-		doGet(req,res);
-		return ;
-	}
-	
 
 } // End class
-
-
-

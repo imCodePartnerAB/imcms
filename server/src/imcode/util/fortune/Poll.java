@@ -28,7 +28,7 @@ public class Poll {
 	if (answerCount == null) {
 	    answers.put(answer,new Integer(1)) ;
 	} else {
-	    answers.put(answer, new Integer(answerCount.intValue() + 1)) ; 
+	    answers.put(answer, new Integer(answerCount.intValue() + 1)) ;
 	}
     }
 
@@ -36,11 +36,20 @@ public class Poll {
 	Integer answerCount = (Integer)answers.get(answer) ;
 	if (answerCount != null) {
 	    if (answerCount.intValue() > 1) {
-		answers.put(answer, new Integer(answerCount.intValue() - 1)) ; 
+		answers.put(answer, new Integer(answerCount.intValue() - 1)) ;
 	    } else {
 		answers.remove(answer) ;
 	    }
 	}
+    }
+
+    public int getTotalAnswerCount() {
+	int totalAnswers = 0 ;
+	Iterator answers = this.getAnswersIterator() ;
+	while (answers.hasNext()) {
+	    totalAnswers += this.getAnswerCount((String)answers.next()) ;
+	}
+	return totalAnswers ;
     }
 
     public int getAnswerCount(String answer) {

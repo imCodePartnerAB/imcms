@@ -11,6 +11,8 @@ import imcode.external.chat.*;
 import imcode.util.* ;
 import imcode.util.fortune.* ;
 
+import org.apache.log4j.Category ;
+
 /**
  * @author  Monika Hurtig
  * @version 1.0
@@ -20,6 +22,8 @@ import imcode.util.fortune.* ;
 public class QuestionEngine extends HttpServlet
 {
     private final static String questionTemplate = "QuestionEngine.htm";
+
+    private static Category log = Category.getInstance(imcode.server.IMCConstants.ERROR_LOG) ;
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
     {
@@ -110,7 +114,8 @@ public class QuestionEngine extends HttpServlet
 	    }
 	}
 
-	// We didn't find a question/poll... what to do, what to do?
+	// FIXME: We didn't find a question/poll... what to do, what to do?
+	log.error("QuestionEngine: There are no current polls!") ;
 	List newPollList = new LinkedList() ;
 	DateRange dateRange = new DateRange(new Date(0),new Date(0)) ;
 	newPollList.add(new Poll("",dateRange)) ;
