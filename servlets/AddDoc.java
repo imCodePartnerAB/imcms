@@ -220,15 +220,8 @@ public class AddDoc extends HttpServlet {
         */
         // Here i'll select all classification-strings and
         // concatenate them into one semicolon-separated string.
-        sqlStr = "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = " + meta_id;
-        String[] classifications = imcref.sqlQuery( sqlStr );
-        String classification = "";
-        if( classifications.length > 0 ) {
-            classification += classifications[0];
-            for( int i = 1; i < classifications.length; ++i ) {
-                classification += "; " + classifications[i];
-            }
-        }
+        String classification = DocumentMapper.getClassificationsAsOneString( imcref, Integer.parseInt(meta_id) );
+
         vec.add( "#classification#" );
         vec.add( classification );
 

@@ -368,7 +368,7 @@ public class DocumentMapper {
         imcref.sqlUpdateProcedure( SPROC_INHERIT_PERMISSONS + " " + meta_id + "," + parent_meta_id + "," + doc_type );
     }
 
-    public static void sprocSaveClassification( IMCServiceInterface imcref, String meta_id, String classification ) {
+    public static void sprocSaveClassification( IMCServiceInterface imcref, int meta_id, String classification ) {
         imcref.sqlUpdateProcedure( SPROC_CLASSIFICATION_FIX + " " + meta_id + ",'" + classification + "'" );
     }
 
@@ -394,7 +394,8 @@ public class DocumentMapper {
     }
 
     /**
-     * Inspired by the SaveNewMeta servlet... I went throug the code and tried to extract the nessesary parts.
+     * Inspired by the SaveNewMeta servlet... I went throu the code and tried to extract the nessesary parts. Hasse
+     * todo: make the SaveNewMeta to use this method instead.
      * @param parentId
      * @param parentMenuNumber
      * @return
@@ -405,11 +406,16 @@ public class DocumentMapper {
         Date nowDateTime = new Date();
 
         int newMetaId = sqlCreateNewRowInMetaCopyParentData( service, parentId );
+        // fix the data that is unique for this document
         sqlUpdateCreatedDate( service, newMetaId, nowDateTime );
         sqlUpdateModifiedDate( service, newMetaId , nowDateTime );
         sqlUpdateDockType( service, newMetaId, docType );
 
+        // inherit all the different data thats not in meta from parent.
         sprocInheritPermissions( service, newMetaId, parentId, docType );
+        copyClassification( parentId, newMetaId );
+
+        // update parents modfied date because it has gotten an new link
         sqlAddSortorderToParentsChildList( service, String.valueOf( parentId ), String.valueOf( newMetaId ), String.valueOf( parentMenuNumber ) );
         sqlUpdateModifiedDate( service, parentId , nowDateTime );
 
@@ -420,12 +426,18 @@ public class DocumentMapper {
         return getDocument( newMetaId );
     }
 
+    private void copyClassification( int from_parentId, int to_newMetaId ) {
+        String classifications = getClassificationsAsOneString( service, from_parentId );
+        sprocSaveClassification( service, to_newMetaId, classifications );
+    }
+
     private void sqlUpdateDockType( IMCService service, int metaId, int docType ) {
         String sql = "update meta set doc_type = " + docType + " where meta_id = " + metaId;
         service.sqlUpdateQuery( sql );
     }
 
     private int sqlCreateNewRowInMetaCopyParentData( IMCService service, int parentId ) {
+        // todo: All this chould propably be done in a singel sql query but i dont have time to think how that should be done right now. Hasse
         final String columnsToBeCopied = "description,doc_type,meta_headline,meta_text,meta_image,owner_id,permissions,shared,expand,show_meta,help_text_id,archive,status_id,lang_prefix,classification,date_created,date_modified,sort_position,menu_position,disable_search,target,frame_name,activate,activated_datetime,archived_datetime";
         String sqlStatmentGetAllParentData = "select " + columnsToBeCopied + " from meta where meta_id = " + parentId;
 
@@ -455,12 +467,15 @@ public class DocumentMapper {
             "'" + parentDataRow[21] + "'," +
             parentDataRow[22];
 
+        // The above query returns "" of some reason instead of NULL, and I don't have time to think of why, Hasse
+        // Todo: think throu how to deal with sql that is not stored procedures.
         if( parentDataRow[23].equals("") ) {
             values+=",NULL";
         } else {
             values +=  ",'" + parentDataRow[23] + "'";
         }
 
+        // Same reson here.
         if( parentDataRow[24].equals("") ) {
             values+=",NULL";
         } else {
@@ -486,6 +501,25 @@ public class DocumentMapper {
         HashSet user_doc_types = sprocGetDocTypesForUser( imcref, user, parent_meta_id, lang_prefix );
         boolean userHasRights = user_doc_types.contains( doc_type );
         return userHasRights;
+    }
+
+    public static String getClassificationsAsOneString( IMCServiceInterface imcref, int meta_id ) {
+        String[] classifications = sqlGetClassificationStrings( imcref, meta_id );
+        String classification = "";
+        if( classifications.length > 0 ) {
+            classification += classifications[0];
+            for( int i = 1; i < classifications.length; ++i ) {
+                classification += "; " + classifications[i];
+            }
+        }
+        return classification;
+    }
+
+    private static String[] sqlGetClassificationStrings( IMCServiceInterface imcref, int meta_id ) {
+        String sqlStr;
+        sqlStr = "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = " + meta_id;
+        String[] classifications = imcref.sqlQuery( sqlStr );
+        return classifications;
     }
 }
 
