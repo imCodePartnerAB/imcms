@@ -463,7 +463,10 @@
             <fileset dir="sql/sprocs"/>
         </cat>
 
-        <copy file="sql/tables/create_db.sql" todir="${dist}" filtering="true" />
+        <cat destfile="${dist}/create_db${versionfilesuffix}.sql" orderby="path" filtering="true">
+            <fileset dir="sql/tables" includes="delete_db.sql"/>
+            <fileset dir="sql/tables" includes="create_db.sql"/>
+        </cat>
 
         <imtranslate bundle="sql/imcms" bundlelanguage="${defaultlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
