@@ -39,3 +39,7 @@ INSERT INTO roles_rights VALUES (2,1001,3);
 INSERT INTO texts VALUES( 1001, 1, '<h2>imCode imCMS</h2><br><a href="@loginurl@/">Logga in!</a>',1,1);
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 VALUES (1001,100,29,0,0,0,3,'','_blank','','top','','','imCMSpower.gif','http://www.imcms.net');
+
+UPDATE unique_keys SET key_value = 1001 WHERE table_name = 'meta' AND column_name = 'meta_id';
+UPDATE unique_keys SET key_value = 2 WHERE table_name = 'users' AND column_name = 'user_id';
+UPDATE unique_keys SET key_value = 2 WHERE table_name = 'roles' AND column_name = 'role_id';

@@ -6,6 +6,11 @@ import imcode.server.db.sql.TransactionContent;
 
 import java.sql.SQLException;
 
+/**
+ * Mimer transaction differ from many others, they uses optimistic transaction management, witch meens that
+ * deadlock can't happend, but instead they throw Exceptions when to transaction clashes, 
+ * see http://developer.mimer.com/features/feature_12.htm
+ */
 public class MimerDatabaseService extends DatabaseService {
 
     public MimerDatabaseService( String hostName, Integer port, String databaseName, String user, String password, Integer maxConnectionCount ) {
@@ -24,7 +29,7 @@ public class MimerDatabaseService extends DatabaseService {
     }
 
     void backup( final String fullPathToBackupFile ) {
-        final SQLTransaction transaction = sqlProcessor.startTransaction();
+        final SQLTransaction transaction = sqlProcessor.createNewTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
                 transaction.executeUpdate( "START BACKUP", null );
@@ -37,7 +42,7 @@ public class MimerDatabaseService extends DatabaseService {
     /*
     Not working, but I'm tired, whaiting a few days before desiding on if this is needed.
     void restore( String fullPathToDatabaseFile, String fullPathToBackupFile )  throws IOException {
-        SQLProcessor.SQLTransaction transaction = sqlProcessor.startTransaction();
+        SQLProcessor.SQLTransaction transaction = sqlProcessor.createNewTransaction();
         sqlProcessor.executeUpdate( "SET DATABASE OFFLINE", null );
         copyFile( fullPathToDatabaseFile, fullPathToBackupFile );
         sqlProcessor.executeUpdate( "ALTER DATABANK test RESTORE USING '" + fullPathToDatabaseFile + "'", null );

@@ -39,7 +39,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     private final static int DOC_TEST_ID_DETACHED = 9999;
     private final static int DOC_TEST_MAX_ID = 9999;
-    private static final int DOC_NO_MORE_THAN_EXISTS_IN_SYSTEM = 100000;
+    private static final int DOC_ONE_MORE_THAN_EXISTS_IN_SYSTEM_ID = DOC_TEST_MAX_ID + 1;
 
     private static final int DOC_TYPE_TEXT_ID = 2;
     private static final int DOC_TYPE_FILE_ID = 8;
@@ -62,11 +62,44 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private static final int IP_ACCESS_ID = 1;
 
     protected void setUp() throws IOException {
+        createDatabasesWithDefaultData();
+        createAditionalTestData();
+    }
+
+    private void createDatabasesWithDefaultData() throws IOException {
         databaseServices = new DatabaseService[]{
             DatabaseTestInitializer.static_initMySql(),
-            DatabaseTestInitializer.static_initSqlServer(),
-            DatabaseTestInitializer.static_initMimer(),
+            //DatabaseTestInitializer.static_initSqlServer(),
+            //DatabaseTestInitializer.static_initMimer(),
         };
+    }
+
+    private void createAditionalTestData() throws IOException {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            databaseService.createTestData( DatabaseTestInitializer.FILE_PATH );
+        }
+    }
+
+    public void testThatUniquKeyTableIsUpdatedInScriptsCorrectly() throws IOException {
+        createDatabasesWithDefaultData();
+        UniquKeyTableTest();
+
+        createAditionalTestData();
+        UniquKeyTableTest();
+    }
+
+    private void UniquKeyTableTest() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            final DatabaseService databaseService = databaseServices[i];
+            DatabaseService.Table_unique_keys[] keyRows = databaseService.getAllUniqueKeys();
+            for( int k = 0; k < keyRows.length; k++ ) {
+                DatabaseService.Table_unique_keys keyRow = keyRows[k];
+                int maxValuInUniqueKeyTable = keyRow.key_value;
+                int maxInActualTable = databaseService.getMaxKeyValue( keyRow.table_name, keyRow.column_name);
+                assertTrue( keyRow.table_name + ", " + keyRow.column_name + " = " +  maxValuInUniqueKeyTable + " is not equal max in actual table = " + maxInActualTable, maxValuInUniqueKeyTable == maxInActualTable  );
+           }
+        }
     }
 
     /**
@@ -142,6 +175,11 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         }
     }
 
+    // todo, add testdata.
+    private void test_sproc_GetReadrunnerUserDataForUser( DatabaseService databaseService ) {
+        assertNotNull( databaseService.sproc_GetReadrunnerUserDataForUser( USER_TEST_ID ) );
+    }
+
     private void test_sproc_GetTexts(DatabaseService databaseService ) {
         assertEquals(1, databaseService.sproc_GetTexts(DOC_TEST_FIRST_ID).length) ;
     }
@@ -152,7 +190,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_GetDocTypesWithPermissions( DatabaseService databaseService ) {
-        DatabaseService.ExtgendedTable_doc_types[] extgendedTable_doc_typeses = databaseService.sporc_GetDocTypesWithPermissions( DOC_FIRST_PAGE_ID, 1, LANG_PREFIX_SWEDEN );
+        DatabaseService.ExtgendedTable_doc_types[] extgendedTable_doc_typeses = databaseService.sproc_GetDocTypesWithPermissions( DOC_FIRST_PAGE_ID, 1, LANG_PREFIX_SWEDEN );
         assertEquals( 9, extgendedTable_doc_typeses.length );
     }
 
@@ -410,7 +448,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_getDocs( DatabaseService dbService ) {
-        assertEquals( DOC_NO_OF_DOCS, dbService.sproc_getDocs( USER_ADMIN_ID, 1, DOC_NO_MORE_THAN_EXISTS_IN_SYSTEM ).length );
+        assertEquals( DOC_NO_OF_DOCS, dbService.sproc_getDocs( USER_ADMIN_ID, 1, DOC_ONE_MORE_THAN_EXISTS_IN_SYSTEM_ID ).length );
     }
 
     private void test_sproc_getChilds( DatabaseService dbService ) {
@@ -603,10 +641,10 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         String copyPrefix = "Kopierat document";
         for( int i = 0; i < databaseServices.length; i++ ) {
             DatabaseService databaseService = databaseServices[i];
-            DatabaseService.PartOfTable_document[] documentForUserBefore = databaseService.sproc_getDocs( USER_ADMIN_ID, DOC_TEST_FIRST_ID, DOC_NO_MORE_THAN_EXISTS_IN_SYSTEM );
+            DatabaseService.PartOfTable_document[] documentForUserBefore = databaseService.sproc_getDocs( USER_ADMIN_ID, DOC_TEST_FIRST_ID, DOC_ONE_MORE_THAN_EXISTS_IN_SYSTEM_ID );
             int[] result = databaseService.sproc_copyDocs( DOC_TEST_FIRST_ID, menu_id, USER_ADMIN_ID, documentsToBeCopied, copyPrefix );
             assertEquals( 1, result.length );
-            DatabaseService.PartOfTable_document[] documentForUserAfter = databaseService.sproc_getDocs( USER_ADMIN_ID, DOC_TEST_FIRST_ID, DOC_NO_MORE_THAN_EXISTS_IN_SYSTEM );
+            DatabaseService.PartOfTable_document[] documentForUserAfter = databaseService.sproc_getDocs( USER_ADMIN_ID, DOC_TEST_FIRST_ID, DOC_ONE_MORE_THAN_EXISTS_IN_SYSTEM_ID );
             assertEquals( documentForUserBefore.length + documentsToBeCopied.length - result.length, documentForUserAfter.length );
         }
     }

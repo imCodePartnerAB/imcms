@@ -16,7 +16,7 @@ public class Log4JConfiguredTestCase extends TestCase {
         initLog4J();
     }
 
-    private static void initLog4J() {
+    public static void initLog4J() {
 //            String tmpDir = System.getProperty( "java.io.tmpdir" );
 //            File tmpFile = new File( tmpDir, "log4joutput.log" );
             BasicConfigurator.configure( new ConsoleAppender( new SimpleLayout()) );

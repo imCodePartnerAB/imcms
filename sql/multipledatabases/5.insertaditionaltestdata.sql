@@ -38,7 +38,9 @@ INSERT INTO text_docs VALUES (9999, 1, 0, 1, -1, -1);
 
 INSERT INTO users VALUES (3,'TestUser', 'TestUser', 'TestUser', 'TestUser','','','','','','','','',0,1001,0,1,1,1,CURRENT_TIMESTAMP);
 INSERT INTO roles VALUES(3, 'TestRole', 1, 0);
+
 INSERT INTO phones VALUES (1, '666-666', 3, 0);
+
 INSERT INTO user_roles_crossref VALUES(3,3);
 INSERT INTO user_roles_crossref VALUES(3,2);
 
@@ -53,3 +55,8 @@ INSERT INTO meta_section VALUES(9001,1);
 
 INSERT INTO ip_accesses VALUES(1,3,6666,7777);
 
+UPDATE unique_keys SET key_value = 9999 WHERE table_name = 'meta' AND column_name = 'meta_id';
+UPDATE unique_keys SET key_value = 1 WHERE table_name = 'phones' AND column_name = 'phone_id';
+UPDATE unique_keys SET key_value = 1 WHERE table_name = 'ip_accesses' AND column_name = 'ip_access_id';
+UPDATE unique_keys SET key_value = 3 WHERE table_name = 'roles' AND column_name = 'role_id';
+UPDATE unique_keys SET key_value = 3 WHERE table_name = 'users' AND column_name = 'user_id';

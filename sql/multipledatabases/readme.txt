@@ -38,9 +38,8 @@ deleteuseradminpermissibleroles.prc
 existingdocsgetselectedmetaids.prc
 getcategoryusers.prc
 getdoctypeswithnewpermissions.prc
-
-getmetapathinfo.prc
 getpermissionset.prc
+
 getreadrunneruserdataforuser.prc
 getrolesdocpermissions.prc
 gettemplategroupswithpermissions.prc

@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 public class MySQLDatabaseService extends DatabaseService {
 
     private static final String TEXT_TYPE_MY_SQL = "TEXT";
+    private static final String CREATE_TABLE_STR = "CREATE TABLE";
 
     public MySQLDatabaseService( String hostName, Integer port, String databaseName, String user, String password, Integer maxConnectionCount  ) {
         super( Logger.getLogger( MySQLDatabaseService.class ) );
@@ -47,9 +48,46 @@ public class MySQLDatabaseService extends DatabaseService {
     }
 
     ArrayList filterCreateCommands( ArrayList commands ) {
+        commands = changeTableType( commands );
         commands = changeTimestampToDateTime( commands );
         commands = changeCHAR256PlusToTextForMySQL( commands );
         return commands;
+    }
+
+    /** MySQL has a special table type for tables that support transactions named InnoDB that is spceified during
+     * table creation.
+     */
+    private ArrayList changeTableType( ArrayList commands ) {
+        ArrayList modifiedCommands = new ArrayList();
+        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
+            String command = (String)iterator.next();
+            if( CREATE_TABLE_STR.equalsIgnoreCase( command.substring( 0, CREATE_TABLE_STR.length() ) ) ) {
+                command = command + " TYPE = InnoDB";
+                command = addIndexesForForeigKeys( command );
+            }
+            modifiedCommands.add( command );
+        }
+        return modifiedCommands;
+    }
+
+    /**
+     * If a table has a forreign key then there needs to be an index on that, http://www.mysql.com/doc/en/InnoDB_foreign_key_constraints.html
+     * And of course it uses a non standard way to add an index in a table during creation.
+     * CREATE TABLE ( pk INT, fk, INT, INDEX(fk), FOREIGN KEY (fk) REFERENCES foo (bar) )
+     */
+    private String addIndexesForForeigKeys( String command ) {
+        int startindex = 0;
+        String FOREIGN_KEY_IDENTIFIER = "FOREIGN KEY (";
+        int foreginIndex = command.indexOf(FOREIGN_KEY_IDENTIFIER, startindex );
+        while( -1 != foreginIndex ) {
+            int foreignKeyParenthasisEnd = command.indexOf( ")", foreginIndex );
+            String columnNameToBeIndexed = command.substring( foreginIndex + FOREIGN_KEY_IDENTIFIER.length(), foreignKeyParenthasisEnd);
+            String indexConstraint = " INDEX( " + columnNameToBeIndexed + " ), ";
+            command = command.substring( 0, foreginIndex ) + indexConstraint + command.substring( foreginIndex );
+            startindex = foreignKeyParenthasisEnd + indexConstraint.length();
+            foreginIndex = command.indexOf(FOREIGN_KEY_IDENTIFIER, startindex );
+        }
+        return command;
     }
 
     /**

@@ -1,3 +1,10 @@
+CREATE TABLE unique_keys (
+    table_name VARCHAR(32),
+    column_name VARCHAR(32),
+    key_value INT,
+	PRIMARY KEY (table_name, column_name)
+);
+
 CREATE TABLE meta (
 	meta_id INT NOT NULL ,
 	description VARCHAR (80) NOT NULL ,
@@ -27,6 +34,7 @@ CREATE TABLE meta (
 	archived_datetime TIMESTAMP,
 	PRIMARY KEY (meta_id)
 );
+INSERT INTO unique_keys VALUES('meta', 'meta_id', 0);
 
 CREATE TABLE browsers (
 	browser_id INT NOT NULL ,
@@ -77,8 +85,10 @@ CREATE TABLE ip_accesses (
 	ip_access_id INT NOT NULL ,
 	user_id INT NOT NULL ,
 	ip_start DECIMAL(18, 0) NOT NULL ,
-	ip_end DECIMAL(18, 0) NOT NULL
+	ip_end DECIMAL(18, 0) NOT NULL,
+	PRIMARY KEY (ip_access_id)
 );
+INSERT INTO unique_keys VALUES('ip_accesses', 'ip_access_id', 0);
 
 CREATE TABLE lang_prefixes (
 	lang_id INT NOT NULL ,
@@ -137,6 +147,7 @@ CREATE TABLE roles (
 	admin_role INT NOT NULL ,
 	PRIMARY KEY (role_id)
 );
+INSERT INTO unique_keys VALUES('roles', 'role_id', 0);
 
 CREATE TABLE roles_permissions (
 	permission_id INT NOT NULL ,
@@ -232,6 +243,7 @@ CREATE TABLE users (
 	create_date TIMESTAMP NOT NULL ,
 	PRIMARY KEY (user_id)
 );
+INSERT INTO unique_keys VALUES('users', 'user_id', 0);
 
 CREATE TABLE browser_docs (
 	meta_id INT NOT NULL ,
@@ -345,9 +357,10 @@ CREATE TABLE phones (
 	number VARCHAR (25) NOT NULL ,
 	user_id INT NOT NULL ,
 	phonetype_id INT NOT NULL ,
-	PRIMARY KEY (phone_id,user_id) ,
+	PRIMARY KEY (phone_id) ,
     FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
+INSERT INTO unique_keys VALUES('phones', 'phone_id', 0);
 
 CREATE TABLE phonetypes (
 	phonetype_id INT NOT NULL ,
@@ -468,9 +481,8 @@ CREATE TABLE polls (
 	hide_result SMALLINT NOT NULL ,
 	confirmation_text INT,
 	email_recipients INT,
-	email_from int NULL,
-	email_subject int NULL,
+       email_from INT DEFAULT NULL,
+	email_subject INT DEFAULT NULL,
 	result_template INT,
 	PRIMARY KEY (id)
 );
-

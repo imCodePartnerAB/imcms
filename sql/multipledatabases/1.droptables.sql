@@ -50,3 +50,4 @@ drop table templates;
 drop table user_flags;
 drop table permission_sets;
 drop table meta;
+drop table unique_keys;

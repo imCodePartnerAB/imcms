@@ -1,4 +1,3 @@
-
 INSERT INTO languages VALUES('se','se','Svenska');
 INSERT INTO languages VALUES('se','en','Swedish');
 INSERT INTO languages VALUES('en','se','Engelska');

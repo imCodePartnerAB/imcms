@@ -10,6 +10,7 @@ import java.sql.*;
 import java.io.*;
 
 import imcode.server.db.sql.*;
+import imcode.server.test.Log4JConfiguredTestCase;
 
 /**
  * STOP! Before changing anyting in this class, make sure to run (all) the test in class TestDatabaseService.
@@ -93,6 +94,7 @@ public abstract class DatabaseService {
     void setupDatabaseWithTablesAndData( File pathToScriptFiles ) {
         try {
             ArrayList commands = readCommandsFromFile( new File( pathToScriptFiles, DROP_TABLES ) );
+
             executeCommands( commands );
 
             commands = readCommandsFromFile( new File( pathToScriptFiles, CREATE_TABLES ) );
@@ -103,11 +105,21 @@ public abstract class DatabaseService {
             // sqlProcessor.executeBatchUpdate( con, (String[])commands.toArray( new String[commands.size()] ) );
 
             commands = readCommandsFromFile( new File( pathToScriptFiles, INSERT_TYPE_DATA ) );
-            sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
+            executeCommands( commands );
+            /* Uncomment this if you need better error messages
+            for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
+                String command = (String)iterator.next();
+                sqlProcessor.executeUpdate( command, null );
+            }*/
 
             commands = readCommandsFromFile( new File( pathToScriptFiles, INSERT_DEFAULT_DATA ) );
             commands = filterInsertCommands( commands );
-            sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
+            executeCommands( commands );
+            /* Uncomment this if you need better error messages
+            for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
+                String command = (String)iterator.next();
+                sqlProcessor.executeUpdate( command, null );
+            }*/
         } catch( IOException ex ) {
             log.fatal( "Couldn't open a file ", ex );
         }
@@ -124,7 +136,10 @@ public abstract class DatabaseService {
 
     void createTestData( File pathToScriptFiles ) throws IOException {
         ArrayList commands = readCommandsFromFile( new File( pathToScriptFiles, ADITIONAL_TEST_DATA ) );
-        sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
+        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
+            String command = (String)iterator.next();
+            sqlProcessor.executeUpdate( command, null );
+        }
     }
 
     private void executeCommands( ArrayList commands ) {
@@ -245,13 +260,18 @@ public abstract class DatabaseService {
         return (Table_users[])queryResult.toArray( new Table_users[queryResult.size()] );
     }
 
-    // todo, ska man behöva stoppa in user_id här? Kan man inte bara få ett unikt?
+    /**
+     *
+     * @param userData The user id is not needed to be set, it is generated within this method.
+     * @return
+     */
     public int sproc_AddNewuser( Table_users userData ) {
+        Integer newUserId = getNextUniquePrimaryKey( "users", "user_id");
         String sql = "INSERT INTO users (user_id, login_name, login_password, first_name, last_name, title, " +
             "company, address, city, zip, country, county_council, email, external, last_page, archive_mode, " +
             "lang_id, user_type, active, create_date ) " +
             "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        Object[] paramValues = new Object[]{new Integer( userData.user_id ), userData.login_name,
+        Object[] paramValues = new Object[]{ newUserId, userData.login_name,
                                             userData.login_password, userData.first_name, userData.last_name,
                                             userData.title, userData.company, userData.address, userData.city,
                                             userData.zip, userData.country, userData.county_council, userData.email,
@@ -268,7 +288,7 @@ public abstract class DatabaseService {
     }
 
     public int sproc_updateUser( Table_users userData ) {
-        String sql = "Update users SET " + "login_name = ?, " + "login_password = ?, " + "first_name = ?, " +
+        String sql = "UPDATE users SET " + "login_name = ?, " + "login_password = ?, " + "first_name = ?, " +
             "last_name = ?, " + "title = ?, " + "company = ?, " + "address =  ?, " + "city = ?, " + "zip = ?, " +
             "country = ?, " + "county_council =?, " + "email = ?, " + "user_type = ?, " + "active = ?, " +
             "lang_id = ? " + "WHERE user_id = ?";
@@ -308,48 +328,96 @@ public abstract class DatabaseService {
     /*
     This function adds a new phone numbers to the db. Used by AdminUserProps
     */
-    // todo: se till att detta fungerar även om fler försöker göra insert samtigit.
-    // Todo: nöja mig med synchroniced på metoden? Eller se till att testa några gånger tills det går igenom?
     public int sproc_phoneNbrAdd( final int userId, final String number, final int phoneType ) {
-        final SQLTransaction transcation = sqlProcessor.startTransaction();
+        final SQLTransaction transcation = sqlProcessor.createNewTransaction();
         transcation.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                insertInto_phones( transcation, number, new Integer( userId ), new Integer( phoneType ) );
+                Integer userId1 = new Integer( userId );
+                Integer phoneType1 = new Integer( phoneType );
+                String tableName = "phones";
+                String primaryKeyColumnName = "phone_id";
+                Integer newPhoneId = getNextUniquePrimaryKey( tableName, primaryKeyColumnName );
+                String sql = "INSERT INTO phones ( phone_id , number , user_id, phonetype_id ) VALUES ( ? , ?, ?, ? )";
+                Object[] paramValues = new Object[]{ newPhoneId, number, userId1, phoneType1};
+                transcation.executeUpdate( sql, paramValues );
             }
         } );
         return transcation.getRowCount();
     }
 
-    private int insertInto_phones( SQLTransaction transaction, String number, Integer userId, Integer phoneType )
-        throws SQLException {
-        String tableName = "phones";
-        String primaryKeyColumnName = "phone_id";
-        Integer newPhoneId = getMaxIntValuePlusOne( transaction, tableName, primaryKeyColumnName );
-        String sql = "INSERT INTO phones ( phone_id , number , user_id, phonetype_id ) VALUES ( ? , ?, ?, ? )";
-        Object[] paramValues = new Object[]{ newPhoneId, number, userId, phoneType};
-        return transaction.executeUpdate( sql, paramValues );
+    /**
+     * Used to thest multithreading within methoc getNextUniquePrimaryKey
+     * To run this test make sure to uncomment the commented lines in the above method.
+     * @param args
+     */
+    public static void main( String[] args ) throws Exception {
+        Log4JConfiguredTestCase.initLog4J();
+
+        DatabaseService[] databaseServices = new DatabaseService[] {
+            DatabaseTestInitializer.static_initMySql(),
+            DatabaseTestInitializer.static_initSqlServer(),
+            DatabaseTestInitializer.static_initMimer()
+        };
+
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            final DatabaseService databaseService = databaseServices[i];
+            for( int k = 0; k < 2 ; k ++ ) {
+                Thread testTread = new Thread( new Runnable() {
+                    public void run() {
+                        System.out.println( "Started one thread" );
+                        System.out.println( "key = " + databaseService.getNextUniquePrimaryKey( "meta", "meta_id" ) );
+                    }
+                });
+                testTread.start();
+            }
+            System.out.println( "Finnished datbaseservice " + i+1 );
+            Thread.currentThread().sleep(1500) ;
+        }
     }
 
-    private Integer getMaxIntValuePlusOne( SQLTransaction transaction, String tableName, String columnName ) throws SQLException {
-        String sql = "SELECT MAX(" + columnName + ") FROM " + tableName;
-        ArrayList queryResult = transaction.executeQuery( sql, null, new ResultProcessor() {
-            public Object mapOneRow( ResultSet rs ) throws SQLException {
-                int id = rs.getInt( 1 );
-                return new Integer( id + 1 );
+
+    /**
+     * In case of optimistic transaction lockin mechanism, such as the case with MIMER
+     * Overide this method and put it in a loop
+     * @param table_name
+     * @param column_name
+     * @return
+     */
+    Integer getNextUniquePrimaryKey( final String table_name, final String column_name ) {
+        final SQLTransaction transaction = sqlProcessor.createNewTransaction( Connection.TRANSACTION_READ_COMMITTED );
+        transaction.executeAndCommit( 5, new TransactionContent() {
+            public void execute() throws SQLException {
+                String sql = "UPDATE unique_keys SET key_value = key_value + 1 WHERE table_name = ? AND column_name = ? ";
+                Object[] paramValues = new Object[]{ table_name, column_name };
+                transaction.executeUpdate( sql, paramValues );
+
+                /* This code fragment is used when testing concurrent read/writes
+                try {
+                    System.out.println("Updated key, now sleep for a feew seconds");
+                    Thread.currentThread().sleep( 1000 );
+                } catch( InterruptedException ex ){}// newver happends
+                */
+                sql = "SELECT key_value FROM unique_keys WHERE table_name = ? AND column_name = ? ";
+                paramValues = new Object[]{ table_name, column_name };
+                ArrayList queryResult = transaction.executeQuery( sql, paramValues, new ResultProcessor() {
+                    public Object mapOneRow( ResultSet rs ) throws SQLException {
+                        int id = rs.getInt( "key_value" );
+                        return new Integer( id );
+                    }
+                } );
+
+                Integer keyValue = (Integer)queryResult.get(0);
+                transaction.setTransactionResult( keyValue );
             }
         } );
-        if( queryResult.isEmpty() ) {
-            return new Integer( 0 );
-        } else {
-            return ((Integer)queryResult.get( 0 ));
-        }
+        return (Integer)transaction.getTransactionResult();
     }
 
     // todo: ta bort från samtliga forreign key ställen (och inte bara från user_roles_crossref)? phones,
     // todo: user_flags_crossref, user_rights, useradmin_role_crossref
     // todo: Or Split into two, depending on how it is used.
     public int sproc_delUser( final int user_id ) {
-        final SQLTransaction transaction = sqlProcessor.startTransaction();
+        final SQLTransaction transaction = sqlProcessor.createNewTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
                 String sqlUserRoles = "DELETE FROM user_roles_crossref WHERE user_id = " + user_id;
@@ -540,7 +608,7 @@ public abstract class DatabaseService {
     }
 
     public int sproc_DocumentDelete( final int meta_id ) {
-        final SQLTransaction transaction = sqlProcessor.startTransaction();
+        final SQLTransaction transaction = sqlProcessor.createNewTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
                 Object[] paramValues = new Object[]{new Integer( meta_id )};
@@ -586,7 +654,6 @@ public abstract class DatabaseService {
      * @param meta_id Document that will have the link
      * @param existing_meta_id Document that will be linked to
      * @param doc_menu_no Menu number in meta_id
-     * @return 0 if already exists, 1 if new link was added.
      */
     // todo: Testa denna!!! Och gå igenom nogrannt!!!
     // todo: Ska inte ändringsdatumen uppdateras i denna också?
@@ -603,7 +670,7 @@ public abstract class DatabaseService {
 
         int manualSortOrder = 500;
         if( countItem.intValue() > 0 ) {// update manual_sort_order
-            String sqlSortOrder = "SELECT max(manual_sort_order) FROM childs WHERE meta_id = ? AND menu_sort = ?";
+            String sqlSortOrder = "SELECT MAX(manual_sort_order) FROM childs WHERE meta_id = ? AND menu_sort = ?";
             Object[] paramValuesSortOrder = new Object[]{new Integer( meta_id ), new Integer( doc_menu_no )};
             ArrayList sortOrderResult = sqlProcessor.executeQuery( sqlSortOrder, paramValuesSortOrder, new ResultProcessor() {
                 public Object mapOneRow( ResultSet rs ) throws SQLException {
@@ -942,7 +1009,7 @@ public abstract class DatabaseService {
      Column 3: permission_data, > -1 if this set_id may use this.
     */
     // todo: "ORDER BY CAST(ISNULL(dpse.permission_data,-1)+1  AS BIT) DESC,doc_type" borttagen, sortering får göras vid behov i den anropande koden.
-    ExtgendedTable_doc_types[] sporc_GetDocTypesWithPermissions( int meta_id, int set_id, String lang_prefix ) {
+    ExtgendedTable_doc_types[] sproc_GetDocTypesWithPermissions( int meta_id, int set_id, String lang_prefix ) {
         String sql = "SELECT doc_type,type, dpse.permission_data " +
             "FROM doc_types dt " +
             "LEFT JOIN doc_permission_sets_ex dpse " +
@@ -1775,43 +1842,42 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    // todo: Lös detta med att två uppdateringar kan skriva över varandra.
     private int copyDocument( final Integer meta_id ) {
-        final SQLTransaction transaction = sqlProcessor.startTransaction();
+        final SQLTransaction transaction = sqlProcessor.createNewTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                Integer nexFreeMetaId = getMaxIntValuePlusOne( transaction, "meta", "meta_id" );
+                Integer nextFreeMetaId = getNextUniquePrimaryKey( "meta", "meta_id" );
                 Table_meta metaToBeCopied = selectFrom_meta( meta_id );
-                metaToBeCopied.meta_id = nexFreeMetaId.intValue();
+                metaToBeCopied.meta_id = nextFreeMetaId.intValue();
                 insertInto_meta( transaction, metaToBeCopied );
 
                 Table_text_docs textDocsToBeCopied = selectFrom_text_docs( meta_id );
                 if( null != textDocsToBeCopied ) {
-                    textDocsToBeCopied.meta_id = nexFreeMetaId.intValue();
+                    textDocsToBeCopied.meta_id = nextFreeMetaId.intValue();
                     insertInto_text_docs( transaction, textDocsToBeCopied );
                 }
 
                 Table_url_docs urlDocsToBeCopied = selectFrom_url_docs( meta_id );
                 if( null != urlDocsToBeCopied ) {
-                    urlDocsToBeCopied.meta_id = nexFreeMetaId.intValue();
+                    urlDocsToBeCopied.meta_id = nextFreeMetaId.intValue();
                     insertInto_url_docs( transaction, urlDocsToBeCopied );
                 }
 
                 Table_browser_docs browserDocsToBeCopied = selectFrom_browser_docs( meta_id );
                 if( null != browserDocsToBeCopied ) {
-                    browserDocsToBeCopied.meta_id = nexFreeMetaId.intValue();
+                    browserDocsToBeCopied.meta_id = nextFreeMetaId.intValue();
                     insertInto_browser_docs( transaction, browserDocsToBeCopied );
                 }
 
                 Table_frameset_docs framesetDocsToBeCopied = selectFrom_frameset_docs( meta_id );
                 if( null != framesetDocsToBeCopied ) {
-                    framesetDocsToBeCopied.meta_id = nexFreeMetaId.intValue();
+                    framesetDocsToBeCopied.meta_id = nextFreeMetaId.intValue();
                     insertInto_frameset_docs( transaction, framesetDocsToBeCopied );
                 }
 
                 Table_fileupload_docs fileUploadDocsToBeCopied = selectFrom_fileupload_docs( meta_id );
                 if( null != fileUploadDocsToBeCopied ) {
-                    fileUploadDocsToBeCopied.meta_id = nexFreeMetaId.intValue();
+                    fileUploadDocsToBeCopied.meta_id = nextFreeMetaId.intValue();
                     insertInto_fileupload_docs( transaction, fileUploadDocsToBeCopied );
                 }
 
@@ -1819,7 +1885,7 @@ public abstract class DatabaseService {
                 for( int i = 0; i < textsToBeCopied.length; i++ ) {
                     Table_texts textToBeCopied = textsToBeCopied[i];
                     textToBeCopied.meta_id = meta_id.intValue();
-                    Integer newCounterValue = getMaxIntValuePlusOne( transaction, "texts", "counter" );
+                    Integer newCounterValue = getNextUniquePrimaryKey( "texts", "counter" );
                     textToBeCopied.counter = newCounterValue.intValue();
                     insertInto_texts( transaction, textToBeCopied );
                 }
@@ -1834,49 +1900,49 @@ public abstract class DatabaseService {
                 Table_includes[] includesToBeCopied = selectFrom_includes( meta_id );
                 for( int i = 0; i < includesToBeCopied.length; i++ ) {
                     Table_includes table_includes = includesToBeCopied[i];
-                    table_includes.meta_id = nexFreeMetaId.intValue();
+                    table_includes.meta_id = nextFreeMetaId.intValue();
                     insertInto_includes( transaction, table_includes );
                 }
 
                 Table_doc_permission_sets docPermissionSetsToBeCopied = selectFrom_doc_permission_sets( meta_id );
                 if( null != docPermissionSetsToBeCopied ) {
-                    docPermissionSetsToBeCopied.meta_id = nexFreeMetaId.intValue();
+                    docPermissionSetsToBeCopied.meta_id = nextFreeMetaId.intValue();
                     insertInto_doc_permission_sets( transaction, docPermissionSetsToBeCopied );
                 }
 
                 Table_new_doc_permission_sets newDocPermissionSetsToBeCopied = selectFrom_new_doc_permission_sets( meta_id );
                 if( null != newDocPermissionSetsToBeCopied ) {
-                    newDocPermissionSetsToBeCopied.meta_id = nexFreeMetaId.intValue();
+                    newDocPermissionSetsToBeCopied.meta_id = nextFreeMetaId.intValue();
                     insertInto_new_doc_permission_sets( transaction, newDocPermissionSetsToBeCopied );
                 }
 
                 Table_doc_permission_sets_ex docPermissionsSetsExToBeCopied = selectFrom_doc_permission_sets_ex( meta_id );
                 if( null != docPermissionsSetsExToBeCopied ) {
-                    docPermissionsSetsExToBeCopied.meta_id = nexFreeMetaId.intValue();
+                    docPermissionsSetsExToBeCopied.meta_id = nextFreeMetaId.intValue();
                     insertInto_doc_permission_sets_ex( transaction, docPermissionsSetsExToBeCopied );
                 }
 
                 Table_new_doc_permission_sets_ex newDocPermissionSetsExToBeCopied = selectFrom_new_doc_permission_sets_ex( meta_id );
                 if( null != newDocPermissionSetsExToBeCopied ) {
-                    newDocPermissionSetsExToBeCopied.meta_id = nexFreeMetaId.intValue();
+                    newDocPermissionSetsExToBeCopied.meta_id = nextFreeMetaId.intValue();
                     insertInto_new_doc_permission_sets_ex( transaction, newDocPermissionSetsExToBeCopied );
                 }
 
                 Table_roles_rights rolesRightsToBeCopied = selectFrom_roles_rights( meta_id );
                 if( null != rolesRightsToBeCopied ) {
-                    rolesRightsToBeCopied.meta_id = nexFreeMetaId.intValue();
+                    rolesRightsToBeCopied.meta_id = nextFreeMetaId.intValue();
                     insertInto_roles_rights( transaction, rolesRightsToBeCopied );
                 }
 
                 Table_meta_classification metaClassificationToBeCopied = selectFrom_meta_classification( meta_id );
                 if( null != metaClassificationToBeCopied ) {
-                    metaClassificationToBeCopied.meta_id = nexFreeMetaId.intValue();
+                    metaClassificationToBeCopied.meta_id = nextFreeMetaId.intValue();
                     insertInto_meta_classification( transaction, metaClassificationToBeCopied );
                 }
 
                 Table_meta_section metaSectionToBeCopied = selectFrom_meta_section( meta_id );
                 if( null != metaSectionToBeCopied ) {
-                    metaSectionToBeCopied.meta_id = nexFreeMetaId.intValue();
+                    metaSectionToBeCopied.meta_id = nextFreeMetaId.intValue();
                     insertInto_meta_section( transaction, metaSectionToBeCopied );
                 }
             }
@@ -2290,7 +2356,7 @@ public abstract class DatabaseService {
     }
 
     public int sproc_SectionChangeAndDeleteCrossref( final int new_section_id, final int old_section_id ) {
-        final SQLTransaction transaction = sqlProcessor.startTransaction();
+        final SQLTransaction transaction = sqlProcessor.createNewTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
                 Integer oldSectionId = new Integer( old_section_id );
@@ -2351,7 +2417,7 @@ public abstract class DatabaseService {
     }
 
     public int sproc_SectionDelete( final int section_id ) {
-        final SQLTransaction transaction = sqlProcessor.startTransaction();
+        final SQLTransaction transaction = sqlProcessor.createNewTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
                 Integer sectionId = new Integer( section_id );
@@ -2380,7 +2446,7 @@ public abstract class DatabaseService {
     }
 
     public int sproc_SectionChangeName( final Table_section sectionData ) {
-        final SQLTransaction transaction = sqlProcessor.startTransaction();
+        final SQLTransaction transaction = sqlProcessor.createNewTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
                 update_sections( transaction, sectionData );
@@ -2396,7 +2462,7 @@ public abstract class DatabaseService {
     }
 
     public int sproc_SectionAdd( final Table_section sectionData ) {
-        final SQLTransaction transaction = sqlProcessor.startTransaction();
+        final SQLTransaction transaction = sqlProcessor.createNewTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
                 Table_section textDocsToBeCopied = selectFrom_section( transaction, new Integer( sectionData.section_id ) );
@@ -2437,7 +2503,7 @@ public abstract class DatabaseService {
      * @return
      */
     public int sproc_SectionAddCrossref( final Table_meta_section tableData ) {
-        final SQLTransaction transaction = sqlProcessor.startTransaction();
+        final SQLTransaction transaction = sqlProcessor.createNewTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
                 deleteFrom_meta_section( transaction, new Integer( tableData.meta_id ) );
@@ -2496,10 +2562,10 @@ public abstract class DatabaseService {
      *  Adds a new role
      */
     public int sproc_RoleAddNew( final String role_name ) {
-        final SQLTransaction transaction = sqlProcessor.startTransaction();
+        final SQLTransaction transaction = sqlProcessor.createNewTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                Integer newRoleId = getMaxIntValuePlusOne( transaction, "roles", "role_id" );
+                Integer newRoleId = getNextUniquePrimaryKey( "roles", "role_id" );
                 String sql = "INSERT INTO roles ( role_id , role_name, permissions, admin_role ) VALUES( ?, ?, ?, ? )";
                 Object[] paramValues = new Object[]{ newRoleId, role_name, new Integer( 0 ), new Integer( 0 )};
                 transaction.executeUpdate( sql, paramValues );
@@ -2512,7 +2578,7 @@ public abstract class DatabaseService {
      * Deletes an role from the role table. Used by the AdminRoles servlet
      */
     public int sproc_RoleDelete( final int role_id ) {
-        final SQLTransaction transaction = sqlProcessor.startTransaction();
+        final SQLTransaction transaction = sqlProcessor.createNewTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
                 String sql = "DELETE FROM roles_rights WHERE role_id = ? ";
@@ -2671,10 +2737,10 @@ public abstract class DatabaseService {
      */
     // todo: Borde inte ip_access_id vara en primary key, och user_id en forreign?
     public int sproc_IPAccessAdd( final int user_id, final long ip_start, final long ip_end ) {
-        final SQLTransaction transaction = sqlProcessor.startTransaction();
+        final SQLTransaction transaction = sqlProcessor.createNewTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                Integer new_ip_access_id = getMaxIntValuePlusOne(transaction,"ip_accesses", "ip_access_id");
+                Integer new_ip_access_id = getNextUniquePrimaryKey( "ip_accesses", "ip_access_id");
                 String sql = "INSERT INTO ip_accesses ( ip_access_id, user_id , ip_start , ip_end ) VALUES (?,?,?,?)";
                 Object[] paramValues = new Object[]{ new_ip_access_id, new Integer(user_id), new Long(ip_start), new Long(ip_end) };
                 transaction.executeUpdate( sql, paramValues );
@@ -2998,4 +3064,84 @@ public abstract class DatabaseService {
         return (JoinedTables_meta_childs2[])queryResult.toArray( new JoinedTables_meta_childs2[queryResult.size()] );
     }
 
+    public class Table_readrunner_user_data {
+        int user_id;
+        int uses;
+        int max_uses;
+        int max_uses_warning_threshold;
+        Timestamp expiry_date;
+        int expiry_date_warning_threshold;
+        int expiry_date_warning_sent;
+
+        public Table_readrunner_user_data( ResultSet rs ) throws SQLException {
+            user_id = rs.getInt("user_id");
+            uses = rs.getInt("uses");
+            max_uses = rs.getInt("max_uses");
+            max_uses_warning_threshold = rs.getInt("max_uses_warning_threshold");
+            expiry_date = rs.getTimestamp("expiry_date");
+            expiry_date_warning_threshold = rs.getInt("expiry_date_warning_threshold");
+            expiry_date_warning_sent = rs.getInt("expiry_date_warning_sent");
+        }
+    }
+
+    /**
+     * Return readrunner-user-data for one user.
+     * @param user_id The id of the user
+     * @return    Returns one row with the following columns:
+            uses                          INT      The number of times the user have used readrunner.
+            max_uses                      INT      Maximum allowed amount of uses.
+            max_uses_warning_threshold    INT      Percentage threshold at which the user will be warned about expiry.
+            expiry_date                   DATETIME The last date the user may use readrunner.
+            expiry_date_warning_threshold INT      Threshold of days before expiry_date at which the user will be warned about expiry.
+            expiry_date_warning_sent      INT      Whether a expiry-date-warning has been sent or not.
+     */
+    Table_readrunner_user_data sproc_GetReadrunnerUserDataForUser( int user_id ) {
+        String sql = "SELECT user_id, uses, max_uses, max_uses_warning_threshold, expiry_date_warning_threshold, " +
+            "expiry_date_warning_sent FROM readrunner_user_data WHERE user_id = ? ";
+        Object[] paramValues = new Object[]{ new Integer( user_id ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Table_readrunner_user_data( rs );
+            }
+        } );
+        if( queryResult.isEmpty() ) {
+            return null;
+        } else {
+            return (Table_readrunner_user_data)queryResult.get(0);
+        }
+    }
+
+    class Table_unique_keys {
+        String table_name;
+        String column_name;
+        int key_value;
+
+        Table_unique_keys( ResultSet rs ) throws SQLException {
+            table_name = rs.getString("table_name");
+            column_name = rs.getString("column_name");
+            key_value = rs.getInt("key_value");
+        }
+    }
+
+
+    Table_unique_keys[] getAllUniqueKeys() {
+        String sql = "SELECT table_name, column_name, key_value FROM unique_keys";
+        ArrayList queryResult = sqlProcessor.executeQuery(sql, null, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Table_unique_keys(rs);
+            }
+        } );
+        return (Table_unique_keys[])queryResult.toArray( new Table_unique_keys[ queryResult.size() ] );
+    }
+
+    int getMaxKeyValue( String table_name, String column_name ) {
+        String sql = "SELECT MAX(" + column_name + ") AS max_value FROM " + table_name;
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                int max_value = rs.getInt("max_value");
+                return new Integer(max_value);
+            }
+        } );
+        return ((Integer)queryResult.get(0)).intValue();
+    }
 }

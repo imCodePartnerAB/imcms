@@ -24,19 +24,21 @@ public class SQLProcessorNoTransaction {
         this.connectionPool = connectionPool;
     }
 
-    public SQLTransaction startTransaction() {
+    public SQLTransaction createNewTransaction( int transactionIsolationLevel ) {
         SQLTransaction result = null;
-        Connection con;
         try {
-             con = connectionPool.getConnection();
-             result = new SQLTransaction( con );
+             result = new SQLTransaction( connectionPool, transactionIsolationLevel );
         }
         catch( SQLException ex ) {
-            static_logSQLException( "SQLExcetion in startTransaction()", ex );
+            static_logSQLException( "SQLExcetion in createNewTransaction()", ex );
         }
         return result;
     }
 
+    public SQLTransaction createNewTransaction() {
+        return createNewTransaction( Connection.TRANSACTION_SERIALIZABLE );
+
+    }
 
     public ArrayList executeQuery( String sql, Object[] paramValues, ResultProcessor resultProc ) {
         Connection con = null;
