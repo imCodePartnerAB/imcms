@@ -44,4 +44,12 @@ public class DocumentReference  {
         }
         return time ;
     }
+
+    public boolean equals( Object obj ) {
+        return obj instanceof DocumentReference && ((DocumentReference)obj).documentId == documentId ;
+    }
+
+    public int hashCode() {
+        return documentId ;
+    }
 }
