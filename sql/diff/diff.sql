@@ -918,159 +918,7 @@ LEFT JOIN doc_permission_sets dps
        AND dps.meta_id = m.meta_id
 GO
 
--- 2001-11-13
-
--- Add proper fields for activated and archived date-times.
-ALTER TABLE meta ADD activated_datetime DATETIME
-ALTER TABLE meta ADD archived_datetime DATETIME
-
--- Migrate the old ugly fields to the new nice ones
-UPDATE meta SET activated_datetime = NULLIF(activated_date+' '+activated_time,'')
-UPDATE meta SET archived_datetime = NULLIF(archived_date+' '+archived_time,'')
-
--- Drop the old bastards.
-ALTER TABLE meta DROP COLUMN activated_date
-ALTER TABLE meta DROP COLUMN activated_time
-ALTER TABLE meta DROP COLUMN archived_date
-ALTER TABLE meta DROP COLUMN archived_time
-
-GO
-DROP PROCEDURE GetChilds
-GO
---
--- Procedure Create
--- dbo.GetChilds
---
-CREATE PROCEDURE GetChilds
- @meta_id int,
- @user_id int
-AS
-/*
-Nice little query that lists the children of a document that a particular user may see, and includes a field that tells you wether he may do something to it or not.
-*/
-declare @sort_by int
-select @sort_by = sort_order from text_docs where meta_id = @meta_id
--- Manual sort order
-if @sort_by = 2
-begin
-select  to_meta_id, c.menu_sort,manual_sort_order, doc_type,
-  archive,target, convert (varchar,date_created,120), convert (varchar,date_modified,120),
-  meta_headline,meta_text,meta_image,frame_name,
-  activated_datetime,archived_datetime,
-  min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1)),
-  fd.filename
-from   childs c
-join   meta m    
-     on    m.meta_id = c.to_meta_id     -- meta.meta_id corresponds to childs.to_meta_id
-     and  m.activate > 0       -- Only include the documents that are active in the meta table.
-     and  c.meta_id = @meta_id      -- Only include documents that are children to this particular meta_id
-left join roles_rights rr            -- We may have permission, even though we don't have anything in role-permissions... That is, if we're docowner or superadmin.
-     on  c.to_meta_id = rr.meta_id      -- Only include rows with the documents we are interested in
-left join doc_permission_sets dps           -- Include the permission_sets
-     on  c.to_meta_id = dps.meta_id     -- for each document
-     and dps.set_id = rr.set_id      -- and only the sets for the roles we are interested in
-     and dps.permission_id > 0      -- and only the sets that have any permission
-join user_roles_crossref urc           -- This table tells us which users have which roles
-     on urc.user_id = @user_id      -- Only include the rows with the user we are interested in...
-     and ( 
-       rr.role_id = urc.role_id     -- Include rows where the users roles match the roles that have permissions on the documents
-      or  urc.role_id = 0      -- and also include the rows that tells us this user is a superadmin
-      or  (
-        m.show_meta != 0    -- and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)
-       and ISNULL(~CAST(dps.permission_id AS BIT),1) != 1
-      )
-     )
-left join fileupload_docs fd
-     on  fd.meta_id = c.to_meta_id
-group by to_meta_id, c.menu_sort,manual_sort_order, doc_type,
-  archive,target, convert (varchar,date_created,120), convert (varchar,date_modified,120),
-  meta_headline,meta_text,meta_image,frame_name,
-  activated_datetime,archived_datetime,
-  fd.filename
-order by  menu_sort,c.manual_sort_order desc
-end
-else if @sort_by = 3
-begin
-select  to_meta_id, c.menu_sort,manual_sort_order, doc_type,
-  archive,target, convert (varchar,date_created,120), convert (varchar,date_modified,120),
-  meta_headline,meta_text,meta_image,frame_name,
-  activated_datetime,archived_datetime,
-  min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1)),
-  fd.filename
-from   childs c
-join   meta m    
-     on    m.meta_id = c.to_meta_id     -- meta.meta_id corresponds to childs.to_meta_id
-     and  m.activate > 0       -- Only include the documents that are active in the meta table.
-     and  c.meta_id = @meta_id      -- Only include documents that are children to this particular meta_id
-left join roles_rights rr            -- We may have permission, even though we don't have anything in role-permissions... That is, if we're docowner or superadmin.
-     on  c.to_meta_id = rr.meta_id      -- Only include rows with the documents we are interested in
-left join doc_permission_sets dps           -- Include the permission_sets
-     on  c.to_meta_id = dps.meta_id     -- for each document
-     and dps.set_id = rr.set_id      -- and only the sets for the roles we are interested in
-     and dps.permission_id > 0      -- and only the sets that have any permission
-join user_roles_crossref urc           -- This table tells us which users have which roles
-     on urc.user_id = @user_id      -- Only include the rows with the user we are interested in...
-     and ( 
-       rr.role_id = urc.role_id     -- Include rows where the users roles match the roles that have permissions on the documents
-      or  urc.role_id = 0      -- and also include the rows that tells us this user is a superadmin
-      or  (
-        m.show_meta != 0    -- and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)
-       and ISNULL(~CAST(dps.permission_id AS BIT),1) != 1
-      )
-     )
-left join fileupload_docs fd
-     on  fd.meta_id = c.to_meta_id
-group by to_meta_id, c.menu_sort,manual_sort_order, doc_type,
-  archive,target, convert (varchar,date_created,120), convert (varchar,date_modified,120),
-  meta_headline,meta_text,meta_image,frame_name,
-  activated_datetime,archived_datetime,
-  fd.filename
-order by  menu_sort,convert (varchar,date_created,120) desc
-end
-else if @sort_by = 1
-begin
-select  to_meta_id, c.menu_sort,manual_sort_order, doc_type,
-  archive,target, convert (varchar,date_created,120), convert (varchar,date_modified,120),
-  meta_headline,meta_text,meta_image,frame_name,
-  activated_datetime,archived_datetime,
-  min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1)),
-  fd.filename
-from   childs c
-join   meta m    
-     on    m.meta_id = c.to_meta_id     -- meta.meta_id corresponds to childs.to_meta_id
-     and  m.activate > 0       -- Only include the documents that are active in the meta table.
-     and  c.meta_id = @meta_id      -- Only include documents that are children to this particular meta_id
-left join roles_rights rr            -- We may have permission, even though we don't have anything in role-permissions... That is, if we're docowner or superadmin.
-     on  c.to_meta_id = rr.meta_id      -- Only include rows with the documents we are interested in
-left join doc_permission_sets dps           -- Include the permission_sets
-     on  c.to_meta_id = dps.meta_id     -- for each document
-     and dps.set_id = rr.set_id      -- and only the sets for the roles we are interested in
-     and dps.permission_id > 0      -- and only the sets that have any permission
-join user_roles_crossref urc           -- This table tells us which users have which roles
-     on urc.user_id = @user_id      -- Only include the rows with the user we are interested in...
-     and ( 
-       rr.role_id = urc.role_id     -- Include rows where the users roles match the roles that have permissions on the documents
-      or  urc.role_id = 0      -- and also include the rows that tells us this user is a superadmin
-      or  (
-        m.show_meta != 0    -- and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)
-       and ISNULL(~CAST(dps.permission_id AS BIT),1) != 1
-      )
-     )
-left join fileupload_docs fd
-     on  fd.meta_id = c.to_meta_id
-group by to_meta_id, c.menu_sort,manual_sort_order, doc_type,
-  archive,target, convert (varchar,date_created,120), convert (varchar,date_modified,120),
-  meta_headline,meta_text,meta_image,frame_name,
-  activated_datetime,archived_datetime,
-  fd.filename
-order by  menu_sort,meta_headline
-end
-GO
-
-GO
-DROP PROCEDURE CopyDocs
-GO
-CREATE PROCEDURE CopyDocs @documents_string VARCHAR(200), @parent_id INT, @menu_id INT, @user INT, @copyPrefix VARCHAR(20) AS
+-- 2001-11-13  -- Add proper fields for activated and archived date-times. ALTER TABLE meta ADD activated_datetime DATETIME ALTER TABLE meta ADD archived_datetime DATETIME  -- Migrate the old ugly fields to the new nice ones UPDATE meta SET activated_datetime = NULLIF(activated_date+' '+activated_time,'') UPDATE meta SET archived_datetime = NULLIF(archived_date+' '+archived_time,'')  -- Drop the old bastards. ALTER TABLE meta DROP COLUMN activated_date ALTER TABLE meta DROP COLUMN activated_time ALTER TABLE meta DROP COLUMN archived_date ALTER TABLE meta DROP COLUMN archived_time  GO DROP PROCEDURE GetChilds GO -- -- Procedure Create -- dbo.GetChilds -- CREATE PROCEDURE GetChilds  @meta_id int,  @user_id int AS /* Nice little query that lists the children of a document that a particular user may see, and includes a field that tells you wether he may do something to it or not. */ declare @sort_by int select @sort_by = sort_order from text_docs where meta_id = @meta_id -- Manual sort order if @sort_by = 2 begin select  to_meta_id, c.menu_sort,manual_sort_order, doc_type,   archive,target, convert (varchar,date_created,120), convert (varchar,date_modified,120),   meta_headline,meta_text,meta_image,frame_name,   activated_datetime,archived_datetime,   min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1)),   fd.filename from   childs c join   meta m          on    m.meta_id = c.to_meta_id     -- meta.meta_id corresponds to childs.to_meta_id      and  m.activate > 0       -- Only include the documents that are active in the meta table.      and  c.meta_id = @meta_id      -- Only include documents that are children to this particular meta_id left join roles_rights rr            -- We may have permission, even though we don't have anything in role-permissions... That is, if we're docowner or superadmin.      on  c.to_meta_id = rr.meta_id      -- Only include rows with the documents we are interested in left join doc_permission_sets dps           -- Include the permission_sets      on  c.to_meta_id = dps.meta_id     -- for each document      and dps.set_id = rr.set_id      -- and only the sets for the roles we are interested in      and dps.permission_id > 0      -- and only the sets that have any permission join user_roles_crossref urc           -- This table tells us which users have which roles      on urc.user_id = @user_id      -- Only include the rows with the user we are interested in...      and (         rr.role_id = urc.role_id     -- Include rows where the users roles match the roles that have permissions on the documents       or  urc.role_id = 0      -- and also include the rows that tells us this user is a superadmin       or  (         m.show_meta != 0    -- and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)        and ISNULL(~CAST(dps.permission_id AS BIT),1) != 1       )      ) left join fileupload_docs fd      on  fd.meta_id = c.to_meta_id group by to_meta_id, c.menu_sort,manual_sort_order, doc_type,   archive,target, convert (varchar,date_created,120), convert (varchar,date_modified,120),   meta_headline,meta_text,meta_image,frame_name,   activated_datetime,archived_datetime,   fd.filename order by  menu_sort,c.manual_sort_order desc end else if @sort_by = 3 begin select  to_meta_id, c.menu_sort,manual_sort_order, doc_type,   archive,target, convert (varchar,date_created,120), convert (varchar,date_modified,120),   meta_headline,meta_text,meta_image,frame_name,   activated_datetime,archived_datetime,   min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1)),   fd.filename from   childs c join   meta m          on    m.meta_id = c.to_meta_id     -- meta.meta_id corresponds to childs.to_meta_id      and  m.activate > 0       -- Only include the documents that are active in the meta table.      and  c.meta_id = @meta_id      -- Only include documents that are children to this particular meta_id left join roles_rights rr            -- We may have permission, even though we don't have anything in role-permissions... That is, if we're docowner or superadmin.      on  c.to_meta_id = rr.meta_id      -- Only include rows with the documents we are interested in left join doc_permission_sets dps           -- Include the permission_sets      on  c.to_meta_id = dps.meta_id     -- for each document      and dps.set_id = rr.set_id      -- and only the sets for the roles we are interested in      and dps.permission_id > 0      -- and only the sets that have any permission join user_roles_crossref urc           -- This table tells us which users have which roles      on urc.user_id = @user_id      -- Only include the rows with the user we are interested in...      and (         rr.role_id = urc.role_id     -- Include rows where the users roles match the roles that have permissions on the documents       or  urc.role_id = 0      -- and also include the rows that tells us this user is a superadmin       or  (         m.show_meta != 0    -- and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)        and ISNULL(~CAST(dps.permission_id AS BIT),1) != 1       )      ) left join fileupload_docs fd      on  fd.meta_id = c.to_meta_id group by to_meta_id, c.menu_sort,manual_sort_order, doc_type,   archive,target, convert (varchar,date_created,120), convert (varchar,date_modified,120),   meta_headline,meta_text,meta_image,frame_name,   activated_datetime,archived_datetime,   fd.filename order by  menu_sort,convert (varchar,date_created,120) desc end else if @sort_by = 1 begin select  to_meta_id, c.menu_sort,manual_sort_order, doc_type,   archive,target, convert (varchar,date_created,120), convert (varchar,date_modified,120),   meta_headline,meta_text,meta_image,frame_name,   activated_datetime,archived_datetime,   min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1)),   fd.filename from   childs c join   meta m          on    m.meta_id = c.to_meta_id     -- meta.meta_id corresponds to childs.to_meta_id      and  m.activate > 0       -- Only include the documents that are active in the meta table.      and  c.meta_id = @meta_id      -- Only include documents that are children to this particular meta_id left join roles_rights rr            -- We may have permission, even though we don't have anything in role-permissions... That is, if we're docowner or superadmin.      on  c.to_meta_id = rr.meta_id      -- Only include rows with the documents we are interested in left join doc_permission_sets dps           -- Include the permission_sets      on  c.to_meta_id = dps.meta_id     -- for each document      and dps.set_id = rr.set_id      -- and only the sets for the roles we are interested in      and dps.permission_id > 0      -- and only the sets that have any permission join user_roles_crossref urc           -- This table tells us which users have which roles      on urc.user_id = @user_id      -- Only include the rows with the user we are interested in...      and (         rr.role_id = urc.role_id     -- Include rows where the users roles match the roles that have permissions on the documents       or  urc.role_id = 0      -- and also include the rows that tells us this user is a superadmin       or  (         m.show_meta != 0    -- and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)        and ISNULL(~CAST(dps.permission_id AS BIT),1) != 1       )      ) left join fileupload_docs fd      on  fd.meta_id = c.to_meta_id group by to_meta_id, c.menu_sort,manual_sort_order, doc_type,   archive,target, convert (varchar,date_created,120), convert (varchar,date_modified,120),   meta_headline,meta_text,meta_image,frame_name,   activated_datetime,archived_datetime,   fd.filename order by  menu_sort,meta_headline end GO  GO DROP PROCEDURE CopyDocs GO CREATE PROCEDURE CopyDocs @documents_string VARCHAR(200), @parent_id INT, @menu_id INT, @user INT, @copyPrefix VARCHAR(20) AS
 CREATE TABLE #documents (
   meta_id VARCHAR(10)
 )
@@ -1408,9 +1256,7 @@ CLOSE documents_cursor
 DEALLOCATE documents_cursor
 DROP TABLE #documents
 GO
-
-
--- 2001-11-15
+  -- 2001-11-15
 
 -- Added a parameter that tells if only to search on words that starts with the search-string
 -- the SearchDocs-method is used by the servlets GetExistingDoc and SearchDocuments.
@@ -1725,4 +1571,476 @@ DROP TABLE #keywords_matched
 GO
 
 -- 2001-11-21
+
+--here is the release of v1_5_0-pre8
+
+--adding a new method used by IMCServise to save text in db
+
+CREATE PROCEDURE InsertText
+ @meta_id int,
+ @name char(15),
+ @type int,
+ @text text
+
+AS
+
+declare  @number int 
+
+ select @number=counter from texts
+ where meta_id = @meta_id
+ and name = @name
+
+if(@number is null) begin
+     insert into texts (meta_id,name,type,text)
+     values(@meta_id,@name,@type,@text)
+  end
+else begin
+  update texts
+  set text = @text
+  where counter=@number
+  update texts
+  set type=@type
+  where counter=@number
+end
+GO
+-- 2001-12-20
+
+
+--this is the stuff needed to create full-text index on the colums we want to search on
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.texts
+	DROP CONSTRAINT FK_texts_meta
+GO
+COMMIT
+BEGIN TRANSACTION
+CREATE TABLE dbo.Tmp_texts
+	(
+	meta_id int NOT NULL,
+	name int NOT NULL,
+	text text NOT NULL,
+	type int NULL,
+	counter int NOT NULL IDENTITY (1, 1)
+	)  ON [PRIMARY]
+	 TEXTIMAGE_ON [PRIMARY]
+GO
+SET IDENTITY_INSERT dbo.Tmp_texts OFF
+GO
+IF EXISTS(SELECT * FROM dbo.texts)
+	 EXEC('INSERT INTO dbo.Tmp_texts (meta_id, name, text, type)
+		SELECT meta_id, name, text, type FROM dbo.texts TABLOCKX')
+GO
+DROP TABLE dbo.texts
+GO
+EXECUTE sp_rename N'dbo.Tmp_texts', N'texts', 'OBJECT'
+GO
+CREATE NONCLUSTERED INDEX IX_texts ON dbo.texts
+	(
+	meta_id
+	) ON [PRIMARY]
+GO
+ALTER TABLE dbo.texts ADD CONSTRAINT
+	PK_texts PRIMARY KEY CLUSTERED 
+	(
+	counter
+	) ON [PRIMARY]
+
+GO
+ALTER TABLE dbo.texts WITH NOCHECK ADD CONSTRAINT
+	FK_texts_meta FOREIGN KEY
+	(
+	meta_id
+	) REFERENCES dbo.meta
+	(
+	meta_id
+	)
+GO
+COMMIT
+
+
+--Enable full-text searching in the database.
+EXEC sp_fulltext_database 'enable'
+GO
+-- Create a new full-text catalog.
+EXEC sp_fulltext_catalog 'full_text_index',
+			'create'
+GO
+--Register the new tales and colums in it
+--then activate the table
+--classification-table
+EXEC sp_fulltext_table  'classification',
+			'create',
+			'full_text_index',
+			'PK_classification'
+EXEC sp_fulltext_column 'classification',
+			'code',
+			'add'
+EXEC sp_fulltext_table  'classification',
+			'activate'
+GO
+--meta-table
+EXEC sp_fulltext_table  'meta',
+			'create',
+			'full_text_index',
+			'PK_meta'
+EXEC sp_fulltext_column 'meta',
+			'meta_headline',
+			'add'
+EXEC sp_fulltext_column 'meta',
+			'meta_text',
+			'add'
+EXEC sp_fulltext_table  'meta',
+			'activate'
+GO
+--texts-table
+EXEC sp_fulltext_table  'texts',
+			'create',
+			'full_text_index',
+			'PK_texts'
+EXEC sp_fulltext_column 'texts',
+			'text',
+			'add'
+EXEC sp_fulltext_table  'texts',
+			'activate'
+GO
+--start the population
+EXEC sp_fulltext_catalog 'full_text_index',
+			 'start_full'
+while (SELECT fulltextcatalogproperty('full_text_index','populatestatus')) <> 0
+	BEGIN
+	WAITFOR DELAY '00:00:02'
+	CONTINUE
+	END
+GO
+
+--start the trace of changes
+--classification table
+EXEC sp_fulltext_table classification, 'Start_change_tracking'
+EXEC sp_fulltext_table classification, 'Start_background_updateindex'
+Go
+--meta-table
+EXEC sp_fulltext_table meta, 'Start_change_tracking'
+EXEC sp_fulltext_table meta, 'Start_background_updateindex'
+GO
+-- texts-table
+EXEC sp_fulltext_table texts, 'Start_change_tracking'
+EXEC sp_fulltext_table texts, 'Start_background_updateindex'
+
+GO
+-- 2001-12-20
+
+--this is the new search querry
+
+CREATE PROCEDURE SearchDocsIndex
+  @user_id INT,
+  @serchString varchar (180),  -- Must be large enough to encompass an entire searchstring.
+  @doc_types_string VARCHAR(30), -- Must be large enough to encompass all possible doc_types, commaseparated and expressed in decimal notation.
+  @fromdoc INT,
+  @num_docs INT,
+  @sortorder VARCHAR(256),  -- doc_type, date_modified, date_created, archived_datetime, activated_datetime, meta_id, meta_headline
+  @created_startdate DATETIME,
+  @created_enddate DATETIME,
+  @modified_startdate DATETIME,
+  @modified_enddate DATETIME,
+  @activated_startdate DATETIME,
+  @activated_enddate DATETIME,
+  @archived_startdate DATETIME,
+  @archived_enddate DATETIME,
+  @only_addable TINYINT  -- 1 to show only documents the user may add.
+  
+AS 
+
+SET nocount on
+SET @fromdoc = @fromdoc - 1
+DECLARE @created_sd DATETIME,
+  @modified_sd DATETIME,
+  @activated_sd DATETIME,
+  @archived_sd DATETIME,
+  @created_ed DATETIME,
+  @modified_ed DATETIME,
+  @activated_ed DATETIME,
+  @archived_ed DATETIME,
+  @search_start VARCHAR(5)
+
+IF (@created_startdate = '') BEGIN
+ SET @created_sd = '1753-01-01'
+END ELSE BEGIN
+ SET @created_sd = @created_startdate
+END
+IF (@modified_startdate = '') BEGIN
+ SET @modified_sd = '1753-01-01'
+END ELSE BEGIN
+ SET @modified_sd = @modified_startdate
+END
+IF (@activated_startdate = '') BEGIN
+ SET @activated_sd = '1753-01-01'
+END ELSE BEGIN
+ SET @activated_sd = @activated_startdate
+END
+IF (@archived_startdate = '') BEGIN
+ SET @archived_sd = '1753-01-01'
+END ELSE BEGIN
+ SET @archived_sd = @archived_startdate
+END
+IF (@created_enddate = '') BEGIN
+ IF (@created_startdate = '') BEGIN
+  SET @created_ed = '1753-01-01'
+ END ELSE BEGIN
+  SET @created_ed = '9999-12-31'
+ END
+END ELSE BEGIN
+ SET @created_ed = @created_enddate
+END
+IF (@modified_enddate = '') BEGIN
+ IF (@modified_startdate = '') BEGIN
+  SET @modified_ed = '1753-01-01'
+ END ELSE BEGIN
+  SET @modified_ed = '9999-12-31'
+ END
+END ELSE BEGIN
+ SET @modified_ed = @modified_enddate
+END
+IF (@activated_enddate = '') BEGIN
+ IF (@activated_startdate = '') BEGIN
+  SET @activated_ed = '1753-01-01'
+ END ELSE BEGIN
+  SET @activated_ed = '9999-12-31'
+ END
+END ELSE BEGIN
+ SET @activated_ed = @activated_enddate
+END
+IF (@archived_enddate = '') BEGIN
+     IF (@archived_startdate = '') BEGIN
+          SET @archived_sd = '1753-01-01'
+         END
+       SET @archived_ed = '9999-12-31'
+    END 
+ELSE BEGIN
+   SET @archived_ed = @archived_enddate
+END
+
+/* start setup table that contains the docctypes to search on */
+CREATE TABLE #doc_types ( doc_type INT )
+
+DECLARE @substring VARCHAR(30)
+DECLARE @index INT
+DECLARE @endindex INT
+IF LEN(@doc_types_string) > 0 BEGIN
+ 	SET @index = 1
+ 	WHILE @index <= LEN(@doc_types_string) BEGIN
+  		SET @endindex = CHARINDEX(',',@doc_types_string,@index+1)
+  		IF @endindex = 0 BEGIN
+   			SET @endindex = LEN(@doc_types_string)+1
+ 		 END --IF
+ 		 SET @substring = SUBSTRING(@doc_types_string,@index,@endindex-@index)
+ 		 INSERT INTO #doc_types VALUES (@substring)
+  		SET @index = @endindex + 1
+	END -- WHILE
+END -- IF
+/*end doctype setup*/
+
+
+/* here have we the start of the search engine stuff */
+ create table #temp (meta_id int)
+ create table #and ( meta_id int )
+ create table #or    (meta_id int )
+ create table #not  ( meta_id int )
+ DECLARE @sWord varchar(180)
+ DECLARE @start int
+ DECLARE @stop int
+ Declare @doneAnAnd int
+ set @doneAnAnd = 0
+
+ DECLARE @counter int
+ declare @orCounter int
+ set @orCounter = 0
+ set @counter = 0
+
+ IF LEN( @serchString ) > 0  BEGIN
+	set @start = 1
+	while @start <= LEN( @serchString ) BEGIN
+		set @stop = charindex(',' , @serchString , @start + 1 )
+		if  @stop = 0
+		 begin
+			set @stop =  len( @serchString ) +1
+		 end --if 
+		set @sWord = substring( @serchString , @start , @stop - @start )
+		if @sWord like '"and"'  begin
+			set @doneAnAnd = @doneAnAnd +1
+			set @start = @stop +1
+			set @stop = charindex(',' , @serchString , @start + 1 )
+			if @stop = 0 begin
+				set @stop =  len( @serchString ) +1
+			end  			if   @start <= LEN( @serchString ) BEGIN
+				
+				
+				set @sWord = substring( @serchString , @start , @stop - @start )
+				insert into #temp select meta_id from meta where contains(meta_headline,  @sWord )or contains(meta_text,  @sWord )
+				insert into #temp select meta_id from texts where contains(text,  @sWord )
+				insert into #temp select meta_id from classification, meta_classification where contains(code,  @sWord ) and meta_classification.class_id=classification.class_id
+				select @counter = count(meta_id) from #and
+				if @counter  > 0 begin
+					delete from #temp where meta_id not in (select meta_id from #and) 
+					delete from #and
+				end
+				insert into #and select * from #temp		
+			end
+		end 
+		else if @sWord = '"not"'  begin
+			set @start = @stop +1
+			set @stop = charindex(',' , @serchString , @start + 1 )
+			if @stop = 0 begin
+				set @stop =  len( @serchString ) +1
+			end 
+			if   @start <= LEN( @serchString ) BEGIN
+				set @sWord = substring( @serchString , @start , @stop - @start )
+				insert into #not select meta_id from meta where contains(meta_headline,  @sWord )or contains(meta_text,  @sWord )
+				insert into #not select meta_id from texts where contains(text,  @sWord )
+				insert into #not select meta_id from classification, meta_classification where contains(code,  @sWord ) and meta_classification.class_id=classification.class_id
+			end
+		end
+		else begin
+			set @orCounter = @orCounter + 1
+			if @stop = 0 begin
+				set @stop =  len( @serchString ) +1
+			end 
+			if   @start <= LEN( @serchString ) BEGIN
+				set @sWord = substring( @serchString , @start , @stop - @start )
+				insert into #or select meta_id from meta where contains(meta_headline,  @sWord ) or contains(meta_text,  @sWord )
+				insert into #or select meta_id from texts where contains(text,  @sWord )
+				insert into #or select meta_id from classification, meta_classification where contains(code,  @sWord ) and meta_classification.class_id=classification.class_id
+			end
+		end	
+		set @start = @stop + 1
+	end --while
+ END --begin
+
+/*plockar ut de meta idn som ska vara kvar*/
+if @orCounter = 0 begin
+  insert into #or select meta_id from #and	
+end
+if @doneAnAnd  > 0 begin
+	delete from #or where meta_id not in (select meta_id from #and) 
+end
+select @counter = count(meta_id) from #not
+if @counter > 0 begin
+	select @counter = count(meta_id) from #or
+	if @counter > 0 begin
+		delete from #or  where meta_id in(select meta_id from #not)
+--		#or.meta_id = #not.meta_id
+	end
+end
+
+--select  * from #or
+/* end of the search engine*/
+
+/*lets get the pages to return*/
+
+SELECT  distinct
+  m.meta_id,
+  m.doc_type,
+  m.meta_headline,
+  m.meta_text,
+  m.date_created,
+  m.date_modified,
+  activated_datetime,
+  archived_datetime,
+  archive,
+  shared,
+  show_meta,
+  disable_search,
+  meta_image
+FROM
+  meta m
+ JOIN
+  #doc_types dt  ON m.doc_type = dt.doc_type
+     AND activate = 1
+     AND (
+       (
+        date_created >= @created_sd
+       AND date_created <= @created_ed
+      ) OR (
+        date_modified >= @modified_sd
+       AND date_modified <= @modified_ed
+      ) OR (
+        activated_datetime >= @activated_sd
+       AND activated_datetime <= @activated_ed
+      ) OR (
+        archived_datetime >= @archived_sd
+       AND archived_datetime <= @archived_ed
+      ) OR (
+        @created_startdate = ''
+       AND @created_enddate = ''
+       AND @modified_startdate = ''
+       AND @modified_enddate = ''
+       AND @activated_startdate = ''
+       AND @activated_enddate = ''
+       AND @archived_startdate = ''
+       AND @archived_enddate = ''
+      )
+     )
+
+left  JOIN
+  roles_rights rr  ON rr.meta_id = m.meta_id and m.meta_id != null
+JOIN
+  user_roles_crossref urc ON urc.user_id = @user_id
+     AND (
+       urc.role_id = 0   -- Superadmin may always see everything
+      OR (
+        rr.role_id = urc.role_id  -- As does a user...
+       AND (
+         rr.set_id < 3   -- ... with a privileged role
+        OR (
+          (
+           rr.set_id = 3   -- ... or a user with read-rights
+          OR show_meta != 0   -- ... or if the document lets anyone see
+         )
+         AND m.disable_search = 0   -- ... that is, if searching is not turned off for this document
+         AND (
+           m.shared != 0   -- ... and the document is shared
+          OR @only_addable = 0  -- ... unless we've selected to only see addable (shared) documents.
+         )
+        )
+       )
+      )
+     )
+JOIN 
+#or on #or.meta_id=m.meta_id and m.meta_id != null
+
+GROUP BY
+  m.meta_id,
+  m.doc_type,
+  m.meta_headline,
+  m.meta_text,
+  m.date_created,
+  m.date_modified,
+  activated_datetime,
+  archived_datetime,
+  archive,
+  shared,
+  show_meta,
+  disable_search,
+  meta_image
+order by m.meta_headline
+
+
+DROP TABLE #doc_types
+drop table #temp
+drop table #and
+drop table #or
+drop table #not
+GO
+
+-- 2001-12-20
+
+
 

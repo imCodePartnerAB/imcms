@@ -1,15 +1,56 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_meta_classification_classification]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[meta_classification] DROP CONSTRAINT FK_meta_classification_classification
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[classification]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[classification]
 GO
 
+if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
+exec sp_fulltext_database N'enable' 
+
+GO
+
+
+if exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'drop'
+
+GO
+
+if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'create' 
+
+GO
+
 CREATE TABLE [dbo].[classification] (
 	[class_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[code] [varchar] (30) NOT NULL ,
+	[code] [varchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[classification] WITH NOCHECK ADD 
 	CONSTRAINT [PK_classification] PRIMARY KEY  NONCLUSTERED 
 	(
 		[class_id]
 	)  ON [PRIMARY] 
-) ON [PRIMARY]
 GO
 
+if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
+exec sp_fulltext_database N'enable' 
+
+GO
+
+if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'create' 
+
+GO
+
+exec sp_fulltext_table N'[dbo].[classification]', N'create', N'full_text_index', N'PK_classification'
+GO
+
+exec sp_fulltext_column N'[dbo].[classification]', N'code', N'add', 1033  
+GO
+
+exec sp_fulltext_table N'[dbo].[classification]', N'activate'  
+GO
 

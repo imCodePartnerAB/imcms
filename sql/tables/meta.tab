@@ -1,14 +1,86 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_browser_docs_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[browser_docs] DROP CONSTRAINT FK_browser_docs_meta
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_childs_meta1]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[childs] DROP CONSTRAINT FK_childs_meta1
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_permission_sets_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[doc_permission_sets] DROP CONSTRAINT FK_permission_sets_meta
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_frameset_docs_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[frameset_docs] DROP CONSTRAINT FK_frameset_docs_meta
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_images_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[images] DROP CONSTRAINT FK_images_meta
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_includes_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[includes] DROP CONSTRAINT FK_includes_meta
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_includes_meta1]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[includes] DROP CONSTRAINT FK_includes_meta1
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_meta_classification_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[meta_classification] DROP CONSTRAINT FK_meta_classification_meta
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_new_doc_permission_sets_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[new_doc_permission_sets] DROP CONSTRAINT FK_new_doc_permission_sets_meta
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_roles_rights_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[roles_rights] DROP CONSTRAINT FK_roles_rights_meta
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_text_docs_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[text_docs] DROP CONSTRAINT FK_text_docs_meta
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_texts_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[texts] DROP CONSTRAINT FK_texts_meta
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_url_docs_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[url_docs] DROP CONSTRAINT FK_url_docs_meta
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_rights_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[user_rights] DROP CONSTRAINT FK_user_rights_meta
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[meta]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[meta]
 GO
 
+if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
+exec sp_fulltext_database N'enable' 
+
+GO
+
+
+if exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'drop'
+
+GO
+
+if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'create' 
+
+GO
+
 CREATE TABLE [dbo].[meta] (
 	[meta_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[description] [varchar] (80) NOT NULL ,
+	[description] [varchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[doc_type] [int] NOT NULL ,
-	[meta_headline] [varchar] (255) NOT NULL ,
-	[meta_text] [varchar] (1000) NOT NULL ,
-	[meta_image] [varchar] (255) NOT NULL ,
+	[meta_headline] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[meta_text] [varchar] (1000) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[meta_image] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[owner_id] [int] NOT NULL ,
 	[permissions] [int] NOT NULL ,
 	[shared] [int] NOT NULL ,
@@ -17,26 +89,50 @@ CREATE TABLE [dbo].[meta] (
 	[help_text_id] [int] NOT NULL ,
 	[archive] [int] NOT NULL ,
 	[status_id] [int] NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL ,
-	[classification] [varchar] (200) NOT NULL ,
+	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[classification] [varchar] (200) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[date_created] [datetime] NOT NULL ,
 	[date_modified] [datetime] NOT NULL ,
 	[sort_position] [int] NOT NULL ,
 	[menu_position] [int] NOT NULL ,
 	[disable_search] [int] NOT NULL ,
-	[target] [varchar] (10) NOT NULL ,
-	[frame_name] [varchar] (20) NOT NULL ,
+	[target] [varchar] (10) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[frame_name] [varchar] (20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[activate] [int] NOT NULL ,
 	[activated_datetime] [datetime] NULL ,
-	[archived_datetime] [datetime] NULL ,
-	CONSTRAINT [PK_meta] PRIMARY KEY  NONCLUSTERED 
-	(
-		[meta_id]
-	)  ON [PRIMARY] 
+	[archived_datetime] [datetime] NULL 
 ) ON [PRIMARY]
 GO
 
  CREATE  UNIQUE  CLUSTERED  INDEX [meta_meta_id] ON [dbo].[meta]([meta_id], [show_meta], [activate]) ON [PRIMARY]
 GO
 
+ALTER TABLE [dbo].[meta] WITH NOCHECK ADD 
+	CONSTRAINT [PK_meta] PRIMARY KEY  NONCLUSTERED 
+	(
+		[meta_id]
+	)  ON [PRIMARY] 
+GO
+
+if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
+exec sp_fulltext_database N'enable' 
+
+GO
+
+if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'create' 
+
+GO
+
+exec sp_fulltext_table N'[dbo].[meta]', N'create', N'full_text_index', N'PK_meta'
+GO
+
+exec sp_fulltext_column N'[dbo].[meta]', N'meta_headline', N'add', 1033  
+GO
+
+exec sp_fulltext_column N'[dbo].[meta]', N'meta_text', N'add', 1033  
+GO
+
+exec sp_fulltext_table N'[dbo].[meta]', N'activate'  
+GO
 

@@ -2,23 +2,66 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[texts]') a
 drop table [dbo].[texts]
 GO
 
+if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
+exec sp_fulltext_database N'enable' 
+
+GO
+
+
+if exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'drop'
+
+GO
+
+if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'create' 
+
+GO
+
 CREATE TABLE [dbo].[texts] (
 	[meta_id] [int] NOT NULL ,
 	[name] [int] NOT NULL ,
-	[text] [text] NOT NULL ,
+	[text] [text] COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[type] [int] NULL ,
-	CONSTRAINT [PK_texts] PRIMARY KEY  NONCLUSTERED 
+	[counter] [int] IDENTITY (1, 1) NOT NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[texts] WITH NOCHECK ADD 
+	CONSTRAINT [PK_texts] PRIMARY KEY  CLUSTERED 
 	(
-		[meta_id],
-		[name]
-	)  ON [PRIMARY] ,
+		[counter]
+	)  ON [PRIMARY] 
+GO
+
+if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
+exec sp_fulltext_database N'enable' 
+
+GO
+
+if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'create' 
+
+GO
+
+exec sp_fulltext_table N'[dbo].[texts]', N'create', N'full_text_index', N'PK_texts'
+GO
+
+exec sp_fulltext_column N'[dbo].[texts]', N'text', N'add', 1033  
+GO
+
+exec sp_fulltext_table N'[dbo].[texts]', N'activate'  
+GO
+
+ CREATE  INDEX [IX_texts] ON [dbo].[texts]([meta_id]) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[texts] ADD 
 	CONSTRAINT [FK_texts_meta] FOREIGN KEY 
 	(
 		[meta_id]
 	) REFERENCES [dbo].[meta] (
 		[meta_id]
 	)
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-
 
