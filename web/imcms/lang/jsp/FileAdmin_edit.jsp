@@ -1,10 +1,16 @@
 <%@ page language="java"
-	
+
 	import="imcode.util.Utility,
 	        org.apache.oro.text.perl.Perl5Util,
-	        java.io.*"
-	
+	        java.io.*,
+            imcode.server.user.UserDomainObject"
+
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><vel:velocity><%
+
+UserDomainObject user = Utility.getLoggedOnUser( request );
+if (!user.isSuperAdmin()) {
+    return ;
+}
 
 /* *******************************************************************
  *           SETTINGS                                                *
@@ -16,7 +22,7 @@ String acceptedExtPatternReadonly = "/" +
 	"|(\\.LOG+)" +
 	"/i" ;
 
-String IMG_PATH   = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ; // path to buttons (with trailing /)
+    String IMG_PATH   = request.getContextPath()+"/imcms/"+user.getLanguageIso639_2()+"/images/admin/" ; // path to buttons (with trailing /)
 
 /* *******************************************************************
  *           INIT                                                    *
@@ -28,8 +34,8 @@ String sTemp;
 
 String hdPath      = request.getParameter("hdPath") ;
 String fileSrc     = request.getParameter("txtField") ;
-boolean doSave     = (fileSrc != null) ? true : false ;
-boolean isReadonly = (request.getParameter("readonly") != null) ? true : false ;
+boolean doSave     = "POST".equalsIgnoreCase(request.getMethod()) && fileSrc != null ;
+boolean isReadonly = request.getParameter("readonly") != null ;
 
 String theSearchString = (request.getParameter("searchString") != null) ? request.getParameter("searchString") : "" ;
 
@@ -88,7 +94,7 @@ String[] fuckedUpUmling = new String[] {
 } ;
 
  /* replace back. If any of them where in a script-block, they would have been rendered and saved wrongly.
-    ie: &amp;nbsp; will be replaced with &nbsp; 
+    ie: &amp;nbsp; will be replaced with &nbsp;
 String[] fuckedUpUmlingBack = new String[] {
  "&amp;", "&#$1;"
 } ;
@@ -142,10 +148,10 @@ if (isEditable && !doSave) {
 
 
 } else if (!isEditable) {
-	
+
 	out.print("The file is not editable!") ;
 	return ;
-	
+
 }
 
 /*
