@@ -1,25 +1,41 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-"http://www.w3.org/TR/html40/strict.dtd">
 <html>
 <head>
 <title><? templates/sv/AdminListDocs_doclList.html/1 ?></title>
 
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
-
 <body bgcolor="#FFFFFF">
-<table width="100%" border="0">
-  <tr> 
-    <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminListDocs_doclList.html/2 ?></font></b></td>
-    <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminListDocs_doclList.html/3 ?></font></b></td>
-    <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminListDocs_doclList.html/4 ?></font></b></td>
-    <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminListDocs_doclList.html/5 ?></font></b></td>
-    <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminListDocs_doclList.html/6 ?></font></b></td>
-    <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminListDocs_doclList.html/7 ?></font></b></td>
-  </tr>
-  <tr> 
-    #LIST_DOCUMENT#
-  </tr>
+
+
+#gui_outer_start()
+#gui_head( "<? templates/sv/AdminListDocs_doclList.html/1 ?>" )
+<table border="0" cellspacing="0" cellpadding="0">
+<form>
+<tr>
+	<td><input type="button" class="imcmsFormBtn" value="<? global/back ?>" onClick="history.go(-1);"></td>
+</tr>
+</form>
 </table>
+#gui_mid()
+
+<table border="0" cellspacing="0" cellpadding="2" width="680">
+<tr> 
+	<td><b><? templates/sv/AdminListDocs_doclList.html/2 ?></b></td>
+	<td><b><? templates/sv/AdminListDocs_doclList.html/3 ?></b></td>
+	<td><b><? templates/sv/AdminListDocs_doclList.html/4 ?></b></td>
+	<td><b><? templates/sv/AdminListDocs_doclList.html/5 ?></b></td>
+	<td><b><? templates/sv/AdminListDocs_doclList.html/6 ?></b></td>
+	<td><b><? templates/sv/AdminListDocs_doclList.html/7 ?></b></td>
+</tr>
+<tr> 
+#LIST_DOCUMENT#
+</tr>
+</table>
+#gui_bottom()
+#gui_outer_end()
+
+
 </body>
 </html>
