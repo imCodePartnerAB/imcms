@@ -47,7 +47,11 @@ public class SaveInclude extends HttpServlet {
 	    String included_meta_id = req.getParameter("include_meta_id") ;
 	    String include_id = req.getParameter("include_id") ;
 	    if (included_meta_id != null && include_id != null) {
-		IMCServiceRMI.sqlUpdateProcedure(imcserver,"SetInclude "+meta_id_str+","+include_id+","+included_meta_id) ; 
+		if ("".equals(included_meta_id.trim())) {
+		    IMCServiceRMI.sqlUpdateProcedure(imcserver,"DeleteInclude "+meta_id_str+","+include_id) ; 
+		} else {
+		    IMCServiceRMI.sqlUpdateProcedure(imcserver,"SetInclude "+meta_id_str+","+include_id+","+included_meta_id) ; 
+		}
 	    }
 	    byte[] tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
 	    if ( tempbytes != null ) {
