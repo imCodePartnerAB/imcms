@@ -49,6 +49,8 @@ function openSearchHelp(id) {
 
 
 <form method="post" action="SearchDocuments">
+<input type="hidden" name="fromDoc" value="1001">
+<input type="hidden" name="toDoc" value="-1">
 <input type="hidden" name="template" value="search_result.html">
 <input type="hidden" name="template_list" value="search_result_list.html">
 <input type="hidden" name="template_no_hit" value="search_result_no_hit.html">
@@ -88,7 +90,7 @@ function openSearchHelp(id) {
 			</select></td>
 		</tr>
 		</table></td>
-		<td align="right"><a href="GetDoc?meta_id=101" target="_blank" onClick="openHelp('101'); return false;"><img src="/imcms/images/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a> &nbsp;<input type="submit" name="search" value="S&ouml;k"></td>
+		<td align="right"><a href="GetDoc?meta_id=101" target="_blank" onClick="openHelp('101'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a> &nbsp;<input type="submit" name="search" value="S&ouml;k"></td>
 	</tr>
 	</table></td>
 	<td width="5%">&nbsp;</td>

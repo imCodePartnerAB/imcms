@@ -56,7 +56,7 @@ public class SearchDocuments extends HttpServlet {
 
 		//this is the params we can get from the browser
 		String searchString		= req.getParameter("question_field") == null? "":req.getParameter("question_field") ;
-		String fromDoc			= req.getParameter("fromDoc") == null? "1":req.getParameter("fromDoc");
+		String fromDoc			= req.getParameter("fromDoc") == null? "1001":req.getParameter("fromDoc");
 		String toDoc			= req.getParameter("toDoc")== null? "-1":req.getParameter("toDoc");;
 		String maxHits			= req.getParameter("maxHits") == null? "1000":req.getParameter("maxHits");
 		String searchPrep		= req.getParameter("search_prep") == null? "and":req.getParameter("search_prep");
@@ -78,8 +78,7 @@ public class SearchDocuments extends HttpServlet {
 			originalSearchString = prev_search;
 		}
 			
-		
-		
+				
 		String format =  "yyyy-MM-dd HH:mm" ;
 		Date date = new Date();
 		java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(format);
@@ -105,7 +104,7 @@ public class SearchDocuments extends HttpServlet {
 		sqlBuff.append(",'"+searchString+"'");		//@keyword_string VARCHAR(128)
 		sqlBuff.append(",'"+doctypes+"'");			//@doc_types_string VARCHAR(30)
 		sqlBuff.append(","+fromDoc);				//@fromdoc INT
-		sqlBuff.append(","+toDoc);					//@todoc INT
+		sqlBuff.append(","+toDoc);				//@todoc INT
 		sqlBuff.append(",'"+sortBy+"'");			//@sortorder VARCHAR(256)
 		sqlBuff.append(",'"+created_start+"'");		//@created_startdate DATETIME
 		sqlBuff.append(",'"+create_stop+"'");		//@created_enddate DATETIME,
@@ -119,6 +118,8 @@ public class SearchDocuments extends HttpServlet {
 		sqlBuff.append(","+section_id);				//@section_id INT
 		sqlBuff.append(","+activate);				//@activated doc(1) not activated(0)
 
+	    //System.out.println("searchString: "+searchString)	;
+	    //System.out.println("doctypes: "+doctypes)	;	
 		//System.out.println("sql: "+sqlBuff.toString())	;
 
 		String[][] sqlResults;
@@ -432,23 +433,36 @@ public class SearchDocuments extends HttpServlet {
 				}else if(str.equals("+")) {
 					if ( !first ) {
 						return "\"and\",";
+						
 					}else {
 						buff.append("\"and\",");
+						
 					}
 				}else if(str.equals("-")) {
 					if ( !first ) {
 						return "\"not\",";
+						
 					}else {
 						buff.append("\"not\",");
+						
 					}
 				}else {
 					if ( !first ) {
 						return "\""+str+"\",";
+						
+						
 					}else {
 						buff.append("\""+str+"\",");
+						
 					}
 
 				}
+			}
+		}
+		if (buff.length() > 0 )	{
+			String lastChar = buff.substring(buff.length()-1);
+			if ( (",").equals(lastChar) ){
+				buff.deleteCharAt(buff.length()-1);
 			}
 		}
 		return buff.toString();
