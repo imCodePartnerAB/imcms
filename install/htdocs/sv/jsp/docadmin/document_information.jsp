@@ -293,55 +293,51 @@ imcmsGui("mid", null);
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/29 ?></td>
-		<td class="imcmsAdmText">
-            <% CategoryTypeDomainObject[] categoryTypes = documentMapper.getAllCategoryTypes() ;
-                Arrays.sort(categoryTypes) ;
-                for ( int i = 0; i < categoryTypes.length; i++ ) {
-                    CategoryTypeDomainObject categoryType = categoryTypes[i] ;
-                    if( !categoryType.hasImages() ) {%>
-                        <div style="float: left; margin: auto 1em 1ex auto;">
-                        <a href="@imcmsjspurl@/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>"
-                            target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br>
-                        <select name="<%= DocumentComposer.PARAMETER__CATEGORIES %>"<% if (1 != categoryType.getMaxChoices()) { %>size="4" multiple<% } %>>
-                            <%= Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType, document) %>
-                        </select>
-                    <%
-                    }
-                    %>
-                    </div>
-                    <%
-                }
-                for ( int i = 0; i < categoryTypes.length; i++ ) {
-                    CategoryTypeDomainObject categoryType = categoryTypes[i] ;
-                    if( categoryType.hasImages() ) {
-                        %>
-                        <div style="float: left; margin: auto 1em 1ex auto;">
-                        <a href="@imcmsjspurl@/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>"
-                            target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br>
-                        <%
-
-                        boolean radioButton = categoryType.getMaxChoices() == 1;
-                        String typeStr = radioButton?"radio":"checkbox";
-                        CategoryDomainObject[] documentSelectedCategories = document.getCategoriesOfType(categoryType);
-                        Set selectedValuesSet = new HashSet( Arrays.asList(documentSelectedCategories) );
-                        CategoryDomainObject[] categories = documentMapper.getAllCategoriesOfType(categoryType);
-                        for (int k = 0; k < categories.length; k++) {
-                            CategoryDomainObject category = categories[k];
-                            boolean checked = selectedValuesSet.contains(category);
-                            String checkedStr = checked?"checked":"";
-                            boolean hasImage = !category.getImage().equals("");
-                            String imageStr = hasImage?"<img src=\"" + category.getImage() + "\"/>":"";
-                            %>
-                                <input name="<%= DocumentComposer.PARAMETER__CATEGORIES %>" type="<%=typeStr%>" value="<%=category.getId()%>" <%=checkedStr%> > <%=imageStr%> <%=category.getName()%><br>
-                            <%
-                        }
-                    }
-                    %>
-                    </div>
-                    <%
-                }
-            %>
-        </td>
+		<td class="imcmsAdmText"><%
+		CategoryTypeDomainObject[] categoryTypes = documentMapper.getAllCategoryTypes() ;
+		Arrays.sort(categoryTypes) ;
+		for ( int i = 0; i < categoryTypes.length; i++ ) {
+			CategoryTypeDomainObject categoryType = categoryTypes[i] ;
+			if( !categoryType.hasImages() ) {%>
+		<div style="float: left; margin: auto 1em 1ex auto;">
+		<a href="@imcmsjspurl@/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br>
+		<select name="<%= DocumentComposer.PARAMETER__CATEGORIES %>"<% if (1 != categoryType.getMaxChoices()) { %>size="4" multiple<% } %>>
+		<%= Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType, document) %>
+		</select></div><%
+			}
+		}
+		for ( int i = 0; i < categoryTypes.length; i++ ) {
+			CategoryTypeDomainObject categoryType = categoryTypes[i] ;
+			if( categoryType.hasImages() ) { %>
+		<div style="float: left; margin: auto 1em 1ex auto;">
+		<a href="@imcmsjspurl@/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><%
+				
+				boolean radioButton = categoryType.getMaxChoices() == 1;
+				String typeStr = radioButton?"radio":"checkbox";
+				CategoryDomainObject[] documentSelectedCategories = document.getCategoriesOfType(categoryType);
+				Set selectedValuesSet = new HashSet( Arrays.asList(documentSelectedCategories) );
+				CategoryDomainObject[] categories = documentMapper.getAllCategoriesOfType(categoryType);
+				for (int k = 0; k < categories.length; k++) {
+					CategoryDomainObject category = categories[k];
+					boolean checked = selectedValuesSet.contains(category);
+					String checkedStr = checked?"checked":"";
+					boolean hasImage = !category.getImage().equals("");
+					String imageStr = hasImage ? "<img src=\"" + category.getImage() + "\"/>" : ""; %>
+		<table border="0" cellspacing="2" cellpadding="0" style="float:left;">
+		<tr>
+			<td bgcolor="#000000">
+			<table border="0" cellspacing="1" cellpadding="2">
+			<tr>
+				<td bgcolor="#ffffff"><%=imageStr%></td>
+				<td bgcolor="#ffffff"><input id="<%= DocumentComposer.PARAMETER__CATEGORIES + "" + category.getId() %>" name="<%= DocumentComposer.PARAMETER__CATEGORIES %>" type="<%=typeStr%>" value="<%=category.getId()%>"<%=checkedStr%>></td>
+				<td bgcolor="#ffffff"><label for="<%= DocumentComposer.PARAMETER__CATEGORIES + "" + category.getId() %>"><%=category.getName()%></label></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table><%
+				}
+			} %></div><%
+		} %></td>
 	</tr>
 	<tr>
 		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
