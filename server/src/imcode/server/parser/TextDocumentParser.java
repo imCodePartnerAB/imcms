@@ -244,7 +244,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         tags.setProperty( "#externalparam#", parserParameters.getExternalParameter() );
 
         if (parserParameters.getFlags() >= 0) {
-            tags.setProperty( "#adminMode#", service.getMenuButtons( user, document ) );
+            tags.setProperty( "#adminMode#", service.getAdminButtons( user, document ) );
         }
 
         String changeTemplateUi = createChangeTemplateUi( templatemode, user, document );

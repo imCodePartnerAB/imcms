@@ -294,7 +294,7 @@ public class MetaDataParser {
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( meta_id ) ;
         // Lets get the menu with the buttons
-        String menuStr = imcref.getMenuButtons(user, document);
+        String menuStr = imcref.getAdminButtons(user, document);
         vec.add( "#adminMode#" );
         vec.add( menuStr );
 

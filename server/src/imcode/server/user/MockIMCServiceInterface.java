@@ -289,7 +289,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         // TODO
     }
 
-    public String getMenuButtons( UserDomainObject user, DocumentDomainObject document ) {
+    public String getAdminButtons( UserDomainObject user, DocumentDomainObject document ) {
         return null;  // TODO
     }
 

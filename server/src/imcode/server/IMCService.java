@@ -328,7 +328,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Returns the menubuttonrow
      */
-    public String getMenuButtons( UserDomainObject user, DocumentDomainObject document ) {
+    public String getAdminButtons( UserDomainObject user, DocumentDomainObject document ) {
         int user_permission_set_id = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, document );
         if ( user_permission_set_id >= IMCConstants.DOC_PERM_SET_READ && !user.isUserAdmin()) {
             return "";

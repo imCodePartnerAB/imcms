@@ -496,6 +496,13 @@ imcmsGui("mid", null);
 imcmsGui("bottom", null);
 imcmsGui("outer_end", null);
 </script>
-
+<%
+    if (editingExistingDocument) {
+        String adminButtons = service.getAdminButtons( user, document) ;
+        if (!"".equals( adminButtons )) {
+            %><center><%= adminButtons %></center><%
+        }
+    }
+%>
 </body>
 </html>

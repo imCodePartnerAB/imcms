@@ -114,7 +114,7 @@ public class AdminDoc extends HttpServlet {
                 if ( doc_type != 1 && doc_type != 2 ) {
                     Vector vec = new Vector( 2 );
                     vec.add( "#adminMode#" );
-                    vec.add( imcref.getMenuButtons( user, document ) );
+                    vec.add( imcref.getAdminButtons( user, document ) );
                     vec.add( "#doc_type_description#" );
                     vec.add( imcref.getAdminTemplate( "adminbuttons/adminbuttons" + doc_type + "_description.html", user, null ) );
                     return imcref.getAdminTemplate( "docinfo.html", user, vec );
@@ -305,7 +305,7 @@ public class AdminDoc extends HttpServlet {
                 htmlStr = imcref.getAdminTemplate( "change_fileupload.html", user, d );
                 break;
         }
-        String[] parsetmp = {"#adminMode#", imcref.getMenuButtons( user, document )};
+        String[] parsetmp = {"#adminMode#", imcref.getAdminButtons( user, document )};
         htmlStr = imcode.util.Parser.parseDoc( htmlStr, parsetmp );
 
         return htmlStr;

@@ -176,7 +176,7 @@ public interface IMCServiceInterface {
     public void deleteDemoTemplate(int template_id) throws IOException
     ;
 
-    public String getMenuButtons( UserDomainObject user, DocumentDomainObject document )  ;
+    public String getAdminButtons( UserDomainObject user, DocumentDomainObject document )  ;
 
     public SystemData getSystemData()  ;
 
