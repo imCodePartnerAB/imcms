@@ -13,6 +13,7 @@ import java.io.IOException;
 public abstract class DocumentPageFlow extends HttpPageFlow {
 
     protected CreateDocumentPageFlow.SaveDocumentCommand saveDocumentCommand;
+    private boolean saved;
 
     protected DocumentPageFlow( DispatchCommand returnCommand,
                        SaveDocumentCommand saveDocumentCommand ) {
@@ -23,9 +24,9 @@ public abstract class DocumentPageFlow extends HttpPageFlow {
     public abstract DocumentDomainObject getDocument() ;
 
     protected synchronized void saveDocument( HttpServletRequest request ) throws IOException, ServletException {
-        if (null != saveDocumentCommand) {
+        if (!saved) {
             saveDocumentCommand.saveDocument( getDocument(), Utility.getLoggedOnUser( request ) );
-            saveDocumentCommand = null ;
+            saved = true ;
         }
     }
 
