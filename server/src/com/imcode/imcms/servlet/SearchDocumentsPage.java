@@ -74,7 +74,7 @@ public class SearchDocumentsPage extends OkCancelPage {
     public static final int USER_DOCUMENTS_RESTRICTION__NONE = 0;
     public static final int USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER = 1;
     public static final int USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER = 2;
-    public static final int USER_DOCUMENTS_RESTRICTION__DOCUMENTS_MODIFIABLE_BY_USER = 3;
+    public static final int USER_DOCUMENTS_RESTRICTION__DOCUMENTS_EDITABLE_BY_USER = 3;
 
     public static final int DATE_TYPE__PUBLICATION_START = 1;
     public static final int DATE_TYPE__PUBLICATION_END = 2;
@@ -375,6 +375,10 @@ public class SearchDocumentsPage extends OkCancelPage {
 
     public String getSortOrder() {
         return sortOrder;
+    }
+
+    public int getUserDocumentsRestriction() {
+        return userDocumentsRestriction;
     }
 
     private static class ToStringArrayTransformer implements Transformer {
