@@ -47,7 +47,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends LdapUserBas
 
     public void testLdapOnlyAuthentication() {
         mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, new String[]{} );
-        boolean userAuthenticates = externalizedImcmsAndUserMapper.authenticate( "chrham", "trexus" );
+        boolean userAuthenticates = externalizedImcmsAndUserMapper.authenticate( ldapUsername, ldapPassword );
 
         assertTrue( userAuthenticates );
         mockImcmsService.verify();

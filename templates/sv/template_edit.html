@@ -22,8 +22,7 @@ function editFile() {
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'template')">
 
 <script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
+<? sv/template_edit.html/1001 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
@@ -56,28 +55,28 @@ imcmsGui("head", null);
 </form>
 </table>
 <script>
-imcmsGui("mid", null);
+<? sv/template_edit.html/1002 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateEdit">
 <input type="HIDDEN" name="language" value="#language#">
 <tr>
-	<td colspan="2"><script>imcHeading("<? sv/template_edit.html/4 ?>",656);</script></td>
+	<td colspan="2"><script><? sv/template_edit.html/1003 ?><? sv/template_edit.html/4 ?><? sv/template_edit.html/1004 ?></script></td>
 </tr>
 <tr>
 	<td colspan="2">
 	<table border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td width="80" height="24" class="imcmsAdmText" nowrap>Formatmall &nbsp;</td>
+		<td width="80" height="24" class="imcmsAdmText" nowrap><? sv/template_edit.html/1005 ?> &nbsp;</td>
 		<td>
 		<select name="template">
-		#templates#
+		<? sv/template_edit.html/1006 ?>
 		</select></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
+	<td colspan="2"><script><? sv/template_edit.html/1007 ?></script></td>
 </tr>
 <tr>
 	<td colspan="2" align="right">
@@ -87,8 +86,7 @@ imcmsGui("mid", null);
 </form>
 </table>
 <script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
+<? sv/template_edit.html/1008 ?>
 </script>
 
 </body>

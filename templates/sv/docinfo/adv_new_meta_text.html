@@ -141,9 +141,7 @@ function showDate(show) {
 <input type="hidden" name="current_section_id" value="#current_section_id#">
 <input type="hidden" name="archive" value="0">
 <tr>
-	<td class="imcmsAdmText">När du skapar ett dokument sker det i två steg:<br><br>
-	&nbsp; &nbsp; 1. Fyll i rubrik och annan data som presenterar dokumentet (denna sida). Klicka <b>OK</b>.<br>
-	&nbsp; &nbsp; 2. Fyll i innehåll i dokumentet, t ex texter, länkinformation, uppladdning av fil etc (nästa sida). Klicka <b>OK</b>.<br>
+	<td class="imcmsAdmText"><? sv/docinfo/adv_new_meta_text.html/1001 ?>
 	&nbsp;</td>
 </tr>
 <tr>
@@ -160,7 +158,7 @@ function showDate(show) {
 </script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText" nowrap>Text (i meny)<br>&nbsp;</td>
+		<td class="imcmsAdmText" nowrap><? sv/docinfo/adv_new_meta_text.html/1002 ?>&nbsp;</td>
 		<td class="imcmsAdmForm">
 		<textarea name="meta_text" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%">
 </textarea>
@@ -192,13 +190,13 @@ function showDate(show) {
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td><input type="radio" name="publish" value="1" onClick="setPubl()" onChange="setPubl()" checked></td>
-			<td class="imcmsAdmText">&nbsp;Ja &nbsp; &nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;<? sv/docinfo/adv_new_meta_text.html/1003 ?> &nbsp; &nbsp;</td>
 			<td><input type="radio" name="publish" value="2" onClick="setPubl()" onChange="setPubl()"></td>
-			<td class="imcmsAdmText">&nbsp;Nej &nbsp; &nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;<? sv/docinfo/adv_new_meta_text.html/1004 ?> &nbsp; &nbsp;</td>
 			<td><input type="radio" name="publish" value="3" onClick="setPubl()" onChange="setPubl()"></td>
-			<td class="imcmsAdmText">&nbsp;Tidsbestämd &nbsp; &nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;<? sv/docinfo/adv_new_meta_text.html/1005 ?> &nbsp; &nbsp;</td>
 			<td><input type="radio" name="publish" value="4" onClick="setPubl()" onChange="setPubl()"></td>
-			<td class="imcmsAdmText">&nbsp;Arkiverad</td>
+			<td class="imcmsAdmText">&nbsp;<? sv/docinfo/adv_new_meta_text.html/1006 ?></td>
 		</tr>
 		</table></td>
 	</tr>
@@ -219,11 +217,11 @@ function showDate(show) {
 			<td><script>
 <? sv/docinfo/adv_new_meta_text.html/16 ?>
 </script></td>
-			<td class="imcmsAdmText">&nbsp;kl:</td>
+			<td class="imcmsAdmText">&nbsp;<? sv/docinfo/adv_new_meta_text.html/1007 ?></td>
 			<td><script>
 <? sv/docinfo/adv_new_meta_text.html/17 ?>
 </script></td>
-			<td class="imcmsAdmDim">&nbsp;(ÅÅÅÅ-MM-DD HH:MM)</td>
+			<td class="imcmsAdmDim">&nbsp;<? sv/docinfo/adv_new_meta_text.html/1008 ?></td>
 		</tr>
 		</table></td>
 	</tr>
@@ -235,11 +233,11 @@ function showDate(show) {
 			<td><script>
 <? sv/docinfo/adv_new_meta_text.html/19 ?>
 </script></td>
-			<td class="imcmsAdmText">&nbsp;kl:</td>
+			<td class="imcmsAdmText">&nbsp;<? sv/docinfo/adv_new_meta_text.html/1009 ?></td>
 			<td><script>
 <? sv/docinfo/adv_new_meta_text.html/20 ?>
 </script></td>
-			<td class="imcmsAdmDim">&nbsp;(ÅÅÅÅ-MM-DD HH:MM)</td>
+			<td class="imcmsAdmDim">&nbsp;<? sv/docinfo/adv_new_meta_text.html/1010 ?></td>
 		</tr>
 		</table></td>
 	</tr>
@@ -259,9 +257,9 @@ function showDate(show) {
 		<td class="imcmsAdmText"><? sv/docinfo/adv_new_meta_text.html/22 ?></td>
 		<td class="imcmsAdmText">
 		<select name="change_section" size="5" multiple>
-			#section_option_list#
+			<? sv/docinfo/adv_new_meta_text.html/1011 ?>
 		</select>
-		&nbsp; Nuvarande: #current_section_name#</td>
+		&nbsp; <? sv/docinfo/adv_new_meta_text.html/1012 ?></td>
 	</tr>
 	<tr>
 		<td colspan="2"><script><? sv/docinfo/adv_new_meta_text.html/25 ?></script></td>
@@ -272,7 +270,7 @@ function showDate(show) {
 		<select name="lang_prefix" size="1">
 			<? sv/docinfo/adv_new_meta_text.html/27 ?>
 		</select>
-		&nbsp; Nuvarande: #current_language#</td>
+		&nbsp; <? sv/docinfo/adv_new_meta_text.html/1013 ?></td>
 	</tr>
 	<tr>
 		<td colspan="2"><script><? sv/docinfo/adv_new_meta_text.html/28 ?></script></td>
@@ -299,7 +297,7 @@ function showDate(show) {
 <script>
 <? sv/docinfo/adv_new_meta_text.html/36 ?>
 </script><br>
-		<span class="imcmsAdmDim">Sökord skall anges separerade med kommatecken. &nbsp;Ex: soppa, blomkål</span><br>
+		<span class="imcmsAdmDim"><? sv/docinfo/adv_new_meta_text.html/1014 ?></span><br>
 		<input type="CHECKBOX" name="disable_search" value="1" #disable_search#> <? sv/docinfo/adv_new_meta_text.html/37 ?></td>
 	</tr>
 	<tr>
@@ -311,13 +309,13 @@ function showDate(show) {
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td><input type="radio" name="target" value="_self" #_self#></td>
-			<td class="imcmsAdmText">&nbsp;Samma frame &nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;<? sv/docinfo/adv_new_meta_text.html/1015 ?> &nbsp;</td>
 			<td><input type="radio" name="target" value="_blank" #_blank#></td>
-			<td class="imcmsAdmText">&nbsp;Nytt fönster &nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;<? sv/docinfo/adv_new_meta_text.html/1016 ?> &nbsp;</td>
 			<td><input type="radio" name="target" value="_top" #_top#></td>
-			<td class="imcmsAdmText">&nbsp;Ersätt allt &nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;<? sv/docinfo/adv_new_meta_text.html/1017 ?> &nbsp;</td>
 			<td><input type="radio" name="target" value="_other" #_other#></td>
-			<td class="imcmsAdmText">&nbsp;Annan frame:&nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;<? sv/docinfo/adv_new_meta_text.html/1018 ?>&nbsp;</td>
 			<td><script>
 <? sv/docinfo/adv_new_meta_text.html/40 ?>
 </script></td>
@@ -333,7 +331,7 @@ function showDate(show) {
 		<select name="publisher_id" size="1">
 			<? sv/docinfo/adv_new_meta_text.html/43 ?>
 		</select>
-		&nbsp; Nuvarande: #current_publisher_name#</td>
+		&nbsp; <? sv/docinfo/adv_new_meta_text.html/1019 ?></td>
 	</tr>
 	<tr>
 		<td colspan="2"><script><? sv/docinfo/adv_new_meta_text.html/44 ?></script></td>

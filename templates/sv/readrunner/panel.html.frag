@@ -9,7 +9,7 @@
 	<td align="center"><img src="@readrunnerimagesurl@/1x1.gif" width="1" height="50"><br>
 	<table border="0" cellpadding="0" cellspacing="0" width="400" style="border: 3px groove #c00000">
 	<tr>
-		<td align="center" height="200" style="font: bold 56px/66px Verdana; background-color:#f0f0f0; color:#c00000">&nbsp;&nbsp;Vänta...</td>
+		<td align="center" height="200" style="font: bold 56px/66px Verdana; background-color:#f0f0f0; color:#c00000">&nbsp;&nbsp;<? sv/readrunner/panel.html.frag/1001 ?></td>
 	</tr>
 	</table></td>
 </tr>

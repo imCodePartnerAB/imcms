@@ -405,7 +405,7 @@
 
             <batchtest>
                 <fileset dir="${classes}">
-                    <exclude name="TestChat.class"/>
+                    <exclude name="**/test/http/*.class"/>
                     <exclude name="**/*$*.class"/>
                     <include name="Test*.class"/>
                     <include name="**/Test*.class"/>

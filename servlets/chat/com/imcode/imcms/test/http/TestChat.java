@@ -1,3 +1,4 @@
+package com.imcode.imcms.test.http;
 
 import com.meterware.httpunit.*;
 import junit.framework.TestCase;

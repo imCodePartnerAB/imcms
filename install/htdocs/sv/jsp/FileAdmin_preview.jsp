@@ -15,7 +15,7 @@ if (isImage) {
 		%>5<% 
 	} else {
 		%>6<% 
-	} %> 0; font: 10px Verdana, Geneva, sans-serif; color:#999999;"><? sv/jsp/FileAdmin_preview.jsp/13 ?></div><img name="theImg" id="theImg" src="<%= imC_PATH + file %>"<%= border + zoom %><? sv/jsp/FileAdmin_preview.jsp/14 ?></div>
+	} %> 0; font: 10px Verdana, Geneva, sans-serif; color:#999999;"><? sv/jsp/FileAdmin_preview.jsp/13 ?></div><? sv/jsp/FileAdmin_preview.jsp/1001 ?><? sv/jsp/FileAdmin_preview.jsp/14 ?></div>
 
 </body>
 </html><%
@@ -51,12 +51,7 @@ A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 <table border="0" cellspacing="0" cellpadding="0" width="100%" height="100%" style="border-bottom: 1px solid #828482">
 <tr>
 	<td nowrap><span class="imHeading">
-	&nbsp;<%
-	if (isStat) {
-		%>Statistik rapport<%
-	} else {
-		%>Förhandsgranska<% 
-	} %> &nbsp;</span></td>
+	&nbsp;<? sv/jsp/FileAdmin_preview.jsp/1002 ?> &nbsp;</span></td>
 	
 	<td align="right"><%
 	if (isStat) {
@@ -83,8 +78,7 @@ A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 	<input type="hidden" name="frame" value="main">
 	<input type="hidden" name="file" value="<%= file %>">
 	<tr>
-		<td class="norm">| &nbsp; <%
-		if (isIE) { %><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();"><? sv/jsp/FileAdmin_preview.jsp/16 ?></span>&nbsp;</td>
+		<td class="norm"><? sv/jsp/FileAdmin_preview.jsp/1003 ?><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();"><? sv/jsp/FileAdmin_preview.jsp/16 ?></span>&nbsp;</td>
 		<td class="norm">
 		<select name="zoom" onChange="this.form.submit();">
 			<option value="0.25"<% if (defZoom.equals("0.25")) { %> <? sv/jsp/FileAdmin_preview.jsp/17 ?>
@@ -97,11 +91,7 @@ A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 			<option value="8.0"<%  if (defZoom.equals("8.0")) { %> <? sv/jsp/FileAdmin_preview.jsp/24 ?>
 			<option value="16.0"<% if (defZoom.equals("16.0")) { %> <? sv/jsp/FileAdmin_preview.jsp/25 ?>
 		</select></td>
-		<td class="norm"> &nbsp; | &nbsp; <%
-		} %>Kantlinje:
-		<a href="<%= thisPage %>?frame=main&file=<%= file %>&border=1" target="main">På</a> /
-		<a href="<%= thisPage %>?frame=main&file=<%= file %>&border=0" target="main">Av</a> &nbsp; | &nbsp;
-		<a href="javascript: closeIt();"><b>Stäng &amp; återgå</b></a> &nbsp; | &nbsp;</td>
+		<td class="norm"> &nbsp; <? sv/jsp/FileAdmin_preview.jsp/1004 ?> &nbsp;</td>
 	</tr>
 	</form>
 	</table><% 

@@ -196,18 +196,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 	<tr valign="top">
 		<td>
 		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">
-		<select name="<%= FORM_SELECT_ROLES %>" size="5" multiple><%
-		
-		String[] allRoleNames = userMapper.getAllRolesNames();
-		Set setOfAllRoleNames = new TreeSet( Arrays.asList(allRoleNames) );
-		
-		String[] userRoleNames = userMapper.getRoleNames( user );
-		Set setOfUserRoleNames = new HashSet( Arrays.asList( userRoleNames ));
-		
-		for( Iterator iterator = setOfAllRoleNames.iterator(); iterator.hasNext(); ) {
-			String roleName = (String)iterator.next();
-			%>
-			<option value="<%= roleName %>"<%= (setOfUserRoleNames.contains(roleName) ? " selected" : "") %><? sv/adminuser/changeexternaluser.jsp/20 ?></option><%
+		<select name="<%= FORM_SELECT_ROLES %>" size="5" multiple><? sv/adminuser/changeexternaluser.jsp/1001 ?><? sv/adminuser/changeexternaluser.jsp/20 ?></option><%
 		} %>
 		</select></font></td>
 		

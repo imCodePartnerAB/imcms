@@ -19,8 +19,6 @@ sub tag {
 
 sub output_tag {
     my ($TAGFILE, $filename, $tagindex, $chunk) = @_ ;
-    return unless $chunk ;
-    return if $chunk =~ m!^<[^<>]+>$! ;
 
     $chunk =~ s!\\!\\\\!g ;
     $chunk =~ s!\t!\\t!g ;
@@ -42,7 +40,8 @@ sub wanted {
     $File::Find::prune = 1 if $_ eq 'CVS' ;
     return if -d ;
     return if -B ;
-    return if /\.(?:out|css|js|vbs|properties)$/ ;
+    return if /^\./ ;
+    return if /\.(?:out|css|js|vbs|properties|old|new)$/ ;
     
     my $filename = $_ ;
     my $filepath = $File::Find::name ;
@@ -57,27 +56,29 @@ sub wanted {
 					    process => '" ", text',
 					    default => '" ", text'
 					) || die $! ;
-
+    $htmlparser->xml_mode(1) ;
+    $htmlparser->unbroken_text(1) ;
+    
     my $outfilename = "$filename.out" ;
     open OUTFILE, '>', $outfilename or die "Failed to open file $outfilename: $!\n" ;
 
-    my $tagindex = 0 ;
+    my $tagindex = 1000 ;
     my $textchunk = '' ;
     while (my $token = $htmlparser->get_token) {
 	my $tagname = $token->[0] ;
 	if ($token and is_text($tagname)) {
-	    $textchunk .= $token->[1] ;
+    	    $textchunk .= $token->[1] ;
 	    next ;
 	}
-	if ($textchunk =~ /\S/ and $textchunk !~ /^\s*(?:<[^>]+>\s*)+\s*$/ and $textchunk !~ /\s*(?:&nbsp;\s*)+\s*/) {
+	if ($textchunk =~ /\w/ and $textchunk !~ /^\s*(?:(?:<[^>]+>|&nbsp;)\s*)+\s*$/i) {
 	    $tagindex++ ;
 
 	    my $starttoken = '<? ' ;
 	    my $endtoken = ' ?>' ;
-	    if ($textchunk =~ s/^(\s+)//) {
+	    if ($textchunk =~ s/^(\s*(?:&nbsp;\s*)*\s*)//) {
 		$starttoken = "$1$starttoken";
 	    }
-	    if ($textchunk =~ s/(\s+)$//) {
+	    if ($textchunk =~ s/(\s*(?:&nbsp;\s*)*\s*)$//) {
 		$endtoken = "$endtoken$1" ;
 	    }
 	    print OUTFILE $starttoken,tag($filepath,$tagindex),$endtoken ;
@@ -86,6 +87,7 @@ sub wanted {
 	    print OUTFILE $textchunk ;
 	}
 	print OUTFILE $token->[1] ;
+
         $textchunk = '' ;
     }
 
@@ -98,7 +100,7 @@ sub wanted {
 foreach my $directory (@ARGV) {
     chdir $currentdir ;
     chdir $directory or die $! ;
-    open TAGFILE, '>', "imcms_sv.properties" or die "Failed to open tags file: $!\n" ;
+    open TAGFILE, '>', "imcms_sv.properties2" or die "Failed to open tags file: $!\n" ;
     find( { wanted => \&wanted }, '.') ;
     close TAGFILE ;
 }
