@@ -188,7 +188,7 @@ public class BillBoardCreator extends BillBoard
 		confP.setProperty("BILLBOARD_NAME", billBoard_name.trim()) ;
 		confP.setProperty("SECTION_NAME", section_name.trim()) ;
 		
-		log("BillBoard paramters:" + confP.toString()) ;
+		//log("BillBoard paramters:" + confP.toString()) ;
 		return confP ;
 	}
 
@@ -207,10 +207,9 @@ public class BillBoardCreator extends BillBoard
 	Log function, will work for both servletexec and Apache
 	**/
 
-	public void log( String str)
+	public void log( String msg)
 	{
-		super.log(str) ;
-		System.out.println("BillBoardCreator: " + str ) ;
+		super.log("BillBoardCreator: " + msg ) ;
 	}
 
 

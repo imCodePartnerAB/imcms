@@ -317,17 +317,6 @@ public class BillBoard extends HttpServlet { //Conference
 	protected boolean getAdminRights(String server, String metaId, imcode.server.User user)
 	{
 
-		/* Rickards old style
-		try {
-		// Lets verify if the user has admin rights for the metaid
-		RmiConf rmi = new RmiConf(user) ;
-		return rmi.checkAdminRights( server, metaId , user ) ;
-		} catch	(Exception e) {
-		log("GetAdminRights failed!!!") ;
-		return false ;
-
-		}
-		*/
 		try {
 			return userHasAdminRights( server, Integer.parseInt( metaId ), user );
 		} catch ( IOException e )
@@ -412,10 +401,9 @@ public class BillBoard extends HttpServlet { //Conference
 	Gives the folder to the root external folder,Example /templates/se/102/
 	*/
 
-	public String getExternalTemplateRootFolder (HttpServletRequest req)
+	public String getExternalTemplateRootFolder (HttpServletRequest req)//p ok
 	throws ServletException, IOException
 	{
-
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
@@ -432,17 +420,16 @@ public class BillBoard extends HttpServlet { //Conference
 		return externalTemplateLib ;
 	}
 
-
+	 
 	/**
 	Gives the folder where All the html templates for a language are located.
 	This method will call its helper method getTemplateLibName to get the
 	name of the folder which contains the templates for a certain meta id
 	*/
 
-	public String getExternalTemplateFolder (HttpServletRequest req)
+	public String getExternalTemplateFolder (HttpServletRequest req)//p ok
 	throws ServletException, IOException
 	{
-
 		String externalTemplateLib = "" ;
 		String metaId = this.getMetaId(req) ;
 		if( metaId == null)
@@ -456,7 +443,9 @@ public class BillBoard extends HttpServlet { //Conference
 		String confPoolServer = Utility.getDomainPref("billboard_server",host) ;//"conference_server"
 		//log(confPoolServer);
 		String extFolder = this.getExternalTemplateFolder(imcServer, metaId) ;
-		return extFolder += this.getTemplateLibName(confPoolServer, metaId) ;
+		extFolder += this.getTemplateLibName(confPoolServer, metaId) ;
+		
+		return extFolder;
 		// return this.getExternalTemplateFolder(imcServer, metaId) ;
 	}
 
@@ -469,7 +458,7 @@ public class BillBoard extends HttpServlet { //Conference
 	public String getExternalTemplateFolder (String server, String metaId )
 	throws ServletException, IOException
 	{
-
+		
 		String externalTemplateLib = "" ;
 		if( metaId == null)
 		{
@@ -479,9 +468,7 @@ public class BillBoard extends HttpServlet { //Conference
 		externalTemplateLib = MetaInfo.getExternalTemplateFolder(server, metaId) ;
 		if(externalTemplateLib == null)
 			log("Error!: getExternalTemplateFolder: " + externalTemplateLib) ;
-		//externalTemplateLib += this.getTemplateLibName(server, metaId) ;
-		// log("ExternalTemplateLib: " + externalTemplateLib) ;
-		//log("*** GetExternalTemplateFolder WAS CALLED" ) ;
+				
 		return externalTemplateLib ;
 	}
 
@@ -552,7 +539,6 @@ public class BillBoard extends HttpServlet { //Conference
 	public void sendHtml (HttpServletRequest req, HttpServletResponse res,
 		VariableManager vm, String htmlFile) throws ServletException, IOException
 	{
-
 		imcode.server.User user = getUserObj(req,res) ;
 		// RmiConf rmi = new RmiConf(user) ;
 		String metaId = this.getMetaId(req) ;
@@ -606,10 +592,9 @@ public class BillBoard extends HttpServlet { //Conference
 		HtmlGenerator htmlObj = new HtmlGenerator(templateLib, htmlFile) ;
 		String html = htmlObj.createHtmlString(vm,req) ;
 		//log("Before sendToBrowser: ") ;
-
 		htmlObj.sendToBrowser(req,res,html) ;
 		//log("after sendToBrowser: ") ;
-
+	
 	}
 
 	/**
@@ -618,8 +603,8 @@ public class BillBoard extends HttpServlet { //Conference
 
 	public void log(String msg)
 	{
-		super.log(msg) ;
-		System.out.println("BillBoard: " + msg) ;
+		//super.log(msg) ;
+		System.out.println(msg) ;
 
 	}
 
@@ -683,16 +668,6 @@ public class BillBoard extends HttpServlet { //Conference
 		return rolesV ;
 	}
 
-	/**
-	Creates Sql characters. Encapsulates a string with ' ' signs. And surrounding
-	Space.
-	Example. this.sqlChar("myString")  --> " 'myString' "
-	*/
-
-	public static String sqlChar(String s)
-	{
-		return " '" + s + "' " ;
-	}
 
 	/**
 	Creates Sql characters. Encapsulates a string with ' ' signs. + an comma.
@@ -704,7 +679,7 @@ public class BillBoard extends HttpServlet { //Conference
 	{
 		return " '" + s + "', " ;
 	}
-
+	
 	/**
 	Creates Sql characters. Encapsulates a string with ' ' signs. And surrounding
 	Space.
@@ -716,18 +691,8 @@ public class BillBoard extends HttpServlet { //Conference
 		return " '" + s + "' " ;
 	}
 
-
-	/**
-	Adds a delimiter to the end of the string.
-	Example. this.sqlDelim("myString")  --> "myString, "
-	*/
-
-	public static String sqlDelim(String s)
-	{
-		return s + ", " ;
-	}
-
-
+	
+	
 	/**
 	Prepare user for the conference
 	**/
@@ -735,7 +700,7 @@ public class BillBoard extends HttpServlet { //Conference
 	public boolean prepareUserForBillBoard(HttpServletRequest req, HttpServletResponse res,
 		Properties params, String loginUserId)  throws ServletException, IOException
 	{
-
+		
 		// Lets get the user object
 		imcode.server.User user = this.getUserObj(req,res) ;
 		if(user == null) return false ;
@@ -789,6 +754,7 @@ public class BillBoard extends HttpServlet { //Conference
 			url += "BillBoardViewer" ;
 			// this.log("Redirects to:" + url) ;
 			res.sendRedirect(url) ;
+			
 			return true;
 		}
 		return false ;
@@ -823,7 +789,9 @@ public class BillBoard extends HttpServlet { //Conference
 		String confPoolServer = Utility.getDomainPref("billboard_server",host) ;//conference_server
 
 		String extFolder = this.getExternalImageFolder(imcServer, metaId, user) ;
-		return extFolder += this.getTemplateLibName(confPoolServer, metaId) ;
+		extFolder += this.getTemplateLibName(confPoolServer, metaId) ;
+		
+		return extFolder;
 	}
 
 
@@ -833,13 +801,9 @@ public class BillBoard extends HttpServlet { //Conference
 	protected String getExternalImageFolder(String server, String meta_id, imcode.server.User user) throws ServletException, IOException
 	{
 		RmiConf rmi = new RmiConf(user) ;
-		// Ok, Lets get the language for the system
 		String imageLib = rmi.getExternalImageFolder(server, meta_id) ;
-
-		// Lets get the foldername used for this meta id . Default is original
-		//imageLib += this.getTemplateLibName(server, meta_id )  ;
-		//log("ImageLib: " + imageLib) ;
 		return imageLib ;
+		
 	} // End of getImageLibName
 
 
@@ -879,7 +843,6 @@ public class BillBoard extends HttpServlet { //Conference
 	public String getAdminButtonLink(HttpServletRequest req,imcode.server.User user, VariableManager adminButtonVM )
 	throws ServletException, IOException
 	{
-
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
@@ -898,17 +861,19 @@ public class BillBoard extends HttpServlet { //Conference
 			VariableManager adminLinkVM = new VariableManager();
 			adminLinkVM.addProperty( "SERVLET_URL", adminButtonVM.getProperty( "SERVLET_URL" ) );
 			String adminLinkFile = adminButtonVM.getProperty( "ADMIN_LINK_HTML" );
-
+				
 			//lets create adminbuttonhtml
 			String templateLib = this.getExternalTemplateFolder( req );
 			HtmlGenerator htmlObj = new HtmlGenerator( templateLib, this.ADMIN_BUTTON_TEMPLATE );
 			String adminBtn = htmlObj.createHtmlString( adminButtonVM, req );
-
+			
 			//lets create adminlink
 			adminLinkVM.addProperty( "ADMIN_BUTTON", adminBtn );
-			HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, adminLinkFile );
-			adminLink = linkHtmlObj.createHtmlString( adminLinkVM, req );
-
+			if ( !adminLinkFile.equals(""))
+			{
+				HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, adminLinkFile );
+	 			adminLink = linkHtmlObj.createHtmlString( adminLinkVM, req );	
+			}	
 		}
 		//log("After getAdminRights") ;
 		return adminLink ;
@@ -922,7 +887,6 @@ public class BillBoard extends HttpServlet { //Conference
 	public String getUnAdminButtonLink(HttpServletRequest req,imcode.server.User user, VariableManager unAdminButtonVM )
 	throws ServletException, IOException
 	{
-
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
@@ -935,17 +899,16 @@ public class BillBoard extends HttpServlet { //Conference
 		//lets generat unadminbutton if user has administrator rights and rights to edit
 		if ( userHasAdminRights( imcServer, intMetaId, user ) )
 		{
-
 			//lets save tags we need later
 			VariableManager unAdminLinkVM = new VariableManager();
 			unAdminLinkVM.addProperty( "SERVLET_URL", unAdminButtonVM.getProperty( "SERVLET_URL" ) );
 			String unAdminLinkFile = unAdminButtonVM.getProperty( "UNADMIN_LINK_HTML" );
-
+			
 			//lets create unadminbuttonhtml
 			String templateLib = this.getExternalTemplateFolder( req );
 			HtmlGenerator htmlObj = new HtmlGenerator( templateLib, this.UNADMIN_BUTTON_TEMPLATE );
 			String unAdminBtn = htmlObj.createHtmlString( unAdminButtonVM, req );
-
+	
 			//lets create unadminlink
 			unAdminLinkVM.addProperty( "UNADMIN_BUTTON", unAdminBtn );
 			HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, unAdminLinkFile );

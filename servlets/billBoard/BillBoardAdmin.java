@@ -1316,9 +1316,8 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	Log function, will work for both servletexec and Apache
 	**/
 
-	public void log( String str) {
-		super.log(str) ;
-		System.out.println("BillBoardAdmin: " + str ) ;
+	public void log( String msg) {
+		super.log("BillBoardAdmin: " + msg ) ;
 	}
 
 

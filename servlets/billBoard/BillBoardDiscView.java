@@ -118,9 +118,9 @@ public class BillBoardDiscView extends BillBoard {//ConfDiscView
 	Log function, will work for both servletexec and Apache
 	**/
 
-	public void log( String str)
+	public void log( String msg)
 	{
-		super.log(str) ;
-		System.out.println("BillBoardDiscView: " + str ) ;	
+		super.log("BillBoardDiscView: " + msg) ;
+
 	}
 } // End of class

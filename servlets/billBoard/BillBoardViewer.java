@@ -97,8 +97,8 @@ public class BillBoardViewer extends BillBoard {//ConfViewer
 	Log function, will work for both servletexec and Apache
 	**/
 
-	public void log( String str) {
-		super.log(str) ;
-		System.out.println("BillBoardViewer: " + str ) ;
+	public void log( String msg) {
+		super.log("BillBoardViewer: " + msg) ;
+		
 	}
 } // End of class

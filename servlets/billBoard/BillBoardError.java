@@ -172,8 +172,8 @@ public class BillBoardError extends BillBoard
 
 	public void log(String msg)
 	{
-		//	 super.log(msg) ;
-		System.out.println("ConfError: " + msg) ;
+			 super.log("BillBoardError: " + msg) ;
+		
 	}
 
 	/*

@@ -188,10 +188,10 @@ public class BillBoardManager extends BillBoard	  //ConfManager
 	Log function, will work for both servletexec and Apache
 	**/
 
-	public void log( String str)
+	public void log( String msg)
 	{
-		super.log(str) ;
-		System.out.println("BillBoardManager: " + str ) ;
+		super.log("BillBoardManager: " + msg) ;
+		
 	}
 
 	/**

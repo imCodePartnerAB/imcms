@@ -132,8 +132,8 @@ public class BillBoardForum extends BillBoard {//ConfForum
 	Log function, will work for both servletexec and Apache
 	**/
 
-	public void log( String str) {
-		super.log(str) ;
-		System.out.println("BillBoardForum: " + str ) ;//
+	public void log( String msg) {
+		super.log("BillBoardForum: " + msg) ;
+		
 	}
 } // End of class

@@ -128,7 +128,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 		// ************* VERIFY LOGIN TO CONFERENCE **************
 		// Ok, the user wants to login
 		if(loginType.equalsIgnoreCase("login") /* && req.getParameter("submit") != null */) {
-			log("Ok, nu försöker vi verifiera logga in!") ;
+			//log("Ok, nu försöker vi verifiera logga in!") ;
 			String userId = user.getString("user_id");
 			
 
@@ -194,9 +194,9 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 	Log function, will work for both servletexec and Apache
 	**/
 
-	public void log( String str) {
-		super.log(str) ;
-		System.out.println("BillBoardLogin: " + str ) ;
+	public void log( String msg) {
+		super.log("BillBoardLogin: " + msg) ;
+		
 	}
 
 

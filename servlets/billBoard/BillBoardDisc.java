@@ -1123,10 +1123,10 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 	Log function, will work for both servletexec and Apache
 	**/
 
-	public void log( String str)
+	public void log( String msg)
 	{
-		super.log(str) ;
-		System.out.println("BillBoardDisc: " + str ) ;
+		super.log("BillBoardDisc: " + msg) ;
+		
 	}
 
 	/**

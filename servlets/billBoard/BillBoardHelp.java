@@ -30,7 +30,6 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
 			return ;
 		} 
 
-		log("tyest");
 		// Lets get the user object 	
 		imcode.server.User user = super.getUserObj(req,res) ;
 		if(user == null) return ;
@@ -134,9 +133,9 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
 	Log function, will work for both servletexec and Apache
 	**/
 
-	public void log( String str) {
-		super.log(str) ;
-		System.out.println("BillBoardHelp: " +  str ) ;	
+	public void log( String msg) {
+		super.log("BillBoardHelp: " +  msg) ;
+	
 	}
 
 } // End of class

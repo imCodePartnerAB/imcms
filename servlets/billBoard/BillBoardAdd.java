@@ -240,8 +240,6 @@ public class BillBoardAdd extends BillBoard
 				//log("B_AddNewBillSQL: " + sqlQuest) ;
 				rmi.execSqlUpdateProcedure(confPoolServer, sqlQuest) ;
 				
-				
-
 				// Lets redirect to the servlet which holds in us.
 				res.sendRedirect(MetaInfo.getServletPath(req)  + "BillBoardDiscView?MAIL_SENT=OK") ;//ConfDiscView
 				//	log("AddReply är klar") ;
@@ -404,7 +402,6 @@ public class BillBoardAdd extends BillBoard
 
 		/* server info */
 		String host = req.getHeader("Host") ;
-		String imcserver = Utility.getDomainPref( "adminserver", host );//?????????
 		String hostName = emptyString;
 		try {
 			hostName = InetAddress.getLocalHost().getHostName();
@@ -414,13 +411,9 @@ public class BillBoardAdd extends BillBoard
 		
 		/* mailserver info */
 		String mailserver = Utility.getDomainPref( "smtp_server", host );
-		String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );
-		String emailFromServer = Utility.getDomainPref( "system_email", host );;
-		String mailFrom = eMailServerMaster;
-		String deafultLanguagePrefix = IMCServiceRMI.getLanguage( imcserver );
 		String stringMailPort = Utility.getDomainPref( "smtp_port", host );
 		String stringMailtimeout = Utility.getDomainPref( "smtp_timeout", host );
-
+		
 		// Handling of default-values is another area where java can't hold a candle to perl.
 		int mailport = 25 ;
 		try
@@ -439,28 +432,10 @@ public class BillBoardAdd extends BillBoard
 		{
 			// Do nothing, let mailtimeout stay at default.
 		}
-
 		
-		Vector errorParsVector = new Vector();
-		
+		SMTP smtp = new SMTP( mailserver, mailport, mailtimeout );					
 
-
-		/* send mail */
-		//try {			
-			SMTP smtp = new SMTP( mailserver, mailport, mailtimeout );					
-
-			smtp.sendMailWait( fromEmail, toEmail ,header , text );
-		//}catch (ProtocolException pe)
-		//{
-			//ok something whent wrong
-		//	BillBoardError err = new BillBoardError(req,res,"BillBoardAdd servlet. ",pe.getMessage()) ;
-		//	log(pe.getMessage());
-		//	return;
-		//}
-			
-			//smtp.sendMailWait (String from, String to, String subject, String msg)
-
-				
+		smtp.sendMailWait( fromEmail, toEmail ,header , text );				
 	}
 
 
@@ -611,8 +586,8 @@ public class BillBoardAdd extends BillBoard
 
 	public void log( String str)
 	{
-		super.log(str) ;
-		System.out.println(SERVLET_NAME + " " + str ) ;
+		super.log("BillBoardAdd " +str) ;
+		//System.out.println(SERVLET_NAME + " " + str ) ;
 	}
 
 } // End of class

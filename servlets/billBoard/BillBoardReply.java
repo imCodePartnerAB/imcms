@@ -63,7 +63,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
 	{
-		log("START BillBoardReply doPost");
+		//log("START BillBoardReply doPost");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
@@ -490,9 +490,9 @@ public class BillBoardReply extends BillBoard {//ConfReply
 	Log function, will work for both servletexec and Apache
 	**/
 
-	public void log( String str) {
-		super.log(str) ;
-		// System.out.println("BillBoardReply: " + str ) ;
+	public void log( String msg) {
+		super.log("BillBoardReply: " + msg ) ;
+		
 	}
 } // End of class
 
