@@ -16,7 +16,11 @@ public class MockDatabase implements Database {
     private List expectedSqlCalls = new ArrayList();
 
     public String[] sqlProcedure( String procedure, String[] params ) {
-        return (String[])getResultForSqlCall( procedure, params );
+        String[] result = (String[])getResultForSqlCall( procedure, params );
+        if (null == result) {
+            return new String[0] ;
+        }
+        return result;
     }
 
     public Map sqlProcedureHash( String procedure, String[] params ) {

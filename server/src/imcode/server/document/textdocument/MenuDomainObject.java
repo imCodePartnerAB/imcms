@@ -2,8 +2,8 @@ package imcode.server.document.textdocument;
 
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
 
 import java.io.Serializable;
@@ -13,7 +13,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     private int id;
     private int sortOrder;
-    private Map menuItems;
+    private HashMap menuItems;
 
     public final static int MENU_SORT_ORDER__BY_HEADLINE = 1;
     public final static int MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED = 2;
@@ -67,10 +67,11 @@ public class MenuDomainObject implements Cloneable, Serializable {
         return (MenuItemDomainObject[])menuItemsUserCanSee.toArray( new MenuItemDomainObject[menuItemsUserCanSee.size()] );
     }
 
-    private List getMenuItemsVisibleToUser( UserDomainObject user ) {
-        List menuItemsUserCanSee = new ArrayList(menuItems.size()) ;
-        for ( Iterator iterator = menuItems.values().iterator(); iterator.hasNext(); ) {
-            MenuItemDomainObject menuItem = (MenuItemDomainObject)iterator.next();
+    List getMenuItemsVisibleToUser( UserDomainObject user ) {
+        MenuItemDomainObject[] menuItemsArray = getMenuItems();
+        List menuItemsUserCanSee = new ArrayList(this.menuItems.size()) ;
+        for ( int i = 0; i < menuItemsArray.length; i++ ) {
+            MenuItemDomainObject menuItem = menuItemsArray[i];
             if (user.canSeeDocumentWhenEditingMenus( menuItem.getDocument() )) {
                 menuItemsUserCanSee.add(menuItem) ;
             }
@@ -90,7 +91,15 @@ public class MenuDomainObject implements Cloneable, Serializable {
     }
 
     public MenuItemDomainObject[] getMenuItems() {
-        MenuItemDomainObject[] menuItemsArray = (MenuItemDomainObject[])menuItems.values().toArray( new MenuItemDomainObject[menuItems.size()] );
+        HashMap menuItemsClone = (HashMap)menuItems.clone() ;
+        List menuItemsList = new ArrayList( menuItemsClone.size() ) ;
+        for ( Iterator iterator = menuItemsClone.values().iterator(); iterator.hasNext(); ) {
+            MenuItemDomainObject menuItem = (MenuItemDomainObject)iterator.next() ;
+            if (null != menuItem.getDocument()) {
+                menuItemsList.add(menuItem) ;
+            }
+        }
+        MenuItemDomainObject[] menuItemsArray = (MenuItemDomainObject[])menuItemsList.toArray( new MenuItemDomainObject[menuItemsList.size()] );
         Arrays.sort( menuItemsArray, getMenuItemComparatorForSortOrder( sortOrder ) );
         return menuItemsArray;
     }

@@ -1,7 +1,6 @@
 package imcode.server.document.textdocument;
 
 import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentComparator;
 
 public abstract class MenuItemComparator extends ChainableReversibleNullComparator {
@@ -11,6 +10,10 @@ public abstract class MenuItemComparator extends ChainableReversibleNullComparat
     static final MenuItemComparator MODIFIED_DATETIME = new MenuItemDocumentComparator( DocumentComparator.MODIFIED_DATETIME );
     static final MenuItemComparator SORT_KEY = new SortKeyComparator();
     static final MenuItemComparator TREE_SORT_KEY = new TreeSortKeyComparator();
+
+    public String toString() {
+        return getClass().getName() ;
+    }
 
     public int compare( Object o1, Object o2 ) {
         return compareMenuItems( (MenuItemDomainObject)o1, (MenuItemDomainObject)o2 );
@@ -43,6 +46,10 @@ public abstract class MenuItemComparator extends ChainableReversibleNullComparat
         int compareMenuItems( MenuItemDomainObject menuItem1,
                               MenuItemDomainObject menuItem2 ) {
             return documentComparator.compare( menuItem1.getDocument(), menuItem2.getDocument() );
+        }
+
+        public String toString() {
+            return getClass().getName()+": "+documentComparator.toString() ;
         }
 
     }
