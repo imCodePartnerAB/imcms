@@ -30,7 +30,7 @@ li {
 
 }
 
-.config, .value, .path, .tag, .attr, .localfile, .class, .package, .method {
+.config, .value, .path, .tag, .attr, .localfile, .class, .package, .method, .variable {
     font-family: monospace;
     background-color: #eee;
 }
