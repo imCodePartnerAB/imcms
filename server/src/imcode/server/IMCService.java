@@ -333,15 +333,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	String textstring = text.getText() ;
 
-	if ( text.getType() == IMCText.TEXT_TYPE_HTML) {
-	    /*
-	      Make sure all word-chars are kept away from the html-tags by at least one space.
-	      Without this, the sql-freetext-indexer won't do its work properly.
-	    */
-	    textstring = perl5util.substitute("s/\\b</ </g",textstring) ; // Substitute word-boundary (\b) next to '<' for " <" globally (g) in textstring
-	    textstring = perl5util.substitute("s/>\\b/> /g",textstring) ; // Substitute '>' next to word-boundary (\b) for "> " globally (g) in textstring
-	}
-
 	// update text
 	sqlUpdateProcedure("InsertText ", new String[] { ""+meta_id, ""+txt_no, ""+text.getType(), textstring } ) ;
 
@@ -623,15 +614,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	if (childsThisMenu != null && childsThisMenu.length > 0) {
 	    StringBuffer childs = new StringBuffer("CopyDocs '"+childsThisMenu[0]) ;
-		StringBuffer logchilds = new StringBuffer(childsThisMenu[0]) ;
+	    StringBuffer logchilds = new StringBuffer(childsThisMenu[0]) ;
 	    for (int i=1; i<childsThisMenu.length; ++i) {
 		childs.append(",").append(childsThisMenu[i]) ;
 		logchilds.append(", "+childsThisMenu[i]) ;
-		}
+	    }
 
 	    childs.append("',"+meta_id+","+doc_menu_no+","+user.getUserId()+","+copyPrefix) ;
 	    sqlUpdateProcedure(childs.toString()) ;
-		this.updateLogs("Childs [" + logchilds.toString()+"] on ["+meta_id+"] copied by user: [" + user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+	    // Copy a potential file.
+
+	    this.updateLogs("Childs [" + logchilds.toString()+"] on ["+meta_id+"] copied by user: [" + user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
 
 	}
 
