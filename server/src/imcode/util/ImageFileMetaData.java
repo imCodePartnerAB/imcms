@@ -38,7 +38,7 @@ public class ImageFileMetaData {
 	try
 	    {
 		DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
-		if (file.getName().endsWith(".gif")) // ****************** A GIF-File
+		if (file.getName().toLowerCase().endsWith(".gif")) // ****************** A GIF-File
 		    {
 			byte[] t = new byte[6] ;
 			dis.readFully(t);
@@ -53,7 +53,7 @@ public class ImageFileMetaData {
 			dis.close();
 		    }
 
-		else if (file.getName().endsWith(".jpg") || file.getName().endsWith(".jpeg")) { // FIXME: Move into a separate (protected?) method. Preferably one that takes just a File
+		else if (file.getName().toLowerCase().endsWith(".jpg") || file.getName().toLowerCase().endsWith(".jpeg")) { // FIXME: Move into a separate (protected?) method. Preferably one that takes just a File
 		    if(dis.read() != MARKER || dis.read() != SOI) {
 			throw(new UnsupportedOperationException("Unsupported jpeg-type"));
 		    }
@@ -130,7 +130,7 @@ public class ImageFileMetaData {
 		  dis.close();
 		  }*/
 			
-		else if (file.getName().endsWith(".png")) // ***************** A PNG-File
+		else if (file.getName().toLowerCase().endsWith(".png")) // ***************** A PNG-File
 		    {
 			// PNG starts with 8 bytes (here in decimal): 137 80 78 71 13 10 26 10
 			//  indicating this is a PNG-file
