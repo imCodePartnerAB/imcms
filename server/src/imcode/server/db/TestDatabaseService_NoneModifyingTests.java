@@ -23,9 +23,11 @@ public class TestDatabaseService_NoneModifyingTests extends TestCase {
         System.out.println( "t2 = " + t2.toString() );
         System.out.println( t1.equals(t2) );
 */
+
+/*
         DatabaseService mimer = new DatabaseService( DatabaseService.MIMER, DB_HOST, MIMER_PORT, MIMMER_DATABASE_NAME );
         mimer.initializeDatabase();
-
+*/
         DatabaseService sqlServer = new DatabaseService( DatabaseService.SQL_SERVER, DB_HOST, SQL_SERVER_PORT, SQLSERVER_DATABASE_NAME );
         sqlServer.initializeDatabase();
     }
@@ -40,7 +42,9 @@ public class TestDatabaseService_NoneModifyingTests extends TestCase {
     }
 
     public void testSameResultFromSprocGetAllUsers() {
-        assertEquals( sqlServer.sproc_getallusers(), mimer.sproc_getallusers() );
+        DatabaseService.UsersTabelData[] oneArr = sqlServer.sproc_getallusers();
+        DatabaseService.UsersTabelData[] anotherArr = mimer.sproc_getallusers();
+        assertEquals( oneArr, anotherArr );
     }
 
     private void assertEquals( Object[] oneArr, Object[] anotherArr ) {
@@ -49,10 +53,12 @@ public class TestDatabaseService_NoneModifyingTests extends TestCase {
         } else if( anotherArr == null ) {
             fail( "The second array is null, but not the first oneArr" );
         } else {
+            assertTrue( oneArr != anotherArr );
             assertEquals( oneArr.length, anotherArr.length );
             for( int i = 0; i < oneArr.length; i++ ) {
                 Object one = oneArr[i];
                 Object another = anotherArr[i];
+                assertTrue( one != another );
                 assertEquals( one, another );
                 System.out.println( "one: " + one.toString() );
                 System.out.println( "another: " + another.toString() );

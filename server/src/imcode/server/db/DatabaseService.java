@@ -46,6 +46,7 @@ public class DatabaseService {
         String jdbcDriver = null;
         String user = null;
         String password = null;
+        String serverName = null;
 
         switch( databaseType ) {
             case MIMER:
@@ -54,6 +55,7 @@ public class DatabaseService {
                 serverUrl = jdbcUrl + host + ":" + port + "/" + databaseName;
                 user = "sysadm";
                 password = "admin";
+                serverName = "Mimer test server";
                 break;
             case SQL_SERVER:
                 jdbcDriver = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
@@ -61,12 +63,13 @@ public class DatabaseService {
                 serverUrl = jdbcUrl1 + host + ":" + port + ";DatabaseName=" + databaseName;
                 user = "sa";
                 password = "sa";
+                serverName = "SQL Server test server";
                 break;
         }
 
         int maxConnectionCount = 20;
         try {
-            connectionPool = new ConnectionPoolForNonPoolingDriver( "", jdbcDriver, serverUrl, user, password, maxConnectionCount );
+            connectionPool = new ConnectionPoolForNonPoolingDriver( serverName, jdbcDriver, serverUrl, user, password, maxConnectionCount );
         } catch( Exception ex ) {
             log.fatal( "Couldn't initialize connection pool", ex );
         }
