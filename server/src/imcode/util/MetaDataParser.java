@@ -140,6 +140,11 @@ public class MetaDataParser {
 	String checks = "" ;
 	for ( int i = 0 ; i<metatable.length ; i+=2 ) {
 	    String temp = ((String[])hash.get(metatable[i]))[0] ;
+		if (metatable[i].equals("meta_headline")||metatable[i].equals("meta_text"))
+		{
+			//do nothing its already parsed
+		}else
+		{
 	    String[] pd = {
 		"&",	"&amp;",
 		"<",	"&lt;",
@@ -147,6 +152,7 @@ public class MetaDataParser {
 		"\"",	"&quot;",
 	    } ;
 	    temp = Parser.parseDoc(temp,pd) ;
+		}
 	    String tag = "#"+metatable[i]+"#" ;
 	    if ( metatabletype[i/2] == NORMAL ) {			// This is not a checkbox or an optionbox
 		if ( htmlStr.indexOf(tag)==-1 ) {
@@ -165,6 +171,7 @@ public class MetaDataParser {
 		    }
 		}
 	    }
+		
 	}
 
 	String target = ((String[])hash.get("target"))[0] ;
@@ -200,7 +207,7 @@ public class MetaDataParser {
 	if ( classifications.length > 0 ) {
 	    classification += classifications[0] ;
 	    for ( int i = 1 ; i<classifications.length ; ++i ) {
-		classification += "; "+classifications[i] ;
+		classification += ", "+classifications[i] ;
 	    }
 	}
 	vec.add("#classification#") ;

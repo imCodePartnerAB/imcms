@@ -200,6 +200,11 @@ public class SaveMeta extends HttpServlet {
 				) {
 				continue ;
 			}
+			if (metatable[i].equals("meta_headline")||metatable[i].equals("meta_text"))
+			{
+				if( tmp != null)
+					tmp = imcode.server.HTMLConv.toHTML(tmp);
+			}
 			if ( tmp != null) {
 				metaprops.setProperty(metatable[i],tmp) ;	// If it is found, set it.
 			} else {
@@ -313,6 +318,7 @@ public class SaveMeta extends HttpServlet {
 
 		// Save the classifications to the db
 		if ( classification != null ) {
+			classification = imcode.server.HTMLConv.toHTML(classification);
 			IMCServiceRMI.sqlUpdateProcedure(imcserver,"Classification_Fix "+meta_id+",'"+classification+"'") ;
 		}
 		

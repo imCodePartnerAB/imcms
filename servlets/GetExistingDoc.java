@@ -109,7 +109,9 @@ public class GetExistingDoc extends HttpServlet {
             String sortBy = "";
             String includeDocStr = "";
 
-            searchString = req.getParameter("searchstring");
+            searchString = imcode.server.HTMLConv.toHTML(req.getParameter("searchstring"));
+			System.out.println(searchString);
+			
             searchPrep = req.getParameter("search_prep");
 
             // Lets build a comma separetad string with the doctypes
@@ -202,7 +204,7 @@ public class GetExistingDoc extends HttpServlet {
 
             // FIXME: Maximum number of hits is 1000.
             sqlString = "SearchDocs " + userId + ",'" + searchString + "', '" + searchPrep + "', '" + doctype + "', " + fromDoc + ", " + "1000" + ", '" + sortBy + "', " + includeDocStr + ", '1'";
-            //log("SQL: " + sqlString) ;
+            System.out.println("SQL: " + sqlString) ;
             String[][] sqlResults = IMCServiceRMI.sqlProcedureMulti(imcserver, sqlString);
             Vector outVector = new Vector();
 

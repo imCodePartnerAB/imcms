@@ -91,9 +91,14 @@ public class SaveNewMeta extends HttpServlet {
 		String classification = req.getParameter("classification") ;
 
 		int parent_int = Integer.parseInt(parent_meta_id) ;
-
+		
 		for ( int i=0 ; i<metatable.length ; i+=2 ) {
 			String tmp = req.getParameter(metatable[i]) ;
+			if (metatable[i].equals("meta_headline")||metatable[i].equals("meta_text"))
+			{
+				if ( tmp != null)
+					tmp = imcode.server.HTMLConv.toHTML(tmp);
+			}
 			if ( tmp != null) {
 				metaprops.setProperty(metatable[i],tmp) ;
 			} else {
@@ -196,6 +201,7 @@ public class SaveNewMeta extends HttpServlet {
 
 			// Save the classifications to the db
 			if ( classification != null ) {
+				classification = imcode.server.HTMLConv.toHTML(classification);
 				IMCServiceRMI.sqlUpdateProcedure(imcserver,"Classification_Fix "+meta_id+",'"+classification+"'") ;
 			}
 
@@ -405,12 +411,12 @@ public class SaveNewMeta extends HttpServlet {
 				    String [] vp = {
 					"'",	"''"
 				    } ;
-					String mHeadline = metaprops.getProperty("meta_headline") ;
-					String mText = metaprops.getProperty("meta_text") ;
+					String mHeadline = imcode.server.HTMLConv.toHTML(metaprops.getProperty("meta_headline")) ;
+					String mText = imcode.server.HTMLConv.toHTML(metaprops.getProperty("meta_text")) ;
 
 					mHeadline = Parser.parseDoc(mHeadline,vp) ;
 					mText = Parser.parseDoc(mText,vp) ;
-
+		
 					sqlStr = "insert into texts (meta_id,name,text,type) values ("+meta_id +", 1, '" + mHeadline + "', 1)" ;
 					IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
 					sqlStr = "insert into texts (meta_id,name,text,type) values ("+meta_id +", 2, '" + mText + "', 1)" ;

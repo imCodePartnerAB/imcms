@@ -104,7 +104,7 @@ public class SearchDocuments extends HttpServlet {
 	String langPrefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
 	// Lets run the question
 
-	String sqlStr = buildSqlStr(question_field, search_type, search_prep, string_match, search_area) ;
+	String sqlStr = buildSqlStr(imcode.server.HTMLConv.toHTML(question_field), search_type, search_prep, string_match, search_area) ;
 	// log("BuildSqlStr: " + sqlStr) ;  
 	String[] answer= IMCServiceRMI.sqlQuery(imcserver, sqlStr) ;
 
