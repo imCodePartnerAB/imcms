@@ -357,7 +357,7 @@ class MenuParser {
         tags.setProperty( "#menuitemtreesortkey#", menuItem.getTreeSortKey().toString() );
         tags.setProperty( "#menuitemmetaid#", "" + document.getId() );
         tags.setProperty( "#menuitemheadline#", headline );
-        tags.setProperty( "#menuitemtext#", StringEscapeUtils.escapeHtml( document.getMenuText() ) );
+        tags.setProperty( "#menuitemtext#", document.getMenuText() );
         tags.setProperty( "#menuitemimage#", imageTag );
         tags.setProperty( "#menuitemimageurl#", StringEscapeUtils.escapeHtml( imageUrl ) );
         tags.setProperty( "#menuitemtarget#", document.getTarget() );
