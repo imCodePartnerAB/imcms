@@ -23,6 +23,19 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.collections.iterators.ArrayIterator;
 
 public class TemplateAdmin extends HttpServlet {
+    private static final String TEMPLATE_ADMIN = "template_admin.html";
+    private static final String ADMIN_TEMPLATE_DELETE = "templategroup_delete.html";
+    private static final String ADMIN_TEMPLATE_ADD = "templategroup_add.html";
+    private static final String ADMIN_TEMPLATE_EDIT = "template_edit.html";
+    private static final String ADMIN_TEMPLATE_RENAME = "template_rename.html";
+    private static final String TEMPLATE_DELETE = "template_delete.html";
+    private static final String TEMPLATE_DEMO_UPLOAD = "templatedemo_uptemplategroup_add.htmlload.html";
+    private static final String TEMPLATE_UPLOAD = "template_upload.html";
+    private static final String TEMPLATE_GROUP_RENAME = "templategroup_rename.html";
+    private static final String TEMPLATE_ASSIGN = "template_assign.html";
+    private static final String TEMPLATE_DOCS_ROW = "templates_docs_row.html";
+    private static final String TEMPLATE_DELETE_WARNING = "template_delete_warning.html";
+    private static final String TEMPLATE_GROUP_DELETE_WARNING = "templategroup_delete_warning.html";
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
@@ -37,7 +50,7 @@ public class TemplateAdmin extends HttpServlet {
 
         Utility.setDefaultHtmlContentType( res );
 
-        String htmlStr = imcref.getAdminTemplate( "template_admin.html", user, null );
+        String htmlStr = imcref.getAdminTemplate( TEMPLATE_ADMIN, user, null );
         out.println( htmlStr );
 
     }
@@ -111,13 +124,13 @@ public class TemplateAdmin extends HttpServlet {
         List vec = new ArrayList();
         vec.add( "#templategroups#" );
         vec.add( temps );
-        htmlStr = imcref.getAdminTemplate( "templategroup_delete.html", user, vec );
+        htmlStr = imcref.getAdminTemplate( ADMIN_TEMPLATE_DELETE, user, vec );
         return htmlStr;
     }
 
     static String createAddGroupDialog( IMCServiceInterface imcref, UserDomainObject user ) {
         String htmlStr;
-        htmlStr = imcref.getAdminTemplate( "templategroup_add.html", user, null );
+        htmlStr = imcref.getAdminTemplate( ADMIN_TEMPLATE_ADD, user, null );
         return htmlStr;
     }
 
@@ -131,7 +144,7 @@ public class TemplateAdmin extends HttpServlet {
         String temps = templateMapper.createHtmlOptionListOfTemplates( templates, null );
         vec.add( "#templates#" );
         vec.add( temps );
-        htmlStr = imcref.getAdminTemplate( "template_edit.html", user, vec );
+        htmlStr = imcref.getAdminTemplate( ADMIN_TEMPLATE_EDIT, user, vec );
         return htmlStr;
     }
 
@@ -159,7 +172,7 @@ public class TemplateAdmin extends HttpServlet {
         String temps = templateMapper.createHtmlOptionListOfTemplates( templates, null );
         vec.add( "#templates#" );
         vec.add( temps );
-        htmlStr = imcref.getAdminTemplate( "template_rename.html", user, vec );
+        htmlStr = imcref.getAdminTemplate( ADMIN_TEMPLATE_RENAME, user, vec );
         return htmlStr;
     }
 
@@ -172,7 +185,7 @@ public class TemplateAdmin extends HttpServlet {
         vec.add( htmlStr );
         vec.add( "#language#" );
         vec.add( lang );
-        htmlStr = imcref.getAdminTemplate( "template_delete.html", user, vec );
+        htmlStr = imcref.getAdminTemplate( TEMPLATE_DELETE, user, vec );
         return htmlStr;
     }
 
@@ -186,7 +199,7 @@ public class TemplateAdmin extends HttpServlet {
         String temps = templateMapper.createHtmlOptionListOfTemplates( templates, null );
         vec.add( "#templates#" );
         vec.add( temps );
-        htmlStr = imcref.getAdminTemplate( "templatedemo_upload.html", user, vec );
+        htmlStr = imcref.getAdminTemplate( TEMPLATE_DEMO_UPLOAD, user, vec );
         return htmlStr;
     }
 
@@ -199,7 +212,7 @@ public class TemplateAdmin extends HttpServlet {
         vec.add( temps );
         vec.add( "#language#" );
         vec.add( lang );
-        htmlStr = imcref.getAdminTemplate( "template_upload.html", user, vec );
+        htmlStr = imcref.getAdminTemplate( TEMPLATE_UPLOAD, user, vec );
         return htmlStr;
     }
 
@@ -210,7 +223,7 @@ public class TemplateAdmin extends HttpServlet {
         List vec = new ArrayList();
         vec.add( "#templategroups#" );
         vec.add( htmlOptionListOfTemplateGroups );
-        htmlStr = imcref.getAdminTemplate( "templategroup_rename.html", user, vec );
+        htmlStr = imcref.getAdminTemplate( TEMPLATE_GROUP_RENAME, user, vec );
         return htmlStr;
     }
 
@@ -250,7 +263,7 @@ public class TemplateAdmin extends HttpServlet {
         }
         vec.add( "#language#" );
         vec.add( language );
-        return imcref.getAdminTemplate( "template_assign.html", user, vec );
+        return imcref.getAdminTemplate( TEMPLATE_ASSIGN, user, vec );
     }
 
     static String createHtmlOptionListOfDocumentsUsingTemplate( IMCServiceInterface imcref, TemplateDomainObject template,
@@ -271,7 +284,7 @@ public class TemplateAdmin extends HttpServlet {
             }
             headline = Parser.parseDoc( headline, pd );
             vec.add( headline );
-            htmlOptionList.append( imcref.getAdminTemplate( "templates_docs_row.html", user, vec ) );
+            htmlOptionList.append( imcref.getAdminTemplate( TEMPLATE_DOCS_ROW, user, vec ) );
         }
         return htmlOptionList.toString();
     }
@@ -290,7 +303,7 @@ public class TemplateAdmin extends HttpServlet {
         vec.add( "#templates#" );
         vec.add( templateMapper.createHtmlOptionListOfTemplates( templateMapper.createHtmlOptionListOfAllTemplatesExceptOne( template ), null ) );
 
-        htmlStr = imcref.getAdminTemplate( "template_delete_warning.html", user, vec );
+        htmlStr = imcref.getAdminTemplate( TEMPLATE_DELETE_WARNING, user, vec );
         return htmlStr;
     }
 
@@ -309,7 +322,7 @@ public class TemplateAdmin extends HttpServlet {
         vec.add( commaSeparatedTemplateNames );
         vec.add( "#templategroup#" );
         vec.add( String.valueOf( templateGroupId ) );
-        htmlStr = imcref.getAdminTemplate( "templategroup_delete_warning.html", user, vec );
+        htmlStr = imcref.getAdminTemplate( TEMPLATE_GROUP_DELETE_WARNING, user, vec );
         return htmlStr;
     }
 

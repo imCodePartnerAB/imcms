@@ -1,36 +1,29 @@
-<html>
-    <head>
-        <title><? templates/sv/AdminDeleteDoc.htm/1 ?></title>
+#gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/15 ?>" "AdminManager" "" "85" "" )
 
-        <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-        <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
-        <script language="JavaScript">
-        <!--
-        function clearForm() {
-            document.DeleteDoc.delete_meta_id.value = "" ;
-        }
-        function confirmDeleteDoc() {
-            return confirm("<? templates/sv/AdminDeleteDoc.htm/2010 ?>") ;
-        }
-        //-->
-        </script>
-    </head>
-    <body bgcolor="#FFFFFF">
-        #gui_outer_start()
-        #gui_head( "<? templates/sv/AdminDeleteDoc.htm/1 ?>" )
-        <form method="GET" action="AdminManager" >
-            <input type="submit" class="imcmsFormBtn" name="Submit" value="<? global/back ?>">&nbsp;
-            <input type="button" value="<? global/help ?>" class="imcmsFormBtn" onClick="openHelpW(85)">
-        </form>
-        #gui_mid()
-        #gui_heading( "<? templates/sv/AdminDeleteDoc.htm/3 ?>" )
-        <? templates/sv/AdminDeleteDoc.htm/4 ?>
-        <form method="post" action="AdminDeleteDoc" name="DeleteDoc">
+<table width="300">
+<form method="post" action="AdminDeleteDoc" name="DeleteDoc">
+    <tr>
+        <td>#gui_heading( "<? templates/sv/AdminDeleteDoc.htm/3 ?>" )</td>
+    </tr>
+    <tr>
+        <td><? templates/sv/AdminDeleteDoc.htm/4 ?></td>
+    </tr>
+    <tr>
+        <td>
             <input type="text" name="delete_meta_id" maxlength="9" size="9">
             <input type="submit" class="imcmsFormBtn" name="DELETE_DOC" value="<? templates/sv/AdminDeleteDoc.htm/2001 ?>" onClick="if(confirmDeleteDoc()==false)return false; return true;">
             <script language="javascript">document.DeleteDoc.delete_meta_id.focus()</script>
-        </form>
-        #gui_bottom()
-        #gui_outer_end()
-    </body>
-</html>
+        </td>
+    </tr>
+</form>
+</table>
+
+<script language="JavaScript">
+<!--
+function confirmDeleteDoc() {
+    return confirm("<? templates/sv/AdminDeleteDoc.htm/2010 ?>") ;
+}
+//-->
+</script>
+
+#gui_end_of_page()
