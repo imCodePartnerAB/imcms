@@ -1,0 +1,390 @@
+<html>
+<head>
+<title>Redigera text</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<script language="JavaScript">
+<!--
+var naVe    = navigator.appVersion;
+var naUa    = navigator.userAgent;
+var isIE    = (document.all) ? 1 : 0;
+var isIE55  = 0;
+var isNS    = (document.layers) ? 1 : 0;
+var isMoz   = (document.getElementById) ? 1 : 0;
+var isMac   = (naUa.indexOf("Mac") != -1) ? 1 : 0;
+var isOpera = (naUa.indexOf("Opera") != -1) ? 1 : 0;
+
+if (isIE && !isMac && !isOpera && (naVe.indexOf("MSIE 5.5") != -1 || naVe.indexOf("MSIE 6.0") != -1 || naVe.indexOf("MSIE 6.5") != -1 || naVe.indexOf("MSIE 7.0") != -1)) {
+	isIE55 = 1;
+}
+
+/* HTML-EDITOR - OPEN FUNCTION */
+
+function openEditor(metaId,txtNr) {
+	if(isIE55) {
+		var sLabel = document.getElementById("theLabel").innerText;
+		sLabel = sLabel.replace(/^\s*(.*)\s*$/g, "$1");
+		var sUrl = "@rooturl@/htmleditor/editor.html?meta_id=" + metaId + "&txt=" + txtNr + "&label=" + sLabel;
+		var iWidth = 680;
+		var iHeight = 495;
+		var sMenu = 0;
+		var sScroll = 0;
+		var sStatus = 0;
+		var window_width = iWidth;
+		var window_height = iHeight;
+		if(screen.height < 700){ 
+			var window_top = 0;
+			var window_left = (screen.width-window_width)/2;
+		} else { 
+			var window_top = (screen.height-window_height)/2;
+			var window_left = (screen.width-window_width)/2;
+		}
+		sUrl = (location.search.indexOf("admin") != -1) ? sUrl + "?admin=1" : sUrl;
+		var popWindow = window.open(sUrl,"Editor","resizable=no,menubar=" + sMenu + ",scrollbars=" + sScroll + ",status=" + sStatus + ",width=" + window_width + ",height=" + window_height + ",top=" + window_top + ",left=" + window_left + ",location=0,directories=0");
+		if (popWindow) popWindow.focus();
+	} else {
+		var sMess = "Du måste ha ";
+		sMess += (isMac) ? "Windows och " : "";
+		sMess += "Internet Explorer 5.5+ för att kunna använda HTML-Editorn.";
+		alert(sMess);
+	}
+}
+
+
+
+document.writeln("<STYLE TYPE=\"text/css\">");
+if (isNS && !isMac) {
+	document.writeln("INPUT, SELECT, .form { font: x-small Verdana,Geneva,sans-serif; }");
+	document.writeln(".formBtn { font: 12px Verdana,Geneva,sans-serif; }");
+} else {
+	document.writeln("TD, INPUT, SELECT, .form, .formBtn { font: 11px Verdana,Geneva,sans-serif; }");
+}
+document.writeln("</STYLE>");
+//-->
+</script>
+
+</head>
+<body bgcolor="#FFFFFF">
+
+
+<table border="0" cellpadding="2" cellspacing="0" align="center" width="660">
+<form method="POST" action="SaveText">
+<tr bgcolor="#333366">
+	<td>&nbsp;</td>
+	<td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">
+	<b>&nbsp;Redigera text</b> #txt_no# <b>på sida</b> #meta_id#</font></td>
+	<td>&nbsp;</td>
+</tr>
+<tr bgcolor="#BABABA">
+	<td>&nbsp;</td>
+	<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;<b id="theLabel">#label#</b></font></td>
+	<td>&nbsp;</td>
+</tr>
+<tr bgcolor="#bababa">
+	<td>&nbsp;</td>
+	<td align="center">
+<textarea name="text" id="txtCont" cols="73" rows="18" wrap="VIRTUAL">
+#txt#</textarea></td>
+	<td>&nbsp;</td>
+</tr>
+<tr bgcolor="#bababa">
+	<td>&nbsp;</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="2" width="100%">
+	<tr>
+		<td align="left">
+		<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Format:</font></td>
+			<td><input type="RADIO" name="format_type"  value="0" style="background-color:#bababa" #!html#></td>
+			<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Vanlig text</font>&nbsp;&nbsp;</td>
+			<td><input type="RADIO" name="format_type"  value="1" style="background-color:#bababa" #html#></td>
+			<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HTML</font></td>
+		</tr>
+		</table></td>
+		<td align="right"><input type="RESET" value="Återställ" class="formBtn"></td>
+	</tr>
+	</table></td>
+	<td>&nbsp;</td>
+</tr>
+<tr bgcolor="#bababa">
+	<td>&nbsp;</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="2">
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="SUBMIT" value="  OK  " name="ok" class="formBtn">
+		<input type="SUBMIT" value="Avbryt" name="cancel" class="formBtn"></td>
+		<td>&nbsp;</td>
+		<td><a href="@documentationurl@GetDoc?meta_id=36" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" height="21" border="0" alt="Öppna hjälpsidan"></a></td>
+	</tr>
+	</table></td>
+	<td>&nbsp;</td>
+</tr>
+<input type="HIDDEN" name="meta_id"  value="#meta_id#">
+<input type="HIDDEN" name="txt_no"   value="#txt_no#">
+
+<tr>
+	<td colspan="3" bgcolor="#ffffff">&nbsp;</td>
+</tr>
+<tr bgcolor="#bababa">
+	<td>&nbsp;</td>
+	<td>
+	<table border="0" cellpadding="2" cellspacing="0" width="100%">
+	<tr>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>HTML</b></font></td>
+		<td align="right">
+		<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td><input type="button" value="Koda brytningar" title="Byt ut radbrytningar mot &lt;BR&gt; i HTML-läge." name="replaceCrLf" onclick="replaceBreaks();" width="120" style="width:120" class="formBtn"></td>
+			<td>&nbsp;</td>
+			<td><input type="button" value="HTML-Editor" name="editorBtn" onClick="openEditor('#meta_id#','#txt_no#')"></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></td>
+	<td>&nbsp;</td>
+</tr>
+</form>
+<form name="createLinkForm" onSubmit="createLink(); return false">
+<tr>
+	<td colspan="3" bgcolor="#ffffff">&nbsp;</td>
+</tr>
+<tr bgcolor="#bababa">
+	<td>&nbsp;</td>
+	<td align="center">
+	<table border="0" cellpadding="2" cellspacing="0" width="100%">
+	<tr>
+		<td colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Skapa länk</b></font></td>
+	</tr>
+	<tr>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Beskrivning:</font></td>
+		<td><input type="text" name="createLinkDesc" id="createLinkDesc" value="Det som syns på sidan!" size="57" maxlength="255"></td>
+	</tr>
+	<tr>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Länktyp:</font></td>
+		<td>
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<tr>
+			<td class="form">
+			<select class="form" name="createLinkType" onChange="changeLinkType(document.forms.createLinkForm.createLinkType.options[document.forms.createLinkForm.createLinkType.selectedIndex].value)">
+				<option value="GetDoc">Befintligt dokument</option>
+				<option value="http">Annan websida</option>
+				<option value="mailto">Mailadress</option>
+				<option value="ftp">FTP länk</option>
+				<option value="#">Länk till &quot;ankare&quot;</option>
+				<option value="NAME">Skapa &quot;ankare&quot;</option>
+			</select></td>
+			<td nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Visa länken i:&nbsp;</font></td>
+			<td nowrap class="form">
+			<select class="form" name="createLinkTargetTemp" onChange="document.forms.createLinkForm.createLinkTarget.value = document.forms.createLinkForm.createLinkTargetTemp.options[document.forms.createLinkForm.createLinkTargetTemp.selectedIndex].value; document.forms.createLinkForm.createLinkTarget.focus(); document.forms.createLinkForm.createLinkTarget.select()">
+				<option value="" selected>Samma fönster (Standard)</option>
+				<option value="_blank">Nytt fönster</option>
+				<option value="_top">Hela fönstret (utan frames)</option>
+				<option value="_self">Samma frame</option>
+				<option value="_parent">Parent frameset</option>
+				<option value="Skriv namn!">Annan frame</option>
+			</select>&nbsp;<input type="text" name="createLinkTarget" id="createLinkTarget" value="" size="9" maxlength="50"></td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td colspan="2" nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+		URL / adress / meta_id:</font></td>
+	</tr>
+	<tr>
+		<td><font size="1">&nbsp;</font></td>
+		<td><input type="text" name="createLinkValue" id="createLinkValue" value="Skriv nummer!" size="57" maxlength="100"></td>
+	</tr>
+	<tr>
+		<td nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Ev. CSS-class:</font></td>
+		<td colspan="2">
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<tr>
+			<td><input type="text" name="createLinkCss" value="" size="12" maxlength="50"></td>
+			<td align="right">
+			<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td><input type="submit" value="Generera länk" class="formBtn" width="120" style="width:120"></td>
+				<td>&nbsp;</td>
+				<td><input type="reset" value="Återställ" class="formBtn" width="100" style="width:100"></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td colspan="2"><hr></td>
+	</tr>
+	<tr>
+		<td colspan="2" nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+		<b>Kod att klistra in / dra till rätt plats:</b></font></td>
+	</tr>
+	<tr>
+		<td colspan="2"><input type="text" name="theLinkCodeField" id="theLinkCodeField" value="" size="68"></td>
+	</tr>
+	</table></td>
+	<td>&nbsp;</td>
+</tr>
+</form>
+</table>
+
+
+
+
+<script language="javascript">
+<!--
+var ie4 = (document.all) ? 1 : 0;
+var ns4 = (document.layers) ? 1 : 0;
+var ns6 = (document.getElementById) ? 1 : 0;
+var moz = (document.getElementById) ? 1 : 0;
+
+var arrTheFieldValues = new Array("Skriv nummer!", "http:/\/", "Skriv adressen!", "Skriv ankarnamn!", "Skriv ankarnamn!", "ftp:/\/");
+var defValDesc = "Det som syns på sidan!";
+
+function changeLinkType(what) {
+	var theField     = document.forms.createLinkForm.createLinkValue;
+	var theFieldDesc = document.forms.createLinkForm.createLinkDesc;
+	switch (what) {
+		case "GetDoc":
+			theField.value     = getFieldVals(0,0);
+			theFieldDesc.value = getFieldVals(0,1);
+		break
+		case "http":
+			theField.value     = getFieldVals(1,0);
+			theFieldDesc.value = getFieldVals(1,1);
+		break
+		case "mailto":
+			theField.value     = getFieldVals(2,0);
+			theFieldDesc.value = getFieldVals(2,1);
+		break
+		case "NAME":
+			theField.value     = getFieldVals(3,0);
+			theFieldDesc.value = getFieldVals(3,1);
+		break
+		case "#":
+			theField.value     = getFieldVals(4,0);
+			theFieldDesc.value = getFieldVals(4,1);
+		break
+		case "ftp":
+			theField.value     = getFieldVals(5,0);
+			theFieldDesc.value = getFieldVals(5,1);
+		break
+	}
+	theField.focus();
+	theField.select();
+}
+
+function getFieldVals(iNum,isDesc) {
+	var theField     = document.forms.createLinkForm.createLinkValue;
+	var theFieldDesc = document.forms.createLinkForm.createLinkDesc;
+	if (isDesc) {
+		if (iNum == 3 && (theFieldDesc.value == "" || theFieldDesc.value == defValDesc)) {
+			return "";
+		} else if (theFieldDesc.value == "" || theFieldDesc.value == defValDesc) {
+			return defValDesc;
+		} else {
+			return theFieldDesc.value;
+		}
+		return (iNum == 3) ? "" : defValDesc;
+	} else {
+		var doChange = false;
+		for (var i = 0; i < arrTheFieldValues.length; i++) {
+			if (theField.value == arrTheFieldValues[i]) {
+				doChange = true;
+			}
+		}
+		if (doChange || theField.value == "") {
+			return arrTheFieldValues[iNum];
+		} else {
+			return theField.value;
+		}
+	}
+}
+
+function createLink() {
+	var f = document.forms.createLinkForm;
+	var linkDesc = f.createLinkDesc.value;
+	var linkType = f.createLinkType.options[f.createLinkType.selectedIndex].value;
+	var linkTarget = f.createLinkTarget.value;
+	var linkValue = f.createLinkValue.value;
+	var linkClass = f.createLinkCss.value;
+	var theLinkCode = (linkType == "NAME") ? "<A NAME=\"" : "<A HREF=\"";
+	if (linkType == "NAME") {
+		theLinkCode += linkValue + "\"";
+		theLinkCode += ">" + linkDesc + "</A>";
+	} else {
+		if (linkType == "GetDoc") {
+			theLinkCode += "GetDoc?meta_id=" + linkValue + "\"";
+		} else if (linkType == "mailto") {
+			theLinkCode += "mailto:" + linkValue + "\"";
+		} else if (linkType == "#") {
+			if (linkValue.indexOf("#") == -1) linkValue = "#" + linkValue;
+			theLinkCode += linkValue + "\"";
+		} else {
+			theLinkCode += linkValue + "\"";
+		}
+		if (linkTarget != "") {
+			theLinkCode += " TARGET=\"" + linkTarget + "\"";
+		}
+		if (linkClass != "") {
+			theLinkCode += " CLASS=\"" + linkClass + "\"";
+		}
+		theLinkCode += ">" + linkDesc + "</A>";
+	}
+	//alert(theLinkCode);
+	f.theLinkCodeField.value = theLinkCode;
+	if (!(document.forms[0].format_type[1].checked == 1)) {
+		if(confirm("Du måste välja HTML läge för att\nlägga in en länk i texten!\n\nVill du göra detta nu?")){
+			document.forms[0].format_type[1].checked = 1;
+		}
+	}
+	f.theLinkCodeField.focus();
+	f.theLinkCodeField.select();
+}
+
+if (moz) {
+	document.getElementById("createLinkDesc").style.width   = 535;
+	document.getElementById("createLinkValue").style.width  = 535;
+	document.getElementById("createLinkTarget").style.width = (isIE) ? 114 : 105;
+	document.getElementById("theLinkCodeField").style.width = 639;
+	document.getElementById("txtCont").style.width          = 635;
+	document.getElementById("txtCont").style.overflow       = "auto";
+}
+
+function replaceBreaks() {
+	var f = document.forms[0];
+	var theText = f.text.value;
+	if (!(f.format_type[1].checked == 1)) {
+		if(confirm("Du måste välja HTML läge för att\nlägga in \"Break-taggar\" i texten!\n\nVill du göra detta nu?")){
+			f.format_type[1].checked = 1;
+			doReplaceBreaks();
+		}
+	} else {
+		doReplaceBreaks();
+	}
+}
+
+function doReplaceBreaks() {
+	var f = document.forms[0];
+	var theText = f.text.value;
+	var tempText = theText.toUpperCase();
+	var reFr = (isMoz && !isIE) ? /\n/g : /\r/g;
+	var reTo = (isMoz && !isIE) ? "<BR>\n" : "<BR>\r";
+	if (tempText.indexOf("<BR>") < 0) {
+		theText = theText.replace(reFr,reTo);
+		f.text.value = theText;
+	} else {
+		if (confirm("Du har redan \"<BR>\" i texten!\nRadbrytningar kommer att läggas in\noberoende av dessa, vid varje radslut.\n\nVill du göra det?")) {
+			theText = theText.replace(reFr,reTo);
+			f.text.value = theText;
+		}
+	}
+}
+
+document.forms[0].text.focus();
+//-->
+</script>
+</body>
+</html>
