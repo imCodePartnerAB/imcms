@@ -1272,9 +1272,13 @@ public class DocumentMapper {
     }
 
     private int getSortOrderOfMenu( int documentId, int menuIndex ) {
-        String temp = service.sqlQueryStr( "SELECT sort_order FROM menus WHERE meta_id = ? ANd menu_index = ?",
+        String temp = service.sqlQueryStr( "SELECT sort_order FROM menus WHERE meta_id = ? AND menu_index = ?",
                                            new String[]{"" + documentId, "" + menuIndex} );
-        return Integer.parseInt( temp );
+        if( null != temp ) {
+            return  Integer.parseInt( temp );
+        } else {
+            return IMCConstants.MENU_SORT_DEFAULT;
+        }
     }
 
     private void inheritClassifications( int from_parentId, int to_newMetaId ) {

@@ -24,7 +24,7 @@
             %>Menu <%= MENU_INDEX_IN_DOCUMENT %> on document <%= DOCUMENT_ID %> already contains document <%= DOCUMENT_TO_BE_ADDED_ID %>.<%
         }
     } else { %>
-        No document with id <%= documentToBeAdded %> exists. Please add before running this page again.
+        No document with id <%= DOCUMENT_TO_BE_ADDED_ID %> exists. Please add a document before running this page again.
   <%}
 %>
 </body>
