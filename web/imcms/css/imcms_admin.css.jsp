@@ -24,6 +24,7 @@ boolean isGecko = re.match("/Gecko/i", uAgent) ;
 boolean isNS  = re.match("/Mozilla/i", uAgent) && !isGecko && !isIE ;
 
 String BORDER_COLOR_NORMAL     = "#668DB6 #000000 #000000 #668DB6" ;
+String BORDER_COLOR_NORMAL_SUB = "#668DB6 #999999 #999999 #668DB6" ;
 String BORDER_COLOR_NORMAL_ACT = "#000000 #668DB6 #668DB6 #000000" ;
 String BORDER_COLOR_DISABLED   = "#DAE4EF #999999 #999999 #DAE4EF" ;
 
@@ -121,17 +122,27 @@ if (isNS) { %>
 	background-color: #20568D;
 	color: #ffffff;
 	font: 11px Tahoma, Arial, sans-serif;
-	border: 2px outset #668DB6;
+	border: <%= isGecko ? 1 : 2 %>px outset #668DB6;
 	border-color: <%= BORDER_COLOR_NORMAL %>;
 	cursor:hand;
 	cursor:pointer;
-	padding: 2 8; }
+	padding: <%= isGecko ? 3 : 2 %> 8; }
+
+.imcmsFormBtnSub {
+	background-color: #4076ad;
+	color: #ffffff;
+	font: 11px Tahoma, Arial, sans-serif;
+	border: <%= isGecko ? 1 : 2 %>px outset #668DB6;
+	border-color: <%= BORDER_COLOR_NORMAL_SUB %>;
+	cursor:hand;
+	cursor:pointer;
+	padding: <%= isGecko ? 3 : 2 %> 8; }
 
 .imcmsFormBtnActive {
 	background-color: #30669D;
 	color: #ffffff;
 	font: 11px Tahoma, Arial, sans-serif;
-	border: 2px inset #668DB6;
+	border: <%= isGecko ? 1 : 2 %>px inset #668DB6;
 	border-color: <%= BORDER_COLOR_NORMAL_ACT %>;
 	cursor:hand;
 	cursor:pointer;
@@ -141,11 +152,21 @@ if (isNS) { %>
 	background-color: #B8C6D5;
 	color: #ffffff;
 	font: 11px Tahoma, Arial, sans-serif;
-	border: 2px outset #DAE4EF;
+	border: <%= isGecko ? 1 : 2 %>px outset #DAE4EF;
 	border-color: <%= BORDER_COLOR_DISABLED %>;
 	cursor:hand;
 	cursor:pointer;
-	padding: 2 8; }
+	padding: <%= isGecko ? 3 : 2 %> 8; }
+
+.imcmsFormBtnSubDisabled {
+	background-color: #B8C6D5;
+	color: #ffffff;
+	font: 11px Tahoma, Arial, sans-serif;
+	border: <%= isGecko ? 1 : 2 %>px outset #DAE4EF;
+	border-color: <%= BORDER_COLOR_DISABLED %>;
+	cursor:hand;
+	cursor:pointer;
+	padding: <%= isGecko ? 3 : 2 %> 8; }
 
 <% /* Small */ %>
 
@@ -153,21 +174,21 @@ if (isNS) { %>
 	background-color: #20568D;
 	color: #ffffff;
 	font: 10px Tahoma, Arial, sans-serif;
-	border: 2px outset #668DB6;
+	border: <%= isGecko ? 1 : 2 %>px outset #668DB6;
 	border-color: <%= BORDER_COLOR_NORMAL %>;
 	cursor:hand;
 	cursor:pointer;
-	padding: 0 2; }
+	padding: <%= isGecko ? 1 : 0 %> 2; }
 
 .imcmsFormBtnSmallDisabled {
 	background-color: #B8C6D5;
 	color: #ffffff;
 	font: 10px Tahoma, Arial, sans-serif;
-	border: 2px outset #DAE4EF;
+	border: <%= isGecko ? 1 : 2 %>px outset #DAE4EF;
 	border-color: <%= BORDER_COLOR_DISABLED %>;
 	cursor:hand;
 	cursor:pointer;
-	padding: 0 2; }<%
+	padding: <%= isGecko ? 1 : 0 %> 2; }<%
 }
 
 /* *******************************************************************************************
@@ -190,14 +211,9 @@ if (!isNS) { %>
 TH   { font-size: 90%; }<%
 }
 
-if (false) {
-	%></style><% // Dummy - To get the right colors in the editor
-}
-
 /* ******************************************************************************************
  *      Admin Manager Tab                                                                   *
- ********************************************************************************************/
-%>
+ ********************************************************************************************/ %>
 
 SPAN.NavBtnTextAct, SPAN.NavBtnTextAct A:link, SPAN.NavBtnTextAct A:visited, SPAN.NavBtnTextAct A:hover {
 	font: bold 10px Verdana, Geneva, Helvetica, sans-serif;
@@ -214,3 +230,9 @@ SPAN.NavBtnTextInact, SPAN.NavBtnTextInact A:link, SPAN.NavBtnTextInact A:visite
 TD.NavBtnTextAct   { cursor: default; }
 TD.NavBtnTextInact { cursor: pointer; cursor: hand; }
 
+<%
+
+if (false) {
+	%></style><% // Dummy - To get the right colors in the editor
+}
+%>

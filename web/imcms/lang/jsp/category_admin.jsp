@@ -68,13 +68,13 @@ if (inDefaultMode) {
 <form name="head" action="AdminCategories" method="post">
 <tr>
 	<td>
-	<input type="submit" class="imcmsFormBtn<%=
+	<input type="submit" class="imcmsFormBtnSub<%=
 	inAddCategoryTypeMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__ADD_CATEGORY_TYPE %>" value="<? global/create ?>">
-	<input type="submit" class="imcmsFormBtn<%=
+	<input type="submit" class="imcmsFormBtnSub<%=
 	inEditCategoryTypeMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__EDIT_CATEGORY_TYPE %>" value="<? global/edit ?>" >
-	<input type="submit" class="imcmsFormBtn<%=
+	<input type="submit" class="imcmsFormBtnSub<%=
 	inDeleteCategoryTypeMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__DELETE_CATEGORY_TYPE %>" value="<? global/remove ?>"></td>
 </tr>
@@ -83,16 +83,16 @@ if (inDefaultMode) {
 </tr>
 <tr>
 	<td>
-	<input type="submit" class="imcmsFormBtn<%=
+	<input type="submit" class="imcmsFormBtnSub<%=
 	inAddCategoryMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__ADD_CATEGORY %>" value="<? global/create ?>">
-	<input type="submit" class="imcmsFormBtn<%=
+	<input type="submit" class="imcmsFormBtnSub<%=
 	inEditCategoryMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__EDIT_CATEGORY %>" value="<? global/edit ?>">
-	<input type="submit" class="imcmsFormBtn<%=
+	<input type="submit" class="imcmsFormBtnSub<%=
 	inDeleteCategoryMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__DELETE_CATEGORY %>" value="<? global/remove ?>">
-	<input type="submit" class="imcmsFormBtn<%=
+	<input type="submit" class="imcmsFormBtnSub<%=
 	inViewCategoryMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__VIEW_CATEGORY %>" value="<? global/view ?>"></td>
 </tr>
