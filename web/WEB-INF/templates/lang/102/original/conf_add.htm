@@ -1,0 +1,73 @@
+<html>
+<head>
+<title>Conf Add</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    
+<Script Language=JavaScript>
+<!--
+function DoPreview() {
+    parent.MsgFrame.location = 'DoPreview.asp?Rubrik=' + escape(document.NewMsgForm.ADDHEADER.value) + '&Desc=' + escape(document.NewMsgForm.ADDTEXT.value);
+}
+
+
+function FocusField() {
+    parent.SubjListFrame.focus();
+    document.NewMsgForm.ADDHEADER.focus();
+}
+//-->
+</Script>
+</Head>
+
+<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<table width="320" cellpadding="0" cellspacing="0" border="0">
+  <tr> 
+    <td width="285" valign="middle" bgcolor="#333999" height="20"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;&nbsp;<? templates/sv/conf/original/Conf_Add.htm/1001 ?></font> </td>
+    <td width="35" bgcolor="#333999">&nbsp; </td>
+  </tr>
+  <tr> 
+    <td width="285" height="3"><img src="#IMAGE_URL#1pix.gif" width="1" height="3"></td>
+  </tr>
+</table>
+<form method="post" action="#SERVLET_URL#ConfAdd" target=_parent name="NewMsgForm">
+  <table border=0 width="270" cellpadding="0" cellspacing="0">
+    <tr> 
+      <td colspan=2 valign=Top>&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><font color="#000000"><? templates/sv/conf/original/Conf_Add.htm/1002 ?>
+        &nbsp;&nbsp;<font size="1"><? templates/sv/conf/original/Conf_Add.htm/2 ?></font></font></font></td>
+    </tr>
+    <tr> 
+      <td valign=Top colspan=2> <br>
+        &nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Add.htm/3 ?></font>
+       </td>
+    </tr>
+    <tr>
+      <td valign=Top colspan=2>
+        &nbsp;&nbsp;<input type=Text name="ADDHEADER" maxlength=50 size=30 value="#DISC_HEADER#">
+        <br><br>
+      </td>
+    </tr>
+
+    <tr valign="top"> 
+      <td colspan=2><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;&nbsp;<? templates/sv/conf/original/Conf_Add.htm/1003 ?></font></td>
+    </tr>
+    <tr valign="top">
+      <td colspan=2 align="right">
+        <textarea wrap="Virtual" name="ADDTEXT" rows=10 cols=30></textarea></td>
+    </tr>
+    <tr valign="top"> 
+      <td colspan="2" height="30"> 
+        <div align="right"> &nbsp;&nbsp; <font size=3> 
+          <input type="hidden" name="ADDTYPE" value="#ADD_TYPE#">
+          <input type="hidden" name="ADD1" value="L&auml;gg till">
+          </font> <font size=3>
+          <input type="hidden" name="CANCEL1" value="Avbryt">
+          </font> 
+          <input type="image" border="0" name="ADD" src="#IMAGE_URL#conf_send.gif" width="52" height="18">
+          <input type="image" border="0" name="CANCEL" src="#IMAGE_URL#conf_cancel.gif" width="52" height="18">
+          <font size=3> </font> </div>
+      
+    </tr>
+  </table>
+</form>
+  <br>
+</body>
+</html>

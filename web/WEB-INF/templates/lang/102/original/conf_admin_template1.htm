@@ -1,0 +1,176 @@
+<html>
+<head>
+<script language="JavaScript">
+<!--
+function evalNewTemplate(){
+	if(document.NewTemplate.TEMPLATE_LIB_NAME.value==""){
+		alert("Du måste ange ett namn på det nya mallsetet")
+		return false
+	}
+	else{
+		if(confirm("Du kommer att skapa ett nytt mallset med namnet: " +document.NewTemplate.TEMPLATE_LIB_NAME.value + "\n" 
+		+ "Programmet lägger in originalmallarna, för att ändra dessa använd funktionen: Lägg till mallfil ... ")){		
+			return true
+		}
+		else{
+			return false
+			}
+	}
+}
+function evalNbrOfDiscssetTemplates(){
+	// alert(document.NbrOfDiscssetTemplateForm.TEMPLATE_ID.selectedIndex) ;
+	if(document.NbrOfDiscssetTemplateForm.TEMPLATE_ID.selectedIndex == "-1"){
+		alert("Du måste ange vilket mallset som skall användas")
+		return false
+	}
+	else
+		if(confirm("Varning! Du kommer att byta mallset, detta kan förändra utseendet i hela konferensen! Fortsätta?")){
+		return true
+		}
+		else
+			return false
+	
+}
+
+function evalPrepareAdd(){
+	if(document.PrepareAddTemplate.TEMPLATE_NAME.selectedIndex != "-1"){
+		var index
+		index == document.PrepareAddTemplate.TEMPLATE_NAME.selectedIndex
+		if(confirm("Du kommer att infoga filer till det valda mallsetet, vill du fortsätta?")){
+			return true
+		}
+		else{
+			return false
+			}
+	}
+	else
+		alert("Du måste ange mallset")
+	return false	
+}
+
+function closeThisWindow(){
+	window.close()
+}
+//-->
+</script>
+<title><? templates/sv/conf/original/Conf_Admin_Template1.htm/1 ?></title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<center>
+<table width="500" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td>
+<table width="500" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+            <td><font face="Verdana, Arial, Helvetica, sans-serif" size="6" color="#000000"><b><i><font size="5"><? templates/sv/conf/original/Conf_Admin_Template1.htm/2 ?></font></i></b></font><br>
+              <img src="#IMAGE_URL#blueline.gif" width="500" height="8"></td>
+  </tr>
+</table>
+<table width="500" border="0" cellspacing="0" cellpadding="0">
+  <tr bgcolor="#FFFFFF"> 
+    <td width="31%" valign="top" nowrap><BR>
+      <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? templates/sv/conf/original/Conf_Admin_Template1.htm/3 ?></font><br>
+              <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr> 
+                  <td width="55%" nowrap height="36"> <br>
+                    <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Template1.htm/4 ?></font></td>
+                </tr>
+                <tr> 
+                  <td width="55%" nowrap><a href="#SERVLET_URL#ConfLogin?login_type=ADMIN_USER"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Template1.htm/5 ?> 
+                    </font></a> </td>
+                </tr>
+                <tr> 
+                  <td width="55%" nowrap><a href="#SERVLET_URL#ConfAdmin?ADMIN_TYPE=FORUM"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Template1.htm/6 ?> 
+                    </font></a></td>
+                </tr>
+                <tr>
+                  <td width="55%" nowrap><a href="#SERVLET_URL#ConfAdmin?ADMIN_TYPE=SELF_REGISTER"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Template1.htm/7 ?> 
+                    </font></a></td>
+                </tr>
+              </table>
+    </td>
+  </tr>
+  <tr bgcolor="#FFFFFF"> 
+    <td width="31%" valign="top"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Template1.htm/8 ?></font></td>
+  </tr>
+  <tr bgcolor="#FFFFFF"> 
+    <td width="31%" valign="top" nowrap height="87"> 
+      <form name="NewTemplate" action="#SERVLET_URL#ConfAdmin" method="post" >
+                <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? templates/sv/conf/original/Conf_Admin_Template1.htm/9 ?></font> <? templates/sv/conf/original/Conf_Admin_Template1.htm/10 ?> 
+                <input type="hidden" name="ADMIN_TYPE" value="META">
+        <br>
+        <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Template1.htm/11 ?></font> 
+        <br>
+        <input type="text" name="TEMPLATE_LIB_NAME" size="25" maxlength="50">
+        &nbsp;&nbsp;&nbsp;<input type="submit" name="REGISTER_TEMPLATE_LIB" value="<? templates/sv/conf/original/Conf_Admin_Template1.htm/2001 ?>" style="font-size:10" onClick="if(evalNewTemplate()== false) return false; return true;">
+      </form>
+<img src="#IMAGE_URL#blueline.gif" width="500" height="4">
+    </td>
+  </tr>
+  <tr bgcolor="#FFFFFF"> 
+    <td width="31%" valign="top" nowrap>
+      <form method="post" action="#SERVLET_URL#ConfAdmin" name="NbrOfDiscssetTemplateForm">
+                <font face="Verdana, Arial, Helvetica, sans-serif" size="3"> <? templates/sv/conf/original/Conf_Admin_Template1.htm/12 ?></font> <? templates/sv/conf/original/Conf_Admin_Template1.htm/13 ?> 
+                <input type="hidden" name="ADMIN_TYPE" value="META">
+                <br>
+                <br>
+                <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? templates/sv/conf/original/Conf_Admin_Template1.htm/14 ?></font><br>
+        <br>
+<select name="TEMPLATE_ID" size="1">          #TEMPLATE_LIST#                                                         </select>
+        <br>
+        <br>
+        <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Template1.htm/16 ?></font> 
+        <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>
+        (Metaid=#A_META_ID#)</font> 
+        &nbsp;&nbsp;&nbsp;
+                <input type="submit" name="SET_TEMPLATE_LIB" value="<? templates/sv/conf/original/Conf_Admin_Template1.htm/2002 ?>" style="font-size:10" onClick="if(evalNbrOfDiscssetTemplates()==false) return false; return true;">
+        </form>
+    </td>
+  </tr>
+  <tr bgcolor="#FFFFFF"> 
+    <td valign=Top align=Left>
+<br>
+<img src="#IMAGE_URL#blueline.gif" width="500" height="4"><br>
+      <form method="post" action="#SERVLET_URL#ConfAdmin" name="PrepareAddTemplate">
+                <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? templates/sv/conf/original/Conf_Admin_Template1.htm/18 ?></font> 
+                <input type="hidden" name="ADMIN_TYPE" value="META">
+        <br>
+        <br>
+        <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Template1.htm/19 ?> </font>&nbsp;&nbsp;&nbsp; 
+        <select name="TEMPLATE_NAME">          #TEMPLATE_LIST#                                                                  </select>
+        <br>
+        <br>
+        <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Template1.htm/21 ?></font> 
+        &nbsp;
+        <select name="UPLOAD_TYPE">
+          <option value="image"><? templates/sv/conf/original/Conf_Admin_Template1.htm/22 ?></option>
+          <option value="Template" selected><? templates/sv/conf/original/Conf_Admin_Template1.htm/23 ?></option>
+        </select>&nbsp;&nbsp;&nbsp;
+         <input type="submit" value="<? templates/sv/conf/original/Conf_Admin_Template1.htm/2003 ?>" name="UPLOAD_CONF" onClick="if(evalPrepareAdd()==false)return false; return true;">
+        <br>
+        <br>
+      </form>
+    </td>
+  </tr>
+<tr> 
+    <td valign="top" nowrap bgcolor="#FFFFFF" colspan="2">&nbsp;</td>
+  </tr>
+  <tr bgcolor="#FFFFFF"> 
+            <td width="31%" valign="top" nowrap> 
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td width="50%"><a href="#SERVLET_URL#ConfHelp?helpmode=admin&amp;helparea=Forum#Template" target="_ConfHelp"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/conf/original/Conf_Admin_Template1.htm/24 ?></font></a></td>
+                  <td width="50%"><a href="#SERVLET_URL#ConfViewer">#CONF_UNADMIN_LINK#</a></td>
+                </tr>
+              </table>
+    </td>
+  </tr>
+</table>
+    </td>
+  </tr>
+</table>
+</center>
+ </body>
+</html>

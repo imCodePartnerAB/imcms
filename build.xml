@@ -590,7 +590,7 @@
         <mkdir dir="${imcms}"/>
 
         <copy todir="${webroot}" filtering="true">
-            <fileset dir="web" excludes="imcms/lang/**"/>
+            <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**"/>
         </copy>
 
         <antcall target="web-copy">
@@ -607,9 +607,14 @@
         </copy>
 
          <!-- copy and translate texttemplates files -->
-        <antcall target="texttemplates">
-            <param name="buildlanguage" value="${defaultlanguage}"/>
-        </antcall>
+        <mkdir dir="${demotemplates}"/>
+
+        <copy todir="${apisamples}" description="appending .txt on all jsp files making the source browsable" >
+            <fileset dir="${apisamples}">
+                <include name="*.jsp"/>
+            </fileset>
+            <mapper type="glob" from="*" to="*.txt"/>
+        </copy>
 
         <!-- Create empty files needed by fortune -->
         <mkdir dir="${fortunes}"/>
@@ -646,6 +651,12 @@
 
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${templates}/${buildlanguage}" filtering="true">
+            <fileset dir="web/WEB-INF/templates/lang"/>
+        </imtranslate>
+
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${imcms}/${buildlanguage}" filtering="true">
             <fileset dir="web/imcms/lang" excludes="**/*.png,**/*.jpg,**/*.gif" />
         </imtranslate>
@@ -654,119 +665,8 @@
             <fileset dir="web/imcms/lang" includes="**/*.png,**/*.jpg,**/*.gif" />
         </copy>
 
-        <copy todir="${apisamples}" description="appending .txt on all jsp files making the source browsable" >
-            <fileset dir="${apisamples}">
-                <include name="*.jsp"/>
-            </fileset>
-            <mapper type="glob" from="*" to="*.txt"/>
-        </copy>
-
-
-        <!-- Copies and filters all templates. -->
-
-        <!-- Copies and filters the admintemplates. -->
-        <property name="installdir" value="${templates}/${buildlanguage}/admin"/>
-        <mkdir dir="${installdir}"/>
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-            starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${installdir}" filtering="true">
-            <fileset dir="templates/sv">
-                <patternset>
-                    <include name="adminbuttons/**"/>
-                    <include name="docinfo/**"/>
-                    <include name="permissions/**"/>
-                    <include name="sections/**"/>
-                    <include name="shop/**"/>
-                    <include name="textdoc/**"/>
-                    <include name="*.htm"/>
-                    <include name="*.html"/>
-                    <include name="*.ini"/>
-                    <include name="*.txt"/>
-                </patternset>
-            </fileset>
-        </imtranslate>
-
-        <!-- copy and translate the search templates -->
-        <property name="searchtemplates" value="${templates}/${buildlanguage}/admin/search/original"/>
-        <mkdir dir="${searchtemplates}"/>
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-            starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${searchtemplates}" filtering="true">
-            <fileset dir="templates/sv/search"/>
-        </imtranslate>
-
-        <property name="adminbuttonstemplates" value="${templates}/${buildlanguage}/admin/adminbuttons"/>
-        <replace dir="${adminbuttonstemplates}" excludes="adminbuttons.html"
-            token="&#10;" value=""/>
-
-        <replace dir="${adminbuttonstemplates}" excludes="adminbuttons.html"
-            token="&#13;" value=""/>
-        <!-- end admintemplates -->
-
-        <!-- Copy and translate the conference files. -->
-        <property name="conference-templates" value="${templates}/${buildlanguage}/102"/>
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-            starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${conference-templates}" filtering="true">
-            <fileset dir="templates/sv/conf" excludes="original/images/"/>
-        </imtranslate>
-        <!-- end conference -->
-
-    <!-- Copy and translate the chat files . -->
-        <property name="chat-templates" value="${templates}/${buildlanguage}/103"/>
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-            starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${chat-templates}" filtering="true">
-            <fileset dir="templates/sv/chat"/>
-        </imtranslate>
-        <!-- end chat -->
-
-    <!-- Copy and translate the billboard files. -->
-        <property name="billboard-templates" value="${templates}/${buildlanguage}/104"/>
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-            starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${billboard-templates}" filtering="true">
-            <fileset dir="templates/sv/billboard" excludes="original/images/"/>
-        </imtranslate>
-        <!-- end billboard -->
-
-        <!-- Copy and translates the files for the postcard. -->
-        <property name="postcard-templates" value="${templates}/${buildlanguage}/105"/>
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-                    starttoken="&lt;? " endtoken=" ?&gt;"
-                    todir="${postcard-templates}" filtering="true">
-           <fileset dir="templates/sv/postcard"/>
-        </imtranslate>
-        <!-- end postcard -->
-
-       <!-- Copy and translates the files for the fortune. -->
-       <property name="fortune-templates" value="${templates}/${buildlanguage}/106"/>
-       <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-                    starttoken="&lt;? " endtoken=" ?&gt;"
-                    todir="${fortune-templates}" filtering="true">
-           <fileset dir="templates/sv/fortunes"/>
-       </imtranslate>
-
     </target>
     <!-- end target web-copy -->
-
-    <!-- Copies and filters the text templates. -->
-    <target name="texttemplates" depends="init,tools" description="Copies and filters the texttemplates">
-
-        <filter token="adminbuttonsurl"     value="${imcmsurl}/${buildlanguage}/images/admin/adminbuttons"/>
-        <filter token="imcmsimageurl"       value="${imcmsurl}/${buildlanguage}/images"/>
-
-
-        <property name="installdir" value="${templates}/text"/>
-        <mkdir dir="${installdir}/demo"/>
-
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-                     starttoken="&lt;? " endtoken=" ?&gt;"
-                     todir="${installdir}" filtering="true">
-            <fileset dir="templates/text"/>
-        </imtranslate>
-
-    </target>
 
 
     <!-- Create some empty directories that will be used by imCMS. -->

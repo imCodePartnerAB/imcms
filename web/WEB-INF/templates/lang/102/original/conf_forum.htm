@@ -1,0 +1,91 @@
+<html>
+<head>
+<title><? templates/sv/conf/original/Conf_Forum.htm/1 ?></title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" link="#000099" vlink="#000099" alink="#000099" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" background="#IMAGE_URL#bg2.gif">
+<center>
+<img src="#IMAGE_URL#konferens_logga.gif" width="160" height="27">
+</center>
+<table width="100%" border="0" align="left" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td width="242" nowrap valig="top"> 
+      <table cellspacing=0 cellpadding=0 width="245" border="0">
+        <tr> 
+          <td valign="top" nowrap> 
+            <form method="post" action="#SERVLET_URL#ConfDisc" name="UPDATE" target="_ConfDiscViewFrame">
+              &nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;<? templates/sv/conf/original/Conf_Forum.htm/1001 ?></font><br>
+              &nbsp; 
+              <select name="forum_id" size="1" >          #FORUM_LIST#                                            
+              </select>
+              <input type="image" border="0" name="SUBMIT" src="#IMAGE_URL#valj.gif" width="42" height="18">
+              <input type="hidden" name="UPDATE" value="Ok">
+              <input type="hidden" name="CHANGE_FORUM" value="Change">
+            </form>
+          </td>
+        </tr>
+      </table>
+      <table cellspacing=0 cellpadding=0 width="200" border="0">
+        <tr> 
+          <td valign="top" align="right"> &nbsp;&nbsp;<a href="#SERVLET_URL#ConfHelp?helpmode=user&amp;helparea=forum#forum" target="_blank"></a> 
+            <a href="#SERVLET_URL#ConfHelp?helpmode=user&amp;helparea=forum" target="_ConfReplyFrame"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Forum.htm/3 ?></font></a> 
+          </td>
+          <td valign="top" align="right">#CONF_ADMIN_LINK#</td>
+        </tr>
+      </table>
+    </td>
+    <td width="40" valign="top">&nbsp;</td>
+    <td width="438" valign=Top> 
+      <form method="post" action="#SERVLET_URL#ConfDisc" name="ConfSearch" target="_ConfDiscFrame">
+        <table cellspacing=0 cellpadding=0 width="438" border="0">
+
+<tr> 
+<td width="10">&nbsp;</td>
+            <td valign="top">&nbsp;&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Forum.htm/5 ?> </font> <br>
+              &nbsp;&nbsp; 
+              <select name="CATEGORY">
+                <option value="0" selected><? templates/sv/conf/original/Conf_Forum.htm/6 ?></option>
+                <option value="1"><? templates/sv/conf/original/Conf_Forum.htm/7 ?></option>
+                <option value="2"><? templates/sv/conf/original/Conf_Forum.htm/8 ?></option>
+              </select>
+            </td>
+            <td valign=top align=Left><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Forum.htm/9 ?></font><font face="Verdana, Arial, Helvetica, sans-serif" size="3"> 
+              </font> <br>
+              <input type=Text name="SEARCH" maxlength=30 size=10 style=font-size:10>
+              <input type="hidden" name="BUTTON_SEARCH" value="S&ouml;k">
+            </td>
+            <td valign=top> 
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                  <td colspan="3" valign="top"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Forum.htm/10 ?> </font></td>
+                </tr>
+                <tr> 
+                  <td valign="top"> 
+                    <input type=Text size=10 name="FR_DATE" value="<? templates/yesterday ?>">
+                    <input type="hidden" name="FR_VALUE" value="<? templates/yesterday ?>">
+                  </td>
+                  <td valign="top"> 
+                    <input type=Text size=10 name="TO_DATE" value="<? templates/today ?>">
+                    <input type="hidden" name="TO_VALUE" value="<? templates/today ?>">
+                  </td>
+                  <td valign="top"> 
+                    <input type="image" border="0" name="SUBMIT" src="#IMAGE_URL#sok1.gif" width="42" height="18">
+                    <input type="hidden" name="SUBMIT" value="S&ouml;k">
+                  </td>
+                </tr>
+                <tr> 
+                  <td valign="top"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><? templates/sv/conf/original/Conf_Forum.htm/11 ?></font></td>
+                  <td valign="top"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><? templates/sv/conf/original/Conf_Forum.htm/12 ?></font></td>
+                  <td valign=top><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;</font></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </form>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

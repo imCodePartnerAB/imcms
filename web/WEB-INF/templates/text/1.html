@@ -1,0 +1,110 @@
+<!--IMSCRIPT-->
+<html>
+<head>
+<title>#metaHeadline# - Powered by imCode imCMS</title>
+
+<STYLE TYPE="text/css">
+<!--
+TD { font: x-small Verdana,Geneva,sans-serif; color:#000000; }
+.small { font: xx-small Verdana,Geneva,sans-serif; color:#666666; }
+PRE, TT { font: x-small "Courier New", Courier, monospace; color:#888888; }
+
+A:link    { color:#0000cc; }
+A:visited { color:#9900aa; }
+A:active  { color:#cc0000; }
+A:hover   { color:#0000ff; }
+
+.greylink A:link, .greylink A:visited { color:#888888; text-decoration:none; }
+.greylink A:active, .greylink A:hover { color:#8888ff; text-decoration:underline; }
+
+.infoTbl { border-width: 1px; border-style: solid; border-color: #f0f0f0 #cccccc #cccccc #f0f0f0; }
+-->
+</STYLE>
+
+</head>
+<body bgcolor="#FFFFFF">
+
+<div align="center">#adminMode#</div>
+
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+	<td><?imcms:include no="1" label='Include 1'?></td>
+</tr>
+<tr>
+	<td><?imcms:include no="2" label='Include 2'?></td>
+</tr>
+
+<tr>
+	<td><?imcms:include no="3" label='Include 3'?></td>
+</tr>
+</table>
+
+<table border="0" cellspacing="0" cellpadding="0" width="620" align="center">
+<tr>
+	<td>
+	<?imcms:image no='1' label='Image 1'?>
+	<?imcms:text no='1' label='Text 1' post='<br><br>'?>
+
+	<?imcms:menu no="1" label='Link menu 1'?>
+	<table border="0" cellspacing="0" cellpadding="3">
+	<?imcms:menuloop?>
+	<tr valign="top">
+		<td>#menuitemimage#</td>
+		<td><tt>#menuitemtreesortkey#</tt></td>
+		<td align="right" class="greylink"><tt>[#menuitemlinkonly##menuitemmetaid##/menuitemlinkonly#]</tt></td>
+		<td class="small">#menuitemlink##menuitemheadline##/menuitemlink#<div>#menuitemtext#</div></td>
+	</tr>
+	<?/imcms:menuloop?>
+	</table><br>
+	<?/imcms:menu?>
+
+	<?imcms:text no='2' label='Text 2' pre='<br>'?>
+	<?imcms:image no='2' label='Image 2' post='<br>'?>
+
+	<?imcms:text no='3' label='Text 3' pre='<br>'?>
+	<?imcms:image no='3' label='Image 3' post='<br>'?>
+
+	<?imcms:text no='4' label='Text 4' pre='<br>'?>
+	<?imcms:image no='4' label='Image 4' post='<br>'?>
+
+	<?imcms:text no='5' label='Text 5' pre='<br>'?>
+	<?imcms:image no='5' label='Image 5' post='<br>'?>
+
+	<br clear="all">
+	<table border="0" cellspacing="0" cellpadding="2" bgcolor="#ffffff" class="infoTbl" align="center"
+		onDblClick="if (this) if (this.style) this.style.display = 'none';">
+	<tr valign="top">
+		<td>&nbsp;&nbsp;</td>
+		<td>
+		&nbsp;<br>
+
+<b>Info meta_id <?imcms:metaid?>:</b>
+
+<pre>
+Changed:     <?imcms:datetime format="EEEE MMMM d yyyy" type="m" lang="en"?>
+Created:     <?imcms:datetime format="EEEE MMMM d yyyy" type="c" lang="en"?>
+Date now:    <?imcms:datetime format="EEEE MMMM d yyyy" type="n" lang="en"?>
+Active user: <?imcms:user get='FirstName'?> <?imcms:user get='LastName'?></pre></td>
+		<td>&nbsp;&nbsp;</td>
+	</tr>
+	</table>
+
+
+	<div align="center">
+	&nbsp;<br>
+
+	<i>#metaHeadline#</i><br>
+
+	<br><br>Number of visits (sessions) to this site:&nbsp;#session_counter#&nbsp;&nbsp;since&nbsp;#session_counter_date#<br><br>
+
+	Powered by imCode imCMS<br>
+
+	<?imcms:image no="3" label='Image 3'?>
+
+	#changePage##adminMode#</div></td>
+</tr>
+</table>
+
+</body>
+</html>
+<!--/IMSCRIPT-->
