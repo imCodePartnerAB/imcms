@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding='ISO-8859-1'?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-                      "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN">
+    <!-- "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd" -->
 
 <article class="whitepaper">
-
+  <title>CVS för dummies.</title>
   <articleinfo>
     <author>
       <firstname>Christoffer</firstname>
@@ -13,9 +13,11 @@
 
   <sect1>
     <title>Inledning.</title>
-    <para>
-        <quote>A few months in the laboratory can often save a few hours in the library.</quote>
-    </para>
+    <epigraph>
+      <para>
+        A few months in the laboratory can often save a few hours in the library.
+      </para>
+    </epigraph>
     <sect2>
       <title>Om det här dokumentet.</title>
       <para>
@@ -39,8 +41,12 @@
   <sect1>
     <title>CVS</title>
 
-    <para>
-    </para>
+    <epigraph>
+      <attribution>Clarke's Law</attribution>
+      <para>
+        Any sufficiently advanced technology is indistinguishable from magic.
+      </para>
+    </epigraph>
 
     <sect2>
       <title>Vad är CVS?</title>
@@ -124,7 +130,7 @@
     </sect2>
 
     <sect2>
-      <title>Vad behöver man?</title>
+      <title>Vad behöver man för att använda CVS?</title>
       <para>
         För att kunna använda CVS måste man ha en CVS-klient,
 	som kan prata med CVS-servern.
@@ -184,26 +190,26 @@
 	Enklast är att man bara lägger cvs-program-filen (<filename>cvs.exe</filename>)
 	i katalogen <filename class="directory">C:\WINNT</filename>.
 	eftersom <filename class="directory">C:\WINNT</filename> redan ligger i <envar>PATH</envar>.
-        Detta kan man göra genom att högerklicka med musen på 
-	<guiicon>Den här datorn</guiicon>, och välja
-	<menuchoice>
-	  <guimenu>Egenskaper</guimenu>
-          <guisubmenu>Avancerat</guisubmenu>
-          <guimenuitem>Miljövariabler</guimenuitem>
-        </menuchoice>.
-	Där finns en lista, i vilken <envar>PATH</envar> borde finnas.
       </para>
       <para>
 	Om man inte vill lägga cvs-klienten i <filename class="directory">C:\WINNT</filename>
 	så kan man lägga till sökvägen till <filename>cvs.exe</filename> i <envar>PATH</envar>.
+        Detta kan man göra genom att högerklicka med musen på 
+	<guiicon>Den här datorn</guiicon>, och välja
+	<menuchoice>
+	  <guimenuitem>Egenskaper</guimenuitem>
+          <guilabel>Avancerat</guilabel>
+          <guibutton>Miljövariabler</guibutton>
+        </menuchoice>.
+	Där finns en lista, i vilken <envar>PATH</envar> borde finnas.
 	<example>
 	  <title><envar>PATH</envar></title>
 	  <para>
 	    Om du lägger <filename>cvs.exe</filename> i katalogen <filename class="directory">C:\CVS</filename>,
 	    och din nuvarande <envar>PATH</envar> är
-	    <quote><computeroutput>C:\WINNT;C:\WINNT\SYSTEM32</computeroutput></quote>
+	    <filename class="directory">C:\WINNT;C:\WINNT\SYSTEM32</filename>
 	    så ska du ändra din <envar>PATH</envar> till
-	    <quote><computeroutput>C:\WINNT;C:\WINNT\SYSTEM32;C:\CVS</computeroutput></quote>.
+	    <filename class="directory">C:\WINNT;C:\WINNT\SYSTEM32;C:\CVS</filename>.
 	  </para>
 	</example>
       </para>
@@ -218,7 +224,7 @@
 
       <para>
         <envar>CVSROOT</envar> innehåller en sträng i formen
-	<userinput><replaceable>:access-metod:användarnamn@server-address:server-sökväg</replaceable></userinput>.
+	<replaceable>:access-metod:användarnamn@server-address:server-sökväg</replaceable>.
       </para>
       <para>
 	Denna talar om för CVS på vilket sätt servern ska kommas åt, och för vilken användare.
@@ -242,7 +248,6 @@
       Dessa två aktiviteter gör man inte särskilt ofta.
       Loggar in gör man bara när man ska prata med en ny CVS-server för första gången,
       och checkar ut ett projekt gör man bara när man behöver en helt ny uppsättning filer att börja med.
-
     </para>
 
     <sect2>
@@ -253,7 +258,8 @@
           <para>
 	    Om du inte har satt <envar>CVSROOT</envar>,
 	    så kan du istället ange din <envar>CVSROOT</envar>
-	    till <command>cvs</command> med parametern <parameter>-d</parameter> varje gång.
+	    till <command>cvs</command> med parametern <parameter>-d</parameter> varje gång du utför ett cvs-kommando.
+	    Det blir snabbt påfrestande.
 	    <example>
 	      <title>cvs -d</title>
 	      <para>
@@ -333,9 +339,35 @@
       <para>
         CVS checkar ut projektet, och bygger samma filstruktur på din disk som den som ligger på CVS-servern,
 	med de allra färskaste versionerna av alla filer.
-      </para>
-    </sect2>
 
+        <tip>
+          <para>
+	    Du kan checka ut hur många kopior som helst av samma filstruktur, till olika kataloger.
+	    Detta är praktiskt när du till exempel vill jobba på flera olika problem samtidigt,
+	    och de inte ska checkas in tillsammans.
+	    Var bara noga med att hålla reda på vilken kopia som är vilken.
+	  </para>
+        </tip>
+      </para>
+
+      <para>
+        Den filstruktur du har checkat ut innehåller en massa
+        kataloger vid namn <quote><filename class="directory">CVS</filename></quote>,
+        en i varje <quote>normal</quote> katalog.
+        Dessa <quote><filename class="directory">CVS</filename></quote>-kataloger innehåller
+        filer som CVS använder för att hålla reda på statusen på dina utcheckade filer,
+        var du checkade ut filerna från, och så vidare.
+
+        <note>
+          <para>
+            Du bör aldrig röra filerna i <quote><filename class="directory">CVS</filename></quote>-katalogerna,
+            om du inte vet vad du håller på med.
+	    Du bör heller inte skapa egna kataloger eller filer med namnet <quote><filename>CVS</filename></quote>.
+	  </para>
+        </note>
+      </para>
+
+    </sect2>
   </sect1>
 
   <sect1>
@@ -343,9 +375,24 @@
     <para>
       När du har checkat ut filer från CVS så har du en exakt kopia av den filstruktur som finns på CVS-servern,
       samma filstruktur som alla i projektet använder.
+      Din kopia av filstrukturen är ditt <quote>working directory</quote>,
+      eller din <quote>sandbox</quote>,
+      där du ska göra alla ändringar som du vill checka in igen.
+
+      <important>
+        <para>
+          Det är viktigt att du inte flyttar filerna från ditt working directory.
+	  Du måste redigera filerna där de ligger
+	  för att CVS ska kunna hålla reda på dem.
+	</para>
+      </important>
+    </para>
+
+    <para>
       När du vill göra några ändringar i en fil, så behöver du bara öppna filen i din favorit-editor,
       göra ändringarna, och spara.
-      För att dagligen arbeta med CVS är det bara två kommandon du måste kunna: <command>update</command> och <command>commit</command>.
+      För att dagligen arbeta normalt med CVS är det bara två kommandon du måste kunna:
+      <command>cvs update</command> och <command>cvs commit</command>.
     </para>
     <sect2>
       <title>Uppdatera.</title>
@@ -365,20 +412,14 @@
             <screen>
 	      <prompt>D:\projekt\imCMS> </prompt><command>cvs update</command>
 	      cvs server: Updating .
-	      cvs server: Updating 1.3
-	      ? 1.3/unknown.file
-	      C 1.3/build.xml
-	      R 1.3/cvstest
-	      cvs server: Updating 1.3/install
-	      cvs server: Updating 1.3/install/conf
-	      M 1.3/install/conf/log4j.xml
-	      cvs server: Updating 1.3/servlets
-	      A 1.3/servlets/HelloWorld.java
-	      cvs server: Updating 1.3/sql
-	      cvs server: Updating 1.3/sql/diff
-	      U 1.3/sql/diff/diff.sql
-	      cvs server: Updating 1.3/sql/sprocs
-	      P 1.3/sql/sprocs/sprocs.ascii.sql
+	      cvs server: Updating example
+	      ? example/unknown.file
+	      M example/modified.file
+	      A example/added.file
+	      R example/removed.file
+	      C example/conflicting.file
+	      U example/updated.file
+	      P example/patched.file
 	    </screen>
 	  </para>
 	</example>
@@ -389,7 +430,7 @@
 	  <title> cvs update - statusindikatorer </title>
 	  <segtitle> status </segtitle> <segtitle> betydelse </segtitle>
 	  <seglistitem>
-	    <seg>A</seg><seg>(Added) En fil du har markerat som tilllagd i din kopia, som ännu inte finns i CVS-servern.</seg>
+	    <seg>A</seg><seg>(Added) En fil du har markerat som tillagd i din kopia, som ännu inte finns i CVS-servern.</seg>
 	  </seglistitem>
 	  <seglistitem>
 	    <seg>R</seg><seg>(Removed) En fil som finns i CVS-servern, men som du har markerat borttagen i din kopia.</seg>
@@ -438,13 +479,29 @@
           <command>cvs commit <replaceable>filnamn</replaceable></command>
         </synopsis>
         Där <replaceable>filnamn</replaceable> är sökvägen till filen/filerna som du vill checka in.
+      </para>
+
+      <para>
         CVS jämför dina filer med de som ligger på CVS-servern, precis som vid en update,
-        sammanställer en lista på de som har ändrat sig, och startar en editor
+        sammanställer en lista på de som har ändrat sig, och startar automatiskt en editor
         (vanligtvis <application>notepad</application> på <trademark>Windows</trademark>).
+      </para>
+
+      <para>
         I editorn skriver du en kommentar om dina ändringar, vad du har gjort och varför.
         Ju mer uttömmande det är desto bättre, men viktigast är att syftet med dina ändringar blir klart.
-        Sedan sparar du filen och stänger editorn, så fortsätter CVS med incheckningen.
+        När du är klar sparar du filen och stänger editorn, så fortsätter CVS automatiskt med incheckningen.
 
+	<note>
+	  <para>
+	    En del CVS-servrar är konfigurerade att kräva en viss syntax på kommentaren,
+	    där man måste ange ett bugg-nummer, eller fylla i en mall eller liknande.
+	    Glöm inte att fylla i rätt.
+	  </para>
+	</note>
+      </para>
+
+      <para>
         <warning>
 	  <para>
 	    Var noga med att bara ange alla 
@@ -452,9 +509,13 @@
 	    Om du utför kommandot <command>cvs commit</command> utan att ange filnamn
 	    plockas alla ändringar du har gjort i alla filer
 	    i katalogen du befinner dig i och dess underkataloger.
+	  </para>
+	  <para>
 	    Tänk på att <command>cvs commit</command> är det kommando som
 	    utför ändringar i filerna på CVS-servern.
-	    Misstag är enkla att fixa, men det kan ta tid innan de upptäcks.
+	    Misstag är oftast enkla att fixa, men det kan ta tid innan de upptäcks,
+	    och ju längre tid det tar, och ju fler utvecklare som uppdaterat ut ändringarna,
+	    desto mer omständigt blir det att fixa.
 	  </para>
         </warning>
 
@@ -464,6 +525,14 @@
 
   <sect1>
     <title> Lägga till och ta bort filer </title>
+    <epigraph>
+        <attribution>Antoine de St. Exupery</attribution>
+        <para>
+	  Perfection is achieved,
+	  not when there is nothing left to add,
+	  but when there is nothing left to take away.
+	</para>
+    </epigraph>
     <para>
       Du har gjort stora ändringar, lagt till några nya filer, tagit bort några gamla filer som blivit onödiga.
       Du behöver <command>cvs add</command> och <command>cvs remove</command>.
@@ -548,52 +617,80 @@
       CVS-kommandot har följande syntax:
       <cmdsynopsis>
         <command>cvs</command>
-	<arg choice="opt">cvs-parametrar</arg>
-	<arg choice="plain">cvs-kommando</arg>
-	<arg choice="opt">cvs-kommando-parametrar</arg>
-	<arg choice="opt">fil ...</arg>
+	<arg choice="opt"><replaceable>cvs-parametrar</replaceable></arg>
+	<arg choice="plain"><replaceable>cvs-kommando</replaceable></arg>
+	<arg choice="opt"><replaceable>cvs-kommando-parametrar</replaceable></arg>
+	<arg choice="opt"><replaceable>fil ...</replaceable></arg>
       </cmdsynopsis>
 
       <itemizedlist>
         <listitem>
 	  <para>
-	    <parameter>cvs-parametrar</parameter> är generella parametrar som gäller för alla cvs-kommmandon.
+	    <replaceable>cvs-parametrar</replaceable> är generella parametrar som gäller för alla cvs-kommmandon.
 	  </para>
 	</listitem>
 	<listitem>
 	  <para>
-            <parameter>cvs-kommando</parameter> är det cvs-kommando man vill utföra,
+            <replaceable>cvs-kommando</replaceable> är det cvs-kommando man vill utföra,
 	    till exempel <quote>add</quote>,<quote>login</quote>,<quote>update</quote>, och så vidare.
 	  </para>
 	</listitem>
 	<listitem>
 	  <para>
-	    <parameter>cvs-kommando-parametrar</parameter> är parametrar som är specifika för varje cvs-kommando.
+	    <replaceable>cvs-kommando-parametrar</replaceable> är parametrar som är specifika för varje cvs-kommando.
 	    <important>
 	      <para>
-	        Märk väl att de parametrar som är tillåtna här är helt skilda från de parametrar som kommer före cvs-kommandot.
-		<command>cvs -f commit</command> är något <emphasis>helt</emphasis> annat än <command>cvs commit -f</command>!
+	        Märk väl att de parametrar som är tillåtna här (<replaceable>cvs-kommando-parametrar</replaceable>)
+		är helt skilda från de parametrar som kommer före cvs-kommandot
+		(<replaceable>cvs-parametrar</replaceable>).
+		<command>cvs -f commit</command> är något <emphasis>helt</emphasis>
+		annat än <command>cvs commit -f</command>!
 	      </para>
 	    </important>
+	  </para>	 
+	</listitem>
+	<listitem>
+	  <para>
+	    <replaceable>fil ...</replaceable> är de eventuella filer som kommandot ska arbeta på.
 	  </para>	 
 	</listitem>
       </itemizedlist>
 
       <tip>
-        <title> Hjälpen är nära! </title>
+        <title>Hjälpen finns alltid nära till hands.</title>
         <para>
           Du kan alltid skriva <command>cvs --help</command> för att få generell hjälp.
-	  Vill du ha hjälp med ett specifikt kommando så kan du använda
+	  Vill du ha hjälp med syntax eller parametrar
+	  för ett specifikt kommando så kan du använda
 	  <command>cvs -H <replaceable>kommando</replaceable></command>
 	  där <replaceable>kommando</replaceable> är kommandot du behöver hjälp med.
 	  <example>
 	    <title>cvs -H</title>
 	    <para>
-	      <synopsis>
-	        <command>cvs -H update</command>
-	      </synopsis>
+	      <screen>
+	        <prompt>D:\projekt\imCMS&gt; </prompt><command>cvs -H update</command>
+		Usage: cvs update [-APCdflRp] [-k kopt] [-r rev] [-D date] [-j rev]
+		    [-I ign] [-W spec] [files...]
+		    	-A	Reset any sticky tags/date/kopts.
+			-P	Prune empty directories.
+			-C	Overwrite locally modified files with clean repository copies.
+			-d	Build directories, like checkout does.
+			-f	Force a head revision match if tag/date not found.
+			-l	Local directory only, no recursion.
+			-R	Process directories recursively.
+			-p	Send updates to standard output (avoids stickiness).
+			-k kopt	Use RCS kopt -k option on checkout. (is sticky)
+			-r rev	Update using specified revision/tag (is sticky).
+			-D date	Set date to update from (is sticky).
+			-j rev	Merge in changes made between current revision and rev.
+			-I ign	More files to ignore (! to reset).
+			-W spec	Wrappers specification line.
+		(Specify the --help global option for a list of other help options)
+	      </screen>
 	    </para>
 	  </example>
+	  Andra bra hjälp-parametrar är <parameter>--help-commands</parameter> för att lista alla cvs-kommandon,
+	  och <parameter>--help-options</parameter> för att lista generella cvs-parametrar.
 	</para>
       </tip>
     </para>
