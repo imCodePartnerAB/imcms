@@ -71,6 +71,19 @@ String formatTime(Date time) {
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
+<script language="JavaScript">
+<!--
+var selFocused = false ;
+
+function checkFocus() {
+	if (selFocused) {
+		document.body.focus();
+		selFocused = false ;
+	}
+}
+//-->
+</script>
+
 </head>
 <body id="theBody" bgcolor="#FFFFFF" onLoad="focusField(0,'<%= StringEscapeUtils.escapeJavaScript( DocumentComposer.PARAMETER__HEADLINE ) %>');">
 
@@ -100,7 +113,7 @@ String formatTime(Date time) {
  ******************************************************************************************* */
 
 %>
-<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center" onMouseOver="checkFocus();">
 <input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
 	value="<%= DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) %>"><%
 if (creatingNewDocument) { %>
@@ -179,7 +192,7 @@ if (creatingNewDocument) { %>
 		<td class="imcmsAdmText">
 		<? install/htdocs/sv/jsp/docadmin/document_information.jsp/status ?></td>
 		<td>
-		<select name="<%= DocumentComposer.PARAMETER__STATUS %>">
+		<select name="<%= DocumentComposer.PARAMETER__STATUS %>" onFocus="selFocused = true;">
 			<option value="<%= DocumentDomainObject.STATUS_NEW %>"<%
 				if (DocumentDomainObject.STATUS_NEW == document.getStatus()) {
 					%> selected<%
@@ -315,7 +328,7 @@ if (creatingNewDocument) { %>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/26 ?></td>
 		<td class="imcmsAdmText">
-		<select name="<%= DocumentComposer.PARAMETER__LANGUAGE %>" size="1">
+		<select name="<%= DocumentComposer.PARAMETER__LANGUAGE %>" size="1" onFocus="selFocused = true;">
 			<%= LanguageMapper.getLanguageOptionList( service, user, document.getLanguageIso639_2() ) %>
 		</select>
 		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_language ?> <%= LanguageMapper.getCurrentLanguageNameInUsersLanguage( service, user, document.getLanguageIso639_2() )%></td>
@@ -333,7 +346,7 @@ if (creatingNewDocument) { %>
 			if ( !categoryType.hasImages() ) { %>
 		<div style="float: left; margin: auto 1em 1ex auto;">
 		<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
-		<select name="<%= DocumentComposer.PARAMETER__CATEGORIES %>"<% if (1 != categoryType.getMaxChoices()) { %>size="4" multiple<% } %>>
+		<select name="<%= DocumentComposer.PARAMETER__CATEGORIES %>"<% if (1 != categoryType.getMaxChoices()) { %> size="4" multiple<% } else { %> onFocus="selFocused = true;"<% } %>>
 			<%= Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType, document) %>
 		</select></div><%
 			}
@@ -496,7 +509,7 @@ if (creatingNewDocument) { %>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/42 ?></td>
 		<td class="imcmsAdmText">
-		<select name="<%= DocumentComposer.PARAMETER__PUBLISHER_ID %>" size="1">
+		<select name="<%= DocumentComposer.PARAMETER__PUBLISHER_ID %>" size="1" onFocus="selFocused = true;">
 			<%= Html.createPublisherOptionList( service.getImcmsAuthenticatorAndUserAndRoleMapper(), document.getPublisher()) %>
 		</select>
 		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_publisher ?> <% UserDomainObject publisher = document.getPublisher() ; %>
