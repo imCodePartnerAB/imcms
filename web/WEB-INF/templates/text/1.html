@@ -27,14 +27,14 @@ LI { padding-bottom:5; }
 	<table border="0" cellspacing="0" cellpadding="0" width="760">
 	<tr>
 		<td colspan="5"><?imcms:include
-		url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoTop"?></td>
+		url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoTop"?></td>
 	</tr>
 	<tr>
 		<td colspan="5" height="15">&nbsp;</td>
 	</tr>
 	<tr valign="top">
 		<td width="200"><?imcms:include
-		url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoLeft"?></td>
+		url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoLeft"?></td>
 
 		<td width="15">&nbsp;</td>
 
@@ -50,7 +50,7 @@ LI { padding-bottom:5; }
 		</ul>
 		<?/imcms:menu?><?imcms:include
 
-		url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoContent" pre='<hr>' post='<hr>'?><?imcms:image
+		url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoContent" pre='<hr>' post='<hr>'?><?imcms:image
 		no='3' label='Bild' pre='<br><br>' post='<br>'?><br>
 		<?imcms:include no='1' label='Dynamisk inkludering 1'?></td>
 
@@ -58,14 +58,14 @@ LI { padding-bottom:5; }
 
 
 		<td width="150"><?imcms:include
-		url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoRight"?></td>
+		url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoRight"?></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
 	<td align="center" valign="bottom">&nbsp;<br>#adminMode##changePage#
 	<?imcms:include
-	url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoBottom"?></td>
+	url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoBottom"?></td>
 </tr>
 </table>
 
