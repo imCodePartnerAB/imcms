@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.imcode.util.MultipartHttpServletRequest;
+import com.imcode.util.HumanReadable;
 
 /**
  * Browse images in image-directory.
@@ -165,10 +166,9 @@ public class ImageBrowse extends HttpServlet {
             imagesOptionList = Html.createOptionList( imageList, currentImage, new Transformer() {
                 public Object transform( Object input ) {
                     File file = (File)input;
+	                  String formattedFileSize = HumanReadable.getHumanReadableByteSize( file.length() ) ;
                     return new String[]{
-                        FileUtility.relativizeFile( imagesRoot, file ).getPath(), file.getName() + "\t["
-                                                                                  + file.length()
-                                                                                  + "]"
+                        FileUtility.relativizeFile( imagesRoot, file ).getPath(), file.getName() + "\t[" + formattedFileSize + "]"
                     };
                 }
             } );
