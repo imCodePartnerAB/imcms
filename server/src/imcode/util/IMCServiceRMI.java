@@ -385,7 +385,7 @@ public class IMCServiceRMI {
 	    return imc.parseDoc(variables,file_name,lang_prefix) ;
     }
 
-	public String parseExternalDoc(String server,Vector variables, String external_template_name, String lang_prefix, String doc_type) throws IOException  {
+	public static String parseExternalDoc(String server,Vector variables, String external_template_name, String lang_prefix, String doc_type) throws IOException  {
 		IMCServiceInterface imc = getInterface( server ) ;
 		
 		return imc.parseExternalDoc(variables,external_template_name, lang_prefix, doc_type);
