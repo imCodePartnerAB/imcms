@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat ;
 
 import java.util.Date ;
 import java.util.StringTokenizer ;
+import java.util.NoSuchElementException ;
 
 import imcode.util.Parser ;
 import imcode.util.DateRange ;
@@ -35,6 +36,8 @@ public class QuoteReader extends BufferedReader {
 	} catch (NullPointerException npe) {
 	    return null ;
 	} catch (ParseException pe) {
+	    return null ;
+	} catch (NoSuchElementException nsee) {
 	    return null ;
 	}
     }

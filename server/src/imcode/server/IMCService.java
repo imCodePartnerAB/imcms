@@ -2864,14 +2864,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
        @return the quote-List.
     **/
-    public List getQuoteList(String quoteListName) throws IOException {
+    public List getQuoteList(String quoteListName) {
 	List theList = new LinkedList() ;
-	StringReader reader = new StringReader(getFortune(quoteListName));
-	QuoteReader quoteReader = new QuoteReader(reader) ;
-	for (Quote quote; null != (quote = quoteReader.readQuote()) ; ) {
-	    theList.add(quote) ;
+	try {
+	    StringReader reader = new StringReader(getFortune(quoteListName));
+	    QuoteReader quoteReader = new QuoteReader(reader) ;
+	    for (Quote quote; null != (quote = quoteReader.readQuote()) ; ) {
+		theList.add(quote) ;
+	    }
+	    reader.close();
+	} catch (IOException ignored) {
+	    // ignored
 	}
-	reader.close();
 	return theList ;
     }
 
@@ -2896,14 +2900,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
        @return a List of Polls
     **/
-    public List getPollList(String pollListName) throws IOException {
+    public List getPollList(String pollListName) {
 	List theList = new LinkedList() ;
-	StringReader reader = new StringReader(getFortune(pollListName));
-	PollReader pollReader = new PollReader(reader) ;
-	for (Poll poll; null != (poll = pollReader.readPoll()) ; ) {
-	    theList.add(poll) ;
+	try {
+	    StringReader reader = new StringReader(getFortune(pollListName));
+	    PollReader pollReader = new PollReader(reader) ;
+	    for (Poll poll; null != (poll = pollReader.readPoll()) ; ) {
+		theList.add(poll) ;
+	    }
+	    reader.close();
+	} catch (IOException ignored) {
+	    // ignored
 	}
-	reader.close();
 	return theList ;
     }
 

@@ -1,5 +1,7 @@
 import java.util.*;
 
+import java.io.PrintWriter ;
+import java.io.StringWriter ;
 import java.io.IOException;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -266,7 +268,9 @@ public class GetDoc extends HttpServlet {
 		    imcode.external.GetDocControllerInterface obj =(imcode.external.GetDocControllerInterface) cl.newInstance();
 		    externalparam = obj.createString(req);
 		}catch(Exception e)	{
-		    //obs do nothing, let the externalParam be null
+		    StringWriter sw = new StringWriter() ;
+		    e.printStackTrace(new PrintWriter(sw)) ;
+		    externalparam = "<!-- Exception: "+sw.toString()+" -->" ;
 		}
 	    }
 

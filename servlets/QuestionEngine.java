@@ -19,7 +19,7 @@ import imcode.util.fortune.* ;
 
 public class QuestionEngine extends HttpServlet
 {
-    String questionTemplate = "QuestionEngine.htm";
+    private final static String questionTemplate = "QuestionEngine.htm";
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
     {
@@ -33,11 +33,11 @@ public class QuestionEngine extends HttpServlet
 
 	String inFile = req.getParameter("file");
 	if (inFile == null) {
-	    inFile = "" ;
+	    inFile = "poll" ;
 	}
 
 	// Get the current poll
-	List pollList = IMCServiceRMI.getPollList(imcserver,inFile+"enkatcurrent.txt") ;
+	List pollList = IMCServiceRMI.getPollList(imcserver,inFile+".current.txt") ;
 
 	Date now = new Date() ;
 
@@ -79,7 +79,7 @@ public class QuestionEngine extends HttpServlet
     public List getNewQuestion(String imcserver,String inFile) throws ServletException, IOException
     {
 
-	List questionList = IMCServiceRMI.getQuoteList(imcserver,inFile+"enkat.txt") ;
+	List questionList = IMCServiceRMI.getQuoteList(imcserver,inFile+".txt") ;
 
 	Date date = new Date();
 
@@ -93,7 +93,7 @@ public class QuestionEngine extends HttpServlet
 
 		List newPollList = new LinkedList() ;
 		newPollList.add(new Poll(questionString)) ;
-		IMCServiceRMI.setPollList(imcserver,inFile+"enkatcurrent.txt",newPollList) ;
+		IMCServiceRMI.setPollList(imcserver,inFile+".current.txt",newPollList) ;
 		return newPollList ;
 	    }
 	}
