@@ -109,12 +109,13 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
                                                        boolean imcmsUserExists ) {
         externalUser.setImcmsExternal( true );
 
-        addExternalRolesToUser( externalUser );
         if ( imcmsUserExists ) {
             imcmsAuthenticatorAndUserMapper.updateUser( loginName, externalUser );
         } else {
             imcmsAuthenticatorAndUserMapper.addUser( externalUser );
         }
+        addExternalRolesToUser( externalUser );
+        imcmsAuthenticatorAndUserMapper.sqlUpdateUserRoles( externalUser );
 
         return imcmsAuthenticatorAndUserMapper.getUser( loginName );
     }

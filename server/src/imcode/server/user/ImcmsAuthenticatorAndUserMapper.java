@@ -146,9 +146,8 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         return service.sqlQuery( sqlStr, new String[]{"" + userId} );
     }
 
-    public void updateUser( String loginName, UserDomainObject newUser ) {
+    public void updateUser( String loginName, UserDomainObject tempUser ) {
         UserDomainObject imcmsUser = getUser( loginName );
-        UserDomainObject tempUser = (UserDomainObject)newUser.clone();
         tempUser.setId( imcmsUser.getId() );
         tempUser.setLoginName( loginName );
 
@@ -331,18 +330,20 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         };
         service.sqlUpdateProcedure( modifyUserProcedureName, params );
 
-        sqlRemoveAllRoles( tempUser );
-        sqlAddAllRoles( tempUser );
-
+        sqlUpdateUserRoles( tempUser );
     }
 
-    private void sqlAddAllRoles( UserDomainObject tempUser ) {
+    public void sqlUpdateUserRoles( UserDomainObject tempUser ) {
         tempUser.addRole( RoleDomainObject.USERS );
-
         RoleDomainObject[] userRoles = tempUser.getRoles();
+        sqlRemoveAllRoles( tempUser );
+        sqlAddRolesToUser( userRoles, tempUser );
+    }
+
+    private void sqlAddRolesToUser( RoleDomainObject[] userRoles, UserDomainObject user ) {
         for ( int i = 0; i < userRoles.length; i++ ) {
             RoleDomainObject userRole = userRoles[i];
-            sqlAddRoleToUser( userRole, tempUser );
+            sqlAddRoleToUser( userRole, user );
         }
     }
 
