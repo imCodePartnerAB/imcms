@@ -10,9 +10,7 @@ import imcode.server.* ;
 import imcode.server.user.UserDomainObject;
 
 public class TemplateAdmin extends HttpServlet {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	
+
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 	}
@@ -32,16 +30,16 @@ public class TemplateAdmin extends HttpServlet {
 		sqlStr += "where users.user_id = user_roles_crossref.user_id\n" ;
 		sqlStr += "and user_roles_crossref.role_id = 0\n" ;
 		sqlStr += "and users.user_id = " + user.getUserId() ;
-		
+
 		if ( imcref.sqlQuery(sqlStr).length == 0 ) {
 			Utility.redirect(req,res,start_url) ;
 			return ;
 		}
 
 		PrintWriter out = res.getWriter() ;
-			
+
 		res.setContentType("text/html") ;
-		
+
 		String temp[] ;
 		temp = imcref.sqlProcedure( "getLanguages") ;
 		String temps = "" ;
@@ -56,10 +54,10 @@ public class TemplateAdmin extends HttpServlet {
 		String lang_prefix = user.getLangPrefix() ;
 		String htmlStr = imcref.parseDoc( vec, "template_admin.html",lang_prefix) ;
 		out.println( htmlStr ) ;
-		
+
 	}
 
-	
+
 	public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
 		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
@@ -67,17 +65,17 @@ public class TemplateAdmin extends HttpServlet {
 
 		// Check if user logged on
 		UserDomainObject user ;
-		
+
 		if ( (user=Check.userLoggedOn(req,res,start_url))==null ) {
 			return ;
-		} 
+		}
 		// Is user superadmin?
 
 		String sqlStr  = "select role_id from users,user_roles_crossref\n" ;
 		sqlStr += "where users.user_id = user_roles_crossref.user_id\n" ;
 		sqlStr += "and user_roles_crossref.role_id = 0\n" ;
 		sqlStr += "and users.user_id = " + user.getUserId() ;
-		
+
 		if ( imcref.sqlQuery(sqlStr).length == 0 ) {
 			Utility.redirect(req,res,start_url) ;
 			return ;
@@ -85,7 +83,7 @@ public class TemplateAdmin extends HttpServlet {
 
 		res.setContentType("text/html") ;
 		PrintWriter out = res.getWriter() ;
-		
+
 		String lang_prefix = user.getLangPrefix() ;
 		String lang = req.getParameter("language") ;
 		String htmlStr = null ;
@@ -195,6 +193,23 @@ public class TemplateAdmin extends HttpServlet {
 			} else {
 				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
 			}
+        } else if ( req.getParameter("edit_template") != null ) {
+			String temp[] ;
+			temp = imcref.sqlQuery( "select template_id, simple_name from templates where lang_prefix = '"+lang+"' order by simple_name") ;
+			Vector vec = new Vector() ;
+			vec.add("#language#") ;
+			vec.add(lang) ;
+			if ( temp.length > 0 ) {
+				String temps = "" ;
+				for (int i = 0; i < temp.length; i+=2) {
+					temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;
+				}
+				vec.add("#templates#") ;
+				vec.add(temps);
+				htmlStr = imcref.parseDoc( vec, "template_edit.html",lang_prefix) ;
+			} else {
+				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
+			}
 		} else if ( req.getParameter("add_group") != null ) {
 			htmlStr = imcref.parseDoc( null, "templategroup_add.html",lang_prefix) ;
 		} else if ( req.getParameter("delete_group") != null ) {
@@ -273,5 +288,5 @@ public class TemplateAdmin extends HttpServlet {
 		super.log(str);
 		System.out.println("TemplateAdmin: " + str);
 	}
-	
+
 }
