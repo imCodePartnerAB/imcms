@@ -280,6 +280,9 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     public UserDomainObject[] getAllUsersWithRole( String roleName ) {
         RoleDomainObject role = getRoleByName( roleName );
+        if( null == role ) {
+            return new UserDomainObject[]{};
+        }
         String[] usersWithRole = service.sqlProcedure( SPROC_GET_USERS_WHO_BELONGS_TO_ROLE,
                                                        new String[]{"" + role.getId()} );
         UserDomainObject[] result = new UserDomainObject[usersWithRole.length / 2];

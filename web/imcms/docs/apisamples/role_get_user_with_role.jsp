@@ -6,16 +6,16 @@
     UserService userService = imcmsSystem.getUserService();
     User[] users = userService.getAllUserWithRole( RoleConstants.USERS );
 %>
-All users in the system:<br>
+All users in the system wit hte role "<%=RoleConstants.USERS%>":<br>
 <%= java.util.Arrays.asList( users ) %><br>
 <br>
-Users that has the role user administrator:<br>
+Users that has the role "<%=RoleConstants.USER_ADMIN%>":<br>
 <%
     User[] userAdministrators = userService.getAllUserWithRole( RoleConstants.USER_ADMIN );
 %>
 <%= java.util.Arrays.asList( userAdministrators ) %><br>
 <br>
-Users that has the role super administrator:<br>
+Users that has the role "<%=RoleConstants.SUPER_ADMIN%>":<br>
 <%
     User[] userSuperAdmin = userService.getAllUserWithRole( RoleConstants.SUPER_ADMIN );
 %>
