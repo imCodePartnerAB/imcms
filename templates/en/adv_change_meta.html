@@ -1,57 +1,47 @@
-<HTML>
-<HEAD>
+<HTML><HEAD>
 <TITLE>Edit pageinfo</TITLE>
-
-<SCRIPT language="Javascript">
-<!--
-function openHelp(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
-}
-//-->
-</SCRIPT>
-
 </HEAD>
 <body bgcolor="#FFFFFF">
-<FORM METHOD="POST" ACTION="SaveMeta">
+<FORM METHOD=POST ACTION="SaveMeta">
     <table border="1" cellspacing="0" cellpadding="2" width="450" align="center">
 		<tr valign="middle" bgcolor="#333366"> 
 			<td colspan="2">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Edit 
 				page info 
-				<input type="HIDDEN" name="doc_type" value="#doc_type#">
-				<input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
-				<input type="HIDDEN" name="parent_meta_id" value="#parent_meta_id#">
-				<input type="HIDDEN" name="meta_id" value="#meta_id#">
+				<input type=HIDDEN name=doc_type value="#doc_type#">
+				<input type=HIDDEN name=doc_menu_no value="#doc_menu_no#">
+				<input type=HIDDEN name=parent_meta_id value="#parent_meta_id#">
+				<input type=HIDDEN name=meta_id value="#meta_id#">
 				#checks#</font></b></td>
 		</tr>
-		<input type="HIDDEN" name="description" size="30" value="" oldvalue="#description#">
+		<input type=hidden name=description size=30 value="" oldvalue="#description#">
 		<tr valign="middle"> 
 			<td width="61" bgcolor="#BABABA" valign="middle"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Header 
-				(in link menu) </font></font><br>
+				&nbsp;(in link &nbsp;menu) </font></font><br>
 			</td>
 			<td valign="middle" bgcolor="#BABABA"> <font size="2"></font> 
-				<input type="TEXT" name="meta_headline" size="60" maxlength="255" value="#meta_headline#">
+				<input type=TEXT name=meta_headline size=60 maxlength="255" value="#meta_headline#">
 			</td>
 		</tr>
 		<tr> 
-			<td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Text 
-				(in link menu)</font></td>
+			<td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Text 
+				&nbsp;(in link &nbsp;menu)</font></td>
 			<td valign="middle" bgcolor="#BABABA"> 
-				<textarea name="meta_text" cols="50" rows="3" maxlength="100">#meta_text#</textarea>
+				<textarea name=meta_text cols="50" rows="3" maxlength="100">#meta_text#</textarea>
 			</td>
 		<tr valign="middle"> 
 			<td width="61" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Image 
-				icon&nbsp; (in link menu) </font><br>
+				&nbsp;icon&nbsp; &nbsp;(in link &nbsp;menu) </font><br>
 			</td>
 			<td valign="middle" bgcolor="#BABABA"> 
-				<input type="TEXT" name="meta_image" size="60" value="#meta_image#">
+				<input type=TEXT name=meta_image size=60 value="#meta_image#">
 			</td>
 		</tr>
 		<tr> 
 			<td width="61" valign="top" height="8" bgcolor="#BABABA">&nbsp;</td>
 			<td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
 				<div align="left"> 
-					<input type="submit"value="OK" name="ok">
-					<input type=reset value="Reset" name="cancel">&nbsp; <a href="javascript:openHelp('39');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+					<input type=submit value="OK" name="ok">
+					<input type=reset value="Reset" name="cancel">
 					<font size="2"></font></div>
 			</td>
 		</tr>
@@ -65,22 +55,19 @@ function openHelp(id){
 				(change when necessary)</font></b></td>
 		</tr>
 		<tr> 
-			<td width="61" valign="middle" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Created</font></td>
-			<td valign="middle" bgcolor="#BABABA"><font size="2"><input TYPE="TEXT" name="date_created" size="11" value="#date_created#" maxlength="10" >
-			<font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Time:</font>
-			<input TYPE="TEXT" name="created_time" size="7" maxlength="5" value="#created_time#">
+			<td width="61" valign="middle" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Created 
+				</font></td>
+			<td valign="middle" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">#date_created# 
 				by #owner#</font></td>
 		</tr>
 		<tr> 
-			<td width="61" valign="middle" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Modified</font></td>
-			<td valign="middle" bgcolor="#BABABA"><font size="2"><input TYPE="TEXT" name="date_modified" size="11" value="#date_modified#" maxlength="10" >
-			<font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Time:</font>
-			<input TYPE="TEXT" name="modified_time" size="7" maxlength="5" value="#modified_time#">
-			</font></td>
+			<td width="61" valign="middle" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Modified 
+				</font></td>
+			<td valign="middle" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">#date_modified#</font></td>
 		</tr>
 		<tr> 
 			<td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Keywords 
-				(for searches)</font></td>
+				&nbsp;(for &nbsp;searches)</font></td>
 			<td valign="middle" bgcolor="#BABABA"> 
 				<input type=TEXT name=classification size=50 value="#classification#" >
 				<font size="2"> <br>
@@ -92,6 +79,18 @@ function openHelp(id){
 				from finding this page</font></font> </td>
 		</tr>
 		<tr> 
+	  <td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Site &nbsp;section</font></td>
+	  <td valign="middle" bgcolor="#BABABA"> 		
+	  	<input type="Hidden" name="current_section_id" value="#current_section_id#">
+		<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Current: #current_section_name# <br>
+		Change to:&nbsp; 
+		<SELECT NAME="change_section" size="1">
+			<option value="-1">No section</option>			  
+			#section_option_list#		
+		</SELECT>		
+		</font><br>		
+	  </td>
+	</tr><tr> 
 			<td width="88" valign="middle" bgcolor="#BABABA"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Share</font></font></td>
 			<td valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
 				<input type=CHECKBOX name=show_meta value="1" #show_meta#>
@@ -101,7 +100,7 @@ function openHelp(id){
 		</tr>
 		<tr valign="middle"> 
 			<td width="61" height="14" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Publish 
-				from </font></td>
+				&nbsp;from </font></td>
 			<td width="*" valign="middle" height="14" bgcolor="#BABABA"><font size="2"> 
 				<input type=TEXT name=activated_date size=13 value="#activated_date#" maxlength="10" >
 				<font face="Verdana, Arial, Helvetica, sans-serif"> <font size="1">(YYYY-MM-DD)</font> 
@@ -111,7 +110,7 @@ function openHelp(id){
 		</tr>
 		<tr valign="middle"> 
 			<td width="61" height="14" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;To 
-				the archives:</font></td>
+				the &nbsp;archives:</font></td>
 			<td width="*" valign="middle" height="14" bgcolor="#BABABA"><font size="2"> 
 				<input type=TEXT name=archived_date size=13 maxlength="10" value="#archived_date#" >
 				<font face="Verdana, Arial, Helvetica, sans-serif"> <font size="1">(YYYY-MM-DD)</font> 
@@ -124,7 +123,7 @@ function openHelp(id){
 		</tr>
 		<tr valign="middle"> 
 			<td width="61" height=2 bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Display 
-				in </font></td>
+				&nbsp;in </font></td>
 			<td width="*" valign="middle" height=14 bgcolor="#BABABA"><font size="2"> 
 				<input type="radio" name="target" value="_self" #_self#>
 				</font><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Same 
@@ -138,15 +137,15 @@ function openHelp(id){
 				<input type="radio" name="target" value="_other" #_other#>
 				</font><font face="Verdana, Arial, Helvetica, sans-serif">Other 
 				frame</font> 
-				<input type="text" name="frame_name" size=20 value="#frame_name#">
+				<input type=text name="frame_name" size=20 value="#frame_name#">
 				</font></td>
 		</tr>
 		<tr> 
 			<td width="61" valign="top" height="8" bgcolor="#BABABA">&nbsp;</td>
 			<td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
 				<div align="left"> 
-					<input type="submit"value="OK" name="ok">
-					<input type="reset" value="Reset" name="cancel">&nbsp; <a href="javascript:openHelp('39');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open Help"></a>
+					<input type=submit value="OK" name="ok">
+					<input type=reset value="Reset" name="cancel">
 				</div>
 			</td>
 		</tr>
