@@ -1574,38 +1574,6 @@ GO
 
 --here is the release of v1_5_0-pre8
 
---adding a new method used by IMCServise to save text in db
-
-CREATE PROCEDURE InsertText
- @meta_id int,
- @name char(15),
- @type int,
- @text text
-
-AS
-
-declare  @number int 
-
- select @number=counter from texts
- where meta_id = @meta_id
- and name = @name
-
-if(@number is null) begin
-     insert into texts (meta_id,name,type,text)
-     values(@meta_id,@name,@type,@text)
-  end
-else begin
-  update texts
-  set text = @text
-  where counter=@number
-  update texts
-  set type=@type
-  where counter=@number
-end
-GO
--- 2001-12-20
-
-
 --this is the stuff needed to create full-text index on the colums we want to search on
 BEGIN TRANSACTION
 SET QUOTED_IDENTIFIER ON
@@ -1737,6 +1705,40 @@ EXEC sp_fulltext_table texts, 'Start_background_updateindex'
 
 GO
 -- 2001-12-20
+
+
+--adding a new method used by IMCServise to save text in db
+
+CREATE PROCEDURE InsertText
+ @meta_id int,
+ @name char(15),
+ @type int,
+ @text text
+
+AS
+
+declare  @number int 
+
+ select @number=counter from texts
+ where meta_id = @meta_id
+ and name = @name
+
+if(@number is null) begin
+     insert into texts (meta_id,name,type,text)
+     values(@meta_id,@name,@type,@text)
+  end
+else begin
+  update texts
+  set text = @text
+  where counter=@number
+  update texts
+  set type=@type
+  where counter=@number
+end
+GO
+-- 2001-12-20
+
+
 
 --this is the new search querry
 
