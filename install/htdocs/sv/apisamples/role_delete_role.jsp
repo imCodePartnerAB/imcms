@@ -4,7 +4,7 @@
 
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
-    UserMapperBean userMapper = imcmsSystem.getUserMapperBean();
+    UserService userMapper = imcmsSystem.getUserMapperBean();
 %>
 Before:<br>
 <%=java.util.Arrays.asList( userMapper.getAllRolesNames() )%>

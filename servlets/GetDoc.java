@@ -25,7 +25,7 @@ import javax.servlet.ServletOutputStream;
 import imcode.util.* ;
 import imcode.util.log.* ;
 import imcode.server.* ;
-import imcode.server.document.Document;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.util.IMCServiceRMI;
 
@@ -92,7 +92,7 @@ public class GetDoc extends HttpServlet {
 
 	HttpSession session = req.getSession(true) ;
 	Object done = session.getAttribute("logon.isDone");  // marker object
-	imcode.server.user.User user = (imcode.server.user.User)done ;
+	imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done ;
 	if (done == null) {
 	    // Check the name and password for validity
 	    String ip = req.getRemoteAddr( ) ;
@@ -136,7 +136,7 @@ public class GetDoc extends HttpServlet {
 	DocumentRequest documentRequest ;
 	Revisits revisits ;
 	String referrer = req.getHeader("Referer") ; // Note, intended misspelling of "Referrer", according to the HTTP spec.
-	Document referringDocument = null ;
+	DocumentDomainObject referringDocument = null ;
 	Perl5Util perlrx = new Perl5Util() ;
 	if (null != referrer && perlrx.match("/meta_id=(\\d+)/",referrer)) {
 	    int referring_meta_id = Integer.parseInt(perlrx.group(1));

@@ -29,7 +29,7 @@ public class TestLdapUserMapper extends UserBaseTestCase {
 
    public void testExistingUserLdapService() {
       final String userName = "hasbra" ;
-      User user = ldapUserMapper.getUser( userName );
+      UserDomainObject user = ldapUserMapper.getUser( userName );
       assertNotNull( user );
       assertEquals( userName, user.getLoginName() );
       assertNull( user.getPassword() );
@@ -44,18 +44,18 @@ public class TestLdapUserMapper extends UserBaseTestCase {
    }
 
    public void testInvalidName() {
-      User user = ldapUserMapper.getUser( "" );
+      UserDomainObject user = ldapUserMapper.getUser( "" );
       assertNull( user );
    }
 
    public void testNonExistingUser() {
-      User user = ldapUserMapper.getUser( "kalle banan som inte finns" );
+      UserDomainObject user = ldapUserMapper.getUser( "kalle banan som inte finns" );
       assertNull( user );
    }
 
    public void testGetRolesForUserLdapService() {
       final String userName = "hasbra" ;
-      User user = ldapUserMapper.getUser( userName );
+      UserDomainObject user = ldapUserMapper.getUser( userName );
       String[] roleNames = ldapUserMapper.getRoleNames( user );
       assertNotNull( roleNames );
       assertTrue( Arrays.asList( roleNames ).contains( LdapUserAndRoleMapper.DEFAULT_LDAP_ROLE ) );

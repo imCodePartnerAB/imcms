@@ -40,7 +40,7 @@ public class ChatViewer extends ChatBase {
 		}
 
 		// Lets get an user object
-		imcode.server.user.User user = super.getUserObj(req,res) ;
+		imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
 		if(user == null) return ;
 
 		if ( !isUserAuthorized( req, res, user ) ){

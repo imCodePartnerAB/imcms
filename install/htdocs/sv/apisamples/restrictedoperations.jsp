@@ -7,8 +7,8 @@
 
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
-    UserMapperBean userMapper = imcmsSystem.getUserMapperBean();
-    UserBean[] allUsers = userMapper.getAllUsers();
+    UserService userMapper = imcmsSystem.getUserMapperBean();
+    User[] allUsers = userMapper.getAllUsers();
     for( int i = 0; i<allUsers.length; i++ ){%>
        <%= allUsers[i] %><%
     }

@@ -38,7 +38,7 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	HttpSession session = req.getSession();
-	imcode.server.user.User user ;
+	imcode.server.user.UserDomainObject user ;
 
 	// Check if the user logged on
 	if ( (user = Check.userLoggedOn(req,res,"StartDoc" )) == null )	{
@@ -207,7 +207,7 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 	return true;
     }
 
-    private StringBuffer createOptionList(HttpServletRequest req, List lines, imcode.server.user.User user ) throws ServletException, IOException {
+    private StringBuffer createOptionList(HttpServletRequest req, List lines, imcode.server.user.UserDomainObject user ) throws ServletException, IOException {
 	StringBuffer buff = new StringBuffer();
 	int counter = 0;
 	Iterator iter = lines.iterator();

@@ -2,7 +2,7 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.*;
 import imcode.server.IMCService;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 import imcode.util.IMCServiceRMI;
 import org.apache.log4j.Logger;
 
@@ -18,14 +18,14 @@ public class ImcmsSetupFilter implements Filter {
     public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
 
         HttpSession session = ((HttpServletRequest)request).getSession( true );
-        User accessor = (User)session.getAttribute( USER );
+        UserDomainObject accessor = (UserDomainObject)session.getAttribute( USER );
 
         initRequestWithImcmsSystemAPI( accessor, request );
 
         chain.doFilter( request, response );
     }
 
-    private void initRequestWithImcmsSystemAPI( User accessor, ServletRequest request ) {
+    private void initRequestWithImcmsSystemAPI( UserDomainObject accessor, ServletRequest request ) {
         if( null != accessor ) {
             try {
                 IMCService service = (IMCService)IMCServiceRMI.getIMCServiceInterface( (HttpServletRequest)request );

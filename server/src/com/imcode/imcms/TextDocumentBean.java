@@ -1,12 +1,11 @@
 package com.imcode.imcms;
 
-import imcode.server.document.Document ;
 import imcode.server.document.DocumentMapper;
 import imcode.server.IMCText;
 
-public class TextDocumentBean extends DocumentBean {
+public class TextDocumentBean extends Document {
 
-    TextDocumentBean( SecurityChecker securityChecker,  Document document, DocumentMapper documentMapper ) {
+    TextDocumentBean( SecurityChecker securityChecker,  imcode.server.document.DocumentDomainObject document, DocumentMapper documentMapper ) {
         super( securityChecker, document, documentMapper );
     }
 

@@ -15,7 +15,7 @@ import imcode.util.* ;
 
 import imcode.server.parser.* ;
 import imcode.server.* ;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 
 public class PutInShoppingCart extends HttpServlet {
 
@@ -160,7 +160,7 @@ public class PutInShoppingCart extends HttpServlet {
 	if (null != req.getParameter("send") || null != req.getParameter("send.x")) {
 	    forwardTo = req.getParameter("send_next") ;
 	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
-	    User user = null ;
+	    UserDomainObject user = null ;
 	    // Check if user logged on
 	    if ( (user=Check.userLoggedOn(req,res,forwardTo))==null ) {
 		return ;
@@ -217,7 +217,7 @@ public class PutInShoppingCart extends HttpServlet {
 	return theDecimalFormat ;
     }
 
-    private void sendMail (HttpServletRequest req, User user) throws IOException {
+    private void sendMail (HttpServletRequest req, UserDomainObject user) throws IOException {
 
 	String host = req.getHeader("Host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;

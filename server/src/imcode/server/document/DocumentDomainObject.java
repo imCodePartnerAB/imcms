@@ -7,7 +7,19 @@ import java.util.Date;
 
 /** Stores all info about a text-internalDocument. **/
 
-public class Document implements IMCConstants {
+public class DocumentDomainObject implements IMCConstants {
+
+    interface DocumentTypes {
+        public static final String TEXT = "2";
+        public static final String URL = "5";
+        public static final String BROWSER_CONTROLL = "6";
+        public static final String HTML = "7";
+        public static final String FILE = "8";
+        public static final String CONFERANCE = "102";
+        public static final String CHAT = "103?";
+        public static final String BILLBOARD = "104";
+        public static final String CALENDAR = "105?";
+    }
 
     private int metaId;
     private int documentType;

@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 
-import com.imcode.imcms.Role;
+import com.imcode.imcms.RoleConstants;
 
 public class TestImcmsAuthenticatorAndUserMapper extends UserBaseTestCase {
    private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
@@ -40,19 +40,19 @@ public class TestImcmsAuthenticatorAndUserMapper extends UserBaseTestCase {
       boolean exists = imcmsAAUM.authenticate( loginName, "user" );
       assertTrue( exists );
 
-      User user = imcmsAAUM.getUser( loginName );
+      UserDomainObject user = imcmsAAUM.getUser( loginName );
       assertTrue( user.getFirstName().equalsIgnoreCase( loginName ) );
       mockImcmsService.verify();
    }
 
    public void testUserRoleUsers() {
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_USER );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{Role.USERS} );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{RoleConstants.USERS} );
 
       String loginName = "user";
-      User user = imcmsAAUM.getUser( loginName );
+      UserDomainObject user = imcmsAAUM.getUser( loginName );
       String[] roleNames = imcmsAAUM.getRoleNames( user );
-      assertTrue( Arrays.asList( roleNames ).contains( Role.USERS ) );
+      assertTrue( Arrays.asList( roleNames ).contains( RoleConstants.USERS ) );
       mockImcmsService.verify();
    }
 
@@ -60,8 +60,8 @@ public class TestImcmsAuthenticatorAndUserMapper extends UserBaseTestCase {
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETALLROLES, new String[]{"0", "Superadmin", "1", "Useradmin"} );
 
       String[] roles = imcmsAAUM.getAllRoleNames();
-      assertTrue( Arrays.asList( roles ).contains( Role.USERS) );
-      assertTrue( Arrays.asList( roles ).contains( Role.SUPERADMIN ) );
+      assertTrue( Arrays.asList( roles ).contains( RoleConstants.USERS) );
+      assertTrue( Arrays.asList( roles ).contains( RoleConstants.SUPERADMIN ) );
       mockImcmsService.verify();
    }
 

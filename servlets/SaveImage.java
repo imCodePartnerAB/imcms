@@ -33,7 +33,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 	String image_url			= imcref.getImageUrl() ;
 	File image_path			= Utility.getDomainPrefPath( "image_path",host ) ;
 
-	imcode.server.user.User user ;
+	imcode.server.user.UserDomainObject user ;
 	String htmlStr = "" ;
 	String submit_name = "" ;
 	String values[] ;
@@ -234,7 +234,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 
 	// Does the session indicate this user already logged in?
 	Object done = session.getAttribute( "logon.isDone" );  // marker object
-	user = (imcode.server.user.User)done ;
+	user = (imcode.server.user.UserDomainObject)done ;
 
 	if( done == null ) {
 	    // No logon.isDone means he hasn't logged in.

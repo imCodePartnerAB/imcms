@@ -7,7 +7,7 @@ import java.rmi.registry.*;
 
 import imcode.util.* ;
 import imcode.server.* ;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 
 public class TemplateAdd extends HttpServlet {
     private final static String CVS_REV = "$Revision$" ;
@@ -23,7 +23,7 @@ public class TemplateAdd extends HttpServlet {
 	String start_url	= imcref.getStartUrl() ;
 
 	// Check if user logged on
-	User user ;
+	UserDomainObject user ;
 	if ( (user = Check.userLoggedOn(req,res,start_url))==null ) {
 	    return ;
 	}
@@ -98,7 +98,7 @@ public class TemplateAdd extends HttpServlet {
 	String start_url	= imcref.getStartUrl() ;
 
 	// Check if user logged on
-	User user ;
+	UserDomainObject user ;
 	if ( (user = Check.userLoggedOn(req,res,start_url))==null ) {
 	    return ;
 	}

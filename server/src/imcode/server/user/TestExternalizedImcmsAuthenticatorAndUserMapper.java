@@ -1,6 +1,6 @@
 package imcode.server.user;
 
-import com.imcode.imcms.Role;
+import com.imcode.imcms.RoleConstants;
 
 import java.util.Arrays;
 
@@ -38,7 +38,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       assertTrue( userAuthenticates );
 
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
-      User user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_ADMIN );
+      UserDomainObject user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_ADMIN );
 
       assertNotNull( user );
       assertTrue( user.getFirstName().equalsIgnoreCase( LOGIN_NAME_ADMIN ) );
@@ -60,7 +60,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
 
-      User user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
+      UserDomainObject user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
 
       assertTrue( "hasse".equalsIgnoreCase( user.getFirstName() ) );
       mockImcmsService.verify();
@@ -74,7 +74,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
 
-      User user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
+      UserDomainObject user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
 
       assertTrue( "hasse".equalsIgnoreCase( user.getFirstName() ) );
       mockImcmsService.verify();
@@ -87,13 +87,13 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"2"} );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{Role.USERS} );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{Role.USERS} );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{RoleConstants.USERS} );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{RoleConstants.USERS} );
 
-      User user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
+      UserDomainObject user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
       String[] userRoles = externalizedImcmsAndUserMapper.getRoleNames( user );
 
-      assertTrue( Arrays.asList( userRoles ).contains( Role.USERS ) );
+      assertTrue( Arrays.asList( userRoles ).contains( RoleConstants.USERS ) );
       assertTrue( Arrays.asList( userRoles ).contains( LdapUserAndRoleMapper.DEFAULT_LDAP_ROLE ) );
       assertTrue( Arrays.asList( userRoles ).contains( "Crisp" ) );
 
@@ -111,8 +111,8 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
    public void testGetRoles() {
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETALLROLES, new String[]{"0", "Superadmin", "1", "Useradmin"} );
       String[] roles = externalizedImcmsAndUserMapper.getAllRoleNames();
-      assertTrue( Arrays.asList( roles ).contains( Role.USERS ) );
-      assertTrue( Arrays.asList( roles ).contains( Role.SUPERADMIN ) );
+      assertTrue( Arrays.asList( roles ).contains( RoleConstants.USERS ) );
+      assertTrue( Arrays.asList( roles ).contains( RoleConstants.SUPERADMIN ) );
       assertTrue( Arrays.asList( roles ).contains( LdapUserAndRoleMapper.DEFAULT_LDAP_ROLE ) );
       mockImcmsService.verify();
    }

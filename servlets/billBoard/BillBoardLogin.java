@@ -53,7 +53,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 		if (super.checkParameters(req, res, params) == false) return ;
 
 		// Lets get the user object
-		imcode.server.user.User user = super.getUserObj(req,res) ;
+		imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
 		if(user == null) return ;
 
 		int testMetaId = Integer.parseInt( params.getProperty("META_ID") );
@@ -108,7 +108,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 		if (super.checkParameters(req, res, params) == false) return ;
 
 		// Lets get the user object
-		imcode.server.user.User user = super.getUserObj(req,res) ;
+		imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
 		if(user == null) return ;
 
 		int testMetaId = Integer.parseInt( params.getProperty("META_ID") );

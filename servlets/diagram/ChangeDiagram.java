@@ -119,7 +119,7 @@ public class ChangeDiagram extends HttpServlet {
     HttpSession session = req.getSession(true);
     // Does the session indicate this user already logged in?
     Object done = session.getAttribute("logon.isDone");  // marker object
-    imcode.server.user.User user = (imcode.server.user.User) done ;
+    imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) done ;
 
     if (done == null) {
       // No logon.isDone means he hasn't logged in.

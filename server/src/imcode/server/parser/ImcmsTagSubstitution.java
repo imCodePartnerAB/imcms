@@ -7,8 +7,8 @@ import javax.servlet.http.Cookie ;
 
 import org.apache.oro.text.regex.* ;
 import imcode.server.* ;
-import imcode.server.document.Document;
-import imcode.server.user.User;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.user.UserDomainObject;
 import imcode.util.* ;
 import java.text.DateFormatSymbols;
 
@@ -64,7 +64,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     private String labelTemplate ;
 
-    private Document document;
+    private DocumentDomainObject document;
 
     private HashMap included_docs = new HashMap() ;
 
@@ -502,7 +502,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
 	String attrib = attributes.getProperty("get");
 	String result = "";
-	User user = documentRequest.getUser();
+	UserDomainObject user = documentRequest.getUser();
 	if (  attrib != null && !"".equals(attrib) ){
 
 	    if ( attrib.equals("firstname") ) {

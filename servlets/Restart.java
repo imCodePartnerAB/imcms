@@ -3,7 +3,7 @@ import javax.servlet.* ;
 import javax.servlet.http.* ;
 import imcode.util.* ;
 import imcode.server.* ;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 
 public class Restart extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
@@ -14,7 +14,7 @@ public class Restart extends HttpServlet {
 		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 		String start_url        	= imcref.getStartUrl() ;
 
-		User user ;
+		UserDomainObject user ;
 		if ( (user = Check.userLoggedOn( req, res, start_url ))==null ) {
 			return;
 		}

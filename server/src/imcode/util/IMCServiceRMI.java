@@ -7,7 +7,7 @@ import java.util.*;
 import javax.servlet.http.*;
 
 import imcode.server.*;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 import imcode.server.Table;
 import imcode.server.ExternalDocType;
 import imcode.server.Image;

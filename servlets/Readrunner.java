@@ -1,6 +1,6 @@
 import imcode.server.parser.* ;
 import imcode.server.* ;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 import imcode.util.* ;
 import imcode.readrunner.* ;
 import java.io.* ;
@@ -36,7 +36,7 @@ public class Readrunner extends HttpServlet {
 	File   readrunnerPath = Utility.getDomainPrefPath("readrunner_preparsed_path",host) ;
 	String readrunnerUrl = Utility.getDomainPref("readrunner_preparsed_url",host) ;
 
-	User user ;
+	UserDomainObject user ;
 	if ( (user=Check.userLoggedOn(req,res,start_url))==null ) {
 	    return ;
 	}
@@ -155,7 +155,7 @@ public class Readrunner extends HttpServlet {
 	}
     }
 
-    private void sendWarningMail(IMCServiceInterface imcref, User user, String host, ReadrunnerUserData rrUserData) {
+    private void sendWarningMail(IMCServiceInterface imcref, UserDomainObject user, String host, ReadrunnerUserData rrUserData) {
 	int max_uses_warning_threshold = rrUserData.getMaxUses() - (int)(rrUserData.getMaxUsesWarningThreshold() * rrUserData.getMaxUses() * 0.01 ) ;
 	Date expiry_date_warning_threshold =
 	    null != rrUserData.getExpiryDate() && 0 != rrUserData.getExpiryDateWarningThreshold()

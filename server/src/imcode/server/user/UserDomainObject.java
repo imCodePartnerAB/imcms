@@ -2,9 +2,9 @@ package imcode.server.user;
 
 import java.util.Hashtable;
 
-public class User extends Hashtable {
+public class UserDomainObject extends Hashtable {
 
-   User() {
+   UserDomainObject() {
    }
 
    /** Good stuff **/

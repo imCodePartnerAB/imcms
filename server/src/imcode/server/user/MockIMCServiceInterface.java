@@ -4,7 +4,7 @@ import com.mockobjects.ExpectationList;
 import com.mockobjects.MockObject;
 import imcode.readrunner.ReadrunnerUserData;
 import imcode.server.*;
-import imcode.server.document.Document;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.shop.ShoppingOrderSystem;
@@ -30,11 +30,11 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       this.sqlUpdateProcedureCalls.addExpected( sqlUpdateProcedure );
    }
 
-   public User verifyUser( String login, String password ) {
+   public UserDomainObject verifyUser( String login, String password ) {
       return null;
    }
 
-   public User getUserById( int userId ) {
+   public UserDomainObject getUserById( int userId ) {
       return null;
    }
 
@@ -42,7 +42,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return false;
    }
 
-   public void saveText( User user, int meta_id, int txt_no, IMCText text, String text_type ) {
+   public void saveText( UserDomainObject user, int meta_id, int txt_no, IMCText text, String text_type ) {
    }
 
    public IMCText getText( int meta_id, int txt_no ) {
@@ -54,74 +54,74 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // Save an image
-   public void saveImage( int meta_id, User user, int img_no, Image image ) {
+   public void saveImage( int meta_id, UserDomainObject user, int img_no, Image image ) {
    }
 
-   public void deleteDocAll( int meta_id, User user ) {
+   public void deleteDocAll( int meta_id, UserDomainObject user ) {
    }
 
-   public void addExistingDoc( int meta_id, User user, int existing_meta_id, int doc_menu_no ) {
+   public void addExistingDoc( int meta_id, UserDomainObject user, int existing_meta_id, int doc_menu_no ) {
    }
 
-   public void saveManualSort( int meta_id, User user, Vector childs, Vector sort_no ) {
+   public void saveManualSort( int meta_id, UserDomainObject user, Vector childs, Vector sort_no ) {
    }
 
-   public void deleteChilds( int meta_id, int menu, User user, String childsThisMenu[] ) {
+   public void deleteChilds( int meta_id, int menu, UserDomainObject user, String childsThisMenu[] ) {
    }
 
    // archive childs
-   public void archiveChilds( int meta_id, User user, String childsThisMenu[] ) {
+   public void archiveChilds( int meta_id, UserDomainObject user, String childsThisMenu[] ) {
    }
 
-   public String[] copyDocs( int meta_id, int doc_menu_no, User user, String[] childsThisMenu, String copyPrefix ) {
+   public String[] copyDocs( int meta_id, int doc_menu_no, UserDomainObject user, String[] childsThisMenu, String copyPrefix ) {
       return new String[0];
    }
 
    // save textdoc
-   public void saveTextDoc( int meta_id, User user, Table doc ) {
+   public void saveTextDoc( int meta_id, UserDomainObject user, Table doc ) {
    }
 
    // Save a url_doc
-   public void saveUrlDoc( int meta_id, User user, Table doc ) {
+   public void saveUrlDoc( int meta_id, UserDomainObject user, Table doc ) {
    }
 
    // Save a new url_doc
-   public void saveNewUrlDoc( int meta_id, User user, Table doc ) {
+   public void saveNewUrlDoc( int meta_id, UserDomainObject user, Table doc ) {
    }
 
    // check if url doc
-   public Table isUrlDoc( int meta_id, User user ) {
+   public Table isUrlDoc( int meta_id, UserDomainObject user ) {
       return null;
    }
 
    // Save a new frameset
-   public void saveNewFrameset( int meta_id, User user, Table doc ) {
+   public void saveNewFrameset( int meta_id, UserDomainObject user, Table doc ) {
    }
 
    // Save a frameset
-   public void saveFrameset( int meta_id, User user, Table doc ) {
+   public void saveFrameset( int meta_id, UserDomainObject user, Table doc ) {
    }
 
    // check if url doc
-   public String isFramesetDoc( int meta_id, User user ) {
+   public String isFramesetDoc( int meta_id, UserDomainObject user ) {
       return null;
    }
 
    // check if external doc
-   public ExternalDocType isExternalDoc( int meta_id, User user ) {
+   public ExternalDocType isExternalDoc( int meta_id, UserDomainObject user ) {
       return null;
    }
 
    // remove child from child table
-   public void removeChild( int meta_id, int parent_meta_id, User user ) {
+   public void removeChild( int meta_id, int parent_meta_id, UserDomainObject user ) {
    }
 
    // activate child to child table
-   public void activateChild( int meta_id, User user ) {
+   public void activateChild( int meta_id, UserDomainObject user ) {
    }
 
    // make child inactive
-   public void inActiveChild( int meta_id, User user ) {
+   public void inActiveChild( int meta_id, UserDomainObject user ) {
    }
 
    // Parse doc replace variables with data
@@ -291,7 +291,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // checkDocAdminRights
-   public boolean checkDocAdminRights( int meta_id, User user ) {
+   public boolean checkDocAdminRights( int meta_id, UserDomainObject user ) {
       return false;
    }
 
@@ -311,15 +311,15 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // check if user can view internalDocument
-   public boolean checkDocRights( int meta_id, User user ) {
+   public boolean checkDocRights( int meta_id, UserDomainObject user ) {
       return false;
    }
 
-   public boolean checkDocAdminRights( int meta_id, User user, int permissions ) {
+   public boolean checkDocAdminRights( int meta_id, UserDomainObject user, int permissions ) {
       return false;
    }
 
-   public boolean checkDocAdminRightsAny( int meta_id, User user, int permissions ) {
+   public boolean checkDocAdminRightsAny( int meta_id, UserDomainObject user, int permissions ) {
       return false;
    }
 
@@ -333,7 +333,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // save templategroup
-   public void saveTemplateGroup( String group_name, User user ) {
+   public void saveTemplateGroup( String group_name, UserDomainObject user ) {
    }
 
    // delete templategroup
@@ -378,11 +378,11 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return 0;
    }
 
-   public String getMenuButtons( int meta_id, User user ) {
+   public String getMenuButtons( int meta_id, UserDomainObject user ) {
       return null;
    }
 
-   public String getMenuButtons( String meta_id, User user ) {
+   public String getMenuButtons( String meta_id, UserDomainObject user ) {
       return null;
    }
 
@@ -411,7 +411,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   public boolean checkUserDocSharePermission( User user, int meta_id ) {
+   public boolean checkUserDocSharePermission( UserDomainObject user, int meta_id ) {
       return false;
    }
 
@@ -451,7 +451,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    public void setPollList( String pollListName, List pollList ) throws IOException {
    }
 
-   public Document getDocument( int meta_id ) {
+   public DocumentDomainObject getDocument( int meta_id ) {
       return null;
    }
 
@@ -467,14 +467,14 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   public boolean checkAdminRights( User user ) {
+   public boolean checkAdminRights( UserDomainObject user ) {
       return false;
    }
 
-   public void setReadrunnerUserData( User user, ReadrunnerUserData rrUserData ) {
+   public void setReadrunnerUserData( UserDomainObject user, ReadrunnerUserData rrUserData ) {
    }
 
-   public ReadrunnerUserData getReadrunnerUserData( User user ) {
+   public ReadrunnerUserData getReadrunnerUserData( UserDomainObject user ) {
       return null;
    }
 
@@ -494,7 +494,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   public Map getUserFlags( User user ) {
+   public Map getUserFlags( UserDomainObject user ) {
       return null;
    }
 
@@ -502,14 +502,14 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   public Map getUserFlags( User user, int type ) {
+   public Map getUserFlags( UserDomainObject user, int type ) {
       return null;
    }
 
-   public void setUserFlag( User user, String flagName ) {
+   public void setUserFlag( UserDomainObject user, String flagName ) {
    }
 
-   public void unsetUserFlag( User user, String flagName ) {
+   public void unsetUserFlag( UserDomainObject user, String flagName ) {
    }
 
    public PollHandlingSystem getPollHandlingSystem() {

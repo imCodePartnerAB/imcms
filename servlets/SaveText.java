@@ -27,7 +27,7 @@ public class SaveText extends HttpServlet {
 	Writer out = res.getWriter( );
 
 	// Check if user logged on
-	imcode.server.user.User user ;
+	imcode.server.user.UserDomainObject user ;
 	if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
 	    return ;
 	}

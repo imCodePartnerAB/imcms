@@ -1,7 +1,6 @@
 package com.imcode.imcms;
 
-import imcode.server.user.User;
-import imcode.server.document.Document;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 
 import java.util.HashSet;
@@ -13,13 +12,13 @@ public class SecurityChecker {
     private final static String USER_ADMIN = "Useradmin";
 
     private DocumentMapper docMapper;
-    private User accessingUser;
+    private imcode.server.user.UserDomainObject accessingUser;
     private HashSet accessorRoles;
 
     private boolean isSuperAdmin;
     private boolean isUserAdmin;
 
-    public SecurityChecker( DocumentMapper docMapper, User accessor, String[] accessorRoles ) {
+    public SecurityChecker( DocumentMapper docMapper, imcode.server.user.UserDomainObject accessor, String[] accessorRoles ) {
         this.docMapper = docMapper;
         this.accessingUser = accessor;
         this.accessorRoles = new HashSet( Arrays.asList( accessorRoles ) );
@@ -46,24 +45,24 @@ public class SecurityChecker {
         }
     }
 
-    void isSuperAdminOrIsUserAdminOrIsSameUser( UserBean userBean ) throws NoPermissionException {
+    void isSuperAdminOrIsUserAdminOrIsSameUser( User userBean ) throws NoPermissionException {
         boolean isSameUser = userBean.getLoginName().equalsIgnoreCase( accessingUser.getLoginName() );
         if( !isSuperAdmin && !isUserAdmin && !isSameUser ) {
             throw new NoPermissionException( "User is not superadmin, useradmin nor the same user." );
         }
     }
 
-    void hasEditPermission( UserBean user ) throws NoPermissionException {
+    void hasEditPermission( User user ) throws NoPermissionException {
         throw new NoPermissionException( "Not implemented yet. Didn't feel like it." );
     }
 
-    public void hasEditPermission( Document document ) throws NoPermissionException  {
+    public void hasEditPermission( DocumentDomainObject document ) throws NoPermissionException  {
         if( !docMapper.hasAdminPermissions( document, accessingUser ) ) {
             throw new NoPermissionException("The logged in user does not have permission to edit internalDocument: " + document.getMetaId() );
         };
     }
 
-    public User getAccessingUser() {
+    public imcode.server.user.UserDomainObject getAccessingUser() {
         return accessingUser;
     }
 }

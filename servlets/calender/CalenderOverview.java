@@ -30,7 +30,7 @@ public class CalenderOverview
        @throws NumberFormatException if thrown when handling the request
     */
     public String makeOverview(HttpServletRequest req, HttpServletResponse res,
-			       Properties prop, imcode.server.user.User user, Vector variables)
+			       Properties prop, imcode.server.user.UserDomainObject user, Vector variables)
 	throws IOException, NumberFormatException {
 
 	HttpSession session = req.getSession(true);
@@ -577,7 +577,7 @@ public class CalenderOverview
     */
     private String parseOverview(HttpServletRequest req, HttpServletResponse res,
 				 java.util.Vector variables, String template_name,
-				 imcode.server.user.User user) throws IOException
+				 imcode.server.user.UserDomainObject user) throws IOException
     {
 	String lang_prefix	= user.getLangPrefix();
 	String host		= req.getHeader("Host");

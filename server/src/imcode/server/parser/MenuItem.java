@@ -3,10 +3,10 @@ package imcode.server.parser ;
 import org.apache.oro.text.regex.* ;
 
 import org.apache.log4j.Category;
-import imcode.server.document.Document;
+import imcode.server.document.DocumentDomainObject;
 
 /** Stores all info about a menuitem **/
-public class MenuItem extends Document {
+public class MenuItem extends DocumentDomainObject {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
 

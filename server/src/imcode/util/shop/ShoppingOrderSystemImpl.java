@@ -4,7 +4,7 @@ import java.util.* ;
 import java.text.* ;
 
 import imcode.server.* ;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 
 import org.apache.log4j.* ;
 
@@ -18,7 +18,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
 	this.imcref = imcref ;
     }
 
-    public ShoppingOrder getShoppingOrderForUserById(User user, int orderId) {
+    public ShoppingOrder getShoppingOrderForUserById(UserDomainObject user, int orderId) {
 	int userId = user.getUserId() ;
 
 	String[] dbData = imcref.sqlProcedure("Shop_GetShoppingOrderForUserById", new String[] { String.valueOf(userId), String.valueOf(orderId) }) ;
@@ -27,7 +27,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
     }
 
     /** Retrieve a List of all ShoppingOrders for a User, sorted by datetime. **/
-    public List getShoppingOrdersForUser(User user) {
+    public List getShoppingOrdersForUser(UserDomainObject user) {
 	int userId = user.getUserId() ;
 	String[][] dbData = imcref.sqlProcedureMulti("Shop_GetShoppingOrdersForUser", new String[] { String.valueOf(userId) }) ;
 
@@ -46,7 +46,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
 
 	int orderId = Integer.parseInt(dbData[0]) ;
 	int userId = Integer.parseInt(dbData[2]) ;
-	User user = imcref.getUserById(userId) ;
+	UserDomainObject user = imcref.getUserById(userId) ;
 	String datetimeStr = dbData[1] ;
 
 	ShoppingOrder theOrder = new ShoppingOrder() ;
@@ -97,7 +97,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
     /** Add a shopping order. **/
     public void addShoppingOrder(ShoppingOrder theOrder) throws NullPointerException {
 
-	User user = theOrder.getUser() ;
+	UserDomainObject user = theOrder.getUser() ;
 	Date datetime = theOrder.getDatetime() ;
 	if (null == user) {
 	    throw new NullPointerException("null == user") ;

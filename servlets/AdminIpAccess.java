@@ -29,7 +29,7 @@ public class AdminIpAccess  extends Administrator {
 	if (super.checkSession(req,res) == false)	return ;
 
 	// Lets get an user object
-	imcode.server.user.User user = super.getUserObj(req,res) ;
+	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
 	if(user == null) {
 	    String header = "Error in AdminIpAccess." ;
 	    String msg = "Couldnt create an user object."+ "<BR>" ;
@@ -84,7 +84,7 @@ public class AdminIpAccess  extends Administrator {
 	if (super.checkSession(req,res) == false) return ;
 
 	// Lets get an user object
-	imcode.server.user.User user = super.getUserObj(req,res) ;
+	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
 	if(user == null) {
 	    String header = "Error in AdminCounter." ;
 	    String msg = "Couldnt create an user object."+ "<BR>" ;

@@ -6,7 +6,7 @@ import java.util.*;
 
 import imcode.external.diverse.*;
 import imcode.server.*;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 
 import org.apache.log4j.*;
@@ -30,7 +30,7 @@ public class AdminUser extends Administrator {
          return;
 
       // Lets get an user object
-      User user = super.getUserObj( req, res );
+      UserDomainObject user = super.getUserObj( req, res );
       if( user == null ) {
          String header = "Error in AdminCounter.";
          String msg = "Couldnt create an user object." + "<BR>";
@@ -120,7 +120,7 @@ public class AdminUser extends Administrator {
       }
 
       // Lets get an user object
-      imcode.server.user.User user = super.getUserObj( req, res );
+      imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
       if( user == null ) {
          String header = "Error in AdminCounter.";
          String msg = "Couldnt create an user object." + "<BR>";
@@ -155,7 +155,7 @@ public class AdminUser extends Administrator {
       } else if( req.getParameter( "CHANGE_USER" ) != null ) {
 
          String userToChangeId = getCurrentUserId( req, res );
-         User userToChange = imcref.getUserById( Integer.parseInt( userToChangeId ) );
+         UserDomainObject userToChange = imcref.getUserById( Integer.parseInt( userToChangeId ) );
 
          if( !userToChange.isImcmsExternal() ) {
             redirectChangeUser( req, res, imcref, user, isUseradmin, session, userToChangeId );
@@ -178,7 +178,7 @@ public class AdminUser extends Administrator {
 
    private void redirectChangeUser( HttpServletRequest req, HttpServletResponse res,
                                     IMCServiceInterface imcref,
-                                    User user,
+                                    UserDomainObject user,
                                     boolean useradmin,
                                     HttpSession session, String userToChangeId ) throws ServletException, IOException {
       // ******* GENERATE AN CHANGE_USER PAGE**********

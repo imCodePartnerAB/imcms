@@ -31,7 +31,7 @@ public class ChangeExternalDoc2 extends HttpServlet {
 		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 		String start_url        	= imcref.getStartUrl() ;
 
-		imcode.server.user.User user ;
+		imcode.server.user.UserDomainObject user ;
 		String htmlStr = "" ;                         	
 		int meta_id ;
 		int parent_meta_id ;

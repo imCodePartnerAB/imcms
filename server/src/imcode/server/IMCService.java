@@ -3,7 +3,7 @@ package imcode.server;
 import imcode.readrunner.ReadrunnerUserData;
 import imcode.server.db.ConnectionPool;
 import imcode.server.db.DBConnect;
-import imcode.server.document.Document;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
@@ -188,11 +188,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Verify a Internet/Intranet user. User data retrived from SQL Database.
      */
 
-    public User verifyUser( String login, String password ) {
-        User result = null;
+    public UserDomainObject verifyUser( String login, String password ) {
+        UserDomainObject result = null;
 
         boolean userAuthenticates = externalizedImcmsAuthAndMapper.authenticate( login, password );
-        User user = externalizedImcmsAuthAndMapper.getUser( login );
+        UserDomainObject user = externalizedImcmsAuthAndMapper.getUser( login );
         if( userAuthenticates ) {
             result = user;
             mainLog.info( "->User '" + (login) + "' successfully logged in." );
@@ -251,9 +251,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return instance;
     }
 
-    public User getUserById( int id ) {
+    public UserDomainObject getUserById( int id ) {
         ImcmsAuthenticatorAndUserMapper userMapper = new ImcmsAuthenticatorAndUserMapper( this );
-        User result = userMapper.getUser( id );
+        UserDomainObject result = userMapper.getUser( id );
         return result;
     }
 
@@ -280,7 +280,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      Returns the menubuttonrow
      */
-    public String getMenuButtons( String meta_id, User user ) {
+    public String getMenuButtons( String meta_id, UserDomainObject user ) {
         // Get the users language prefix
         String lang_prefix = user.getLangPrefix();
 
@@ -343,7 +343,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      Returns the menubuttonrow
      */
-    public String getMenuButtons( int meta_id, User user ) {
+    public String getMenuButtons( int meta_id, UserDomainObject user ) {
         return getMenuButtons( String.valueOf( meta_id ), user );
     }
 
@@ -385,7 +385,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
      **/
 
-    public void saveText( User user, int meta_id, int txt_no, IMCText text, String text_type ) {
+    public void saveText( UserDomainObject user, int meta_id, int txt_no, IMCText text, String text_type ) {
         documentMapper.saveText( text, meta_id, txt_no, user, text_type );
     }
 
@@ -402,7 +402,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Save an imageref.
      */
-    public void saveImage( int meta_id, User user, int img_no, imcode.server.Image image ) {
+    public void saveImage( int meta_id, UserDomainObject user, int img_no, imcode.server.Image image ) {
         String sqlStr = "";
 
         // create a db connection an get meta data
@@ -469,7 +469,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Save template -> text_docs, sort
      */
-    public void saveTextDoc( int meta_id, imcode.server.user.User user, imcode.server.Table doc ) {
+    public void saveTextDoc( int meta_id, imcode.server.user.UserDomainObject user, imcode.server.Table doc ) {
         String sqlStr = "";
 
         DBConnect dbc = new DBConnect( m_conPool );
@@ -500,7 +500,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Delete a doc and all data related. Delete from db and file system.
      */
     /* Fixme:  delete doc from plugin db */
-    public void deleteDocAll( int meta_id, imcode.server.user.User user ) {
+    public void deleteDocAll( int meta_id, imcode.server.user.UserDomainObject user ) {
         String sqlStr = "DocumentDelete " + meta_id;
 
         String filename = meta_id + "_se";
@@ -529,7 +529,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Add a existing doc.
      */
-    public void addExistingDoc( int meta_id, User user, int existing_meta_id, int doc_menu_no ) {
+    public void addExistingDoc( int meta_id, UserDomainObject user, int existing_meta_id, int doc_menu_no ) {
 
         String sqlStr = "AddExistingDocToMenu  " + meta_id + ", " + existing_meta_id + ", " + doc_menu_no;
         int addDoc = sqlUpdateProcedure( sqlStr );
@@ -539,7 +539,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         }
     }
 
-    public void saveManualSort( int meta_id, User user, java.util.Vector childs, java.util.Vector sort_no ) {
+    public void saveManualSort( int meta_id, UserDomainObject user, java.util.Vector childs, java.util.Vector sort_no ) {
         String sqlStr = "";
 
         // create a db connection
@@ -577,7 +577,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Delete childs from a menu.
      */
-    public void deleteChilds( int meta_id, int menu, User user, String childsThisMenu[] ) {
+    public void deleteChilds( int meta_id, int menu, UserDomainObject user, String childsThisMenu[] ) {
         String sqlStr = "";
         String childStr = "[";
         // create a db connection an get meta data
@@ -626,7 +626,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
      @return A String array containing the meta-ids of uncopyable pages.
      **/
-    public String[] copyDocs( int meta_id, int doc_menu_no, User user, String[] childsThisMenu, String copyPrefix ) {
+    public String[] copyDocs( int meta_id, int doc_menu_no, UserDomainObject user, String[] childsThisMenu, String copyPrefix ) {
 
         if( childsThisMenu != null && childsThisMenu.length > 0 ) {
 
@@ -648,7 +648,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Archive childs for a menu.
      **/
-    public void archiveChilds( int meta_id, User user, String childsThisMenu[] ) {
+    public void archiveChilds( int meta_id, UserDomainObject user, String childsThisMenu[] ) {
         String sqlStr = "";
         String childStr = "[";
         // create a db connection an get meta data
@@ -680,7 +680,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Save an url internalDocument.
      */
-    public void saveUrlDoc( int meta_id, User user, imcode.server.Table doc ) {
+    public void saveUrlDoc( int meta_id, UserDomainObject user, imcode.server.Table doc ) {
         String sqlStr = "";
 
         // create a db connection an get meta data
@@ -710,7 +710,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Save a new url internalDocument.
      */
-    public void saveNewUrlDoc( int meta_id, User user, imcode.server.Table doc ) {
+    public void saveNewUrlDoc( int meta_id, UserDomainObject user, imcode.server.Table doc ) {
         String sqlStr = "";
 
         // create a db connection an get meta data
@@ -745,7 +745,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Check if url doc.
      */
-    public imcode.server.Table isUrlDoc( int meta_id, User user ) {
+    public imcode.server.Table isUrlDoc( int meta_id, UserDomainObject user ) {
         String sqlStr = "";
         imcode.server.Table url_doc;
 
@@ -779,7 +779,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Save a new frameset.
      */
-    public void saveNewFrameset( int meta_id, User user, imcode.server.Table doc ) {
+    public void saveNewFrameset( int meta_id, UserDomainObject user, imcode.server.Table doc ) {
         String sqlStr = "";
 
         // create a db connection an get meta data
@@ -809,7 +809,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Save a frameset
      */
-    public void saveFrameset( int meta_id, User user, imcode.server.Table doc ) {
+    public void saveFrameset( int meta_id, UserDomainObject user, imcode.server.Table doc ) {
         String sqlStr = "";
 
         // create a db connection an get meta data
@@ -848,7 +848,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Check if frameset doc.                                                                        *
      */
-    public String isFramesetDoc( int meta_id, User user ) {
+    public String isFramesetDoc( int meta_id, UserDomainObject user ) {
         String sqlStr = "";
         Vector frame_set;
         String html_str = "";
@@ -885,7 +885,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Check if external doc.
      */
-    public ExternalDocType isExternalDoc( int meta_id, User user ) {
+    public ExternalDocType isExternalDoc( int meta_id, UserDomainObject user ) {
         String sqlStr = "";
         ExternalDocType external_doc = null;
 
@@ -920,7 +920,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Remove child from child-table.
      */
-    public void removeChild( int meta_id, int parent_meta_id, User user ) {
+    public void removeChild( int meta_id, int parent_meta_id, UserDomainObject user ) {
         String sqlStr = "";
 
 
@@ -947,7 +947,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Activate child to child-table.
      */
-    public void activateChild( int meta_id, imcode.server.user.User user ) {
+    public void activateChild( int meta_id, imcode.server.user.UserDomainObject user ) {
 
         String sqlStr = "";
 
@@ -974,7 +974,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      Deactivate (sigh) child from child-table.
      **/
-    public void inActiveChild( int meta_id, imcode.server.user.User user ) {
+    public void inActiveChild( int meta_id, imcode.server.user.UserDomainObject user ) {
 
         String sqlStr = "";
 
@@ -1735,7 +1735,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      0 = superadministrator
      */
 
-    public boolean checkAdminRights( imcode.server.user.User user ) {
+    public boolean checkAdminRights( imcode.server.user.UserDomainObject user ) {
 
         // Lets verify that the user who tries to add a new user is an SUPERADMIN
         int currUser_id = user.getUserId();
@@ -1754,8 +1754,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      checkDocAdminRights
      */
-    public boolean checkDocAdminRights( int meta_id, User user ) {
-        Document document = documentMapper.getDocument(meta_id);
+    public boolean checkDocAdminRights( int meta_id, UserDomainObject user ) {
+        DocumentDomainObject document = documentMapper.getDocument(meta_id);
         return documentMapper.hasAdminPermissions(document, user) ;
     }
 
@@ -1763,7 +1763,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      checkDocRights
      */
-    public boolean checkDocRights( int meta_id, User user ) {
+    public boolean checkDocRights( int meta_id, UserDomainObject user ) {
         try {
             DBConnect dbc = new DBConnect( m_conPool );
             dbc.getConnection();
@@ -1792,7 +1792,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      @param user		The user
      @param permission A bitmap containing the permissions.
      */
-    public boolean checkDocAdminRightsAny( int meta_id, User user, int permission ) {
+    public boolean checkDocAdminRightsAny( int meta_id, UserDomainObject user, int permission ) {
         try {
             DBConnect dbc = new DBConnect( m_conPool );
             dbc.getConnection();
@@ -1826,7 +1826,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      @param user		    The user
      @param permission	A bitmap containing the permissions.
      */
-    public boolean checkDocAdminRights( int meta_id, User user, int permission ) {
+    public boolean checkDocAdminRights( int meta_id, UserDomainObject user, int permission ) {
         try {
             DBConnect dbc = new DBConnect( m_conPool );
             dbc.getConnection();
@@ -2136,7 +2136,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      save templategroup
      */
-    public void saveTemplateGroup( String group_name, User user ) {
+    public void saveTemplateGroup( String group_name, UserDomainObject user ) {
         String sqlStr = "";
 
 
@@ -2426,7 +2426,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return this.sqlQueryHash( "GetDocTypes '" + langPrefixStr + "'" );
     }
 
-    public boolean checkUserDocSharePermission( User user, int meta_id ) {
+    public boolean checkUserDocSharePermission( UserDomainObject user, int meta_id ) {
         return sqlProcedure( "CheckUserDocSharePermission " + user.getUserId() + "," + meta_id ).length > 0;
     }
 
@@ -2585,7 +2585,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      @return a imcode.server.internalDocument.Document representation of the internalDocument, or null if there was none.
      @throws IndexOutOfBoundsException if there was no such internalDocument.
      **/
-    public Document getDocument( int meta_id ) throws IndexOutOfBoundsException {
+    public DocumentDomainObject getDocument( int meta_id ) throws IndexOutOfBoundsException {
         return documentMapper.getDocument( meta_id );
     }
 
@@ -2604,7 +2604,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      @param user The id of the user
      @return     The readrunner-user-data for a user, or null if the user had none.
      **/
-    public ReadrunnerUserData getReadrunnerUserData( User user ) {
+    public ReadrunnerUserData getReadrunnerUserData( UserDomainObject user ) {
         int userId = user.getUserId();
         String[] dbData = sqlProcedure( "GetReadrunnerUserDataForUser", new String[]{String.valueOf( userId )} );
         if( 0 == dbData.length ) {
@@ -2643,7 +2643,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      @param user       The user
      @param rrUserData The ReadrunnerUserData-object
      **/
-    public void setReadrunnerUserData( User user, ReadrunnerUserData rrUserData ) {
+    public void setReadrunnerUserData( UserDomainObject user, ReadrunnerUserData rrUserData ) {
         int userId = user.getUserId();
 
         String expiryDateString = null != rrUserData.getExpiryDate() ? new SimpleDateFormat( "yyyy-MM-dd" ).format( rrUserData.getExpiryDate() ) : null;
@@ -2660,7 +2660,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      Set a user flag
      **/
-    public void setUserFlag( User user, String flagName ) {
+    public void setUserFlag( UserDomainObject user, String flagName ) {
         int userId = user.getUserId();
 
         sqlUpdateProcedure( "SetUserFlag", new String[]{"" + userId, flagName} );
@@ -2669,7 +2669,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      Unset a user flag
      **/
-    public void unsetUserFlag( User user, String flagName ) {
+    public void unsetUserFlag( UserDomainObject user, String flagName ) {
         int userId = user.getUserId();
 
         sqlUpdateProcedure( "UnsetUserFlag", new String[]{"" + userId, flagName} );
@@ -2688,7 +2688,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      Get all userflags for a single user
      **/
-    public Map getUserFlags( User user ) {
+    public Map getUserFlags( UserDomainObject user ) {
         int userId = user.getUserId();
         String[] dbData = sqlProcedure( "GetUserFlagsForUser", new String[]{String.valueOf( userId )} );
 
@@ -2707,7 +2707,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      Get all userflags for a single user of a single type
      **/
-    public Map getUserFlags( User user, int type ) {
+    public Map getUserFlags( UserDomainObject user, int type ) {
         int userId = user.getUserId();
         String[] dbData = sqlProcedure( "GetUserFlagsForUserOfType", new String[]{String.valueOf( userId ), String.valueOf( type )} );
 

@@ -80,7 +80,7 @@ public class AdminListDocs extends Administrator {
 	}
 
 	// Lets get an user object
-	imcode.server.user.User user = super.getUserObj( request, response ) ;
+	imcode.server.user.UserDomainObject user = super.getUserObj( request, response ) ;
 
 	if(user == null) {
 	    return ;
@@ -121,7 +121,7 @@ public class AdminListDocs extends Administrator {
 	if (super.checkSession( request , response ) == false) return ;
 
 	// Lets get an user object
-	imcode.server.user.User user = super.getUserObj( request , response ) ;
+	imcode.server.user.UserDomainObject user = super.getUserObj( request , response ) ;
 
 	// lets get ready for errors
 	ErrorMessageGenerator errroMessage = null;

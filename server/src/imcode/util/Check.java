@@ -8,10 +8,10 @@ public class Check extends Object {
 	private final static String CVS_REV="$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 
-	static public imcode.server.user.User userLoggedOn (HttpServletRequest req, HttpServletResponse res, String start_url) throws ServletException, IOException {
+	static public imcode.server.user.UserDomainObject userLoggedOn (HttpServletRequest req, HttpServletResponse res, String start_url) throws ServletException, IOException {
 
 		HttpSession session = req.getSession(true) ;
-		imcode.server.user.User user = (imcode.server.user.User) session.getAttribute("logon.isDone") ;
+		imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
 
 		if (user == null) {
 		//	session.setAttribute("login.target", HttpUtils.getRequestURL(req).toString()) ;

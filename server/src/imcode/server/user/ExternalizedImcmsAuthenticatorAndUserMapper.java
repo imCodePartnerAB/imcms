@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.imcode.imcms.Role;
+import com.imcode.imcms.RoleConstants;
 
 public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authenticator {
    private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
@@ -45,14 +45,14 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
       return userAuthenticatesInImcms || userAuthenticatesInExternal ;
    }
 
-   public User getUser( String loginName ) {
-      User imcmsUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
-      User externalUser = getUserFromOtherUserMapper( loginName );
+   public UserDomainObject getUser( String loginName ) {
+      UserDomainObject imcmsUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
+      UserDomainObject externalUser = getUserFromOtherUserMapper( loginName );
       boolean imcmsUserExists = null != imcmsUser;
       boolean externalUserExists = null != externalUser;
       boolean imcmsUserIsInternal = (null != imcmsUser) && !imcmsUser.isImcmsExternal();
 
-      User result = null;
+      UserDomainObject result = null;
 
       if( !imcmsUserIsInternal && !externalUserExists && !imcmsUserExists ) {
          result = null;
@@ -76,8 +76,8 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
       return result;
    }
 
-   private User getUserFromOtherUserMapper( String loginName ) {
-      User result = null;
+   private UserDomainObject getUserFromOtherUserMapper( String loginName ) {
+      UserDomainObject result = null;
       if( null != externalUserMapper ) {
          result = externalUserMapper.getUser( loginName );
       }
@@ -93,7 +93,7 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
       return result;
    }
 
-   private User synchExternalUserInImcms( String loginName, User externalUser, boolean imcmsUserExists ) {
+   private UserDomainObject synchExternalUserInImcms( String loginName, UserDomainObject externalUser, boolean imcmsUserExists ) {
       externalUser.setImcmsExternal( true );
 
       if( imcmsUserExists ) {
@@ -102,32 +102,32 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
          imcmsAuthenticatorAndUserMapper.addUser( externalUser );
       }
 
-      User synchedUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
+      UserDomainObject synchedUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
       updateRoleAssignments( synchedUser );
       return synchedUser;
    }
 
 
-   private void updateRoleAssignments( User user ) {
-      imcmsAuthenticatorAndUserMapper.addRoleToUser( user, Role.USERS );
+   private void updateRoleAssignments( UserDomainObject user ) {
+      imcmsAuthenticatorAndUserMapper.addRoleToUser( user, RoleConstants.USERS );
 
       String[] externalRoleNames = externalUserMapper.getRoleNames( user );
       for( int i = 0; i < externalRoleNames.length; i++ ) {
          String externalRoleName = externalRoleNames[i];
-         boolean hasNameConflictWithSuperAdmin = Role.SUPERADMIN.equalsIgnoreCase(externalRoleName);
-         boolean hasNameConflictWithUserAdmin = Role.USERADMIN.equalsIgnoreCase(externalRoleName);
+         boolean hasNameConflictWithSuperAdmin = RoleConstants.SUPERADMIN.equalsIgnoreCase(externalRoleName);
+         boolean hasNameConflictWithUserAdmin = RoleConstants.USERADMIN.equalsIgnoreCase(externalRoleName);
          if( !hasNameConflictWithSuperAdmin && !hasNameConflictWithUserAdmin ) {
             imcmsAuthenticatorAndUserMapper.addRoleToUser( user, externalRoleName );
          }
       }
    }
 
-   private void deactivateExternalUserInImcms( String loginName, User imcmsUser ) {
+   private void deactivateExternalUserInImcms( String loginName, UserDomainObject imcmsUser ) {
       imcmsUser.setActive( false );
       imcmsAuthenticatorAndUserMapper.updateUser( loginName, imcmsUser );
    }
 
-   public String[] getRoleNames( User user ) {
+   public String[] getRoleNames( UserDomainObject user ) {
       String[] imcmsRoleNames = imcmsAuthenticatorAndUserMapper.getRoleNames( user );
       String[] externalRoleNames = externalUserMapper.getRoleNames( user );
 

@@ -6,7 +6,7 @@ import java.util.* ;
 import java.text.* ;
 
 import imcode.server.* ;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 import imcode.util.* ;
 
 import imcode.readrunner.* ;
@@ -19,7 +19,7 @@ public class AdminUserReadrunner extends HttpServlet {
     public void doGet (HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
 		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
-		User user = null ;
+		UserDomainObject user = null ;
 
 		if( null == (user = Check.userLoggedOn(req,res,imcref.getStartUrl())) ) {
 		    // User is not logged on
@@ -34,7 +34,7 @@ public class AdminUserReadrunner extends HttpServlet {
 	*/
 		HttpSession session = req.getSession( false );
 		String userToChangeId = (String)session.getAttribute("userToChange");
-		User userToChange = null;
+		UserDomainObject userToChange = null;
 		if ( userToChangeId != null ) {
 			userToChange = imcref.getUserById(Integer.parseInt( userToChangeId ) ) ;
 		}
@@ -46,7 +46,7 @@ public class AdminUserReadrunner extends HttpServlet {
 	throws ServletException, IOException {
 
 		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
-		User user = null ;
+		UserDomainObject user = null ;
 
 		HttpSession session = req.getSession( false );
 		
@@ -57,7 +57,7 @@ public class AdminUserReadrunner extends HttpServlet {
 		
 		String userToChangeId = req.getParameter("user_id");
 		
-		User userToChange = null;
+		UserDomainObject userToChange = null;
 		
 		if ( !("").equals(userToChangeId) ){
 			userToChange = imcref.getUserById(Integer.parseInt(userToChangeId) ) ;
@@ -114,7 +114,7 @@ public class AdminUserReadrunner extends HttpServlet {
 	}
 
 
-    private void displayPage(IMCServiceInterface imcref, User user, User userToChange, HttpServletResponse res)
+    private void displayPage(IMCServiceInterface imcref, UserDomainObject user, UserDomainObject userToChange, HttpServletResponse res)
 	throws IOException {
 
 		// check if user is a Useradmin, adminRole = 2

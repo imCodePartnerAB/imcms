@@ -1,35 +1,34 @@
 package com.imcode.imcms;
 
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
-import imcode.server.user.User;
 
-public class UserMapperBean {
+public class UserService {
 
     private SecurityChecker securityChecker;
     private ImcmsAuthenticatorAndUserMapper internalMapper;
 
-    public UserMapperBean( SecurityChecker securityChecker, ImcmsAuthenticatorAndUserMapper mapper ) {
+    public UserService( SecurityChecker securityChecker, ImcmsAuthenticatorAndUserMapper mapper ) {
         this.securityChecker = securityChecker;
         this.internalMapper = mapper;
     }
 
-    public UserBean[] getAllUsers() throws NoPermissionException {
+    public User[] getAllUsers() throws NoPermissionException {
         securityChecker.loggedIn();
 
-        imcode.server.user.User[] internalUsers = internalMapper.getAllUsers();
-        UserBean[] result = new UserBean[internalUsers.length];
+        imcode.server.user.UserDomainObject[] internalUsers = internalMapper.getAllUsers();
+        User[] result = new User[internalUsers.length];
         for( int i = 0; i < result.length; i++ ) {
-            imcode.server.user.User internalUser = internalUsers[i];
-            result[i] = new UserBean( internalUser );
+            imcode.server.user.UserDomainObject internalUser = internalUsers[i];
+            result[i] = new User( internalUser );
         }
         return result;
     }
 
-    public UserBean getUser( String userLoginName ) throws NoPermissionException {
+    public User getUser( String userLoginName ) throws NoPermissionException {
         securityChecker.loggedIn();
 
-        imcode.server.user.User internalUser = internalMapper.getUser( userLoginName );
-        UserBean result = new UserBean( internalUser );
+        imcode.server.user.UserDomainObject internalUser = internalMapper.getUser( userLoginName );
+        User result = new User( internalUser );
         return result;
     }
 
@@ -39,17 +38,17 @@ public class UserMapperBean {
         return internalMapper.getAllRoleNames();
     }
 
-    public String[] getRoleNames( UserBean user ) throws NoPermissionException {
+    public String[] getRoleNames( User user ) throws NoPermissionException {
         securityChecker.loggedIn();
 
-        UserBean userImpl = user;
+        User userImpl = user;
         return internalMapper.getRoleNames( userImpl.getInternalUser() );
     }
 
-    public void setUserRoles( UserBean user, String[] roleNames ) throws NoPermissionException {
+    public void setUserRoles( User user, String[] roleNames ) throws NoPermissionException {
         securityChecker.isSuperAdminOrIsUserAdminOrIsSameUser( user );
 
-        UserBean userImpl = user;
+        User userImpl = user;
         internalMapper.setUserRoles( userImpl.getInternalUser(), roleNames );
     }
 
@@ -59,14 +58,14 @@ public class UserMapperBean {
         internalMapper.addRole( role );
     }
 
-    public UserBean[] getAllUserWithRole( String roleName ) throws NoPermissionException {
+    public User[] getAllUserWithRole( String roleName ) throws NoPermissionException {
         securityChecker.isSuperAdmin();
 
-        User[] internalUsersWithRole = internalMapper.getAllUsersWithRole( roleName );
-        UserBean[] result = new UserBean[internalUsersWithRole.length];
+        imcode.server.user.UserDomainObject[] internalUsersWithRole = internalMapper.getAllUsersWithRole( roleName );
+        User[] result = new User[internalUsersWithRole.length];
         for( int i = 0; i < internalUsersWithRole.length; i++ ) {
-            User user = internalUsersWithRole[i];
-            result[i] = new UserBean( user );
+            imcode.server.user.UserDomainObject user = internalUsersWithRole[i];
+            result[i] = new User( user );
         }
 
         return result;

@@ -4,8 +4,8 @@ import javax.servlet.http.Cookie ;
 import javax.servlet.http.HttpServletRequest ;
 
 import imcode.server.parser.* ;
-import imcode.server.user.User;
-import imcode.server.document.Document;
+import imcode.server.user.UserDomainObject;
+import imcode.server.document.DocumentDomainObject;
 
 /**
    This class exists to store data about requests for documents in.
@@ -18,15 +18,15 @@ public class DocumentRequest {
     private String   hostName ;
     private String   contextPath ;
 
-    private User     user ;
-    private Document document ;
-    private Document referrer ;
+    private UserDomainObject     user ;
+    private DocumentDomainObject document ;
+    private DocumentDomainObject referrer ;
 
     private IMCServiceInterface serverObject ;
     private Revisits revisits ;
     private Cookie[] cookies;
 
-    public DocumentRequest(IMCServiceInterface serverObject, String remoteAddr, String sessionId, User user, int metaId, Document referrer) {
+    public DocumentRequest(IMCServiceInterface serverObject, String remoteAddr, String sessionId, UserDomainObject user, int metaId, DocumentDomainObject referrer) {
 	this.serverObject = serverObject ;
 	this.remoteAddr   = remoteAddr ;
 	this.sessionId    = sessionId ;
@@ -56,15 +56,15 @@ public class DocumentRequest {
 	return this.sessionId ;
     }
 
-    public User getUser() {
+    public UserDomainObject getUser() {
 	return this.user ;
     }
 
-    public Document getDocument() {
+    public DocumentDomainObject getDocument() {
 	return document ;
     }
 
-    public Document getReferrer() {
+    public DocumentDomainObject getReferrer() {
 	return referrer ;
     }
 

@@ -32,7 +32,7 @@ public class ChangeText extends HttpServlet {
 	String start_url	= imcref.getStartUrl() ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
-	imcode.server.user.User user ;
+	imcode.server.user.UserDomainObject user ;
 
 	res.setContentType("text/html");
 
@@ -55,7 +55,7 @@ public class ChangeText extends HttpServlet {
 
 	// Does the session indicate this user already logged in?
 	Object done = session.getAttribute("logon.isDone");  // marker object
-	user = (imcode.server.user.User)done ;
+	user = (imcode.server.user.UserDomainObject)done ;
 
 	if (done == null) {
 	    // No logon.isDone means he hasn't logged in.

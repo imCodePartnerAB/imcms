@@ -29,10 +29,10 @@ public class Calender extends HttpServlet
        @throws ServletException if the request could not be handled
        @throws IOException if detected when handling the request
     */
-    public imcode.server.user.User checkLogin (HttpServletRequest req, HttpServletResponse res, String start_url)
+    public imcode.server.user.UserDomainObject checkLogin (HttpServletRequest req, HttpServletResponse res, String start_url)
 	throws ServletException, IOException
     {
-	imcode.server.user.User user = Check.userLoggedOn( req,res,start_url );
+	imcode.server.user.UserDomainObject user = Check.userLoggedOn( req,res,start_url );
 	if( user == null )
 	    {
 
@@ -93,7 +93,7 @@ public class Calender extends HttpServlet
     */
     public String parseCalender(HttpServletRequest req, HttpServletResponse res,
 				java.util.Vector variables, String template_name,
-				imcode.server.user.User user) throws IOException
+				imcode.server.user.UserDomainObject user) throws IOException
     {
 	String lang_prefix	= user.getLangPrefix();
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;

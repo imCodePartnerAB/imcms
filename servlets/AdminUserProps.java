@@ -8,7 +8,7 @@ import javax.servlet.http.*;
 import imcode.external.diverse.*;
 import imcode.util.*;
 import imcode.server.*;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.readrunner.*;
 
@@ -31,7 +31,7 @@ public class AdminUserProps extends Administrator {
       HttpSession session = req.getSession( false );
 
       // Lets get an user object
-      imcode.server.user.User user = super.getUserObj( req, res );
+      imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
 
       if( user == null ) {
          String header = "Error in AdminCounter.";
@@ -102,9 +102,9 @@ public class AdminUserProps extends Administrator {
 
    }
 
-   private void showChangeUserPage( String userToChangeId, IMCServiceInterface imcref, Properties tmp_userInfo, Vector tmp_phones, User user, HttpServletResponse res, HttpSession session, Vector phoneTypesV, boolean superadmin, boolean useradmin, HttpServletRequest req ) throws IOException {
+   private void showChangeUserPage( String userToChangeId, IMCServiceInterface imcref, Properties tmp_userInfo, Vector tmp_phones, UserDomainObject user, HttpServletResponse res, HttpSession session, Vector phoneTypesV, boolean superadmin, boolean useradmin, HttpServletRequest req ) throws IOException {
       // get a user object by userToChangeId
-      User userToChange = null;
+      UserDomainObject userToChange = null;
       if( userToChangeId != "" ) {
          userToChange = imcref.getUserById( Integer.parseInt( userToChangeId ) );
       }
@@ -313,7 +313,7 @@ public class AdminUserProps extends Administrator {
       new AdminError( req, res, header, msg );
    }
 
-   private void showAddUserPage( Properties tmp_userInfo, HttpServletResponse res, Vector phoneTypesV, Vector tmp_phones, User user, IMCServiceInterface imcref, HttpServletRequest req, HttpSession session ) throws IOException {
+   private void showAddUserPage( Properties tmp_userInfo, HttpServletResponse res, Vector phoneTypesV, Vector tmp_phones, UserDomainObject user, IMCServiceInterface imcref, HttpServletRequest req, HttpSession session ) throws IOException {
       String login_name = "";
       String password1 = "";
       String password2 = "";
@@ -458,7 +458,7 @@ public class AdminUserProps extends Administrator {
          return;
 
       // Lets get an user object
-      imcode.server.user.User user = super.getUserObj( req, res );
+      imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
       if( user == null ) {
          String header = "Error in AdminCounter.";
          String msg = "Couldnt create an user object." + "<BR>";
@@ -494,7 +494,7 @@ public class AdminUserProps extends Administrator {
       }
 
       // get a user object by userToChangeId
-      imcode.server.user.User userToChange = null;
+      imcode.server.user.UserDomainObject userToChange = null;
       if( userToChangeId != "" ) {
          userToChange = imcref.getUserById( Integer.parseInt( userToChangeId ) );
       }
@@ -888,7 +888,7 @@ public class AdminUserProps extends Administrator {
          if( null != session.getAttribute( "tempRRUserData" ) ) {
             ReadrunnerUserData rrUserData = new ReadrunnerUserData();
             rrUserData = (ReadrunnerUserData)session.getAttribute( "tempRRUserData" );
-            User newUser = imcref.getUserById( Integer.parseInt( newUserId ) );
+            UserDomainObject newUser = imcref.getUserById( Integer.parseInt( newUserId ) );
             imcref.setReadrunnerUserData( newUser, rrUserData );
          }
 
@@ -1426,7 +1426,7 @@ public class AdminUserProps extends Administrator {
     Collects the parameters from the request object
     **/
 
-   public Properties getParameters( HttpServletRequest req, IMCServiceInterface imcref, User user, User userToChange ) throws ServletException, IOException {
+   public Properties getParameters( HttpServletRequest req, IMCServiceInterface imcref, UserDomainObject user, UserDomainObject userToChange ) throws ServletException, IOException {
 
       Properties userInfo = new Properties();
       // Lets get the parameters we know we are supposed to get from the request object
@@ -1567,7 +1567,7 @@ public class AdminUserProps extends Administrator {
    }
 
 
-   boolean checkAdminRights( User user, IMCServiceInterface imcref ) {
+   boolean checkAdminRights( UserDomainObject user, IMCServiceInterface imcref ) {
 
       // check if user is a Superadmin, adminRole = 1
       boolean isSuperadmin = imcref.checkUserAdminrole( user.getUserId(), 1 );
@@ -1597,7 +1597,7 @@ public class AdminUserProps extends Administrator {
 
 
    // Create html for admin_part in AdminUserResp
-   public String createAdminPartHtml( User user, User userToChange, IMCServiceInterface imcref, HttpServletRequest req, HttpServletResponse res, HttpSession session ) {
+   public String createAdminPartHtml( UserDomainObject user, UserDomainObject userToChange, IMCServiceInterface imcref, HttpServletRequest req, HttpServletResponse res, HttpSession session ) {
 
       String html_admin_part = "";
       Vector vec_admin_part = new Vector();

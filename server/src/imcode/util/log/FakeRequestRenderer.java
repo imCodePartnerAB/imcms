@@ -8,7 +8,7 @@ import org.apache.log4j.* ;
 import org.apache.log4j.or.* ;
 
 import imcode.server.* ;
-import imcode.server.document.Document;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.parser.* ;
 
 public class FakeRequestRenderer implements ObjectRenderer {
@@ -22,8 +22,8 @@ public class FakeRequestRenderer implements ObjectRenderer {
 
 	DocumentRequest docReq = (DocumentRequest) o ;
 
-	Document document = docReq.getDocument() ;
-	Document referrer = docReq.getReferrer() ;
+	DocumentDomainObject document = docReq.getDocument() ;
+	DocumentDomainObject referrer = docReq.getReferrer() ;
 	Revisits revisits ;
 
 	StringBuffer result = new StringBuffer(docReq.getRemoteAddr()) ;
@@ -44,7 +44,7 @@ public class FakeRequestRenderer implements ObjectRenderer {
 	return result.toString() ;
     }
 
-    private String renderDocument(Document document) {
+    private String renderDocument(DocumentDomainObject document) {
 
 	String section  = document.getSection() ;
 	int    metaId   = document.getMetaId() ;

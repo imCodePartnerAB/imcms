@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.*;
 
 import imcode.server.*;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 import imcode.server.db.DBConnect;
 import imcode.server.db.ConnectionPool;
 
@@ -448,7 +448,7 @@ public class IMCPool implements IMCPoolInterface {
    /**
     checkDocAdminRights
     */
-   public boolean checkDocAdminRights( int meta_id, User user ) {
+   public boolean checkDocAdminRights( int meta_id, UserDomainObject user ) {
       String sqlStr = "";
       // is user superadmin?
       sqlStr = "select role_id from users,user_roles_crossref\n";

@@ -99,7 +99,7 @@ public class PostcardServlet extends HttpServlet {
 
 	HttpSession session = req.getSession(true);
 	Object done = session.getAttribute("logon.isDone");
-	imcode.server.user.User user = (imcode.server.user.User) done ;
+	imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) done ;
 
 	String qLine = "1";
 	String metaId ="";
@@ -263,7 +263,7 @@ public class PostcardServlet extends HttpServlet {
 
 	HttpSession session = req.getSession(true);
 	Object done = session.getAttribute("logon.isDone");
-	imcode.server.user.User user = (imcode.server.user.User) done ;
+	imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) done ;
 
 	// Since our templates are located into the 105 folder, we'll have to hang on 105
 	File templateLib = new File(imcref.getTemplateHome(), user.getLangPrefix());

@@ -24,7 +24,7 @@ private static void redirectToAdminUser (HttpServletRequest request, HttpServlet
 	response.sendRedirect( url );
 }
 
-private static void updateUserRoles( HttpServletRequest request, UserMapperBean userMapper, UserBean user ) throws NoPermissionException {
+private static void updateUserRoles( HttpServletRequest request, UserService userMapper, User user ) throws NoPermissionException {
 	String[] roleNames = request.getParameterValues(FORM_SELECT_ROLES) ;
 	userMapper.setUserRoles(user,roleNames) ;
 }
@@ -33,10 +33,10 @@ private static void updateUserRoles( HttpServletRequest request, UserMapperBean 
 %><%
 
 ContentManagementSystem  imcms = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
-UserMapperBean  userMapper = imcms.getUserMapperBean();
+UserService  userMapper = imcms.getUserMapperBean();
 
 String userLoginName = request.getParameter( WebAppGlobalConstants.USER_LOGIN_NAME );
-UserBean user = userMapper.getUser( userLoginName );
+User user = userMapper.getUser( userLoginName );
 
 if ( buttonPressed(request, ACTION_CANCEL) ) {
 	redirectToAdminUser(request,response) ;

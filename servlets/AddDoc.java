@@ -32,7 +32,7 @@ public class AddDoc extends HttpServlet {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 	String start_url	= imcref.getStartUrl() ;
 
-	imcode.server.user.User user ;
+	imcode.server.user.UserDomainObject user ;
 
 	res.setContentType ( "text/html" );
 	Writer out = res.getWriter ( );

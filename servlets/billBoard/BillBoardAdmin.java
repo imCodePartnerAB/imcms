@@ -88,7 +88,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	if (super.checkSession(req,res) == false)	return ;
 
 	// Lets get the user object
-	imcode.server.user.User user = super.getUserObj(req,res) ;
+	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
 	if(user == null) return ;
 
 	if ( !isUserAuthorized( req, res, user ) ) {
@@ -567,7 +567,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	}
 
 	// Lets get the user object
-	imcode.server.user.User user = super.getUserObj(req,res) ;
+	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
 	if(user == null) return ;
 
 	if ( !isUserAuthorized( req, res, user ) ) {

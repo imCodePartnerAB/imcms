@@ -6,7 +6,7 @@ import javax.servlet.http.*;
 
 import imcode.util.*;
 import imcode.server.*;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 import imcode.server.parser.ParserParameters;
 
 import org.apache.log4j.*;
@@ -37,7 +37,7 @@ public class AdminDoc extends HttpServlet {
         String servlet_url = Utility.getDomainPref( "servlet_url", host );
         // Find the start-page
         int start_doc = imcref.getSystemData().getStartDocument();
-        imcode.server.user.User user;
+        imcode.server.user.UserDomainObject user;
         String htmlStr = "";
         int meta_id;
         String sqlStr;
@@ -69,7 +69,7 @@ public class AdminDoc extends HttpServlet {
         }
     }
 
-    public static String adminDoc( int meta_id, int parent_meta_id, User user, HttpServletRequest req, HttpServletResponse res ) throws IOException {
+    public static String adminDoc( int meta_id, int parent_meta_id, UserDomainObject user, HttpServletRequest req, HttpServletResponse res ) throws IOException {
 
         IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
         String start_url = imcref.getStartUrl();

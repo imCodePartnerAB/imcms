@@ -72,7 +72,7 @@ public class ChatBase extends HttpServlet {
     }
 
     //peter keep
-    protected Chat createChat(HttpServletRequest req, imcode.server.user.User user, int metaId)throws ServletException, IOException{
+    protected Chat createChat(HttpServletRequest req, imcode.server.user.UserDomainObject user, int metaId)throws ServletException, IOException{
 	IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;
 
 	//lets get the standard stuff
@@ -198,7 +198,7 @@ public class ChatBase extends HttpServlet {
        Returns an user object. If an error occurs, an errorpage will be generated.
     */
 
-    protected imcode.server.user.User getUserObj(HttpServletRequest req,
+    protected imcode.server.user.UserDomainObject getUserObj(HttpServletRequest req,
 					    HttpServletResponse res) throws ServletException, IOException
     {
 
@@ -209,7 +209,7 @@ public class ChatBase extends HttpServlet {
 		HttpSession session = req.getSession(true);
 		// Does the session indicate this user already logged in?
 		Object done = session.getAttribute("logon.isDone");  // marker object
-		imcode.server.user.User user = (imcode.server.user.User) done ;
+		imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) done ;
 
 		return user ;
 	    }
@@ -282,7 +282,7 @@ public class ChatBase extends HttpServlet {
 	HttpSession session = req.getSession(true);
 	// Does the session indicate this user already logged in?
 	Object done = session.getAttribute("logon.isDone");  // marker object
-	imcode.server.user.User user = (imcode.server.user.User) done ;
+	imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) done ;
 
 	if (done == null) {
 	    // No logon.isDone means he hasn't logged in.
@@ -334,7 +334,7 @@ public class ChatBase extends HttpServlet {
 
     // *************************** ADMIN RIGHTS FUNCTIONS **************************
 
-    protected boolean getAdminRights(IMCServiceInterface imcref, String metaId, imcode.server.user.User user)
+    protected boolean getAdminRights(IMCServiceInterface imcref, String metaId, imcode.server.user.UserDomainObject user)
     {
 	try {
 	    return userHasAdminRights( imcref, Integer.parseInt( metaId ), user );
@@ -351,7 +351,7 @@ public class ChatBase extends HttpServlet {
        1 = administrator
        0 = superadministrator
     */
-    protected boolean checkAdminRights(IMCServiceInterface imcref, imcode.server.user.User user)
+    protected boolean checkAdminRights(IMCServiceInterface imcref, imcode.server.user.UserDomainObject user)
     {
 	// Lets verify that the user who tries to add a new user is an SUPERADMIN
 	int currUser_id = user.getUserId() ;
@@ -379,7 +379,7 @@ public class ChatBase extends HttpServlet {
 	// Lets get serverinformation
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
-	imcode.server.user.User user = getUserObj(req,res) ;
+	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
 	if(user == null)
 	    {
 		this.log("CheckadminRights: an error occured, getUserObj") ;
@@ -594,7 +594,7 @@ public class ChatBase extends HttpServlet {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;
 
-	imcode.server.user.User user = getUserObj(req,res) ;
+	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
 	String metaId = this.getMetaId(req) ;
 	if( metaId == null)
 	    {
@@ -657,7 +657,7 @@ public class ChatBase extends HttpServlet {
      */
 
     //används av bla ChatViewer
-    protected boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, imcode.server.user.User user )
+    protected boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, imcode.server.user.UserDomainObject user )
 	throws ServletException, IOException
     {
 
@@ -697,7 +697,7 @@ public class ChatBase extends HttpServlet {
      * @param metaId conference metaId
      * @param user
      */
-    protected boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, int metaId, imcode.server.user.User user )
+    protected boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, int metaId, imcode.server.user.UserDomainObject user )
 	throws ServletException, IOException
     {
 
@@ -728,7 +728,7 @@ public class ChatBase extends HttpServlet {
      * @param user
      */
     protected boolean userHasRightToEdit( IMCServiceInterface imcref, int metaId,
-					  imcode.server.user.User user ) throws java.io.IOException
+					  imcode.server.user.UserDomainObject user ) throws java.io.IOException
     {
 
 	return ( imcref.checkDocRights( metaId, user ) &&
@@ -742,7 +742,7 @@ public class ChatBase extends HttpServlet {
      * @param user
      */
     protected boolean userHasAdminRights( IMCServiceInterface imcref, int metaId,
-					  imcode.server.user.User user ) throws java.io.IOException
+					  imcode.server.user.UserDomainObject user ) throws java.io.IOException
     {
 	return ( imcref.checkDocAdminRights( metaId, user ) &&
 		 imcref.checkDocAdminRights( metaId, user, 65536 ) );

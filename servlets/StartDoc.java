@@ -7,7 +7,7 @@ import java.rmi.* ;
 import imcode.util.* ;
 import imcode.util.poll.* ;
 import imcode.server.* ;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 
 /**
    Start servlet in the system.
@@ -26,7 +26,7 @@ public class StartDoc extends HttpServlet {
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 	long time = System.currentTimeMillis() ;
-	imcode.server.user.User user ;
+	imcode.server.user.UserDomainObject user ;
 	String htmlStr = "" ;
 	int meta_id ;
 	String test = "" ;
@@ -41,7 +41,7 @@ public class StartDoc extends HttpServlet {
 
 	// Does the session indicate this user already logged in?
 	Object done = session.getAttribute( "logon.isDone" );  // marker object
-	user = (imcode.server.user.User)done ;
+	user = (imcode.server.user.UserDomainObject)done ;
 
 	if( done == null ) {
 
@@ -99,7 +99,7 @@ public class StartDoc extends HttpServlet {
     /**
        Check if user exist in database
     */
-    static protected imcode.server.user.User allowUser( String user_name, String passwd, String host ) throws IOException {
+    static protected imcode.server.user.UserDomainObject allowUser( String user_name, String passwd, String host ) throws IOException {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 
 	// user information
@@ -109,9 +109,9 @@ public class StartDoc extends HttpServlet {
     /**
        Ip login  - check if user exist in ip-table
     */
-    static protected imcode.server.user.User ipAssignUser( String remote_ip , String host) throws IOException {
+    static protected imcode.server.user.UserDomainObject ipAssignUser( String remote_ip , String host) throws IOException {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
-	imcode.server.user.User user = null;
+	imcode.server.user.UserDomainObject user = null;
 
 	long ip = Utility.ipStringToLong(remote_ip) ;
 
@@ -139,7 +139,7 @@ public class StartDoc extends HttpServlet {
     }
 	
 
-    static void incrementSessionCounter(IMCServiceInterface imcref, User user, HttpServletRequest req) throws IOException {
+    static void incrementSessionCounter(IMCServiceInterface imcref, UserDomainObject user, HttpServletRequest req) throws IOException {
 		if (!( "user".equalsIgnoreCase(user.getLoginName())
 		       && req.getParameter("no_count")!=null) ) {
 		    // Only increase the login counter if the user

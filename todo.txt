@@ -1,35 +1,31 @@
-Lennart:
-- Vart borde api sidorna ligga?
-- Går det att bestämma vilken url man ska till efter inloggning beroende på vilken sida man loggar in från?
-
 Christoffer:
 - Säkerheten och *.jsp sidor. Ska vi lägga loginfilter på alla *.jsp sidor? Eller *.*, går det?
-- Namnen på api, paket, user userdb etc
-- servlet.jar, vilken version ska vara incheckad? Någon över huvudtaget?
-- Servlets in i paket, och fixa om urlerna till att döljas för surfaren?
+- Namnen på paket och "Den inloggade användaren"
 
 Hillar, prioritera
-(?) Include av externa system
-(?) "" password
 (?) Inloggningschecken till filtret
-(?) Markera roller som externa så att de kan tas bort ifall de försvinner
-(?) Hantering av extern användare, useradmin.jsp, och rollerna
+(?) Duplicering av APIet i Servletarna
 
 API:et (prio)
+(1,3) Include av externa system
 (1) Visa behörighet för sida
+(2) "" password
 (2) Skapa behörighet på viss sida
-(2) Skapa ny sida med valfri dokument-typ i valfri meny på valfri sida
+(2) Skapa ny sida med valfri dokument-typ i valfri meny på valfri sida  (AdminDoc->SaveNewMeta)
+? Hillar, alla typer?
 (2) Skapa/ändra docinfo för valfri sida
 (2) Ange formatmall och format-grupp för valfri sida
 (2) Ange documentnummer för valfri sida och valfri includ tag
 (2) API: förhindra tilldelning av User (döpa om? mejla Hillar och Lennart)
 (3) Visa/tilldela vilka roller en användare som är user admin får administrera
+(4) Hantering av extern användare, useradmin.jsp, och rollerna, useradmin
 (4) Visa behöriga användare för viss sida
 (4) Gör det möjligt att öppna upp säkerheten
 (4) Skapa ny avdelning
 (4) Ta bort roll från användare
 
 Snarast
+- Servlets in i paket, och fixa om urlerna till att döljas för surfaren
 - Gå igenom alla FIXME och TODO
 - Använd API:et i servletarna istället för hacken som nu finns där
 - Session och inloggning koncentrerat till en plats.

@@ -7,7 +7,7 @@
 The first field in document <%= metaId %> has content:<br>
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
-    DocumentMapperBean documentMapper = imcmsSystem.getDocumentMapper();
+    DocumentService documentMapper = imcmsSystem.getDocumentMapper();
     TextDocumentBean document = (TextDocumentBean)documentMapper.getDocument(metaId) ;
     TextDocumentBean.TextField textField = document.getTextField(2) ;
     out.println(textField.getHtmlFormattedText()) ;

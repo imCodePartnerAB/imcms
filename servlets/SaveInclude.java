@@ -2,7 +2,7 @@ import javax.servlet.* ;
 import javax.servlet.http.* ;
 
 import imcode.server.* ;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 
 import imcode.util.Check ;
 import imcode.util.Utility ;
@@ -37,7 +37,7 @@ public class SaveInclude extends HttpServlet {
 
 	Writer out = res.getWriter() ;
 
-	imcode.server.user.User user ;
+	imcode.server.user.UserDomainObject user ;
 
 	String meta_id_str = req.getParameter("meta_id") ;
 	int meta_id = Integer.parseInt(meta_id_str) ;
@@ -87,7 +87,7 @@ public class SaveInclude extends HttpServlet {
 	return ;
     }
 
-    protected void sendPermissionDenied(IMCServiceInterface imcref, Writer out, int meta_id, User user) throws IOException {
+    protected void sendPermissionDenied(IMCServiceInterface imcref, Writer out, int meta_id, UserDomainObject user) throws IOException {
 	Vector vec = new Vector(2) ;
 	vec.add("#meta_id#") ;
 	vec.add(String.valueOf(meta_id)) ;
@@ -95,7 +95,7 @@ public class SaveInclude extends HttpServlet {
 	out.write(htmlStr) ;
     }
 
-    protected void sendBadId(IMCServiceInterface imcref, Writer out, int meta_id, User user) throws IOException {
+    protected void sendBadId(IMCServiceInterface imcref, Writer out, int meta_id, UserDomainObject user) throws IOException {
 	Vector vec = new Vector(2) ;
 	vec.add("#meta_id#") ;
 	vec.add(String.valueOf(meta_id)) ;

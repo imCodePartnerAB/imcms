@@ -60,7 +60,7 @@ public class Administrator extends HttpServlet {
        Returns an user object
     */
 
-    protected static imcode.server.user.User getUserObj(HttpServletRequest req,
+    protected static imcode.server.user.UserDomainObject getUserObj(HttpServletRequest req,
 						   HttpServletResponse res) throws ServletException, IOException {
 
 	if(checkSession(req,res) == true) {
@@ -69,7 +69,7 @@ public class Administrator extends HttpServlet {
 	    HttpSession session = req.getSession(true);
 	    // Does the session indicate this user already logged in?
 	    Object done = session.getAttribute("logon.isDone");  // marker object
-	    imcode.server.user.User user = (imcode.server.user.User) done ;
+	    imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) done ;
 	    return user ;
 	} else
 	    return null ;
@@ -87,7 +87,7 @@ public class Administrator extends HttpServlet {
 	HttpSession session = req.getSession(true);
 	// Does the session indicate this user already logged in?
 	Object done = session.getAttribute("logon.isDone");  // marker object
-	imcode.server.user.User user = (imcode.server.user.User) done ;
+	imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) done ;
 
 	if (done == null) {
 	    // No logon.isDone means he hasn't logged in.
@@ -116,7 +116,7 @@ public class Administrator extends HttpServlet {
 	throws ServletException, IOException {
 
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
-	imcode.server.user.User user = getUserObj(req,res) ;
+	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
 	if(user == null) {
 	    return false ;
 	} else {
@@ -132,7 +132,7 @@ public class Administrator extends HttpServlet {
 
        Example : D:\apache\htdocs\templates\se\admin\
     */
-    public File getAdminTemplateFolder (IMCServiceInterface imcref, imcode.server.user.User user) throws ServletException, IOException {
+    public File getAdminTemplateFolder (IMCServiceInterface imcref, imcode.server.user.UserDomainObject user) throws ServletException, IOException {
 
 	// Since our templates are located into the admin folder, we'll have to hang on admin
 	File templateLib = imcref.getInternalTemplateFolder(-1) ;
@@ -153,7 +153,7 @@ public class Administrator extends HttpServlet {
 
 	// Lets get the path to the admin templates folder
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
-	imcode.server.user.User user = getUserObj(req,res) ;
+	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
 	File templateLib = this.getAdminTemplateFolder(imcref, user) ;
 
 

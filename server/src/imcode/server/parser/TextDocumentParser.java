@@ -8,8 +8,8 @@ import org.apache.oro.text.regex.* ;
 
 import imcode.server.parser.* ;
 import imcode.server.* ;
-import imcode.server.document.Document;
-import imcode.server.user.User;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.user.UserDomainObject;
 import imcode.server.db.DBConnect;
 import imcode.server.db.ConnectionPool;
 import imcode.util.* ;
@@ -92,11 +92,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	try {
 	    long totaltime     = System.currentTimeMillis() ;
 
-	    Document myDoc     = documentRequest.getDocument();
+	    DocumentDomainObject myDoc     = documentRequest.getDocument();
 	    int meta_id        = myDoc.getMetaId() ;
 	    String meta_id_str = String.valueOf(meta_id) ;
 
-	    User user          = documentRequest.getUser() ;
+	    UserDomainObject user          = documentRequest.getUser() ;
 	    int user_id        = user.getUserId() ;
 	    String user_id_str = String.valueOf(user_id) ;
 

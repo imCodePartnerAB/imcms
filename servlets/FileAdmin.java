@@ -5,7 +5,7 @@ import javax.servlet.http.*;
 
 import imcode.util.* ;
 import imcode.server.* ;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 
 import org.apache.log4j.Category;
 
@@ -26,7 +26,7 @@ public class FileAdmin extends HttpServlet {
 	String start_url	= imcref.getStartUrl() ;
 
 	// Check if user logged on
-	User user ;
+	UserDomainObject user ;
 	if ( (user = Check.userLoggedOn(req,res,start_url))==null ) {
 	    return ;
 	}
@@ -86,7 +86,7 @@ public class FileAdmin extends HttpServlet {
 	String rootpaths			= Utility.getDomainPref( "fileadmin_rootpaths",host ) ;
 	String start_url	= imcref.getStartUrl() ;
 
-	User user ;
+	UserDomainObject user ;
 	if ( (user = Check.userLoggedOn(req,res,start_url))==null ) {
 	    return ;
 	}
@@ -792,7 +792,7 @@ public class FileAdmin extends HttpServlet {
 	return result ;
     }
 
-    private String parseFileAdmin (User user, String host, File fd1, File fd2) throws IOException {
+    private String parseFileAdmin (UserDomainObject user, String host, File fd1, File fd2) throws IOException {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 	String rootpaths			= Utility.getDomainPref( "fileadmin_rootpaths",host ) ;
 

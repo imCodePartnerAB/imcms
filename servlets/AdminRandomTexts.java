@@ -38,7 +38,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 	if (super.checkSession(req,res) == false)	return ;
 
 	// Lets get an user object
-	imcode.server.user.User user = super.getUserObj(req,res) ;
+	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
 	if(user == null){
 	    String header = "Error in AdminRandomTexts." ;
 	    String msg = "Couldnt create an user object."+ "<BR>" ;
@@ -96,7 +96,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
-	imcode.server.user.User user ;
+	imcode.server.user.UserDomainObject user ;
 
 	// Check if the user logged on
 	if ((user = Check.userLoggedOn(req,res,"StartDoc" )) == null ){

@@ -45,7 +45,7 @@ public class AdminRoles extends Administrator {
 	if (super.checkSession(req,res) == false)	return ;
 
 	// Lets get an user object
-	imcode.server.user.User user = super.getUserObj(req,res) ;
+	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
 
 	if(user == null) {
 	    String header = "Error in AdminRoles." ;
@@ -103,7 +103,7 @@ public class AdminRoles extends Administrator {
 	if (super.checkSession(req,res) == false) return ;
 
 	// Lets get an user object
-	imcode.server.user.User user = super.getUserObj(req,res) ;
+	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
 	if(user == null) {
 	    String header = "Error in AdminRoles." ;
 	    String msg = "Couldnt create an user object."+ "<BR>" ;

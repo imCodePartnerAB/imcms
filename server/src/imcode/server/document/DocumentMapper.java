@@ -2,7 +2,7 @@ package imcode.server.document;
 
 import imcode.server.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.log4j.Logger;
 
@@ -35,8 +35,8 @@ public class DocumentMapper {
         this.imcmsAAUM = imcmsAAUM;
     }
 
-    public Document getDocument( int metaId ) {
-        Document document = null;
+    public DocumentDomainObject getDocument( int metaId ) {
+        DocumentDomainObject document = null;
         try {
             String[] params = new String[]{String.valueOf(metaId)};
             String[] result = service.sqlProcedure( SPROC_GET_DOCUMENT_INFO, params );
@@ -49,7 +49,7 @@ public class DocumentMapper {
             DateFormat dateform = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
             //ok lets set all the internalDocument stuff
             try {
-                document = new Document();
+                document = new DocumentDomainObject();
                 document.setMetaId( Integer.parseInt( result[0] ) );
                 document.setDocumentType( Integer.parseInt( result[2] ) );
             } catch( NumberFormatException nfe ) {
@@ -128,7 +128,7 @@ public class DocumentMapper {
         return service.sqlProcedureStr( SPROC_GET_FILE_NAME, params );
     }
 
-    public Map getAllRolesMappedToPermissions( Document document ) {
+    public Map getAllRolesMappedToPermissions( DocumentDomainObject document ) {
         Map result = new HashMap();
         String[] params = {String.valueOf( document.getMetaId() ), null};
         String[] sprocResult = service.sqlProcedure( SPROC_GET_USER_ROLES_DOC_PERMISSONS, params );
@@ -142,7 +142,7 @@ public class DocumentMapper {
         return result;
     }
 
-    public boolean hasAdminPermissions( Document document, User user ) {
+    public boolean hasAdminPermissions( DocumentDomainObject document, UserDomainObject user ) {
 
         boolean result = false;
 
@@ -175,7 +175,7 @@ public class DocumentMapper {
         return result;
     }
 
-    public IMCText getTextField( Document document, int textFieldIndexInDocument ) {
+    public IMCText getTextField( DocumentDomainObject document, int textFieldIndexInDocument ) {
         return service.getText( document.getMetaId(), textFieldIndexInDocument );
     }
 
@@ -203,7 +203,7 @@ public class DocumentMapper {
         }
     }
 
-    public void saveText( IMCText text, int meta_id, int txt_no, User user, String text_type ) {
+    public void saveText( IMCText text, int meta_id, int txt_no, UserDomainObject user, String text_type ) {
         String textstring = text.getText();
 
         // update text

@@ -38,7 +38,7 @@ public class SaveNewMeta extends HttpServlet {
 	String start_url	= imcref.getStartUrl() ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
-	imcode.server.user.User user ;
+	imcode.server.user.UserDomainObject user ;
 	String htmlStr = "" ;
 	String submit_name = "" ;
 	String search_string = "" ;

@@ -1,17 +1,17 @@
 package com.imcode.imcms;
 
 import imcode.server.IMCText;
-import imcode.server.document.Document;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 
 import java.util.Map;
 
-public class DocumentBean {
+public class Document {
     protected SecurityChecker securityChecker;
-    protected Document internalDocument;
+    protected DocumentDomainObject internalDocument;
     protected DocumentMapper internalDocumentMapper;
 
-    public DocumentBean( SecurityChecker securityChecker, Document document, DocumentMapper mapper ) {
+    public Document( SecurityChecker securityChecker, DocumentDomainObject document, DocumentMapper mapper ) {
         this.securityChecker = securityChecker;
         this.internalDocument = document;
         this.internalDocumentMapper = mapper;

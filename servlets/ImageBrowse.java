@@ -38,7 +38,7 @@ public class ImageBrowse extends HttpServlet {
 	HttpSession session = req.getSession(true);
 
 	// Does the session indicate this user already logged in?
-	imcode.server.user.User user  = (imcode.server.user.User)session.getAttribute("logon.isDone");  // marker object
+	imcode.server.user.UserDomainObject user  = (imcode.server.user.UserDomainObject)session.getAttribute("logon.isDone");  // marker object
 
 	if (user == null) {
 		// No logon.isDone means he hasn't logged in.
@@ -65,7 +65,7 @@ public class ImageBrowse extends HttpServlet {
 
 	// Get the session
 	HttpSession session = req.getSession(false);
-	imcode.server.user.User user  = (imcode.server.user.User)session.getAttribute("logon.isDone");  // marker object
+	imcode.server.user.UserDomainObject user  = (imcode.server.user.UserDomainObject)session.getAttribute("logon.isDone");  // marker object
 
 
 	String meta_id = req.getParameter("meta_id");
@@ -333,7 +333,7 @@ public class ImageBrowse extends HttpServlet {
 
        Example : D:\apache\htdocs\templates\se\admin\
     */
-    public static File getAdminTemplateFolder (IMCServiceInterface imcref, imcode.server.user.User user) throws ServletException, IOException {
+    public static File getAdminTemplateFolder (IMCServiceInterface imcref, imcode.server.user.UserDomainObject user) throws ServletException, IOException {
 
 	// Since our templates are located into the admin folder, we'll have to hang on admin
 	File templateLib = imcref.getInternalTemplateFolder(-1) ;

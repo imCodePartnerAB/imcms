@@ -1,9 +1,9 @@
 <%@ page import="com.imcode.imcms.ContentManagementSystem,
                  com.imcode.imcms.RequestConstants,
-                 com.imcode.imcms.UserBean"%>
+                 com.imcode.imcms.User"%>
 <%
 ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
-UserBean accessingUser = imcmsSystem.getAccessionUser();
+User accessingUser = imcmsSystem.getAccessionUser();
 %>
 
 You are logged in as "<%=accessingUser.getLoginName()%>"

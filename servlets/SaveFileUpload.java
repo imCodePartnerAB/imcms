@@ -23,7 +23,7 @@ public class SaveFileUpload extends HttpServlet {
 	String start_url	= imcref.getStartUrl() ;
 	File file_path				= imcode.util.Utility.getDomainPrefPath( "file_path", host );
 
-	imcode.server.user.User user ;
+	imcode.server.user.UserDomainObject user ;
 
 	// Check if user logged on
 	if ( (user=Check.userLoggedOn(req,res,start_url))==null ) {

@@ -54,7 +54,7 @@ public class BillBoardViewer extends BillBoard {//ConfViewer
 		}
 
 		// Lets get an user object
-		imcode.server.user.User user = super.getUserObj(req,res) ;
+		imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
 		if (user == null)
 		{
 			log("user = null so return");

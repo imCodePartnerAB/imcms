@@ -2,9 +2,9 @@ package imcode.server.user;
 
 
 public interface UserAndRoleMapper {
-   User getUser( String loginName );
+   UserDomainObject getUser( String loginName );
 
-   String[] getRoleNames( User user );
+   String[] getRoleNames( UserDomainObject user );
 
    String[] getAllRoleNames();
 }

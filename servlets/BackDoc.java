@@ -5,7 +5,7 @@ import javax.servlet.http.*;
 
 import imcode.util.* ;
 import imcode.server.* ;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 
 public class BackDoc extends HttpServlet {
     private final static String CVS_REV = "$Revision$" ;
@@ -33,7 +33,7 @@ public class BackDoc extends HttpServlet {
 	res.setContentType( "text/html" );
 	Writer out = res.getWriter() ;
 
-	User user ;
+	UserDomainObject user ;
 	if ( (user=Check.userLoggedOn(req,res,start_url))==null ) {
 	    return ;
 	}

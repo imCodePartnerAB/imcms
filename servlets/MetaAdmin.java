@@ -22,7 +22,7 @@ public class MetaAdmin extends HttpServlet {
 
                 res.setContentType("text/html") ;
 
-                imcode.server.user.User user ;
+                imcode.server.user.UserDomainObject user ;
                 // Check if user logged on
                 if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
                         return ;

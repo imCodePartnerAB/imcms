@@ -5,7 +5,7 @@ import java.util.* ;
 import java.text.* ;
 
 import imcode.server.* ;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 import imcode.external.diverse.* ;
 import imcode.util.* ;
 
@@ -19,7 +19,7 @@ public class MetaDataParser {
        parseMetaData collects the information for a certain meta_id from the db and
        parses the information into the change_meta.html (the plain admin mode file).
     */
-    static public String parseMetaData (String meta_id, String parent_meta_id, User user, String host) throws IOException {
+    static public String parseMetaData (String meta_id, String parent_meta_id, UserDomainObject user, String host) throws IOException {
 
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 
@@ -40,7 +40,7 @@ public class MetaDataParser {
        parseMetaPermission parses the page which consists of  the information for a certain meta_id from the db and
        parses the information into the change_meta.html (the plain admin mode file).
     */
-    static public String parseMetaPermission (String meta_id, String parent_meta_id, User user, String host, String htmlFile) throws IOException {
+    static public String parseMetaPermission (String meta_id, String parent_meta_id, UserDomainObject user, String host, String htmlFile) throws IOException {
 	//	return getMetaDataFromDb(meta_id, parent_meta_id, user, host, "change_meta.html") ;
 	return getMetaDataFromDb(meta_id, parent_meta_id, user, host, htmlFile, true) ;
     } // end of parseMetaData
@@ -52,7 +52,7 @@ public class MetaDataParser {
        parses the information into the assigned htmlFile. If the htmlfile doesnt has
        all the properties, hidden fields will be created by default into the htmlfile
     */
-    static public String getMetaDataFromDb (String meta_id, String parent_meta_id, User user, String host,
+    static public String getMetaDataFromDb (String meta_id, String parent_meta_id, UserDomainObject user, String host,
 					    String htmlFile, boolean showRoles ) throws IOException {
 
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
@@ -340,7 +340,7 @@ public class MetaDataParser {
        getRolesFromDb collects the information for a certain meta_id regarding the
        rolesrights and parses the information into the assigned htmlFile.
     */
-    static public void getRolesFromDb( String meta_id, User user, String host, Vector vec	) throws IOException {
+    static public void getRolesFromDb( String meta_id, UserDomainObject user, String host, Vector vec	) throws IOException {
 
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 
@@ -493,7 +493,7 @@ public class MetaDataParser {
 
     } // End of getRolesFromDb
 
-	private static synchronized String getDefaultTemplateOptionList(IMCServiceInterface imcref, imcode.server.user.User user, String[] def_templates, String meta_id, String lang_prefix, boolean restr_1 )throws IOException
+	private static synchronized String getDefaultTemplateOptionList(IMCServiceInterface imcref, imcode.server.user.UserDomainObject user, String[] def_templates, String meta_id, String lang_prefix, boolean restr_1 )throws IOException
 	{
 		String returnValue = "";
 		//ok lets setup the default_template-option-lists for restricted 1 & 2
@@ -587,7 +587,7 @@ public class MetaDataParser {
 
     */
 
-    public static String parsePermissionSet (int meta_id, User user, String host, int set_id, boolean for_new) throws IOException {
+    public static String parsePermissionSet (int meta_id, UserDomainObject user, String host, int set_id, boolean for_new) throws IOException {
 	final IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 
 	// Lets get the langprefix

@@ -178,8 +178,8 @@ public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
         return userAuthenticates ;
     }
 
-    public User getUser( String loginName ) {
-        User result = null;
+    public UserDomainObject getUser( String loginName ) {
+        UserDomainObject result = null;
 
         Map attributeMap = searchForUserAttributes( loginName, null );
 
@@ -212,8 +212,8 @@ public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
         return ldapAttributeValues;
     }
 
-    private User createUserFromLdapAttributes( Map ldapAttributeValues ) {
-        User newlyFoundLdapUser = new User();
+    private UserDomainObject createUserFromLdapAttributes( Map ldapAttributeValues ) {
+        UserDomainObject newlyFoundLdapUser = new UserDomainObject();
 
         String value = getValueForUserField( "lastName", ldapAttributeValues );
         newlyFoundLdapUser.setLastName( value );
@@ -308,7 +308,7 @@ public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
         return Logger.getLogger( this.getClass() );
     }
 
-    public String[] getRoleNames( User user ) {
+    public String[] getRoleNames( UserDomainObject user ) {
         String loginName = user.getLoginName();
 
         Map attributeMappedRoles = searchForUserAttributes( loginName, ldapAttributesAutoMappedToRoles );

@@ -7,7 +7,7 @@ import java.rmi.registry.*;
 
 import imcode.util.* ;
 import imcode.server.* ;
-import imcode.server.user.User;
+import imcode.server.user.UserDomainObject;
 
 import org.apache.log4j.Category;
 
@@ -28,7 +28,7 @@ public class TemplateChange extends HttpServlet {
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 	// Check if user logged on
-	User user ;
+	UserDomainObject user ;
 
 	if ( (user=Check.userLoggedOn(req,res,start_url))==null ) {
 	    return ;

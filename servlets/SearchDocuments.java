@@ -40,7 +40,7 @@ public class SearchDocuments extends HttpServlet {
 		String host			= req.getHeader("Host") ;
 		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 		HttpSession session	= req.getSession(true);
-		imcode.server.user.User user	= (imcode.server.user.User) session.getAttribute("logon.isDone");
+		imcode.server.user.UserDomainObject user	= (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone");
 
 		//we must have a user obj, even if its a user extern object, so lets get one, or get rid of the req
 		if (user == null) {
@@ -326,7 +326,7 @@ public class SearchDocuments extends HttpServlet {
 		String start_url	= imcref.getStartUrl() ;
 		String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
-		imcode.server.user.User user ;
+		imcode.server.user.UserDomainObject user ;
 		res.setContentType( "text/html" );
 		ServletOutputStream out = res.getOutputStream();
 
@@ -334,7 +334,7 @@ public class SearchDocuments extends HttpServlet {
 		HttpSession session = req.getSession( true );
 		// Does the session indicate this user already logged in?
 		Object done = session.getAttribute( "logon.isDone" );  // marker object
-		user = (imcode.server.user.User)done ;
+		user = (imcode.server.user.UserDomainObject)done ;
 
 		if( done == null ) {
 		    // No logon.isDone means he hasn't logged in.

@@ -31,7 +31,7 @@ public class SaveBrowserDoc extends HttpServlet {
 	String servlet_url        	= imcode.util.Utility.getDomainPref( "servlet_url",host ) ;
 	String start_url        	= imcref.getStartUrl() ;
 
-	imcode.server.user.User user ;
+	imcode.server.user.UserDomainObject user ;
 	String htmlStr = "" ;
 	String submit_name = "" ;;
 	String text = "" ;

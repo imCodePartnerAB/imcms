@@ -1,13 +1,13 @@
 package com.imcode.imcms;
 
-public class UserBean {
-    private imcode.server.user.User internalUser;
+public class User {
+    private imcode.server.user.UserDomainObject internalUser;
 
-    imcode.server.user.User getInternalUser() {
+    imcode.server.user.UserDomainObject getInternalUser() {
         return internalUser;
     }
 
-    public UserBean( imcode.server.user.User internalUser ) {
+    public User( imcode.server.user.UserDomainObject internalUser ) {
         this.internalUser = internalUser;
     }
 
