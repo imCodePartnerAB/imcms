@@ -30,16 +30,6 @@ Setting up the database:
       download the imCMS source code, and run the corresponding files in the "sql" directory.
 
 
-Setting up Tomcat:
-    * In Tomcat's web.xml in the "tomcat/conf" directory,
-      uncomment the "/servlet/*" mapping for the "invoker" servlet:
-
-      <servlet-mapping>
-          <servlet-name>invoker</servlet-name>
-          <url-pattern>/servlet/*</url-pattern>
-      </servlet-mapping>
-
-
 Installing imCMS:
     * Install the file "imcms.war" in the "tomcat/webapps" directory.
       If the war-file isn't named "imcms.war", rename it first,
