@@ -397,7 +397,6 @@ public class MetaDataParser {
 	
 		    ftr.add("#new_set_2#") ;   ftr.add(IMCServiceRMI.parseDoc(imcserver,null,"permissions/new_set_2_button.html",lang_prefix)) ;
 		} else {
-			System.out.println("### 90");
 		    ftr.add("#new_set_2#") ;   ftr.add("") ;
 		}
 		ftr.add("#default_templates#");ftr.add(default_templates);	
@@ -408,7 +407,6 @@ public class MetaDataParser {
 	    }
 
 	} else {
-		System.out.println("### 92");
 	    vec.add("#define_sets#") ;
 	    vec.add("") ;
 	}
@@ -642,32 +640,6 @@ public class MetaDataParser {
 	}
 	vec.put("templategroups", options_templategroups) ;
 	
-	//--------------------- Get all templates and add to variable "templates" --------------------------------------------------------------		
-		
-		// Now we get the templategroups the set-id we are editing may use.
-		String[] templates = IMCServiceRMI.sqlProcedure(imcserver,"GetTemplates ") ;
-				
-		// We allocate a string to contain the option-list
-		String options_templates = "" ;
-		
-		for ( int i=0 ; i<templates.length ; i+=2 ) 
-		{
-		// Check if the current user may set this templategroup for any set-id (May he use it himself?)
-	    	
-		//	if ( user_set_id == 0 )			// If current user has full rights,		 	    ) 
-		//	{
-	    //	}
-	    	options_templates += "<option value=\"2097152_" + templates[i] + "\">" + templates[i+1]+"</option>" ;
-			
-		}
-		
-		
-		
-		vec.put("templates", options_templates) ;
-
-//----------------------------------------------------------------------------------------
-
-
 	vec.put("set_id", String.valueOf(set_id)) ;
 
 	vec.put("meta_id", String.valueOf(meta_id)) ;
