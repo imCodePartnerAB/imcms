@@ -1,8 +1,8 @@
 	<table name="poll_questions">
         <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
-        <column name="poll_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
-        <column name="question_number" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
-        <column name="text_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
+        <column name="poll_id" required="true" type="INTEGER" />
+        <column name="question_number" required="true" type="INTEGER" />
+        <column name="text_id" required="true" type="INTEGER" />
         <foreign-key foreignTable="polls">
             <reference foreign="id" local="poll_id" />
         </foreign-key>

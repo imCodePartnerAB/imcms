@@ -1,4 +1,4 @@
 	<table name="C_authorization_types">
-        <column name="authorization_type" required="true" size="50" type="VARCHAR" primaryKey="false" autoIncrement="false" />
-        <column name="authorization_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
+        <column name="authorization_type" required="true" size="50" type="VARCHAR" />
+        <column name="authorization_id" primaryKey="true" required="true" type="INTEGER" />
     </table>

@@ -1,7 +1,7 @@
 	<table name="roles_rights">
-        <column name="role_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
-        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
-        <column name="set_id" required="true" type="TINYINT" primaryKey="false" autoIncrement="false" />
+        <column name="role_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="set_id" required="true" type="TINYINT" />
         <foreign-key foreignTable="roles">
             <reference foreign="role_id" local="role_id" />
         </foreign-key>

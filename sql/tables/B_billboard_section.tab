@@ -1,6 +1,6 @@
 	<table name="B_billboard_section">
-        <column name="billboard_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
-        <column name="section_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
+        <column name="billboard_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="section_id" primaryKey="true" required="true" type="INTEGER" />
         <foreign-key foreignTable="B_section">
             <reference foreign="section_id" local="section_id" />
         </foreign-key>

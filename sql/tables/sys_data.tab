@@ -1,7 +1,7 @@
 	<table name="sys_data">
         <column autoIncrement="true" name="sys_id" primaryKey="true" required="true" type="TINYINT" />
-        <column name="type_id" primaryKey="true" required="true" type="TINYINT" autoIncrement="false" />
-        <column name="value" size="80" type="VARCHAR" primaryKey="false" required="false" autoIncrement="false" />
+        <column name="type_id" primaryKey="true" required="true" type="TINYINT" />
+        <column name="value" size="80" type="VARCHAR" required="false" />
         <foreign-key foreignTable="sys_types">
             <reference foreign="type_id" local="type_id" />
         </foreign-key>

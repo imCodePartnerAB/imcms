@@ -1,9 +1,9 @@
 	<table name="A_conf_users_crossref">
-        <column name="conf_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
-        <column name="user_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
-        <column default="0" name="user_level" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
-        <column name="last_login_date" type="TIMESTAMP" primaryKey="false" required="false" autoIncrement="false" />
-        <column default="1" name="replies_order" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
+        <column name="conf_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="user_id" primaryKey="true" required="true" type="INTEGER" />
+        <column default="0" name="user_level" required="true" type="INTEGER" />
+        <column name="last_login_date" type="TIMESTAMP" required="false" />
+        <column default="1" name="replies_order" required="true" type="INTEGER" />
         <foreign-key foreignTable="A_conference">
             <reference foreign="meta_id" local="conf_id" />
         </foreign-key>

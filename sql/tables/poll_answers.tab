@@ -1,10 +1,10 @@
 	<table name="poll_answers">
         <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
-        <column name="question_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
-        <column name="text_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
-        <column name="option_number" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
-        <column default="0" name="answer_count" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
-        <column name="option_point" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
+        <column name="question_id" required="true" type="INTEGER" />
+        <column name="text_id" required="true" type="INTEGER" />
+        <column name="option_number" required="true" type="INTEGER" />
+        <column default="0" name="answer_count" required="true" type="INTEGER" />
+        <column name="option_point" type="INTEGER" required="false" />
         <foreign-key foreignTable="poll_questions">
             <reference foreign="id" local="question_id" />
         </foreign-key>

@@ -1,4 +1,4 @@
 	<table name="C_msg_type">
         <column autoIncrement="true" name="msg_id" primaryKey="true" required="true" type="INTEGER" />
-        <column name="msg_string" required="true" size="25" type="VARCHAR" primaryKey="false" autoIncrement="false" />
+        <column name="msg_string" required="true" size="25" type="VARCHAR" />
     </table>

@@ -1,6 +1,6 @@
 	<table name="C_chat_msg_type">
-        <column name="msg_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
-        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
+        <column name="msg_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
         <foreign-key foreignTable="C_chat">
             <reference foreign="meta_id" local="meta_id" />
         </foreign-key>

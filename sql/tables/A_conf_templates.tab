@@ -1,6 +1,6 @@
 	<table name="A_conf_templates">
-        <column name="conf_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
-        <column name="template_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
+        <column name="conf_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="template_id" primaryKey="true" required="true" type="INTEGER" />
         <foreign-key foreignTable="A_templates">
             <reference foreign="template_id" local="template_id" />
         </foreign-key>

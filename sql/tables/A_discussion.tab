@@ -1,10 +1,10 @@
 	<table name="A_discussion">
         <column autoIncrement="true" name="discussion_id" primaryKey="true" required="true" type="INTEGER" />
-        <column name="forum_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
-        <column name="reply_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" />
-        <column name="count_replies" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" />
-        <column name="create_date" type="TIMESTAMP" primaryKey="false" required="false" autoIncrement="false" />
-        <column name="last_mod_date" type="TIMESTAMP" primaryKey="false" required="false" autoIncrement="false" />
+        <column name="forum_id" required="true" type="INTEGER" />
+        <column name="reply_id" required="true" type="INTEGER" />
+        <column name="count_replies" type="INTEGER" required="false" />
+        <column name="create_date" type="TIMESTAMP" required="false" />
+        <column name="last_mod_date" type="TIMESTAMP" required="false" />
         <foreign-key foreignTable="A_forum">
             <reference foreign="forum_id" local="forum_id" />
         </foreign-key>

@@ -1,5 +1,5 @@
 	<table name="languages">
-        <column name="lang_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" autoIncrement="false" />
-        <column name="user_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" autoIncrement="false" />
-        <column name="language" size="30" type="VARCHAR" primaryKey="false" required="false" autoIncrement="false" />
+        <column name="lang_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" />
+        <column name="user_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" />
+        <column name="language" size="30" type="VARCHAR" required="false" />
     </table>

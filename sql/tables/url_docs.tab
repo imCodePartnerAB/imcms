@@ -1,10 +1,10 @@
 	<table name="url_docs">
-        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" />
-        <column name="frame_name" required="true" size="80" type="VARCHAR" primaryKey="false" autoIncrement="false" />
-        <column name="target" required="true" size="15" type="VARCHAR" primaryKey="false" autoIncrement="false" />
-        <column name="url_ref" required="true" size="255" type="VARCHAR" primaryKey="false" autoIncrement="false" />
-        <column name="url_txt" required="true" size="255" type="VARCHAR" primaryKey="false" autoIncrement="false" />
-        <column name="lang_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" autoIncrement="false" />
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="frame_name" required="true" size="80" type="VARCHAR" />
+        <column name="target" required="true" size="15" type="VARCHAR" />
+        <column name="url_ref" required="true" size="255" type="VARCHAR" />
+        <column name="url_txt" required="true" size="255" type="VARCHAR" />
+        <column name="lang_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" />
         <foreign-key foreignTable="meta">
             <reference foreign="meta_id" local="meta_id" />
         </foreign-key>
