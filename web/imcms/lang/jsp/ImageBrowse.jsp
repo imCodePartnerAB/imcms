@@ -118,7 +118,7 @@
 #gui_bottom()
 #gui_outer_end()
 <% if (null != imageBrowsePage.getImageUrl()) { %>
-<div align="center" id="previewDiv"><img src="<%= Imcms.getServices().getConfig().getImageUrl() %><%=imageBrowsePage.getImageUrl()%>"></div>
+<div align="center" id="previewDiv"><img src="<%= request.getContextPath() %><%= Imcms.getServices().getConfig().getImageUrl() %><%=imageBrowsePage.getImageUrl()%>"></div>
 <% } %>
 
 <script language="JavaScript">
