@@ -57,8 +57,14 @@
 
   </target>
 
-  <target name="install" depends="dist" description="Copies the WAR-package into the deployroot.">
+  <target name="install-war" depends="dist" description="Copies the WAR-package into the deployroot.">
     <copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
+  </target>
+
+  <target name="install" depends="build" description="Copies the webapp directly into the deployroot.">
+    <copy todir="${webapproot}" overwrite="yes">
+      <fileset dir="${build}"/>
+    </copy>
   </target>
 
   <target name="clean" description="Deletes everything for a fresh start.">
