@@ -3,17 +3,16 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
 import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
+import com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentComparator;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
-import imcode.util.DateConstants;
-import imcode.util.Utility;
 import imcode.util.LocalizedMessage;
+import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
@@ -24,8 +23,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class AdminManager extends Administrator {
@@ -320,7 +317,7 @@ public class AdminManager extends Administrator {
             this.expand_listMap = expand_listMap;
             this.subreports = subreports;
             documentFinder = new DocumentFinder( new AdminManagerSearchPage( this ) );
-            documentFinder.addExtraSearchResultColumn( new ModifiedDateSearchResultColumn() );
+            documentFinder.addExtraSearchResultColumn( new DatesSummarySearchResultColumn() );
         }
 
         public String getHtml_admin_part() {
@@ -373,16 +370,20 @@ public class AdminManager extends Administrator {
             return documentFinder;
         }
 
-        private static class ModifiedDateSearchResultColumn implements DocumentFinder.SearchResultColumn {
+        private static class DatesSummarySearchResultColumn implements DocumentFinder.SearchResultColumn {
 
-            public String render( DocumentDomainObject document, HttpServletRequest request ) {
-                DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_NO_SECONDS_FORMAT_STRING ) ;
-                String formattedDatetime = dateFormat.format( document.getModifiedDatetime() );
-                return StringEscapeUtils.escapeHtml( formattedDatetime ).replaceAll( " ", "&nbsp;" ) ;
+            public String render( DocumentDomainObject document, HttpServletRequest request,
+                                  HttpServletResponse response ) throws IOException, ServletException {
+                UserDomainObject user = Utility.getLoggedOnUser( request ) ;
+                AdminManagerExpandableDatesBean expandableDatesBean = new AdminManagerExpandableDatesBean() ;
+                expandableDatesBean.setExpanded( true );
+                expandableDatesBean.setDocument( document );
+                request.setAttribute( "expandableDatesBean", expandableDatesBean );
+                return Utility.getContents( "/imcms/"+user.getLanguageIso639_2()+"/jsp/admin/admin_manager_expandable_dates.jsp", request, response ) ;
             }
 
             public LocalizedMessage getName() {
-                return new LocalizedMessage( "global/modified" );
+                return new LocalizedMessage( "global/Dates" );
             }
         }
     }

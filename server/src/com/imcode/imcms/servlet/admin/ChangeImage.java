@@ -326,7 +326,7 @@ public class ChangeImage extends HttpServlet {
 
     private static class ImageThumbnailSearchResultColumn implements DocumentFinder.SearchResultColumn {
 
-        public String render( DocumentDomainObject document, HttpServletRequest request ) {
+        public String render( DocumentDomainObject document, HttpServletRequest request, HttpServletResponse response ) {
             UserDomainObject user = Utility.getLoggedOnUser( request );
             FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)document;
             ImageSize imageSize = new ImageSize( 0, 0 );

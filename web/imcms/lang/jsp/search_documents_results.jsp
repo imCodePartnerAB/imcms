@@ -88,7 +88,7 @@
                             <%
                                 for ( int j = 0; j < searchResultColumns.length; j++ ) {
                                     DocumentFinder.SearchResultColumn searchResultColumn = searchResultColumns[j];
-                                    %><td><%= searchResultColumn.render(document, request ) %></td><%
+                                    %><td><%= searchResultColumn.render(document, request, response ) %></td><%
                                 }
                             %>
                             <td align="right">&nbsp;

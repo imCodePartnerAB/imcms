@@ -177,10 +177,8 @@ class TagParser {
     private String includePath( String path ) {
         HttpServletRequest request = documentRequest.getHttpServletRequest();
         HttpServletRequestWrapper metaIdHeaderHttpServletRequest = new TagParser.MetaIdHeaderHttpServletRequest( request, document.getId() );
-        HttpServletResponseWrapper collectingHttpServletResponse = new CollectingHttpServletResponse( documentRequest.getHttpServletResponse() ) ;
         try {
-            request.getRequestDispatcher( path ).include( metaIdHeaderHttpServletRequest, collectingHttpServletResponse );
-            return collectingHttpServletResponse.toString() ;
+            return Utility.getContents( path, metaIdHeaderHttpServletRequest, documentRequest.getHttpServletResponse() );
         } catch ( ServletException ex ) {
             return "<!-- imcms:include path failed: " + ex + " -->";
         } catch ( IOException ex ) {

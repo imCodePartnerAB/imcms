@@ -111,7 +111,7 @@ public class DocumentFinder extends WebComponent {
 
     public interface SearchResultColumn extends Serializable {
 
-        String render( DocumentDomainObject document, HttpServletRequest request ) ;
+        String render( DocumentDomainObject document, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException;
 
         LocalizedMessage getName();
     }

@@ -15,9 +15,8 @@ import org.apache.commons.lang.time.DateUtils;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
+import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -215,6 +214,13 @@ public class Utility {
             parameterInts[i] = Integer.parseInt(parameterValues[i]);
         }
         return parameterInts;
+    }
+
+    public static String getContents( String path, HttpServletRequest request,
+                                HttpServletResponse response ) throws ServletException, IOException {
+        HttpServletResponseWrapper collectingHttpServletResponse = new CollectingHttpServletResponse( response );
+        request.getRequestDispatcher( path ).include( request, collectingHttpServletResponse );
+        return collectingHttpServletResponse.toString();
     }
 
     private static class TimeLengthSuffixPair {
