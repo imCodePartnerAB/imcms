@@ -9,15 +9,15 @@ import imcode.util.log.* ;
 
 public class GetExistingDoc extends HttpServlet {
 
-	public void init(ServletConfig config) throws ServletException {
+/*	public void init(ServletConfig config) throws ServletException {
 		super.init(config) ;
 	}
-
+*/
    	public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
 		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
-		
+
         res.setContentType("text/html");
         ServletOutputStream out = res.getOutputStream();
         HttpSession session = req.getSession(true);
@@ -31,27 +31,61 @@ public class GetExistingDoc extends HttpServlet {
             res.sendRedirect(scheme + "://" + serverName + port + start_url);
             return;
         }
+
+        // Lets insert the existing doc
+          if ( req.getParameter("addExistingDocs") != null ) {
+             log("Lets add a document") ;
+             String[] metaId = req.getParameterValues("existing_meta_id") ;
+             try {
+              for( int i = 0; i< metaId.length; i++) {
+                String aMetaId = metaId[i] ;
+                int mId = Integer.parseInt(aMetaId) ;
+                //String sql = IMCServiceRMI.activateChild(imcServer, aMetaId, user);
+              }
+             } catch (NumberFormatException e) {
+
+                  // FIXME: Verify the arguments to this function
+                  Log.log("?????" , Log.ERROR, "No metaid could be found: " + e.getMessage(), e) ;
+                  throw new RuntimeException(e.getMessage()) ;
+               }
+
+              // Send page to userhere....
+              return ;
+             }
+
+
+        // ******************'  Test av funktion
+      //  String[] arr  =  {"1001", "1002"} ;
+      //  Hashtable h = IMCServiceRMI.ExistingDocsGetMetaIdInfo(imcserver,arr) ;
+      //  log("h: " + h.toString()) ;
+      //   *********************************
+
+
 //**********************************************************************************
         String sqlString = "";
-        String s6 = "";
-        String s7 = "";
-        String s9 = "";
+        String hitsPerPage = "";
+        String fromDoc = "";
+        String userId = "";
         String searchString = "";
         String searchPrep = "";
-        String s12 = "";
+        String doctype = "";
         String sortBy = "";
-        String s14 = "";
-        String s15 = "";
-        String s17 = "";
+        String includeDocStr = "";
+        //String s15 = "";
+        //String s17 = "";
         int j = 0;
-        if(req.getParameter("sqlstring") == null) {
+
+        if( req.getParameter("sqlstring") == null) {
+            log("sqlString saknas") ;
             searchString = req.getParameter("searchstring");
             searchPrep = req.getParameter("search_prep");
-            String as[] = req.getParameterValues("doc_type");
-            for(int k = 0; k < as.length; k++) {
-                s12 = s12 + as[k];
-                if(k != as.length - 1)
-                    s12 = s12 + ", ";
+
+           // Lets build a comma separetad string with the doctypes
+            String docTypes[] = req.getParameterValues("doc_type");
+            for(int k = 0; k < docTypes.length; k++) {
+                doctype = doctype + docTypes[k];
+                if(k != docTypes.length - 1)
+                    doctype = doctype + ", ";
             }
 
             String start_date = req.getParameter("start_date");
@@ -73,31 +107,32 @@ public class GetExistingDoc extends HttpServlet {
                     archived_date = dateString;
             }
 
-            s14 = created_date + ", " + changed_date + ", " + activated_date + ", " + archived_date;
+            includeDocStr = created_date + ", " + changed_date + ", " + activated_date + ", " + archived_date;
             sortBy = req.getParameter("sortBy");
-            s6 = req.getParameter("HitsPerPage");
-            s9 = "" + user.getObject("user_id");
-            s7 = "1";
+            hitsPerPage = req.getParameter("HitsPerPage");
+            userId = "" + user.getObject("user_id");
+            fromDoc = "1";
         } else {
+            log("SQL string var inte null") ;
             sqlString = req.getParameter("sqlstring");
-            s6 = req.getParameter("hitsPerPage");
-            s7 = req.getParameter("fromDoc");
-            s9 = req.getParameter("userID");
+            hitsPerPage = req.getParameter("hitsPerPage");
+            fromDoc = req.getParameter("fromDoc");
+            userId = req.getParameter("userID");
             searchString = req.getParameter("searchString");
             searchPrep = req.getParameter("search_prep");
-            s12 = req.getParameter("doc_types");
+            doctype = req.getParameter("doc_types");
             sortBy = req.getParameter("sortBy");
-            s14 = req.getParameter("includeDocStr");
+            includeDocStr = req.getParameter("includeDocStr");
             j = Integer.parseInt(req.getParameter("doc_count"));
             if(req.getParameter("next") != null)
-                s7 = "" + (Integer.parseInt(s7) + Integer.parseInt(s6));
+                fromDoc = "" + (Integer.parseInt(fromDoc) + Integer.parseInt(hitsPerPage));
             else
-                s7 = "" + (Integer.parseInt(s7) - Integer.parseInt(s6));
+                fromDoc = "" + (Integer.parseInt(fromDoc) - Integer.parseInt(hitsPerPage));
         }
-		
+
 		//-----------------------------------------------------------------
 		// check form-parameters: sortBy
-		
+
 		Hashtable check = new Hashtable();
 		check.put("meta_id", "meta_id");
 		check.put("doc_type", "doc_type");
@@ -116,7 +151,7 @@ public class GetExistingDoc extends HttpServlet {
 			log("GetExistingDoc: invalid parameter:sortBy=" + sortBy
 			+ "\n      setting sortBy to 'meta_id'");
 			sortBy = "meta_id";
-			
+
 		}
 		//------------------------------------------------------------------
 		// parse searchString, replaces SPACE with RETURN and EMPTY with RETURN
@@ -129,15 +164,16 @@ public class GetExistingDoc extends HttpServlet {
 		}
 		if(searchString.equals(""))
 			searchString = "" + char13;
-		log("searchString: " + searchString);	
+		//log("searchString: " + searchString);
 		//------------------------------------------------------------------
-        sqlString = "EXEC SearchDocs " + s9 + ",'" + searchString + "', '" + searchPrep + "', '" + s12 + "', " + s7 + ", " + s6 + ", '" + sortBy + "', " + s14 + ", '1'";
-        String s19 = "";
-        String s20 = "";
+        sqlString = "SearchDocs " + userId + ",'" + searchString + "', '" + searchPrep + "', '" + doctype + "', " + fromDoc + ", " + hitsPerPage + ", '" + sortBy + "', " + includeDocStr + ", '1'";
+        //String s19 = "";
+        //String s20 = "";
+        log("SQL: " + sqlString) ;
         Hashtable hashtable = IMCServiceRMI.sqlQueryHash(imcserver, sqlString);
-        String as3[] = (String[])hashtable.get("doc_count");
+        String nbrOfHits[] = (String[])hashtable.get("doc_count");
         try {
-            j = Integer.parseInt(as3[1]);
+            j = Integer.parseInt(nbrOfHits[1]);
         }
         catch(Exception exception) {
             j = 0;
@@ -162,13 +198,13 @@ public class GetExistingDoc extends HttpServlet {
         vector.add("#archive#");
         vector.add("Arkiverad");
         vector.add("#doc_start#");
-        vector.add(s7);
+        vector.add(fromDoc);
         vector.add("#doc_end#");
-        int l = (Integer.parseInt(s7) + Integer.parseInt(s6)) - 1;
+        int l = (Integer.parseInt(fromDoc) + Integer.parseInt(hitsPerPage)) - 1;
         if(l > j)
             l = j;
         vector.add("" + l);
-        if(s7.equals("1")) {
+        if(fromDoc.equals("1")) {
             vector.add("#butt_hide_start1#");
             vector.add("<!--");
             vector.add("#butt_hide_end1#");
@@ -179,7 +215,7 @@ public class GetExistingDoc extends HttpServlet {
             vector.add("#butt_hide_end1#");
             vector.add("");
         }
-        if((Integer.parseInt(s7) + Integer.parseInt(s6)) - 1 >= j) {
+        if((Integer.parseInt(fromDoc) + Integer.parseInt(hitsPerPage)) - 1 >= j) {
             vector.add("#butt_hide_start2#");
             vector.add("<!--");
             vector.add("#butt_hide_end2#");
@@ -191,26 +227,28 @@ public class GetExistingDoc extends HttpServlet {
             vector.add("");
         }
         vector.add("#end_value#");
-        vector.add("" + s6);
+        vector.add("" + hitsPerPage);
         vector.add("#sqlstring#");
         vector.add(sqlString);
         vector.add("#hitsPerPage#");
-        vector.add(s6);
+        vector.add(hitsPerPage);
         vector.add("#fromDoc#");
-        vector.add(s7);
+        vector.add(fromDoc);
         vector.add("#userID#");
-        vector.add(s9);
+        vector.add(userId);
         vector.add("#searchString#");
         vector.add(searchString);
         vector.add("#search_prep#");
         vector.add(searchPrep);
         vector.add("#doc_types#");
-        vector.add(s12);
+        vector.add(doctype);
         vector.add("#sortBy#");
         vector.add(sortBy);
         vector.add("#includeDocStr#");
-        vector.add(s14);
+        vector.add(includeDocStr);
         String langID = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = " + user.getInt("lang_id"));
+
+        // Lets get the template
         String htmlOut = IMCServiceRMI.parseDoc(imcserver, vector, "existing_doc_RESULTS.html", langID);
         int j1 = htmlOut.indexOf("<?");
         int k1 = htmlOut.indexOf("?>", j1);
@@ -234,8 +272,8 @@ public class GetExistingDoc extends HttpServlet {
         try {
             k3 = Integer.parseInt(htmlOut.substring(j2 + 1, i3));
             l3 = Integer.parseInt(htmlOut.substring(k2 + 1, j3));
-            if(l3 > l - Integer.parseInt(s7))
-                l3 = l - Integer.parseInt(s7);
+            if(l3 > l - Integer.parseInt(fromDoc))
+                l3 = l - Integer.parseInt(fromDoc);
         }
         catch(NumberFormatException numberformatexception) {
             throw new RuntimeException("Can't make out start and/or stop parameters!");
@@ -251,9 +289,9 @@ public class GetExistingDoc extends HttpServlet {
         String s33 = "";
         String s34 = s30;
         int k4 = s34.indexOf("%" + s29 + "%");
-        for(int l4 = k3; l4 <= l3; l4++) {
+        for(int i = k3; i <= l3; i++) {
             while(k4 != -1)  {
-                s34 = s34.substring(0, k4) + l4 + s34.substring(k4 + s29.length() + 2, s34.length());
+                s34 = s34.substring(0, k4) + i + s34.substring(k4 + s29.length() + 2, s34.length());
                 k4 = s34.indexOf("%" + s29 + "%");
             }
             s33 = s33 + s34;
@@ -264,15 +302,15 @@ public class GetExistingDoc extends HttpServlet {
         htmlOut = s31 + s33 + s32;
         vector.clear();
         for(Enumeration enumeration = hashtable.keys(); enumeration.hasMoreElements();) {
-            String s21 = (String)enumeration.nextElement();
-            String as2[] = (String[])hashtable.get(s21);
-            for(int i5 = 0; i5 < as2.length; i5++) {
-                vector.add("#" + s21 + (k3 + i5) + "#");
-                vector.add(as2[i5].equals("") ? "&nbsp;" : ((Object) (as2[i5])));
+            String tmpElement = (String)enumeration.nextElement();
+            String as2[] = (String[])hashtable.get(tmpElement);
+            for(int i = 0; i < as2.length; i++) {
+                vector.add("#" + tmpElement + (k3 + i) + "#");
+                vector.add(as2[i].equals("") ? "&nbsp;" : ((Object) (as2[i])));
             }
 
-            for(int j5 = as2.length; j5 < Integer.parseInt(s6); j5++) {
-                vector.add("#" + s21 + (k3 + j5) + "#");
+            for(int j5 = as2.length; j5 < Integer.parseInt(hitsPerPage); j5++) {
+                vector.add("#" + tmpElement + (k3 + j5) + "#");
                 vector.add("&nbsp;");
             }
 
