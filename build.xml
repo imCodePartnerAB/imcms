@@ -16,6 +16,7 @@
   <property name="templates"      value="${WEB-INF}/templates"/>
   <property name="includes"       value="${WEB-INF}/includes"/>
   <property name="uploads"        value="${WEB-INF}/uploads"/>
+  <property name="logs"           value="${WEB-INF}/logs"/>
 
   <property name="admintemplates" value="${templates}/admin"/>
   <property name="texttemplates"  value="${templates}/text"/>
@@ -36,6 +37,10 @@
 
     <echo> Done packaging distribution. </echo>
 
+  </target>
+
+  <target name="install" depends="dist">
+    <copy file="${wardist}" todir="${deployroot}"/>
   </target>
 
   <target name="clean">
@@ -191,6 +196,7 @@
           description="Creates directories necessary for imCMS.">
     <mkdir dir="${includes}"/>
     <mkdir dir="${uploads}"/>
+    <mkdir dir="${logs}"/>
   </target>
 
 </project>
