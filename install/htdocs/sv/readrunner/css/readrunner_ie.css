@@ -1,0 +1,40 @@
+/* Normal fonts */
+
+BODY, TD, P, SPAN, DIV, .norm, .grey, .grey TD { font: 12px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #999999; }
+.heading { font: bold 14px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #888888; }
+.heading2 { font: bold 18px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #136881; }
+.heading22 { font: bold 12px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #136881; }
+.small { font: 9px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #999999; }
+.blackBold, .blackBold TD { font: bold 12px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #000000; }
+
+/* Forms */
+
+INPUT, SELECT, TEXTAREA { font: 12px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #999999; }
+
+
+/* Links */
+
+A:link { color: #003399; text-decoration: underline; }
+A:visited { color: #003399; text-decoration: underline; }
+A:active { color: #009933; text-decoration: underline; }
+A:hover { color: #009933; text-decoration: underline; }
+
+A.navTop:link { font: bold 9px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #cccccc; text-decoration: none; }
+A.navTop:visited { font: bold 9px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #cccccc; text-decoration: none; }
+A.navTop:active { font: bold 9px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #ffffcc; text-decoration: none; }
+A.navTop:hover { font: bold 9px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #ffffff; text-decoration: none; }
+
+A.grey:link { font: bold 12px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #999999; text-decoration: none; }
+A.grey:visited { font: bold 12px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #999999; text-decoration: none; }
+A.grey:active { font: bold 12px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #009933; text-decoration: none; }
+A.grey:hover { font: bold 12px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #003399; text-decoration: none; }
+
+
+/* Misc */
+
+BODY { background-color: #ffffff }
+
+B { font-weight: bold; }
+I { font-style: italic; }
+U { text-decoration: underline; }
+

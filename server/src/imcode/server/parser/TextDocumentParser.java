@@ -25,12 +25,16 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     private static Pattern IMCMS_TAG_PATTERN  = null ;
     private static Pattern MENU_NO_PATTERN  = null ;
     private static Pattern HTML_TAG_PATTERN  = null ;
-    private static Pattern READRUNNER_QUOTE_SUBSTITUTION_COUNT_PATTERN = null ;
+
+    private static Pattern READRUNNER_END_TITLE_PATTERN = null ;
+    private static Pattern READRUNNER_END_HEAD_PATTERN = null ;
+    private static Pattern READRUNNER_START_BODY_PATTERN = null ;
+    private static Pattern READRUNNER_END_BODY_PATTERN = null ;
 
     static {
 	Perl5Compiler patComp = new Perl5Compiler() ;
 	try {
-	    // OK, so this is simple, ugly, and prone to give a lot of errors.
+	    // OK, so this pattern is simple, ugly, and prone to give a lot of errors.
 	    // Very good. Very good. Know something? NO SOUP FOR YOU!
 	    HTML_TAG_PATTERN = patComp.compile("<[^>]+?>",Perl5Compiler.READ_ONLY_MASK) ;
 
@@ -38,7 +42,12 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    MENU_NO_PATTERN = patComp.compile("#doc_menu_no#",Perl5Compiler.READ_ONLY_MASK) ;
 	    HASHTAG_PATTERN = patComp.compile("#[^ #\"<>&;\\t\\r\\n]+#",Perl5Compiler.READ_ONLY_MASK) ;
 	    MENU_PATTERN = patComp.compile("<\\?imcms:menu(.*?)\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-	    READRUNNER_QUOTE_SUBSTITUTION_COUNT_PATTERN = patComp.compile("#readrunner_quote_substitution_count#", Perl5Compiler.READ_ONLY_MASK) ;
+
+	    READRUNNER_END_TITLE_PATTERN = patComp.compile("(</title>)", Perl5Compiler.READ_ONLY_MASK|Perl5Compiler.CASE_INSENSITIVE_MASK) ;
+	    READRUNNER_END_HEAD_PATTERN = patComp.compile("(</head>)", Perl5Compiler.READ_ONLY_MASK|Perl5Compiler.CASE_INSENSITIVE_MASK) ;
+	    READRUNNER_START_BODY_PATTERN = patComp.compile("(<body.*?)(>)", Perl5Compiler.READ_ONLY_MASK|Perl5Compiler.CASE_INSENSITIVE_MASK) ;
+	    READRUNNER_END_BODY_PATTERN = patComp.compile("(</body>)", Perl5Compiler.READ_ONLY_MASK|Perl5Compiler.CASE_INSENSITIVE_MASK) ;
+
 	} catch (MalformedPatternException ignored) {
 	    // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
 	    log.fatal("Danger, Will Robinson!",ignored) ;
@@ -638,11 +647,63 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    String returnresult = result.toString() ;
 
 	    if (readrunnerQuoteSubstitutionCount > 0) {
-		returnresult = org.apache.oro.text.regex.Util.substitute(patMat,
-							  READRUNNER_QUOTE_SUBSTITUTION_COUNT_PATTERN,
-							  new StringSubstitution(""+readrunnerQuoteSubstitutionCount),
-							  returnresult,
-							  org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
+		// We found a couple of readrunner-text-tags, and did a few substitutions
+
+		Vector readrunnerSubstitutionCountVector = new Vector() ;
+		readrunnerSubstitutionCountVector.add("#readrunner_quote_substitution_count#") ;
+		readrunnerSubstitutionCountVector.add(""+readrunnerQuoteSubstitutionCount) ;
+
+		String readrunner_script_frag =      serverObject.parseDoc(readrunnerSubstitutionCountVector,
+									   "readrunner/script.html.frag",
+									   lang_prefix) ;
+
+		String readrunner_titlesuffix_frag = serverObject.parseDoc(null,
+									   "readrunner/titlesuffix.html.frag",
+									   lang_prefix) ;
+
+		String readrunner_panel_frag =       serverObject.parseDoc(null,
+									   "readrunner/panel.html.frag",
+									   lang_prefix) ;
+
+		String readrunner_buffer_frag =      serverObject.parseDoc(null,
+									   "readrunner/buffer.html.frag",
+									   lang_prefix) ;
+
+		String readrunner_bodyevents_frag =  serverObject.parseDoc(null,
+									   "readrunner/bodyevents.html.frag",
+									   lang_prefix) ;
+
+		String readrunner_copyright_frag =   serverObject.parseDoc(null,
+									   "readrunner/copyright.html.frag",
+									   lang_prefix) ;
+
+		readrunner_titlesuffix_frag  = escapeSubstitution(readrunner_titlesuffix_frag) ;
+		readrunner_bodyevents_frag   = escapeSubstitution(readrunner_bodyevents_frag) ;
+		readrunner_panel_frag        = escapeSubstitution(readrunner_panel_frag) ;
+		readrunner_script_frag       = escapeSubstitution(readrunner_script_frag) ;
+		readrunner_buffer_frag       = escapeSubstitution(readrunner_buffer_frag) ;
+
+		// FIXME: Use a StringBuffer for all this crap instead.
+
+		// Insert the copyright fragment at the top of the page
+		returnresult = readrunner_copyright_frag+returnresult ;
+
+		// Insert the titlesuffix fragment at the end of the title
+		returnresult = org.apache.oro.text.regex.Util.substitute(patMat, READRUNNER_END_TITLE_PATTERN,
+									 new Perl5Substitution(readrunner_titlesuffix_frag+"$1"), returnresult) ;
+
+		// Insert the script fragment at the end of the head
+		returnresult = org.apache.oro.text.regex.Util.substitute(patMat, READRUNNER_END_HEAD_PATTERN,
+									 new Perl5Substitution(readrunner_script_frag+"$1"), returnresult) ;
+
+		// Insert the body-events and panel in and after the body tag.
+		returnresult = org.apache.oro.text.regex.Util.substitute(patMat, READRUNNER_START_BODY_PATTERN,
+									 new Perl5Substitution("$1"+readrunner_bodyevents_frag+"$2"+readrunner_panel_frag), returnresult) ;
+
+		// Insert the buffer fragment at the end of the body
+		returnresult = org.apache.oro.text.regex.Util.substitute(patMat, READRUNNER_END_BODY_PATTERN,
+									 new Perl5Substitution(readrunner_buffer_frag+"$1"), returnresult) ;
+
 	    }
 
 	    /*
@@ -717,6 +778,22 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
     private LinkedList getMenuById(Map menus, int id) {
 	return (LinkedList)menus.get(new Integer(id)) ;
+    }
+
+    private String escapeSubstitution(String substitution) {
+	StringBuffer result = new StringBuffer() ;
+
+	for (int i = 0; i < substitution.length(); ++i) {
+	    char c = substitution.charAt(i) ;
+	    switch (c) {
+	    case '\\':
+	    case '$':
+		result.append('\\') ;
+	    }
+	    result.append(c) ;
+	}
+
+	return result.toString() ;
     }
 
 }

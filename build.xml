@@ -27,6 +27,14 @@
   <property name="javascript"     value="${webroot}/javascript"/>
   <property name="adminbuttons"   value="${imcmsimages}/admin"/>
 
+  <property name="imcmsimages"          value="${webroot}/imcmsimages"/>
+  <property name="images"               value="${webroot}/images"/>
+  <property name="login"                value="${webroot}/login"/>
+  <property name="css"                  value="${webroot}/css"/>
+  <property name="user"                 value="${webroot}/user"/>
+  <property name="javascript"           value="${webroot}/javascript"/>
+  <property name="adminbuttons"         value="${imcmsimages}/admin"/>
+  <property name="readrunner"	        value="${webroot}/readrunner"/>
 
   <!-- 'WEB-INF' - Everything put here is private to the webapp -->
   <property name="WEB-INF"        value="${webroot}/WEB-INF"/>
@@ -50,27 +58,32 @@
   <property file="${build.properties}"/>
 
   <!-- URIs -->
-  <property name="servleturl"      value="${rooturl}/servlet"/>
-  <property name="loginurl"        value="${rooturl}/login"/>
-  <property name="imageurl"        value="${rooturl}/images"/>
-  <property name="cssurl"          value="${rooturl}/css"/>
-  <property name="javascripturl"   value="${rooturl}/javascript"/>
-  <property name="postcardsurl"    value="${rooturl}/postcards"/>
-  <property name="imcmsimageurl"   value="${rooturl}/imcmsimages"/>
-  <property name="adminbuttonsurl" value="${imcmsimageurl}/admin"/>
+  <property name="servleturl"           value="${rooturl}/servlet"/>
+  <property name="loginurl"             value="${rooturl}/login"/>
+  <property name="imageurl"             value="${rooturl}/images"/>
+  <property name="cssurl"               value="${rooturl}/css"/>
+  <property name="javascripturl"        value="${rooturl}/javascript"/>
+  <property name="postcardsurl"         value="${rooturl}/postcards"/>
+  <property name="imcmsimageurl"        value="${rooturl}/imcmsimages"/>
+  <property name="adminbuttonsurl"      value="${imcmsimageurl}/admin"/>
+
+  <property name="readrunnerurl"	value="${rooturl}/readrunner"/>
+  <property name="readrunnerimagesurl"  value="${readrunnerurl}/images"/>
+  <property name="readrunnercssurl"     value="${readrunnerurl}/css"/>
+  <property name="readrunnerjsurl"      value="${readrunnerurl}/javascript"/>
 
 
   <!-- Locations for the final packages -->
-  <property name="warfile"         value="${webappname}.war"/>
-  <property name="wardist"         value="${dist}/${warfile}"/>
+  <property name="warfile"              value="${webappname}.war"/>
+  <property name="wardist"              value="${dist}/${warfile}"/>
 
-  <property name="dist-sql"        value="${dist}/imcms.sql"/>
-  <property name="sprocs-sql"      value="${dist}/sprocs.sql"/>
-  <property name="help-sql"        value="${dist}/help.sql"/>
+  <property name="dist-sql"             value="${dist}/imcms.sql"/>
+  <property name="sprocs-sql"           value="${dist}/sprocs.sql"/>
+  <property name="help-sql"             value="${dist}/help.sql"/>
 
 
   <!-- Where to install imCMS -->
-  <property name="webapproot" value="${deployroot}/${webappname}"/>
+  <property name="webapproot"           value="${deployroot}/${webappname}"/>
 
 
   <!-- A handy target to have everything else depend on, just in case. -->
@@ -92,35 +105,40 @@
 	  description="Defines global filters.">
 
     <!-- Global filters -->
-    <filter token="rooturl"            value="${rooturl}"/>
-    <filter token="servleturl"         value="${servleturl}"/>
-    <filter token="loginurl"           value="${loginurl}"/>
-    <filter token="imageurl"           value="${imageurl}"/>
-    <filter token="cssurl"             value="${cssurl}"/>
-    <filter token="postcardsurl"       value="${postcardsurl}"/>
-    <filter token="adminbuttonsurl"    value="${adminbuttonsurl}"/>
-    <filter token="imcmsimageurl"      value="${imcmsimageurl}"/>
-    <filter token="javascripturl"      value="${javascripturl}"/>
+    <filter token="rooturl"             value="${rooturl}"/>
+    <filter token="servleturl"          value="${servleturl}"/>
+    <filter token="loginurl"            value="${loginurl}"/>
+    <filter token="imageurl"            value="${imageurl}"/>
+    <filter token="cssurl"              value="${cssurl}"/>
+    <filter token="postcardsurl"        value="${postcardsurl}"/>
+    <filter token="adminbuttonsurl"     value="${adminbuttonsurl}"/>
+    <filter token="imcmsimageurl"       value="${imcmsimageurl}"/>
+    <filter token="javascripturl"       value="${javascripturl}"/>
 
-    <filter token="db-host"            value="${db-host}"/>
-    <filter token="db-port"            value="${db-port}"/>
-    <filter token="db-name"            value="${db-name}"/>
-    <filter token="db-user"            value="${db-user}"/>
-    <filter token="db-pass"            value="${db-pass}"/>
+    <filter token="readrunnerurl"       value="${readrunnerurl}"/>
+    <filter token="readrunnerimagesurl" value="${readrunnerimagesurl}"/>
+    <filter token="readrunnercssurl"    value="${readrunnercssurl}"/>
+    <filter token="readrunnerjsurl"     value="${readrunnerjsurl}"/>
 
-    <filter token="plugin-db-host"     value="${plugin-db-host}"/>
-    <filter token="plugin-db-port"     value="${plugin-db-port}"/>
-    <filter token="plugin-db-name"     value="${plugin-db-name}"/>
-    <filter token="plugin-db-user"     value="${plugin-db-user}"/>
-    <filter token="plugin-db-pass"     value="${plugin-db-pass}"/>
+    <filter token="db-host"             value="${db-host}"/>
+    <filter token="db-port"             value="${db-port}"/>
+    <filter token="db-name"             value="${db-name}"/>
+    <filter token="db-user"             value="${db-user}"/>
+    <filter token="db-pass"             value="${db-pass}"/>
 
-    <filter token="smtp-server"        value="${smtp-server}"/>
+    <filter token="plugin-db-host"      value="${plugin-db-host}"/>
+    <filter token="plugin-db-port"      value="${plugin-db-port}"/>
+    <filter token="plugin-db-name"      value="${plugin-db-name}"/>
+    <filter token="plugin-db-user"      value="${plugin-db-user}"/>
+    <filter token="plugin-db-pass"      value="${plugin-db-pass}"/>
 
-    <filter token="servermaster-name"  value="${servermaster-name}"/>
-    <filter token="servermaster-email" value="${servermaster-email}"/>
+    <filter token="smtp-server"         value="${smtp-server}"/>
 
-    <filter token="webmaster-name"     value="${webmaster-name}"/>
-    <filter token="webmaster-email"    value="${webmaster-email}"/>
+    <filter token="servermaster-name"   value="${servermaster-name}"/>
+    <filter token="servermaster-email"  value="${servermaster-email}"/>
+
+    <filter token="webmaster-name"      value="${webmaster-name}"/>
+    <filter token="webmaster-email"     value="${webmaster-email}"/>
 
   </target>
 
@@ -131,6 +149,9 @@
     <!-- The language to install for, and where to install from and to. -->
     <property name="languagetemplates"    value="${templates}/${language}"/>
     <property name="admintemplates"       value="${languagetemplates}/admin"/>
+    <property name="searchtemplates"      value="${languagetemplates}/search"/>
+
+    <property name="readrunnertemplates"  value="${admintemplates}/readrunner"/>
 
     <!-- Paths for templates for the plugins -->
     <property name="conference-templates" value="${languagetemplates}/102"/>
@@ -543,8 +564,12 @@
       <fileset dir="templates/${srclanguage}/sections"/>
     </copy>
 
-    <copy todir="${admintemplates}/search" filtering="true">
+    <copy todir="${searchtemplates}" filtering="true">
       <fileset dir="templates/${srclanguage}/search"/>
+    </copy>
+
+    <copy todir="${readrunnertemplates}" filtering="true">
+      <fileset dir="templates/${srclanguage}/readrunner"/>
     </copy>
 
     <copy todir="${admintemplates}" filtering="true">
@@ -934,43 +959,19 @@
 
   <!-- Copies the files for readrunner -->
   <target name="readrunner"
-          depends="init,readrunner-includes,readrunner-images,readrunner-javascript"
-	  description="Copies the files for readrunner."/>
+          depends="init,global-filters"
+	  description="Copies the files for readrunner.">
 
-
-  <!-- Copies the includes needed by readrunner. -->
-  <target name="readrunner-includes"
-	  depends="init,web"
-	  description="Copies the includes needed by readrunner.">
-
-	  <copy todir="${includes}/readrunner" filtering="true">
-	    <fileset dir="install/htdocs/sv/readrunner/includes"/>
-	  </copy>
-
-  </target>
-
-
-  <!-- Copies the images needed by readrunner. -->
-  <target name="readrunner-images"
-	  depends="init,web"
-	  description="Copies the images needed by readrunner.">
-
-	  <copy todir="${imcmsimages}/readrunner">
+	  <!-- First the images, since they aren't to be filtered. -->
+	  <copy todir="${readrunner}/images">
 	    <fileset dir="install/htdocs/sv/readrunner/images"/>
 	  </copy>
 
-  </target>
-
-
-  <!-- Copies the javascript needed by readrunner. -->
-  <target name="readrunner-javascript"
-	  depends="init,web"
-	  description="Copies the javascript needed by readrunner.">
-
-	  <copy todir="${javascript}/readrunner" filtering="true">
-	    <fileset dir="install/htdocs/sv/readrunner/javascript"/>
+	  <copy todir="${readrunner}" filtering="true">
+	    <fileset dir="install/htdocs/sv/readrunner" excludes="*.jpg,*.gif"/>
 	  </copy>
 
   </target>
+
 
 </project>

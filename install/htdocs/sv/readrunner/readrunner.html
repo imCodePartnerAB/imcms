@@ -1,0 +1,861 @@
+<html><!-- rr_panel -->
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="must-revalidate"> 
+<meta http-equiv="Cache-Control" content="no-cache">
+
+<script language="JavaScript" src="javascript/rrsettingsnav.js"></script>
+<script language="JavaScript" src="javascript/rrsettingsfunc.js"></script>
+<script language="JavaScript">
+if (ie || moz) {
+	document.write('<link rel="STYLESHEET" type="text/css" href="css/readrunner_ie.css">');
+} else {
+	document.write('<link rel="STYLESHEET" type="text/css" href="css/readrunner_ns.css">');
+}
+</script><noscript><link rel="STYLESHEET" type="text/css" href="css/readrunner_ns.css"></noscript>
+
+</head>
+<body onLoad="preloadImages(); setDefaultVis(); RRinit0();">
+
+
+
+
+<div id="navDiv" style="position:absolute; left:0; top:10; width:100%; z-index:1;">
+<table border="0" cellpadding="0" cellspacing="0" width="515" align="center">
+<tr>
+	<td rowspan="3"><a href="http://www.readrunner.se/" target="_top" onMouseOver="eyeOver()" onMouseOut="eyeOut()"><img name="eyeBtn" src="images/btn_eye_0.gif" width="40" height="40" border="0" title="www.ReadRunner.se"></a></td>
+	<td colspan="9"><img src="images/1x1.gif" width="1" height="10"></td>
+	<td rowspan="3"><a href="javascript: void(0)" onClick="showDiv('help')"><img src="images/btn_fraga.jpg" width="36" height="34" border="0" title="Hjälp för ReadRunner"></a></td>
+</tr>
+<tr>
+	<td><img src="images/1x1.gif" width="1" height="20"></td>
+	<td bgcolor="#136881" align="center">
+	<a href="javascript: void(0)" onClick="showDiv('nr1')" id="nr1Link" title="Börja direkt" class="navTop">KICKSTART</a></td>
+	<td><img src="images/1x1.gif" width="1" height="1"></td>
+	<td bgcolor="#136881" align="center">
+	<a href="javascript: void(0)" onClick="showDiv('nr2')" id="nr2Link" title="Ställ in färgerna du vill ha på avmaskningen" class="navTop">VÄLJ FÄRG</a></td>
+	<td><img src="images/1x1.gif" width="1" height="1"></td>
+	<td bgcolor="#136881" align="center">
+	<a href="javascript: void(0)" onClick="showDiv('nr3')" id="nr3Link" title="Ställ in hur mycket pauser du vill ha i din läsning" class="navTop">PAUSER</a></td>
+	<td><img src="images/1x1.gif" width="1" height="1"></td>
+	<td bgcolor="#136881" align="center">
+	<a href="javascript: void(0)" onClick="showDiv('nr4')" id="nr4Link" title="Hur snabb skall läsningshastigheten vara" class="navTop">HASTIGHET</a></td>
+	<td><img src="images/1x1.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td colspan="9"><img src="images/1x1.gif" width="1" height="10"></td>
+</tr>
+<tr><!-- width settings -->
+	<td><img src="images/1x1.gif" width="40" height="1"></td>
+	<td><img src="images/1x1.gif" width="5" height="1"></td>
+	<td><img src="images/1x1.gif" width="103" height="1"></td>
+	<td><img src="images/1x1.gif" width="4" height="1"></td>
+	<td><img src="images/1x1.gif" width="103" height="1"></td>
+	<td><img src="images/1x1.gif" width="4" height="1"></td>
+	<td><img src="images/1x1.gif" width="103" height="1"></td>
+	<td><img src="images/1x1.gif" width="4" height="1"></td>
+	<td><img src="images/1x1.gif" width="103" height="1"></td>
+	<td><img src="images/1x1.gif" width="5" height="1"></td>
+	<td><img src="images/1x1.gif" width="36" height="1"></td>
+</tr>
+</table></div>
+
+
+
+
+
+
+<div id="nr1Div" style="position:absolute; left:0; top:100; width:100%; z-index:10; visibility: hidden">
+<table border="0" cellpadding="0" cellspacing="0" width="500" align="center" bgcolor="#ffffff">
+<tr>
+	<td colspan="2">
+	<span class="heading2">Kickstart</span><br><br>
+
+Att komma igång och köra ReadRunner Web är enkelt. Det är lite som att köra bil &#150; starta, gasa och stanna.<br><br>
+	
+	<div id="form0Div" style="position:relative; z-index:11">
+		<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td bgcolor="#999999">
+			<table border="0" cellspacing="1" cellpadding="0" width="420">
+			<tr>
+				<td id="form01TD" height="24" bgcolor="#ffffff" align="center">
+				Start och stopp – [CTRL] eller [S]</td>
+			</tr>
+			<tr>
+				<td id="form02TD" height="24" bgcolor="#ffffff" align="center">
+				Öka hastighet – pil höger. Sänka hastighet – pil vänster</td>
+			</tr>
+			<tr>
+				<td id="form03TD" height="24" bgcolor="#ffffff" align="center">
+				Starta från valfritt ställe i texten – högerklicka på meningen</td>
+			</tr>
+			<tr>
+				<td height="25" bgcolor="#ffffff" align="center">
+				<a href="javascript: startRR()"><img src="images/btn_start_0.gif" width="88" height="21" alt="" border="0"></a></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table>
+		
+		<div id="form0HelpBtnDiv" style="position:absolute; left:5; top:-7; z-index:15">
+		<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td bgcolor="#999999">
+			<table border="0" cellpadding="0" cellspacing="1">
+			<tr>
+				<td bgcolor="#66aa66" style="color:#ccffaa; cursor:hand" title="Visa hjälp om detta" onClick="showDiv('help')"><b>&nbsp;?&nbsp;</b></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table></div>
+	</div>
+	<!-- 
+	<br>
+	<a href="javascript: showHideLay('s1',2)"><b>Körlektion 1</b></a> (ungefär 2 min)<br><br>
+	 -->
+	<div id="s1Div" style="position:relative; display:none; visibility: hidden"><!-- 
+	<br>
+	Tryck på (S) eller (Ctrl) för att starta. Oooops, nu är du på väg genom texten. Om du vill sänka hastigheten trycker du på (&lt;&#150;). Varje gång du klickar på (&lt;&#150;) sänks hastigheten en aning. Kör ännu långsammare (&lt;&#150;). Om det går för sakta tappar du koncentrationen och intresset för texten.<br><br>
+	
+	Öka hastigheten genom att  trycka på (&#150;&gt;). Ju fler gånger du trycker på (&#150;&gt;) desto mer ökar den. Öka lite till (&#150;&gt;). Men du får inte köra för fort, du hinner du inte läsa texten.<br><br>
+	
+	ReadRunner utnyttjar hjärnans nedärvda beteende att alltid uppmärksamma det som rör sig i omgivningen. Något vi människor använt under årtusenden för att skydda oss vid ett oväntat hot eller för att upptäcka ett jaktbyte. Oj, nu går det lite för fort. Sänk med (&lt;&#150;). Nu tror jag att det är dags att stanna. Det gör du med (S) eller (Ctrl). När du vill komma igång trycker du på samma knapp igen (S) eller (Ctrl). Du ökar hastigheten genom att trycka på (&#150;&gt;) och sänker den genom att trycka  på (&lt;&#150;). Tryck flera gånger om du vill höja eller sänka den mycket. Testa! <br><br>
+	
+	ReadRunner gör det bekvämare att läsa på skärmen, din koncentration ökar och som en följd av det ökar din läshastighet. Stanna igen genom att trycka på (S) eller (Ctrl). Om du vill läsa om det sista stycket, så placerar du markören på ordet "ReadRunner" genom att klicka med (musbild) framför "ReadRunner". Tryck på (S) eller (Ctrl) så startar du igen. Du kan givetvis placera markören var du vill i den här eller andra texter. ReadRunner Web startat alltid vid närmaste punkt, komma eller andra tecken.<br><br>
+	
+	Enklare kan det inte bli. Du läser lugnt i din egen takt och har alltid situationen under kontroll. Innan du avslutar första lektionen, repeterar vi det enda du behöver veta så här långt:
+	
+	<ol>
+		<li>Start och stopp (S) eller (Ctrl)</li>
+		<li>Öka hastigheten (&#150;&gt;). Sänka hastigheten (&lt;&#150;).</li>
+		<li>Starta från valfritt ställe i texten (musbild)</li>
+	</ol>
+	<a href="javascript: showHideLay('s1',0)"><b>Dölj</b></a><br>
+	&nbsp; --></div></td>
+</tr>
+</table></div>
+
+
+
+
+<form name="form1">
+<input type="hidden" name="MetaId" value="">
+<input type="hidden" name="blnSaveSpeed" value="0">
+<input type="hidden" name="blnSaveSettings" value="0">
+<input type="hidden" name="colorWormField" value="">
+<input type="hidden" name="colorWormMaskField" value="">
+<input type="hidden" name="blnHidePanel" value="0">
+<input type="hidden" name="blnPattern" value="0">
+<input type="hidden" name="blnOpacity" value="1">
+<input type="hidden" name="RRcolorBg" id="RRcolorBgField" value="255,255,255">
+
+
+
+
+
+<div id="nr2Div" style="position:absolute; left:0; top:100; width:100%; z-index:20; visibility: hidden">
+<table border="0" cellpadding="0" cellspacing="0" width="500" align="center" bgcolor="#ffffff">
+<tr>
+	<td colspan="2">
+	<span class="heading2">Välj färg</span><br><br>
+	
+	<a href="javascript: showHideLay('s2',2)"><b>Trimma mot hjärnan</b></a><br><br>
+	<div id="s2Div" style="position:relative; display:none; visibility: hidden">
+	
+	När du faxar, så svarar faxen i andra änden med en vindlande ton. Faxarna anpassar sig till varandra för att överföringen ska bli så bra som möjligt. Principen är densamma när du använder ReadRunner Web.<BR><BR>
+	
+	För att säkerställa att överföringen, från dataskärmen till din hjärna ska bli optimal kan du bl a välja färg. Ett exempel: Jag vill ha grön färg på ReadRunner. Min bror föredrar blå och Kristina läser bäst när ReadRunner är transparant och grå. Prova dig fram. Det är lättast om du inte ändrar för mycket på en gång.<br><br>
+	
+	<a href="javascript: showHideLay('s2',0)"><b>Dölj</b></a><br>
+	&nbsp;</div><br>
+	
+	
+
+<div id="form1Div" style="position:relative">
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellspacing="1" cellpadding="0" width="250">
+		<tr>
+			<td id="form11TD" class="grey" style="cursor:hand" height="24" bgcolor="#ffffff" align="center"
+				onMouseOver="formTdOver('form11')" onMouseOut="formTdOut('form11')"
+				onClick="formTdClick('form11')">Typsnitt/bokstäver</td>
+		</tr>
+		<tr>
+			<td id="form12TD" class="grey" style="cursor:hand" height="24" bgcolor="#ffffff" align="center"
+				onMouseOver="formTdOver('form12')" onMouseOut="formTdOut('form12')"
+				onClick="formTdClick('form12')">ReadRunner</td>
+		</tr>
+		<tr>
+			<td id="form13TD" class="grey" style="cursor:hand" height="24" bgcolor="#ffffff" align="center"
+				onMouseOver="formTdOver('form13')" onMouseOut="formTdOut('form13')"
+				onClick="formTdClick('form13')">Transparens</td>
+		</tr>
+		<tr>
+			<td id="form14TD" class="grey" style="cursor:hand" height="24" bgcolor="#ffffff" align="center"
+				onMouseOver="formTdOver('form14')" onMouseOut="formTdOut('form14')"
+				onClick="activeTd = ''; hideAllFormSubLays();">D&ouml;lj</td>
+		</tr>
+		<tr>
+			<td id="form15TD" class="grey" style="cursor:hand" height="24" bgcolor="#ffffff" align="center"
+				onMouseOver="formTdOver('form15')" onMouseOut="formTdOut('form15')"
+				onClick="formTdClick('form15'); RRsaveSettings('Settings')">Spara inställningarna</td>
+		</tr>
+		<tr>
+			<td height="25" bgcolor="#ffffff" align="center">
+			<a href="javascript: startRR()"><img src="images/btn_start_0.gif" width="88" height="21" alt="" border="0"></a></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table>
+	
+	
+	
+	
+	<div id="form11Div" style="position:absolute; left:240; top:5; z-index:12; visibility:hidden">
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellspacing="1" cellpadding="0" width="150">
+		<tr>
+			<td id="form111TD" class="blackBold" style="cursor:hand; background:#ffffff" align="center"
+				onMouseOver="formTdOver('form111')" onMouseOut="formTdOut('form111')"
+				onClick="form11Click('form111')">
+			<table border="0" cellpadding="0" cellspacing="3" width="100%">
+			<tr>
+				<td>Mörkgrå</td>
+				<td width="34"><input id="form111Radio" type="radio" name="RRcolorText" value="102,102,102" checked></td>
+				<td width="16" bgcolor="#666666"><img src="images/1x1.gif" width="1" height="1"></td>
+			</tr>
+			</table></td>
+		</tr>
+		<tr>
+			<td id="form112TD" class="grey" style="cursor:hand; background:#ffffff" align="center"
+				onMouseOver="formTdOver('form112')" onMouseOut="formTdOut('form112')"
+				onClick="form11Click('form112')">
+			<table border="0" cellpadding="0" cellspacing="3" width="100%">
+			<tr>
+				<td>Svart</td>
+				<td width="34"><input id="form112Radio" type="radio" name="RRcolorText" value="0,0,0"></td>
+				<td width="16" bgcolor="#000000"><img src="images/1x1.gif" width="1" height="1"></td>
+			</tr>
+			</table></td>
+		</tr>
+		<tr>
+			<td id="form113TD" class="grey" style="cursor:hand; background:#ffffff" align="center"
+				onMouseOver="formTdOver('form113')" onMouseOut="formTdOut('form113')"
+				onClick="form11Click('form113')">
+			<table border="0" cellpadding="0" cellspacing="3" width="100%">
+			<tr>
+				<td>Mörkblå</td>
+				<td width="34"><input id="form113Radio" type="radio" name="RRcolorText" value="0,0,102"></td>
+				<td width="16" bgcolor="#000066"><img src="images/1x1.gif" width="1" height="1"></td>
+			</tr>
+			</table></td>
+		</tr>
+		<tr>
+			<td id="form114TD" class="grey" style="cursor:hand; background:#ffffff" align="center"
+				onMouseOver="formTdOver('form114')" onMouseOut="formTdOut('form114')"
+				onClick="form11Click('form114')">
+			<table border="0" cellpadding="0" cellspacing="3" width="100%">
+			<tr>
+				<td>Mörkgrön</td>
+				<td width="34"><input id="form114Radio" type="radio" name="RRcolorText" value="0,102,0"></td>
+				<td width="16" bgcolor="#006600"><img src="images/1x1.gif" width="1" height="1"></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></div>
+	
+	<div id="form12Div" style="position:absolute; left:240; top:30; z-index:13; visibility:hidden">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellspacing="1" cellpadding="0" width="150">
+		<tr>
+			<td id="form121TD" class="blackBold" style="cursor:hand; background:#ffffff" align="center"
+				onMouseOver="formTdOver('form121')" onMouseOut="formTdOut('form121')"
+				onClick="form12Click('form121')">
+			<table border="0" cellpadding="0" cellspacing="3" width="100%">
+			<tr>
+				<td>Ljusblå</td>
+				<td width="34"><input id="form121Radio" type="radio" name="RRcolorWorm" value="153,204,255" checked></td>
+				<td width="16" bgcolor="#99CCFF"><img src="images/1x1.gif" width="1" height="1"></td>
+			</tr>
+			</table></td>
+		</tr>
+		<tr>
+			<td id="form122TD" class="grey" style="cursor:hand; background:#ffffff" align="center"
+				onMouseOver="formTdOver('form122')" onMouseOut="formTdOut('form122')"
+				onClick="form12Click('form122')">
+			<table border="0" cellpadding="0" cellspacing="3" width="100%">
+			<tr>
+				<td>Gröngrå</td>
+				<td width="34"><input id="form122Radio" type="radio" name="RRcolorWorm" value="153,204,204"></td>
+				<td width="16" bgcolor="#99CCCC"><img src="images/1x1.gif" width="1" height="1"></td>
+			</tr>
+			</table></td>
+		</tr>
+		<tr>
+			<td id="form123TD" class="grey" style="cursor:hand; background:#ffffff" align="center"
+				onMouseOver="formTdOver('form123')" onMouseOut="formTdOut('form123')"
+				onClick="form12Click('form123')">
+			<table border="0" cellpadding="0" cellspacing="3" width="100%">
+			<tr>
+				<td>Ljusgrön</td>
+				<td width="34"><input id="form123Radio" type="radio" name="RRcolorWorm" value="153,204,153"></td>
+				<td width="16" bgcolor="#99CC99"><img src="images/1x1.gif" width="1" height="1"></td>
+			</tr>
+			</table></td>
+		</tr>
+		<tr>
+			<td id="form124TD" class="grey" style="cursor:hand; background:#ffffff" align="center"
+				onMouseOver="formTdOver('form124')" onMouseOut="formTdOut('form124')"
+				onClick="form12Click('form124')">
+			<table border="0" cellpadding="0" cellspacing="3" width="100%">
+			<tr>
+				<td>Ljusgrå</td>
+				<td width="34"><input id="form124Radio" type="radio" name="RRcolorWorm" value="204,204,204"></td>
+				<td width="16" bgcolor="#cccccc"><img src="images/1x1.gif" width="1" height="1"></td>
+			</tr>
+			</table></td>
+		</tr>
+		<tr>
+			<td id="form125TD" class="grey" style="cursor:hand; background:#ffffff" align="center"
+				onMouseOver="formTdOver('form125')" onMouseOut="formTdOut('form125')"
+				onClick="form12Click('form125')">
+			<table border="0" cellpadding="0" cellspacing="3" width="100%">
+			<tr>
+				<td>Grå</td>
+				<td width="34"><input id="form125Radio" type="radio" name="RRcolorWorm" value="153,153,153"></td>
+				<td width="16" bgcolor="#999999"><img src="images/1x1.gif" width="1" height="1"></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div id="form13Div" style="position:absolute; left:240; top:55; z-index:14; visibility:hidden">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td bgcolor="#999999">
+		<SCRIPT LANGUAGE="JavaScript">
+		<!--
+		var iColorR = 0;
+		var iColorG = 0;
+		var iColorB = 0;
+		var blnCheck = '';
+		var sClass = 'grey';
+		
+		document.write('<table border="0" cellspacing="1" cellpadding="0" width="150">');
+		for (var i = 0; i < arrForm13SubDivs.length; i++) {
+			blnCheck = (active13Td == arrForm13SubDivs[i]) ? ' checked' : '';
+			sClass = (active13Td == arrForm13SubDivs[i]) ? 'blackBold' : 'grey';
+			theColorTextTransp = '153,204,204';
+			var transpVal = arrForm13Values[i];
+			arrTransp = theColorTextTransp.split(',');
+			for (var j=0; j<3; j++) {
+				arrTransp[j] = (arrTransp[j] > 0) ? parseInt(arrTransp[j] * transpVal) : 0;
+			}
+			theColorTextTransp = 'rgb(' + arrTransp[0] + ',' + arrTransp[1] + ',' + arrTransp[2] + ')';
+			document.write('<tr>');
+			document.write('	<td id="' + arrForm13SubDivs[i] + 'TD" cl'+'ass="' + sClass + '" style="cursor:hand; background:#ffffff" align="center"');
+			document.write('		onMouseOver="formTdOver(\'' + arrForm13SubDivs[i] + '\')" onMouseOut="formTdOut(\'' + arrForm13SubDivs[i] + '\')"');
+			document.write('		onClick="form13Click(\'' + arrForm13SubDivs[i] + '\')">');
+			document.write('	<table border="0" cellpadding="0" cellspacing="3" width="100%">');
+			document.write('	<tr>');
+			document.write('		<td width="50">' + arrForm13Descriptions[i] + '</td>');
+			document.write('		<td width="30"><input id="' + arrForm13SubDivs[i] + 'Radio" type="radio" name="RRopacityLevel" value="' + arrForm13Values[i] + '"' + blnCheck + '></td>');
+			document.write('		<td bgcolor="#99CCCC" align="center" style="color:#666666">');
+			document.write('		<span style="color: ' + theColorTextTransp + '">Text</span></td>');
+			document.write('	</tr>');
+			document.write('	</table></td>');
+			document.write('</tr>');
+		}
+		document.write('</table>');
+		//-->
+		</SCRIPT></td>
+	</tr>
+	</table></div>
+	
+	<div id="form14Div" style="position:absolute; left:240; top:80; z-index:15; visibility:hidden"></div>
+	
+	<div id="form15Div" style="position:absolute; left:240; top:105; z-index:15; visibility:hidden">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellspacing="1" cellpadding="0" width="250">
+		<tr>
+			<td height="24" bgcolor="#eeeeaa" align="center"><b>Färgerna är sparade!</b></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></div>
+	
+	<div id="form1HelpBtnDiv" style="position:absolute; left:5; top:-7; z-index:15">
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellpadding="0" cellspacing="1">
+		<tr>
+			<td bgcolor="#66aa66" style="color:#ccffaa; cursor:hand" title="Visa hjälp om detta" onClick="showDiv('help')"><b>&nbsp;?&nbsp;</b></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></div>
+</div>
+	
+	
+	
+	</td>
+</tr>
+</table></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="nr3Div" style="position:absolute; left:0; top:100; width:100%; z-index:30; visibility: hidden">
+<table border="0" cellpadding="0" cellspacing="0" width="500" align="center" bgcolor="#ffffff">
+<tr>
+	<td colspan="2">
+	<span class="heading2">Pauser</span><br><br>
+	
+	<a href="javascript: showHideLay('s3',2)"><b>Pauser gör det bekvämare</b></a><br><br>
+	<div id="s3Div" style="position:relative; display:none; visibility: hidden">
+	
+	Jag vill ha 4/10 sekunders uppehåll efter punkt, komma, ny rad och scrollning. Min bror, som är dyslektiker väljer 10 efter punkt, komma och ny rad. Min kompis Anna, som är snabbläsare, föredrar 8/10 sekunder efter punkt och scrollning och 0 efter alla andra variabler. Adam som har svårt att flytta blicken har kommit fram till att 20 passar bäst vid radbyte.<BR><BR>
+	
+	Din hjärna är unik. Genom att anpassa ReadRunner Web blir läsningen  behagligare. Det har visat sig att det är lättast att läsa med ReadRunner och när du tycker att det känns obekvämt så ändrar du på det.<br><br>
+
+	<a href="javascript: showHideLay('s3',0)"><b>Dölj</b></a><br>
+	&nbsp;</div><br>
+	
+	
+	
+	
+	
+
+<div id="form2Div" style="position:relative">
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellspacing="1" cellpadding="0" width="250">
+		<tr>
+			<td id="form21TD" class="grey" style="cursor:hand" height="24" bgcolor="#ffffff" align="center"
+				onMouseOver="formTdOver('form21')" onMouseOut="formTdOut('form21')"
+				onClick="formTdClick('form21')">Skiljetecken</td>
+		</tr>
+		<tr>
+			<td id="form22TD" class="grey" style="cursor:hand" height="24" bgcolor="#ffffff" align="center"
+				onMouseOver="formTdOver('form22')" onMouseOut="formTdOut('form22')"
+				onClick="formTdClick('form22')">Stopptecken</td>
+		</tr>
+		<tr>
+			<td id="form23TD" class="grey" style="cursor:hand" height="24" bgcolor="#ffffff" align="center"
+				onMouseOver="formTdOver('form23')" onMouseOut="formTdOut('form23')"
+				onClick="formTdClick('form23')">Ny rad</td>
+		</tr>
+		<tr>
+			<td id="form24TD" class="grey" style="cursor:hand" height="24" bgcolor="#ffffff" align="center"
+				onMouseOver="formTdOver('form24')" onMouseOut="formTdOut('form24')"
+				onClick="formTdClick('form24')">Scrollning</td>
+		</tr>
+		<tr>
+			<td id="form25TD" class="grey" style="cursor:hand" height="24" bgcolor="#ffffff" align="center"
+				onMouseOver="formTdOver('form25')" onMouseOut="formTdOut('form25')"
+				onClick="activeTd = ''; hideAllFormSubLays();">D&ouml;lj</td>
+		</tr>
+		<tr>
+			<td id="form26TD" class="grey" style="cursor:hand" height="24" bgcolor="#ffffff" align="center"
+				onMouseOver="formTdOver('form26')" onMouseOut="formTdOut('form26')"
+				onClick="formTdClick('form26'); RRsaveSettings('Settings')">Spara inställningarna</td>
+		</tr>
+		<tr>
+			<td height="25" bgcolor="#ffffff" align="center">
+			<a href="javascript: startRR()"><img src="images/btn_start_0.gif" width="88" height="21" alt="" border="0"></a></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table>
+	
+	<div id="form21Div" style="position:absolute; left:240; top:5; z-index:12; visibility:hidden">
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellspacing="1" cellpadding="0" width="150">
+		<tr>
+			<td height="24" bgcolor="#f0f0f0" align="center">
+			<table border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td><input class="RR_field2" type="checkbox" name="cbp3" value="1" title="På/Av" checked></td>
+				<td><input class="RR_field_right" type="text" name="p3" size="4" maxlength="4" value="0.5" onKeyUp="RRcheckPauseVal('p3')"></td>
+				<td><img src="images/btn_adjust_up_down.gif" width="15" height="21" alt="" border="0" usemap="#fArrowMap3"></td>
+				<td><img src="images/1x1.gif" width="10" height="1"></td>
+				<td><b>sek</b></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></div>
+	
+	<div id="form22Div" style="position:absolute; left:240; top:30; z-index:13; visibility:hidden">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellspacing="1" cellpadding="0" width="150">
+		<tr>
+			<td height="24" bgcolor="#f0f0f0" align="center">
+			<table border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td><input class="RR_field2" type="checkbox" name="cbp2" value="1" title="På/Av" checked></td>
+				<td><input class="RR_field_right" type="text" name="p2" size="4" maxlength="4" value="0.5" onKeyUp="RRcheckPauseVal('p2')"></td>
+				<td><img src="images/btn_adjust_up_down.gif" width="15" height="21" alt="" border="0" usemap="#fArrowMap2"></td>
+				<td><img src="images/1x1.gif" width="10" height="1"></td>
+				<td><b>sek</b></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></div>
+	
+	<div id="form23Div" style="position:absolute; left:240; top:55; z-index:14; visibility:hidden">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellspacing="1" cellpadding="0" width="150">
+		<tr>
+			<td height="24" bgcolor="#f0f0f0" align="center">
+			<table border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td><input class="RR_field2" type="checkbox" name="cbp1" value="1" title="På/Av" checked></td>
+				<td><input class="RR_field_right" type="text" name="p1" size="4" maxlength="4" value="1.0" onKeyUp="RRcheckPauseVal('p1')"></td>
+				<td><img src="images/btn_adjust_up_down.gif" width="15" height="21" alt="" border="0" usemap="#fArrowMap1"></td>
+				<td><img src="images/1x1.gif" width="10" height="1"></td>
+				<td><b>sek</b></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></div>
+	
+	<div id="form24Div" style="position:absolute; left:240; top:80; z-index:14; visibility:hidden">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellspacing="1" cellpadding="0" width="150">
+		<tr>
+			<td height="24" bgcolor="#f0f0f0" align="center">
+			<table border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td><input class="RR_field2" type="checkbox" name="cbp4" value="1" title="På/Av"></td>
+				<td><input class="RR_field_right" type="text" name="p4" size="4" maxlength="4" value="0" onKeyUp="RRcheckPauseVal('p4')"></td>
+				<td><img src="images/btn_adjust_up_down.gif" width="15" height="21" alt="" border="0" usemap="#fArrowMap4"></td>
+				<td><img src="images/1x1.gif" width="10" height="1"></td>
+				<td><b>sek</b></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></div>
+	
+	<div id="form25Div" style="position:absolute; left:240; top:105; z-index:15; visibility:hidden"></div>
+	
+	<div id="form26Div" style="position:absolute; left:240; top:130; z-index:15; visibility:hidden">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellspacing="1" cellpadding="0" width="250">
+		<tr>
+			<td height="24" bgcolor="#eeeeaa" align="center"><b>Pauserna är sparade!</b></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></div>
+	
+	<div id="form2HelpBtnDiv" style="position:absolute; left:5; top:-7; z-index:15">
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellpadding="0" cellspacing="1">
+		<tr>
+			<td bgcolor="#66aa66" style="color:#ccffaa; cursor:hand" title="Visa hjälp om detta" onClick="showDiv('help')"><b>&nbsp;?&nbsp;</b></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></div>
+</div>
+	
+	
+	
+	
+	</td>
+</tr>
+</table></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="nr4Div" style="position:absolute; left:0; top:100; width:100%; z-index:40; visibility: hidden">
+<table border="0" cellpadding="0" cellspacing="0" width="500" align="center" bgcolor="#ffffff">
+<tr>
+	<td colspan="2">
+	<span class="heading2">Hastighet</span><br><br>
+	
+	<a href="javascript: showHideLay('s4',2)"><b>Mer kunskap = högre hastighet</b></a><br><br>
+	<div id="s4Div" style="position:relative; display:none; visibility: hidden">
+	
+	Vi läser olika texter olika fort. En text som handlar om läsning på skärm läser jag fort, på grund av att jag känner igen begreppen och kan ämnet. Handlar den om kemi tvingas jag läsa långsamt, eftersom jag bara hade en etta i betyg och inte har lärt mig något nytt sedan gymnasiet. Man kan säga att mer kunskap i ett ämne, resulterar i högre hastighet. <BR>
+	<BR>
+	Skriv in den nya hastigheten här, istället för att klicka massa gånger på piltangenterna, när du vill ändra inställningen av hastighet snabbt.<br><br>
+
+	<a href="javascript: showHideLay('s4',0)"><b>Dölj</b></a><br>
+	&nbsp;</div><br>
+	
+	
+	
+	
+	
+	
+	
+	
+<div id="form3Div" style="position:relative">
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellspacing="1" cellpadding="0" width="250">
+		<tr>
+			<td id="form31TD" class="grey" style="cursor:hand" height="24" bgcolor="#ffffff" align="center"
+				onMouseOver="formTdOver('form31')" onMouseOut="formTdOut('form31')"
+				onClick="formTdClick('form31')">Skriv in egen hastighet</td>
+		</tr>
+		<tr>
+			<td id="form32TD" class="grey" style="cursor:hand" height="24" bgcolor="#ffffff" align="center"
+				onMouseOver="formTdOver('form32')" onMouseOut="formTdOut('form32')"
+				onClick="activeTd = ''; hideAllFormSubLays();">D&ouml;lj</td>
+		</tr>
+		<tr>
+			<td id="form33TD" class="grey" style="cursor:hand" height="24" bgcolor="#ffffff" align="center"
+				onMouseOver="formTdOver('form33')" onMouseOut="formTdOut('form33')"
+				onClick="formTdClick('form33'); RRsaveSettings('Speed')">Spara inställningarna</td>
+		</tr>
+		<tr>
+			<td height="25" bgcolor="#ffffff" align="center">
+			<a href="javascript: startRR()"><img src="images/btn_start_0.gif" width="88" height="21" alt="" border="0"></a></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table>
+	
+	<div id="form31Div" style="position:absolute; left:240; top:5; z-index:12; visibility:hidden">
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellspacing="1" cellpadding="0" width="150">
+		<tr>
+			<td height="24" bgcolor="#f0f0f0" align="center">
+			<table border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td><input class="RR_field_right" type="text" name="RRspeed" size="3" maxlength="3" value="30"
+				onChange="RRcheckSpeed('RRspeed');" onKeyUp="RRcheckSpeedVal('RRspeed');"><input type="hidden" name="RRspeed0" value="30"></td>
+				<td><img src="images/1x1.gif" width="10" height="1"></td>
+				<td><b>tecken/sek</b></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></div>
+	
+	<div id="form32Div" style="position:absolute; left:240; top:30; z-index:15; visibility:hidden"></div>
+	
+	<div id="form33Div" style="position:absolute; left:240; top:55; z-index:15; visibility:hidden">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellspacing="1" cellpadding="0" width="250">
+		<tr>
+			<td height="24" bgcolor="#eeeeaa" align="center"><b>Hastigheten är sparad!</b></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></div>
+	
+	<div id="form3HelpBtnDiv" style="position:absolute; left:5; top:-7; z-index:15">
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td bgcolor="#999999">
+		<table border="0" cellpadding="0" cellspacing="1">
+		<tr>
+			<td bgcolor="#66aa66" style="color:#ccffaa; cursor:hand" title="Visa hjälp om detta" onClick="showDiv('help')"><b>&nbsp;?&nbsp;</b></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></div>
+</div>
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	</td>
+</tr>
+<tr><!-- width settings -->
+	<td><img src="images/1x1.gif" width="103" height="1"></td>
+	<td><img src="images/1x1.gif" width="50" height="1"></td>
+</tr>
+</table></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</form>
+
+
+
+
+
+
+
+
+
+<div id="helpDiv" style="position:absolute; left:0; top:100; width:100%; z-index:40; visibility: hidden">
+<table border="0" cellpadding="0" cellspacing="0" width="500" align="center" bgcolor="#ffffff">
+<tr>
+	<td colspan="2">
+	<span class="heading2">Hjälp</span><br><br>
+	Lorem ipsum, dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.<BR>
+<BR>
+Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.<br><br>
+	
+	<b><span class="heading22">Duis autem</span></b><br><br>
+	Lorem ipsum, dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.<BR>
+<BR>
+Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</td>
+</tr>
+<tr><!-- width settings -->
+	<td><img src="images/1x1.gif" width="103" height="1"></td>
+	<td><img src="images/1x1.gif" width="50" height="1"></td>
+</tr>
+</table></div>
+
+
+
+
+<!-- * Up/Down arrows * -->
+<map name="fArrowMap1">
+	<area alt="" coords="0,0,14,9" href="javascript: void(0)" onMouseDown="fArrowUp('p1');">
+	<area alt="" coords="0,11,15,21" href="javascript: void(0)" onMouseDown="fArrowDn('p1');">
+</map>
+<map name="fArrowMap2">
+	<area alt="" coords="0,0,14,9" href="javascript: void(0)" onMouseDown="fArrowUp('p2');">
+	<area alt="" coords="0,11,15,21" href="javascript: void(0)" onMouseDown="fArrowDn('p2');">
+</map>
+<map name="fArrowMap3">
+	<area alt="" coords="0,0,14,9" href="javascript: void(0)" onMouseDown="fArrowUp('p3');">
+	<area alt="" coords="0,11,15,21" href="javascript: void(0)" onMouseDown="fArrowDn('p3');">
+</map>
+<map name="fArrowMap4">
+	<area alt="" coords="0,0,14,9" href="javascript: void(0)" onMouseDown="fArrowUp('p4');">
+	<area alt="" coords="0,11,15,21" href="javascript: void(0)" onMouseDown="fArrowDn('p4');">
+</map>
+
+</body>
+</html>
