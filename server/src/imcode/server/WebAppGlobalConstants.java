@@ -12,6 +12,7 @@ public class WebAppGlobalConstants {
 	private static WebAppGlobalConstants singletonInstance;
     public final static String USER_LOGIN_NAME_PARAMETER_NAME = "loginname";
     public static final String DEFAULT_ENCODING_WINDOWS_1252 = "windows-1252";
+    public static final String LOGGED_IN_USER = "logon.isDone";
 
     /**
 	* This must be called before any other method is called.

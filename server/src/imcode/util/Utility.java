@@ -83,7 +83,7 @@ public class Utility {
 
     public static UserDomainObject getLoggedOnUser( HttpServletRequest req ) {
         HttpSession session = req.getSession( true );
-        UserDomainObject user = (UserDomainObject)session.getAttribute( "logon.isDone" );
+        UserDomainObject user = (UserDomainObject)session.getAttribute( WebAppGlobalConstants.LOGGED_IN_USER );
         return user;
     }
 

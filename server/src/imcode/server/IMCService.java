@@ -229,7 +229,7 @@ final public class IMCService implements IMCServiceInterface {
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
     }
 
-    public int getSessionCounter() {
+    public synchronized int getSessionCounter() {
         return sessionCounter;
     }
 
@@ -263,7 +263,7 @@ final public class IMCService implements IMCServiceInterface {
         return result;
     }
 
-    public void incrementSessionCounter() {
+    public synchronized void incrementSessionCounter() {
         sqlUpdateProcedure( "IncSessionCounter", new String[0] );
         sessionCounter = getSessionCounterFromDb();
     }
@@ -706,7 +706,7 @@ final public class IMCService implements IMCServiceInterface {
     /**
      * Set session counter.
      */
-    public void setSessionCounter( int value ) {
+    public synchronized void setSessionCounter( int value ) {
         setSessionCounterInDb( value );
         sessionCounter = getSessionCounterFromDb();
     }

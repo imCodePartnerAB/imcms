@@ -5,6 +5,7 @@ import com.imcode.imcms.api.DefaultContentManagementSystem;
 import com.imcode.imcms.api.RequestConstants;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.NDC;
@@ -17,22 +18,24 @@ import java.io.IOException;
 
 public class ImcmsSetupFilter implements Filter {
 
-    private static final String LOGGED_IN_USER = "logon.isDone";
+    //private final static Logger log = Logger.getLogger( ImcmsSetupFilter.class );
 
     public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
 
-        HttpSession session = ((HttpServletRequest) request).getSession( true );
+        HttpServletRequest httpServletRequest = ((HttpServletRequest) request);
+        HttpSession session = httpServletRequest.getSession( false );
 
-        if (session.isNew()) {
+        if ( null == session ) {
+            session = httpServletRequest.getSession( true );
             IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
             service.incrementSessionCounter();
         }
 
-        UserDomainObject user = (UserDomainObject) session.getAttribute( LOGGED_IN_USER );
+        UserDomainObject user = (UserDomainObject)session.getAttribute( WebAppGlobalConstants.LOGGED_IN_USER );
         if (user == null) {
             String ip = request.getRemoteAddr();
             user = getUserUserOrIpLoggedInUser( ip );
-            session.setAttribute( LOGGED_IN_USER, user );
+            session.setAttribute( WebAppGlobalConstants.LOGGED_IN_USER, user );
         }
         user.setCurrentContextPath( ((HttpServletRequest) request).getContextPath() );
 

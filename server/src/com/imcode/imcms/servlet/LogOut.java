@@ -1,16 +1,15 @@
 package com.imcode.imcms.servlet;
 
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+import java.io.IOException;
+
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
 
 public class LogOut extends HttpServlet {
 
@@ -18,7 +17,7 @@ public class LogOut extends HttpServlet {
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         HttpSession session = req.getSession( true );
-        session.invalidate();
+        session.removeAttribute( WebAppGlobalConstants.LOGGED_IN_USER );
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
