@@ -60,21 +60,29 @@ public class MenuDomainObject {
 
     public void addMenuItem( MenuItemDomainObject menuItem ) {
         if (null == menuItem.getSortKey()) {
-            int maxSortKey = getMaxSortKey();
-            menuItem.setSortKey( new Integer( maxSortKey + DEFAULT_SORT_KEY_INCREMENT ) ) ;
+            Integer maxSortKey = getMaxSortKey();
+            Integer sortKey;
+            if ( null != maxSortKey ) {
+                sortKey = new Integer( maxSortKey.intValue() + DEFAULT_SORT_KEY_INCREMENT );
+            } else {
+                sortKey = new Integer( DEFAULT_SORT_KEY );
+            }
+            menuItem.setSortKey( sortKey );
         }
 
         menuItems.add( menuItem );
     }
 
-    private int getMaxSortKey() {
+    private Integer getMaxSortKey() {
         Collection menuItemSortKeys = CollectionUtils.collect(menuItems,new Transformer() {
             public Object transform( Object o ) {
                 return ((MenuItemDomainObject)o).getSortKey() ;
             }
         }) ;
-        Integer maxSortKey = (Integer)Collections.max(menuItemSortKeys) ;
-        return maxSortKey.intValue();
+        if (menuItemSortKeys.isEmpty()) {
+            return null ;
+        }
+        return (Integer)Collections.max(menuItemSortKeys) ;
     }
 
     public void removeMenuItem( MenuItemDomainObject menuItem ) {
