@@ -424,30 +424,5 @@ public class Document {
             }
         };
 
-        public final static class CategoryNameDocumentComparator extends Comparator {
-
-            private CategoryType categoryType;
-
-            public CategoryNameDocumentComparator( CategoryType categoryType ) {
-                if ( 1 != categoryType.getInternal().getMaxChoices() ) {
-                    throw new IllegalArgumentException( "Non-single-choice category-type." );
-                }
-                this.categoryType = categoryType;
-            }
-
-            protected int compareDocuments( Document d1, Document d2 ) throws NoPermissionException {
-                Category[] c1 = d1.getCategoriesOfType( categoryType );
-                Category[] c2 = d2.getCategoriesOfType( categoryType );
-                if ( 0 == c1.length && 0 == c2.length ) {
-                    return 0;
-                } else if ( c1.length < c2.length ) {
-                    return -1;
-                } else if ( c1.length > c2.length ) {
-                    return +1;
-                } else {
-                    return c1[0].compareTo( c2[0] );
-                }
-            }
-        }
     }
 }
