@@ -1,70 +1,68 @@
 package imcode.buildtests;
 
-import junit.framework.TestCase;
-
-import java.io.*;
-import java.util.Properties;
-import java.util.HashSet;
-import java.util.Set;
-
 import imcode.util.LineReader;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
+
+import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.MultiMap;
 
 /**
  * @author kreiger
  */
-public class TestForMissingLanguageProperties extends TestCase {
+public class TestForMissingLanguageProperties extends PropertiesBaseTestCase {
 
     private final static String START_TOKEN = "<? ";
     private final static String END_TOKEN = " ?>";
-    private String[] propertyFilenames = { "imcms_swe.properties", "imcms_eng.properties" } ;
+    private String[] propertyFilenames = {"imcms_swe.properties", "imcms_eng.properties"};
 
     public void testHtdocs() throws IOException {
-        File dir = new File( "install/htdocs" );
-        Set missingProperties = new HashSet() ;
-
-        Properties[] propertieses = getPropertieses( dir, propertyFilenames );
-        recurse( dir, propertieses, missingProperties );
-
-        assertTrue( "Missing properties: " + missingProperties.toString(), missingProperties.isEmpty() ) ;
+        testDir( new File( "install/htdocs" ) );
     }
 
     public void testSql() throws IOException {
-        File dir = new File( "sql" );
-        Set missingProperties = new HashSet() ;
-
-        Properties[] propertieses = getPropertieses( dir, propertyFilenames );
-        recurse( dir, propertieses, missingProperties  );
-
-        assertTrue( "Missing properties: " + missingProperties.toString(), missingProperties.isEmpty() ) ;
+        testDir( new File( "sql" ) );
     }
 
     public void testTemplates() throws IOException {
-        File dir = new File( "templates" );
-        Set missingProperties = new HashSet() ;
+        testDir( new File( "templates" ) );
+    }
+
+    private void testDir( File dir ) throws IOException {
+        MultiMap mapOfPropertyKeysToFiles = new MultiHashMap();
 
         Properties[] propertieses = getPropertieses( dir, propertyFilenames );
-        recurse( dir, propertieses, missingProperties  );
+        recurse( dir, propertieses, mapOfPropertyKeysToFiles );
 
-        assertTrue( "Missing properties: " + missingProperties.toString(), missingProperties.isEmpty() ) ;
+        MultiMap filesWithMissingProperties = buildMapOfFileNamesToPropertyKeys( mapOfPropertyKeysToFiles );
+        assertTrue( "Missing properties: " + filesWithMissingProperties.toString(), filesWithMissingProperties.isEmpty() );
     }
 
-    private Properties[] getPropertieses( File dir, String[] propertiesFilenames ) throws IOException {
-        Properties[] propertieses = new Properties[propertiesFilenames.length] ;
-        for ( int i = 0; i < propertiesFilenames.length; i++ ) {
-            String propertiesFilename = propertiesFilenames[i];
-            Properties properties = new Properties() ;
-            properties.load(new FileInputStream(new File(dir,propertiesFilename)));
-            propertieses[i] = properties ;
+    private MultiMap buildMapOfFileNamesToPropertyKeys( MultiMap missingProperties ) throws IOException {
+        Set missingPropertyKeys = missingProperties.keySet() ;
+        MultiMap filesWithMissingProperties = new MultiHashMap() ;
+        for ( Iterator iterator = missingPropertyKeys.iterator(); iterator.hasNext(); ) {
+            String propertyKey = (String)iterator.next() ;
+            Collection filesWithPropertyKey = (Collection)missingProperties.get( propertyKey ) ;
+            Set uniqueFilesWithPropertyKey = new HashSet( filesWithPropertyKey) ;
+            for ( Iterator iterator1 = uniqueFilesWithPropertyKey.iterator(); iterator1.hasNext(); ) {
+                File fileWithPropertyKey = (File)iterator1.next();
+                filesWithMissingProperties.put("\n"+fileWithPropertyKey.getCanonicalPath()+":0: \n", propertyKey) ;
+            }
         }
-        return propertieses ;
+        return filesWithMissingProperties;
     }
 
-    private void recurse( File dir, Properties[] propertieses, Set missingProperties  ) throws IOException {
+    private void recurse( File dir, Properties[] propertieses, MultiMap missingProperties ) throws IOException {
         File[] files = dir.listFiles();
         for ( int i = 0; i < files.length; i++ ) {
             File file = files[i];
-            if (file.getName().startsWith( "." )) {
-                continue ;
+            if ( file.getName().startsWith( "." ) ) {
+                continue;
             }
             if ( file.isDirectory() ) {
                 recurse( file, propertieses, missingProperties );
@@ -74,8 +72,8 @@ public class TestForMissingLanguageProperties extends TestCase {
         }
     }
 
-    private void parseFile( File file, Properties[] propertieses, Set missingProperties ) throws IOException {
-        LineReader in = new LineReader(new BufferedReader( new FileReader( file ) ) );
+    private void parseFile( File file, Properties[] propertieses, MultiMap missingProperties ) throws IOException {
+        LineReader in = new LineReader( new BufferedReader( new FileReader( file ) ) );
         for ( String line; null != ( line = in.readLine() ); ) {
             for ( int startTokenIndex = 0; -1 != ( startTokenIndex = line.indexOf( START_TOKEN, startTokenIndex ) ); ) {
                 int endTokenIndex = line.indexOf( END_TOKEN, startTokenIndex + START_TOKEN.length() );
@@ -83,8 +81,8 @@ public class TestForMissingLanguageProperties extends TestCase {
                     String propertyKey = line.substring( startTokenIndex + START_TOKEN.length(), endTokenIndex );
                     for ( int i = 0; i < propertieses.length; i++ ) {
                         Properties properties = propertieses[i];
-                        if (null == properties.getProperty( propertyKey ))  {
-                            missingProperties.add(propertyKey) ;
+                        if ( null == properties.getProperty( propertyKey ) ) {
+                            missingProperties.put( propertyKey, file );
                         }
                     }
                     startTokenIndex = endTokenIndex + END_TOKEN.length();
