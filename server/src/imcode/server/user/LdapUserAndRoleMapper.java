@@ -335,16 +335,15 @@ public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
 
     private Properties trySearchForUserAttributes( String loginName, String[] attributesToReturn ) throws NamingException {
         String ldapUserIdentifyingAttribute = userPropertyNameToLdapAttributeNameMap.getProperty( "LoginName" );
-        String searchFilter = "(&(objectClass=" + ldapUserObjectClass + ")(" + ldapUserIdentifyingAttribute + "="
-                              + loginName
-                              + "))";
 
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
         searchControls.setReturningAttributes( attributesToReturn );
         searchControls.setReturningObjFlag( true );
 
-        NamingEnumeration enumeration = ctx.search( "", searchFilter, searchControls );
+        String searchFilterExpr = "(&(objectClass={0})({1}={2}))";
+
+        NamingEnumeration enumeration = ctx.search( "", searchFilterExpr, new Object[] { ldapUserObjectClass, ldapUserIdentifyingAttribute, loginName }, searchControls );
 
         boolean foundUser = enumeration != null && enumeration.hasMore();
 
