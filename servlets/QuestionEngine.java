@@ -71,15 +71,21 @@ public class QuestionEngine extends HttpServlet
 				}
 				else
 				{
-					//save old question
+					//save old question 
 					String svarFile = IMCServiceRMI.getFortune(imcServer,inFile + "enkatcurrent.txt");
 	
-		String file = new String(fortune_path + "\\" + inFile + "enkatstatistics.txt");
-		BufferedWriter fileW = new BufferedWriter( new FileWriter(file,true) );
-		fileW.newLine();
-		fileW.write(svarFile);
-		fileW.flush();
-		fileW.close();
+					String file = new String(fortune_path + "\\" + inFile + "enkatstatistics.txt");
+					BufferedWriter fileW = new BufferedWriter( new FileWriter(file,true) );
+					fileW.write(svarFile);
+					fileW.flush();
+					fileW.close();
+					
+					//ta bort den gamla
+					String file1 = new String(fortune_path + "\\" + inFile + "enkatcurrent.txt");
+					BufferedWriter file1W = new BufferedWriter( new FileWriter(file1) );
+					file1W.newLine();
+					file1W.flush();
+					file1W.close();
 					
 					//get new question
 					question = this.getNewQuestion(host,imcServer,inFile);
@@ -104,7 +110,6 @@ public class QuestionEngine extends HttpServlet
 		values.add(inFile);		
 		
 		String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, questionTemplate , "se", "106");
-		
 		
 		out.println(parsed);
 		
@@ -162,15 +167,18 @@ public class QuestionEngine extends HttpServlet
 		if(  !( ( date1.before(date) || ( (dateF.format(date1)).equals(dateF.format(date)) ) ) && ( date2.after(date)  || ( (dateF.format(date2)).equals(dateF.format(date)) ) ) ) )
 		{
 			theQuestion = "Ingen text kan visas";
+			questionTemplate="QuestionError.htm";
 		}
-		
-		//update svarfilen
-		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
-		File file = new File(fortune_path,inFile + "enkatcurrent.txt");
-		BufferedWriter fileW = new BufferedWriter( new FileWriter(file) );
-		fileW.write(dateF.format(date1) + "#" + dateF.format(date2) +"#" + theQuestion + "#" +"ja: 0" + "#" + "nej: 0" + "#"); 
-		fileW.flush();
-		fileW.close();
+		else
+		{
+			//update svarfilen
+			File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
+			File file = new File(fortune_path,inFile + "enkatcurrent.txt");
+			BufferedWriter fileW = new BufferedWriter( new FileWriter(file) );
+			fileW.write(dateF.format(date1) + "#" + dateF.format(date2) +"#" + theQuestion + "#" +"ja: 0" + "#" + "nej: 0" + "#"); 
+			fileW.flush();
+			fileW.close();
+		}
 				
 		return theQuestion;
 	}
