@@ -1,12 +1,14 @@
 #gui_start_of_page( "<? global/edit ?> <? templates/sv/AdminManager_adminTask_element.htm/4 ?>" "AdminQuestionsFile" "back" 98 "" )
 
-<table  width="400">
+<table  width="500">
 <form method="post" id="addForm" action="AdminQuestionsFile" name="AdminQuestionsFile">
 <tr>
-  <td><? templates/sv/fortunes/admin_questions_file.html/4 ?><input type="text" name="date1" size="6" value="#date1#"></td>
+  <td><? templates/sv/fortunes/admin_questions_file.html/4 ?>&nbsp;
+  <input type="text" name="date1" size="6" id="dateFrom" maxlength="6" value="#date1#"></td>
 </tr>
 <tr>
-  <td><? templates/sv/fortunes/admin_questions_file.html/1001 ?><input type="text" name="date2" size="6" value="#date2#"></td>
+  <td><? templates/sv/fortunes/admin_questions_file.html/1001 ?>&nbsp;
+  <input type="text" name="date2" size="6" id="dateTo" maxlength="6" value="#date2#"></td>
 </tr>
 <tr>
   <td><? templates/sv/fortunes/admin_questions_file.html/5 ?></td>
@@ -39,7 +41,7 @@
 </tr>
 <tr>
   <td align="center">
-    <input type="submit" class="imcmsFormBtnSmall" name="save" value="<? templates/sv/fortunes/admin_questions_file.html/2004 ?>" onClick="return checkInput()" >
+    <input type="submit" class="imcmsFormBtnSmall" name="save" value="<? global/save ?>" onClick="return checkInput()" >
     <input type="submit" class="imcmsFormBtnSmall" name="back" value="<? global/cancel ?>" >
   </td>
 </tr>
