@@ -45,8 +45,7 @@ public class ChatControl extends ChatBase
 		//ok lets load the page for first time
 
 		VariableManager vm = new VariableManager() ;
-		Html htm = new Html() ;
-		
+		Html htm = new Html() ;		
 	
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)
@@ -98,22 +97,21 @@ public class ChatControl extends ChatBase
 	//	int metaId = Integer.parseInt( aMetaId );
 		String aChatId = params.getProperty("CHAT_ID") ; //vet ej om denna behövs?????????????
 
+
+		//lets get the Chat
 		Chat myChat = (Chat)session.getValue("theChat");
 		if (myChat == null)
 		{
 			log("myChat was null so return");
 		 	return;
 		}
-	
-
 		//lets get the chatmember
 		ChatMember myMember = (ChatMember) session.getValue("theChatMember");
 		if (myMember == null)
 		{
 			log("myMember was null so return");
 			return;
-		}
-	
+		}	
 		//lets get the room
 		ChatGroup myGroup = myMember.getMyGroup();
 		if (myGroup == null)
@@ -122,21 +120,20 @@ public class ChatControl extends ChatBase
 			return;
 		}
 		
+		//lets get all Properties from Chat
+		//här måste vi skriva en metod som returnerar en Properties från Chat
+		//Properties pageOptions = myChat.getProperties();
+		//session.putValue("pageOptions");
+		
+		
 		String chatRoom = myGroup.getChatGroupName();
 		String alias = myMember.getName();
 
 		//lets's get all messagetypes for this room
-		StringBuffer msgTypes = new StringBuffer("");
-msgTypes.append("<option value=\"101\">arne säger</option>\n");		
-//		ListIterator listIter = myGroup.getAllMsgTypes();
-
-//		while (listIter.hasNext())	
-//		{
-//			MsgType tempType = (MsgType) listIter.next();
-//			msgTypes.append("<option value=\""+tempType.getIdNr() + "\">" + tempType.getName()+"</option>\n" );
-//		}
-
-
+		Vector msgTypeVect = myChat.getMsgTypes();
+		Html ht = new Html();
+		String msgTypes = ht.createHtmlCode("ID_OPTION", "", msgTypeVect ) ;
+		
 		//let's get all the users in this room		
 		StringBuffer group_members = new StringBuffer("");
 		Iterator iter = myGroup.getAllGroupMembers();
@@ -166,8 +163,8 @@ msgTypes.append("<option value=\"101\">arne säger</option>\n");
 		//lets add all the needed tags 
 		vm.addProperty("alias", alias ) ;	
 		vm.addProperty("chatRoom", chatRoom ) ;	
-		vm.addProperty("msgTypes", msgTypes.toString() ) ;
-		vm.addProperty("recipient", group_members.toString() ) ;
+		vm.addProperty("MSG_PREFIX", msgTypes ) ;
+		vm.addProperty("MSG_RECIVER", group_members.toString() ) ;
 		vm.addProperty("CHAT_ROOMS", chat_rooms.toString() ) ;
 		
 	
@@ -203,7 +200,7 @@ msgTypes.append("<option value=\"101\">arne säger</option>\n");
 			return ;
 		}
 
-			HttpSession session = req.getSession(false);
+		HttpSession session = req.getSession(false);
 
 		// Lets get the standard SESSION parameters and validate them
 		Properties params = this.getSessionParameters(req) ;
@@ -274,54 +271,58 @@ msgTypes.append("<option value=\"101\">arne säger</option>\n");
 		}
 		
 	log("OK so far !!!!");
+		
+		
 		//**** ok the user wants to send a message ****
 		if (req.getParameter("sendMsg") != null)
 		{
 			//the user wants to send a message
 			log("ok lets try and send a message");
-			
+			String senderName = myMember.getName();
+						
 			//lets get the message and all the needed params add it into the msgpool
 			String newMessage = (req.getParameter("msg") == null ? "" : req.getParameter("msg").trim());
-			if(newMessage.length() == 2) return; //there was an empty string
-
-			//lets get the recipient 1 = all 
-			String recieverNrStr = (req.getParameter("recipient") == null ? "" :  req.getParameter("recipient").trim());
-			log("recieverNrStr = "+recieverNrStr);
-			if(recieverNrStr.length() == 2) recieverNrStr = "1"; //it was empty lets send it too all
+			if (newMessage.length() == 0)
+			{
+			
+				//lets get the recipient 1 = all 
+				String recieverNrStr = (req.getParameter("recipient") == null ? "" :  req.getParameter("recipient").trim());
+				log("recieverNrStr = "+recieverNrStr);
+				if(recieverNrStr.length() == 2) recieverNrStr = "1"; //it was empty lets send it too all
 		
-			//lets get the messageType fore the message 0 = none
-			String msgTypeNrStr = (req.getParameter("msgTypes") == null ? "" : req.getParameter("msgTypes").trim());
-			log("msgTypeNrStr = "+msgTypeNrStr);
-			if(msgTypeNrStr.length() == 2) msgTypeNrStr = "0";
+				//lets get the messageType fore the message 0 = none
+				String msgTypeNrStr = (req.getParameter("msgTypes") == null ? "" : req.getParameter("msgTypes").trim());
+				log("msgTypeNrStr = "+msgTypeNrStr);
+				if(msgTypeNrStr.length() == 2) msgTypeNrStr = "0";
 	
-			//ok lets parse those to int
-			int recieverNr, msgTypeNr;
-			try
-			{
-				recieverNr = Integer.parseInt(recieverNrStr);
-				msgTypeNr = Integer.parseInt(msgTypeNrStr);
-			}catch (NumberFormatException nfe)
-			{
-				log("NumberFormatException while try to send msg");
-				recieverNr = 1;
-				msgTypeNr = 0;
+				//ok lets parse those to int
+				int recieverNr, msgTypeNr;
+				try
+				{
+					recieverNr = Integer.parseInt(recieverNrStr);
+					msgTypeNr = Integer.parseInt(msgTypeNrStr);
+				}catch (NumberFormatException nfe)
+				{
+					log("NumberFormatException while try to send msg");
+					recieverNr = 1;
+					msgTypeNr = 0;
+				}
+
+				int senderNr = myMember.getUserId();
+
+				String theDateTime = (super.getDateToday() +" : "+ super.getTimeNow());
+
+				//ok lets create the message  "public ChatMsg(String chatMsg, String recieverStr,int reciever, int msgType, String msgTypeStr, String sender, String dateTime)"
+				imcode.external.chat.ChatMsg newChatMsg = new ChatMsg(newMessage, "obs",recieverNr, msgTypeNr,"obs", senderName, theDateTime);
+				log("ChatMsg = "+newChatMsg.getMessage());
+				//ok now lets send it "boolean addNewMsg(ChatMsg msg)"
+				myMember.addNewMsg(newChatMsg);	
+				log("antal i listan efter adden= "+myGroup.getNoOffMessages());		
+
+				log("ok now has the msg been sent");
 			}
-
-			int senderNr = myMember.getUserId();
-
-			String theDateTime = (super.getDateToday() +" : "+ super.getTimeNow());
-
-			//ok lets create the message  "ChatMsg(String chatMsg, int reciever, int msgType, int sender)"
-			imcode.external.chat.ChatMsg newChatMsg = new ChatMsg(newMessage, recieverNr, msgTypeNr, senderNr, theDateTime);
-			log("ChatMsg = "+newChatMsg.getMessage());
-			//ok now lets send it "boolean addNewMsg(ChatMsg msg)"
-			myMember.addNewMsg(newChatMsg);	
-			log("antal i listan efter adden= "+myGroup.getNoOffMessages());		
-
-			log("ok now has the msg been sent");
-
+			
 			//ok now lets build the page in doGet
-		log("test5");
 			doGet(req,res);
 			return;
 		}//end if (req.getParameter("sendMSG") != null)
@@ -334,7 +335,8 @@ msgTypes.append("<option value=\"101\">arne säger</option>\n");
 			log("ok lets try and change chatRoom");
 			//ok first lets send a msg to tell everybody that the user has left the room
 			int senderNr = myMember.getUserId();
-			ChatMsg newLeaveMsg = new ChatMsg(LEAVE_MSG, 1, 0, senderNr, "");
+			String senderName = myMember.getName();
+			ChatMsg newLeaveMsg = new ChatMsg(LEAVE_MSG,"", 1, 0,"", senderName, "");
 			myMember.addNewMsg(newLeaveMsg);
 
 			//ok lets get the "new room number"
@@ -354,14 +356,57 @@ msgTypes.append("<option value=\"101\">arne säger</option>\n");
 			mewGroup.addNewGroupMember(myMember);
 
 			//ok lets send a enter group msg
-			ChatMsg newEnterMsg = new ChatMsg(ENTER_MSG, 1, 0, senderNr, "");
+			ChatMsg newEnterMsg = new ChatMsg(ENTER_MSG, "", 1, 0,"", senderName, "");
 			myMember.addNewMsg(newEnterMsg);
 
 			//ok lets build the page in doGet
 			log("ok the room is now changed");
 			doGet(req, res);		
-		}
-
+		}//end if (req.getParameter("changeRoom") != null)
+			
+		
+		//the user want to change settings
+		if (req.getParameter("controlOK") != null)
+		{
+			log("ok lets change some settings");
+			Enumeration ene = req.getParameterNames();
+			log("++++++++++++++++++++++++++++");
+			while (ene.hasMoreElements())
+			{
+				String st = (String) ene.nextElement();
+				
+				log(st+" = "+req. getParameter(st));
+			}
+			log("++++++++++++++++++++++++++++");
+			
+			//lets get the parameters
+			String showPrivate 	= req.getParameter("private");
+			String showInOut 	= req.getParameter("inOut");
+			String autoscroll	= req.getParameter("autoscroll");
+			String showDateTime = req.getParameter("dateTime");
+			String showPublicMsg= req.getParameter("public");			
+			String fontInc 		= req.getParameter("fontInc");
+			String fontDec		= req.getParameter("fontDec");
+			
+			//ok lets update the chatSettings in session
+			Properties settings = (Properties)session.getValue("chatUserSettings");
+			if (settings == null) settings = new Properties();
+			{	//if null lets create one
+				settings = new Properties();
+				session.putValue("chatUserSettings",settings );
+			}
+			settings.setProperty("private",		(showPrivate 	== null ? "off" : "on"));
+			settings.setProperty("inOut",		(showInOut 		== null ? "off" : "on"));
+			settings.setProperty("autoscroll",	(autoscroll 	== null ? "off" : "on"));
+			settings.setProperty("dateTime",	(showDateTime 	== null ? "off" : "on"));
+			settings.setProperty("public",		(showPublicMsg 	== null ? "off" : "on"));
+			settings.setProperty("fontInc",		(fontInc 		== null ? "off" : "on"));
+			settings.setProperty("fontDec",		(fontDec 		== null ? "off" : "on"));
+			
+			doGet(req, res);
+			return;
+		}//end if (req.getParameter("controlOK") != null)
+		
 		return;
 
 

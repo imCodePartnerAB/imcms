@@ -24,8 +24,7 @@ public class ChatBoard extends ChatBase
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-		//här ska det ännu fixas lite det är nog hit vi komer om användaren vill byta font storlek
-		//har dock skrivit lite om det i do get men det bör nog flyttas hit
+		
 		log("someone is trying to acces by doPost!!! It's not allowed yet!");
 
 
@@ -87,46 +86,14 @@ public class ChatBoard extends ChatBase
 		//		int metaId = Integer.parseInt( aMetaId );
 		String aChatId = params.getProperty("CHAT_ID") ;//=id strängen för chatten ????
 
-
+		HttpSession session = req.getSession(false) ;
 		//used to store all params to resend
 		//är inte så snygg men får duga så länge
-		StringBuffer paramString = new StringBuffer("?");
+		StringBuffer paramString = new StringBuffer("?");//vet ej om denna behös längre
 
-		//ok lets set up the font font size
-		//det här med ändringarna ska flyttas till doPost
-		int fontSize;
-		log("FONT_SIZE = "+req.getParameter("FONT_SIZE"));
-		if (req.getParameter("FONT_SIZE") != null)
-		{
-			String sizeStr = req.getParameter("FONT_SIZE");
-			try
-			{	
-				fontSize = Integer.parseInt(sizeStr);
-
-				String sizeAction = req.getParameter("FONT");
-				if(sizeAction.equalsIgnoreCase("Inc"))
-				{
-					if(fontSize < 7) fontSize++;
-				}
-				if(sizeAction.equalsIgnoreCase("Dec"))
-				{
-					if(fontSize > 1) fontSize--;
-				}
-
-			}catch(NumberFormatException nfe)
-			{
-				fontSize = 3;
-				log("NumberFormatException in fontsize");
-			}
-			paramString.append("FONT_SIZE=\""+ fontSize +"\"");
-
-		}else
-		{
-			fontSize = 3;
-
-			paramString.append("FONT_SIZE=\""+ fontSize +"\"");
-		}//end setting up the font size
-		log("paramString = "+ paramString);
+		//ok lets get the settings
+		
+				
 		
 		//this buffer is used to store all the msgs to send to the page
 		StringBuffer sendMsgString = new StringBuffer("");		
@@ -135,13 +102,14 @@ public class ChatBoard extends ChatBase
 		if (true)//(req.getParameter("ROOM_ID") != null )
 		{ 
 			log("nu är vi inne");	
-			HttpSession session = req.getSession(false) ;
+			
 			if(session == null)
 			{
 				log("session was null so return");
 				return;
 			}
-
+			
+			boolean dateOn = true;
 			//ok lets get the Chat and stuff
 			Chat myChat = (Chat)session.getValue("theChat");
 			log("myChat = "+myChat);
@@ -162,6 +130,7 @@ public class ChatBoard extends ChatBase
 
 			log("msgIter = "+msgIter);
 			//lets fix the html-string to send
+			String fontSize = "3";
 			sendMsgString.append("<font size=\""+ fontSize+"\">");
 			while(msgIter.hasNext())
 			{
@@ -170,23 +139,22 @@ public class ChatBoard extends ChatBase
 				//must check if it is a public msg
 				if (tempMsg.getReciever() == 1 )
 				{
+					if (dateOn)
+					{
+						sendMsgString.append(tempMsg.getDateTime()+" ");	
+					}
 					log("public: "+tempMsg.getReciever());
-					sendMsgString.append(tempMsg.getDateTime() +" : " +
-						myMember.getName() +"  "+
-						//	myGroup.getMsgTypeName(tempMsg.getMsgType()) +"  "+
-						//	myChat.getChatMember(tempMsg.getReciever()).getName() +" : "+
-						tempMsg.getMessage()	);
+					sendMsgString.append(tempMsg.toString());
 				}
 				//or if its a private one to this user
 				else if (tempMsg.getReciever() == myMember.getUserId())
 				{
+					if (dateOn)
+					{
+						sendMsgString.append(tempMsg.getDateTime()+" ");	
+					}
 					log("private: ");
-					//obs här ska det nog in någon färgtagg på texten
-					sendMsgString.append(tempMsg.getDateTime() +" : " +
-						myMember.getName() +"  "+
-						//	myGroup.getMsgTypeName(tempMsg.getMsgType()) +"  "+
-						//	myChat.getChatMember(tempMsg.getReciever()).getName() +" : "+
-						tempMsg.getMessage()	);
+					sendMsgString.append(tempMsg.toString()	);
 				}
 
 				sendMsgString.append("<br>");

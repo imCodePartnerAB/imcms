@@ -54,7 +54,7 @@ public class ChatViewer extends ChatBase {
 		// Lets get an user object
 		imcode.server.User user = super.getUserObj(req,res) ;
 		if(user == null) return ;
-
+		
 		if ( !isUserAuthorized( req, res, user ) )
 		{
 			return;
@@ -93,6 +93,9 @@ public class ChatViewer extends ChatBase {
 		if (myMember == null)
 		{
 			myMember = chat.createChatMember();
+			myMember.setName((String)(session.getValue("chatAlias")== null ? "Okänd" : session.getValue("chatAlias")));
+			myMember.setIPNr(req.getRemoteHost());
+			log("ipNr = "+myMember.getIPNr());
 			log("chatmember id = "+myMember.getUserId());
 		
 			session.putValue("theChatMember", myMember);
