@@ -45,6 +45,8 @@
     <!-- 'WEB-INF' - Everything put here is private to the webapp -->
     <property name="WEB-INF" value="${webroot}/WEB-INF"/>
 
+    <property name="versionfile" value="${WEB-INF}/version.txt"/>
+
     <property name="conf" value="${WEB-INF}/conf"/>
     <property name="classes" value="${WEB-INF}/classes"/>
     <property name="lib" value="${WEB-INF}/lib"/>
@@ -295,17 +297,21 @@
 		     classes,javadoc,
 		     libraries,
 		     web,conf,dir,sql,
-             copy-web-xml, copy-version-file,
+             web-xml, version-file,
              build-addon"
 	    description="Builds everything."/>
 
 
-    <target name="copy-version-file">
-        <echo message="${version}" file="${WEB-INF}/version.txt"/>
+    <target name="version-file">
+        <echo message="${version}&#10;" file="${versionfile}"/>
+        <fixcrlf srcdir="${basedir}" includes="${versionfile}"/>
+        <checksumfiles destfile="${versionfile}" digest="MD5" append="true">
+            <fileset dir="${build}"/>
+        </checksumfiles>
     </target>
 
 
-    <target name="copy-web-xml" depends="validate-web-xml" >
+    <target name="web-xml" depends="validate-web-xml" >
         <copy todir="${WEB-INF}" file="install/web.xml"/>
     </target>
 
@@ -434,6 +440,12 @@
     	<ant dir="tools"/>
     	<taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
     	<taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
+    	<taskdef name="checksumfiles" classname="imcode.anttasks.ChecksumFiles">
+            <classpath>
+                <pathelement path="tools/build"/>
+                <path refid="libraries"/>
+            </classpath>
+        </taskdef>
     </target>
 
 
