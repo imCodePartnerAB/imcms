@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import org.apache.log4j.Logger;
 import imcode.server.IMCServiceInterface;
 
-public class TestImcmsAndLdapAuthenticatorAndUserMapper extends Log4JInitTestCase {
+public class TestAuthenticatorAndUserMapperUsingImcmsAndOther extends Log4JInitTestCase {
    private AuthenticatorAndUserMapperUsingImcmsAndOther imcmsAndLdapAuthAndMapper;
    private IMCServiceInterface service;
 
