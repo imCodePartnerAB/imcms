@@ -1,0 +1,165 @@
+<html>
+<head>
+<title>createChat</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="ChatCreator" name="CreateChat">
+	<input type="hidden" name="action" value="ADD_CHAT">
+
+  <table width="30%" border="0" cellspacing="0" height="216">
+    <tr bgcolor="#333366"> 
+      <td width="0%">&nbsp;</td>
+      <td colspan="4"> 
+        <div align="center"><b>Skapa enkel chatt </b></div>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%">&nbsp;</td>
+      <td colspan="4" align="right">&nbsp;</td>
+    </tr>
+	
+    <tr bgcolor="#bababa"> 
+      <td width="0%">&nbsp;</td>
+      <td width="28%">Chattrubrik</td>
+      <td width="50%" colspan="2">
+        <input type="text" name="chatName" size="20" value="#chatName#">
+		</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="35">&nbsp;</td>
+      <td width="28%" height="35">Chattrum:</td>
+      <td width="25%" height="35">
+	  	<input type="text" name="chatRoom" size="20" value="#chatRoom#">
+      </td>
+      <td width="25%" height="35">
+        <input type="submit" name="addRoom" value=" L&auml;gg till  ">
+       </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="29">&nbsp;</td>
+      <td width="28%" height="29">&nbsp;</td>
+      <td width="50%" height="29" colspan="2"> 
+        <select name="roomList" size="1">
+	#roomList#
+        </select>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%">&nbsp;</td>
+      <td width="28%">Beh&ouml;riga anv&auml;ndare:</td>
+      <td width="50%" colspan="2"> 
+        <select name="authorized" size="3" multiple>
+       #authorized#
+        </select>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="53">&nbsp;</td>
+      <td width="28%" height="53">&nbsp;</td>
+      <td width="25%" height="53"> 
+        <div align="center"> 
+          <input type="submit" name="okChat" value="Skapa chatt!">
+        </div>
+      </td>
+      <td width="25%" height="53">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#333366"> 
+      <td width="0%" height="22">&nbsp;</td>
+      <td colspan="4" height="22"> 
+        <div align="center"><b>Avancerade 
+          chattinst&auml;llningar </b></div>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="37">&nbsp;</td>
+      <td width="28%" height="37">Meddelandetyper: </td>
+      <td width="25%" height="37"> 
+        <input type="text" name="msgType" value="#msgType#">
+      </td>
+      <td width="25%" height="37"> 
+        <input type="submit" name="addMsgType" value=" L&auml;gg till  ">
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td width="28%" height="26">&nbsp;</td>
+      <td width="50%" height="26" colspan="2"> 
+        <select name="messageTypes" >
+          #msgTypes#
+        </select>
+      </td>
+    </tr>
+  
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td width="28%" height="26">&nbsp;</td>
+      <td width="50%" height="26" colspan="2">&nbsp; </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td colspan="2" height="26"><b>Valfria inst&auml;llningar:</b></td>
+      <td height="26">Ja/Nej/Valfri</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td colspan="2" height="26">uppdatera automatiskt var 
+        <input type="text" name="updateTime" size="2" value="#updateTime#">
+        sekund </td>
+      <td height="26"> 
+	  #reload#
+        
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td colspan="2" height="26">visa in/utg&aring;ng </td>
+      <td height="26"> 
+        #inOut#
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td height="26" colspan="2">visa enbart privata meddelanden </td>
+      <td height="26"> 
+        #private#
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td height="26" colspan="2">visa enbart publika meddelanden</td>
+      <td height="26"> 
+        #public#
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td height="26" colspan="2">visa datum/tid vid meddelanden</td>
+      <td height="26"> 
+        #dateTime#
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td height="26" colspan="2">&ouml;ka/minska typsnitt</td>
+      <td height="26"> 
+        #font#
+		      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td width="28%" height="53">&nbsp;</td>
+      <td width="25%" height="53"> 
+        <div align="center"> 
+          <input type="submit" name="okChat" value="Skapa chatt!">
+        </div>
+      </td>
+      <td width="25%" height="53">&nbsp; </td>
+    </tr>
+  </table>
+ 
+</form>
+</body>
+</html>
+
