@@ -4866,28 +4866,11 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	* <p>Delete a doc and all data related.
 	*/
 	public void deleteDocAll(int meta_id,imcode.server.User user) {
-		String sqlStr = "" ;
+		String sqlStr = "DocumentDelete " + meta_id ;
 
 		// create a db connection an get meta data
 		DBConnect dbc = new DBConnect(m_conPool) ;
 		dbc.getConnection() ;
-
-		sqlStr  = "delete from childs where to_meta_id ="  + meta_id   + "\n";
-		sqlStr += "delete from childs where meta_id ="  + meta_id   + "\n";
-
-		sqlStr += "delete from text_docs where meta_id ="  + meta_id  + "\n" ;
-		sqlStr += "delete from texts where meta_id ="  + meta_id  + "\n" ;
-		sqlStr += "delete from images where meta_id ="  + meta_id  + "\n" ;
-		sqlStr += "delete from roles_rights where meta_id ="  + meta_id  + "\n" ;
-		sqlStr += "delete from user_rights where meta_id ="  + meta_id  + "\n" ;
-		sqlStr += "delete from url_docs where meta_id ="  + meta_id  + "\n" ;
-		sqlStr += "delete from browser_docs where meta_id ="  + meta_id  + "\n" ;
-		sqlStr += "delete from fileupload_docs where meta_id ="  + meta_id  + "\n" ;
-		sqlStr += "delete from frameset_docs where meta_id ="  + meta_id  + "\n" ;
-
-		sqlStr += "delete from meta where meta_id ="  + meta_id  + "\n" ;
-
-
 		dbc.setSQLString(sqlStr) ;
 		dbc.createStatement() ;
 		dbc.executeUpdateQuery() ;
