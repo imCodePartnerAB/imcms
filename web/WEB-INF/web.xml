@@ -1020,6 +1020,11 @@
     </session-config>
 
     <mime-mapping>
+        <extension>dot</extension>
+        <mime-type>application/msword</mime-type>
+    </mime-mapping>
+
+    <mime-mapping>
         <extension>xls</extension>
         <mime-type>application/vnd.ms-excel</mime-type>
     </mime-mapping>
