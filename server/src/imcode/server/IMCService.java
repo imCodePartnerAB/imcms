@@ -1336,7 +1336,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        @deprecated Use {@link #sqlUpdateProcedure(String, String[])} instead.
     **/
     public int sqlUpdateProcedure(String procedure) {
-	return sqlUpdateProcedure(procedure, null) ;
+	return sqlUpdateProcedure(procedure, new String[] {}) ;
     }
 
 
