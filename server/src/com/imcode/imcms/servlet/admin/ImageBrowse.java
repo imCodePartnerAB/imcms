@@ -280,12 +280,13 @@ public class ImageBrowse extends HttpServlet {
         formBean.setLabel( label );
         formBean.setNextButton( nextButton );
         formBean.setPreviousButton( previousButton );
-        formBean.setStartNumber( Integer.toString( counter - max + 1 ) );
+
         formBean.setOptions( imageOptions.toString() );
 
         if ( counter > img_numbers ) {
             counter = img_numbers;
         }
+        formBean.setStartNumber( Integer.toString( counter - max + 1 ) );
         formBean.setStopNumber( Integer.toString( counter ) );
         formBean.setMaxNumber( Integer.toString( img_numbers ) );
 

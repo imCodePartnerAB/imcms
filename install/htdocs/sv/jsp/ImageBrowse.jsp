@@ -46,9 +46,7 @@ imcmsGui("mid", null);
 <input type="HIDDEN" name="imglist" value="<%=imageBrowseFormBean.getImageList()%>">
 <input type="HIDDEN" name="dirlist_preset" value="<%=imageBrowseFormBean.getDirListPreset()%>">
 <tr>
-	<td colspan="3"><script>imcHeading("
-        <? sv/jsp/ImageBrowse.html/4/1 ?> <%=imageBrowseFormBean.getImageNumber()%>
-        <? sv/jsp/ImageBrowse.html/4/2 ?> <%=imageBrowseFormBean.getMetaId()%>",656);</script></td>
+	<td colspan="3"><script>imcHeading("<? sv/jsp/ImageBrowse.html/4/1 ?> <%=imageBrowseFormBean.getImageNumber()%> <? sv/jsp/ImageBrowse.html/4/2 ?> <%=imageBrowseFormBean.getMetaId()%>",656);</script></td>
 </tr>
 <tr valign="top">
 	<td width="45%" align="right">
@@ -90,9 +88,7 @@ imcmsGui("mid", null);
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td colspan="3" class="imcmsAdmText">
-        <? sv/jsp/ImageBrowse.html/9 ?> <%=imageBrowseFormBean.getStartNumber()%>
-        <? sv/jsp/ImageBrowse.html/10 ?> <%=imageBrowseFormBean.getStopNumber()%>
-        <? sv/jsp/ImageBrowse.html/11 ?> <%=imageBrowseFormBean.getMaxNumber()%>
+        <? sv/jsp/ImageBrowse.html/9 ?> <%=imageBrowseFormBean.getMaxNumber()%>&nbsp;&nbsp;&nbsp;&nbsp;  
         </td>
 	</tr>
 	<tr>
