@@ -1,124 +1,97 @@
 <html>
 <head>
-<title><? sv/template_edit.html/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<title><? sv/template_edit.html/1 ?></title>
+
+<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
+<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
 
 <script language="JavaScript">
 <!--
-
 function editFile() {
 	var f = document.forms.TemplateEdit;
-    var sTemplateUrl  = "/WEB-INF/templates/text/" + f.template.options[f.template.selectedIndex].value + ".html";
-    var sTemplateName = f.template.options[f.template.selectedIndex].text;
-    popWinOpen(800,570,"@imcmsjspurl@/FileAdmin_edit.jsp?template=1&file=" + escape(sTemplateUrl) + "&templName=" + escape(sTemplateName),"templateEdit",0);
-}
-
-function popWinOpen(width,height,url,wName,scroll) {
-	if (screen) {
-		var window_width = width;
-		var window_height = height;
-		if (screen.height < 700) {
-			var window_top = 0;
-			var window_left = (screen.width-window_width)/2;
-		} else {
-			var window_top = (screen.height-window_height)/2;
-			var window_left = (screen.width-window_width)/2;
-		}
-		var popWindow = window.open(url,wName,"resizable=yes,menubar=0,scrollbars=" + scroll + ",width=" + window_width + ",height=" + window_height + ",top=" + window_top + ",left=" + window_left + "");
-		if (popWindow) popWindow.focus();
-	} else {
-		window.open(url,wName,"resizable=yes,menubar=0,scrollbars=" + scroll + ",width=" + width + ",height=" + height);
+	if (f.template.selectedIndex > 0) {
+		var sTemplateUrl  = "/WEB-INF/templates/text/" + f.template.options[f.template.selectedIndex].value + ".html";
+		var sTemplateName = f.template.options[f.template.selectedIndex].text;
+		popWinOpen(800,570,"@rooturl@/jsp/FileAdmin_edit.jsp?template=1&file=" + escape(sTemplateUrl) + "&templName=" + escape(sTemplateName),"templateEdit",0,0);
 	}
-}
-
-function openHelp(mid) {
-	popWinOpen(650,570,"GetDoc?meta_id=" + mid,"help",1);
 }
 //-->
 </script>
 
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF" onLoad="focusField(1,'template')">
 
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
 <input type="HIDDEN" name="language" value="en">
-<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
-<tr bgcolor="#333366">
-	<td width="5%">&nbsp;</td>
-	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><? sv/template_edit.html/2 ?></font></td>
-	<td width="5%">&nbsp;</td>
+<tr>
+	<td colspan="2" class="imcmsAdmText"><? sv/template_edit.html/2 ?></td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
-	<td colspan="2"><hr><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/template_edit.html/3 ?></font></td>
-	<td width="5%">&nbsp;</td>
-</tr>
-<tr>
-	<td width="5%">&nbsp;</td>
 	<td colspan="2">
-	<input type="submit" name="add_template" value="L&auml;gg till">
-	<input type="submit" name="delete_template" value="Ta bort">
-	<input type="submit" name="rename_template" value="Byt namn">
-	<input type="submit" name="get_template" value="H&auml;mta uppladdad">
-	<input type="submit" name="edit_template" value="Redigera" disabled><br>
-	<input type="submit" name="add_demotemplate" value="Ladda upp exempelmallar">
-	<input type="submit" name="show_templates" value="Visa formatmallar"></td>
-	<td width="5%">&nbsp;</td>
+	<input type="submit" class="imcmsFormBtn" name="add_template" value="L&auml;gg till">
+	<input type="submit" class="imcmsFormBtn" name="delete_template" value="Ta bort">
+	<input type="submit" class="imcmsFormBtn" name="rename_template" value="Byt namn">
+	<input type="submit" class="imcmsFormBtn" name="get_template" value="H&auml;mta uppladdad">
+	<input type="submit" class="imcmsFormBtn" name="edit_template" value="Redigera" disabled><br>
+	<input type="submit" class="imcmsFormBtn" name="add_demotemplate" value="Ladda upp exempelmallar">
+	<input type="submit" class="imcmsFormBtn" name="show_templates" value="Visa formatmallar"></td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
-	<td colspan="2"><hr><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/template_edit.html/4 ?></font></td>
-	<td width="5%">&nbsp;</td>
+	<td colspan="2" class="imcmsAdmText"><? sv/template_edit.html/3 ?></td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
-	<td colspan="2">
-	<input type="submit" name="add_group" value="Skapa">
-	<input type="submit" name="delete_group" value="Ta bort">
-	<input type="submit" name="rename_group" value="Byt namn">
-	<input type="submit" name="assign_group" value="Tilldela formatmallar"></td>
-	<td width="5%">&nbsp;</td>
+	<td colspan="1">
+	<input type="submit" class="imcmsFormBtn" name="add_group" value="Skapa">
+	<input type="submit" class="imcmsFormBtn" name="delete_group" value="Ta bort">
+	<input type="submit" class="imcmsFormBtn" name="rename_group" value="Byt namn">
+	<input type="submit" class="imcmsFormBtn" name="assign_group" value="Tilldela formatmallar"></td>
+	<td>
+    <input type="button" value="Hjälp" title="Öppna hjälpsidan" class="imcmsFormBtn" onClick="openHelpW(21)"></td>
 </tr>
-<tr>
-	<td colspan="4">&nbsp;</td>
-</tr>
-</table>
 </form>
-
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateEdit">
-<input type="hidden" name="language" value="en">
-<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
-<tr bgcolor="#333366">
-	<td width="5%">&nbsp;</td>
-	<td align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff">
-	<? sv/template_edit.html/5 ?></font></td>
-	<td width="5%">&nbsp;</td>
+<input type="HIDDEN" name="language" value="#language#">
+<tr>
+	<td colspan="2"><script>imcHeading("<? sv/template_edit.html/4 ?>",656);</script></td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
-	<td><hr>
+	<td colspan="2">
 	<table border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td height="24" nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatmall:&nbsp;&nbsp;</font></td>
-		<td><select name="template">
-		<? sv/template_edit.html/6 ?>
+		<td width="80" height="24" class="imcmsAdmText" nowrap>Formatmall &nbsp;</td>
+		<td>
+		<select name="template">
+		#templates#
 		</select></td>
 	</tr>
 	</table></td>
-	<td width="5%">&nbsp;</td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
-	<td><hr>
-	<input type="button" name="template_edit" value="Redigera" onClick="editFile(); return false">
-	<input type="button" name="back" value="Tillbaka" onClick="document.location = 'TemplateAdmin'; return false">&nbsp; <a href="GetDoc?meta_id=20" target="_blank" onClick="openHelp('20'); return false;"><img src="@imcmsimageurllang@/admin/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
-	<td width="5%">&nbsp;</td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
-	<td colspan="4">&nbsp;</td>
+	<td colspan="2" align="right">
+	<input type="button" class="imcmsFormBtn" name="template_edit" value="Redigera" onClick="editFile(); return false">
+	<input type="button" class="imcmsFormBtn" name="back" value="Tillbaka" onClick="document.location = 'TemplateAdmin'; return false"></td>
 </tr>
-</table>
 </form>
+</table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
 
 </body>
 </html>
