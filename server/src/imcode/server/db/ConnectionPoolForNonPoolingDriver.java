@@ -54,6 +54,19 @@ public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
         }
     }
 
+    /**
+     *
+     * @param serverName Must be a unique name that is used to identify this pool
+     * @param driverClassName
+     * @param dbUrl
+     * @param userName
+     * @param password
+     * @param maxActiveConnections
+     * @throws Exception
+     * @throws InstantiationException
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public ConnectionPoolForNonPoolingDriver( String serverName, String driverClassName, String dbUrl, String userName, String password, int maxActiveConnections ) throws Exception, InstantiationException, SQLException, ClassNotFoundException {
         this.pooledDataSourceName = POOLED_DATA_SOURCE_NAME_PREFIX + serverName;
         this.serverName = serverName;
