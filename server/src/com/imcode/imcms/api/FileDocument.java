@@ -1,6 +1,6 @@
 package com.imcode.imcms.api;
 
-import com.imcode.imcms.api.util.InputStreamSource;
+import imcode.util.InputStreamSource;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import org.apache.commons.collections.Transformer;

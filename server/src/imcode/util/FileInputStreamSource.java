@@ -1,7 +1,5 @@
 package imcode.util;
 
-import com.imcode.imcms.api.util.InputStreamSource;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

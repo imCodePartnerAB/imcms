@@ -1,11 +1,12 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.api.util.InputStreamSource;
+import imcode.util.InputStreamSource;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.util.FileInputStreamSource;
 import imcode.util.ImageSize;
+import imcode.util.InputStreamSource;
 import org.apache.commons.lang.StringUtils;
 
 import javax.imageio.ImageIO;

@@ -1,7 +1,8 @@
 package imcode.server.document;
 
-import com.imcode.imcms.api.util.InputStreamSource;
+import imcode.util.InputStreamSource;
 import imcode.util.Utility;
+import imcode.util.InputStreamSource;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.UnhandledException;

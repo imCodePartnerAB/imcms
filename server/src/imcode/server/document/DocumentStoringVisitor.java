@@ -1,6 +1,6 @@
 package imcode.server.document;
 
-import com.imcode.imcms.api.util.InputStreamSource;
+import imcode.util.InputStreamSource;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.textdocument.*;
