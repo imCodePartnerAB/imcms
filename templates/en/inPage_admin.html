@@ -1,5 +1,10 @@
 <SCRIPT LANGUAGE="JavaScript">
 <!--
+  
+  function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+  }
+    
   function targetNewWindow() {
     var exampelWindow = window.open("", "Exempelmall", "height=400, width=700, resizable");
     document.myForm.target="Exempelmall";
@@ -8,8 +13,10 @@
   function resetTarget() {
     document.myForm.target="";
   }
+  
 //-->
 </SCRIPT>
+
 <FORM name="myForm" METHOD="POST" ACTION="SaveInPage">
   <table BORDER="1" cellspacing="0" cellpadding="2">
     <tr bgcolor="#333366">

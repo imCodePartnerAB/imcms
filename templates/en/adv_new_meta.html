@@ -1,4 +1,16 @@
-<HTML><HEAD><TITLE>Admin - Add a new page</TITLE></HEAD>
+<HTML><HEAD><TITLE>Admin - Add a new page</TITLE>
+
+<SCRIPT language="Javascript">
+<!--
+
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+
+-->
+</SCRIPT>
+
+</HEAD>
 <body bgcolor="#FFFFFF">
 <FORM METHOD=POST ACTION="SaveNewMeta">
   <table border="1" cellspacing="0" cellpadding="2" width="450" align="center">
@@ -68,7 +80,7 @@
 		(change when necessary)</font></b></td>
 	</tr>
 	<tr> 
-	  <td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Categories &nbsp;for &nbsp;searches</font></td>
+	  <td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Keywords <font size="1"> &nbsp;(for &nbsp;searches)</font></font></td>
 	  <td valign="middle" bgcolor="#BABABA"> 
 		<input type=TEXT name=classification size=50 value="#classification#" >
 		<font size="2"> <br>

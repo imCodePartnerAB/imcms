@@ -23,7 +23,7 @@ function openHelp(id){
           </b></font></TD>
 		</TR>
 		<TR bgcolor="#333366"> 
-		  <TD width="623" height="16"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;Meta ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2726</font> 
+		  <TD width="623" height="16"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"></font> 
 		  </TD>
 		</TR>
 		<TR valign="middle"> 
@@ -50,11 +50,9 @@ function openHelp(id){
             </tr>
           </table>
           <font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-          &nbsp;Key words: 
-          <input type="text" name="searchstring" size="65">
-          &nbsp;&nbsp;AND</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-          <input type="radio" value="and" name="search_prep">
-          </font><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;&nbsp;OR</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+          &nbsp;Keywords: 
+          <input type="text" name="searchstring" size="65" value="#searchstring#">&nbsp;AND</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> <input type="radio" value="and" name="search_prep">
+          </font><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2">OR</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
           <input type="radio" value="or" name="search_prep" checked>
           </font></TD>
       </TR>
@@ -149,7 +147,7 @@ function openHelp(id){
                         date: </font></div>
                     </td>
                     <td> 
-                      <input type="text" name="start_date" size="16" maxlength="16" value="#now#">
+                      <input type="text" name="start_date" size="16" maxlength="16" value="#start_date#">
                     </td>
                   </tr>
                   <tr> 
@@ -158,7 +156,7 @@ function openHelp(id){
                         date: </font></div>
                     </td>
                     <td> 
-                      <input type="text" name="end_date" size="16" maxlength="16" value="#now#">
+                      <input type="text" name="end_date" size="16" maxlength="16" value="#end_date#">
                     </td>
                   </tr>
                   <tr> 

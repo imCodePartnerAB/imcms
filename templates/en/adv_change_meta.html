@@ -1,5 +1,16 @@
 <HTML><HEAD>
 <TITLE>Edit pageinfo</TITLE>
+
+<SCRIPT language="Javascript">
+<!--
+
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+
+-->
+</SCRIPT>
+
 </HEAD>
 <body bgcolor="#FFFFFF">
 <FORM METHOD=POST ACTION="SaveMeta">
@@ -9,14 +20,13 @@
 				page info 
 				<input type=HIDDEN name=doc_type value="#doc_type#">
 				<input type=HIDDEN name=doc_menu_no value="#doc_menu_no#">
-				<input type=HIDDEN name=parent_meta_id value="#parent_meta_id#">
 				<input type=HIDDEN name=meta_id value="#meta_id#">
 				#checks#</font></b></td>
 		</tr>
 		<input type=hidden name=description size=30 value="" oldvalue="#description#">
 		<tr valign="middle"> 
-			<td width="61" bgcolor="#BABABA" valign="middle"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Header 
-				&nbsp;(in link &nbsp;menu) </font></font><br>
+			<td width="61" bgcolor="#BABABA" valign="middle"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Header 
+				<font size="1">&nbsp;(in link &nbsp;menu) </font></font><br>
 			</td>
 			<td valign="middle" bgcolor="#BABABA"> <font size="2"></font> 
 				<input type=TEXT name=meta_headline size=60 maxlength="255" value="#meta_headline#">
@@ -24,13 +34,13 @@
 		</tr>
 		<tr> 
 			<td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Text 
-				&nbsp;(in link &nbsp;menu)</font></td>
+				<font size="1">&nbsp;(in link &nbsp;menu)</font></font></td>
 			<td valign="middle" bgcolor="#BABABA"> 
 				<textarea name=meta_text cols="50" rows="3" maxlength="100">#meta_text#</textarea>
 			</td>
 		<tr valign="middle"> 
 			<td width="61" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Image 
-				&nbsp;icon&nbsp; &nbsp;(in link &nbsp;menu) </font><br>
+				&nbsp;icon&nbsp; <font size="1">&nbsp;(in link &nbsp;menu) </font></font><br>
 			</td>
 			<td valign="middle" bgcolor="#BABABA"> 
 				<input type=TEXT name=meta_image size=60 value="#meta_image#">
@@ -41,8 +51,8 @@
 			<td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
 				<div align="left"> 
 					<input type=submit value="OK" name="ok">
-					<input type=reset value="Reset" name="cancel">
-					<font size="2"></font></div>
+					<input type=reset value="Reset" name="reset">&nbsp;<a href="GetDoc?meta_id=239" target="_blank" onClick="openHelp('239'); return false;"><img src="@imageurl@/en/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+					</div>
 			</td>
 		</tr>
 	</table>
@@ -67,7 +77,7 @@
 		</tr>
 		<tr> 
 			<td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Keywords 
-				&nbsp;(for &nbsp;searches)</font></td>
+				<font size = "1" >&nbsp;(for &nbsp;searches)</font></font></td>
 			<td valign="middle" bgcolor="#BABABA"> 
 				<input type=TEXT name=classification size=50 value="#classification#" >
 				<font size="2"> <br>
@@ -145,14 +155,18 @@
 			<td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
 				<div align="left"> 
 					<input type=submit value="OK" name="ok">
-					<input type=reset value="Reset" name="cancel">
+					<input type=reset value="Reset" name="reset">&nbsp; <a href="GetDoc?meta_id=239" target="_blank" onClick="openHelp('239'); return false;"><img src="@imageurl@/en/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 				</div>
 			</td>
 		</tr>
 	</table>
-    <center>
-		<br>
-		#adminMode# 
-	</center>
+	<br>
+    <table width="90%" border="0">
+	<tr> 
+	  <td> 
+		<div align="center">#adminMode# </div>
+	  </td>
+	</tr>
+  </table>
 </FORM>
 </BODY></HTML>
