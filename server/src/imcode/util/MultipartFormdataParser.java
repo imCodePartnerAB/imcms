@@ -6,9 +6,8 @@ import java.util.* ;
 	Parses multipart/form-data into parts, easily gettable with it's methods.
 */
 public class MultipartFormdataParser {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	MultipartParser mp ;	
+
+	MultipartParser mp ;
 	String names[] ;
 	/**
 		Parses the multipartdata into parts.
@@ -81,16 +80,19 @@ public class MultipartFormdataParser {
 
 	/**
 		Gets the filename produced by a "file"-control on a form.
-		@param The name of the control.
+		@param name The name of the control.
 		@return The filename, or null if none is found.
 	*/	
 	public String getFilename (String name) {
-		for ( int i = 0 ; i<names.length ; i++ ) {
+		String filename = null ;
+        for ( int i = 0 ; i<names.length ; i++ ) {
 			if ( names[i].equals(name) ) {
-				return (mp.getHeaderParams(i,"content-disposition").getProperty("filename")) ;
+				filename = (mp.getHeaderParams(i,"content-disposition").getProperty("filename")) ;
+                filename = filename.substring( filename.lastIndexOf( '/' ) + 1 );
+                filename = filename.substring( filename.lastIndexOf( '\\' ) + 1 );
 			}
 		}
-		return null ;
+		return filename ;
 	}
 	
 	/**

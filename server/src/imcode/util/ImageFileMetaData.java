@@ -187,7 +187,6 @@ public class ImageFileMetaData {
     }
     /**
      * getHeight
-     * @param none
      * @return imageheight
      **/
     public int getHeight()
@@ -196,7 +195,6 @@ public class ImageFileMetaData {
     }
     /**
      * getType
-     * @param none
      * @return filename
      **/
     public String getName()
@@ -205,7 +203,6 @@ public class ImageFileMetaData {
     }
     /**
      * getType
-     * @param none
      * @return imagetype (returns GIF87a or GIF89a for GIF-files, nothing yet for JPG-files)
      **/
     public String getType()
