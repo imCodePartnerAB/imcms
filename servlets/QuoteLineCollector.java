@@ -9,7 +9,8 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 
 public class QuoteLineCollector implements imcode.external.GetDocControllerInterface{
-
+	private final static String CVS_REV = "$Revision$"  ;
+	private final static String CVS_DATE = "$Date$";
 
 	public QuoteLineCollector(){}
 	
