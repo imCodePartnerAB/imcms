@@ -44,10 +44,10 @@ my $currentdir = getcwd ;
 foreach my $directory (@ARGV) {
     chdir $currentdir ;
     chdir $directory or die $! ;
-    $properties = new Properties("insert.properties") ;
+    $properties = new Properties("../insert.properties") ;
     find( { wanted => \&wanted }, '.') ;
 
-    foreach my $property_file ('imcms_en.properties', 'imcms_sv.properties') {
+    foreach my $property_file ('../imcms_eng.properties', '../imcms_swe.properties') {
         my $original_properties = new Properties($property_file) ;
         foreach my $key (keys %$properties) {
              delete $original_properties->{$key} ;   
