@@ -87,8 +87,7 @@ public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
     public Connection getConnection() throws SQLException {
         Connection result = null;
         try {
-            Connection result11 = DriverManager.getConnection( URI_FOR_POOLED_DRIVER + pooledDataSourceName, userName, password );
-            result = result11;
+            result = DriverManager.getConnection( URI_FOR_POOLED_DRIVER + pooledDataSourceName, userName, password );
         } catch( org.apache.commons.dbcp.DbcpException ex ) {
             log.debug( getAttributeAsString(), ex );
             throw (SQLException)ex.getCause();
