@@ -59,7 +59,7 @@ public class SaveInPage extends HttpServlet {
 			return ;
 		}
 		// Check if user has write rights
-		if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,524288 ) ) {	// Checking to see if user may edit this
+		if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,imcode.server.IMCConstants.PERM_DT_TEXT_CHANGE_TEMPLATE ) ) {	// Checking to see if user may edit this
 			byte[] tempbytes ;
 			tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
 			if ( tempbytes != null ) {
@@ -134,7 +134,7 @@ public class SaveInPage extends HttpServlet {
 				htmlStr = new String((byte[])temp[1],"8859_1") ;
 			}
 		} else if ( req.getParameter("change_group")!=null ) {
-			user.put("flags",new Integer(524288)) ;
+			user.put("flags",new Integer(imcode.server.IMCConstants.PERM_DT_TEXT_CHANGE_TEMPLATE)) ;
 
 			String group = req.getParameter("group") ;
 			if ( group != null ) {

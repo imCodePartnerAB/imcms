@@ -78,7 +78,7 @@ public class SaveText extends HttpServlet {
 			return ;
 		}
 
-		if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,65536 ) ) {	// Checking to see if user may edit this
+		if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_TEXTS ) ) {	// Checking to see if user may edit this
 			byte[] tempbytes ;
 			tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
 			if ( tempbytes != null ) {
@@ -87,7 +87,7 @@ public class SaveText extends HttpServlet {
 			return ;
 		}
 
-		user.put("flags",new Integer(65536)) ;
+		user.put("flags",new Integer(imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_TEXTS)) ;
 
 		if( req.getParameter( "ok" )!=null ) {
 			log("ok") ;
