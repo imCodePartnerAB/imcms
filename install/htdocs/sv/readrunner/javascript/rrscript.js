@@ -781,7 +781,7 @@ function RRcheckIt() {
 	var X_right = document.body.scrollLeft + RRpageWidth - (iObjW + iObjOffsetX + 16);
 	var Y_top = document.body.scrollTop + iObjOffsetY;
 	var Y_mid = ((RRpageHeight - iObjH) / 2) + document.body.scrollTop;
-	var Y_bottom = document.body.scrollTop + RRpageHeight - (iObjH + iObjOffsetY - 4);
+	var Y_bottom = document.body.scrollTop + RRpageHeight - (iObjH + iObjOffsetY);
 	switch(sPos) {
 		case "1": // TL
 			RRpanelObj.RRmoveIt(X_left,Y_top);
