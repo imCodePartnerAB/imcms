@@ -49,7 +49,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         }
         String sqlStr = "UPDATE fileupload_docs SET filename = ?, mime = ?, created_as_image = ? WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{
-            filename, fileDocument.getMimeType(), "" + fileDocument.getId(), fileDocument.isCreatedAsImage() ? "1" : "0"
+            filename, fileDocument.getMimeType(), fileDocument.isCreatedAsImage() ? "1" : "0", "" + fileDocument.getId() 
         } );
         saveFile( fileDocument );
     }

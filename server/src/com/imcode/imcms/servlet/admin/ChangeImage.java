@@ -129,7 +129,7 @@ public class ChangeImage extends HttpServlet {
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
         };
-        EditFileDocumentPageFlow.MimeTypeRestriction mimeTypeRestriction = new EditFileDocumentPageFlow.MimeTypeRestriction( IMAGE_MIME_TYPES, ERROR_MESSAGE___ONLY_ALLOWED_TO_UPLOAD_IMAGES );
+        EditFileDocumentPageFlow.ArrayMimeTypeRestriction mimeTypeRestriction = new EditFileDocumentPageFlow.ArrayMimeTypeRestriction( IMAGE_MIME_TYPES, ERROR_MESSAGE___ONLY_ALLOWED_TO_UPLOAD_IMAGES );
         DocumentPageFlow pageFlow = new EditFileDocumentPageFlow( fileDocument, getServletContext(), returnToImageEditPageCommand, saveNewImageFileDocument, mimeTypeRestriction );
         pageFlow.dispatch( request, response );
     }

@@ -10,6 +10,7 @@ import imcode.util.MultipartHttpServletRequest;
 import imcode.util.Utility;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -20,21 +21,24 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 
     private static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
-    public static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
+    private static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
     public static final String REQUEST_PARAMETER__FILE_DOC__FILE = "file";
     public static final String REQUEST_PARAMETER__FILE_DOC__MIME_TYPE = "mimetype";
     private static final String URL_I15D_PAGE__FILEDOC = "/jsp/docadmin/file_document.jsp";
 
-    private MimeTypeRestriction mimeTypeRestriction = new NoMimeTypeRestriction();
+    private MimeTypeRestriction mimeTypeRestriction = new ValidMimeTypeRestriction();
     private ServletContext servletContext;
+    private static final LocalizedMessage ERROR_MESSAGE__UNABLE_TO_AUTODETECT_MIMETYPE = new LocalizedMessage( "server/src/com/imcode/imcms/flow/EditFileDocumentPageFlow/unable_to_autodetect_mimetype" );
 
     public EditFileDocumentPageFlow( FileDocumentDomainObject document, ServletContext servletContext,
                                      DispatchCommand returnCommand,
-                                     SaveDocumentCommand saveDocumentCommand, MimeTypeRestriction mimeTypeRestriction ) {
+                                     SaveDocumentCommand saveDocumentCommand,
+                                     MimeTypeRestriction mimeTypeRestriction ) {
         super( document, returnCommand, saveDocumentCommand );
         this.servletContext = servletContext;
         if ( null != mimeTypeRestriction ) {
@@ -44,22 +48,40 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 
     protected void dispatchOkFromEditPage( HttpServletRequest r, HttpServletResponse response ) throws IOException, ServletException {
         MultipartHttpServletRequest request = (MultipartHttpServletRequest)r;
-        String mimeType = getMimeTypeFromRequest( request );
-        if ( !mimeTypeRestriction.allows( mimeType ) ) {
+
+        FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
+        FileItem fileItem = request.getParameterFileItem( REQUEST_PARAMETER__FILE_DOC__FILE );
+        String filename = fileDocument.getFilename() ;
+        if ( 0 != fileItem.getSize() ) {
+            filename = fileItem.getName();
+            if ( StringUtils.isNotBlank( filename ) ) {
+                fileDocument.setFilename( filename );
+            }
+            fileDocument.setInputStreamSource( new FileItemInputStreamSource( fileItem ) );
+        }
+
+        String mimeType = getMimeTypeFromRequestAndFilename( request, filename );
+        LocalizedMessage mimeTypeErrorMessage = null;
+        if ( StringUtils.isBlank( mimeType ) ) {
+            mimeTypeErrorMessage = ERROR_MESSAGE__UNABLE_TO_AUTODETECT_MIMETYPE;
+            setFileDocumentMimeTypeIfAllowed( fileDocument, MIME_TYPE__UNKNOWN_DEFAULT );
+        } else if ( !mimeTypeRestriction.allows( mimeType ) ) {
+            mimeTypeErrorMessage = mimeTypeRestriction.getErrorMessage();
+            setFileDocumentMimeTypeIfAllowed( fileDocument, getMimeTypeForFilename( filename ) );
+        }
+
+        if ( null != mimeTypeErrorMessage ) {
             FileDocumentEditPage fileDocumentEditPage = createFileDocumentEditPage();
-            fileDocumentEditPage.setErrorMessage( mimeTypeRestriction.getErrorMessage() );
+            fileDocumentEditPage.setErrorMessage( mimeTypeErrorMessage );
             fileDocumentEditPage.forward( request, response );
         } else {
-            FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
             fileDocument.setMimeType( mimeType );
-            final FileItem fileItem = request.getParameterFileItem( REQUEST_PARAMETER__FILE_DOC__FILE );
-            String fileName = fileItem.getName();
-            if ( !"".equals( fileName ) ) {
-                fileDocument.setFilename( fileName );
-                if ( 0 != fileItem.getSize() ) {
-                    fileDocument.setInputStreamSource( new FileItemInputStreamSource( fileItem ) );
-                }
-            }
+        }
+    }
+
+    private void setFileDocumentMimeTypeIfAllowed( FileDocumentDomainObject fileDocument, String mimeTypeForFilename ) {
+        if (mimeTypeRestriction.allows( mimeTypeForFilename )) {
+            fileDocument.setMimeType( mimeTypeForFilename );
         }
     }
 
@@ -74,9 +96,7 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
     protected void dispatchFromEditPage( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {
     }
 
-    private String getMimeTypeFromRequest( MultipartHttpServletRequest request ) {
-        FileItem fileItem = request.getParameterFileItem( REQUEST_PARAMETER__FILE_DOC__FILE );
-        String filename = fileItem.getName();
+    private String getMimeTypeFromRequestAndFilename( MultipartHttpServletRequest request, String filename ) {
         final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
         Set predefinedMimeTypes = new HashSet( Arrays.asList( documentMapper.getAllMimeTypes() ) );
         String[] mimeTypeParameters = request.getParameterValues( REQUEST_PARAMETER__FILE_DOC__MIME_TYPE );
@@ -86,20 +106,31 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
             if ( predefinedMimeTypes.contains( mimeType ) ) {
                 break;
             }
-            if ( "".equals( mimeType ) ) {
-                if ( null != filename ) {
-                    filename = filename.toLowerCase();
-                    mimeType = servletContext.getMimeType( filename );
-                }
+            if ( StringUtils.isBlank( mimeType ) ) {
+                mimeType = getMimeTypeForFilename( filename );
             } else if ( -1 == mimeType.indexOf( '/' ) ) {
-                if ( '.' != mimeType.charAt( 0 ) ) {
-                    mimeType = '.' + mimeType;
-                }
-                mimeType = servletContext.getMimeType( '_' + mimeType );
+                mimeType = getMimeTypeIfTreatedAsFilenameExtension( mimeType );
             }
-            if ( null == mimeType || "".equals( mimeType ) ) {
-                mimeType = MIME_TYPE__UNKNOWN_DEFAULT;
-            }
+        }
+        return mimeType;
+    }
+
+    private String getMimeTypeForFilename( String filename ) {
+        if ( null == filename ) {
+            return null ;
+        }
+        return servletContext.getMimeType( filename.toLowerCase() );
+    }
+
+    private String getMimeTypeIfTreatedAsFilenameExtension( String mimeType ) {
+        String mimeTypeTreatedAsFilenameExtension = mimeType;
+        if ( '.' != mimeTypeTreatedAsFilenameExtension.charAt( 0 ) ) {
+            mimeTypeTreatedAsFilenameExtension = '.' + mimeTypeTreatedAsFilenameExtension;
+        }
+        mimeTypeTreatedAsFilenameExtension = servletContext.getMimeType( '_'
+                                                                         + mimeTypeTreatedAsFilenameExtension );
+        if ( null != mimeTypeTreatedAsFilenameExtension ) {
+            mimeType = mimeTypeTreatedAsFilenameExtension;
         }
         return mimeType;
     }
@@ -114,25 +145,6 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 
         public InputStream getInputStream() throws IOException {
             return fileItem.getInputStream();
-        }
-    }
-
-    public static class MimeTypeRestriction {
-
-        private String[] allowedMimeTypes;
-        private LocalizedMessage localizedErrorMessage;
-
-        public MimeTypeRestriction( String[] allowedMimeTypes, LocalizedMessage localizedErrorMessage ) {
-            this.allowedMimeTypes = allowedMimeTypes;
-            this.localizedErrorMessage = localizedErrorMessage;
-        }
-
-        public boolean allows( String mimeType ) {
-            return ArrayUtils.contains( allowedMimeTypes, mimeType );
-        }
-
-        public LocalizedMessage getErrorMessage() {
-            return localizedErrorMessage;
         }
     }
 
@@ -171,14 +183,46 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 
     }
 
-    private static class NoMimeTypeRestriction extends MimeTypeRestriction {
+    public interface MimeTypeRestriction {
+        boolean allows( String mimeType ) ;
+        LocalizedMessage getErrorMessage() ;
+    }
 
-        private NoMimeTypeRestriction() {
-            super( null, null );
+    public static class ValidMimeTypeRestriction implements MimeTypeRestriction {
+
+        protected LocalizedMessage errorMessage;
+        private static final LocalizedMessage ERROR__INVALID_MIMETYPE = new LocalizedMessage( "server/src/com/imcode/imcms/flow/EditFileDocumentPageFlow/invalid_mimetype" );
+
+        public boolean allows( String mimeType ) {
+            if ( StringUtils.isBlank( mimeType ) || !isValidMimeType( mimeType ) ) {
+                errorMessage = ERROR__INVALID_MIMETYPE;
+                return false;
+            }
+            return true;
+        }
+
+        private boolean isValidMimeType( String mimeType ) {
+            return Pattern.compile( "^(x-[a-z-]|application|audio|image|message|model|multipart|text|video)/", Pattern.CASE_INSENSITIVE ).matcher( mimeType ).find();
+        }
+
+        public LocalizedMessage getErrorMessage() {
+            return errorMessage;
+        }
+    }
+
+    public static class ArrayMimeTypeRestriction extends ValidMimeTypeRestriction {
+
+        private String[] allowedMimeTypes;
+
+        public ArrayMimeTypeRestriction( String[] allowedMimeTypes, LocalizedMessage errorMessage ) {
+            this.allowedMimeTypes = allowedMimeTypes;
+            this.errorMessage = errorMessage;
         }
 
         public boolean allows( String mimeType ) {
-            return true;
+            return super.allows( mimeType ) && ArrayUtils.contains( allowedMimeTypes, mimeType );
         }
+
     }
+
 }

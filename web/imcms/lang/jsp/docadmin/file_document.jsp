@@ -57,7 +57,7 @@
     <%  LocalizedMessage localizedErrorMessage = editPage.getErrorMessage() ;
         if (null != localizedErrorMessage) {
             %><tr>
-                <td colspan="2"><span style="color: red"><%= StringEscapeUtils.escapeHtml(localizedErrorMessage.toLocalizedString(request)) %></span></td>
+                <td colspan="2"><div style="color: red"><%= localizedErrorMessage.toLocalizedString(request) %></div></td>
             </tr><%
         }
     %>
@@ -73,7 +73,7 @@
 	<tr>
 		<td height="22"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/7 ?></td>
 		<td>
-		<select name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__MIME_TYPE %>">
+		<select id="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__MIME_TYPE %>" name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__MIME_TYPE %>">
 			<option value=""<% if (StringUtils.isBlank( document.getMimeType() ) ) { %> selected<% } %>>
                 <? install/htdocs/sv/jsp/docadmin/file_document.jsp/autodetect_or_fill_in_below ?>
             </option>
@@ -93,7 +93,7 @@
                         documentMimeTypeFoundInDropDown = true ;
                     }
                     %><option value="<%= mimeType %>"<% if (selected) { %> selected<% } %>>
-                        <%= StringEscapeUtils.escapeHtml( mimeTypeDescriptionInUsersLanguage ) %>
+                        <%= StringEscapeUtils.escapeHtml( mimeTypeDescriptionInUsersLanguage ) %> (<%= mimeType %>)
                     </option><%
                 }
             %>
@@ -102,7 +102,10 @@
 	<tr>
 		<td height="22"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/10 ?></td>
 		<td>
-            <input type="text" name="mimetype" size="30" maxlength="50" value="<% if (!documentMimeTypeFoundInDropDown) { %><%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getMimeType(), "" ) ) %><% } %>">
+            <input type="text" size="30" maxlength="50"
+                name="mimetype"
+                value="<% if (!documentMimeTypeFoundInDropDown) { %><%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getMimeType(), "" ) ) %><% } %>"
+                onkeypress="if (document.getElementById) document.getElementById('<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__MIME_TYPE %>').selectedIndex = 0;">
         </td>
 	</tr>
 	</table></td>
