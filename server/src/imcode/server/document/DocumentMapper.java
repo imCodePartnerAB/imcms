@@ -371,13 +371,17 @@ public class DocumentMapper {
         DocumentDomainObject document = null;
         if ( 0 != result.length ) {
             document = getDocumentFromSqlResultRow( result );
+            initDocumentAttributes( document ) ;
+            initDocumentCategories( document );
+            initRolesMappedToDocumentPermissionSetIds( document );
+
             document.accept( new DocumentInitializingVisitor() );
         }
         NDC.pop();
         return document;
     }
 
-    public void initLazilyLoadedDocumentAttributes( DocumentDomainObject document ) {
+    public void initDocumentAttributes( DocumentDomainObject document ) {
 
         document.setSections( getSections( document.getId() ) );
 
@@ -391,13 +395,13 @@ public class DocumentMapper {
 
     }
 
-    public void initLazilyLoadedDocumentCategories( DocumentDomainObject document ) {
+    public void initDocumentCategories( DocumentDomainObject document ) {
 
         addCategoriesFromDatabaseToDocument( document );
 
     }
 
-    public void initLazilyLoadedRolesMappedToDocumentPermissionSetIds( DocumentDomainObject document ) {
+    public void initRolesMappedToDocumentPermissionSetIds( DocumentDomainObject document ) {
 
         String[][] sprocResult = service.sqlQueryMulti( "SELECT  r.role_id, r.role_name, r.admin_role, rr.set_id\n"
                                                         + "FROM  roles AS r, roles_rights AS rr\n"
@@ -1239,13 +1243,7 @@ public class DocumentMapper {
                 documentSoftReferenceArray = new SoftReference[1] ;
                 map.put(key, documentSoftReferenceArray) ;
                 document = documentMapper.getDocumentFromDb( documentId );
-                if (null != document) {
-                    document.loadAllLazilyLoaded();
-                }
                 documentSoftReferenceArray[0] = new SoftReference( document );
-            }
-            if (null == documentSoftReferenceArray[0]) {
-                throw new RuntimeException( "Loop in document cache.") ;
             }
             return document ;
         }
