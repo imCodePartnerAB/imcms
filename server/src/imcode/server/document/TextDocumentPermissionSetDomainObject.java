@@ -7,49 +7,54 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
     private TemplateGroupDomainObject[] allowedTemplateGroups = new TemplateGroupDomainObject[0];
     private int[] allowedDocumentTypeIds = new int[0];
     private TemplateDomainObject defaultTemplate;
+    public static final DocumentPermission EDIT_TEXTS = new DocumentPermission( "editTexts" );
+    public static final DocumentPermission EDIT_MENUS = new DocumentPermission( "editMenus" );
+    public static final DocumentPermission EDIT_TEMPLATE = new DocumentPermission( "editTemplates" );
+    public static final DocumentPermission EDIT_INCLUDES = new DocumentPermission( "editIncludes" ) ;
+    public static final DocumentPermission EDIT_IMAGES = new DocumentPermission( "editImages" );
 
     public TextDocumentPermissionSetDomainObject( int typeId ) {
         super( typeId );
     }
 
     public boolean getEditTexts() {
-        return hasPermission( TextDocumentPermission.EDIT_TEXTS ) ;
+        return hasPermission( EDIT_TEXTS ) ;
     }
 
     public void setEditTexts( boolean editTexts ) {
-        setPermission( TextDocumentPermission.EDIT_TEXTS, editTexts );
+        setPermission( EDIT_TEXTS, editTexts );
     }
 
     public boolean getEditMenus() {
-        return hasPermission( TextDocumentPermission.EDIT_MENUS );
+        return hasPermission( EDIT_MENUS );
     }
 
     public void setEditMenus( boolean editMenus ) {
-        setPermission( TextDocumentPermission.EDIT_MENUS, editMenus);
+        setPermission( EDIT_MENUS, editMenus);
     }
 
     public boolean getEditTemplates() {
-        return hasPermission( TextDocumentPermission.EDIT_TEMPLATE );
+        return hasPermission( EDIT_TEMPLATE );
     }
 
     public void setEditTemplates( boolean editTemplates ) {
-        setPermission( TextDocumentPermission.EDIT_TEMPLATE, editTemplates );
+        setPermission( EDIT_TEMPLATE, editTemplates );
     }
 
     public boolean getEditIncludes() {
-        return hasPermission( TextDocumentPermission.EDIT_INCLUDES );
+        return hasPermission( EDIT_INCLUDES );
     }
 
     public void setEditIncludes( boolean editIncludes ) {
-        setPermission( TextDocumentPermission.EDIT_INCLUDES, editIncludes );
+        setPermission( EDIT_INCLUDES, editIncludes );
     }
 
     public boolean getEditImages() {
-        return hasPermission( TextDocumentPermission.EDIT_IMAGES );
+        return hasPermission( EDIT_IMAGES );
     }
 
     public void setEditImages( boolean editImages ) {
-        setPermission( TextDocumentPermission.EDIT_IMAGES, editImages );
+        setPermission( EDIT_IMAGES, editImages );
     }
 
     public void setFromBits ( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,

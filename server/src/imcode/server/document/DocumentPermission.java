@@ -4,10 +4,7 @@ import org.apache.commons.lang.NullArgumentException;
 
 public class DocumentPermission {
 
-    private String name ;
-    static final DocumentPermission EDIT_DOCUMENT_INFORMATION = new DocumentPermission( "editDocumentInformation" );
-    static final DocumentPermission EDIT_PERMISSIONS = new DocumentPermission( "editPermissions" );
-    static final DocumentPermission EDIT = new DocumentPermission( "edit" );
+    private final String name ;
 
     public DocumentPermission( String name ) {
         if (null == name) {

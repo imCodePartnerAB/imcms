@@ -65,6 +65,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     protected DocumentDomainObject() {
         attributes = new Attributes();
+        attributes.permissionSetForRestrictedOne = new NonTextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
+        attributes.permissionSetForRestrictedTwo = new NonTextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 );
+        attributes.permissionSetForRestrictedOneForNewDocuments = new NonTextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
+        attributes.permissionSetForRestrictedTwoForNewDocuments = new NonTextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 );
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -507,10 +511,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private Set categories = new HashSet();
         private Set keywords = new HashSet();
         private Set sections = new HashSet();
-        public DocumentPermissionSetDomainObject permissionSetForRestrictedOne = new DocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
-        public DocumentPermissionSetDomainObject permissionSetForRestrictedTwo = new DocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 );
-        public DocumentPermissionSetDomainObject permissionSetForRestrictedOneForNewDocuments = new DocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
-        public DocumentPermissionSetDomainObject permissionSetForRestrictedTwoForNewDocuments = new DocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 ); ;
+        public DocumentPermissionSetDomainObject permissionSetForRestrictedOne ;
+        public DocumentPermissionSetDomainObject permissionSetForRestrictedTwo ;
+        public DocumentPermissionSetDomainObject permissionSetForRestrictedOneForNewDocuments ;
+        public DocumentPermissionSetDomainObject permissionSetForRestrictedTwoForNewDocuments ;
 
         private Map rolesMappedToDocumentPermissionSetIds = new HashMap();
 

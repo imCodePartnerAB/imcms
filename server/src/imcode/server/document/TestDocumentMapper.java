@@ -66,7 +66,11 @@ public class TestDocumentMapper extends TestCase {
         oldDocument.setPermissionSetIdForRole( userRole, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
         textDocument.setRolesMappedToPermissionSetIds( oldDocument.getRolesMappedToPermissionSetIds() );
         textDocument.setPermissionSetIdForRole( testRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
-        DocumentPermissionSetDomainObject permissionSetForRestrictedOne = new DocumentPermissionSetDomainObject( 1 );
+        DocumentPermissionSetDomainObject permissionSetForRestrictedOne = new DocumentPermissionSetDomainObject( 1 ) {
+            void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
+                              int permissionBits, boolean forNewDocuments ) {
+            }
+        };
         oldDocument.setPermissionSetForRestrictedOne( permissionSetForRestrictedOne );
 
         permissionSetForRestrictedOne.setEditPermissions( false );

@@ -85,27 +85,27 @@ public class ParserParameters implements Cloneable {
     }
 
     public boolean isTextMode() {
-        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS, TextDocumentPermission.EDIT_TEXTS );
+        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS, TextDocumentPermissionSetDomainObject.EDIT_TEXTS );
     }
 
     public boolean isMenuMode() {
-        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS, TextDocumentPermission.EDIT_MENUS );
+        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS, TextDocumentPermissionSetDomainObject.EDIT_MENUS );
     }
 
     public boolean isImageMode() {
-        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES, TextDocumentPermission.EDIT_IMAGES );
+        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES, TextDocumentPermissionSetDomainObject.EDIT_IMAGES );
     }
 
     public boolean isIncludesMode() {
-        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES, TextDocumentPermission.EDIT_INCLUDES );
+        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES, TextDocumentPermissionSetDomainObject.EDIT_INCLUDES );
     }
 
     public boolean isTemplateMode() {
-        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE, TextDocumentPermission.EDIT_TEMPLATE );
+        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE, TextDocumentPermissionSetDomainObject.EDIT_TEMPLATE );
     }
 
     private boolean isMode( int flag,
-                            TextDocumentPermission permission ) {
+                            DocumentPermission permission ) {
         return ( flags & flag ) != 0 && getPermissionSet().hasPermission(permission);
     }
 

@@ -42,7 +42,6 @@ public class DocumentPermissionSetPage extends OkCancelPage {
 
     protected void updateFromRequest( HttpServletRequest request ) {
         documentPermissionSet.setEditPermissions( null != request.getParameter( REQUEST_PARAMETER__EDIT_PERMISSIONS ));
-        documentPermissionSet.setEdit( null != request.getParameter( REQUEST_PARAMETER__EDIT ));
         documentPermissionSet.setEditDocumentInformation( null != request.getParameter( REQUEST_PARAMETER__EDIT_DOCUMENT_INFORMATION ));
         if (documentPermissionSet instanceof TextDocumentPermissionSetDomainObject) {
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet ;
@@ -65,6 +64,9 @@ public class DocumentPermissionSetPage extends OkCancelPage {
                 defaultTemplate = templateMapper.getTemplateById( defaultTemplateId );
             } catch( NumberFormatException ignored ) {}
             textDocumentPermissionSet.setDefaultTemplate( defaultTemplate );
+        } else {
+            NonTextDocumentPermissionSetDomainObject nonTextDocumentPermissionSet = (NonTextDocumentPermissionSetDomainObject)documentPermissionSet ;
+            nonTextDocumentPermissionSet.setEdit( null != request.getParameter( REQUEST_PARAMETER__EDIT ));
         }
     }
 

@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DocumentPermissionSetDomainObject implements Serializable {
+public abstract class DocumentPermissionSetDomainObject implements Serializable {
 
     public static final int TYPE_ID__FULL = 0 ;
     public static final int TYPE_ID__RESTRICTED_1 = 1 ;
@@ -49,6 +49,8 @@ public class DocumentPermissionSetDomainObject implements Serializable {
     private int typeId ;
 
     private Set permissions = new HashSet() ;
+    static final DocumentPermission EDIT_DOCUMENT_INFORMATION = new DocumentPermission( "editDocumentInformation" );
+    static final DocumentPermission EDIT_PERMISSIONS = new DocumentPermission( "editPermissions" );
 
     public DocumentPermissionSetDomainObject( int typeId ) {
         if (TYPE_ID__FULL > typeId || TYPE_ID__NONE < typeId) {
@@ -115,32 +117,22 @@ public class DocumentPermissionSetDomainObject implements Serializable {
     }
 
     public boolean getEditDocumentInformation() {
-        return hasPermission(DocumentPermission.EDIT_DOCUMENT_INFORMATION);
+        return hasPermission(EDIT_DOCUMENT_INFORMATION);
     }
 
     public void setEditDocumentInformation( boolean editDocumentInformation ) {
-        setPermission( DocumentPermission.EDIT_DOCUMENT_INFORMATION, editDocumentInformation);
+        setPermission( EDIT_DOCUMENT_INFORMATION, editDocumentInformation);
     }
 
     public boolean getEditPermissions() {
-        return hasPermission( DocumentPermission.EDIT_PERMISSIONS ) ;
+        return hasPermission( EDIT_PERMISSIONS ) ;
     }
 
     public void setEditPermissions( boolean editPermissions ) {
-        setPermission( DocumentPermission.EDIT_PERMISSIONS, editPermissions );
+        setPermission( EDIT_PERMISSIONS, editPermissions );
     }
 
-    public boolean getEdit() {
-        return hasPermission( DocumentPermission.EDIT ) ;
-    }
-
-    public void setEdit( boolean edit ) {
-        setPermission( DocumentPermission.EDIT, edit );
-    }
-
-    void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
-                             int permissionBits, boolean forNewDocuments ) {
-        documentPermissionSetMapper.setDocumentPermissionSetFromBits( this, permissionBits) ;
-    }
+    abstract void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
+                             int permissionBits, boolean forNewDocuments ) ;
 
 }

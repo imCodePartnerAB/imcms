@@ -24,15 +24,12 @@ public class TestDocumentPermissionSetMapper extends TestCase {
         database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( DocumentPermissionSetMapper.SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS ), new String[0][0] );
         database.addExpectedSqlCall( new MockDatabase.StartsWithSqlCallPredicate( DocumentPermissionSetMapper.SQL_SELECT_PERMISSON_DATA__PREFIX ), new String[0] );
         documentPermissionSetMapper.setTextDocumentPermissionSetFromBits( textDocument, textDocumentPermissionSet, DocumentPermissionSetMapper.EDIT_DOCUMENT_PERMISSION_ID, false );
-        assertTrue( textDocumentPermissionSet.getEdit() );
         assertTrue( textDocumentPermissionSet.getEditTexts() );
     }
 
-    public void testSaveRestrictedTextDocumentPermissionSetConsidersEditTextsAndEditIsTheSameThing() {
-        textDocumentPermissionSet.setEdit( true );
+    public void testSaveRestrictedTextDocumentPermissionSet() {
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSet( textDocument, textDocumentPermissionSet, false );
-        database.assertCalled( new MockDatabase.EqualsWithParameterSqlCallPredicate( DocumentPermissionSetMapper.SPROC_SET_DOC_PERMISSION_SET, ""+DocumentPermissionSetMapper.EDIT_TEXT_DOCUMENT_TEXTS_PERMISSION_ID));
-        textDocumentPermissionSet.setEdit( false );
+        database.assertCalled( new MockDatabase.EqualsWithParameterSqlCallPredicate( DocumentPermissionSetMapper.SPROC_SET_DOC_PERMISSION_SET, "0"));
         textDocumentPermissionSet.setEditTexts( true );
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSet( textDocument, textDocumentPermissionSet, false );
         database.assertCalled( new MockDatabase.EqualsWithParameterSqlCallPredicate( DocumentPermissionSetMapper.SPROC_SET_DOC_PERMISSION_SET, ""+DocumentPermissionSetMapper.EDIT_DOCUMENT_PERMISSION_ID));

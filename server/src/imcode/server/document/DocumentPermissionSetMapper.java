@@ -37,11 +37,11 @@ public class DocumentPermissionSetMapper {
     public DocumentPermissionSetDomainObject getRestrictedPermissionSet( DocumentDomainObject document,
                                                                          int permissionTypeId,
                                                                          boolean forNewDocuments ) {
-        DocumentPermissionSetDomainObject documentPermissionSet ;
+        DocumentPermissionSetDomainObject documentPermissionSet;
         if ( document instanceof TextDocumentDomainObject ) {
             documentPermissionSet = new TextDocumentPermissionSetDomainObject( permissionTypeId );
         } else {
-            documentPermissionSet = new DocumentPermissionSetDomainObject( permissionTypeId );
+            documentPermissionSet = new NonTextDocumentPermissionSetDomainObject( permissionTypeId );
         }
         setDocumentPermissionSetBitsFromDb( document, documentPermissionSet, forNewDocuments );
 
@@ -54,8 +54,9 @@ public class DocumentPermissionSetMapper {
         String table = getPermissionsTable( forNewDocuments );
         String sqlStr = "SELECT permission_id FROM " + table + " WHERE meta_id = ? AND set_id = ?";
         String permissionBitsString = database.sqlQueryStr( sqlStr, new String[]{
-            String.valueOf( document.getId() ), String.valueOf( documentPermissionSet.getTypeId() )
-        } );
+                                                                            String.valueOf( document.getId() ),
+                                                                            String.valueOf( documentPermissionSet.getTypeId() )
+                                                                    } );
         int permissionBits = 0;
         if ( null != permissionBitsString ) {
             permissionBits = Integer.parseInt( permissionBitsString );
@@ -102,14 +103,13 @@ public class DocumentPermissionSetMapper {
     }
 
     public void saveRestrictedDocumentPermissionSet( DocumentDomainObject document,
-                                                      DocumentPermissionSetDomainObject documentPermissionSet,
-                                                      boolean forNewDocuments ) {
+                                                     DocumentPermissionSetDomainObject documentPermissionSet,
+                                                     boolean forNewDocuments ) {
 
         List permissionPairs = new ArrayList( Arrays.asList( new PermissionPair[]{
-            new PermissionPair( EDIT_DOCINFO_PERMISSION_ID, documentPermissionSet.getEditDocumentInformation() ),
-            new PermissionPair( EDIT_PERMISSIONS_PERMISSION_ID, documentPermissionSet.getEditPermissions() ),
-            new PermissionPair( EDIT_DOCUMENT_PERMISSION_ID, documentPermissionSet.getEdit() )
-        } ) );
+             new PermissionPair( EDIT_DOCINFO_PERMISSION_ID, documentPermissionSet.getEditDocumentInformation() ),
+             new PermissionPair( EDIT_PERMISSIONS_PERMISSION_ID, documentPermissionSet.getEditPermissions() ),
+         } ) );
 
         if ( document instanceof TextDocumentDomainObject ) {
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet;
@@ -118,6 +118,8 @@ public class DocumentPermissionSetMapper {
             permissionPairs.add( new PermissionPair( EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID, textDocumentPermissionSet.getEditMenus() ) );
             permissionPairs.add( new PermissionPair( EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID, textDocumentPermissionSet.getEditTemplates() ) );
             permissionPairs.add( new PermissionPair( EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID, textDocumentPermissionSet.getEditIncludes() ) );
+        } else {
+            permissionPairs.add( new PermissionPair( EDIT_DOCUMENT_PERMISSION_ID, ( (NonTextDocumentPermissionSetDomainObject)documentPermissionSet ).getEdit() ) );
         }
 
         int permissionBits = 0;
@@ -131,10 +133,11 @@ public class DocumentPermissionSetMapper {
         sqlDeleteFromExtendedPermissionsTable( document, documentPermissionSet, forNewDocuments );
 
         String sproc = forNewDocuments
-                       ? SPROC_SET_NEW_DOC_PERMISSION_SET : SPROC_SET_DOC_PERMISSION_SET;
+                        ? SPROC_SET_NEW_DOC_PERMISSION_SET : SPROC_SET_DOC_PERMISSION_SET;
         database.sqlUpdateProcedure( sproc, new String[]{
-            "" + document.getId(), "" + documentPermissionSet.getTypeId(), "" + permissionBits
-        } );
+                                                     "" + document.getId(), "" + documentPermissionSet.getTypeId(),
+                                                     "" + permissionBits
+                                             } );
 
         if ( document instanceof TextDocumentDomainObject ) {
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet;
@@ -157,9 +160,10 @@ public class DocumentPermissionSetMapper {
         for ( int i = 0; i < allowedTemplateGroups.length; i++ ) {
             TemplateGroupDomainObject allowedTemplateGroup = allowedTemplateGroups[i];
             database.sqlUpdateQuery( sqlInsertAllowedTemplateGroupId, new String[]{
-                "" + document.getId(), "" + textDocumentPermissionSet.getTypeId(), ""
-                                                                                   + allowedTemplateGroup.getId()
-            } );
+                                                     "" + document.getId(), "" + textDocumentPermissionSet.getTypeId(),
+                                                     ""
+                                                     + allowedTemplateGroup.getId()
+                                             } );
         }
     }
 
@@ -170,8 +174,8 @@ public class DocumentPermissionSetMapper {
         String sqlDelete = "DELETE FROM " + table
                            + " WHERE meta_id = ? AND set_id = ?";
         database.sqlUpdateQuery( sqlDelete, new String[]{
-            "" + document.getId(), "" + documentPermissionSet.getTypeId()
-        } );
+                                                 "" + document.getId(), "" + documentPermissionSet.getTypeId()
+                                         } );
     }
 
     private void sqlSaveAllowedDocumentTypes( DocumentDomainObject document,
@@ -188,9 +192,10 @@ public class DocumentPermissionSetMapper {
         for ( int i = 0; i < allowedDocumentTypeIds.length; i++ ) {
             int creatableDocumentTypeId = allowedDocumentTypeIds[i];
             database.sqlUpdateQuery( sqlInsertCreatableDocumentTypeId, new String[]{
-                "" + document.getId(), "" + textDocumentPermissionSet.getTypeId(), ""
-                                                                                   + creatableDocumentTypeId
-            } );
+                                                     "" + document.getId(), "" + textDocumentPermissionSet.getTypeId(),
+                                                     ""
+                                                     + creatableDocumentTypeId
+                                             } );
         }
     }
 
@@ -202,10 +207,17 @@ public class DocumentPermissionSetMapper {
         return table;
     }
 
-    void setDocumentPermissionSetFromBits( DocumentPermissionSetDomainObject documentPermissionSet, int permissionBits ) {
+    void setDocumentPermissionSetFromBits( DocumentPermissionSetDomainObject documentPermissionSet,
+                                           int permissionBits ) {
         documentPermissionSet.setEditDocumentInformation( 0 != ( permissionBits & EDIT_DOCINFO_PERMISSION_ID ) );
         documentPermissionSet.setEditPermissions( 0 != ( permissionBits & EDIT_PERMISSIONS_PERMISSION_ID ) );
-        documentPermissionSet.setEdit( 0 != ( permissionBits & EDIT_DOCUMENT_PERMISSION_ID ) );
+
+    }
+
+    void setNonTextDocumentPermissionSetFromBits( NonTextDocumentPermissionSetDomainObject nonTextDocumentPermissionSet,
+                                              int permissionBits ) {
+        setDocumentPermissionSetFromBits( nonTextDocumentPermissionSet, permissionBits );
+        nonTextDocumentPermissionSet.setEdit( 0 != ( permissionBits & EDIT_DOCUMENT_PERMISSION_ID ) );
     }
 
     void setTextDocumentPermissionSetFromBits( DocumentDomainObject document,
@@ -215,7 +227,8 @@ public class DocumentPermissionSetMapper {
         textDocumentPermissionSet.setEditTexts( 0 != ( permissionBits & EDIT_TEXT_DOCUMENT_TEXTS_PERMISSION_ID ) );
         textDocumentPermissionSet.setEditImages( 0 != ( permissionBits & EDIT_TEXT_DOCUMENT_IMAGES_PERMISSION_ID ) );
         textDocumentPermissionSet.setEditMenus( 0 != ( permissionBits & EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID ) );
-        textDocumentPermissionSet.setEditIncludes( 0 != ( permissionBits & EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID ) );
+        textDocumentPermissionSet.setEditIncludes( 0
+                                                   != ( permissionBits & EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID ) );
         textDocumentPermissionSet.setEditTemplates( 0
                                                     != ( permissionBits & EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID ) );
 
@@ -233,8 +246,9 @@ public class DocumentPermissionSetMapper {
                         + " WHERE meta_id = ? AND set_id = ? AND permission_id = "
                         + ImcmsConstants.PERM_CREATE_DOCUMENT;
         String[] documentTypeIdStrings = database.sqlQuery( sqlStr, new String[]{
-            "" + metaId, "" + documentPermissionSet.getTypeId()
-        } );
+                                                                            "" + metaId,
+                                                                            "" + documentPermissionSet.getTypeId()
+                                                                    } );
         int[] documentTypeIds = new int[documentTypeIdStrings.length];
         for ( int i = 0; i < documentTypeIdStrings.length; i++ ) {
             documentTypeIds[i] = Integer.parseInt( documentTypeIdStrings[i] );
@@ -246,10 +260,10 @@ public class DocumentPermissionSetMapper {
                                                                              DocumentPermissionSetDomainObject documentPermissionSet,
                                                                              boolean forNewDocuments ) {
         String[] params = new String[]{
-            String.valueOf( metaId ), String.valueOf( documentPermissionSet.getTypeId() )
-        };
+                        String.valueOf( metaId ), String.valueOf( documentPermissionSet.getTypeId() )
+                };
         String sproc = forNewDocuments
-                       ? SPROC_GET_TEMPLATE_GROUPS_WITH_NEW_PERMISSIONS : SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS;
+                        ? SPROC_GET_TEMPLATE_GROUPS_WITH_NEW_PERMISSIONS : SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS;
         String[][] sprocResult = database.sqlProcedureMulti( sproc, params );
         List templateGroups = new ArrayList();
         for ( int i = 0; i < sprocResult.length; i++ ) {

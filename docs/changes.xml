@@ -25,6 +25,15 @@
         </change>
     </changes>
 
+    <changes for="users">
+        <change>
+            <p>
+                Fixed a bug that made it impossible to set "edit texts" permission for restricted 1 or 2.
+            </p>
+            <bug id="2885"/>
+        </change>
+    </changes>
+
     <changes for="administrators">
         <change>
             <p>
