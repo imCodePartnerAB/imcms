@@ -31,7 +31,7 @@ public class ImcmsSystem  {
         return docMapper;
     }
 
-    UserBean getAccessionUser() {
+    public UserBean getAccessionUser() {
         return accessingUser;
     }
 }

@@ -17,6 +17,6 @@
 %>
 
 <p>
-This page has now changed the first and second fileds in the page <%=metaId%>.<br>
+This page has now changed the first and second fields in the page <%=metaId%>.<br>
 You can watch the changes by clicking on this link <a href="../servlet/GetDoc?meta_id=1001">document <%=metaId%></a>
 </p>

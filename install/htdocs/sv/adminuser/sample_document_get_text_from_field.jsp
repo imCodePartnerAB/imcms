@@ -1,9 +1,15 @@
 <%@ page import="com.imcode.imcms.*"%>
+
+<%!
+    int metaId = 1001 ;
+%>
+
+The first field in document <%= metaId %> has content:<br>
 <%
     ImcmsSystem imcmsSystem = (ImcmsSystem)request.getAttribute( RequestConstants.SYSTEM );
     DocumentMapperBean documentMapper = imcmsSystem.getDocumentMapper();
-    int metaId = 1001 ;
     TextDocumentBean document = (TextDocumentBean)documentMapper.getDocument(metaId) ;
-    TextDocumentBean.TextField textField = document.getTextField(1) ;
+    TextDocumentBean.TextField textField = document.getTextField(2) ;
     out.println(textField.getHtmlFormattedText()) ;
 %>
+// end content

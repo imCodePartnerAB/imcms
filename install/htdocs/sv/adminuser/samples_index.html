@@ -13,8 +13,10 @@ Warning!<br>
 These links works differently depending what user you are logged in as, and what permissions that user has.<br>
 When logged out, the only link that should work is the sample of exception handling at the bottom of this document.</p>
 <p>
-<a href="../login/index.html">Logg in</a>
-<a href="../servlet/LogOut">Logg out</a>
+<h3>Who you are</h3>
+To see what user you are goto <a href="sample_logged_in_user.jsp">sample_logged_in_user.jsp</a><br>
+To change, just log in as a different user: <a href="../login/index.html">Logg in</a><br>
+and to try the links below as a non logged in user, log out: <a href="../servlet/LogOut">Logg out</a>
 </p>
 
 <h3>Users</h3>
@@ -25,9 +27,12 @@ Add: <a href="sample_role_create_role.jsp">sample_role_create_role.jsp</a><br>
 Delete: <a href="sample_role_delete_role.jsp">sample_role_delete_role.jsp</a><br>
 
 <h3>Document</h3>
-<a href="sample_get_document_text.jsp">sample_get_document_text.jsp</a><br>
-<a href="sample_set_document_text.jsp">sample_set_document_text.jsp</a><br>
-<a href="sample_clear_document_text.jsp">sample_clear_document_text.jsp</a><br>
+The following samples is modifying document 1001.<br>
+It lookes like this: <a href="../servlet/GetDoc?meta_id=1001">document</a><br>
+
+Get the first document field from the document: <a href="sample_document_get_text_from_field.jsp">sample_document_get_text_from_field.jsp</a><br>
+Change the first and the second field<a href="sample_document_set_text_field.jsp">sample_document_set_text_field.jsp</a><br>
+Clear the first and the second field</a><a href="sample_document_clear_text_field.jsp">sample_document_clear_text_field.jsp</a><br>
 <br>
 <a href="sample_document_permissions.jsp">sample_document_permissions.jsp</a><br>
 

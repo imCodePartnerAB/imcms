@@ -1,0 +1,53 @@
+Lennart:
+- Vart borde api sidorna ligga?
+- Går det att bestämma vilken url man ska till efter inloggning beroende på vilken sida man loggar in från?
+
+Christoffer:
+- servlet.jar, vilken version ska vara incheckad? Någon över huvudtaget?
+
+Hillar, prioritera
+(?) Include av externa system
+(?) "" password
+(?) Inloggningschecken till filtret
+(?) Markera roller som externa så att de kan tas bort ifall de försvinner
+
+API:et (prio)
+(1) Visa behörighet för sida
+(2) Skapa behörighet på viss sida
+(2) Skapa ny sida med valfri dokument-typ i valfri meny på valfri sida
+(2) Skapa/ändra docinfo för valfri sida
+(2) Ange formatmall och format-grupp för valfri sida
+(2) Ange documentnummer för valfri sida och valfri includ tag
+(2) API: förhindra tilldelning av User (döpa om? mejla Hillar och Lennart)
+(3) Visa/tilldela vilka roller en användare som är user admin får administrera
+(4) Visa behöriga användare för viss sida
+(4) Gör det möjligt att öppna upp säkerheten
+(4) Skapa ny avdelning
+(4) Ta bort roll från användare
+
+Snarast
+- Gå igenom alla FIXME och TODO
+- Använd API:et i servletarna istället för hacken som nu finns där
+- Session och inloggning koncentrerat till en plats.
+- Mocka bort ImcmsAuthenticatorAndUserMapper och LDAPUserAndRoleMapper i TestExternalizedImcmsAuthenticatorAndUserMapper istället för databasgrejerna.
+- Bestäm en strategi hur bilbord, chat etc ska behandlas vid förändringar.
+
+- Gå igenom koden och ta bort all kod som inte används. Använd verktyg
+- Gå igenom och ta bort alla stored procedures som inte används.
+
+- Gå igenom koden och ta bort alla depricated SQL grejer
+- Rensa upp i cvs strukturen, ett källkodsträd.
+
+- Gå igenom hela koden och flytta alla användning av User relaterade saker till samma ställe(n)
+
+Eventuellt
+- Ordna så att LDAP körs utan att man måste vara beroende av en server i nätet.
+- Lägg in automatisk körning av testen vid build i ant
+- Gå igenom koden och se till att trådsäkra alla anrop av typen där det sker två SQL androp efter varandra utan att det är skyddat
+- Ordna sökvägarna och mappningar via web.xml filen
+
+Skulle vara bra när som helst
+- Strängkonstanter i hela programmet
+- Flytta servlet och globala config parametrarna till web.xml
+- Döp om GetAllRoles, och/eller ändra på anropen till denna så att de inte förutsätter att "users" rollen ej kommer med
+- Ta bort langID ur hela applikationen
