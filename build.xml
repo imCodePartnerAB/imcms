@@ -7,6 +7,8 @@
 
   <property name="images"         value="${webroot}/images"/>
   <property name="login"          value="${webroot}/login"/>
+  <property name="css"            value="${webroot}/css"/>
+
 
   <property name="adminbuttons"   value="${webroot}/admin"/>
   <property name="WEB-INF"        value="${webroot}/WEB-INF"/>
@@ -229,7 +231,8 @@
           description="Creates the public web">
     <mkdir dir="${images}"/>
     <mkdir dir="${login}"/>
-    <copy file="templates/index.html" todir="${login}">
+    <mkdir dir="${css}"/>
+    <copy file="templates/login/index.html" todir="${login}">
        <filterset>
         <filter token="servleturl" value="${servleturl}"/>
         <filter token="imageurl" value="${imageurl}"/>
