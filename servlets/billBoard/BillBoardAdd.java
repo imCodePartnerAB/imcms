@@ -220,8 +220,16 @@ public class BillBoardAdd extends BillBoard
 					return;
 				}							
 				String sqlQuest = "B_GetSubjectStr " + discId+", "+params.getProperty("META_ID")+", "+params.getProperty("SECTION_ID");
-				String subjectStr = rmi.execSqlProcedureStr(confPoolServer, sqlQuest);				
-				this.sendReplieEmail(req,res,toEmail,addEpost,subjectStr,addText);
+				String subjectStr = rmi.execSqlProcedureStr(confPoolServer, sqlQuest);	
+				try
+				{			
+					this.sendReplieEmail(req,res,toEmail,addEpost,subjectStr,addText);
+				}catch (ProtocolException pe)
+				{
+					BillBoardError err = new BillBoardError(req,res,"BillBoardAdd servlet. ",76) ;
+					log(pe.getMessage());
+					return;
+				}
 
 				// Ok, Lets add the discussion to DB  
 				sqlQuest = "B_AddReply " + discId + ", " + userId + ", " ;
@@ -230,9 +238,11 @@ public class BillBoardAdd extends BillBoard
 				sqlQuest +=	sqlPDelim(addEpost)+req.getRemoteAddr();//AddNewDisc
 				//log("B_AddNewBillSQL: " + sqlQuest) ;
 				rmi.execSqlUpdateProcedure(confPoolServer, sqlQuest) ;
+				
+				
 
 				// Lets redirect to the servlet which holds in us.
-				res.sendRedirect(MetaInfo.getServletPath(req)  + "BillBoardDiscView") ;//ConfDiscView
+				res.sendRedirect(MetaInfo.getServletPath(req)  + "BillBoardDiscView?MAIL_SENT=OK") ;//ConfDiscView
 				//	log("AddReply är klar") ;
 				return ;
 			}

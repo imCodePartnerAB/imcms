@@ -179,7 +179,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			// Lets get the nbr of discussions to show. If it does not contain any
 			// discussions, 20 will be returned by default from db
 			String showDiscsStr = rmi.execSqlProcedureStr(confPoolServer, "B_GetNbrOfDiscsToShow " +
-				params.getProperty("SECTION_ID"))  ;//GetNbrOfDiscsToShow, FORUM_ID
+			params.getProperty("SECTION_ID"))  ;//GetNbrOfDiscsToShow, FORUM_ID
 			//log("showDiscsStr = "+showDiscsStr);
 			
 			int showDiscsCounter = Integer.parseInt(showDiscsStr) ;
@@ -470,7 +470,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		
 		String sqlAnswer[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProcOld ) ;
 		//log("sqlAnswer = "+sqlAnswer);
-		if (sqlAnswer == null)//ok we have delete the one so lets get the first
+		/*if (sqlAnswer == null)//ok we have delete the one so lets get the first
 		{	
 			String sqlGetFirst = "B_GetFirstSection " + aMetaId ;//GetAllDiscussions
 			String first = rmi.execSqlProcedureStr(confPoolServer, sqlGetFirst ) ;
@@ -480,7 +480,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			params.setProperty("SECTION_ID",first);
 			
 		}
-		
+		*/
 		
 		
 		//lets generate the buttons that should appear
@@ -513,8 +513,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			//int showDiscsCounter = Integer.parseInt(showDiscsStr) ;
 			showDiscsCounter = Integer.parseInt(showDiscsStr) ;
 	
-	
-	//OBS OBS OBS
+			
 			int recStartPos = this.getRecordPos(sqlAnswer, discIndexPos, req ) ;
 			int recStopPos = this.getRecordPos(sqlAnswer, discIndexPos + showDiscsCounter, req ) ;
 

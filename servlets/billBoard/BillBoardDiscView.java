@@ -83,12 +83,17 @@ public class BillBoardDiscView extends BillBoard {//ConfDiscView
 		// servlet in the frameset
 		MetaInfo metaInfo = new MetaInfo() ;
 		String paramStr = metaInfo.passMeta(params) ;
+		String extParam="";
+		if (req.getParameter("MAIL_SENT") != null)
+		{
+			extParam = "&MAIL_SENT=OK";
+		}
 
 
 		// Lets build the Responsepage
 		VariableManager vm = new VariableManager() ;
 		vm.addProperty("BILLBOARD_DISC", servletHome + "BillBoardDisc?" + paramStr ) ;//CONF_DISC, ConfDisc
-		vm.addProperty("BILLBOARD_REPLY", servletHome + "BillBoardReply?" + paramStr) ;//CONF_REPLY, ConfReply
+		vm.addProperty("BILLBOARD_REPLY", servletHome + "BillBoardReply?" + paramStr+extParam) ;//CONF_REPLY, ConfReply
 
 
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;

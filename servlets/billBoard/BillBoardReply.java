@@ -52,7 +52,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 
 	private final static String NEW_COMMENT_TEMPLATE =  "BillBoard_Reply_New_Comment.htm";//Conf_Reply_New_Comment.htm
 	private final static String ADMIN_LINK_TEMPLATE = "BillBoard_Reply_Admin_Link.htm";//Conf_Reply_Admin_Link.htm
-
+	private final static String HTML_TEMPLATE_MAIL_SENT = "BillBoard_Reply_Mail_Sent.htm";
 	String HTML_TEMPLATE ;
 	String RECS_HTML;
 
@@ -155,7 +155,6 @@ public class BillBoardReply extends BillBoard {//ConfReply
 		Properties userParams = super.getUserParameters(user) ;
 		String userId = "" ;
 
-		// Lets get the replylist from DB
 		String discId = params.getProperty("DISC_ID") ;
 
 		// Lets update the sessions DISC_ID
@@ -170,6 +169,14 @@ public class BillBoardReply extends BillBoard {//ConfReply
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String confPoolServer = Utility.getDomainPref("billboard_server",host) ;
                 //log("ConfPoolServer: " + confPoolServer) ;
+				
+		if (req.getParameter("MAIL_SENT") != null)
+		{
+			//ok lets get the sent msg page
+			VariableManager vm = new VariableManager() ;
+			this.sendHtml(req,res,vm, HTML_TEMPLATE_MAIL_SENT) ;
+			return;
+		}
 
 		RmiConf rmi = new RmiConf(user) ;
         String sqlQ = "B_GetCurrentBill " + discId ;//GetAllRepliesInDisc

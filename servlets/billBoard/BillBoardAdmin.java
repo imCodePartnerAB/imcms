@@ -112,7 +112,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		if( super.getAdminRights(imcServer, params.getProperty("META_ID"), user) == false ) {
 			String header = "BillBoardAdmin servlet. " ;
 			String msg = params.toString() ;
-			ConfError err = new ConfError(req,res,header,6) ;
+			BillBoardError err = new BillBoardError(req,res,header,6) ;
 			return ;
 		}
 
@@ -136,7 +136,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				/*
 				String header = "ConfAdmin servlet. " ;
 				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header,1) ;
+				BillBoardError err = new BillBoardError(req,res,header,1) ;
 				*/
 				return ;
 			}
@@ -192,7 +192,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				/*
 				String header = "ConfAdmin servlet. " ;
 				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header,1) ;
+				BillBoardError err = new BillBoardError(req,res,header,1) ;
 				*/
 				return ;
 			}
@@ -210,7 +210,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				/*
 				String header = "ConfAdmin servlet. " ;
 				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header,1) ;
+				BillBoardError err = new BillBoardError(req,res,header,1) ;
 				*/
 				return ;
 			}
@@ -220,7 +220,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			if (newLibName == null) {
 				String header = "BillBoardAdmin servlet. " ;
 				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header, 80) ;
+				BillBoardError err = new BillBoardError(req,res,header, 80) ;
 				return ;
 			}
 
@@ -231,7 +231,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			if(templateId.equalsIgnoreCase("-1")) {
 				String header = "BillBoardAdmin servlet. " ;
 				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header,81) ;
+				BillBoardError err = new BillBoardError(req,res,header,81) ;
 				return ;
 			}
 			// Ok, lets update the conference with this new templateset.
@@ -251,7 +251,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				/*
 				String header = "ConfAdmin servlet. " ;
 				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header,1) ;
+				BillBoardError err = new BillBoardError(req,res,header,1) ;
 				*/
 				return ;
 			}
@@ -296,7 +296,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				/*
 				String header = "ConfAdmin servlet. " ;
 				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header,1) ;
+				BillBoardError err = new BillBoardError(req,res,header,1) ;
 				*/
 				return ;
 			}
@@ -347,7 +347,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				/*
 				String header = "ConfAdmin servlet. " ;
 				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header,1) ;
+				BillBoardError err = new BillBoardError(req,res,header,1) ;
 				*/
 				return ;
 			}
@@ -366,6 +366,54 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			res.sendRedirect(MetaInfo.getServletPath(req) + "BillBoardAdmin?ADMIN_TYPE=DISCUSSION") ;
 			return ;
 		}
+		
+		// ********* MOVE BILLS TO ANITHER SECTION ******** Peter says OK!!!!
+		if (req.getParameter("MOVE_BILLS") != null)
+		{
+			//log("Nu tar vi och flyttar bills till en annan avdelning");
+			if (super.checkParameters(req, res, params) == false ) {
+				/*
+				String header = "ConfAdmin servlet. " ;
+				String msg = params.toString() ;
+				BillBoardError err = new BillBoardError(req,res,header,1) ;
+				*/
+				return ;
+			}
+			String redirectParam = req.getParameter("BILLTYPES");
+			if (redirectParam.equalsIgnoreCase("OLD_ONES"))
+			{
+				redirectParam = "OLD_DISCUSSION";
+			}else
+			{
+				redirectParam = "DISCUSSION";
+			}
+			// Lets get the section_id and set our session object before updating
+			String aSectionId = params.getProperty("SECTION_ID") ;
+			
+			String discIds[] = this.getDelDiscParameters(req) ;
+			
+			String moveToId = req.getParameter("MOVE_TO_SECTION") == null ? aSectionId:req.getParameter("MOVE_TO_SECTION");
+			
+			//Lets move all the bills to the section admin wants
+			for(int i = 0 ; i < discIds.length ; i++ ) 
+			{
+				String sqlQ = "B_ChangeSection " + discIds[i] +", "+moveToId ;//DeleteDiscussion
+				rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
+			}
+			
+			//Lets update the session in case we moved the shown bill
+			HttpSession session = req.getSession(false);
+			String sqlStr = "B_GetLastDiscussionId " +params.getProperty("META_ID") + ", " + aSectionId;
+			String aDiscId = rmi.execSqlProcedureStr(confPoolServer, sqlStr) ;
+			session.putValue("BillBoard.disc_id", aDiscId) ;
+			
+			//ok lets rebuild the page
+			res.sendRedirect(MetaInfo.getServletPath(req) + "BillBoardAdmin?ADMIN_TYPE="+redirectParam) ;
+			return ;
+			
+		}
+		
+
 
 		// ********* DELETE SECTION ******** 	Peter says OK!!!!
 		if (req.getParameter("DELETE_SECTION") != null) {
@@ -373,9 +421,9 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			params = this.getDelSectionParameters(req, params) ;
 			if (super.checkParameters(req, res, params) == false) {
 				/*
-				String header = "ConfAdmin servlet. " ;
+				String header = "BillBoardAdmin servlet. " ;
 				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header,1) ;
+				BillBoardError err = new BillBoardError(req,res,header,1) ;
 				*/
 				return ;
 			}
@@ -396,6 +444,13 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			// B_DeleteSection @aSectionId int
 			String sqlQ = "B_DeleteSection " + params.getProperty("SECTION_ID") ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
+			
+			//ok lets update the session incase we deleted the current one
+			String sqlGetFirst = "B_GetFirstSection " + params.getProperty("META_ID") ;//GetAllDiscussions
+			String first = rmi.execSqlProcedureStr(confPoolServer, sqlGetFirst ) ;
+			HttpSession session = req.getSession(false);
+			session.putValue("BillBoard.section_id", first) ;
+			
 			this.doGet(req, res) ;
 			return ;
 		}
@@ -409,7 +464,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				/*
 				String header = "ConfAdmin servlet. " ;
 				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header,1) ;
+				BillBoardError err = new BillBoardError(req,res,header,1) ;
 				*/
 				return ;
 			}
@@ -427,7 +482,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			if( !foundIt.equalsIgnoreCase("-1") ) {
 				String header = "BillBoardAdmin servlet. " ;
 				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header,85) ;
+				BillBoardError err = new BillBoardError(req,res,header,85) ;
 				return ;
 			}
 			
@@ -449,13 +504,27 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				/*
 				String header = "ConfAdmin servlet. " ;
 				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header,1) ;
+				BillBoardError err = new BillBoardError(req,res,header,1) ;
 				*/
 				return ;
 			}
 
 			// Lets verify the parameters for the sql questions.
 			params = super.verifyForSql(params) ;
+			
+			// Lets check if a forum with that name exists
+			String findSql = "B_FindSectionName " + params.getProperty("META_ID") + ", '" ;
+			findSql += params.get("NEW_SECTION_NAME") + "'" ;
+			//log("B_FindSectionName SQL: " + findSql) ;
+			String foundIt = rmi.execSqlProcedureStr(confPoolServer, findSql) ;
+			//log("FoundIt: " + foundIt) ;
+
+			if( !foundIt.equalsIgnoreCase("-1") ) {
+				String header = "BillBoardAdmin servlet. " ;
+				String msg = params.toString() ;
+				BillBoardError err = new BillBoardError(req,res,header,85) ;
+				return ;
+			}
 
 			String sqlAddQ = "B_RenameSection " + params.getProperty("SECTION_ID") + ", '" ;
 			sqlAddQ += params.getProperty("NEW_SECTION_NAME") + "'" ;
@@ -474,7 +543,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				/*
 				String header = "ConfAdmin servlet. " ;
 				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header,1) ;
+				BillBoardError err = new BillBoardError(req,res,header,1) ;
 				*/
 				return ;
 			}
@@ -495,7 +564,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				/*
 				String header = "ConfAdmin servlet. " ;
 				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header,1) ;
+				BillBoardError err = new BillBoardError(req,res,header,1) ;
 				*/
 				return ;
 			}
@@ -550,7 +619,8 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		if( super.getAdminRights(imcServer, params.getProperty("META_ID"), user) == false ) {
 			String header = "BillBoardAdmin servlet. " ;
 			String msg = params.toString() ;
-			ConfError err = new ConfError(req,res,header,6) ;
+			BillBoardError err = new BillBoardError(req,res,header,6) ;
+			log("nu small det i BillBoardAdmin doGet super.getAdminRights");
 			return ;
 		}
 
@@ -646,8 +716,8 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			String forumList = Html.createHtmlCode("ID_OPTION", "", sectionV ) ;
 
 			// Lets get the name of the currently selected forum
-			String forumNameSql = "B_GetSectionName " + params.getProperty("SECTION_ID") ;
-			String forumName = rmi.execSqlProcedureStr(confPoolServer, forumNameSql ) ;
+			String sectionNameSql = "B_GetSectionName " + params.getProperty("SECTION_ID") ;
+			String sectionName = rmi.execSqlProcedureStr(confPoolServer, sectionNameSql ) ;
 
 			// Lets get the name of the currently selected forum
 			String nbrOfDiscsToShowSql = "B_GetNbrOfDiscsToShow " + params.getProperty("SECTION_ID") ;//GetNbrOfDiscsToShow
@@ -691,7 +761,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		if (adminWhat.equalsIgnoreCase("DISCUSSION") ) {
 			HTML_TEMPLATE ="BillBoard_admin_disc.htm" ;//Conf_admin_disc.htm
 			String adminDiscList = "BillBoard_admin_disc_list.htm" ;//Conf_admin_disc_list.htm
-			//log("OK, Administrera Discussions") ;
+			log("OK, Administrera Discussions") ;
 
 			// Lets get the url to the servlets directory
 			String servletHome = MetaInfo.getServletPath(req) ;
@@ -700,7 +770,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			String aMetaId = params.getProperty("META_ID") ;
 			String aSectionId = params.getProperty("SECTION_ID") ;
 			String aLoginDate = params.getProperty("LAST_LOGIN_DATE") ;
-
+			
 			// Lets get path to the imagefolder. http://dev.imcode.com/images/se/102/ConfDiscNew.gif
 			String imagePath = super.getExternalImageFolder(req) + "BillBoardDiscNew.gif" ;//ConfDiscNew.gif
 
@@ -712,6 +782,12 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			String sqlStoredProc = "B_GetAllBillsToShow " +aMetaId+ ", "+ aSectionId;//GetAllNewDiscussions
 			//log("SQL new: " + sqlStoredProc) ;
 			String sqlAnswerNew[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProc ) ;
+			
+			//lets get all the sections and the code for the selectlist
+			sqlStoredProc = "B_GetAllSection "+aMetaId;
+			String sqlSections[] = rmi.execSqlProcedure(confPoolServer, sqlStoredProc ) ;			
+			Vector sectionV = super.convert2Vector(sqlSections) ;
+			String sectionListStr = Html.createHtmlCode("ID_OPTION", aSectionId, sectionV ) ;
 			
 			// Lets build our tags vector.
 			Vector tagsV = this.buildAdminTags() ;
@@ -726,6 +802,8 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			// Lets build the Responsepage
 			//VariableManager vm = new VariableManager() ;
 			//log("allNewRecs: "+allNewRecs);
+	
+			vm.addProperty("SECTION_LIST", sectionListStr  ) ;
 			vm.addProperty("NEW_A_HREF_LIST", allNewRecs  ) ;
 			//vm.addProperty("OLD_A_HREF_LIST", allOldRecs  ) ;
 			vm.addProperty("UNADMIN_LINK_HTML", this.DISC_UNADMIN_LINK_TEMPLATE );
@@ -735,7 +813,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			htmlFile = HTML_TEMPLATE;
 			//return ;
 		} // End admin discussion
-//##########
+
 
 
 		// *********** ADMIN OLD DISCUSSION *************
@@ -751,7 +829,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			String aMetaId = params.getProperty("META_ID") ;
 			String aSectionId = params.getProperty("SECTION_ID") ;
 			//String aLoginDate = params.getProperty("LAST_LOGIN_DATE") ;
-
+			
 			// Lets get path to the imagefolder. http://dev.imcode.com/images/se/102/ConfDiscNew.gif
 			//String imagePath = super.getExternalImageFolder(req) + "BillBoardDiscNew.gif" ;//ConfDiscNew.gif
 
@@ -763,12 +841,19 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			String sqlStoredProc = "B_GetAllOldBills " +aMetaId+ ", "+ aSectionId;//GetAllNewDiscussions
 			//log("SQL new: " + sqlStoredProc) ;
 			String sqlAnswerNew[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProc ) ;
-		
+			
+			
+			//lets get all the sections and the code for the selectlist
+			sqlStoredProc = "B_GetAllSection "+aMetaId;
+			String sqlSections[] = rmi.execSqlProcedure(confPoolServer, sqlStoredProc ) ;			
+			Vector sectionV = super.convert2Vector(sqlSections) ;
+			String sectionListStr = Html.createHtmlCode("ID_OPTION", aSectionId, sectionV ) ;
+						
 
 			// Lets build our tags vector.
 			Vector tagsV = this.buildAdminTags() ;
 
-			// Lets preparse all NEW records
+			// Lets preparse all OLD records
 			String allNewRecs  = "" ;
 			if( sqlAnswerNew != null ) {
 				if( sqlAnswerNew.length > 0)
@@ -779,6 +864,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			// Lets build the Responsepage
 			//VariableManager vm = new VariableManager() ;
 			//log("allNewRecs: "+allNewRecs);
+			vm.addProperty("SECTION_LIST", sectionListStr  ) ;
 			vm.addProperty("NEW_A_HREF_LIST", allNewRecs  ) ;
 			//vm.addProperty("OLD_A_HREF_LIST", allOldRecs  ) ;
 			vm.addProperty("UNADMIN_LINK_HTML", this.DISC_UNADMIN_LINK_TEMPLATE );
@@ -789,7 +875,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			//return ;
 		} // End admin discussion
 
-//##########
+
 
 		// *********** ADMIN REPLIES *************
 		if (adminWhat.equalsIgnoreCase("REPLY") ) {
@@ -933,7 +1019,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 					// log("COunter: "+ k + " Tagvärde: " + DBArr[k] ) ;
 				}
 			}
-
+			
 			// Lets do for all records...
 			for(int i = nbrOfCols+1; i<DBArr.length; i += nbrOfCols) {
 				// Lets prepare the dataVector with some values before were read
@@ -950,8 +1036,9 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 					dataV.add(DBArr[j]) ;
 					//log("DATA nr:"+j+" = "+DBArr[j]);
 				} // End of one records for
-
 				
+				//ok lets fix the sectionlist
+								
 				// Lets parse one record
 				oneParsedRecordStr = this.parseOneRecord(tagsV, dataV, htmlCodeFile) ;
 				//log("Ett record: " + oneParsedRecordStr);
