@@ -1,3 +1,18 @@
+Version 1.11.1
+
+    Of interest to administrators:
+
+    * In the fix to bug 2452 in 1.11.0, we changed the way files in file documents are saved to disk,
+      forgetting backwards-compatibility.
+      Administrators had to remove the "_se"-suffix from all files under "WEB-INF/uploads",
+      or the files would not be found after an upgrade.
+      This was fixed so the "_se" suffix is recognized again,
+      and will be automatically removed when the file document is saved.
+      Removing the suffix from the files on upgrade is still recommended. (Bug 2650)
+    * On a related note, don't show "WEB-INF/uploads" in "FileAdmin" by default. (Bug 2640)
+    * Made "/RD/*"-paths (as seen in the log) work again. (Bug 2633)
+
+
 Version 1.11.0:
 
     Of importance to administrators:
