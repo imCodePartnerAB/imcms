@@ -255,18 +255,15 @@ public class DatabaseService {
     }
 
     Table_roles[] sproc_GetAllRoles_but_user() {
-        String sql = "SELECT role_id, role_name FROM roles ORDER BY role_name";
+        String sql = "SELECT role_id, role_name FROM roles WHERE role_name <> 'Users' ORDER BY role_name";
         Object[] paramValues = null;
 
         SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int id = rs.getInt( "role_id" );
                 String name = rs.getString( "role_name" );
-
                 Table_roles result = null;
-                if( !name.equalsIgnoreCase( "users" ) ) { // all roles but user should be mapped.
-                    result = new Table_roles( id, name );
-                }
+                result = new Table_roles( id, name );
                 return result;
             }
         };
@@ -445,10 +442,9 @@ public class DatabaseService {
         Object[] paramValues = new Object[]{new Integer( groupId )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                View_TemplateGroup result = null;
                 int templateId = rs.getInt( "template_id" );
                 String simpleName = rs.getString( "simple_name" );
-                result = new View_TemplateGroup( templateId, simpleName );
+                View_TemplateGroup result = new View_TemplateGroup( templateId, simpleName );
                 return result;
             }
         } );
