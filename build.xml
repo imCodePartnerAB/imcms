@@ -80,16 +80,29 @@
     <target name="dist" depends="bindist,srcdist" description="Build all binary and source distributions." />
 
 
-    <target name="bindist" depends="bindist-war,bindist-jar" description="Build all binary distributions.">
+    <target name="bindist" depends="bindist-zip,bindist-tgz,bindist-jar" description="Build all binary distributions."/>
+
+
+    <target name="bindist-zip" depends="bindist-war">
+        <fixcrlf srcdir="${basedir}" destdir="${tmp}"
+            includes="*.TXT" excludes="${srcincludes}"
+            eol="dos"/>
         <zip destfile="${bindist-zip}">
             <fileset file="${bindist-war}"/>
             <fileset dir="${dist}" includes="imcms*.sql"/>
-            <fileset dir="${basedir}" includes="*.TXT" excludes="${srcincludes}"/>
+            <fileset dir="${tmp}" includes="*.TXT"/>
         </zip>
+    </target>
+
+
+    <target name="bindist-tgz" depends="bindist-war">
+        <fixcrlf srcdir="${basedir}" destdir="${tmp}"
+            includes="*.TXT" excludes="${srcincludes}"
+            eol="unix"/>
         <tar destfile="${bindist-tgz}" compression="gzip">
             <tarfileset file="${bindist-war}"/>
             <tarfileset dir="${dist}" includes="imcms*.sql"/>
-            <tarfileset dir="${basedir}" includes="*.TXT" excludes="${srcincludes}"/>
+            <tarfileset dir="${tmp}" includes="*.TXT"/>
         </tar>
     </target>
 
