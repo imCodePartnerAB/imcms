@@ -99,6 +99,8 @@ public class Translate extends Task {
                         if (null != bundleValue) {
                             line = line.substring(0,startTokenIndex)+bundleValue+line.substring(endTokenIndex+endToken.length()) ;
                             startTokenIndex += bundleValue.length() ;
+                        } else {
+                            startTokenIndex += startToken.length() ;
                         }
                     } else {
                         break ;
