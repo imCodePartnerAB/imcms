@@ -104,33 +104,35 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
             date2 = ( req.getParameter( "date2" ) ).trim();
             text = ( req.getParameter( "text" ) ).trim();
 
-            boolean ok = true;
+            boolean dateIsOk = true;
             if ( !checkDate( date1 ) ) {
                 date1 = errMsgDate;
-                ok = false;
+                dateIsOk = false;
             }
 
             if ( !checkDate( date2 ) ) {
                 date2 = errMsgDate;
-                ok = false;
+                dateIsOk = false;
             }
 
-            try {
-                DateRange range = new DateRange( dateForm.parse( date1 ), new Date( dateForm.parse( date2 ).getTime() + ONE_DAY ) );
-                if ( !checkDates( req, range ) ) {
-                    date1 = errMsgDate;
-                    date2 = errMsgDate;
-                    ok = false;
+            if ( dateIsOk ){
+                try {
+                    DateRange range = new DateRange( dateForm.parse( date1 ), new Date( dateForm.parse( date2 ).getTime() + ONE_DAY ) );
+                    if ( !checkDates( req, range ) ) {
+                        date1 = errMsgDate;
+                        date2 = errMsgDate;
+                        dateIsOk = false;
+                    }
+                } catch ( ParseException ignored ) {
                 }
-            } catch ( ParseException ignored ) {
             }
-
+            boolean textIsOk = true;
             if ( text.length() < 1 ) {
                 text = errMsgTxt;
-                ok = false;
+                textIsOk = false;
             }
 
-            if ( ok ) {
+            if ( textIsOk && dateIsOk ) {
                 addLineToList( req, lines );
                 date1 = "";
                 date2 = "";
