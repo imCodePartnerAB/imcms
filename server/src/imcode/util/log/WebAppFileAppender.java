@@ -7,7 +7,7 @@ import imcode.server.WebAppGlobalConstants;
 
 public class WebAppFileAppender  extends FileAppender
 {	
-	private static String absoluteWebAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
+	private static File absoluteWebAppPath = new File(WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath());
 
 	public WebAppFileAppender() 
 	{
@@ -16,6 +16,6 @@ public class WebAppFileAppender  extends FileAppender
 	
 	public void setFile(String fileName, boolean append ) throws IOException 
 	{
-		super.setFile( absoluteWebAppPath + fileName, append );
+		super.setFile( (new File(absoluteWebAppPath, fileName)).toString(), append );
 	}
 }
