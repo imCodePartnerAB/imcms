@@ -59,8 +59,7 @@ public class ChatViewer extends ChatBase {
 		{
 			return;
 		}
-
-
+		
 		// Lets get the url to the servlets directory
 		String servletHome = MetaInfo.getServletPath(req) ;
 
@@ -68,7 +67,14 @@ public class ChatViewer extends ChatBase {
 		MetaInfo metaInfo = new MetaInfo() ;
 		String paramStr = metaInfo.passMeta(params) ;
 		log("params: "+paramStr);
-
+		
+		
+		//lets clean up some in the session just incase
+		session.removeValue("checkBoxTextarr");
+		session.removeValue("chatParams");
+		session.removeValue("chatChecked");
+		
+		
 	
 		//ok lets get the chat from the session
 		Chat chat = (Chat) session.getValue("theChat");
@@ -90,12 +96,6 @@ public class ChatViewer extends ChatBase {
 
 		//ok lets see which room we shall have
 		String rumIdStr = (String)session.getValue("currentRoomId");
-		if (rumIdStr == null)
-		{
-			log("currentRoomId was null so return");
-			return;
-		}
-
 		int grupId = -1;
 		try
 		{
@@ -106,6 +106,8 @@ public class ChatViewer extends ChatBase {
 			return;
 		}
 
+		String theDateTime = (super.getDateToday() +" : "+ super.getTimeNow());
+		String senderName = myMember.getName();
 		if (session.getValue("theRoom") == null)
 		{
 			//ok now lets get the groups
@@ -117,11 +119,63 @@ public class ChatViewer extends ChatBase {
 				if (tempGr.getGroupId() == grupId)
 				{
 					tempGr.addNewGroupMember(myMember);
+					//lets send a enter msg
+					ChatMsg newEnterMsg = new ChatMsg(ENTER_MSG, "", CHAT_ENTER_LEAVE_INT,
+									 CHAT_ENTER_LEAVE_INT,"", senderName, -1, theDateTime);
+					myMember.addNewMsg(newEnterMsg);
 					session.putValue("theRoom", tempGr);
 					found = true;
 				}
 			}
+		}else
+		{
+			log("ok vi har en i sessionen, kolla om det är rätt");
+			log("gruppid = "+grupId);
+			ChatGroup temp = (ChatGroup)session.getValue("theRoom");
+			if (temp.getGroupId() != grupId)
+			{
+				log("det var inte rätt grupp id");
+				Enumeration enum = chat.getAllChatGroups();
+				boolean found = false;
+				while (enum.hasMoreElements() && !found)
+				{log("då loopar vi igenom alla och kollar");
+					ChatGroup tempGr = (ChatGroup) enum.nextElement();
+					if (tempGr.getGroupId() == grupId)
+					{log("ok vi har hittat rätt");
+						ChatMsg newLeaveMsg = new ChatMsg(	LEAVE_MSG, "", CHAT_ENTER_LEAVE_INT,
+									 						CHAT_ENTER_LEAVE_INT,"",
+														 	senderName, -1, theDateTime);
+						myMember.addNewMsg(newLeaveMsg);	
+						temp.removeGroupMember(myMember);	
+						tempGr.addNewGroupMember(myMember);
+						ChatMsg newEnterMsg = new ChatMsg(	ENTER_MSG, "", CHAT_ENTER_LEAVE_INT,
+									 						CHAT_ENTER_LEAVE_INT,"",
+														 	senderName, -1, theDateTime);
+						myMember.addNewMsg(newEnterMsg);
+						session.putValue("theRoom", tempGr);
+						found = true;
+					}
+				}
+			}
 		}
+		
+		//Chat chat, HttpServletRequest req, boolean bool
+		Hashtable hash = super.prepareChatBoardSettings(chat, req, false);
+		session.putValue("ChatBoardHashTable", hash );
+		
+		//ok lets see if we have an bindingListener
+		if (session.getValue("chatBinding") == null)
+		{
+	    	session.putValue("chatBinding",new ChatBindingListener());
+		}
+		log("req.getRequestedSessionId() = "+req.getRequestedSessionId());
+		
+	Enumeration enn = ChatBindingListener.getKeys();
+	while (enn.hasMoreElements())
+	{
+		String sesId = (String) enn.nextElement();
+		log("sesId = " + sesId.toString());
+	}
 		
 		// Lets build the Responsepage
 		VariableManager vm = new VariableManager() ;
@@ -134,11 +188,12 @@ public class ChatViewer extends ChatBase {
 		
 	}//end doGet
 
-
+	
+	
 	/**
 	Detects paths and filenames.
 	*/
-
+		
 	public void init(ServletConfig config) throws ServletException
 	{
 

@@ -39,6 +39,11 @@ public class ChatBase extends HttpServlet {
 
 	private final static String ADMIN_BUTTON_TEMPLATE = "Chat_Admin_Button.htm";
 	private final static String UNADMIN_BUTTON_TEMPLATE = "Chat_Unadmin_Button.htm";
+	
+	public final static int CHAT_ALLA_INT = 0;
+	public final static int CHAT_ENTER_LEAVE_INT = -32;
+	public final static String LEAVE_MSG = "lämnar rummet";
+	public final static String ENTER_MSG = "stiger in";
 
 
 	/**
@@ -61,7 +66,7 @@ public class ChatBase extends HttpServlet {
 
 		String chatName = (req.getParameter("chatName")==null) ? "" : (req.getParameter("chatName"));
 		String permission = (req.getParameter("permission")==null) ? "3" : (req.getParameter("permission"));
-		String updateTime = ( req.getParameter("updateTime")==null ) ? "30" : (req.getParameter("updateTime"));		
+		String updateTime = ( req.getParameter("updateTime")==null ) ? "20" : (req.getParameter("updateTime"));		
 		String reload = (req.getParameter("reload")==null ) ? "2" :(req.getParameter("reload"));
 		String inOut = (req.getParameter("inOut")==null ) ? "2" :(req.getParameter("inOut"));
 		String privat = (req.getParameter("private")==null ) ? "2" :(req.getParameter("private"));
@@ -1272,18 +1277,20 @@ public class ChatBase extends HttpServlet {
 		return chatE;
 	}
 	
-	//**************** does the setup for chatboard  *****************************
+	//**************** does the setup for chatboard  **********************
 	//lets get the settings for the chat and convert them 
 	//and add them into HashTable and add it into the session
 	public Hashtable prepareChatBoardSettings(Chat chat, HttpServletRequest req, boolean bool)
 	{
 		//now we sets up the settings for this chat
 		Hashtable hash = new Hashtable();
-		Properties settings = chat.getChatParameters();		
+		Properties settings = chat.getChatParameters();	
+		log("settings "+settings);
 		//lets convert them
 		boolean onOff = false;
 
 		//sets up show datTime or not
+		log("settings.getProperty(dateTime) = "+settings.getProperty("dateTime"));
 		if(settings.getProperty("dateTime").equals("2"))
 		{
 			onOff = false;
@@ -1301,13 +1308,14 @@ public class ChatBase extends HttpServlet {
 				onOff = true;
 			}		
 		}
-		log("1dateTime = "+onOff);
+		//log("1dateTime = "+onOff);
 		hash.put("dateTimeBoolean", new Boolean(onOff));
 
 
 		// onOff = req.getParameter("") == null ? false : true;
 
 		//sets up show public msg or not
+		log("settings.getProperty(publik) = "+settings.getProperty("publik"));
 		if(settings.getProperty("publik").equals("2"))
 		{
 			onOff = false;
@@ -1327,11 +1335,12 @@ public class ChatBase extends HttpServlet {
 				onOff = true;
 			}		
 		}
-		log("1publik = "+onOff);
+		//log("1publik = "+onOff);
 		hash.put("publicMsgBoolean", new Boolean(onOff));
 
 
 		//sets up show private msg or not
+		log("settings.getProperty(privat) = "+settings.getProperty("privat"));
 		if(settings.getProperty("privat").equals("2"))
 		{
 			onOff = false;
@@ -1351,12 +1360,13 @@ public class ChatBase extends HttpServlet {
 				onOff = true;
 			}		
 		}
-		log("1privat = "+onOff);
+		//log("1privat = "+onOff);
 		hash.put("privateMsgBoolean", new Boolean(onOff));
 
 
 
 		//sets up show entrense and exits, or not
+		log("settings.getProperty(inOut) = "+settings.getProperty("inOut"));
 		if(settings.getProperty("inOut").equals("2"))
 		{
 			onOff = false;
@@ -1376,12 +1386,13 @@ public class ChatBase extends HttpServlet {
 				onOff = true;
 			}		
 		}
-		log("1inOut = "+onOff);
+		//log("1inOut = "+onOff);
 		hash.put("inOutBoolean", new Boolean(onOff));
 
 
 
 		//sets up autoreload on off
+		log("settings.getProperty(reload) = "+settings.getProperty("reload"));
 		String timeStr = "30";
 		if(settings.getProperty("reload").equals("2"))
 		{
@@ -1414,6 +1425,7 @@ public class ChatBase extends HttpServlet {
 			log(nfe.getMessage());
 			hash.put("reloadInteger", new Integer("30"));
 		}
+		log("reloadBoolean = "+onOff);
 		hash.put("reloadBoolean", new Boolean(onOff));
 
 
@@ -1449,13 +1461,32 @@ public class ChatBase extends HttpServlet {
 		{
 			size = 3;
 		}
-		log("1size = "+size);
+		//log("1size = "+size);
 		hash.put("fontSizeInteger", new Integer(size));
 
 		return 	hash;	
 
 	}//end prepareSettings
-
+	
+	
+	//*****************cleares the session from all chat params ***************
+	//the only ones left is
+	//logon_isDone and browser_id
+	
+	public void cleanUpSessionParams(HttpSession session)
+	{
+		String[] namnen = session.getValueNames();
+		for(int i=0; i< namnen.length; i++)
+		{
+			if(namnen[i].equals("logon.isDone") || namnen[i].equals("browser_id"))
+			{
+				//do nothing
+			}else
+			{
+				session.removeValue(namnen[i]);
+			}
+		}
+	}
 
 
 } // End class
