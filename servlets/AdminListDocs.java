@@ -87,9 +87,11 @@ public class AdminListDocs extends Administrator {
 		
 			return ;
 		}
+
+		String languagePrefix = getLanguagePrefix( imcserver, user.getInt( "lang_id" ) );
 			
 		// Lets get all doctypes from DB
-		String sqlQ = "ListDocsGetInternalDocTypes";
+		String sqlQ = "ListDocsGetInternalDocTypes '"+languagePrefix+"'" ;
 		String[][] queryResult = IMCServiceRMI.sqlQueryMulti( imcserver, sqlQ );
 
 		// Lets generate the html page
@@ -254,7 +256,7 @@ public class AdminListDocs extends Administrator {
 				StringBuffer listOfDocs = new StringBuffer();
 				for ( int i = 0 ; i < docTypesToShow.length ; i++ ) {
 					String sqlQ = "ListDocsByDate " + listMod + ", " + docTypesToShow[i] + 
-					               ", '" + startDate + "', '" + endDate + "'";
+					               ", '" + startDate + "', '" + endDate + "','"+languagePrefix+"'";
 					String[][] queryResult = IMCServiceRMI.sqlQueryMulti( imcserver, sqlQ );
 					
 					for ( int j = 0 ; j < queryResult.length ; j++ ) {
