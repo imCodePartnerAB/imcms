@@ -4,8 +4,17 @@
 <meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>
 </head>
 <body bgcolor='#FFFFFF'>
+<form name='folder' action='/imcms/servlet/ImageBrowse'>
+<INPUT TYPE=HIDDEN NAME="meta_id" VALUE="#meta_id#">
+<INPUT TYPE=HIDDEN NAME="img_no" VALUE="#img_no#">
+<select name='dirlist' size='1'>
+	#folders#
+</select>
+<input type="submit" value="Byt katalog" name="change">
+<br>
+</form>
 <form name='form1' method='POST' action='/imcms/servlet/ChangeImage'>
-<select name='imglist' size='29'>
+<select name='imglist' size='25'>
 #options#
 </select>
   #img_preview# 
@@ -13,13 +22,23 @@
 <INPUT TYPE=HIDDEN NAME="meta_id" VALUE="#meta_id#">
 <INPUT TYPE=HIDDEN NAME="img_no" VALUE="#img_no#">
 <INPUT TYPE=HIDDEN NAME="imglist" VALUE="#imglist#">
-
+<INPUT TYPE=HIDDEN NAME="img_no" VALUE="#img_curr_max#">
+<INPUT TYPE=HIDDEN NAME="dirlist_preset" VALUE="#dirlist_preset#">
 <p>
 	Visar bild #img_startNr# till #img_stopNr# av #img_maxNr# <br>
-	
-    <input type='submit' name='OK' value='Anv&auml;nd markerad bild'>
-    <input type='submit' name='preview' value='F&ouml;rhandsgranska markerad bild' target='_blank'>
+<table width="600" border="0" cellspacing="0" cellpadding="0">
+	<tr>
+    <td><input type='submit' name='OK' value='Anv&auml;nd markerad bild'></td>
+    <td><input type='submit' name='preview' value='F&ouml;rhandsgranska markerad bild' target='_blank'></td>
 </form>
+<form name='form1' method='POST' action='/imcms/servlet/ChangeImage'>
+	<td><input type="Submit" name="avbryt" value='Avbryt'></td>
+	<INPUT TYPE=HIDDEN NAME="meta_id" VALUE="#meta_id#">
+	<INPUT TYPE=HIDDEN NAME="img_no" VALUE="#img_no#">
+</form>
+	</tr>
+</table>
+<br>
 <table width="300" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td width="150" nowrap>#previousButton#</td>
