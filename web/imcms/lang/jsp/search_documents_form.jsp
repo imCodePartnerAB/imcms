@@ -9,23 +9,20 @@
                  imcode.server.document.SectionDomainObject,
                  com.imcode.imcms.servlet.superadmin.AdminManager,
                  imcode.util.Utility,
-                 com.imcode.imcms.flow.Page"%>
+                 com.imcode.imcms.flow.Page,
+                 imcode.server.document.DocumentDomainObject,
+                 org.apache.commons.lang.ArrayUtils"%>
 <%
     SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage) Page.fromRequest(request) ;
     int documentsPerPage = searchDocumentsPage.getDocumentsPerPage() ;
-    int status[] = {};
+    int[] statusIds = searchDocumentsPage.getStatusIds() ;
     String IMG_PATH  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
     String SORTORDER_OPTION_SELECTED;
 %>
 
 <%!
     boolean isSelected(int a, int[] values) {
-
-        boolean found = false;
-        for ( int i = 0; i < values.length; i++){
-             found = a == values[i] ? true : false;
-        }
-        return found;
+        return ArrayUtils.contains( values, a ) ;
     }
 %>
 
@@ -36,7 +33,7 @@
         </tr>
         <tr>
             <td height="24"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/2 ?></td>
-            <td colspan="3"><input type="text" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__QUERY_STRING %>" value="<%= StringEscapeUtils.escapeHtml("") %>" size="20" maxlength="255" style="width:300"></td>
+            <td colspan="3"><input type="text" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__QUERY_STRING %>" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString( searchDocumentsPage.getQueryString() ) ) %>" size="20" maxlength="255" style="width:300"></td>
         </tr>
         <tr>
             <td colspan="4"><img src="<%= IMG_PATH %>/1x1_cccccc.gif" width="100%" height="1" vspace="8"></td>
@@ -45,10 +42,11 @@
         <td height="20"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/3 ?></td>
 
         <td colspan="3">
-        <select name="permission">
-            <option value="CRE"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option1 ?>
-            <option value="PUB"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option2 ?>
-            <option value="MOD"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option3 ?>
+        <select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__PERMISSION %>">
+            <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__NONE %>"></option>
+            <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER %>"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option1 ?></option>
+            <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER %>"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option2 ?></option>
+            <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_MODIFIABLE_BY_USER %>"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option3 ?></option>
         </select></td>
     </tr>
     <tr>
@@ -57,11 +55,11 @@
         <td colspan="3">
         <table border="0" cellspacing="0" cellpadding="2">
         <tr>
-            <td><input type="checkbox" name="<%= AdminManager.REQUEST_PARAMETER__STATUS %>" value="0" <%= isSelected(0, status) ? "checked" : "" %> ></td>
+            <td><input type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.STATUS_NEW %>" <%= isSelected(DocumentDomainObject.STATUS_NEW, statusIds) ? "checked" : "" %> ></td>
             <td><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/4 ?> &nbsp;</td>
-            <td><input type="checkbox" name="<%= AdminManager.REQUEST_PARAMETER__STATUS %>" value="2" <%= isSelected(2, status) ? "checked" : "" %> ></td>
+            <td><input type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.STATUS_PUBLICATION_APPROVED %>" <%= isSelected(DocumentDomainObject.STATUS_PUBLICATION_APPROVED, statusIds) ? "checked" : "" %> ></td>
             <td><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/5 ?> &nbsp;</td>
-            <td><input type="checkbox" name="<%= AdminManager.REQUEST_PARAMETER__STATUS %>" value="1" <%= isSelected(1, status) ? "checked" : "" %> ></td>
+            <td><input type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED %>" <%= isSelected(DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED, statusIds) ? "checked" : "" %> ></td>
             <td><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/6 ?></td>
         </tr>
         </table></td>

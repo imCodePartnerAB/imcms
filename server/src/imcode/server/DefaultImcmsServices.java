@@ -314,16 +314,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return documentMapper.getText( meta_id, no );
     }
 
-    private void saveChildSortOrder( String columnName, List childs, List sort_no, int meta_id, int menuIndex ) {
-        for ( int i = 0; i < childs.size(); i++ ) {
-            String columnValue = sort_no.get( i ).toString();
-            String to_meta_id = childs.get( i ).toString();
-            String sql = "UPDATE childs SET " + columnName
-                         + " = ? WHERE to_meta_id = ? AND menu_id = (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
-            sqlUpdateQuery( sql, new String[]{columnValue, to_meta_id, "" + meta_id, "" + menuIndex} );
-        }
-    }
-
     /**
      * Check if url doc.
      */

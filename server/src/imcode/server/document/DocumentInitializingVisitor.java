@@ -74,7 +74,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     public void visitTextDocument( TextDocumentDomainObject document ) {
         String[] sqlResult = service.sqlQuery( "SELECT template_id, group_id, default_template_1, default_template_2, default_template FROM text_docs WHERE meta_id = ?",
                                                new String[]{String.valueOf( document.getId() )} );
-        if ( sqlResult.length >= 4 ) {
+        if ( sqlResult.length > 0 ) {
             int template_id = Integer.parseInt( sqlResult[0] );
             int group_id = Integer.parseInt( sqlResult[1] );
             int defaultTemplateIdForRestrictedPermissionSetOne = Integer.parseInt( sqlResult[2] );

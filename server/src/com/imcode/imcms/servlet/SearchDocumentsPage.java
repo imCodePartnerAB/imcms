@@ -1,5 +1,7 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.OkCancelPage;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
@@ -28,9 +30,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.imcode.imcms.flow.OkCancelPage;
-import com.imcode.imcms.flow.DispatchCommand;
-
 public class SearchDocumentsPage extends OkCancelPage {
 
     public static final String REQUEST_PARAMETER__SECTION_ID = "section_id";
@@ -42,11 +41,15 @@ public class SearchDocumentsPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID = "toedit";
     public static final String REQUEST_PARAMETER__SEARCH_BUTTON = "search";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
+    public static final String REQUEST_PARAMETER__PERMISSION = "permission";
 
     private static final int DEFAULT_DOCUMENTS_PER_PAGE = 10;
     private final static Logger log = Logger.getLogger( SearchDocumentsPage.class.getName() );
 
     private SectionDomainObject section;
+    private int[] statusIds;
+    private int userDocumentsRestriction;
+
     private DocumentDomainObject[] documentsFound;
     private int firstDocumentIndex;
     private int documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE;
@@ -61,6 +64,12 @@ public class SearchDocumentsPage extends OkCancelPage {
     DocumentFinder documentFinder ;
 
     private static final String REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER = "finder";
+    public static final String REQUEST_PARAMETER__STATUS = "status";
+
+    public static final int USER_DOCUMENTS_RESTRICTION__NONE = 0 ;
+    public static final int USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER = 1;
+    public static final int USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER = 2;
+    public static final int USER_DOCUMENTS_RESTRICTION__DOCUMENTS_MODIFIABLE_BY_USER = 3;
 
     public SearchDocumentsPage(DispatchCommand okDispatchCommand, DispatchCommand cancelDispatchCommand) {
         super(okDispatchCommand, cancelDispatchCommand);
@@ -93,11 +102,16 @@ public class SearchDocumentsPage extends OkCancelPage {
         } catch ( NumberFormatException nfe ) {
         }
 
+        statusIds = Utility.getParameterInts( request, REQUEST_PARAMETER__STATUS ) ;
+
+        userDocumentsRestriction = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__PERMISSION ) ) ;
+
         setDocumentsPerPage( NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__DOCUMENTS_PER_PAGE ), DEFAULT_DOCUMENTS_PER_PAGE ) );
         firstDocumentIndex = Math.max( 0, NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX ) ) );
         queryString = StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__QUERY_STRING ) );
         searchButtonPressed = null != request.getParameter( REQUEST_PARAMETER__SEARCH_BUTTON );
-        query = createQuery( documentFinder );
+
+        query = createQuery( documentFinder, Utility.getLoggedOnUser( request ) );
     }
 
     protected void dispatchOther(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -145,7 +159,7 @@ public class SearchDocumentsPage extends OkCancelPage {
         return parameters;
     }
 
-    private Query createQuery( DocumentFinder documentFinder ) {
+    private Query createQuery( DocumentFinder documentFinder, UserDomainObject user ) {
 
         BooleanQuery query = new BooleanQuery();
         if ( StringUtils.isNotBlank( queryString ) ) {
@@ -160,6 +174,26 @@ public class SearchDocumentsPage extends OkCancelPage {
         if ( null != section ) {
             Query sectionQuery = new TermQuery( new Term( DocumentIndex.FIELD__SECTION, section.getName().toLowerCase() ) );
             query.add( sectionQuery, true, false );
+        }
+
+        BooleanQuery statusQueries = new BooleanQuery();
+        for ( int i = 0; i < statusIds.length; i++ ) {
+            int statusId = statusIds[i];
+            Query statusQuery = new TermQuery( new Term( DocumentIndex.FIELD__STATUS, ""+statusId) ) ;
+            statusQueries.add( statusQuery, false, false ) ;
+        }
+        if (statusIds.length > 0) {
+            query.add( statusQueries, true, false ) ;
+        }
+
+        if (USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER == userDocumentsRestriction) {
+            Query createdByUserQuery = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, ""+user.getId())) ;
+            query.add(createdByUserQuery, true, false) ;
+        }
+
+        if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER == userDocumentsRestriction ) {
+            Query publishedByUserQuery = new TermQuery( new Term( DocumentIndex.FIELD__PUBLISHER_ID, "" + user.getId() ) );
+            query.add( publishedByUserQuery, true, false );
         }
 
         if ( 0 == query.getClauses().length ) {
@@ -238,6 +272,10 @@ public class SearchDocumentsPage extends OkCancelPage {
     public void setDocumentFinder( DocumentFinder documentFinder ) {
         documentFinderSessionAttributeName = HttpSessionUtils.createUniqueNameForObject(documentFinder) ;
         this.documentFinder = documentFinder;
+    }
+
+    public int[] getStatusIds() {
+        return statusIds;
     }
 
     private static class ToStringArrayTransformer implements Transformer {

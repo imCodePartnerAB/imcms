@@ -25,7 +25,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-
 public class AdminManager extends Administrator {
 
     private final static Logger log = Logger.getLogger( AdminManager.class.getName() );
@@ -34,7 +33,7 @@ public class AdminManager extends Administrator {
     private final static String JSP__ADMIN_MANAGER_REMINDERS = "admin_manager_reminders.jsp";
     private final static String JSP__ADMIN_MANAGER_SUMMARY = "admin_manager_summary.jsp";
     private final static String JSP__ADMIN_MANAGER_SEARCH = "admin_manager_search.jsp";
-    private final static String HTML_ADMINTASK = "AdminManager_adminTask_element.htm" ;
+    private final static String HTML_ADMINTASK = "AdminManager_adminTask_element.htm";
     private final static String HTML_USERADMINTASK = "AdminManager_useradminTask_element.htm";
     public final static String REQUEST_PARAMETER__SHOW = "show";
     private final static String PARAMETER_VALUE__SHOW_NEW = "new";
@@ -69,7 +68,6 @@ public class AdminManager extends Administrator {
     public static final String REQUEST_PARAMETER__SEARCH_STRING = "search_string";
     public static final String REQUEST_PARAMETER__RESET_BTN = "reset_btn";
     public static final String REQUEST_PARAMETER__PERMISSION = "permission";
-    public static final String REQUEST_PARAMETER__STATUS = "status";
     public static final String REQUEST_PARAMETER__DATE_TYPE = "date_type";
     public static final String REQUEST_PARAMETER__DATE_START = "date_start";
     public static final String REQUEST_PARAMETER__DATE_END = "date_end";
@@ -77,162 +75,158 @@ public class AdminManager extends Administrator {
     public static final String REQUEST_PARAMETER__FROMPAGE = "frompage";
     public static final String PAGE_SEARCH = "search";
 
+    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+        this.doPost( req, res );
+    }
 
-    /**
-     * doGet
-     */
-
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws ServletException, IOException {
-
-        this.doPost(req, res);
-        return;
-
-    } // End doGet
-
-
-    /**
-     * doPost
-     */
-    public void doPost(HttpServletRequest req, HttpServletResponse res)
+    public void doPost( HttpServletRequest req, HttpServletResponse res )
             throws ServletException, IOException {
 
         ImcmsServices service = Imcms.getServices();
-        UserDomainObject loggedOnUser = Utility.getLoggedOnUser(req);
+        UserDomainObject loggedOnUser = Utility.getLoggedOnUser( req );
 
-        String whichButton = req.getParameter("AdminTask");
+        String whichButton = req.getParameter( "AdminTask" );
         if ( null != whichButton ) {
 
-            /* handle Admin tasks only for Users with admin rights*/
-            if (!loggedOnUser.isSuperAdmin() && !loggedOnUser.isUserAdmin()) {
+            if ( !loggedOnUser.isSuperAdmin() && !loggedOnUser.isUserAdmin() ) {
                 String header = "Error in AdminManager.";
                 Properties langproperties = service.getLanguageProperties( loggedOnUser );
-                String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-                log.debug(header + "- user is not an administrator");
+                String msg = langproperties.getProperty( "error/servlet/global/no_administrator" ) + "<br>";
+                log.debug( header + "- user is not an administrator" );
 
-                new AdminError(req, res, header, msg);
+                new AdminError( req, res, header, msg );
                 return;
             }
 
-            String url = getAdminTaskUrl(whichButton);
-            if (StringUtils.isNotBlank( url )) {
+            String url = getAdminTaskUrl( whichButton );
+            if ( StringUtils.isNotBlank( url ) ) {
                 res.sendRedirect( url );
                 return;
             }
+        } else if ( PAGE_SEARCH.equals( req.getParameter( REQUEST_PARAMETER__FROMPAGE ) ) ) {
+            req.getRequestDispatcher( "/servlet/SearchDocuments" ).forward( req, res );
+            return;
         }
 
-        else if (PAGE_SEARCH.equals(req.getParameter(REQUEST_PARAMETER__FROMPAGE))) {
-            req.getRequestDispatcher("/servlet/SearchDocuments").forward(req, res);
-            return ;
-        }
-
-        String tabToShow = null != req.getParameter(REQUEST_PARAMETER__SHOW) ? req.getParameter(REQUEST_PARAMETER__SHOW): PARAMETER_VALUE__SHOW_NEW;
+        String tabToShow = null != req.getParameter( REQUEST_PARAMETER__SHOW )
+                           ? req.getParameter( REQUEST_PARAMETER__SHOW ) : PARAMETER_VALUE__SHOW_NEW;
         String fileToForwardTo = JSP__ADMIN_MANAGER_NEW;
 
         // parse and return the html_admin_part
         Vector vec = new Vector();
         String html_admin_part = "";
 
-        if (loggedOnUser.isSuperAdmin()) {
+        if ( loggedOnUser.isSuperAdmin() ) {
             html_admin_part = service.getAdminTemplate( HTML_ADMINTASK, loggedOnUser, vec ); // if superadmin
-        } else if (loggedOnUser.isUserAdmin() ) { //if user is useradmin
+        } else if ( loggedOnUser.isUserAdmin() ) { //if user is useradmin
             html_admin_part = service.getAdminTemplate( HTML_USERADMINTASK, loggedOnUser, vec ); //if useradmin
         }
-
 
         List documents_new = new LinkedList();        // STATUS = NEW
         List documents_changed = new LinkedList();    //MODIFIED_DATETIME > CREATED_DATETIME
         List documents_archived_less_then_one_week = new LinkedList();    //ARCHIVED_DATETIME < 7 days
-        List documents_publication_end_less_then_one_week = new LinkedList() ;  //PUBLICATION_END_DATETIME < 7 days
+        List documents_publication_end_less_then_one_week = new LinkedList();  //PUBLICATION_END_DATETIME < 7 days
         List documents_not_changed_in_six_month = new LinkedList();
 
         DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
         BooleanQuery booleanQuery = new BooleanQuery();
-        Query restrictingQuery = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, loggedOnUser.getId()+"" ) );
+        Query restrictingQuery = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, loggedOnUser.getId() + "" ) );
         booleanQuery.add( restrictingQuery, true, false );
-
 
         HashMap current_sortorderMap = new HashMap();
         HashMap expand_listMap = new HashMap();
         HashMap subreports = new HashMap();
-        String sortorder ;
+        String sortorder;
         String new_sortorder = "";
         String list_toChange_sortorder = "";
-        DocumentDomainObject[] documentsFound = index.search( booleanQuery, loggedOnUser);
+        DocumentDomainObject[] documentsFound = index.search( booleanQuery, loggedOnUser );
 
-        if ( tabToShow.equals(PARAMETER_VALUE__SHOW_NEW) ){
+        if ( tabToShow.equals( PARAMETER_VALUE__SHOW_NEW ) ) {
 
-            fileToForwardTo = JSP__ADMIN_MANAGER_NEW ;
-            addNewNotApprovedDocumentsToList(booleanQuery, documents_new, index, loggedOnUser);
+            fileToForwardTo = JSP__ADMIN_MANAGER_NEW;
+            addNewNotApprovedDocumentsToList( booleanQuery, documents_new, index, loggedOnUser );
 
-            if ( null != req.getParameter(REQUEST_PARAMETER__NEW_SORTORDER) ) {
-                new_sortorder = req.getParameter(REQUEST_PARAMETER__NEW_SORTORDER);
+            if ( null != req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER ) ) {
+                new_sortorder = req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER );
                 list_toChange_sortorder = LIST_TYPE__list_new_not_approved;
             }
-            sortorder = getSortorderForListType(list_toChange_sortorder, new_sortorder, req.getParameter(REQUEST_PARAMETER__list_new_not_approved_current_sortorder), LIST_TYPE__list_new_not_approved, "MOD");
-            current_sortorderMap.put(LIST_TYPE__list_new_not_approved, sortorder );
-            Collections.sort( documents_new, getChainableReversibleNullComparator(sortorder) ) ;
+            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_new_not_approved_current_sortorder ), LIST_TYPE__list_new_not_approved, "MOD" );
+            current_sortorderMap.put( LIST_TYPE__list_new_not_approved, sortorder );
+            Collections.sort( documents_new, getChainableReversibleNullComparator( sortorder ) );
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_new_not_approved, REQUEST_PARAMETER__list_new_not_approved_current_expand );
 
-           // documents_new_not_approved = new AdminManagerSubreport(LIST_TYPE__list_new_not_approved, "", "", DEFAULT_DOCUMENTS_PER_LIST, documents_new  );
+            // documents_new_not_approved = new AdminManagerSubreport(LIST_TYPE__list_new_not_approved, "", "", DEFAULT_DOCUMENTS_PER_LIST, documents_new  );
 
-
-        }else if ( tabToShow.equals(PARAMETER_VALUE__SHOW_REMINDERS) ) {
+        } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_REMINDERS ) ) {
 
             fileToForwardTo = JSP__ADMIN_MANAGER_REMINDERS;
 
-            if ( null != req.getParameter(REQUEST_PARAMETER__NEW_SORTORDER) ) {
-                new_sortorder = req.getParameter(REQUEST_PARAMETER__NEW_SORTORDER);
-                list_toChange_sortorder = req.getParameter(REQUEST_PARAMETER__LIST_TYPE);
+            if ( null != req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER ) ) {
+                new_sortorder = req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER );
+                list_toChange_sortorder = req.getParameter( REQUEST_PARAMETER__LIST_TYPE );
             }
-            sortorder = getSortorderForListType(list_toChange_sortorder, new_sortorder, req.getParameter(REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_sortorder), LIST_TYPE__list_documents_archived_less_then_one_week, "ARCR");
-            current_sortorderMap.put(LIST_TYPE__list_documents_archived_less_then_one_week, sortorder);
+            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_sortorder ), LIST_TYPE__list_documents_archived_less_then_one_week, "ARCR" );
+            current_sortorderMap.put( LIST_TYPE__list_documents_archived_less_then_one_week, sortorder );
 
-            sortorder = getSortorderForListType(list_toChange_sortorder, new_sortorder, req.getParameter(REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_sortorder), LIST_TYPE__list_documents_publication_end_less_then_one_week, "PUBER");
-            current_sortorderMap.put(LIST_TYPE__list_documents_publication_end_less_then_one_week, sortorder);
+            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_sortorder ), LIST_TYPE__list_documents_publication_end_less_then_one_week, "PUBER" );
+            current_sortorderMap.put( LIST_TYPE__list_documents_publication_end_less_then_one_week, sortorder );
 
-            sortorder = getSortorderForListType(list_toChange_sortorder, new_sortorder, req.getParameter(REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder), LIST_TYPE__list_documents_not_changed_in_six_month, "MOD");
-            current_sortorderMap.put(LIST_TYPE__list_documents_not_changed_in_six_month, sortorder);
+            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder ), LIST_TYPE__list_documents_not_changed_in_six_month, "MOD" );
+            current_sortorderMap.put( LIST_TYPE__list_documents_not_changed_in_six_month, sortorder );
 
-            addFoundDocumentsToCorrespondingList(documentsFound, documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month, null, current_sortorderMap);
+            addFoundDocumentsToCorrespondingList( documentsFound, documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month, null, current_sortorderMap );
 
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_archived_less_then_one_week, REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_expand );
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_publication_end_less_then_one_week, REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_sortorder );
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_not_changed_in_six_month, REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder );
 
-
-        }else if ( tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY) ) {
+        } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_SUMMARY ) ) {
 
             fileToForwardTo = JSP__ADMIN_MANAGER_SUMMARY;
-            addNewNotApprovedDocumentsToList(booleanQuery, documents_new, index, loggedOnUser);
+            addNewNotApprovedDocumentsToList( booleanQuery, documents_new, index, loggedOnUser );
 
-            if ( null != req.getParameter(REQUEST_PARAMETER__NEW_SORTORDER) ) {
-                new_sortorder = req.getParameter(REQUEST_PARAMETER__NEW_SORTORDER);
-                list_toChange_sortorder = req.getParameter(REQUEST_PARAMETER__LIST_TYPE);
+            if ( null != req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER ) ) {
+                new_sortorder = req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER );
+                list_toChange_sortorder = req.getParameter( REQUEST_PARAMETER__LIST_TYPE );
             }
-            sortorder = getSortorderForListType(list_toChange_sortorder, new_sortorder, req.getParameter(REQUEST_PARAMETER__list_new_not_approved_current_sortorder), LIST_TYPE__list_new_not_approved, "MOD");
-            current_sortorderMap.put(LIST_TYPE__list_new_not_approved, sortorder);
-            Collections.sort( documents_new, getChainableReversibleNullComparator(sortorder) ) ;
+            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_new_not_approved_current_sortorder ), LIST_TYPE__list_new_not_approved, "MOD" );
+            current_sortorderMap.put( LIST_TYPE__list_new_not_approved, sortorder );
+            Collections.sort( documents_new, getChainableReversibleNullComparator( sortorder ) );
 
-            sortorder = getSortorderForListType(list_toChange_sortorder, new_sortorder, req.getParameter(REQUEST_PARAMETER__list_documents_changed_current_sortorder), LIST_TYPE__list_documents_changed, "MOD");
-            current_sortorderMap.put(LIST_TYPE__list_documents_changed, sortorder);
+            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_changed_current_sortorder ), LIST_TYPE__list_documents_changed, "MOD" );
+            current_sortorderMap.put( LIST_TYPE__list_documents_changed, sortorder );
 
-            sortorder = getSortorderForListType(list_toChange_sortorder, new_sortorder, req.getParameter(REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_sortorder), LIST_TYPE__list_documents_publication_end_less_then_one_week, "PUBER");
-            current_sortorderMap.put(LIST_TYPE__list_documents_publication_end_less_then_one_week, sortorder);
+            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_sortorder ), LIST_TYPE__list_documents_publication_end_less_then_one_week, "PUBER" );
+            current_sortorderMap.put( LIST_TYPE__list_documents_publication_end_less_then_one_week, sortorder );
 
-            sortorder = getSortorderForListType(list_toChange_sortorder, new_sortorder, req.getParameter(REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_sortorder), LIST_TYPE__list_documents_archived_less_then_one_week, "ARCR");
-            current_sortorderMap.put(LIST_TYPE__list_documents_archived_less_then_one_week, sortorder);
+            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_sortorder ), LIST_TYPE__list_documents_archived_less_then_one_week, "ARCR" );
+            current_sortorderMap.put( LIST_TYPE__list_documents_archived_less_then_one_week, sortorder );
 
-            sortorder = getSortorderForListType(list_toChange_sortorder, new_sortorder, req.getParameter(REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder), LIST_TYPE__list_documents_not_changed_in_six_month, "MOD");
-            current_sortorderMap.put(LIST_TYPE__list_documents_not_changed_in_six_month, sortorder);
+            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder ), LIST_TYPE__list_documents_not_changed_in_six_month, "MOD" );
+            current_sortorderMap.put( LIST_TYPE__list_documents_not_changed_in_six_month, sortorder );
 
-            addFoundDocumentsToCorrespondingList(documentsFound, documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month, documents_changed, current_sortorderMap);
+            addFoundDocumentsToCorrespondingList( documentsFound, documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month, documents_changed, current_sortorderMap );
 
-            expand_listMap.put(LIST_TYPE__list_new_not_approved, null != req.getParameter(REQUEST_PARAMETER__list_new_not_approved_current_expand) ? req.getParameter(REQUEST_PARAMETER__list_new_not_approved_current_expand) : "hide");
-            expand_listMap.put(LIST_TYPE__list_documents_changed, null != req.getParameter(REQUEST_PARAMETER__list_documents_changed_current_expand) ? req.getParameter(REQUEST_PARAMETER__list_documents_changed_current_expand) : "hide");
-            expand_listMap.put(LIST_TYPE__list_documents_publication_end_less_then_one_week, null != req.getParameter(REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_expand) ? req.getParameter(REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_expand) : "hide");
-            expand_listMap.put(LIST_TYPE__list_documents_archived_less_then_one_week, null != req.getParameter(REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_expand) ? req.getParameter(REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_expand) : "hide");
-            expand_listMap.put(LIST_TYPE__list_documents_not_changed_in_six_month, null != req.getParameter(REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_expand) ? req.getParameter(REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_expand) : "hide");
+            expand_listMap.put( LIST_TYPE__list_new_not_approved, null
+                                                                  != req.getParameter( REQUEST_PARAMETER__list_new_not_approved_current_expand )
+                                                                  ? req.getParameter( REQUEST_PARAMETER__list_new_not_approved_current_expand )
+                                                                  : "hide" );
+            expand_listMap.put( LIST_TYPE__list_documents_changed, null
+                                                                   != req.getParameter( REQUEST_PARAMETER__list_documents_changed_current_expand )
+                                                                   ? req.getParameter( REQUEST_PARAMETER__list_documents_changed_current_expand )
+                                                                   : "hide" );
+            expand_listMap.put( LIST_TYPE__list_documents_publication_end_less_then_one_week, null
+                                                                                              != req.getParameter( REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_expand )
+                                                                                              ? req.getParameter( REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_expand )
+                                                                                              : "hide" );
+            expand_listMap.put( LIST_TYPE__list_documents_archived_less_then_one_week, null
+                                                                                       != req.getParameter( REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_expand )
+                                                                                       ? req.getParameter( REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_expand )
+                                                                                       : "hide" );
+            expand_listMap.put( LIST_TYPE__list_documents_not_changed_in_six_month, null
+                                                                                    != req.getParameter( REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_expand )
+                                                                                    ? req.getParameter( REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_expand )
+                                                                                    : "hide" );
 
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_new_not_approved, REQUEST_PARAMETER__list_new_not_approved_current_expand );
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_changed, REQUEST_PARAMETER__list_documents_changed_current_expand );
@@ -240,52 +234,51 @@ public class AdminManager extends Administrator {
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_archived_less_then_one_week, REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_expand );
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_not_changed_in_six_month, REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder );
 
-
-        } else if ( tabToShow.equals(PARAMETER_VALUE__SHOW_SEARCH) ) {
+        } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_SEARCH ) ) {
             fileToForwardTo = JSP__ADMIN_MANAGER_SEARCH;
         }
 
+        AdminManagerPage page = new AdminManagerPage( "".equals( html_admin_part ) ? null : html_admin_part,
+                                                      documents_new,
+                                                      documents_changed, documents_archived_less_then_one_week,
+                                                      documents_publication_end_less_then_one_week,
+                                                      documents_not_changed_in_six_month,
+                                                      fileToForwardTo,
+                                                      current_sortorderMap,
+                                                      expand_listMap,
+                                                      subreports );
 
-        AdminManagerPage page = new AdminManagerPage( "".equals(html_admin_part) ? null : html_admin_part,
-                                documents_new,
-                                documents_changed, documents_archived_less_then_one_week,
-                                documents_publication_end_less_then_one_week,
-                                documents_not_changed_in_six_month,
-                                fileToForwardTo,
-                                current_sortorderMap,
-                                expand_listMap,
-                                subreports,
-                                restrictingQuery);
-
-        page.forward(req, res, loggedOnUser);
+        page.forward( req, res, loggedOnUser );
     }
 
-    private void setNewExpandStatusForList(HttpServletRequest req, HashMap expand_listMap, String list, String request_parameter ) {
+    private void setNewExpandStatusForList( HttpServletRequest req, HashMap expand_listMap, String list,
+                                            String request_parameter ) {
 
-        String expand_status = null != req.getParameter(request_parameter) ? req.getParameter(request_parameter) : "hide";
+        String expand_status = null != req.getParameter( request_parameter )
+                               ? req.getParameter( request_parameter ) : "hide";
 
-        if ( list.equals( req.getParameter("list_type") ) ) {
-            if ( null != req.getParameter(REQUEST_PARAMETER__showAll) ) {
+        if ( list.equals( req.getParameter( "list_type" ) ) ) {
+            if ( null != req.getParameter( REQUEST_PARAMETER__showAll ) ) {
                 expand_status = "expand";
             }
-             if ( null != req.getParameter(REQUEST_PARAMETER__hideAll) ) {
+            if ( null != req.getParameter( REQUEST_PARAMETER__hideAll ) ) {
                 expand_status = "hide";
             }
         }
 
-        expand_listMap.put(list, expand_status);
+        expand_listMap.put( list, expand_status );
     }
 
-    private String getSortorderForListType(String list_toChange_sortorder, String new_sortorder, String current_sortorder, String list_type, String default_sortorder) {
+    private String getSortorderForListType( String list_toChange_sortorder, String new_sortorder,
+                                            String current_sortorder, String list_type, String default_sortorder ) {
         String sortorder;
         if ( list_toChange_sortorder.equals( list_type ) ) {
             sortorder = new_sortorder;
-        }else{
+        } else {
             sortorder = null != current_sortorder ? current_sortorder : default_sortorder;
         }
         return sortorder;
     }
-
 
     public static class AdminManagerPage {
 
@@ -300,21 +293,19 @@ public class AdminManager extends Administrator {
         HashMap current_sortorderMap;
         HashMap expand_listMap;
         HashMap subreports;
-        Query restrictingQuery;
 
-        DocumentFinder documentFinder ;
+        DocumentFinder documentFinder;
 
-        public AdminManagerPage(String html_admin_part,
-                                List documents_new,
-                                List documents_changed,
-                                List documents_archived_less_then_one_week,
-                                List documents_publication_end_less_then_one_week,
-                                List documents_not_changed_in_six_month,
-                                String filename,
-                                HashMap current_sortorderMap,
-                                HashMap expand_listMap,
-                                HashMap subreports,
-                                Query restrictingQuery ) {
+        public AdminManagerPage( String html_admin_part,
+                                 List documents_new,
+                                 List documents_changed,
+                                 List documents_archived_less_then_one_week,
+                                 List documents_publication_end_less_then_one_week,
+                                 List documents_not_changed_in_six_month,
+                                 String filename,
+                                 HashMap current_sortorderMap,
+                                 HashMap expand_listMap,
+                                 HashMap subreports ) {
             this.html_admin_part = html_admin_part;
             this.documents_new = documents_new;
             this.documents_changed = documents_changed;
@@ -325,8 +316,7 @@ public class AdminManager extends Administrator {
             this.current_sortorderMap = current_sortorderMap;
             this.expand_listMap = expand_listMap;
             this.subreports = subreports;
-            documentFinder = new DocumentFinder(new AdminManagerSearchPage(this));
-            documentFinder.setRestrictingQuery(restrictingQuery);
+            documentFinder = new DocumentFinder( new AdminManagerSearchPage( this ) );
         }
 
         public String getHtml_admin_part() {
@@ -353,9 +343,9 @@ public class AdminManager extends Administrator {
             return documents_not_changed_in_six_month;
         }
 
-        public void forward(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException, ServletException {
-            if (JSP__ADMIN_MANAGER_SEARCH.equals(fileToForwardTo)) {
-                documentFinder.forward(request, response);
+        public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
+            if ( JSP__ADMIN_MANAGER_SEARCH.equals( fileToForwardTo ) ) {
+                documentFinder.forward( request, response );
             } else {
                 request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
                 String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/admin/" + fileToForwardTo;
@@ -381,17 +371,18 @@ public class AdminManager extends Administrator {
     }
 
     public static class AdminManagerSubreport {
+
         String name;
         String sortorder;
         String expand_status;
         int hits_per_page;
         List documentsFound;
 
-        public AdminManagerSubreport (String name,
+        public AdminManagerSubreport( String name,
                                       String sortorder,
                                       String expand_status,
                                       int hits_per_page,
-                                      List documentsFound) {
+                                      List documentsFound ) {
             this.name = name;
             this.sortorder = sortorder;
             this.expand_status = expand_status;
@@ -416,120 +407,133 @@ public class AdminManager extends Administrator {
         }
     }
 
-    public String formatDatetime(Date datetime) {
-        if (null == datetime) {
-            return "" ;
+    public String formatDatetime( Date datetime ) {
+        if ( null == datetime ) {
+            return "";
         }
-        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING+"'&nbsp;'"+DateConstants.TIME_NO_SECONDS_FORMAT_STRING ) ;
-        return dateFormat.format(datetime) ;
+        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING + "'&nbsp;'"
+                                                      + DateConstants.TIME_NO_SECONDS_FORMAT_STRING );
+        return dateFormat.format( datetime );
     }
 
-    private Date getDate(int days){
+    private Date getDate( int days ) {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.DATE, days);
+        calendar.setTime( new Date() );
+        calendar.add( Calendar.DATE, days );
         return calendar.getTime();
     }
 
-    private void addFoundDocumentsToCorrespondingList(DocumentDomainObject[] documentsFound, List documents_archived_less_then_one_week, List documents_publication_end_less_then_one_week, List documents_not_changed_in_six_month, List documents_changed, HashMap sortorderMap) {
+    private void addFoundDocumentsToCorrespondingList( DocumentDomainObject[] documentsFound,
+                                                       List documents_archived_less_then_one_week,
+                                                       List documents_publication_end_less_then_one_week,
+                                                       List documents_not_changed_in_six_month, List documents_changed,
+                                                       HashMap sortorderMap ) {
         Date now = new Date();
-        Date oneWeekAhead = getDate(+7);
-        Date sixMonthAgo = getDate(-182);
+        Date oneWeekAhead = getDate( +7 );
+        Date sixMonthAgo = getDate( -182 );
 
-        for (int i = 0; i < documentsFound.length; i++){
-            if (null != documents_archived_less_then_one_week && null != documentsFound[i].getArchivedDatetime() && documentsFound[i].getArchivedDatetime().after(now) && documentsFound[i].getArchivedDatetime().before( oneWeekAhead )  ){
-                documents_archived_less_then_one_week.add(documentsFound[i]);
-                Collections.sort(documents_archived_less_then_one_week, getChainableReversibleNullComparator( sortorderMap.get(LIST_TYPE__list_documents_archived_less_then_one_week).toString() ) );
+        for ( int i = 0; i < documentsFound.length; i++ ) {
+            if ( null != documents_archived_less_then_one_week && null != documentsFound[i].getArchivedDatetime()
+                 && documentsFound[i].getArchivedDatetime().after( now )
+                 && documentsFound[i].getArchivedDatetime().before( oneWeekAhead ) ) {
+                documents_archived_less_then_one_week.add( documentsFound[i] );
+                Collections.sort( documents_archived_less_then_one_week, getChainableReversibleNullComparator( sortorderMap.get( LIST_TYPE__list_documents_archived_less_then_one_week ).toString() ) );
             }
 
-            if (null != documents_publication_end_less_then_one_week && null != documentsFound[i].getPublicationEndDatetime() && documentsFound[i].getPublicationEndDatetime().after( now ) && documentsFound[i].getPublicationEndDatetime().before( oneWeekAhead )  ){
-                documents_publication_end_less_then_one_week.add(documentsFound[i]);
-                Collections.sort(documents_publication_end_less_then_one_week, getChainableReversibleNullComparator( sortorderMap.get(LIST_TYPE__list_documents_publication_end_less_then_one_week).toString() ) );
+            if ( null != documents_publication_end_less_then_one_week
+                 && null != documentsFound[i].getPublicationEndDatetime()
+                 && documentsFound[i].getPublicationEndDatetime().after( now )
+                 && documentsFound[i].getPublicationEndDatetime().before( oneWeekAhead ) ) {
+                documents_publication_end_less_then_one_week.add( documentsFound[i] );
+                Collections.sort( documents_publication_end_less_then_one_week, getChainableReversibleNullComparator( sortorderMap.get( LIST_TYPE__list_documents_publication_end_less_then_one_week ).toString() ) );
             }
 
-            if (null != documents_not_changed_in_six_month && null != documentsFound[i].getModifiedDatetime() && documentsFound[i].getModifiedDatetime().before( sixMonthAgo ) ){
-                documents_not_changed_in_six_month.add(documentsFound[i]);
-                Collections.sort(documents_not_changed_in_six_month, getChainableReversibleNullComparator( sortorderMap.get(LIST_TYPE__list_documents_not_changed_in_six_month).toString() ) );
+            if ( null != documents_not_changed_in_six_month && null != documentsFound[i].getModifiedDatetime()
+                 && documentsFound[i].getModifiedDatetime().before( sixMonthAgo ) ) {
+                documents_not_changed_in_six_month.add( documentsFound[i] );
+                Collections.sort( documents_not_changed_in_six_month, getChainableReversibleNullComparator( sortorderMap.get( LIST_TYPE__list_documents_not_changed_in_six_month ).toString() ) );
             }
 
-            if (null != documents_changed && null != documentsFound[i].getModifiedDatetime() && documentsFound[i].getModifiedDatetime().after( documentsFound[i].getCreatedDatetime() ) ) {
-                    documents_changed.add( documentsFound[i] );
-                    Collections.sort(documents_changed, getChainableReversibleNullComparator( sortorderMap.get(LIST_TYPE__list_documents_changed).toString() ) );
-                }
+            if ( null != documents_changed && null != documentsFound[i].getModifiedDatetime()
+                 && documentsFound[i].getModifiedDatetime().after( documentsFound[i].getCreatedDatetime() ) ) {
+                documents_changed.add( documentsFound[i] );
+                Collections.sort( documents_changed, getChainableReversibleNullComparator( sortorderMap.get( LIST_TYPE__list_documents_changed ).toString() ) );
+            }
         }
     }
 
-    private void addNewNotApprovedDocumentsToList(BooleanQuery booleanQuery, List documents_new, DocumentIndex index, UserDomainObject loggedOnUser) {
+    private void addNewNotApprovedDocumentsToList( BooleanQuery booleanQuery, List documents_new, DocumentIndex index,
+                                                   UserDomainObject loggedOnUser ) {
         Query query = new TermQuery( new Term( DocumentIndex.FIELD__STATUS, DocumentDomainObject.STATUS_NEW + "" ) );
-        booleanQuery.add(query, true, false);
-        documents_new.addAll( Arrays.asList(index.search( booleanQuery, loggedOnUser ) ) );
+        booleanQuery.add( query, true, false );
+        documents_new.addAll( Arrays.asList( index.search( booleanQuery, loggedOnUser ) ) );
     }
 
-    private ChainableReversibleNullComparator getChainableReversibleNullComparator(String sortorder) {
+    private ChainableReversibleNullComparator getChainableReversibleNullComparator( String sortorder ) {
 
         ChainableReversibleNullComparator comparator = DocumentDomainObject.DocumentComparator.MODIFIED_DATETIME.reversed();
-        if ( "MODR".equals(sortorder)  ) {
+        if ( "MODR".equals( sortorder ) ) {
             comparator = DocumentDomainObject.DocumentComparator.MODIFIED_DATETIME;
-        }else if ( "PUBS".equals(sortorder)  ){
+        } else if ( "PUBS".equals( sortorder ) ) {
             comparator = DocumentDomainObject.DocumentComparator.PUBLICATION_START_DATETIME.reversed();
-        }else if ( "PUBSR".equals(sortorder)  ){
+        } else if ( "PUBSR".equals( sortorder ) ) {
             comparator = DocumentDomainObject.DocumentComparator.PUBLICATION_START_DATETIME;
-        }else if ( "PUBE".equals(sortorder)  ){
+        } else if ( "PUBE".equals( sortorder ) ) {
             comparator = DocumentDomainObject.DocumentComparator.PUBLICATION_END_DATETIME.reversed().nullsLast();
-        }else if ( "PUBER".equals(sortorder)  ){
+        } else if ( "PUBER".equals( sortorder ) ) {
             comparator = DocumentDomainObject.DocumentComparator.PUBLICATION_END_DATETIME.nullsLast();
-        }else if ( "ARC".equals(sortorder)  ){
+        } else if ( "ARC".equals( sortorder ) ) {
             comparator = DocumentDomainObject.DocumentComparator.ARCHIVED_DATETIME.reversed().nullsLast();
-        }else if ( "ARCR".equals(sortorder)  ){
+        } else if ( "ARCR".equals( sortorder ) ) {
             comparator = DocumentDomainObject.DocumentComparator.ARCHIVED_DATETIME.nullsLast();
-        }else if ( "HEADL".equals(sortorder)  ){
+        } else if ( "HEADL".equals( sortorder ) ) {
             comparator = DocumentDomainObject.DocumentComparator.HEADLINE;
-        }else if ( "HEADLR".equals(sortorder)  ){
+        } else if ( "HEADLR".equals( sortorder ) ) {
             comparator = DocumentDomainObject.DocumentComparator.HEADLINE.reversed();
-        }else if ( "ID".equals(sortorder)  ){
+        } else if ( "ID".equals( sortorder ) ) {
             comparator = DocumentDomainObject.DocumentComparator.ID;
-        }else if ( "IDR".equals(sortorder)  ){
+        } else if ( "IDR".equals( sortorder ) ) {
             comparator = DocumentDomainObject.DocumentComparator.ID.reversed();
         }
         return comparator;
     }
 
-    private String getAdminTaskUrl (String whichButton) {
+    private String getAdminTaskUrl( String whichButton ) {
         String url = "";
-        if (whichButton.equalsIgnoreCase("UserStart")) {
-                url += "AdminUser";
-            } else if (whichButton.equalsIgnoreCase("CounterStart")) {
-                url += "AdminCounter";
-            } else if (whichButton.equalsIgnoreCase("AddTemplates")) {
-                url += "TemplateAdmin";
-            } else if (whichButton.equalsIgnoreCase("DeleteDocs")) {
-                url += "AdminDeleteDoc";
-            } else if (whichButton.equalsIgnoreCase("IP-access")) {
-                url += "AdminIpAccess";
-            } else if (whichButton.equalsIgnoreCase("SystemMessage")) {
-                url += "AdminSystemInfo";
-            } else if (whichButton.equalsIgnoreCase("AdminRoles")) {
-                url += "AdminRoles";
-            } else if (whichButton.equalsIgnoreCase("LinkCheck")) {
-                url += "LinkCheck";
-            } else if (whichButton.equalsIgnoreCase("ListDocuments")) {
-                url += "ListDocuments";
-            } else if (whichButton.equalsIgnoreCase("FileAdmin")) {
-                url += "FileAdmin";
-            } else if (whichButton.equalsIgnoreCase("AdminListDocs")) {
-                url += "AdminListDocs";
-            } else if (whichButton.equalsIgnoreCase("AdminConference")) {
-                url += "AdminConference";
-            } else if (whichButton.equalsIgnoreCase("AdminRandomTexts")) {
-                url += "AdminRandomTexts";
-            } else if (whichButton.equalsIgnoreCase("AdminQuestions")) {
-                url += "AdminQuestions";
-            } else if (whichButton.equalsIgnoreCase("AdminSection")) {
-                url += "AdminSection";
-            } else if (whichButton.equalsIgnoreCase("AdminCategories")) {
-                url += "AdminCategories";
-            }
-            return url;
+        if ( whichButton.equalsIgnoreCase( "UserStart" ) ) {
+            url += "AdminUser";
+        } else if ( whichButton.equalsIgnoreCase( "CounterStart" ) ) {
+            url += "AdminCounter";
+        } else if ( whichButton.equalsIgnoreCase( "AddTemplates" ) ) {
+            url += "TemplateAdmin";
+        } else if ( whichButton.equalsIgnoreCase( "DeleteDocs" ) ) {
+            url += "AdminDeleteDoc";
+        } else if ( whichButton.equalsIgnoreCase( "IP-access" ) ) {
+            url += "AdminIpAccess";
+        } else if ( whichButton.equalsIgnoreCase( "SystemMessage" ) ) {
+            url += "AdminSystemInfo";
+        } else if ( whichButton.equalsIgnoreCase( "AdminRoles" ) ) {
+            url += "AdminRoles";
+        } else if ( whichButton.equalsIgnoreCase( "LinkCheck" ) ) {
+            url += "LinkCheck";
+        } else if ( whichButton.equalsIgnoreCase( "ListDocuments" ) ) {
+            url += "ListDocuments";
+        } else if ( whichButton.equalsIgnoreCase( "FileAdmin" ) ) {
+            url += "FileAdmin";
+        } else if ( whichButton.equalsIgnoreCase( "AdminListDocs" ) ) {
+            url += "AdminListDocs";
+        } else if ( whichButton.equalsIgnoreCase( "AdminConference" ) ) {
+            url += "AdminConference";
+        } else if ( whichButton.equalsIgnoreCase( "AdminRandomTexts" ) ) {
+            url += "AdminRandomTexts";
+        } else if ( whichButton.equalsIgnoreCase( "AdminQuestions" ) ) {
+            url += "AdminQuestions";
+        } else if ( whichButton.equalsIgnoreCase( "AdminSection" ) ) {
+            url += "AdminSection";
+        } else if ( whichButton.equalsIgnoreCase( "AdminCategories" ) ) {
+            url += "AdminCategories";
+        }
+        return url;
 
     }
 
