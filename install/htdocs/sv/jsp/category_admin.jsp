@@ -170,49 +170,21 @@ imcmsGui("mid", null);
     <%} // ------ add category -------
     else if(request.getParameter("add_category") != null || adminCategoriesFormData.getAdminMode().equals("addCategoryMode")) {
 
+        CategoryDomainObject categoryToEdit = adminCategoriesFormData.getCategoryToEdit();
         if( request.getParameter("category_add") != null && !adminCategoriesFormData.getUniqueName() ) {
             messageToUser.append("Det finns redan en kategori med namn \"");
             messageToUser.append(request.getParameter("name") + "\" ");
-            messageToUser.append("i kategoritypen \"" + adminCategoriesFormData.getCategoryTypeToEdit().getName() + "\". ");
+            messageToUser.append("i kategoritypen \"" + categoryToEdit.getType().getName() + "\". ");
             messageToUser.append("Var vänlig välj ett nytt namn!");
         }
-        CategoryDomainObject categoryToEdit = adminCategoriesFormData.getCategoryToEdit();
     %>
 
 
         <input type="hidden" name="adminMode" value="addCategoryMode">
         <input type="hidden" name="heading" value="<%=createCategoryHeading%>">
-
-        <tr>
-		    <td width="80" height="24" class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/category_name ?> &nbsp;</td>
-            <td><script>
-                writeFormField("TEXT","name",30,50,null, "<%= request.getParameter("name") != null && !adminCategoriesFormData.getUniqueName() ? request.getParameter("name") : "" %>" );
-            </script></td>
-        </tr>
-        <tr><td colspan="2">&nbsp;</td></tr>
-        <tr>
-		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/description ?> &nbsp;</td>
-            <td><script>
-                writeFormField("TEXTAREA","description",30,2,"100%",null);
-            </script><%= request.getParameter("description") != null && !adminCategoriesFormData.getUniqueName() ? request.getParameter("description") : "" %></textarea></td>
-        </tr>
-        <tr><td colspan="2">&nbsp;</td></tr>
-        <tr>
-		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/icon ?> &nbsp;</td>
-            <td>
-            <input type="text" name="icon" size="30" maxlength="255" value="<%= null != categoryToEdit ? categoryToEdit.getImage() : "" %>">
-            &nbsp;
-            <input type="submit" class="imcmsFormBtnSmall" name="browseForMenuImage" value=" Browse ">
-            <input type="hidden" name="imageBrowse.originalAction" value="editDocumentInformation"/>
-			</td>
-        </tr>
-        <tr><td colspan="2">&nbsp;</td></tr>
-        <tr>
-		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/add_to_category_type ?> &nbsp;</td>
-            <td><select name="<%= AdminCategories.PARAMETER__ADD_TO_CATEGORY_TYPE %>">
-                    <%= adminCategoriesFormData.getCategoryTypesOptionList() %>
-                </select></td>
-        </tr>
+    <% if (null != categoryToEdit) { %>
+        <%@include file="category_admin_category.jsp"%>
+    <% } %>
     </table></td>
     </tr>
     <%if( messageToUser.length() > 0 ) { %>

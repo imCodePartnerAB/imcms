@@ -30,55 +30,55 @@ public class ImageBrowse extends HttpServlet {
     private final static String IMG_NEXT_LIST_TEMPLATE = "Admin_Img_List_Next.html";
     private final static String IMG_PREVIOUS_LIST_TEMPLATE = "Admin_Img_List_Previous.html";
 
-    private final static Logger log = Logger.getLogger( ImageBrowse.class.getName() );
+    private final static Logger log = Logger.getLogger(ImageBrowse.class.getName());
     public static final String PARAMETER__CALLER = "caller";
-    public static final String PARAMETER_BUTTON__OK = "ok";
-    public static final String PARAMETER_BUTTON__PREVIEW = "preview";
-    public static final String PARAMETER_BUTTON__CANCEL = "cancel";
+    public static final String PARAMETER_BUTTON__OK = "ImageBrowse.button.ok";
+    public static final String PARAMETER_BUTTON__PREVIEW = "ImageBrowse.button.preview";
+    public static final String PARAMETER_BUTTON__CANCEL = "ImageBrowse.button.cancel";
 
-    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws IOException, ServletException {
-        doGet( req, res );
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        doGet(req, res);
     }
 
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws IOException, ServletException {
-        getPage( req, res );
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        getPage(req, res);
     }
 
-    public static void getPage( HttpServletRequest request, HttpServletResponse response )
+    public static void getPage(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        if (null != request.getParameter( PARAMETER_BUTTON__CANCEL) || null != request.getParameter( PARAMETER_BUTTON__OK )) {
-            String callerParam = request.getParameter( PARAMETER__CALLER );
-            request.getRequestDispatcher( callerParam ).forward( request, response );
-            return ;
+        if (null != request.getParameter(PARAMETER_BUTTON__CANCEL) || null != request.getParameter(PARAMETER_BUTTON__OK)) {
+            String callerParam = request.getParameter(PARAMETER__CALLER);
+            request.getRequestDispatcher(callerParam).forward(request, response);
+            return;
         }
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String image_url = imcref.getImageUrl();
-        File file_path = Utility.getDomainPrefPath( "image_path" );
+        File file_path = Utility.getDomainPrefPath("image_path");
 
-        String meta_id = request.getParameter( "meta_id" );
-        String img_no = request.getParameter( "img_no" );
-        String img_preset = request.getParameter( "imglist" );//the choosen image to show
-        String img_dir_preset = request.getParameter( "dirlist" );//the dir to show
+        String meta_id = request.getParameter("meta_id");
+        String img_no = request.getParameter("img_no");
+        String img_preset = request.getParameter("imglist");//the choosen image to show
+        String img_dir_preset = request.getParameter("dirlist");//the dir to show
 
         // get img label
-        String label = request.getParameter( "label" );
-        if ( label == null ) {
+        String label = request.getParameter("label");
+        if (label == null) {
             label = "";
         }
 
-        if ( img_dir_preset == null ) {
+        if (img_dir_preset == null) {
             //if img_dir_preset null then its first time, or a prew. of choosen image
-            img_dir_preset = request.getParameter( "dirlist_preset" ) == null
-                             ? "" : request.getParameter( "dirlist_preset" );
+            img_dir_preset = request.getParameter("dirlist_preset") == null
+                    ? "" : request.getParameter("dirlist_preset");
         }
 
-        if ( request.getParameter( "PREVIOUS_IMG" ) != null || request.getParameter( "NEXT_IMG" ) != null ) {
+        if (request.getParameter("PREVIOUS_IMG") != null || request.getParameter("NEXT_IMG") != null) {
             img_preset = null;
         }
 
         //**handles the case when we have a image to show
         String img_tag = "";
-        if ( img_preset == null ) {
+        if (img_preset == null) {
             img_preset = "";
         } else {
             img_tag = "<img src='" + image_url + img_preset + "' align=\"top\">";
@@ -87,216 +87,214 @@ public class ImageBrowse extends HttpServlet {
         //*lets get some path we need later on
         String canon_path = file_path.getCanonicalPath(); //ex: C:\Tomcat3\webapps\imcms\images
         String root_dir_parent = file_path.getParentFile().getCanonicalPath();  //ex: C:\Tomcat3\webapps\webapps\imcms
-        String root_dir_name = canon_path.substring( root_dir_parent.length() );
-        if ( root_dir_name.startsWith( File.separator ) ) {
-            root_dir_name = root_dir_name.substring( File.separator.length() );
+        String root_dir_name = canon_path.substring(root_dir_parent.length());
+        if (root_dir_name.startsWith(File.separator)) {
+            root_dir_name = root_dir_name.substring(File.separator.length());
             //ex: root_dir_name = images
         }
 
         //*lets get all the folders in an ArrayList
-        List folderList = GetImages.getImageFolders( file_path, true );
+        List folderList = GetImages.getImageFolders(file_path, true);
         //lets add the rootdir to the dir list
-        folderList.add( 0, file_path );
+        folderList.add(0, file_path);
 
 
         //*lets get all the images in a folder and put them in an ArrayList
-        File folderImgPath = new File( canon_path + img_dir_preset );
-        List imgList = GetImages.getImageFilesInFolder( folderImgPath, true );
+        File folderImgPath = new File(canon_path + img_dir_preset);
+        List imgList = GetImages.getImageFilesInFolder(folderImgPath, true);
 
 
         //*the StringBuffers to save the lists html-code in
-        StringBuffer imageOptions = new StringBuffer( imgList.size() * 64 );
-        StringBuffer folderOptions = new StringBuffer( folderList.size() * 64 );
+        StringBuffer imageOptions = new StringBuffer(imgList.size() * 64);
+        StringBuffer folderOptions = new StringBuffer(folderList.size() * 64);
 
 
         //*hamdles the number of images to show and the buttons to admin it.
-        UserDomainObject user = Utility.getLoggedOnUser( request );
+        UserDomainObject user = Utility.getLoggedOnUser(request);
         String adminImgPath = user.getLanguageIso639_2() + "/admin/";
         String previousButton = "&nbsp;";
         String nextButton = "&nbsp;";
-        String startStr = request.getParameter( "img_curr_max" );
+        String startStr = request.getParameter("img_curr_max");
         int max = 1000;//the nr of img th show at the time
         int counter = 0; //the current startNr
         int img_numbers = imgList.size();//the total numbers of img
-        if ( startStr != null ) {
-            counter = Integer.parseInt( startStr );
+        if (startStr != null) {
+            counter = Integer.parseInt(startStr);
         }
         //lest see if a previous button whas punshed
-        if ( request.getParameter( "PREVIOUS_IMG" ) != null ) {
-            counter = counter - ( max * 2 );
-            if ( counter < 0 ) {
+        if (request.getParameter("PREVIOUS_IMG") != null) {
+            counter = counter - (max * 2);
+            if (counter < 0) {
                 counter = 0;
             }
         }
         // Lets bee ready to create buttons
         VariableManager nextButtonVm = new VariableManager();
-        nextButtonVm.addProperty( "IMAGE_URL", image_url + adminImgPath );
-        nextButtonVm.addProperty( "meta_id", meta_id );
-        nextButtonVm.addProperty( "img_no", img_no );
-        nextButtonVm.addProperty( "img_curr_max", Integer.toString( counter + max ) );
-        nextButtonVm.addProperty( "SERVLET_URL", "" );
+        nextButtonVm.addProperty("IMAGE_URL", image_url + adminImgPath);
+        nextButtonVm.addProperty("meta_id", meta_id);
+        nextButtonVm.addProperty("img_no", img_no);
+        nextButtonVm.addProperty("img_curr_max", Integer.toString(counter + max));
+        nextButtonVm.addProperty("SERVLET_URL", "");
 
         VariableManager prevButtonVm = new VariableManager();
-        prevButtonVm.addProperty( "IMAGE_URL", image_url + adminImgPath );
-        prevButtonVm.addProperty( "meta_id", meta_id );
-        prevButtonVm.addProperty( "img_no", img_no );
-        prevButtonVm.addProperty( "img_curr_max", Integer.toString( counter + max ) );
-        prevButtonVm.addProperty( "SERVLET_URL", "" );
+        prevButtonVm.addProperty("IMAGE_URL", image_url + adminImgPath);
+        prevButtonVm.addProperty("meta_id", meta_id);
+        prevButtonVm.addProperty("img_no", img_no);
+        prevButtonVm.addProperty("img_curr_max", Integer.toString(counter + max));
+        prevButtonVm.addProperty("SERVLET_URL", "");
         //lets get the teplatePath to the buttons
-        File templatePath = ImageBrowse.getAdminTemplateFolder( imcref, user );
+        File templatePath = ImageBrowse.getAdminTemplateFolder(imcref, user);
         //now we have to find out what buttons to show
-        if ( counter > 0 ) {
-            HtmlGenerator previousButtonHtmlObj = new HtmlGenerator( templatePath,
-                                                                     ImageBrowse.IMG_PREVIOUS_LIST_TEMPLATE );
-            previousButton = previousButtonHtmlObj.createHtmlString( prevButtonVm, request );
+        if (counter > 0) {
+            HtmlGenerator previousButtonHtmlObj = new HtmlGenerator(templatePath,
+                    ImageBrowse.IMG_PREVIOUS_LIST_TEMPLATE);
+            previousButton = previousButtonHtmlObj.createHtmlString(prevButtonVm, request);
         }
-        if ( img_numbers > counter + max ) {
-            HtmlGenerator nextButtonHtmlObj = new HtmlGenerator( templatePath, ImageBrowse.IMG_NEXT_LIST_TEMPLATE );
-            nextButton = nextButtonHtmlObj.createHtmlString( nextButtonVm, request );
+        if (img_numbers > counter + max) {
+            HtmlGenerator nextButtonHtmlObj = new HtmlGenerator(templatePath, ImageBrowse.IMG_NEXT_LIST_TEMPLATE);
+            nextButton = nextButtonHtmlObj.createHtmlString(nextButtonVm, request);
         }
 
         //*lets create the image folder option list
-        for ( int x = 0; x < folderList.size(); x++ ) {
-            File fileObj = (File)folderList.get( x );
+        for (int x = 0; x < folderList.size(); x++) {
+            File fileObj = (File) folderList.get(x);
 
             //ok lets set up the folder name to show and the one to put as value
             String optionName = fileObj.getCanonicalPath();
             //lets remove the start of the path so we end up at the rootdir.
-            if ( optionName.startsWith( canon_path ) ) {
-                optionName = optionName.substring( root_dir_parent.length() );
-                if ( optionName.startsWith( File.separator ) ) {
-                    optionName = optionName.substring( File.separator.length() );
+            if (optionName.startsWith(canon_path)) {
+                optionName = optionName.substring(root_dir_parent.length());
+                if (optionName.startsWith(File.separator)) {
+                    optionName = optionName.substring(File.separator.length());
                 }
-            } else if ( optionName.startsWith( File.separator ) ) {
-                optionName = optionName.substring( File.separator.length() );
+            } else if (optionName.startsWith(File.separator)) {
+                optionName = optionName.substring(File.separator.length());
             }
             //the path to put in the option value
             String optionPath = optionName;
-            if ( optionPath.startsWith( root_dir_name ) ) {
-                optionPath = optionPath.substring( root_dir_name.length() );
+            if (optionPath.startsWith(root_dir_name)) {
+                optionPath = optionPath.substring(root_dir_name.length());
             }
             //ok now we have to replace all parent folders with a '-' char
-            StringTokenizer token = new StringTokenizer( optionName, "\\", false );
-            StringBuffer buff = new StringBuffer( "" );
-            while ( token.countTokens() > 1 ) {
+            StringTokenizer token = new StringTokenizer(optionName, "\\", false);
+            StringBuffer buff = new StringBuffer("");
+            while (token.countTokens() > 1) {
                 token.nextToken();
-                buff.append( "&nbsp;&nbsp;-" );
+                buff.append("&nbsp;&nbsp;-");
             }
-            if ( token.countTokens() > 0 ) {
+            if (token.countTokens() > 0) {
                 optionName = buff.toString() + token.nextToken();
             }
-            File urlFile = new File( optionName );
+            File urlFile = new File(optionName);
             String fileName = urlFile.getName();
             File parentDir = urlFile.getParentFile();
-            if ( parentDir != null ) {
+            if (parentDir != null) {
                 optionName = parentDir.getPath() + "/";
             } else {
                 optionName = "";
             }
             //filepathfix ex: images\nisse\kalle.gif to images/nisse/kalle.gif
-            optionName = optionName.replace( File.separatorChar, '/' ) + fileName;
+            optionName = optionName.replace(File.separatorChar, '/') + fileName;
 
-            optionName = optionName.replace( '-', '\\' );
-            folderOptions.append(
-                    "<option value=\"" + optionPath + "\""
-                    + ( optionPath.equals( img_dir_preset ) ? " selected" : "" )
+            optionName = optionName.replace('-', '\\');
+            folderOptions.append("<option value=\"" + optionPath + "\""
+                    + (optionPath.equals(img_dir_preset) ? " selected" : "")
                     + ">"
                     + optionName
-                    + "</option>\r\n" );
+                    + "</option>\r\n");
         }//end setUp option dir list
 
 
         //*lets create the image file option list
-        for ( int i = counter; i < imgList.size() && i < counter + max; i++ ) {
-            File fileObj = (File)imgList.get( i );
+        for (int i = counter; i < imgList.size() && i < counter + max; i++) {
+            File fileObj = (File) imgList.get(i);
 
             String filePath = fileObj.getCanonicalPath();
-            if ( filePath.startsWith( canon_path ) ) {
-                filePath = filePath.substring( canon_path.length() );
+            if (filePath.startsWith(canon_path)) {
+                filePath = filePath.substring(canon_path.length());
             }
-            if ( filePath.startsWith( File.separator ) ) {
-                filePath = filePath.substring( File.separator.length() );
+            if (filePath.startsWith(File.separator)) {
+                filePath = filePath.substring(File.separator.length());
             }
 
             //lets copy the path before we gets rid of parent-dirs in the string to show
             //not whery sexy but it whill do fore now
             String imagePath = filePath;
-            StringTokenizer token = new StringTokenizer( imagePath, "\\", false );
-            StringBuffer buff = new StringBuffer( "" );
-            while ( token.countTokens() > 1 ) {
+            StringTokenizer token = new StringTokenizer(imagePath, "\\", false);
+            StringBuffer buff = new StringBuffer("");
+            while (token.countTokens() > 1) {
                 token.nextToken();
                 //do nothing just get rid of every token exept the image name
             }
-            if ( token.countTokens() > 0 ) {
+            if (token.countTokens() > 0) {
                 imagePath = buff.toString() + token.nextToken();
             }
 
-            File urlFile = new File( filePath );
+            File urlFile = new File(filePath);
             String fileName = urlFile.getName();
             File parentDir = urlFile.getParentFile();
 
-            if ( parentDir != null ) {
+            if (parentDir != null) {
                 filePath = parentDir.getPath() + "/";
             } else {
                 filePath = "";
             }
 
-            filePath = filePath.replace( File.separatorChar, '/' ) + fileName;
-            StringTokenizer tokenizer = new StringTokenizer( filePath, "/", true );
+            filePath = filePath.replace(File.separatorChar, '/') + fileName;
+            StringTokenizer tokenizer = new StringTokenizer(filePath, "/", true);
             StringBuffer filePathSb = new StringBuffer();
             //the URLEncoder.encode() method replaces '/' whith "%2F" and the can't be red by the browser
             //that's the reason for the while-loop.
-            while ( tokenizer.countTokens() > 0 ) {
+            while (tokenizer.countTokens() > 0) {
                 String temp = tokenizer.nextToken();
-                if ( temp.length() > 1 ) {
-                    filePathSb.append( java.net.URLEncoder.encode( temp ) );
+                if (temp.length() > 1) {
+                    filePathSb.append(java.net.URLEncoder.encode(temp));
                 } else {
-                    filePathSb.append( temp );
+                    filePathSb.append(temp);
                 }
             }
 
             String parsedFilePath = filePathSb.toString();
 
-            imageOptions.append(
-                    "<option value=\"" + parsedFilePath + "\""
-                    + ( parsedFilePath.equals( img_preset ) ? " selected" : "" )
+            imageOptions.append("<option value=\"" + parsedFilePath + "\""
+                    + (parsedFilePath.equals(img_preset) ? " selected" : "")
                     + ">"
                     + imagePath
                     + "\t["
                     + fileObj.length()
-                    + "]</option>\r\n" );
+                    + "]</option>\r\n");
         }
 
         FormData formData = new FormData();
 
-        String caller = request.getParameter( PARAMETER__CALLER );
-        formData.setCaller( caller );
+        String caller = request.getParameter(PARAMETER__CALLER);
+        formData.setCaller(caller);
 
-        formData.setMetaId( meta_id );
-        formData.setImageNumber( img_no );
-        formData.setImageList( img_preset );
-        formData.setDirListPreset( img_dir_preset );
-        formData.setFolders( folderOptions.toString() );
-        formData.setImagePreview( img_tag );
-        formData.setLabel( label );
-        formData.setNextButton( nextButton );
-        formData.setPreviousButton( previousButton );
+        formData.setMetaId(meta_id);
+        formData.setImageNumber(img_no);
+        formData.setImageList(img_preset);
+        formData.setDirListPreset(img_dir_preset);
+        formData.setFolders(folderOptions.toString());
+        formData.setImagePreview(img_tag);
+        formData.setLabel(label);
+        formData.setNextButton(nextButton);
+        formData.setPreviousButton(previousButton);
 
-        formData.setOptions( imageOptions.toString() );
+        formData.setOptions(imageOptions.toString());
 
-        if ( counter > img_numbers ) {
+        if (counter > img_numbers) {
             counter = img_numbers;
         }
-        formData.setMaxNumber( Integer.toString( img_numbers ) );
+        formData.setMaxNumber(Integer.toString(img_numbers));
 
-        request.setAttribute( REQUEST_ATTRIBUTE__IMAGE_BROWSE_FORM_DATA, formData );
+        request.setAttribute(REQUEST_ATTRIBUTE__IMAGE_BROWSE_FORM_DATA, formData);
 
         try {
-            String forwardPath = "/imcms/"+ user.getLanguageIso639_2() + "/jsp/" + JSP_TEMPLATE_IMAGE_BROWSE;
-            RequestDispatcher rd = request.getRequestDispatcher( forwardPath );
-            rd.forward( request, response );
-        } catch ( ServletException ex ) {
-            log.error( "Error while dispatching: " + ex.getMessage(), ex );
+            String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP_TEMPLATE_IMAGE_BROWSE;
+            RequestDispatcher rd = request.getRequestDispatcher(forwardPath);
+            rd.forward(request, response);
+        } catch (ServletException ex) {
+            log.error("Error while dispatching: " + ex.getMessage(), ex);
         }
 
     }
@@ -307,14 +305,26 @@ public class ImageBrowse extends HttpServlet {
      * language prefix and an "/admin/" string afterwards...
      * <p/>
      */
-    private static File getAdminTemplateFolder( IMCServiceInterface imcref, imcode.server.user.UserDomainObject user ) {
+    private static File getAdminTemplateFolder(IMCServiceInterface imcref, imcode.server.user.UserDomainObject user) {
 
         // Since our templates are located into the admin folder, we'll have to hang on admin
         File templateLib = imcref.getTemplatePath();
         // Lets get the users language id. Use the langid to get the lang prefix from db.
         String langPrefix = user.getLanguageIso639_2();
-        templateLib = new File( templateLib, langPrefix + "/admin" );
+        templateLib = new File(templateLib, langPrefix + "/admin");
         return templateLib;
+    }
+
+    public static String getImageUri(HttpServletRequest req) {
+        boolean pressedCancelButton = (null != req.getParameter(PARAMETER_BUTTON__CANCEL));
+        String meta_image = null;
+        if (!pressedCancelButton) {
+            meta_image = req.getParameter("imglist");
+            if (null != meta_image) {
+                meta_image = "../images/" + meta_image;
+            }
+        }
+        return meta_image;
     }
 
     public static class FormData {
@@ -353,23 +363,23 @@ public class ImageBrowse extends HttpServlet {
             return dirListPreset;
         }
 
-        public void setMetaId( String metaId ) {
+        public void setMetaId(String metaId) {
             this.metaId = metaId;
         }
 
-        public void setImageNumber( String imageNumber ) {
+        public void setImageNumber(String imageNumber) {
             this.imageNumber = imageNumber;
         }
 
-        public void setLabel( String label ) {
+        public void setLabel(String label) {
             this.label = label;
         }
 
-        public void setImageList( String imageList ) {
+        public void setImageList(String imageList) {
             this.imageList = imageList;
         }
 
-        public void setDirListPreset( String dirListPreset ) {
+        public void setDirListPreset(String dirListPreset) {
             this.dirListPreset = dirListPreset;
         }
 
@@ -377,7 +387,7 @@ public class ImageBrowse extends HttpServlet {
             return folders;
         }
 
-        public void setFolders( String folders ) {
+        public void setFolders(String folders) {
             this.folders = folders;
         }
 
@@ -385,7 +395,7 @@ public class ImageBrowse extends HttpServlet {
             return imagePreview;
         }
 
-        public void setImagePreview( String imagePreview ) {
+        public void setImagePreview(String imagePreview) {
             this.imagePreview = imagePreview;
         }
 
@@ -393,7 +403,7 @@ public class ImageBrowse extends HttpServlet {
             return options;
         }
 
-        public void setOptions( String options ) {
+        public void setOptions(String options) {
             this.options = options;
         }
 
@@ -401,7 +411,7 @@ public class ImageBrowse extends HttpServlet {
             return nextButton;
         }
 
-        public void setNextButton( String nextButton ) {
+        public void setNextButton(String nextButton) {
             this.nextButton = nextButton;
         }
 
@@ -409,7 +419,7 @@ public class ImageBrowse extends HttpServlet {
             return previousButton;
         }
 
-        public void setPreviousButton( String previousButton ) {
+        public void setPreviousButton(String previousButton) {
             this.previousButton = previousButton;
         }
 
@@ -417,11 +427,11 @@ public class ImageBrowse extends HttpServlet {
             return maxNumber;
         }
 
-        public void setMaxNumber( String maxNumber ) {
+        public void setMaxNumber(String maxNumber) {
             this.maxNumber = maxNumber;
         }
 
-        public void setCaller( String caller ) {
+        public void setCaller(String caller) {
             this.caller = caller;
         }
 

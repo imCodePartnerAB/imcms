@@ -457,9 +457,9 @@ public class DocumentMapper {
         } );
     }
 
-    public void addCategoryToDb( CategoryTypeDomainObject categoryType, String name, String description, String image ) {
+    public void addCategoryToDb(CategoryDomainObject category) {
         String sqlstr = "insert into categories  (category_type_id, name, description, image) values(?,?,?,?)";
-        service.sqlUpdateQuery( sqlstr, new String[]{categoryType.getId() + "", name, description, image} );
+        service.sqlUpdateQuery( sqlstr, new String[]{category.getType().getId() + "", category.getName(), category.getDescription(), category.getImage()} );
     }
 
     public void updateCategory( CategoryDomainObject category ) {

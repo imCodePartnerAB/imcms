@@ -155,8 +155,10 @@ public class DocumentComposer extends HttpServlet {
                 action = request.getParameter( PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION );
                 request.setAttribute( REQUEST_ATTR_OR_PARAM__ACTION, action );
                 if ( null != request.getParameter( ImageBrowse.PARAMETER_BUTTON__OK ) ) {
-                    String imageUrl = AdminDoc.getImageUri( request );
-                    document.setMenuImage( imageUrl );
+                    String imageUrl = ImageBrowse.getImageUri( request );
+                    if (null != imageUrl) {
+                        document.setMenuImage( imageUrl );
+                    }
                 }
             }
 
