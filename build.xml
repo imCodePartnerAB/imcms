@@ -304,6 +304,12 @@
     <target name="version-file">
         <echo message="${version}&#10;" file="${versionfile}"/>
         <fixcrlf srcdir="${basedir}" includes="${versionfile}"/>
+        <taskdef name="checksumfiles" classname="imcode.anttasks.ChecksumFiles">
+            <classpath>
+                <pathelement path="tools/build"/>
+                <path refid="libraries"/>
+            </classpath>
+        </taskdef>
         <checksumfiles destfile="${versionfile}" digest="MD5" append="true">
             <fileset dir="${build}"/>
         </checksumfiles>
@@ -429,14 +435,6 @@
     <!-- Build extra tools needed for building. -->
     <target name="tools" description="Builds extra tools needed for building.">
         <ant dir="tools"/>
-        <taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
-        <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
-        <taskdef name="checksumfiles" classname="imcode.anttasks.ChecksumFiles">
-            <classpath>
-                <pathelement path="tools/build"/>
-                <path refid="libraries"/>
-            </classpath>
-        </taskdef>
     </target>
 
 
@@ -490,6 +488,7 @@
 
         <mkdir dir="${tmp}" />
 
+        <taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
         <cat destfile="${tmp}/imcms${versionfilesuffix}.sql" orderby="path" filtering="true">
             <fileset file="sql/tables/tables.ascii.sql"/>
             <fileset  dir="sql/sprocs" includes="*.prc" />
@@ -517,6 +516,7 @@
             <fileset file="sql/tables/create_db.sql"/>
         </cat>
 
+        <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
         <imtranslate bundle="imcms" bundlelanguage="${defaultlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${dist}" filtering="true">
@@ -639,6 +639,7 @@
         <filter token="shopurl"             value="${imcmsurl}/${buildlanguage}/shop"/>
         <filter token="pollurl"             value="${imcmsurl}/${buildlanguage}/poll"/>
 
+        <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${templates}/${buildlanguage}" filtering="true">
