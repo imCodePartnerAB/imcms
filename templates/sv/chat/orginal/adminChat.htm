@@ -1,19 +1,20 @@
 <html>
 <head>
-<title>createChat</title>
+<title>adminChat</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
 <body bgcolor="#FFFFFF">
-<form method="post" action="#SERVLET_URL#ChatCreator" name="CreateChat">
-	<input type="hidden" name="action" value="ADD_CHAT">
+<form method="post" action="#SERVLET_URL#ChatCreator" name="AdminChat">
+	<input type="hidden" name="action" value="admin_chat">
+    <input type="hidden" name="chatName" value="#chatName#">
 
   <table width="30%" border="0" cellspacing="0" height="216">
     <tr bgcolor="#333366"> 
       <td width="0%">&nbsp;</td>
       <td colspan="4"> 
-        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Skapa 
-          enkel chatt </font></b></div>
+        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Administrera 
+          chatt</font></b></div>
       </td>
     </tr>
     <tr bgcolor="#bababa"> 
@@ -21,14 +22,11 @@
       <td colspan="4" align="right"> <a href="http://www.imcode.se/chat/help.html"
  		target="chathelp">Hj&auml;lpsida</a> </td>
     </tr>
-	
     <tr bgcolor="#bababa"> 
       <td width="0%">&nbsp;</td>
-      <td width="28%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Chattrubrik</font></td>
-      <td width="50%" colspan="2"> <font size="2"> 
-        <input type="text" name="chatName" size="20" value="#chatName#">
-		
-        </font></td>
+      <td width="28%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Chattrubrik:</font></td>
+      <td width="25%" align="center"> <font size="2"> <b> #chatName# </b></font></td>
+      <td width="25%">&nbsp;</td>
     </tr>
     <tr bgcolor="#bababa"> 
       <td width="0%" height="35">&nbsp;</td>
@@ -38,72 +36,54 @@
         </font></td>
       <td width="25%" height="35"><font size="2"> 
         <input type="submit" name="addRoom" value=" L&auml;gg till  ">
+        <input type="submit" name="removeRoom" value="  Ta bort  ">
         </font></td>
     </tr>
     <tr bgcolor="#bababa"> 
       <td width="0%" height="29">&nbsp;</td>
       <td width="28%" height="29">&nbsp;</td>
       <td width="50%" height="29" colspan="2"> 
-        <select name="roomList" size="1">
-	#roomList#
-        </select>
-      </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%">&nbsp;</td>
-      <td width="28%">Beh&ouml;riga anv&auml;ndare:</td>
-      <td width="50%" colspan="2"> 
-        <select name="authorized" size="3" multiple>
-       #authorized#
-        </select>
-      </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%" height="53"> 
-        <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"></font></div>
-      </td>
-      <td width="28%" height="53"> 
-        <div align="center"></div>
-      </td>
-      <td width="25%" height="53"> 
-        <div align="center"> 
-          <input type="submit" name="okChat" value="Skapa chatt!">
-        </div>
-      </td>
-      <td width="25%" height="53">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#333366"> 
-      <td width="0%" height="22">&nbsp;</td>
-      <td colspan="4" height="22"> 
-        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Avancerade 
-          chattinst&auml;llningar </font></b></div>
+        <select name="roomList">
+         #roomList#
+                </select>
       </td>
     </tr>
     <tr bgcolor="#bababa"> 
       <td width="0%" height="37"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"></font> 
       </td>
-      <td width="28%" height="37">Meddelandetyper: </td>
+      <td width="28%" height="37">Meddelandetyper:</td>
       <td width="25%" height="37"> 
         <input type="text" name="msgType" value="#msgType#">
       </td>
       <td width="25%" height="37"> 
         <input type="submit" name="addMsgType" value=" L&auml;gg till  ">
-      </td>
+        <font size="2">
+        <input type="submit" name="removeMsgType" value="  Ta bort  ">
+        </font> </td>
     </tr>
     <tr bgcolor="#bababa"> 
       <td width="0%" height="26">&nbsp;</td>
       <td width="28%" height="26"></td>
       <td width="50%" height="26" colspan="2"> 
-        <select name="messageTypes" >
-          #msgTypes#
-        </select>
+          <select name="msgTypes">
+         #msgTypes#
+                </select>
       </td>
     </tr>
     <tr bgcolor="#bababa"> 
       <td width="0%" height="26">&nbsp;</td>
-      <td width="28%" height="26">Utseendemall</td>
+      <td width="28%" height="26">Byta mall:</td>
       <td width="50%" height="26" colspan="2"> 
         <input type="file" name="templateFile">
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td width="28%" height="26">Beh&ouml;riga anv&auml;ndare:</td>
+      <td width="50%" height="26" colspan="2"> 
+        <select name="authorized" size="3" multiple>
+       		#authorized#
+        </select>
       </td>
     </tr>
     <tr bgcolor="#bababa"> 
@@ -119,7 +99,7 @@
     <tr bgcolor="#bababa"> 
       <td width="0%" height="26">&nbsp;</td>
       <td colspan="2" height="26">uppdatera automatiskt var 
-        <input type="text" name="updateTime" size="2" value="#updateTime#">
+        <input type="text" name="updateTime" size="2" value="30">
         sekund </td>
       <td height="26"> 
 	  #reload#
@@ -130,36 +110,41 @@
       <td width="0%" height="26">&nbsp;</td>
       <td colspan="2" height="26">visa in/utg&aring;ng </td>
       <td height="26"> 
-        #inOut#
+	  #inOut#
+        
       </td>
     </tr>
     <tr bgcolor="#bababa"> 
       <td width="0%" height="26">&nbsp;</td>
       <td height="26" colspan="2">visa enbart privata meddelanden </td>
       <td height="26"> 
-        #private#
+	  #private#
+        
       </td>
     </tr>
     <tr bgcolor="#bababa"> 
       <td width="0%" height="26">&nbsp;</td>
       <td height="26" colspan="2">visa enbart publika meddelanden</td>
       <td height="26"> 
-        #public#
+	  #public#
+        
       </td>
     </tr>
     <tr bgcolor="#bababa"> 
       <td width="0%" height="26">&nbsp;</td>
       <td height="26" colspan="2">visa datum/tid vid meddelanden</td>
       <td height="26"> 
-        #dateTime#
+	  #dateTime#
+        
       </td>
     </tr>
     <tr bgcolor="#bababa"> 
       <td width="0%" height="26">&nbsp;</td>
       <td height="26" colspan="2">&ouml;ka/minska typsnitt</td>
       <td height="26"> 
-        #font#
-		      </td>
+	  #font#
+        
+      </td>
     </tr>
     <tr bgcolor="#bababa"> 
       <td width="0%" height="26">&nbsp;</td>
@@ -168,7 +153,7 @@
       </td>
       <td width="25%" height="53"> 
         <div align="center"> 
-          <input type="submit" name="okChat" value="Skapa chatt!">
+          <input type="submit" name="okChat" value="OK">
         </div>
       </td>
       <td width="25%" height="53">&nbsp; </td>
@@ -176,6 +161,7 @@
   </table>
  
 </form>
+<p>&nbsp; </p>
 </body>
 </html>
 
