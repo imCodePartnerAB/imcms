@@ -157,6 +157,9 @@ public class SaveFileUpload extends HttpServlet {
 			} catch ( RemoteException ex ) {
 				log ("Failed to update db with new fileupload") ;
 			}
+
+			// Write the file to disk.
+			// FIXME: File needs to be sent to the appserver.
 			if (file.length() > 0) {
 				FileOutputStream fos = new FileOutputStream(fn) ;
 				fos.write(file.getBytes("8859_1")) ;
