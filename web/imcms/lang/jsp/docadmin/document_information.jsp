@@ -124,10 +124,6 @@ function checkFocus() {
     value="<%= EditDocumentInformationPageFlow.PAGE__DOCUMENT_INFORMATION %>">
 <% if (creatingNewDocument) { %>
 <tr>
-	<td class="imcmsAdmText">
-	<? install/htdocs/sv/jsp/docadmin/document_information.jsp/new_document_procedure_description ?> &nbsp;</td>
-</tr>
-<tr>
 	<td>#gui_heading( '<? install/htdocs/sv/jsp/docadmin/document_information.jsp/create_document_heading ?>' )</td>
 </tr><%
 } else { %>
@@ -305,8 +301,8 @@ function checkFocus() {
 	/* *******************************************************************************************
 	 *         SECTIONS                                                                          *
 	 ******************************************************************************************* */
-	
-	
+
+
 		SectionDomainObject[] sections = documentMapper.getAllSections() ;
 		Arrays.sort(sections) ;
 		SectionDomainObject[] documentSections = document.getSections() ;
@@ -357,12 +353,12 @@ function checkFocus() {
 	/* *******************************************************************************************
 	 *         CATEGORIES                                                                        *
 	 ******************************************************************************************* */
-	
-	
+
+
 		CategoryTypeDomainObject[] categoryTypes = documentMapper.getAllCategoryTypes() ;
 		Arrays.sort(categoryTypes) ;
-	
-	
+
+
 	if (categoryTypes != null && categoryTypes.length > 0) { %>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/29 ?></td>
