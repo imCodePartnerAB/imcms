@@ -666,7 +666,7 @@ public class ConfLogin extends Conference {
 	sqlStr +=	"'" + params.getProperty("country_council") + "', ";
 	sqlStr +=	"'" + params.getProperty("email") + "', ";
 
-	// Default values for admin_mode, last_page, archive_mode, lang_id
+	// Default values for external, last_page, archive_mode, lang_id
 	sqlStr +=	"0" + ", ";
 	sqlStr += "1001" + ", ";
 	sqlStr +=	"0" + ", ";

@@ -21,10 +21,10 @@ public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper,
       imcode.server.user.User ldapUser  = ldap.getUser(loginName) ;
       boolean imcmsUserExists = null != imcmsUser ;
       boolean ldapUserExists  = null != ldapUser ;
-      boolean imcmsUserIsInternal = (null != imcmsUser) && imcmsUser.isImcmsInternal() ;
+      boolean imcmsUserIsInternal = (null != imcmsUser) && !imcmsUser.isImcmsExternal() ;
 
       if ( imcmsUserExists && ldapUserExists && imcmsUserIsInternal ) {
-         throw new InternalUserCollisionException("An imcms-internal user was found in external directory.",null) ;
+         throw new UserConflictException("An imcms-internal user was found in external directory.",null) ;
       } else if( !imcmsUserExists && !ldapUserExists ) {
          return null;
       } else if (ldapUserExists) {
@@ -54,8 +54,8 @@ public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper,
    public void update( String loginName, imcode.server.user.User newUserData ) {
    }
 
-   public class InternalUserCollisionException extends RuntimeException {
-      InternalUserCollisionException(String message, Throwable cause){
+   public class UserConflictException extends RuntimeException {
+      UserConflictException(String message, Throwable cause){
          super( message, cause );
       }
 

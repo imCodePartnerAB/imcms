@@ -412,7 +412,7 @@ public class UserChangePrefs extends Administrator {
       p.setProperty( "country_council", "" );
       p.setProperty( "email", "" );
 
-      p.setProperty( "internal", "" );
+      p.setProperty( "external", "" );
       p.setProperty( "last_page", "" );
       p.setProperty( "archive_mode", "" );
       p.setProperty( "lang_id", "" );

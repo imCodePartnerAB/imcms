@@ -25,7 +25,7 @@ usertype. 0=special, 1=default, 2=conferenceuser
  @country varchar(30),
  @county_council varchar(30),
  @email varchar(50),
- @internal int,
+ @external int,
  @last_page int,
  @archive_mode int,
  @lang_id int,

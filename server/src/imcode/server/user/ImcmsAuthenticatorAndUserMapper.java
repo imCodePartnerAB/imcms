@@ -64,7 +64,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
          result.setActive( 0 != Integer.parseInt( user_data[16] ) );
          result.setCreateDate( user_data[17] );
          result.setLangPrefix( user_data[14] );
-         result.setImcmsInternal( 0 != Integer.parseInt( user_data[18] ));
+         result.setImcmsExternal( 0 != Integer.parseInt( user_data[18] ));
 
          String[][] phoneNbr = service.sqlProcedureMulti( "GetUserPhoneNumbers " + user_data[0] );
          String workPhone = "";

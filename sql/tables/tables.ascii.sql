@@ -758,7 +758,7 @@ CREATE TABLE [dbo].[users] (
 	[country] [varchar] (30) NOT NULL ,
 	[county_council] [varchar] (30) NOT NULL ,
 	[email] [varchar] (50) NOT NULL ,
-	[internal] [int] NOT NULL ,
+	[external] [int] NOT NULL ,
 	[last_page] [int] NOT NULL ,
 	[archive_mode] [int] NOT NULL ,
 	[lang_id] [int] NOT NULL ,

@@ -35,7 +35,7 @@ CREATE PROCEDURE GetUserByLogin @login varchar(50) AS
 	user_type 		int
 	active			INT			Whether the user is allowed to log in.
 	create_date		smalldatetime
-	internal                             int         Whether this user is handled solely within imcms or is synchronized externally
+	external                             int         Whether this user is handled solely within imcms or is synchronized externally
 **/
 
 SELECT  user_id,
@@ -56,7 +56,7 @@ SELECT  user_id,
 		user_type,
 		active,
 		create_date,
-		internal
+		[external]
 		
 FROM users, lang_prefixes
 WHERE login_name = @login

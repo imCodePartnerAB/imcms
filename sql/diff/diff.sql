@@ -1271,13 +1271,13 @@ SET ANSI_PADDING ON
 SET ANSI_WARNINGS ON
 COMMIT
 BEGIN TRANSACTION
-EXECUTE sp_rename N'dbo.users.admin_mode', N'Tmp_internal', 'COLUMN'
+EXECUTE sp_rename N'dbo.users.admin_mode', N'Tmp_external', 'COLUMN'
 GO
-EXECUTE sp_rename N'dbo.users.Tmp_internal', N'internal', 'COLUMN'
+EXECUTE sp_rename N'dbo.users.Tmp_external', N'external', 'COLUMN'
 GO
 DECLARE @v sql_variant
-SET @v = N'Used to determine if this user is hanlded by Imcms instead of an external directory'
-EXECUTE sp_addextendedproperty N'MS_Description', @v, N'user', N'dbo', N'table', N'users', N'column', N'internal'
+SET @v = N'Used to determine if this user is handled by Imcms instead of an external directory'
+EXECUTE sp_addextendedproperty N'MS_Description', @v, N'user', N'dbo', N'table', N'users', N'column', N'external'
 GO
 COMMIT
 

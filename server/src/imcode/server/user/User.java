@@ -43,7 +43,7 @@ public class User extends Hashtable {
    private String loginType;
 
    private IMCServiceInterface serverObject;
-   private boolean imcmsInternal = false ;
+   private boolean imcmsExternal = false ;
 
    /**
     get user-id
@@ -380,11 +380,11 @@ public class User extends Hashtable {
       this.loginType = loginType;
    }
 
-   public boolean isImcmsInternal() {
-      return this.imcmsInternal;
+   public boolean isImcmsExternal() {
+      return this.imcmsExternal;
    }
 
-   public void setImcmsInternal( boolean internal ){
-      this.imcmsInternal = internal;
+   public void setImcmsExternal( boolean external ){
+      this.imcmsExternal = external;
    }
 }
