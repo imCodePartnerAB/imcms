@@ -1,13 +1,14 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.flow.*;
 import com.imcode.imcms.servlet.GetDoc;
 import com.imcode.imcms.servlet.WebComponent;
-import com.imcode.imcms.flow.*;
 import imcode.server.*;
 import imcode.server.document.*;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
-import imcode.util.*;
+import imcode.util.Parser;
+import imcode.util.Utility;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.servlet.ServletException;
@@ -34,30 +35,14 @@ public class AdminDoc extends HttpServlet {
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( metaId );
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if (!documentMapper.userHasMoreThanReadPermissionOnDocument( user, document )) {
-            flags = 0 ;
+        if ( !documentMapper.userHasMoreThanReadPermissionOnDocument( user, document ) ) {
+            flags = 0;
         }
-        RedirectToDocumentCommand returnCommand = new RedirectToDocumentCommand( document );
-        SaveEditedDocumentCommand saveDocumentCommand = new SaveEditedDocumentCommand();
-        if ( IMCConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
-            HttpPageFlow httpPageFlow = new EditDocumentInformationPageFlow(document, returnCommand, saveDocumentCommand ) ;
-            DocumentComposer.forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
-        } else if ( document instanceof BrowserDocumentDomainObject
-                    && IMCConstants.DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT == flags ) {
-            HttpPageFlow httpPageFlow = new EditBrowserDocumentPageFlow((BrowserDocumentDomainObject)document, returnCommand, saveDocumentCommand ) ;
-            DocumentComposer.forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
-        } else if ( document instanceof HtmlDocumentDomainObject
-                    && IMCConstants.DISPATCH_FLAG__EDIT_HTML_DOCUMENT == flags ) {
-            HttpPageFlow httpPageFlow = new EditHtmlDocumentPageFlow((HtmlDocumentDomainObject)document, returnCommand, saveDocumentCommand ) ;
-            DocumentComposer.forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
-        } else if ( document instanceof UrlDocumentDomainObject
-                    && IMCConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT == flags ) {
-            HttpPageFlow httpPageFlow = new EditUrlDocumentPageFlow((UrlDocumentDomainObject)document, returnCommand, saveDocumentCommand ) ;
-            DocumentComposer.forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
-        } else if ( document instanceof FileDocumentDomainObject
-                    && IMCConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags ) {
-            HttpPageFlow httpPageFlow = new EditFileDocumentPageFlow((FileDocumentDomainObject)document, getServletContext(), returnCommand, saveDocumentCommand ) ;
-            DocumentComposer.forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
+
+        HttpPageFlow httpPageFlow = createFlow( document, flags );
+
+        if ( null != httpPageFlow ) {
+            httpPageFlow.dispatch( req, res );
         } else {
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -83,6 +68,30 @@ public class AdminDoc extends HttpServlet {
             }
 
         }
+    }
+
+    private HttpPageFlow createFlow( DocumentDomainObject document, int flags ) {
+        RedirectToDocumentCommand returnCommand = new RedirectToDocumentCommand( document );
+        SaveEditedDocumentCommand saveDocumentCommand = new SaveEditedDocumentCommand();
+
+        HttpPageFlow httpPageFlow = null;
+        if ( IMCConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
+            httpPageFlow = new EditDocumentInformationPageFlow( document, returnCommand, saveDocumentCommand );
+        } else if ( document instanceof BrowserDocumentDomainObject
+                    && IMCConstants.DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT == flags ) {
+            httpPageFlow = new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, returnCommand, saveDocumentCommand );
+        } else if ( document instanceof HtmlDocumentDomainObject
+                    && IMCConstants.DISPATCH_FLAG__EDIT_HTML_DOCUMENT == flags ) {
+            httpPageFlow = new EditHtmlDocumentPageFlow( (HtmlDocumentDomainObject)document, returnCommand, saveDocumentCommand );
+        } else if ( document instanceof UrlDocumentDomainObject
+                    && IMCConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT == flags ) {
+            httpPageFlow = new EditUrlDocumentPageFlow( (UrlDocumentDomainObject)document, returnCommand, saveDocumentCommand );
+        } else if ( document instanceof FileDocumentDomainObject
+                    && IMCConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags ) {
+            httpPageFlow = new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), returnCommand, saveDocumentCommand );
+
+        }
+        return httpPageFlow;
     }
 
     public static String adminDoc( int meta_id, int parent_meta_id, UserDomainObject user, HttpServletRequest req,

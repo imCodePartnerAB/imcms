@@ -1,9 +1,7 @@
 package com.imcode.imcms.flow;
 
 import com.imcode.imcms.servlet.WebComponent;
-import imcode.server.ApplicationServer;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.user.UserDomainObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,8 +30,7 @@ public abstract class EditDocumentPageFlow extends DocumentPageFlow {
 
     protected void dispatchOk( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {
         dispatchOkFromEditPage( request, response );
-        saveDocument( request );
-        dispatchReturn( request, response );
+        saveDocumentAndReturn( request, response );
     }
 
     protected abstract void dispatchFromEditPage( HttpServletRequest request, HttpServletResponse response,

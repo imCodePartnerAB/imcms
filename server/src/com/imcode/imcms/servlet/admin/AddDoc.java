@@ -22,10 +22,6 @@ import java.util.Vector;
 import com.imcode.imcms.flow.*;
 import com.imcode.imcms.servlet.WebComponent;
 
-/**
- * Adds a new document to a menu.
- * Shows an empty metadata page, which calls SaveNewMeta
- */
 public class AddDoc extends HttpServlet {
 
     public static final String REQUEST_PARAMETER__DOCUMENT_TYPE_ID = "edit_menu";
@@ -61,9 +57,8 @@ public class AddDoc extends HttpServlet {
                 httpPageFlow = new CreateDocumentWithEditPageFlow( new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, new AdminDoc.RedirectToDocumentCommand( (BrowserDocumentDomainObject)document ), new AdminDoc.SaveEditedDocumentCommand() ), saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand ) ;
             } else if (document instanceof FormerExternalDocumentDomainObject) {
                 httpPageFlow = new CreateFormerExternalDocumentPageFlow( (FormerExternalDocumentDomainObject)document, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand ) ;
-
             }
-            DocumentComposer.forwardToDocumentComposerWithFlow( request, response, httpPageFlow );
+            httpPageFlow.dispatch( request, response );
         }
     }
 

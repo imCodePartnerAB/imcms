@@ -54,9 +54,4 @@ public class DocumentComposer extends HttpServlet {
         return (DocumentPageFlow)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
     }
 
-    public static void forwardToDocumentComposerWithFlow( HttpServletRequest req, HttpServletResponse res,
-                                                             HttpPageFlow httpPageFlow ) throws ServletException, IOException {
-        HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( httpPageFlow, req, HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
-        req.getRequestDispatcher( "DocumentComposer" ).forward( req, res );
-    }
 }

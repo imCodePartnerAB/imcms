@@ -104,6 +104,7 @@ public class ChangeImage extends HttpServlet {
             public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
                 FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document ;
                 fileDocument.setHeadline( fileDocument.getFilename() );
+                fileDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
                 documentMapper.saveNewDocument( document, user );
                 image.setUrl( "../servlet/GetDoc?meta_id="+document.getId() );
             }
