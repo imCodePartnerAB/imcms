@@ -2,7 +2,9 @@ package imcode.server.user;
 
 import com.imcode.imcms.api.RoleConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.db.*;
+import imcode.server.db.Database;
+import imcode.server.db.DatabaseConnection;
+import imcode.server.db.commands.TransactionDatabaseCommand;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -369,13 +371,12 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
 
     void addRole( final RoleDomainObject role ) {
         final int unionOfPermissionSetIds = getUnionOfRolePermissionIds( role );
-        final int[] newRoleId = new int[1];
-        database.executeTransaction( new DatabaseCommand() {
-            public void executeOn( DatabaseConnection connection ) {
-                newRoleId[0] = connection.executeUpdateAndGetGeneratedKey(SQL_INSERT_INTO_ROLES, new String[] { role.getName(), ""+unionOfPermissionSetIds } ).intValue() ;
+        final int newRoleId = ((Integer)database.executeCommand( new TransactionDatabaseCommand() {
+            public Object executeInTransaction( DatabaseConnection connection ) {
+                return connection.executeUpdateAndGetGeneratedKey(SQL_INSERT_INTO_ROLES, new String[] { role.getName(), ""+unionOfPermissionSetIds } ) ;
             }
-        } );
-        role.setId( newRoleId[0] );
+        })).intValue();
+        role.setId( newRoleId );
     }
 
     private int getUnionOfRolePermissionIds( RoleDomainObject role ) {
@@ -447,12 +448,13 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
 
     public UserDomainObject[] findUsersByNamePrefix( String namePrefix, boolean includeInactiveUsers ) {
         String sql = SQL_SELECT_USERS + " WHERE user_id != " + USER_EXTERN_ID
-                     + " AND ( login_name LIKE ? + '%' OR first_name LIKE ? + '%' OR last_name LIKE ? + '%' )";
+                     + " AND ( login_name LIKE ? OR first_name LIKE ? OR last_name LIKE ? )";
         if ( !includeInactiveUsers ) {
             sql += " AND active = 1";
         }
 	      sql += " ORDER BY last_name, first_name";
-        String[][] sqlRows = database.sqlQueryMulti( sql, new String[]{namePrefix, namePrefix, namePrefix} );
+        String like = namePrefix + "%";
+        String[][] sqlRows = database.sqlQueryMulti( sql, new String[]{like, like, like} );
         return getUsersFromSqlRows( sqlRows );
     }
 

@@ -1,8 +1,8 @@
 package imcode.server.document;
 
-import imcode.server.db.MockDatabase;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.MockImcmsServices;
+import imcode.server.db.impl.MockDatabase;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import junit.framework.TestCase;
 
 public class TestDocumentPermissionSetMapper extends TestCase {

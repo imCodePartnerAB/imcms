@@ -1,6 +1,8 @@
 package imcode.server.document;
 
-import imcode.server.db.*;
+import imcode.server.db.Database;
+import imcode.server.db.DatabaseConnection;
+import imcode.server.db.commands.TransactionDatabaseCommand;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.log4j.Logger;
@@ -48,9 +50,10 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
         boolean menusChanged = !textDocument.getMenus().equals( ( (TextDocumentDomainObject)oldDocument ).getMenus() );
         if ( menusChanged ) {
-            database.executeTransaction( new DatabaseCommand() {
-                public void executeOn( DatabaseConnection connection ) {
+            database.executeCommand( new TransactionDatabaseCommand() {
+                public Object executeInTransaction( DatabaseConnection connection ) {
                     updateTextDocumentMenus( connection, textDocument );
+                    return null ;
                 }
             } );
         }

@@ -17,9 +17,9 @@ import org.apache.velocity.app.VelocityEngine;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyStore;
 import java.text.Collator;
 import java.util.*;
-import java.security.KeyStore;
 
 public class MockImcmsServices implements ImcmsServices {
 
@@ -248,10 +248,6 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public Map sqlProcedureHash( String procedure, String[] params ) {
-        return database.sqlProcedureHash( procedure, params ) ;
-    }
-
     public int sqlUpdateProcedure( String procedure, String[] params ) {
         return database.sqlUpdateProcedure( procedure, params ) ;
     }
@@ -280,8 +276,8 @@ public class MockImcmsServices implements ImcmsServices {
         return database.sqlQueryMulti( sqlstr, params ) ;
     }
 
-    public void executeTransaction( DatabaseCommand databaseCommand ) {
-        database.executeTransaction( databaseCommand );
+    public Object executeCommand( DatabaseCommand databaseCommand ) {
+        return database.executeCommand( databaseCommand );
     }
 
     public TemplateMapper getTemplateMapper() {

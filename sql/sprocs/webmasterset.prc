@@ -7,6 +7,3 @@ CREATE PROCEDURE WebMasterSet
 
 UPDATE sys_data SET value = @wmname WHERE type_id = 6
 UPDATE sys_data SET value = @wmaddress WHERE type_id = 7
-
-
-;

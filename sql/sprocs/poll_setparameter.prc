@@ -9,5 +9,3 @@ AS
 		UPDATE polls SET '+ @param_name + ' = '''+ @value + ''' WHERE id = '+ convert(varchar(10), @poll_id ) )
 
 	EXEC (@eval)
-
-;

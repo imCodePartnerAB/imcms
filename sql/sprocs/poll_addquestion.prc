@@ -5,6 +5,3 @@ CREATE PROCEDURE Poll_AddQuestion
 AS
 	INSERT INTO poll_questions 
 	VALUES (@poll_id, @question_no, @text_id)
-	
-
-;

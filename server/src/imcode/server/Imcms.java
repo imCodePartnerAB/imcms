@@ -1,13 +1,19 @@
 package imcode.server;
 
-import imcode.server.db.ConnectionPool;
-import imcode.server.db.ConnectionPoolDatabase;
 import imcode.server.db.Database;
+import imcode.server.db.impl.DefaultDatabase;
+import imcode.server.db.impl.DefaultProcedureExecutor;
 import imcode.util.Prefs;
-import org.apache.log4j.Logger;
+import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.log4j.Logger;
 
+import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class Imcms {
@@ -15,11 +21,10 @@ public class Imcms {
     private static final String SERVER_PROPERTIES_FILENAME = "server.properties";
     private final static Logger log = Logger.getLogger( imcode.server.Imcms.class.getName() );
     private static ImcmsServices services ;
-    private static ConnectionPool apiConnectionPool ;
-    private static ConnectionPool connectionPool;
+    private static BasicDataSource apiDataSource ;
+    private static BasicDataSource dataSource;
 
-    private Imcms() {
-    }
+    private Imcms() {}
 
     public synchronized static ImcmsServices getServices() {
         if (null == services) {
@@ -30,18 +35,19 @@ public class Imcms {
 
     private synchronized static ImcmsServices createServices() {
         Properties serverprops = getServerProperties();
-        connectionPool = createConnectionPool( serverprops );
-        Database database = new ConnectionPoolDatabase( connectionPool );
+        dataSource = createDataSource( serverprops );
+        QueryRunner queryRunner = new QueryRunner( dataSource );
+        Database database = new DefaultDatabase( queryRunner, new DefaultProcedureExecutor(queryRunner) );
         DefaultImcmsServices services = new DefaultImcmsServices( database, serverprops );
         return services ;
     }
 
-    public synchronized static ConnectionPool getApiConnectionPool() {
-        if (null == apiConnectionPool) {
+    public synchronized static DataSource getApiDataSource() {
+        if (null == apiDataSource) {
             Properties serverprops = getServerProperties();
-            apiConnectionPool = createConnectionPool( serverprops );
+            apiDataSource = createDataSource( serverprops );
         }
-        return apiConnectionPool ;
+        return apiDataSource ;
     }
 
     private static Properties getServerProperties() {
@@ -53,7 +59,7 @@ public class Imcms {
         }
     }
 
-    private static ConnectionPool createConnectionPool( Properties props ) {
+    private static BasicDataSource createDataSource( Properties props ) {
 
         String jdbcDriver = props.getProperty( "JdbcDriver" );
         String jdbcUrl = props.getProperty( "JdbcUrl" );
@@ -66,13 +72,47 @@ public class Imcms {
         log.debug( "User = " + user );
         log.debug( "MaxConnectionCount = " + maxConnectionCount );
 
-        return ConnectionPool.createConnectionPool( jdbcDriver, jdbcUrl, user, password, maxConnectionCount );
+        return createDataSource( jdbcDriver, jdbcUrl, user, password, maxConnectionCount );
     }
 
     public synchronized static void restart() {
+        try {
+            apiDataSource.close();
+            dataSource.close();
+        } catch ( SQLException e ) {
+            throw new UnhandledException( e );
+        }
         Prefs.flush();
-        apiConnectionPool.destroy();
-        connectionPool.destroy();
         services = createServices() ;
     }
+
+    private static void logDatabaseVersion( BasicDataSource basicDataSource ) throws SQLException {
+        Connection connection = basicDataSource.getConnection();
+        DatabaseMetaData metaData = connection.getMetaData();
+        log.info( "Database product version = " + metaData.getDatabaseProductVersion() );
+        connection.close();
+    }
+
+    public static BasicDataSource createDataSource( String jdbcDriver, String jdbcUrl,
+                                               String user, String password,
+                                               int maxConnectionCount ) {
+        try {
+            BasicDataSource basicDataSource = new BasicDataSource();
+            basicDataSource.setDriverClassName( jdbcDriver );
+            basicDataSource.setUsername( user );
+            basicDataSource.setPassword( password );
+            basicDataSource.setUrl( jdbcUrl );
+
+            basicDataSource.setMaxActive( maxConnectionCount );
+            basicDataSource.setMaxIdle( maxConnectionCount );
+
+            logDatabaseVersion(basicDataSource);
+
+            return basicDataSource ;
+        } catch ( Exception ex ) {
+            log.fatal( "Failed to create connection pool. Url: " + jdbcUrl + " Driver: " + jdbcDriver, ex );
+            throw new RuntimeException( ex );
+        }
+    }
+
 }

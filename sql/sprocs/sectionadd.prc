@@ -16,4 +16,3 @@ IF ( @foundCode = 0 ) BEGIN
  INSERT INTO sections (section_name)
  VALUES (  @section_word )
 END
-;

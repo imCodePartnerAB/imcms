@@ -7,11 +7,8 @@ Updates the IPaccess table
  @newIpStart DECIMAL ,
  @newIpEnd DECIMAL 
 AS
-UPDATE IP_ACCESSES
+UPDATE ip_accesses
 SET user_id = @newUserId ,
  ip_start = @newIpStart,
  ip_end = @newIpEnd
-WHERE ip_access_id = @IpAccessId 
-
-
-;
+WHERE ip_access_id = @IpAccessId

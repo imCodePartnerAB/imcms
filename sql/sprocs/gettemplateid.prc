@@ -8,6 +8,3 @@ CREATE PROCEDURE GetTemplateId
 SELECT template_id
 FROM templates
 WHERE simple_name = @aTemplatename
-
-
-;

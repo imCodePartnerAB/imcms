@@ -7,4 +7,3 @@ SELECT	order_id, order_datetime, user_id
 FROM		shopping_orders
 WHERE	shopping_orders.user_id = @user_id
 ORDER BY	order_datetime
-;

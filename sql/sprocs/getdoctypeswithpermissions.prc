@@ -18,6 +18,3 @@ LEFT JOIN doc_permission_sets_ex dpse
        AND dpse.permission_id = 8
 WHERE dt.lang_prefix = @lang_prefix
 ORDER BY CAST(ISNULL(dpse.permission_data,-1)+1  AS BIT) DESC,doc_type
-
-
-;

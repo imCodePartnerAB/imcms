@@ -7,6 +7,3 @@ Begin with getting the users langId from the userobject.
 SELECT lang_prefix 
 FROM lang_prefixes
 WHERE lang_id = @aLangId
-
-
-;

@@ -6,5 +6,3 @@ AS
 	FROM poll_questions 
 	WHERE poll_id = @poll_id 
 	ORDER BY question_number
-
-;

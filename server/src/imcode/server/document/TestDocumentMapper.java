@@ -1,14 +1,14 @@
 package imcode.server.document;
 
-import imcode.server.db.MockDatabase;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.IndexException;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.user.UserDomainObject;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
+import imcode.server.db.impl.MockDatabase;
+import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.IndexException;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 import org.apache.lucene.search.Query;
 

@@ -3,8 +3,8 @@ package imcode.server.document;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
-import imcode.server.db.DatabaseCommand;
 import imcode.server.db.DatabaseConnection;
+import imcode.server.db.commands.TransactionDatabaseCommand;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -152,8 +152,8 @@ public class DocumentPermissionSetMapper {
         }
 
         final int permissionBits1 = permissionBits;
-        database.executeTransaction( new DatabaseCommand() {
-            public void executeOn( DatabaseConnection connection ) {
+        database.executeCommand( new TransactionDatabaseCommand() {
+            public Object executeInTransaction( DatabaseConnection connection ) {
                 sqlDeleteFromExtendedPermissionsTable( document, documentPermissionSet, forNewDocuments, connection );
                 String tableName = forNewDocuments ? TABLE_NEW_DOC_PERMISSION_SETS : TABLE_DOC_PERMISSION_SETS ;
                 connection.executeUpdate( "DELETE FROM "+tableName+"\n"
@@ -163,6 +163,7 @@ public class DocumentPermissionSetMapper {
                 connection.executeUpdate( "INSERT INTO "+tableName+" (meta_id, set_id, permission_id)\n"
                                                + "VALUES (?,?,?)", new String[] {"" + document.getId(), "" + documentPermissionSet.getTypeId(),
                                                                            "" + permissionBits1} );
+                return null ;
             }
         } );
 

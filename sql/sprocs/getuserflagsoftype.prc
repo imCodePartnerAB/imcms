@@ -9,4 +9,3 @@ SELECT	user_flags.user_flag_id,
 		user_flags.description
 FROM		user_flags
 WHERE	user_flags.type = @type
-;

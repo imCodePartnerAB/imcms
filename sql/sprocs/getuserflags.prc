@@ -8,4 +8,3 @@ SELECT	user_flags.user_flag_id,
 		user_flags.type,
 		user_flags.description
 FROM		user_flags
-;

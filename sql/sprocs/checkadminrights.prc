@@ -10,6 +10,3 @@ FROM users INNER JOIN
     users.user_id = user_roles_crossref.user_id INNER JOIN
     roles ON user_roles_crossref.role_id = roles.role_id
 WHERE roles.role_id = 0 AND users.user_id = @aUserId
-
-
-;

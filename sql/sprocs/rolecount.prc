@@ -12,6 +12,3 @@ WHERE role_id = @aRoleId
 -- Lets validate for null
 SELECT @returnVal = ISNULL(  @returnVal , 0 )
 SELECT @returnVal AS 'Number_of_roles'
-
-
-;

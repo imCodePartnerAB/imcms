@@ -6,4 +6,3 @@ SELECT	order_id, order_datetime, user_id
 FROM		shopping_orders
 WHERE	order_id = @order_id
 AND		user_id = @user_id
-;

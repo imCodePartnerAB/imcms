@@ -7,6 +7,3 @@ AS
 SELECT lang_prefix 
 FROM meta
 WHERE meta_id = @meta_id
-
-
-;

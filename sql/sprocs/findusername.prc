@@ -4,6 +4,3 @@ AS
 SELECT  u.login_name
 FROM users u
 WHERE u.login_name = @userName
-
-
-;

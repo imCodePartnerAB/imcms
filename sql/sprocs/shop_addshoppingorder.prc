@@ -7,5 +7,3 @@ INSERT INTO	shopping_orders	(user_id, order_datetime)
 VALUES			(@user_id, @datetime)
 
 SELECT @@IDENTITY
-
-;

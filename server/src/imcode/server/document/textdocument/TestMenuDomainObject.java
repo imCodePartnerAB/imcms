@@ -1,12 +1,12 @@
 package imcode.server.document.textdocument;
 
 import imcode.server.Config;
-import imcode.server.user.UserDomainObject;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.db.MockDatabase;
+import imcode.server.db.impl.MockDatabase;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentReference;
-import imcode.server.document.DocumentDomainObject;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 
 import java.util.List;

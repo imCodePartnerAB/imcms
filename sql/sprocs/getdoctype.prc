@@ -7,6 +7,3 @@ AS
 SELECT doc_type
 FROM meta
 WHERE meta_id = @meta_id
-
-
-;

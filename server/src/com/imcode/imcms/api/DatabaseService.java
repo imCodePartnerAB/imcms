@@ -1,16 +1,15 @@
 package com.imcode.imcms.api;
 
-import imcode.server.db.ConnectionPool;
-
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DatabaseService {
 
-    private ConnectionPool connectionPool;
+    private DataSource dataSource;
 
-    public DatabaseService(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
+    public DatabaseService(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     /**
@@ -25,6 +24,6 @@ public class DatabaseService {
      */
 
     public Connection getConnection() throws SQLException {
-        return connectionPool.getConnection() ;
+        return dataSource.getConnection() ;
     }
 }

@@ -4,6 +4,3 @@ AS
  update sys_data
  set value = @value
  where type_id = 1
- 
-  return
-;

@@ -7,7 +7,4 @@ Updates the name on a role in the db
 AS
 UPDATE ROLES
 SET role_name = @newRole_name
-WHERE role_id = @role_id 
-
-
-;
+WHERE role_id = @role_id

@@ -12,6 +12,3 @@ WHERE r.role_id = @roleId
 -- Lets validate for null
 SELECT @returnStr = ISNULL(  @returnStr , '---' )
 SELECT @returnStr AS 'Rolename'
-
-
-;

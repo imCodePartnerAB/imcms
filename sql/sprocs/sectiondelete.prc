@@ -8,4 +8,3 @@ AS
  DELETE 
  FROM sections
  WHERE section_id = @section_id
-;

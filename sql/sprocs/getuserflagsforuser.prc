@@ -11,4 +11,3 @@ FROM		user_flags,
 		user_flags_crossref
 WHERE		user_flags.user_flag_id = user_flags_crossref.user_flag_id
 AND		user_flags_crossref.user_id = @user_id
-;

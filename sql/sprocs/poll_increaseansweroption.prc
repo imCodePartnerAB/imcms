@@ -7,5 +7,3 @@ AS
 	SET answer_count = answer_count + 1
 	WHERE question_id = @question_id and
 		option_number = @option_no
-
-;

@@ -10,6 +10,3 @@ SELECT  u.user_id
 FROM users u
 WHERE u.login_name = @userName
 AND u.login_password = @userPwd
-
-
-;

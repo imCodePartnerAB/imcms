@@ -11,6 +11,3 @@ CREATE  PROCEDURE GetUseradminPermissibleRoles
 		SELECT role_id
  		FROM useradmin_role_crossref  
  		WHERE user_id = @userId )
-
-
-;

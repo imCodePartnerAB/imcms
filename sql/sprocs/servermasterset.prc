@@ -7,6 +7,3 @@ CREATE PROCEDURE ServerMasterSet
 
 UPDATE sys_data SET value = @smname WHERE type_id = 4
 UPDATE sys_data SET value = @smaddress WHERE type_id = 5
-
-
-;

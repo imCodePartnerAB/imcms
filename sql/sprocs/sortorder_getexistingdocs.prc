@@ -12,6 +12,3 @@ INNER JOIN display_name display
 	AND lang.lang_prefix = @langPrefixString
 INNER JOIN sort_by sType
 	ON sType.sort_by_id = display.sort_by_id
-
-
-;

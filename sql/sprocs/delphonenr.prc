@@ -8,6 +8,3 @@ AS
  DELETE 
  FROM phones
  WHERE user_id = @aUserId
-
-
-;

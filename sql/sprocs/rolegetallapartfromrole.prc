@@ -5,6 +5,3 @@ CREATE PROCEDURE RoleGetAllApartFromRole @role_id int AS
 SELECT role_id , role_name FROM ROLES
 WHERE role_id != 0 and role_id != @role_id
 ORDER BY role_id
-
-
-;

@@ -7,6 +7,3 @@ CREATE PROCEDURE GetAllUsers AS
  from USERS
  
  order by  last_name
-
-
-;

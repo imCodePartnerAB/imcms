@@ -6,6 +6,3 @@ AS
 DELETE FROM ROLES_RIGHTS WHERE role_id = @roleId
 DELETE FROM user_roles_crossref WHERE role_id =@roleId
 DELETE FROM ROLES WHERE role_id = @roleId
-
-
-;

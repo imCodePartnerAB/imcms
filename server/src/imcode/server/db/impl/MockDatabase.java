@@ -1,16 +1,20 @@
-package imcode.server.db;
+package imcode.server.db.impl;
 
+import imcode.server.db.Database;
+import imcode.server.db.DatabaseCommand;
+import imcode.server.db.DatabaseConnection;
 import junit.framework.Assert;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 
+import java.sql.*;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.sql.Connection;
+import java.util.regex.Pattern;
 
 public class MockDatabase implements Database {
 
@@ -23,10 +27,6 @@ public class MockDatabase implements Database {
             return new String[0] ;
         }
         return result;
-    }
-
-    public Map sqlProcedureHash( String procedure, String[] params ) {
-        return (Map)getResultForSqlCall( procedure, params );
     }
 
     public int sqlUpdateProcedure( String procedure, String[] params ) {
@@ -71,8 +71,8 @@ public class MockDatabase implements Database {
         return result;
     }
 
-    public void executeTransaction( DatabaseCommand databaseCommand ) {
-        databaseCommand.executeOn( new MockDatabaseConnection(this) );
+    public Object executeCommand( DatabaseCommand databaseCommand ) {
+        return databaseCommand.executeOn( new MockDatabaseConnection(this) );
     }
 
     public void addExpectedSqlCall( final SqlCallPredicate sqlCallPredicate, final Object result ) {
@@ -370,8 +370,181 @@ public class MockDatabase implements Database {
             return (Number)database.getResultForSqlCall( sql, parameters ) ;
         }
 
-        public void executeUpdate( String sql, String[] parameters ) {
-            database.sqlUpdateQuery( sql, parameters );
+        public int executeUpdateProcedure( String procedure, String[] parameters ) {
+            return database.sqlUpdateProcedure( procedure, parameters );
+        }
+
+        public Object executeQuery( String sqlQuery, String[] parameters,
+                                    ResultSetHandler resultSetHandler ) {
+            throw new NotImplementedException( MockDatabaseConnection.class ) ;
+        }
+
+        public Object executeProcedure( String procedure, String[] params, ResultSetHandler resultSetHandler ) {
+            throw new NotImplementedException( MockDatabaseConnection.class ) ;
+        }
+
+        public Connection getConnection() {
+            return new MockConnection() ;
+        }
+
+        public int executeUpdate( String sql, String[] parameters ) {
+            return database.sqlUpdateQuery( sql, parameters );
         }
     }
+
+    public static class MockConnection implements Connection {
+
+        public int getTransactionIsolation() {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public void setTypeMap(Map map) {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public int getHoldability() throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public void clearWarnings() throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public void close() throws SQLException {
+        }
+
+        public void commit() throws SQLException {}
+
+        public void rollback() throws SQLException {}
+
+        public boolean getAutoCommit() throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public boolean isClosed() throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public boolean isReadOnly() throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public void setHoldability( int holdability ) throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public void setTransactionIsolation( int level ) throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public void setAutoCommit( boolean autoCommit ) throws SQLException {
+        }
+
+        public void setReadOnly( boolean readOnly ) throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public String getCatalog() throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public void setCatalog( String catalog ) throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public DatabaseMetaData getMetaData() throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public SQLWarning getWarnings() throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public Savepoint setSavepoint() throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public void releaseSavepoint( Savepoint savepoint ) throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public void rollback( Savepoint savepoint ) throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public Statement createStatement() throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public Statement createStatement( int resultSetType, int resultSetConcurrency )
+                throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public Statement createStatement( int resultSetType, int resultSetConcurrency,
+                                          int resultSetHoldability ) throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public Map getTypeMap() throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public String nativeSQL( String sql ) throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public CallableStatement prepareCall( String sql ) throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public CallableStatement prepareCall( String sql, int resultSetType,
+                                              int resultSetConcurrency ) throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public CallableStatement prepareCall( String sql, int resultSetType,
+                                              int resultSetConcurrency,
+                                              int resultSetHoldability ) throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public PreparedStatement prepareStatement( String sql )
+                throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public PreparedStatement prepareStatement( String sql, int autoGeneratedKeys )
+                throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public PreparedStatement prepareStatement( String sql, int resultSetType,
+                                                   int resultSetConcurrency )
+                throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public PreparedStatement prepareStatement( String sql, int resultSetType,
+                                                   int resultSetConcurrency, int resultSetHoldability )
+                throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public PreparedStatement prepareStatement( String sql, int columnIndexes[] )
+                throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public Savepoint setSavepoint( String name ) throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+        public PreparedStatement prepareStatement( String sql, String columnNames[] )
+                throws SQLException {
+            throw new NotImplementedException( MockConnection.class );
+        }
+
+    }
+
 }

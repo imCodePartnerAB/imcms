@@ -5,6 +5,3 @@ AS
 DELETE 
 FROM user_roles_crossref
 WHERE user_id = @userId and role_id = @role_id
-
-
-;

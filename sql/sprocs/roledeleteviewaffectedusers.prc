@@ -11,6 +11,3 @@ WHERE usr.role_id = @aRoleId
 AND usr.user_id = u.user_id
 --GROUP BY (RTRIM(last_name) + ', ' + RTRIM(first_name)), usr.role_id
 ORDER BY (RTRIM(last_name) + ', ' + RTRIM(first_name))
-
-
-;

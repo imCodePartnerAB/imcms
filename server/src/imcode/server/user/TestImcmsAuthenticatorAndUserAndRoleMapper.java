@@ -1,6 +1,6 @@
 package imcode.server.user;
 
-import imcode.server.db.MockDatabase;
+import imcode.server.db.impl.MockDatabase;
 import junit.framework.TestCase;
 import org.apache.commons.lang.ArrayUtils;
 

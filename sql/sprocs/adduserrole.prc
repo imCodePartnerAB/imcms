@@ -16,5 +16,3 @@ IF @@rowcount  = 0 BEGIN
  INSERT INTO  user_roles_crossref(user_id, role_id)
  VALUES( @aUser_id , @aRole_id)
 END
-
-;

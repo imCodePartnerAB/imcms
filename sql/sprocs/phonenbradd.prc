@@ -12,7 +12,4 @@ FROM phones
 IF @newPhoneId IS NULL 
  SET @newPhoneId = 1
 INSERT INTO PHONES ( phone_id , number , user_id, phonetype_id )
-VALUES (@newPhoneId , @nbr, @user_id, @phonetype_id )  
-
-
-;
+VALUES (@newPhoneId , @nbr, @user_id, @phonetype_id )

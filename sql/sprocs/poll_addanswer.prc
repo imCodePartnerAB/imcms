@@ -7,5 +7,3 @@ CREATE  PROCEDURE Poll_AddAnswer
 AS
 	INSERT INTO poll_answers ( question_id, text_id, option_number )
 	VALUES ( @question_id, @text_id, @option_no )
-
-;

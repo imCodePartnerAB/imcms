@@ -8,6 +8,3 @@ join users u
   on us.user_id = u.user_id
 where role_id = @role_id
 order by  last_name
-
-
-;

@@ -5,4 +5,3 @@ AS
 	SELECT *
 	FROM polls 
 	WHERE meta_id = @meta_id
-;

@@ -12,6 +12,3 @@ WHERE r.role_name = @newRoleName
 -- Lets validate for null
 SELECT @returnVal = ISNULL(  @returnVal , -1 )
 SELECT @returnVal AS 'FoundRoleName'
-
-
-;

@@ -23,6 +23,3 @@ LEFT JOIN doc_permission_sets dps
        ON (dp.permission_id & dps.permission_id) > 0
        AND dps.set_id = @set_id
        AND dps.meta_id = m.meta_id
-
-
-;

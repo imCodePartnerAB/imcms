@@ -601,10 +601,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return sessionCounterDate;
     }
 
-    public Map sqlProcedureHash( String procedure, String[] params ) {
-        return database.sqlProcedureHash( procedure, params );
-    }
-
     /**
      * Send a procedure to the database and return a multi string array
      */
@@ -616,8 +612,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return database.sqlQueryMulti( sqlQuery, params );
     }
 
-    public void executeTransaction( DatabaseCommand databaseCommand ) {
-        database.executeTransaction( databaseCommand );
+    public Object executeCommand( DatabaseCommand databaseCommand ) {
+        return database.executeCommand( databaseCommand ) ;
     }
 
     /**

@@ -24,6 +24,3 @@ WHERE
        OR rr.set_id = 0
        OR urc.role_id = 0
 ORDER BY dt.group_name
-
-
-;

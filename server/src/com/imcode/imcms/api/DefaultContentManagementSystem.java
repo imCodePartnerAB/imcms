@@ -35,7 +35,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
         userService = new UserService( this );
         documentService = new DocumentService( this ) ;
         templateService = new TemplateService( this );
-        databaseService = new DatabaseService( Imcms.getApiConnectionPool() );
+        databaseService = new DatabaseService( Imcms.getApiDataSource() );
         mailService = new MailService(this.service.getSMTP()) ;
     }
 

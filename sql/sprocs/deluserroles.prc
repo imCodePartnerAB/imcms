@@ -19,5 +19,3 @@ ELSE IF @roleId > 0 BEGIN
  FROM user_roles_crossref
  WHERE user_id = @userToChangeId AND role_id = @roleId	
 END
-
-;

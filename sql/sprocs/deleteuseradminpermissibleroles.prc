@@ -6,7 +6,3 @@ CREATE  PROCEDURE DeleteUseradminPermissibleRoles
  AS
  DELETE FROM useradmin_role_crossref
  WHERE user_id = @userId
- 
-
-
-;

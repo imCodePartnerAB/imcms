@@ -1,10 +1,10 @@
 package com.imcode.imcms.flow;
 
 import com.imcode.test.mock.MockHttpServletRequest;
-import imcode.server.ImcmsServices;
 import imcode.server.Config;
+import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
-import imcode.server.db.MockDatabase;
+import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetMapper;

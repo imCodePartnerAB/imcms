@@ -1,12 +1,8 @@
 package imcode.server.db;
 
-import java.util.Map;
-
 public interface Database {
 
     String[] sqlProcedure(String procedure, String[] params) ;
-
-    Map sqlProcedureHash( String procedure, String[] params );
 
     int sqlUpdateProcedure( String procedure, String[] params );
 
@@ -22,6 +18,5 @@ public interface Database {
 
     String[][] sqlQueryMulti(String sqlstr, String[] params);
 
-    void executeTransaction( DatabaseCommand databaseCommand );
-
+    Object executeCommand( DatabaseCommand databaseCommand );
 }

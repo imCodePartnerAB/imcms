@@ -4,6 +4,3 @@ CREATE PROCEDURE DeleteInclude @meta_id INT, @include_id INT AS
 **/
 
 DELETE FROM includes WHERE meta_id = @meta_id AND include_id = @include_id
-
-
-;

@@ -17,3 +17,7 @@ DROP PROCEDURE GetDocTypesForUser
 DROP PROCEDURE SetRoleDocPermissionSetId
 
 -- 2005-03-01 Kreiger
+
+DROP PROCEDURE DocumentDelete
+
+-- 2005-03-03 Kreiger

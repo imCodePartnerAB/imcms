@@ -5,6 +5,3 @@ CREATE PROCEDURE RoleAdminGetAll AS
 SELECT role_id , role_name FROM ROLES
 WHERE role_id != 0
 ORDER BY role_name
-
-
-;

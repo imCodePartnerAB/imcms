@@ -1,12 +1,12 @@
 package com.imcode.imcms.api;
 
-import junit.framework.TestCase;
-import imcode.server.MockImcmsServices;
 import imcode.server.Config;
-import imcode.server.user.UserDomainObject;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.db.MockDatabase;
+import imcode.server.MockImcmsServices;
+import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.DocumentMapper;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
+import junit.framework.TestCase;
 
 public class TestDocumentService extends TestCase {
 

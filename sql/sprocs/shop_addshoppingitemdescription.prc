@@ -4,5 +4,3 @@ CREATE PROCEDURE Shop_AddShoppingItemDescription @item_id INT, @number INT, @des
 **/
 INSERT INTO	shopping_order_item_descriptions	(item_id,		number,		description)
 VALUES						(@item_id,	@number,	@description)
-
-;

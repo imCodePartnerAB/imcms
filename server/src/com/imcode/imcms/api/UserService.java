@@ -1,10 +1,10 @@
 package com.imcode.imcms.api;
 
+import imcode.server.db.exceptions.IntegrityConstraintViolationSQLException;
+import imcode.server.db.exceptions.StringTruncationSQLException;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.server.db.IntegrityConstraintViolationSQLException;
-import imcode.server.db.StringTruncationSQLException;
 
 public class UserService {
 

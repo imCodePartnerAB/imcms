@@ -7,4 +7,3 @@ AS
 	FROM 	poll_questions 
 	WHERE poll_id = @poll_id and
 		question_number = @question_no
-;

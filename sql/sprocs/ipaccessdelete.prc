@@ -4,8 +4,5 @@ CREATE PROCEDURE IPAccessDelete
 */
  @ipAccessId int
 AS
-DELETE FROM IP_ACCESSES 
+DELETE FROM ip_accesses
 WHERE ip_access_id = @ipAccessId
-
-
-;

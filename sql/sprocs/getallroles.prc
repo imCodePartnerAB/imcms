@@ -8,6 +8,3 @@ FROM roles
 WHERE role_name not like 'Users'
  
 ORDER BY role_name
-
-
-;

@@ -9,6 +9,3 @@ FROM  templates t JOIN
 ON  t.template_id = c.template_id
 WHERE c.group_id = @grp_id
 ORDER BY simple_name
-
-
-;

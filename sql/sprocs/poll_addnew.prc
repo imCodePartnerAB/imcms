@@ -4,6 +4,3 @@ CREATE PROCEDURE Poll_AddNew
 AS
 	INSERT INTO polls ( meta_id )
 	VALUES ( @meta_id )
-
-
-;

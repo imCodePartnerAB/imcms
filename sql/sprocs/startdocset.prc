@@ -13,6 +13,3 @@ IF @@ROWCOUNT = 0 BEGIN
 		INSERT INTO sys_data (sys_id, type_id, value) VALUES(0, 0, @meta_id)
 		SET IDENTITY_INSERT sys_data OFF
 END
-
-
-;

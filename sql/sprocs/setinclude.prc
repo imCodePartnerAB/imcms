@@ -8,6 +8,3 @@ WHERE 	meta_id = @meta_id
 	AND 	include_id = @include_id
 INSERT INTO	includes	 (meta_id, include_id, included_meta_id)
 VALUES	(@meta_id, @include_id, @included_meta_id)
-
-
-;

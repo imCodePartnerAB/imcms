@@ -8,6 +8,3 @@ CREATE PROCEDURE FindMetaId
 SELECT meta_id 
 FROM meta
 WHERE meta_id = @meta_id
-
-
-;

@@ -10,6 +10,3 @@ CREATE  PROCEDURE AddUseradminPermissibleRoles
  INSERT INTO useradmin_role_crossref
  (user_id, role_id )
  VALUES (@userId, @roleId)
- 
-
-;

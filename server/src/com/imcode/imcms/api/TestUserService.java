@@ -1,7 +1,7 @@
 package com.imcode.imcms.api;
 
 import imcode.server.MockImcmsServices;
-import imcode.server.db.MockDatabase;
+import imcode.server.db.impl.MockDatabase;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;

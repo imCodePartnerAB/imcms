@@ -7,6 +7,3 @@ AS
 	UPDATE poll_answers
 	SET option_point = @point
 	WHERE [id] = @answer_id
-
-
-;
