@@ -576,6 +576,42 @@ GO
 
 
 
+/*
+   den 9 januari 2003 17:44:40
+   Application: MS SQLEM - Data Tools
+   
+   New column admin_role in table roles and 
+   one new role : Useradmin
+   admin_role values: Superadmin = 1
+   					  Useradmin = 2	
+*/
+
+
+SET QUOTED_IDENTIFIER ON
+BEGIN TRANSACTION
+
+
+ALTER TABLE dbo.roles ADD
+	admin_role int NOT NULL CONSTRAINT DF_roles_admin_role DEFAULT 0
+GO
+COMMIT
+
+BEGIN TRANSACTION
+	UPDATE roles set admin_role = 1
+	WHERE role_id = 0
+
+	DECLARE @maxId int
+	SELECT @maxId = max(role_id) FROM roles  
+	
+	INSERT INTO roles 
+	VALUES ( @maxId+1, 'Useradmin', 0, 2 ) 
+	
+GO
+COMMIT
+SET QUOTED_IDENTIFIER OFF
+
+-- 2003-01-09
+
 print' OBS!!!  Glöm inte att du MÅSTE köra hela sprocs.sql efter detta script vid uppgradering  OBS!!'
 
 

@@ -572,9 +572,11 @@ GO
 CREATE TABLE [dbo].[roles] (
 	[role_id] [int] NOT NULL ,
 	[role_name] [char] (25) NOT NULL ,
-	[permissions] [int] NOT NULL 
+	[permissions] [int] NOT NULL ,
+	[admin_role] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
+
 
 CREATE TABLE [dbo].[roles_permissions] (
 	[permission_id] [int] NOT NULL ,
@@ -1024,11 +1026,14 @@ GO
 
 ALTER TABLE [dbo].[roles] WITH NOCHECK ADD 
 	CONSTRAINT [DF_roles_permissions] DEFAULT (0) FOR [permissions],
+	CONSTRAINT [DF_roles_admin_role] DEFAULT (0) FOR [admin_role],
 	CONSTRAINT [PK_roles] PRIMARY KEY  NONCLUSTERED 
 	(
 		[role_id]
 	)  ON [PRIMARY] 
 GO
+
+
 
 ALTER TABLE [dbo].[roles_permissions] WITH NOCHECK ADD 
 	CONSTRAINT [PK_roles_permissions] PRIMARY KEY  NONCLUSTERED 

@@ -155,7 +155,9 @@ public class AdminUserReadrunner extends HttpServlet {
 		Writer out = res.getWriter() ;
 		
 		//Useradmin is not allowed to change his own readrunner values
-		if (isUseradmin && (user.getUserId() != userToChange.getUserId() ) || isSuperadmin){
+		if (isUseradmin && (null == userToChange) ||  // useradmin is going to add a new user
+		   (isUseradmin && user.getUserId() != userToChange.getUserId() ) || // or is going to change a user 
+		   isSuperadmin){   // or Superadmin
 			out.write(imcref.parseDoc(parseList, HTML_RESPONSE_ADMIN, user.getLangPrefix())) ;
 		}else{
 			out.write(imcref.parseDoc(parseList, HTML_RESPONSE_USER, user.getLangPrefix())) ;
