@@ -4,26 +4,19 @@ import org.apache.log4j.Logger;
 
 import javax.naming.*;
 import javax.naming.directory.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Map;
-
-/*
-The use of LDAP simple auth for secret data or update is NOT recommended.
-If you want to use LDAP for that, check out RFC 2829 and RFC 2830.
-*/
+import java.util.*;
 
 /**
  * The mapper maps LDAP attributes to Imcms internal user objekt.
- * This mapper is based on the popular inetOrgPerson (2.16.840.1.113730.3.2.2) schema found in Netscape Directory Server <br>
+ * As a default way to map is to use the popular inetOrgPerson (2.16.840.1.113730.3.2.2) schema found in Netscape Directory Server <br>
  * The inetOrgPerson is based on rganizationalPerson (2.5.6.7) that is based on person (2.5.6.7) that is based on top (2.5.6.0)<br>
  * See for example * @http://www.cio.ufl.edu/projects/directory/ldap-schema/oc-INETORGPERSON.html
- * or @link http://ldap.akbkhome.com/objectclasstree/inetOrgPerson.html
- * for details witch attributes that exists.
+ * or @link http://ldap.akbkhome.com/objectclasstree/inetOrgPerson.html for details witch attributes that exists.
  */
 
-public class LdapUserMapper implements UserMapper {
+public class LdapUserAndRoleMapper implements UserAndRoleMapper {
+
+   public final static String AUTHENTICATION_TYPE_SIMPLE = "simple";
 
    /** The following constanst are mapped to the Imcms internal user tables.
     /* Where the loginname is mapped to the attribute attribute
@@ -61,19 +54,26 @@ public class LdapUserMapper implements UserMapper {
    private HashMap userFieldLdapMappings = null;
    private String[] ldapAttributesAutoMappedToRoles;
 
-   public LdapUserMapper( String ldapServerURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword, String[] ldapAttributesAutoMappedToRoles ) throws LdapInitException {
+   /**
+    * @param ldapURL The full path to where the ldap-service is located _and_ the node where to start the searches, e.g.  "ldap://computername:389/CN=Users,DC=companyName,DC=com"
+    * @param ldapAuthenticationType Curently only AUTHENTICATION_TYPE_SIMPLE is suported
+    * @param ldapUserName A name that is used to log in (bind) to the ldap server
+    * @param ldapPassword A password that i used to log in (bind) to the ldap server
+    */
+
+   public LdapUserAndRoleMapper( String ldapURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword, String[] ldapAttributesAutoMappedToRoles ) throws LdapInitException {
       this.ldapAttributesAutoMappedToRoles = ldapAttributesAutoMappedToRoles;
       this.userIdentifier = NONSTANDARD_USERID;
       this.userFieldLdapMappings = createLdapMappings();
 
       try {
-         ctx = staticSetupInitialDirContext( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword );
+         ctx = staticSetupInitialDirContext( ldapURL, ldapAuthenticationType, ldapUserName, ldapPassword );
       } catch( AuthenticationException ex ) {
          throw new LdapInitException( "Authentication failed, using login: '" + ldapUserName + "', password: '" + ldapPassword + "'", ex );
       } catch( NameNotFoundException ex ) {
-         throw new LdapInitException( "Root not found: " + ldapServerURL, ex );
+         throw new LdapInitException( "Root not found: " + ldapURL, ex );
       } catch( NamingException ex ) {
-         throw new LdapInitException( "Failed to create LDAP context " + ldapServerURL, ex );
+         throw new LdapInitException( "Failed to create LDAP context " + ldapURL, ex );
       }
    }
 
@@ -194,11 +194,11 @@ public class LdapUserMapper implements UserMapper {
       return value;
    }
 
-   private static DirContext staticSetupInitialDirContext( String ldapServerURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword ) throws NamingException {
+   private static DirContext staticSetupInitialDirContext( String ldapURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword ) throws NamingException {
       String ContextFactory = "com.sun.jndi.ldap.LdapCtxFactory";
       Hashtable env = new Hashtable();
       env.put( Context.INITIAL_CONTEXT_FACTORY, ContextFactory );
-      env.put( Context.PROVIDER_URL, ldapServerURL );
+      env.put( Context.PROVIDER_URL, ldapURL );
       env.put( Context.SECURITY_AUTHENTICATION, ldapAuthenticationType );
       env.put( Context.SECURITY_PRINCIPAL, ldapUserName );
       env.put( Context.SECURITY_CREDENTIALS, ldapPassword );
@@ -212,9 +212,8 @@ public class LdapUserMapper implements UserMapper {
 
    public String[] getRoleNames( User user ) {
       String loginName = user.getLoginName();
-      String[] attributesToReturn = ldapAttributesAutoMappedToRoles;
 
-      Map attributeMappedRoles = searchForUserAttributes( loginName, attributesToReturn );
+      Map attributeMappedRoles = searchForUserAttributes( loginName, ldapAttributesAutoMappedToRoles );
       HashSet roles = new HashSet( attributeMappedRoles.values() );
 
       String[] rolesArray = new String[roles.size() + 1];
@@ -248,7 +247,7 @@ public class LdapUserMapper implements UserMapper {
    }
 
    public String[] getAllRoleNames() {
-      return new String[]{DEFAULT_LDAP_ROLE};
+      return new String[] {DEFAULT_LDAP_ROLE };
    }
 
 }

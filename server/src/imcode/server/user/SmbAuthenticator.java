@@ -10,13 +10,13 @@ import org.apache.log4j.Logger;
 import java.net.UnknownHostException;
 
 public class SmbAuthenticator implements Authenticator {
-   private final static String DOMAIN_SERVER = "loke";
-   private final static String DOMAIN_NAME = "imcode";
    private UniAddress domainServerAddress;
+   private String domainName;
 
-   public SmbAuthenticator() {
+   public SmbAuthenticator( String domainServer, String domainName ) {
+      this.domainName = domainName;
       try {
-         this.domainServerAddress = UniAddress.getByName( DOMAIN_SERVER );
+         this.domainServerAddress = UniAddress.getByName( domainServer );
       } catch( UnknownHostException e ) {
          getLogger().error( "Domain server not found.", e );
       }
@@ -25,12 +25,13 @@ public class SmbAuthenticator implements Authenticator {
    public boolean authenticate( String loginName, String password ) {
       boolean result = false;
       try {
-         SmbSession.logon( domainServerAddress, new NtlmPasswordAuthentication( DOMAIN_NAME, loginName, password ) );
+         SmbSession.logon( domainServerAddress,
+                           new NtlmPasswordAuthentication( domainName, loginName, password ) );
          result = true;
       } catch( SmbAuthException e ) {
          result = false;
       } catch( SmbException e ) {
-         getLogger().error( "Error logging on to domain with login " + DOMAIN_NAME + "\\" + loginName + " and password " + password, e );
+         getLogger().error( "Error logging on to domain with login " + domainName + "\\" + loginName + " and password " + password, e );
          result = false;
       }
       return result;

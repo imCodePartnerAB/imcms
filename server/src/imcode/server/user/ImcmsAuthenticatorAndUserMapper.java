@@ -3,7 +3,7 @@ package imcode.server.user;
 import imcode.server.IMCServiceInterface;
 import org.apache.log4j.Logger;
 
-public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticator {
+public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authenticator {
 
    private IMCServiceInterface service;
    final static String ALWAYS_EXISTING_USERS_ROLE = "Users";

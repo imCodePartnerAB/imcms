@@ -5,15 +5,18 @@ import org.apache.log4j.Logger;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticator {
+public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authenticator {
    private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
    private Authenticator externalAuthenticator;
-   private UserMapper externalUserMapper;
+   private UserAndRoleMapper externalUserMapper;
    private String defaultLanguage;
 
    private Logger log = Logger.getLogger( ExternalizedImcmsAuthenticatorAndUserMapper.class );
 
-   public ExternalizedImcmsAuthenticatorAndUserMapper( ImcmsAuthenticatorAndUserMapper imcms, Authenticator externalAuthenticator, UserMapper externalUserMapper, String defaultLanguage ) {
+   public ExternalizedImcmsAuthenticatorAndUserMapper( ImcmsAuthenticatorAndUserMapper imcms,
+                                                       Authenticator externalAuthenticator,
+                                                       UserAndRoleMapper externalUserMapper,
+                                                       String defaultLanguage ) {
       this.imcmsAuthenticatorAndUserMapper = imcms;
       this.externalAuthenticator = externalAuthenticator;
       this.externalUserMapper = externalUserMapper;
@@ -21,15 +24,19 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
    }
 
    public void synchRolesWithExternal() {
-      String[] externalRoleNames = externalUserMapper.getAllRoleNames();
-      imcmsAuthenticatorAndUserMapper.addRoleNames( externalRoleNames );
+      if( null != externalUserMapper ) {
+         String[] externalRoleNames = externalUserMapper.getAllRoleNames();
+         imcmsAuthenticatorAndUserMapper.addRoleNames( externalRoleNames );
+      }
    }
 
    public boolean authenticate( String loginName, String password ) {
       boolean result = false;
-      boolean userExistsInOther = externalAuthenticator.authenticate( loginName, password );
-      result = userExistsInOther;
-      if( !userExistsInOther ) {
+      if (null != externalAuthenticator) {
+         boolean userExistsInOther = externalAuthenticator.authenticate( loginName, password );
+         result = userExistsInOther;
+      }
+      if( !result ) {
          boolean userExistsInImcms = imcmsAuthenticatorAndUserMapper.authenticate( loginName, password );
          result = userExistsInImcms;
       }
@@ -67,11 +74,14 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
    }
 
    private User getUserFromOtherUserMapper( String loginName ) {
-      User externalUser = externalUserMapper.getUser( loginName );
-      if( null != externalUser && null == externalUser.getLangPrefix() ) {
-         externalUser.setLangPrefix( defaultLanguage );
+      User result = null;
+      if( null != externalUserMapper ) {
+         result = externalUserMapper.getUser( loginName );
       }
-      return externalUser;
+      if( null != result && null == result.getLangPrefix() ) {
+         result.setLangPrefix( defaultLanguage );
+      }
+      return result;
    }
 
    private User synchExternalUserInImcms( String loginName, User externalUser, boolean imcmsUserExists ) {

@@ -4,16 +4,15 @@ import java.util.Arrays;
 
 
 public class TestLdapUserMapper extends UserBaseTestCase {
-   private LdapUserMapper ldapUserMapper;
+   private LdapUserAndRoleMapper ldapUserMapper;
 
    public void setUp() {
       try {
-         String ldapServerURL = "ldap://loke:389/CN=Users,DC=imcode,DC=com";
-         String ldapAuthenticationType = "simple";
+         String ldapURL = "ldap://loke:389/CN=Users,DC=imcode,DC=com";
          String ldapUserName = "imcode\\hasbra";
          String ldapPassword = "hasbra";
-         ldapUserMapper = new LdapUserMapper( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword, new String[0] );
-      } catch( LdapUserMapper.LdapInitException e ) {
+         ldapUserMapper = new LdapUserAndRoleMapper( ldapURL, LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE, ldapUserName, ldapPassword, new String[0] );
+      } catch( LdapUserAndRoleMapper.LdapInitException e ) {
          fail();
       }
    }
@@ -78,7 +77,13 @@ public class TestLdapUserMapper extends UserBaseTestCase {
       User user = ldapUserMapper.getUser( "chrham" );
       String[] roleNames = ldapUserMapper.getRoleNames( user );
       assertNotNull( roleNames );
-      assertTrue( Arrays.asList( roleNames ).contains( LdapUserMapper.DEFAULT_LDAP_ROLE ) );
+      assertTrue( Arrays.asList( roleNames ).contains( LdapUserAndRoleMapper.DEFAULT_LDAP_ROLE ) );
+   }
+
+   public void testGetAllRoleNames() {
+      String[] roleNames = ldapUserMapper.getAllRoleNames() ;
+      assertNotNull(roleNames) ;
+      assertTrue( Arrays.asList( roleNames ).contains( LdapUserAndRoleMapper.DEFAULT_LDAP_ROLE )) ;
    }
 
 }

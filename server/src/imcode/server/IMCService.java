@@ -8,6 +8,9 @@ import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
 import imcode.util.FileCache;
+import imcode.util.Prefs;
+import imcode.util.Parser;
+import imcode.util.AdminButtonParser;
 import imcode.util.fortune.*;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.poll.PollHandlingSystemImpl;
@@ -27,8 +30,6 @@ import java.util.*;
  Made final, since only a complete and utter moron would want to extend it.
  **/
 final public class IMCService implements IMCServiceInterface, IMCConstants {
-   private final static String CVS_REV = "$Revision$";
-   private final static String CVS_DATE = "$Date$";
 
    private final ConnectionPool m_conPool; // inet pool of connections
    private TextDocumentParser textDocParser;
@@ -36,14 +37,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
    private File m_TemplateHome;           // template home
    private File m_IncludePath;
    private File m_FortunePath;
-   private File m_ImagePath;
    private File m_FilePath;
    private String m_StartUrl;			   // start url
    private String m_ServletUrl;			   // servlet url
    private String m_ImageUrl;            // image folder
    private String m_Language = "";      // language
-   private String m_serverName = "";      // servername
-
    private static final int DEFAULT_STARTDOCUMENT = 1001;
 
    private SystemData sysData;
@@ -51,12 +49,15 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
    private ExternalDocType m_ExDoc[];
    private String m_SessionCounterDate = "";
    private int m_SessionCounter = 0;
-   private int m_NoOfTemplates;
 
    private FileCache fileCache = new FileCache();
 
    private final static Logger mainLog = Logger.getLogger( IMCConstants.MAIN_LOG );
    private final static Logger log = Logger.getLogger( IMCService.class.getName() );
+   private static final String EXTERNAL_AUTHENTICATOR_SMB = "SMB";
+   private static final String LDAP_PROPERTIES_FILE = "ldap.properties";
+   private static final String SMB_PROPERTIES_FILE = "smb.properties";
+   private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "LDAP";
 
    static {
       mainLog.info( "Main log started." );
@@ -103,6 +104,19 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       m_Language = props.getProperty( "DefaultLanguage" ).trim(); //FIXME: Get from DB
       log.info( "DefaultLanguage: " + m_Language );
 
+      String externalAuthenticator = props.getProperty( "ExternalAuthenticator" ) ;
+      if (null == externalAuthenticator) {
+         log.info("ExternalAuthenticator not set.") ;
+      } else {
+         log.info( "ExternalAuthenticator: "+externalAuthenticator ) ;
+      }
+
+      String externalUserAndRoleMapper = props.getProperty( "ExternalUserAndRoleMapper") ;
+      if (null == externalUserAndRoleMapper) {
+         log.info("ExternalUserAndRoleMapper not set.") ;
+      } else {
+         log.info( "ExternalUserAndRoleMapper: "+externalUserAndRoleMapper) ;
+      }
 
       StringTokenizer doc_types = new StringTokenizer( externalDocTypes, ";", false );
       m_ExDoc = new ExternalDocType[doc_types.countTokens()];
@@ -133,7 +147,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
       textDocParser = new TextDocumentParser( this, m_conPool, m_TemplateHome, m_IncludePath, m_ImageUrl, m_ServletUrl );
 
-      initAuthenticatorAndUserMapper();
+      initAuthenticatorAndUserMapper( externalAuthenticator, externalUserAndRoleMapper);
    }
 
    public int getSessionCounter() {
@@ -169,26 +183,65 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       return result;
    }
 
-   private void initAuthenticatorAndUserMapper() {
-      String ldapServerURL = "ldap://loke:389/CN=Users,DC=imcode,DC=com";
-      String ldapAuthenticationType = "simple";
-      String ldapUserName = "imcode\\hasbra";
-      String ldapPassword = "hasbra";
+   private void initAuthenticatorAndUserMapper( String externalAuthenticator, String externalUserAndRoleMapper) {
+      Authenticator auth = null ;
+      if (null == externalAuthenticator) {
+         auth = null ;
+      } else if (EXTERNAL_AUTHENTICATOR_SMB.equalsIgnoreCase(externalAuthenticator)) {
+         String smbDomainServer = null ;
+         try {
+            smbDomainServer = Prefs.get("DomainServer",SMB_PROPERTIES_FILE);
+            String smbDomainName = Prefs.get("DomainName",SMB_PROPERTIES_FILE) ;
+            auth = new SmbAuthenticator( smbDomainServer, smbDomainName ) ;
+         } catch( IOException e ) {
+            log.error("Could not read file "+SMB_PROPERTIES_FILE+", using default authenticator.") ;
+         }
+      } else {
+         try {
+           auth = (Authenticator)Class.forName(externalAuthenticator).newInstance() ;
+         } catch( Exception e ) {
+            log.error("Authenticator "+externalAuthenticator+" could not be created, using default authenticator.", e) ;
+         }
+      }
 
-      LdapUserMapper ldapUserMapper = null;
-      try {
-         ldapUserMapper = new LdapUserMapper( ldapServerURL,
-                                              ldapAuthenticationType,
-                                              ldapUserName,
-                                              ldapPassword,
-                                              new String[]{ "Company" } );
-      } catch( LdapUserMapper.LdapInitException e ) {
-         log.error( "Failed to initialize external ldap system", e );
+      UserAndRoleMapper userAndRoleMapper = null ;
+      if (null == externalUserAndRoleMapper) {
+         userAndRoleMapper = null ;
+      } else if (EXTERNAL_USER_AND_ROLE_MAPPER_LDAP.equalsIgnoreCase(externalUserAndRoleMapper)) {
+         try {
+            String ldapUrl = Prefs.get("URL",LDAP_PROPERTIES_FILE) ;
+            String ldapUserName = Prefs.get("UserName",LDAP_PROPERTIES_FILE) ;
+            String ldapPassword = Prefs.get("Password",LDAP_PROPERTIES_FILE) ;
+            String ldapAttributesMappedToRoles = Prefs.get("AttributesMappedToRoles",LDAP_PROPERTIES_FILE) ;
+            StringTokenizer attributesTokenizer = new StringTokenizer(ldapAttributesMappedToRoles, ", ");
+            String[] ldapAttributes = new String[attributesTokenizer.countTokens()] ;
+            for (int i = 0; i < ldapAttributes.length; ++i) {
+               ldapAttributes[i] = attributesTokenizer.nextToken() ;
+            }
+            userAndRoleMapper = new LdapUserAndRoleMapper(ldapUrl,
+                                                          LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE,
+                                                          ldapUserName,
+                                                          ldapPassword,
+                                                          ldapAttributes) ;
+
+         } catch( IOException e ) {
+            log.error("Could not read file "+LDAP_PROPERTIES_FILE+", using default user and role mapper.") ;
+         } catch( LdapUserAndRoleMapper.LdapInitException e ) {
+            log.error("LdapUserAndRoleMapper could not be created, using default user and role mapper.",e) ;
+         }
+
+      } else {
+         try {
+           userAndRoleMapper = (UserAndRoleMapper)Class.forName(externalUserAndRoleMapper).newInstance() ;
+         } catch( Exception e ) {
+            log.error("UserAndRoleMapper "+externalUserAndRoleMapper+" could not be created, using default.", e) ;
+            userAndRoleMapper = new ImcmsAuthenticatorAndUserMapper(this) ;
+         }
       }
 
       imcmsAndLdapAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( new ImcmsAuthenticatorAndUserMapper( this ),
-                                                                                   new SmbAuthenticator(),
-                                                                                   ldapUserMapper,
+                                                                                   auth,
+                                                                                   userAndRoleMapper,
                                                                                    this.getLanguage() );
       imcmsAndLdapAuthAndMapper.synchRolesWithExternal();
    }
@@ -260,9 +313,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       imcode.util.AdminButtonParser doc_tags = new imcode.util.AdminButtonParser( new File( m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton" + doc_type + "_" ).toString(), ".html", user_permission_set_id, user_permission_set );
 
       doc_tags.put( "getMetaId", meta_id );
-      imcode.util.Parser.parseTags( tempbuffer, '#', " <>\n\r\t", (Map)doc_tags, true, 1 );
+      Parser.parseTags( tempbuffer, '#', " <>\n\r\t", doc_tags, true, 1 );
 
-      imcode.util.AdminButtonParser tags = new imcode.util.AdminButtonParser( new File( m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton_" ).toString(), ".html", user_permission_set_id, user_permission_set );
+      AdminButtonParser tags = new imcode.util.AdminButtonParser( new File( m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton_" ).toString(), ".html", user_permission_set_id, user_permission_set );
 
       tags.put( "getMetaId", meta_id );
       tags.put( "doc_buttons", tempbuffer.toString() );
@@ -277,7 +330,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
          tags.put( "superadmin", "" );
       }
 
-      imcode.util.Parser.parseTags( templatebuffer, '#', " <>\n\r\t", (Map)tags, true, 1 );
+      Parser.parseTags( templatebuffer, '#', " <>\n\r\t", tags, true, 1 );
 
       return templatebuffer.toString();
    }
@@ -328,8 +381,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     **/
 
    public void saveText( imcode.server.user.User user, int meta_id, int txt_no, IMCText text, String text_type ) {
-
-      org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util();
 
       String textstring = text.getText();
 
@@ -388,8 +439,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     */
    public void saveImage( int meta_id, User user, int img_no, imcode.server.Image image ) {
       String sqlStr = "";
-      Table meta;
-
 
       // create a db connection an get meta data
       DBConnect dbc = new DBConnect( m_conPool );
@@ -397,7 +446,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       sqlStr = "select * from images where meta_id = " + meta_id + " and name = " + img_no;
       dbc.setSQLString( sqlStr );
       dbc.createStatement();
-      if( ((Vector)dbc.executeQuery()).size() > 0 ) {
+      if( dbc.executeQuery().size() > 0 ) {
          sqlStr = "update images";
          sqlStr += " set imgurl      = '" + image.getImageRef() + "'";
          sqlStr += ",width       = " + image.getImageWidth();
@@ -1636,7 +1685,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     * Return file-path to images.
     */
    public File getImagePath() {
-      return m_ImagePath;
+      log.warn("getImagePath() called, no implementation, returning null");
+      return null;
    }
 
    /**

@@ -1,7 +1,7 @@
 package imcode.server.user;
 
 
-public interface UserMapper {
+public interface UserAndRoleMapper {
    User getUser( String loginName );
 
    String[] getRoleNames( User user );
