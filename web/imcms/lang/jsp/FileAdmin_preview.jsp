@@ -47,8 +47,6 @@ if (request.getParameter("border") != null) {
 }
 
 File webRoot    = imcode.server.WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath() ;
-String filePath = file.substring(0, file.lastIndexOf("/")) ;
-String fileName = file.substring(file.lastIndexOf("/") + 1, file.length()) ;
 
 /* Is image? */
 Perl5Util re       = new Perl5Util() ;
@@ -63,13 +61,11 @@ boolean hasGetElementById = re.match("/Gecko/i", uAgent) ;
 boolean isMac = re.match("/Mac/i", uAgent) ;
 
 /* if Stat-Report - Read file and show it */
+File fn = new File(webRoot, file) ;
 
 if (isStat && frame.equalsIgnoreCase("MAIN")) {
-    File sf = new File(fileName) ;
-    sf = new File (new File(webRoot + filePath),sf.getName()) ;
-    //String statSrc = ReadTextFile.getFile(sf);
 
-    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(sf))) ;
+    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fn))) ;
 
     String statSrc = "" ;
     String fileLine = "" ;
@@ -107,9 +103,6 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
 }
 
 /* Get size */
-
-File fn = new File(fileName) ;
-fn = new File (new File(webRoot + filePath),fn.getName()) ;
 
 String image_ref = fn.getCanonicalPath() ;
 
@@ -157,7 +150,7 @@ if (isImage) {
 		%>5<% 
 	} else {
 		%>6<% 
-	} %> 0; font: 10px Verdana, Geneva, sans-serif; color:#999999;">&quot;<%= request.getContextPath() + file %>&quot;<%
+	} %> 0; font: 10px Verdana, Geneva, sans-serif; color:#999999;">&quot;<%= request.getContextPath() + "/"+file %>&quot;<%
 	if (width > 0 && height > 0 && !size.equals("")) {
 		%> (<%
 		if (width > 0 && height > 0) {
@@ -166,7 +159,7 @@ if (isImage) {
 		if (!size.equals("")) {
 			%><%= size %><%
 		} %>)<%
-	} %></div><img name="theImg" id="theImg" src="<%= request.getContextPath() + file %>"<%= border + zoom %>><%
+	} %></div><img name="theImg" id="theImg" src="<%= request.getContextPath() + "/" + file %>"<%= border + zoom %>><%
 } else {
 	%><%
 } %></div>

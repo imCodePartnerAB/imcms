@@ -2,9 +2,12 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.MultipartFormdataParser;
 import imcode.util.Utility;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -25,7 +28,7 @@ public class FileAdmin extends HttpServlet {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        UserDomainObject user = Utility.getLoggedOnUser( req ) ;
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !user.isSuperAdmin() ) {
             Utility.redirectToStartDocument( req, res );
             return;
@@ -57,7 +60,16 @@ public class FileAdmin extends HttpServlet {
      */
     private boolean isUnderRoot( File path, File[] roots ) throws IOException {
         for ( int i = 0; i < roots.length; i++ ) {
-            if ( path.getCanonicalPath().startsWith( roots[i].getCanonicalPath() ) ) {
+            if ( isUnderRoot( path, roots[i] ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isUnderRoot( File path, File root ) throws IOException {
+        for ( File currentFile = path.getCanonicalFile(); null != currentFile; currentFile = currentFile.getParentFile() ) {
+            if ( currentFile.equals( root ) ) {
                 return true;
             }
         }
@@ -67,7 +79,7 @@ public class FileAdmin extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        UserDomainObject user = Utility.getLoggedOnUser( req ) ;
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !user.isSuperAdmin() ) {
             Utility.redirectToStartDocument( req, res );
             return;
@@ -84,13 +96,21 @@ public class FileAdmin extends HttpServlet {
 
         File[] roots = getRoots();
 
-        File dir1 = new File( mp.getParameter( "dir1" ) );
-        if ( !isUnderRoot( dir1, roots ) ) {
-            doGet( req, res );
+        File webappPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath() ;
+        String dir1Parameter = mp.getParameter( "dir1" );
+        File dir1 = new File( dir1Parameter );
+        if (!dir1.isAbsolute()) {
+            dir1 = new File( webappPath, dir1Parameter );
         }
-        File dir2 = new File( mp.getParameter( "dir2" ) );
-        if ( !isUnderRoot( dir2, roots ) ) {
+        String dir2Parameter = mp.getParameter( "dir2" );
+        File dir2 = new File( dir2Parameter );
+        if (!dir2.isAbsolute()) {
+            dir2 = new File( webappPath, dir2Parameter );
+        }
+
+        if ( !isUnderRoot( dir1, roots ) || !isUnderRoot( dir2, roots )) {
             doGet( req, res );
+            return ;
         }
         String[] files1 = mp.getParameterValues( "files1" );
         String[] files2 = mp.getParameterValues( "files2" );
@@ -694,12 +714,11 @@ public class FileAdmin extends HttpServlet {
 
         File[] rootlist = getRoots();
         List vec = new ArrayList();
-        DirectoryFilter dirfilt = new DirectoryFilter();
-        NotDirectoryFilter notdirfilt = new NotDirectoryFilter();
+        File webappPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
         if ( fd1 != null ) {
             vec.add( "#dir1#" );
-            vec.add( fd1.getCanonicalPath() );
-            String optionlist = createDirectoryOptionList( rootlist, fd1, dirfilt, notdirfilt );
+            vec.add( getPathRelativeTo( fd1, webappPath ) + File.separator );
+            String optionlist = createDirectoryOptionList( rootlist, fd1 );
             vec.add( "#files1#" );
             vec.add( optionlist );
         } else {
@@ -710,8 +729,8 @@ public class FileAdmin extends HttpServlet {
         }
         if ( fd2 != null ) {
             vec.add( "#dir2#" );
-            vec.add( fd2.getCanonicalPath() );
-            String optionlist = createDirectoryOptionList( rootlist, fd2, dirfilt, notdirfilt );
+            vec.add( getPathRelativeTo( fd2, webappPath ) + File.separator );
+            String optionlist = createDirectoryOptionList( rootlist, fd2 );
             vec.add( "#files2#" );
             vec.add( optionlist );
         } else {
@@ -724,40 +743,58 @@ public class FileAdmin extends HttpServlet {
         return imcref.getAdminTemplate( "FileAdmin.html", user, vec );
     }
 
-    private String createDirectoryOptionList( File[] rootlist, File directory, DirectoryFilter dirfilt,
-                                              NotDirectoryFilter notdirfilt ) throws IOException {
+    private String getPathRelativeTo( File file, File root ) throws IOException {
+        if ( !isUnderRoot( file, root ) ) {
+            return file.getCanonicalPath();
+        }
+        if ( file.equals( root ) ) {
+            return "";
+        }
+        List files = new ArrayList();
+        for ( File currentFile = file.getCanonicalFile(); null != currentFile; currentFile = currentFile.getParentFile() ) {
+            if ( currentFile.equals( root ) ) {
+                break;
+            }
+            files.add( 0, currentFile );
+        }
+        Iterator iterator = files.iterator();
+        File relativeFile = new File( ( (File)iterator.next() ).getName() );
+        while ( iterator.hasNext() ) {
+            File currentFile = (File)iterator.next();
+            relativeFile = new File( relativeFile, currentFile.getName() );
+        }
+        return relativeFile.getPath();
+    }
+
+    private String createDirectoryOptionList( File[] rootlist, File directory ) throws IOException {
         StringBuffer optionlist = new StringBuffer();
         for ( int i = 0; i < rootlist.length; i++ ) {
-            String root = rootlist[i].getCanonicalPath() + File.separator;
-            optionlist.append( "<option value=\"" ).append( root ).append( "\">" ).append( root ).append( "</option>" );
+            optionlist.append( getDirectoryOption( rootlist[i] ) );
         }
-        optionlist.append( "<option value=\"..\">.." ).append( File.separator ).append( "</option>" );
-        File[] dirlist = directory.listFiles( dirfilt );
+        File parent = directory.getParentFile();
+        if ( isUnderRoot( parent, rootlist )) {
+            optionlist.append( getDirectoryOption( parent, ".." ) );
+        }
+        File[] dirlist = directory.listFiles( (FileFilter)DirectoryFileFilter.INSTANCE );
         for ( int i = 0; null != dirlist && i < dirlist.length; i++ ) {
-            String directoryName = dirlist[i].getName() + File.separator;
-            optionlist.append( "<option value=\"" ).append( directoryName ).append( "\">" ).append( directoryName )
-                    .append( "</option>" );
+            optionlist.append( getDirectoryOption( dirlist[i],dirlist[i].getName() ));
         }
-        File[] filelist = directory.listFiles( notdirfilt );
+        File[] filelist = directory.listFiles( (FileFilter)new NotFileFilter( DirectoryFileFilter.INSTANCE ) );
         for ( int i = 0; null != filelist && i < filelist.length; i++ ) {
             String fileNameAndSize = filelist[i].getName() + " [" + filelist[i].length() + "]";
-            optionlist.append( "<option value=\"" ).append( filelist[i].getName() ).append( "\">" ).append(
-                    fileNameAndSize ).append( "</option>" );
+            optionlist.append( "<option value=\"" ).append( filelist[i].getName() ).append( "\">" ).append( fileNameAndSize ).append( "</option>" );
         }
         return optionlist.toString();
     }
 
-    private class DirectoryFilter implements FileFilter {
-
-        public boolean accept( File path ) {
-            return path.isDirectory();
-        }
+    private String getDirectoryOption( File dir ) throws IOException {
+        File webappPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
+        String displayDir = getPathRelativeTo( dir, webappPath ) ;
+        return getDirectoryOption( dir, displayDir );
     }
 
-    private class NotDirectoryFilter implements FileFilter {
-
-        public boolean accept( File path ) {
-            return !path.isDirectory();
-        }
+    private String getDirectoryOption( File dir, String displayDir ) {
+        return "<option value=\"" + dir + File.separator + "\">" +  displayDir + File.separator + "</option>";
     }
+
 }

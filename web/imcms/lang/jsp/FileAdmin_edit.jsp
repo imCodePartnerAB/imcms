@@ -56,13 +56,10 @@ String templName = request.getParameter("templName") ;
 /* split to "/path" and "filename.ext" */
 
 File webRoot    = imcode.server.WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath() ;
-String filePath = file.substring(0, file.lastIndexOf("/")) ;
-String fileName = file.substring(file.lastIndexOf("/") + 1, file.length()) ;
 
 /* get full path */
 
-File fn = new File(fileName) ;
-fn = new File (new File(webRoot + filePath),fn.getName()) ;
+File fn = new File(webRoot, file) ;
 
 if (hdPath == null) {
 	hdPath = fn.getCanonicalPath() ;
@@ -127,10 +124,7 @@ String tempStr  = "";
 
 if (isEditable && !doSave) {
 
-	File sf = new File(fileName) ;
-	sf = new File (new File(webRoot + filePath),sf.getName()) ;
-
-	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(sf))) ;
+	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fn))) ;
 
 	fileSrc = "" ;
 	while ((fileLine = br.readLine()) != null) {

@@ -25,8 +25,6 @@ var moz   = (document.getElementById) ? 1 : 0;
 var gecko = (moz && !ie) ? 1 : 0;
 var isMac = (/mac/i.test(navigator.platform)) ? 1 : 0;
 
-var webRoot = "";
-
 aDir = new Array(3); // absolutedir[iside]
 aDir[0] = "";
 aDir[1] = "";
@@ -233,10 +231,10 @@ function dblClickAction(iside) {
 }
 
 function previewFile(iside) {
-	var f = document.forms[0];
-	var sdir = (iside == 2) ? f.dir2w.value : f.dir1w.value;
+	var form = document.forms[0];
+	var sdir = (iside == 2) ? form.dir2w.value : form.dir1w.value;
 	var sfile = getFile(iside);
-	sfile = (webRoot != "") ? webRoot + '/' + sfile : wDir[iside] + '/' + sfile;
+	sfile = wDir[iside] + sfile;
 	if (isStatFile(iside)) { // stat
 		//alert("1") ;
 		popWinOpen(800,570,JSP_PATH + "/FileAdmin_preview.jsp?isStat=1&file=" + escape(sfile),"filePreview",1,0);
@@ -260,7 +258,7 @@ function openFile(iside) {
 	var f = document.forms[0];
 	var sdir = (iside == 2) ? f.dir2w.value : f.dir1w.value;
 	var sfile = getFile(iside);
-	sfile = (webRoot != "") ? webRoot + '/' + sfile : wDir[iside] + '/' + sfile;
+	sfile = wDir[iside] + sfile;
 	window.open(imC_PATH + sfile);
 }
 
@@ -268,7 +266,7 @@ function editFile(iside,readonlyFlag) {
 	var f = document.forms[0];
 	var sdir = (iside == 2) ? f.dir2w.value : f.dir1w.value;
 	var sfile = getFile(iside);
-	sfile = (webRoot != "") ? webRoot + '/' + sfile : wDir[iside] + '/' + sfile;
+	sfile = wDir[iside] + sfile;
 	readonlyFlag = (readonlyFlag) ? "&readonly=1" : "";
 	popWinOpen(800,570,JSP_PATH + "/FileAdmin_edit.jsp?file=" + escape(sfile) + readonlyFlag,"fileEdit",1,0);
 }
@@ -497,18 +495,8 @@ if (gecko && !isMac) {
 var actDir1 = document.forms[0].dir1.value;
 var actDir2 = document.forms[0].dir2.value;
 
-webDir1 = (/webapps/i.test(actDir1)) ? actDir1.substring(actDir1.indexOf("webapps") + 8, actDir1.length) : "";
-webDir1 = webDir1.replace(/\\/g, "/");
-webDir1 = (webDir1.indexOf("/") != -1) ? webDir1.substring(webDir1.indexOf("/"), webDir1.length) : "";
-
-webDir2 = (/webapps/i.test(actDir2)) ? actDir2.substring(actDir2.indexOf("webapps") + 8, actDir2.length) : "";
-webDir2 = webDir2.replace(/\\/g, "/");
-webDir2 = (webDir2.indexOf("/") != -1) ? webDir2.substring(webDir2.indexOf("/"), webDir2.length) : "";
-
-aDir[1] = actDir1;
-aDir[2] = actDir2;
-wDir[1] = webDir1;
-wDir[2] = webDir2;
+wDir[1] = actDir1;
+wDir[2] = actDir2;
 
 /*
  * make the file-select's wider.
