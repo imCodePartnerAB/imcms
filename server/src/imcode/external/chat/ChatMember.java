@@ -131,7 +131,7 @@ public class ChatMember
 	
 	public String toString()
 	{
-		return null;
+		return "Id= "+_userId +" Namn = "+_name;
 
 	}
 
