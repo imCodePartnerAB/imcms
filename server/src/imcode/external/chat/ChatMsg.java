@@ -19,13 +19,14 @@ import java.util.*;
 public class ChatMsg
 {
 
-	private String _sender;
+	private String _senderStr;
 	private int _msgType;
 	private String _msgTypeStr;
 	private String _chatMsg;
 	private String _recieverStr;
 	private int _reciever;
 	private int _number;
+	private int _sender;
 	private String _dateTime;
 	//	private Date date;
 
@@ -33,20 +34,21 @@ public class ChatMsg
 	/**
 	*Default constructor
 	*/
-	public ChatMsg(String chatMsg, String recieverStr,int reciever, int msgType, String msgTypeStr, String sender, String dateTime)
+	public ChatMsg(String chatMsg, String recieverStr,int reciever, int msgType, String msgTypeStr, String senderStr,int sender, String dateTime)
 	{
 		_chatMsg = chatMsg;
 		_reciever =	reciever;
 		_recieverStr = recieverStr;
 		_msgType = msgType;
 		_msgTypeStr = msgTypeStr;
-		_sender = sender;
+		_senderStr = senderStr;
 		_dateTime = dateTime;
+		_sender = sender;
 	}
 	
 	public String toString()
 	{
-		return _sender+" "+ _msgTypeStr+" "+_recieverStr+" : "+_chatMsg;
+		return _senderStr+" "+ _msgTypeStr+" "+_recieverStr+" : "+_chatMsg;
 
 	}
 
@@ -95,11 +97,16 @@ public class ChatMsg
 		return _msgTypeStr;
 	}
 	
-	public String getSender()
+	public String getSenderStr()
+	{
+		return _senderStr;
+
+	}
+	
+	public int getSender()
 	{
 		return _sender;
 
 	}
-
 
 }
