@@ -212,8 +212,11 @@ public class SaveMeta extends HttpServlet {
 				}
 			}
 		}
-
-
+		//ok here we fetch the settings fore the default_template 1 & 2
+		String temp_default_template_1 = req.getParameter("default_template_set_1") == null ? "-1" : req.getParameter("default_template_set_1");
+		String temp_default_template_2 = req.getParameter("default_template_set_2") == null ? "-1" : req.getParameter("default_template_set_2");
+		String[] temp_default_templates = {temp_default_template_1, temp_default_template_2};
+		
 		// Set modified-date to now...
 		SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
 		Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
@@ -223,26 +226,28 @@ public class SaveMeta extends HttpServlet {
 		// It's like this... people make changes on the page, and then they forget to press "save"
 		// before they press one of the "define-permission" buttons, and then their settings are lost.
 		// I will fix this by storing the settings in a temporary variable in the user object.
-		// This variable will be an array of three objects. In order:
+		// This variable will be an array of four objects. In order:
 		// A String, containing the meta-id of the page.
 		// A Properties, containing the docinfo for the page. (db-column, value)
 		// A Properties, containing the permission_sets for the roles. (role_id, set_id)
+		// A String[], containing default_template 1 and 2
 		// We also need a name for this temporary variable... i think i shall call it... (Drumroll, please...) "temp_perm_settings" !
+		//
 		
 		if ( req.getParameter("define_set_1") != null ) {	// If user want's to edit permission-set 1
-			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings}) ;
+			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings,temp_default_templates}) ;
 			out.print(MetaDataParser.parsePermissionSet(meta_id_int,user,host,1,false)) ;
 			return ;
 		} else if ( req.getParameter("define_set_2") != null ) {	// If user want's to edit permission-set 2
-			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings}) ;
+			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings,temp_default_templates}) ;
 			out.print(MetaDataParser.parsePermissionSet(meta_id_int,user,host,2,false)) ;
 			return ;
 		} else if ( req.getParameter("define_new_set_1") != null ) {
-			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings}) ;
+			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings,temp_default_templates}) ;
 			out.print(MetaDataParser.parsePermissionSet(meta_id_int,user,host,1,true)) ;
 			return ;
 		} else if ( req.getParameter("define_new_set_2") != null ) {
-			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings}) ;
+			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings,temp_default_templates}) ;
 			out.print(MetaDataParser.parsePermissionSet(meta_id_int,user,host,2,true)) ;
 			return ;
 		} else if ( req.getParameter("add_roles") != null ) {		// The user wants to give permissions to roles that have none.
@@ -250,7 +255,7 @@ public class SaveMeta extends HttpServlet {
 			for ( int i = 0 ; roles_no_rights!=null && i<roles_no_rights.length ; ++i ) {
 				temp_permission_settings.setProperty(roles_no_rights[i],"3") ;
 			}
-			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings}) ;
+			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings,temp_default_templates}) ;
 			out.print(MetaDataParser.parseMetaPermission(meta_id,meta_id,user,host,"change_meta_rights.html")) ;
 			return ;
 		}
@@ -260,6 +265,16 @@ public class SaveMeta extends HttpServlet {
 
 		// Here i'll construct an sql-query that will update all docinfo
 		// the user is allowed to change.
+		//ok lets start and get the default templates
+		String tempStr = req.getParameter("default_template_set_1");
+		String template1 = "-1";
+		if (tempStr != null)
+		{
+		 	template1 = req.getParameter("default_template_set_1").equals("") ? "-1" : req.getParameter("default_template_set_1");
+			
+		}		
+		String template2 = req.getParameter("default_template_set_2").equals("")? "-1":req.getParameter("default_template_set_2");
+		
 		String sqlStr = "" ;
 
 		Enumeration propkeys = metaprops.propertyNames() ;
@@ -274,7 +289,7 @@ public class SaveMeta extends HttpServlet {
 				sqlStr += ", " ;
 			}
 		}
-
+		
 		for (int i=0; i<role_permissions.length; ++i) {
 			String role_id = (String)role_permissions[i][0] ;
 			String new_set_id = temp_permission_settings.getProperty(role_id) ;
@@ -295,6 +310,11 @@ public class SaveMeta extends HttpServlet {
 		if ( classification != null ) {
 			IMCServiceRMI.sqlUpdateProcedure(imcserver,"Classification_Fix "+meta_id+",'"+classification+"'") ;
 		}
+		
+		//ok lets save the default templates 
+		//log("test sql: UpdateDefaultTemplates "+meta_id+",'"+template1+"','"+template2+"'");
+		IMCServiceRMI.sqlUpdateProcedure(imcserver, "UpdateDefaultTemplates '"+meta_id+"','"+template1+"','"+template2+"'") ;
+			
 
 		// Update the date_modified for all parents.
 		IMCServiceRMI.sqlUpdateProcedure(imcserver, "UpdateParentsDateModified "+meta_id) ;

@@ -127,6 +127,7 @@ public class SaveNewMeta extends HttpServlet {
 			return ;
 		}
 
+		
 		// Lets fix the date information (date_created, modified etc)
 		metaprops.setProperty("date_modified",dateformat.format(dt)) ;
 		metaprops.setProperty("date_created",dateformat.format(dt)) ;
@@ -354,11 +355,43 @@ public class SaveNewMeta extends HttpServlet {
 				res.sendRedirect( scheme + "://" + serverName + port + servlet_url + ex_doc.getCallServlet( ) + paramStr );
 				return ;
 
-	 // TEXT DOCUMENT
+	 // TEXT DOCUMENT 
 			} else if (doc_type.equals("2")) {
-				sqlStr = "select template_id, sort_order,group_id from text_docs where meta_id = " + parent_meta_id ;
+				//lets get the users greatest permission_set for this dokument
+				final int perm_set = IMCServiceRMI.getUserHighestPermissionSet (imcserver,Integer.parseInt(meta_id), user.getInt("user_id"));
+				//ok now lets see what to do with the templates
+				sqlStr = "select template_id, sort_order,group_id,default_template_1,default_template_2 from text_docs where meta_id = " + parent_meta_id ;
 				String temp[] = IMCServiceRMI.sqlQuery(imcserver,sqlStr) ;
-				sqlStr = "insert into text_docs (meta_id,template_id,sort_order,group_id) values ("+meta_id+","+temp[0]+","+temp[1]+","+temp[2]+")" ;
+				//ok now we have to setup the template too use
+				if (perm_set == imcode.server.IMCConstants.DOC_PERM_SET_RESTRICTED_1)
+				{
+					//ok restricted_1 permission lets see if we have a default template fore this one
+					//and if so lets put it as the orinary template instead of the parents
+					try
+					{
+						int tempInt = Integer.parseInt(temp[3]);
+						if(tempInt >= 0)
+							temp[0] = String.valueOf(tempInt);						
+					}catch(NumberFormatException nfe)
+					{
+					
+						//there wasn't a number but we dont care, we just catch the exeption and moves on.
+					}					
+				}else if(perm_set == imcode.server.IMCConstants.DOC_PERM_SET_RESTRICTED_2)
+				{ //ok we have a restricted_2 permission lets see if we have default template fore this one
+					//and if soo lets put it as ordinary instead of the parents
+					try
+					{
+						int tempInt = Integer.parseInt(temp[4]);
+						if(tempInt >= 0)
+							temp[0] = String.valueOf(tempInt);						
+					}catch(NumberFormatException nfe)
+					{
+						//there wasn't a number but we dont care, we just catch the exeption and moves on.
+					}
+				}
+				//ok were set, lets update db
+				sqlStr = "insert into text_docs (meta_id,template_id,sort_order,group_id,default_template_1,default_template_2) values ("+meta_id+","+temp[0]+","+temp[1]+","+temp[2]+","+temp[3]+","+temp[4]+")" ;
 				IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
 
 
