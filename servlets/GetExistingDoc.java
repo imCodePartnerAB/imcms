@@ -119,14 +119,15 @@ public class GetExistingDoc extends HttpServlet {
 		}
 		//------------------------------------------------------------------
 		// parse searchString, replaces SPACE with RETURN and EMPTY with RETURN
+		Character char13 = new Character((char)(13));
 		while (searchString.indexOf(" ") != -1)
 		{
 			int spaceIndex = searchString.indexOf(" ");
 			searchString = searchString.substring(0, spaceIndex)
-			+ "\n" + searchString.substring(spaceIndex+1, searchString.length());
+			+ char13 + searchString.substring(spaceIndex+1, searchString.length());
 		}
 		if(searchString.equals(""))
-			searchString = "\n";
+			searchString = "" + char13;
 		//------------------------------------------------------------------
         sqlString = "EXEC SearchDocs " + s9 + ",'" + searchString + "', '" + searchPrep + "', '" + s12 + "', " + s7 + ", " + s6 + ", '" + sortBy + "', " + s14 + ", '1'";
         String s19 = "";
