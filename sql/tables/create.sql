@@ -1,5 +1,3 @@
-CREATE DATABANK mimer_blobs
-
 CREATE TABLE meta (
 	meta_id int NOT NULL ,
 	description varchar (80) NOT NULL ,
@@ -273,7 +271,7 @@ CREATE TABLE doc_permission_sets_ex (
 
 CREATE TABLE frameset_docs (
 	meta_id int NOT NULL ,
-	frame_set text ,
+	frame_set varchar(8000) ,
 	PRIMARY KEY (meta_id) ,
 	FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
 );
@@ -399,7 +397,7 @@ CREATE TABLE text_docs (
 CREATE TABLE texts (
 	meta_id int NOT NULL ,
 	name int NOT NULL ,
-	text ntext NOT NULL ,
+	text varchar(8000) NOT NULL ,
 	type int ,
 	counter int NOT NULL ,
 	PRIMARY KEY (counter) ,
