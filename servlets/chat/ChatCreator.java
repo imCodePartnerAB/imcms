@@ -55,7 +55,7 @@ public class ChatCreator extends ChatBase
 			return ;
 		}
 		
-		//******************************** Get New Chatparameters********************************
+		//******************************** Get all New Chatparameters********************************
 		
 		//get the msgTypes
 		Vector msgTypesV = new Vector();
@@ -105,6 +105,7 @@ public class ChatCreator extends ChatBase
 		
 		//get existing rooms
 		Vector roomsV = ( (Vector)session.getValue("roomList")==null ) ? new Vector() : (Vector)session.getValue("roomList");
+		
 		//get existing msgTypes
 		Vector newMsgTypeV = ( (Vector)session.getValue("newMsgTypes")==null ) ? new Vector() : (Vector)session.getValue("newMsgTypes");
 		
@@ -180,7 +181,7 @@ public class ChatCreator extends ChatBase
 		}
 		
 		
-		// ********* NEW ********
+		// ********* If a NEW CHAT is created and we wants to save it to the db ********
 		if(action.equalsIgnoreCase("ADD_CHAT"))
 		{
 			log("OK, nu skapar vi Chatten") ;
@@ -257,13 +258,14 @@ public class ChatCreator extends ChatBase
 			Vector valuesV = new Vector();
 			String valuesS = "AddChatParams ";
 				
-			Iterator chatValuesIt = (newChatParams.values()).iterator();
-			while( chatValuesIt.hasNext() )
-			{
-				 valuesS = valuesS + (String)chatValuesIt.next() +",";
-			}	
-				
-			valuesS=valuesS.substring(0,valuesS.length()-1);
+			valuesS = valuesS + metaId +"," 
+			+ newChatParams.getProperty("updateTime")+"," 
+			+ newChatParams.getProperty("reload")+"," 
+			+ newChatParams.getProperty("inOut")+"," 
+			+ newChatParams.getProperty("privat")+"," 
+			+ newChatParams.getProperty("publik")+"," 
+			+ newChatParams.getProperty("dateTime")+"," 
+			+ newChatParams.getProperty("font") ;
 			
 			log("valuesS: " + valuesS );
 			
@@ -377,6 +379,11 @@ public class ChatCreator extends ChatBase
 			vm.addProperty("SERVLET_URL", MetaInfo.getServletPath(req)) ;
 			vm.addProperty("msgTypes", htm.createHtmlCode("ID_OPTION","säger till", msgTypesV) ) ;
 			vm.addProperty("authorized", htm.createHtmlCode("ID_OPTION",selV, autTypeV) ) ;
+			vm.addProperty("chatName", "") ;
+			vm.addProperty("chatRoom", "") ;
+			vm.addProperty("msgType", "") ;
+			vm.addProperty("updateTime", "30") ;
+			
 			sendHtml(req,res,vm, HTML_TEMPLATE) ;
 			return ;
 		}
@@ -392,16 +399,16 @@ public class ChatCreator extends ChatBase
 		Properties chatP = new Properties();
 		
 		String chatName = (req.getParameter("chatName")==null) ? "" : (req.getParameter("chatName"));
-		String updateTime = (req.getParameter("updateTime")==null ) ? "" :(req.getParameter("updateTime"));		
-		String reload = (req.getParameter("reload")==null ) ? "" :(req.getParameter("reload"));
-		String inOut = (req.getParameter("inOut")==null ) ? "" :(req.getParameter("inOut"));
-		String privat = (req.getParameter("private")==null ) ? "" :(req.getParameter("private"));
-		String publik = (req.getParameter("public")==null ) ? "" :(req.getParameter("public"));
-		String dateTime = (req.getParameter("dateTime")==null ) ? "" :(req.getParameter("dateTime"));
-		String font = (req.getParameter("font")==null ) ? "" :(req.getParameter("font"));
+		String updateTime = ( req.getParameter("updateTime")==null ) ? "30" : (req.getParameter("updateTime"));		
+		String reload = (req.getParameter("reload")==null ) ? "2" :(req.getParameter("reload"));
+		String inOut = (req.getParameter("inOut")==null ) ? "2" :(req.getParameter("inOut"));
+		String privat = (req.getParameter("private")==null ) ? "2" :(req.getParameter("private"));
+		String publik = (req.getParameter("public")==null ) ? "2" :(req.getParameter("public"));
+		String dateTime = (req.getParameter("dateTime")==null ) ? "2" :(req.getParameter("dateTime"));
+		String font = (req.getParameter("font")==null ) ? "2" :(req.getParameter("font"));
 
 		chatP.setProperty("chatName", chatName.trim());
-		chatP.setProperty("updateTime",updateTime.trim());
+		chatP.setProperty("updateTime",updateTime);
 		chatP.setProperty("reload",reload.trim());
 		chatP.setProperty("inOut",inOut.trim());
 		chatP.setProperty("privat",privat.trim());
