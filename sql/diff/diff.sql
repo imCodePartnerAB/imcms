@@ -1478,6 +1478,11 @@ update mime_types set lang_prefix = 'eng' where lang_prefix = 'en'
 
 -- 2004-01-20 / Lennart Å
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[readrunner_user_data]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[readrunner_user_data]
+GO
+
+-- 2004-01-21  /Hasse
 
 print ' OBS !!!!! '
 print 'Följande åtgärder behöver genomföras efter detta script '

@@ -9,9 +9,6 @@ import imcode.server.document.TextDocumentTextDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.db.ConnectionPool;
 
-import imcode.readrunner.* ;
-
-
 /**
  * Interface for the Imcode Net Server.
  */
@@ -250,9 +247,6 @@ public interface IMCServiceInterface {
     public imcode.server.document.DocumentDomainObject getDocument(int meta_id) ;
 
     public boolean checkAdminRights(UserDomainObject user) ;
-    public void setReadrunnerUserData(UserDomainObject user, ReadrunnerUserData rrUserData) ;
-
-    public ReadrunnerUserData getReadrunnerUserData(UserDomainObject user) ;
 
     /**
        Retrieve the texts for a internalDocument

@@ -1,6 +1,5 @@
 package imcode.server;
 
-import imcode.readrunner.ReadrunnerUserData;
 import imcode.server.db.ConnectionPool;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
@@ -1384,63 +1383,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      **/
     public DocumentDomainObject getDocument( int meta_id ) throws IndexOutOfBoundsException {
         return documentMapper.getDocument( meta_id );
-    }
-
-    /**
-     Get the readrunner-user-data for a user
-     @param user The id of the user
-     @return     The readrunner-user-data for a user, or null if the user had none.
-     **/
-    public ReadrunnerUserData getReadrunnerUserData( UserDomainObject user ) {
-        int userId = user.getUserId();
-        String[] dbData = sqlProcedure( "GetReadrunnerUserDataForUser", new String[]{String.valueOf( userId )} );
-        if ( 0 == dbData.length ) {
-            // There was no readrunner-user-data
-            return null;
-        }
-
-        // Create the ReadrunnerUserData-object
-        ReadrunnerUserData rrUserData = new ReadrunnerUserData();
-        try {
-            // Fill it with data from the DB
-            DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
-            rrUserData.setUses( Integer.parseInt( dbData[0] ) );
-            rrUserData.setMaxUses( Integer.parseInt( dbData[1] ) );
-            rrUserData.setMaxUsesWarningThreshold( Integer.parseInt( dbData[2] ) );
-            if ( null != dbData[3] ) {
-                rrUserData.setExpiryDate( dateFormat.parse( dbData[3] ) );
-            } else {
-                rrUserData.setExpiryDate( null );
-            }
-            rrUserData.setExpiryDateWarningThreshold( Integer.parseInt( dbData[4] ) );
-            rrUserData.setExpiryDateWarningSent( Integer.parseInt( dbData[5] ) != 0 );
-            // Return it
-            return rrUserData;
-        } catch ( NumberFormatException nfe ) {
-            log.error( "GetReadrunnerUserData returned malformed integer-data.", nfe );
-            throw nfe;
-        } catch ( ParseException pe ) {
-            log.error( "GetReadrunnerUserData returned malformed date-data: '" + dbData[3] + "'", pe );
-            throw new RuntimeException( "GetReadrunnerUserData returned malformed date-data: '" + dbData[3] + "'" );
-        }
-    }
-
-    /**
-     Set the readrunner-user-data for a user
-     @param user       The user
-     @param rrUserData The ReadrunnerUserData-object
-     **/
-    public void setReadrunnerUserData( UserDomainObject user, ReadrunnerUserData rrUserData ) {
-        int userId = user.getUserId();
-
-        String expiryDateString = null != rrUserData.getExpiryDate() ? new SimpleDateFormat( "yyyy-MM-dd" ).format( rrUserData.getExpiryDate() ) : null;
-
-        String temp[] = {"" + userId, "" + rrUserData.getUses(), "" + rrUserData.getMaxUses(), "" + rrUserData.getMaxUsesWarningThreshold(), expiryDateString, "" + rrUserData.getExpiryDateWarningThreshold(), "" + rrUserData.getExpiryDateWarningSent()};
-        for ( int i = 0; i < temp.length; i++ ) {
-            System.out.println( "temp[]= " + temp[i] );
-        }
-
-        sqlUpdateProcedure( "SetReadrunnerUserDataForUser", new String[]{"" + userId, "" + rrUserData.getUses(), "" + rrUserData.getMaxUses(), "" + rrUserData.getMaxUsesWarningThreshold(), expiryDateString, "" + rrUserData.getExpiryDateWarningThreshold(), rrUserData.getExpiryDateWarningSent() ? "1" : "0"} );
     }
 
     /**

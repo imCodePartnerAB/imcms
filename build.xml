@@ -44,7 +44,6 @@
     <property name="imcmsjsp"              value="${imcms}/jsp"/>
     <property name="imcmshtml"             value="${imcms}/html"/>
 
-    <property name="readrunner"	   	       value="${webroot}/readrunner"/>
     <property name="shop"	               value="${webroot}/shop"/>
     <property name="htmleditor"            value="${webroot}/htmleditor"/>
     <property name="poll"	               value="${webroot}/poll"/>
@@ -82,11 +81,6 @@
     <property name="imcmscssurl"              value="${rooturl}/imcms/css"/>
     <property name="imcmsjspurl"              value="${rooturl}/imcms/jsp"/>
     <property name="shopurl"                  value="${rooturl}/shop"/>
-    <property name="readrunnerurl"	          value="${rooturl}/readrunner"/>
-    <property name="readrunnerimagesurl"      value="${readrunnerurl}/images"/>
-    <property name="readrunnercssurl"         value="${readrunnerurl}/css"/>
-    <property name="readrunnerjsurl"          value="${readrunnerurl}/javascript"/>
-
 
     <property name="srcincludes"              value="${basedir}/MANIFEST.TXT"/>
 
@@ -197,11 +191,6 @@
 
         <filter token="documentationwebappurl"    value="http://${documentation-host}/${versionnumber}"/>
         <filter token="documentationurl"          value="http://${documentation-host}/${versionnumber}/servlet"/>
-
-        <filter token="readrunnerurl"       value="${readrunnerurl}"/>
-        <filter token="readrunnerimagesurl" value="${readrunnerimagesurl}"/>
-        <filter token="readrunnercssurl"    value="${readrunnercssurl}"/>
-        <filter token="readrunnerjsurl"     value="${readrunnerjsurl}"/>
 
         <filter token="db-driver"           value="${db-driver}"/>
         <filter token="db-url"              value="${db-url}"/>

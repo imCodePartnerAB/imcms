@@ -8,10 +8,7 @@ import imcode.server.document.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateHelper;
 import imcode.util.FileCache;
-import imcode.readrunner.ReadrunnerFilter;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.iterators.TransformIterator;
 import org.apache.oro.text.regex.*;
 
 import javax.servlet.http.Cookie;
@@ -83,19 +80,14 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     private HashMap included_docs = new HashMap();
 
-    private ParserParameters parserParameters;
-
-    private ReadrunnerFilter readrunnerFilter;
-
     private IMCServiceInterface serverObject;
 
     ImcmsTagSubstitution(TextDocumentParser textdocparser, DocumentRequest documentRequest,
                                 File templatepath,
                                 List included_list, boolean includemode, int includelevel, File includepath,
                                 Map textmap, boolean textmode,
-                                Map imagemap, boolean imagemode,
-                                ParserParameters parserParameters,
-                                ReadrunnerFilter readrunnerFilter) {
+                                Map imagemap, boolean imagemode
+                         ) {
         this.textDocParser = textdocparser;
         this.documentRequest = documentRequest;
         this.document = documentRequest.getDocument();
@@ -115,10 +107,6 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
         this.imageMap = imagemap;
         this.imageMode = imagemode;
-
-        this.parserParameters = parserParameters;
-
-        this.readrunnerFilter = readrunnerFilter;
 
         String langPrefix = documentRequest.getUser().getLangPrefix();
         File label_template_file = new File(templatePath, langPrefix + "/admin/textdoc/label.frag");
@@ -341,7 +329,6 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
      Handle a <?imcms:text ...?> tag
 
      @param attributes The attributes of the text tag
-     @param patMat     A pattern matcher.
 
      attributes:
      - no	( int )   text number in document
@@ -372,7 +359,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
      pollparameter-description
 
      **/
-    private String tagText(Properties attributes, PatternMatcher patMat) {
+    private String tagText(Properties attributes ) {
         String mode = attributes.getProperty("mode");
         if ((mode != null && !"".equals(mode))
                 && ((textMode && "read".startsWith(mode)) // With mode="read", we don't want anything in textMode.
@@ -396,12 +383,6 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         } else {
             // Since this is supposed to be a html-view of the db, we'll do some html-escaping.
             result = text.toHtmlString();
-        }
-
-        String filter = attributes.getProperty("filter");
-        if (null != filter && "readrunner".equalsIgnoreCase(filter)) {
-
-            result = readrunnerFilter.filter(result, patMat, parserParameters.getReadrunnerParameters());
         }
 
         String type = attributes.getProperty("type"); // get text type, ex. pollparameter-xxxx
@@ -658,7 +639,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         with a known interface, looked up through some HashMap.
         JSP already fixes this with tag-libs. */
         if ( "text".equals( tagname ) ) {
-            result = tagText( attributes, patMat );
+            result = tagText( attributes );
         } else if ( "image".equals( tagname ) ) {
             result = tagImage( attributes );
         } else if ( "include".equals( tagname ) ) {

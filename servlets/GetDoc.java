@@ -290,8 +290,6 @@ public class GetDoc extends HttpServlet {
                 paramsToParser.setParameter( req.getParameter( "param" ) );
                 paramsToParser.setExternalParameter( externalparam );
 
-                paramsToParser.setReadrunnerParameters( Readrunner.getReadrunnerParameters( req ) );
-
                 String result = imcref.parsePage( documentRequest, 0, paramsToParser );
                 // Log to accesslog
                 trackLog.info( documentRequest );

@@ -1,6 +1,5 @@
 package imcode.server.parser;
 
-import imcode.readrunner.ReadrunnerFilter;
 import imcode.server.DocumentRequest;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
@@ -34,11 +33,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     private static Pattern IMCMS_TAG_PATTERN = null;
     private static Pattern HTML_TAG_PATTERN = null;
 
-    private static Pattern READRUNNER_END_TITLE_PATTERN = null;
-    private static Pattern READRUNNER_END_HEAD_PATTERN = null;
-    private static Pattern READRUNNER_START_BODY_PATTERN = null;
-    private static Pattern READRUNNER_END_BODY_PATTERN = null;
-
     static {
         Perl5Compiler patComp = new Perl5Compiler();
         try {
@@ -49,11 +43,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             IMCMS_TAG_PATTERN = patComp.compile( "<\\?imcms:([-\\w]+)(.*?)\\?>", Perl5Compiler.SINGLELINE_MASK | Perl5Compiler.READ_ONLY_MASK );
             HASHTAG_PATTERN = patComp.compile( "#[^ #\"<>&;\\t\\r\\n]+#", Perl5Compiler.READ_ONLY_MASK );
             MENU_PATTERN = patComp.compile( "<\\?imcms:menu(.*?)\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK | Perl5Compiler.READ_ONLY_MASK );
-
-            READRUNNER_END_TITLE_PATTERN = patComp.compile( "(</title>)", Perl5Compiler.READ_ONLY_MASK | Perl5Compiler.CASE_INSENSITIVE_MASK );
-            READRUNNER_END_HEAD_PATTERN = patComp.compile( "(</head>)", Perl5Compiler.READ_ONLY_MASK | Perl5Compiler.CASE_INSENSITIVE_MASK );
-            READRUNNER_START_BODY_PATTERN = patComp.compile( "(<body.*?)(>)", Perl5Compiler.READ_ONLY_MASK | Perl5Compiler.CASE_INSENSITIVE_MASK );
-            READRUNNER_END_BODY_PATTERN = patComp.compile( "(</body>)", Perl5Compiler.READ_ONLY_MASK | Perl5Compiler.CASE_INSENSITIVE_MASK );
 
         } catch ( MalformedPatternException ignored ) {
             // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
@@ -368,8 +357,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             tags.setProperty( "#param#", param_value );
             tags.setProperty( "#externalparam#", extparam_value );
 
-            tags.setProperty( "#readrunner_quote_substitution_count#", "#readrunner_quote_substitution_count#" );
-
             // Give the user a row of buttons if he is privileged enough.
             if ( ( serverObject.checkDocAdminRights( meta_id, user ) || serverObject.checkUserAdminrole( user.getUserId(), 2 ) ) && flags >= 0 ) {
                 tags.setProperty( "#adminMode#", serverObject.getMenuButtons( meta_id, user ) );
@@ -518,10 +505,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             String templateContents = templatebuffer.toString();
             StringBuffer result = new StringBuffer( templateContents.length() + 16384 ); // This value is the amount i expect the internalDocument to increase in size.
 
-            ReadrunnerFilter readrunnerFilter = new ReadrunnerFilter();
             MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( documentRequest, menus, menumode, tags );
             HashTagSubstitution hashtagsubstitution = new imcode.server.parser.HashTagSubstitution( tags, numberedtags );
-            ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, documentRequest, templatePath, Arrays.asList( included_docs ), includemode, includelevel, includePath, textMap, textmode, imageMap, imagemode, paramsToParse, readrunnerFilter );
+            ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, documentRequest, templatePath, Arrays.asList( included_docs ), includemode, includelevel, includePath, textMap, textmode, imageMap, imagemode );
 
             LinkedList parse = new LinkedList();
             perl5util.split( parse, "/(<!--\\/?IMSCRIPT-->)/", templateContents );
@@ -561,53 +547,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 result.append( nextbit );
             } // end while (pit.hasNext()) // End of the main parseloop
 
-            // Get the number of <q>tags</q> inserted by the readrunner filter.
-            int readrunnerQuoteSubstitutionCount = readrunnerFilter.getReadrunnerQuoteSubstitutionCount();
             String returnresult = result.toString();
 
-            if ( readrunnerQuoteSubstitutionCount > 0 ) {
-                // We found a couple of readrunner-text-tags, and did a few substitutions
-
-                Vector readrunnerSubstitutionCountVector = new Vector();
-                readrunnerSubstitutionCountVector.add( "#readrunner_quote_substitution_count#" );
-                readrunnerSubstitutionCountVector.add( "" + readrunnerQuoteSubstitutionCount );
-
-                String readrunner_script_frag = serverObject.parseDoc( readrunnerSubstitutionCountVector, "readrunner/script.html.frag", lang_prefix );
-
-                String readrunner_titlesuffix_frag = serverObject.parseDoc( null, "readrunner/titlesuffix.html.frag", lang_prefix );
-
-                String readrunner_panel_frag = serverObject.parseDoc( null, "readrunner/panel.html.frag", lang_prefix );
-
-                String readrunner_buffer_frag = serverObject.parseDoc( null, "readrunner/buffer.html.frag", lang_prefix );
-
-                String readrunner_bodyevents_frag = serverObject.parseDoc( null, "readrunner/bodyevents.html.frag", lang_prefix );
-
-                String readrunner_copyright_frag = serverObject.parseDoc( null, "readrunner/copyright.html.frag", lang_prefix );
-
-                readrunner_titlesuffix_frag = escapeSubstitution( readrunner_titlesuffix_frag );
-                readrunner_bodyevents_frag = escapeSubstitution( readrunner_bodyevents_frag );
-                readrunner_panel_frag = escapeSubstitution( readrunner_panel_frag );
-                readrunner_script_frag = escapeSubstitution( readrunner_script_frag );
-                readrunner_buffer_frag = escapeSubstitution( readrunner_buffer_frag );
-
-                // FIXME: Use a StringBuffer for all this crap instead.
-
-                // Insert the copyright fragment at the top of the page
-                returnresult = readrunner_copyright_frag + returnresult;
-
-                // Insert the titlesuffix fragment at the end of the title
-                returnresult = org.apache.oro.text.regex.Util.substitute( patMat, READRUNNER_END_TITLE_PATTERN, new Perl5Substitution( readrunner_titlesuffix_frag + "$1" ), returnresult );
-
-                // Insert the script fragment at the end of the head
-                returnresult = org.apache.oro.text.regex.Util.substitute( patMat, READRUNNER_END_HEAD_PATTERN, new Perl5Substitution( readrunner_script_frag + "$1" ), returnresult );
-
-                // Insert the body-events and panel in and after the body tag.
-                returnresult = org.apache.oro.text.regex.Util.substitute( patMat, READRUNNER_START_BODY_PATTERN, new Perl5Substitution( "$1" + readrunner_bodyevents_frag + "$2" + readrunner_panel_frag ), returnresult );
-
-                // Insert the buffer fragment at the end of the body
-                returnresult = org.apache.oro.text.regex.Util.substitute( patMat, READRUNNER_END_BODY_PATTERN, new Perl5Substitution( readrunner_buffer_frag + "$1" ), returnresult );
-
-            }
 
             /*
               So, it is here i shall have to put my magical markupemphasizing code.

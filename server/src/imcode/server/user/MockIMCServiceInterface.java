@@ -2,7 +2,6 @@ package imcode.server.user;
 
 import com.mockobjects.ExpectationList;
 import com.mockobjects.MockObject;
-import imcode.readrunner.ReadrunnerUserData;
 import imcode.server.*;
 import imcode.server.db.ConnectionPool;
 import imcode.server.document.DocumentDomainObject;
@@ -530,14 +529,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return false;
    }
 
-   public void setReadrunnerUserData( UserDomainObject user, ReadrunnerUserData rrUserData ) {
-   }
-
-   public ReadrunnerUserData getReadrunnerUserData( UserDomainObject user ) {
-      return null;
-   }
-
-   public Map getTexts( int meta_id ) {
+    public Map getTexts( int meta_id ) {
       return null;
    }
 

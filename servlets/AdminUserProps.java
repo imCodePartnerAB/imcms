@@ -1,7 +1,6 @@
 
 import imcode.external.diverse.Html;
 import imcode.external.diverse.VariableManager;
-import imcode.readrunner.ReadrunnerUserData;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
@@ -517,31 +516,6 @@ public class AdminUserProps extends Administrator {
         vm.addProperty( "COUNTRY_COUNCIL", userInfoP.getProperty( "country_council" ) );
         vm.addProperty( "EMAIL", userInfoP.getProperty( "email" ) );
 
-
-        //******* READRUNNER_SETTINGS BUTTON WAS PUNSCHED ***********
-        if ( null != req.getParameter( "READRUNNER_SETTINGS" ) ) {
-
-            String theUserType = req.getParameter( "user_type" );
-            String[] theUserRoles = req.getParameterValues( "roles" );
-            String[] theUseradminRoles = req.getParameterValues( "useradmin_roles" );
-
-            if ( null != theUserRoles ) {
-                session.setAttribute( "tempUserRoles", theUserRoles );
-            }
-            if ( null != theUserType ) {
-                session.setAttribute( "tempUserType", theUserType );
-            }
-            if ( null != userInfoP ) {
-                session.setAttribute( "tempUser", userInfoP );
-            }
-            if ( null != theUseradminRoles ) {
-                session.setAttribute( "tempUseradminRoles", theUseradminRoles );
-            }
-
-            res.sendRedirect( "AdminUserReadrunner" );
-            return;
-        }
-
         //******** USERADMIN_STTINGS BUTTON WAS PUNSCHED ***********
         if ( null != req.getParameter( "useradmin_settings" ) ) {
 
@@ -827,14 +801,6 @@ public class AdminUserProps extends Administrator {
             Vector phonesV = (Vector)session.getAttribute( "Ok_phoneNumbers" );
 
             String newUserId = addNewUser( imcref, params );
-
-            // Lets add Readrunner user data
-            if ( null != session.getAttribute( "tempRRUserData" ) ) {
-                ReadrunnerUserData rrUserData = new ReadrunnerUserData();
-                rrUserData = (ReadrunnerUserData)session.getAttribute( "tempRRUserData" );
-                UserDomainObject newUser = imcref.getUserById( Integer.parseInt( newUserId ) );
-                imcref.setReadrunnerUserData( newUser, rrUserData );
-            }
 
             // Lets add the new users roles
             String roleId[] = imcref.sqlProcedure( "GetRoleIdByRoleName", new String[]{"Useradmin"} );
@@ -1176,11 +1142,6 @@ public class AdminUserProps extends Administrator {
                     }
                 }
 
-                // Lets add Readrunner user data
-                if ( null != session.getAttribute( "tempRRUserData" ) ) {
-                    ReadrunnerUserData rrUserData = (ReadrunnerUserData)session.getAttribute( "tempRRUserData" );
-                    imcref.setReadrunnerUserData( userToChange, rrUserData );
-                }
             }
 
             this.goNext( req, res, session );
