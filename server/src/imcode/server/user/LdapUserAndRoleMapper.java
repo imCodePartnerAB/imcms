@@ -67,7 +67,6 @@ public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
 
     private DirContext ctx = null;
     private HashMap userFieldLdapMappings = null;
-    private static final int USER_TYPE_AUTHENTICATED = 1;
 
     private String ldapURL;
     private String ldapAuthenticationType;

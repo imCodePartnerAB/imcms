@@ -1,0 +1,9 @@
+ALTER TABLE users DROP CONSTRAINT DF_users_user_type
+ALTER TABLE users DROP COLUMN user_type
+
+DROP TABLE user_types
+
+DROP PROCEDURE GetUserType
+DROP PROCEDURE GetUserTypes
+DROP PROCEDURE GetCategoryUsers
+DROP PROCEDURE UserPrefsChange

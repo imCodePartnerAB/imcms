@@ -65,7 +65,7 @@ public class AdminUser extends Administrator {
         String active = ( req.getParameter( "active" ) == null ) ? "1" : req.getParameter( "active" );
         String activeChecked = ( "0".equals( active ) ) ? "checked" : "";
         if ( req.getParameter( "showUsers" ) != null ) {
-            String[] usersArr = imcref.sqlProcedure( "GetCategoryUsers", new String[]{"-1", searchString, "" + user.getId(), "" + showAll, active} );
+            String[] usersArr = imcref.sqlProcedure( "SearchForUsersByName", new String[]{searchString, "" + user.getId(), "" + showAll, active} );
 
             List usersV = new ArrayList( java.util.Arrays.asList( usersArr ) );
             String usersOption = Html.createOptionList( "", usersV );

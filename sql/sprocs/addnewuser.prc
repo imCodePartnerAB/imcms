@@ -30,12 +30,11 @@ usertype. 0=special, 1=default, 2=conferenceuser
  @last_page int,
  @archive_mode int,
  @lang_id int,
- @user_type int,
  @active int
 AS
-INSERT INTO users (user_id,login_name,login_password,first_name,last_name, title, company, address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id, user_type, active, create_date)
+INSERT INTO users (user_id,login_name,login_password,first_name,last_name, title, company, address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id, active, create_date)
 VALUES (@user_id, @login_name, @login_password, @first_name, @last_name, @title, @company,  @address, @city, @zip, @country,
-   @county_council, @email, @external, @last_page, @archive_mode, @lang_id ,@user_type, @active, getDate())
+   @county_council, @email, @external, @last_page, @archive_mode, @lang_id ,@active, getDate())
 
 
 GO

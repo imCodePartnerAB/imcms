@@ -68,7 +68,6 @@ public class TestImcmsAuthenticatorAndUserMapper extends UserBaseTestCase {
    public void testAddRole() {
       String roleName = "testrole";
       final String[] expectedSQLResult = new String[]{"0", "Superadmin", "1", "Useradmin", "3", roleName};
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, expectedSQLResult );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETALLROLES, expectedSQLResult );
 
       imcmsAAUM.addRole( roleName );

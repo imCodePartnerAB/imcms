@@ -434,23 +434,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveBrowserDoc</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveBrowserDoc</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.DocumentComposer</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.DocumentComposer</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveFileUpload</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveFileUpload</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveFrameset</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveFrameset</servlet-class>
     </servlet>
 
     <servlet>
@@ -474,26 +459,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewBrowserDoc</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveNewBrowserDoc</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewFileUpload</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveNewFileUpload</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewFrameset</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveNewFrameset</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewUrlDoc</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveNewUrlDoc</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.SavePermissions</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.SavePermissions</servlet-class>
     </servlet>
@@ -506,11 +471,6 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveText</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.SaveText</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveUrlDoc</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveUrlDoc</servlet-class>
     </servlet>
 
     <servlet>
@@ -551,11 +511,6 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.LinkCheck</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.LinkCheck</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.UserChangePrefs</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.UserChangePrefs</servlet-class>
     </servlet>
 
     <servlet>
@@ -979,23 +934,8 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveBrowserDoc</servlet-name>
-        <url-pattern>/servlet/SaveBrowserDoc</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.DocumentComposer</servlet-name>
         <url-pattern>/servlet/DocumentComposer</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveFileUpload</servlet-name>
-        <url-pattern>/servlet/SaveFileUpload</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveFrameset</servlet-name>
-        <url-pattern>/servlet/SaveFrameset</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -1019,26 +959,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewBrowserDoc</servlet-name>
-        <url-pattern>/servlet/SaveNewBrowserDoc</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewFileUpload</servlet-name>
-        <url-pattern>/servlet/SaveNewFileUpload</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewFrameset</servlet-name>
-        <url-pattern>/servlet/SaveNewFrameset</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewUrlDoc</servlet-name>
-        <url-pattern>/servlet/SaveNewUrlDoc</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.SavePermissions</servlet-name>
         <url-pattern>/servlet/SavePermissions</url-pattern>
     </servlet-mapping>
@@ -1051,11 +971,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveText</servlet-name>
         <url-pattern>/servlet/SaveText</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveUrlDoc</servlet-name>
-        <url-pattern>/servlet/SaveUrlDoc</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -1096,11 +1011,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.LinkCheck</servlet-name>
         <url-pattern>/servlet/LinkCheck</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.UserChangePrefs</servlet-name>
-        <url-pattern>/servlet/UserChangePrefs</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

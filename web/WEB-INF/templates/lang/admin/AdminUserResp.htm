@@ -35,15 +35,7 @@ function evalPrepareAdd() {
 		alert(msg)		
 		return false
 	}
-	var userType
-	userType = document.forms[0].user_type.selectedIndex
-	// Lets check if the user has make a choice
-	if(userType == "-1") {
-		var msg = "<? templates/sv/AdminUserResp.htm/2/3 ?>"
-		alert(msg)
-		return false
-	}
-	
+
 	var userRole
 	userRole = document.forms[0].roles.selectedIndex
 	if(userRole == "-1") {

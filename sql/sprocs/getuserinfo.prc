@@ -30,7 +30,6 @@ AS
 	last_page,      -- Unused?
 	archive_mode,   -- Unused?
 	users.lang_id,
-	user_type,      -- Unused?
 	active,
 	create_date,    -- Unused?
         lang_prefix

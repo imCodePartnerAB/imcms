@@ -32,7 +32,6 @@ CREATE PROCEDURE GetUserByLogin @login varchar(50) AS
 	email			VARCHAR(50)	The users e-mail address.
 	lang_id			int
 	lang_prefix		char 3
-	user_type 		int
 	active			INT			Whether the user is allowed to log in.
 	create_date		smalldatetime
 	external                             int         Whether this user is handled solely within imcms or is synchronized externally
@@ -53,7 +52,6 @@ SELECT  user_id,
 		email,
 		users.lang_id,
 		lang_prefix,
-		user_type,
 		active,
 		create_date,
 		[external]

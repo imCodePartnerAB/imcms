@@ -29,7 +29,6 @@ usertype. 0=special, 1=default, 2=conferenceuser
  @last_page int,
  @archive_mode int,
  @lang_id int,
- @user_type int,
  @active int
 AS
 UPDATE users 
@@ -45,7 +44,6 @@ zip = @zip,
 country = @country,
 county_council = @county_council,
 email = @email,
-user_type = @user_type,
 active = @active,
 lang_id = @lang_id
 WHERE user_id = @User_id 

@@ -25,13 +25,6 @@ INSERT INTO doc_types VALUES(102, 'eng', 'Conference')
 INSERT INTO doc_types VALUES(103, 'eng', 'Chat')
 INSERT INTO doc_types VALUES(104, 'eng', 'Billboard')
 
-INSERT INTO user_types VALUES(0, 'Anonyma användare', 'swe')
-INSERT INTO user_types VALUES(1, 'Autentiserade användare', 'swe')
-INSERT INTO user_types VALUES(2, 'Konferensanvändare', 'swe')
-INSERT INTO user_types VALUES(0, 'Anonymous users', 'eng')
-INSERT INTO user_types VALUES(1, 'Authenticated users', 'eng')
-INSERT INTO user_types VALUES(2, 'Conference users', 'eng')
-
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,2,'swe','Ändra text')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,5,'swe','Redigera')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,6,'swe','Redigera')

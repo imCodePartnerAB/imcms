@@ -35,6 +35,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     private IMCServiceInterface service;
     private Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserMapper.class );
+    static final String SQL_SELECT_ROLE_BY_NAME = "SELECT role_id, role_name, admin_role FROM roles WHERE role_name = ?";
 
     public ImcmsAuthenticatorAndUserMapper( IMCServiceInterface service ) {
         this.service = service;
@@ -97,9 +98,9 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         user.setEmailAddress( sqlResult[12] );
         user.setLangId( Integer.parseInt( sqlResult[13] ) );
         user.setLanguageIso639_2( (String)ObjectUtils.defaultIfNull( sqlResult[14], service.getDefaultLanguageAsIso639_2() ) );
-        user.setActive( 0 != Integer.parseInt( sqlResult[16] ) );
-        user.setCreateDate( sqlResult[17] );
-        user.setImcmsExternal( 0 != Integer.parseInt( sqlResult[18] ) );
+        user.setActive( 0 != Integer.parseInt( sqlResult[15] ) );
+        user.setCreateDate( sqlResult[16] );
+        user.setImcmsExternal( 0 != Integer.parseInt( sqlResult[17] ) );
 
         setPhoneNumbersForUser( user );
 
@@ -152,7 +153,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     String[] sqlSelectUserData( int userId ) {
         String sqlStr = "SELECT user_id, login_name, login_password, first_name, last_name, "
                         + "title, company, address, city, zip, country, county_council, "
-                        + "email, users.lang_id, lang_prefix, user_type, active, "
+                        + "email, users.lang_id, lang_prefix, active, "
                         + "create_date, external "
                         + "FROM users, lang_prefixes "
                         + "WHERE users.lang_id = lang_prefixes.lang_id "
@@ -332,8 +333,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     }
 
     public RoleDomainObject getRoleByName( String wantedRoleName ) {
-        String sqlStr = "SELECT role_id, role_name, admin_role FROM roles WHERE role_name = ?";
-        String[] sqlResult = service.sqlQuery( sqlStr, new String[]{wantedRoleName} );
+        String[] sqlResult = service.sqlQuery( SQL_SELECT_ROLE_BY_NAME, new String[]{wantedRoleName} );
         return getRoleFromSqlResult( sqlResult );
     }
 
@@ -367,7 +367,6 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
             "1001",
             "0",
             String.valueOf( tempUser.getLangId() ),
-            "0",
             tempUser.isActive() ? "1" : "0"
         };
         service.sqlUpdateProcedure( modifyUserProcedureName, params );

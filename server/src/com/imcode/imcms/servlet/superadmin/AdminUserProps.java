@@ -1608,7 +1608,7 @@ public class AdminUserProps extends Administrator {
             ( props.getProperty( "city" ) ).trim(), ( props.getProperty( "zip" ) ).trim(),
             ( props.getProperty( "country" ) ).trim(), ( props.getProperty( "country_council" ) ).trim(),
             ( props.getProperty( "email" ) ).trim(), "0", "1001", "0", props.getProperty( "lang_id" ),
-            props.getProperty( "user_type" ), props.getProperty( "active" )
+            props.getProperty( "active" )
         };
 
         return params;

@@ -489,7 +489,6 @@ public class ConfLogin extends Conference {
         String aCode = ( req.getParameter( "area_code" ) == null ) ? "" : ( req.getParameter( "area_code" ) );
         String lCode = ( req.getParameter( "local_code" ) == null ) ? "" : ( req.getParameter( "local_code" ) );
 
-        String user_type = ( req.getParameter( "user_type" ) == null ) ? "2" : ( req.getParameter( "user_type" ) );
         String active = ( req.getParameter( "active" ) == null ) ? "1" : ( req.getParameter( "active" ) );
 
         // Lets fix those fiels which arent mandatory
@@ -548,7 +547,6 @@ public class ConfLogin extends Conference {
         userInfo.setProperty( "area_code", aCode.trim() );
         userInfo.setProperty( "local_code", lCode.trim() );
 
-        userInfo.setProperty( "user_type", user_type.trim() );
         userInfo.setProperty( "active", active.trim() );
 
         // this.log("UserInfo:" + userInfo.toString()) ;
