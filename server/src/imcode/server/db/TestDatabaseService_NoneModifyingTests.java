@@ -10,34 +10,28 @@ public class TestDatabaseService_NoneModifyingTests extends TestCase {
 
     private static final int SQL_SERVER_PORT = 1433;
     private static final String SQLSERVER_DATABASE_NAME = "test";
+    private static final String SQLSERVE_DATABASE_USER = "sa";
+    private static final String SQLSERVE_DATABASE_PASSWORD = "sa";
 
     private static final int MIMER_PORT = 1360;
     private static final String MIMMER_DATABASE_NAME = "test";
+    private static final String MIMMER_DATABASE_USER = "sysadm";
+    private static final String MIMMER_DATABASE_PASSWORD = "admin";
 
     public static void main( String[] args ) throws Exception {
-/*
-        Timestamp t1 = new Timestamp( new java.util.Date().getTime() );
-        Thread.sleep( 2000 );
-        Timestamp t2 = new Timestamp( new java.util.Date().getTime() );
-        System.out.println( "t1 = " + t1.toString() );
-        System.out.println( "t2 = " + t2.toString() );
-        System.out.println( t1.equals(t2) );
-*/
-
-/*
-        DatabaseService mimer = new DatabaseService( DatabaseService.MIMER, DB_HOST, MIMER_PORT, MIMMER_DATABASE_NAME );
-        mimer.initializeDatabase();
-*/
-        DatabaseService sqlServer = new DatabaseService( DatabaseService.SQL_SERVER, DB_HOST, SQL_SERVER_PORT, SQLSERVER_DATABASE_NAME );
+        DatabaseService sqlServer = new DatabaseService( DatabaseService.SQL_SERVER, DB_HOST, SQL_SERVER_PORT, SQLSERVER_DATABASE_NAME, SQLSERVE_DATABASE_USER, SQLSERVE_DATABASE_PASSWORD );
         sqlServer.initializeDatabase();
+
+        DatabaseService mimer = new DatabaseService( DatabaseService.MIMER, DB_HOST, MIMER_PORT, MIMMER_DATABASE_NAME, MIMMER_DATABASE_USER, MIMMER_DATABASE_PASSWORD );
+        mimer.initializeDatabase();
     }
 
     protected void setUp() throws Exception {
         if( sqlServer == null ) {
-            sqlServer = new DatabaseService( DatabaseService.SQL_SERVER, DB_HOST, SQL_SERVER_PORT, SQLSERVER_DATABASE_NAME );
+            sqlServer = new DatabaseService( DatabaseService.SQL_SERVER, DB_HOST, SQL_SERVER_PORT, SQLSERVER_DATABASE_NAME, SQLSERVE_DATABASE_USER, SQLSERVE_DATABASE_PASSWORD );
         }
         if( mimer == null ) {
-            mimer = new DatabaseService( DatabaseService.MIMER, DB_HOST, MIMER_PORT, MIMMER_DATABASE_NAME );
+            mimer = new DatabaseService( DatabaseService.MIMER, DB_HOST, MIMER_PORT, MIMMER_DATABASE_NAME, MIMMER_DATABASE_USER, MIMMER_DATABASE_PASSWORD );
         }
     }
 

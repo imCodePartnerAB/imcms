@@ -40,12 +40,10 @@ public class DatabaseService {
     private SQLProcessor sqlProcessor = new SQLProcessor();
     private int databaseType;
 
-    public DatabaseService( int databaseType, String host, int port, String databaseName ) {
+    public DatabaseService( int databaseType, String host, int port, String databaseName, String user, String password ) {
         this.databaseType = databaseType;
         String serverUrl = null;
         String jdbcDriver = null;
-        String user = null;
-        String password = null;
         String serverName = null;
 
         switch( databaseType ) {
@@ -53,16 +51,12 @@ public class DatabaseService {
                 jdbcDriver = "com.mimer.jdbc.Driver";
                 String jdbcUrl = "jdbc:mimer://";
                 serverUrl = jdbcUrl + host + ":" + port + "/" + databaseName;
-                user = "sysadm";
-                password = "admin";
                 serverName = "Mimer test server";
                 break;
             case SQL_SERVER:
                 jdbcDriver = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
                 String jdbcUrl1 = "jdbc:microsoft:sqlserver://";
                 serverUrl = jdbcUrl1 + host + ":" + port + ";DatabaseName=" + databaseName;
-                user = "sa";
-                password = "sa";
                 serverName = "SQL Server test server";
                 break;
         }
