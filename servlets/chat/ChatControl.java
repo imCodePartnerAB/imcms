@@ -26,8 +26,11 @@ import imcode.util.IMCServiceRMI;
 
 public class ChatControl extends ChatBase
 {
-
-
+	String HTML_TEMPLATE ;
+	String A_HREF_HTML ;   // The code snippet where the aHref list with all discussions
+	//	int DISCSHOWCOUNTER = 20 ;
+	// will be placed.
+	
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
