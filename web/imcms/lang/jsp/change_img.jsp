@@ -4,7 +4,6 @@
                  imcode.server.Imcms,
                  org.apache.commons.lang.StringEscapeUtils,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
-                 imcode.util.ImageSize,
                  org.apache.commons.lang.ObjectUtils,
                  imcode.util.Utility,
                  imcode.util.Html,
@@ -13,14 +12,15 @@
                  imcode.server.user.UserDomainObject,
                  imcode.server.document.DocumentDomainObject,
                  imcode.util.ImcmsImageUtils,
-                 imcode.server.document.FileDocumentDomainObject"%>
+                 imcode.server.document.FileDocumentDomainObject,
+                 imcode.util.ImageSize"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     ChangeImage.ImageEditPage imageEditPage = (ChangeImage.ImageEditPage)request.getAttribute( ChangeImage.ImageEditPage.REQUEST_ATTRIBUTE__PAGE ) ;
     TextDocumentDomainObject document = imageEditPage.getDocument() ;
     ImageDomainObject image = imageEditPage.getImage() ;
     int imageIndex = imageEditPage.getImageIndex() ;
-    ImageSize imageFileSize = imageEditPage.getImageFileData() ;
+    ImageSize realImageSize = image.getRealImageSize();
 %>
 <vel:velocity>
 <html>
@@ -202,9 +202,9 @@ function checkLinkOnBlur() {
                         <td><? templates/sv/change_img.html/size_explanation ?></td>
                     </tr>
                     <tr>
-                        <td height="20">&nbsp;<%= imageFileSize.getWidth() %></td>
+                        <td height="20">&nbsp;<%= realImageSize.getWidth() %></td>
                         <td>&nbsp;X&nbsp;</td>
-                        <td>&nbsp;<%= imageFileSize.getHeight() %></td>
+                        <td>&nbsp;<%= realImageSize.getHeight() %></td>
                         <td>&nbsp;</td>
                         <td colspan="3"><? templates/sv/change_img.html/originalSize ?></td>
                     </tr>

@@ -5,10 +5,11 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.util.FileInputStreamSource;
-import imcode.util.ImageParser;
 import imcode.util.ImageSize;
 import org.apache.commons.lang.StringUtils;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -54,7 +55,8 @@ public class ImageDomainObject implements Serializable {
             return new ImageSize( 0, 0 );
         }
         try {
-            return new ImageParser().parseImageStream( source.getInputStreamSource().getInputStream() );
+            BufferedImage image = ImageIO.read( source.getInputStreamSource().getInputStream() ) ;
+            return new ImageSize( image.getWidth(), image.getHeight() );
         } catch ( IOException e ) {
             return new ImageSize( 0, 0 );
         }

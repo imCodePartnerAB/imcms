@@ -1,5 +1,7 @@
 <%@ page language="java"
-	import="org.apache.oro.util.*, org.apache.oro.text.*, org.apache.oro.text.regex.*, org.apache.oro.text.perl.*, java.io.*, java.util.*, java.text.*, java.net.*, javax.servlet.*, javax.servlet.http.*, imcode.external.diverse.*, imcode.util.*, imcode.server.*"
+	import="org.apache.oro.util.*, org.apache.oro.text.*, org.apache.oro.text.regex.*, org.apache.oro.text.perl.*, java.io.*, java.util.*, java.text.*, java.net.*, javax.servlet.*, javax.servlet.http.*, imcode.external.diverse.*, imcode.util.*, imcode.server.*,
+            java.awt.image.BufferedImage,
+            javax.imageio.ImageIO"
 %><%
 /* *******************************************************************
  *           SETTINGS                                                *
@@ -106,7 +108,8 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
 
 String image_ref = fn.getCanonicalPath() ;
 
-ImageSize imagefile = new ImageParser().parseImageFile( new File(image_ref) ) ;
+    BufferedImage image = ImageIO.read( new File(image_ref) );
+    ImageSize imagefile = new ImageSize( image.getWidth(), image.getHeight() ) ;
 int width = imagefile.getWidth() ;
 int height = imagefile.getHeight() ;
 

@@ -15,7 +15,10 @@ import imcode.server.document.index.QueryParser;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.*;
+import imcode.util.ImageSize;
+import imcode.util.ImcmsImageUtils;
+import imcode.util.LocalizedMessage;
+import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
@@ -24,15 +27,17 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
 
 public class ChangeImage extends HttpServlet {
 
@@ -261,10 +266,9 @@ public class ChangeImage extends HttpServlet {
                                     HttpServletRequest request,
                                     HttpServletResponse response ) throws IOException, ServletException {
 
-        ImageSize realImageSize = image.getRealImageSize();
         String label = StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__LABEL ) );
 
-        new ImageEditPage( document, imageIndex, image, realImageSize, label ).forward( request, response );
+        new ImageEditPage( document, imageIndex, image, label ).forward( request, response );
     }
 
     private int getImageNumberParam( HttpServletRequest req ) {
@@ -278,15 +282,13 @@ public class ChangeImage extends HttpServlet {
         private TextDocumentDomainObject document;
         private int imageIndex;
         private ImageDomainObject image;
-        private ImageSize imageFileSize;
         private String label;
 
         public ImageEditPage( TextDocumentDomainObject document, int imageIndex, ImageDomainObject image,
-                              ImageSize imageFileSize, String label ) {
+                              String label ) {
             this.document = document;
             this.image = image;
             this.imageIndex = imageIndex;
-            this.imageFileSize = imageFileSize;
             this.label = label;
         }
 
@@ -300,10 +302,6 @@ public class ChangeImage extends HttpServlet {
 
         public int getImageIndex() {
             return imageIndex;
-        }
-
-        public ImageSize getImageFileData() {
-            return imageFileSize;
         }
 
         private void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
@@ -345,7 +343,8 @@ public class ChangeImage extends HttpServlet {
             FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)document;
             ImageSize imageSize ;
             try {
-                imageSize = new ImageParser().parseImageStream( imageFileDocument.getDefaultFile().getInputStreamSource().getInputStream() );
+                BufferedImage image = ImageIO.read( imageFileDocument.getDefaultFile().getInputStreamSource().getInputStream() ) ;
+                imageSize = new ImageSize( image.getWidth(), image.getHeight() );
             } catch ( IOException ioe ) {
                 imageSize = new ImageSize( 0, 0 );
             }
