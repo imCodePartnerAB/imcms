@@ -147,7 +147,9 @@ public class DocumentMapper {
             String permissionBitsString = service.sqlQueryStr( sqlSelectPermissionBits, new String[]{
                 "" + document.getId(), "" + user_permission_set_id
             } );
-            user_permission_set = Integer.parseInt( permissionBitsString );
+            if (null != permissionBitsString) {
+                user_permission_set = Integer.parseInt( permissionBitsString );
+            }
         }
         return user_permission_set;
     }
