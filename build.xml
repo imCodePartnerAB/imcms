@@ -111,7 +111,7 @@
   </target>
 
   <target name="build"
-          depends="server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard"
+          depends="server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help-images"
 	  description="Builds everything.">
 
     <copy file="install/web.xml" todir="${WEB-INF}"/>
@@ -204,6 +204,10 @@
     <mkdir dir="${images}"/>
     <mkdir dir="${login}"/>
     <copy file="templates/index.html" todir="${login}">
+       <filterset>
+        <filter token="servleturl" value="${servleturl}"/>
+        <filter token="imageurl" value="${imageurl}"/>
+      </filterset>
     </copy>
     <copy todir="${images}">
       <fileset dir="install/htdocs/images">
@@ -224,10 +228,10 @@
         <patternset>
 	  <include name="*.htm"/>
 	  <include name="*.html"/>
-	  <exclude name="index.html"/>
 	</patternset>
       </fileset>
       <filterset>
+	<filter token="servleturl" value="${servleturl}"/>
         <filter token="loginurl" value="${loginurl}"/>
         <filter token="imageurl" value="${imageurl}"/>
       </filterset>
@@ -253,10 +257,10 @@
       </filterset>
     </copy>
 
-    <replace dir="${admintemplates}/adminbuttons"
+    <replace dir="${admintemplates}/adminbuttons" excludes="adminbuttons.html"
              token="&#10;" value=""/>
 
-    <replace dir="${admintemplates}/adminbuttons"
+    <replace dir="${admintemplates}/adminbuttons" excludes="adminbuttons.html"
              token="&#13;" value=""/>
 
     <copy todir="${admintemplates}/permissions">
@@ -431,6 +435,13 @@
 	  description="Copies the postcard-templates.">
     <copy todir="${postcard-templates}">
       <fileset dir="templates/${srclanguage}/postcard"/>
+    </copy>
+  </target>
+  <target name="help-images"
+	depends="init,web"
+	description="Copies the help-images.">
+     <copy todir="${images}/${language}/helpimages">
+       	<fileset dir="install/htdocs/imcms/helpimages" includes="*"/>
     </copy>
   </target>
 
