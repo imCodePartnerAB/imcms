@@ -6,6 +6,7 @@ import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.SectionDomainObject;
 import imcode.server.document.WhitespaceLowerCaseAnalyzer;
+import imcode.server.document.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 import imcode.util.Utility;
@@ -330,16 +331,11 @@ public class SearchDocuments extends HttpServlet {
                                                     Date changed_stop, Date activated_start, Date activated_stop,
                                                     Date archived_start, Date archived_stop, SectionDomainObject section, boolean only_addable,
                                                     boolean activate ) throws IOException {
-        File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
-        File indexDirectory = new File( webAppPath, "WEB-INF/index" );
-        IndexReader indexReader = IndexReader.open( indexDirectory );
-        IndexSearcher indexSearcher = new IndexSearcher( indexReader );
+        DocumentIndex documentIndex = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentIndex() ;
         BooleanQuery query = new BooleanQuery();
         if ( null != searchString && !"".equals( searchString.trim() ) ) {
             try {
-                Query textQuery = MultiFieldQueryParser.parse( searchString,
-                                                               new String[]{"meta_headline", "meta_text", "text", "keyword"},
-                                                               new WhitespaceLowerCaseAnalyzer() );
+                Query textQuery = documentIndex.parseLucene( searchString ) ;
                 query.add( textQuery, true, false );
             } catch ( ParseException e ) {
                 log.warn( e.getMessage() + " in search-string " + searchString );
@@ -357,17 +353,8 @@ public class SearchDocuments extends HttpServlet {
         }
 
         log.debug( "Query: " + query.toString() );
-        Hits hits = indexSearcher.search( query );
-        DocumentDomainObject[] result = new DocumentDomainObject[hits.length()];
-        for ( int i = 0; i < hits.length(); ++i ) {
-            int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
-            DocumentDomainObject document = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocument(
-                    metaId );
-            result[i] = document;
-        }
-        indexSearcher.close();
 
-        return result;
+        return documentIndex.search( query ) ;
     }
 
     /**

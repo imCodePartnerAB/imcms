@@ -47,10 +47,15 @@ public class DocumentMapper {
 
     private Logger log = Logger.getLogger( DocumentMapper.class );
     protected IMCServiceInterface service;
+    private DocumentIndex documentIndex;
 
     public DocumentMapper( IMCServiceInterface service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
         this.service = service;
         this.imcmsAAUM = imcmsAAUM;
+        File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
+        File indexDirectory = new File( webAppPath, "WEB-INF/index" );
+
+        this.documentIndex = new DocumentIndex( indexDirectory ) ;
     }
 
     public void addDocumentToMenu( UserDomainObject user, int menuDocumentId, int menuIndex, int toBeAddedId )
@@ -533,7 +538,7 @@ public class DocumentMapper {
 
     public void indexDocument( DocumentDomainObject document ) {
         File indexDir = new File( WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath(), "WEB-INF/index" );
-        DocumentIndexer documentIndexer = new DocumentIndexer( indexDir );
+        DocumentIndex documentIndexer = new DocumentIndex( indexDir );
         try {
             documentIndexer.reindexOneDocument( document );
         } catch ( IOException e ) {
@@ -1233,6 +1238,10 @@ public class DocumentMapper {
             }
         }
         return result;
+    }
+
+    public DocumentIndex getDocumentIndex() {
+        return documentIndex ;
     }
 
     public static class DocumentAlreadyInMenuException extends Exception {

@@ -17,6 +17,11 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,15 +29,39 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
-public class DocumentIndexer {
+public class DocumentIndex {
 
     private final static int INDEX_LOG_TIME_STEP = 2500;
-    private final static Logger log = Logger.getLogger( "imcode.server.document.DocumentIndexer" );
+    private final static Logger log = Logger.getLogger( "imcode.server.document.DocumentIndex" );
 
     File dir;
 
-    public DocumentIndexer( File dir ) {
+    public DocumentIndex( File dir ) {
         this.dir = dir;
+    }
+
+    public DocumentDomainObject[] search( Query query ) throws IOException {
+        IndexReader indexReader = IndexReader.open( dir );
+        IndexSearcher indexSearcher = new IndexSearcher( indexReader );
+        Hits hits = indexSearcher.search( query );
+        DocumentDomainObject[] result = new DocumentDomainObject[hits.length()];
+        for ( int i = 0; i < hits.length(); ++i ) {
+            int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
+            DocumentDomainObject document = ApplicationServer.getIMCServiceInterface()
+                    .getDocumentMapper()
+                    .getDocument( metaId );
+            result[i] = document;
+        }
+        indexSearcher.close();
+        indexReader.close();
+        return result;
+    }
+
+    public Query parseLucene( String queryString ) throws ParseException {
+        return MultiFieldQueryParser.parse( queryString,
+                                            new String[]{"meta_headline", "meta_text", "text", "keyword"},
+                                            new WhitespaceLowerCaseAnalyzer() );
+
     }
 
     public void indexAllDocuments() {
@@ -135,16 +164,16 @@ public class DocumentIndexer {
             indexDocument.add( Field.UnStored( "text" + textIndexString, text.getText() ) );
         }
 
-        CategoryDomainObject[] categories = document.getCategories() ;
+        CategoryDomainObject[] categories = document.getCategories();
         for ( int i = 0; i < categories.length; i++ ) {
             CategoryDomainObject category = categories[i];
-            indexDocument.add( unStoredKeyword( "category_id", ""+category.getId()));
+            indexDocument.add( unStoredKeyword( "category_id", "" + category.getId() ) );
         }
 
-        String[] documentKeywords = document.getKeywords() ;
+        String[] documentKeywords = document.getKeywords();
         for ( int i = 0; i < documentKeywords.length; i++ ) {
             String documentKeyword = documentKeywords[i];
-            indexDocument.add( unStoredKeyword( "keyword", documentKeyword)) ;
+            indexDocument.add( unStoredKeyword( "keyword", documentKeyword ) );
         }
 
         return indexDocument;

@@ -15,15 +15,21 @@ public class ApplicationServer {
     private static IMCPoolInterface imcPoolInterface;
 
 
-    public static IMCServiceInterface getIMCServiceInterface() throws IOException {
+    public static IMCServiceInterface getIMCServiceInterface() {
         if ( null == imcServiceInterface ) {
             imcServiceInterface = createIMCServiceInterface();
         }
         return imcServiceInterface;
     }
 
-    private static IMCServiceInterface createIMCServiceInterface() throws IOException {
-        Properties serverprops = Prefs.getProperties( "server.properties" );
+    private static IMCServiceInterface createIMCServiceInterface() {
+        Properties serverprops = null;
+        try {
+            serverprops = Prefs.getProperties( "server.properties" );
+        } catch ( IOException e ) {
+            log.fatal( "Failed to initialize imCMS", e);
+            throw new RuntimeException(e) ;
+        }
         ConnectionPool connectionPool = createConnectionPool( serverprops );
         return new IMCService( connectionPool, serverprops );
     }

@@ -20,7 +20,6 @@ import imcode.util.fortune.*;
 import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 final public class IMCService implements IMCServiceInterface, IMCConstants {

@@ -1,5 +1,5 @@
 
-import imcode.server.document.DocumentIndexer;
+import imcode.server.document.DocumentIndex;
 import imcode.util.Prefs;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -35,7 +35,7 @@ public class MainInitServlet extends HttpServlet {
             final File indexDirectory = new File( realPathToWebApp, "WEB-INF/index" );
             Thread indexThread = new Thread() {
                 public void run() {
-                    DocumentIndexer documentIndexer = new DocumentIndexer( indexDirectory );
+                    DocumentIndex documentIndexer = new DocumentIndex( indexDirectory );
                     documentIndexer.indexAllDocuments();
                 }
             };
