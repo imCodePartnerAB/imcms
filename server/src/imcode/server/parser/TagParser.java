@@ -707,7 +707,7 @@ class TagParser {
         return documentRequest.getHttpServletRequest().getContextPath();
     }
 
-    public String replaceTags( Perl5Matcher patMat, String template ) {
+    public String replaceTags( PatternMatcher patMat, String template ) {
         StringBuffer result = new StringBuffer() ;
         PatternMatcherInput input = new PatternMatcherInput( template );
         int lastMatchEndOffset = 0;
@@ -735,7 +735,7 @@ class TagParser {
         return result.toString() ;
     }
 
-    private String findEndTag( String tagName, Properties attributes, String entireTag, Perl5Matcher patMat,
+    private String findEndTag( String tagName, Properties attributes, String entireTag, PatternMatcher patMat,
                                PatternMatcherInput input ) {
         String tagResult = entireTag ;
         PatternMatcherInput endTagInput = new PatternMatcherInput( input.getBuffer(), input.getMatchEndOffset(), input.getEndOffset()-input.getMatchEndOffset() ) ;
@@ -779,7 +779,7 @@ class TagParser {
     private String tagMenu( Properties attributes, String content, PatternMatcher patternMatcher ) {
         String result;
         MenuParser menuParser = new MenuParser( parserParameters );
-        result = menuParser.tag( attributes, content, patternMatcher );
+        result = menuParser.tag( attributes, content, patternMatcher, this );
         return result;
     }
 
