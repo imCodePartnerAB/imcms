@@ -9,6 +9,7 @@ import imcode.external.diverse.*;
 import imcode.util.*;
 import imcode.server.*;
 import imcode.server.user.User;
+import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.readrunner.*;
 
 import org.apache.log4j.*;
@@ -941,19 +942,14 @@ public class AdminUserProps extends Administrator {
 
             String workPhone = req.getParameter( "workphone" );
             String mobilePhone = req.getParameter( "mobilephone" );
-            String sqlStr;
 
             if( !("").equals( workPhone ) ) {
-               sqlStr = "phoneNbrAdd " + newUserId + ", '";//userId
-               sqlStr += workPhone + "', 2";//number, phonetype_id
-               log( "PhoneNrAdd: " + sqlStr );
-               imcref.sqlUpdateProcedure( sqlStr );
+               int phoneNumberType = 2 ;
+               ImcmsAuthenticatorAndUserMapper.staticSprocPhoneNbrAdd( imcref, Integer.parseInt(newUserId), workPhone, phoneNumberType );
             }
             if( !("").equals( mobilePhone ) ) {
-               sqlStr = "phoneNbrAdd " + newUserId + ", '";//userId
-               sqlStr += mobilePhone + "', 3";//number, phonetype_id
-               log( "PhoneNrAdd: " + sqlStr );
-               imcref.sqlUpdateProcedure( sqlStr );
+               int phoneNumberType = 3 ;
+               ImcmsAuthenticatorAndUserMapper.staticSprocPhoneNbrAdd( imcref, Integer.parseInt(newUserId), workPhone, phoneNumberType );
             }
          }
 

@@ -1,9 +1,4 @@
-<%@ page
- errorPage="sample_error.jsp"
- import="com.imcode.imcms.*,
-                 org.apache.log4j.Logger,
-         java.util.Arrays"
- %>
+<%@ page import="com.imcode.imcms.*" %>
 
 <h2>A simple sample of using the UserMapperBean and basic operations on a UserBean  </h2>
 <%
@@ -18,25 +13,6 @@
    }
 %>
 
-<H2>Hanling roles</H2>
-<H3>Create a new role</H3>
-
-Before:<br>
-<%=Arrays.asList( userMapper.getAllRolesNames() )%>
-<%
-   String role = "Test role";
-   userMapper.addNewRole( role );
-%><br>
-After adding a new role named "<%=role%>":<br>
-<%=Arrays.asList( userMapper.getAllRolesNames() )%>
-
-<H3>Getting users with a specific role</H3>
-Users with role "<%= Role.USERS %>"
-<%
-   UserBean[] usersWithASpecificRole = userMapper.getAllUserWithRole( Role.USERS );
-%>
-<%= Arrays.asList( usersWithASpecificRole ) %>
-
 <H2>NoPermissionException</H2>
 <P>
 If the user that is accessing the page dosen't have the right permissions a NoPermissionException is thrown from the methods.
@@ -49,3 +25,23 @@ In this sample page, the first choice is made, see error.jsp for details.
 <h2>Test, Things that not everywone should be able to do </h2>
 <a href="sample_restrictedoperations.jsp">sample_restrictedoperations.jsp</a>
 </a>
+
+<H2>Hanling roles</H2>
+<H3>Create a new role</H3>
+
+Before:<br>
+<%=java.util.Arrays.asList( userMapper.getAllRolesNames() )%>
+<%
+   String role = "Test role";
+   userMapper.addNewRole( role );
+%><br>
+After adding a new role named "<%=role%>":<br>
+<%=java.util.Arrays.asList( userMapper.getAllRolesNames() )%>
+
+<H3>Getting users with a specific role</H3>
+Users with role "<%= Role.USERS %>"
+<%
+   UserBean[] usersWithASpecificRole = userMapper.getAllUserWithRole( Role.USERS );
+%>
+<%= java.util.Arrays.asList( usersWithASpecificRole ) %>
+

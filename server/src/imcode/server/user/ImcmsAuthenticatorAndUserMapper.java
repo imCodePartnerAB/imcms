@@ -12,6 +12,12 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
    // todo: if not, make the constant public and use it in place?
    // todo: Remove space in constansts
    private static final String SPROC_GET_ALL_USERS = "getAllUsers";
+   private static final String SPROC_GET_HIGHEST_USER_ID = "GetHighestUserId";
+   private static final String SPROC_ADD_NEW_USER = "AddNewUser";
+   private static final String SPROC_UPDATE_USER = "UpdateUser";
+   private static final String SPROC_GET_USER_INFO = "GetUserInfo ";
+   private static final String SPROC_GET_USER_BY_LOGIN = "GetUserByLogin";
+
    private static final String SPROC_GET_ROLE_ID_BY_ROLE_NAME = "GetRoleIdByRoleName";
    private static final String SPROC_ADD_USER_ROLE = "AddUserRole";
    private static final String SPROC_ROLE_ADD_NEW = "RoleAddNew";
@@ -19,13 +25,12 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
    private static final String SPROC_GET_ALL_ROLES = "GetAllRoles";
    private static final String SPROC_GET_USER_ROLES = "GetUserRoles";
    private static final String SPROC_DEL_USER_ROLES = "DelUserRoles" ;
-   private static final String SPROC_GET_HIGHEST_USER_ID = "GetHighestUserId";
-   private static final String SPROC_ADD_NEW_USER = "AddNewUser";
-   private static final String SPROC_UPDATE_USER = "UpdateUser";
-   private static final String SPROC_GET_USER_INFO = "GetUserInfo ";
-   private static final String SPROC_GET_USER_PHONE_NUMBERS = "GetUserPhoneNumbers ";
-   private static final String SPROC_GET_USER_BY_LOGIN = "GetUserByLogin";
    private static final String SPROC_GET_USERS_WHO_BELONGS_TO_ROLE = "GetUsersWhoBelongsToRole";
+
+   private static final String SPROC_GET_USER_PHONE_NUMBERS = "GetUserPhoneNumbers ";
+   private static final String SPROC_PHONE_NBR_ADD = "phoneNbrAdd";
+   private static final String SPROC_DEL_PHONE_NR = "DelPhoneNr";
+
 
 
    private IMCServiceInterface service;
@@ -136,14 +141,16 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
    }
 
 
-   public void updateUser( String loginName, User newUserData ) {
+   public void updateUser( String loginName, User newUser ) {
       String updateUserPRCStr = SPROC_UPDATE_USER;
       User imcmsUser = getUser( loginName );
-      User tempUser = (User)newUserData.clone();
+      User tempUser = (User)newUser.clone();
       tempUser.setUserId( imcmsUser.getUserId() );
       tempUser.setLoginName( loginName );
 
       callModifyUserProcedure( updateUserPRCStr, tempUser );
+      removePhoneNumbers( tempUser );
+      addPhonenNmbers( tempUser );
    }
 
    public synchronized void addUser( User newUser ) {
@@ -151,9 +158,23 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
       String newUserId = service.sqlProcedureStr( SPROC_GET_HIGHEST_USER_ID );
       int newIntUserId = Integer.parseInt( newUserId );
       newUser.setUserId( newIntUserId );
+
       callModifyUserProcedure( updateUserPRCStr, newUser );
+      addPhonenNmbers( newUser );
    }
 
+   private void removePhoneNumbers( User newUser ) {
+      staticSprocDelPhoneNr( service, newUser.getUserId() );
+   }
+
+   private void addPhonenNmbers( User newUser ) {
+      final int PHONE_TYPE_HOME_PHONE = 1;
+      final int PHONE_TYPE_WORK_PHONE = 2;
+      final int PHONE_TYPE_WORK_MOBILE = 3;
+      staticSprocPhoneNbrAdd( service, newUser.getUserId(), newUser.getHomePhone(), PHONE_TYPE_HOME_PHONE );
+      staticSprocPhoneNbrAdd( service, newUser.getUserId(), newUser.getWorkPhone(), PHONE_TYPE_WORK_PHONE );
+      staticSprocPhoneNbrAdd( service, newUser.getUserId(), newUser.getMobilePhone(), PHONE_TYPE_WORK_MOBILE );
+   }
 
    private void callModifyUserProcedure( String modifyUserProcedureName, User tempUser ) {
       String[] params = { String.valueOf( tempUser.getUserId() ),
@@ -216,7 +237,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
       String userIdStr = String.valueOf( user.getUserId() );
       addRole( roleName );
       log.debug( "Trying to assign role " + roleName + " to user " + user.getLoginName() );
-      String rolesIdStr = sprocCallGetRoleId( roleName );
+      String rolesIdStr = staticSprocCallGetRoleIdByRoleName( service, roleName );
       service.sqlUpdateProcedure( SPROC_ADD_USER_ROLE, new String[]{userIdStr, rolesIdStr} );
    }
 
@@ -248,7 +269,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
    }
 
    public User[] getAllUsersWithRole( String roleName ) {
-      String rolesIdStr = sprocCallGetRoleId( roleName );
+      String rolesIdStr = staticSprocCallGetRoleIdByRoleName( service, roleName );
       String[] usersWithRole = service.sqlProcedure(SPROC_GET_USERS_WHO_BELONGS_TO_ROLE, new String[] {rolesIdStr} );
       User[] result = new User[usersWithRole.length / 2];
 
@@ -260,8 +281,21 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
       return result;
    }
 
-   private String sprocCallGetRoleId( String roleName ) {
+   private static String staticSprocCallGetRoleIdByRoleName( IMCServiceInterface service,
+                                                             String roleName ) {
       String rolesIdStr = service.sqlProcedureStr( SPROC_GET_ROLE_ID_BY_ROLE_NAME, new String[]{roleName} );
       return rolesIdStr;
    }
+
+   public static void staticSprocPhoneNbrAdd( IMCServiceInterface service,
+                                              int newUserId, String phoneNumber, int phoneNumberType ) {
+      String[] sprocParameters = new String[]{ String.valueOf(newUserId), phoneNumber, String.valueOf(phoneNumberType) };
+      service.sqlUpdateProcedure( SPROC_PHONE_NBR_ADD, sprocParameters );
+   }
+
+   private static void staticSprocDelPhoneNr( IMCServiceInterface service, int userId ) {
+      String[] sprocParameters = new String[] { String.valueOf(userId) };
+      service.sqlUpdateProcedure( SPROC_DEL_PHONE_NR, sprocParameters );
+   }
+
 }
