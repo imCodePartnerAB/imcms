@@ -52,6 +52,7 @@ public class QEngine extends HttpServlet
 		res.setContentType("text/html");
 		PrintWriter out = res.getWriter();
 		
+		//out.println( "resFile = " + resFile );
 		
 		//the dates
 		int bIndex = 0;
@@ -81,6 +82,7 @@ public class QEngine extends HttpServlet
 		}	
 
 		int max_row = row;
+		//out.println( "maxRow = " + max_row + " <br>");
 		
 
 		Collection texts = row_texts.values();
@@ -88,7 +90,8 @@ public class QEngine extends HttpServlet
 		
 		//get the text and row to return
 		String theText;
-		int the_row; 
+		int the_row;
+		 
 		if (!(nr>0))
 		{
 			theText = "Ingen text kan visas" ;
@@ -109,6 +112,9 @@ public class QEngine extends HttpServlet
 	
 			theText = (String)row_texts.get(new Integer(the_row));
 		}
+		
+		//out.println( "the_row = " + the_row + " <br>" );
+		//out.println( "theText = " + theText + " <br> <br>");
 
 		if( type.equals("pic"))
 		{
@@ -150,12 +156,12 @@ public class QEngine extends HttpServlet
 	Log function, will work for both servletexec and Apache
 	**/
 
-	public void log( String str) 
+/*	public void log( String str) 
 	{
 		super.log(str) ;
 	}
 
-
+*/
 } // End class
 
 
