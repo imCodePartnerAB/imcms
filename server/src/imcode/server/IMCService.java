@@ -303,10 +303,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    String meta_id_str = String.valueOf(meta_id) ;
 	    int user_id = user.getInt("user_id") ;
 	    String user_id_str = String.valueOf(user_id) ;
-	    //log.log(Log.WILD, "Starting parsing of page for meta_id "+meta_id_str+", user "+user_id_str+", flags "+flags, null) ;
 
 	    DBConnect dbc = new DBConnect(m_conPool) ;
-	    //log.log(Log.WILD, "Getting connection", null) ;
 	    dbc.getConnection() ;
 	    dbc.createStatement() ;
 
@@ -317,7 +315,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		user_id_str
 	    } ;
 
-	    //log.log(Log.WILD, "Getting permissions", null) ;
 	    dbc.setProcedure("GetUserPermissionSet (?,?)",sqlAry) ;
 	    Vector user_permission_set = (Vector)dbc.executeProcedure() ;
 	    dbc.clearResultSet() ;
@@ -326,7 +323,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		log.log(Log.ERROR, "parsePage: GetUserPermissionset returned null") ;
 		return ("GetUserPermissionset returned null").getBytes("8859_1") ;
 	    }
-	    //log.log(Log.WILD, "Setting permissionstate", null) ;
 
 	    int user_set_id = Integer.parseInt((String)user_permission_set.elementAt(0)) ;
 	    int user_perm_set = Integer.parseInt((String)user_permission_set.elementAt(1)) ;
@@ -376,8 +372,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    String simple_name = (String)text_docs.remove(0) ;
 	    int sort_order = Integer.parseInt((String)text_docs.remove(0)) ;
 	    String group_id = (String)text_docs.remove(0) ;
-
-	    log.log(Log.WILD, "Got templateinfo. TemplateId: "+template_id, null) ;
 
 	    Vector doc_types_vec = null ;
 	    String sqlStr = null ;
@@ -430,7 +424,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    String[] emp = (String[])user.get("emphasize") ;
 
 	    // Now we'll get the texts from the db.
-	    //log.log(Log.WILD, "Starting texts.", null) ;
 	    dbc.setProcedure("GetTexts",String.valueOf(meta_id)) ;
 	    Vector texts = (Vector)dbc.executeProcedure() ;
 	    dbc.clearResultSet() ;
@@ -440,8 +433,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		log.log(Log.ERROR, "parsePage: GetTexts returned null") ;
 		return ("GetTexts returned null").getBytes("8859_1") ;
 	    }
-
-	    //log.log(Log.WILD, "Getting images.", null) ;
 
 	    // Get the images from the db
 	    // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
@@ -457,8 +448,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		log.log(Log.ERROR, "parsePage: Query for date_modified returned null") ;
 		return ("Query for date_modified returned null").getBytes("8859_1") ;
 	    }
-
-	    //log.log(Log.WILD, "Got docinfo. Getting childs.", null) ;
 
 	    // Here we have the most timeconsuming part of parsing the page.
 	    // Selecting all the documents with permissions from the DB
@@ -498,7 +487,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    HashMap textMap = new HashMap() ;
 	    HashMap imageMap = new HashMap() ;
 
-	    //log.log(Log.WILD, "Processing texts.", null) ;
 	    Iterator it = texts.iterator() ;
 	    while ( it.hasNext() ) {
 		String key = (String)it.next() ;
@@ -537,7 +525,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		}
 	    }
 
-	    //log.log(Log.WILD, "Processing images.", null) ;
 	    int images_cols = dbc.getColumnCount() ;
 	    int images_rows = images.size() / images_cols ;
 	    dbc.clearResultSet() ;
@@ -606,7 +593,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 			value.append("<a href=\"ChangeImage?meta_id="+meta_id+"&img="+imgnumber+"\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>") ;
 		    }
 		}
-		log.log(Log.WILD, "Storing link '"+value.toString()+"' to image number '"+imgnumber+"'") ;
 		tags.setProperty(imgtag,value.toString()) ;
 		imageMap.put(imgnumber,value.toString()) ;
 	    }
@@ -790,7 +776,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		currentMenu.add(props) ;	// Add the Properties for this menuitem to the current menus list.
 	    }
 
-	    //log.log(Log.WILD, "Getting templateinfo.", null) ;
 
 	    // I need a list of tags that have numbers that need to be parsed in in their data.
 	    Properties numberedtags = new Properties () ;
@@ -927,7 +912,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	    // Now load the files specified in "toload", and place them in "tags"
 	    //System.out.println("Loading template-files.") ;
-	    //log.log(Log.WILD,"Loading template-files.",null) ;
 
 	    MapSubstitution temptagsmapsubstitution = new MapSubstitution(temptags, false) ;
 
@@ -950,7 +934,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		log.log(Log.ERROR, "An error occurred reading file during parsing.", e) ;
 		return ("Error occurred reading file during parsing.\n"+e).getBytes("8859_1") ;
 	    }
-	    //log.log(Log.WILD, "Loaded and parsed other templatefiles.", null) ;
 
 	    if ( menumode ) {	//Menumode! :)
 
@@ -986,7 +969,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    perl5util.split(parse,"/<!-(-\\/?)IMSCRIPT-->/i",template) ;
 	    Iterator pit = parse.iterator() ;
 	    boolean parsing = false ;
-	    //log.log(Log.WILD, "Entering parseloop.") ;
 
 	    // Well. Here we have it. The main parseloop.
 	    // The Inner Sanctum of imCMS. Have fun.
@@ -1332,7 +1314,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	public String tagInclude (Properties attributes, PatternMatcher patMat) {
 	    int no = 0 ;
 	    String attributevalue ;
-	    log.log(Log.DEBUG, "Found include tag with attributes "+attributes) ;
 
 	    if (null != (attributevalue = attributes.getProperty("no"))) { 	    // If we have the attribute no="number"...
 		// Set the number of this include-tag
@@ -1428,7 +1409,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	**/
 	public String tagText (Properties attributes, PatternMatcher patMat) {
 	    // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
-	    log.log(Log.DEBUG, "Found text tag with attributes "+attributes) ;
 	    String noStr = attributes.getProperty("no") ;
 	    String result = null ;
 	    if (null != noStr) {
@@ -1442,7 +1422,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		} else {
 		    result = "" ;
 		}
-		log.log(Log.DEBUG, "Empty texttag in textmode '"+textMode+"' replaced by "+result) ;
 	    }
 	    return result ;
 	}
@@ -1455,7 +1434,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	**/
 	public String tagImage (Properties attributes, PatternMatcher patMat) {
 	    // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
-	    log.log(Log.DEBUG, "Found image tag with attributes "+attributes) ;
 	    String noStr = attributes.getProperty("no") ;
 	    String result = null ;
 	    if (null != noStr) {
@@ -1469,7 +1447,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		} else {
 		    result = "" ;
 		}
-		log.log(Log.DEBUG, "Empty imagetag in imagemode '"+imageMode+"' replaced by "+result) ;
 	    }
 	    return result ;
 	}
@@ -1536,7 +1513,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        @param tags Don't ask... this contains the other tags to parse in the page. Used for getMenuModePrefix
     */
     private void obsoleteMenuParser (StringBuffer sb, int sbindex, int reindex, int[] menu_param, HashMap menus, boolean menumode, int sort_order, PatternMatcher patMat, Properties tags) {
-	log.log(Log.WILD, "Starting to parse an obsolete menu on offset "+sbindex) ;
 	int menurowsindex = sbindex ;   // We'll store away the index of the start of the menu.
 	sbindex = reindex ;
 	// Now we'll read each row... so we'll need some storagespace...
@@ -1554,7 +1530,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    menu_rows[foo] = tmpsb.toString()+"\r\n" ;	// Store the line away... Note that "\r\n" is the standard html (as well as http and dos) end-of-line.
 	    tmpsb.setLength(0) ;						// Clear the stringbuffer
 	}
-	log.log(Log.WILD, "Read the "+menu_param[1]+" rows of the menu") ;
 	//sb.replace(menurowsindex,sbindex,"") ;	// Remove the lines
 	//sbindex = menurowsindex ;
 
@@ -1568,7 +1543,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	if ( currentMenu == null ) {
 	    String menubuff_str = "" ;
 	    if (menumode) {
-		log.log(Log.WILD, "We don't seem to have a menu... got null.") ;
 		menubuff_str = "<!-- inserted by imcms --><tr><td>"+getMenuModePrefix(patMat,menu_param[0],tags)+"</td></tr><!-- empty menu --><tr><td>"+getMenuModeSuffix(tags)+"</td></tr><!-- /inserted by imcms -->" ;
 	    }
 	    sb.replace( menurowsindex, sbindex,menubuff_str) ;
@@ -1596,22 +1570,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	/** Added 010212 **/
 	if ( patMat.contains(menurowstr,TR_START_PATTERN) ) {
 	    trstart = "\r\n<!-- t tr -->"+patMat.getMatch().group(1) ;
-	    log.log(Log.WILD, "Using the menu's own tr.") ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TR_START_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 	if ( patMat.contains(menurowstr,TR_STOP_PATTERN) ) {
 	    trstop = patMat.getMatch().group(1) + "<!-- t /tr -->\r\n" ;
-	    log.log(Log.WILD, "Using the menu's own /tr.") ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TR_STOP_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 	if ( patMat.contains(menurowstr,TD_START_PATTERN) ) {
 	    tdstart = "\r\n<!-- t td -->"+patMat.getMatch().group(1) ;
-	    log.log(Log.WILD, "Using the menu's own td.") ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TD_START_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 	if ( patMat.contains(menurowstr,TD_STOP_PATTERN) ) {
 	    tdstop = patMat.getMatch().group(1)+"<!-- t /td -->\r\n" ;
-	    log.log(Log.WILD, "Using the menu's own /td.") ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TD_STOP_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 
@@ -1627,7 +1597,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    menurowstr = "#adminStart#"+menurowstr ;
 	}
 	// for each element of the menu...
-	log.log(Log.WILD, "Starting to parse the "+currentMenu.size()+" items of the menu." ) ;
 	MapSubstitution mapsubstitution = new MapSubstitution() ;
 	for ( int rowcount = 0 ; menuit.hasNext() ; ) {
 	    if ( rowcount % menu_param[2]==0 ) {	// If this is a new tablerow... (menu_param[2] contains the number of columns per row)
@@ -1640,7 +1609,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    Properties props = (Properties)menuit.next() ;	// Retrieve the tags and data for this menuitem...
 
 	    mapsubstitution.setMap(props, true) ;
-	    log.log(Log.WILD, "Parsing the individual tags of one menuitem.") ;
 	    String menurow = org.apache.oro.text.regex.Util.substitute(patMat,HASHTAG_PATTERN,mapsubstitution,menurowstr,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
 
 	    menubuff.append(menurow+tdstop) ;    // OK... one row done. Append it to the menubuffer and end the cell.
@@ -1652,10 +1620,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	String menubuff_str = menubuff.toString() ;
 
 	if (menumode) {
-	    log.log(Log.WILD, "We're in 'menumode'") ;
 	    menubuff_str = "<tr><td>"+getMenuModePrefix(patMat,menu_param[0],tags)+"</td></tr><!-- menu -->"+menubuff_str+"<!-- /menu --><tr><td>"+getMenuModeSuffix(tags)+"</td></tr>" ;
 	}
-	log.log(Log.WILD, "We're finished with this menu."+sbindex) ;
 	// Yay! One menu done. Insert into the pagebuffer...
 	sb.replace( menurowsindex, sbindex,menubuff_str) ;
 	//sb.insert(sbindex,menubuff_str) ;
