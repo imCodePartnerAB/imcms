@@ -35,27 +35,12 @@
   <property name="uploads"        value="${WEB-INF}/uploads"/>
   <property name="logs"           value="${WEB-INF}/logs"/>
 
-  <!-- The language to install for, and where to install from and to. -->
-  <property name="language"	  value="se"/>
-  <property name="srclanguage"	  value="sv"/>
-  <property name="languagetemplates" value="${templates}/${language}"/>
-
-  <!-- Paths for templates for the plugins -->
-  <property name="conference-templates" value="${languagetemplates}/102"/>
-  <property name="chat-templates"       value="${languagetemplates}/103"/>
-  <property name="billboard-templates"  value="${languagetemplates}/104"/>
-  <property name="postcard-templates"   value="${languagetemplates}/105"/>
-  <property name="fortune-templates"    value="${languagetemplates}/106"/>
-
   <!-- Paths for other templates -->
-  <property name="admintemplates" value="${languagetemplates}/admin"/>
   <property name="texttemplates"  value="${templates}/text"/>
   <property name="demotemplates"  value="${texttemplates}/demo"/>
 
-  <!--
-    Read in 'build.properties' and set the properties therein.
-    Those properties are used as bases for later properties in this file.
-  -->
+  <!-- Read in 'build.properties' and set the properties therein. -->
+  <!-- Those properties are used as bases for later properties in this file. -->
   <property name="build.properties"     value="build.properties"/>
   <property file="${build.properties}"/>
 
@@ -82,10 +67,21 @@
 
   <!-- A handy target to have everything else depend on, just in case. -->
   <target name="init"
-	  depends="check-build-properties"
+	  depends="global-filters"
 	  description="Handy target for everything else to depend on.">
 
+    <!-- Record the build to a log-file. -->
+    <record name="build.log"/>
+
     <tstamp/>
+
+  </target>
+
+
+  <!-- Defines global filters. -->
+  <target name="global-filters"
+          depends="check-build-properties"
+	  description="Defines global filters.">
 
     <!-- Global filters -->
     <filter token="rooturl"         value="${rooturl}"/>
@@ -109,6 +105,23 @@
     <filter token="plugin-db-pass"  value="${plugin-db-pass}"/>
 
     <filter token="smtp-server"     value="${smtp-server}"/>
+
+  </target>
+
+
+  <!-- Sets the language-properties for language-specific targets depending on this, that are called using the antcall task -->
+  <target name="language-properties">
+
+    <!-- The language to install for, and where to install from and to. -->
+    <property name="languagetemplates"    value="${templates}/${language}"/>
+    <property name="admintemplates"       value="${languagetemplates}/admin"/>
+
+    <!-- Paths for templates for the plugins -->
+    <property name="conference-templates" value="${languagetemplates}/102"/>
+    <property name="chat-templates"       value="${languagetemplates}/103"/>
+    <property name="billboard-templates"  value="${languagetemplates}/104"/>
+    <property name="postcard-templates"   value="${languagetemplates}/105"/>
+    <property name="fortune-templates"    value="${languagetemplates}/106"/>
 
   </target>
 
@@ -350,7 +363,7 @@
 
   <!-- Creates the directories and copies the files that are to be public. -->
   <target name="web"
-	  depends="init"
+	  depends="init,imagebrowse-images,adminbutton-images"
 	  description="Creates the public web">
     <mkdir dir="${images}"/>
     <mkdir dir="${login}"/>
@@ -363,17 +376,7 @@
 	  <include name="*.gif"/>
 	</patternset>
       </fileset>
-      <fileset dir="install/htdocs/imcms/resource"/>
-    </copy>
-    <copy todir="${images}/${language}/admin">
-      <fileset dir="install/htdocs/imcms/imagebrowse"/>
-    </copy>
-    <copy todir="${adminbuttons}">
-      <fileset dir="install/htdocs/imcms">
-	<patternset>
-	  <include name="*.gif"/>
-	</patternset>
-      </fileset>
+      <fileset dir="install/htdocs/sv/resource"/>
     </copy>
     <copy todir="${webroot}" filtering="true">
       <fileset dir="templates">
@@ -388,13 +391,115 @@
   </target>
 
 
+  <!-- Copies the adminbutton images. -->
+  <target name="adminbutton-images"
+          depends="init"
+	  description="Copies the adminbutton images.">
+
+    <antcall target="adminbutton-images-lang">
+      <param name="srclanguage" value="sv"/>
+      <param name="language" value="sv"/>
+    </antcall>
+
+    <antcall target="adminbutton-images-lang">
+      <param name="srclanguage" value="en"/>
+      <param name="language" value="en"/>
+    </antcall>
+
+  </target>
+
+
+  <!-- Copies the adminbutton images for one language. -->
+  <target name="adminbutton-images-lang"
+          depends="language-properties"
+	  description="Copies the adminbutton images for one language.">
+
+    <copy todir="${adminbuttons}/${language}">
+      <fileset dir="install/htdocs/${srclanguage}/adminbuttons">
+	<patternset>
+	  <include name="*.gif"/>
+	</patternset>
+      </fileset>
+    </copy>
+
+  </target>
+
+  <!-- Copies the imagebrowse images. -->
+  <target name="imagebrowse-images"
+          depends="init"
+	  description="Copies the imagebrowse images.">
+
+    <antcall target="imagebrowse-images-lang">
+      <param name="srclanguage" value="sv"/>
+      <param name="language" value="se"/>
+    </antcall>
+
+    <antcall target="imagebrowse-images-lang">
+      <param name="srclanguage" value="en"/>
+      <param name="language" value="en"/>
+    </antcall>
+
+  </target>
+
+
+  <!-- Copies the imagebrowse images for one language. -->
+  <target name="imagebrowse-images-lang"
+          depends="language-properties"
+          description="Copies the image-browse images for one language.">
+
+    <copy todir="${images}/${language}/admin">
+      <fileset dir="install/htdocs/${srclanguage}/imagebrowse"/>
+    </copy>
+
+  </target>
+
+
   <!-- Copies and filters all non-plugin templates. -->
   <target name="templates"
-	  depends="init,dir"
-	  description="Copies the templates.">
+	  depends="init,dir,texttemplates,admintemplates"
+	  description="Copies and filters the templates.">
+
+  </target>
+
+
+  <!-- Copies and filters the texttemplates. -->
+  <target name="texttemplates"
+          depends="init"
+	  description="Copies and filters the texttemplates">
+
+    <mkdir dir="${demotemplates}"/>
+
+    <copy todir="${texttemplates}" filtering="true">
+      <fileset dir="templates/text"/>
+    </copy>
+
+  </target>
+
+
+  <!-- Copies and filters the admintemplates. -->
+  <target name="admintemplates"
+          depends="init"
+	  description="Copies and filters the admintemplates.">
+
+    <antcall target="admintemplates-lang">
+      <param name="srclanguage" value="sv"/>
+      <param name="language"    value="se"/>
+    </antcall>
+
+    <antcall target="admintemplates-lang">
+      <param name="srclanguage" value="en"/>
+      <param name="language"    value="en"/>
+    </antcall>
+
+  </target>
+
+
+  <!-- Copies and filters the admintemplates for one language. -->
+  <target name="admintemplates-lang"
+          depends="language-properties,global-filters"
+          description="Copies and filters the admintemplates for one language">
 
     <mkdir dir="${admintemplates}"/>
-    <mkdir dir="${demotemplates}"/>
 
     <copy todir="${admintemplates}/adminbuttons" filtering="true">
       <fileset dir="templates/${srclanguage}/adminbuttons"/>
@@ -413,7 +518,7 @@
    <copy todir="${admintemplates}/sections" filtering="true">
       <fileset dir="templates/${srclanguage}/sections"/>
     </copy>
-    
+
     <copy todir="${admintemplates}/search" filtering="true">
       <fileset dir="templates/${srclanguage}/search"/>
     </copy>
@@ -427,10 +532,6 @@
 	  <include name="*.txt"/>
 	</patternset>
       </fileset>
-    </copy>
-
-    <copy todir="${texttemplates}" filtering="true">
-      <fileset dir="templates/text"/>
     </copy>
 
   </target>
@@ -482,9 +583,29 @@
   <target name="conference-templates"
 	  depends="init"
 	  description="Copies the conference-templates.">
+
+    <antcall target="conference-templates-lang">
+      <param name="srclanguage" value="sv"/>
+      <param name="language"    value="se"/>
+    </antcall>
+
+    <antcall target="conference-templates-lang">
+      <param name="srclanguage" value="en"/>
+      <param name="language"    value="en"/>
+    </antcall>
+
+  </target>
+
+
+  <!-- The conference-templates. -->
+  <target name="conference-templates-lang"
+          depends="language-properties,global-filters"
+	  description="Copies the conference-templates for one language.">
+
     <copy todir="${conference-templates}" filtering="true">
       <fileset dir="templates/${srclanguage}/conf" excludes="original/images/"/>
     </copy>
+
   </target>
 
 
@@ -492,9 +613,29 @@
   <target name="conference-images"
 	  depends="init,conference-templates"
 	  description="Copies the conference-images.">
+
+    <antcall target="conference-images-lang">
+      <param name="srclanguage" value="sv"/>
+      <param name="language"    value="se"/>
+    </antcall>
+
+    <antcall target="conference-images-lang">
+      <param name="srclanguage" value="en"/>
+      <param name="language"    value="en"/>
+    </antcall>
+
+  </target>
+
+
+  <!-- The conference-images. -->
+  <target name="conference-images-lang"
+	  depends="language-properties"
+	  description="Copies the conference-images for one language.">
+
     <copy todir="${images}/${language}/102/original">
       <fileset dir="templates/${srclanguage}/conf/original/images" includes="*"/>
     </copy>
+
   </target>
 
 
@@ -533,12 +674,32 @@
   <target name="chat-templates"
 	  depends="init"
 	  description="Copies the chat-templates.">
+
+    <antcall target="chat-templates-lang">
+      <param name="srclanguage" value="sv"/>
+      <param name="language"    value="se"/>
+    </antcall>
+
+    <antcall target="chat-templates-lang">
+      <param name="srclanguage" value="en"/>
+      <param name="language"    value="en"/>
+    </antcall>
+
+  </target>
+
+
+  <!-- The chat-templates for one language. -->
+  <target name="chat-templates-lang"
+	  depends="language-properties,global-filters"
+	  description="Copies the chat-templates for one language.">
+
     <copy todir="${chat-templates}/original" filtering="true">
-      <fileset dir="templates/${srclanguage}/chat/orginal"/>
+      <fileset dir="templates/${srclanguage}/chat/original"/>
     </copy>
     <copy todir="${chat-templates}" filtering="true">
-      <fileset dir="templates/${srclanguage}/chat" excludes="orginal/"/>
+      <fileset dir="templates/${srclanguage}/chat" excludes="original/"/>
     </copy>
+
   </target>
 
 
@@ -577,12 +738,32 @@
   <target name="billboard-templates"
 	  depends="init"
 	  description="Copies the billboard-templates.">
+
+    <antcall target="billboard-templates-lang">
+      <param name="srclanguage" value="sv"/>
+      <param name="language"    value="se"/>
+    </antcall>
+
+    <antcall target="billboard-templates-lang">
+      <param name="srclanguage" value="en"/>
+      <param name="language"    value="en"/>
+    </antcall>
+
+  </target>
+
+
+  <!-- The billboard-templates for one language. -->
+  <target name="billboard-templates-lang"
+	  depends="language-properties,global-filters"
+	  description="Copies the billboard-templates for one language.">
+
     <copy todir="${billboard-templates}/original" filtering="true">
-      <fileset dir="templates/${srclanguage}/billBoard/ORIGINAL" excludes="images/"/>
+      <fileset dir="templates/${srclanguage}/billboard/original" excludes="images/"/>
     </copy>
     <copy todir="${billboard-templates}" filtering="true">
-      <fileset dir="templates/${srclanguage}/billBoard" excludes="ORIGINAL/"/>
+      <fileset dir="templates/${srclanguage}/billboard" excludes="original/"/>
     </copy>
+
   </target>
 
 
@@ -590,8 +771,26 @@
   <target name="billboard-images"
 	  depends="init,billboard-templates"
 	  description="Copies the billboard-images.">
+
+    <antcall target="billboard-images-lang">
+      <param name="srclanguage" value="sv"/>
+      <param name="language"    value="se"/>
+    </antcall>
+
+    <antcall target="billboard-images-lang">
+      <param name="srclanguage" value="en"/>
+      <param name="language"    value="en"/>
+    </antcall>
+
+  </target>
+
+
+  <!-- The billboard-images for one language. -->
+  <target name="billboard-images-lang"
+	  depends="language-properties"
+	  description="Copies the billboard-images for one language.">
     <copy todir="${images}/${language}/104/original">
-      <fileset dir="templates/${srclanguage}/billBoard/ORIGINAL/images" includes="*"/>
+      <fileset dir="templates/${srclanguage}/billboard/original/images" includes="*"/>
     </copy>
   </target>
 
@@ -606,9 +805,29 @@
   <target name="postcard-templates"
 	  depends="init"
 	  description="Copies the postcard-templates.">
+
+    <antcall target="postcard-templates-lang">
+      <param name="srclanguage" value="sv"/>
+      <param name="language"    value="se"/>
+    </antcall>
+
+    <antcall target="postcard-templates-lang">
+      <param name="srclanguage" value="en"/>
+      <param name="language"    value="en"/>
+    </antcall>
+
+  </target>
+
+
+  <!-- The postcard-templates for one language. -->
+  <target name="postcard-templates-lang"
+	  depends="language-properties,global-filters"
+	  description="Copies the postcard-templates for one language.">
+
     <copy todir="${postcard-templates}" filtering="true">
       <fileset dir="templates/${srclanguage}/postcard"/>
     </copy>
+
   </target>
 
 
@@ -620,9 +839,29 @@
   <target name="help-images"
 	depends="init,web"
 	description="Copies the help-images.">
+
+    <antcall target="help-images-lang">
+      <param name="srclanguage" value="sv"/>
+      <param name="language"    value="se"/>
+    </antcall>
+
+    <antcall target="help-images-lang">
+      <param name="srclanguage" value="en"/>
+      <param name="language"    value="en"/>
+    </antcall>
+
+  </target>
+
+
+  <!-- The images for the online-help for one language. -->
+  <target name="help-images-lang"
+	depends="language-properties"
+	description="Copies the help-images for one language.">
+
      <copy todir="${images}/${language}/helpimages">
-	<fileset dir="install/htdocs/imcms/helpimages" includes="*"/>
+	<fileset dir="install/htdocs/${srclanguage}/helpimages" includes="*"/>
     </copy>
+
   </target>
 
 
@@ -640,9 +879,30 @@
   <target name="fortune-templates"
 	depends="init,web"
 	description="Copies the fortune-templates.">
+
+    <antcall target="fortune-templates-lang">
+      <param name="srclanguage" value="sv"/>
+      <param name="language"    value="se"/>
+    </antcall>
+
+    <antcall target="fortune-templates-lang">
+      <param name="srclanguage" value="en"/>
+      <param name="language"    value="en"/>
+    </antcall>
+
+  </target>
+
+
+  <!-- The fortune-templates for one language.-->
+  <target name="fortune-templates-lang"
+	depends="language-properties,global-filters"
+	description="Copies the fortune-templates for one language.">
+
 	<copy todir="${fortune-templates}" filtering="true">
 	  <fileset dir="templates/${srclanguage}/fortunes"/>
 	</copy>
+
   </target>
+
 
 </project>
