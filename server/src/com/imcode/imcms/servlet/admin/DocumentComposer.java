@@ -158,6 +158,7 @@ public class DocumentComposer extends HttpServlet {
             DocumentDomainObject newDocument = createDocumentOfTypeFromParent( newDocumentParentInformation.documentTypeId, parentDocument );
             newDocument.setHeadline( "" );
             newDocument.setMenuText( "" );
+            newDocument.setMenuImage( "" );
             newDocument.setStatus( DocumentDomainObject.STATUS_NEW );
             newDocument.setPublicationStartDatetime( new Date() );
             addObjectToSessionAndSetSessionAttributeNameInRequest( "newDocument", newDocument, request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
