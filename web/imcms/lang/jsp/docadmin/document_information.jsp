@@ -299,16 +299,24 @@ function checkFocus() {
 </tr>
 <tr>
 	<td>
-	<table border="0" cellspacing="0" cellpadding="0">
+	<table border="0" cellspacing="0" cellpadding="0"><%
+
+	/* *******************************************************************************************
+	 *         SECTIONS                                                                          *
+	 ******************************************************************************************* */
+	
+	
+		SectionDomainObject[] sections = documentMapper.getAllSections() ;
+		Arrays.sort(sections) ;
+		SectionDomainObject[] documentSections = document.getSections() ;
+
+	if (sections != null && sections.length > 0) { %>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/22 ?></td>
 		<td class="imcmsAdmText">
 		<a href="$contextPath/imcms/$language/jsp/section_descriptions.jsp" target="_blank"><? global/view ?> info</a><br>
 		<img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
-		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SECTIONS %>" size="5" multiple><%
-		SectionDomainObject[] sections = documentMapper.getAllSections() ;
-		Arrays.sort(sections) ;
-		SectionDomainObject[] documentSections = document.getSections() ;
+		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SECTIONS %>" size="<%= (sections.length > 5) ? 5 : sections.length %>" multiple><%
 		Transformer sectionToStrings = new Transformer() {
 			public Object transform( Object o ) {
 				SectionDomainObject section = (SectionDomainObject) o ;
@@ -326,7 +334,13 @@ function checkFocus() {
 	</tr>
 	<tr>
 		<td colspan="2">#gui_hr( "cccccc" )</td>
-	</tr>
+	</tr><%
+	}
+
+	/* *******************************************************************************************
+	 *         LANGUAGE                                                                          *
+	 ******************************************************************************************* */
+	 %>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/26 ?></td>
 		<td class="imcmsAdmText">
@@ -337,12 +351,21 @@ function checkFocus() {
 	</tr>
 	<tr>
 		<td colspan="2">#gui_hr( "cccccc" )</td>
-	</tr>
+	</tr><%
+
+	/* *******************************************************************************************
+	 *         CATEGORIES                                                                        *
+	 ******************************************************************************************* */
+	
+	
+		CategoryTypeDomainObject[] categoryTypes = documentMapper.getAllCategoryTypes() ;
+		Arrays.sort(categoryTypes) ;
+	
+	
+	if (categoryTypes != null && categoryTypes.length > 0) { %>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/29 ?></td>
 		<td class="imcmsAdmText"><%
-		CategoryTypeDomainObject[] categoryTypes = documentMapper.getAllCategoryTypes() ;
-		Arrays.sort(categoryTypes) ;
 		for ( int i = 0; i < categoryTypes.length; i++ ) {
 			CategoryTypeDomainObject categoryType = categoryTypes[i] ;
 			if ( !categoryType.hasImages() ) { %>
@@ -389,7 +412,8 @@ function checkFocus() {
 	</tr>
 	<tr>
 		<td colspan="2">#gui_hr( "cccccc" )</td>
-	</tr>
+	</tr><%
+	} %>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/32 ?></td>
 		<td class="imcmsAdmText">
