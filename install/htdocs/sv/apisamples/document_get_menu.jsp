@@ -88,7 +88,9 @@ When the (tree) keys is used to order the document in a tree structure:<br>
     String treeStr = "";
     int treeStartLevel = 1;
     int startIndex = 0;
-    treeStr = getTreeOutput( treeStartLevel, startIndex, menuItems );
+    if( menuItems.length > 0 ) {
+        treeStr = getTreeOutput( treeStartLevel, startIndex, menuItems );
+    }
 %>
 <%=treeStr%>
 
