@@ -265,7 +265,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
             return "<!-- imcms:include failed: " + ex + " -->";
         } catch ( NumberFormatException ex ) {
             // There was no such include in the db.
-            return "<!-- imcms:include failed: " + ex + " -->";
+            return "";
         }
     }
 
