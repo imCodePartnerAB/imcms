@@ -1,26 +1,27 @@
 package imcode.server.parser;
 
-import java.io.*;
-import java.util.*;
-import java.text.*;
-
-import org.apache.oro.text.regex.*;
-
-import imcode.server.parser.*;
-import imcode.server.*;
-import imcode.util.DateHelper;
+import imcode.readrunner.ReadrunnerFilter;
+import imcode.server.DocumentRequest;
+import imcode.server.IMCService;
+import imcode.server.IMCServiceInterface;
+import imcode.server.db.ConnectionPool;
+import imcode.server.db.DBConnect;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.TemplateMapper;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateDomainObject;
-import imcode.server.user.UserDomainObject;
+import imcode.server.document.TemplateMapper;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
-import imcode.server.db.DBConnect;
-import imcode.server.db.ConnectionPool;
-import imcode.util.*;
-import imcode.readrunner.ReadrunnerFilter;
-
+import imcode.server.user.UserDomainObject;
+import imcode.util.DateHelper;
+import imcode.util.FileCache;
 import org.apache.log4j.Category;
+import org.apache.oro.text.regex.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class TextDocumentParser implements imcode.server.IMCConstants {
     private static Category log = Category.getInstance( "TextDocumentParser" );
@@ -28,10 +29,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
     private final static org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util(); // Internally synchronized
 
-    private static Pattern HASHTAG_PATTERN = null;
+    static Pattern HASHTAG_PATTERN = null;
     private static Pattern MENU_PATTERN = null;
     private static Pattern IMCMS_TAG_PATTERN = null;
-    private static Pattern MENU_NO_PATTERN = null;
     private static Pattern HTML_TAG_PATTERN = null;
 
     private static Pattern READRUNNER_END_TITLE_PATTERN = null;
@@ -47,7 +47,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             HTML_TAG_PATTERN = patComp.compile( "<[^>]+?>", Perl5Compiler.READ_ONLY_MASK );
 
             IMCMS_TAG_PATTERN = patComp.compile( "<\\?imcms:([-\\w]+)(.*?)\\?>", Perl5Compiler.SINGLELINE_MASK | Perl5Compiler.READ_ONLY_MASK );
-            MENU_NO_PATTERN = patComp.compile( "#doc_menu_no#", Perl5Compiler.READ_ONLY_MASK );
             HASHTAG_PATTERN = patComp.compile( "#[^ #\"<>&;\\t\\r\\n]+#", Perl5Compiler.READ_ONLY_MASK );
             MENU_PATTERN = patComp.compile( "<\\?imcms:menu(.*?)\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK | Perl5Compiler.READ_ONLY_MASK );
 
@@ -113,7 +112,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             int user_set_id = Integer.parseInt( (String)user_permission_set.elementAt( 0 ) );
             int user_perm_set = Integer.parseInt( (String)user_permission_set.elementAt( 1 ) );
-            int currentdoc_perms = Integer.parseInt( (String)user_permission_set.elementAt( 2 ) );
 
             boolean textmode = false;
             boolean imagemode = false;
@@ -194,9 +192,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 return ("GetChilds returned null");
             }
 
-            int child_cols = dbc.getColumnCount();
-            int child_rows = childs.size() / child_cols;
-
             // Get the images from the db
             // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
             //					0                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
@@ -210,21 +205,15 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             dbc.setProcedure( "SectionGetInheritId", String.valueOf( meta_id ) );
             Vector section_data = (Vector)dbc.executeProcedure();
 
-            String section_name = null;
             if( section_data == null ) {
                 log.error( "parsePage: SectionGetInheritId returned null" );
                 return ("SectionGetInheritId returned null");
-            } else if( section_data.size() < 2 ) {
-                section_name = "";
-            } else {
-                section_name = (String)section_data.get( 1 );
             }
 
             File admintemplate_path = new File( templatePath, "/" + lang_prefix + "/admin/" );
 
             String emphasize_string = fileCache.getCachedFileString( new File( admintemplate_path, "textdoc/emphasize.html" ) );
 
-            Perl5Compiler patComp = new Perl5Compiler();
             Perl5Matcher patMat = new Perl5Matcher();
 
             Perl5Substitution emphasize_substitution = new Perl5Substitution( emphasize_string );
@@ -233,12 +222,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             Map textMap = serverObject.getTexts( meta_id );
             HashMap imageMap = new HashMap();
 
-            int images_cols = dbc.getColumnCount();
-            int images_rows = images.size() / images_cols;
             Iterator imit = images.iterator();
             // This is where we gather all images from the database and put them in our maps.
             while( imit.hasNext() ) {
-                String imgtag = (String)imit.next();
+                imit.next();
                 String imgnumber = (String)imit.next();
                 String imgurl = (String)imit.next();
                 String linkurl = (String)imit.next();
@@ -310,7 +297,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             HashMap menus = new HashMap();	// Map to contain all the menus on the page.
             Menu currentMenu = null;
             int old_menu = -1;
-            java.util.Date now = new java.util.Date();
             SimpleDateFormat DATETIMEFORMAT = DateHelper.DATE_TIME_FORMAT_IN_DATABASE;
 
             Iterator childIt = childs.iterator();
