@@ -66,14 +66,6 @@ INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(4,'eng'
 INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(8,'eng','Create document')
 GO
 
-INSERT INTO roles_permissions (permission_id, lang_prefix, description) VALUES(1,'swe','Rätt att få lösenord per mail')
-INSERT INTO roles_permissions (permission_id, lang_prefix, description) VALUES(2,'swe','Självregistreringsrätt i konferens')
-GO
-
-INSERT INTO roles_permissions (permission_id, lang_prefix, description) VALUES(1,'eng','Permission to get password by email')
-INSERT INTO roles_permissions (permission_id, lang_prefix, description) VALUES(2,'eng','Selfregister rights in conference')
-GO
-
 INSERT INTO permission_sets (set_id, description) VALUES(0,'Full')
 INSERT INTO permission_sets (set_id, description) VALUES(1,'Begränsad 1')
 INSERT INTO permission_sets (set_id, description) VALUES(2,'Begränsad 2')

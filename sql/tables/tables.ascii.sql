@@ -500,13 +500,6 @@ CREATE TABLE [dbo].[roles] (
 ) ON [PRIMARY]
 GO
 
-CREATE TABLE [dbo].[roles_permissions] (
-	[permission_id] [int] NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL ,
-	[description] [varchar] (40) NOT NULL
-) ON [PRIMARY]
-GO
-
 CREATE TABLE [dbo].[roles_rights] (
 	[role_id] [int] NOT NULL ,
 	[meta_id] [int] NOT NULL ,
@@ -1274,14 +1267,6 @@ ALTER TABLE [dbo].[roles] WITH NOCHECK ADD
 	CONSTRAINT [roles_role_name] UNIQUE  NONCLUSTERED
 	(
 		[role_name]
-	)  ON [PRIMARY]
-GO
-
-ALTER TABLE [dbo].[roles_permissions] WITH NOCHECK ADD
-	CONSTRAINT [PK_roles_permissions] PRIMARY KEY  NONCLUSTERED
-	(
-		[permission_id],
-		[lang_prefix]
 	)  ON [PRIMARY]
 GO
 
