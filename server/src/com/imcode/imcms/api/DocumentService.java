@@ -97,7 +97,7 @@ public class DocumentService {
     private DocumentDomainObject createAndSaveNewDocument( int doctype, Document parent ) throws MaxCategoriesOfTypeExceededException, NoPermissionException {
         securityChecker.hasEditPermission( parent.getId() );
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
-        DocumentDomainObject newDoc = documentMapper.createDocumentOfTypeFromParent( doctype, parent.internalDocument, user );
+        DocumentDomainObject newDoc = documentMapper.createDocumentOfTypeFromParent( doctype, parent.getInternal(), user );
         try {
             documentMapper.saveNewDocument( newDoc, user );
         } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
@@ -140,8 +140,8 @@ public class DocumentService {
 
     private void addDocumentToMenu( Document parentDocument, int parentMenuNumber, Document document ) {
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
-        DocumentDomainObject internalParentDocument = parentDocument.internalDocument;
-        ( (TextDocumentDomainObject)internalParentDocument ).getMenu( parentMenuNumber ).addMenuItem( new MenuItemDomainObject( document.internalDocument ) );
+        DocumentDomainObject internalParentDocument = parentDocument.getInternal();
+        ( (TextDocumentDomainObject)internalParentDocument ).getMenu( parentMenuNumber ).addMenuItem( new MenuItemDomainObject( document.getInternal() ) );
         documentMapper.saveDocument( internalParentDocument, user );
     }
 

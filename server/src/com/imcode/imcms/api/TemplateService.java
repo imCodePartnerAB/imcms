@@ -34,7 +34,7 @@ public class TemplateService {
 
     /**
      * Get all the template groups found in the system.
-     * @return
+     * @return An array of template groups
      */
     public TemplateGroup[] getAllTemplateGroups() {
         TemplateGroupDomainObject[] templateGroupDomainObject = templateMapper.getAllTemplateGroups();

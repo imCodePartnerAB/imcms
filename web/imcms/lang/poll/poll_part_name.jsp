@@ -28,5 +28,5 @@ if ( meta_id !=null ) {
 }
 //System.out.println( "");
 
-out.write( poll_name.getText() );
-%> 
+    out.write( poll_name.getText() );
+%>

@@ -14,11 +14,8 @@ import imcode.util.* ;
 import imcode.util.net.SMTP;
 import imcode.util.poll.*;
 
-import imcode.server.parser.* ;
 import imcode.server.* ;
 import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 
 public class PollHandler extends HttpServlet {
 
@@ -51,12 +48,6 @@ public class PollHandler extends HttpServlet {
 	int set_cookie = Integer.parseInt( poll_param[5] );
 	int hide_result = Integer.parseInt( poll_param[6] );
 
-	
-		
-	// Get the session, creating a new one if needed //
-	HttpSession session = req.getSession(true) ;
-	
-	
 	// Check if we are going to save answer from this client.
 	// if param 'set_cookie' = 1 then we will only accept answers for this poll(meta_id) 
 	// one time from a client. 
@@ -78,9 +69,6 @@ public class PollHandler extends HttpServlet {
 		
 		if ( saveAnswers == true) { // this is first time from this client so lets set new cookie  
 	
-	    	Date now = new Date() ;
-	    	long lNow = now.getTime() ;
-	    	String sNow = "" + lNow ;
 	    	Cookie resCookie = new Cookie( cookieName, "true" ) ;
 	    	resCookie.setMaxAge(31500000) ;
 	    	resCookie.setPath("/") ;
@@ -217,7 +205,7 @@ public class PollHandler extends HttpServlet {
 		
 		// get poll name
 		TextDomainObject poll_name = new TextDomainObject("",0);
-		
+
 		if ( poll_param != null && poll_param.length !=0 && poll_param[1] != null ){
 			int text_no = Integer.parseInt( poll_param[1] );
 			poll_name = imcref.getText(Integer.parseInt(meta_id), text_no);

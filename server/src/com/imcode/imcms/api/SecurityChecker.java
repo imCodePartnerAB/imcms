@@ -28,7 +28,7 @@ class SecurityChecker {
     }
 
     void hasEditPermission( Document document ) throws NoPermissionException  {
-        hasEditPermission(document.internalDocument.getId());
+        hasEditPermission(document.getInternal().getId());
     }
 
     UserDomainObject getCurrentLoggedInUser() {

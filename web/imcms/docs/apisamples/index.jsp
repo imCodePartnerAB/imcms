@@ -64,7 +64,7 @@ Change template for a document, <%= makeLinks("document_change_template.jsp") %>
 Set template for a document to "Start", <%= makeLinks("document_change_template_by_name.jsp") %><br>
 Set template for a document to one with id=1, <%= makeLinks("document_change_template_by_id.jsp") %><br>
 <br>
-Get the first text field from the document, <%= makeLinks("document_get_text_from_field.jsp") %><br>
+Get the first text field from the document, <%= makeLinks("document_get_texts_from_fields.jsp") %><br>
 Change the first and the second field, <%= makeLinks("document_set_text_field.jsp") %><br>
 Clear the first and the second field, </a><%= makeLinks("document_clear_text_field.jsp") %><br>
 <br>

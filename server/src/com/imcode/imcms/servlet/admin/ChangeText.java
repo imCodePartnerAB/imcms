@@ -2,8 +2,6 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;

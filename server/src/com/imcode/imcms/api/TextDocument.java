@@ -14,11 +14,33 @@ public class TextDocument extends Document {
         super(document, service, securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper);
     }
 
+    public TextField[] getTextFields() {
+        Map textFieldsMap = getInternalTextDocument().getTexts();
+        Set keys = textFieldsMap.keySet();
+        Iterator iter = keys.iterator();
+
+        List textFieldsList = new ArrayList();
+        while (iter.hasNext()) {
+            Integer index = (Integer) iter.next();
+            TextDomainObject tempTextField = (TextDomainObject) textFieldsMap.get( index );
+            boolean nonEmptyTextField = !"".equals(tempTextField.getText());
+            if ( nonEmptyTextField ) {
+                textFieldsList.add(new TextField(tempTextField, index.intValue() ));
+            }
+        }
+        Collections.sort( textFieldsList, new TextField.IndexComparator() );
+        return (TextField[]) textFieldsList.toArray(new TextField[textFieldsList.size()]);
+    }
+
     public TextField getTextField(int textFieldIndexInDocument) throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
-        TextDomainObject imcmsText = documentMapper.getTextField(internalDocument, textFieldIndexInDocument);
-        TextField textField = new TextField(imcmsText);
+        TextDomainObject imcmsText = getInternalTextDocument().getText(textFieldIndexInDocument);
+        TextField textField = new TextField(imcmsText, textFieldIndexInDocument );
         return textField;
+    }
+
+    private TextDocumentDomainObject getInternalTextDocument() {
+        return ((TextDocumentDomainObject) getInternal());
     }
 
     public void setPlainTextField(int textFieldIndexInDocument, String newText) throws NoPermissionException {
@@ -31,26 +53,26 @@ public class TextDocument extends Document {
 
     private void setTextField(int textFieldIndexInDocument, String newText, int textType) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
-        TextDomainObject imcmsText = new TextDomainObject(newText, textType);
-        ((TextDocumentDomainObject)internalDocument).setText( textFieldIndexInDocument, imcmsText);
+        TextDomainObject imcmsText = new TextDomainObject( newText, textType);
+        getInternalTextDocument().setText( textFieldIndexInDocument, imcmsText );
     }
 
     /**
-     * @deprecated Use {@link #setImage(int, java.lang.String, java.lang.String, int, int, int, int, int, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)} instead. link_target is used instead of link_targetname.
      * @throws NoPermissionException
+     * @deprecated Use {@link #setImage(int, java.lang.String, java.lang.String, int, int, int, int, int, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)} instead. link_target is used instead of link_targetname.
      */
     public void setImage(int imageIndexInDocument, String image_src, String image_name,
                          int width, int heigth, int border, int v_space, int h_space, String align,
                          String link_target, String link_targetname, String link_href,
                          String alt_text, String low_src) throws NoPermissionException {
-        setImage( imageIndexInDocument, image_src, image_name, width, heigth, border, v_space, h_space, align, link_target, link_href, alt_text, low_src );
+        setImage(imageIndexInDocument, image_src, image_name, width, heigth, border, v_space, h_space, align, link_target, link_href, alt_text, low_src);
 
     }
 
-    public void setImage( int imageIndexInDocument, String image_src, String image_name, int width, int heigth,
-                           int border, int v_space,
-                           int h_space, String align, String link_target, String link_href, String alt_text,
-                           String low_src ) throws NoPermissionException {
+    public void setImage(int imageIndexInDocument, String image_src, String image_name, int width, int heigth,
+                         int border, int v_space,
+                         int h_space, String align, String link_target, String link_href, String alt_text,
+                         String low_src) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
         imcode.server.document.textdocument.ImageDomainObject internalImage = new ImageDomainObject();
 
@@ -69,10 +91,10 @@ public class TextDocument extends Document {
         documentMapper.saveDocumentImage(this.getId(), imageIndexInDocument, internalImage, super.securityChecker.getCurrentLoggedInUser());
     }
 
-    public Image getImage( int imageIndexInDocument ) throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission( this );
-        ImageDomainObject imageDomainObject = ((TextDocumentDomainObject)internalDocument).getImage( imageIndexInDocument );
-        if( null != imageDomainObject ) {
+    public Image getImage(int imageIndexInDocument) throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission(this);
+        ImageDomainObject imageDomainObject = getInternalTextDocument().getImage(imageIndexInDocument);
+        if (null != imageDomainObject) {
             return new Image(imageDomainObject, service);
         } else {
             return null;
@@ -80,21 +102,21 @@ public class TextDocument extends Document {
     }
 
     public Template getTemplate() {
-        TemplateDomainObject template = ((TextDocumentDomainObject)internalDocument).getTemplate();
+        TemplateDomainObject template = getInternalTextDocument().getTemplate();
         Template result = new Template(template);
         return result;
     }
 
     public void setTemplate(TemplateGroup templateGroup, Template template) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
-        setTemplateInternal( template );
-        ((TextDocumentDomainObject)internalDocument).setTemplateGroupId( templateGroup.getId() );
+        setTemplateInternal(template);
+        getInternalTextDocument().setTemplateGroupId(templateGroup.getId());
     }
 
     /**
-     * @deprecated
      * @param template
      * @throws NoPermissionException
+     * @deprecated
      */
     public void setTemplate(Template template) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
@@ -104,16 +126,16 @@ public class TextDocument extends Document {
 
     private void setTemplateInternal(Template newTemplate) {
         TemplateDomainObject internalTemplate = newTemplate.getInternal();
-        ((TextDocumentDomainObject)internalDocument).setTemplate(internalTemplate);
+        getInternalTextDocument().setTemplate(internalTemplate);
     }
 
     public Document getInclude(int includeIndexInDocument) throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
-        Integer includedDocumentId = ((TextDocumentDomainObject)internalDocument).getIncludedDocumentId( includeIndexInDocument );
+        Integer includedDocumentId = getInternalTextDocument().getIncludedDocumentId(includeIndexInDocument);
         if (null != includedDocumentId) {
             DocumentDomainObject includedDocument = documentMapper.getDocument(includedDocumentId.intValue());
-            if (null != includedDocument ) {
-                return documentService.wrapDocumentDomainObject( includedDocument );
+            if (null != includedDocument) {
+                return documentService.wrapDocumentDomainObject(includedDocument);
             }
         }
         return null;
@@ -154,7 +176,7 @@ public class TextDocument extends Document {
     public int getMenuSortOrder() throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
         //return ((TextDocumentDomainObject)internalTextDocument).getMenuSortOrder();
-        return TextDocument.Menu.SORT_BY_HEADLINE ;
+        return TextDocument.Menu.SORT_BY_HEADLINE;
     }
 
     /**
@@ -170,10 +192,24 @@ public class TextDocument extends Document {
     }
 
     public static class TextField {
-        TextDomainObject imcmsText;
+        private TextDomainObject imcmsText;
+        private int index;
 
-        private TextField(TextDomainObject imcmsText) {
+        public int getIndex() {
+            return index;
+        }
+
+        static class IndexComparator implements java.util.Comparator {
+            public int compare(Object o1, Object o2) {
+                TextField t1 = (TextField) o1;
+                TextField t2 = (TextField) o2;
+                return t1.getIndex() - t2.getIndex();
+            }
+        }
+
+        private TextField(TextDomainObject imcmsText, int index ) {
             this.imcmsText = imcmsText;
+            this.index = index;
         }
 
         /**
@@ -224,7 +260,7 @@ public class TextDocument extends Document {
 
         public MenuItem(MenuItemDomainObject internalMenuItem) {
             this.internalMenuItem = internalMenuItem;
-            child = documentService.wrapDocumentDomainObject( internalMenuItem.getDocument() );
+            child = documentService.wrapDocumentDomainObject(internalMenuItem.getDocument());
         }
 
         public Document getDocument() {
@@ -234,7 +270,7 @@ public class TextDocument extends Document {
         public int getManualNumber() {
             Integer sortKey = internalMenuItem.getSortKey();
             if (null == sortKey) {
-                return 0 ;
+                return 0;
             }
             return sortKey.intValue();
         }
@@ -292,13 +328,13 @@ public class TextDocument extends Document {
         private int menuIndex;
 
         private Menu(TextDocument document, int menuIndex, SecurityChecker securityChecker) {
-            this.internalTextDocument = (TextDocumentDomainObject)document.internalDocument ;
-            this.menuIndex = menuIndex ;
+            this.internalTextDocument = document.getInternalTextDocument();
+            this.menuIndex = menuIndex;
             this.securityChecker = securityChecker;
         }
 
         public MenuItem[] getMenuItems() throws NoPermissionException {
-            MenuItemDomainObject[] menuItemsDomainObjects = internalTextDocument.getMenu( menuIndex ).getMenuItems();
+            MenuItemDomainObject[] menuItemsDomainObjects = internalTextDocument.getMenu(menuIndex).getMenuItems();
             MenuItem[] menuItems = new MenuItem[menuItemsDomainObjects.length];
             for (int i = 0; i < menuItemsDomainObjects.length; i++) {
                 MenuItemDomainObject menuItemDomainObject = menuItemsDomainObjects[i];
@@ -317,7 +353,7 @@ public class TextDocument extends Document {
         public void addDocument(Document documentToAdd) throws NoPermissionException, DocumentAlreadyInMenuException {
             securityChecker.hasEditPermission(documentToAdd.getId());
             securityChecker.userHasPermissionToAddDocumentToAnyMenu(documentToAdd);
-            internalTextDocument.getMenu(menuIndex).addMenuItem( new MenuItemDomainObject( documentToAdd.internalDocument ) );
+            internalTextDocument.getMenu(menuIndex).addMenuItem(new MenuItemDomainObject(documentToAdd.getInternal()));
         }
 
         /**
@@ -328,24 +364,24 @@ public class TextDocument extends Document {
          */
         public void removeDocument(Document documentToRemove) throws NoPermissionException {
             securityChecker.hasEditPermission(documentToRemove.getId());
-            internalTextDocument.getMenu(menuIndex).removeMenuItem( new MenuItemDomainObject( documentToRemove.internalDocument ) );
+            internalTextDocument.getMenu(menuIndex).removeMenuItem(new MenuItemDomainObject(documentToRemove.getInternal()));
         }
 
         public Document[] getDocuments() {
-            MenuItemDomainObject[] menuItemDomainObjects = internalTextDocument.getMenu(menuIndex).getMenuItems() ;
-            List documentList = new ArrayList() ;
+            MenuItemDomainObject[] menuItemDomainObjects = internalTextDocument.getMenu(menuIndex).getMenuItems();
+            List documentList = new ArrayList();
             for (int i = 0; i < menuItemDomainObjects.length; i++) {
                 MenuItemDomainObject menuItemDomainObject = menuItemDomainObjects[i];
                 DocumentDomainObject documentDomainObject = menuItemDomainObject.getDocument();
                 boolean documentIsVisibleInMenu = (documentDomainObject.isPublishedAndNotArchived()
-                                    && documentMapper.userHasAtLeastDocumentReadPermission( securityChecker.getCurrentLoggedInUser(), documentDomainObject ))
-                                                  || documentMapper.userHasMoreThanReadPermissionOnDocument(securityChecker.getCurrentLoggedInUser(), documentDomainObject );
+                        && documentMapper.userHasAtLeastDocumentReadPermission(securityChecker.getCurrentLoggedInUser(), documentDomainObject))
+                        || documentMapper.userHasMoreThanReadPermissionOnDocument(securityChecker.getCurrentLoggedInUser(), documentDomainObject);
                 if (documentIsVisibleInMenu) {
                     Document document = documentService.wrapDocumentDomainObject(documentDomainObject);
                     documentList.add(document);
                 }
             }
-            return (Document[])documentList.toArray( new Document[documentList.size()]);
+            return (Document[]) documentList.toArray(new Document[documentList.size()]);
         }
     }
 }

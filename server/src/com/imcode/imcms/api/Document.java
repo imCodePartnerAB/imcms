@@ -1,7 +1,6 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
-import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.*;
 import imcode.server.user.RoleDomainObject;
@@ -15,8 +14,8 @@ public class Document {
 
     SecurityChecker securityChecker;
     DocumentService documentService;
-    DocumentDomainObject internalDocument;
     DocumentMapper documentMapper;
+    private DocumentDomainObject internalDocument;
     private DocumentPermissionSetMapper documentPermissionSetMapper;
     UserAndRoleMapper userAndRoleMapper;
     IMCServiceInterface service;

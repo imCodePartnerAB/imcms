@@ -13,11 +13,17 @@ public class UrlDocument extends Document {
 
     public void setUrl(String url ) throws NoPermissionException {
         securityChecker.hasEditPermission( this );
-        ((UrlDocumentDomainObject)internalDocument).setUrlDocumentUrl( url );
+        UrlDocumentDomainObject urlDocumentDomainObject = getInternalUrlDocument();
+        urlDocumentDomainObject.setUrlDocumentUrl( url );
+    }
+
+    private UrlDocumentDomainObject getInternalUrlDocument() {
+        UrlDocumentDomainObject urlDocumentDomainObject = ((UrlDocumentDomainObject)getInternal());
+        return urlDocumentDomainObject;
     }
 
     public String getUrl() throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission( this );
-        return ((UrlDocumentDomainObject)internalDocument).getUrl();
+        return getInternalUrlDocument().getUrl();
     }
 }
