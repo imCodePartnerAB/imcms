@@ -90,6 +90,13 @@
             </p>
             <bug id="2893"/>
         </change>
+        <change>
+            <p>
+                Added fields <tag>section_id</tag>, <tag>category</tag>, <tag>category_type</tag>,
+                and <tag>category_type_id</tag> to search index.
+            </p>
+            <bug id="2887"/>
+        </change>
     </changes>
 
 </changeset>

@@ -12,9 +12,13 @@ public interface DocumentIndex {
     String FIELD__TEXT = "text";
     String FIELD__KEYWORD = "keyword";
     String FIELD__SECTION = "section";
+    String FIELD__SECTION_ID = "section_id";
     String FIELD__ACTIVATED_DATETIME = "activated_datetime";
     String FIELD__ARCHIVED_DATETIME = "archived_datetime";
+    String FIELD__CATEGORY = "category";
     String FIELD__CATEGORY_ID = "category_id";
+    String FIELD__CATEGORY_TYPE = "category_type";
+    String FIELD__CATEGORY_TYPE_ID = "category_type_id";
     String FIELD__CREATED_DATETIME = "created_datetime";
     String FIELD__META_HEADLINE = "meta_headline";
     String FIELD__META_ID = "meta_id";

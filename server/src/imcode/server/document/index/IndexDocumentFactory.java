@@ -36,6 +36,7 @@ class IndexDocumentFactory {
         for ( int i = 0; i < sections.length; i++ ) {
             SectionDomainObject section = sections[i];
             indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__SECTION, section.getName() ) );
+            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__SECTION_ID, ""+section.getId())) ;
         }
 
         addDateFieldToIndexDocument( documentId, indexDocument, DocumentIndex.FIELD__CREATED_DATETIME, document.getCreatedDatetime() );
@@ -60,7 +61,11 @@ class IndexDocumentFactory {
         CategoryDomainObject[] categories = document.getCategories();
         for ( int i = 0; i < categories.length; i++ ) {
             CategoryDomainObject category = categories[i];
+            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__CATEGORY, category.getName() )) ;
             indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__CATEGORY_ID, "" + category.getId() ) );
+            CategoryTypeDomainObject categoryType = category.getType() ;
+            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__CATEGORY_TYPE, categoryType.getName() )) ;
+            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__CATEGORY_TYPE_ID, ""+categoryType.getId() )) ;
         }
 
         String[] documentKeywords = document.getKeywords();
