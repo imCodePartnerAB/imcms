@@ -50,7 +50,7 @@ class MenuParser {
             "#menuindex#", "" + menuIndex,
             "#label#", menuattributes.getProperty( "label" ),
             "#flags#", "" + parserParameters.getFlags(),
-            "#sortOrder" + ( null != menu ? menu.getSortOrder() : MenuDomainObject.MENU_SORT_ORDER__DEFAULT ) + "#", "checked",
+            "#sortOrder" + ( null != menu ? menu.getSortOrder() : MenuDomainObject.MENU_SORT_ORDER__DEFAULT ) + "#", " selected",
             "#doc_types#", createDocumentTypesOptionList(),
             "#meta_id#", "" + parserParameters.getDocumentRequest().getDocument().getId(),
             "#defaulttemplate#", URLEncoder.encode( StringUtils.defaultString( menuattributes.getProperty( "defaulttemplate" ) ) )
