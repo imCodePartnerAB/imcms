@@ -29,7 +29,6 @@ public class SaveInPage extends HttpServlet {
 	String start_url	= Utility.getDomainPref( "start_url",host ) ;
 
 	imcode.server.User user ;
-	String htmlStr = "" ;
 	String submit_name = "" ;
 	String search_string = "" ;
 	String text = "" ;
@@ -77,10 +76,6 @@ public class SaveInPage extends HttpServlet {
 
 	String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
 
-	/*if (req.getParameter("metadata")!=null) {
-	//htmlStr = IMCServiceRMI.interpretAdminTemplate(imcserver,meta_id,user,"change_meta.html",1,meta_id,0,0) ;
-	htmlStr = imcode.util.MetaDataParser.parseMetaData(String.valueOf(meta_id), String.valueOf(meta_id),user,host) ;
-	} else */
 	if (req.getParameter("update")!=null) {
 	    Writer out = res.getWriter();
 
@@ -91,7 +86,7 @@ public class SaveInPage extends HttpServlet {
 		Vector vec = new Vector() ;
 		vec.add("#meta_id#") ;
 		vec.add(String.valueOf(meta_id)) ;
-		htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"inPage_admin_no_template.html",lang_prefix) ;
+		String htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"inPage_admin_no_template.html",lang_prefix) ;
 		out.write(htmlStr) ;
 		return ;
 	    }
@@ -113,18 +108,19 @@ public class SaveInPage extends HttpServlet {
 	    return ;
 
 	} else if (req.getParameter("preview")!=null) {
-	    if ( template == null ) {
+	    if ( template == null ) { // If the user didn't select a template
 		Vector vec = new Vector() ;
 		vec.add("#meta_id#") ;
 		vec.add(String.valueOf(meta_id)) ;
-		htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"inPage_admin_no_template.html",lang_prefix) ;
+		res.setContentType("text/html");
+		String htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"inPage_admin_no_template.html",lang_prefix) ;
 		Writer out = res.getWriter();
 		out.write(htmlStr) ;
 		return ;
 	    }
 	    Object[] temp = null ;
-	    try {		
-		temp = IMCServiceRMI.getDemoTemplate(imcserver,Integer.parseInt(template)) ;
+	    temp = IMCServiceRMI.getDemoTemplate(imcserver,Integer.parseInt(template)) ;
+	    if (temp != null) {
 		String demoTemplateName = template+"."+(String)temp[0] ;
 		// Set content-type depending on type of demo-template.
 		res.setContentType(getServletContext().getMimeType(demoTemplateName)) ;
@@ -133,8 +129,12 @@ public class SaveInPage extends HttpServlet {
 		res.setContentLength(bytes.length) ;
 		out.write(bytes) ;
 		return;
-	    } catch ( Exception ex ) {
-		htmlStr = IMCServiceRMI.parseDoc( imcserver, null, "no_demotemplate.html", lang_prefix ) ;
+	    } else {
+		res.setContentType("text/html") ;
+		String htmlStr = IMCServiceRMI.parseDoc( imcserver, null, "no_demotemplate.html", lang_prefix ) ;
+		Writer out = res.getWriter();
+		out.write(htmlStr) ;
+		return ;
 	    }
 	} else if ( req.getParameter("change_group")!=null ) {
 	    res.setContentType("text/html");
@@ -154,7 +154,5 @@ public class SaveInPage extends HttpServlet {
 	    return ;
 
 	}
-	Writer out = res.getWriter();
-	out.write(htmlStr) ;
     }
 }

@@ -7,6 +7,8 @@
     
   function targetNewWindow() {
     var exampelWindow = window.open("", "Exempelmall", "height=400, width=700, resizable");
+    exampelWindow.focus() ;
+
     document.myForm.target="Exempelmall";
   }
 
@@ -35,7 +37,7 @@
         <div><font size="1"><font face="Verdana, Arial, Helvetica, sans-serif">
           &nbsp;Current format directory: (#group#)<br>
           <select name="group" size="1">
-            #getTemplateGroups#                                    
+            #getTemplateGroups#
           </select>
           </font></font></div><br>
           <input type="submit" name="change_group" value="Change directory" onClick="resetTarget()">
