@@ -64,7 +64,7 @@
 	</tr>
 	<tr>
 		<td>
-		<select name="imglist" size="15" onDblClick="document.forms[0].<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.PARAMETER_BUTTON__PREVIEW ) %>.click();" style="width:270">
+		<select name="imglist" size="15" onDblClick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.PARAMETER_BUTTON__PREVIEW ) %>'].click();" style="width:270">
 		<%=imageBrowseFormData.getOptions()%>
 		</select></td>
 	</tr>

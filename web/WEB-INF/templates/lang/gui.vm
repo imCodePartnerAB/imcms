@@ -58,13 +58,13 @@
 
 #macro( gui_head_help_and_back_buttons $help_id $formAction $formName $cancelButtonName )
 <table border="0" cellspacing="0" cellpadding="0">
-    <form method="post" action="$formAction">
-        <tr>
-            <td><input type="submit"  class="imcmsFormBtn" name="$cancelButtonName" value="<? global/back ?>"></td>
-            <td>&nbsp;</td>
-            <td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW($help_id)"></td>
-        </tr>
-    </form>
+<form method="post" action="$formAction">
+<tr>
+	<td><input type="submit"  class="imcmsFormBtn" name="$cancelButtonName" value="<? global/back ?>"></td>
+	<td>&nbsp;</td>
+	<td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW($help_id)"></td>
+</tr>
+</form>
 </table>
 #end
 
@@ -218,21 +218,23 @@
 
 #macro( gui_start_of_page $titleAndHeading $backServlet $action $helpPageNo $bodyOnLoad )
 <html>
-    <head>
-        <title>$titleAndHeading</title>
-        <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-        <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
-    </head>
-    <body onLoad="$bodyOnLoad">
-        #gui_outer_start()
-        #gui_head( "$titleAndHeading" )
-        #gui_head_help_and_back_buttons( $helpPageNo  "$backServlet" "" "$action" )
-        #gui_mid()
+<head>
+<title>$titleAndHeading</title>
+
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+
+</head>
+<body onLoad="$bodyOnLoad">
+	#gui_outer_start()
+	#gui_head( "$titleAndHeading" )
+	#gui_head_help_and_back_buttons( $helpPageNo  "$backServlet" "" "$action" )
+	#gui_mid()
 #end
 
 #macro( gui_end_of_page )
-        #gui_bottom()
-        #gui_outer_end()
-    </body>
+	#gui_bottom()
+	#gui_outer_end()
+</body>
 </html>
 #end

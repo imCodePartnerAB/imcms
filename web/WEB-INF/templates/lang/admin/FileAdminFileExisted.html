@@ -2,47 +2,48 @@
 <head>
 <title><? templates/sv/FileAdminFileExisted.html/1 ?></title>
 
-</head>
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
-<body bgcolor="#FFFFFF">
+</head>
+<body onLoad="focusField(1, 'no')">
+
+#gui_outer_start()
+#gui_head( "<? templates/sv/FileAdminFileExisted.html/1 ?>" )
+<table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="FileAdmin" enctype="multipart/form-data">
-  <table border="0" cellspacing="0" width="40%">
-	<tr bgcolor="#333366"> 
-	  <td width="5%">&nbsp;</td>
-	  <td> 
-		<center>
-		  <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><? templates/sv/FileAdminFileExisted.html/2 ?></font> 
-		</center>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#BABABA"> 
-	  <td width="5%">&nbsp;</td>
-	  <td>&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#BABABA"> 
-	  <td width="5%">&nbsp;</td>
-	  <td> 
-		<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/FileAdminFileExisted.html/3 ?></font> </p>
-		</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#BABABA"> 
-	  <td width="5%">&nbsp;</td>
-	  <td> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		<input type="submit" name="no" value="<? templates/sv/FileAdminFileExisted.html/2001 ?>">
-		<input type="HIDDEN" name="dir1" value="#dir1#">
-		<input type="HIDDEN" name="dir2" value="#dir2#">
-		</font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#BABABA"> 
-	  <td width="5%">&nbsp;</td>
-	  <td>&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-  </table>
+<input type="HIDDEN" name="dir1" value="#dir1#">
+<input type="HIDDEN" name="dir2" value="#dir2#">
+<tr> 
+	<td><input type="submit" class="imcmsFormBtn" name="no" value="<? global/back ?>"></td>
+	<td>&nbsp;</td>
+	<td><input type="button" class="imcmsFormBtn" value="<? global/help ?>" title="<? global/openthehelppage ?>" onClick="openHelpW(2)"></td>
+</tr>
 </form>
+</table>
+#gui_mid()
+
+<table border="0" cellspacing="0" cellpadding="0" width="500">
+<form method="post" action="FileAdmin" enctype="multipart/form-data">
+<input type="HIDDEN" name="dir1" value="#dir1#">
+<input type="HIDDEN" name="dir2" value="#dir2#">
+<tr>
+	<td>#gui_heading( "<? templates/sv/FileAdminFileExisted.html/2 ?>" )</td>
+</tr>
+<tr>
+	<td><? templates/sv/FileAdminFileExisted.html/3 ?></td>
+</tr>
+<tr>
+	<td>#gui_hr( "blue" )</td>
+</tr>
+<tr> 
+	<td align="right"><input type="submit" class="imcmsFormBtn" style="width:70" name="no" value="<? templates/sv/FileAdminFileExisted.html/2001 ?>"></td>
+</tr>
+</form>
+</table>
+#gui_bottom()
+#gui_outer_end()
+
+
 </body>
 </html>
