@@ -4,8 +4,6 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.lucene.search.Query;
 
-import java.io.IOException;
-
 public interface DocumentIndex {
 
     String FIELD__DOC_TYPE_ID = "doc_type_id";

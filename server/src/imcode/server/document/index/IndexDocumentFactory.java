@@ -13,10 +13,7 @@ import org.apache.lucene.document.Field;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 class IndexDocumentFactory {
 
@@ -122,8 +119,9 @@ class IndexDocumentFactory {
                 Map.Entry textEntry = (Map.Entry)textsIterator.next();
                 Integer textIndex = (Integer)textEntry.getKey();
                 TextDomainObject text = (TextDomainObject)textEntry.getValue();
-                indexDocument.add( Field.UnStored( DocumentIndex.FIELD__TEXT, text.getText() ) );
-                indexDocument.add( Field.UnStored( DocumentIndex.FIELD__TEXT + textIndex, text.getText() ) );
+                String htmlStrippedText = stripHtml(text) ;
+                indexDocument.add( Field.UnStored( DocumentIndex.FIELD__TEXT, htmlStrippedText ) );
+                indexDocument.add( Field.UnStored( DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText ) );
             }
 
             Iterator imagesIterator = textDocument.getImages().values().iterator();
@@ -134,6 +132,14 @@ class IndexDocumentFactory {
                     indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl ) );
                 }
             }
+        }
+
+        private String stripHtml( TextDomainObject text ) {
+            String string = text.getText() ;
+            if (TextDomainObject.TEXT_TYPE_HTML == text.getType()) {
+                string = string.replaceAll( "<[^>]+?>", "" ) ;
+            }
+            return string ;
         }
 
         public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
