@@ -151,7 +151,7 @@ public class AdminListDocs extends Administrator {
 		
 		// *************** RETURN TO ADMIN ROLES *****************
 		if( request.getParameter("LISTDOC_LIST") != null) {
-		
+System.out.println("LISTDOC_LIST");
 			boolean noErrors = true;
 			String parseTemplate = null;
 			String[] docTypesToShow = null;
@@ -249,12 +249,13 @@ public class AdminListDocs extends Administrator {
 										"#DATE#", null,
 									};
 				// lets exchange som html codes
+				/*we dont need to do this anymore because it already in ouml.
 				String[] pd =	{
 									"&",	"&amp;",
 									"<",	"&lt;",
 									">",	"&gt;",
 					   			};
-
+				*/
 				StringBuffer listOfDocs = new StringBuffer();
 				for ( int i = 0 ; i < docTypesToShow.length ; i++ ) {
 					String sqlQ = "ListDocsByDate " + listMod + ", " + docTypesToShow[i] + 
@@ -264,7 +265,7 @@ public class AdminListDocs extends Administrator {
 					for ( int j = 0 ; j < queryResult.length ; j++ ) {
 						tagData[1] = queryResult[j][0];
 						tagData[3] = queryResult[j][1];
-						tagData[5] = Parser.parseDoc( queryResult[j][2], pd );
+						tagData[5] = queryResult[j][2];
 						tagData[7] = queryResult[j][3];
 						listOfDocs.append( Parser.parseDoc( htmlListElement, tagData ) );
 					}
