@@ -39,7 +39,6 @@ public class ChatBase extends HttpServlet {
 
 	private final static String ADMIN_BUTTON_TEMPLATE = "Chat_Admin_Button.htm";
 	private final static String UNADMIN_BUTTON_TEMPLATE = "Chat_Unadmin_Button.htm";
-	private static Map _allChats;
 	
 	
 	/**
@@ -50,8 +49,6 @@ public class ChatBase extends HttpServlet {
 	{
 		super.init(config);
 		log("init");
-		//lets create an empty one
-		_allChats = Collections.synchronizedMap(new HashMap());
 	}
 	
 	/**
@@ -1219,7 +1216,7 @@ if(lastLoginDate == null)
 	*/
 	public boolean checkChat(String chatId)
 	{
-		return _allChats.containsKey(chatId);
+		return ChatHolder.hasAChat(chatId);
 	}
 	
 	/**
@@ -1232,7 +1229,7 @@ if(lastLoginDate == null)
 	{
 		if ( !checkChat(chatId))
 		{
-			_allChats.put(chatId, theChat);
+			ChatHolder.addNewChat(chatId, theChat);
 			return true;
 		}else
 		{
@@ -1246,7 +1243,7 @@ if(lastLoginDate == null)
 	*/
 	public void removeChat(String chatId)
 	{
-		_allChats.remove(chatId);
+		ChatHolder.removeAChat(chatId);;
 	}
 	
 	/**
@@ -1256,7 +1253,7 @@ if(lastLoginDate == null)
 	*/
 	public Chat getChat(String chatId)
 	{
-		return (Chat) _allChats.get(chatId);
+		return ChatHolder.getAChat(chatId);
 	}
 	
 } // End class
