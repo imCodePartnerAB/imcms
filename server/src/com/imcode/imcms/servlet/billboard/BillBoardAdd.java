@@ -448,7 +448,7 @@ public class BillBoardAdd extends BillBoard {
 
         SMTP smtp = Imcms.getServices().getSMTP();
 
-        smtp.sendMailWait( fromEmail, toEmail, header, replyHeader + "\n" + text );
+        smtp.sendMail( new SMTP.Mail(fromEmail, new String[] { toEmail }, header, replyHeader + "\n" + text ) ) ;
     }
 
     /* checks if email address is valid (abc@x)*/

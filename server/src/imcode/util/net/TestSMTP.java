@@ -25,10 +25,6 @@ public class TestSMTP extends TestCase {
         smtp = new SMTP( smtpServer, 25 );
     }
 
-    public void testSendMailWait() throws IOException {
-        smtp.sendMailWait( fromAddress, toAddress, TEST_SUBJECT, TEST_MAIL );
-    }
-
     public void testSendMail() throws IOException {
         SMTP.Mail mail = new SMTP.Mail( fromAddress, new String[]{toAddress}, TEST_SUBJECT, TEST_MAIL );
         smtp.sendMail( mail );

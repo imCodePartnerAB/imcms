@@ -310,7 +310,7 @@ public class PutInShoppingCart extends HttpServlet {
         log.debug( "Sending mail to " + mailToAddress );
         /* Send the mail */
         SMTP smtp = imcref.getSMTP();
-        smtp.sendMailWait( mailFromAddress, mailToAddress, mailSubject, mail );
+        smtp.sendMail( new SMTP.Mail(mailFromAddress, new String[]{mailToAddress}, mailSubject, mail ));
 
     }
 

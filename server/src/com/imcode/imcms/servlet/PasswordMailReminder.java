@@ -151,7 +151,7 @@ public class PasswordMailReminder extends HttpServlet {
 
                 String userMessage = imcref.getAdminTemplate( PasswordMailReminder.USER_MAIL_BODY, user, mailTags );
 
-                smtp.sendMailWait( mailFrom, userEmail, null, userMessage );
+                smtp.sendMail( new SMTP.Mail( mailFrom, new String[] { userEmail }, null, userMessage ) );
 
             }
 
@@ -167,7 +167,7 @@ public class PasswordMailReminder extends HttpServlet {
 
             String serverMasterMessage = imcref.getAdminTemplate( serverMasterMailBody, user, parsVector );
 
-            smtp.sendMailWait( emailFromServer, eMailServerMaster, null, serverMasterMessage );
+            smtp.sendMail( new SMTP.Mail( emailFromServer, new String[] { eMailServerMaster }, null, serverMasterMessage ) ) ;
 
             returnString = imcref.getAdminTemplate( returnFileBody, user, null );
 

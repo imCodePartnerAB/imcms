@@ -281,7 +281,7 @@ public class PostcardServlet extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         try {
             SMTP smtp = imcref.getSMTP();
-            smtp.sendMailWait( mailNfo[0], mailNfo[1], mailNfo[2], mailNfo[3] );
+            smtp.sendMail( new SMTP.Mail(mailNfo[0], new String[] { mailNfo[1] }, mailNfo[2], mailNfo[3] ) );
 
         } catch ( ProtocolException ex ) {
             out.println( imcref.getTemplateFromDirectory( POSTCARD_MAIL_ERROR, user, new Vector(), "105" ) );

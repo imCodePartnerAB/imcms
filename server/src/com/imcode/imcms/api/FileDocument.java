@@ -3,11 +3,13 @@ package com.imcode.imcms.api;
 import com.imcode.imcms.api.util.InputStreamSource;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.util.FileInputStreamSource;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.list.TransformedList;
 
-import java.io.File;
+import javax.activation.DataSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -61,61 +63,101 @@ public class FileDocument extends Document {
         return new FileDocumentFile( getInternalFileDocument().getDefaultFile() );
     }
 
-    public void addFile( String fileId, FileDocumentFile file ) throws NoPermissionException {
+    public void addFile( String fileId, FileDocumentFile file) throws NoPermissionException {
         getSecurityChecker().hasEditPermission( this );
-        getInternalFileDocument().addFile( fileId, file.internalFile );
+        getInternalFileDocument().addFile( fileId, file.getInternal() );
     }
 
-    public static class FileDocumentFile {
+    public static class FileDocumentFile implements DataSource {
 
-        private FileDocumentDomainObject.FileDocumentFile internalFile;
+        private FileDocumentDataSource dataSource ;
+
+        public FileDocumentFile( DataSource dataSource ) {
+            FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
+            file.setFilename( dataSource.getName() );
+            file.setMimeType( dataSource.getContentType() );
+            file.setInputStreamSource( new DataSourceInputStreamSource( dataSource ));
+            this.dataSource = new FileDocumentDataSource( file ) ;
+        }
 
         public FileDocumentFile( FileDocumentDomainObject.FileDocumentFile file ) {
-            internalFile = file;
+            dataSource = new FileDocumentDataSource( file ) ;
         }
 
-        public FileDocumentFile() {
-            this(new FileDocumentDomainObject.FileDocumentFile());
+        public FileDocumentDomainObject.FileDocumentFile getInternal() {
+            return dataSource.getFile() ;
         }
 
-        public FileDocumentFile( String filename, String mimeType, InputStreamSource inputStreamSource ) {
-            this() ;
-            setFilename( filename );
-            setMimeType( mimeType );
-            setInputStreamSource( inputStreamSource );
+        public String getContentType() {
+            return dataSource.getContentType();
         }
 
-        public FileDocumentFile( File file, String mimeType ) {
-            this( file.getName(), mimeType, new FileInputStreamSource( file ) );
+        public InputStream getInputStream() throws IOException {
+            return dataSource.getInputStream();
         }
 
-        public String getMimeType() {
-            return internalFile.getMimeType();
+        public String getName() {
+            return dataSource.getName();
         }
 
-        public String getFilename() {
-            return internalFile.getFilename();
+        /** @throws UnsupportedOperationException */
+        public OutputStream getOutputStream() throws IOException {
+            throw new UnsupportedOperationException() ;
         }
 
-        public InputStreamSource getInputStreamSource() {
-            return internalFile.getInputStreamSource();
+        public long getSize() throws IOException {
+            return dataSource.getFile().getInputStreamSource().getSize() ;
         }
 
         public String getId() {
-            return internalFile.getId() ;
+            return dataSource.getFile().getId();
         }
 
-        public void setInputStreamSource( InputStreamSource inputStreamSource ) {
-            internalFile.setInputStreamSource( inputStreamSource );
+    }
+
+    private static class FileDocumentDataSource implements DataSource {
+
+        private FileDocumentDomainObject.FileDocumentFile file;
+
+        private FileDocumentDataSource( FileDocumentDomainObject.FileDocumentFile file ) {
+            this.file = file;
         }
 
-        public void setFilename( String v ) {
-            internalFile.setFilename( v );
+        public InputStream getInputStream() throws IOException {
+            return file.getInputStreamSource().getInputStream();
         }
 
-        public void setMimeType( String mimeType ) {
-            internalFile.setMimeType( mimeType );
+        public OutputStream getOutputStream() throws IOException {
+            throw new UnsupportedOperationException();
+        }
+
+        public String getContentType() {
+            return file.getMimeType();
+        }
+
+        public String getName() {
+            return file.getFilename();
+        }
+
+        private FileDocumentDomainObject.FileDocumentFile getFile() {
+            return file;
         }
     }
 
+    private static class DataSourceInputStreamSource implements InputStreamSource {
+
+        private final DataSource dataSource;
+
+        private DataSourceInputStreamSource( DataSource dataSource ) {
+            this.dataSource = dataSource;
+        }
+
+        public InputStream getInputStream() throws IOException {
+            return dataSource.getInputStream();
+        }
+
+        public long getSize() throws IOException {
+            return 0;
+        }
+    }
 }

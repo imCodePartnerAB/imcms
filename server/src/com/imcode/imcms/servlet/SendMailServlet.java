@@ -161,7 +161,7 @@ public class SendMailServlet extends HttpServlet {
         // send mail
         try {
             SMTP smtp = imcref.getSMTP();
-            smtp.sendMailWait( mailFrom, mailTo, mailSubject, mailBody );
+            smtp.sendMail( new SMTP.Mail( mailFrom, new String[] { mailTo }, mailSubject, mailBody ) );
 
         } catch ( ProtocolException ex ) {
             log( "Protocol error while sending mail. " + ex.getMessage() );

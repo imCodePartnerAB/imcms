@@ -16,6 +16,8 @@ public abstract class ContentManagementSystem {
 
     public abstract TemplateService getTemplateService();
 
+    public abstract MailService getMailService() ;
+
     public static ContentManagementSystem getContentManagementSystem( String userName, String password ) {
         ImcmsServices imcref;
         imcref = Imcms.getServices();

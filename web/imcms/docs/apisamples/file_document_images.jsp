@@ -15,26 +15,16 @@ java.util.*,
     Document[] documents = documentService.search( new LuceneParsedQuery( "doc_type_id:"+FileDocument.TYPE_ID )) ;
     for ( int i = 0; i < documents.length; i++ ) {
         FileDocument fileDocument = (FileDocument)documents[i] ;
-        FileDocument.FileDocumentFile[] files = fileDocument.getFiles() ;
-        Arrays.sort( files, new FileDocumentFileSizeComparator() );
-        %>
-        <%= fileDocument.getId() %>
-        <ul><%
-            for ( int j = 0; j < files.length; j++ ) {
-                FileDocument.FileDocumentFile file = files[j];
-                boolean isDefault = fileDocument.getDefaultFileId().equals( file.getId() ) ;
-                BufferedImage image = ImageIO.read(file.getInputStream()) ; %>
-                <li>
-                    <% if (isDefault) { %><strong><%}%>
-                    <%= file.getId() %>:
-                    <%= file.getName() %> - <%= file.getContentType() %> - <%= file.getSize() %>
-                    <% if (null != image) { %>
-                        - Image-size: <%= image.getWidth() %>x<%=image.getHeight()%>
-                    <% } %>
-                    <% if (isDefault) { %></strong><%}%>
-                </li>
-            <% } %>
-        </ul><%
+        List fileEntries = new ArrayList(Arrays.asList(fileDocument.getFiles())) ;
+        Collections.sort( fileEntries, new FileDocumentFileSizeComparator() );
+        %><%= fileDocument.getId() %><ul><%
+            for ( Iterator iterator = fileEntries.iterator(); iterator.hasNext(); ) {
+                FileDocument.FileDocumentFile file = (FileDocument.FileDocumentFile)iterator.next();
+                String fileId = (String)file.getId() ;
+                BufferedImage image = ImageIO.read(file.getInputStream()) ;
+                %><li><%= fileId %>: <%= file.getName() %> - <%= file.getContentType() %> - <%= file.getSize() %><% if (null != image) { %> - <%= image.getWidth() %>x<%=image.getHeight()%><% } %></li><%
+            }
+        %></ul><%
     } %>
     </body>
 </html>
@@ -43,6 +33,7 @@ java.util.*,
         public int compare( Object o1, Object o2 ) {
             FileDocument.FileDocumentFile f1 = (FileDocument.FileDocumentFile)o1 ;
             FileDocument.FileDocumentFile f2 = (FileDocument.FileDocumentFile)o2 ;
+
             try {
                 return (int)( f1.getSize() - f2.getSize() ) ;
             } catch ( IOException e ) {

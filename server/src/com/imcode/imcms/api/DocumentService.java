@@ -252,6 +252,13 @@ public class DocumentService {
         return new LuceneParsedQuery( query );
     }
 
+    public org.w3c.dom.Document getXmlDomForDocument(Document document) {
+        XmlDocumentBuilder xmlDocumentBuilder = new XmlDocumentBuilder();
+        xmlDocumentBuilder.addDocument( document.getInternal() );
+        org.w3c.dom.Document xmlDocument = xmlDocumentBuilder.getXmlDocument();
+        return xmlDocument ;
+    }
+
     private static class ApiWrappingDocumentVisitor extends DocumentVisitor {
 
         private ContentManagementSystem contentManagementSystem ;

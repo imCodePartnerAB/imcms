@@ -10,6 +10,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
     private DocumentService documentService;
     private TemplateService templateService;
     private DatabaseService databaseService;
+    private MailService mailService;
     private User currentUser;
     protected ImcmsServices service;
     protected SecurityChecker securityChecker;
@@ -26,6 +27,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
         documentService = new DocumentService( this ) ;
         templateService = new TemplateService( this );
         databaseService = new DatabaseService( Imcms.getApiConnectionPool() );
+        mailService = new MailService(service.getSMTP()) ;
     }
 
     public UserService getUserService(){
@@ -46,6 +48,10 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
 
     public TemplateService getTemplateService() {
         return templateService;
+    }
+
+    public MailService getMailService() {
+        return mailService ;
     }
 
     ImcmsServices getInternal() {

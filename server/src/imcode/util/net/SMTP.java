@@ -14,7 +14,7 @@ import java.net.ProtocolException;
 import java.util.Arrays;
 
 /**
- * class SMTP - Manages a connection to a SMTP-server, and provides methods for sending mail.
+ * class SMTP - Provides methods for sending mail.
  *
  * @author Kreiger
  * @version $Revision$
@@ -47,19 +47,6 @@ public class SMTP {
         } catch ( MessagingException e ) {
             throw new UnhandledException( e );
         }
-    }
-
-    /**
-     * Composes and sends a mail to the SMTP server, and returns when finished.
-     *
-     * @param	from		The address sent from.
-     * @param	to		The comma- or space-separated string of addresses to send to.
-     * @param	subject		The message subject.
-     * @param	msg		String containing the message.
-     * @deprecated Use {@link #sendMail(imcode.util.net.SMTP.Mail)} instead.
-     */
-    public void sendMailWait( String from, String to, String subject, String msg ) throws IOException {
-        sendMailWait( from, to.split( "\\s," ), subject, msg );
     }
 
     /**

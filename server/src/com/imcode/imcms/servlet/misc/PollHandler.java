@@ -1,20 +1,17 @@
 package com.imcode.imcms.servlet.misc;
 
-import javax.servlet.* ;
-import javax.servlet.http.* ;
-
-import java.io.* ;
-import java.text.* ;
-import java.util.* ;
-
-
-import org.apache.log4j.Logger ;
-
-import imcode.util.net.SMTP;
-import imcode.util.poll.*;
-
-import imcode.server.* ;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.textdocument.TextDomainObject;
+import imcode.util.net.SMTP;
+import imcode.util.poll.PollHandlingSystem;
+import org.apache.log4j.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.*;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class PollHandler extends HttpServlet {
 
@@ -217,7 +214,7 @@ public class PollHandler extends HttpServlet {
 
 		// Send the mail
 		SMTP smtp = imcref.getSMTP() ;
-		smtp.sendMailWait(mailFromAddress, mailToAddress, mailSubject, mail.toString()) ;
+		smtp.sendMail(new SMTP.Mail(mailFromAddress, new String[] { mailToAddress }, mailSubject, mail.toString())) ;
 		log.debug("Sending mail to "+mailToAddress);
 
     } // end of sendMail()

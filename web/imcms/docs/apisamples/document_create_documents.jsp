@@ -1,7 +1,8 @@
 <%@ page import="com.imcode.imcms.api.*,
                  java.util.Date,
-                 com.imcode.imcms.api.util.InputStreamSource,
-                 java.io.*" errorPage="error.jsp" %>
+                 javax.activation.DataSource,
+                 java.io.*,
+                 javax.activation.FileDataSource" errorPage="error.jsp" %>
 
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
@@ -42,8 +43,8 @@ with link from the document with id "<a href="<%= request.getContextPath() %>/se
 <%
     FileDocument fileDocument = documentService.createNewFileDocument( parentDocument ) ;
     fileDocument.setHeadline( "Filedocument created from API");
-    //FileDocument.FileDocumentFile file = new FileDocument.FileDocumentFile( new File("file.txt"), "text/plain");
-    FileDocument.FileDocumentFile file = new FileDocument.FileDocumentFile("file.txt", "text/plain", new StringInputStreamSource("This is the contents of the file."));
+    //FileDocument.FileDocumentFile file = new FileDocument.FileDocumentFile( new FileDataSource("file.txt"));
+    FileDocument.FileDocumentFile file = new FileDocument.FileDocumentFile( new StringDataSource("This is the contents of the file."));
     fileDocument.addFile( "text", file );
     fileDocument.setPublicationStartDatetime( new Date() );
     fileDocument.setStatus(Document.STATUS_PUBLICATION_APPROVED);
@@ -56,12 +57,12 @@ Created a file document with id "<a href="<%= request.getContextPath() %>/servle
 with link from the document with id "<a href="<%= request.getContextPath() %>/servlet/GetDoc?meta_id=<%= parentId %>"><%= parentId %></a>".<br>
 
 <%!
-    private static class StringInputStreamSource implements InputStreamSource {
+    private static class StringDataSource implements DataSource {
 
         private String string;
         private byte[] buffer ;
 
-        StringInputStreamSource( String string ) {
+        StringDataSource( String string ) {
             this.string = string;
         }
 
@@ -80,9 +81,17 @@ with link from the document with id "<a href="<%= request.getContextPath() %>/se
             return new ByteArrayInputStream( buffer ) ;
         }
 
-        public long getSize() throws IOException {
-            createBuffer();
-            return buffer.length;
+        public OutputStream getOutputStream() throws IOException {
+            return null;
         }
+
+        public String getContentType() {
+            return "text/plain" ;
+        }
+
+        public String getName() {
+            return "string.txt" ;
+        }
+
     }
 %>
