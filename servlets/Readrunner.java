@@ -22,6 +22,8 @@ public class Readrunner extends HttpServlet {
     private final static String EXPIRED_DATE_MAIL = "readrunner/expired_date_mail.txt" ;
     private final static String EXPIRED_USES_MAIL = "readrunner/expired_uses_mail.txt" ;
 
+    private final static String READRUNNER_CONFIG = "readrunner.properties" ;
+
     /** The number of milliseconds in one day **/
     private final long ONE_DAY = 86400000 ;
 
@@ -184,6 +186,11 @@ public class Readrunner extends HttpServlet {
 	String mailserver = "" ;
 	int mailport = 25 ;
 	try {
+	    String otherToAddresses = Prefs.get("mail-warning-to-addresses", READRUNNER_CONFIG) ;
+	    if (null != otherToAddresses) {
+		toAddress += " "+otherToAddresses ;
+	    }
+
 	    mailserver = Utility.getDomainPref( "smtp_server", host );
 	    String stringMailPort = Utility.getDomainPref( "smtp_port", host );
 	    String stringMailtimeout = Utility.getDomainPref( "smtp_timeout", host );

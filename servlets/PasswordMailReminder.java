@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import imcode.util.IMCServiceRMI;
 import imcode.util.Utility;
+import imcode.util.SMTP;
+
 import imcode.server.* ;
 
 /**

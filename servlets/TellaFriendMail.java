@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import imcode.util.IMCServiceRMI;
 import imcode.util.Utility;
+import imcode.util.SMTP;
+
 import imcode.server.* ;
 /**
   * Proces if user can and has right to recive password by mail.

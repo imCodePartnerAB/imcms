@@ -3,17 +3,18 @@
  * @(#)SendMailServlet.java
  */
 import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Vector;
+import java.net.* ;
+import java.util.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.util.IMCServiceRMI;
-import imcode.server.*;
 import imcode.util.Utility;
-import java.net.* ;
-import java.util.*;
+import imcode.util.SMTP;
+
+import imcode.server.*;
+
 /**
  * PARAMS in use, in doPost()
  *	mailTo (the email adress were to send this ex. nisse@swipnet.se)
