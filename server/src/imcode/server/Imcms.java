@@ -12,14 +12,16 @@ public class Imcms {
 
     private static final String SERVER_PROPERTIES_FILENAME = "server.properties";
     private final static Logger log = Logger.getLogger( imcode.server.Imcms.class.getName() );
-    private final static ImcmsServices services = createServices();
-
+    private static ImcmsServices services ;
     private static ConnectionPool apiConnectionPool ;
 
     private Imcms() {
     }
 
     public synchronized static ImcmsServices getServices() {
+        if (null == services) {
+            services = createServices();
+        }
         return services;
     }
 
