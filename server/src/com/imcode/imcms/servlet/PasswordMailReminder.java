@@ -104,7 +104,7 @@ public class PasswordMailReminder extends HttpServlet {
         parsVector.add("#errorininput#");
         parsVector.add("");
 
-        String returnString = imcref.parseDoc( PasswordMailReminder.RETURNING_DOCUMENT_INPUT, null, parsVector );
+        String returnString = imcref.getAdminTemplate( PasswordMailReminder.RETURNING_DOCUMENT_INPUT, null, parsVector );
         out.print(returnString);
     }
 
