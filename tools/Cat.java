@@ -61,7 +61,7 @@ public class Cat extends Task {
 	}
 
 	try {
-	    OutputStream out = new FileOutputStream(destFile,append) ;
+	    OutputStream out = new FileOutputStream(destFile.getPath(),append) ;
     
 	    Vector srcFiles = new Vector() ;
 
