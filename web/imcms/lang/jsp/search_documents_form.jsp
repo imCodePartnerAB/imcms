@@ -75,12 +75,12 @@
         <table border="0" cellspacing="0" cellpadding="0">
         <tr>
             <td>
-            <select name="date_type">
-                <option value="PUB" <%= "a".equals("PUB")? "selected" : "" %> ><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option1 ?>
-                <option value="PUBC" <%= "a".equals("PUBC")? "selected" : "" %> ><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option2 ?>
-                <option value="CRE" <%= "a".equals("CRE")? "selected" : "" %> ><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option3 ?>
-                <option value="ARC" <%= "a".equals("ARC")? "selected" : "" %> ><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option4 ?>
-                <option value="MOD" <%= "a".equals("MOD")? "selected" : "" %> ><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option5 ?>
+            <select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__DATE_TYPE %>">
+                <option value="<%= SearchDocumentsPage.DATE_TYPE__PUBLICATION_START %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__PUBLICATION_START ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option1 ?>
+                <option value="<%= SearchDocumentsPage.DATE_TYPE__PUBLICATION_END %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__PUBLICATION_END ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option2 ?>
+                <option value="<%= SearchDocumentsPage.DATE_TYPE__CREATED %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__CREATED ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option3 ?>
+                <option value="<%= SearchDocumentsPage.DATE_TYPE__ARCHIVED %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__ARCHIVED ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option4 ?>
+                <option value="<%= SearchDocumentsPage.DATE_TYPE__MODIFIED %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__MODIFIED ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option5 ?>
             </select></td>
 
         </tr>
@@ -91,9 +91,9 @@
         <td colspan="3">
         <table border="0" cellspacing="0" cellpadding="0">
         <tr>
-            <td><input type="text" name="date_start" value="" size="10" maxlength="10" style="width:65"></td>
+            <td><input type="text" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__START_DATE %>" value="<%= searchDocumentsPage.getFormattedStartDate() %>" size="10" maxlength="10" style="width:7em"></td>
             <td nowrap>&nbsp; &nbsp; - &nbsp; &nbsp;</td>
-            <td><input type="text" name="date_end" value="" size="10" maxlength="10" style="width:65"></td>
+            <td><input type="text" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__END_DATE %>" value="<%= searchDocumentsPage.getFormattedEndDate() %>" size="10" maxlength="10" style="width:7em"></td>
             <td>&nbsp; &nbsp; (<? web/imcms/lang/jsp/admin/admin_manager_search.jsp/9 ?>)</td>
         </tr>
         </table></td>

@@ -69,7 +69,7 @@
                             <td>
                                     <%
                                         if (user.canEdit(document)) {
-                                            %><a href="SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%= Html.getLinkedStatusIconTemplate(document, user, request ) %></a><%
+                                            %><a href="PageDispatcher?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%= Html.getLinkedStatusIconTemplate(document, user, request ) %></a><%
                                         } else {
                                             %>&nbsp;<%
                                         }
@@ -91,7 +91,7 @@
                             %>
                             <td align="right">&nbsp;
                                 <% if (documentFinder.isDocumentsSelectable()) { %>
-                                    <a href="SearchDocuments?<%= SearchDocumentsPage.REQUEST_PARAMETER__SELECTED_DOCUMENT_ID+"="+document.getId()+"&"+searchDocumentsPage.getParameterString(request)%>"><? imcms/lang/jsp/search_documents.jsp/select_document ?></a>
+                                    <a href="PageDispatcher?<%= SearchDocumentsPage.REQUEST_PARAMETER__SELECTED_DOCUMENT_ID+"="+document.getId()+"&"+searchDocumentsPage.getParameterString(request)%>"><? imcms/lang/jsp/search_documents.jsp/select_document ?></a>
                                 <% } %>
                             </td>
                         </tr>

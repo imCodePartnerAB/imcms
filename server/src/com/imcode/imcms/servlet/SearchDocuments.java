@@ -34,19 +34,6 @@ public class SearchDocuments extends HttpServlet {
     */
     }
 
-    private void goToEditDocumentInformation( final SearchDocumentsPage page, final DocumentFinder documentFinder,
-                                              HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        DocumentDomainObject documentSelectedForEditing = page.getDocumentSelectedForEditing();
-        DispatchCommand returnCommand = new DispatchCommand() {
-            public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                documentFinder.forwardWithPage(request, response, page);
-            }
-        };
-        EditDocumentInformationPageFlow editDocumentInformationPageFlow = new EditDocumentInformationPageFlow( documentSelectedForEditing, returnCommand, new DocumentMapper.SaveEditedDocumentCommand() );
-        editDocumentInformationPageFlow.setAdminButtonsHidden( true );
-        editDocumentInformationPageFlow.dispatch( request, response );
-    }
-
     public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         doGet( request, response );
     }

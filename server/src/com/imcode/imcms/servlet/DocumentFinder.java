@@ -29,7 +29,7 @@ public class DocumentFinder extends WebComponent {
     private SearchDocumentsPage page ;
 
     public DocumentFinder() {
-        this(new SearchDocumentsPage(null, null));
+        this(new SearchDocumentsPage());
     }
 
     public DocumentFinder(SearchDocumentsPage page) {
@@ -57,7 +57,9 @@ public class DocumentFinder extends WebComponent {
             booleanQuery.add( restrictingQuery, true, false );
         }
         if ( booleanQuery.getClauses().length > 0 ) {
-            page.setDocumentsFound( index.search( booleanQuery, Utility.getLoggedOnUser( request ) ) );
+            DocumentDomainObject[] documentsFound = index.search( booleanQuery, Utility.getLoggedOnUser( request ) );
+
+            page.setDocumentsFound( documentsFound );
         }
         page.forward( request, response );
     }
