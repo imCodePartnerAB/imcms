@@ -12,9 +12,9 @@ public class DocumentMapperBean {
         this.documentMapper = documentMapper;
     }
 
-    public DocumentBean getDocument( int metaId ) throws NoPermissionException {
+    public TextDocumentBean getDocument( int metaId ) throws NoPermissionException {
         Document doc = documentMapper.getDocument( metaId );
-        DocumentBean result = new DocumentBean( securityChecker, doc, documentMapper );
+        TextDocumentBean result = new TextDocumentBean( securityChecker, doc, documentMapper );
 
         return result;
     }

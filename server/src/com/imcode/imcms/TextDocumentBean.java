@@ -5,12 +5,12 @@ import imcode.server.document.Document ;
 import imcode.server.document.DocumentMapper;
 import imcode.server.IMCText;
 
-public class DocumentBean {
+public class TextDocumentBean {
     private SecurityChecker securityChecker;
     private Document document;
     private DocumentMapper mapper;
 
-    DocumentBean( SecurityChecker securityChecker,  Document document, DocumentMapper mapper ) {
+    TextDocumentBean( SecurityChecker securityChecker,  Document document, DocumentMapper mapper ) {
         this.securityChecker = securityChecker;
         this.document = document;
         this.mapper = mapper;
