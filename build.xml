@@ -582,6 +582,10 @@
       <fileset dir="templates/${srclanguage}/sections"/>
     </copy>
 
+   <copy todir="${admintemplates}/textdoc" filtering="true">
+      <fileset dir="templates/${srclanguage}/textdoc"/>
+    </copy>
+
     <copy todir="${searchtemplates}" filtering="true">
       <fileset dir="templates/${srclanguage}/search"/>
     </copy>

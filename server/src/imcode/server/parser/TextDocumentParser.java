@@ -162,7 +162,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 					int temp_template = Integer.parseInt( (String)vectT.get(0) );
 					if(temp_template > 0)
 						template_id = temp_template+"";
-				}catch(NumberFormatException nfe){
+				} catch(NumberFormatException nfe){
 						//do nothing, we keep the original template
 				}
 			}
@@ -265,7 +265,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    File admintemplate_path = new File(templatePath,  "/" +lang_prefix + "/admin/") ;
 
-	    String emphasize_string = fileCache.getCachedFileString(new File(admintemplate_path, "emphasize.html")) ;
+	    String emphasize_string = fileCache.getCachedFileString(new File(admintemplate_path, "textdoc/emphasize.html")) ;
 
 	    Perl5Compiler patComp = new Perl5Compiler() ;
 	    Perl5Matcher patMat = new Perl5Matcher() ;
@@ -501,7 +501,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		temptags.setProperty("#getTemplates#",templatelist.toString()) ;
 
 		// Put templateadmintemplate in list of files to load.
-		toload.setProperty("#changePage#",(new File(admintemplate_path,"inPage_admin.html")).getPath()) ;
+		toload.setProperty("#changePage#",(new File(admintemplate_path,"textdoc/inPage_admin.html")).getPath()) ;
 	    }  // if (templatemode)
 
 	    temptags.setProperty("#servlet_url#",servletUrl) ;
@@ -523,7 +523,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		}
 
 		// Add an option for an existing doc, too
-		String existing_doc_filename = (new File(admintemplate_path, "existing_doc_name.html")).getPath() ;
+		String existing_doc_filename = (new File(admintemplate_path, "textdoc/existing_doc_name.html")).getPath() ;
 		String existing_doc_name = null ;
 
 		existing_doc_name = fileCache.getCachedFileString(new File(existing_doc_filename)) ;
@@ -533,10 +533,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		}
 
 		// List of files to load, and tags to parse them into
-		toload.setProperty("addDoc",(new File(admintemplate_path,"add_doc.html")).getPath()) ;
-		toload.setProperty("saveSortStart",(new File(admintemplate_path,"sort_order.html")).getPath()) ;
-		toload.setProperty("saveSortStop",(new File(admintemplate_path,"archive_del_button.html")).getPath()) ;
-		toload.setProperty("sort_button",(new File(admintemplate_path,"sort_button.html")).getPath()) ;
+		toload.setProperty("addDoc",(new File(admintemplate_path,"textdoc/add_doc.html")).getPath()) ;
+		toload.setProperty("saveSortStart",(new File(admintemplate_path,"textdoc/sort_order.html")).getPath()) ;
+		toload.setProperty("saveSortStop",(new File(admintemplate_path,"textdoc/archive_del_button.html")).getPath()) ;
+		toload.setProperty("sort_button",(new File(admintemplate_path,"textdoc/sort_button.html")).getPath()) ;
 
 		// Some tags to parse in the files we'll load.
 		temptags.setProperty("#doc_types#",doc_types_sb.toString()) ;	// The doc-types.
