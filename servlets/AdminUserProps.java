@@ -895,6 +895,24 @@ public class AdminUserProps extends Administrator {
 		
 	    Properties params = this.getParameters(req, imcref, user, userToChange) ;
 	    params.setProperty("user_id", userToChangeId) ;
+		
+		
+		// Lets check if loginname is going to be changed and if so, 
+		// lets check that the new loginname doesnt exists already in db
+		String currentLogin = userToChange.getLoginName();
+	    String newLogin = params.getProperty("login_name") ;
+		if ( !newLogin.equalsIgnoreCase(currentLogin) ){
+		    String userNameExists[] = imcref.sqlProcedure("FindUserName '" + newLogin + "'") ;
+		    if(userNameExists != null ) {
+				if(userNameExists.length > 0 ) {
+				    String header = "Error in AdminUserProps." ;
+				    String msg = "The username already exists, please change the username."+ "<BR>" ;
+				    this.log(header + msg) ;
+				    AdminError err = new AdminError(req,res,header,msg) ;
+				    return ;
+				}
+		    }
+		}
 
 	    // Lets check the password. if its empty, then it wont be updated. get the
 	    // old password from db and use that one instad
