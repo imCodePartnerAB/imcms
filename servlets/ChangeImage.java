@@ -115,8 +115,8 @@ public class ChangeImage extends HttpServlet {
             //so the current "directory" or the "parent" must be equal to root_dir_name
             //lets start and see if the parent is root_dir
             if ( root_dir_name.equals( fileObj.getParentFile().getName() ) ) {
-                optionValue = HTMLConv.toHTML( "\\" + fileObj.getName() );
-                optionName = HTMLConv.toHTML( "&nbsp;&nbsp;\\" + fileObj.getName() );
+                optionValue = HTMLConv.toHTML( fileObj.getName() );
+                optionName = HTMLConv.toHTML( "&nbsp;&nbsp;/" + fileObj.getName() );
             } else if ( root_dir_name.equals( fileObj.getName() ) ) {
                 optionValue = "";
                 optionName = HTMLConv.toHTML( fileObj.getName() );

@@ -39,13 +39,10 @@ function setDef() {
 function checkFileName() {
 	var f = document.forms.ImageUploadForm ;
 	var thePath = f.file.value ;
-	var theFile ;
+	var theFile = thePath;
 	var isValid = true ;
-	if (isMac) {
-		theFile = thePath.substring(thePath.lastIndexOf("/") + 1, thePath.length) ;
-	} else {
-		theFile = thePath.substring(thePath.lastIndexOf("\\") + 1, thePath.length) ;
-	}
+    theFile = theFile.substring(theFile.lastIndexOf("/") + 1) ;
+	theFile = theFile.substring(theFile.lastIndexOf("\\") + 1) ;
 	theFile = theFile.substring(0, theFile.lastIndexOf(".")) ;
 	theFile = unescape(theFile) ;
 	for (var i = 0; i < theFile.length; i++) {

@@ -48,8 +48,6 @@ public class HTMLConv {
     private static String toHTML( char ch ) {
         if ( (int)ch > 159 ) {
             return h_code[(int)ch - 160];
-        } else if ( ch == '\'' ) {
-            return "''";
         } else {
             return "" + ch;
         }
