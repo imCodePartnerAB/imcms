@@ -30,7 +30,8 @@ db-pass =
 db-maxconnections = 20
 
 db-driver = com.microsoft.jdbc.sqlserver.SQLServerDriver
-db-url-without-db-name = jdbc:microsoft:sqlserver://${db-host}:${db-port};SelectMethod=direct;ProgramName=imCMS
+# Note that SelectMethod must be "cursor"!
+db-url-without-db-name = jdbc:microsoft:sqlserver://${db-host}:${db-port};SelectMethod=cursor;ProgramName=imCMS
 db-url = ${db-url-without-db-name};DatabaseName=${db-name}
 
 
