@@ -16,6 +16,7 @@ import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -48,6 +49,7 @@ public class DocumentMapper {
     protected IMCServiceInterface service;
     private DocumentIndex documentIndex;
     private static final int FILE_BUFFER_LENGTH = 2048;
+    private static final String XOPEN_SQLSTATE__INTEGRITY_CONSTRAINT_VIOLATION = "23000";
 
     public DocumentMapper( IMCServiceInterface service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
         this.service = service;
@@ -62,46 +64,57 @@ public class DocumentMapper {
             throws DocumentAlreadyInMenuException {
 
         String menuIdStr = sqlSelectMenuId( menuDocumentId, menuIndex );
-        if (null == menuIdStr) {
+        if ( null == menuIdStr ) {
             sqlInsertMenu( menuDocumentId, menuIndex );
             // FIXME: Get generated menu_id primary key from insert without selecting it.
-            menuIdStr = sqlSelectMenuId( menuDocumentId, menuIndex ) ;
+            menuIdStr = sqlSelectMenuId( menuDocumentId, menuIndex );
         }
-        int menuId = Integer.parseInt(menuIdStr) ;
+        int menuId = Integer.parseInt( menuIdStr );
 
-        String sqlSelectMaxManualSortIndex = "SELECT ISNULL(MAX(manual_sort_order),500) FROM childs WHERE menu_id = ?" ;
-        String maxManualSortIndexStr = service.sqlQueryStr( sqlSelectMaxManualSortIndex, new String[] {""+menuId}) ;
-        if (null == maxManualSortIndexStr) {
-            maxManualSortIndexStr = ""+500 ;
+        String sqlSelectMaxManualSortIndex = "SELECT ISNULL(MAX(manual_sort_order),500) FROM childs WHERE menu_id = ?";
+        String maxManualSortIndexStr = service.sqlQueryStr( sqlSelectMaxManualSortIndex, new String[]{"" + menuId} );
+        if ( null == maxManualSortIndexStr ) {
+            maxManualSortIndexStr = "" + 500;
         }
-        int maxManualSortIndex = Integer.parseInt(maxManualSortIndexStr) ;
-        int newManualSortIndex = maxManualSortIndex + 10 ;
+        int maxManualSortIndex = Integer.parseInt( maxManualSortIndexStr );
+        int newManualSortIndex = maxManualSortIndex + 10;
 
         String sqlInsertChild = "INSERT INTO childs (menu_id, to_meta_id, manual_sort_order, tree_sort_index)\n"
-                                + "VALUES(?,?,?,'')" ;
-        int updatedRows = service.sqlUpdateQuery( sqlInsertChild, new String[] { ""+menuId, ""+toBeAddedId, ""+newManualSortIndex}) ;
-
-        if ( 1 == updatedRows ) {	// if existing doc is added to the menu
-            service.updateLogs( "Link from [" + menuDocumentId + "] in menu [" + menuIndex + "] to [" + toBeAddedId
-                                + "] added by user: ["
-                                + user.getFullName()
-                                + "]" );
-        } else {
-            throw new DocumentAlreadyInMenuException( "Failed to add document " + toBeAddedId + " to menu "
-                                                      + menuIndex
-                                                      + " on document "
-                                                      + menuDocumentId );
+                                + "VALUES(?,?,?,'')";
+        try {
+            service.sqlUpdateQuery( sqlInsertChild, new String[]{
+                "" + menuId, "" + toBeAddedId, ""
+                                               + newManualSortIndex
+            } );
+        } catch ( RuntimeException re ) {
+            if ( re.getCause() instanceof SQLException ) {
+                SQLException sqlException = (SQLException)re.getCause();
+                if ( XOPEN_SQLSTATE__INTEGRITY_CONSTRAINT_VIOLATION.equals( sqlException.getSQLState() ) ) {
+                    throw new DocumentAlreadyInMenuException( "Failed to add document " + toBeAddedId + " to menu "
+                                                              + menuIndex
+                                                              + " on document "
+                                                              + menuDocumentId );
+                }
+            }
+            throw re ;
         }
+
+        service.updateLogs( "Link from [" + menuDocumentId + "] in menu [" + menuIndex + "] to [" + toBeAddedId
+                            + "] added by user: ["
+                            + user.getFullName()
+                            + "]" );
     }
 
     private void sqlInsertMenu( int menuDocumentId, int menuIndex ) {
-        String sqlInsertMenu = "INSERT INTO menus (meta_id, menu_index, sort_order) VALUES(?,?,?)" ;
-        service.sqlUpdateQuery( sqlInsertMenu, new String[] {""+menuDocumentId, ""+menuIndex, ""+IMCConstants.MENU_SORT_DEFAULT}) ;
+        String sqlInsertMenu = "INSERT INTO menus (meta_id, menu_index, sort_order) VALUES(?,?,?)";
+        service.sqlUpdateQuery( sqlInsertMenu, new String[]{
+            "" + menuDocumentId, "" + menuIndex, "" + IMCConstants.MENU_SORT_DEFAULT
+        } );
     }
 
     private String sqlSelectMenuId( int menuDocumentId, int menuIndex ) {
-        String sqlSelectMenuId = "SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?" ;
-        String menuIdStr = service.sqlQueryStr( sqlSelectMenuId, new String[] {""+menuDocumentId, ""+menuIndex} ) ;
+        String sqlSelectMenuId = "SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?";
+        String menuIdStr = service.sqlQueryStr( sqlSelectMenuId, new String[]{"" + menuDocumentId, "" + menuIndex} );
         return menuIdStr;
     }
 
