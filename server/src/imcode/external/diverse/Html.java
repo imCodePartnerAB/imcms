@@ -39,10 +39,10 @@ public class Html {
                         if (lookFor.equals(selected.elementAt(j).toString())) htmlStr += " selected " ;
                     } // end for
                     htmlStr += ">" ;
-                    htmlStr += data.elementAt(i+1).toString() + "\n" ;
+                    htmlStr += data.elementAt(i+1).toString() + "</option>\n" ;
                 } else {
                     htmlStr += ">" ;
-                    htmlStr += data.elementAt(i+1).toString() + "\n" ;
+                    htmlStr += data.elementAt(i+1).toString() + "</option>\n" ;
                 } // end if
             } // end for
         } // end if
@@ -110,7 +110,7 @@ public class Html {
                         htmlStr += " selected " ;
                 
                 htmlStr += ">" ;
-                htmlStr += data.elementAt(i+1).toString() + "\n" ;
+                htmlStr += data.elementAt(i+1).toString() + "</option>\n" ;
             }
             
             // A_HREF_LIST
