@@ -83,6 +83,12 @@ public class GetDoc extends HttpServlet {
 	String no_permission_url	= Utility.getDomainPref( "no_permission_url",host ) ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 	File file_path			= Utility.getDomainPrefPath( "file_path", host ) ;
+	
+	Vector vec = new Vector() ;
+	imcode.server.SystemData sysData = imcref.getSystemData() ;
+	String eMailServerMaster = sysData.getServerMasterAddress() ;
+	vec.add("#EMAIL_SERVER_MASTER#") ;
+	vec.add(eMailServerMaster) ;
 
 	HttpSession session = req.getSession(true) ;
 	Object done = session.getAttribute("logon.isDone");  // marker object
@@ -103,7 +109,7 @@ public class GetDoc extends HttpServlet {
 
 	    // get type of browser
 	    String value = req.getHeader( "User-Agent" ) ;
-  
+
 	    if ( value == null ) {
 		value = "" ;
 	    }
@@ -130,13 +136,18 @@ public class GetDoc extends HttpServlet {
 	    } catch (IndexOutOfBoundsException ex) {
 		referringDocument = null ;
 	    }
- 	}
+	}
 	try {
 	    documentRequest = new DocumentRequest(imcref,req.getRemoteAddr(),session.getId(), user,meta_id,referringDocument) ;
+	    documentRequest.setContextPath(req.getContextPath()) ;
 	    documentRequest.setUserAgent(req.getHeader("User-agent")) ;
-	    revisits = new Revisits() ;
+	    documentRequest.setHostName(req.getHeader("Host"));
 
+	    // Get all cookies from request
 	    Cookie[] cookies = req.getCookies() ;
+
+	    // add all cookies to documentRequest
+	    documentRequest.setCookies(cookies) ;
 
 	    // Find cookies and put in hash.
 	    Hashtable cookieHash = new Hashtable() ;
@@ -145,6 +156,8 @@ public class GetDoc extends HttpServlet {
 		Cookie currentCookie=cookies[i] ;
 		cookieHash.put(currentCookie.getName(), currentCookie.getValue()) ;
 	    }
+
+	    revisits = new Revisits() ;
 
 	    if (cookieHash.get("imVisits")==null)
 		{
@@ -164,7 +177,7 @@ public class GetDoc extends HttpServlet {
 
 	    doc_type = documentRequest.getDocument().getDocumentType() ;
 	} catch (IndexOutOfBoundsException ex) {
-	    return imcref.parseDoc( null,"no_page.html",user.getLangPrefix() ) ;
+	    return imcref.parseDoc( vec,"no_page.html",user.getLangPrefix() ) ;
 	}
 
 	// FIXME: One of the places that need fixing. Number one, we should put the no-permission-page
@@ -248,8 +261,7 @@ public class GetDoc extends HttpServlet {
 	    try {
 		fr = new BufferedInputStream( new FileInputStream( new File( file_path, String.valueOf( meta_id )+"_se" ) ) ) ;
 	    } catch ( IOException ex ) {
-		String lang_prefix = user.getLangPrefix() ;
-		htmlStr = imcref.parseDoc( null,"no_page.html",lang_prefix ) ;
+		htmlStr = imcref.parseDoc( vec,"no_page.html", user.getLangPrefix() ) ;
 		return htmlStr ;
 	    }
 	    int len = fr.available( ) ;

@@ -832,453 +832,453 @@ SET IDENTITY_INSERT meta OFF
 -- now insert all images 
  
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (2,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-filadministration.GIF','')
+values (2,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-filadministration.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (3,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-roller-av-aktiv-anv.GIF','')
+values (3,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-roller-av-aktiv-anv.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (4,0,329,0,0,0,'1','','_self','','top','','','se/helpimages/admin_roller_anvoroller.gif','')
+values (4,0,329,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/admin_roller_anvoroller.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (5,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/AdminsidaBrowser2.GIF','')
+values (5,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/AdminsidaBrowser2.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (6,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-forandrade-dok-bild1.GIF','')
+values (6,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-forandrade-dok-bild1.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (6,0,0,0,0,0,'2','','_self','','top','','','se/helpimages/Admin-forandrade-dok-bild2.GIF','')
+values (6,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-forandrade-dok-bild2.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (7,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-forandrade-dok-bild2.GIF','')
+values (7,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-forandrade-dok-bild2.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (8,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-mallar.GIF','')
+values (8,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-mallar.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (9,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-grupp-byt-namn.GIF','')
+values (9,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-grupp-byt-namn.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (10,333,249,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-formatgrupp-tilldela-mall.gif','')
+values (10,333,249,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-formatgrupp-tilldela-mall.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (11,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-formatgrupp-skapa.GIF','')
+values (11,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-formatgrupp-skapa.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (12,331,85,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-formatgrupp-ta-bort.gif','')
+values (12,331,85,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-formatgrupp-ta-bort.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (13,303,137,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-formatgrupp-ta-bort-varning.gif','')
+values (13,303,137,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-formatgrupp-ta-bort-varning.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (14,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-ip-access.GIF','')
+values (14,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-ip-access.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (14,0,0,0,0,0,'2','','_self','','top','','','se/helpimages/Admin-admin-ip-access.GIF','')
+values (14,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-admin-ip-access.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (15,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-IP-access-ny.GIF','')
+values (15,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-IP-access-ny.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (16,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-IP-access-varning.GIF','')
+values (16,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-IP-access-varning.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (17,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-raknare.GIF','')
+values (17,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-raknare.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (18,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-test-av-url.GIF','')
+values (18,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-test-av-url.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (19,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-lank-bef-dok copy.GIF','')
+values (19,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-lank-bef-dok copy.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (19,0,0,0,0,0,'2','','_self','','top','','','','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (20,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-mallar-byt-namn-mall.GIF','')
+values (20,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-mallar-byt-namn-mall.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (21,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-mallar-hamta-ned.GIF','')
+values (21,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-mallar-hamta-ned.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (22,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-ladda-upp-ny-mall.GIF','')
+values (22,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-ladda-upp-ny-mall.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (23,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-mallar-ny-exempelmall.GIF','')
+values (23,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-mallar-ny-exempelmall.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (24,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-mallar-uppl-gickbra.GIF','')
+values (24,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-mallar-uppl-gickbra.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (25,222,0,0,0,0,'1','','_self','','top','','','se/helpimages/admin_mallar_tabort.gif','')
+values (25,222,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/admin_mallar_tabort.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (26,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-mallar-tabort-varning.GIF','')
+values (26,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-mallar-tabort-varning.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (27,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-mallar-visa-formatmallar.GIF','')
+values (27,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-mallar-visa-formatmallar.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (28,0,0,1,0,0,'1','','_self','','top','','','se/helpimages/Admin-meny.GIF','')
+values (28,0,0,1,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-meny.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (29,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-roller-adm-anvoroller.GIF','')
+values (29,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-roller-adm-anvoroller.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (30,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-admin-roller.GIF','')
+values (30,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-admin-roller.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (31,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-roller-bytnamn.GIF','')
+values (31,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-roller-bytnamn.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (32,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-roller-lagg-till-ny.GIF','')
+values (32,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-roller-lagg-till-ny.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (33,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-roller-redigera.GIF','')
+values (33,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-roller-redigera.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (34,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-roller-ta-bort-varning.GIF','')
+values (34,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-roller-ta-bort-varning.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (35,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-systeminfo.GIF','')
+values (35,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-systeminfo.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (36,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Andra-text-html.GIF','')
+values (36,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Andra-text-html.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (36,0,0,0,0,0,'2','','_self','','top','','','se/helpimages/Admin_text_html.GIF','')
+values (36,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin_text_html.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (37,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-visa-alla-dok.GIF','')
+values (37,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-visa-alla-dok.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (37,0,0,0,0,0,'2','','_self','','top','','','se/helpimages/Admin-visa-dok2.GIF','')
+values (37,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-visa-dok2.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (38,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-andraanvegenskaper.GIF','')
+values (38,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-andraanvegenskaper.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (39,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Dokumentinfo.GIF','')
+values (39,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Dokumentinfo.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (40,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Rattigheter-behorighet1.GIF','')
+values (40,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Rattigheter-behorighet1.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (41,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Rattigheter-behorighet1.GIF','')
+values (41,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Rattigheter-behorighet1.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (42,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Behorighet2.GIF','')
+values (42,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Behorighet2.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (43,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Behorighet2-nya-dok.GIF','')
+values (43,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Behorighet2-nya-dok.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (44,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Bildarkiv.GIF','')
+values (44,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Bildarkiv.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (45,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Bild-finns-redan.GIF','')
+values (45,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Bild-finns-redan.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (46,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Valj-Browser.GIF','')
+values (46,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Valj-Browser.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (47,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Lagg-till-diagram.GIF','')
+values (47,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Lagg-till-diagram.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (48,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Skapa-Nytt-Diagram.GIF','')
+values (48,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Skapa-Nytt-Diagram.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (49,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Diagram-inmatningsformular.GIF','')
+values (49,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Diagram-inmatningsformular.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (49,0,0,0,0,0,'2','','_self','','top','','','se/helpimages/Diagram-tabellinstallning.GIF','')
+values (49,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Diagram-tabellinstallning.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (50,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Diagram-tillbaka-till-x.GIF','')
+values (50,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Diagram-tillbaka-till-x.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (51,0,0,1,0,0,'1','','_self','','middle','','','se/helpimages/Login-ej-e-post.GIF','')
+values (51,0,0,1,0,0,'1','','_self','','middle','','','../..@imcmsimageurl@/se/helpimages/Login-ej-e-post.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (52,0,0,1,0,0,'1','','_self','','top','','','se/helpimages/Losen-via-e-post.GIF','')
+values (52,0,0,1,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Losen-via-e-post.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (53,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Include.GIF','')
+values (53,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Include.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (54,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/login.GIF','')
+values (54,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/login.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (55,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Knappar3.GIF','')
+values (55,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Knappar3.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (56,0,0,1,0,0,'1','','_self','','top','','','se/helpimages/Konf-admin-anvandare.GIF','')
+values (56,0,0,1,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konf-admin-anvandare.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (57,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Konf-admin-anvandardata.GIF','')
+values (57,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konf-admin-anvandardata.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (58,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Konf-bytmallset-varning1.GIF','')
+values (58,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konf-bytmallset-varning1.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (59,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Konf-admin-diskussion.GIF','')
+values (59,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konf-admin-diskussion.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (60,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Konf-admin-forum.GIF','')
+values (60,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konf-admin-forum.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (61,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Konf-admin-kommentar.GIF','')
+values (61,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konf-admin-kommentar.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (62,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Konf-admin-mallset.GIF','')
+values (62,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konf-admin-mallset.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (63,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Konf-admin-sjalvreg.GIF','')
+values (63,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konf-admin-sjalvreg.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (64,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Konf-ny-mallfil.GIF','')
+values (64,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konf-ny-mallfil.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (65,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Konferens-login.GIF','')
+values (65,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konferens-login.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (66,940,452,0,0,0,'1','','_self','','top','','','se/helpimages/Konf-confViewer1.gif','')
+values (66,940,452,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konf-confViewer1.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (67,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Konf-sjalvreg.GIF','')
+values (67,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konf-sjalvreg.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (68,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Konferens-data.GIF','')
+values (68,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konferens-data.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (69,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Konf-admin-ny-diskussion.GIF','')
+values (69,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konf-admin-ny-diskussion.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (70,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Konf-admin-ny-kommentar.GIF','')
+values (70,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Konf-admin-ny-kommentar.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (71,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-lagg-till-anvandare.GIF','')
+values (71,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-lagg-till-anvandare.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (72,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Lagg-till-bild-m-bild.GIF','')
+values (72,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Lagg-till-bild-m-bild.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (73,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Bild-Browse.GIF','')
+values (73,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Bild-Browse.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (74,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Valj-fil.GIF','')
+values (74,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Valj-fil.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (74,0,0,0,0,0,'2','','_self','','top','','','se/helpimages/Valj-filtyp.GIF','')
+values (74,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Valj-filtyp.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (75,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Lagg-till-dokument2.GIF','')
+values (75,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Lagg-till-dokument2.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (76,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/HTML-kod.GIF','')
+values (76,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/HTML-kod.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (77,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Lagg-till-dokument.GIF','')
+values (77,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Lagg-till-dokument.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (78,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Andra-Text1.GIF','')
+values (78,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Andra-Text1.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (78,0,0,0,0,0,'2','','_self','','top','','','se/helpimages/Andra-text-html1.GIF','')
+values (78,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Andra-text-html1.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (79,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Lank-valj.GIF','')
+values (79,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Lank-valj.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (79,0,0,0,0,0,'2','','_self','','top','','','se/helpimages/Lank-Arkivera.GIF','')
+values (79,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Lank-Arkivera.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (80,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Lank-fil.GIF','')
+values (80,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Lank-fil.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (81,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Lank-URL.GIF','')
+values (81,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Lank-URL.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (82,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/NyURL.GIF','')
+values (82,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/NyURL.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (83,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Losen-felaktigt.GIF','')
+values (83,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Losen-felaktigt.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (84,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Rattigheter.GIF','')
+values (84,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Rattigheter.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (85,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-ta-bort-dok.GIF','')
+values (85,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-ta-bort-dok.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (86,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-ta-bort-dok-varning.GIF','')
+values (86,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-ta-bort-dok-varning.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (87,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/utseende3.GIF','')
+values (87,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/utseende3.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (88,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-ta-bort-roll-varning.GIF','')
+values (88,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-ta-bort-roll-varning.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (89,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-roller-huvudsida.GIF','')
+values (89,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-roller-huvudsida.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (90,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Lagg-till-dokument.GIF','')
+values (90,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Lagg-till-dokument.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (91,238,134,0,0,0,'1','','_self','','top','','','se/helpimages/Index-val.gif','')
+values (91,238,134,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Index-val.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (92,375,0,0,0,0,'1','','_self','','top','','','se/helpimages/Index-ny.gif','')
+values (92,375,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Index-ny.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (93,236,140,0,0,0,'1','','_self','','top','','','se/helpimages/Index-tabort.gif','')
+values (93,236,140,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Index-tabort.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (94,348,216,0,0,0,'1','','_self','','top','','','se/helpimages/Index-tabort_varning.gif','')
+values (94,348,216,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Index-tabort_varning.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (95,348,145,0,0,0,'1','','_self','','top','','','se/helpimages/Index-byt-namn.gif','')
+values (95,348,145,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Index-byt-namn.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (96,406,155,0,0,0,'1','','_self','','top','','','se/helpimages/adminEnkat.gif','')
+values (96,406,155,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/adminEnkat.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (97,405,133,0,0,0,'1','','_self','','top','','','se/helpimages/AdminQuotes.gif','')
+values (97,405,133,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/AdminQuotes.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (98,360,440,0,0,0,'1','','_self','','top','','','se/helpimages/AdminQuesText.gif','')
+values (98,360,440,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/AdminQuesText.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (99,488,420,0,0,0,'1','','_self','','top','','','se/helpimages/AdminQuotText.gif','')
+values (99,488,420,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/AdminQuotText.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (100,534,178,0,0,0,'1','','_self','','top','','','se/helpimages/ShowPoll.gif','')
+values (100,534,178,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/ShowPoll.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (101,495,108,0,0,0,'1','','_self','','top','','','se/helpimages/SearchDocuments.gif','')
+values (101,495,108,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/SearchDocuments.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (102,487,165,0,0,0,'1','','_self','','top','','','se/helpimages/SearchDocuments-adv.gif','')
+values (102,487,165,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/SearchDocuments-adv.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (103,393,114,0,0,0,'1','','_self','','top','','','se/helpimages/Chat_login.gif','')
+values (103,393,114,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Chat_login.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (104,343,545,0,0,0,'1','','_self','','top','','','se/helpimages/Chat_Admin.gif','')
+values (104,343,545,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Chat_Admin.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (105,701,307,0,0,0,'1','','_self','','top','','','se/helpimages/chat_rum.GIF','')
+values (105,701,307,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/chat_rum.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (106,557,131,0,0,0,'1','','_self','','top','','','se/helpimages/Chat_installningar.gif','')
+values (106,557,131,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Chat_installningar.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (107,513,238,0,0,0,'1','','_self','','top','','','se/helpimages/Chat_mallar.gif','')
+values (107,513,238,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Chat_mallar.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (108,417,158,0,0,0,'1','','_self','','top','','','se/helpimages/Chat_mallar_laggtill.gif','')
+values (108,417,158,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Chat_mallar_laggtill.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (202,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-filadministration.GIF','')
+values (202,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-filadministration.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (203,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-roller-av-aktiv-anv.GIF','')
+values (203,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-roller-av-aktiv-anv.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (204,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-admin-anvoroller.GIF','')
+values (204,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-admin-anvoroller.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (205,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/AdminsidaBrowser2.GIF','')
+values (205,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/AdminsidaBrowser2.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (206,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-forandrade-dok-bild1.GIF','')
+values (206,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-forandrade-dok-bild1.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (206,0,0,0,0,0,'2','','_self','','top','','','en/helpimages/Admin-forandrade-dok-bild2.GIF','')
+values (206,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-forandrade-dok-bild2.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (207,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-forandrade-dok-bild2.GIF','')
+values (207,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-forandrade-dok-bild2.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (208,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-mallar.GIF','')
+values (208,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-mallar.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (209,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-grupp-byt-namn.GIF','')
+values (209,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-grupp-byt-namn.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (210,333,249,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-formatgrupp-tilldela-mall.gif','')
+values (210,333,249,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-formatgrupp-tilldela-mall.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (211,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-formatgrupp-skapa.GIF','')
+values (211,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-formatgrupp-skapa.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (212,331,85,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-formatgrupp-ta-bort.gif','')
+values (212,331,85,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-formatgrupp-ta-bort.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (213,303,137,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-formatgrupp-ta-bort-varning.gif','')
+values (213,303,137,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-formatgrupp-ta-bort-varning.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (214,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-ip-access.GIF','')
+values (214,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-ip-access.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (214,0,0,0,0,0,'2','','_self','','top','','','en/helpimages/Admin-admin-ip-access.GIF','')
+values (214,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-admin-ip-access.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (215,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-IP-access-ny.GIF','')
+values (215,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-IP-access-ny.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (216,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-IP-access-varning.GIF','')
+values (216,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-IP-access-varning.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (217,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-raknare.GIF','')
+values (217,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-raknare.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (218,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-test-av-url.GIF','')
+values (218,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-test-av-url.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (219,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-lank-bef-dok copy.GIF','')
+values (219,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-lank-bef-dok copy.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (219,0,0,0,0,0,'2','','_self','','top','','','','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (220,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-mallar-byt-namn-mall.GIF','')
+values (220,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-mallar-byt-namn-mall.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (221,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-mallar-hamta-ned.GIF','')
+values (221,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-mallar-hamta-ned.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (222,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-ladda-upp-ny-mall.GIF','')
+values (222,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-ladda-upp-ny-mall.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (223,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-mallar-ny-exempelmall.GIF','')
+values (223,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-mallar-ny-exempelmall.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (224,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-mallar-uppl-gickbra.GIF','')
+values (224,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-mallar-uppl-gickbra.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (225,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-ta-bort-mall.GIF','')
+values (225,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-ta-bort-mall.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (226,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-mallar-tabort-varning.GIF','')
+values (226,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-mallar-tabort-varning.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (227,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-mallar-visa-formatmallar.GIF','')
+values (227,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-mallar-visa-formatmallar.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (228,0,0,1,0,0,'1','','_self','','top','','','en/helpimages/Admin-meny.GIF','')
+values (228,0,0,1,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-meny.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (229,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-roller-adm-anvoroller.GIF','')
+values (229,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-roller-adm-anvoroller.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (230,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-admin-roller.GIF','')
+values (230,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-admin-roller.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (231,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-roller-bytnamn.GIF','')
+values (231,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-roller-bytnamn.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (232,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-roller-lagg-till-ny.GIF','')
+values (232,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-roller-lagg-till-ny.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (233,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-roller-redigera.GIF','')
+values (233,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-roller-redigera.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (234,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-roller-ta-bort-varning.GIF','')
+values (234,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-roller-ta-bort-varning.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (235,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-systeminfo.GIF','')
+values (235,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-systeminfo.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (236,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Andra-text-html.GIF','')
+values (236,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Andra-text-html.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (236,0,0,0,0,0,'2','','_self','','top','','','en/helpimages/Admin_text_html.GIF','')
+values (236,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin_text_html.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (237,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-visa-alla-dok.GIF','')
+values (237,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-visa-alla-dok.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (237,0,0,0,0,0,'2','','_self','','top','','','se/helpimages/Admin-visa-dok2.GIF','')
+values (237,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-visa-dok2.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (238,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-andraanvegenskaper.GIF','')
+values (238,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-andraanvegenskaper.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (239,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Dokumentinfo.GIF','')
+values (239,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Dokumentinfo.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (240,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Rattigheter-behorighet1.GIF','')
+values (240,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Rattigheter-behorighet1.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (241,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Rattigheter-behorighet1.GIF','')
+values (241,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Rattigheter-behorighet1.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (242,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Behorighet2.GIF','')
+values (242,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Behorighet2.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (243,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Behorighet2-nya-dok.GIF','')
+values (243,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Behorighet2-nya-dok.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (244,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Bildarkiv.GIF','')
+values (244,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Bildarkiv.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (245,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Bild-finns-redan.GIF','')
+values (245,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Bild-finns-redan.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (246,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Valj-Browser.GIF','')
+values (246,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Valj-Browser.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (247,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Lagg-till-diagram.GIF','')
+values (247,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Lagg-till-diagram.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (248,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Skapa-Nytt-Diagram.GIF','')
+values (248,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Skapa-Nytt-Diagram.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (249,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Diagram-inmatningsformular.GIF','')
+values (249,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Diagram-inmatningsformular.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (249,0,0,0,0,0,'2','','_self','','top','','','en/helpimages/Diagram-tabellinstallning.GIF','')
+values (249,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Diagram-tabellinstallning.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (250,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Diagram-tillbaka-till-x.GIF','')
+values (250,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Diagram-tillbaka-till-x.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (251,0,0,1,0,0,'1','','_self','','middle','','','en/helpimages/Login-ej-e-post.GIF','')
+values (251,0,0,1,0,0,'1','','_self','','middle','','','../..@imcmsimageurl@/en/helpimages/Login-ej-e-post.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (252,0,0,1,0,0,'1','','_self','','top','','','en/helpimages/Losen-via-e-post.GIF','')
+values (252,0,0,1,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Losen-via-e-post.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (253,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Include.GIF','')
+values (253,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Include.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (254,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/login.GIF','')
+values (254,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/login.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (255,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Knappar3.GIF','')
+values (255,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Knappar3.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (256,0,0,1,0,0,'1','','_self','','top','','','en/helpimages/Konf-admin-anvandare.GIF','')
+values (256,0,0,1,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konf-admin-anvandare.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (257,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Konf-admin-anvandardata.GIF','')
+values (257,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konf-admin-anvandardata.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (258,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Konf-bytmallset-varning1.GIF','')
+values (258,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konf-bytmallset-varning1.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (259,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Konf-admin-diskussion.GIF','')
+values (259,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konf-admin-diskussion.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (260,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Konf-admin-forum.GIF','')
+values (260,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konf-admin-forum.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (261,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Konf-admin-kommentar.GIF','')
+values (261,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konf-admin-kommentar.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (262,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Konf-admin-mallset.GIF','')
+values (262,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konf-admin-mallset.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (263,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Konf-admin-sjalvreg.GIF','')
+values (263,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konf-admin-sjalvreg.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (264,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Konf-ny-mallfil.GIF','')
+values (264,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konf-ny-mallfil.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (265,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Konferens-login.GIF','')
+values (265,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konferens-login.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (266,940,452,0,0,0,'1','','_self','','top','','','en/helpimages/Konf-confViewer1.gif','')
+values (266,940,452,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konf-confViewer1.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (267,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Konf-sjalvreg.GIF','')
+values (267,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konf-sjalvreg.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (268,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Konferens-data.GIF','')
+values (268,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konferens-data.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (269,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Konf-admin-ny-diskussion.GIF','')
+values (269,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konf-admin-ny-diskussion.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (270,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Konf-admin-ny-kommentar.GIF','')
+values (270,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Konf-admin-ny-kommentar.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (271,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-lagg-till-anvandare.GIF','')
+values (271,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-lagg-till-anvandare.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (272,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Lagg-till-bild-m-bild.GIF','')
+values (272,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Lagg-till-bild-m-bild.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (273,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Bild-Browse.GIF','')
+values (273,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Bild-Browse.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (274,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Valj-fil.GIF','')
+values (274,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Valj-fil.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (274,0,0,0,0,0,'2','','_self','','top','','','en/helpimages/Valj-filtyp.GIF','')
+values (274,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Valj-filtyp.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (275,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Lagg-till-dokument2.GIF','')
+values (275,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Lagg-till-dokument2.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (276,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/HTML-kod.GIF','')
+values (276,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/HTML-kod.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (277,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Lagg-till-dokument.GIF','')
+values (277,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Lagg-till-dokument.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (278,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Andra-Text1.GIF','')
+values (278,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Andra-Text1.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (278,0,0,0,0,0,'2','','_self','','top','','','en/helpimages/Andra-text-html1.GIF','')
+values (278,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Andra-text-html1.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (279,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Lank-valj.GIF','')
+values (279,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Lank-valj.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (279,0,0,0,0,0,'2','','_self','','top','','','en/helpimages/Lank-Arkivera.GIF','')
+values (279,0,0,0,0,0,'2','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Lank-Arkivera.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (280,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Lank-fil.GIF','')
+values (280,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Lank-fil.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (281,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Lank-URL.GIF','')
+values (281,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Lank-URL.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (282,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/NyURL.GIF','')
+values (282,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/NyURL.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (283,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Losen-felaktigt.GIF','')
+values (283,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Losen-felaktigt.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (284,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Rattigheter.GIF','')
+values (284,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Rattigheter.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (285,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-ta-bort-dok.GIF','')
+values (285,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-ta-bort-dok.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (286,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-ta-bort-dok-varning.GIF','')
+values (286,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-ta-bort-dok-varning.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (287,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/utseende3.GIF','')
+values (287,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/utseende3.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (288,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-ta-bort-roll-varning.GIF','')
+values (288,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Admin-ta-bort-roll-varning.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (289,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-roller-huvudsida.GIF','')
+values (289,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Admin-roller-huvudsida.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (290,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Lagg-till-dokument.GIF','')
+values (290,0,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/Lagg-till-dokument.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (291,238,134,0,0,0,'1','','_self','','top','','','se/helpimages/Index-val.gif','')
+values (291,238,134,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Index-val.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (292,375,0,0,0,0,'1','','_self','','top','','','se/helpimages/Index-ny.gif','')
+values (292,375,0,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Index-ny.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (293,236,140,0,0,0,'1','','_self','','top','','','se/helpimages/Index-tabort.gif','')
+values (293,236,140,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Index-tabort.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (294,348,216,0,0,0,'1','','_self','','top','','','se/helpimages/Index-tabort_varning.gif','')
+values (294,348,216,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Index-tabort_varning.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (295,348,145,0,0,0,'1','','_self','','top','','','se/helpimages/Index-byt-namn.gif','')
+values (295,348,145,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/se/helpimages/Index-byt-namn.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (296,430,157,0,0,0,'1','','_self','','top','','','en/helpimages/AdminQues.gif','')
+values (296,430,157,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/AdminQues.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (297,435,136,0,0,0,'1','','_self','','top','','','en/helpimages/AdminRandomTexts.gif','')
+values (297,435,136,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/AdminRandomTexts.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (298,358,434,0,0,0,'1','','_self','','top','','','en/helpimages/AdminQuestionsFile.gif','')
+values (298,358,434,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/AdminQuestionsFile.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (299,549,414,0,0,0,'1','','_self','','top','','','en/helpimages/AdminRandomTextsFile.gif','')
+values (299,549,414,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/AdminRandomTextsFile.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (300,358,179,0,0,0,'1','','_self','','top','','','en/helpimages/ShowResults.gif','')
+values (300,358,179,0,0,0,'1','','_self','','top','','','../..@imcmsimageurl@/en/helpimages/ShowResults.gif','')
  
 -- now insert all data in texts 
 INSERT INTO texts( meta_id, name, text, type )
@@ -1682,10 +1682,10 @@ INSERT INTO texts( meta_id, name, text, type )
                   upp genom att anv&auml;nda "Browse/S&ouml;k" (namnet beror
                   p&aring; vilket spr&aring;k din webbl&auml;sare anv&auml;nder).</p>
                   <p align="left"> Skriv in det namn du vill att formatmallen
-                  skall ha. Observera att mallnamnet inte får innehålla å, ä eller ö. En <img border="0" src="/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                  skall ha. Observera att mallnamnet inte får innehålla å, ä eller ö. En <img border="0" src="@imcmsimageurl@/se/helpimages/Admin-4.GIF" width="13" height="14">
                   vid <i>"Skriv &ouml;ver existerande" </i> g&ouml;r att om en
                   formatmall med det namnet redan finns, skrivs den &ouml;ver. S&auml;tt
-                  inte <img border="0" src="/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                  inte <img border="0" src="@imcmsimageurl@/se/helpimages/Admin-4.GIF" width="13" height="14">
                   om du inte &auml;r riktigt s&auml;ker p&aring; att du verkligen skall
                   skriva &ouml;ver den befintliga mallen.</p>
                   <p align="left"> Markera i rutan till h&ouml;ger den/de
@@ -1878,12 +1878,12 @@ INSERT INTO texts( meta_id, name, text, type )
       <td>
                 <p align="left">Skriv in namnet p&aring; den roll som skall l&auml;ggas
                 till. </p>
-                <p align="left">Genom att s&auml;tta en <img border="0" src="/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                <p align="left">Genom att s&auml;tta en <img border="0" src="@imcmsimageurl@/se/helpimages/Admin-4.GIF" width="13" height="14">
                 vid <i>"R&auml;tt att f&aring; l&ouml;senord per mail"</i> f&aring;r en
                 anv&auml;ndare som tillh&ouml;r rollen m&ouml;jlighet att f&aring; sitt l&ouml;senord
                 s&auml;nt till sig per mail om han/hon gl&ouml;mt bort det.
                 (Best&auml;llningen av l&ouml;senordet g&ouml;rs p&aring; inloggningssidan).</p>
-                <p align="left">Genom att s&auml;tta en <img border="0" src="/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                <p align="left">Genom att s&auml;tta en <img border="0" src="@imcmsimageurl@/se/helpimages/Admin-4.GIF" width="13" height="14">
                 vid <i>"Sj&auml;lvregistreringsr&auml;tt i konferens"</i> f&aring;r
                 en anv&auml;ndare som tillh&ouml;r rollen r&auml;tt att registrera sig
                 sj&auml;lv f&ouml;r att kunna delta i en konferens. OBS att Konferens
@@ -2055,7 +2055,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <table border="0" width="100%">
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
-        vid s&ouml;kning. En <imgborder="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        vid s&ouml;kning. En <imgborder="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -2073,7 +2073,7 @@ INSERT INTO texts( meta_id, name, text, type )
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som anges. En 
-<img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14"> i
+<img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14"> i
         rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
@@ -2489,7 +2489,7 @@ INSERT INTO texts( meta_id, name, text, type )
       <td>
 <p align="center">H&auml;r v&auml;ljs vilken typ av diagram som skall skapas.</p>
 <blockquote>
-                <p align="left">V&auml;lj diagramtyp: Klicka p&aring; <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
+                <p align="left">V&auml;lj diagramtyp: Klicka p&aring; <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">
                 f&ouml;r att kunna markera den diagramtyp du vill ha. De olika
                 alternativen visas p&aring; bildens nedersta del. Klicka sedan p&aring;
                 "Skapa nytt diagram".</p>
@@ -2571,12 +2571,12 @@ width="100%" height="19"><b>Delta x (x- och y-axel): </b>Autogenereras
   </tr>
   <tr>
     <td width="100%" height="19"><b>Ta bort rad: </b>Tar bort en rad. Vilken rad
-      som skall tas bort v&auml;ljer man i rullgardingsmenyn <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">,
+      som skall tas bort v&auml;ljer man i rullgardingsmenyn <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardingsmenyn sl&auml;pps tas raden bort. </td>
   </tr>
   <tr>
     <td width="100%" height="19"><b>Ta bort kolumn: </b> Tar bort en
-      kolumn. Vilken kolumn som skall tas bort v&auml;ljer man i rullgardingsmenyn <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">,
+      kolumn. Vilken kolumn som skall tas bort v&auml;ljer man i rullgardingsmenyn <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardingsmenyn sl&auml;pps tas kolumnen bort. </td>
   </tr>
   <tr>
@@ -2627,12 +2627,12 @@ INSERT INTO texts( meta_id, name, text, type )
   </tr>
   <tr>
     <td width="100%" height="19"><b>Ta bort rad: </b>Tar bort en rad. Vilken rad
-      som skall tas bort v&auml;ljer man i rullgardinsmenyn <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">,
+      som skall tas bort v&auml;ljer man i rullgardinsmenyn <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardinsmenyn sl&auml;pps tas raden bort. </td>
   </tr>
   <tr>
     <td width="100%" height="19"><b>Ta bort kolumn: </b> Tar bort en kolumn.
-      Vilken kolumn som skall tas bort v&auml;ljer man i rullgardinsmenyn <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">,
+      Vilken kolumn som skall tas bort v&auml;ljer man i rullgardinsmenyn <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardinsmenyn sl&auml;pps tas kolumnen bort. </td>
   </tr>
   <tr>
@@ -2918,8 +2918,8 @@ INSERT INTO texts( meta_id, name, text, type )
   <center>
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
-      <td><i>Expertanv&auml;ndare:</i> Genom att s&auml;tta en <img border="0" src="/images/se/helpimages/Konf-a1.GIF" width="13" height="14">
-        i rutan efter Expertanv&auml;ndare kommer det att visas en&nbsp; <img border="0" src="/images/se/helpimages/Konf-a2.GIF" width="12" height="16">&nbsp;
+      <td><i>Expertanv&auml;ndare:</i> Genom att s&auml;tta en <img border="0" src="@imcmsimageurl@/se/helpimages/Konf-a1.GIF" width="13" height="14">
+        i rutan efter Expertanv&auml;ndare kommer det att visas en&nbsp; <img border="0" src="@imcmsimageurl@/se/helpimages/Konf-a2.GIF" width="12" height="16">&nbsp;
         framf&ouml;r rubriken i de inl&auml;gg
         som anv&auml;ndaren g&ouml;r. Detta visar att anv&auml;ndaren &auml;r specialist i
         &auml;mnet. </td>
@@ -2948,7 +2948,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <center>
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
-      <td>F&ouml;r att ta bort en diskussion: <img border="0" src="/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
+      <td>F&ouml;r att ta bort en diskussion: <img border="0" src="@imcmsimageurl@/se/helpimages/Konf-a3.GIF" width="13" height="14">
         f&ouml;r den diskussion som du vill ta bort och klicka sedan p&aring; "TA BORT".
         <p>F&ouml;r att l&auml;mna administrationsl&auml;get: klicka p&aring; "Avsluta admin".</td>
     </tr>
@@ -2981,7 +2981,7 @@ INSERT INTO texts( meta_id, name, text, type )
         du vill &auml;ndra antalet diskussioner i genom att klicka p&aring; det i listan
         till h&ouml;ger. Det befintliga antalet diskussioner som visas i forumet
         visas inom parentes i listan. V&auml;lj sedan det&nbsp; nya antalet
-        diskussioner som skall visas genom att klicka p&aring; <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
+        diskussioner som skall visas genom att klicka p&aring; <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">
         och markera det antalet. Klicka sedan p&aring; "Uppdatera".</td>
     </tr>
   </table>
@@ -3001,7 +3001,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <center>
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
-      <td><b>Ta bort en kommentar:</b> <img border="0" src="/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
+      <td><b>Ta bort en kommentar:</b> <img border="0" src="@imcmsimageurl@/se/helpimages/Konf-a3.GIF" width="13" height="14">
         f&ouml;r den/de kommentarer du vill ta bort och klicka sedan p&aring; "TA
         BORT". En varningsbild visas d&auml;r du f&aring;r bekr&auml;fta att du
         verkligen vill ta bort inl&auml;gget. Inl&auml;gget kommer d&aring; att tas bort
@@ -3013,7 +3013,7 @@ INSERT INTO texts( meta_id, name, text, type )
         &auml;ndra den text som skall uppdateras och markera inl&auml;gget genom att
 
 
- <img border="0" src="/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
+ <img border="0" src="@imcmsimageurl@/se/helpimages/Konf-a3.GIF" width="13" height="14">
         f&ouml;r det. Klicka sedan p&aring; "SPARA OM".</p>
         <p>F&ouml;r att &aring;terg&aring; till anv&auml;ndarl&auml;ge, klicka p&aring; "Avsluta admin".</td>
     </tr>
@@ -3140,12 +3140,12 @@ INSERT INTO texts( meta_id, name, text, type )
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
       <td>Varje konferens har minst ett forum d&auml;r olika diskussionen p&aring;g&aring;r.
-        V&auml;lj vilket forum du vill genom att klicka p&aring; <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
+        V&auml;lj vilket forum du vill genom att klicka p&aring; <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">
         under rubriken <i>V&auml;lj forum, </i>markera forumet och klicka p&aring;
         "V&auml;lj". De diskussioner som visas i f&ouml;nstrets v&auml;nstra del &auml;r
         rubrikerna till de f&ouml;rsta inl&auml;ggen som skrivits i respektive
         diskussion. F&ouml;r att leta bland de diskussioner som inte visas anv&auml;nds
-        knapparna "Tidigare inl&auml;gg" och "Senare inl&auml;gg. Om <img border="0" src="/images/se/helpimages/Konf-k4.GIF" width="21" height="15">&nbsp;
+        knapparna "Tidigare inl&auml;gg" och "Senare inl&auml;gg. Om <img border="0" src="@imcmsimageurl@/se/helpimages/Konf-k4.GIF" width="21" height="15">&nbsp;
         (Ny-symbolen) visas framf&ouml;r en diskussion s&aring; inneb&auml;r det att antingen
         &auml;r detta en ny diskussion eller s&aring; har de
 
@@ -3154,7 +3154,7 @@ t tillkommit nya inl&auml;gg
         sedan du sist var inloggad i konferensen. F&ouml;r att visa de inl&auml;gg som
         tillkommit sedan du sist var inloggad, klicka p&aring; "Uppdatera".
         <p>Genom att klicka p&aring; diskussionsrubriken visas alla inl&auml;gg i
-        diskussionen i f&ouml;nstrets h&ouml;gra del. Om <img border="0" src="/images/se/helpimages/Konf-k3.GIF" width="14" height="16">
+        diskussionen i f&ouml;nstrets h&ouml;gra del. Om <img border="0" src="@imcmsimageurl@/se/helpimages/Konf-k3.GIF" width="14" height="16">
         (specialist-symbolen) visas framf&ouml;r rubriken inneb&auml;r det att inl&auml;gget
         skrivits av en anv&auml;ndare som i den h&auml;r konferensen &auml;r n&aring;gon form av
         specialist. Efter den eventuella "specialistsymbolen" f&ouml;ljer
@@ -3311,15 +3311,15 @@ INSERT INTO texts( meta_id, name, text, type )
                     telefonnummer - ange landskod (inget + framf&ouml;r), riktnr och
                     telefonnr.&nbsp; Klicka sedan p&aring; OK. F&ouml;r att ta bort eller
                     &auml;ndra ett telefonnr: bl&auml;ddra fram det telefonnr som skall
-                    &auml;ndras/tas bort genom att klicka p&aring; <img border="0" src="/images/se/helpimages/Pil.GIF" width="17" height="22">.
+                    &auml;ndras/tas bort genom att klicka p&aring; <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="17" height="22">.
                     N&auml;r telefonnr &auml;r markerat - klicka p&aring; den knapp som
                     g&auml;ller f&ouml;r det du vill g&ouml;ra. Om "&Auml;ndra" &auml;r
                     valet, kommer telefonnr att visas i rutorna och sedan kan
                     man &auml;ndra det som skall &auml;ndras och till sist klicka p&aring;
                     "OK". </li><br><br>
                   <li>
-                    <p align="left"><i> Aktiverad - </i> en <img border="0" src="/images/se/helpimages/Lagg-t1.GIF" width="13" height="14">
-                    g&ouml;r att anv&auml;ndaren &auml;r aktiverad och kan logga in. <img border="0" src="/images/se/helpimages/Lagg-t2.GIF" width="13" height="14">
+                    <p align="left"><i> Aktiverad - </i> en <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t1.GIF" width="13" height="14">
+                    g&ouml;r att anv&auml;ndaren &auml;r aktiverad och kan logga in. <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t2.GIF" width="13" height="14">
                     kan tas bort om anv&auml;ndaren inte l&auml;ngre skall kunna  logga
                     in i systemet.</li><br><br>
                   <li>
@@ -3420,7 +3420,7 @@ INSERT INTO texts( meta_id, name, text, type )
           <tr>
             <td width="100%"><b> N&auml;sta textf&auml;lts placering: </b> H&auml;r v&auml;ljs var
               texten kring bilden kommer att hamna. OBS att det beror p&aring;
-              utseendemallen om dessa val fungerar eller ej. Klicka p&aring;<b> <img border="0" src="/images/se/helpimages/Lagg-t3.GIF">
+              utseendemallen om dessa val fungerar eller ej. Klicka p&aring;<b> <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t3.GIF">
               </b> f&ouml;r att v&auml;lja alternativ.
               <ul>
                 <li><i> Ingen: </i> Textens placering styrs av webbl&auml;sarens
@@ -3470,7 +3470,7 @@ INSERT INTO texts( meta_id, name, text, type )
           </tr>
           <tr>
             <td width="100%"><b> L&auml;nk &ouml;ppnas i: </b> H&auml;r v&auml;ljs i vilket
-              f&ouml;nster/frame l&auml;nken skall &ouml;ppnas. Klicka p&aring;<b> <img border="0" src="/images/se/helpimages/Lagg-t3.GIF">
+              f&ouml;nster/frame l&auml;nken skall &ouml;ppnas. Klicka p&aring;<b> <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t3.GIF">
               </b> f&ouml;r att v&auml;lja alternativ.
               <ul>
                 <li><i> Aktuellt f&ouml;nster: </i>&Ouml;ppnar sidan som bilden l&auml;nkar
@@ -3580,7 +3580,7 @@ INSERT INTO texts( meta_id, name, text, type )
 
 
  tr&auml;ff
-        vid s&ouml;kning. En <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        vid s&ouml;kning. En <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -3599,7 +3599,7 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tas
  bort vid det datum och klockslag som
-        anges. En <img border="0" src="/images/se/helpimages/Lagg-t5.GIF" width="13" height="14"> i
+        anges. En <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t5.GIF" width="13" height="14"> i
         rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
@@ -3675,7 +3675,7 @@ INSERT INTO texts( meta_id, name, text, type )
 
 
 r&auml;ff
-        vid s&ouml;kning. En <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        vid s&ouml;kning. En <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -3693,7 +3693,7 @@ r&auml;ff
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som
-        anges. En <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        anges. En <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
@@ -3766,7 +3766,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
       <td>
-<p align="center">Klicka p&aring; <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
+<p align="center">Klicka p&aring; <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">
 f&ouml;r att f&aring; se hela listan p&aring; vilka olika typer av l&auml;nkar det g&aring;r att l&auml;gga
 till.</p>
 <div align="center">
@@ -3823,7 +3823,7 @@ ter">Administrera befintliga l&auml;nkar</h2>
 INSERT INTO texts( meta_id, name, text, type )
        values(79,4,'<p align="center">&nbsp;</p>
         <blockquote>
-            <p align="left">Genom att <img border="0" src="/images/se/helpimages/Lank.h6.GIF" width="13" height="14">
+            <p align="left">Genom att <img border="0" src="@imcmsimageurl@/se/helpimages/Lank.h6.GIF" width="13" height="14">
             f&ouml;r en l&auml;nk kan den tas bort, arkiveras eller kopieras genom att klicka p&aring;
             respektive knapp. N&auml;r en l&auml;nk &auml;r arkiverad visas det genom att
             l&auml;nken &auml;r &ouml;verstruken (se bilden - Dokument 1). Arkiveringen kan
@@ -3880,7 +3880,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <table border="0" width="75%">
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
-        vid s&ouml;kning. En <img border="0" src="/images/se/helpimages/Lank-U1.GIF" width="13" height="14">
+        vid s&ouml;kning. En <img border="0" src="@imcmsimageurl@/se/helpimages/Lank-U1.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -3899,7 +3899,7 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att t
 as bort vid det datum och klockslag som
-        anges. En <img border="0" src="/images/se/helpimages/Lank-U1.GIF" width="13" height="14">
+        anges. En <img border="0" src="@imcmsimageurl@/se/helpimages/Lank-U1.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
@@ -3953,7 +3953,7 @@ INSERT INTO texts( meta_id, name, text, type )
         vid s&oum
 
 
-l;kning. En <img border="0" src="/images/se/helpimages/Lank-U1.GIF" width="13" height="14">
+l;kning. En <img border="0" src="@imcmsimageurl@/se/helpimages/Lank-U1.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -3971,7 +3971,7 @@ l;kning. En <img border="0" src="/images/se/helpimages/Lank-U1.GIF" width="13" h
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som
-        anges. En <img border="0" src="/images/se/helpimages/Lank-U1.GIF" width="13" height="14">
+        anges. En <img border="0" src="@imcmsimageurl@/se/helpimages/Lank-U1.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
@@ -4071,7 +4071,7 @@ sidan. </p>
 <table border="0" width="100%">
   <tr>
     <td width="100%"><b> Rubrik: </b> Visar dokumentets rubrik (l&auml;nktexten).
-      Genom att <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      Genom att <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
       f&ouml;r <i> Visa rubrik &auml;ven om anv&auml;ndaren &auml;r obeh&ouml;rig </i> till&aring;ts
       obeh&ouml;riga att se l&auml;nken men kan inte komma in p&aring; sj&auml;lva sidan.</td>
   </tr>
@@ -4080,7 +4080,7 @@ sidan. </p>
       av r&auml;ttighet p&aring; sidan. 
       <ul>
         <li><i> Ingen </i> betyder att l&auml;nken inte visas f&ouml;r rollen, om inte <i> Visa
-          rubrik &auml;ven om anv&auml;ndaren &auml;r obeh&ouml;rig </i>&auml;r <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">.
+          rubrik &auml;ven om anv&auml;ndaren &auml;r obeh&ouml;rig </i>&auml;r <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">.
         </li>
         <li><i> L
 
@@ -4116,7 +4116,7 @@ flyttas ned till <i> Roller
     <td width="100%"><b> Definiera beh&ouml;righet: </b> Genom att klicka p&aring;
       "Definiera" vid antingen <i> Begr&auml;nsad beh&ouml;righet 1 </i> eller <i> Begr&auml;nsad
       beh&ouml;righet 2 </i> f&aring;s den sida upp d&auml;r dessa r&auml;ttigheter kan &auml;ndras.
-      En <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      En <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
       betyder att Begr&auml;nsad 1 &auml;r mer priviligerad &auml;n Begr&auml;nsad 2 f&ouml;r den
       h&auml;r sidan och därmed kan &auml;ndra r
 &aum
@@ -4127,7 +4127,7 @@ l;ttigheter f&ouml;r Begr&auml;nsad 2.
   </tr>
   <tr>
     <td width="100%"><b> Skapad av: </b>(namnet p&aring; den anv&auml;ndare som skapat
-      sidan). Genom en <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      sidan). Genom en <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
       vid <i> Dela ut dokumentet </i> ges m&ouml;jlighet f&ouml;r andra anv&auml;ndare att
       l&auml;nka till sidan fr&aring;n "sina" dokument.</td>
   </tr>
@@ -4181,12 +4181,12 @@ INSERT INTO texts( meta_id, name, text, type )
     <tr>
       <td>
             <p align="left">Aktuell formatgrupp och mall visas. F&ouml;r att &auml;ndra
-            utseendet - klicka p&aring; <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
+            utseendet - klicka p&aring; <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">
             vid format-mallen. Om mallen som du vill ha ligger i en annan
-            formatgrupp m&aring;ste du f&ouml;rst klicka p&aring; <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
+            formatgrupp m&aring;ste du f&ouml;rst klicka p&aring; <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">
             vid formatgrupp, v&auml;lja ny formatgrupp och klicka p&aring; "&Auml;ndra
             grupp". De mallar som tillh&ouml;r den nu valda formatgruppen visas
-            vid klick p&aring; <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
+            vid klick p&aring; <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">
             vid formatmall. Markera formatmallen och klicka sedan p&aring;
             "Spara". F&ouml;r att se hur mallen ser ut, klicka p&aring;
             "Visa mall". OBS
@@ -4266,7 +4266,7 @@ INSERT INTO texts( meta_id, name, text, type )
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge t
 r&auml;ff
-        vid s&ouml;kning. En <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        vid s&ouml;kning. En <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -4285,7 +4285,7 @@ r&auml;ff
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tasbo
 rt vid det datum och klockslag som
-        anges. En <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        anges. En <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
@@ -5236,7 +5236,7 @@ INSERT INTO texts( meta_id, name, text, type )
                 <blockquote>
                   <p align="left">Find the design template you wish to upload by using the "Browse/Search" button (the name depends
                   on the language used by your web browser).</p>
-                  <p align="left"><i>Select name:</i> Enter the name for the template here. A <img border="0" src="/imcode/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                  <p align="left"><i>Select name:</i> Enter the name for the template here. A <img border="0" src="@imcmsimageurl@/se/helpimages/Admin-4.GIF" width="13" height="14">
                   by <i> "Overwrite existing file" </i> will overwrite any template of the same name in the system. Do not tick this box if you are unsure about deleting the existing template.</p>
                   <p align="left">Select which template directories should have access to this template from the select box to the right. This can be done any time, but a template must be assigned to at least one directory before it can be used.</p>
                   
@@ -5434,10 +5434,10 @@ INSERT INTO texts( meta_id, name, text, type )
     <tr>
       <td>
                 <p align="left"> Enter the name of the new role that is to be added. </p>
-                <p align="left"> By setting a <img border="0" src="/imcode/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                <p align="left"> By setting a <img border="0" src="@imcmsimageurl@/se/helpimages/Admin-4.GIF" width="13" height="14">
                 by <i>"Permission to get password by e-mail"</i>, the users with this role can receive their password by e-mail, provided they do not have another role prohibiting this right. 
                 (Ordering a password is done at the log-in page with the link "Forgotten your password?").</p>
-                <p align="left"> By setting a <img border="0" src="/imcode/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                <p align="left"> By setting a <img border="0" src="@imcmsimageurl@/se/helpimages/Admin-4.GIF" width="13" height="14">
                 by <i>"Self-register rights in conference"</i>, this role can be distributed to users who register themselves on a self-registery page (for example, to participate in an online conference). The role(s) that are given to s
 
 elf-registered users are determined by the conference administrator, who selects from a list of roles which permit self-registry.
@@ -5578,7 +5578,7 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100%"><b> Text:</b> Additional description shown by the link. (NB. This text is only displayed if the design template in use permits link texts). If you do not want any link description, leave this box blank.</td>
     </tr>
     <tr>
-      <td width="100%"><b> Image icon:</b> The path to the thumbnail image or icon symbol of the image to be displayed is entered here, e.g. "/images/picture1.gif". This image will already be loaded into the system. (NB. This image is only displayed if the design template in use permits link image icons). If you do not wish to have a small image by the link, leave this box blank.</td>
+      <td width="100%"><b> Image icon:</b> The path to the thumbnail image or icon symbol of the image to be displayed is entered here, e.g. "@imcmsimageurl@/picture1.gif". This image will already be loaded into the system. (NB. This image is only displayed if the design template in use permits link image icons). If you do not wish to have a small image by the link, leave this box blank.</td>
     </tr>
   </table>
   <h3 align="center"> Advanced </h3>
@@ -5587,7 +5587,7 @@ INSERT INTO texts( meta_id, name, text, type )
       <td w
 
 
-idth="100%"><b> Key words (for searches): </b> These are additional words or codes (which are not already found on the page) that will help find this page in a site search. Ticking <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+idth="100%"><b> Key words (for searches): </b> These are additional words or codes (which are not already found on the page) that will help find this page in a site search. Ticking <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         <i> Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
     <tr>
@@ -5603,7 +5603,7 @@ idth="100%"><b> Key words (for searches): </b> These are additional words or cod
   
  </tr>
     <tr>
-      <td width="100%"><b> To the archives: </b> A future time and date can be given as the date when this page is to be archived. The links to this page will be removed on the given date. Ticking <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      <td width="100%"><b> To the archives: </b> A future time and date can be given as the date when this page is to be archived. The links to this page will be removed on the given date. Ticking <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         <i> Archive now </i> means that the page will be archived immediately.</td>
     </tr>
     <tr>
@@ -5893,7 +5893,7 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100%"><b> Text:</b> Additional description shown by the link. (NB. This text is only displayed if the design template in use permits text links). If you do not want any description of the link, leave this box blank.</td>
     </tr>
     <tr>
-      <td width="100%"><b> Image icon:</b> Enter the path to the thumbnail image or icon symbol which is already loaded into the system, such as "/images/picture1.gif".  (NB. This image is only displayed if the design template in use permits link image icons). If you do not wish to have a small image by the link, leave this box blank.</td>
+      <td width="100%"><b> Image icon:</b> Enter the path to the thumbnail image or icon symbol which is already loaded into the system, such as "@imcmsimageurl@/picture1.gif".  (NB. This image is only displayed if the design template in use permits link image icons). If you do not wish to have a small image by the link, leave this box blank.</td>
     </tr>
   </table>
   <h3 align="center"> Advanced </h3>
@@ -5901,7 +5901,7 @@ INSERT INTO texts( meta_id, name, text, type )
     <tr>
       <td width="100%"><b> Key words (for searches): </b> These are additional words o
 
-r codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+r codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i> Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
     <tr>
@@ -5916,7 +5916,7 @@ r codes (which are not already found on the page) that will help find this page 
     <tr>
       <td width="100%"><b> To the
  a
-rchives: </b> A future time and date can be given for when this page is to be archived. The links to this page will be removed on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+rchives: </b> A future time and date can be given for when this page is to be archived. The links to this page will be removed on the given date. A <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i> Archive now </i> means that the page will be archived immediately.</td>
     </tr>
     <tr>
@@ -6011,7 +6011,7 @@ nteger, the text written in this field will not be displayed.</td>
     <td width="100%" height="19"><b>Add column: </b>Adds a new column to the table. The new column is added to the far right of the table. </td>
   </tr>
   <tr>
-    <td width="100%" height="19"><b>Delete row: </b>This removes a row. The row that is actually removed is determined in the drop-down menu. <img border="0" src="/imcode/images/se/helpimages/Pil.GIF" width="16" height="21">,
+    <td width="100%" height="19"><b>Delete row: </b>This removes a row. The row that is actually removed is determined in the drop-down menu. <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">,
       When the drop-down menu is released, the row is removed. </td>
   </tr>
   <tr>
@@ -6355,8 +6355,8 @@ INSERT INTO texts( meta_id, name, text, type )
   <center>
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
-      <td><i>Expert users:</i> By putting a <img border="0" src="/imcode/images/se/helpimages/Konf-a1.GIF" width="13" height="14">
-        in the Expert checkbox, the symbol <img border="0" src="/imcode/images/se/helpimages/Konf-a2.GIF" width="12" height="16">&nbsp;
+      <td><i>Expert users:</i> By putting a <img border="0" src="@imcmsimageurl@/se/helpimages/Konf-a1.GIF" width="13" height="14">
+        in the Expert checkbox, the symbol <img border="0" src="@imcmsimageurl@/se/helpimages/Konf-a2.GIF" width="12" height="16">&nbsp;
         will be placed in front of the headers of all the contributions made by this user. This shows that the user is a specialist in the subject matter. </td>
     </tr>
   </table>
@@ -6409,7 +6409,7 @@ INSERT INTO texts( meta_id, name, text, type )
         <p><i>Change name of a forum:</i> Select the forum from the list of forums on the right. Enter the new name in the field under <i>New name</i>, and click on "Change". A warning will appear asking you to confirm that you wish to make this name change.</p>
         <p><i>Number of discussions shown:</i> You can determine how many discussions should be shown at any one time in this forum. Select the forum from the list on the right. The current number of discussions allowed to be shown in this forum is displayed after t
 
-he forum in parentheses. Select the new number of discussions to be shown by clicking on <img border="0" src="/imcode/images/se/helpimages/Pil.GIF" width="16" height="21">
+he forum in parentheses. Select the new number of discussions to be shown by clicking on <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">
         and selecting the desired number. Then click on "Update".</td>
     </tr>
   </table>
@@ -6433,7 +6433,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <center>
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
-      <td><b>Remove a contribution:</b> <img border="0" src="/imcode/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
+      <td><b>Remove a contribution:</b> <img border="0" src="@imcmsimageurl@/se/helpimages/Konf-a3.GIF" width="13" height="14">
         Tick the checkbox(es) of the contribution(s) you wish to remove and then click the "Delete" button. You will get a warning asking if you really wish to remove the contribution. Once you confirm the removal, the contribution is deleted from the discussion. NB. the first contribution of a discussion (in other words, the contribution which initiated the discussion and its header) <b>CANNOT</b> be removed here. It is, however, possible to alter/edit the initial contribution, or you can remove the entire discussion on the Discussion Administration page. Note that when you remove a discussion, all of its contributions are also deleted.
         <p><b>Resave a contribution: </b>To alter an existing contribution, change the text as desired and tick the
 
@@ -6541,11 +6541,11 @@ INSERT INTO texts( meta_id, name, text, type )
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
       <td>Each conference has at least one forum where various discussions can take place.
-        Select the forum you wish to view from the drop-down box under the the header <i>Select forum</i>, and then click on "Select". Those discussions displayed in the windows´s left-hand side are the headers of the current discussions (more precisely, the header of the first contribution of each discussion).  To browse through the discussions, use the buttons "earlier discussions" and "later discussions". If <img border="0" src="/imcode/images/se/helpimages/Konf-k4.GIF" width="21" height="15">&nbsp;
+        Select the forum you wish to view from the drop-down box under the the header <i>Select forum</i>, and then click on "Select". Those discussions displayed in the windows´s left-hand side are the headers of the current discussions (more precisely, the header of the first contribution of each discussion).  To browse through the discussions, use the buttons "earlier discussions" and "later discussions". If <img border="0" src="@imcmsimageurl@/se/helpimages/Konf-k4.GIF" width="21" height="15">&nbsp;
         (NEW symbol) is shown before a discussion, this is either a new discussion or there is a new contribution in this dicussion since you last logged into the conference. To see the contributions made since your last visit, click on "Update".
         <p>By clicking on the header of a
 
- discussion, all the contributions in that discussion will be displayed on the window´s right-hand side. If <img border="0" src="/imcode/images/se/helpimages/Konf-k3.GIF" width="14" height="16">
+ discussion, all the contributions in that discussion will be displayed on the window´s right-hand side. If <img border="0" src="@imcmsimageurl@/se/helpimages/Konf-k3.GIF" width="14" height="16">
         &nbsp;(EXPERT symbol) is shown in front of the header, the author of this contribution is registered as a specialist. After the "specialist symbol", the contribution´s header, text, author and date created are displayed.</p>
         <p>You can control how the contributions are presented in your computer by clicking on 
         <i>"ascending" </i>or <i>"descending"</i>.
@@ -6686,12 +6686,12 @@ INSERT INTO texts( meta_id, name, text, type )
 
 
 
-/images/se/helpimages/Pil.GIF" width="17" height="22">.
+@imcmsimageurl@/se/helpimages/Pil.GIF" width="17" height="22">.
                     After the telephone number is selected, click on either "Edit" or "Delete". If you choose "Edit", the telephone no. will be displayed in the above boxes and you can then edit the number.  When finised, Click on
                     "OK". </li>
                   <li>
-                    <p align="left"><i> Activated - </i> a <img border="0" src="/imcode/images/se/helpimages/Lagg-t1.GIF" width="13" height="14">
-                    activates a user so that they can log in. <img border="0" src="/imcode/images/se/helpimages/Lagg-t2.GIF" width="13" height="14">
+                    <p align="left"><i> Activated - </i> a <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t1.GIF" width="13" height="14">
+                    activates a user so that they can log in. <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t2.GIF" width="13" height="14">
                     can be removed so that the user cannot log into the system but remains registered.</li>
                   <li>
                     <p align="left"><i> User type </i>- authenticated
@@ -6776,7 +6776,7 @@ re
  in pixels.</td>
           </tr>
           <tr>
-            <td width="100%"><b> Alignment of next text: </b> Here is where you select where the text following the image should begin. NB. The design template determines if this function is enabled on this page. Click on <b> <img border="0" src="/imcode/images/se/helpimages/Lagg-t3.GIF">
+            <td width="100%"><b> Alignment of next text: </b> Here is where you select where the text following the image should begin. NB. The design template determines if this function is enabled on this page. Click on <b> <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t3.GIF">
               </b> to select an alternative.
               <ul>
                 <li><i> None: </i> The placement of the text is determined by the visitor´s browser"s default setting.</li>
@@ -6823,7 +6823,7 @@ Alt image while loading: </b> Image shown while the main image is being loaded (
  the image should be clickable to a web site, enter the FULL URL web address here (do not begin just with "www", for example).</td>
           </tr>
           <tr>
-            <td width="100%"><b> Link shown in : </b> Here is where you can control how the page is displayed. Click on <b> <img border="0" src="/imcode/images/se/helpimages/Lagg-t3.GIF">
+            <td width="100%"><b> Link shown in : </b> Here is where you can control how the page is displayed. Click on <b> <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t3.GIF">
               </b> to select an alternative.
         <ul>
           <li><i> Current window:</i> Opens the page in the top-most window. NB. window, not frame. </li>
@@ -6913,7 +6913,7 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100%"><b>Text:</b> Additional description shown by the link. (NB. This text is only displayed if the design template in use permits text links). If you do not want any description of the link, leave this box blank.</td>
     </tr>
     <tr>
-      <td width="100%"><b>Image icon:</b> Enter the path to the thumbnail image or icon symbol that is already loaded into the system, such as "/images/picture1.gif".  (NB. This image is only displayed if the design template in use permits link image icons). If you do not wish to have a small image by the link, leave this box blank.</td>
+      <td width="100%"><b>Image icon:</b> Enter the path to the thumbnail image or icon symbol that is already loaded into the system, such as "@imcmsimageurl@/picture1.gif".  (NB. This image is only displayed if the design template in use permits link image icons). If you do not wish to have a small image by the link, leave this box blank.</td>
     </tr>
   </table>
   <h3 align="center">Advanced</h3>
@@ -6921,7 +6921,7 @@ INSERT INTO texts( meta_id, name, text, type )
     <tr>
       <td width="100%"><b>Key words (for searches): </b>These are additional words or codes (w
 
-hich are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+hich are not already found on the page) that will help find this page in a site search. A <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
     <tr>
@@ -6938,7 +6938,7 @@ hich are not already found on the page) that will help find this page in a site 
     <tr>
       <td width="100%"><b>To the archives: </b>
 A 
-future time and date can be given as the date when this page is to be archived. The links to this page will be removed on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+future time and date can be given as the date when this page is to be archived. The links to this page will be removed on the given date. A <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Archive now</i> means that the page will be archived immediately.</td>
     </tr>
     <tr>
@@ -6997,7 +6997,7 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100%"><b>Text:</b> Additional description shown by the link. (NB. This text is only displayed if the design template in use permits link texts). If you do not want any description of the link, leave this box blank.</td>
     </tr>
     <tr>
-      <td width="100%"><b>Image icon:</b> Enter the path to the thumbnail image or icon symbol which is already loaded into the system such as "/images/picture1.gif".  (NB. This image is only displayed if the design template in use permits link image icons). If you do not wish to have a small image by the link, leave this box blank.</td>
+      <td width="100%"><b>Image icon:</b> Enter the path to the thumbnail image or icon symbol which is already loaded into the system such as "@imcmsimageurl@/picture1.gif".  (NB. This image is only displayed if the design template in use permits link image icons). If you do not wish to have a small image by the link, leave this box blank.</td>
     </tr>
   </table>
   <h3 align="center">Advanced</h3>
@@ -7005,7 +7005,7 @@ INSERT INTO texts( meta_id, name, text, type )
     <tr>
       <td width="100%"><b>Key words (for searches): </b>These are additional words or codes (which 
 
-are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+are not already found on the page) that will help find this page in a site search. A <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
     <tr>
@@ -7024,7 +7024,7 @@ td
     <tr>
       <td width="100%"><b>To the archives: <
 /b
->A future time and date can be given as the date when this page is to be archived. The links to this page will be removed on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+>A future time and date can be given as the date when this page is to be archived. The links to this page will be removed on the given date. A <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Archive now</i> means that the page will be archived immediately.</td>
     </tr>
     <tr>
@@ -7084,7 +7084,7 @@ INSERT INTO texts( meta_id, name, text, type )
 INSERT INTO texts( meta_id, name, text, type )
        values(279,4,'<p align="center">&nbsp;</p>
         <blockquote>
-            <p align="left"> By setting a <img border="0" src="/imcode/images/se/helpimages/Lank.h6.GIF" width="13" height="14">
+            <p align="left"> By setting a <img border="0" src="@imcmsimageurl@/se/helpimages/Lank.h6.GIF" width="13" height="14">
             in the checkbox in front of the link, you can remove, archive or copy a link by clicking on the corresponding button. When a link is archived, it will be struck through (see picture - Page 1). This archiving can be changed through the page´s Admin button "Page info". To sort the links, numbers are used in front of the links. The numbering system is random and you may change any or all the numbers to sort. The highest number will always move to the top. Click
             on "Sort" to get it to re-sort according to the numbers you entered.&nbsp;</p>
             <p align="left"> When you click on the "copy" button,
@@ -7121,7 +7121,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
       <td>
-<p align="center"> Click on <img border="0" src="/imcode/images/se/helpimages/Pil.GIF" width="16" height="21">
+<p align="center"> Click on <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">
 to view all the types of pages/links that can be created </p>
 <div align="center">
 <table border="1" width="75%">
@@ -7184,7 +7184,7 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100%"><b> Text:</b> Additional description shown by the link. (NB. This text is only displayed if the design template in use permits link texts). If you do not want any description of the link, leave this box blank.</td>
     </tr>
     <tr>
-      <td width="100%"><b> Image icon:</b> Enter the path to the thumbnail image or icon symbol which is already loaded into the system, such as "/images/picture1.gif".  (NB.
+      <td width="100%"><b> Image icon:</b> Enter the path to the thumbnail image or icon symbol which is already loaded into the system, such as "@imcmsimageurl@/picture1.gif".  (NB.
         This image is only displayed if the design template in use permits link image icons). If you do not wish to have a small image by the link, leave this box blank.</td>
     </tr>
   </table>
@@ -7198,7 +7198,7 @@ INSERT INTO texts( meta_id, name, text, type )
 %"><b> Key words (for searches): </b> These are a
 
 
-dditional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+dditional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i> Block searches from finding this page </i> prevents the page from ever appearing in local site searches.
     </tr>
     <tr>
@@ -7217,7 +7217,7 @@ dditional words or codes (which are not already found on the page) that will hel
       <
 td
  w
-idth="100%"><b> To the archives: </b> You can allocate a  future time and date for when this page is to be archived. The links to this page will be removed on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+idth="100%"><b> To the archives: </b> You can allocate a  future time and date for when this page is to be archived. The links to this page will be removed on the given date. A <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i> Archive now </i> means that the page will be archived immediately.</td>
     </tr>
     <tr>
@@ -7260,7 +7260,7 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100%"><b>Text:</b> Additional description shown by the link. (NB. This text is only displayed if the design template in use permits link texts). If you do not want any description of the link, leave this box blank.</td>
     </tr>
     <tr>
-      <td width="100%"><b>Image icon:</b> Enter the path to the thumbnail image or icon symbol which is already loaded into the system such as "/images/picture1.gif".  (NB. This image is only displayed if the design template in use permits link image icons). If you do not wish to have a small image by the link, leave this box blank.</td>
+      <td width="100%"><b>Image icon:</b> Enter the path to the thumbnail image or icon symbol which is already loaded into the system such as "@imcmsimageurl@/picture1.gif".  (NB. This image is only displayed if the design template in use permits link image icons). If you do not wish to have a small image by the link, leave this box blank.</td>
     </tr>
   </table>
   <h3 align="center">Advanced</h3>
@@ -7268,7 +7268,7 @@ INSERT INTO texts( meta_id, name, text, type )
     <tr>
       <td width="100%"><b>Key words (for searches): </b>These are additional words or codes (w
 
-hich are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+hich are not already found on the page) that will help find this page in a site search. A <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
     <tr>
@@ -7287,7 +7287,7 @@ td
     <tr>
       <td width="100%"><b>To the archives: </
 b>
-A future time and date can be given as the date when this page is to be archived. The links to this page will be deleted on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+A future time and date can be given as the date when this page is to be archived. The links to this page will be deleted on the given date. A <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Archive now</i> means that the page will be archived immediately.</td>
     </tr>
     <tr>
@@ -7391,13 +7391,13 @@ INSERT INTO texts( meta_id, name, text, type )
 <table border="1" width="100%">
   <tr>
     <td width="100%"><b> Header: </b> The page title to be displayed (main link text).
-      By ticking <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      By ticking <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
       <i> Show page link to unauthorised users </i>, visitors without page authority are allowed to see the link but prevented from visiting the page.</td>
   </tr>
   <tr>
     <td width="100%"><b> Authority: </b> Displays the roles that have some level of authority on the page in question. 
       <ul>
-        <li><i> None </i> means that not even the link is seen by this role unless <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14"><i> Show page link to unauthorised users </i> is ticked. 
+        <li><i> None </i> means that not even the link is seen by this role unless <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14"><i> Show page link to unauthorised users </i> is ticked. 
         </li>
         <li><i> Read </i> means that users with this role can read everything on the page, but cannot make any change
 
@@ -7419,7 +7419,7 @@ ole authority table. A level of authority can be assigned there.</p>
     </td>
   </tr>
   <tr>
-    <td width="100%"><b> Define authority: </b> By clicking on "Define authority" either by <i> Dynamic Authority 1 </i> or <i> Dynamic Authority 2 </i>, a new settings page will appear where you can define in detail the authority to be given.  A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+    <td width="100%"><b> Define authority: </b> By clicking on "Define authority" either by <i> Dynamic Authority 1 </i> or <i> Dynamic Authority 2 </i>, a new settings page will appear where you can define in detail the authority to be given.  A <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
       means that Dynamic Authority 1 has more authority than Dynamic Authority 2 on this specific page.  This checkbox should be ticked if you wish to strongly differentiate the two dynamic levels of authority. This tick means that Dynamic Authority 1 is allowed to redefine the authority of dynamic authority 2 and change the roles assigned to the lower levels of the page.
       "Define for new sub-pages" means that you can define the authority configuration of future sub-pages created from this page and that this configuration can be different than those on this 
 page
@@ -7427,7 +7427,7 @@ page
 . Default settings for new sub-pages will otherwise be those found on this page. </td>
   </tr>
   <tr>
-    <td width="100%"><b> Created by: </b>(the name of the user that created this page). By ticking <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+    <td width="100%"><b> Created by: </b>(the name of the user that created this page). By ticking <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
 <i> Allow unauthorised local links to this page </i>, you can allow other site administrators who do not have authority on this page to link to it.</td>
   </tr>
 </table>
@@ -7479,7 +7479,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
       <td>
-            <p align="left"> The current template directory and template are listed. To change the template (appearance), select it from the template drop-down list. If the template you wish to use is in a different directory, select it form the template directory drop-down box and click on "Change directory". The templates within the directory can be seen by clicking on <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
+            <p align="left"> The current template directory and template are listed. To change the template (appearance), select it from the template drop-down list. If the template you wish to use is in a different directory, select it form the template directory drop-down box and click on "Change directory". The templates within the directory can be seen by clicking on <img border="0" src="@imcmsimageurl@/se/helpimages/Pil.GIF" width="16" height="21">
             by "templates". Select the desired template and then click on "Save". To see the template, click on "Preview template". NB. This works only if a model of the template (i.e. gif image from a screen dump) has been loaded.</p>
       </td>
     </tr>
@@ -7544,7 +7544,7 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100%"><b> Text:</b> Additional description shown by the link. (NB. This text is only displayed if the design template in use permits link texts). If you do not want any description of the link, leave this box blank.</td>
     </tr>
     <tr>
-      <td width="100%"><b> Image icon:</b> Enter the path to the thumbnail image or icon symbol which is already loaded into the system, such as "/images/picture1.gif".  (NB.
+      <td width="100%"><b> Image icon:</b> Enter the path to the thumbnail image or icon symbol which is already loaded into the system, such as "@imcmsimageurl@/picture1.gif".  (NB.
         This image is only displayed if the design template in use permits link image icons). If you do not wish to have a small image by the link, leave this box blank.</td>
     </tr>
   </table>
@@ -7558,7 +7558,7 @@ INSERT INTO texts( meta_id, name, text, type )
 %"><b> Key words (for searches): </b> These are a
 
 
-dditional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+dditional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i> Block searches from finding this page </i> prevents the page from ever appearing in local site searches.
     </tr>
     <tr>
@@ -7577,7 +7577,7 @@ dditional words or codes (which are not already found on the page) that will hel
       <
 td
  w
-idth="100%"><b> To the archives: </b> You can allocate a  future time and date for when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+idth="100%"><b> To the archives: </b> You can allocate a  future time and date for when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="@imcmsimageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i> Archive now </i> means that the page will be archived immediately.</td>
     </tr>
     <tr>

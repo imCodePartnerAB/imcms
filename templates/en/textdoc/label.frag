@@ -1,1 +1,1 @@
-<img src="@imageurl@/red.gif" border="0">#label#
+<img src="@imcmsimageurl@/red.gif" border="0">#label#

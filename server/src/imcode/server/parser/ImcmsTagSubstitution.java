@@ -3,6 +3,7 @@ package imcode.server.parser ;
 import java.io.* ;
 import java.util.* ;
 import java.net.* ;
+import javax.servlet.http.Cookie ;
 
 import org.apache.oro.text.regex.* ;
 import imcode.server.* ;
@@ -170,6 +171,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 										  documentRequest.getSessionId(),
 										  documentRequest.getUser(), included_meta_id, document) ;
 		    includedDocumentRequest.setUserAgent(documentRequest.getUserAgent()) ;
+		    includedDocumentRequest.setContextPath(documentRequest.getContextPath()) ;
 		    String documentStr = textDocParser.parsePage(includedDocumentRequest,-1,includeLevel-1,paramsToParse) ;
 		    documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
 		    documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
@@ -187,6 +189,9 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	} else if (null != (attributevalue = attributes.getProperty("url"))) { // If we have an attribute of the form url="url:url"
 	    try {
 		String urlStr = attributevalue ;
+		if ( urlStr.startsWith("/") ){  // lets add hostname if we got a relative path 
+			urlStr = "http://" + documentRequest.getHostName() + urlStr;
+		}
 		URL url = new URL(urlStr) ;
 		String urlProtocol = url.getProtocol() ;
 		if ("file".equalsIgnoreCase(urlProtocol)) { // Make sure we don't have to defend against file://urls...
@@ -198,6 +203,19 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		if (null != attributes.getProperty("sendsessionid")) {
 		    urlConnection.setRequestProperty("Cookie","JSESSIONID="+sessionId) ;
 		}
+		if (null != attributes.getProperty("sendcookies")) {
+			Cookie[] requestCookies = documentRequest.getCookies() ;
+			for (int i = 0; requestCookies != null && i < requestCookies.length; ++i) {
+				Cookie theCookie = requestCookies[i] ;
+				if (!"JSESSIONID".equals(theCookie.getName())) {
+		    		urlConnection.setRequestProperty("Cookie",theCookie.getName()+"="+theCookie.getValue()) ;
+				}
+			}
+		}
+		if (null != attributes.getProperty("sendmetaid")) {
+        	urlConnection.setRequestProperty("X-Meta-Id",""+document.getMetaId()) ;
+        }
+
 		InputStreamReader urlInput = new InputStreamReader(urlConnection.getInputStream()) ;
 		int charsRead = -1 ;
 		final int URL_BUFFER_LEN = 16384 ;
@@ -234,6 +252,8 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 									      documentRequest.getRemoteAddr(),
 									      documentRequest.getSessionId(),
 									      documentRequest.getUser(), included_meta_id,document) ;
+		includedDocumentRequest.setUserAgent(documentRequest.getUserAgent()) ;
+		includedDocumentRequest.setContextPath(documentRequest.getContextPath()) ;
 		String documentStr = textDocParser.parsePage(includedDocumentRequest,-1,includeLevel-1,paramsToParse) ;         ;
 		documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
 		documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
