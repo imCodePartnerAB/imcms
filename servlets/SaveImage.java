@@ -101,7 +101,21 @@ public class SaveImage extends HttpServlet {
 		
 // ****************************** Här börjar Mårtens lilla lekstuga
 		if(keepAspectRatio && (req.getParameter("ok") != null || req.getParameter("show_img") != null)) {
-		    int iHeight = 0 ;
+		    int oHeight = 0 ;
+		    try {
+			oHeight = Integer.parseInt(origHeight); // image height
+		    } catch ( NumberFormatException ex ) {
+			log("Failed to parse origHeight") ;
+		    }
+		    int oWidth = 0 ;
+		    try {
+			oWidth = Integer.parseInt(origWidth); // image width
+		    } catch ( NumberFormatException ex ) {
+			log("Failed to parse origHeight") ;
+		    }
+
+			
+			int iHeight = 0 ;
 		    try {
 			iHeight = Integer.parseInt(image_height); // form width
 		    } catch ( NumberFormatException ex ) {
@@ -116,32 +130,19 @@ public class SaveImage extends HttpServlet {
 
 		    int oldHeight = 0 ;
 		    try {
-			oldHeight = (sql.length>0)?Integer.parseInt(sql[3]):0; // database height
+			oldHeight = (sql.length>0)?Integer.parseInt(sql[3]):oHeight; // database height
 		    } catch ( NumberFormatException ex ) {
 			log("Failed to parse oldHeight") ;
 		    }
 		    int oldWidth = 0 ;
 		    try {
-			oldWidth = (sql.length>0)?Integer.parseInt(sql[2]):0; // database width
+			oldWidth = (sql.length>0)?Integer.parseInt(sql[2]):oWidth; // database width
 		    } catch ( NumberFormatException ex ) {
 			log("Failed to parse oldWidth") ;
 		    }
 
 		    //log("REQUESTED SIZE " + iWidth + "/" + iHeight);
-		    int oHeight = 0 ;
-		    try {
-			oHeight = Integer.parseInt(origHeight); // image height
-		    } catch ( NumberFormatException ex ) {
-			log("Failed to parse origHeight") ;
-		    }
-		    int oWidth = 0 ;
-		    try {
-			oWidth = Integer.parseInt(origWidth); // image width
-		    } catch ( NumberFormatException ex ) {
-			log("Failed to parse origHeight") ;
-		    }
-
-		    
+		    		    
 		    double asp_rat = ((double)oWidth/(double)oHeight);
 		    
 		    int heightDiff = Math.abs(iHeight - oldHeight);
