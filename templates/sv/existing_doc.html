@@ -4,31 +4,34 @@
 <TITLE>Admin</TITLE>
 </HEAD>
 <BODY  bgcolor="#FFFFFF">
+<form method="post" action="/servlet/GetExistingDoc">
+  <table cellpadding="2" cellspacing="0" align="center" border="1" width="631" height="1">
+    <tr bgcolor="#333366"> 
+      <td width="623" height="16"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><b>&nbsp;V&auml;lj 
+        befintligt dokument </b></font></td>
+    </tr>
+    <tr bgcolor="#333366"> 
+      <td width="623" height="16"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;MetaId&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2726</font> 
+      </td>
+    </tr>
+    <tr valign="middle"> 
+      <td bgcolor="#BABABA" width="623" height="52"> 
+        <p>&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Dokument 
+          med metaId</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+          <input type="TEXT" name="existing_meta_id" value="" size=10>
+          &nbsp;&nbsp;&nbsp; 
+          <input type=SUBMIT value="Lägg till" name="addExistingDocs">
+          <input type=RESET value="Rensa" name="RESET">
+          <input type=SUBMIT value="Avbryt" name="cancel">
+        </p>
+      </td>
+    </tr>
+  </table>
+</form>
 <FORM METHOD="post" ACTION="/servlet/GetExistingDoc">
-<CENTER>
-      <TABLE cellpadding="2" cellspacing="0" align="center" border="1" width="631" height="1">
-		<TR bgcolor="#333366"> 
-		  
-        <TD width="623" height="16"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><b>&nbsp;V&auml;lj 
-          befintligt dokument </b></font></TD>
-		</TR>
-		<TR bgcolor="#333366"> 
-		  <TD width="623" height="16"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;MetaId&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2726</font> 
-		  </TD>
-		</TR>
-		<TR valign="middle"> 
-		  <TD bgcolor="#BABABA" width="623" height="52"> 
-			<p>&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Dokument
-            med metaId</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="TEXT" name="existing_meta_id" value="" SIZE=10> &nbsp;&nbsp;&nbsp;
-            <INPUT TYPE=SUBMIT VALUE="Lägg till" NAME="ok"><INPUT TYPE=RESET VALUE="Rensa"><INPUT TYPE=SUBMIT VALUE="Avbryt" NAME="cancel"> 
-			</p>
-			</TD>
-		</TR>
-		</TABLE>
-		<BR><input type="hidden" name="meta_id_value" value=#meta_id#>
-			<input type="hidden" name="doc_meny_no" value=#doc_meny_no#>
-		
+  <input type="hidden" name="meta_id_value" value=#meta_id#>
+  <input type="hidden" name="doc_meny_no" value=#doc_meny_no#>
+  <CENTER>
     <TABLE cellpadding="2" cellspacing="0" align="center" border="1" width="631" height="1">
       <TR bgcolor="#333366" valign="middle"> 
         <TD bgcolor="#333366" width="623" height="26" colspan="2"> 
