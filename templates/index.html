@@ -1,5 +1,15 @@
 <HTML>
+<head>
 <TITLE>Login</TITLE>
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('@servleturl@/GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+</head>
 <BODY bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 <table width="743" border="0" cellspacing="0" cellpadding="0" height="100%">
       <tr> 
@@ -29,13 +39,10 @@
 			    <INPUT TYPE=PASSWORD NAME="passwd" VALUE="" SIZE=15>
         		</TD>
 		    </TR>
-		    <TR bgcolor="#bababa" valign="middle"> 
-		        <TD COLSPAN=2> 
-		          <CENTER>
-		            <INPUT TYPE=SUBMIT VALUE="  OK   ">
-		          </CENTER>
-			</TD>
-		    </TR>
+		    <TR bgcolor="#bababa" valign="middle">
+    			<td>&nbsp;</td>
+    			<TD><INPUT TYPE=SUBMIT VALUE="  OK   ">&nbsp; <a href="javascript:openHelp('54');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></TD>
+  			</TR>
 		</TABLE>
 	    </form>
 	    <br><br>
