@@ -39,17 +39,16 @@ function regExpTest(what,pattern) {
 }
 
 function setSize() {
-    if(isGecko) {
-        document.getElementById("sfile").style.width = 300;
+	if(isGecko) {
+		document.getElementById("sfile").style.width = 300;
 		document.getElementById("sname").style.width = 200;
-    }
-	else if (moz) {
+	} else if (isMoz) {
 		document.getElementById("sfile").style.width = 400;
 		document.getElementById("sname").style.width = 200;
 	}
 }
 
-if (moz) {
+if (isMoz) {
 	window.onload = setSize;
 }
 
