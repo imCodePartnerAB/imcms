@@ -15,6 +15,8 @@ Snarast
 - lägg in automatisk körning av testen vid buil i ant
 - upgradering av junit och ant
 - Gå igenom och ta bort alla stored procedures som inte används.
+- Rensa upp i cvs strukturen, ett källkodsträd.
+- Gå igenom alla FIXME och TODO
 
 Eventuellt
 - Testa SSL och LDAP

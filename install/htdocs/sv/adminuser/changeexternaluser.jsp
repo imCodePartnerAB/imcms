@@ -33,9 +33,6 @@
    String userLoginName = request.getParameter( WebAppConstants.USER_LOGIN_NAME );
    User user = userMapper.getUser( userLoginName );
 
-   out.print( request.getParameter( ACTION_CANCEL ) );
-   out.print( request.getParameter( ACTION_SAVE_USER ) );
-
    if ( buttonPressed(request, ACTION_CANCEL) ) {
       redirectToAdminUser(request,response) ;
       return ;
@@ -144,7 +141,7 @@
   </tr>
   <tr>
     <td>&nbsp;</td>
-    <td>Telefon, arbetet</td>
+    <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Telefon, arbetet</font></td>
     <td>&nbsp;</td>
     <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif" ><%=user.getWorkPhone()%>
       </font></td>
@@ -152,7 +149,7 @@
   </tr>
   <tr>
     <td>&nbsp;</td>
-    <td>Telefon, mobil</td>
+    <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Telefon, mobil</font></td>
     <td>&nbsp;</td>
     <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getMobilePhone()%>
       </font></td>
@@ -160,7 +157,7 @@
   </tr>
   <tr>
     <td>&nbsp;</td>
-    <td>Telefon, hem</td>
+      <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Telefon, hem</font></td>
     <td>&nbsp;</td>
     <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getHomePhone()%>&nbsp;
       </font></td>
@@ -212,11 +209,11 @@
   </tr>
   <tr>
     <td>&nbsp;</td>
-    <td><p><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Användarens 
+    <td><p><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Användarens
           Roller:</font></p>
-        <p><font size="2" face="Verdana, Arial, Helvetica, sans-serif">(Varning! 
-          Endast de roller som hanteras internt i Imcms blir varaktigt lagrade 
-          p&aring; anv&auml;ndaren. Roller som hanteras av det externa systemet 
+        <p><font size="2" face="Verdana, Arial, Helvetica, sans-serif">(Varning!
+          Endast de roller som hanteras internt i Imcms blir varaktigt lagrade
+          p&aring; anv&auml;ndaren. Roller som hanteras av det externa systemet
           uppdateras vid inloggning.)</font></p>
         </td>
     <td>&nbsp;</td>
