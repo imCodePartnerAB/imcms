@@ -1,52 +1,53 @@
-<HTML>
+<html>
 <head>
-<TITLE><? templates/sv/userprefs_login.htm/1 ?></TITLE>
+<title><? templates/sv/userprefs_login.htm/1 ?></title>
+
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
-<BODY bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<body onLoad="focusField(1, 'verifyUser')">
 
-    
-<table width="743" border="0" cellspacing="0" cellpadding="0" height="100%">
-      <tr> 
-        
-    <td valign=top align="center"><BR> 
-      <FORM ACTION="UserChangePrefs" METHOD="POST" name="login">
-        <TABLE BORDER="1" cellpadding="0" cellspacing="0" width="200">
-          <TR bgcolor="#333366"> 
-            <TD COLSPAN="2" align="center"> <font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="3"><? templates/sv/userprefs_login.htm/2 ?></font> </TD>
-          </TR>
- <TR bgcolor="#333366"> 
-        <TD COLSPAN="2" align="center"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2">
-            <? templates/sv/userprefs_login.htm/3 ?></font> 
-            </TD>
-          </TR>
-
-<TR>
-            <TD bgcolor="#bababa" valign="middle"> &nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/userprefs_login.htm/4 ?></font><b> 
-              </b> </TD>
-            <TD bgcolor="#bababa" valign="middle" align="center"> 
-              <INPUT TYPE="TEXT" NAME="login_name" VALUE="" SIZE="15">
-            </TD>
-      </TR>
-
-<TR>
-            <TD bgcolor="#bababa" valign="middle"> &nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/userprefs_login.htm/5 ?></font> 
-            </TD>
-            <TD bgcolor="#bababa" valign="middle" align="center"> 
-              <INPUT TYPE="PASSWORD" NAME="password" VALUE="" SIZE="15">
-            </TD>
-      </TR>
-
-      <TR bgcolor="#bababa" valign="middle"> 
-        <TD COLSPAN="2"> 
-          <CENTER>
-                <INPUT TYPE="SUBMIT" VALUE="  OK   " name="verifyUser">&nbsp; <a href="@documentationurl@/GetDoc?meta_id=54" target="_blank"><img src="$contextPath/imcms/$language/images/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/userprefs_login.htm/2001 ?>"></a></TD>
-          </CENTER>
-</TD></TR>
-</TABLE>
+#gui_outer_start()
+#gui_head( "<? templates/sv/userprefs_login.htm/1 ?>" )
+<table border="0" cellspacing="0" cellpadding="0">
+<form>
+<tr> 
+	<td><input type="button" class="imcmsFormBtn" name="back" value="<? global/back ?>" onClick="history.go(-1)"></td>
+	<td>&nbsp;</td>
+	<td><input type="button" class="imcmsFormBtn" value="<? global/help ?>" title="<? global/openthehelppage ?>" onClick="openHelpW(54)"></td>
+</tr>
 </form>
-</td>
-    <td width="25">&nbsp;</td>
-      </tr>
-    </table>
-</BODY></HTML>
+</table>
+#gui_mid()
+
+<table border="0" cellspacing="0" cellpadding="0" width="500">
+<form action="UserChangePrefs" method="POST" name="login">
+<tr> 
+	<td colspan="2">#gui_heading( "<? templates/sv/userprefs_login.htm/2 ?>" )</td>
+</tr>
+<tr> 
+	<td colspan="2"><? templates/sv/userprefs_login.htm/3 ?></td>
+</tr>
+<tr>
+	<td width="100">&nbsp;<? templates/sv/userprefs_login.htm/4 ?></td>
+	<td><input type="TEXT" name="login_name" value="" size="15"></td>
+</tr>
+<tr>
+	<td>&nbsp;<? templates/sv/userprefs_login.htm/5 ?> </td>
+	<td><input type="PASSWORD" name="password" value="" size="15"></td>
+</tr>
+<tr>
+	<td>#gui_hr( "blue" )</td>
+</tr>
+<tr> 
+	<td colspan="2" align="right"><input type="submit" class="imcmsFormBtn" value="  OK   " name="verifyUser"></td>
+</tr>
+</form>
+</table>
+#gui_bottom()
+#gui_outer_end()
+
+
+</body>
+</html>

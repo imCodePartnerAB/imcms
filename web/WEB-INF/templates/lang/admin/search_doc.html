@@ -1,15 +1,18 @@
-<HTML><HEAD><TITLE><? templates/sv/search_doc.html/1 ?></TITLE>
-<SCRIPT language=VBScript>
-<!-- Lite Kod
+<html>
+<head>
+<title><? templates/sv/search_doc.html/1 ?></title>
+
+<script language="vbscript">
+<!--
 Sub Document_onKeyPress()
 if (window.event.keyCode = 13) Then
 call IEkeyDown(13)
 End If
 End Sub
-// Som slutar här -->
-</SCRIPT>
 
-<SCRIPT language=JavaScript>
+</script>
+
+<script language="javascript">
 <!-- Original:  Ronnie T. Moore -->
 <!-- Web Site:  The JavaScript Source -->
 
@@ -47,74 +50,71 @@ alert("Submit");
 }
 
 
-if (window.document.captureEvents!=null) 
+if (window.document.captureEvents!="null)" 
  window.document.captureEvents(Event.KEYPRESS);
  window.document.onkeypress = keyDown;
 
 //  End -->
-</SCRIPT>
-</HEAD>
+</script>
+</head>
 <body bgcolor="#FFFFFF" link="#333399" vlink="#333399" alink="#999999" leftmargin="15" topmargin="0" marginwidth="15" marginheight="0">
-<FORM METHOD="POST" ACTION="SearchDocuments" name="form1">
-  <table border="0" width="500" cellpadding="2" cellspacing="0">
-    <tr> 
-    <td><img src="$contextPath/imcms/$language/images/admin/sok.gif" width="500" height="27" align="top"></td>
-  </tr>
-  <tr> 
-    <td>&nbsp;</td>
-  </tr>
+
+<table border="0" width="500" cellpadding="2" cellspacing="0">
+<form method="POST" action="SearchDocuments" name="form1">
+<input type="HIDDEN" name="start" value="#START#">
+<tr> 
+	<td><img src="$contextPath/imcms/$language/images/admin/sok.gif" width="500" height="27" align="top"></td>
+</tr>
 </table>
-  <table border="1" width="450" cellpadding="2" cellspacing="0">
-    <tr bgcolor="#333366"> 
-      <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><? templates/sv/search_doc.html/2 ?></font></b> </td>
-    </tr>
-    <tr bgcolor="#BABABA" valign="middle"> 
-      <td height="46"> 
-        <input type="text" name="question_field" size="65">
-        <input type="submit" name="search" value="<? templates/sv/search_doc.html/2001 ?>">
-        <BR>
-      </td>
-    </tr>
-    <tr bgcolor="#BABABA" valign="middle"> 
-      <td> 
-        <input type="radio" name="search_prep" value="or">
-        <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/search_doc.html/3 ?>
-        <input type="HIDDEN" name="start" value="#START#">
-        </font></td>
-    </tr>
-    <tr bgcolor="#BABABA" valign="middle"> 
-      <td> 
-        <input type="radio" name="search_prep" value="and" checked>
-        <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/search_doc.html/4 ?></font></td>
-    </tr>
-    <tr bgcolor="#BABABA" valign="middle"> 
-      <td> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-        <input type="checkbox" name="search_type" value="atc_icd10">
-        <? templates/sv/search_doc.html/5 ?></font></td>
-    </tr>
-    <tr bgcolor="#BABABA" valign="middle"> 
-      <td> 
-        <input type="checkbox" name="string_match" value="match">
-        <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/search_doc.html/6 ?></font></td>
-    </tr>
-    <tr bgcolor="#BABABA" valign="middle"> 
-      <td> <BR> 
-        <select name="search_area" size="1">
-          <option value="all" selected><? templates/sv/search_doc.html/7 ?></option>
-          <option value="not_archived"><? templates/sv/search_doc.html/8 ?></option>
-          <option value="archived"><? templates/sv/search_doc.html/9 ?></option>
-        </select>
-        <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/search_doc.html/10 ?></font></td>
-    </tr>
-  </table>
-  <? templates/sv/search_doc.html/11 ?> 
-</FORM>
+<table border="1" width="450" cellpadding="2" cellspacing="0">
+<tr> 
+	<td><? templates/sv/search_doc.html/2 ?></td>
+</tr>
+<tr> 
+	<td height="46"> 
+	<input type="text" name="question_field" size="65">
+	<input type="submit" class="imcmsFormBtn" name="search" value="<? templates/sv/search_doc.html/2001 ?>">
+	<br></td>
+</tr>
+<tr> 
+	<td> 
+	<input type="radio" name="search_prep" value="or">
+	<? templates/sv/search_doc.html/3 ?></td>
+</tr>
+<tr> 
+	<td> 
+	<input type="radio" name="search_prep" value="and" checked>
+	<? templates/sv/search_doc.html/4 ?></td>
+</tr>
+<tr> 
+	<td>  
+	<input type="checkbox" name="search_type" value="atc_icd10">
+	<? templates/sv/search_doc.html/5 ?></td>
+</tr>
+<tr> 
+	<td> 
+	<input type="checkbox" name="string_match" value="match">
+	<? templates/sv/search_doc.html/6 ?></td>
+</tr>
+<tr> 
+	<td><br> 
+	<select name="search_area" size="1">
+		<option value="all" selected><? templates/sv/search_doc.html/7 ?></option>
+		<option value="not_archived"><? templates/sv/search_doc.html/8 ?></option>
+		<option value="archived"><? templates/sv/search_doc.html/9 ?></option>
+	</select>
+	<? templates/sv/search_doc.html/10 ?></td>
+</tr>
+</table>
+<? templates/sv/search_doc.html/11 ?> 
+</form>
+
   
-<SCRIPT language=JavaScript>
+<script language="javascript">
 <!--
 var alreadySubmitted = false;
-document.form1.elements[0].focus();
-//document.forms[0].elements[1].focus();
 //-->
-</SCRIPT>
-</BODY></HTML>
+</script>
+
+</body>
+</html>

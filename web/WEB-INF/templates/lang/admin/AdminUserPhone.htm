@@ -2,13 +2,11 @@
 <head>
 <title><? templates/sv/AdminUserPhone.htm/1 ?></title>
 
-
 <SCRIPT language=JavaScript>
 <!--
-
 function closeThisWindow() {
 	window.close();
-} //END FUNCTION CloseThisWindow
+}
 
 function confirmDeletetion(){
 	if(confirm("<? templates/sv/AdminUserPhone.htm/3000 ?>"))
@@ -29,61 +27,57 @@ function evalEditUser() {
 
 //-->
 </SCRIPT>
+
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+
 </head>
-<body bgcolor="#FFFFFF">
+<body onLoad="focusField(1, 'ADD_NEW_PHONE_PAGE')">
+
+#gui_outer_start()
+#gui_head( "<? templates/sv/AdminUserPhone.htm/1 ?>" )
+<table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="AdminUserPhones" name="argumentForm">
-  <table width="40%" border="0" cellspacing="0">
-	<tr bgcolor="#333366"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%"> 
-        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? templates/sv/AdminUserPhone.htm/2 ?> </font></b></div>
-      </td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%">
-        <input type="HIDDEN" name="CURR_USER_FIELD" value="#USER_ID#">
-      </td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminUserPhone.htm/3 ?></font></td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%"><font face="Arial, Helvetica, sans-serif" size="1"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminUserPhone.htm/4 ?>: #USER_NAME#</font></font> </td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">#ALL_USER_PHONES# 
-        </font></td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%" height="23">&nbsp; </td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%" height="26"> 
-        <input type="submit" name="ADD_NEW_PHONE_PAGE" value="<? templates/sv/AdminUserPhone.htm/2001 ?>">
-        <input type="submit" name="RESAVE_PHONES" value="<? templates/sv/AdminUserPhone.htm/2002 ?>">
-        <input type="submit" name="DELETE_PHONES" value="<? templates/sv/AdminUserPhone.htm/2003 ?>">
-        <input type="submit" name="CANCEL_PHONE" value="<? templates/sv/AdminUserPhone.htm/2004 ?>">
-      </td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%">&nbsp;</td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-  </table>
-  </form>
+<input type="HIDDEN" name="CURR_USER_FIELD" value="#USER_ID#">
+<tr> 
+	<td><input type="submit" class="imcmsFormBtn" name="CANCEL_PHONE" value="<? global/back ?>"></td>
+	<td>&nbsp;</td>
+	<td><input type="button" class="imcmsFormBtn" value="<? global/help ?>" title="<? global/openthehelppage ?>" onClick="openHelpW(2)"></td>
+</tr>
+</form>
+</table>
+#gui_mid()
+
+<table border="0" cellspacing="0" cellpadding="0" width="500">
+<form method="post" action="AdminUserPhones" name="argumentForm">
+<input type="HIDDEN" name="CURR_USER_FIELD" value="#USER_ID#">
+<tr>
+	<td>#gui_heading( "<? templates/sv/AdminUserPhone.htm/2 ?>" )</td>
+</tr>
+<tr>
+	<td><? templates/sv/AdminUserPhone.htm/3 ?></td>
+</tr>
+<tr>
+	<td><? templates/sv/AdminUserPhone.htm/4 ?>: #USER_NAME# </td>
+</tr>
+<tr>
+	<td>#ALL_USER_PHONES#</td>
+</tr>
+<tr>
+	<td>#gui_hr( "blue" )</td>
+</tr>
+<tr>
+	<td> 
+	<input type="submit" class="imcmsFormBtn" name="ADD_NEW_PHONE_PAGE" value="<? templates/sv/AdminUserPhone.htm/2001 ?>">
+	<input type="submit" class="imcmsFormBtn" name="RESAVE_PHONES" value="<? templates/sv/AdminUserPhone.htm/2002 ?>">
+	<input type="submit" class="imcmsFormBtn" name="DELETE_PHONES" value="<? templates/sv/AdminUserPhone.htm/2003 ?>">
+	<input type="submit" class="imcmsFormBtn" name="CANCEL_PHONE" value="<? templates/sv/AdminUserPhone.htm/2004 ?>"></td>
+</tr>
+</form>
+</table>
+#gui_bottom()
+#gui_outer_end()
+
+
 </body>
 </html>
