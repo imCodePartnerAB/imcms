@@ -47,7 +47,7 @@ fetch next from posCursor
 into @meta_id
 while @@fetch_status = 0
 begin
-	insert into fileupload_docs values (@meta_id, '', 'application/octet-stream', 0, '', 0)
+	insert into fileupload_docs values (@meta_id, 're-created-filedocument', '', 0, '', 0)
 	fetch next from posCursor
 	into @meta_id
 end
@@ -91,8 +91,9 @@ close posCursor
 deallocate posCursor
 
 
--- Delete all erroneous text-documents  ( missing in table text_docs )
+-- Delete all erroneous text-documents  ( missing in table text_docs and don't have any references in table texts )
 declare @meta_id int
+declare @rows int
 declare posCursor  Cursor scroll for
     select meta_id from meta where doc_type = 2 and
         meta_id not in (select meta_id from text_docs)
@@ -101,12 +102,16 @@ fetch next from posCursor
 into @meta_id
 while @@fetch_status = 0
 begin
-	exec documentdelete @meta_id
-	fetch next from posCursor
-	into @meta_id
+    set @rows= (select count(*) from texts where meta_id = @meta_id)
+    if @rows = 0
+    begin
+        exec documentdelete @meta_id
+    end
+    fetch next from posCursor into @meta_id
 end
 close posCursor
 deallocate posCursor
+
 
 
 -- Delete all erroneous browser-documents  ( missing in table browser_docs )
