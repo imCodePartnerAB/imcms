@@ -1721,19 +1721,18 @@ HTMLArea.prototype.execCommand = function(cmdID, UI, param) {
 	    case "cut":
 	    case "copy":
 	    case "paste":
-		try {
-			if (this.config.killWordOnPaste)
-				this._wordClean();
-			this._doc.execCommand(cmdID, UI, param);
-		} catch (e) {
-			if (HTMLArea.is_gecko) {
-				if (confirm("Unprivileged scripts cannot access Cut/Copy/Paste programatically " +
-					    "for security reasons.  Click OK to see a technical note at mozilla.org " +
-					    "which shows you how to allow a script to access the clipboard."))
-					window.open("http://mozilla.org/editor/midasdemo/securityprefs.html");
-			}
-		}
-		break;
+		    try {
+			    this._doc.execCommand(cmdID, UI, param);
+			    if (this.config.killWordOnPaste) this._wordClean();
+		    } catch (e) {
+			    if (HTMLArea.is_gecko) {
+			    	if (confirm("Unprivileged scripts cannot access Cut/Copy/Paste programatically " +
+				    	    "for security reasons.  Click OK to see a technical note at mozilla.org " +
+				    	    "which shows you how to allow a script to access the clipboard."))
+				    	window.open("http://mozilla.org/editor/midasdemo/securityprefs.html");
+			    }
+		    }
+		    break;
 	    case "lefttoright":
 	    case "righttoleft":
 		var dir = (cmdID == "righttoleft") ? "rtl" : "ltr";
