@@ -712,8 +712,8 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    props.setProperty("#childCreatedDate#",child_date_created) ;
 
 	    // Put the data in the proper tags.
-	    props.setProperty("#menuitemlink#", admin_start+"<a href="+href+">") ;
 	    props.setProperty("#/menuitemlink#", "</a>"+admin_stop) ;
+	    props.setProperty("#menuitemlink#", admin_start+"<a href="+href+">") ;
 	    props.setProperty("#menuitemheadline#", child_meta_headline) ;
 	    props.setProperty("#menuitemtext#", child_meta_text) ;
 	    props.setProperty("#menuitemdatecreated#", child_date_created) ;
@@ -5994,9 +5994,13 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	Parse doc replace variables with data
 	*/
 	public String  parseDoc(String htmlStr,java.util.Vector variables) {
-
+	    try {
 		String[] foo = new String[variables.size()] ;
 		return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
+	    } catch ( RuntimeException ex ) {
+		log.log(Log.ERROR,"parseDoc(String,Vector): RuntimeException", ex );
+		throw ex ;
+	    }
 	}
 
 
@@ -6004,9 +6008,14 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	Parse doc replace variables with data, uses two vectors
 	*/
 	public String  parseDoc(String htmlStr,java.util.Vector variables,java.util.Vector data) {
+	    try {
 		String[] foo = new String[variables.size()] ;
 		String[] bar = new String[data.size()] ;
 		return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo),(String[])data.toArray(bar)) ;
+	    } catch ( RuntimeException ex ) {
+		log.log(Log.ERROR,"parseDoc(String,Vector,Vector): RuntimeException", ex );
+		throw ex ;
+	    }
 	}
 
 
@@ -6014,6 +6023,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	Parse doc replace variables with data , use template
 	*/
 	public String parseDoc(java.util.Vector variables,String admin_template_name,
+			    
 		String lang_prefix) {
 		int v_start ;
 		String temp_str1 = "" ;
@@ -6043,16 +6053,20 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
 			//IMPORTANT!!!! - CLOSE THE STREAM!!!!!
 			br.close();
-		} catch(IOException e) {
-			this.updateLogs("An error occurred reading the file" + e );
-		}
 
-		if ( variables == null ) {
-			return htmlStr ;
-		}
+			if ( variables == null ) {
+			    return htmlStr ;
+			}
 
-		String[] foo = new String[variables.size()] ;
-		return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
+			String[] foo = new String[variables.size()] ;
+			return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
+		} catch ( RuntimeException e ) {
+			log.log(Log.ERROR,"parseDoc(Vector, String, String): RuntimeException", e );
+			throw e ;
+		} catch ( IOException e ) {
+			log.log(Log.ERROR,"parseDoc(Vector, String, String): IOException", e );
+			return e.getMessage() ;
+		}
 	}
 
 
