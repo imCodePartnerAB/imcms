@@ -1590,7 +1590,7 @@ public class AdminUserProps extends Administrator {
 
                 // Lets get this user usertype from DB if we don´t have got them from session.
                 if ( userType == null ) {
-                    userType = imcref.sqlQueryStr( "GetUserType", new String[]{"" + userToChange.getUserId()} );
+                    userType = imcref.sqlProcedureStr( "GetUserType", new String[]{"" + userToChange.getUserId()} );
                 }
 
 
