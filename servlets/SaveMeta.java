@@ -494,9 +494,7 @@ public class SaveMeta extends HttpServlet {
 
     static void setSectionInDbFromRequest( HttpServletRequest req, IMCServiceInterface imcref, int metaId ) {
         String[] sectionIdStrings = req.getParameterValues( "change_section" );
-        if ( null != sectionIdStrings ) {
-            DocumentMapper.setSectionsForDocument( imcref, metaId, sectionIdStrings );
-        }
+        DocumentMapper.setSectionsForDocument( imcref, metaId, sectionIdStrings );
     }
 
 }
