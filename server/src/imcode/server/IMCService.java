@@ -209,8 +209,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	return user ;
     }
 
-    public byte[] parsePage (int meta_id, User user, int flags,String template) throws IOException {
-	return textDocParser.parsePage(meta_id,user,flags,1,template) ;
+    public byte[] parsePage (int meta_id, User user, int flags,ParserParameters paramsToParse) throws IOException {
+	return textDocParser.parsePage(meta_id,user,flags,1,paramsToParse) ;
     }
 
     /**

@@ -34,6 +34,7 @@ import com.cyscape.browserhawk.LicenseException;
 import imcode.util.* ;
 import imcode.util.log.* ;
 import imcode.server.* ;
+import imcode.server.parser.ParserParameters;
 import imcode.util.IMCServiceRMI;
 
 /**
@@ -84,7 +85,7 @@ public class GetDoc extends HttpServlet {
 			int start_doc				= IMCServiceRMI.getDefaultHomePage(imcserver) ;
 			String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 			String file_path			= Utility.getDomainPref( "file_path", host ) ;
-
+		
 			HttpSession session = req.getSession( true );
 
 			String htmlStr = "" ;
@@ -319,12 +320,13 @@ public class GetDoc extends HttpServlet {
 
 		default:
 			user.setTemplateGroup(-1) ;
-			String temp_template = req.getParameter("template");
+			ParserParameters paramsToParser = new ParserParameters(req.getParameter("template"),
+																	req.getParameter("param"));
 			// track user
 			//			IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
-
+			
 			user.setLastMetaId( meta_id ) ;
-			byte[] result = IMCServiceRMI.parsePage( imcserver,meta_id,user,0,temp_template ) ;
+			byte[] result = IMCServiceRMI.parsePage( imcserver,meta_id,user,0,paramsToParser ) ;
 			return result ;
 		}
 	}

@@ -5,6 +5,7 @@ import javax.servlet.http.*;
 
 import imcode.util.* ;
 import imcode.server.* ;
+import imcode.server.parser.ParserParameters ;
 /**
   Administrate a document. 
   */
@@ -128,7 +129,7 @@ public class AdminDoc extends HttpServlet {
 		switch ( doc_type ) {
 
 		default:
-			byte[] result = IMCServiceRMI.parsePage( imcserver,meta_id,user,flags,null ) ;
+			byte[] result = IMCServiceRMI.parsePage( imcserver,meta_id,user,flags,new ParserParameters() ) ;
 			return result ;
 
 		case 101:

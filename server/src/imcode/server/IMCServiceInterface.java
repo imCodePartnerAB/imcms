@@ -24,7 +24,7 @@
 package imcode.server ;
 
 import java.util.* ;
-
+import imcode.server.parser.ParserParameters ;
 
 /**
   * <p<Interface for the Imcode Net Server.
@@ -42,7 +42,7 @@ public interface IMCServiceInterface {
 	void saveText(int meta_id,imcode.server.User user,int txt_no,String text,int toHTML)
 	 ;
 
-	byte[] parsePage(int meta_id, imcode.server.User user, int flags,String template) throws java.io.IOException ;
+	byte[] parsePage(int meta_id, imcode.server.User user, int flags,ParserParameters paramsToParse) throws java.io.IOException ;
 
 
 /*	// Save a doc

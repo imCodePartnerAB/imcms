@@ -12,6 +12,8 @@ import imcode.server.LoginUser ;
 import imcode.server.Image ;
 import imcode.server.SystemData ;
 
+import imcode.server.parser.ParserParameters ;
+
 import imcode.server.IMCServiceInterface ;
 
 /**
@@ -507,9 +509,9 @@ public class IMCServiceRMI {
 	    return imc.getDemoTemplateList() ;
     }
 
-    public static byte[] parsePage (String server,int meta_id,User user,int flags,String template) throws IOException {
+    public static byte[] parsePage (String server,int meta_id,User user,int flags,ParserParameters paramsToParse) throws IOException {
 		IMCServiceInterface imc = getInterface( server ) ;
-	    return imc.parsePage(meta_id,user,flags,template) ;
+	    return imc.parsePage(meta_id,user,flags,paramsToParse) ;
     }
 
     public static String getMenuButtons (String server,int meta_id, User user) throws IOException {
