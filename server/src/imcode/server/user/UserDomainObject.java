@@ -8,7 +8,7 @@ import java.util.*;
 public class UserDomainObject extends Hashtable {
 
     public UserDomainObject() {
-
+        roles.add( RoleDomainObject.USERS );
     }
 
     protected int id;
@@ -396,11 +396,14 @@ public class UserDomainObject extends Hashtable {
     }
 
     public void removeRole( RoleDomainObject role ) {
-        roles.remove( role );
+        if (!RoleDomainObject.USERS.equals( role )) {
+            roles.remove( role );
+        }
     }
 
     public void setRoles( RoleDomainObject[] rolesForUser ) {
         this.roles = new HashSet( Arrays.asList( rolesForUser ) );
+        roles.add( RoleDomainObject.USERS ) ;
     }
 
     public boolean hasRole( RoleDomainObject role ) {
