@@ -21,10 +21,12 @@ public class ChatGroup
 
 	private int _groupId;
 	private String _name;
-	private MsgBuffer _msgPool;
+//	private MsgBuffer _msgPool;
+	private List _msgBuffer;	
 	private List _groupMembers;
 	private Counter _msgNrCounter;
 	private Counter _membersCounter;
+	private final int _maxSize = 100;
 	
 
 
@@ -37,9 +39,10 @@ public class ChatGroup
 		_groupId = groupNumber;
 		_name = groupName;
 		_groupMembers = Collections.synchronizedList(new LinkedList());
-		_msgPool = new MsgBuffer();
+//		_msgPool = new MsgBuffer();
 		_msgNrCounter = new Counter();
 		_membersCounter = new Counter();
+		_msgBuffer = Collections.synchronizedList(new LinkedList());
 	
 	}
 	
@@ -119,11 +122,17 @@ public class ChatGroup
 	*Adds a ChatMsg into this ChatGroup
 	*@param msg The ChatMsg you want to add
 	*/
-	protected void addNewMsg(ChatMsg msg)
+	protected boolean addNewMsg(ChatMsg msg)
 	{
 		_msgNrCounter.increment();
 		msg.setIdNumber(_msgNrCounter.getValue());
-		_msgPool.addNewMsg(msg);
+//		_msgPool.addNewMsg(msg);
+
+		if (_msgBuffer.size() > _maxSize)
+		{
+			_msgBuffer.remove(0);
+		}
+		return _msgBuffer.add(msg);
 	}
 	
 	
@@ -135,14 +144,30 @@ public class ChatGroup
 	*/
 	protected ListIterator getMessages(ChatMsg lastMsg, int nrOfOldOnes)
 	{
-		return _msgPool.getMessages(lastMsg, nrOfOldOnes);
+		//get the number for the last read msg
+		int start = _msgBuffer.indexOf(lastMsg);
 		
+		start = start - nrOfOldOnes;
+		
+		if (start < 0) start = 0;
+		return _msgBuffer.listIterator(start);
 	}
 	
 	public String toString()
 	{
 		return "Group: " + _name + " GroupId: " + _groupId;
 	}
-
+	
+	public ListIterator getAllMessages()
+	{
+		return _msgBuffer.listIterator();
+		
+	}
+	
+	public int getNoOffMessages()
+	{
+		return _msgBuffer.size();
+		
+	}
 
 }
