@@ -19,6 +19,7 @@
     if (documents.length > 0) {
         Document firstDocument = documents[0] ;
         menu.removeDocument(firstDocument);
+        documentService.saveChanges( document ); // Don't forget to save!
         %>Removed the first document (<%= makeLink(firstDocument.getId(), request) %> with headline "<b><%= firstDocument.getHeadline() %></b>")
         from menu <%= menuIndex %> on <%= makeLink(document.getId(), request) %>.<br><%
     } else {
