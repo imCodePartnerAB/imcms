@@ -39,8 +39,8 @@
         <td colspan="2">#gui_heading( "<%= userFinder.getHeadline().toLocalizedString(request) %>" )</td>
     </tr>
     <tr>
-        <td class="imcmsAdmText"><? templates/sv/AdminChangeUser.htm/10 ?></td>
-        <td>
+        <td width="100" class="imcmsAdmText"><? templates/sv/AdminChangeUser.htm/10 ?></td>
+        <td width="500">
         <table border="0" cellspacing="0" cellpadding="0">
         <tr>
             <td><input type="text" name="<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>" size="20" maxlength="20" value="<%= StringEscapeUtils.escapeHtml(userBrowserPage.getSearchString()) %>"></td>
@@ -73,10 +73,10 @@
     </tr>
     <tr>
         <td colspan="2">
-        <table border="0" cellspacing="0" cellpadding="0" style="width: 100%">
+        <table border="0" cellspacing="0" cellpadding="0" width="100%">
         <tr valign="top">
-            <td>
-            <select name="<%= UserBrowser.REQUEST_PARAMETER__USER_ID %>" size="15" style="min-width: 30em; width: 100%;">
+            <td width="80%">
+            <select name="<%= UserBrowser.REQUEST_PARAMETER__USER_ID %>" size="15" style="width: 100%;">
                 <%
                     UserDomainObject[] users = userBrowserPage.getUsers();
                     for ( int i = 0; i < users.length; i++ ) {
@@ -90,8 +90,7 @@
                     </option><%
                 } %>
             </select></td>
-            <td>&nbsp;</td>
-            <td>
+            <td align="right" >
             <input type="submit" class="imcmsFormBtnSmall"
                 name="<%= UserBrowser.REQUEST_PARAMETER__SELECT_USER_BUTTON %>"
                 value="<%= userFinder.getSelectButtonText().toLocalizedString(request) %>" onClick="if(!evalEditUser()) return false;" style="width:80">
