@@ -12,7 +12,7 @@
     List documents = subreport.getDocuments() ;
 %>
 
-<table border="0" cellspacing="0" cellpadding="2" width="100%" align="center">
+<table border="0" cellspacing="0" cellpadding="2" width="656">
     <tr>
         <td colspan="2"><img src="<%= imagesPath %>/1x1.gif" width="1" height="25"></td>
     </tr>
@@ -38,8 +38,8 @@
         <td colspan="2">
             <table border="0" cellspacing="0" cellpadding="2" width="100%">
                 <tr valign="bottom">
-                    <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/15 ?></b></td>
-                    <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/16 ?></b>&nbsp;</td>
+                    <td width="40"><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/16 ?></b>&nbsp;</td>
+                    <td width="50"><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/15 ?></b></td>
                     <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/17 ?>/<? web/imcms/lang/jsp/admin/admin_manager.jsp/18 ?></b></td>
                     <td align="right">
                         <table border="0" cellspacing="0" cellpadding="0">

@@ -12,10 +12,10 @@
     String linkedStatusIcon = Html.getLinkedStatusIconTemplate(document, Utility.getLoggedOnUser( request ), request );
 %>
 <vel:velocity>
-<tr valign="top" <%= listItemBean.getIndex() % 2 == 1 ? "bgcolor=\"#ffffff\"" : "" %> >
+<tr valign="top"<%= listItemBean.getIndex() % 2 != 1 ? " bgcolor=\"#ffffff\"" : "" %>>
+    <td align="center"><%= linkedStatusIcon %></td>
     <td><img src="<%= imagesPath %>/1x1.gif" width="1" height="3"><br>
         <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId() %>"><%= document.getId() %></a></td>
-    <td align="center"><%= linkedStatusIcon %></td>
     <td><img src="<%= imagesPath %>/1x1.gif" width="1" height="3"><br>
         <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId()%>"><%= StringEscapeUtils.escapeHtml(document.getHeadline()) %></a><br>
         <%= StringEscapeUtils.escapeHtml(document.getMenuText() ) %></td>
