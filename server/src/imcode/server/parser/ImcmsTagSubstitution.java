@@ -12,14 +12,14 @@ import java.text.DateFormatSymbols;
 import org.apache.log4j.Category;
 
 public class ImcmsTagSubstitution implements Substitution, IMCConstants {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
+    private final static String CVS_REV = "$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
 
     private static Pattern HTML_PREBODY_PATTERN  = null ;
     private static Pattern HTML_POSTBODY_PATTERN  = null ;
     private static Pattern IMCMS_TAG_ATTRIBUTES_PATTERN  = null ;
 
-	private static Category log = Category.getInstance("server");
+    private static Category log = Category.getInstance("server");
 
     FileCache fileCache = new FileCache() ;
 
@@ -59,8 +59,8 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
     boolean imageMode ;
     String imageUrl ;
     int implicitImageNumber = 1 ;
-	
-	Document document;
+
+    Document document;
 
     private final Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
 
@@ -126,6 +126,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    // Set the number of this include-tag
 	    try {
 		no = Integer.parseInt(attributevalue) ; // Then set the number wanted
+		implicitIncludeNumber = no + 1 ;
 	    }
 	    catch (NumberFormatException ex) {
 		return "" ;
@@ -224,7 +225,13 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	}
 	// Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
 	String noStr = attributes.getProperty("no") ;
-	IMCText text = null != noStr ? (IMCText)textMap.get(noStr) : (IMCText)textMap.get(noStr = String.valueOf(implicitTextNumber++)) ;
+	IMCText text = null ;
+	if (null != noStr) {
+	    text = (IMCText)textMap.get(noStr) ;
+	    implicitTextNumber = Integer.parseInt(noStr) + 1 ;
+	} else {
+	    text = (IMCText)textMap.get(noStr = String.valueOf(implicitTextNumber++)) ;
+	}
 	String result ;
 	if (text == null) {
 	    result = "" ;
@@ -264,7 +271,13 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	}
 	// Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
 	String noStr = attributes.getProperty("no") ;
-	String result = null != noStr ? (String)imageMap.get(noStr) : (String)imageMap.get(noStr = String.valueOf(implicitImageNumber++)) ;
+	String result = null ;
+	if (null != noStr) {
+	    result = (String)imageMap.get(noStr) ;
+	    implicitImageNumber = Integer.parseInt(noStr) + 1 ;
+	} else {
+	    result = (String)imageMap.get(noStr = String.valueOf(implicitImageNumber++)) ;
+	}
 	if (result == null) {
 	    result = "" ;
 	}
@@ -290,17 +303,17 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
        @param attributes The attributes of the datetime tag.
 	   format attribute defines a user pattern to use when geting the date.
-	   type attribute defines what date to get they can bee 
-	   	now, created, modified, activated, archived
+	   type attribute defines what date to get they can bee
+		now, created, modified, activated, archived
 
     **/
     public String tagDatetime (Properties attributes) {
 		String format =  attributes.getProperty("format") == null ? DATETIME_FORMAT_STD : attributes.getProperty("format") ;
 		String type	  =  attributes.getProperty("type")	;
 		String lang	  =  attributes.getProperty("lang")	;
-		
+
 		Date date = null;
-		
+
 		if (type != null) {
 			type = type.toLowerCase();
 			if ("now".startsWith(type)) {
@@ -320,15 +333,15 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		}else {
 			date = new Date();
 		}
-				
+
 		java.text.SimpleDateFormat formatter;
 		if (lang == null){
-		
+
 			formatter = new java.text.SimpleDateFormat(format);
 		}else{
 			formatter = new java.text.SimpleDateFormat(format, new Locale(lang,""));
 		}
-		
+
 		try{
 			return formatter.format(date);
 		}catch(IllegalArgumentException ex){
