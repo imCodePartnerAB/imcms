@@ -141,7 +141,7 @@ public class DocumentMapper {
         //ok now we have to setup the template too use
 
         String[] templateData = imcref.sqlQuery( "select template_id, group_id, default_template_1, default_template_2 from text_docs where meta_id = ?",
-                                         new String[]{parent_meta_id} );
+                                                 new String[]{parent_meta_id} );
 
         String templateIdStr = templateData[0];
         String groupIdStr = templateData[1];
@@ -394,7 +394,7 @@ public class DocumentMapper {
 
         String[] categorySqlResult = service.sqlQuery( sqlQuery, new String[]{"" + categoryId} );
 
-        if( 0 != categorySqlResult.length ) {
+        if ( 0 != categorySqlResult.length ) {
             String categoryName = categorySqlResult[0];
             String categoryDescription = categorySqlResult[1];
             String categoryImage = categorySqlResult[2];
@@ -774,17 +774,23 @@ public class DocumentMapper {
         saveDocument( document, user );
     }
 
-    private void saveFile( FileDocumentDomainObject newFileDocument ) {
+    private void saveFile( FileDocumentDomainObject fileDocument ) {
         try {
-            InputStreamSource inputStreamSource = newFileDocument.getInputStreamSource();
-            InputStream in = inputStreamSource.getInputStream();
+            InputStreamSource inputStreamSource = fileDocument.getInputStreamSource();
+            InputStream in;
+            try {
+                in = inputStreamSource.getInputStream();
+            } catch ( FileNotFoundException e ) {
+                throw new RuntimeException( "The file for filedocument " + fileDocument.getId()
+                                            + " has disappeared." );
+            }
             if ( null == in ) {
                 return;
             }
             File filePath = null;
             filePath = Utility.getDomainPrefPath( PREFERENCE__FILE_PATH );
 
-            File file = new File( filePath, "" + newFileDocument.getId() );
+            File file = new File( filePath, "" + fileDocument.getId() );
             boolean sameFileOnDisk = inputStreamSource instanceof FileInputStreamSource && file.exists();
             if ( sameFileOnDisk ) {
                 return;
@@ -1286,8 +1292,8 @@ public class DocumentMapper {
     private int getSortOrderOfMenu( int documentId, int menuIndex ) {
         String temp = service.sqlQueryStr( "SELECT sort_order FROM menus WHERE meta_id = ? AND menu_index = ?",
                                            new String[]{"" + documentId, "" + menuIndex} );
-        if( null != temp ) {
-            return  Integer.parseInt( temp );
+        if ( null != temp ) {
+            return Integer.parseInt( temp );
         } else {
             return IMCConstants.MENU_SORT_DEFAULT;
         }

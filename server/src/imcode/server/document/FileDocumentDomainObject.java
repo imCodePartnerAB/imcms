@@ -41,7 +41,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         this.inputStreamSource = inputStreamSource;
     }
 
-    public InputStreamSource getInputStreamSource() throws IOException {
+    public InputStreamSource getInputStreamSource() {
         return inputStreamSource ;
     }
 
