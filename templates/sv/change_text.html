@@ -1,5 +1,14 @@
-<HTML><HEAD><TITLE>Admin</TITLE>
-</HEAD><BODY  bgcolor="#FFFFFF"><H3>
+<HTML>
+<HEAD>
+<TITLE>Admin</TITLE>
+<style type="text/css">
+<!--
+.hide {  visibility: hidden; }
+.show {  visibility: visible; }
+-->
+</style>
+</HEAD>
+<BODY  bgcolor="#FFFFFF"><H3>
   <FORM METHOD=POST ACTION="#servlet_url#SaveText" name="">
     <TABLE width="430" align="center" cellpadding="2" cellspacing="0" border="1">
       <CENTER>
@@ -25,8 +34,11 @@
         <TR> 
           <TD valign="middle" align="center" bgcolor="#BABABA"> 
             <INPUT TYPE=SUBMIT VALUE="OK" NAME="ok">
-            <INPUT TYPE=RESET VALUE="Rensa">
+			<INPUT TYPE=RESET VALUE="&Aring;terst&auml;ll">
             <INPUT TYPE=SUBMIT VALUE="Avbryt" NAME="cancel">
+            <span id="three" style="position:absolute; visibility:hidden"> 
+            <input type="button" name="rensa" value="Rensa" onClick="document.forms[0].text.value=''">
+            </span>
           </TD>
         </TR>
       </CENTER>
@@ -38,6 +50,7 @@
 <script language="JavaScript">
 <!--
 document.forms[0].text.focus();
+document.all.three.style.visibility = "visible";
 //-->
 </script>
 </BODY></HTML>
