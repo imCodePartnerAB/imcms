@@ -780,7 +780,7 @@ GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
 GO
 
-CREATE PROCEDURE CheckDocSharePermissionForUser @user_id INT, @meta_id INT AS
+CREATE PROCEDURE CheckUserDocSharePermission @user_id INT, @meta_id INT AS
 
 SELECT m.meta_id
 FROM meta m
