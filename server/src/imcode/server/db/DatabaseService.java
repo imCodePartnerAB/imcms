@@ -1049,8 +1049,8 @@ public abstract class DatabaseService {
     }
 
     public class Table_doc_types {
-        private int doc_type;
-        private String type;
+        public int doc_type;
+        public String type;
 
         Table_doc_types( ResultSet rs ) throws SQLException {
             doc_type = rs.getInt( "doc_type" );

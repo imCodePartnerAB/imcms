@@ -29,7 +29,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     private static Pattern HASHTAG_PATTERN = null;
     private static Pattern MENU_PATTERN = null;
     private static Pattern IMCMS_TAG_PATTERN = null;
-    private static Pattern MENU_NO_PATTERN = null;
     private static Pattern HTML_TAG_PATTERN = null;
 
     private static Pattern READRUNNER_END_TITLE_PATTERN = null;
@@ -45,7 +44,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             HTML_TAG_PATTERN = patComp.compile( "<[^>]+?>", Perl5Compiler.READ_ONLY_MASK );
 
             IMCMS_TAG_PATTERN = patComp.compile( "<\\?imcms:([-\\w]+)(.*?)\\?>", Perl5Compiler.SINGLELINE_MASK | Perl5Compiler.READ_ONLY_MASK );
-            MENU_NO_PATTERN = patComp.compile( "#doc_menu_no#", Perl5Compiler.READ_ONLY_MASK );
             HASHTAG_PATTERN = patComp.compile( "#[^ #\"<>&;\\t\\r\\n]+#", Perl5Compiler.READ_ONLY_MASK );
             MENU_PATTERN = patComp.compile( "<\\?imcms:menu(.*?)\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK | Perl5Compiler.READ_ONLY_MASK );
 
@@ -147,14 +145,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 }
             }
 
-            String lang_prefix = user.getLangPrefix();	// Find language
-
-            Vector doc_types_vec = null;
-            if( menumode ) {
-                // I'll retrieve a list of all doc-types the user may create.
-                doc_types_vec = DatabaseAccessor.sprocGetDocTypeForUser( dbc, user, meta_id, lang_prefix );
-            }
-
             Vector templategroups = null;
             Vector templates = null;
             Vector groupnamevec = null;
@@ -193,6 +183,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 return ("sprocGetImgs returned null");
             }
 
+            String lang_prefix = user.getLangPrefix();	// Find language
             File admintemplate_path = new File( templatePath, "/" + lang_prefix + "/admin/" );
 
             String emphasize_string = fileCache.getCachedFileString( new File( admintemplate_path, "textdoc/emphasize.html" ) );
@@ -423,13 +414,19 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             temptags.setProperty( "#servlet_url#", servletUrl );
 
             if( menumode ) {
+                DatabaseService.Table_doc_types[] docTypes = null;
+
+                // I'll retrieve a list of all doc-types the user may create.
+                DatabaseService databaseService = serverObject.getDatabaseService();
+                docTypes = databaseService.sproc_GetDocTypesForUser( user.getUserId(), meta_id, lang_prefix );
 
                 // I'll put the doc-types in a html-list
-                Iterator dt_it = doc_types_vec.iterator();
                 StringBuffer doc_types_sb = new StringBuffer( 256 );
-                while( dt_it.hasNext() ) {
-                    String dt = (String)dt_it.next();
-                    String dtt = (String)dt_it.next();
+
+                for (int i = 0; i < docTypes.length; i++) {
+                    DatabaseService.Table_doc_types docType = docTypes[i];
+                    String dt = ""+docType.doc_type;
+                    String dtt = docType.type;
                     doc_types_sb.append( "<option value=\"" );
                     doc_types_sb.append( dt );
                     doc_types_sb.append( "\">" );
@@ -443,7 +440,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
                 existing_doc_name = fileCache.getCachedFileString( new File( existing_doc_filename ) );
 
-                if( doc_types_vec != null && doc_types_vec.size() > 0 ) {
+                if( docTypes != null && docTypes.length > 0 ) {
                     doc_types_sb.append( "<option value=\"0\">" + existing_doc_name + "</option>" );
                 }
 

@@ -34,12 +34,9 @@ public class DatabaseAccessor {
     private static final String SPROC_GET_DOC_TYPES_WITH_PERMISSIONS = "GetDocTypesWithPermissions";
     private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "getTemplateGroupsWithPermissions";
     private static final String SPROC_GET_TEMPLATE_ID = "GetTemplateId";
-    private static final String SPROC_GET_IMGS = "GetImgs";
 
     // todo make sure all the following is only used in one and only sprocMethod and nowhere else
     // these are found to be used elseware in
-    private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
-    private static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo";
     private static final String SPROC_GET_TEXT = "GetText";
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
     private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
@@ -337,15 +334,6 @@ public class DatabaseAccessor {
 
     public static void sprocSectionAddCrossref( IMCServiceInterface imcref, int meta_id, int section_id ) {
         imcref.sqlUpdateProcedure( SPROC_SECTION_ADD_CROSSREF + " " + meta_id + ", " + section_id );
-    }
-
-    public static Vector sprocGetDocTypeForUser( DBConnect dbc, UserDomainObject user, int meta_id, String lang_prefix ) {
-        String sqlStr = SPROC_GET_DOC_TYPES_FOR_USER;
-        String[] sqlAry2 = {String.valueOf( meta_id ), String.valueOf( user.getUserId() ), lang_prefix};
-        dbc.setProcedure( sqlStr, sqlAry2 );
-        Vector doc_types_vec = dbc.executeProcedure();
-        dbc.clearResultSet();
-        return doc_types_vec;
     }
 
     public static void sprocUpdateParentsDateModified( IMCServiceInterface imcref, int meta_id ) {
