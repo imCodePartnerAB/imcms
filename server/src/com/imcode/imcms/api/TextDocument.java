@@ -76,9 +76,24 @@ public class TextDocument extends Document {
         return result;
     }
 
-    public void setTemplate(Template newTemplate) throws NoPermissionException {
+    public void setTemplate(TemplateGroup templateGroup, Template template) throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
+        setTemplateInternal( template );
+        internalDocument.setTemplateGroupId( templateGroup.getId() );
+    }
+
+    /**
+     * @deprecated
+     * @param template
+     * @throws NoPermissionException
+     */
+    public void setTemplate(Template template) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
         // todo: check if the template is alowed to be set on this document
+        setTemplateInternal(template);
+    }
+
+    private void setTemplateInternal(Template newTemplate) {
         TemplateDomainObject internalTemplate = newTemplate.getInternal();
         internalDocument.setTemplate(internalTemplate);
     }
@@ -143,7 +158,8 @@ public class TextDocument extends Document {
         return new Menu(this, menuIndexInDocument, securityChecker);
     }
 
-    public void setLanguage(Language language) {
+    public void setLanguage(Language language) throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
         internalDocument.setLanguageIso639_2(language.getIsoCode639_2());
     }
 

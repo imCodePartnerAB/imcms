@@ -9,10 +9,6 @@ import imcode.server.document.TemplateGroupDomainObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.imcode.imcms.api.SecurityChecker;
-import com.imcode.imcms.api.Template;
-import com.imcode.imcms.api.TemplateGroup;
-
 public class TemplateService {
     private SecurityChecker securityChecker;
     private TemplateMapper templateMapper;
@@ -84,6 +80,10 @@ public class TemplateService {
     public Template getTemplateById(int templateId) {
         TemplateDomainObject template = templateMapper.getTemplateById(templateId);
         return (null != template) ? new Template(template) : null ;
+    }
+
+    public TemplateGroup getTemplateGroupById(int templateGroupId) {
+        return new TemplateGroup(templateMapper.getTemplateGroupById(templateGroupId));
     }
 
 }
