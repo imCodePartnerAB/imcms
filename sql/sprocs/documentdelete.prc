@@ -8,6 +8,7 @@ drop procedure [dbo].[DocumentDelete]
 GO
 
 
+
 CREATE PROCEDURE [dbo].[DocumentDelete] 
 	@meta_id int
 AS
@@ -32,6 +33,7 @@ delete from doc_permission_sets_ex where meta_id = @meta_id
 delete from doc_permission_sets where meta_id = @meta_id
 delete from meta where meta_id = @meta_id
 delete from meta where meta_id = @meta_id
+delete from meta_section where meta_id = @meta_id
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO

@@ -1,10 +1,10 @@
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SearchDocsIndex]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[SearchDocsIndex]
-GO
-
-SET QUOTED_IDENTIFIER ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS OFF 
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SearchDocsIndex]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[SearchDocsIndex]
 GO
 
 
@@ -23,7 +23,8 @@ CREATE PROCEDURE SearchDocsIndex
   @activated_enddate DATETIME,
   @archived_startdate DATETIME,
   @archived_enddate DATETIME,
-  @only_addable TINYINT  -- 1 to show only documents the user may add.
+  @only_addable TINYINT,  -- 1 to show only documents the user may add.
+  @section_id INT -- (-1) means search on all otherwise only the section_id
   
 AS 
 
@@ -207,6 +208,11 @@ if @counter > 0 begin
 		delete from #or  where meta_id in(select meta_id from #not)
 --		#or.meta_id = #not.meta_id
 	end
+end
+
+/*ok här kollar vi om sektionerna ska tas hänsyn till */
+if @section_id > -1 begin
+	delete from #or where meta_id not in (select meta_id from meta_section where section_id=@section_id)
 end
 
 --select  * from #or

@@ -42,6 +42,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_meta_cl
 ALTER TABLE [dbo].[meta_classification] DROP CONSTRAINT FK_meta_classification_meta
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_meta_section_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[meta_section] DROP CONSTRAINT FK_meta_section_meta
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_new_doc_permission_sets_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[new_doc_permission_sets] DROP CONSTRAINT FK_new_doc_permission_sets_meta
 GO
@@ -94,6 +98,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_ro
 ALTER TABLE [dbo].[user_roles_crossref] DROP CONSTRAINT FK_user_roles_crossref_roles
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_meta_section_section]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[meta_section] DROP CONSTRAINT FK_meta_section_section
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_display_name_sort_by]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[display_name] DROP CONSTRAINT FK_display_name_sort_by
 GO
@@ -126,10 +134,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_ro
 ALTER TABLE [dbo].[user_roles_crossref] DROP CONSTRAINT FK_user_roles_crossref_users
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[Results]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[Results]
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[browser_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[browser_docs]
 GO
@@ -144,10 +148,6 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[classification]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[classification]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[countDoc]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[countDoc]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[display_name]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
@@ -210,6 +210,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[meta_class
 drop table [dbo].[meta_classification]
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[meta_section]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[meta_section]
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[mime_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[mime_types]
 GO
@@ -244,6 +248,10 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[roles_rights]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[roles_rights]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[sections]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[sections]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[sort_by]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
@@ -306,6 +314,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[users]') a
 drop table [dbo].[users]
 GO
 
+if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
 exec sp_fulltext_database N'enable' 
 
 GO
@@ -321,13 +330,6 @@ exec sp_fulltext_catalog N'full_text_index', N'create'
 
 GO
 
-CREATE TABLE [dbo].[Results] (
-	[user_type] [int] NOT NULL ,
-	[type_name] [char] (30) NULL ,
-	[lang_prefix] [char] (3) NOT NULL 
-) ON [PRIMARY]
-GO
-
 CREATE TABLE [dbo].[browser_docs] (
 	[meta_id] [int] NOT NULL ,
 	[to_meta_id] [int] NOT NULL ,
@@ -337,8 +339,8 @@ GO
 
 CREATE TABLE [dbo].[browsers] (
 	[browser_id] [int] NOT NULL ,
-	[name] [varchar] (50) NOT NULL ,
-	[user_agent] [varchar] (50) NOT NULL ,
+	[name] [varchar] (50)  NOT NULL ,
+	[user_agent] [varchar] (50)  NOT NULL ,
 	[value] [tinyint] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -353,30 +355,14 @@ GO
 
 CREATE TABLE [dbo].[classification] (
 	[class_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[code] [varchar] (30) NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[countDoc] (
-	[CountDate] [datetime] NOT NULL ,
-	[Text_doc] [int] NULL ,
-	[File_doc] [int] NULL ,
-	[Conf_doc] [int] NULL ,
-	[Html_doc] [int] NULL ,
-	[Chat_doc] [int] NULL ,
-	[Billb_doc] [int] NULL ,
-	[Url_doc] [int] NULL ,
-	[Brows_doc] [int] NULL ,
-	[Chart_doc] [int] NULL ,
-	[SumA_doc] [int] NULL ,
-	[SumB_doc] [int] NULL 
+	[code] [varchar] (30)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[display_name] (
 	[sort_by_id] [int] NOT NULL ,
 	[lang_id] [int] NOT NULL ,
-	[display_name] [varchar] (30) NOT NULL 
+	[display_name] [varchar] (30)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -398,28 +384,28 @@ GO
 CREATE TABLE [dbo].[doc_permissions] (
 	[permission_id] [int] NOT NULL ,
 	[doc_type] [int] NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL ,
-	[description] [varchar] (50) NOT NULL 
+	[lang_prefix] [varchar] (3)  NOT NULL ,
+	[description] [varchar] (50)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[doc_types] (
 	[doc_type] [int] NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL ,
-	[type] [varchar] (50) NULL 
+	[lang_prefix] [varchar] (3)  NOT NULL ,
+	[type] [varchar] (50)  NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[fileupload_docs] (
 	[meta_id] [int] NOT NULL ,
-	[filename] [varchar] (50) NOT NULL ,
-	[mime] [varchar] (50) NOT NULL 
+	[filename] [varchar] (50)  NOT NULL ,
+	[mime] [varchar] (50)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[frameset_docs] (
 	[meta_id] [int] NOT NULL ,
-	[frame_set] [text] NULL 
+	[frame_set] [text]  NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -431,14 +417,14 @@ CREATE TABLE [dbo].[images] (
 	[v_space] [int] NOT NULL ,
 	[h_space] [int] NOT NULL ,
 	[name] [int] NOT NULL ,
-	[image_name] [varchar] (40) NOT NULL ,
-	[target] [varchar] (15) NOT NULL ,
-	[target_name] [varchar] (80) NOT NULL ,
-	[align] [varchar] (15) NOT NULL ,
-	[alt_text] [varchar] (255) NOT NULL ,
-	[low_scr] [varchar] (255) NOT NULL ,
-	[imgurl] [varchar] (255) NOT NULL ,
-	[linkurl] [varchar] (255) NOT NULL 
+	[image_name] [varchar] (40)  NOT NULL ,
+	[target] [varchar] (15)  NOT NULL ,
+	[target_name] [varchar] (80)  NOT NULL ,
+	[align] [varchar] (15)  NOT NULL ,
+	[alt_text] [varchar] (255)  NOT NULL ,
+	[low_scr] [varchar] (255)  NOT NULL ,
+	[imgurl] [varchar] (255)  NOT NULL ,
+	[linkurl] [varchar] (255)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -459,30 +445,30 @@ GO
 
 CREATE TABLE [dbo].[lang_prefixes] (
 	[lang_id] [int] NOT NULL ,
-	[lang_prefix] [char] (3) NULL 
+	[lang_prefix] [char] (3)  NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[languages] (
-	[lang_prefix] [varchar] (3) NOT NULL ,
-	[user_prefix] [varchar] (3) NOT NULL ,
-	[language] [varchar] (30) NULL 
+	[lang_prefix] [varchar] (3)  NOT NULL ,
+	[user_prefix] [varchar] (3)  NOT NULL ,
+	[language] [varchar] (30)  NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[main_log] (
 	[log_datetime] [datetime] NULL ,
-	[event] [varchar] (255) NULL 
+	[event] [varchar] (255)  NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[meta] (
 	[meta_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[description] [varchar] (80) NOT NULL ,
+	[description] [varchar] (80)  NOT NULL ,
 	[doc_type] [int] NOT NULL ,
-	[meta_headline] [varchar] (255) NOT NULL ,
-	[meta_text] [varchar] (1000) NOT NULL ,
-	[meta_image] [varchar] (255) NOT NULL ,
+	[meta_headline] [varchar] (255)  NOT NULL ,
+	[meta_text] [varchar] (1000)  NOT NULL ,
+	[meta_image] [varchar] (255)  NOT NULL ,
 	[owner_id] [int] NOT NULL ,
 	[permissions] [int] NOT NULL ,
 	[shared] [int] NOT NULL ,
@@ -491,15 +477,15 @@ CREATE TABLE [dbo].[meta] (
 	[help_text_id] [int] NOT NULL ,
 	[archive] [int] NOT NULL ,
 	[status_id] [int] NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL ,
-	[classification] [varchar] (200) NOT NULL ,
+	[lang_prefix] [varchar] (3)  NOT NULL ,
+	[classification] [varchar] (200)  NOT NULL ,
 	[date_created] [datetime] NOT NULL ,
 	[date_modified] [datetime] NOT NULL ,
 	[sort_position] [int] NOT NULL ,
 	[menu_position] [int] NOT NULL ,
 	[disable_search] [int] NOT NULL ,
-	[target] [varchar] (10) NOT NULL ,
-	[frame_name] [varchar] (20) NOT NULL ,
+	[target] [varchar] (10)  NOT NULL ,
+	[frame_name] [varchar] (20)  NOT NULL ,
 	[activate] [int] NOT NULL ,
 	[activated_datetime] [datetime] NULL ,
 	[archived_datetime] [datetime] NULL 
@@ -512,11 +498,17 @@ CREATE TABLE [dbo].[meta_classification] (
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [dbo].[meta_section] (
+	[meta_id] [int] NOT NULL ,
+	[section_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [dbo].[mime_types] (
 	[mime_id] [int] IDENTITY (0, 1) NOT NULL ,
-	[mime_name] [varchar] (50) NOT NULL ,
-	[mime] [varchar] (50) NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL 
+	[mime_name] [varchar] (50)  NOT NULL ,
+	[mime] [varchar] (50)  NOT NULL ,
+	[lang_prefix] [varchar] (3)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -537,37 +529,37 @@ GO
 
 CREATE TABLE [dbo].[permission_sets] (
 	[set_id] [int] NOT NULL ,
-	[description] [varchar] (30) NOT NULL 
+	[description] [varchar] (30)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[permissions] (
 	[permission_id] [tinyint] NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL ,
-	[description] [varchar] (50) NOT NULL 
+	[lang_prefix] [varchar] (3)  NOT NULL ,
+	[description] [varchar] (50)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[phones] (
 	[phone_id] [int] NOT NULL ,
-	[country_code] [varchar] (4) NOT NULL ,
-	[area_code] [char] (8) NOT NULL ,
-	[number] [char] (25) NOT NULL ,
+	[country_code] [varchar] (4)  NOT NULL ,
+	[area_code] [char] (8)  NOT NULL ,
+	[number] [char] (25)  NOT NULL ,
 	[user_id] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[roles] (
 	[role_id] [int] NOT NULL ,
-	[role_name] [char] (25) NOT NULL ,
+	[role_name] [char] (25)  NOT NULL ,
 	[permissions] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[roles_permissions] (
 	[permission_id] [int] NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL ,
-	[description] [varchar] (40) NOT NULL 
+	[lang_prefix] [varchar] (3)  NOT NULL ,
+	[description] [varchar] (40)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -578,14 +570,20 @@ CREATE TABLE [dbo].[roles_rights] (
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [dbo].[sections] (
+	[section_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[section_name] [varchar] (50)  NOT NULL 
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [dbo].[sort_by] (
 	[sort_by_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[sort_by_type] [varchar] (30) NOT NULL 
+	[sort_by_type] [varchar] (30)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[stats] (
-	[name] [varchar] (120) NOT NULL ,
+	[name] [varchar] (120)  NOT NULL ,
 	[num] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -593,27 +591,27 @@ GO
 CREATE TABLE [dbo].[sys_data] (
 	[sys_id] [tinyint] IDENTITY (1, 1) NOT NULL ,
 	[type_id] [tinyint] NOT NULL ,
-	[value] [varchar] (80) NULL 
+	[value] [varchar] (80)  NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[sys_types] (
 	[type_id] [tinyint] IDENTITY (1, 1) NOT NULL ,
-	[name] [varchar] (50) NULL 
+	[name] [varchar] (50)  NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[templategroups] (
 	[group_id] [int] NOT NULL ,
-	[group_name] [varchar] (50) NOT NULL 
+	[group_name] [varchar] (50)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[templates] (
 	[template_id] [int] NOT NULL ,
-	[template_name] [varchar] (80) NOT NULL ,
-	[simple_name] [varchar] (80) NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL ,
+	[template_name] [varchar] (80)  NOT NULL ,
+	[simple_name] [varchar] (80)  NOT NULL ,
+	[lang_prefix] [varchar] (3)  NOT NULL ,
 	[no_of_txt] [int] NULL ,
 	[no_of_img] [int] NULL ,
 	[no_of_url] [int] NULL 
@@ -639,7 +637,7 @@ GO
 CREATE TABLE [dbo].[texts] (
 	[meta_id] [int] NOT NULL ,
 	[name] [int] NOT NULL ,
-	[text] [text] NOT NULL ,
+	[text] [text]  NOT NULL ,
 	[type] [int] NULL ,
 	[counter] [int] IDENTITY (1, 1) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
@@ -656,11 +654,11 @@ GO
 
 CREATE TABLE [dbo].[url_docs] (
 	[meta_id] [int] NOT NULL ,
-	[frame_name] [varchar] (80) NOT NULL ,
-	[target] [varchar] (15) NOT NULL ,
-	[url_ref] [varchar] (255) NOT NULL ,
-	[url_txt] [varchar] (255) NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL 
+	[frame_name] [varchar] (80)  NOT NULL ,
+	[target] [varchar] (15)  NOT NULL ,
+	[url_ref] [varchar] (255)  NOT NULL ,
+	[url_txt] [varchar] (255)  NOT NULL ,
+	[lang_prefix] [varchar] (3)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -679,25 +677,25 @@ GO
 
 CREATE TABLE [dbo].[user_types] (
 	[user_type] [int] NOT NULL ,
-	[type_name] [char] (30) NULL ,
-	[lang_prefix] [char] (3) NOT NULL 
+	[type_name] [char] (30)  NULL ,
+	[lang_prefix] [char] (3)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[users] (
 	[user_id] [int] NOT NULL ,
-	[login_name] [char] (15) NOT NULL ,
-	[login_password] [char] (15) NOT NULL ,
-	[first_name] [char] (25) NOT NULL ,
-	[last_name] [char] (30) NOT NULL ,
-	[title] [char] (30) NOT NULL ,
-	[company] [char] (30) NOT NULL ,
-	[address] [char] (40) NOT NULL ,
-	[city] [char] (30) NOT NULL ,
-	[zip] [char] (15) NOT NULL ,
-	[country] [char] (30) NOT NULL ,
-	[county_council] [char] (30) NOT NULL ,
-	[email] [char] (50) NOT NULL ,
+	[login_name] [char] (15)  NOT NULL ,
+	[login_password] [char] (15)  NOT NULL ,
+	[first_name] [char] (25)  NOT NULL ,
+	[last_name] [char] (30)  NOT NULL ,
+	[title] [char] (30)  NOT NULL ,
+	[company] [char] (30)  NOT NULL ,
+	[address] [char] (40)  NOT NULL ,
+	[city] [char] (30)  NOT NULL ,
+	[zip] [char] (15)  NOT NULL ,
+	[country] [char] (30)  NOT NULL ,
+	[county_council] [char] (30)  NOT NULL ,
+	[email] [char] (50)  NOT NULL ,
 	[admin_mode] [int] NOT NULL ,
 	[last_page] [int] NOT NULL ,
 	[archive_mode] [int] NOT NULL ,
@@ -724,6 +722,21 @@ ALTER TABLE [dbo].[includes] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+ALTER TABLE [dbo].[meta_section] WITH NOCHECK ADD 
+	CONSTRAINT [PK_meta_section] PRIMARY KEY  CLUSTERED 
+	(
+		[meta_id],
+		[section_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[sections] WITH NOCHECK ADD 
+	CONSTRAINT [PK_section] PRIMARY KEY  CLUSTERED 
+	(
+		[section_id]
+	)  ON [PRIMARY] 
+GO
+
 ALTER TABLE [dbo].[sort_by] WITH NOCHECK ADD 
 	CONSTRAINT [PK_sort_by] PRIMARY KEY  CLUSTERED 
 	(
@@ -745,6 +758,7 @@ ALTER TABLE [dbo].[texts] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
 exec sp_fulltext_database N'enable' 
 
 GO
@@ -818,6 +832,7 @@ ALTER TABLE [dbo].[classification] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
 exec sp_fulltext_database N'enable' 
 
 GO
@@ -916,6 +931,7 @@ ALTER TABLE [dbo].[meta] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
 exec sp_fulltext_database N'enable' 
 
 GO
@@ -1067,8 +1083,8 @@ GO
 
 ALTER TABLE [dbo].[text_docs] WITH NOCHECK ADD 
 	CONSTRAINT [DF_text_docs_group_id] DEFAULT (1) FOR [group_id],
-	CONSTRAINT [DF__text_docs__defau__336AA144] DEFAULT ((-1)) FOR [default_template_1],
-	CONSTRAINT [DF__text_docs__defau__345EC57D] DEFAULT ((-1)) FOR [default_template_2],
+	CONSTRAINT [DF__text_docs__defau__0D44F85C] DEFAULT ((-1)) FOR [default_template_1],
+	CONSTRAINT [DF__text_docs__defau__0E391C95] DEFAULT ((-1)) FOR [default_template_2],
 	CONSTRAINT [PK_text_docs] PRIMARY KEY  NONCLUSTERED 
 	(
 		[meta_id]
@@ -1244,6 +1260,21 @@ ALTER TABLE [dbo].[meta_classification] ADD
 		[meta_id]
 	) REFERENCES [dbo].[meta] (
 		[meta_id]
+	)
+GO
+
+ALTER TABLE [dbo].[meta_section] ADD 
+	CONSTRAINT [FK_meta_section_meta] FOREIGN KEY 
+	(
+		[meta_id]
+	) REFERENCES [dbo].[meta] (
+		[meta_id]
+	),
+	CONSTRAINT [FK_meta_section_section] FOREIGN KEY 
+	(
+		[section_id]
+	) REFERENCES [dbo].[sections] (
+		[section_id]
 	)
 GO
 
