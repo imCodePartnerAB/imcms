@@ -9,6 +9,8 @@ import imcode.util.Utility;
 
 public class ChatError extends ChatBase
 {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private static final String ERROR_FILE = "Chat_Error.htm";
 	String myErrorHeader ;

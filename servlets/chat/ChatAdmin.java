@@ -51,6 +51,8 @@ import imcode.util.* ;
  */
 public class ChatAdmin extends Administrator{
 
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	private static final String TEMPLATE_CONF = "AdminChat.html";
 	private static final String TEMPLATE_LIST_TOOL = "AdminChat_list_tool.html";
 	private static final String TEMPLATE_LIST = "AdminChat_list.html";

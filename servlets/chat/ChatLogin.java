@@ -25,6 +25,8 @@ import imcode.util.* ;
 
 public class ChatLogin extends ChatBase 
 {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	String LOGIN_HTML = "CLogin4.htm" ;	   // The login page
 	String LOGIN_ERROR_HTML = "Chat_Error.htm";

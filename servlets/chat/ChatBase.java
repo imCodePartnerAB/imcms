@@ -37,6 +37,8 @@ import imcode.external.chat.*;
 
 public class ChatBase extends HttpServlet {
 
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	private final static String ADMIN_BUTTON_TEMPLATE = "Chat_Admin_Button.htm";
 	private final static String UNADMIN_BUTTON_TEMPLATE = "Chat_Unadmin_Button.htm";
 	
