@@ -103,7 +103,7 @@ public class BillBoardDiscView extends BillBoard {//ConfDiscView
 
     public void init( ServletConfig config ) throws ServletException {
         super.init( config );
-        HTML_TEMPLATE = "BillBoard_Disc_View.htm";//Conf_Disc_View.htm
+        HTML_TEMPLATE = "billboard_disc_view.htm";//Conf_Disc_View.htm
 
     }
 

@@ -22,8 +22,8 @@ import java.util.List;
 
 public class BillBoard extends HttpServlet {
 
-    private final static String ADMIN_BUTTON_TEMPLATE = "BillBoard_Admin_Button.htm";
-    private final static String UNADMIN_BUTTON_TEMPLATE = "BillBoard_Unadmin_Button.htm";
+    private final static String ADMIN_BUTTON_TEMPLATE = "billboard_admin_button.htm";
+    private final static String UNADMIN_BUTTON_TEMPLATE = "billboard_unadmin_button.htm";
 
     /**
      * Returns the metaId from a request object, if not found, we will

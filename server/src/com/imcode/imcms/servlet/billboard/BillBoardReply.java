@@ -50,13 +50,13 @@ import java.util.List;
 
 public class BillBoardReply extends BillBoard {//ConfReply
 
-    private final static String NEW_COMMENT_TEMPLATE = "BillBoard_Reply_New_Comment.htm";//Conf_Reply_New_Comment.htm
-    private final static String ADMIN_LINK_TEMPLATE = "BillBoard_Reply_Admin_Link.htm";//Conf_Reply_Admin_Link.htm
-    private final static String HTML_TEMPLATE_MAIL_SENT = "BillBoard_Reply_Mail_Sent.htm";
-    private final static String HTML_TEMPLATE = "BillBoard_Reply.htm";
-    private final static String RECS_HTML = "BillBoard_reply_list.htm";
-    private final static String RECS_PREV_HTML = "BillBoard_Reply_List_prev.htm";
-    private final static String HTML_TEMPLATE_START = "BillBoard_Reply_Welcome.htm";
+    private final static String NEW_COMMENT_TEMPLATE = "billboard_reply_new_comment.htm";//Conf_Reply_New_Comment.htm
+    private final static String ADMIN_LINK_TEMPLATE = "billboard_reply_admin_link.htm";//Conf_Reply_Admin_Link.htm
+    private final static String HTML_TEMPLATE_MAIL_SENT = "billboard_reply_mail_sent.htm";
+    private final static String HTML_TEMPLATE = "billboard_reply.htm";
+    private final static String RECS_HTML = "billboard_reply_list.htm";
+    private final static String RECS_PREV_HTML = "billboard_reply_list_prev.htm";
+    private final static String HTML_TEMPLATE_START = "billboard_reply_welcome.htm";
 
     private final static String header = "header";
     private final static String text = "text";

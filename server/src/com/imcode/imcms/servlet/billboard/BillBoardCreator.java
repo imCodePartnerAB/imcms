@@ -31,7 +31,7 @@ import imcode.util.Utility;
 
 public class BillBoardCreator extends BillBoard {//BillBoardCreator
 
-    private final static String HTML_TEMPLATE = "BillBoard_Creator.htm";
+    private final static String HTML_TEMPLATE = "billboard_creator.htm";
 
     /**
      * The POST method creates the html page when this side has been

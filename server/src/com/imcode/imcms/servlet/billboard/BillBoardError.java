@@ -17,7 +17,7 @@ import java.util.List;
 
 public class BillBoardError extends BillBoard {
 
-    private static final String ERROR_FILE_2 = "BillBoard_User_Error.htm";
+    private static final String ERROR_FILE_2 = "billboard_user_error.htm";
 
     private String myErrorMessage;
 

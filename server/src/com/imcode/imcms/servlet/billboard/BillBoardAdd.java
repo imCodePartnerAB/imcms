@@ -5,11 +5,9 @@ import imcode.external.diverse.VariableManager;
 import imcode.server.ApplicationServer;
 import imcode.server.HTMLConv;
 import imcode.server.IMCServiceInterface;
-import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,8 +42,9 @@ import java.util.Properties;
 
 public class BillBoardAdd extends BillBoard {
 
-    private String HTML_TEMPLATE;
-    private String SERVLET_NAME;  // The name on this servlet
+    private final static String HTML_TEMPLATE = "billboard_add.htm";
+    private final static String SERVLET_NAME = "BillBoardAdd";  // The name on this servlet
+
     private final static String sectionId = "sectionId";
     private final static String header = "header";
     private final static String text = "text";
@@ -360,11 +359,9 @@ public class BillBoardAdd extends BillBoard {
             vm.addProperty( "CURRENT_SECTION_NAME", currSection );
 		
             // Lets get the addtype and add it to the page
+            String htmlTemplate = HTML_TEMPLATE ;
             if ( params.getProperty( "ADD_TYPE" ).equalsIgnoreCase( "REPLY" ) ) {
-                HTML_TEMPLATE = "BillBoard_Add_Reply.htm";
-            } else {
-
-                HTML_TEMPLATE = "BillBoard_Add.htm";
+                htmlTemplate = "billboard_add_reply.htm";
             }
 
             //ok here we have to see if the input fields shall be empty or not.
@@ -382,7 +379,7 @@ public class BillBoardAdd extends BillBoard {
                 vm.addProperty( email, (String)billPrevData.get( email ) );
             }
 
-            this.sendHtml( req, res, vm, HTML_TEMPLATE );
+            this.sendHtml( req, res, vm, htmlTemplate );
             return;
         } else {
             String header = SERVLET_NAME + " servlet. ";
@@ -588,26 +585,6 @@ public class BillBoardAdd extends BillBoard {
     private String doMailStuff( String str ) {
         //<A HRef="mailto:' + MailLink + '"' + 'Target=_new>' +' ' + MailLink + '</A>' + '&nbsp
         return "<A HRef=\"mailto:" + str + "\" Target=_new> " + str + "</A>";
-    }
-
-    /**
-     * Init
-     */
-
-    public void init( ServletConfig config )
-            throws ServletException {
-        super.init( config );
-        HTML_TEMPLATE = "BillBoard_Add.htm";
-        SERVLET_NAME = "BillBoardAdd";
-    }
-
-    /**
-     * Log function, will work for both servletexec and Apache
-     */
-
-    public void log( String str ) {
-        super.log( "BillBoardAdd " + str );
-        //System.out.println(SERVLET_NAME + " " + str ) ;
     }
 
 } // End of class

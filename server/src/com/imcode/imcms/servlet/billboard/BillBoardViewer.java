@@ -28,7 +28,7 @@ import com.imcode.imcms.servlet.billboard.BillBoard;
 
 public class BillBoardViewer extends BillBoard {//ConfViewer
 
-    private final static String HTML_TEMPLATE = "BillBoard_set.htm";;         // the relative path from web root to where the servlets are
+    private final static String HTML_TEMPLATE = "billboard_set.htm";         // the relative path from web root to where the servlets are
 
     public void doGet( HttpServletRequest req, HttpServletResponse res )
             throws ServletException, IOException {

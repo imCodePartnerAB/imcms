@@ -31,10 +31,10 @@ import com.imcode.imcms.servlet.billboard.BillBoard;
 
 public class BillBoardForum extends BillBoard {//ConfForum
 
-    private final static String ADMIN_LINK_TEMPLATE = "BillBoard_Section_Admin_Link.htm";//Conf_Forum_Admin_Link.htm
+    private final static String ADMIN_LINK_TEMPLATE = "billboard_section_admin_link.htm";//Conf_Forum_Admin_Link.htm
 
-    private final static String HTML_TEMPLATE = "BillBoard_Section.htm";
-    private final static String HTML_TEMPLATE_EXT= "BillBoard_Section_ext.htm" ;
+    private final static String HTML_TEMPLATE = "billboard_section.htm";
+    private final static String HTML_TEMPLATE_EXT= "billboard_section_ext.htm" ;
 
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {

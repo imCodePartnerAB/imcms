@@ -75,11 +75,11 @@ import java.util.Vector;
 
 public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
-    private final static String FORUM_UNADMIN_LINK_TEMPLATE = "BillBoard_Section_Unadmin_Link.htm";//"Conf_Forum_Unadmin_Link.htm";
-    private final static String FORUM_TEMPLATE1_UNADMIN_LINK_TEMPLATE = "BillBoard_Section_Template1_Unadmin_Link.htm";//"Conf_Forum_Template1_Unadmin_Link.htm";
-    private final static String FORUM_TEMPLATE2_UNADMIN_LINK_TEMPLATE = "BillBoard_Section_Template2_Unadmin_Link.htm";//"Conf_Forum_Template2_Unadmin_Link.htm";
-    private final static String DISC_UNADMIN_LINK_TEMPLATE = "BillBoard_Disc_Unadmin_Link.htm";//"Conf_Disc_Unadmin_Link.htm";
-    private final static String REPLY_UNADMIN_LINK_TEMPLATE = "BillBoard_Reply_Unadmin_Link.htm";//"Conf_Reply_Unadmin_Link.htm";
+    private final static String FORUM_UNADMIN_LINK_TEMPLATE = "billboard_section_unadmin_link.htm";//"Conf_Forum_Unadmin_Link.htm";
+    private final static String FORUM_TEMPLATE1_UNADMIN_LINK_TEMPLATE = "billboard_section_template1_unadmin_link.htm";//"Conf_Forum_Template1_Unadmin_Link.htm";
+    private final static String FORUM_TEMPLATE2_UNADMIN_LINK_TEMPLATE = "billboard_section_template2_unadmin_link.htm";//"Conf_Forum_Template2_Unadmin_Link.htm";
+    private final static String DISC_UNADMIN_LINK_TEMPLATE = "billboard_disc_unadmin_link.htm";//"Conf_Disc_Unadmin_Link.htm";
+    private final static String REPLY_UNADMIN_LINK_TEMPLATE = "billboard_reply_unadmin_link.htm";//"Conf_Reply_Unadmin_Link.htm";
 
     /**
      * DoPost
@@ -517,7 +517,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
                 vm.addProperty( "META_ID", metaId );
                 vm.addProperty( "UNADMIN_LINK_HTML", FORUM_TEMPLATE2_UNADMIN_LINK_TEMPLATE );
 
-                htmlFile = "BillBoard_admin_template2.htm";
+                htmlFile = "billboard_admin_template2.htm";
 
                 // Ok, were gonna show our standard meta page
             } else {
@@ -539,7 +539,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
                 vm.addProperty( "CURRENT_TEMPLATE_SET", currTemplateSet );
                 vm.addProperty( "UNADMIN_LINK_HTML", FORUM_TEMPLATE1_UNADMIN_LINK_TEMPLATE );
 
-                htmlFile = "BillBoard_admin_template1.htm" ;
+                htmlFile = "billboard_admin_template1.htm" ;
             }
         }
 
@@ -584,13 +584,13 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             vm.addProperty( "NBR_OF_DAYS_TO_SHOW_LIST", daysToShowList );
             vm.addProperty( "UNADMIN_LINK_HTML", FORUM_UNADMIN_LINK_TEMPLATE );
             //this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
-            htmlFile = "BillBoard_admin_section.htm";
+            htmlFile = "billboard_admin_section.htm";
             //return ;
         }
 
         // *********** ADMIN DISCUSSION *************
         if ( adminWhat.equalsIgnoreCase( "DISCUSSION" ) ) {
-            String adminDiscList = "BillBoard_admin_disc_list.htm";//Conf_admin_disc_list.htm
+            String adminDiscList = "billboard_admin_disc_list.htm";//Conf_admin_disc_list.htm
 
             // Lets get parameters
             String aMetaId = params.getProperty( "META_ID" );
@@ -624,13 +624,13 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             vm.addProperty( "NEW_A_HREF_LIST", allNewRecs );
             vm.addProperty( "UNADMIN_LINK_HTML", DISC_UNADMIN_LINK_TEMPLATE );
 
-            htmlFile = "BillBoard_admin_disc.htm";
+            htmlFile = "billboard_admin_disc.htm";
         } // End admin discussion
 
 
         // *********** ADMIN OLD DISCUSSION *************
         if ( adminWhat.equalsIgnoreCase( "OLD_DISCUSSION" ) ) {
-            String adminDiscList = "BillBoard_admin_disc_list.htm";//Conf_admin_disc_list.htm
+            String adminDiscList = "billboard_admin_disc_list.htm";//Conf_admin_disc_list.htm
 
             // Lets get parameters
             String aMetaId = params.getProperty( "META_ID" );
@@ -665,7 +665,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             vm.addProperty( "UNADMIN_LINK_HTML", DISC_UNADMIN_LINK_TEMPLATE );
 
             //this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
-            htmlFile = "BillBoard_admin_disc2.htm";
+            htmlFile = "billboard_admin_disc2.htm";
             //return ;
         } // End admin discussion
 
@@ -673,7 +673,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
         // *********** ADMIN REPLIES *************
         if ( adminWhat.equalsIgnoreCase( "REPLY" ) ) {
-            String adminReplyList = "BillBoard_admin_reply_list.htm";//Conf_admin_reply_list.htm
+            String adminReplyList = "billboard_admin_reply_list.htm";//Conf_admin_reply_list.htm
             log( "OK, Administrera replies" );
 
             // Lets get the replylist from DB
@@ -712,7 +712,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             vm.addProperty( "REPLIES_RECORDS", allRecs );
             vm.addProperty( "UNADMIN_LINK_HTML", REPLY_UNADMIN_LINK_TEMPLATE );
 
-            htmlFile = "BillBoard_admin_reply.htm";
+            htmlFile = "billboard_admin_reply.htm";
         } // End admin Reply
 
         this.sendHtml( req, res, vm, htmlFile );

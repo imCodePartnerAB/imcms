@@ -62,13 +62,13 @@ import java.util.*;
 
 public class BillBoardDisc extends BillBoard {//ConfDisc
 
-    private final static String PREVIOUS_DISC_LIST_TEMPLATE = "BillBoard_Disc_List_Previous.htm";//"Conf_Disc_List_Previous.htm";
-    private final static String NEXT_DISC_LIST_TEMPLATE = "BillBoard_Disc_List_Next.htm";//"Conf_Disc_List_Next.htm";
-    private final static String NEW_DISC_TEMPLATE = "BillBoard_Disc_New_Button.htm";//"Conf_Disc_New_Button.htm";
-    private final static String ADMIN_LINK_TEMPLATE = "BillBoard_Disc_Admin_Link.htm";//"Conf_Disc_Admin_Link.htm";
+    private final static String PREVIOUS_DISC_LIST_TEMPLATE = "billboard_disc_list_previous.htm";//"Conf_Disc_List_Previous.htm";
+    private final static String NEXT_DISC_LIST_TEMPLATE = "billboard_disc_list_next.htm";//"Conf_Disc_List_Next.htm";
+    private final static String NEW_DISC_TEMPLATE = "billboard_disc_new_button.htm";//"Conf_Disc_New_Button.htm";
+    private final static String ADMIN_LINK_TEMPLATE = "billboard_disc_admin_link.htm";//"Conf_Disc_Admin_Link.htm";
 
-    private String HTML_TEMPLATE = "BillBoard_Disc.htm";
-    private String A_HREF_HTML = "BillBoard_Disc_List.htm";   // The code snippet where the aHref list with all discussions
+    private String HTML_TEMPLATE = "billboard_disc.htm";
+    private String A_HREF_HTML = "billboard_disc_list.htm";   // The code snippet where the aHref list with all discussions
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 

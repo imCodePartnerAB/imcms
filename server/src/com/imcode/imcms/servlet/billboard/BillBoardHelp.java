@@ -15,9 +15,9 @@ import java.util.Properties;
 
 public class BillBoardHelp extends BillBoard {//ConfHelp
 
-    private final static String USER_TEMPLATE = "BillBoard_help_user.htm";//Conf_help_user.htm
-    private final static String ADMIN_TEMPLATE = "BillBoard_help_admin.htm";//Conf_help_admin.htm
-    private final static String ADMIN_TEMPLATE2 = "BillBoard_help_admin2.htm";// Conf_help_admin2.htm
+    private final static String USER_TEMPLATE = "billboard_help_user.htm";//Conf_help_user.htm
+    private final static String ADMIN_TEMPLATE = "billboard_help_admin.htm";//Conf_help_admin.htm
+    private final static String ADMIN_TEMPLATE2 = "billboard_help_admin2.htm";// Conf_help_admin2.htm
 
     public void doPost( HttpServletRequest req, HttpServletResponse res )
             throws ServletException, IOException {
