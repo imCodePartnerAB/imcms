@@ -11,7 +11,7 @@ import java.util.*;
 */
 public class Chat
 {
-
+	private int chatId;
 	private Hashtable _chatMembers;
 	private String _name;
 	private Hashtable _chatGroups;
@@ -28,6 +28,21 @@ public class Chat
 		_roomCounter = new Counter();
 		_chatMembers = new Hashtable();
 		_chatGroups = new Hashtable();	
+	}
+
+	public Chat(int id, String name, Vector groups)
+	{
+		chatId=id;
+		_name=name;
+		_memberCounter = new Counter();
+		_roomCounter = new Counter();
+		_chatMembers = new Hashtable();
+		_chatGroups = new Hashtable();
+		for(int i=0;i<groups.size();i+=2)
+		{
+			_chatGroups.put(groups.get(i),groups.get(i+1));
+		}
+			
 	}
 
 	/**
