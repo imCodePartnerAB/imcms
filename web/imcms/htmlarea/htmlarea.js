@@ -717,7 +717,14 @@ HTMLArea.prototype.generate = function () {
 		}
 		f.onsubmit = function() {
 			if (textarea.style.display == "none") {
-				editor._textArea.value = fixHTML(editor.getHTML()) ;
+				var sEditorContent = fixHTML(editor.getHTML()) ;
+				sEditorContent = sEditorContent.replace(/^\s+/, "") ;
+				sEditorContent = sEditorContent.replace(/\s+$/, "") ;
+				sEditorContent = sEditorContent.replace(/^(<(BR|P) \/>)+/i, "") ;
+				sEditorContent = sEditorContent.replace(/(<(BR|P) \/>)+$/i, "") ;
+				sEditorContent = sEditorContent.replace(/^<P>/i, "") ;
+				sEditorContent = sEditorContent.replace(/<\/P>$/i, "") ;
+				editor._textArea.value = sEditorContent ;
 				var a = this.__msh_prevOnSubmit;
 				// call previous submit methods if they were there.
 				if (typeof a != "undefined") {
