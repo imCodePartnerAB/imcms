@@ -317,7 +317,7 @@ public class AddDoc extends HttpServlet {
 
 	//**************** section index word stuff *****************
 	//lets get the section stuff from db
-	String[] parent_section = IMCServiceRMI.sqlProcedure(imcserver,"get_inherit_section_id "+meta_id) ;
+	String[] parent_section = IMCServiceRMI.sqlProcedure(imcserver,"SectionGetInheritId "+meta_id) ;
 	//lets add the stuff that ceep track of the inherit section id and name
 	if (parent_section == null || parent_section.length < 2 ) {
 	    vec.add("#current_section_id#") ;	vec.add("-1") ;
@@ -328,7 +328,7 @@ public class AddDoc extends HttpServlet {
 	}
 
 	//lets build the option list used when the admin whants to breake the inherit chain
-	String[] all_sections = IMCServiceRMI.sqlProcedure(imcserver,"get_all_sections") ;
+	String[] all_sections = IMCServiceRMI.sqlProcedure(imcserver,"SectionGetAll") ;
 	Vector onlyTemp = new Vector();
 	String option_list = "";
 	String selected = "-1";

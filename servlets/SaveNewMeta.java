@@ -250,7 +250,7 @@ public class SaveNewMeta extends HttpServlet {
 		}
 		//ok if we have one lets update the db
 		if (section_id != null) {
-			IMCServiceRMI.sqlUpdateProcedure(imcserver,"add_section_crossref " + meta_id +", " +section_id);
+			IMCServiceRMI.sqlUpdateProcedure(imcserver,"SectionAddCrossref " + meta_id +", " +section_id);
 		}
 				
 				
