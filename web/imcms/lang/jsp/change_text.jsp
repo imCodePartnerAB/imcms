@@ -94,21 +94,23 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 	<tr>
 		<td>
 		<table border="0" cellpadding="0" cellspacing="0">
-		<tr><%
+		<tr>
+			<td class="imcmsAdmText">&nbsp;<? templates/sv/change_text.html/1001 ?>&nbsp;</td><%
 		if (showModeText) { %>
-			<td class="imcmsAdmText">&nbsp;<? templates/sv/change_text.html/1001 ?>&nbsp;</td>
 			<td><input type="RADIO" name="format_type" id="format_type0" value="0"<%
 			%><%= (imcmsModeText) ? "" : " checked" %>></td>
 			<td class="imcmsAdmText">
 			<label for="format_type0" accesskey="T" title="Text (<%= isMac ? "Ctrl" : "Alt" %> + T)">
 			&nbsp;<u>T</u>ext&nbsp;</label>&nbsp;</td><%
-		} %>
+		}
+		if (showModeHtml) { %>
 			<td><input type="RADIO" name="format_type" id="format_type1" value="1"<%
 			%><%= (isHtmlAreaSupported && showModeEditor) ? " onClick=\"showHideHtmlArea(false);\"" : "" %><%
 			%><%= ((imcmsModeHtml || (imcmsModeText && !showModeText)) && (!showEditorCookie || !showModeEditor || !showModeText)) ? " checked" : "" %>></td>
 			<td class="imcmsAdmText">
 			<label for="format_type1" accesskey="H" title="HTML (<%= isMac ? "Ctrl" : "Alt" %> + H)">
 			&nbsp;<u>H</u>TML&nbsp;</label>&nbsp;</td><%
+		}
 		if (isHtmlAreaSupported && showModeEditor) { %>
 			<td><input type="RADIO" name="format_type" id="format_type2" value="1" <%
 			%>onClick="showHideHtmlArea(true);"<%
@@ -161,8 +163,9 @@ setEditorSize() ;
 
 function checkMode() {
 	var f = document.forms[0] ;
-	if (f.format_type.length == 1) {
-		f.format_type[0].checked = true ;
+	window.status = f.format_type + "" + (f.format_type.length > 0) + "" ;
+	if (!(f.format_type.length > 0)) {
+		f.format_type.checked = true ;
 	} else if (f.format_type.length == 2 && !f.format_type[0].checked && !f.format_type[1].checked) {
 		f.format_type[0].checked = true ;
 	}

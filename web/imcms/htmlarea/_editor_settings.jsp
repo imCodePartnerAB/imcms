@@ -20,10 +20,11 @@ User user                           = imcmsSystem.getCurrentUser() ;
  *         Editor functions & layout                                                         *
  ******************************************************************************************* */
 
-boolean showModeEditor = true ;
 boolean showModeText   = true ;
+boolean showModeHtml   = true ;
+boolean showModeEditor = true ;
 
-boolean hasNone = false ;
+boolean hasHtml = false ;
 boolean hasText = false ;
 
 String[] format = request.getParameterValues("format") ;
@@ -31,15 +32,26 @@ int      rows   = -1 ;
 
 if (format != null) {
 	for (int i = 0; i < format.length; i++) {
-		if (format[i].toLowerCase().matches("none|html")) hasNone = true ;
+		if (format[i].toLowerCase().matches("none|html")) hasHtml = true ;
 		if (format[i].toLowerCase().matches("text"))      hasText = true ;
 	}
 	if (!(format.length == 1 && format[0].equals(""))) {
-		if (hasNone && !hasText) {
+		if (hasHtml && hasText) {
+			showModeText   = true ;
+			showModeHtml   = true ;
 			showModeEditor = false ;
+		} else if (hasHtml) {
 			showModeText   = false ;
-		} else {
+			showModeHtml   = true ;
 			showModeEditor = false ;
+		} else if (hasText) {
+			showModeText   = true ;
+			showModeHtml   = false ;
+			showModeEditor = false ;
+		} else {
+			showModeText   = true ;
+			showModeHtml   = true ;
+			showModeEditor = true ;
 		}
 	}
 }
