@@ -8,6 +8,8 @@ import imcode.server.ApplicationServer;
 import imcode.server.IMCService;
 import imcode.server.user.UserDomainObject;
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +28,9 @@ public class ImcmsSetupFilter implements Filter {
 
         initRequestWithImcmsSystemAPI( currentUser, request );
 
+        NDC.push(StringUtils.substringAfterLast(((HttpServletRequest)request).getRequestURI(), "/")) ;
         chain.doFilter( request, response );
+        NDC.pop() ;
     }
 
     private void initRequestWithImcmsSystemAPI( UserDomainObject currentUser, ServletRequest request ) {

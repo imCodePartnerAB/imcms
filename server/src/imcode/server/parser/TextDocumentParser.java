@@ -9,6 +9,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateHelper;
 import imcode.util.FileCache;
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 import org.apache.oro.text.regex.*;
 
 import java.io.File;
@@ -67,7 +68,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     }
 
     public String parsePage( DocumentRequest documentRequest, int flags, ParserParameters paramsToParse ) throws IOException {
-        return parsePage( documentRequest, flags, 5, paramsToParse );
+        NDC.push("parsePage") ;
+        String page = parsePage( documentRequest, flags, 5, paramsToParse );
+        NDC.pop();
+        return page ;
     }
 
     public String parsePage( DocumentRequest documentRequest, int flags, int includelevel, ParserParameters paramsToParse ) throws IOException {

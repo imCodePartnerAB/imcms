@@ -1,6 +1,7 @@
 package imcode.server.user;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,6 +36,7 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
     }
 
     public boolean authenticate( String loginName, String password ) {
+        NDC.push("authenticate") ;
         // this is a fix. Because external users gets the password empty string "" we need to check that the
         // password exeedes 0 lenght.
         boolean userAuthenticatesInImcms = false;
@@ -45,10 +47,12 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
         if( !userAuthenticatesInImcms && null != externalAuthenticator ) {
             userAuthenticatesInExternal = externalAuthenticator.authenticate( loginName, password );
         }
+        NDC.pop() ;
         return userAuthenticatesInImcms || userAuthenticatesInExternal;
     }
 
     public UserDomainObject getUser( String loginName ) {
+        NDC.push("getUser") ;
         UserDomainObject imcmsUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
         UserDomainObject externalUser = getUserFromOtherUserMapper( loginName );
         boolean imcmsUserExists = null != imcmsUser;
@@ -76,6 +80,7 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
             result = imcmsUser;
             //throw new UserConflictException( "An imcmsAuthenticatorAndUserMapper-internal user was found in external directory.", null );
         }
+        NDC.pop() ;
         return result;
     }
 

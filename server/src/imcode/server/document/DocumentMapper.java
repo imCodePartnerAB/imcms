@@ -12,6 +12,7 @@ import imcode.util.DateHelper;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -131,7 +132,7 @@ public class DocumentMapper {
     private int createNewMeta(int parentId, int parentMenuNumber, int documentType, UserDomainObject user) {
         Date nowDateTime = new Date();
 
-        int newMetaId = sqlCreateNewRowInMetaCopyParentData(service, parentId);
+        int newMetaId = sqlCreateNewRowInMetaCopyParentData( service, parentId );
 
         // inherit all the different data that's not in meta from parent.
         sprocUpdateInheritPermissions(service, newMetaId, parentId, documentType);
@@ -158,6 +159,7 @@ public class DocumentMapper {
                                                                    int documentType, int parentMenuNumber) {
         int newMetaId = createNewMeta(parentId, parentMenuNumber, documentType, user );
 
+        touchDocument( getDocument(parentId) );
         DocumentMapper.copyTemplateData(service, user, String.valueOf(parentId), String.valueOf(newMetaId));
         DocumentMapper.sqlUpdateActivateTheDocument(service, newMetaId);
 
@@ -167,9 +169,10 @@ public class DocumentMapper {
     public DocumentDomainObject createNewUrlDocument(UserDomainObject user, int parentId, int parentMenuNumber, int documentType, String urlRef, String target ) {
         int newMetaId = createNewMeta(parentId, parentMenuNumber, documentType, user);
 
-        //IMCServiceInterface imcref, String new_meta_id, String url_ref, String target
+        DocumentDomainObject document = getDocument( newMetaId );
+        touchDocument( document );
         insertIntoUrlDocs( service, newMetaId, urlRef, target );
-        return getDocument( newMetaId );
+        return document ;
     }
 
 
@@ -313,72 +316,14 @@ public class DocumentMapper {
         return StringUtils.join(keywords, ", ");
     }
 
-    public DocumentDomainObject getDocument(int metaId) {
-        DocumentDomainObject document;
-        Map documentData = sprocGetDocumentInfo(service, metaId);
-        if (documentData == null) {
-            throw new IndexOutOfBoundsException("No such document: " + metaId);
-        }
-        DateFormat dateform = new SimpleDateFormat(DateHelper.DATE_TIME_SECONDS_FORMAT_STRING);
-        document = new DocumentDomainObject();
-        document.setMetaId(Integer.parseInt((String) documentData.get("meta_id")));
-        document.setDocumentType(Integer.parseInt((String) documentData.get("doc_type")));
-        document.setCreator(imcmsAAUM.getUser(Integer.parseInt((String) documentData.get("owner_id"))));
-        document.setHeadline((String) documentData.get("meta_headline"));
-        document.setText((String) documentData.get("meta_text"));
-        document.setImage((String) documentData.get("meta_image"));
-        document.setTarget((String) documentData.get("target"));
-        document.setSearchDisabled("0".equals(documentData.get("disable_search")) ? false : true);
-        String langStr = (String) documentData.get("lang_prefix");
-        try {
-            langStr = LanguageMapper.getAsIso639_2(langStr);
-        } catch (LanguageMapper.LanguageNotSupportedException e) {
-            log.error("Unsupported language '" + langStr + "' found in database for document " + metaId
-                    + ". Using default.",
-                    e);
-            langStr = service.getDefaultLanguageAsIso639_2();
-        }
-        document.setLanguageIso639_2(langStr);
-        document.setArchivedFlag("0".equals(documentData.get("archive")) ? false : true);
+    public DocumentDomainObject getDocument( int metaId ) {
+        NDC.push("getDocument") ;
 
-        String publisherIDStr = (String) documentData.get("publisher_id");
-        if (null != publisherIDStr) {
-            UserDomainObject publisher = imcmsAAUM.getUser(Integer.parseInt(publisherIDStr));
-            document.setPublisher(publisher);
+        DocumentDomainObject document = sprocGetDocumentInfo( metaId );
+        if ( document == null ) {
+            throw new IndexOutOfBoundsException( "No such document: " + metaId );
         }
 
-        document.setSections(getSections(metaId));
-
-        document.setKeywords(getKeywords(metaId));
-
-        try {
-            document.setCreatedDatetime(dateform.parse((String) documentData.get("date_created")));
-        } catch (NullPointerException npe) {
-            document.setCreatedDatetime(null);
-        } catch (ParseException pe) {
-            document.setCreatedDatetime(null);
-        }
-        try {
-            document.setModifiedDatetime(dateform.parse((String) documentData.get("date_modified")));
-        } catch (NullPointerException npe) {
-            document.setModifiedDatetime(null);
-        } catch (ParseException pe) {
-            document.setModifiedDatetime(null);
-        }
-        try {
-            document.setActivatedDatetime(dateform.parse((String) documentData.get("activated_datetime")));
-        } catch (NullPointerException npe) {
-            document.setActivatedDatetime(null);
-        } catch (ParseException pe) {
-            document.setActivatedDatetime(null);
-        }
-        try {
-            document.setArchivedDatetime(dateform.parse((String) documentData.get("archived_datetime")));
-        } catch (NullPointerException npe) {
-            document.setArchivedDatetime(null);
-        } catch (ParseException pe) {
-            document.setArchivedDatetime(null);
-        }
         if (DocumentDomainObject.DOCTYPE_TEXT == document.getDocumentType()) {
             initTextDoc(service, document);
         }
@@ -394,10 +339,16 @@ public class DocumentMapper {
         if (DocumentDomainObject.DOCTYPE_URL == document.getDocumentType()) {
             document.setUrlRef(sqlGetFromUrlDocs(service, metaId));
         }
-        addCategoriesFromDatabaseToDocument(document);
 
-        String[] sprocResult1 = service.sqlProcedure(SPROC_GET_USER_ROLES_DOC_PERMISSONS,
-                new String[]{String.valueOf(document.getMetaId()), "-1"});
+        addCategoriesFromDatabaseToDocument( document );
+
+        document.setSections( getSections( metaId ) );
+
+        document.setKeywords( getKeywords( metaId ) );
+
+        String[] sprocResult1 = service.sqlProcedure( SPROC_GET_USER_ROLES_DOC_PERMISSONS,
+                                                      new String[]{String.valueOf( document.getMetaId() ), "-1"} );
+
         int noOfColumns = 4;
         for (int i = 0, k = 0; i < sprocResult1.length; i = i + noOfColumns, k++) {
             int roleId = Integer.parseInt(sprocResult1[i]);
@@ -407,6 +358,7 @@ public class DocumentMapper {
             document.setPermissionSetForRole(role, rolePermissionSetId);
         }
 
+        NDC.pop() ;
         return document;
     }
 
@@ -1060,45 +1012,47 @@ public class DocumentMapper {
         return user_doc_types;
     }
 
-    private static Map sprocGetDocumentInfo(IMCServiceInterface service, int metaId) {
+    private DocumentDomainObject sprocGetDocumentInfo( int metaId ) {
+        DocumentDomainObject document = new DocumentDomainObject();
 
-        String[] params = new String[]{String.valueOf(metaId)};
-        String[] result = service.sqlProcedure(SPROC_GET_DOCUMENT_INFO, params);
+        String[] result = service.sqlProcedure( SPROC_GET_DOCUMENT_INFO, new String[]{String.valueOf( metaId )} );
 
         if (0 == result.length) {
             return null;
         }
 
-        Map map = new HashMap();
+        document.setMetaId( Integer.parseInt( result[0] ) );
+        document.setDocumentType( Integer.parseInt( result[2] ) );
+        document.setHeadline( result[3] );
+        document.setText( result[4] );
+        document.setImage( result[5] );
+        document.setCreator( imcmsAAUM.getUser( Integer.parseInt( result[6] ) ) );
+        document.setArchivedFlag( "0".equals( result[12] ) ? false : true );
+        document.setLanguageIso639_2( LanguageMapper.getAsIso639_2OrDefaultLanguage( result[14],service )) ;
+        DateFormat dateFormat = new SimpleDateFormat( DateHelper.DATE_TIME_SECONDS_FORMAT_STRING );
+        document.setCreatedDatetime( parseDateFormat( dateFormat, result[16] ) );
+        document.setModifiedDatetime( parseDateFormat( dateFormat, result[17] ) );
+        document.setSearchDisabled( "0".equals(result[20]) ? false : true ) ;
+        document.setTarget( result[21] );
+        document.setActivatedDatetime( parseDateFormat( dateFormat, result[23] ) );
+        document.setArchivedDatetime( parseDateFormat( dateFormat, result[24] ) );
+        String publisherIdStr = result[25];
+        if ( null != publisherIdStr ) {
+            UserDomainObject publisher = imcmsAAUM.getUser( Integer.parseInt( publisherIdStr ) );
+            document.setPublisher( publisher );
+        }
 
-        map.put("meta_id", result[0]);
-        map.put("description", result[1]);
-        map.put("doc_type", result[2]);
-        map.put("meta_headline", result[3]);
-        map.put("meta_text", result[4]);
-        map.put("meta_image", result[5]);
-        map.put("owner_id", result[6]);
-        map.put("permissions", result[7]);
-        map.put("shared", result[8]);
-        map.put("expand", result[9]);
-        map.put("show_meta", result[10]);
-        map.put("help_text_id", result[11]);
-        map.put("archive", result[12]);
-        map.put("status_id", result[13]);
-        map.put("lang_prefix", result[14]);
-        map.put("classification", result[15]);
-        map.put("date_created", result[16]);
-        map.put("date_modified", result[17]);
-        map.put("sort_position", result[18]);
-        map.put("menu_position", result[19]);
-        map.put("disable_search", result[20]);
-        map.put("target", result[21]);
-        map.put("frame_name", result[22]);
-        map.put("activated_datetime", result[23]);
-        map.put("archived_datetime", result[24]);
-        map.put("publisher_id", result[25]);
+        return document;
+    }
 
-        return map;
+    private Date parseDateFormat( DateFormat dateFormat, String dateString ) {
+        try {
+            return dateFormat.parse( dateString );
+        } catch (NullPointerException npe) {
+            return null ;
+        } catch (ParseException pe) {
+            return null ;
+        }
     }
 
     private String[] sprocGetText(int meta_id, int no) {

@@ -74,7 +74,7 @@ public class DocumentIndex {
     }
 
     public void indexAllDocuments() {
-        NDC.push("index all") ;
+        NDC.push("indexAll") ;
         try {
             IndexWriter indexWriter = new IndexWriter( dir, new WhitespaceLowerCaseAnalyzer(), true );
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -110,8 +110,10 @@ public class DocumentIndex {
 
     private void logGetDocumentsStopWatch( StopWatch getDocumentStopWatch, int documentCount ) {
         long time = getDocumentStopWatch.getTime();
-        long millisecondsPerDocument = time / documentCount ;
-        log.debug( "Spent " + time + "ms ("+millisecondsPerDocument+"ms/document) fetching "+documentCount+" documents from the database." );
+        if (0 != documentCount) {
+            long millisecondsPerDocument = time / documentCount ;
+            log.debug( "Spent " + time + "ms ("+millisecondsPerDocument+"ms/document) fetching "+documentCount+" documents from the database." );
+        }
     }
 
     private DocumentDomainObject getDocument( StopWatch getDocumentStopWatch, DocumentMapper documentMapper,

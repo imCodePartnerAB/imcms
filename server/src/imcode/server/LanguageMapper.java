@@ -72,14 +72,7 @@ public class LanguageMapper {
         List languagesInOptionList = new ArrayList();
         for ( int i = 0 ; i < languages.length ; i++ ) {
             String langStr = languages[i][0];
-            try {
-                langStr = getAsIso639_2(langStr);
-            } catch ( LanguageMapper.LanguageNotSupportedException e ) {
-                log.error( "Unsupported language '"
-                           + langStr
-                           + "' found in database. Using default.", e );
-                langStr = service.getDefaultLanguageAsIso639_2() ;
-            }
+            langStr = getAsIso639_2OrDefaultLanguage( langStr, service );
             String userLangPrefix = languages[i][1];
             String languageNameInUserLanguage = languages[i][2];
             if ( userLangPrefix.equalsIgnoreCase( user.getLangPrefix() ) ) {
@@ -88,6 +81,18 @@ public class LanguageMapper {
             }
         }
         return languagesInOptionList;
+    }
+
+    public static String getAsIso639_2OrDefaultLanguage( String langStr, IMCServiceInterface service ) {
+        try {
+            langStr = getAsIso639_2(langStr);
+        } catch ( LanguageNotSupportedException e ) {
+            log.error( "Unsupported language '"
+                       + langStr
+                       + "' found in database. Using default.", e );
+            langStr = service.getDefaultLanguageAsIso639_2() ;
+        }
+        return langStr;
     }
 
     /**

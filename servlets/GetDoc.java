@@ -43,7 +43,7 @@ public class GetDoc extends HttpServlet {
             log.debug( "Exception occured" + ex );
         }
         String tempstring = getDoc( meta_id, meta_id, req, res );
-        if( tempstring != null ) {
+        if ( tempstring != null ) {
             byte[] tempbytes = tempstring.getBytes( WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
             res.setContentLength( tempbytes.length );
             out.write( tempbytes );
@@ -193,7 +193,7 @@ public class GetDoc extends HttpServlet {
         // check if external doc
         imcode.server.ExternalDocType ex_doc = imcref.isExternalDoc( meta_id, user );
         String htmlStr;
-        if( ex_doc != null ) {
+        if ( ex_doc != null ) {
             String paramStr = "?meta_id=" + meta_id + "&";
             paramStr += "parent_meta_id=" + parent_meta_id + "&";
             paramStr += "cookie_id=" + "1A" + "&";

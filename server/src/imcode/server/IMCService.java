@@ -14,6 +14,7 @@ import imcode.util.poll.PollHandlingSystemImpl;
 import imcode.util.shop.ShoppingOrderSystem;
 import imcode.util.shop.ShoppingOrderSystemImpl;
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 import imcode.util.FileCache;
 import imcode.util.fortune.*;
@@ -210,6 +211,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Verify a Internet/Intranet user. User data retrived from SQL Database.
      */
     public UserDomainObject verifyUser( String login, String password ) {
+        NDC.push("verifyUser") ;
         UserDomainObject result = null;
 
         boolean userAuthenticates = externalizedImcmsAuthAndMapper.authenticate( login, password );
@@ -225,6 +227,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             mainLog.info( "->User '" + login + "' failed to log in: Wrong password." );
         }
 
+        NDC.pop() ;
         return result;
     }
 

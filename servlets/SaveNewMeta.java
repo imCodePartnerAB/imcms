@@ -212,8 +212,7 @@ public class SaveNewMeta extends HttpServlet {
             try {
                 DocumentMapper.addDocumentToMenu(imcref,user,parentMetaId,menuIndex,metaId);
             } catch (DocumentMapper.DocumentAlreadyInMenuException e) {
-                // FIXME, forward to an error response instead, that tells the user that the link already exists in that menu
-                // Swallow for now.
+                // Can't happen, new document
             }
 
             // Lets update the parents created_date
