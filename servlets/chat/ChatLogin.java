@@ -3,6 +3,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.external.diverse.*;
+import imcode.external.chat.*;
 import imcode.util.* ;
 
 /**
@@ -80,7 +81,9 @@ public class ChatLogin extends ChatBase {
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String ConfPoolServer = Utility.getDomainPref("conference_server",host) ;
+		String ChatPoolServer = Utility.getDomainPref("chat_server",host) ;
+		
+		RmiConf rmi = new RmiConf(user) ;
 /*
 
 		// ******** ADD USER PAGE *********
@@ -131,20 +134,30 @@ public class ChatLogin extends ChatBase {
 	//	Properties sessParam=super.getSessionParameters(req);
 	//	log("sessParam: " + sessParam);
 		
-		//check which room we wants to logg in to
-		String roomId = params.getProperty("META_ID");
+		//check which chat we wants to logg in to
+		String chatId = params.getProperty("META_ID");
 		Vector roomsV = new Vector() ;
 		
 		//lägg in rumslistan
 		if ( session.getValue("roomList")==null )
 		{
-			//Get the rooms for the intended chat
-			log("the session is empty");
+			//Get the rooms for the intended chat			
+			String[] roomIds = rmi.execSqlProcedure(ChatPoolServer, "GetRoomIds " + chatId );
+
+			for(int i = 0;i<roomIds.length;i++)
+			{
+				String roomName = rmi.execSqlProcedureStr(ChatPoolServer, "GetRoomName " + roomIds[i] );
+			//	log("RumId: " + roomIds[i] + " Rum: " + roomName);
+				roomsV.add(roomIds[i]);
+				roomsV.add(roomName);
+				session.putValue("roomList", roomsV);
+			}
 		}
 		else
 		{
+			log("session not empty");
 			//we just created a chat and it already exists a roomList in the session
-		  roomsV= (Vector)session.getValue("roomList");
+		  	roomsV= (Vector)session.getValue("roomList");
 		}
 		 
 		
@@ -153,6 +166,13 @@ public class ChatLogin extends ChatBase {
 			log("Rooms: " + roomsV.get(i));
 		}
 		
+		//get the users username
+		
+	
+		String userName = user.getString("login_name");
+		
+		
+		vm.addProperty("userName", userName );		
 		vm.addProperty("rooms", htm.createHtmlCode("ID_OPTION","", roomsV) ) ;
 		vm.addProperty("SERVLET_URL", MetaInfo.getServletPath(req)) ;
 		vm.addProperty( "#IMAGE_URL#", this.getExternalImageFolder( req ) );
@@ -184,6 +204,7 @@ public class ChatLogin extends ChatBase {
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
+		HttpSession session = req.getSession(true);
 
 		// Lets get the standard parameters and validate them
 		Properties params = super.getSessionParameters(req) ;
@@ -212,7 +233,10 @@ public class ChatLogin extends ChatBase {
 		String confPoolServer = Utility.getDomainPref("conference_server",host) ;
 
 		//get the chat and room and add to session
-		//create chat and groupobjekt????????????????
+		Chat theChat = new Chat(testMetaId, (String)session.getValue("chatName"), (Vector)session.getValue("roomList"));
+		session.putValue("theChat",theChat);
+//create chat and groupobjekt????????????????
+		
 		
 		//redirect to chatViewer
 		String url = MetaInfo.getServletPath(req) ;
