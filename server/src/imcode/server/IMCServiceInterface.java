@@ -148,6 +148,9 @@ public interface IMCServiceInterface {
     public String getDefaultLanguageAsIso639_1()
 	;
 
+    // get language prefix by id
+    public String getLanguagePrefixByLangId ( int lang_id ); 
+
     // get language prefix for user
     public String getUserLangPrefixOrDefaultLanguage( UserDomainObject user )
     ;

@@ -338,6 +338,11 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
+   // get language prefix by id
+    public String getLanguagePrefixByLangId ( int lang_id ){
+       return null;
+   }
+
     // get language prefix for user
     public String getUserLangPrefixOrDefaultLanguage(UserDomainObject user) {
         return null;

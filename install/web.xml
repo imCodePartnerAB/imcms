@@ -39,6 +39,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminCategories</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminCategories</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.conference.AdminConference</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.conference.Conference.AdminConference</servlet-class>
     </servlet>
@@ -581,6 +586,10 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.billboard.AdminBillBoard</servlet-name>
         <url-pattern>/servlet/AdminBillBoard</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminCategories</servlet-name>
+        <url-pattern>/servlet/com.imcode.imcms.servlet.superadmin.AdminCategories</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -839,6 +839,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return defaultLanguageAsIso639_2;
     }
 
+    public String getLanguagePrefixByLangId ( int lang_id ) {
+        String lang_prefix = sqlProcedureStr("GetLangPrefixFromId", new String[]{ ""+lang_id} );
+        return lang_prefix;
+    }
+
     // get language prefix for user
     public String getUserLangPrefixOrDefaultLanguage( UserDomainObject user ) {
         String lang_prefix = this.getDefaultLanguageAsIso639_2();

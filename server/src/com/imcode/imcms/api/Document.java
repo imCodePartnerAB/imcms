@@ -179,6 +179,12 @@ public class Document {
         return Language.getLanguageByISO639_2( internalDocument.getLanguageIso639_2() );
     }
 
+    public void setLanguage( int lang_id ) throws NoPermissionException {
+        securityChecker.hasEditPermission( this );
+        String lang_prefix = service.getLanguagePrefixByLangId( lang_id);
+        internalDocument.setLanguageIso639_2( lang_prefix);
+    }
+
     public void addCategory( Category category ) throws NoPermissionException {
         securityChecker.hasEditPermission( this );
         internalDocument.addCategory( category.getInternal() );
