@@ -137,6 +137,8 @@
     <uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
       <srcfiles dir="${basedir}" includes="${build.properties}.template"/>
     </uptodate>
+    
+    <antcall target="fail-build-properties"/>
 
   </target>
 
