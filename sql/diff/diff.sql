@@ -647,7 +647,7 @@ GO
 
 
 INSERT INTO phonetypes VALUES(0, 'Annat', 1 )
-INSERT INTO phonetypes VALUES(1, 'Home', 1 )
+INSERT INTO phonetypes VALUES(1, 'Hem', 1 )
 INSERT INTO phonetypes VALUES(2, 'Arbete', 1 )
 INSERT INTO phonetypes VALUES(3, 'Mobil', 1 )
 INSERT INTO phonetypes VALUES(4, 'Fax', 1 )
