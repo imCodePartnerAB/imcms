@@ -43,20 +43,21 @@ public class HashTagSubstitution implements Substitution {
 	String tag = matres.group(0) ;
 	String tagdata = tags.getProperty(tag) ;	// Get value of tag from hash
 	if ( tagdata == null ) {
-	    if (patMat.contains(tag,HASHTAGNUMBER_PATTERN) ) {
+	    if (patMat.contains(tag,HASHTAGNUMBER_PATTERN) ) { // If the tag is of the form "#abc123#" (contains a number before the last hash)...
 		String numbertag ;
 		matres = patMat.getMatch() ;
-		String tagnumber = matres.group(1) ;
-		String tagexp = tag.substring(0,matres.beginOffset(0))+"*#" ;
-		tagdata = tags.getProperty(tagexp) ;
+		String tagnumber = matres.group(1) ; // Retrieve the number (123)
+		String tagprefix = tag.substring(0,matres.beginOffset(0)) ; // Get the "#abc"-part
+		String tagexp = tagprefix+"*#" ; // Make a string of the form "#abc*#"
+		tagdata = tags.getProperty(tagexp) ; // Look for data for "#abc*#".
 		if (tagdata == null) {
 		    tagdata = "" ;
-		} else if ( (numbertag = numberedtags.getProperty(tagexp))!=null ) {	// Is it a numbered tag which has data to insert the number in? (Is the four first chars listed in "numberedtags"?) Get the tag to replace with the number.
+		} else if ( (numbertag = numberedtags.getProperty(tagexp))!=null ) {	// Is it a numbered tag which has data to insert the number in? (Are the first chars listed in "numberedtags"?) Get the tag to replace with the number.
 		    String qm = Perl5Compiler.quotemeta(numbertag) ; // FIXME: Run quotemeta on them before putting them in numberedtags, instead of doing it every iteration.
-		    try {
+		    try { // Replace the number in all the tagdata
 			tagdata = org.apache.oro.text.regex.Util.substitute(patMat,patComp.compile(qm),new StringSubstitution(tagnumber),tagdata,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
 		    } catch (MalformedPatternException ex) {
-			log.log(Log.WARNING, "Dynamic Pattern-compilation failed in IMCService.hashTagHandler(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '"+numbertag+"'",ex) ;
+			log.log(Log.WARNING, "Dynamic Pattern-compilation failed in HashTagSubstitution.hashTagHandler(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '"+numbertag+"'",ex) ;
 		    }
 		}
 	    } else {
@@ -65,6 +66,6 @@ public class HashTagSubstitution implements Substitution {
 	}
 	return tagdata ;
     }
-    
+
 }
 

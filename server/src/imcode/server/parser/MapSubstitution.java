@@ -5,8 +5,8 @@ import java.util.Map ;
 import org.apache.oro.text.regex.* ;
 
 public class MapSubstitution implements Substitution {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
+    private final static String CVS_REV = "$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
     
     Map map ;
     boolean removeNulls ;
@@ -16,8 +16,7 @@ public class MapSubstitution implements Substitution {
     }
 
     public MapSubstitution(Map map, boolean removeNulls) {
-	this.map = map ;
-	this.removeNulls = removeNulls ;
+	setMap(map,removeNulls) ;
     }
 
     public void setMap (Map map, boolean removeNulls) {
