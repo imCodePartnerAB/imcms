@@ -292,9 +292,12 @@ function onCancel() {
 			<table border="0" cellspacing="0" cellpadding="0" width="100%">
 			<tr>
 				<td id="bottomLeftTd" class="imcmsAdmText">&nbsp;</td>
-				<td align="right">
-				<button type="button" class="imcmsFormBtnSmall" style="width:60px" name="ok" onclick="return onOK();">OK</button> &nbsp;
-				<button type="button" class="imcmsFormBtnSmall" style="width:60px" name="cancel" onclick="return onCancel();"><%= lang("Cancel",user) %></button></td>
+				<td align="right" nowrap>
+				<button type="button" class="imcmsFormBtnSmall" style="width:60px" name="ok"<%
+				%> onclick="return onOK();">OK</button><%
+				%>&nbsp;<%
+				%><button type="button" class="imcmsFormBtnSmall" style="width:60px" name="cancel"<%
+				%> onclick="return onCancel();"><%= lang("Cancel",user) %></button></td>
 			</tr>
 			</table></td>
 		</tr>

@@ -98,8 +98,10 @@ function __dlg_translate(i18n) {
 
 // closes the dialog and passes the return info upper.
 function __dlg_close(val) {
-	opener.Dialog._return(val);
-	window.close();
+	try {
+		opener.Dialog._return(val) ;
+		window.close() ;
+	} catch(e) {}
 };
 
 function __dlg_close_on_esc(ev) {
