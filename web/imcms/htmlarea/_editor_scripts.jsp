@@ -3,8 +3,12 @@
 %><%@ include file="_editor_methods.jsp" %><%
 
 if (isHtmlAreaSupported) { %>
+
 <script type="text/javascript">
-_editor_url = "<%= EDITOR_URL %>";
+var openEditor = false ;
+var editW = 650 ;
+var editH = 250 ;
+_editor_url  = "<%= EDITOR_URL %>";
 _editor_lang = "<%= isLangSwe ? "se" : "en" %>";
 var editorTextareaId = "txtCont" ;
 </script>
@@ -144,6 +148,14 @@ function getCookie(Name) {
 			}
 			return unescape(document.cookie.substring(offset, end));
 		}
+	}
+}
+
+function checkEditor() {
+	if (!openEditor || getCookie("imcms_hide_editor") == "true") {
+		focusField(0,'text') ;
+	} else {
+		initEditor() ;
 	}
 }
 </script><%

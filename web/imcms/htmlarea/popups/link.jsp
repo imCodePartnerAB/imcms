@@ -5,6 +5,7 @@
 	
 	contentType="text/html; charset=windows-1252"
 	
+%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"
 %><%@ include file="../_editor_settings.jsp" %><%!
 
 Map langMap = new HashMap() ;
@@ -19,26 +20,30 @@ private String lang( String string ) {
 
 %><%
 
-langMap.put("Create/edit link", "Skapa/ändra länk") ;
-langMap.put("Write number", "Skriv nummer") ;
-langMap.put("Write the address", "Skriv adressen") ;
-langMap.put("Write anchor name", "Skriv ankarnamn") ;
-langMap.put("The old link", "Gamla länken") ;
-langMap.put("Linktype", "Länktyp") ;
-langMap.put("Internal link", "Intern länk") ;
-langMap.put("External link", "Annan webbsida") ;
-langMap.put("Mail address", "Mailadress") ;
-langMap.put("FTP link", "FTP länk") ;
-langMap.put("URL/address/meta_id", "URL/adress/meta_id") ;
-langMap.put("Show link in", "Visa länken i") ;
-langMap.put("Same window (default)", "Samma fönster (Standard)") ;
-langMap.put("New window", "Nytt fönster") ;
+langMap.put("Create/edit link"          , "Skapa/ändra länk") ;
+langMap.put("Write number"              , "Skriv nummer") ;
+langMap.put("Write the address"         , "Skriv adressen") ;
+langMap.put("Write anchor name"         , "Skriv ankarnamn") ;
+langMap.put("The old link"              , "Gamla länken") ;
+langMap.put("Linktype"                  , "Länktyp") ;
+langMap.put("Internal link (page-ID)"   , "Intern länk (meta_id)") ;
+langMap.put("External link or a path"   , "Annan webbsida eller en sökväg") ;
+langMap.put("Mail address"              , "Mailadress") ;
+langMap.put("FTP link"                  , "FTP länk") ;
+langMap.put("URL/address/meta_id"       , "URL/adress/meta_id") ;
+langMap.put("Title/tooltip"             , "Titel/beskrivning") ;
+langMap.put("Show link in"              , "Visa länken i") ;
+langMap.put("Same window (default)"     , "Samma fönster (Standard)") ;
+langMap.put("New window"                , "Nytt fönster") ;
 langMap.put("Replace window (no frames)", "Hela fönstret (utan frames)") ;
-langMap.put("Same frame", "Samma frame") ;
-langMap.put("Cancel", "Avbryt") ;
+langMap.put("Same frame"                , "Samma frame") ;
+langMap.put("Cancel"                    , "Avbryt") ;
+//langMap.put("" , "") ;
 
 
-%><html>
+%>
+<vel:velocity>
+<html>
 <head>
 <title><%= lang("Create/edit link") %></title>
 
@@ -97,19 +102,18 @@ function getFieldVals(iNum) {
 
 function checkLinkType(sHref) {
 	var fObj  = document.forms[0].createLinkType ;
-	//sHref = /.+servlet(\/\d+)$/gi.replace(sHref, "$1") ;
-	if (/GetDoc/i.test(sHref)) {
+	if (/GetDoc/i.test(sHref) || (/\d{4,6}/.test(sHref) && !/^http/i.test(sHref))) {
 		fObj.selectedIndex = 0 ;
 		sHref = /\d+/.exec(sHref) ;
 		document.getElementById("f_href").value = sHref ;
-	} else if (/^http:/i.test(sHref)) {
-		fObj.selectedIndex = 1 ;
 	} else if (/^mailto:/i.test(sHref)) {
 		fObj.selectedIndex = 2 ;
 		sHref = sHref.replace(/mailto:/i, "") ;
 		document.getElementById("f_href").value = sHref ;
 	} else if (/^ftp:/i.test(sHref)) {
 		fObj.selectedIndex = 3 ;
+	} else {
+		fObj.selectedIndex = 1 ;
 	}
 }
 
@@ -132,7 +136,6 @@ function buildHref(sHref) {
 <script type="text/javascript" src="<%= EDITOR_URL %>popups/popup.js"></script>
 
 <script type="text/javascript">
-//window.resizeTo(410, 200);
 window.resizeTo(410, 200);
 
 I18N = window.opener.HTMLArea.I18N.dialogs;
@@ -248,8 +251,8 @@ function onCancel() {
 			<td class="imcmsAdmText"><%= lang("Linktype") %>:</td>
 			<td class="form">
 			<select class="form" name="createLinkType" onChange="changeLinkType(document.forms[0].createLinkType.options[document.forms[0].createLinkType.selectedIndex].value)">
-				<option value="GetDoc"><%= lang("Internal link") %></option>
-				<option value="http"><%= lang("External link") %></option>
+				<option value="GetDoc"><%= lang("Internal link (page-ID)") %></option>
+				<option value="http"><%= lang("External link or a path") %></option>
 				<option value="mailto"><%= lang("Mail address") %></option>
 				<option value="ftp"><%= lang("FTP link") %></option>
 			</select></td>
@@ -261,7 +264,7 @@ function onCancel() {
 		</tr>
 		<tr>
 			<td class="imcmsAdmText" nowrap>
-			Titel/beskrivning: &nbsp;</td>
+			<%= lang("Title/tooltip") %>: &nbsp;</td>
 			<td><input type="text" name="f_title" id="f_title" size="54" maxlength="100" style="width:260px" value=""></td>
 		</tr>
 		<tr>
@@ -308,3 +311,4 @@ function onCancel() {
 
 </body>
 </html>
+</vel:velocity>

@@ -104,7 +104,6 @@ function onOK() {
 		for (var i in required) {
 			var el = document.getElementById(i) ;
 			var re = new RegExp(required[i][0], "gi") ;
-			//alert(re + "\n\n|" + el.value + "|") ;
 			if (!re.test(el.value)) {
 				alert(required[i][1]) ;
 				el.focus() ;
@@ -128,7 +127,6 @@ function onOK() {
 		__dlg_close(param) ;
 		return false ;
 	} catch(e) {
-		alert("Error!") ;
 		return false ;
 	}
 };
@@ -211,7 +209,8 @@ function checkLinkOnBlur() {<%
 
 </head>
 <body id="body" bgcolor="#FFFFFF" onLoad="<%
-	if (fromEditor && request.getParameter("imglist") == null && request.getParameter("imageref") == null) { // Don't init when from browser or on preview
+	// Don't init when from browser or on preview
+	if (fromEditor && request.getParameter("imglist") == null && request.getParameter("imageref") == null) {
 		%>Init(); <%
 	} else if (!fromEditor) {
 		%>setDef(); <%

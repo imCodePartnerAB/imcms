@@ -5,30 +5,18 @@
 	        imcode.server.Imcms,
 	        org.apache.oro.text.perl.Perl5Util"
 	
+%><%
+
+String EDITOR_URL   = request.getContextPath() + "/imcms/htmlarea/" ;
+String SERVLET_PATH = request.getContextPath() + "/servlet/" ;
+
+ContentManagementSystem imcmsSystem = (ContentManagementSystem) request.getAttribute(RequestConstants.SYSTEM) ;
+DocumentService documentService     = imcmsSystem.getDocumentService() ;
+ImcmsServices imcref                = Imcms.getServices() ;
+UserService userService             = imcmsSystem.getUserService() ;
+User user                           = imcmsSystem.getCurrentUser() ;
+
 %><%!
-
-public String EDITOR_URL   = "$contextPath/imcms/htmlarea/" ;
-public String SERVLET_PATH = "$contextPath/servlet/" ;
-
-private ContentManagementSystem imcmsSystem ;
-private DocumentService documentService ;
-private ImcmsServices imcref ;
-private UserService userService ;
-
-/* *******************************************************************************************
- *         BROWSER SNIFFER                                                                   *
- ******************************************************************************************* */
-
-private boolean isIE       = true ;
-private boolean isNS       = false ;
-private boolean isNS6      = false ;
-private boolean isMoz      = false ;
-private boolean isWin      = true ;
-private boolean isMac      = false ;
-private boolean isSafari   = false ;
-private double dBrowserVer = 0.0 ;
-
-private boolean isHtmlAreaSupported = false ;
 
 /* *******************************************************************************************
  *         LANGUAGE                                                                          *
@@ -39,22 +27,25 @@ private boolean isLangEng = !isLangSwe ;
 
 %><%
 
-imcmsSystem     = (ContentManagementSystem) request.getAttribute(RequestConstants.SYSTEM) ;
-documentService = imcmsSystem.getDocumentService() ;
-imcref          = Imcms.getServices() ;
-userService     = imcmsSystem.getUserService() ;
-User user       = imcmsSystem.getCurrentUser() ;
+isLangSwe = user.getLanguage().getIsoCode639_2().equals("swe") ;
+isLangEng = !isLangSwe ;
 
 /* *******************************************************************************************
- *         LANGUAGE                                                                          *
+ *         BROWSER SNIFFER  @returns "is[BrowtypeName]" (boolean) / dBrowserVer (double)     *
  ******************************************************************************************* */
 
-isLangSwe       = user.getLanguage().getIsoCode639_2().equals("swe") ;
-isLangEng       = !isLangSwe ;
+boolean isIE       = true ;
+boolean isNS       = false ;
+boolean isNS6      = false ;
+boolean isMoz      = false ;
+boolean isWin      = true ;
+boolean isMac      = false ;
+boolean isSafari   = false ;
+double dBrowserVer = 0.0 ;
 
-/* *******************************************************************************************
- *         BROWSER SNIFFER  @returns "is[BrowtypeName]" (boolean) / dBrowserVer (double)       *
- ******************************************************************************************* */
+boolean isHtmlAreaSupported = false ;
+
+
 
 Perl5Util re  = new Perl5Util() ;
 String uAgent = request.getHeader("USER-AGENT") ;

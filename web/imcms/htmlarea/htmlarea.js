@@ -1711,7 +1711,7 @@ HTMLArea.prototype.execCommand = function(cmdID, UI, param) {
 	    case "inserttable": this._insertTable(); break;
 	    case "insertimage": this._insertImage(); break;
 	    case "about"    : this._popupDialog("about.html", null, this); break;
-	    case "showhelp" : window.open(_editor_url + "reference.jsp", "ha_help"); break;
+	    case "showhelp" : popWinOpen(550,400,_editor_url + "reference.jsp","ha_help",1,1); break;
 
 	    case "killword": this._wordClean(); break;
 
@@ -2174,7 +2174,7 @@ HTMLArea.prototype.stripBaseURL = function(string) {
 	
 	if (/\d{4,6}$/.test(string) && basere1.test(string) && !/GetDoc/.test(string)) {
 		//alert(string + "\n\n" + this.config.baseURL + "\n\n" + baseurl) ;
-		string = string.replace(basere1, this.config.contextPath) ;
+		string = string.replace(basere1, this.config.contextPath + "/") ;
 	}
 	// strip to last directory in case baseurl points to a file
 	baseurl = baseurl.replace(/[^\/]+$/, "");

@@ -5,6 +5,7 @@
 	
 	contentType="text/html; charset=windows-1252"
 	
+%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"
 %><%@ include file="../_editor_settings.jsp" %><%!
 
 Map langMap = new HashMap() ;
@@ -50,8 +51,9 @@ langMap.put("Cancel"                                  , "Avbryt") ;
 langMap.put("You must enter a number of rows"         , "Du måste ange antal rader") ;
 langMap.put("You must enter a number of columns"      , "Du måste ange antal kolumner") ;
 
-%><html>
-
+%>
+<vel:velocity>
+<html>
 <head>
   <title><%= lang("Insert Table") %></title>
 
@@ -193,3 +195,4 @@ function onCancel() {
 
 </body>
 </html>
+</vel:velocity>

@@ -11,14 +11,7 @@
 
 ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttribute(ChangeText.TextEditPage.REQUEST_ATTRIBUTE__PAGE);
 
-%><%!
-
-private int EDITED_META = 1001 ;
-
-%><%
-
-EDITED_META  = textEditPage.getDocumentId() ;
-SERVLET_PATH = request.getContextPath() + "/servlet/" ;
+int EDITED_META  = textEditPage.getDocumentId() ;
 
 %>
 <vel:velocity>
@@ -28,36 +21,8 @@ SERVLET_PATH = request.getContextPath() + "/servlet/" ;
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
-<%
+<%@ include file="../../htmlarea/_editor_scripts.jsp" %>
 
-
-if (isHtmlAreaSupported) { %>
-<script type="text/javascript">
-var openEditor = false ;
-var editW = 650 ;
-var editH = 250 ;
-</script>
-
-<%
-}
-
-
-%><%@ include file="../../htmlarea/_editor_scripts.jsp" %><%
-
-
-if (isHtmlAreaSupported) { %>
-
-<script type="text/javascript">
-function checkEditor() {
-	if (!openEditor || getCookie("imcms_hide_editor") == "true") {
-		focusField(0,'text') ;
-	} else {
-		initEditor() ;
-	}
-}
-</script><%
-}
-%>
 </head>
 <body bgcolor="#FFFFFF" style="margin-bottom:0px;"<%= isHtmlAreaSupported ? " onLoad=\"checkEditor();\" onResize=\"setEditorSize()\"" : "" %>>
 
