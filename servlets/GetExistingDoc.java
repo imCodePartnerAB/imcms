@@ -10,6 +10,7 @@ import imcode.external.diverse.*;
 import imcode.server.*;
 
 import imcode.server.IMCServiceInterface;
+import imcode.server.document.*;
 import imcode.external.diverse.Html;
 import org.apache.log4j.Logger;
 
@@ -356,7 +357,11 @@ public class GetExistingDoc extends HttpServlet {
                     // Add the document in menu if user is admin for the document OR the document is shared.
                     boolean sharePermission = imcref.checkUserDocSharePermission( user, existing_meta_id );
                     if ( user_doc_types.contains( doc_type ) && sharePermission ) {
-                        imcref.addExistingDoc( meta_id, user, existing_meta_id, doc_menu_no );
+                        try {
+                            imcref.addExistingDoc( meta_id, user, existing_meta_id, doc_menu_no );
+                        } catch (DocumentMapper.DocumentAlreadyInMenuException e) {
+                            //ok, already in menu
+                        }
                     }
 
                 } // End of for loop

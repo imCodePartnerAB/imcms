@@ -483,7 +483,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                 user.getFullName() + "]");
     }
 
-    public void addExistingDoc( int meta_id, UserDomainObject user, int existing_meta_id, int doc_menu_no ) {
+    public void addExistingDoc( int meta_id, UserDomainObject user, int existing_meta_id, int doc_menu_no ) throws DocumentMapper.DocumentAlreadyInMenuException {
         DocumentMapper.addDocumentToMenu( this, user, meta_id, doc_menu_no, existing_meta_id );
     }
 
@@ -967,7 +967,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         try {
             String[] perms = sqlProcedure("GetUserPermissionSet", new String[]{String.valueOf(meta_id), String.valueOf(user.getUserId())});
 
-            if (perms.length > 0 && Integer.parseInt((String) perms[0]) < 4) {
+            if (perms.length > 0 && Integer.parseInt(perms[0]) < 4) {
                 return true;
             } else {
                 return false;
@@ -989,8 +989,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         try {
             String[] perms = sqlProcedure("GetUserPermissionSet", new String[]{String.valueOf(meta_id), String.valueOf(user.getUserId())});
 
-            int set_id = Integer.parseInt((String) perms[0]);
-            int set = Integer.parseInt((String) perms[1]);
+            int set_id = Integer.parseInt(perms[0]);
+            int set = Integer.parseInt(perms[1]);
 
             if (perms.length > 0
                     && set_id == 0		// User has full permission for this document
@@ -1021,8 +1021,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                 return false;
             }
 
-            int set_id = Integer.parseInt((String) perms[0]);
-            int set = Integer.parseInt((String) perms[1]);
+            int set_id = Integer.parseInt(perms[0]);
+            int set = Integer.parseInt(perms[1]);
 
             if (set_id == 0		// User has full permission for this document
                     || (set_id < 3 && ((set & permission) == permission))	// User has all the permissions given.
@@ -1052,7 +1052,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                 return IMCConstants.DOC_PERM_SET_NONE;//nothing was returned so give no rights at all.
             }
 
-            int set_id = Integer.parseInt((String) perms[0]);
+            int set_id = Integer.parseInt(perms[0]);
 
             switch (set_id) {
                 case IMCConstants.DOC_PERM_SET_FULL:         // User has full permission for this document

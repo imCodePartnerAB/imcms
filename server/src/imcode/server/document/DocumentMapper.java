@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.imcode.imcms.api.TextDocument;
-import com.imcode.imcms.api.CategoryType;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -482,7 +481,11 @@ public class DocumentMapper {
         inheritSection( parentId, newMetaId );
 
         // update parents, why? what is this? /Hasse
-        addDocumentToMenu( service, user, parentId, parentMenuNumber, newMetaId );
+        try {
+            addDocumentToMenu( service, user, parentId, parentMenuNumber, newMetaId );
+        } catch (DocumentAlreadyInMenuException e) {
+            // ok, the document alredy exists in that menu.
+        }
 
         // update parents modfied date because it has gotten an new link
         sqlUpdateModifiedDate( service, parentId, nowDateTime );
@@ -726,7 +729,7 @@ public class DocumentMapper {
         return service.checkUserDocSharePermission( user, documentId );
     }
 
-    public void addDocumentToMenu( UserDomainObject user, int menuDocumentId, int menuIndex, int toBeAddedId ) {
+    public void addDocumentToMenu( UserDomainObject user, int menuDocumentId, int menuIndex, int toBeAddedId ) throws DocumentAlreadyInMenuException {
         addDocumentToMenu( service, user, menuDocumentId, menuIndex, toBeAddedId );
     }
 
@@ -767,13 +770,19 @@ public class DocumentMapper {
 
     }
 
-    public static void addDocumentToMenu( IMCServiceInterface service, UserDomainObject user, int menuDocumentId, int menuIndex, int toBeAddedId ) {
+    public static void addDocumentToMenu( IMCServiceInterface service, UserDomainObject user, int menuDocumentId, int menuIndex, int toBeAddedId ) throws DocumentAlreadyInMenuException {
         int updatedRows = service.sqlUpdateProcedure( "AddExistingDocToMenu", new String[]{"" + menuDocumentId, "" + toBeAddedId, "" + menuIndex} );
 
         if ( 1 == updatedRows ) {	// if existing doc is added to the menu
             service.updateLogs( "Link from [" + menuDocumentId + "] in menu [" + menuIndex + "] to [" + toBeAddedId + "] added by user: [" + user.getFullName() + "]" );
         } else {
-            throw new RuntimeException( "Failed to add document " + toBeAddedId + " to menu " + menuIndex + " on document " + menuDocumentId );
+            throw new DocumentAlreadyInMenuException( "Failed to add document " + toBeAddedId + " to menu " + menuIndex + " on document " + menuDocumentId );
+        }
+    }
+
+    public static class DocumentAlreadyInMenuException extends Exception {
+        DocumentAlreadyInMenuException( String message ) {
+            super( message );
         }
     }
 
