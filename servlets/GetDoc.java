@@ -25,6 +25,10 @@ public class GetDoc extends HttpServlet {
     private static String noActiveDocUrl = "no_active_document.html";
     private static String noPageUrl = "no_page.html";
 
+    public void doPost( HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+        doGet( req, res );
+    }
+
     /**
      * doGet()
      */
