@@ -134,7 +134,7 @@ function getParam(attrib) {			// get querystring-parameters from document.locati
  ******************************************************************************************* */
 
 function openHelpW(id){
-	window.open('@documentationurl@/GetDoc?meta_id=' + id,'help');
+	window.open("@documentationurl@/GetDoc?meta_id=" + id,"help");
 }
 
 function openImgBrowse() {
