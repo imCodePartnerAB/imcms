@@ -5,6 +5,8 @@ import org.apache.log4j.Logger;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import com.imcode.imcms.Role;
+
 public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authenticator {
    private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
    private Authenticator externalAuthenticator;
@@ -112,10 +114,14 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
    private void updateRoleAssignments( User user ) {
       imcmsAuthenticatorAndUserMapper.addRoleToUser( user, ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE );
 
-      String[] roleNames = externalUserMapper.getRoleNames( user );
-      for( int i = 0; i < roleNames.length; i++ ) {
-         String roleName = roleNames[i];
-         imcmsAuthenticatorAndUserMapper.addRoleToUser( user, roleName );
+      String[] externalRoleNames = externalUserMapper.getRoleNames( user );
+      for( int i = 0; i < externalRoleNames.length; i++ ) {
+         String externalRoleName = externalRoleNames[i];
+         boolean hasNameConflictWithSuperAdmin = Role.SUPERADMIN.equalsIgnoreCase(externalRoleName);
+         boolean hasNameConflictWithUserAdmin = Role.USERADMIN.equalsIgnoreCase(externalRoleName);
+         if( !hasNameConflictWithSuperAdmin && !hasNameConflictWithUserAdmin ) {
+            imcmsAuthenticatorAndUserMapper.addRoleToUser( user, externalRoleName );
+         }
       }
    }
 
