@@ -154,8 +154,4 @@ public class Image implements java.io.Serializable {
 	public void setImageRefLink(String image_ref_link) {
 		this.image_ref_link = image_ref_link ;
 	}
-
-
-
-
 }
