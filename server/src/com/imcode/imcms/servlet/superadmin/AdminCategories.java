@@ -78,8 +78,7 @@ public class AdminCategories extends HttpServlet {
         CategoryTypeDomainObject categoryType = getCategoryTypeFromRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW, documentMapper );
         CategoryDomainObject category = getCategoryFromIdInRequest( req, documentMapper );
 
-        if ( req.getParameter( PARAMETER_CATEGORY_TYPE_ADD ) != null
-             && !req.getParameter( PARAMETER__NAME ).trim().equals( "" ) ) {
+        if ( null != req.getParameter( PARAMETER_MODE__ADD_CATEGORY_TYPE ) ){
             addCategoryType( req, page, documentMapper );
         } else if ( null != req.getParameter( PARAMETER_MODE__EDIT_CATEGORY_TYPE ) ) {
             editCategoryType( categoryType, req, page, documentMapper );
@@ -287,16 +286,20 @@ public class AdminCategories extends HttpServlet {
         formBean.setCategoryTypeToEdit( categoryTypeToEdit );
     }
 
-    private void addCategoryType( HttpServletRequest req, Page formBean, DocumentMapper documentMapper ) {
+    private void  addCategoryType( HttpServletRequest req, Page formBean, DocumentMapper documentMapper ) {
         formBean.setMode(PARAMETER_MODE__ADD_CATEGORY_TYPE) ;
-        String categoryTypeName = req.getParameter( PARAMETER__NAME ).trim();
-        int maxChoices = Integer.parseInt( req.getParameter( PARAMETER_MAX_CHOICES ) );
+        if ( req.getParameter( PARAMETER_CATEGORY_TYPE_ADD ) != null
+             && !req.getParameter( PARAMETER__NAME ).trim().equals( "" ) ){
 
-        if ( documentMapper.isUniqueCategoryTypeName( categoryTypeName ) ) {
-            formBean.setUniqueCategoryTypeName( true );
-            documentMapper.addCategoryTypeToDb( categoryTypeName, maxChoices );
-        } else {
-            formBean.setUniqueCategoryTypeName( false );
+            String categoryTypeName = req.getParameter( PARAMETER__NAME ).trim();
+            int maxChoices = Integer.parseInt( req.getParameter( PARAMETER_MAX_CHOICES ) );
+
+            if ( documentMapper.isUniqueCategoryTypeName( categoryTypeName ) ) {
+                formBean.setUniqueCategoryTypeName( true );
+                documentMapper.addCategoryTypeToDb( categoryTypeName, maxChoices );
+            } else {
+                formBean.setUniqueCategoryTypeName( false );
+            }
         }
     }
 
