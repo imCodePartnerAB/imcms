@@ -205,7 +205,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
 
    // Send a procedure to the database and return a string
    public String sqlProcedureStr( String procedure, String[] params ) {
-      return null;
+      return "100";
    }
 
    // Send a procedure to the database and return a string

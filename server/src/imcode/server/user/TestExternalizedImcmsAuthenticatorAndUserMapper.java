@@ -3,146 +3,148 @@ package imcode.server.user;
 import com.imcode.imcms.api.*;
 
 import java.util.Arrays;
+import java.io.IOException;
 
-public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTestCase {
-   private ExternalizedImcmsAuthenticatorAndUserMapper externalizedImcmsAndUserMapper;
-   private MockIMCServiceInterface mockImcmsService;
-   private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
-   private LdapUserAndRoleMapper ldapUserMapper;
+public class TestExternalizedImcmsAuthenticatorAndUserMapper extends LdapUserBaseTestCase {
 
-   String DEFAULT_LANGUAGE = "en";
+    private ExternalizedImcmsAuthenticatorAndUserMapper externalizedImcmsAndUserMapper;
+    private MockIMCServiceInterface mockImcmsService;
+    private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
+    private LdapUserAndRoleMapper ldapUserAndRoleMapper;
 
-   public void testDummy() {
-      assertTrue( true );
-   }
+    String DEFAULT_LANGUAGE = "swe";
 
-   public void setUp() throws LdapUserAndRoleMapper.LdapInitException {
-      mockImcmsService = new MockIMCServiceInterface();
-//      String ldapURL = "ldap://ldap-vcn1.vtd.volvo.se:389/dc=vcn,dc=ds,dc=volvo,dc=net";
-//      String ldapUserIdentifyingAttribute = "cn";
-//      String ldapUserName = "CN=cs-ad-ldapquery,OU=ServiceAccounts,OU=AdOperation,OU=CS,DC=vcn,DC=ds,DC=volvo,DC=net";
-//      String ldapPassword = "#D8leYS";
+    public void testDummy() {
+        assertTrue( true );
+    }
 
-      String ldapURL = "ldap://loke:389/CN=Users,DC=imcode,DC=com";
-      String ldapUserObjectClass = "person";
-      String ldapUserIdentifyingAttribute = "samaccountname";
-      String ldapUserName = "imcode\\hasbra";
-      String ldapPassword = "hasbra";
-      ldapUserMapper = new LdapUserAndRoleMapper( ldapURL, LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE, ldapUserObjectClass, ldapUserIdentifyingAttribute, ldapUserName, ldapPassword, new String[]{LdapUserAndRoleMapper.NONSTANDARD_COMPANY} );
-      imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( mockImcmsService );
-      externalizedImcmsAndUserMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, ldapUserMapper, ldapUserMapper, DEFAULT_LANGUAGE );
-   }
+    public void setUp() throws LdapUserAndRoleMapper.LdapInitException, IOException {
+        mockImcmsService = new MockIMCServiceInterface();
+        //      String ldapURL = "ldap://ldap-vcn1.vtd.volvo.se:389/dc=vcn,dc=ds,dc=volvo,dc=net";
+        //      String ldapUserIdentifyingAttribute = "cn";
+        //      String ldapUserName = "CN=cs-ad-ldapquery,OU=ServiceAccounts,OU=AdOperation,OU=CS,DC=vcn,DC=ds,DC=volvo,DC=net";
+        //      String ldapPassword = "#D8leYS";
 
-   public void testImcmsOnlyExisting() {
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
+        ldapUserAndRoleMapper = getLdapUserAndRoleMapper( new String[]{LdapUserAndRoleMapper.NONSTANDARD_COMPANY} );
+        imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( mockImcmsService );
+        externalizedImcmsAndUserMapper = new ExternalizedImcmsAuthenticatorAndUserMapper(
+                imcmsAuthenticatorAndUserMapper, ldapUserAndRoleMapper, ldapUserAndRoleMapper, DEFAULT_LANGUAGE );
+    }
 
-      boolean userAuthenticates = externalizedImcmsAndUserMapper.authenticate( LOGIN_NAME_ADMIN, LOGIN_NAME_ADMIN );
-      assertTrue( userAuthenticates );
+    public void testImcmsOnlyExisting() {
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
 
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
-      UserDomainObject user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_ADMIN );
+        boolean userAuthenticates = externalizedImcmsAndUserMapper.authenticate( LOGIN_NAME_ADMIN, LOGIN_NAME_ADMIN );
+        assertTrue( userAuthenticates );
 
-      assertNotNull( user );
-      assertTrue( user.getFirstName().equalsIgnoreCase( LOGIN_NAME_ADMIN ) );
-      mockImcmsService.verify();
-   }
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
+        UserDomainObject user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_ADMIN );
 
-   public void testLdapOnlyAuthentication() {
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, new String[]{} );
-      boolean userAuthenticates = externalizedImcmsAndUserMapper.authenticate( LOGIN_NAME_HASBRA, LOGIN_NAME_HASBRA );
+        assertNotNull( user );
+        assertTrue( user.getFirstName().equalsIgnoreCase( LOGIN_NAME_ADMIN ) );
+        mockImcmsService.verify();
+    }
 
-      assertTrue( userAuthenticates );
-      mockImcmsService.verify();
-   }
+    public void testLdapOnlyAuthentication() {
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, new String[]{} );
+        boolean userAuthenticates = externalizedImcmsAndUserMapper.authenticate( "chrham", "trexus" );
 
-   public void testLdapOnlyExisting() {
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, new String[]{} );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"2"} );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
+        assertTrue( userAuthenticates );
+        mockImcmsService.verify();
+    }
 
-      UserDomainObject user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
+    public void testLdapOnlyExisting() {
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, new String[]{} );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"2"} );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
 
-      assertTrue( "hasse".equalsIgnoreCase( user.getFirstName() ) );
-      mockImcmsService.verify();
-   }
+        UserDomainObject user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
 
-   public void testLdapAndImcmsUpdateSynchronization() {
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"2"} );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
+        assertTrue( "hasse".equalsIgnoreCase( user.getFirstName() ) );
+        mockImcmsService.verify();
+    }
 
-      UserDomainObject user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
+    public void testLdapAndImcmsUpdateSynchronization() {
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"2"} );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
 
-      assertTrue( "hasse".equalsIgnoreCase( user.getFirstName() ) );
-      mockImcmsService.verify();
-   }
+        UserDomainObject user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
 
-   public void testMergedRolesFromImcmsAndExternal() {
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"2"} );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{RoleConstants.USERS} );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{RoleConstants.USERS} );
+        assertTrue( "hasse".equalsIgnoreCase( user.getFirstName() ) );
+        mockImcmsService.verify();
+    }
 
-      UserDomainObject user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
-      String[] userRoles = externalizedImcmsAndUserMapper.getRoleNames( user );
+    public void testMergedRolesFromImcmsAndExternal() {
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"2"} );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{RoleConstants.USERS} );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{RoleConstants.USERS} );
 
-      assertTrue( Arrays.asList( userRoles ).contains( RoleConstants.USERS ) );
-      assertTrue( Arrays.asList( userRoles ).contains( LdapUserAndRoleMapper.DEFAULT_LDAP_ROLE ) );
-      assertTrue( Arrays.asList( userRoles ).contains( "Crisp" ) );
+        UserDomainObject user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
+        String[] userRoles = externalizedImcmsAndUserMapper.getRoleNames( user );
 
-      assertFalse( Arrays.asList( userRoles ).contains( null ) );
-      mockImcmsService.verify();
-   }
+        assertTrue( Arrays.asList( userRoles ).contains( RoleConstants.USERS ) );
+        assertTrue( Arrays.asList( userRoles ).contains( LdapUserAndRoleMapper.DEFAULT_LDAP_ROLE ) );
+        assertTrue( Arrays.asList( userRoles ).contains( "Crisp" ) );
 
-   public void testAddRoleFromExternalIntoImcms() {
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
-      mockImcmsService.addExpectedSQLUpdateProcedureCall( SPROC_ROLEADDNEW );
-      externalizedImcmsAndUserMapper.synchRolesWithExternal();
-      mockImcmsService.verify();
-   }
+        assertFalse( Arrays.asList( userRoles ).contains( null ) );
+        mockImcmsService.verify();
+    }
 
-   public void testGetRoles() {
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETALLROLES, new String[]{"0", "Superadmin", "1", "Useradmin"} );
-      String[] roles = externalizedImcmsAndUserMapper.getAllRoleNames();
-      assertTrue( Arrays.asList( roles ).contains( RoleConstants.USERS ) );
-      assertTrue( Arrays.asList( roles ).contains( RoleConstants.SUPER_ADMIN ) );
-      assertTrue( Arrays.asList( roles ).contains( LdapUserAndRoleMapper.DEFAULT_LDAP_ROLE ) );
-      mockImcmsService.verify();
-   }
+    public void testAddRoleFromExternalIntoImcms() {
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
+        mockImcmsService.addExpectedSQLUpdateProcedureCall( SPROC_ROLEADDNEW );
+        externalizedImcmsAndUserMapper.synchRolesWithExternal();
+        mockImcmsService.verify();
+    }
 
-   public void testNullExternalAuthenticator() {
-      try {
-         new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, null, ldapUserMapper, DEFAULT_LANGUAGE );
-         fail();
-      } catch( IllegalArgumentException ex ) {
-         //OK
-      }
-   }
+    public void testGetRoles() {
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETALLROLES,
+                                                      new String[]{"0", "Superadmin", "1", "Useradmin"} );
+        String[] roles = externalizedImcmsAndUserMapper.getAllRoleNames();
+        assertTrue( Arrays.asList( roles ).contains( RoleConstants.USERS ) );
+        assertTrue( Arrays.asList( roles ).contains( RoleConstants.SUPER_ADMIN ) );
+        assertTrue( Arrays.asList( roles ).contains( LdapUserAndRoleMapper.DEFAULT_LDAP_ROLE ) );
+        mockImcmsService.verify();
+    }
 
-   public void testNullExternalUserMapper() {
-      try {
-         new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, ldapUserMapper, null, DEFAULT_LANGUAGE );
-         fail();
-      } catch( IllegalArgumentException ex ) {
-         //OK
-      }
-   }
+    public void testNullExternalAuthenticator() {
+        try {
+            new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, null,
+                                                             ldapUserAndRoleMapper, DEFAULT_LANGUAGE );
+            fail();
+        } catch ( IllegalArgumentException ex ) {
+            //OK
+        }
+    }
 
-   public void testNullAuthenticatorAndNullUserMapper() {
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
-      ExternalizedImcmsAuthenticatorAndUserMapper authAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, null, null, DEFAULT_LANGUAGE );
-      authAndMapper.authenticate( LOGIN_NAME_ADMIN, LOGIN_NAME_ADMIN );
-      authAndMapper.getUser( LOGIN_NAME_ADMIN );
-      authAndMapper.synchRolesWithExternal();
-   }
+    public void testNullExternalUserMapper() {
+        try {
+            new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, ldapUserAndRoleMapper,
+                                                             null, DEFAULT_LANGUAGE );
+            fail();
+        } catch ( IllegalArgumentException ex ) {
+            //OK
+        }
+    }
+
+    public void testNullAuthenticatorAndNullUserMapper() {
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
+        mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
+        ExternalizedImcmsAuthenticatorAndUserMapper authAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper(
+                imcmsAuthenticatorAndUserMapper, null, null, DEFAULT_LANGUAGE );
+        authAndMapper.authenticate( LOGIN_NAME_ADMIN, LOGIN_NAME_ADMIN );
+        authAndMapper.getUser( LOGIN_NAME_ADMIN );
+        authAndMapper.synchRolesWithExternal();
+    }
 }

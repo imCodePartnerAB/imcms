@@ -92,6 +92,13 @@ debug = on
 deprecation = on
 
 
+# For JUnit-tests to work, you need to add junit.jar to the classpath of ant.
+# If this is impossible, uncomment the following property.
+# Note that this will prevent tests from running.
+
+#no-junit-task-available
+
+
 # Which log4j-config-file to use.
 # You might want to change this to log4j-debug.xml to turn on debug-logs.
 

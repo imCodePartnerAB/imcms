@@ -131,7 +131,6 @@
         <tstamp/>
 
         <available classname="junit.framework.Test" classpathref="libraries" property="junit-available"/>
-
     </target>
 
 
@@ -192,64 +191,64 @@
     <!-- Defines global filters. -->
     <target name="global-filters"
             depends="check-build-properties"
-	    description="Defines global filters.">
+            description="Defines global filters.">
 
-	<!-- Global filters -->
-	<filter token="rooturl"             value="${rooturl}"/>
-	<filter token="servleturl"          value="${servleturl}"/>
-	<filter token="loginurl"            value="${loginurl}"/>
-	<filter token="imageurl"            value="${imageurl}"/>
-	<filter token="cssurl"              value="${cssurl}"/>
-	<filter token="postcardsurl"        value="${postcardsurl}"/>
-	<filter token="adminbuttonsurl"     value="${adminbuttonsurl}"/>
-	<filter token="imcmsimageurl"       value="${imcmsimageurl}"/>
-    <filter token="imcmsimageurllang"   value="${imcmsimageurllang}"/>
-    <filter token="imcmshtmlurl"        value="${imcmshtmlurl}"/>
-    <filter token="imcmsscripturl"      value="${imcmsscripturl}"/>
-    <filter token="imcmscssurl"         value="${imcmscssurl}"/>
-    <filter token="imcmsjspurl"         value="${imcmsjspurl}"/>
-	<filter token="javascripturl"       value="${javascripturl}"/>
-    <filter token="jspurl"              value="${jspurl}"/>
+        <!-- Global filters -->
+        <filter token="rooturl"             value="${rooturl}"/>
+        <filter token="servleturl"          value="${servleturl}"/>
+        <filter token="loginurl"            value="${loginurl}"/>
+        <filter token="imageurl"            value="${imageurl}"/>
+        <filter token="cssurl"              value="${cssurl}"/>
+        <filter token="postcardsurl"        value="${postcardsurl}"/>
+        <filter token="adminbuttonsurl"     value="${adminbuttonsurl}"/>
+        <filter token="imcmsimageurl"       value="${imcmsimageurl}"/>
+        <filter token="imcmsimageurllang"   value="${imcmsimageurllang}"/>
+        <filter token="imcmshtmlurl"        value="${imcmshtmlurl}"/>
+        <filter token="imcmsscripturl"      value="${imcmsscripturl}"/>
+        <filter token="imcmscssurl"         value="${imcmscssurl}"/>
+        <filter token="imcmsjspurl"         value="${imcmsjspurl}"/>
+        <filter token="javascripturl"       value="${javascripturl}"/>
+        <filter token="jspurl"              value="${jspurl}"/>
 
-    <filter token="documentationurl"    value="http://${documentation-host}/${versionnumber}/servlet"/>
+        <filter token="documentationurl"    value="http://${documentation-host}/${versionnumber}/servlet"/>
 
-	<filter token="readrunnerurl"       value="${readrunnerurl}"/>
-	<filter token="readrunnerimagesurl" value="${readrunnerimagesurl}"/>
-	<filter token="readrunnercssurl"    value="${readrunnercssurl}"/>
-	<filter token="readrunnerjsurl"     value="${readrunnerjsurl}"/>
+        <filter token="readrunnerurl"       value="${readrunnerurl}"/>
+        <filter token="readrunnerimagesurl" value="${readrunnerimagesurl}"/>
+        <filter token="readrunnercssurl"    value="${readrunnercssurl}"/>
+        <filter token="readrunnerjsurl"     value="${readrunnerjsurl}"/>
 
-	<filter token="db-driver"           value="${db-driver}"/>
-	<filter token="db-url"              value="${db-url}"/>
-	<filter token="db-host"             value="${db-host}"/>
-	<filter token="db-port"             value="${db-port}"/>
-	<filter token="db-name"             value="${db-name}"/>
-	<filter token="db-user"             value="${db-user}"/>
-	<filter token="db-pass"             value="${db-pass}"/>
-	<filter token="db-maxconnections"   value="${db-maxconnections}"/>
+        <filter token="db-driver"           value="${db-driver}"/>
+        <filter token="db-url"              value="${db-url}"/>
+        <filter token="db-host"             value="${db-host}"/>
+        <filter token="db-port"             value="${db-port}"/>
+        <filter token="db-name"             value="${db-name}"/>
+        <filter token="db-user"             value="${db-user}"/>
+        <filter token="db-pass"             value="${db-pass}"/>
+        <filter token="db-maxconnections"   value="${db-maxconnections}"/>
 
-	<filter token="plugin-db-host"      value="${plugin-db-host}"/>
-	<filter token="plugin-db-port"      value="${plugin-db-port}"/>
-	<filter token="plugin-db-name"      value="${plugin-db-name}"/>
-	<filter token="plugin-db-user"      value="${plugin-db-user}"/>
-	<filter token="plugin-db-pass"      value="${plugin-db-pass}"/>
+        <filter token="plugin-db-host"      value="${plugin-db-host}"/>
+        <filter token="plugin-db-port"      value="${plugin-db-port}"/>
+        <filter token="plugin-db-name"      value="${plugin-db-name}"/>
+        <filter token="plugin-db-user"      value="${plugin-db-user}"/>
+        <filter token="plugin-db-pass"      value="${plugin-db-pass}"/>
 
-    <filter token="smb-domain-server"   value="${smb-domain-server}" />
-    <filter token="smb-domain-name"     value="${smb-domain-name}" />
+        <filter token="smb-domain-server"   value="${smb-domain-server}" />
+        <filter token="smb-domain-name"     value="${smb-domain-name}" />
 
-    <filter token="ldap-url"                        value="${ldap-url}" />
-    <filter token="ldap-user"                       value="${ldap-user}" />
-    <filter token="ldap-pass"                       value="${ldap-pass}" />
-    <filter token="ldap-user-objectclass"           value="${ldap-user-objectclass}" />
-    <filter token="ldap-user-identifying-attribute" value="${ldap-user-identifying-attribute}" />
-    <filter token="ldap-attributes-mapped-to-roles" value="${ldap-attributes-mapped-to-roles}"/>
+        <filter token="ldap-url"                        value="${ldap-url}" />
+        <filter token="ldap-user"                       value="${ldap-user}" />
+        <filter token="ldap-pass"                       value="${ldap-pass}" />
+        <filter token="ldap-user-objectclass"           value="${ldap-user-objectclass}" />
+        <filter token="ldap-user-identifying-attribute" value="${ldap-user-identifying-attribute}" />
+        <filter token="ldap-attributes-mapped-to-roles" value="${ldap-attributes-mapped-to-roles}"/>
 
-	<filter token="smtp-server"         value="${smtp-server}"/>
+        <filter token="smtp-server"         value="${smtp-server}"/>
 
-	<filter token="servermaster-name"   value="${servermaster-name}"/>
-	<filter token="servermaster-email"  value="${servermaster-email}"/>
+        <filter token="servermaster-name"   value="${servermaster-name}"/>
+        <filter token="servermaster-email"  value="${servermaster-email}"/>
 
-	<filter token="webmaster-name"      value="${webmaster-name}"/>
-	<filter token="webmaster-email"     value="${webmaster-email}"/>
+        <filter token="webmaster-name"      value="${webmaster-name}"/>
+        <filter token="webmaster-email"     value="${webmaster-email}"/>
 
     </target>
 
@@ -261,7 +260,8 @@
             <srcfiles dir="${basedir}" includes="${build.properties}.template"/>
         </uptodate>
 
-        <fail unless="build-properties-up-to-date">'${build.properties}.template' is newer than '${build.properties}'. (See INSTALL.TXT for details.)
+        <fail unless="build-properties-up-to-date">
+            '${build.properties}.template' is newer than '${build.properties}'. (See INSTALL.TXT for details.)
             Copy '${build.properties}.template' to '${build.properties}' and edit it!
         </fail>
 
@@ -396,16 +396,22 @@
     </target>
 
     <!-- Run JUnit-tests -->
-    <target name="test" depends="server" description="Runs JUnit-tests.">
+    <target name="test" depends="classes,junit-task-available" description="Runs JUnit-tests.">
 
-	<java classname="junit.swingui.TestRunner" fork="yes">
-	    <classpath>
-		<pathelement path="${classes}"/>
-		<pathelement path="install/lib/log4j.jar"/>
-		<pathelement path="install/lib/commons-collections.jar"/>
-		<pathelement path="install/lib/junit.jar"/>
-	    </classpath>
-	</java>
+        <junit haltonfailure="yes" haltonerror="yes">
+            <classpath refid="classes-and-libraries"/>
+
+            <formatter usefile="false" type="plain"/>
+
+            <batchtest>
+                <fileset dir="${classes}">
+                    <exclude name="TestChat.class"/>
+                    <exclude name="**/*$*.class"/>
+                    <include name="Test*.class"/>
+                    <include name="**/Test*.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
     </target>
 
 
@@ -427,6 +433,34 @@
     	<ant dir="tools"/>
     	<taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
         <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
+    </target>
+
+
+    <target name="junit-task-available"  unless="no-junit-task-available">
+
+        <available classname="junit.framework.Test" property="junit-task-available"/>
+
+        <fail unless="junit-task-available" >
+            The JUnit task is not available.
+            Please add junit.jar to ant's classpath,
+            for example by adding junit.jar to $ANT_HOME/lib.
+            &#10;
+            If this is impossible, set the property "no-junit-task-available"
+            in build.properties. Note that this means that tests cannot be run!
+        </fail>
+
+    </target>
+
+    <target name="language-property-files" depends="init,junit-task-available,tools">
+
+        <junit haltonerror="yes" haltonfailure="yes">
+            <classpath path="tools/build"/>
+
+            <formatter type="brief" usefile="false"/>
+
+            <test name="imcode.buildtests.TestLanguagePropertyFilesInSync"/>
+        </junit>
+
     </target>
 
 
@@ -502,7 +536,7 @@
 
     <!-- Creates the directories and copies the files that are to be public. -->
     <target name="web"
-            depends="init,tools"
+            depends="init,tools,language-property-files"
             description="Creates the public web">
 
         <mkdir dir="${images}"/>
@@ -625,7 +659,7 @@
             description="Copies and filters the templates."/>
 
     <!-- Copies and filters the texttemplates. -->
-    <target name="texttemplates" depends="init,tools" description="Copies and filters the texttemplates">
+    <target name="texttemplates" depends="init,tools,language-property-files" description="Copies and filters the texttemplates">
 
         <mkdir dir="${demotemplates}"/>
 
@@ -639,7 +673,7 @@
 
 
     <!-- Copies and filters the admintemplates. -->
-    <target name="admintemplates" depends="init,tools" description="Copies and filters the admintemplates.">
+    <target name="admintemplates" depends="init,tools,language-property-files" description="Copies and filters the admintemplates.">
 
         <mkdir dir="${admintemplates}"/>
         <mkdir dir="${searchtemplates}"/>

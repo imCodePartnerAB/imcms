@@ -1,29 +1,34 @@
-package imcode.util.net ;
+package imcode.util.net;
 
-import java.net.ProtocolException ;
-import java.io.IOException ;
+import junit.framework.TestCase;
 
-import junit.framework.TestCase ;
-import imcode.util.net.SMTP;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.ProtocolException;
+import java.util.Properties;
 
 public class TestSMTP extends TestCase {
 
-    private final static String SMTP_SERVER = null ;
-    private final static String FROM_ADDRESS = null ;
-    private final static String TO_ADDRESS = null ;
+    private String smtpServer ;
+    private String fromAddress ;
+    private String toAddress ;
 
-    public TestSMTP(String name) {
-	super(name) ;
+    public void setUp() throws IOException {
+        Properties smtpProperties = new Properties();
+        smtpProperties.load( new FileInputStream( System.getProperty( "test.smtp.properties", "build.properties" ) ) );
+        smtpServer = smtpProperties.getProperty( "smtp-server" ) ;
+        fromAddress = smtpProperties.getProperty( "servermaster-email") ;
+        toAddress = smtpProperties.getProperty( "servermaster-email") ;
     }
 
     public void testSendMailWait() {
-	try {
-	    SMTP smtp = new SMTP(SMTP_SERVER,25,10000) ;
-	    smtp.sendMailWait(FROM_ADDRESS, TO_ADDRESS, "JUnit-testing SMTP.java", "Test") ;
-	} catch (ProtocolException pe) {
-	    fail() ;
-	} catch (IOException ioe) {
-	    fail() ;
-	}
+        try {
+            SMTP smtp = new SMTP( smtpServer, 25, 10000 );
+            smtp.sendMailWait( fromAddress, toAddress, "JUnit-testing SMTP.java", "Test" );
+        } catch ( ProtocolException pe ) {
+            fail();
+        } catch ( IOException ioe ) {
+            fail();
+        }
     }
 }

@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * @author kreiger
  */
-public class LanguagePropertyFilesInSyncTest extends TestCase {
+public class TestLanguagePropertyFilesInSync extends TestCase {
 
     public void testTemplatesLanguagePropertyFiles() throws IOException {
         String dir = "templates";
@@ -35,8 +35,7 @@ public class LanguagePropertyFilesInSyncTest extends TestCase {
         testedProperties.putAll( lang1Properties );
 
         removeKeysFromProperties( testedProperties, lang2Properties.keySet() );
-
-        assertEquals( "In file " + dir + "/" + testedFileName + ": " + testedProperties.toString(), 0, testedProperties.size() );
+        assertTrue("Extra keys in file " + dir + '/' + testedFileName + ": " + testedProperties.keySet().toString(),testedProperties.isEmpty()) ;
     }
 
     private Properties loadPropertyFile( String dir, String fileName ) throws IOException {

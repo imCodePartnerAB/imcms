@@ -6,6 +6,8 @@ import java.sql.*;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Properties;
+import java.io.FileInputStream;
 
 import junit.framework.TestCase;
 
@@ -20,10 +22,13 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
 
     private static Logger log = Logger.getLogger( "TestConnectionPoolForNonPoolingDriver" );
 
-    private final static String DRIVER_CLASS_NAME = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
-    private String userName = System.getProperty( "test.db.user" ) ;
-    private String passWord = System.getProperty( "test.db.pass" ) ;
+    private String driverClassName ;
+    private String userName ;
+    private String passWord ;
     private String dbUrl ;
+
+    private static final String DATABASE_PROPERTIES_SYSTEM_PROPERTY = "test.db.properties";
+    private static final String DEFAULT_DATABASE_PROPERTIES_FILE = "build.properties";
 
     static {
         Layout layout = new SimpleLayout() ;
@@ -36,28 +41,23 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
     }
 
     public void setUp() throws Exception, ClassNotFoundException, IllegalAccessException, InstantiationException {
-        String serverName = System.getProperty( "test.db.host" );
-        String serverPort = System.getProperty( "test.db.port" );
-        String databaseName = System.getProperty( "test.db.database" );
-
-        String[] args = { userName, passWord, serverName, serverPort, databaseName } ;
-        if ( Arrays.asList( args ).contains( null ) ) {
-            String usageInfo = "Setup system properties for this test as " +
-                    "-Dtest.db.host=<host> " +
-                    "-Dtest.db.port=<port> " +
-                    "-Dtest.db.database=<database> " +
-                    "-Dtest.db.user=<username> " +
-                    "-Dtest.db.pass=<password>" ;
-            log.fatal(usageInfo) ;
-            System.exit(1) ;
-        }
-        dbUrl = "jdbc:microsoft:sqlserver://" + serverName + ":" + serverPort + ";DatabaseName=" + databaseName;
+        Properties dbProperties = new Properties() ;
+        dbProperties.load(new FileInputStream( System.getProperty(DATABASE_PROPERTIES_SYSTEM_PROPERTY, DEFAULT_DATABASE_PROPERTIES_FILE ))) ;
+        String serverName = dbProperties.getProperty( "db-host" );
+        String serverPort = dbProperties.getProperty( "db-port" );
+        String databaseName = dbProperties.getProperty( "db-name" );
+        userName = dbProperties.getProperty( "db-user" ) ;
+        passWord = dbProperties.getProperty( "db-pass" ) ;
+        driverClassName = dbProperties.getProperty( "db-driver") ;
+        dbUrl = dbProperties.getProperty( "db-url") ;
+       
+        dbUrl += serverName + ':' + serverPort + ";DatabaseName=" + databaseName;
 
     }
 
     public void testFullPoolAndReturningOfConnectionWhenClose() throws Exception {
         int poolSize = 1;
-        ConnectionPoolForNonPoolingDriver cm = new ConnectionPoolForNonPoolingDriver( DRIVER_CLASS_NAME, dbUrl, userName, passWord, poolSize );
+        ConnectionPoolForNonPoolingDriver cm = new ConnectionPoolForNonPoolingDriver( driverClassName, dbUrl, userName, passWord, poolSize );
         final Connection con1 = cm.getConnection();
         assertNotNull(con1) ;
 
@@ -86,7 +86,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
     }
 
     public void testTwoDifferentConnections() throws Exception {
-        ConnectionPoolForNonPoolingDriver cm = new ConnectionPoolForNonPoolingDriver( DRIVER_CLASS_NAME, dbUrl, userName, passWord, 20 );
+        ConnectionPoolForNonPoolingDriver cm = new ConnectionPoolForNonPoolingDriver( driverClassName, dbUrl, userName, passWord, 20 );
         Connection con1 = cm.getConnection();
         assertNotNull(con1) ;
         Connection con2 = cm.getConnection();
@@ -98,7 +98,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
      * Only used for testing, see main-method above
      */
     public void testConnectionWithSQLDriverOnly() throws ClassNotFoundException, SQLException {
-        Class.forName( DRIVER_CLASS_NAME );
+        Class.forName( driverClassName );
         Connection con = DriverManager.getConnection( dbUrl, userName, passWord );
         assertNotNull(con) ;
     }
@@ -107,7 +107,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
      * Only used for testing, see main-method above
      */
     public void testConnectionWithPool() throws Exception {
-        ConnectionPoolForNonPoolingDriver cm = new ConnectionPoolForNonPoolingDriver( DRIVER_CLASS_NAME, dbUrl, userName, passWord, 20 );
+        ConnectionPoolForNonPoolingDriver cm = new ConnectionPoolForNonPoolingDriver( driverClassName, dbUrl, userName, passWord, 20 );
         try {
             cm.testConnectionAndLogResultToTheErrorLog();
         } catch (SQLException ex) {
@@ -119,7 +119,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
      * Only used for testing, see main-method above
      */
     public void testCallStoredProcedureWithParam() throws Exception {
-        ConnectionPoolForNonPoolingDriver cm = new ConnectionPoolForNonPoolingDriver( DRIVER_CLASS_NAME, dbUrl, userName, passWord, 20 );
+        ConnectionPoolForNonPoolingDriver cm = new ConnectionPoolForNonPoolingDriver( driverClassName, dbUrl, userName, passWord, 20 );
         Connection conn = cm.getConnection();
         CallableStatement cs = conn.prepareCall( "{call " + "GetTextDocData" + "(?) }" );
         cs.setString( 1, "1001" );
@@ -135,7 +135,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
      * Only used for testing, see main-method above
      */
     public void testListAllTables() throws Exception {
-        DatabaseMetaData metaData = getConnectionMetaData( DRIVER_CLASS_NAME, dbUrl, userName, passWord );
+        DatabaseMetaData metaData = getConnectionMetaData( driverClassName, dbUrl, userName, passWord );
         String[] types = {"TABLE"};
         ResultSet resultSet = metaData.getTables( null, null, "%", types );
         Collection tableNames = new ArrayList();
@@ -150,7 +150,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
      * Only used for testing, see main-method above
      */
     public void testListAllStoredProcedures() throws Exception {
-        DatabaseMetaData metaData = getConnectionMetaData( DRIVER_CLASS_NAME, dbUrl, userName, passWord );
+        DatabaseMetaData metaData = getConnectionMetaData( driverClassName, dbUrl, userName, passWord );
         ResultSet rs = metaData.getProcedures( null, null, "%" );
         Collection procedureNames = new ArrayList();
         while ( rs.next() ) {
