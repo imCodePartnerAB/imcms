@@ -576,6 +576,30 @@ public class MetaDataParser {
 	    }
 	}
 	vec.put("templategroups", options_templategroups) ;
+	
+	//--------------------- Get all templates and add to variable "templates" --------------------------------------------------------------		
+		
+		// Now we get the templategroups the set-id we are editing may use.
+		String[] templates = IMCServiceRMI.sqlProcedure(imcserver,"GetTemplates ") ;
+				
+		// We allocate a string to contain the option-list
+		String options_templates = "" ;
+		
+		for ( int i=0 ; i<templates.length ; i+=2 ) 
+		{
+		// Check if the current user may set this templategroup for any set-id (May he use it himself?)
+	    	
+			if ( user_set_id == 0 )			// If current user has full rights,		 	    ) 
+			{
+				options_templates += "<option value=\"2097152_" + templates[i] + "\">" + templates[i+1]+"</option>" ;
+	    	}
+		}
+		
+		vec.put("templates", option_templates) ;
+
+//----------------------------------------------------------------------------------------
+
+
 
 	vec.put("set_id", String.valueOf(set_id)) ;
 
