@@ -10,6 +10,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
 import org.apache.velocity.app.VelocityEngine;
@@ -834,7 +835,8 @@ class TagParser {
         PatternMatcherInput attributes_input = new PatternMatcherInput( attributes_string );
         while ( patternMatcher.contains( attributes_input, ATTRIBUTES_PATTERN ) ) {
             MatchResult attribute_matres = patternMatcher.getMatch();
-            attributes.setProperty( attribute_matres.group( 1 ), attribute_matres.group( 3 ) );
+            String escapedValue = attribute_matres.group( 3 );
+            attributes.setProperty( attribute_matres.group( 1 ), StringEscapeUtils.unescapeHtml( escapedValue ) );
         }
 
         return attributes;
