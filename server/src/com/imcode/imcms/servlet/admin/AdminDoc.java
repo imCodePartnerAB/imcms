@@ -141,7 +141,14 @@ public class AdminDoc extends HttpServlet {
 
             default:
                 DocumentRequest documentRequest = new DocumentRequest( imcref, user, document, null, req );
-                String result = imcref.parsePage( documentRequest, flags, new ParserParameters() );
+                ParserParameters parserParameters = new ParserParameters();
+                parserParameters.setDocumentRequest(documentRequest) ;
+                parserParameters.setFlags( flags );
+                String editingMenuIndexStr = req.getParameter( "editmenu" ) ;
+                if (null != editingMenuIndexStr) {
+                    parserParameters.setEditingMenuIndex( Integer.valueOf(editingMenuIndexStr) );
+                }
+                String result = imcref.parsePage( parserParameters );
                 return result;
 
             case DocumentDomainObject.DOCTYPE_DIAGRAM:

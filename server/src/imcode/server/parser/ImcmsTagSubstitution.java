@@ -188,7 +188,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
                     includedDocumentRequest.setDocument(
                             serverObject.getDocumentMapper().getDocument(included_meta_id));
                     includedDocumentRequest.setReferrer(document);
-                    String documentStr = textDocParser.parsePage(includedDocumentRequest, -1, includeLevel - 1, paramsToParse);
+                    String documentStr = textDocParser.parsePage( paramsToParse, includeLevel - 1 );
                     documentStr = org.apache.oro.text.regex.Util.substitute(patMat, HTML_PREBODY_PATTERN, NULL_SUBSTITUTION, documentStr);
                     documentStr = org.apache.oro.text.regex.Util.substitute(patMat, HTML_POSTBODY_PATTERN, NULL_SUBSTITUTION, documentStr);
                     return documentStr;
@@ -289,7 +289,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
                 }
                 includedDocumentRequest.setDocument(serverObject.getDocumentMapper().getDocument(included_meta_id));
                 includedDocumentRequest.setReferrer(document);
-                String documentStr = textDocParser.parsePage(includedDocumentRequest, -1, includeLevel - 1, paramsToParse);
+                String documentStr = textDocParser.parsePage( paramsToParse, includeLevel - 1 );
                 documentStr = org.apache.oro.text.regex.Util.substitute(patMat, HTML_PREBODY_PATTERN, NULL_SUBSTITUTION, documentStr);
                 documentStr = org.apache.oro.text.regex.Util.substitute(patMat, HTML_POSTBODY_PATTERN, NULL_SUBSTITUTION, documentStr);
                 return documentStr;

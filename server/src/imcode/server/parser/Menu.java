@@ -4,10 +4,12 @@ public class Menu extends java.util.LinkedList {
 
     // todo: Replace inheritance with delegation
 
+    private int menuIndex;
     private boolean menuMode;
     private int sortOrder;
 
-    public Menu( boolean menumode, int sortOrder ) {
+    public Menu( int menuIndex, boolean menumode, int sortOrder ) {
+        this.menuIndex = menuIndex;
         this.menuMode = menumode;
         this.sortOrder = sortOrder ;
     }
@@ -25,4 +27,7 @@ public class Menu extends java.util.LinkedList {
         return sortOrder;
     }
 
+    public int getMenuIndex() {
+        return menuIndex;
+    }
 }

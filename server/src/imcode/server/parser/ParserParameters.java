@@ -1,10 +1,15 @@
 package imcode.server.parser;
 
+import imcode.server.DocumentRequest;
+
 public class ParserParameters {
 
     private String template;	//used to store the template if not default is wanted
     private String param;		//used to store the parameter param
     private String externalParam; //used to store the param prodused from external class.
+    private Integer editingMenuIndex;
+    private DocumentRequest documentRequest;
+    private int flags;
 
     public ParserParameters() {
 
@@ -36,4 +41,27 @@ public class ParserParameters {
         return this.externalParam == null ? "" : this.externalParam;
     }
 
+    public Integer getEditingMenuIndex() {
+        return editingMenuIndex ;
+    }
+
+    public void setEditingMenuIndex( Integer editingMenuIndex ) {
+        this.editingMenuIndex = editingMenuIndex;
+    }
+
+    public DocumentRequest getDocumentRequest() {
+        return documentRequest;
+    }
+
+    public void setDocumentRequest( DocumentRequest documentRequest ) {
+        this.documentRequest = documentRequest;
+    }
+
+    public int getFlags() {
+        return flags;
+    }
+
+    public void setFlags( int flags ) {
+        this.flags = flags;
+    }
 }

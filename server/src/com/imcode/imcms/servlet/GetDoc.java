@@ -262,8 +262,8 @@ public class GetDoc extends HttpServlet {
             paramsToParser.setTemplate( req.getParameter( "template" ) );
             paramsToParser.setParameter( req.getParameter( "param" ) );
             paramsToParser.setExternalParameter( externalparam );
-
-            String result = imcref.parsePage( documentRequest, 0, paramsToParser );
+            paramsToParser.setDocumentRequest( documentRequest );
+            String result = imcref.parsePage( paramsToParser );
             // Log to accesslog
             trackLog.info( documentRequest );
             return result;

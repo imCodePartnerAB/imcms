@@ -43,7 +43,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   public String parsePage( DocumentRequest docReq, int flags, ParserParameters paramsToParse ) throws IOException {
+   public String parsePage( ParserParameters paramsToParse ) throws IOException {
       return null;
    }
 

@@ -68,15 +68,16 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         return this.service;
     }
 
-    public String parsePage( DocumentRequest documentRequest, int flags, ParserParameters paramsToParse ) throws IOException {
+    public String parsePage( ParserParameters paramsToParse ) throws IOException {
         NDC.push( "parsePage" );
-        String page = parsePage( documentRequest, flags, 5, paramsToParse );
+        String page = parsePage( paramsToParse, 5 );
         NDC.pop();
         return page;
     }
 
-    public String parsePage( DocumentRequest documentRequest, int flags, int includelevel,
-                             ParserParameters paramsToParse ) throws IOException {
+    public String parsePage( ParserParameters paramsToParse, int includelevel ) throws IOException {
+        DocumentRequest documentRequest = paramsToParse.getDocumentRequest() ;
+        int flags = paramsToParse.getFlags() ;
         try {
             TextDocumentDomainObject document = (TextDocumentDomainObject)documentRequest.getDocument();
             int meta_id = document.getId();
@@ -85,10 +86,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             UserDomainObject user = documentRequest.getUser();
             int user_id = user.getUserId();
             String user_id_str = String.valueOf( user_id );
-
-            //handles the extra parameters
-            String param_value = paramsToParse.getParameter();
-            String extparam_value = paramsToParse.getExternalParameter();
 
             DocumentMapper documentMapper = service.getDocumentMapper();
 
@@ -118,7 +115,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             TemplateDomainObject documentTemplate = document.getTemplate();
             int documentTemplateId = documentTemplate.getId();
-            String simple_name = documentTemplate.getName();
 
             String template_name = paramsToParse.getTemplate();
             if ( template_name != null ) {
@@ -140,7 +136,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
 
-            Map menus = getChilds( metaIdUserIdPair, menumode, datetimeFormatWithSeconds, lang_prefix );
+            Map menus = getMenus( metaIdUserIdPair, menumode, datetimeFormatWithSeconds, lang_prefix );
 
             StringBuffer templatebuffer = new StringBuffer( service.getTemplateData( documentTemplateId ) );
 
@@ -150,8 +146,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
             result.append( imcmsMessage );
 
-            MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( documentRequest, menus, menumode );
-            MapSubstitution hashtagsubstitution = new imcode.server.parser.MapSubstitution( getHashTags( user, datetimeFormatWithSeconds, document, param_value, extparam_value, templatemode, documentTemplate, simple_name ), true );
+            Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, templatemode, paramsToParse );
+            MapSubstitution hashtagsubstitution = new imcode.server.parser.MapSubstitution( hashTags, true );
+            MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( paramsToParse, menus, menumode );
             ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, documentRequest, templatePath, Arrays.asList( included_docs ), includemode, includelevel, includePath, textMap, textmode, imageMap, imagemode );
 
             LinkedList parse = new LinkedList();
@@ -307,8 +304,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     }
 
     private Properties getHashTags( UserDomainObject user, SimpleDateFormat datetimeFormatWithSeconds,
-                                    TextDocumentDomainObject document, String param_value, String extparam_value,
-                                    boolean templatemode, TemplateDomainObject documentTemplate, String simple_name ) {
+                                    TextDocumentDomainObject document,
+                                    boolean templatemode, ParserParameters paramsToParse ) {
+
         Properties tags = new Properties();	// A properties object to hold the results from the db...
         // Put tags and corresponding data in Properties
         tags.setProperty( "#userName#", user.getFullName() );
@@ -329,20 +327,19 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         tags.setProperty( "#serverMaster#", service.getSystemData().getServerMaster() );
         tags.setProperty( "#serverMasterEmail#", service.getSystemData().getServerMasterAddress() );
 
-        tags.setProperty( "#param#", param_value );
-        tags.setProperty( "#externalparam#", extparam_value );
+        tags.setProperty( "#param#", paramsToParse.getParameter() );
+        tags.setProperty( "#externalparam#", paramsToParse.getExternalParameter() );
 
         // Give the user a row of buttons if he is privileged enough.
         tags.setProperty( "#adminMode#", service.getMenuButtons( user, document ) );
 
-        String changeTemplateUi = createChangeTemplateUi( templatemode, user, document, documentTemplate, simple_name );
+        String changeTemplateUi = createChangeTemplateUi( templatemode, user, document );
         tags.setProperty( "#changePage#", changeTemplateUi );
         return tags;
     }
 
     private String createChangeTemplateUi( boolean templatemode, UserDomainObject user,
-                                           TextDocumentDomainObject document, TemplateDomainObject documentTemplate,
-                                           String simple_name ) {
+                                           TextDocumentDomainObject document ) {
         String changeTemplateUi = "";
         if ( templatemode ) {	//Templatemode! :)
 
@@ -357,7 +354,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             TemplateDomainObject[] templates = templateMapper.getTemplatesInGroup( selected_group );
 
-            String templatelist = templateMapper.createHtmlOptionListOfTemplates( templates, documentTemplate );
+            String templatelist = templateMapper.createHtmlOptionListOfTemplates( templates, document.getTemplate() );
 
             String grouplist = templateMapper.createHtmlOptionListOfTemplateGroups( selected_group );
 
@@ -371,7 +368,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             temptags.add( "#getTemplateGroups#" );
             temptags.add( grouplist );
             temptags.add( "#simple_name#" );
-            temptags.add( simple_name );
+            temptags.add( document.getTemplate().getName() );
             temptags.add( "#getTemplatesInGroup#" );
             temptags.add( templatelist );
 
@@ -381,7 +378,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         return changeTemplateUi;
     }
 
-    private Map getChilds( String[] metaIdUserIdPair, boolean menumode, SimpleDateFormat datetimeFormatWithSeconds,
+    private Map getMenus( String[] metaIdUserIdPair, boolean menumode, SimpleDateFormat datetimeFormatWithSeconds,
                            String lang_prefix ) {
         /*
           OK.. we will now make a LinkedList for the entire page.
@@ -392,7 +389,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         */
         HashMap menus = new HashMap();	// Map to contain all the menus on the page.
         Menu currentMenu = null;
-        int old_menu = -1;
+        int previousMenuIndex = -1;
 
         // Here we have the most timeconsuming part of parsing the page.
         // Selecting all the documents with permissions from the DB
@@ -401,12 +398,12 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         for ( int i = 0; i < childs.length; ++i ) {
             String[] childRow = childs[i];
 
-            int menuno = Integer.parseInt( childRow[1] );              // What menu in the page the child is in.
+            int menuIndex = Integer.parseInt( childRow[1] );              // What menu in the page the child is in.
             int menuSortOrder = Integer.parseInt( childRow[2] );
-            if ( menuno != old_menu ) {	                                     // If we come upon a new menu...
-                old_menu = menuno;
-                currentMenu = new Menu( menumode, menuSortOrder );	     // We make a new Menu,
-                menus.put( new Integer( menuno ), currentMenu );		     // and add it to the page.
+            if ( menuIndex != previousMenuIndex ) {	                                     // If we come upon a new menu...
+                previousMenuIndex = menuIndex;
+                currentMenu = new Menu( menuIndex, menumode, menuSortOrder );	     // We make a new Menu,
+                menus.put( new Integer( menuIndex ), currentMenu );		     // and add it to the page.
             }
             MenuItem menuItem = createMenuItemFromSprocGetChildsRow( currentMenu, childRow, datetimeFormatWithSeconds );
 
@@ -471,8 +468,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         for ( int i = 0; i < emp.length; ++i ) {
             try {
                 Pattern empPattern = empCompiler.compile( "(" + Perl5Compiler.quotemeta( emp[i] ) + ")", Perl5Compiler.CASE_INSENSITIVE_MASK );
-                str = org.apache.oro.text.regex.Util.substitute( // Threadsafe
-                        patMat, empPattern, emphasize_substitution, str, org.apache.oro.text.regex.Util.SUBSTITUTE_ALL );
+                str = org.apache.oro.text.regex.Util.substitute( patMat, empPattern, emphasize_substitution, str, org.apache.oro.text.regex.Util.SUBSTITUTE_ALL );
             } catch ( MalformedPatternException ex ) {
                 log.warn( "Dynamic Pattern-compilation failed in IMCService.emphasizeString(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '"
                           + emp[i]

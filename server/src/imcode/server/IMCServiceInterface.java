@@ -33,7 +33,7 @@ public interface IMCServiceInterface {
     TextDocumentDomainObject.Text getText(int meta_id,int txt_no)
 	;
 
-    String parsePage(DocumentRequest docReq, int flags, ParserParameters paramsToParse) throws IOException ;
+    String parsePage( ParserParameters paramsToParse ) throws IOException ;
 
     // Save an image
     void saveImage(int meta_id,UserDomainObject user,int img_no,imcode.server.ImageDomainObject image)
