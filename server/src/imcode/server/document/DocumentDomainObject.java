@@ -39,7 +39,7 @@ public class DocumentDomainObject implements IMCConstants {
     private Set categories = new HashSet() ;
     private Set keywords = new HashSet() ;
     private Map rolesMappedToPermissionSetIds = new HashMap();
-
+    private boolean searchDisabled;
 
     // todo: classification/Search words is missing
 
@@ -465,4 +465,13 @@ public class DocumentDomainObject implements IMCConstants {
     public String[] getKeywords() {
         return (String[]) keywords.toArray(new String[keywords.size()]) ;
     }
+
+    public void setSearchDisabled( boolean searchDisabled ) {
+        this.searchDisabled = searchDisabled;
+    }
+
+    public boolean isSearchDisabled() {
+        return searchDisabled;
+    }
+
 }

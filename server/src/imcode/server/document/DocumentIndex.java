@@ -10,6 +10,7 @@ import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
@@ -41,19 +42,27 @@ public class DocumentIndex {
     }
 
     public DocumentDomainObject[] search( Query query ) throws IOException {
+        NDC.push( "search" );
         IndexReader indexReader = IndexReader.open( dir );
         IndexSearcher indexSearcher = new IndexSearcher( indexReader );
+        StopWatch searchStopWatch = new StopWatch() ;
+        searchStopWatch.start();
         Hits hits = indexSearcher.search( query );
+        searchStopWatch.stop();
+        log.debug("Search for "+query.toString()+" took " +searchStopWatch.getTime()+"ms.");
         DocumentDomainObject[] result = new DocumentDomainObject[hits.length()];
+        StopWatch getDocumentStopWatch = new StopWatch();
+        final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface()
+                .getDocumentMapper();
         for ( int i = 0; i < hits.length(); ++i ) {
             int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
-            DocumentDomainObject document = ApplicationServer.getIMCServiceInterface()
-                    .getDocumentMapper()
-                    .getDocument( metaId );
+            DocumentDomainObject document = getDocument( getDocumentStopWatch, documentMapper, metaId );
             result[i] = document;
         }
+        logGetDocumentsStopWatch( getDocumentStopWatch, result.length );
         indexSearcher.close();
         indexReader.close();
+        NDC.pop() ;
         return result;
     }
 
@@ -65,6 +74,7 @@ public class DocumentIndex {
     }
 
     public void indexAllDocuments() {
+        NDC.push("index all") ;
         try {
             IndexWriter indexWriter = new IndexWriter( dir, new WhitespaceLowerCaseAnalyzer(), true );
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -89,12 +99,19 @@ public class DocumentIndex {
             indexingStopWatch.stop();
             log.info(
                     "Completed index of " + documentIds.length + " documents in " + indexingStopWatch.getTime() + "ms" );
-            log.info( "Time spent querying the database for documents: " + getDocumentStopWatch.getTime() + "ms" );
+            logGetDocumentsStopWatch( getDocumentStopWatch, documentIds.length );
             optimizeIndex( indexWriter );
             indexWriter.close();
         } catch ( Exception e ) {
             log.error( "Failed to index all documents", e );
         }
+        NDC.pop() ;
+    }
+
+    private void logGetDocumentsStopWatch( StopWatch getDocumentStopWatch, int documentCount ) {
+        long time = getDocumentStopWatch.getTime();
+        long millisecondsPerDocument = time / documentCount ;
+        log.debug( "Spent " + time + "ms ("+millisecondsPerDocument+"ms/document) fetching "+documentCount+" documents from the database." );
     }
 
     private DocumentDomainObject getDocument( StopWatch getDocumentStopWatch, DocumentMapper documentMapper,
@@ -125,11 +142,13 @@ public class DocumentIndex {
     }
 
     private void addDocumentToIndex( DocumentDomainObject document, IndexWriter indexWriter ) throws IOException {
-        Document indexDocument = createIndexDocument( document );
-        indexWriter.addDocument( indexDocument );
+        if (!document.isSearchDisabled()) {
+            Document indexDocument = createIndexDocument( document );
+            indexWriter.addDocument( indexDocument );
+        }
     }
 
-    private Document createIndexDocument( DocumentDomainObject document ) throws IOException {
+    private Document createIndexDocument( DocumentDomainObject document ) {
         Document indexDocument = new Document();
         indexDocument.add( Field.Keyword( "meta_id", "" + document.getMetaId() ) );
         indexDocument.add( unStoredKeyword( "meta_headline_keyword", document.getHeadline().toLowerCase() ) );

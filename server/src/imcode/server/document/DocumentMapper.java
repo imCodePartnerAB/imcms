@@ -312,7 +312,7 @@ public class DocumentMapper {
         DocumentDomainObject document;
         Map documentData = sprocGetDocumentInfo( service, metaId );
         if ( documentData == null ) {
-            throw new IndexOutOfBoundsException( "No such internalDocument: " + metaId );
+            throw new IndexOutOfBoundsException( "No such document: " + metaId );
         }
         DateFormat dateform = new SimpleDateFormat( DateHelper.DATE_TIME_SECONDS_FORMAT_STRING );
         document = new DocumentDomainObject();
@@ -323,6 +323,7 @@ public class DocumentMapper {
         document.setText( (String)documentData.get( "meta_text" ) );
         document.setImage( (String)documentData.get( "meta_image" ) );
         document.setTarget( (String)documentData.get( "target" ) );
+        document.setSearchDisabled( "0".equals(documentData.get("disable_search")) ? false : true ) ;
         String langStr = (String)documentData.get( "lang_prefix" );
         try {
             langStr = LanguageMapper.getAsIso639_2( langStr );
@@ -590,7 +591,7 @@ public class DocumentMapper {
         UserDomainObject publisher = document.getPublisher();
 
         sqlUpdateMeta( service, document.getMetaId(), activatedDatetime, archivedDatetime, createdDatetime, headline,
-                       image, modifiedDatetime, target, text, archived, language, publisher );
+                       image, modifiedDatetime, target, text, archived, language, publisher, document.isSearchDisabled() );
         setSectionsForDocument( service, document.getMetaId(), sections );
 
         service.sqlUpdateQuery( "DELETE FROM document_categories WHERE meta_id = ?",
@@ -1147,7 +1148,7 @@ public class DocumentMapper {
     private static void sqlUpdateMeta( IMCServiceInterface service, int meta_id, Date activatedDatetime,
                                        Date archivedDateTime, Date createdDatetime, String headline, String image,
                                        Date modifiedDateTime, String target, String text, boolean isArchived,
-                                       String language, UserDomainObject publisher ) {
+                                       String language, UserDomainObject publisher, boolean isSearchDisabled ) {
 
         StringBuffer sqlStr = new StringBuffer( "update meta set " );
 
@@ -1167,6 +1168,7 @@ public class DocumentMapper {
         makeStringSQL( "meta_text", textThatFitsInDB, sqlUpdateColumns, sqlUpdateValues );
         makeStringSQL( "lang_prefix", language, sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSQL( "archive", isArchived, sqlUpdateColumns, sqlUpdateValues );
+        makeBooleanSQL( "disable_search", isSearchDisabled, sqlUpdateColumns, sqlUpdateValues) ;
         makeIntSQL( "publisher_id", ( publisher == null ? null : new Integer( publisher.getUserId() ) ), sqlUpdateColumns,
                     sqlUpdateValues );
 
