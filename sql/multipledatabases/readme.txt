@@ -53,7 +53,7 @@ gettemplategroups.prc
 gettemplategroupsforuser.prc
 gettemplategroupswithnewpermissions.prc
 gettemplategroupswithpermissions.prc
-gettemplateid.prc
+
 gettemplates.prc
 gettextdocdata.prc
 gettexts.prc

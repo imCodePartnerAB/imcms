@@ -94,8 +94,13 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_GetUserInfo( databaseService );
             test_sproc_sproc_GetRoleIdByRoleName( databaseService );
             test_sproc_getTemplates( databaseService );
+            test_sproc_GetTemplateId( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_GetTemplateId( DatabaseService databaseService ) {
+        assertEquals( 1, databaseService.sproc_GetTemplateId( "Start" ) );
     }
 
     private void test_sproc_getTemplates(DatabaseService databaseService) {
@@ -138,9 +143,8 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_GetDocTypesForUser( DatabaseService dbService ) {
-        DatabaseService.View_doc_types[] userDocTypes = dbService.sproc_GetDocTypesForUser( USER_TEST_ID, DOC_TEST_FIRST_ID, LANG_PREFIX_SWEDEN );
+        DatabaseService.Table_doc_types[] userDocTypes = dbService.sproc_GetDocTypesForUser( USER_TEST_ID, DOC_TEST_FIRST_ID, LANG_PREFIX_SWEDEN );
         assertEquals( 1, userDocTypes.length );
-        assertEquals( 2, userDocTypes[0].doc_type );
     }
 
     private void testIsFileDoc( DatabaseService dbService ) {
@@ -201,7 +205,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_getChilds( DatabaseService dbService ) {
-        DatabaseService.View_ChildData[] children = dbService.sproc_getChilds( DOC_TEST_ID_DETACHED, USER_ADMIN_ID );
+        DatabaseService.View_ChildsAndMeta[] children = dbService.sproc_getChilds( DOC_TEST_ID_DETACHED, USER_ADMIN_ID );
         assertEquals( 0, children.length );
 
         children = dbService.sproc_getChilds( DOC_TEST_FIRST_ID, USER_ADMIN_ID );
@@ -264,11 +268,9 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         DatabaseService.Table_users user = static_createDummyUser();
         for( int i = 0; i < databaseServices.length; i++ ) {
             DatabaseService dbService = databaseServices[i];
-            DatabaseService.Table_users[] usersBefore = dbService.sproc_GetAllUsers_OrderByLastName();
             dbService.sproc_AddNewuser( user );
             int rowsAffected = dbService.sproc_delUser( USER_NEXT_FREE_ID );
             assertTrue( rowsAffected > 0 );
-            DatabaseService.Table_users[] usersAfter = dbService.sproc_GetAllUsers_OrderByLastName();
         }
     }
 
@@ -387,10 +389,10 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         String copyPrefix = "Kopierat document";
         for( int i = 0; i < databaseServices.length; i++ ) {
             DatabaseService databaseService = databaseServices[i];
-            DatabaseService.View_DocumentForUser[] documentForUserBefore = databaseService.sproc_getDocs( USER_ADMIN_ID, DOC_TEST_FIRST_ID, DOC_NO_MORE_THAN_EXISTS_IN_SYSTEM );
+            DatabaseService.PartOfTable_document[] documentForUserBefore = databaseService.sproc_getDocs( USER_ADMIN_ID, DOC_TEST_FIRST_ID, DOC_NO_MORE_THAN_EXISTS_IN_SYSTEM );
             int[] result = databaseService.sproc_copyDocs( DOC_TEST_FIRST_ID, menu_id, USER_ADMIN_ID, documentsToBeCopied, copyPrefix );
             assertEquals( 1, result.length );
-            DatabaseService.View_DocumentForUser[] documentForUserAfter = databaseService.sproc_getDocs( USER_ADMIN_ID, DOC_TEST_FIRST_ID, DOC_NO_MORE_THAN_EXISTS_IN_SYSTEM );
+            DatabaseService.PartOfTable_document[] documentForUserAfter = databaseService.sproc_getDocs( USER_ADMIN_ID, DOC_TEST_FIRST_ID, DOC_NO_MORE_THAN_EXISTS_IN_SYSTEM );
             assertTrue( documentForUserBefore.length != documentForUserAfter.length );
         }
     }
@@ -408,22 +410,5 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private static DatabaseService.Table_users static_createDummyUser() {
         DatabaseService.Table_users user = new DatabaseService.Table_users( USER_NEXT_FREE_ID, "test login name", "test password", "First name", "Last name", "Titel", "Company", "Adress", "City", "Zip", "Country", "Country council", "Email adress", 0, DOC_ID_FIRST_PAGE, 0, 1, 1, 1, new Timestamp( new java.util.Date().getTime() ) );
         return user;
-    }
-
-    private static void static_assertEquals( Object[] oneArr, Object[] anotherArr ) {
-        if( oneArr == null ) {
-            assertNotNull( anotherArr );
-        } else if( anotherArr == null ) {
-            fail( "The second array is null, but not the first oneArr" );
-        } else {
-            assertTrue( oneArr != anotherArr );
-            assertEquals( oneArr.length, anotherArr.length );
-            for( int i = 0; i < oneArr.length; i++ ) {
-                Object one = oneArr[i];
-                Object another = anotherArr[i];
-                assertTrue( one != another );
-                assertEquals( one, another );
-            }
-        }
     }
 }

@@ -157,17 +157,17 @@ public abstract class DatabaseService {
     }
 
     class Table_roles {
+        private int role_id;
+        private String role_name;
+        private int permissions;
+        private int admin_role;
+
         Table_roles( int role_id, String role_name, int permissions, int admin_role ) {
             this.role_id = role_id;
             this.role_name = role_name;
             this.permissions = permissions;
             this.admin_role = admin_role;
         }
-
-        int role_id;
-        String role_name;
-        int permissions;
-        int admin_role;
     }
 
     Table_roles[] sproc_GetAllRoles_but_user() {
@@ -233,44 +233,35 @@ public abstract class DatabaseService {
             this.create_date = create_date;
         }
 
-        private static Table_users mapOneRowToFileds( ResultSet rs ) throws SQLException {
-            Table_users result = null;
-            int user_id = rs.getInt( "user_id" );
-            String login_name = rs.getString( "login_name" );
-            String login_password = rs.getString( "login_password" );
-            String first_name = rs.getString( "first_name" );
-            String last_name = rs.getString( "last_name" );
-            String title = rs.getString( "title" );
-            String company = rs.getString( "company" );
-            String address = rs.getString( "address" );
-            String city = rs.getString( "city" );
-            String zip = rs.getString( "zip" );
-            String country = rs.getString( "country" );
-            String county_council = rs.getString( "county_council" );
-            String email = rs.getString( "email" );
-            int external = rs.getInt( "external" );
-            int last_page = rs.getInt( "last_page" );
-            int archive_mode = rs.getInt( "archive_mode" );
-            int lang_id = rs.getInt( "lang_id" );
-            int user_type = rs.getInt( "user_type" );
-            int active = rs.getInt( "active" );
-            Timestamp create_date = rs.getTimestamp( "create_date" );
-            result = new Table_users( user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date );
-            return result;
+        Table_users ( ResultSet rs ) throws SQLException {
+            user_id = rs.getInt( "user_id" );
+            login_name = rs.getString( "login_name" );
+            login_password = rs.getString( "login_password" );
+            first_name = rs.getString( "first_name" );
+            last_name = rs.getString( "last_name" );
+            title = rs.getString( "title" );
+            company = rs.getString( "company" );
+            address = rs.getString( "address" );
+            city = rs.getString( "city" );
+            zip = rs.getString( "zip" );
+            country = rs.getString( "country" );
+            county_council = rs.getString( "county_council" );
+            email = rs.getString( "email" );
+            external = rs.getInt( "external" );
+            last_page = rs.getInt( "last_page" );
+            archive_mode = rs.getInt( "archive_mode" );
+            lang_id = rs.getInt( "lang_id" );
+            user_type = rs.getInt( "user_type" );
+            active = rs.getInt( "active" );
+            create_date = rs.getTimestamp( "create_date" );
         }
     }
-
-    /**
-     *  Document me!
-     * @return
-     */
 
     Table_users[] sproc_GetAllUsers_OrderByLastName() {
         String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users ORDER BY last_name";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                Table_users result = Table_users.mapOneRowToFileds( rs );
-                return result;
+                return new Table_users( rs );
             }
         } );
         return (Table_users[])queryResult.toArray( new Table_users[queryResult.size()] );
@@ -458,37 +449,37 @@ public abstract class DatabaseService {
         return (String)queryResult.get( 0 );
     }
 
-    static class View_phonetypes {
-        View_phonetypes( int phonetype_id, String typename ) {
+    static class Table_phonetypes {
+        private int phonetype_id;
+        private String typename;
+
+        Table_phonetypes( int phonetype_id, String typename ) {
             this.phonetype_id = phonetype_id;
             this.typename = typename;
         }
-
-        int phonetype_id;
-        String typename;
     }
 
-    View_phonetypes[] sproc_GetPhonetypes_ORDER_BY_phonetype_id( int lang_id ) {
+    Table_phonetypes[] sproc_GetPhonetypes_ORDER_BY_phonetype_id( int lang_id ) {
         String sql = " SELECT  phonetype_id, typename FROM phonetypes WHERE lang_id = ? ORDER BY phonetype_id";
         Object[] paramValues = new Object[]{new Integer( lang_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int phonetype_id = rs.getInt( "phonetype_id" );
                 String typename = rs.getString( "typename" );
-                return new View_phonetypes( phonetype_id, typename );
+                return new Table_phonetypes( phonetype_id, typename );
             }
         } );
-        return (View_phonetypes[])queryResult.toArray( new View_phonetypes[queryResult.size()] );
+        return (Table_phonetypes[])queryResult.toArray( new Table_phonetypes[queryResult.size()] );
     }
 
-    static class View_phone {
-        View_phone( int phone_id, String phoneNumber ) {
+    static class Table_phone {
+        private int phone_id;
+        private String phoneNumber;
+
+        Table_phone( int phone_id, String phoneNumber ) {
             this.phone_id = phone_id;
             this.phoneNumber = phoneNumber;
         }
-
-        int phone_id;
-        String phoneNumber;
     }
 
     /**
@@ -497,7 +488,7 @@ public abstract class DatabaseService {
      * @return
      */
     // todo: Warning, this method used to RTIM the phone numer result, not any longer...
-    View_phone[] sproc_GetUserPhones( int user_id ) {
+    Table_phone[] sproc_GetUserPhones( int user_id ) {
         String sql = "SELECT p.phone_id, p.number FROM users u , phones p " +
             "WHERE u.user_id = p.user_id AND u.user_id = ? ";
         Object[] paramValues = new Object[]{new Integer( user_id )};
@@ -505,31 +496,31 @@ public abstract class DatabaseService {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int phone_id = rs.getInt( "phone_id" );
                 String phoneNumber = rs.getString( "number" );
-                return new View_phone( phone_id, phoneNumber );
+                return new Table_phone( phone_id, phoneNumber );
             }
         } );
-        return (View_phone[])queryResult.toArray( new View_phone[queryResult.size()] );
+        return (Table_phone[])queryResult.toArray( new Table_phone[queryResult.size()] );
     }
 
-    static class View_userAndPhone {
-        View_userAndPhone( int phone_id, String number, int user_id, int phonetype_id, String typename ) {
+    static class View_PhonesAndPhoneTypes {
+        private int phone_id;
+        private String number;
+        private int user_id;
+        private int phonetype_id;
+        private String typename;
+
+        View_PhonesAndPhoneTypes( int phone_id, String number, int user_id, int phonetype_id, String typename ) {
             this.phone_id = phone_id;
             this.number = number;
             this.user_id = user_id;
             this.phonetype_id = phonetype_id;
             this.typename = typename;
         }
-
-        int phone_id;
-        String number;
-        int user_id;
-        int phonetype_id;
-        String typename;
     }
 
     // todo: Do we realy need to return user_id?
     // todo: This should be able to be used instead of sproc_GetUserPhones, why not?
-    View_userAndPhone[] sproc_GetUserPhoneNumbers( int user_id ) {
+    View_PhonesAndPhoneTypes[] sproc_GetUserPhoneNumbers( int user_id ) {
         String sql = "SELECT phones.phone_id, phones.number, phones.user_id, phones.phonetype_id, phonetypes.typename " +
             "FROM phones " +
             "INNER JOIN users ON phones.user_id = users.user_id " +
@@ -543,10 +534,10 @@ public abstract class DatabaseService {
                 int user_id = rs.getInt( "user_id" );
                 int phonetype_id = rs.getInt( "phonetype_id" );
                 String typename = rs.getString( "typename" );
-                return new View_userAndPhone( phone_id, number, user_id, phonetype_id, typename );
+                return new View_PhonesAndPhoneTypes( phone_id, number, user_id, phonetype_id, typename );
             }
         } );
-        return (View_userAndPhone[])queryResult.toArray( new View_userAndPhone[queryResult.size()] );
+        return (View_PhonesAndPhoneTypes[])queryResult.toArray( new View_PhonesAndPhoneTypes[queryResult.size()] );
     }
 
     int sproc_DocumentDelete( int meta_id ) {
@@ -649,19 +640,20 @@ public abstract class DatabaseService {
         return rowCount;
     }
 
-    static class View_DocumentForUser {
-        View_DocumentForUser( int meta_id, int parentcount, String meta_headline, int doc_type ) {
+    static class PartOfTable_document {
+        private int meta_id;
+        private int parentcount;
+        private String meta_headline;
+        private int doc_type;
+
+        PartOfTable_document( int meta_id, int parentcount, String meta_headline, int doc_type ) {
             this.meta_id = meta_id;
             this.parentcount = parentcount;
             this.meta_headline = meta_headline;
             this.doc_type = doc_type;
         }
-
-        int meta_id;
-        int parentcount;
-        String meta_headline;
-        int doc_type;
     }
+
     /**
      * Lists documents user is allowed to see.
      * @param user_id
@@ -671,7 +663,7 @@ public abstract class DatabaseService {
      */
     // todo: döp om till getDocsForUser eller nåt.
     // todo: Tog bort i första raden ett DISTINCT från COUNT(DISTINCT c.meta_id) till COUNT(c.meta_id), fundera igenom om det gör något?
-    View_DocumentForUser[] sproc_getDocs( int user_id, int start, int end ) {
+    PartOfTable_document[] sproc_getDocs( int user_id, int start, int end ) {
         String sql = "SELECT DISTINCT m.meta_id, COUNT(c.meta_id) parentcount, meta_headline, doc_type FROM meta m " +
             "LEFT JOIN childs c ON c.to_meta_id = m.meta_id " +
             "LEFT JOIN roles_rights rr  ON rr.meta_id = m.meta_id AND rr.set_id < 4 " +
@@ -686,14 +678,30 @@ public abstract class DatabaseService {
                 int parentcount = rs.getInt( "parentcount" );
                 String meta_headline = rs.getString( "meta_headline" );
                 int doc_type = rs.getInt( "doc_type" );
-                return new View_DocumentForUser( meta_id, parentcount, meta_headline, doc_type );
+                return new PartOfTable_document( meta_id, parentcount, meta_headline, doc_type );
             }
         } );
-        return (View_DocumentForUser[])queryResult.toArray( new View_DocumentForUser[queryResult.size()] );
+        return (PartOfTable_document[])queryResult.toArray( new PartOfTable_document[queryResult.size()] );
     }
 
-    static class View_ChildData {
-        View_ChildData( int to_meta_id, int menu_sort, int manual_sort_order, int doc_type, boolean archive, String target, Timestamp date_created, Timestamp date_modified, String meta_headline, String meta_text, String meta_image, String frame_name, Timestamp activated_datetime, Timestamp archived_datetime, String filename ) {
+    static class View_ChildsAndMeta {
+        private int to_meta_id;
+        private int menu_sort;
+        private int manual_sort_order;
+        private int doc_type;
+        private boolean archive;
+        private String target;
+        private Timestamp date_created;
+        private Timestamp date_modified;
+        private String meta_headline;
+        private String meta_text;
+        private String meta_image;
+        private String frame_name;
+        private Timestamp activated_datetime;
+        private Timestamp archived_datetime;
+        private String filename;
+
+        View_ChildsAndMeta( int to_meta_id, int menu_sort, int manual_sort_order, int doc_type, boolean archive, String target, Timestamp date_created, Timestamp date_modified, String meta_headline, String meta_text, String meta_image, String frame_name, Timestamp activated_datetime, Timestamp archived_datetime, String filename ) {
             this.to_meta_id = to_meta_id;
             this.menu_sort = menu_sort;
             this.manual_sort_order = manual_sort_order;
@@ -710,22 +718,6 @@ public abstract class DatabaseService {
             this.archived_datetime = archived_datetime;
             this.filename = filename;
         }
-
-        int to_meta_id;
-        int menu_sort;
-        int manual_sort_order;
-        int doc_type;
-        boolean archive;
-        String target;
-        Timestamp date_created;
-        Timestamp date_modified;
-        String meta_headline;
-        String meta_text;
-        String meta_image;
-        String frame_name;
-        Timestamp activated_datetime;
-        Timestamp archived_datetime;
-        String filename;
     }
     /**
      * Nice little query that lists the children of a document that a particular user may see, and includes a field that tells you wether he may do something to it or not.
@@ -735,7 +727,7 @@ public abstract class DatabaseService {
     // todo WARNING, i anropande kod måste en förändring ske!
     // todo Den bortkommenterade reden nedan beräknar om man har rätt att editera eller ej.
     // todo Se till att göra den kollen på annat sätt efteråt för varje dokument.
-    View_ChildData[] sproc_getChilds( int meta_id, int user_id ) {
+    View_ChildsAndMeta[] sproc_getChilds( int meta_id, int user_id ) {
         Integer sortOrder = getMenuSortOrder( meta_id );
         String sql =
             "select to_meta_id, c.menu_sort,manual_sort_order, doc_type," +
@@ -794,11 +786,11 @@ public abstract class DatabaseService {
                 Timestamp activated_datetime = rs.getTimestamp( "activated_datetime" );
                 Timestamp archived_datetime = rs.getTimestamp( "archived_datetime" );
                 String filename = rs.getString( "filename" );
-                return new View_ChildData( to_meta_id, menu_sort, manual_sort_order, doc_type, archive, target, date_created, date_modified, meta_headline,
+                return new View_ChildsAndMeta( to_meta_id, menu_sort, manual_sort_order, doc_type, archive, target, date_created, date_modified, meta_headline,
                                            meta_text, meta_image, frame_name, activated_datetime, archived_datetime, filename );
             }
         } );
-        return (View_ChildData[])queryResult.toArray( new View_ChildData[queryResult.size()] );
+        return (View_ChildsAndMeta[])queryResult.toArray( new View_ChildsAndMeta[queryResult.size()] );
     }
 
     private Integer getMenuSortOrder( int meta_id ) {
@@ -931,13 +923,13 @@ public abstract class DatabaseService {
     }
 
     class Table_doc_types {
+        private int doc_type;
+        private String type;
+
         Table_doc_types( int doc_type, String type ) {
             this.doc_type = doc_type;
             this.type = type;
         }
-
-        int doc_type;
-        String type;
     }
 
     Table_doc_types[] sproc_GetDocTypes( String lang_prefix ) {
@@ -1015,7 +1007,7 @@ public abstract class DatabaseService {
     private boolean mayUserAddDocumentToParent( Integer user_id, Integer parent_meta_id, Integer meta_id_to_add ) {
         int doc_type = sproc_GetDocType( meta_id_to_add.intValue() );
         // TODO: Use default-language instead of "se"
-        View_doc_types[] user_doc_types = sproc_GetDocTypesForUser( user_id.intValue(), parent_meta_id.intValue(), "se" );
+        Table_doc_types[] user_doc_types = sproc_GetDocTypesForUser( user_id.intValue(), parent_meta_id.intValue(), "se" );
         boolean userCanCreateDocType = false;
         for( int i = 0; i < user_doc_types.length; ++i ) {
             int userDocType = user_doc_types[i].doc_type;
@@ -1027,21 +1019,11 @@ public abstract class DatabaseService {
         return userCanCreateDocType;
     }
 
-    static class View_doc_types {
-        public View_doc_types( int doc_type, String type ) {
-            this.doc_type = doc_type;
-            this.type = type;
-        }
-
-        int doc_type;
-        String type;
-    }
-
     /**
      Nice query that fetches all document types a user may create in a document,
      for easy insertion into an html-option-list, no less!
      */
-    View_doc_types[] sproc_GetDocTypesForUser( int user_id, int meta_id, String lang_prefix ) {
+    Table_doc_types[] sproc_GetDocTypesForUser( int user_id, int meta_id, String lang_prefix ) {
         String sql = "SELECT DISTINCT dt.doc_type, dt.type " +
             "FROM doc_types dt " +
             "JOIN user_roles_crossref urc " +
@@ -1067,13 +1049,40 @@ public abstract class DatabaseService {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int doc_type = rs.getInt( "doc_type" );
                 String type = rs.getString( "type" );
-                return new View_doc_types( doc_type, type );
+                return new Table_doc_types( doc_type, type );
             }
         } );
-        return (View_doc_types[])queryResult.toArray( new View_doc_types[queryResult.size()] );
+        return (Table_doc_types[])queryResult.toArray( new Table_doc_types[queryResult.size()] );
     }
 
     static class Table_meta {
+        private int meta_id;
+        private String description;
+        private int doc_type;
+        private String meta_headline;
+        private String meta_text;
+        private String meta_image;
+        private int owner_id;
+        private int permissions;
+        private int shared;
+        private int expand;
+        private int show_meta;
+        private int help_text_id;
+        private int archive;
+        private int status_id;
+        private String lang_prefix;
+        private String classification;
+        private Timestamp date_created;
+        private Timestamp date_modified;
+        private int sort_position;
+        private int menu_position;
+        private int disable_search;
+        private String target;
+        private String frame_name;
+        private int activate;
+        private Timestamp activated_datetime;
+        private Timestamp archived_datetime;
+
         Table_meta( int meta_id, String description, int doc_type, String meta_headline, String meta_text, String meta_image, int owner_id, int permissions, int shared, int expand, int show_meta, int help_text_id, int archive, int status_id, String lang_prefix, String classification, Timestamp date_created, Timestamp date_modified, int sort_position, int menu_position, int disable_search, String target, String frame_name, int activate, Timestamp activated_datetim, Timestamp archived_datetime ) {
             this.meta_id = meta_id;
             this.description = description;
@@ -1102,33 +1111,6 @@ public abstract class DatabaseService {
             this.activated_datetime = activated_datetim;
             this.archived_datetime = archived_datetime;
         }
-
-        int meta_id;
-        String description;
-        int doc_type;
-        String meta_headline;
-        String meta_text;
-        String meta_image;
-        int owner_id;
-        int permissions;
-        int shared;
-        int expand;
-        int show_meta;
-        int help_text_id;
-        int archive;
-        int status_id;
-        String lang_prefix;
-        String classification;
-        Timestamp date_created;
-        Timestamp date_modified;
-        int sort_position;
-        int menu_position;
-        int disable_search;
-        String target;
-        String frame_name;
-        int activate;
-        Timestamp activated_datetime;
-        Timestamp archived_datetime;
     }
 
     private Table_meta getFomTable_meta( Integer meta_id ) {
@@ -1200,6 +1182,13 @@ public abstract class DatabaseService {
     }
 
     static class Table_text_docs {
+        private int meta_id;
+        private int template_id;
+        private int group_id;
+        private int sort_order;
+        private int default_template_1;
+        private int default_template_2;
+
         Table_text_docs( int meta_id, int template_id, int group_id, int sort_order, int default_template_1, int default_template_2 ) {
             this.meta_id = meta_id;
             this.template_id = template_id;
@@ -1208,13 +1197,6 @@ public abstract class DatabaseService {
             this.default_template_1 = default_template_1;
             this.default_template_2 = default_template_2;
         }
-
-        int meta_id;
-        int template_id;
-        int group_id;
-        int sort_order;
-        int default_template_1;
-        int default_template_2;
     }
 
     private Table_text_docs getFromTable_text_docs( Integer meta_id ) {
@@ -1249,6 +1231,13 @@ public abstract class DatabaseService {
     };
 
     static class Table_url_docs {
+        private int meta_id;
+        private String frame_name;
+        private String target;
+        private String url_ref;
+        private String url_txt;
+        private String lang_prefix;
+
         Table_url_docs( int meta_id, String frame_name, String target, String url_ref, String url_txt, String lang_prefix ) {
             this.meta_id = meta_id;
             this.frame_name = frame_name;
@@ -1257,13 +1246,6 @@ public abstract class DatabaseService {
             this.url_txt = url_txt;
             this.lang_prefix = lang_prefix;
         }
-
-        int meta_id;
-        String frame_name;
-        String target;
-        String url_ref;
-        String url_txt;
-        String lang_prefix;
     }
 
     private Table_url_docs getFromTable_url_docs( Integer meta_id ) {
@@ -1296,15 +1278,15 @@ public abstract class DatabaseService {
     }
 
     static class Table_browser_docs {
+        private int meta_id;
+        private int to_meta_id;
+        private int browser_id;
+
         Table_browser_docs( int meta_id, int to_meta_id, int browser_id ) {
             this.meta_id = meta_id;
             this.to_meta_id = to_meta_id;
             this.browser_id = browser_id;
         }
-
-        int meta_id;
-        int to_meta_id;
-        int browser_id;
     }
 
     private Table_browser_docs getFromTable_browser_docs( Integer meta_id ) {
@@ -1333,13 +1315,13 @@ public abstract class DatabaseService {
     }
 
     static class Table_frameset_docs {
+        private int meta_id;
+        private String frame_set;
+
         Table_frameset_docs( int meta_id, String frame_set ) {
             this.meta_id = meta_id;
             this.frame_set = frame_set;
         }
-
-        int meta_id;
-        String frame_set;
     }
 
     private Table_frameset_docs getFromTable_frameset_docs( Integer meta_id ) {
@@ -1366,15 +1348,15 @@ public abstract class DatabaseService {
     }
 
     static class Table_fileupload_docs {
+        private int meta_id;
+        private String filename;
+        private String mime;
+
         Table_fileupload_docs( int meta_id, String filename, String mime ) {
             this.meta_id = meta_id;
             this.filename = filename;
             this.mime = mime;
         }
-
-        int meta_id;
-        String filename;
-        String mime;
     }
 
     private Table_fileupload_docs getFromTable_fileupload_docs( Integer meta_id ) {
@@ -1401,7 +1383,13 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_texts {
+    class Table_texts {
+        private int meta_id;
+        private int name;
+        private String text;
+        private int type;
+        private int counter;
+
         Table_texts( int meta_id, int name, String text, int type, int counter ) {
             this.meta_id = meta_id;
             this.name = name;
@@ -1409,12 +1397,6 @@ public abstract class DatabaseService {
             this.type = type;
             this.counter = counter;
         }
-
-        int meta_id;
-        int name;
-        String text;
-        int type;
-        int counter;
     }
 
     private Table_texts[] getFromTable_texts( Integer meta_id ) {
@@ -1441,6 +1423,22 @@ public abstract class DatabaseService {
     }
 
     static class Table_images {
+        private int meta_id;
+        private int width;
+        private int height;
+        private int border;
+        private int v_space;
+        private int h_space;
+        private int name;
+        private String image_name;
+        private String target;
+        private String target_name;
+        private String align;
+        private String alt_text;
+        private String low_scr;
+        private String imgurl;
+        private String linkurl;
+
         Table_images( int meta_id, int width, int height, int border, int v_space, int h_space, int name, String image_name, String target, String target_name, String align, String alt_text, String low_scr, String imgurl, String linkurl ) {
             this.meta_id = meta_id;
             this.width = width;
@@ -1458,22 +1456,6 @@ public abstract class DatabaseService {
             this.imgurl = imgurl;
             this.linkurl = linkurl;
         }
-
-        int meta_id;
-        int width;
-        int height;
-        int border;
-        int v_space;
-        int h_space;
-        int name;
-        String image_name;
-        String target;
-        String target_name;
-        String align;
-        String alt_text;
-        String low_scr;
-        String imgurl;
-        String linkurl;
     }
 
     // todo: Varning, Denna sproc returnerar inte exakt i den ordning som den ursprungliga sproc ville ha det.
@@ -1522,15 +1504,15 @@ public abstract class DatabaseService {
     }
 
     static class Table_includes {
+        private int meta_id;
+        private int include_id;
+        private int included_meta_id;
+
         Table_includes( int meta_id, int include_id, int included_meta_id ) {
             this.meta_id = meta_id;
             this.include_id = include_id;
             this.included_meta_id = included_meta_id;
         }
-
-        int meta_id;
-        int include_id;
-        int included_meta_id;
     }
 
     Table_includes[] sproc_GetInclues( int meta_id ) {
@@ -1559,15 +1541,15 @@ public abstract class DatabaseService {
     }
 
     static class Table_doc_permission_sets {
+        private int meta_id;
+        private int set_id;
+        private int permission_id;
+
         Table_doc_permission_sets( int meta_id, int set_id, int permission_id ) {
             this.meta_id = meta_id;
             this.set_id = set_id;
             this.permission_id = permission_id;
         }
-
-        int meta_id;
-        int set_id;
-        int permission_id;
     }
 
     private Table_doc_permission_sets getFromTable_doc_permission_sets( Integer meta_id ) {
@@ -1595,15 +1577,15 @@ public abstract class DatabaseService {
     }
 
     static class Table_new_doc_permission_sets {
+        private int meta_id;
+        private int set_id;
+        private int permission_id;
+
         Table_new_doc_permission_sets( int meta_id, int set_id, int permission_id ) {
             this.meta_id = meta_id;
             this.set_id = set_id;
             this.permission_id = permission_id;
         }
-
-        int meta_id;
-        int set_id;
-        int permission_id;
     }
 
     private Table_new_doc_permission_sets getFromTable_new_doc_permission_sets( Integer meta_id ) {
@@ -1631,17 +1613,17 @@ public abstract class DatabaseService {
     }
 
     static class Table_doc_permission_sets_ex {
+        private int meta_id;
+        private int set_id;
+        private int permission_id;
+        private int permission_data;
+
         Table_doc_permission_sets_ex( int meta_id, int set_id, int permission_id, int permission_data ) {
             this.meta_id = meta_id;
             this.set_id = set_id;
             this.permission_id = permission_id;
             this.permission_data = permission_data;
         }
-
-        int meta_id;
-        int set_id;
-        int permission_id;
-        int permission_data;
     }
 
     private Table_doc_permission_sets_ex getFromTable_doc_permission_sets_ex( Integer meta_id ) {
@@ -1670,17 +1652,17 @@ public abstract class DatabaseService {
     }
 
     static class Table_new_doc_permission_sets_ex {
+        private int meta_id;
+        private int set_id;
+        private int permission_id;
+        private int permission_data;
+
         Table_new_doc_permission_sets_ex( int meta_id, int set_id, int permission_id, int permission_data ) {
             this.meta_id = meta_id;
             this.set_id = set_id;
             this.permission_id = permission_id;
             this.permission_data = permission_data;
         }
-
-        int meta_id;
-        int set_id;
-        int permission_id;
-        int permission_data;
     }
 
     private Table_new_doc_permission_sets_ex getFromTable_new_doc_permission_sets_ex( Integer meta_id ) {
@@ -1709,15 +1691,15 @@ public abstract class DatabaseService {
     }
 
     static class Table_roles_rights {
+        private int role_id;
+        private int meta_id;
+        private int set_id;
+
         Table_roles_rights( int role_id, int meta_id, int set_id ) {
             this.role_id = role_id;
             this.meta_id = meta_id;
             this.set_id = set_id;
         }
-
-        int role_id;
-        int meta_id;
-        int set_id;
     }
 
     private Table_roles_rights getFromTable_roles_rights( Integer meta_id ) {
@@ -1745,13 +1727,13 @@ public abstract class DatabaseService {
     }
 
     static class Table_meta_classification {
+        private int meta_id;
+        private int class_id;
+
         public Table_meta_classification( int meta_id, int class_id ) {
             this.meta_id = meta_id;
             this.class_id = class_id;
         }
-
-        int meta_id;
-        int class_id;
     }
 
     private Table_meta_classification getFromTable_meta_classification( Integer meta_id ) {
@@ -1778,13 +1760,13 @@ public abstract class DatabaseService {
     }
 
     static class Table_meta_section {
+        private int meta_id;
+        private int section_id;
+
         public Table_meta_section( int meta_id, int section_id ) {
             this.meta_id = meta_id;
             this.section_id = section_id;
         }
-
-        int meta_id;
-        int section_id;
     }
 
     private Table_meta_section getFromTable_meta_section( Integer meta_id ) {
@@ -1950,7 +1932,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{user_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                return Table_users.mapOneRowToFileds( rs );
+                return new Table_users( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -1984,26 +1966,26 @@ public abstract class DatabaseService {
      * Begin with getting the users langId from the userobject.
      */
     Table_lang_prefixes sproc_GetLangPrefixFromId( int lang_id ) {
-        return getFromTable_lang_prefixes( new Integer( lang_id ));
+        return getFromTable_lang_prefixes( new Integer( lang_id ) );
     }
 
     static class Table_lang_prefixes {
+        private int lang_id;
+        String lang_prefix;
+
         public Table_lang_prefixes( int lang_id, String lang_prefix ) {
             this.lang_id = lang_id;
             this.lang_prefix = lang_prefix;
         }
-
-        int lang_id;
-        String lang_prefix;
     }
 
     Table_lang_prefixes getFromTable_lang_prefixes( Integer lang_id ) {
         String sql = "SELECT lang_id, lang_prefix FROM lang_prefixes WHERE lang_id = ? ";
-        Object[] paramValues = new Object[]{ lang_id };
+        Object[] paramValues = new Object[]{lang_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int lang_id = rs.getInt("lang_id");
-                String lang_prefix = rs.getString("lang_prefix");
+                int lang_id = rs.getInt( "lang_id" );
+                String lang_prefix = rs.getString( "lang_prefix" );
                 return new Table_lang_prefixes( lang_id, lang_prefix );
             }
         } );
@@ -2016,40 +1998,33 @@ public abstract class DatabaseService {
 
     int sproc_GetRoleIdByRoleName( String role_name ) {
         String sql = "SELECT role_id FROM roles WHERE role_name like ? ";
-        Object[] paramValues = new Object[]{ role_name };
+        Object[] paramValues = new Object[]{role_name};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                return new Integer(rs.getInt( "role_id" ));
+                return new Integer( rs.getInt( "role_id" ) );
             }
         } );
-        return ((Integer)queryResult.get(0)).intValue();
+        return ((Integer)queryResult.get( 0 )).intValue();
     }
 
     static class Table_templates {
-        private int id;
-        private String simpleName;
+        private int template_id;
+        private String simple_name;
 
-        Table_templates( int id, String simpleName ) {
-            this.id = id;
-            this.simpleName = simpleName;
-        }
-
-        private static Object mapOneRowToFileds( ResultSet rs ) throws SQLException {
-            int templateId = rs.getInt( "template_id" );
-            String simpleName = rs.getString( "simple_name" );
-            Table_templates result = new Table_templates( templateId, simpleName );
-            return result;
+        public Table_templates( ResultSet rs ) throws SQLException {
+            template_id = rs.getInt( "template_id" );
+            simple_name = rs.getString( "simple_name" );
         }
     }
 
     Table_templates[] sproc_getTemplates() {
         String sql = "select template_id, simple_name from templates";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new SQLProcessor.ResultProcessor() {
-                                Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                                    return Table_templates.mapOneRowToFileds( rs );
-                                };
-                            } );
-        return (Table_templates[])queryResult.toArray( new Table_templates[ queryResult.size() ] );
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Table_templates( rs );
+            };
+        } );
+        return (Table_templates[])queryResult.toArray( new Table_templates[queryResult.size()] );
     }
 
     Table_templates[] sproc_GetTemplatesInGroup( int groupId ) {
@@ -2060,9 +2035,21 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{new Integer( groupId )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                return Table_templates.mapOneRowToFileds( rs );
+                return new Table_templates( rs );
             }
         } );
         return (Table_templates[])queryResult.toArray( new Table_templates[queryResult.size()] );
+    }
+
+    int sproc_GetTemplateId( String simple_name ) {
+        String sql = "SELECT template_id FROM templates WHERE simple_name = ? ";
+        Object[] paramValues = new Object[]{ simple_name };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                int template_id = rs.getInt("template_id");
+                return new Integer( template_id );
+            }
+        } );
+        return ((Integer)queryResult.get(0)).intValue();
     }
 }
