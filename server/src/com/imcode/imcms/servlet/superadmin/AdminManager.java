@@ -4,6 +4,7 @@ import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
 import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean;
+import com.imcode.imcms.servlet.beans.AdminManagerSubreport;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentComparator;
@@ -29,10 +30,6 @@ public class AdminManager extends Administrator {
 
     private final static Logger log = Logger.getLogger( AdminManager.class.getName() );
 
-    private final static String JSP__ADMIN_MANAGER_NEW = "admin_manager_new.jsp";
-    private final static String JSP__ADMIN_MANAGER_REMINDERS = "admin_manager_reminders.jsp";
-    private final static String JSP__ADMIN_MANAGER_SUMMARY = "admin_manager_summary.jsp";
-    private final static String JSP__ADMIN_MANAGER_SEARCH = "admin_manager_search.jsp";
     private final static String HTML_ADMINTASK = "AdminManager_adminTask_element.htm";
     private final static String HTML_USERADMINTASK = "AdminManager_useradminTask_element.htm";
     public final static String REQUEST_PARAMETER__SHOW = "show";
@@ -47,7 +44,6 @@ public class AdminManager extends Administrator {
     public final static String LIST_TYPE__list_documents_changed = "list_documents_changed";
     public final static String LIST_TYPE__SEARCH_LIST = "search_list";
 
-    public static final int DEFAULT_DOCUMENTS_PER_PAGE = 20;
     public static final int DEFAULT_DOCUMENTS_PER_LIST = 5;
     public static final String REQUEST_PARAMETER__list_new_not_approved_current_sortorder = "list_new_not_approved_current_sortorder";
     public static final String REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_sortorder = "list_documents_archived_less_then_one_week_current_sortorder";
@@ -110,20 +106,17 @@ public class AdminManager extends Administrator {
 
         String tabToShow = null != req.getParameter( REQUEST_PARAMETER__SHOW )
                            ? req.getParameter( REQUEST_PARAMETER__SHOW ) : PARAMETER_VALUE__SHOW_NEW;
-        String fileToForwardTo = JSP__ADMIN_MANAGER_NEW;
 
-        // parse and return the html_admin_part
-        Vector vec = new Vector();
         String html_admin_part = "";
 
         if ( loggedOnUser.isSuperAdmin() ) {
-            html_admin_part = service.getAdminTemplate( HTML_ADMINTASK, loggedOnUser, vec ); // if superadmin
+            html_admin_part = service.getAdminTemplate( HTML_ADMINTASK, loggedOnUser, null ); // if superadmin
         } else if ( loggedOnUser.isUserAdmin() ) { //if user is useradmin
-            html_admin_part = service.getAdminTemplate( HTML_USERADMINTASK, loggedOnUser, vec ); //if useradmin
+            html_admin_part = service.getAdminTemplate( HTML_USERADMINTASK, loggedOnUser, null ); //if useradmin
         }
 
         List documents_new = new LinkedList();        // STATUS = NEW
-        List documents_changed = new LinkedList();    //MODIFIED_DATETIME > CREATED_DATETIME
+        List documents_modified = new LinkedList();    //MODIFIED_DATETIME > CREATED_DATETIME
         List documents_archived_less_then_one_week = new LinkedList();    //ARCHIVED_DATETIME < 7 days
         List documents_publication_end_less_then_one_week = new LinkedList();  //PUBLICATION_END_DATETIME < 7 days
         List documents_not_changed_in_six_month = new LinkedList();
@@ -135,15 +128,14 @@ public class AdminManager extends Administrator {
 
         HashMap current_sortorderMap = new HashMap();
         HashMap expand_listMap = new HashMap();
-        HashMap subreports = new HashMap();
         String sortorder;
         String new_sortorder = "";
         String list_toChange_sortorder = "";
         DocumentDomainObject[] documentsFound = index.search( booleanQuery, loggedOnUser );
 
+        AdminManagerPage adminManagerPage = null ;
         if ( tabToShow.equals( PARAMETER_VALUE__SHOW_NEW ) ) {
 
-            fileToForwardTo = JSP__ADMIN_MANAGER_NEW;
             addNewNotApprovedDocumentsToList( booleanQuery, documents_new, index, loggedOnUser );
 
             if ( null != req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER ) ) {
@@ -156,10 +148,10 @@ public class AdminManager extends Administrator {
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_new_not_approved, REQUEST_PARAMETER__list_new_not_approved_current_expand );
 
             // documents_new_not_approved = new AdminManagerSubreport(LIST_TYPE__list_new_not_approved, "", "", DEFAULT_DOCUMENTS_PER_LIST, documents_new  );
+            adminManagerPage = createNewDocumentsAdminManagerPage( documents_new );
 
         } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_REMINDERS ) ) {
 
-            fileToForwardTo = JSP__ADMIN_MANAGER_REMINDERS;
 
             if ( null != req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER ) ) {
                 new_sortorder = req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER );
@@ -180,9 +172,10 @@ public class AdminManager extends Administrator {
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_publication_end_less_then_one_week, REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_sortorder );
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_not_changed_in_six_month, REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder );
 
+            adminManagerPage = createReminderAdminManagerPage( documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month, documents_modified );
+
         } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_SUMMARY ) ) {
 
-            fileToForwardTo = JSP__ADMIN_MANAGER_SUMMARY;
             addNewNotApprovedDocumentsToList( booleanQuery, documents_new, index, loggedOnUser );
 
             if ( null != req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER ) ) {
@@ -205,7 +198,7 @@ public class AdminManager extends Administrator {
             sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder ), LIST_TYPE__list_documents_not_changed_in_six_month, "MOD" );
             current_sortorderMap.put( LIST_TYPE__list_documents_not_changed_in_six_month, sortorder );
 
-            addFoundDocumentsToCorrespondingList( documentsFound, documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month, documents_changed, current_sortorderMap );
+            addFoundDocumentsToCorrespondingList( documentsFound, documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month, documents_modified, current_sortorderMap );
 
             expand_listMap.put( LIST_TYPE__list_new_not_approved, null
                                                                   != req.getParameter( REQUEST_PARAMETER__list_new_not_approved_current_expand )
@@ -234,21 +227,121 @@ public class AdminManager extends Administrator {
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_archived_less_then_one_week, REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_expand );
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_not_changed_in_six_month, REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder );
 
+            adminManagerPage = createSummaryAdminManagerPage( documents_new, documents_modified, documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month );
         } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_SEARCH ) ) {
-            fileToForwardTo = JSP__ADMIN_MANAGER_SEARCH;
+            DocumentFinder documentFinder = new DocumentFinder( new AdminManagerSearchPage() );
+            documentFinder.addExtraSearchResultColumn( new DatesSummarySearchResultColumn() );
+            documentFinder.forward( req, res );
         }
 
-        AdminManagerPage page = new AdminManagerPage( "".equals( html_admin_part ) ? null : html_admin_part,
-                                                      documents_new,
-                                                      documents_changed, documents_archived_less_then_one_week,
-                                                      documents_publication_end_less_then_one_week,
-                                                      documents_not_changed_in_six_month,
-                                                      fileToForwardTo,
-                                                      current_sortorderMap,
-                                                      expand_listMap,
-                                                      subreports );
+        if (!res.isCommitted()) {
+            adminManagerPage.setHtmlAdminPart( "".equals( html_admin_part ) ? null : html_admin_part );
+            adminManagerPage.forward( req, res, loggedOnUser );
+        }
+    }
 
-        page.forward( req, res, loggedOnUser );
+    private AdminManagerPage createSummaryAdminManagerPage( List documents_new, List documents_modified,
+                                                                         List documents_archived_less_then_one_week,
+                                                                         List documents_publication_end_less_then_one_week,
+                                                                         List documents_not_changed_in_six_month ) {
+        AdminManagerPage summaryAdminManagerPage = new AdminManagerPage();
+        summaryAdminManagerPage.setName( "admin_manager_summary.jsp" );
+        summaryAdminManagerPage.setTabName( "summary" );
+        summaryAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/2" ) );
+
+        AdminManagerSubreport newDocumentsSubreport = createNewDocumentsSubreport( documents_new ) ;
+        summaryAdminManagerPage.addSubreport( newDocumentsSubreport );
+
+        AdminManagerSubreport modifiedDocumentsSubreport = createModifiedDocumentsSubreport( documents_modified );
+        summaryAdminManagerPage.addSubreport( modifiedDocumentsSubreport );
+
+        AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = createDocumentsArchivedWithinOneWeekSubreport( documents_archived_less_then_one_week );
+        summaryAdminManagerPage.addSubreport( documentsArchivedWithinOneWeekSubreport );
+
+        AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = createDocumentsUnpublishedWithinOneWeekSubreport( documents_publication_end_less_then_one_week );
+        summaryAdminManagerPage.addSubreport( documentsUnpublishedWithinOneWeekSubreport );
+
+        AdminManagerSubreport documentsUnmodifiedForSixMonthsSubreport = createDocumentsUnmodifiedForSixMonthsSubreport( documents_not_changed_in_six_month );
+        summaryAdminManagerPage.addSubreport( documentsUnmodifiedForSixMonthsSubreport );
+        return summaryAdminManagerPage;
+    }
+
+    private AdminManagerSubreport createModifiedDocumentsSubreport( List documents_modified ) {
+        AdminManagerSubreport modifiedDocumentsSubreport = new AdminManagerSubreport();
+        modifiedDocumentsSubreport.setDocuments( documents_modified );
+        modifiedDocumentsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/5" ));
+        return modifiedDocumentsSubreport;
+    }
+
+    private AdminManagerPage createNewDocumentsAdminManagerPage( List documents_new ) {
+        AdminManagerSubreport newDocumentsSubreport = createNewDocumentsSubreport( documents_new );
+        newDocumentsSubreport.setMaxDocumentCount( 0 );
+
+        AdminManagerPage newDocumentsAdminManagerPage = new AdminManagerPage();
+        newDocumentsAdminManagerPage.setName( "admin_manager_new.jsp");
+        newDocumentsAdminManagerPage.setTabName( "new" );
+        newDocumentsAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0" ) );
+        newDocumentsAdminManagerPage.addSubreport(newDocumentsSubreport) ;
+        return newDocumentsAdminManagerPage;
+    }
+
+    private AdminManagerSubreport createNewDocumentsSubreport( List documents_new ) {
+        AdminManagerSubreport newDocumentsSubreport = new AdminManagerSubreport();
+        newDocumentsSubreport.setDocuments( documents_new );
+        newDocumentsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/1" ) );
+        return newDocumentsSubreport;
+    }
+
+    private AdminManagerPage createReminderAdminManagerPage( List documents_archived_less_then_one_week,
+                                                             List documents_publication_end_less_then_one_week,
+                                                             List documents_not_changed_in_six_month,
+                                                             List documents_modified ) {
+        AdminManagerPage reminderAdminManagerPage = new AdminManagerPage();
+        reminderAdminManagerPage.setName( "admin_manager_reminders.jsp" );
+        reminderAdminManagerPage.setTabName( "reminders" );
+        reminderAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1" ) );
+
+        AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = createDocumentsArchivedWithinOneWeekSubreport( documents_archived_less_then_one_week );
+        documentsArchivedWithinOneWeekSubreport.setMaxDocumentCount( 0 );
+        reminderAdminManagerPage.addSubreport(documentsArchivedWithinOneWeekSubreport);
+
+        AdminManagerSubreport modifiedDocumentsSubreport = createModifiedDocumentsSubreport( documents_modified );
+        //modifiedDocumentsSubreport.setMaxDocumentCount( 0 );
+        reminderAdminManagerPage.addSubreport( modifiedDocumentsSubreport );
+
+        AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = createDocumentsUnpublishedWithinOneWeekSubreport( documents_publication_end_less_then_one_week );
+        documentsUnpublishedWithinOneWeekSubreport.setMaxDocumentCount( 0 );
+        reminderAdminManagerPage.addSubreport( documentsUnpublishedWithinOneWeekSubreport );
+
+        AdminManagerSubreport documentsUnchangedForSixMonthsSubreport = createDocumentsUnmodifiedForSixMonthsSubreport( documents_not_changed_in_six_month );
+        documentsUnchangedForSixMonthsSubreport.setMaxDocumentCount( 0 );
+        reminderAdminManagerPage.addSubreport( documentsUnchangedForSixMonthsSubreport );
+
+        return reminderAdminManagerPage;
+    }
+
+    private AdminManagerSubreport createDocumentsUnmodifiedForSixMonthsSubreport(
+            List documents_not_changed_in_six_month ) {
+        AdminManagerSubreport documentsUnchangedForSixMonthsSubreport = new AdminManagerSubreport();
+        documentsUnchangedForSixMonthsSubreport.setDocuments( documents_not_changed_in_six_month );
+        documentsUnchangedForSixMonthsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/4" ) );
+        return documentsUnchangedForSixMonthsSubreport;
+    }
+
+    private AdminManagerSubreport createDocumentsArchivedWithinOneWeekSubreport(
+            List documents_archived_less_then_one_week ) {
+        AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = new AdminManagerSubreport();
+        documentsArchivedWithinOneWeekSubreport.setDocuments( documents_archived_less_then_one_week );
+        documentsArchivedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/2" ));
+        return documentsArchivedWithinOneWeekSubreport;
+    }
+
+    private AdminManagerSubreport createDocumentsUnpublishedWithinOneWeekSubreport(
+            List documents_publication_end_less_then_one_week ) {
+        AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = new AdminManagerSubreport();
+        documentsUnpublishedWithinOneWeekSubreport.setDocuments( documents_publication_end_less_then_one_week );
+        documentsUnpublishedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/3" ) );
+        return documentsUnpublishedWithinOneWeekSubreport;
     }
 
     private void setNewExpandStatusForList( HttpServletRequest req, HashMap expand_listMap, String list,
@@ -280,112 +373,76 @@ public class AdminManager extends Administrator {
         return sortorder;
     }
 
+    private static class DatesSummarySearchResultColumn implements DocumentFinder.SearchResultColumn {
+
+        public String render( DocumentDomainObject document, HttpServletRequest request,
+                              HttpServletResponse response ) throws IOException, ServletException {
+            UserDomainObject user = Utility.getLoggedOnUser( request );
+            AdminManagerExpandableDatesBean expandableDatesBean = new AdminManagerExpandableDatesBean();
+            expandableDatesBean.setExpanded( true );
+            expandableDatesBean.setDocument( document );
+            request.setAttribute( "expandableDatesBean", expandableDatesBean );
+            return Utility.getContents( "/imcms/" + user.getLanguageIso639_2()
+                                        + "/jsp/admin/admin_manager_expandable_dates.jsp", request, response );
+        }
+
+        public LocalizedMessage getName() {
+            return new LocalizedMessage( "global/Dates" );
+        }
+    }
+
     public static class AdminManagerPage {
-
+        String name ;
+        LocalizedMessage heading ;
+        String tabName ;
+        List subreports = new ArrayList() ;
+        String htmlAdminPart ;
         public static final String REQUEST_ATTRIBUTE__PAGE = "ampage";
-        String html_admin_part;
-        List documents_new;
-        List documents_changed;
-        List documents_archived_less_then_one_week;
-        List documents_publication_end_less_then_one_week;
-        List documents_not_changed_in_six_month;
-        String fileToForwardTo;
-        HashMap current_sortorderMap;
-        HashMap expand_listMap;
-        HashMap subreports;
 
-        DocumentFinder documentFinder;
-
-        public AdminManagerPage( String html_admin_part,
-                                 List documents_new,
-                                 List documents_changed,
-                                 List documents_archived_less_then_one_week,
-                                 List documents_publication_end_less_then_one_week,
-                                 List documents_not_changed_in_six_month,
-                                 String filename,
-                                 HashMap current_sortorderMap,
-                                 HashMap expand_listMap,
-                                 HashMap subreports ) {
-            this.html_admin_part = html_admin_part;
-            this.documents_new = documents_new;
-            this.documents_changed = documents_changed;
-            this.documents_archived_less_then_one_week = documents_archived_less_then_one_week;
-            this.documents_publication_end_less_then_one_week = documents_publication_end_less_then_one_week;
-            this.documents_not_changed_in_six_month = documents_not_changed_in_six_month;
-            this.fileToForwardTo = filename;
-            this.current_sortorderMap = current_sortorderMap;
-            this.expand_listMap = expand_listMap;
-            this.subreports = subreports;
-            documentFinder = new DocumentFinder( new AdminManagerSearchPage( this ) );
-            documentFinder.addExtraSearchResultColumn( new DatesSummarySearchResultColumn() );
+        public LocalizedMessage getHeading() {
+            return heading;
         }
 
-        public String getHtml_admin_part() {
-            return html_admin_part;
+        public void setHeading( LocalizedMessage heading ) {
+            this.heading = heading;
         }
 
-        public List getDocuments_new() {
-            return documents_new;
+        public void setName( String name ) {
+            this.name = name;
         }
 
-        public List getDocuments_changed() {
-            return documents_changed;
-        }
-
-        public List getDocuments_archived_less_then_one_week() {
-            return documents_archived_less_then_one_week;
-        }
-
-        public List getDocuments_publication_end_less_then_one_week() {
-            return documents_publication_end_less_then_one_week;
-        }
-
-        public List getDocuments_not_changed_in_six_month() {
-            return documents_not_changed_in_six_month;
-        }
-
-        public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
-            if ( JSP__ADMIN_MANAGER_SEARCH.equals( fileToForwardTo ) ) {
-                documentFinder.forward( request, response );
-            } else {
-                request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
-                String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/admin/" + fileToForwardTo;
-                request.getRequestDispatcher( forwardPath ).forward( request, response );
-            }
-        }
-
-        public HashMap getCurrent_sortorderMap() {
-            return current_sortorderMap;
-        }
-
-        public HashMap getExpand_listMap() {
-            return expand_listMap;
-        }
-
-        public HashMap getSubreports() {
+        public List getSubreports() {
             return subreports;
         }
 
-        public DocumentFinder getDocumentFinder() {
-            return documentFinder;
+        public String getTabName() {
+            return tabName;
         }
 
-        private static class DatesSummarySearchResultColumn implements DocumentFinder.SearchResultColumn {
-
-            public String render( DocumentDomainObject document, HttpServletRequest request,
-                                  HttpServletResponse response ) throws IOException, ServletException {
-                UserDomainObject user = Utility.getLoggedOnUser( request ) ;
-                AdminManagerExpandableDatesBean expandableDatesBean = new AdminManagerExpandableDatesBean() ;
-                expandableDatesBean.setExpanded( true );
-                expandableDatesBean.setDocument( document );
-                request.setAttribute( "expandableDatesBean", expandableDatesBean );
-                return Utility.getContents( "/imcms/"+user.getLanguageIso639_2()+"/jsp/admin/admin_manager_expandable_dates.jsp", request, response ) ;
-            }
-
-            public LocalizedMessage getName() {
-                return new LocalizedMessage( "global/Dates" );
-            }
+        public void setTabName( String tabName ) {
+            this.tabName = tabName;
         }
+
+        public void addSubreport( AdminManagerSubreport newDocumentsSubreport ) {
+            subreports.add( newDocumentsSubreport );
+        }
+
+
+        public String getHtmlAdminPart() {
+            return htmlAdminPart;
+        }
+
+        public void setHtmlAdminPart( String htmlAdminPart ) {
+            this.htmlAdminPart = htmlAdminPart;
+        }
+
+
+        public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
+            request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
+            String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/admin/admin_manager.jsp";
+            request.getRequestDispatcher( forwardPath ).forward( request, response );
+        }
+
     }
 
     private Date getDate( int days ) {

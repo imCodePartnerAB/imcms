@@ -24,7 +24,7 @@
 <%
 
     AdminManagerSearchPage adminManagerSearchPage = (AdminManagerSearchPage) Page.fromRequest(request) ;
-    AdminManager.AdminManagerPage adminManagerPage = adminManagerSearchPage.getAdminManagerPage() ;
+    AdminManager.AdminManagerPages adminManagerPages = adminManagerSearchPage.getAdminManagerPage() ;
 
     IMG_PATH  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin" ;
     TAB_TO_SHOW = "search";
@@ -65,9 +65,9 @@
     <form method="post" action="AdminManager">
 	<td colspan="4" id="adm">
         <table border="0" cellspacing="0" cellpadding="0">
-	    <% if ( null != adminManagerPage.getHtml_admin_part() ) { %>
+	    <% if ( null != adminManagerPages.getHtml_admin_part() ) { %>
         <tr>
-		    <td><%= adminManagerPage.getHtml_admin_part() %></td>
+		    <td><%= adminManagerPages.getHtml_admin_part() %></td>
 		    <td>&nbsp; &nbsp;</td>
 		    <td><input type="submit" class="imcmsFormBtnSmall" style="height:20"  name="submit" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/2 ?>"></td>
         </tr>

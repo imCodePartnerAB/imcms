@@ -1,16 +1,21 @@
 package com.imcode.imcms.servlet.beans;
 
+import com.imcode.imcms.servlet.superadmin.AdminManager;
+import imcode.util.LocalizedMessage;
+
 import java.util.List;
 
-public class AdminManagerSubreportBean {
+public class AdminManagerSubreport {
 
     private String name;
     private String sortorder;
     private List documents;
-    private String heading;
+    private LocalizedMessage heading;
     private boolean expanded;
+    private int maxDocumentCount = AdminManager.DEFAULT_DOCUMENTS_PER_LIST ;
 
-    public AdminManagerSubreportBean() {
+
+    public AdminManagerSubreport() {
     }
 
     public String getName() {
@@ -21,7 +26,7 @@ public class AdminManagerSubreportBean {
         return sortorder;
     }
 
-    public String getHeading() {
+    public LocalizedMessage getHeading() {
         return heading;
     }
 
@@ -41,7 +46,7 @@ public class AdminManagerSubreportBean {
         this.expanded = expanded;
     }
 
-    public void setHeading( String heading ) {
+    public void setHeading( LocalizedMessage heading ) {
         this.heading = heading;
     }
 
@@ -53,4 +58,15 @@ public class AdminManagerSubreportBean {
         this.sortorder = sortorder;
     }
 
+    public int getMaxDocumentCount() {
+        return maxDocumentCount;
+    }
+
+    public void setMaxDocumentCount( int maxDocumentCount ) {
+        this.maxDocumentCount = maxDocumentCount;
+    }
+
+    public boolean isBelowMaxDocumentCount( int i ) {
+        return 0 == maxDocumentCount || i < maxDocumentCount ;
+    }
 }

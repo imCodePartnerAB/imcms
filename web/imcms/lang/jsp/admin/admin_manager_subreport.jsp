@@ -1,13 +1,14 @@
 <%@ page import="java.util.List,
-                 imcode.util.Utility,
+                 imcode.util.LocalizedMessage,
                  imcode.server.document.DocumentDomainObject,
                  org.apache.commons.lang.StringEscapeUtils,
-                 com.imcode.imcms.servlet.superadmin.AdminManager"%>
+                 com.imcode.imcms.servlet.superadmin.AdminManager,
+                 imcode.util.*"%>
 <%@page contentType="text/html"%>
-<jsp:useBean id="subreport" scope="request" class="com.imcode.imcms.servlet.beans.AdminManagerSubreportBean"/>
+<jsp:useBean id="subreport" scope="request" class="com.imcode.imcms.servlet.beans.AdminManagerSubreport"/>
 <%
     String imagesPath = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
-    String subreportHeading = subreport.getHeading() ;
+    LocalizedMessage subreportHeading = subreport.getHeading() ;
     List documents = subreport.getDocuments() ;
 %>
 
@@ -17,7 +18,7 @@
 </tr>
 <form method="post" name="subreport" action="AdminManager">
 <tr>
-    <td nowrap><span class="imcmsAdmHeading" ><%= StringEscapeUtils.escapeHtml( subreportHeading ) %> (<%= documents.size() %> <? web/imcms/lang/jsp/admin/admin_manager.jsp/10 ?>)</span></td>
+    <td nowrap><span class="imcmsAdmHeading" ><%= StringEscapeUtils.escapeHtml( subreportHeading.toLocalizedString( request ) ) %> (<%= documents.size() %> <? web/imcms/lang/jsp/admin/admin_manager.jsp/10 ?>)</span></td>
     <td align="right">
     <table border="0" cellspacing="0" cellpadding="0">
     <tr>
@@ -56,7 +57,7 @@
     </tr>
 </form>
 
-   <% for (int i = 0; i < documents.size() && i < AdminManager.DEFAULT_DOCUMENTS_PER_LIST; i++) {
+   <% for (int i = 0; i < documents.size() && subreport.isBelowMaxDocumentCount(i); i++) {
         boolean expand = i < 2 || subreport.isExpanded() ;
         DocumentDomainObject document = (DocumentDomainObject) documents.get(i);
     %>
@@ -71,7 +72,7 @@
 </table>
 </td>
 </tr>
-<% if (documents.size() > AdminManager.DEFAULT_DOCUMENTS_PER_LIST ) { %>
+<% if ( !subreport.isBelowMaxDocumentCount( documents.size() ) ) { %>
 <tr>
     <td colspan="4" align="center"><img src="<%= imagesPath %>/1x1.gif" height="20" width="1"><br>
         <a href="javascript: document.forms.seachForm99.submit();"><? web/imcms/lang/jsp/admin/admin_manager.jsp/19 ?></a></td>

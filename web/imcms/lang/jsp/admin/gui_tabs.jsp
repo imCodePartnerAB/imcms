@@ -1,26 +1,54 @@
+<%@ page import="com.imcode.imcms.servlet.beans.Tab,
+                 imcode.util.Utility"%>
 <%!
 
 final static String COLOR_ACT   = "#f5f5f7" ;
 final static String COLOR_INACT = "#4076ad" ;
 
+private String getTabs( Tab[] tabs, String nameOfActiveTab, HttpServletRequest request) {
+    String result = "" ;
+    for(int i = 0; i < tabs.length; i++) {
+        Tab tab = tabs[i];
+        boolean firstTab = 0 == i ;
+        boolean active = tab.getName().equals( nameOfActiveTab ) ;
+        if (firstTab) {
+            result+= createNavBar("", "", "START"  , false, active, 25, request ) ;
+        }
+        boolean lastTab = i == tabs.length - 1 ;
+        boolean nextIsActive = !lastTab && tabs[i+1].getName().equals( nameOfActiveTab ) ;
+        String leftMidRight = "M" ;
+        if (firstTab) {
+            leftMidRight = "L" ;
+        } else if (lastTab) {
+            leftMidRight = "R" ;
+        }
+        result += createNavBar(tab.getText(), tab.getUri(), leftMidRight, active , nextIsActive, 0, request ) ;
+    }
+    result += createNavBar("", "", "END", false, false, 0, request ) ;
+     return result ;
+}
 
-private String getTabs( String[][] tabTextsLinks, int actTabIdx ) {
+private String getTabs( String[][] tabTextsLinks, int actTabIdx, HttpServletRequest request ) {
 	String retVal = "" ;
 	if (tabTextsLinks != null && tabTextsLinks.length > 0) {
-		retVal += createNavBar("", "", "START"  , false, (actTabIdx == 0), 25) ;
+		retVal += createNavBar("", "", "START"  , false, (actTabIdx == 0), 25, request ) ;
 		for (int i = 0; i < tabTextsLinks.length; i++) {
 			boolean thisAct     = (i == actTabIdx) ;
 			boolean nextAct     = ((i+1) == actTabIdx) ;
-			String leftMidRight = (i == 0) ? "L" : (i == tabTextsLinks.length - 1) ? "R" : "M" ;
-	    retVal += createNavBar(tabTextsLinks[i][0], tabTextsLinks[i][1], leftMidRight, thisAct , nextAct, 0) ;
+            boolean lastTab = i == tabTextsLinks.length - 1;
+            boolean firstTab = i == 0;
+            String leftMidRight = firstTab ? "L" : lastTab ? "R" : "M" ;
+	    retVal += createNavBar(tabTextsLinks[i][0], tabTextsLinks[i][1], leftMidRight, thisAct , nextAct, 0, request ) ;
 		}
-	  retVal += createNavBar("", "", "END", false, false, 0) ;
+	  retVal += createNavBar("", "", "END", false, false, 0, request ) ;
 	}
 	return retVal ;
 }
 
 
-private String createNavBar( String text, String url, String pos, boolean thisAct, boolean nextAct, int width) {
+private String createNavBar( String text, String url, String pos, boolean thisAct, boolean nextAct, int width,
+                             HttpServletRequest request ) {
+    String IMG_PATH  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
 	String sRet, topImg, midRightImg, sClass, sEvent ;
 	int btnH, totH, row1height, row2height, midRightImgW, itype ;
 	pos = pos.toUpperCase() ;
