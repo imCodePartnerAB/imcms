@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.Properties;
 import java.util.Hashtable;
-
 import imcode.util.log.*;
 import imcode.util.Prefs;
 
@@ -26,40 +25,13 @@ public class ApplicationServer {
 
     private final Hashtable serverObjects = new Hashtable();
 
-    private final Log log;
+    private final Log log = new Log( ApplicationServer.class.toString() );
 
 
     /**
      *  Constructor for the ApplicationServer object
      */
     public ApplicationServer() {
-
-	log = Log.getLog("server");
-
-
-	// Set up logfiles
-	WriterLogger imcms = null;
-	try {
-	    String mainlog = Prefs.get("Log.Main", CONFIG_FILE);
-	    imcms = new WriterLogger(new java.io.BufferedWriter(new java.io.FileWriter(mainlog, true)), new imcode.util.log.SimpleLogFormat(), Log.INFO, Log.WARNING, LOGINTERVAL, LOGSIZE);
-	} catch (NullPointerException ex) {
-	    log.log(Log.NOTICE, "Failed to find and setup Log.Main (the main log) in " + CONFIG_FILE);
-	} catch (IOException ex) {
-	    log.log(Log.NOTICE, "Failed to find and setup Log.Main (the main log) in " + CONFIG_FILE);
-	}
-
-	WriterLogger error = null;
-	try {
-	    String errorlog = Prefs.get("Log.Error", CONFIG_FILE);
-	    error = new WriterLogger(new java.io.BufferedWriter(new java.io.FileWriter(errorlog, true)), new imcode.util.log.SimpleLogFormat(), Log.WARNING, Log.WARNING, LOGINTERVAL, LOGSIZE);
-	} catch (NullPointerException ex) {
-	    log.log(Log.NOTICE, "Failed to find and setup Log.Error (the error log) in " + CONFIG_FILE);
-	} catch (IOException ex) {
-	    log.log(Log.NOTICE, "Failed to find and setup Log.Error (the error log) in " + CONFIG_FILE);
-	}
-
-	log.addLogListener(imcms);
-	log.addLogListener(error);
 
 	// get list of servers
 	StringTokenizer st = null;
