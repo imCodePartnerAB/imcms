@@ -1426,7 +1426,7 @@ public class DocumentMapper {
     }
 
     public void saveNewDocumentAndAddToMenu( DocumentDomainObject newDocument, UserDomainObject user,
-                                             DocumentComposer.NewDocumentParentInformation newDocumentParentInformation ) throws MaxCategoryDomainObjectsOfTypeExceededException, DocumentAlreadyInMenuException {
+                                             DocumentComposer.NewDocumentParentInformation newDocumentParentInformation ) {
         saveNewDocument( newDocument, user );
         TextDocumentDomainObject parentDocument = (TextDocumentDomainObject)getDocument( newDocumentParentInformation.parentId );
         parentDocument.getMenu( newDocumentParentInformation.parentMenuIndex ).addMenuItem( new MenuItemDomainObject(newDocument));
@@ -1640,13 +1640,6 @@ public class DocumentMapper {
     void saveHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
         String sqlStr = "UPDATE frameset_docs SET frame_set = ? WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{htmlDocument.getHtmlDocumentHtml(), "" + htmlDocument.getId()} );
-    }
-
-    public static class DocumentAlreadyInMenuException extends Exception {
-
-        private DocumentAlreadyInMenuException( String message ) {
-            super( message );
-        }
     }
 
     private static class FileInputStreamSource implements InputStreamSource, Serializable {

@@ -322,7 +322,6 @@ public class DocumentComposer extends HttpServlet {
                                                                              NewDocumentParentInformation newDocumentParentInformation,
                                                                              UserDomainObject user,
                                                                              HttpServletRequest request ) {
-        try {
             final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
             final DocumentMapper documentMapper = service.getDocumentMapper();
             documentMapper.saveNewDocumentAndAddToMenu( newDocument, user, newDocumentParentInformation );
@@ -330,11 +329,6 @@ public class DocumentComposer extends HttpServlet {
             removeObjectFromSessionWithKeyInRequest( request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
             removeObjectFromSessionWithKeyInRequest( request, REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME );
 
-        } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
-            throw new RuntimeException( e );
-        } catch ( DocumentMapper.DocumentAlreadyInMenuException e ) {
-            throw new RuntimeException( e );
-        }
     }
 
     private void processNewDocumentInformation( NewDocumentParentInformation newDocumentParentInformation,
