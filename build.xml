@@ -412,7 +412,7 @@
     </target>
 
 
-    <target name="classes" depends="init,server,servlets" description="Builds all classes."/>
+    <target name="classes" depends="init,server" description="Builds all classes."/>
 
 
     <!-- Generate documentation -->
@@ -507,58 +507,6 @@
             <classpath refid="libraries"/>
 
         </javac>
-
-    </target>
-
-
-    <!-- Builds the servlets. -->
-    <target name="servlets" depends="init,server" description="Builds the servlets.">
-
-        <mkdir dir="${classes}"/>
-        <javac srcdir="servlets"
-            destdir="${classes}"
-            includes="*.java"
-            classpath="${classes}"
-            debug="${debug}"
-            optimize="${optimize}"
-            deprecation="${deprecation}">
-
-            <classpath refid="classes-and-libraries"/>
-
-        </javac>
-
-        <javac srcdir="servlets/conf"
-            destdir="${classes}"
-            includes="*.java"
-            classpath="${classes}"
-            debug="${debug}"
-            optimize="${optimize}"
-            deprecation="${deprecation}">
-
-            <classpath refid="classes-and-libraries"/>
-        </javac>
-
-        <javac srcdir="servlets/chat"
-            destdir="${classes}"
-            includes="*.java"
-            classpath="${classes}"
-            debug="${debug}"
-            optimize="${optimize}"
-            deprecation="${deprecation}">
-
-            <classpath refid="classes-and-libraries"/>
-        </javac>
-        <javac srcdir="servlets/billBoard"
-            destdir="${classes}"
-            includes="*.java"
-            classpath="${classes}"
-            debug="${debug}"
-            optimize="${optimize}"
-            deprecation="${deprecation}">
-
-            <classpath refid="classes-and-libraries"/>
-        </javac>
-
 
     </target>
 

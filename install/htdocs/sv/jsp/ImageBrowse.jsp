@@ -1,4 +1,5 @@
-<%@ page import="formbeans.ImageBrowseBean"%>
+<%@ page import="com.imcode.imcms.servlet.admin.ImageBrowse,
+                 com.imcode.imcms.servlet.admin.ImageBrowse"%>
 
 <html>
 <head>
@@ -18,8 +19,8 @@ imcmsGui("head", null);
 </script>
 
 <%
-    ImageBrowseBean imageBrowseFormBean;
-    imageBrowseFormBean = (ImageBrowseBean)request.getAttribute("imagebrowsebean");
+    ImageBrowse.ImageBrowseBean imageBrowseFormBean;
+    imageBrowseFormBean = (ImageBrowse.ImageBrowseBean)request.getAttribute("imagebrowsebean");
 %>
 <table border="0" cellspacing="0" cellpadding="0">
 <form name="backForm" method="POST" action="<%=imageBrowseFormBean.getCaller()%>">
