@@ -704,8 +704,10 @@ public class DocumentMapper {
 
         int newMetaId = sqlInsertIntoMeta( document );
 
-        document.setPermissionSetForRestrictedOne( document.getPermissionSetForRestrictedOneForNewDocuments() );
-        document.setPermissionSetForRestrictedTwo( document.getPermissionSetForRestrictedTwoForNewDocuments() );
+        if (!userIsSuperAdminOrFullAdminOnDocument( user, document )) {
+            document.setPermissionSetForRestrictedOne( document.getPermissionSetForRestrictedOneForNewDocuments() );
+            document.setPermissionSetForRestrictedTwo( document.getPermissionSetForRestrictedTwoForNewDocuments() );
+        }
 
         document.setId( newMetaId );
 

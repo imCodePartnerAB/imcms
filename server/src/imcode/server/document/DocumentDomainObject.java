@@ -46,7 +46,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return clone;
     }
 
-
     public static DocumentDomainObject fromDocumentTypeId( int documentTypeId ) {
         DocumentDomainObject document = null;
 
@@ -136,7 +135,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.id = v;
     }
 
-    protected abstract void loadAllLazilyLoadedDocumentTypeSpecificAttributes() ;
+    protected abstract void loadAllLazilyLoadedDocumentTypeSpecificAttributes();
 
     public String getMenuImage() {
         return attributes.image;
@@ -302,7 +301,20 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public boolean equals( Object o ) {
-        return attributes.equals( o );
+        if ( this == o ) {
+            return true;
+        }
+        if ( !( o instanceof DocumentDomainObject ) ) {
+            return false;
+        }
+
+        final DocumentDomainObject document = (DocumentDomainObject)o;
+
+        if ( attributes.id != document.attributes.id ) {
+            return false;
+        }
+
+        return true;
     }
 
     public CategoryDomainObject[] getCategoriesOfType( CategoryTypeDomainObject type ) {
@@ -321,7 +333,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public abstract int getDocumentTypeId();
 
     public int hashCode() {
-        return attributes.hashCode();
+        return attributes.id ;
     }
 
     public boolean isArchivedAtTime( Date time ) {
@@ -414,21 +426,21 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public synchronized Attributes.LazilyLoadedDocumentCategories getLazilyLoadedDocumentCategories() {
-        if (null == attributes.lazilyLoadedDocumentCategories) {
+        if ( null == attributes.lazilyLoadedDocumentCategories ) {
             attributes.lazilyLoadedDocumentCategories = new Attributes.LazilyLoadedDocumentCategories();
             DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
             documentMapper.initLazilyLoadedDocumentCategories( this );
         }
-        return attributes.lazilyLoadedDocumentCategories ;
+        return attributes.lazilyLoadedDocumentCategories;
     }
 
     public synchronized Attributes.LazilyLoadedRolesMappedToDocumentPermissionSetIds getLazilyLoadedRolesMappedToDocumentPermissionSetIds() {
-        if (null ==attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds) {
+        if ( null == attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds ) {
             attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds = new Attributes.LazilyLoadedRolesMappedToDocumentPermissionSetIds();
             DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
-            documentMapper.initLazilyLoadedRolesMappedToDocumentPermissionSetIds( this ) ;
+            documentMapper.initLazilyLoadedRolesMappedToDocumentPermissionSetIds( this );
         }
-        return attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds ;
+        return attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds;
     }
 
     public abstract void initDocument( DocumentMapper documentMapper );
@@ -456,7 +468,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
         private LazilyLoadedDocumentAttributes lazilyLoadedDocumentAttributes = null;
         private LazilyLoadedDocumentCategories lazilyLoadedDocumentCategories = null;
-        private LazilyLoadedRolesMappedToDocumentPermissionSetIds lazilyLoadedRolesMappedToDocumentPermissionSetIds = null ;
+        private LazilyLoadedRolesMappedToDocumentPermissionSetIds lazilyLoadedRolesMappedToDocumentPermissionSetIds = null;
 
         public Object clone() throws CloneNotSupportedException {
             Attributes clone = (Attributes)super.clone();
@@ -467,27 +479,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
                 clone.lazilyLoadedDocumentCategories = (LazilyLoadedDocumentCategories)lazilyLoadedDocumentCategories.clone();
             }
             return clone;
-        }
-
-        public boolean equals( Object o ) {
-            if ( this == o ) {
-                return true;
-            }
-            if ( !( o instanceof Attributes ) ) {
-                return false;
-            }
-
-            final Attributes documentInformation = (Attributes)o;
-
-            if ( id != documentInformation.id ) {
-                return false;
-            }
-
-            return true;
-        }
-
-        public int hashCode() {
-            return id;
         }
 
         private static class LazilyLoadedDocumentAttributes implements Cloneable, Serializable {
@@ -508,6 +499,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         }
 
         private static class LazilyLoadedDocumentCategories implements Cloneable, Serializable {
+
             private Set categories = new HashSet();
 
             public Object clone() throws CloneNotSupportedException {
@@ -518,6 +510,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         }
 
         private static class LazilyLoadedRolesMappedToDocumentPermissionSetIds implements Cloneable, Serializable {
+
             private Map rolesMappedToDocumentPermissionSetIds = new HashMap();
 
             public Object clone() throws CloneNotSupportedException {
