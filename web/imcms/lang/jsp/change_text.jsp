@@ -1,3 +1,29 @@
+<%@ page import="imcode.server.document.textdocument.TextDomainObject,
+                 imcode.util.Parser,
+                 com.imcode.imcms.api.ContentManagementSystem,
+                 com.imcode.imcms.api.DocumentService,
+                 com.imcode.imcms.api.TextDocument,
+                 imcode.server.Imcms"%>
+<%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%
+    int documentId = Integer.parseInt( request.getParameter( "meta_id" ) );
+    int txt_no = Integer.parseInt( request.getParameter( "txt" ) );
+
+    TextDomainObject text = Imcms.getServices().getText( documentId, txt_no );
+
+    if ( null == text ) {
+        text = new TextDomainObject( "", TextDomainObject.TEXT_TYPE_PLAIN );
+    }
+
+    String[] tags = {
+        "&", "&amp;",
+        "<", "&lt;",
+        ">", "&gt;"
+    };
+    String text_string = Parser.parseDoc( text.getText(), tags );
+%>
+
+<vel:velocity>
 <html>
 <head>
 <title><? templates/sv/change_text.html/1 ?></title>
@@ -70,13 +96,13 @@ function readCookie(name) {
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'text'); checkMode();">
 
-<div id="theLabel" style="display:none"><i>#label#</i></div>
+<div id="theLabel" style="display:none"><i><%= null == request.getParameter( "label" ) ? "" :  request.getParameter( "label" ) %></i></div>
 
 <script language="JavaScript">
 <!--
 if(isIE55 && readCookie("imcms_use_editor") != "true") {
-	openEditor("#meta_id#","#txt_no#") ;
-	document.location = "AdminDoc?meta_id=#meta_id#&flags=65536" ;
+	openEditor("<%=documentId %>","<%=txt_no%>") ;
+	document.location = "AdminDoc?meta_id=<%=documentId %>&flags=65536" ;
 }
 //-->
 </script>
@@ -86,13 +112,13 @@ if(isIE55 && readCookie("imcms_use_editor") != "true") {
 
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="POST" action="SaveText">
-<input type="hidden" name="meta_id"  value="#meta_id#">
-<input type="hidden" name="txt_no"   value="#txt_no#">
-<input type="hidden" name="type"     value="#type#">
+<input type="hidden" name="meta_id"  value="<%= documentId %>">
+<input type="hidden" name="txt_no"   value="<%= txt_no %>">
+<input type="hidden" name="type"     value="<%= null == request.getParameter( "type" ) ? "" : request.getParameter( "type" ) %>">
 <tr>
 	<td><input type="SUBMIT" value="<? templates/sv/change_text.html/2001 ?>" name="cancel" class="imcmsFormBtn"></td>
 	<td>&nbsp;</td>
-	<td><input type="button" value="<? templates/sv/change_text.html/2002 ?>" title="<? templates/sv/change_text.html/2003 ?>" name="editorBtn" class="imcmsFormBtn" onClick="openEditor('#meta_id#','#txt_no#')"></td>
+	<td><input type="button" value="<? templates/sv/change_text.html/2002 ?>" title="<? templates/sv/change_text.html/2003 ?>" name="editorBtn" class="imcmsFormBtn" onClick="openEditor('<%= documentId %>','<%= txt_no %>')"></td>
 	<td>&nbsp;</td>
     <td><input type="button" value="<? templates/sv/change_text.html/2004 ?>" title="<? templates/sv/change_text.html/2005 ?>" class="imcmsFormBtn" onClick="openHelpW(36)"></td>
 </tr>
@@ -101,11 +127,11 @@ if(isIE55 && readCookie("imcms_use_editor") != "true") {
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <tr>
-	<td colspan="2">#gui_heading( "<? templates/sv/change_text.html/4/1 ?>" )<div class="imcmsAdmText"><i>#label#</i></div></td>
+	<td colspan="2">#gui_heading( "<? templates/sv/change_text.html/4/1 ?>" )<div class="imcmsAdmText"><i><%= null == request.getParameter( "label" ) ? "" :  request.getParameter( "label" ) %></i></div></td>
 </tr>
 <tr>
 	<td colspan="2" class="imcmsAdmForm"><textarea name="text" id="txtCont" cols="125" rows="18" style="overflow: auto; width: 100%" wrap="virtual">
-#txt#</textarea></td>
+<%= text_string %></textarea></td>
 </tr>
 <tr>
 	<td colspan="2">
@@ -115,9 +141,9 @@ if(isIE55 && readCookie("imcms_use_editor") != "true") {
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class="imcmsAdmText">&nbsp;<? templates/sv/change_text.html/1001 ?>&nbsp;</td>
-			<td><input type="RADIO" name="format_type"  value="0" onClick="checkMode()" onChange="checkMode()" #!html#></td>
+			<td><input type="RADIO" name="format_type"  value="0" onClick="checkMode()" onChange="checkMode()" <%= text.getType() == TextDomainObject.TEXT_TYPE_HTML ? "" : "checked" %>></td>
 			<td class="imcmsAdmText">&nbsp;<? templates/sv/change_text.html/1002 ?>&nbsp;&nbsp;</td>
-			<td><input type="RADIO" name="format_type"  value="1" onClick="checkMode()" onChange="checkMode()" #html#></td>
+			<td><input type="RADIO" name="format_type"  value="1" onClick="checkMode()" onChange="checkMode()" <%= text.getType() == TextDomainObject.TEXT_TYPE_HTML ? "checked" : "" %>></td>
 			<td class="imcmsAdmText">&nbsp;<? templates/sv/change_text.html/1003 ?></td>
 		</tr>
 		</table></td>
@@ -210,3 +236,4 @@ function doReplaceBreaks() {
 </script>
 </body>
 </html>
+</vel:velocity>
