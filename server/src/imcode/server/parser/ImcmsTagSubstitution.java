@@ -9,6 +9,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateHelper;
 import imcode.util.FileCache;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.oro.text.regex.*;
 
 import javax.servlet.http.Cookie;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -241,7 +243,13 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
                     urlConnection.setRequestProperty("X-Meta-Id", "" + document.getMetaId());
                 }
 
-                InputStreamReader urlInput = new InputStreamReader(urlConnection.getInputStream());
+                InputStream connectionInputStream = urlConnection.getInputStream();
+                String contentType = urlConnection.getContentType() ;
+                String contentEncoding = StringUtils.substringAfter(contentType, "charset=") ;
+                if ("".equals(contentEncoding)) {
+                    contentEncoding = WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 ;
+                }
+                InputStreamReader urlInput = new InputStreamReader(connectionInputStream,contentEncoding);
                 int charsRead = -1;
                 final int URL_BUFFER_LEN = 16384;
                 char[] buffer = new char[URL_BUFFER_LEN];
