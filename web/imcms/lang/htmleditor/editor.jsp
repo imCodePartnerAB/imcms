@@ -66,31 +66,31 @@ String txtContent = "" ;
 TextDocument txtDoc = documentService.getTextDocument(iMetaId) ;
 
 if (action.equals("ExecSave")) {
-	
+
 	orgContent = request.getParameter("orgContent") ;
 	txtContent = request.getParameter("txtContent") ;
-	
+
 	txtDoc.setHtmlTextField(iTxtNo, txtContent) ;
 	documentService.saveChanges(txtDoc) ;
-	
+
 } else {
-	
+
 	TextDocument.TextField txtField = txtDoc.getTextField(iTxtNo) ;
 	orgContent = txtField.getHtmlFormattedText() ;
 	txtContent = orgContent ;
-	
+
 }
 %><html>
 <head>
 <title>&nbsp; <? install/htdocs/sv/htmleditor/editor/editor.jsp/1001 ?> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</title>
 
 <META HTTP-EQUIV="pragma" CONTENT="no-cache">
-<META HTTP-EQUIV="Cache-Control" CONTENT="must-revalidate"> 
+<META HTTP-EQUIV="Cache-Control" CONTENT="must-revalidate">
 <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
 <META NAME="robots" CONTENT="noindex, nofollow, noimageindex">
 
 <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="scripts/editor_config.js.jsp"></SCRIPT>
-<SCRIPT LANGUAGE="VBScript"   TYPE="text/vbscript"   SRC="scripts/editor_config.vbs"></SCRIPT>
+<SCRIPT LANGUAGE="VBScript"   TYPE="text/vbscript"   SRC="scripts/editor_config.vbs.jsp"></SCRIPT>
 <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="scripts/editor_functions.js"></SCRIPT>
 <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="scripts/editor_help.js"></SCRIPT>
 <SCRIPT LANGUAGE="VBScript"   TYPE="text/vbscript"   SRC="scripts/editor_functions.vbs"></SCRIPT>
@@ -99,7 +99,7 @@ if (action.equals("ExecSave")) {
 <link rel="STYLESHEET" type="text/css" href="css/editor.css">
 
 <STYLE TYPE="text/css">
-<!-- 
+<!--
 #fontColorDiv { position:relative; width:18; height:18; border: 1px inset #FFFFFF; background-color:#000000 }
 #backgroundColorDiv { position:relative; width:18; height:18; border: 1px inset #FFFFFF; background-color:#FFFFFF }
 -->
@@ -182,7 +182,7 @@ for (var i = 0; i < arrButtonsRowOne.length; i++) {
 	</tr>
 	</table></td>
 	<td align="right" unselectable="on">
-	
+
 <SCRIPT LANGUAGE="JavaScript">
 <!--
 if (showHtmlBtn) {
@@ -209,7 +209,7 @@ if (arrButtonsRowTwo.length > 0) {
 	document.writeln('<img src="images/1x1_848284.gif" width="681" height="1"><br>');
 	document.writeln('<img src="images/1x1_white.gif" width="681" height="1"><br>');
 	document.writeln('<img src="images/1x1.gif" width="1" height="3"><br>');
-	
+
 	document.writeln('<table border="0" cellspacing="0" cellpadding="0" align="left">');
 	document.writeln('<tr>');
 	document.writeln('	<td><img src="images/1x1.gif" width="3" height="1"></td>');
@@ -271,7 +271,7 @@ if(showSimple){
 	if (showSimpleLinkDiv) onCountSimple++;
 	if (showSimpleListDiv) onCountSimple++;
 	if (showSimplePixelDiv) onCountSimple++;
-	
+
 	if (onCountSimple > 1) {
 		document.write('	<b><? install/htdocs/sv/htmleditor/editor/editor.jsp/8/1 ?></b></td>\n');
 		document.write('	</tr>\n');
@@ -283,7 +283,7 @@ if(showSimple){
 		}
 		if(showSimpleListDiv) {
 			document.write('		<option value="modeSimpleListDiv"><? install/htdocs/sv/htmleditor/editor/editor.jsp/8/3 ?></option>\n');
-		}	
+		}
 		if(showSimplePixelDiv) {
 			document.write('		<option value="modeSimplePixelDiv"><? install/htdocs/sv/htmleditor/editor/editor.jsp/8/4 ?></option>\n');
 		}
@@ -601,7 +601,7 @@ if(showAdv){
 	if (showAdvFontStyleDiv) onCountAdv++;
 	if (showAdvCodeStringDiv) onCountAdv++;
 	if (showAdv<? install/htdocs/sv/htmleditor/editor/editor.jsp/62/3 ?>Div) onCountAdv++;
-	
+
 	if (onCountAdv > 1) {
 		document.write('	<b><? install/htdocs/sv/htmleditor/editor/editor.jsp/62/1 ?></b></td>\n');
 		document.write('	</tr>\n');
@@ -613,13 +613,13 @@ if(showAdv){
 		}
 		if(showAdvFontClassDiv){
 			document.write('		<option value="modeAdvFontClassDiv">Font Cl'+'ass=&quot\; X &quot\;</option>\n');
-		}	
+		}
 		if(showAdvFontStyleDiv){
 			document.write('		<option value="modeAdvFontStyleDiv">Font Style=&quot\; X &quot\;</option>\n');
-		}	
+		}
 		if(showAdvCodeStringDiv){
 			document.write('		<option value="modeAdvCodeStringDiv"><? install/htdocs/sv/htmleditor/editor/editor.jsp/62/2 ?></option>\n');
-		}	
+		}
 		if(showAdv<? install/htdocs/sv/htmleditor/editor/editor.jsp/62/3 ?>Div){
 			document.write('		<option value="modeAdv<? install/htdocs/sv/htmleditor/editor/editor.jsp/62/3 ?>Div"><? install/htdocs/sv/htmleditor/editor/editor.jsp/62/3 ?></option>\n');
 		}
@@ -1047,7 +1047,7 @@ if (showSimple || showAdv) {
 
 
 <STYLE TYPE="text/css">
-<!-- 
+<!--
 #theColorRedDiv { position:relative; top:+1; width:25; height:2; background-color:#FF0000 }
 #theColorGreenDiv { position:relative; top:+1; width:25; height:2; background-color:#00FF00 }
 #theColorBlueDiv { position:relative; top:+1; width:25; height:2; background-color:#0000FF }
@@ -1267,21 +1267,21 @@ function fBlueDn(){
 </SCRIPT>
 
 <map name="fRed">
-	<area alt="" coords="0,0,14,9" 
+	<area alt="" coords="0,0,14,9"
 		href="#" onMouseDown="mouseActiveUp = 1; fRedUp();" onMouseUp="mouseActiveUp = 0; clearTimeout('timeDn');">
-	<area alt="" coords="0,11,15,21" 
+	<area alt="" coords="0,11,15,21"
 		href="#" onMouseDown="mouseActiveDn = 1; fRedDn();" onMouseUp="mouseActiveDn = 0; clearTimeout('timeUp');">
 </map>
 <map name="fGreen">
-	<area alt="" coords="0,0,14,9" 
+	<area alt="" coords="0,0,14,9"
 		href="#" onMouseDown="mouseActiveUp = 1; fGreenUp();" onMouseUp="mouseActiveUp = 0; clearTimeout('timeDn');">
-	<area alt="" coords="0,11,15,21" 
+	<area alt="" coords="0,11,15,21"
 		href="#" onMouseDown="mouseActiveDn = 1; fGreenDn();" onMouseUp="mouseActiveDn = 0; clearTimeout('timeUp');">
 </map>
 <map name="fBlue">
-	<area alt="" coords="0,0,14,9" 
+	<area alt="" coords="0,0,14,9"
 		href="#" onMouseDown="mouseActiveUp = 1; fBlueUp();" onMouseUp="mouseActiveUp = 0; clearTimeout('timeDn');">
-	<area alt="" coords="0,11,15,21" 
+	<area alt="" coords="0,11,15,21"
 		href="#" onMouseDown="mouseActiveDn = 1; fBlueDn();" onMouseUp="mouseActiveDn = 0; clearTimeout('timeUp');">
 </map>
 

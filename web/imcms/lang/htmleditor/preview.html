@@ -4,7 +4,7 @@
 
 
 <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="scripts/editor_config.js.jsp"></SCRIPT>
-<SCRIPT LANGUAGE="VBScript"   TYPE="text/vbscript"   SRC="scripts/editor_config.vbs"></SCRIPT>
+<SCRIPT LANGUAGE="VBScript"   TYPE="text/vbscript"   SRC="scripts/editor_config.vbs.jsp"></SCRIPT>
 <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="scripts/editor_functions.js"></SCRIPT>
 <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="scripts/editor_help.js"></SCRIPT>
 <SCRIPT LANGUAGE="VBScript"   TYPE="text/vbscript"   SRC="scripts/editor_functions.vbs"></SCRIPT>
@@ -47,7 +47,7 @@ function init() {
 	thePreview.innerHTML = theHTML;
 	theCode.innerText    = theHTML;
 	theText.innerHTML    = theHTML;
-	
+
 	//thePreview.style.height = windowHeight - 55;
 	var pof = parent.opener.document.forms.editorForm;
 	var previewWidth      = pof.previewWidth.value;
@@ -55,7 +55,7 @@ function init() {
 	var previewColor      = pof.previewColor.value;
 	var previewFontSize   = pof.previewFontSize.value;
 	var previewFontFamily = pof.previewFontFamily.value;
-	
+
 	var origW = '';
 	if(previewWidth.indexOf('%') > 0){
 		if(previewWidth == '100%'){
