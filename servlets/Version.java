@@ -64,7 +64,7 @@ public class Version extends HttpServlet implements FilenameFilter {
 	    } ;
 
 	    // Find and print the revision.
-	    if (perl.match("/\\$"+"Revision"+"$/",file_buffer.toString())) {
+	    if (perl.match("/\\$"+"Revision: (\\d(?:\\.\\d)+) "+"\\$/",file_buffer.toString())) {
 		String revision = perl.group(1) ;
 		out.print(revision+' ') ;
 	    } else {
