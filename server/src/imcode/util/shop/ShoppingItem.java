@@ -21,7 +21,7 @@ public class ShoppingItem implements Comparable {
 
     /**
      * get-method for price
-     * 
+     *
      * @return the value of price
      */
     public double getPrice() {
@@ -30,7 +30,7 @@ public class ShoppingItem implements Comparable {
 
     /**
      * set-method for price
-     * 
+     *
      * @param price Value for price
      */
     public void setPrice( double price ) {
@@ -79,7 +79,7 @@ public class ShoppingItem implements Comparable {
 
     /**
      * Determine whether this ShoppingItem is equal to another.
-     * 
+     *
      * @param o the object to compare to.
      * @return true if and only if o is an instance of ShoppingItem, and has the same price and descriptions.
      */
@@ -114,11 +114,11 @@ public class ShoppingItem implements Comparable {
             if ( it1.hasNext() && it2.hasNext() ) {
                 Map.Entry desc1 = (Map.Entry)it1.next();
                 Map.Entry desc2 = (Map.Entry)it2.next();
-                int descCompare = ( (Integer)desc1.getKey() ).compareTo( desc2.getKey() );
+                int descCompare = ( (Integer)desc1.getKey() ).compareTo( (Integer)desc2.getKey() );
                 if ( 0 != descCompare ) {
                     return -descCompare;
                 }
-                descCompare = ( (String)desc1.getValue() ).compareTo( desc2.getValue() );
+                descCompare = ( (String)desc1.getValue() ).compareTo( (String)desc2.getValue() );
                 if ( 0 != descCompare ) {
                     return descCompare;
                 }
