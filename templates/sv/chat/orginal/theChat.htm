@@ -1,0 +1,121 @@
+<html>
+<head>
+<title>chatControl</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<table cellpadding="0" cellspacing="2" width="701" border="0" height="268">
+  <form method="post" name="huvud" action="http://chatta.aftonbladet.se/existens/se.existens.chat.chat?chatframe=1&number=499969&code=956571027">
+    <input type="HIDDEN" name="nick" value="#alias#">
+    <input type="HIDDEN" name="room" value="202">
+    <input type="HIDDEN" name="house" value="200">
+	<input type="HIDDEN" name="chatRoom2" value="#chatRoom#">
+    <tr> 
+      <td height="41" colspan="3"><b>#alias#</b> i <b>#chatRoom#</b> 
+        <select name="msgTypes">
+          <option value="0" selected>s&auml;g till </option>
+          <option value="1">viska till [privat] </option>
+          <option value="2">fr&aring;ga </option>
+          <option value="3">ropa till </option>
+          <option value="-99">------ </option>
+          <option value="-2">Ignorera </option>
+          <option value="-3">St&auml;ng av</option>
+        </select>
+        <select name="recipient">
+          <option value="-1" selected>ALLA 
+          
+        </select>
+        &nbsp; 
+        <input type="text" name="msg" size="73" maxlength="250" value="#msg#">
+      </td>
+      <td height="41" width="29%"> 
+        <input type="Submit" value="Skicka/Uppdatera" name="sendMsg">
+      </td>
+    </tr>
+  </form>
+  <form method="post">
+    <tr> 
+      <td height="19" colspan="4"> 
+        <hr>
+        <div align="left"></div>
+      </td>
+    </tr>
+    <tr> 
+      <td height="8" width="34%"><b>Inst&auml;llningar:&nbsp;</b> &nbsp;&nbsp; 
+        <a href="http://www.imcode.se/chat/help.html"
+ 		target="chathelp">Hj&auml;lpsida</a></td>
+      <td height="8" width="4%">&nbsp;</td>
+      <td height="8" width="33%">&nbsp;</td>
+      <td height="8" width="29%"><b>Powered by <a href="http://www.imcode.se" target="_blank">imCode</a></b> 
+      </td>
+    </tr>
+    <tr> 
+      <td height="17" colspan="4"> 
+        <hr>
+      </td>
+    </tr>
+    <tr> 
+      <td valign="top" height="35" width="34%"> Automatisk uppdatering </td>
+      <td valign="top" height="35" width="4%"> 
+        <input type="checkbox" name="autoscroll" CHECKED>
+      </td>
+      <td height="35" width="33%" align="center">Typsnitt 
+        <input type="submit" name="fontInc" value="+">
+        <input type="submit" name="fontDec" value="-">
+      </td>
+      <td height="40" rowspan="2" valign="top" width="29%"> <b>Byta rum:<br>
+        </b> 
+        <select name="newRooms">
+          <option value="-1" selected>V&auml;lj rum 
+          
+        </select>
+        <input type="Submit" value=" G&aring; till " name="changeRoom">
+      </td>
+    </tr>
+    <tr> 
+      <td width="34%" valign="top" height="29">Visa in/utg&aring;ng </td>
+      <td width="4%" valign="top" height="29"> 
+        <input type="checkbox" name="inout" CHECKED>
+      </td>
+      <td height="29" width="33%">&nbsp;</td>
+    </tr>
+    <tr> 
+      <td width="34%" valign="top" height="33">Visa enbart publika meddelanden 
+      </td>
+      <td width="4%" valign="top" height="33"> 
+        <input type="checkbox" name="public" CHECKED>
+      </td>
+      <td width="33%" height="33">&nbsp;</td>
+      <td valign="top" height="13"> 
+        <input type="button" onClick="parent.omstart();" value=" Omstart " name="refresh">
+        <input type="button" onClick="parent.loggaut();" value=" Logga ut" name="logOut">
+      </td>
+    </tr>
+    <tr> 
+      <td width="34%" valign="top" height="32">Visa enbart privata viskningar 
+      </td>
+      <td width="4%" valign="top" height="32"> 
+        <input type="checkbox" name="private" CHECKED>
+      </td>
+      <td width="33%" height="32">&nbsp; </td>
+      <td valign="top" height="14">&nbsp;</td>
+    </tr>
+    <tr> 
+      <td width="34%" valign="top" height="30">Visa datum/tid vid meddelande </td>
+      <td width="4%" valign="top" height="30"> 
+        <input type="checkbox" name="dateTime" value="checkbox" checked>
+      </td>
+      <td align="center" valign="top"> 
+        <input type="submit" name="controlOK" value="Uppdatera inst&auml;llningar">
+      </td>
+      <td align="center" valign="top">&nbsp;</td>
+    </tr>
+  </form>
+</table>
+</BODY>
+</HTML>
+
+
+
+

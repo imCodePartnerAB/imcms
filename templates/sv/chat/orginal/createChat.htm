@@ -1,0 +1,197 @@
+<html>
+<head>
+<title>createChat</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="#SERVLET_URL#ChatCreator" name="CreateChat">
+	<input type="hidden" name="action" value="ADD_CHAT">
+
+  <table width="30%" border="0" cellspacing="0" height="216">
+    <tr bgcolor="#333366"> 
+      <td width="0%">&nbsp;</td>
+      <td colspan="4"> 
+        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Skapa 
+          enkel chatt </font></b></div>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%">&nbsp;</td>
+      <td colspan="4" align="right"> <a href="http://www.imcode.se/chat/help.html"
+ 		target="chathelp">Hj&auml;lpsida</a> </td>
+    </tr>
+	
+    <tr bgcolor="#bababa"> 
+      <td width="0%">&nbsp;</td>
+      <td width="28%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Chattrubrik</font></td>
+      <td width="50%" colspan="2"> <font size="2"> 
+        <input type="text" name="chatName" size="20" value="#chatName#">
+        </font></td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="35">&nbsp;</td>
+      <td width="28%" height="35"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Chattrum:</font></td>
+      <td width="25%" height="35"> <font size="2"> 
+        <input type="text" name="chatRoom" size="20" value="#chatRoom#">
+        </font></td>
+      <td width="25%" height="35"><font size="2"> 
+        <input type="submit" name="addRoom" value=" L&auml;gg till  ">
+        </font></td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="29">&nbsp;</td>
+      <td width="28%" height="29">&nbsp;</td>
+      <td width="50%" height="29" colspan="2"> 
+        <select name="roomList">
+        </select>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%">&nbsp;</td>
+      <td width="28%">Beh&ouml;riga anv&auml;ndare:</td>
+      <td width="50%" colspan="2"> 
+        <select name="authorized" size="1" multiple>
+          <option>oregistrerade</option>
+          <option>sj&auml;lvregistrerade</option>
+          <option>systemregistrerade</option>
+        </select>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="53"> 
+        <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"></font></div>
+      </td>
+      <td width="28%" height="53"> 
+        <div align="center"></div>
+      </td>
+      <td width="25%" height="53"> 
+        <div align="center"> 
+          <input type="submit" name="okChat" value="Skapa chatt!">
+        </div>
+      </td>
+      <td width="25%" height="53">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#333366"> 
+      <td width="0%" height="22">&nbsp;</td>
+      <td colspan="4" height="22"> 
+        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Avancerade 
+          chattinst&auml;llningar </font></b></div>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="37"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"></font> 
+      </td>
+      <td width="28%" height="37">Meddelandetyper: </td>
+      <td width="25%" height="37"> 
+        <input type="text" name="messageType" value="#messageType#">
+      </td>
+      <td width="25%" height="37"> 
+        <input type="submit" name="addMsgType" value=" L&auml;gg till  ">
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td width="28%" height="26"></td>
+      <td width="50%" height="26" colspan="2"> 
+        <select name="messageTypes" size="1" multiple>
+          <option selected>s&auml;ger till</option>
+          <option>viskar till</option>
+          <option>fr&aring;gar</option>
+          <option>ropar till</option>
+          <option>ignorerar</option>
+        </select>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td width="28%" height="26">Utseendemall</td>
+      <td width="50%" height="26" colspan="2"> 
+        <input type="file" name="templateFile">
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td width="28%" height="26"></td>
+      <td width="50%" height="26" colspan="2">&nbsp; </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td colspan="2" height="26"><b>Valfria inst&auml;llningar:</b></td>
+      <td height="26">Ja/Nej/Valfri</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td colspan="2" height="26">uppdatera automatiskt var 
+        <input type="text" name="updateTime" size="2" value="30">
+        sekund </td>
+      <td height="26"> 
+        <input type="radio" name="reload" value="radiobutton">
+        <input type="radio" name="reload" value="radiobutton">
+        <input type="radio" name="reload" value="radiobutton" checked>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td colspan="2" height="26">visa in/utg&aring;ng </td>
+      <td height="26"> 
+        <input type="radio" name="inOut" value="radiobutton">
+        <input type="radio" name="inOut" value="radiobutton">
+        <input type="radio" name="inOut" value="radiobutton" checked>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td height="26" colspan="2">visa enbart privata meddelanden </td>
+      <td height="26"> 
+        <input type="radio" name="private" value="radiobutton">
+        <input type="radio" name="private" value="radiobutton">
+        <input type="radio" name="private" value="radiobutton" checked>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td height="26" colspan="2">visa enbart publika meddelanden</td>
+      <td height="26"> 
+        <input type="radio" name="public" value="radiobutton">
+        <input type="radio" name="public" value="radiobutton">
+        <input type="radio" name="public" value="radiobutton" checked>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td height="26" colspan="2">visa datum/tid vid meddelanden</td>
+      <td height="26"> 
+        <input type="radio" name="dateTime" value="radiobutton">
+        <input type="radio" name="dateTime" value="radiobutton">
+        <input type="radio" name="dateTime" value="radiobutton" checked>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td height="26" colspan="2">&ouml;ka/minska typsnitt</td>
+      <td height="26"> 
+        <input type="radio" name="font" value="radiobutton">
+        <input type="radio" name="font" value="radiobutton">
+        <input type="radio" name="font" value="radiobutton" checked>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td width="28%" height="53"> 
+        <div align="center"></div>
+      </td>
+      <td width="25%" height="53"> 
+        <div align="center"> 
+          <input type="submit" name="okChat" value="Skapa chatt!">
+        </div>
+      </td>
+      <td width="25%" height="53">&nbsp; </td>
+    </tr>
+  </table>
+ 
+</form>
+<p>&nbsp; </p>
+</body>
+</html>
+
