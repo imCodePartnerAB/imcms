@@ -302,7 +302,7 @@
              build-addon"
 	    description="Builds everything."/>
 
-    
+
     <target name="copy-version-file">
         <echo message="${version}" file="${WEB-INF}/version.txt"/>
     </target>
@@ -452,7 +452,7 @@
 
         <junit haltonerror="yes" haltonfailure="yes" fork="yes" dir="${basedir}">
             <classpath path="tools/build">
-                <path refid="libraries"/> 
+                <path refid="libraries"/>
             </classpath>
 
             <formatter type="brief" usefile="false"/>
