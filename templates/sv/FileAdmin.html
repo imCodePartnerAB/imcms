@@ -6,6 +6,7 @@
 <noscript><link rel="STYLESHEET" type="text/css" href="@cssurl@/imcms_win_ie.css"></noscript>
 <script language="JavaScript">
 <!--
+
 /* *******************************************************************
  *           SETTINGS                                                *
  ******************************************************************* */
@@ -330,10 +331,6 @@ function popWinOpen(width,height,url,wName,scroll) {
 	}
 }
 
-function openHelp(id) {
-	popWinOpen(650,570,"GetDoc?meta_id=" + id,"help",1);
-}
-
 if (ie || moz) {
 	document.write("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"" + CSS_IE + "\">");
 	if (ie)  document.write("<STYLE TYPE=\"text/css\">\n.formBtnBlue { cursor: hand }\n</STYLE>");
@@ -524,7 +521,6 @@ if (gecko && !isMac) {
 </tr>
 </table>
 </form>
-
 
 <script language="JavaScript">
 <!--

@@ -71,11 +71,6 @@ function evalPrepareAdd() {
 	return true
 }
 
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-
-
 function activateUseradmin_roles(){
 	if ( document.forms[0].useradmin_roles ){
 		var list = document.forms[0].roles;
@@ -87,7 +82,6 @@ function activateUseradmin_roles(){
 		}
 	}
 }
-
 
 //-->
 </script>
@@ -110,6 +104,8 @@ imcmsGui("head", null);
 <input type="HIDDEN" name="new_pwd2" value="#NEW_PWD2#">
 <tr>
 	<td><input type="submit" class="imcmsFormBtn" name="CANCEL" value="Tillbaka"></td>
+	<td>&nbsp;</td>
+    <td><input type="button" value="Hjälp" title="Öppna hjälpsidan" class="imcmsFormBtn" onClick="openHelpW(71)"></td>
 </tr>
 </table>
 <script>
@@ -134,7 +130,7 @@ writeFormField("TEXT","login_name",25,50,null,"#LOGIN_NAME#");
 </script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText" nowrap>Lösenord <b class="red">*</b> <span class="imcmsAdmDim">(Max 15 tkn)</span> &nbsp;</td>
+	<td class="imcmsAdmText" nowrap>Lösenord <b class="red">*</b> <span class="imcmsAdmDim">(Min 4 - Max 15 tkn)</span> &nbsp;</td>
 	<td> 
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>

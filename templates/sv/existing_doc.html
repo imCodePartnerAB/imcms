@@ -20,6 +20,8 @@ imcmsGui("head", null);
 <input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
 <tr> 
 	<td><input type="submit" class="imcmsFormBtn" value="Avbryt" name="cancel"></td>
+	<td>&nbsp;</td>
+    <td><input type="button" value="Hjälp" title="Öppna hjälpsidan" class="imcmsFormBtn" onClick="openHelpW(82)"></td>
 </tr>
 </form>
 </table>
@@ -108,11 +110,15 @@ writeFormField("TEXT","searchstring",62,255,360,"#searchstring#");
 			<td class="imcmsAdmText">Fil:</td>
 			<td><input type="checkbox" name="doc_type" value="8" #checked_8#></td>
 		</tr>
-		<tr> 
-			<td class="imcmsAdmText">Diagram dokument:</td>
-			<td><input type="checkbox" name="doc_type" value="101" #checked_101#></td>
+		<tr>
+			<td class="imcmsAdmText">Anslagstavla dokument:</td>
+			<td><input type="checkbox" name="doc_type" value="104" #checked_104#></td>
 		</tr>
-		<tr> 
+		<tr>
+			<td class="imcmsAdmText">Chatt dokument:</td>
+			<td><input type="checkbox" name="doc_type" value="103" #checked_103#></td>
+		</tr>
+		<tr>
 			<td class="imcmsAdmText">Konferens dokument:</td>
 			<td><input type="checkbox" name="doc_type" value="102" #checked_102#></td>
 		</tr>

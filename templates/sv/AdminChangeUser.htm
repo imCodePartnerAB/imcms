@@ -1,9 +1,7 @@
 <!--
 Template: AdminChangeUser.htm
 -->
-<!--
-Template: AdminChangeUser.htm
---><html>
+<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
@@ -37,18 +35,7 @@ function evalEditUser() {
 	}
 }
 
-function evalShowUser() {
-	if ( document.forms.user_categoriesForm.searchstring.value.length < 1 ) {
-		alert("Skriv in minst ett tecken i användarnamnet som du vill visa!");
-		return false;
-	} else {
-		return true;
-	}
-}
 
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
 //-->
 </SCRIPT>
 
@@ -64,6 +51,8 @@ imcmsGui("head", null);
 <input type="hidden" name="user_Id" value="">
 <tr>
 	<td><input type="submit" class="imcmsFormBtn" name="GO_BACK" value="Tillbaka"></td>
+	<td>&nbsp;</td>
+    <td><input type="button" value="Hjälp" title="Öppna hjälpsidan" class="imcmsFormBtn" onClick="openHelpW(38)"></td>
 </tr>
 </form>
 </table>
@@ -97,15 +86,15 @@ imcmsGui("mid", null);
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><script>
-writeFormField("TEXT","searchstring",20,20,null,"");
+writeFormField("TEXT","searchstring",20,20,null,"#searchstring#");
 </script></td>
-		<td class="imcmsAdmDim">&nbsp; (Ange minst ett tecken!)</td>
+		<td class="imcmsAdmDim">&nbsp; (Tomt fält visar alla!)</td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText">&nbsp;</td>
-	<td><input type="checkbox" name="showall" value="0"> Visa även EJ aktiva användare.</td>
+	<td><input type="checkbox" name="showall" value="0" #active#> Visa &auml;ven EJ aktiva anv&auml;ndare.</td>
 </tr>
 <tr>
 	<td colspan="2"><script>hr("100%",396,"cccccc");</script></td>
@@ -115,18 +104,16 @@ writeFormField("TEXT","searchstring",20,20,null,"");
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><input type="submit" class="imcmsFormBtnSmall" name="showUsers" value="Visa användare" onClick="if(!evalShowUser()) return false;"></td>
-		<td>&nbsp;</td>
-		<td><input type="submit" class="imcmsFormBtnSmall" name="showUsersAll" value=" Visa alla " onClick="document.forms[1].searchstring.value = ' '; return true"></td>
+		<td><input type="submit" class="imcmsFormBtnSmall" name="showUsers" value="Visa anv&auml;ndare"></td>
 	</tr>
 	</table>
 </td>
 </tr>
 </form>
 <tr>
-	<td colspan="2" class="imcmsAdmText">Användare</td>
+	<td colspan="2" class="imcmsAdmText">Anv&auml;ndare</td>
 </tr>
-<form name="argumentForm" action="AdminUser" method="post">
+<form name="argumentForm" action="AdminUser" method="post" target="_top">
 <tr>
 	<td colspan="2">
 	<table border="0" cellspacing="0" cellpadding="0">
@@ -137,7 +124,9 @@ writeFormField("TEXT","searchstring",20,20,null,"");
 		</select></td>
 		<td>&nbsp;</td>
 		<td>
-		<input type="submit" class="imcmsFormBtnSmall" name="ADD_USER" value="Lägg till ny" style="width:80"><br><img src="@imcmsimageurl@/1x1.gif" width="1" height="3"><br><input type="submit" class="imcmsFormBtnSmall" name="CHANGE_USER" value=" Redigera " onClick="if(!evalEditUser()) return false;" style="width:80"></td>
+		<input type="submit" class="imcmsFormBtnSmall" name="ADD_USER" value="Lägg till ny" style="width:80"><br>
+		<img src="@imcmsimageurl@/1x1.gif" width="1" height="3"><br>
+		<input type="submit" class="imcmsFormBtnSmall" name="CHANGE_USER" value=" Redigera " onClick="if(!evalEditUser()) return false;" style="width:80"></td>
 	</tr>
 	</table></td>
 </tr>

@@ -20,6 +20,8 @@ imcmsGui("head", null);
 <input type="HIDDEN" name="img_no" value="#img_no#">
 <tr>
 	<td><input type="Submit" class="imcmsFormBtn" name="avbryt" value="Tillbaka"></td>
+	<td>&nbsp;</td>
+    <td><input type="button" value="Hjälp" title="Öppna hjälpsidan" class="imcmsFormBtn" onClick="openHelpW(44)"></td>
 </tr>
 </form>
 </table>
@@ -30,6 +32,7 @@ imcmsGui("mid", null);
 <form name="folder" action="ImageBrowse">
 <input type="HIDDEN" name="meta_id" value="#meta_id#">
 <input type="HIDDEN" name="img_no" value="#img_no#">
+<INPUT TYPE="HIDDEN" NAME="label" VALUE="#label#">
 <input type="HIDDEN" name="imglist" value="#imglist#">
 <input type="HIDDEN" name="dirlist_preset" value="#dirlist_preset#">
 <tr>
@@ -56,6 +59,9 @@ imcmsGui("mid", null);
 	<form name="imageForm" method="POST" action="ChangeImage">
 	<input type="HIDDEN" name="meta_id" value="#meta_id#">
 	<input type="HIDDEN" name="img_no" value="#img_no#">
+	<input type="HIDDEN" name="imglist" value="#imglist#">
+    <input type="HIDDEN" name="dirlist_preset" value="#dirlist_preset#">
+    <input type="HIDDEN" name="label" value="#label#">
 	<tr>
 		<td class="imcmsAdmText" align="right">Bilder</td>
 	</tr>
@@ -97,6 +103,7 @@ imcmsGui("mid", null);
 		<form name="abortForm" method="POST" action="ChangeImage">
 		<input type="HIDDEN" name="meta_id" value="#meta_id#">
 		<input type="HIDDEN" name="img_no" value="#img_no#">
+		<input type="HIDDEN" name="label" value="#label#">
 		<tr>
 			<td><input type="Submit" class="imcmsFormBtn" name="avbryt" value="Avbryt"></td>
 		</tr>

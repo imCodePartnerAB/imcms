@@ -88,6 +88,9 @@ imcmsGui("head", null);
 	<input type="hidden" name="flags" value="131072">
 	<tr>
 		<td><input type="submit" class="imcmsFormBtn" value="Tillbaka"></td>
+	    <td>&nbsp;</td>
+        <td><input type="button" value="Hjälp" title="Öppna hjälpsidan" class="imcmsFormBtn" onClick="openHelpW(72)"></td>
+
 	</tr>
 	</form>
 	</table></td>
@@ -97,7 +100,7 @@ imcmsGui("head", null);
 	<form name="imgbr" method="get" action="ImageBrowse">
 	<input type="hidden" name="meta_id" value="#getMetaId#">
 	<input type="hidden" name="img_no" value="#img_no#">
-	<!-- input type="hidden" name="label" value="#label#" -->
+	<input type="hidden" name="label" value="#label#">
 	<tr>
 		<td><input type="submit" class="imcmsFormBtn" value="Välj från bildarkiv"></td>
 	</tr>
@@ -112,6 +115,7 @@ imcmsGui("mid", null);
 <form name="ImageUploadForm" action="ImageUpload" enctype="multipart/form-data" method="POST" onSubmit="return (checkFileName()); return false">
 <input type="HIDDEN" name="meta_id" value="#getMetaId#">
 <input type="HIDDEN" name="img_no" value="#img_no#">
+<input type="hidden" name="label" value="#label#">
 <tr>
 	<td colspan="2"><script>imcHeading("Lägg till ny bild","656");</script></td>
 </tr>
@@ -137,9 +141,12 @@ writeFormField("FILE","file\" id=\"theFile",54,null,null,null);
 </form>
 <form name="imgProp" method="POST" action="SaveImage">
 <input type="HIDDEN" name="meta_id" value="#getMetaId#">
-<input type="HIDDEN" name="img_no"  value="#img_no#">
-<input type="HIDDEN" name="origW"   value="#origW#">
-<input type="HIDDEN" name="origH"   value="#origH#">
+<input type="HIDDEN" name="img_no" value="#img_no#">
+<input type="HIDDEN" name="origW" value="#origW#">
+<input type="HIDDEN" name="origH" value="#origH#">
+<input type="HIDDEN" name="oldW" value="#imgWidth#">
+<input type="HIDDEN" name="oldH" value="#imgHeight#">
+<input type="hidden" name="label" value="#label#">
 <tr>
 	<td colspan="2">&nbsp;<br>
 	<script>imcHeading("Redigera bild #img_no# på sida #getMetaId#","656");</script><div id="theLabel" class="imcmsAdmText"><i>#label#</i></div></td>

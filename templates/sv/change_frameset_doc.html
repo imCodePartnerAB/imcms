@@ -18,6 +18,8 @@ imcmsGui("head", null);
 <form action="BackDoc">
 <tr>
 	<td><input type="submit" class="imcmsFormBtn" value="Tillbaka"></td>
+	<td>&nbsp;</td>
+    <td><input type="button" value="Hjälp" title="Öppna hjälpsidan" class="imcmsFormBtn" onClick="openHelpW(76)"></td>
 </tr>
 </form>
 </table>
@@ -46,6 +48,8 @@ imcmsGui("mid", null);
 	<input type="submit" class="imcmsFormBtn" name="ok" value="Spara">
 	<input type="reset" class="imcmsFormBtn" name="reset" value="Återställ">
 	<input type="button" class="imcmsFormBtn" name="abort" value="Avbryt" onClick="top.location = 'BackDoc'; return false"></td>
+    <input type="HIDDEN" name="meta_id" value="#getMetaId#">
+    <input type="HIDDEN" name="parent_meta_id" value="#getParentMetaId#">
 </tr>
 </form>
 </table>

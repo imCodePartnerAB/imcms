@@ -1,4 +1,3 @@
-
 <html>
 <!-- template: readrunner/AdminUserResp.htm  -->
 <head>
@@ -65,11 +64,6 @@ function evalPrepareAdd() {
 	  
 	return true
 }
-
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-
 
 function activateUseradmin_roles(){
 	if ( document.forms[0].useradmin_roles ){
@@ -259,7 +253,7 @@ function activateUseradmin_roles(){
 	<td colspan="3">
 	<input type="submit" name="SAVE_USER" value="Spara" onClick="if( !evalPrepareAdd() ) return false;">
 	<input type="submit" name="RESET_FORM" value="Återställ">
-	<input type="submit" name="CANCEL" value="Avbryt">&nbsp; <a href="GetDoc?meta_id=71" target="_blank" onClick="openHelp('71'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+	<input type="submit" name="CANCEL" value="Avbryt">&nbsp; <a href="@documentationurl@GetDoc?meta_id=71" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 	<input type="submit" name="READRUNNER_SETTINGS" value="Readrunner-inställningar"></td>
 	<td>&nbsp;</td>
 </tr>

@@ -16,9 +16,6 @@
 </style>
 <script language="JavaScript">
 <!--
-function openHelp(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
-}
 
 function targetNewWindow() {
 	var exampelWindow = window.open("", "Exempelmall", "scrollbars=yes,toolbar=0,resizable=yes,location=0,directories=0,status=0,menubar=0,height=500,width=800");
@@ -57,7 +54,7 @@ function resetTarget() {
 	<input type="submit" name="update" value="Spara" onClick="resetTarget()" class="changePageButton"></td>
 	
 	<td id="changePageTd24" nowrap>
-	<a href="GetDoc?meta_id=87" target="_blank" onClick="openHelp('87'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan" hspace="2"></a></td>
+	<a href="@documentationurl@GetDoc?meta_id=87" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan" hspace="2"></a></td>
 </tr>
 <input type="HIDDEN" name="meta_id" value="#getMetaId#">
 #getDocType# 

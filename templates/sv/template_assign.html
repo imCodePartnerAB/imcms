@@ -34,11 +34,13 @@ imcmsGui("head", null);
 	<td colspan="2" class="imcmsAdmText"><b class="white">Formatgrupp:</b></td>
 </tr>
 <tr>
-	<td colspan="2">
+	<td colspan="1">
 	<input type="submit" class="imcmsFormBtn" name="add_group" value="Skapa">
 	<input type="submit" class="imcmsFormBtn" name="delete_group" value="Ta bort">
 	<input type="submit" class="imcmsFormBtn" name="rename_group" value="Byt namn">
 	<input type="submit" class="imcmsFormBtn" name="assign_group" value="Tilldela formatmallar" disabled></td>
+	<td>
+	<input type="button" value="Hjälp" title="Öppna hjälpsidan" class="imcmsFormBtn" onClick="openHelpW(10)"></td>
 </tr>
 </form>
 </table>
@@ -56,7 +58,7 @@ imcmsGui("mid", null);
 	<td colspan="2">
 	<table border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td height="24" class="imcmsAdmText" nowrap>Formatgrupper &nbsp; &nbsp;</td>
+		<td height="24" nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatgrupper:&nbsp;&nbsp;</font></td>
 		<td>
 		<select name="templategroup">
 		#templategroups#
@@ -83,8 +85,8 @@ imcmsGui("mid", null);
 		#unassigned#
 		</select></td>
 		<td align="center">
-		&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="assign" value="L&auml;gg till &gt;&gt;" style="width:70">&nbsp;
-		&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="deassign" value="&lt;&lt; Ta bort " style="width:70">&nbsp;</td>
+		&nbsp;<input type="submit" name="assign" value="L&auml;gg till &gt;&gt;">&nbsp;
+		&nbsp;<input type="submit" name="deassign" value="&lt;&lt; Ta bort ">&nbsp;</td>
 		<td>
 		<select name="assigned" size="7" style="width:100%" multiple>
 		#assigned#

@@ -3,20 +3,12 @@
 <title>Untitled Document</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
-
 </head>
 
 <body bgcolor="#FFFFFF">
 <form METHOD="POST" action="SaveNewUrlDoc">
   <BR><BR><div align="center">
-    <table 0 cellspacing=0 width="450" cellpadding="2" border="1" align="center">
+    <table cellspacing=0 width="450" cellpadding="2" border="1" align="center">
 	  <tr bgcolor="#333366" > 
 		<td valign="TOP"><B><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;Ny 
 		  URL</font></B></td>
@@ -52,7 +44,7 @@ function openHelp(id){
 		  <TD align="center" valign="middle" bgcolor="#BABABA"> 
 			<input TYPE="SUBMIT" value="OK" name="ok">
 			<INPUT TYPE="RESET" VALUE="Rensa">
-			<input TYPE="SUBMIT" value="Avbryt" name="cancel">&nbsp; <a href="GetDoc?meta_id=82" target="_blank" onClick="openHelp('82'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+			<input TYPE="SUBMIT" value="Avbryt" name="cancel">&nbsp; <a href="@documentationurl@GetDoc?meta_id=82" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		  </TD>
 		</TR>
 		<INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#getMetaId#">

@@ -1,5 +1,14 @@
 <style type="text/css">
 <!--
+/*
+
+/* IMCMS SPECIFIC */
+
+/* imCMS label. Ändra utseende om så önskas. */
+
+.imcms_label, .imcms_label:link, .imcms_label:visited { font: 10px Verdana; color:#c00000; text-decoration:none; background-color:#ffffcc }
+.imcms_label:active, .imcms_label:hover { font: 10px Verdana; color:#000099; text-decoration:underline; background-color:#ffffcc }
+
 /* adminMode */
 
 #adminPanelDiv      { padding: 15 0 10 0; }
@@ -35,13 +44,10 @@
 </tr>
 <tr>
 	<td class="adminPanelTd2" align="center">
-	<a href="BackDoc" id="admHrefBackdoc"><img src="@adminbuttonsurl@/sv/foregaende.gif" alt="Föregående" id="admBtnBackdoc" border="0"></a>#doc_buttons##1##4#<a href="LogOut" id="admHrefLoggaut"><img src="@adminbuttonsurl@/sv/loggaut.gif" alt="Logga ut" id="admBtnLoggaut" border="0"></a>#superadmin#<a href="GetDoc?meta_id=55" target="_blank" onClick="openHelpW('55'); return false;" id="admHrefHelp"><img src="@adminbuttonsurl@/sv/help.gif" alt="&Ouml;ppna hj&auml;lpsidan" id="admBtnHelp" border="0"></a></td>
+	<a href="BackDoc" id="admHrefBackdoc"><img src="@adminbuttonsurl@/sv/foregaende.gif" alt="Föregående" id="admBtnBackdoc" border="0"></a>#doc_buttons##1##4#<a href="LogOut" id="admHrefLoggaut"><img src="@adminbuttonsurl@/sv/loggaut.gif" alt="Logga ut" id="admBtnLoggaut" border="0"></a>#superadmin#<a href="@documentationurl@GetDoc?meta_id=1" target="_blank"  id="admHrefHelp"><img src="@adminbuttonsurl@/sv/help.gif" alt="&Ouml;ppna hj&auml;lpsidan" id="admBtnHelp" border="0"></a></td>
 </tr>
 </table></div>
 <SCRIPT language=JavaScript>
-<!--
-function openHelpW(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
-}
+
 //-->
 </SCRIPT>

@@ -18,6 +18,8 @@ imcmsGui("head", null);
 <form action="BackDoc">
 <tr>
 	<td><input type="submit" class="imcmsFormBtn" value="Tillbaka"></td>
+	<td>&nbsp;</td>
+    <td><input type="button" value="Hjälp" title="Öppna hjälpsidan" class="imcmsFormBtn" onClick="openHelpW(74)"></td>
 </tr>
 </form>
 </table>
@@ -58,6 +60,7 @@ writeFormField("TEXT","other",30,50,null,"#other#");
 	<tr> 
 		<td height="22">Befintlig fil</td>
 		<td>&quot;#file#&quot;</td>
+		<input type="HIDDEN" name="oldname" value="#file#">
 	</tr>
 	</table></td>
 </tr>
@@ -67,6 +70,8 @@ writeFormField("TEXT","other",30,50,null,"#other#");
 <tr> 
 	<td align="right"><input type="submit" class="imcmsFormBtn" value="Spara" name="ok"></td>
 </tr>
+<input type="HIDDEN" name="meta_id" value="#meta_id#">
+<input type="HIDDEN" name="parent_meta_id" value="#parent_meta_id#">
 </form>
 </table>
 <script>
