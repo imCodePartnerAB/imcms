@@ -9,6 +9,7 @@ import imcode.server.document.TemplateMapper;
 import imcode.server.document.TextDocumentTextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
+import imcode.server.parser.AdminButtonParser;
 import imcode.server.user.*;
 import imcode.util.*;
 import imcode.util.fortune.*;
@@ -320,12 +321,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         // Replace #getMetaId# with meta_id
 
-        imcode.util.AdminButtonParser doc_tags = new imcode.util.AdminButtonParser( new File( m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton" + doc_type + "_" ).toString(), ".html", user_permission_set_id, user_permission_set );
+        imcode.server.parser.AdminButtonParser doc_tags = new imcode.server.parser.AdminButtonParser( new File( m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton" + doc_type + "_" ).toString(), ".html", user_permission_set_id, user_permission_set );
 
         doc_tags.put( "getMetaId", meta_id );
         Parser.parseTags( tempbuffer, '#', " <>\n\r\t", doc_tags, true, 1 );
 
-        AdminButtonParser tags = new imcode.util.AdminButtonParser( new File( m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton_" ).toString(), ".html", user_permission_set_id, user_permission_set );
+        AdminButtonParser tags = new imcode.server.parser.AdminButtonParser( new File( m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton_" ).toString(), ".html", user_permission_set_id, user_permission_set );
 
         tags.put( "getMetaId", meta_id );
         tags.put( "doc_buttons", tempbuffer.toString() );
@@ -1217,6 +1218,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return result;
     }
 
+    public DocumentMapper getDocumentMapper() {
+        return documentMapper ;
+    }
+
     /**
      Parse doc replace variables with data
      */
@@ -1246,7 +1251,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             String[] foo = new String[variables.size()];
             return imcode.util.Parser.parseDoc( htmlStr, (String[])variables.toArray( foo ) );
         } catch ( IOException ex ) {
-            log.error( ex.toString() );
+            log.error( ex.toString(),ex );
             return "";
         }
     }

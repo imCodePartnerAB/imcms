@@ -8,6 +8,7 @@ import java.rmi.* ;
 import java.rmi.registry.* ;
 import java.net.InetAddress;
 import imcode.util.* ;
+import imcode.util.net.SMTP;
 import imcode.server.HTMLConv;
 import java.net.*;
 

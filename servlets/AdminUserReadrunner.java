@@ -21,7 +21,7 @@ public class AdminUserReadrunner extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		UserDomainObject user = null ;
 
-		if( null == (user = Check.userLoggedOn(req,res,imcref.getStartUrl())) ) {
+		if( null == (user = Utility.getLoggedOnUserOrRedirect(req,res,imcref.getStartUrl())) ) {
 		    // User is not logged on
 		    return ;
 		}
@@ -50,7 +50,7 @@ public class AdminUserReadrunner extends HttpServlet {
 
 		HttpSession session = req.getSession( false );
 		
-		if( null == (user = Check.userLoggedOn(req,res,imcref.getStartUrl())) ) {
+		if( null == (user = Utility.getLoggedOnUserOrRedirect(req,res,imcref.getStartUrl())) ) {
 		    // User is not logged on
 		    return ;
 		}

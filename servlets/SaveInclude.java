@@ -5,7 +5,6 @@ import imcode.server.* ;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 
-import imcode.util.Check ;
 import imcode.util.Utility ;
 import imcode.util.IMCServiceRMI ;
 
@@ -42,7 +41,7 @@ public class SaveInclude extends HttpServlet {
 	int meta_id = Integer.parseInt(meta_id_str) ;
 
 	// Check if the user logged on
-	if ( (user = Check.userLoggedOn(req,res,start_url )) == null ) {
+	if ( (user = Utility.getLoggedOnUserOrRedirect(req,res,start_url )) == null ) {
 	    return ;
 	}
 

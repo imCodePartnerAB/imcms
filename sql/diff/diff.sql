@@ -1283,6 +1283,68 @@ COMMIT
 
 -- 2003-06-13 Hasse och Kreiger
 
+CREATE TABLE [dbo].[category_types] (
+	[category_type_id] [int] NOT NULL ,
+	[name] [varchar] (50) NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[categories] (
+	[category_id] [int] NOT NULL ,
+	[category_type_id] [int] NULL ,
+	[name] [varchar] (50) NULL ,
+	[description] [varchar] (500) NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[document_categories] (
+	[meta_id] [int] NOT NULL ,
+	[category_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[category_types] WITH NOCHECK ADD 
+	 PRIMARY KEY  CLUSTERED 
+	(
+		[category_type_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[categories] WITH NOCHECK ADD 
+	 PRIMARY KEY  CLUSTERED 
+	(
+		[category_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[document_categories] WITH NOCHECK ADD 
+	 PRIMARY KEY  CLUSTERED 
+	(
+		[meta_id],
+		[category_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[categories] ADD 
+	 FOREIGN KEY 
+	(
+		[category_type_id]
+	) REFERENCES [dbo].[category_types] (
+		[category_type_id]
+	)
+GO
+
+ALTER TABLE [dbo].[document_categories] ADD 
+	 FOREIGN KEY 
+	(
+		[meta_id]
+	) REFERENCES [dbo].[meta] (
+		[meta_id]
+	)
+GO
+
+-- 2003-10-20 Kreiger
+
 print ' OBS !!!!! '
 print 'Följande åtgärder behöver genomföras efter detta script '
 print ''
@@ -1290,5 +1352,4 @@ print '1. Du MÅSTE köra hela "sprocs.sql" som finns i "dist" katalogen'
 print ''
 print '2. Kopiera poll templates från mappen /poll/templates till WEB-INF/templates/text'
 print 'och byt namn på dem enligt anvisningar, se tidigare print utskrift i detta resultat:'
-
 GO

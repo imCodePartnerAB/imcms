@@ -72,34 +72,7 @@ public class Parser {
 	}
 
 
-	/**
-		Parses a string.
-		@param doc The string.
-		@param tags The tags to replace.
-		@param data The data for each tag.
-		@param ignoreCase Whether or not to ignore case.
-	*/
-	public static String parseDoc(String doc, String tags[], String data[], boolean ignoreCase) {
-		if ( doc == null ) {
-			return doc ;
-		}
-		StringBuffer sb = new StringBuffer(doc) ;
-		int length ;
-		for ( int i = 0; i<data.length ; ++i ) {
-			length = tags[i].length() ;
-			int sblength = sb.length() ;
-			for (int start = 0; start < sblength-length; ++start) {
-				if (sb.toString().regionMatches(ignoreCase,start,tags[i],0,length)) {
-					sb.replace(start,start+length,data[i]) ;
-					sblength = sb.length() ;
-					start+=data[i].length()-1 ;
-				}
-			}
-		}
-		return sb.toString() ;
-	}
-
-	/**
+    /**
 		A nice little parsefunction which searches a StringBuffer for "taglikes" (tags), and replaces them with Strings from a Map.
 
 		@param str 				The StringBuffer to be modified.

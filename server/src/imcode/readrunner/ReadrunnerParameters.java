@@ -1,4 +1,4 @@
-package imcode.util ;
+package imcode.readrunner ;
 
 public class ReadrunnerParameters {
 

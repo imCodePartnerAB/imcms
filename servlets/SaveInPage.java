@@ -5,8 +5,8 @@ import imcode.server.IMCService;
 import imcode.server.ApplicationServer;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Check;
 import imcode.util.IMCServiceRMI;
+import imcode.util.Utility;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -61,7 +61,7 @@ public class SaveInPage extends HttpServlet {
             doc.addField( "group_id", groupId );
         }
         // Check if user logged on
-        if( (user = Check.userLoggedOn( req, res, start_url )) == null ) {
+        if( (user = Utility.getLoggedOnUserOrRedirect( req, res, start_url )) == null ) {
             return;
         }
         // Check if user has write rights

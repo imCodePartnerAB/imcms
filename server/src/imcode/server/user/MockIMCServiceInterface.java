@@ -8,6 +8,7 @@ import imcode.server.db.ConnectionPool;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.TextDocumentTextDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.shop.ShoppingOrderSystem;
@@ -90,6 +91,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
 
     public String[][] sqlQueryMulti( String sqlStr, String[] params ) {
         return new String[0][];  //To change body of implemented methods use Options | File Templates.
+    }
+
+    public DocumentMapper getDocumentMapper() {
+        return null;
     }
 
     // archive childs

@@ -1,4 +1,4 @@
-package imcode.util ;
+package imcode.server.parser ;
 
 /**
 	This class extends imcode.util.FileTagReplacer to provide support for the imCMS-server's

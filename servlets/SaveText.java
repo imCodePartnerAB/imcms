@@ -29,7 +29,7 @@ public class SaveText extends HttpServlet {
 
 	// Check if user logged on
 	imcode.server.user.UserDomainObject user ;
-	if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
+	if( (user=Utility.getLoggedOnUserOrRedirect( req,res,start_url ))==null ) {
 	    return ;
 	}
 

@@ -17,10 +17,14 @@
     final String categoryName = "Legal";
     Category legalSubjectCategory = documentService.getCategory(categoryTypeName, categoryName) ;
 
-    document.addCategory(legalSubjectCategory) ;
+    if (null != legalSubjectCategory) {
+        document.addCategory(legalSubjectCategory) ;
+    } else {
+        %> (The category did not exist.)<br> <%
+    }
 
     // don't forget to save your changes!
     documentService.saveChanges( document );
 %>
-Done changing the headline, menutext, menuimageurl, and language of
+Done changing the headline, menutext, menuimageurl, and language, and adding a category to
 document <a href="../servlet/GetDoc?meta_id=<%= documentId %>"><%= documentId %></a>.

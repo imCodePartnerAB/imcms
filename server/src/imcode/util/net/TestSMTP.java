@@ -1,9 +1,10 @@
-package imcode.util ;
+package imcode.util.net ;
 
 import java.net.ProtocolException ;
 import java.io.IOException ;
 
 import junit.framework.TestCase ;
+import imcode.util.net.SMTP;
 
 public class TestSMTP extends TestCase {
 

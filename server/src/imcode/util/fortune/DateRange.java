@@ -1,4 +1,4 @@
-package imcode.util ;
+package imcode.util.fortune ;
 
 import java.util.* ;
 

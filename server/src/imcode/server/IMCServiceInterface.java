@@ -6,6 +6,7 @@ import java.util.* ;
 import imcode.server.parser.ParserParameters ;
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.TextDocumentTextDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.db.ConnectionPool;
 
 import imcode.readrunner.* ;
@@ -391,5 +392,7 @@ public interface IMCServiceInterface {
     String sqlQueryStr( String sqlStr, String[] params );
 
     String[][] sqlQueryMulti( String sqlStr, String[] params );
+
+    DocumentMapper getDocumentMapper();
 
 }

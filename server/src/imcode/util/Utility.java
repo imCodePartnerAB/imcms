@@ -2,6 +2,7 @@ package imcode.util;
 
 import javax.servlet.http.*;
 import javax.servlet.http.HttpUtils;
+import javax.servlet.ServletException;
 import java.io.*;
 import java.util.*;
 
@@ -94,5 +95,17 @@ public class Utility {
         res.setHeader( "Cache-Control", "no-cache; must-revalidate;" );
         res.setHeader( "Pragma", "no-cache;" );
     }
+
+    static public imcode.server.user.UserDomainObject getLoggedOnUserOrRedirect (HttpServletRequest req, HttpServletResponse res, String start_url) throws ServletException, IOException {
+
+		HttpSession session = req.getSession(true) ;
+		imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
+
+		if (user == null) {
+			res.sendRedirect( start_url ) ;
+			return null;
+		}
+		return user;
+	}
 
 }

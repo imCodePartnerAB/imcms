@@ -1,8 +1,9 @@
-package imcode.util ;
+package imcode.util.fortune ;
 
 import java.util.Date ;
 
 import junit.framework.* ;
+import imcode.util.fortune.DateRange;
 
 public class TestDateRange extends TestCase {
 

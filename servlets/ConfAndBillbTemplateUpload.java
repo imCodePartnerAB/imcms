@@ -24,7 +24,7 @@ public class ConfAndBillbTemplateUpload extends HttpServlet {
 	String start_url	= imcref.getStartUrl() ;
 
 	// Check if user logged on
-	if ( (Check.userLoggedOn(req,res,start_url))==null ) {
+	if ( (Utility.getLoggedOnUserOrRedirect(req,res,start_url))==null ) {
 	    return ;
 	}
 

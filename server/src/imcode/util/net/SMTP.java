@@ -1,4 +1,4 @@
-package imcode.util ;
+package imcode.util.net ;
 
 import java.io.*;
 import java.net.*;

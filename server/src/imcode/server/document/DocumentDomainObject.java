@@ -1,9 +1,8 @@
 package imcode.server.document;
 
 import imcode.server.IMCConstants;
-import imcode.server.LanguageMapper;
-import imcode.server.user.UserDomainObject;
 import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
 
 import java.util.*;
 
@@ -395,6 +394,10 @@ public class DocumentDomainObject implements IMCConstants {
         }
         final CategoryDomainObject[] arrayOfCategoriesOfType = new CategoryDomainObject[categoriesOfType.size()];
         return (CategoryDomainObject[]) categoriesOfType.toArray(arrayOfCategoriesOfType) ;
+    }
+
+    public void removeAllCategories() {
+        categories.clear() ;
     }
 
 }

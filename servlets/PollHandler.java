@@ -9,6 +9,7 @@ import java.util.* ;
 import org.apache.log4j.Logger ;
 
 import imcode.util.* ;
+import imcode.util.net.SMTP;
 import imcode.util.poll.*;
 
 import imcode.server.parser.* ;

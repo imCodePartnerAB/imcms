@@ -1,7 +1,6 @@
 package imcode.util.fortune ;
 
 import java.util.Date ;
-import imcode.util.DateRange ;
 
 public class Quote {
 	private final static String CVS_REV = "$Revision$" ;

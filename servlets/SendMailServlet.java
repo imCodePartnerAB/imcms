@@ -11,7 +11,7 @@ import javax.servlet.http.*;
 
 import imcode.util.IMCServiceRMI;
 import imcode.util.Utility;
-import imcode.util.SMTP;
+import imcode.util.net.SMTP;
 
 import imcode.server.*;
 

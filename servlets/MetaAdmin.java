@@ -23,7 +23,7 @@ public class MetaAdmin extends HttpServlet {
 
                 imcode.server.user.UserDomainObject user ;
                 // Check if user logged on
-                if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
+                if( (user=Utility.getLoggedOnUserOrRedirect( req,res,start_url ))==null ) {
                         return ;
                 }
                 String[] pd = {

@@ -32,7 +32,7 @@ public class BackDoc extends HttpServlet {
 	Writer out = res.getWriter() ;
 
 	UserDomainObject user ;
-	if ( (user=Check.userLoggedOn(req,res,start_url))==null ) {
+	if ( (user=Utility.getLoggedOnUserOrRedirect(req,res,start_url))==null ) {
 	    return ;
 	}
 	String top = req.getParameter("top");

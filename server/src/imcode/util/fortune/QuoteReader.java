@@ -12,7 +12,6 @@ import java.util.StringTokenizer ;
 import java.util.NoSuchElementException ;
 
 import imcode.util.Parser ;
-import imcode.util.DateRange ;
 
 public class QuoteReader extends BufferedReader {
     private final static String CVS_REV = "$Revision$" ;

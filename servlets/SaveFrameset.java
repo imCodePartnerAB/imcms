@@ -45,7 +45,7 @@ public class SaveFrameset extends HttpServlet {
 		doc.addField( "frame_set",frame_set ) ;
 
 		// Check if user logged on
-		if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
+		if( (user=Utility.getLoggedOnUserOrRedirect( req,res,start_url ))==null ) {
 			return ;
 		}
 

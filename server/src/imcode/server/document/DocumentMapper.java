@@ -5,7 +5,7 @@ import imcode.server.db.DBConnect;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.RoleDomainObject;
-import imcode.server.util.DateHelper;
+import imcode.util.DateHelper;
 import imcode.util.Parser;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.log4j.Logger;
@@ -359,7 +359,7 @@ public class DocumentMapper {
             String categoryTypeName = categoryArray[1];
             String categoryName = categoryArray[2];
 
-            CategoryDomainObject category = new CategoryDomainObject(categoryId, categoryTypeName, categoryName);
+            CategoryDomainObject category = new CategoryDomainObject(categoryId, categoryName, categoryTypeName);
             document.addCategory(category);
         }
 
@@ -563,7 +563,7 @@ public class DocumentMapper {
         return getDocument(newMetaId);
     }
 
-    public void saveTextDocument(DocumentDomainObject document) {
+    public void saveDocument(DocumentDomainObject document) {
         Date now = new Date();
         document.setModifiedDatetime(now);
 
@@ -590,6 +590,7 @@ public class DocumentMapper {
                 image, modifiedDatetime, target, text, archived, language);
         updateSection(service, document, section);
 
+        service.sqlUpdateQuery("DELETE FROM document_categories WHERE meta_id = ?", new String[] { ""+document.getMetaId()}) ;
         CategoryDomainObject[] categories = document.getCategories();
         for (int i = 0; i < categories.length; i++) {
             CategoryDomainObject category = categories[i];
@@ -606,9 +607,16 @@ public class DocumentMapper {
 
         // TODO Restricted One and Two (Bug 1443)
 
-        // TEXT_DOC
-        updateTextDoc(service, document.getMetaId(), template, menuSortOrder, templateGroupId);
-
+        if (DocumentDomainObject.DOCTYPE_TEXT == document.getDocumentType()) {
+            // TEXT_DOC
+            int templateId = template.getId();
+            String sqlStr = "update text_docs set " + "template_id = ?, " + "sort_order = ?, " + "group_id = ? "
+                    + "where meta_id = ?";
+            service.sqlUpdateQuery(sqlStr,
+                    new String[]{"" + templateId, "" + menuSortOrder, "" + templateGroupId, "" + document.getMetaId()});
+        } else {
+           // TODO Handle other document types.
+        }
 
         // todo: Mark parent as modified
         /*
@@ -635,15 +643,6 @@ public class DocumentMapper {
 
     private static void removeSectionCrossref(IMCServiceInterface service, DocumentDomainObject document) {
         sprocSectionAddCrossref(service, document.getMetaId(), -1);
-    }
-
-    private static void updateTextDoc(IMCServiceInterface service, int meta_id, TemplateDomainObject template,
-                                      int menuSortOrder, int templateGroupId) {
-        int templateId = template.getId();
-        String sqlStr = "update text_docs set " + "template_id = ?, " + "sort_order = ?, " + "group_id = ? "
-                + "where meta_id = ?";
-        service.sqlUpdateQuery(sqlStr,
-                new String[]{"" + templateId, "" + menuSortOrder, "" + templateGroupId, "" + meta_id});
     }
 
     private static void sqlUpdateMeta(IMCServiceInterface service, int meta_id, Date activatedDatetime,
@@ -885,11 +884,52 @@ public class DocumentMapper {
                 "ON categories.category_type_id = category_types.category_type_id\n" +
                 "WHERE category_types.name = ?\n" +
                 "AND categories.name = ?";
-        String[] sqlResult = service.sqlQuery(sqlQuery,new String[] {categoryTypeName, categoryName}) ;
-        final int categoryId = Integer.parseInt(sqlResult[0]);
-        final String categoryTypeNameFromDb = sqlResult[1];
-        final String categoryNameFromDb = sqlResult[2];
-        return new CategoryDomainObject(categoryId,categoryTypeNameFromDb,categoryNameFromDb) ;
+        String[] sqlResult = service.sqlQuery(sqlQuery, new String[]{categoryTypeName, categoryName});
+        if (0 != sqlResult.length) {
+            final int categoryId = Integer.parseInt(sqlResult[0]);
+            final String categoryTypeNameFromDb = sqlResult[1];
+            final String categoryNameFromDb = sqlResult[2];
+            return new CategoryDomainObject(categoryId, categoryNameFromDb, categoryTypeNameFromDb);
+        } else {
+            return null ;
+        }
+    }
+
+    public String[] getAllCategoryTypes() {
+        String sqlQuery = "SELECT name\n" +
+                "FROM category_types";
+        String[] sqlResult = service.sqlQuery(sqlQuery);
+        return sqlResult;
+    }
+
+    public CategoryDomainObject[] getAllCategoriesOfType(String categoryType) {
+        String sqlQuery = "SELECT categories.category_id, categories.name, category_types.name\n" +
+                "FROM categories\n" +
+                "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n" +
+                "WHERE category_types.name = ?";
+        String[][] sqlResult = service.sqlQueryMulti(sqlQuery, new String[]{categoryType});
+        CategoryDomainObject[] categoryDomainObjects = new CategoryDomainObject[sqlResult.length];
+        for (int i = 0; i < sqlResult.length; i++) {
+            int categoryId = Integer.parseInt(sqlResult[i][0]);
+            String categoryName = sqlResult[i][1];
+            String categoryTypeName = sqlResult[i][2];
+            categoryDomainObjects[i] = new CategoryDomainObject(categoryId, categoryName, categoryTypeName);
+        }
+        return categoryDomainObjects;
+    }
+
+    public CategoryDomainObject getCategoryById(int categoryId) {
+        String sqlQuery = "SELECT categories.name, category_types.name\n" +
+                "FROM categories\n" +
+                "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n" +
+                "WHERE categories.category_id = ?";
+
+        String[] categorySqlResult = service.sqlQuery(sqlQuery, new String[]{"" + categoryId});
+
+        String categoryName = categorySqlResult[0];
+        String categoryTypeName = categorySqlResult[1];
+        return new CategoryDomainObject(categoryId, categoryName, categoryTypeName);
+
     }
 
 }

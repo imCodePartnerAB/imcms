@@ -30,7 +30,7 @@ public class Calender extends HttpServlet
     public imcode.server.user.UserDomainObject checkLogin (HttpServletRequest req, HttpServletResponse res, String start_url)
 	throws ServletException, IOException
     {
-	imcode.server.user.UserDomainObject user = Check.userLoggedOn( req,res,start_url );
+	imcode.server.user.UserDomainObject user = Utility.getLoggedOnUserOrRedirect( req,res,start_url );
 	if( user == null )
 	    {
 

@@ -34,7 +34,7 @@ public class AdminDoc extends HttpServlet {
         int meta_id;
 
         // Check if user logged on
-        if( (user = Check.userLoggedOn( req, res, start_url )) == null ) {
+        if( (user = Utility.getLoggedOnUserOrRedirect( req, res, start_url )) == null ) {
             return;
         }
 
@@ -59,7 +59,6 @@ public class AdminDoc extends HttpServlet {
     }
 
     public static String adminDoc( int meta_id, int parent_meta_id, UserDomainObject user, HttpServletRequest req, HttpServletResponse res ) throws IOException {
-        String host = req.getServerName() ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
 
@@ -102,10 +101,10 @@ public class AdminDoc extends HttpServlet {
 
         // Lets detect which view the admin wants
         if( (flags & 1) != 0 ) { // Header, (the plain meta view)
-            htmlStr = imcode.util.MetaDataParser.parseMetaData( String.valueOf( meta_id ), String.valueOf( meta_id ), user, host );
+            htmlStr = imcode.util.MetaDataParser.parseMetaData( String.valueOf( meta_id ), String.valueOf( meta_id ), user);
             return htmlStr;
         } else if( (flags & 4) != 0 ) { // User rights
-            htmlStr = imcode.util.MetaDataParser.parseMetaPermission( String.valueOf( meta_id ), String.valueOf( meta_id ), user, host, "change_meta_rights.html" );
+            htmlStr = imcode.util.MetaDataParser.parseMetaPermission( String.valueOf( meta_id ), String.valueOf( meta_id ), user, "docinfo/change_meta_rights.html");
             return htmlStr;
         }
 

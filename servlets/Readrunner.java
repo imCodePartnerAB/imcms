@@ -3,6 +3,7 @@ import imcode.server.* ;
 import imcode.server.document.TextDocumentTextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.* ;
+import imcode.util.net.SMTP;
 import imcode.readrunner.* ;
 import java.io.* ;
 import java.util.* ;
@@ -38,7 +39,7 @@ public class Readrunner extends HttpServlet {
 	String readrunnerUrl = Utility.getDomainPref("readrunner_preparsed_url" ) ;
 
 	UserDomainObject user ;
-	if ( (user=Check.userLoggedOn(req,res,start_url))==null ) {
+	if ( (user=Utility.getLoggedOnUserOrRedirect(req,res,start_url))==null ) {
 	    return ;
 	}
 

@@ -12,10 +12,11 @@ import org.apache.log4j.Logger ;
 
 import imcode.util.shop.* ;
 import imcode.util.* ;
+import imcode.util.net.SMTP;
 
 import imcode.server.parser.* ;
 import imcode.server.* ;
-import imcode.server.util.DateHelper;
+import imcode.util.DateHelper;
 import imcode.server.user.UserDomainObject;
 
 public class PutInShoppingCart extends HttpServlet {
@@ -163,7 +164,7 @@ public class PutInShoppingCart extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	    UserDomainObject user = null ;
 	    // Check if user logged on
-	    if ( (user=Check.userLoggedOn(req,res,forwardTo))==null ) {
+	    if ( (user=Utility.getLoggedOnUserOrRedirect(req,res,forwardTo))==null ) {
 		return ;
 	    }
 	    sendMail(req,user) ;

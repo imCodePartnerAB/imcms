@@ -11,6 +11,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.util.* ;
+import imcode.util.net.SMTP;
 import imcode.util.fortune.Quote ;
 import imcode.server.* ;
 

@@ -48,7 +48,7 @@ public class SaveBrowserDoc extends HttpServlet {
 	log ("meta_id:"+meta_id) ;
 	log ("parent_meta_id:"+parent_meta_id) ;
 	// Check if user logged on
-	if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
+	if( (user=Utility.getLoggedOnUserOrRedirect( req,res,start_url ))==null ) {
 	    return ;
 	}
 	// Check if user has write rights

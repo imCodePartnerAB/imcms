@@ -1,5 +1,4 @@
 import java.io.*;
-import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -26,7 +25,6 @@ public class ChangeExternalDoc2 extends HttpServlet {
 	doPost()
 	*/
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		String start_url        	= imcref.getStartUrl() ;
 
@@ -34,9 +32,6 @@ public class ChangeExternalDoc2 extends HttpServlet {
 		String htmlStr = "" ;                         	
 		int meta_id ;
 		int parent_meta_id ;
-		int txt_max = 0 ;
-		int img_max = 0 ;                           	
-		String values[] ; 
 
 		res.setContentType( "text/html" );
 		Writer out = res.getWriter( );
@@ -44,7 +39,7 @@ public class ChangeExternalDoc2 extends HttpServlet {
 		parent_meta_id = Integer.parseInt( req.getParameter( "parent_meta_id" ) ) ;
 
 		// Check if user logged on
-		if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
+		if( (user=Utility.getLoggedOnUserOrRedirect( req,res,start_url ))==null ) {
 			return ;
 		} 
 
@@ -56,10 +51,8 @@ public class ChangeExternalDoc2 extends HttpServlet {
 			return ;
 		}
 
-		imcode.server.ExternalDocType ex_doc = imcref.isExternalDoc(meta_id,user ) ;
-
 		if( req.getParameter("metadata")!=null ) {
-			htmlStr = imcode.util.MetaDataParser.parseMetaData(String.valueOf(meta_id), String.valueOf(parent_meta_id),user,host) ;
+			htmlStr = imcode.util.MetaDataParser.parseMetaData(String.valueOf(meta_id), String.valueOf(parent_meta_id),user) ;
 			out.write( htmlStr ) ;
 			return ;
 		}

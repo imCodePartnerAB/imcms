@@ -103,7 +103,7 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 	imcode.server.user.UserDomainObject user ;
 
 	// Check if the user logged on
-	if ( (user = Check.userLoggedOn(req,res,"StartDoc" )) == null )	{
+	if ( (user = Utility.getLoggedOnUserOrRedirect(req,res,"StartDoc" )) == null )	{
 	    return ;
 	}
 

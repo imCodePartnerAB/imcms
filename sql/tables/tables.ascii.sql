@@ -1,3 +1,7 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK__categorie__categ__44952D46]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[categories] DROP CONSTRAINT FK__categorie__categ__44952D46
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_meta_classification_classification]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[meta_classification] DROP CONSTRAINT FK_meta_classification_classification
 GO
@@ -24,6 +28,10 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_permission_sets_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[doc_permission_sets] DROP CONSTRAINT FK_permission_sets_meta
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK__document___meta___3FD07829]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[document_categories] DROP CONSTRAINT FK__document___meta___3FD07829
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_frameset_docs_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
@@ -94,6 +102,14 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_new_doc
 ALTER TABLE [dbo].[new_doc_permission_sets_ex] DROP CONSTRAINT FK_new_doc_permission_sets_ex_permission_sets
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_poll_answers_poll_questions]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[poll_answers] DROP CONSTRAINT FK_poll_answers_poll_questions
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_poll_questions_polls]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[poll_questions] DROP CONSTRAINT FK_poll_questions_polls
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_roles_rights_roles]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[roles_rights] DROP CONSTRAINT FK_roles_rights_roles
 GO
@@ -162,6 +178,14 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[browsers]'
 drop table [dbo].[browsers]
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[categories]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[categories]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[category_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[category_types]
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[childs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[childs]
 GO
@@ -188,6 +212,10 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[doc_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[doc_types]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[document_categories]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[document_categories]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[fileupload_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
@@ -260,6 +288,18 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[phonetypes]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[phonetypes]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[poll_answers]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[poll_answers]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[poll_questions]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[poll_questions]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[polls]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[polls]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[readrunner_user_data]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
@@ -354,6 +394,21 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[users]') a
 drop table [dbo].[users]
 GO
 
+exec sp_fulltext_database N'enable' 
+
+GO
+
+
+if exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'drop'
+
+GO
+
+if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'create' 
+
+GO
+
 CREATE TABLE [dbo].[browser_docs] (
 	[meta_id] [int] NOT NULL ,
 	[to_meta_id] [int] NOT NULL ,
@@ -366,6 +421,20 @@ CREATE TABLE [dbo].[browsers] (
 	[name] [varchar] (50) NOT NULL ,
 	[user_agent] [varchar] (50) NOT NULL ,
 	[value] [tinyint] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[categories] (
+	[category_id] [int] NOT NULL ,
+	[category_type_id] [int] NULL ,
+	[name] [varchar] (50) NULL ,
+	[description] [varchar] (500) NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[category_types] (
+	[category_type_id] [int] NOT NULL ,
+	[name] [varchar] (50) NULL 
 ) ON [PRIMARY]
 GO
 
@@ -417,6 +486,12 @@ CREATE TABLE [dbo].[doc_types] (
 	[doc_type] [int] NOT NULL ,
 	[lang_prefix] [varchar] (3) NOT NULL ,
 	[type] [varchar] (50) NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[document_categories] (
+	[meta_id] [int] NOT NULL ,
+	[category_id] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -576,6 +651,40 @@ CREATE TABLE [dbo].[phonetypes] (
 	[phonetype_id] [int] NOT NULL ,
 	[typename] [varchar] (12) NOT NULL ,
 	[lang_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[poll_answers] (
+	[id] [int] IDENTITY (1, 1) NOT NULL ,
+	[question_id] [int] NOT NULL ,
+	[text_id] [int] NOT NULL ,
+	[option_number] [int] NOT NULL ,
+	[answer_count] [int] NOT NULL ,
+	[option_point] [int] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[poll_questions] (
+	[id] [int] IDENTITY (1, 1) NOT NULL ,
+	[poll_id] [int] NOT NULL ,
+	[question_number] [int] NOT NULL ,
+	[text_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[polls] (
+	[id] [int] IDENTITY (1, 1) NOT NULL ,
+	[name] [int] NULL ,
+	[description] [int] NULL ,
+	[meta_id] [int] NOT NULL ,
+	[popup_freq] [int] NOT NULL ,
+	[set_cookie] [bit] NOT NULL ,
+	[hide_result] [bit] NOT NULL ,
+	[confirmation_text] [int] NULL ,
+	[email_recipients] [int] NULL ,
+	[email_from] [int] NULL ,
+	[email_subject] [int] NULL ,
+	[result_template] [int] NULL 
 ) ON [PRIMARY]
 GO
 
@@ -768,11 +877,33 @@ CREATE TABLE [dbo].[users] (
 ) ON [PRIMARY]
 GO
 
+ALTER TABLE [dbo].[categories] WITH NOCHECK ADD 
+	 PRIMARY KEY  CLUSTERED 
+	(
+		[category_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[category_types] WITH NOCHECK ADD 
+	 PRIMARY KEY  CLUSTERED 
+	(
+		[category_type_id]
+	)  ON [PRIMARY] 
+GO
+
 ALTER TABLE [dbo].[display_name] WITH NOCHECK ADD 
 	CONSTRAINT [PK_display_name] PRIMARY KEY  CLUSTERED 
 	(
 		[sort_by_id],
 		[lang_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[document_categories] WITH NOCHECK ADD 
+	 PRIMARY KEY  CLUSTERED 
+	(
+		[meta_id],
+		[category_id]
 	)  ON [PRIMARY] 
 GO
 
@@ -797,6 +928,27 @@ ALTER TABLE [dbo].[phonetypes] WITH NOCHECK ADD
 	(
 		[phonetype_id],
 		[lang_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[poll_answers] WITH NOCHECK ADD 
+	CONSTRAINT [PK_poll_answers] PRIMARY KEY  CLUSTERED 
+	(
+		[id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[poll_questions] WITH NOCHECK ADD 
+	CONSTRAINT [PK_poll_questions] PRIMARY KEY  CLUSTERED 
+	(
+		[id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[polls] WITH NOCHECK ADD 
+	CONSTRAINT [PK_polls] PRIMARY KEY  CLUSTERED 
+	(
+		[id]
 	)  ON [PRIMARY] 
 GO
 
@@ -833,6 +985,24 @@ ALTER TABLE [dbo].[texts] WITH NOCHECK ADD
 	(
 		[counter]
 	)  ON [PRIMARY] 
+GO
+
+exec sp_fulltext_database N'enable' 
+
+GO
+
+if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'create' 
+
+GO
+
+exec sp_fulltext_table N'[dbo].[texts]', N'create', N'full_text_index', N'PK_texts'
+GO
+
+exec sp_fulltext_column N'[dbo].[texts]', N'text', N'add', 1053  
+GO
+
+exec sp_fulltext_table N'[dbo].[texts]', N'activate'  
 GO
 
 ALTER TABLE [dbo].[user_flags] WITH NOCHECK ADD 
@@ -911,6 +1081,24 @@ ALTER TABLE [dbo].[classification] WITH NOCHECK ADD
 	(
 		[class_id]
 	)  ON [PRIMARY] 
+GO
+
+exec sp_fulltext_database N'enable' 
+
+GO
+
+if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'create' 
+
+GO
+
+exec sp_fulltext_table N'[dbo].[classification]', N'create', N'full_text_index', N'PK_classification'
+GO
+
+exec sp_fulltext_column N'[dbo].[classification]', N'code', N'add', 1053  
+GO
+
+exec sp_fulltext_table N'[dbo].[classification]', N'activate'  
 GO
 
 ALTER TABLE [dbo].[doc_permission_sets] WITH NOCHECK ADD 
@@ -993,6 +1181,27 @@ ALTER TABLE [dbo].[meta] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+exec sp_fulltext_database N'enable' 
+
+GO
+
+if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'create' 
+
+GO
+
+exec sp_fulltext_table N'[dbo].[meta]', N'create', N'full_text_index', N'PK_meta'
+GO
+
+exec sp_fulltext_column N'[dbo].[meta]', N'meta_headline', N'add', 1053  
+GO
+
+exec sp_fulltext_column N'[dbo].[meta]', N'meta_text', N'add', 1053  
+GO
+
+exec sp_fulltext_table N'[dbo].[meta]', N'activate'  
+GO
+
 ALTER TABLE [dbo].[meta_classification] WITH NOCHECK ADD 
 	CONSTRAINT [PK_meta_classification] PRIMARY KEY  NONCLUSTERED 
 	(
@@ -1051,6 +1260,39 @@ ALTER TABLE [dbo].[phones] WITH NOCHECK ADD
 		[phone_id],
 		[user_id]
 	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[poll_answers] WITH NOCHECK ADD 
+	CONSTRAINT [DF_poll_answers_ans_count] DEFAULT (0) FOR [answer_count],
+	CONSTRAINT [IX_poll_answers] UNIQUE  NONCLUSTERED 
+	(
+		[question_id],
+		[text_id]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [IX_poll_answers_1] UNIQUE  NONCLUSTERED 
+	(
+		[question_id],
+		[option_number]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[poll_questions] WITH NOCHECK ADD 
+	CONSTRAINT [IX_poll_questions] UNIQUE  NONCLUSTERED 
+	(
+		[poll_id],
+		[question_number]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [IX_poll_questions_1] UNIQUE  NONCLUSTERED 
+	(
+		[poll_id],
+		[text_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[polls] WITH NOCHECK ADD 
+	CONSTRAINT [DF_polls_popup_freq] DEFAULT (0) FOR [popup_freq],
+	CONSTRAINT [DF_polls_enable_cookie] DEFAULT (0) FOR [set_cookie],
+	CONSTRAINT [DF_polls_showresult] DEFAULT (0) FOR [hide_result]
 GO
 
 ALTER TABLE [dbo].[readrunner_user_data] WITH NOCHECK ADD 
@@ -1213,6 +1455,15 @@ ALTER TABLE [dbo].[browser_docs] ADD
 	)
 GO
 
+ALTER TABLE [dbo].[categories] ADD 
+	 FOREIGN KEY 
+	(
+		[category_type_id]
+	) REFERENCES [dbo].[category_types] (
+		[category_type_id]
+	)
+GO
+
 ALTER TABLE [dbo].[childs] ADD 
 	CONSTRAINT [FK_childs_meta1] FOREIGN KEY 
 	(
@@ -1266,6 +1517,15 @@ ALTER TABLE [dbo].[doc_permission_sets_ex] ADD
 		[set_id]
 	) REFERENCES [dbo].[permission_sets] (
 		[set_id]
+	)
+GO
+
+ALTER TABLE [dbo].[document_categories] ADD 
+	 FOREIGN KEY 
+	(
+		[meta_id]
+	) REFERENCES [dbo].[meta] (
+		[meta_id]
 	)
 GO
 
@@ -1379,6 +1639,24 @@ ALTER TABLE [dbo].[phonetypes] ADD
 		[lang_id]
 	) REFERENCES [dbo].[lang_prefixes] (
 		[lang_id]
+	)
+GO
+
+ALTER TABLE [dbo].[poll_answers] ADD 
+	CONSTRAINT [FK_poll_answers_poll_questions] FOREIGN KEY 
+	(
+		[question_id]
+	) REFERENCES [dbo].[poll_questions] (
+		[id]
+	)
+GO
+
+ALTER TABLE [dbo].[poll_questions] ADD 
+	CONSTRAINT [FK_poll_questions_polls] FOREIGN KEY 
+	(
+		[poll_id]
+	) REFERENCES [dbo].[polls] (
+		[id]
 	)
 GO
 

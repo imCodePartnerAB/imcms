@@ -173,6 +173,11 @@ public class Document {
 
     public Category[] getCategories() {
         CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategories() ;
+        return getCategoryArrayFromCategoryDomainObjectArray(categoryDomainObjects);
+
+    }
+
+    private Category[] getCategoryArrayFromCategoryDomainObjectArray(CategoryDomainObject[] categoryDomainObjects) {
         Category[] categories = new Category[categoryDomainObjects.length] ;
 
         for ( int i = 0 ; i < categories.length ; i++ ) {
@@ -189,5 +194,10 @@ public class Document {
             throw new NoSuchRoleException("No role by the name '"+roleName+"'.") ;
         }
         internalDocument.setPermissionSetForRole(role, permissionSet) ;
+    }
+
+    public Category[] getCategoriesOfType(String categoryType) {
+        CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategoriesOfType(categoryType) ;
+        return getCategoryArrayFromCategoryDomainObjectArray(categoryDomainObjects) ;
     }
 }

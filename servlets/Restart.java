@@ -13,7 +13,7 @@ public class Restart extends HttpServlet {
 		String start_url        	= imcref.getStartUrl() ;
 
 		UserDomainObject user ;
-		if ( (user = Check.userLoggedOn( req, res, start_url ))==null ) {
+		if ( (user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ))==null ) {
 			return;
 		}
 		// Is user superadmin?

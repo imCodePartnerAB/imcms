@@ -1,4 +1,4 @@
-package imcode.server.util;
+package imcode.util;
 
 import java.util.Date;
 import java.text.ParseException;

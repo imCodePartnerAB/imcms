@@ -11,7 +11,6 @@ import java.util.Date ;
 import java.util.StringTokenizer ;
 
 import imcode.util.Parser ;
-import imcode.util.DateRange ;
 
 public class PollReader {
     private final static String CVS_REV = "$Revision$" ;

@@ -8,7 +8,7 @@ import java.text.ParseException;
 import imcode.util.*;
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
-import imcode.server.util.DateHelper;
+import imcode.util.DateHelper;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
 
@@ -131,7 +131,7 @@ public class SaveNewMeta extends HttpServlet {
 
         // Check if user logged on
         imcode.server.user.UserDomainObject user;
-        if( (user = Check.userLoggedOn( req, res, start_url )) == null ) {
+        if( (user = Utility.getLoggedOnUserOrRedirect( req, res, start_url )) == null ) {
             return;
         }
         String usersLangPrefix = user.getLangPrefix();

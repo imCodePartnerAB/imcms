@@ -16,6 +16,7 @@ import imcode.server.user.UserDomainObject;
  Shows an empty metadata page, which calls SaveNewMeta
  */
 public class AddDoc extends HttpServlet {
+    private static final String DOCINFO_TEMPLATE_NAME_PREFIX = "docinfo/";
 
     /**
      init()
@@ -45,7 +46,7 @@ public class AddDoc extends HttpServlet {
 
         // Check if user logged on
         UserDomainObject user;
-        if( (user = Check.userLoggedOn( req, res, start_url )) == null ) {
+        if( (user = Utility.getLoggedOnUserOrRedirect( req, res, start_url )) == null ) {
             return;
         }
         String lang_prefix = user.getLangPrefix();
@@ -92,10 +93,9 @@ public class AddDoc extends HttpServlet {
 
             // Lets fix the sortby list, first get the displaytexts from the database
             String[] sortOrder = imcref.sqlProcedure( "SortOrder_GetExistingDocs '" + lang_prefix + "'" );
-            Vector sortOrderV = this.convert2Vector( sortOrder );
+            Vector sortOrderV = convert2Vector( sortOrder );
             sortOrderV.copyInto( sortOrder );
-            Html htm = new Html();
-            String sortOrderStr = htm.createHtmlOptionList( "", sortOrderV );
+            String sortOrderStr = Html.createHtmlOptionList( "", sortOrderV );
             vec.add( "#sortBy#" );
             vec.add( sortOrderStr );
 
@@ -174,9 +174,9 @@ public class AddDoc extends HttpServlet {
         }
 
         if( item_selected.equals( "2" ) ) {
-            htmlStr = imcref.parseDoc( null, advanced + "new_meta_text.html", lang_prefix );
+            htmlStr = imcref.parseDoc( null, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta_text.html", lang_prefix );
         } else {
-            htmlStr = imcref.parseDoc( null, advanced + "new_meta.html", lang_prefix );
+            htmlStr = imcref.parseDoc( null, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta.html", lang_prefix );
         }
 
         Vector vec = new Vector();
@@ -308,9 +308,9 @@ public class AddDoc extends HttpServlet {
 
         // Lets parse the information and send it to the browser
         if( item_selected.equals( "2" ) ) {
-            out.write( imcref.parseDoc( vec, advanced + "new_meta_text.html", lang_prefix ) );
+            out.write( imcref.parseDoc( vec, DOCINFO_TEMPLATE_NAME_PREFIX+ advanced + "new_meta_text.html", lang_prefix ) );
         } else {
-            out.write( imcref.parseDoc( vec, advanced + "new_meta.html", lang_prefix ) );
+            out.write( imcref.parseDoc( vec, DOCINFO_TEMPLATE_NAME_PREFIX+ advanced + "new_meta.html", lang_prefix ) );
         }
 
     }
