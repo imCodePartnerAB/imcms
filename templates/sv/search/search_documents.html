@@ -2,6 +2,13 @@
 <HTML>
 <HEAD>
 <TITLE>S&ouml;k</TITLE>
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id) {
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
+}
+//-->
+</SCRIPT>
 </HEAD>
 <BODY bgcolor="#ffffff" link="#333399" vlink="#333399" alink="#999999">
 <FORM method="post" action="SearchDocuments">
@@ -16,6 +23,7 @@
 			<TD height="35" colspan="2">
 				<INPUT type="Text" name="question_field" size="65">
 				<INPUT type="submit" name="search" value="S&ouml;k">
+				&nbsp; <a href="GetDoc?meta_id=101" target="_blank" onClick="openHelp('101'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 			</TD>
 		</TR>
 		
