@@ -89,6 +89,9 @@ Clear the first include, <%= makeLink("document_clear_include.jsp") %><br>
 To create different kinds of document that is linked from the document above, <%= makeLink("document_create_documents.jsp") %><br>
 <br>
 
+<h3>Searching for documents</h3>
+Searching for documents, <%= makeLink("document_search.jsp") %><br>
+
 <h3>Documents and permissions </h3>
 You can manipulate documents in various ways. To do so the current user has to have specific roles, that in turn has to
 have specific rights. <%= makeLink("document_permissions.jsp") %><br>

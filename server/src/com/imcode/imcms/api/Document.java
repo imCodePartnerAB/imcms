@@ -1,15 +1,18 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.*;
+import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
-import imcode.server.user.*;
+import imcode.server.document.*;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserAndRoleMapper;
+import imcode.server.user.UserDomainObject;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
-import org.apache.log4j.Logger;
-
 public class Document {
+
     SecurityChecker securityChecker;
     DocumentService documentService;
     DocumentDomainObject internalDocument;
@@ -20,7 +23,10 @@ public class Document {
 
     private final static Logger log = Logger.getLogger( "com.imcode.imcms.api.Document" );
 
-    public Document(DocumentDomainObject document, IMCServiceInterface service, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper) {
+    public Document( DocumentDomainObject document, IMCServiceInterface service, SecurityChecker securityChecker, DocumentService documentService,
+                     DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper,
+                     UserAndRoleMapper userAndRoleMapper ) {
+
         this.securityChecker = securityChecker;
         this.service = service;
         this.documentService = documentService;
@@ -39,17 +45,21 @@ public class Document {
         Map rolesMappedToPermissionSetIds = internalDocument.getRolesMappedToPermissionSetIds();
 
         Map result = new HashMap();
-        for (Iterator it = rolesMappedToPermissionSetIds.entrySet().iterator(); it.hasNext();) {
-            Map.Entry rolePermissionTuple = (Map.Entry) it.next();
-            RoleDomainObject role = (RoleDomainObject) rolePermissionTuple.getKey();
-            int permissionType = ((Integer) rolePermissionTuple.getValue()).intValue();
-            switch (permissionType) {
+        for ( Iterator it = rolesMappedToPermissionSetIds.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry rolePermissionTuple = (Map.Entry)it.next();
+            RoleDomainObject role = (RoleDomainObject)rolePermissionTuple.getKey();
+            int permissionType = ( (Integer)rolePermissionTuple.getValue() ).intValue();
+            switch ( permissionType ) {
                 case IMCConstants.DOC_PERM_SET_FULL:
                     result.put( role.getName(), documentPermissionSetMapper.createFullPermissionSet() );
                     break;
                 case IMCConstants.DOC_PERM_SET_RESTRICTED_1:
                 case IMCConstants.DOC_PERM_SET_RESTRICTED_2:
-                    result.put( role.getName(), documentPermissionSetMapper.createRestrictedPermissionSet( internalDocument, permissionType, securityChecker.getCurrentLoggedInUser().getLangPrefix() ) );
+                    result.put( role.getName(),
+                                documentPermissionSetMapper.createRestrictedPermissionSet( internalDocument,
+                                                                                           permissionType,
+                                                                                           securityChecker.getCurrentLoggedInUser()
+                                                                                           .getLangPrefix() ) );
                     break;
                 case IMCConstants.DOC_PERM_SET_READ:
                     result.put( role.getName(), documentPermissionSetMapper.createReadPermissionSet() );
@@ -70,9 +80,10 @@ public class Document {
         Map result = new HashMap();
         Set keys = rolesMappedToPermissionsIds.keySet();
         Iterator keyIterator = keys.iterator();
-        while (keyIterator.hasNext()) {
-            String roleName = (String) keyIterator.next();
-            DocumentPermissionSetDomainObject documentPermissionSetDO = (DocumentPermissionSetDomainObject) rolesMappedToPermissionsIds.get( roleName );
+        while ( keyIterator.hasNext() ) {
+            String roleName = (String)keyIterator.next();
+            DocumentPermissionSetDomainObject documentPermissionSetDO = (DocumentPermissionSetDomainObject)rolesMappedToPermissionsIds.get(
+                    roleName );
             DocumentPermissionSet documentPermissionSet = new DocumentPermissionSet( documentPermissionSetDO );
             result.put( roleName, documentPermissionSet );
         }
@@ -80,16 +91,16 @@ public class Document {
     }
 
     public boolean equals( Object o ) {
-        if (this == o) {
+        if ( this == o ) {
             return true;
         }
-        if (!(o instanceof Document)) {
+        if ( !( o instanceof Document ) ) {
             return false;
         }
 
-        final Document document = (Document) o;
+        final Document document = (Document)o;
 
-        if (!internalDocument.equals( document.internalDocument )) {
+        if ( !internalDocument.equals( document.internalDocument ) ) {
             return false;
         }
 
@@ -102,14 +113,16 @@ public class Document {
 
     public DocumentPermissionSet getPermissionSetRestrictedOne() throws NoPermissionException {
         securityChecker.hasEditPermission( this );
-        DocumentPermissionSetDomainObject restrictedOne = documentPermissionSetMapper.getPermissionSetRestrictedOne( internalDocument );
+        DocumentPermissionSetDomainObject restrictedOne = documentPermissionSetMapper.getPermissionSetRestrictedOne(
+                internalDocument );
         DocumentPermissionSet result = new DocumentPermissionSet( restrictedOne );
         return result;
     }
 
     public DocumentPermissionSet getPermissionSetRestrictedTwo() throws NoPermissionException {
         securityChecker.hasEditPermission( this );
-        DocumentPermissionSetDomainObject restrictedTwo = documentPermissionSetMapper.getPermissionSetRestrictedTwo( internalDocument );
+        DocumentPermissionSetDomainObject restrictedTwo = documentPermissionSetMapper.getPermissionSetRestrictedTwo(
+                internalDocument );
         DocumentPermissionSet result = new DocumentPermissionSet( restrictedTwo );
         return result;
     }
@@ -167,22 +180,21 @@ public class Document {
     }
 
     public void addCategory( Category category ) throws NoPermissionException {
-        securityChecker.hasEditPermission(this);
+        securityChecker.hasEditPermission( this );
         internalDocument.addCategory( category.getInternal() );
     }
 
     public void removeCategory( Category category ) throws NoPermissionException {
-        securityChecker.hasEditPermission(this);
+        securityChecker.hasEditPermission( this );
         internalDocument.removeCategory( category.getInternal() );
     }
 
     /**
-     *
-     * @return An array of Categoris, an empty if no one found.
+     * @return An array of Categories, an empty if no one found.
      * @throws NoPermissionException
      */
     public Category[] getCategories() throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission(this);
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategories();
         return getCategoryArrayFromCategoryDomainObjectArray( categoryDomainObjects );
     }
@@ -190,7 +202,7 @@ public class Document {
     private Category[] getCategoryArrayFromCategoryDomainObjectArray( CategoryDomainObject[] categoryDomainObjects ) {
         Category[] categories = new Category[categoryDomainObjects.length];
 
-        for (int i = 0; i < categories.length; i++) {
+        for ( int i = 0; i < categories.length; i++ ) {
             CategoryDomainObject categoryDomainObject = categoryDomainObjects[i];
             categories[i] = new Category( categoryDomainObject );
         }
@@ -200,73 +212,72 @@ public class Document {
     public void setPermissionSetForRole( String roleName, int permissionSet ) throws NoSuchRoleException, NoPermissionException {
         securityChecker.hasEditPermission( this );
         RoleDomainObject role = userAndRoleMapper.getRoleByName( roleName );
-        if (null == role) {
+        if ( null == role ) {
             throw new NoSuchRoleException( "No role by the name '" + roleName + "'." );
         }
         internalDocument.setPermissionSetForRole( role, permissionSet );
     }
 
     /**
-     *
      * @param categoryType
      * @return an array of Categories, empty array if no one found.
      * @throws NoPermissionException
      */
     public Category[] getCategoriesOfType( CategoryType categoryType ) throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission(this);
-        CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategoriesOfType( categoryType.getInternal() );
+        securityChecker.hasAtLeastDocumentReadPermission( this );
+        CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategoriesOfType(
+                categoryType.getInternal() );
         return getCategoryArrayFromCategoryDomainObjectArray( categoryDomainObjects );
     }
 
     public User getPublisher() throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission( this );
         UserDomainObject publisher = internalDocument.getPublisher();
-        if( null != publisher ) {
+        if ( null != publisher ) {
             return new User( publisher, userAndRoleMapper, securityChecker );
         } else {
             return null;
         }
     }
 
-    public String getTarget()  throws NoPermissionException {
+    public String getTarget() throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission( this );
         return internalDocument.getTarget();
     }
 
     public Date getActivatedDatetime() throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission(this);
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         return internalDocument.getActivatedDatetime();
     }
 
     public void setActivatedDatetime( Date datetime ) throws NoPermissionException {
-        securityChecker.hasEditPermission(this);
+        securityChecker.hasEditPermission( this );
         internalDocument.setActivatedDatetime( datetime );
     }
 
     public Date getArchivedDatetime() throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission(this);
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         return internalDocument.getArchivedDatetime();
     }
 
     public void setArchivedDatetime( Date datetime ) throws NoPermissionException {
-        securityChecker.hasEditPermission(this);
+        securityChecker.hasEditPermission( this );
         internalDocument.setArchivedDatetime( datetime );
     }
 
-
     public boolean getArchivedFlag() throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission(this);
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         return internalDocument.isArchivedFlag();
     }
 
     public void setArchivedFlag( boolean value ) throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission(this);
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         internalDocument.setArchivedFlag( value );
     }
 
     public void setPublisher( User user ) throws NoPermissionException {
-        securityChecker.hasEditPermission(this);
-        internalDocument.setPublisher( user.getInternalUser() ) ;
+        securityChecker.hasEditPermission( this );
+        internalDocument.setPublisher( user.getInternalUser() );
     }
 
     /**
@@ -274,10 +285,10 @@ public class Document {
      * @throws NoPermissionException
      */
     public Section[] getSections() throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission(this);
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         SectionDomainObject[] sectionDomainObjects = internalDocument.getSections();
         Section[] sections = new Section[sectionDomainObjects.length];
-        for (int i = 0; i < sectionDomainObjects.length; i++) {
+        for ( int i = 0; i < sectionDomainObjects.length; i++ ) {
             SectionDomainObject sectionDomainObject = sectionDomainObjects[i];
             sections[i] = new Section( sectionDomainObject );
         }
@@ -285,32 +296,106 @@ public class Document {
     }
 
     public void setSections( Section[] sections ) throws NoPermissionException {
-        securityChecker.hasEditPermission(this);
+        securityChecker.hasEditPermission( this );
         SectionDomainObject[] internalSections = new SectionDomainObject[sections.length];
-        for (int i = 0; i < sections.length; i++) {
+        for ( int i = 0; i < sections.length; i++ ) {
             Section section = sections[i];
             internalSections[i] = section.internalSection;
         }
-        internalDocument.setSections(internalSections);
+        internalDocument.setSections( internalSections );
     }
 
+    /**
+     * @deprecated Use {@link #getModifiedDatetime()} instead.
+     */
     public Date getModifiedDateTime() throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission(this);
+        return getModifiedDatetime();
+    }
+
+    public Date getModifiedDatetime() throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         return internalDocument.getModifiedDatetime();
     }
 
+    /**
+     * @deprecated Use {@link #setModifiedDatetime(java.util.Date)} instead.
+     */
     public void setModifiedDateTime( Date date ) throws NoPermissionException {
-        securityChecker.hasEditPermission(this);
-        internalDocument.setModifiedDatetime(date);
+        setModifiedDatetime( date );
     }
 
+    public void setModifiedDatetime( Date date ) throws NoPermissionException {
+        securityChecker.hasEditPermission( this );
+        internalDocument.setModifiedDatetime( date );
+    }
+
+    /**
+     * @deprecated Use {@link #getCreatedDatetime()} instead.
+     */
     public Date getCreatedDateTime() throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission(this);
+        return getCreatedDatetime();
+    }
+
+    public Date getCreatedDatetime() throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         return internalDocument.getCreatedDatetime();
     }
 
     public void addSection( Section section ) throws NoPermissionException {
-        securityChecker.hasEditPermission(this);
+        securityChecker.hasEditPermission( this );
         internalDocument.addSection( section.internalSection );
     }
+
+    public abstract static class Comparator extends ChainableReversibleNullComparator {
+
+        public int compare( Object o1, Object o2 ) {
+            final Document d1 = (Document)o1;
+            final Document d2 = (Document)o2;
+            try {
+                return compareDocuments( d1, d2 );
+            } catch ( NoPermissionException e ) {
+                throw new RuntimeException( e );
+            }
+        }
+
+        protected abstract int compareDocuments( Document d1, Document d2 ) throws NoPermissionException;
+
+        public final static Comparator ID = new Comparator() {
+            protected int compareDocuments( Document d1, Document d2 ) throws NoPermissionException {
+                return d1.getId() - d2.getId();
+            }
+        };
+
+        public final static Comparator HEADLINE = new Comparator() {
+            protected int compareDocuments( Document d1, Document d2 ) throws NoPermissionException {
+                return d1.getHeadline().compareTo( d2.getHeadline() );
+            }
+        };
+
+        public final static Comparator CREATED_DATETIME = new Comparator() {
+            protected int compareDocuments( Document d1, Document d2 ) throws NoPermissionException {
+                return d1.getCreatedDatetime().compareTo( d2.getCreatedDatetime() );
+            }
+        };
+
+        public final static Comparator MODIFIED_DATETIME = new Comparator() {
+            protected int compareDocuments( Document d1, Document d2 ) throws NoPermissionException {
+                return d1.getModifiedDatetime().compareTo( d2.getModifiedDatetime() );
+            }
+        };
+
+        public final static Comparator ACTIVATED_DATETIME = new Comparator() {
+            protected int compareDocuments( Document document1, Document document2 ) throws NoPermissionException {
+                return document1.getActivatedDatetime().compareTo( document2.getActivatedDatetime() );
+            }
+        };
+
+        public final static Comparator ARCHIVED_DATETIME = new Comparator() {
+            protected int compareDocuments( Document document1, Document document2 ) throws NoPermissionException {
+                return document1.getArchivedDatetime().compareTo( document2.getArchivedDatetime() );
+            }
+        };
+
+    }
+
 }
