@@ -72,7 +72,7 @@ function activateUseradmin_roles(){
 <input type="HIDDEN" name="CURR_USER_ID" value="#CURR_USER_ID#">
 <input type="HIDDEN" name="adminTask" value="#ADMIN_TASK#">
 <input type="HIDDEN" name="phone_id" value="#PHONE_ID#">
-<input type="HIDDEN" name="go_back" value="#BACK#">
+<input type="HIDDEN" name="nextUrl" value="#NEXT_URL#">
 <input type="HIDDEN" name="new_pwd1" value="#NEW_PWD1#">
 <input type="HIDDEN" name="new_pwd2" value="#NEW_PWD2#">
 
@@ -100,8 +100,8 @@ function activateUseradmin_roles(){
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Användarnamn</font></td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
-	<td nowrap><font size="2"><input name="login_name" size="25" value="#LOGIN_NAME#" maxlength="15"></font>
-	<font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;(Max 15 tecken!)</font></td>
+	<td nowrap><font size="2"><input name="login_name" size="25" value="#LOGIN_NAME#" maxlength="50"></font>
+	<font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;</font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
@@ -116,56 +116,56 @@ function activateUseradmin_roles(){
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Verifiera lösenord:</font></td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
-	<td><font size="2"><input type="password" name="password2" size="25" value="#PWD2#"></font></td>
+	<td><font size="2"><input type="password" name="password2" size="25" value="#PWD2#" maxlength="15"></font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Förnamn:</font></td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
-	<td><font size="2"><input name="first_name" size="25" value="#FIRST_NAME#"></font></td>
+	<td><font size="2"><input name="first_name" size="25" value="#FIRST_NAME#" maxlength="25"></font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Efternamn:</font></td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
-	<td><font size="2"><input name="last_name" size="25" value="#LAST_NAME#"></font></td>
+	<td><font size="2"><input name="last_name" size="25" value="#LAST_NAME#" maxlength="30"></font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Titel:</font></td>
 	<td>&nbsp;</td>
-	<td><font size="2"><input name="title" size="25" value="#TITLE#"></font></td>
+	<td><font size="2"><input name="title" size="25" value="#TITLE#" maxlength="30"></font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Arbetsplats:</font></td>
 	<td>&nbsp;</td>
-	<td><font size="2"><input name="company" size="25" value="#COMPANY#"></font></td>
+	<td><font size="2"><input name="company" size="25" value="#COMPANY#" maxlength="30"></font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Gatuadress:</font></td>
 	<td><font size="2">&nbsp;</font></td>
-	<td><font size="2"><input name="address" size="25" value="#ADDRESS#"></font></td>
+	<td><font size="2"><input name="address" size="25" value="#ADDRESS#" maxlength="40"></font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Postnummer:</font></td>
 	<td><font size="2">&nbsp;</font></td>
-	<td><font size="2"><input name="zip" size="25" value="#ZIP#"></font></td>
+	<td><font size="2"><input name="zip" size="25" value="#ZIP#" maxlength="30"></font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Postort:</font></td>
 	<td><font size="2">&nbsp;</font></td>
-	<td><font size="2"><input name="city" size="25" value="#CITY#"></font></td>
+	<td><font size="2"><input name="city" size="25" value="#CITY#" maxlength="30"></font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
@@ -175,7 +175,7 @@ function activateUseradmin_roles(){
 	<td><select name="phonetype" size="1" >
 	#PHONETYPES_MENU#
 </select>
-	<input name="local_code" size="16" value="#NUMBER#">
+	<input name="local_code" size="16" value="#NUMBER#" maxlength="25">
 	<input type="submit" value="OK" name="ok_phones"></td>
 	<td>&nbsp;</td>
 </tr>
@@ -201,21 +201,21 @@ function activateUseradmin_roles(){
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Län:</font></td>
 	<td><font size="2">&nbsp;</font></td>
-	<td><font size="2"><input name="country_council" size="25" value="#COUNTRY_COUNCIL#"></font></td>
+	<td><font size="2"><input name="country_council" size="25" value="#COUNTRY_COUNCIL#" maxlength="30"></font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Land:</font></td>
 	<td><font size="2">&nbsp;</font></td>
-	<td><font size="2"><input name="country" size="25" value="#COUNTRY#"></font></td>
+	<td><font size="2"><input name="country" size="25" value="#COUNTRY#" maxlength="30"></font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Email:</font></td>
 	<td><font size="2">&nbsp;</font></td>
-	<td><font size="2"><input name="email" size="25" value="#EMAIL#"></font></td>
+	<td><font size="2"><input name="email" size="25" value="#EMAIL#" maxlength="50"></font></td>
 	<td>&nbsp;</td>
 </tr>
 
@@ -237,7 +237,7 @@ function activateUseradmin_roles(){
 	<td colspan="3">
 	<input type="submit" name="SAVE_USER" value="Spara" onClick="if(evalPrepareAdd()==false)return false; return true;">
 	<input type="submit" name="RESET_FORM" value="Återställ">
-	<input type="submit" name="GO_BACK" value="Avbryt">&nbsp; <a href="GetDoc?meta_id=71" target="_blank" onClick="openHelp('71'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+	<input type="submit" name="CANCEL" value="Avbryt">&nbsp; <a href="GetDoc?meta_id=71" target="_blank" onClick="openHelp('71'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 	<input type="submit" name="READRUNNER_SETTINGS" value="Readrunner-inställningar"></td>
 	<td>&nbsp;</td>
 </tr>

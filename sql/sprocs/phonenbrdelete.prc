@@ -10,7 +10,7 @@ GO
 
 CREATE PROCEDURE PhoneNbrDelete
 /*
- Deletes an Ip-access for a user. Used by the PhoneNbrDelete
+ Deletes a phone number for a user.
 */
  @phoneId int
 AS

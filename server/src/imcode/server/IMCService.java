@@ -185,18 +185,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 			
 				/* user object 
 				private int userId ;			
-		    	private String loginName ;		//char 15
-		    	private String password ;		//char 15
-		    	private String firstName;		//char 25
-			    private String lastName;		//char 30
-				private String title;			//char 30
-				private String company;			//char 30
-				private String address;			//char 40
-				private String city;			//char 30
-				private String zip;				//char 15
-				private String country;			//char 30
-				private String county_council;	//char 30
-				private String emailAddress;	//chat 50
+		    	private String loginName ;		//varchar 50
+		    	private String password ;		//varchar 15
+		    	private String firstName;		//varchar 25
+			    private String lastName;		//varchar 30
+				private String title;			//varchar 30
+				private String company;			//varchar 30
+				private String address;			//varchar 40
+				private String city;			//varchar 30
+				private String zip;				//varchar 15
+				private String country;			//varchar 30
+				private String county_council;	//varchar 30
+				private String emailAddress;	//varchar 50
 				private int lang_id;			
 				private int user_type;			
 			    private boolean active ;		//int

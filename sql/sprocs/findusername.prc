@@ -9,7 +9,7 @@ GO
 
 
 CREATE PROCEDURE [FindUserName] 
- @userName char(15)
+ @userName varchar(50)
 AS
 /*
  This function is used from the conference when  someone is logging in to the 

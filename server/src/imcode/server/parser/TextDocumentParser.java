@@ -57,24 +57,31 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	}
     }
 
-    IMCService serverObject ;
-    InetPoolManager connPool ;
-    File templatePath ;
-    File includePath ;
-    String imageUrl ;
-    String servletUrl ;
+    private IMCServiceInterface serverObject ;
+    private InetPoolManager connPool ;
+    private File templatePath ;
+    private File includePath ;
+    private String imageUrl ;
+    private String servletUrl ;
 
-    public TextDocumentParser(IMCService serverobject, InetPoolManager connpool, File templatepath, File includepath, String imageurl, String servleturl) {
-	this.connPool = connpool ;
-	this.templatePath = templatepath ;
-	this.includePath = includepath ;
-	this.imageUrl = imageurl ;
-	this.servletUrl = servleturl ;
-	this.serverObject = serverobject ;
+    public TextDocumentParser(IMCServiceInterface serverobject, InetPoolManager connpool, File templatepath, File includepath, String imageurl, String servleturl) {
+		this.connPool = connpool ;
+		this.templatePath = templatepath ;
+		this.includePath = includepath ;
+		this.imageUrl = imageurl ;
+		this.servletUrl = servleturl ;
+		this.serverObject = serverobject ;
     }
+	
+	/* 
+	 return a referens to IMCServerInterface used by TextDocumentParser  
+	*/
+	public IMCServiceInterface getServerObject(){
+		return this.serverObject;
+	}
 
     public String parsePage (DocumentRequest documentRequest, int flags, ParserParameters paramsToParse) throws IOException{
-	return parsePage(documentRequest,flags,5,paramsToParse) ;
+		return parsePage(documentRequest,flags,5,paramsToParse) ;
     }
 
     public String parsePage (DocumentRequest documentRequest, int flags, int includelevel,ParserParameters paramsToParse) throws IOException{

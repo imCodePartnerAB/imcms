@@ -110,6 +110,16 @@ public class AdminUser extends Administrator
 	
 	// Get the session
 	HttpSession session = req.getSession(false);
+	
+	//lets clear old session attribute
+	try {
+	   	session.removeAttribute("userToChange");
+		session.removeAttribute("next_url");
+		session.removeAttribute("Ok_phoneNumbers");
+		
+	}catch(IllegalStateException ise) {
+    	log("session has been invalidated so no need to remove parameters");
+	}
 
 	// Lets get an user object
 	imcode.server.User user = super.getUserObj(req,res) ;
@@ -157,14 +167,6 @@ public class AdminUser extends Administrator
 		VariableManager vm = new VariableManager() ;
 		Html htm = new Html() ;
 
-		//lets clear old session attribute
-		try {
-	    	session.removeAttribute("userToChange");
-			session.removeAttribute("go_back");
-
-		}catch(IllegalStateException ise) {
-	    	log("session has been invalidated so no need to remove parameters");
-		}
 		
 		
 		// Lets redirect to AdminUserProps and get the HTML page to add a new user.

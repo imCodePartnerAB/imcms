@@ -777,6 +777,149 @@ COMMIT
 
 
 
+/*
+   den 25 januari 2003 11:29:02
+   User: sa
+   Server: LENNART
+   Database: allerannons
+   Application: MS SQLEM - Data Tools
+*/
+
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.users
+	DROP CONSTRAINT DF_users_title
+GO
+ALTER TABLE dbo.users
+	DROP CONSTRAINT DF_users_company
+GO
+ALTER TABLE dbo.users
+	DROP CONSTRAINT DF_users_user_type
+GO
+ALTER TABLE dbo.users
+	DROP CONSTRAINT DF_users_active
+GO
+CREATE TABLE dbo.Tmp_users
+	(
+	user_id int NOT NULL,
+	login_name varchar(50) NOT NULL,
+	login_password varchar(15) NOT NULL,
+	first_name varchar(25) NOT NULL,
+	last_name varchar(30) NOT NULL,
+	title varchar(30) NOT NULL,
+	company varchar(30) NOT NULL,
+	address varchar(40) NOT NULL,
+	city varchar(30) NOT NULL,
+	zip varchar(15) NOT NULL,
+	country varchar(30) NOT NULL,
+	county_council varchar(30) NOT NULL,
+	email varchar(50) NOT NULL,
+	admin_mode int NOT NULL,
+	last_page int NOT NULL,
+	archive_mode int NOT NULL,
+	lang_id int NOT NULL,
+	user_type int NOT NULL,
+	active int NOT NULL,
+	create_date smalldatetime NOT NULL
+	)  ON [PRIMARY]
+GO
+ALTER TABLE dbo.Tmp_users ADD CONSTRAINT
+	DF_users_title DEFAULT ('') FOR title
+GO
+ALTER TABLE dbo.Tmp_users ADD CONSTRAINT
+	DF_users_company DEFAULT ('') FOR company
+GO
+ALTER TABLE dbo.Tmp_users ADD CONSTRAINT
+	DF_users_user_type DEFAULT (1) FOR user_type
+GO
+ALTER TABLE dbo.Tmp_users ADD CONSTRAINT
+	DF_users_active DEFAULT (1) FOR active
+GO
+IF EXISTS(SELECT * FROM dbo.users)
+	 EXEC('INSERT INTO dbo.Tmp_users (user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, admin_mode, last_page, archive_mode, lang_id, user_type, active, create_date)
+		SELECT user_id, CONVERT(varchar(50), login_name), CONVERT(varchar(15), login_password), CONVERT(varchar(25), first_name), CONVERT(varchar(30), last_name), CONVERT(varchar(30), title), CONVERT(varchar(30), company), CONVERT(varchar(40), address), CONVERT(varchar(30), city), CONVERT(varchar(15), zip), CONVERT(varchar(30), country), CONVERT(varchar(30), county_council), CONVERT(varchar(50), email), admin_mode, last_page, archive_mode, lang_id, user_type, active, create_date FROM dbo.users TABLOCKX')
+GO
+ALTER TABLE dbo.useradmin_role_crossref
+	DROP CONSTRAINT FK_useradmin_role_crossref_users
+GO
+ALTER TABLE dbo.phones
+	DROP CONSTRAINT FK_phones_users
+GO
+ALTER TABLE dbo.user_rights
+	DROP CONSTRAINT FK_user_rights_users
+GO
+ALTER TABLE dbo.user_roles_crossref
+	DROP CONSTRAINT FK_user_roles_crossref_users
+GO
+DROP TABLE dbo.users
+GO
+EXECUTE sp_rename N'dbo.Tmp_users', N'users', 'OBJECT'
+GO
+ALTER TABLE dbo.users ADD CONSTRAINT
+	PK_users PRIMARY KEY NONCLUSTERED 
+	(
+	user_id
+	) ON [PRIMARY]
+
+GO
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.user_roles_crossref WITH NOCHECK ADD CONSTRAINT
+	FK_user_roles_crossref_users FOREIGN KEY
+	(
+	user_id
+	) REFERENCES dbo.users
+	(
+	user_id
+	)
+GO
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.user_rights WITH NOCHECK ADD CONSTRAINT
+	FK_user_rights_users FOREIGN KEY
+	(
+	user_id
+	) REFERENCES dbo.users
+	(
+	user_id
+	)
+GO
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.phones WITH NOCHECK ADD CONSTRAINT
+	FK_phones_users FOREIGN KEY
+	(
+	user_id
+	) REFERENCES dbo.users
+	(
+	user_id
+	)
+GO
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.useradmin_role_crossref WITH NOCHECK ADD CONSTRAINT
+	FK_useradmin_role_crossref_users FOREIGN KEY
+	(
+	user_id
+	) REFERENCES dbo.users
+	(
+	user_id
+	)
+GO
+COMMIT
+-- 2003-01-25
+
+
+
 
 print' OBS!!!  Glöm inte att du MÅSTE köra hela sprocs.sql efter detta script vid uppgradering  OBS!!'
 

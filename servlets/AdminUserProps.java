@@ -74,11 +74,6 @@ public class AdminUserProps extends Administrator {
 	// Get a new Vector:  phonetype_id, typename 
 	Vector phoneTypesV = new Vector(java.util.Arrays.asList(phonetypesA) ); 
 	
-		
-	//Vector theUserRolesV = new Vector();
-	//if ( tmp_userRoles != null ) {
-	//	theUserRolesV = new Vector(java.util.Arrays.asList(tmp_userRoles)) ;
-	//}
 	
 	String login_name = "";
 	String password1 = "" ; 
@@ -192,18 +187,11 @@ public class AdminUserProps extends Administrator {
 
 		//store all data into the session
 		session.setAttribute("Ok_phoneNumbers", tmp_phones);
-		//session.setAttribute("RESET_usersArr", usersArr);
-		//session.setAttribute("RESET_userCreateDate", " ");
-		
-		//session.setAttribute("RESET_langList", langList);
-		//session.setAttribute("RESET_selectedLangV", selectedLangV);
 
 		// Lets create the HTML page
-		
 		String outputString = imcref.parseDoc(vec, HTML_RESPONSE, user.getLangPrefix()) ;
     	out.write(outputString) ;
 		
-	//	this.sendHtml(req, res, vm, HTML_RESPONSE) ;
 		return ;
 	}
 		
@@ -334,9 +322,9 @@ public class AdminUserProps extends Administrator {
     	vec.add("#COUNTRY#"); 		vec.add(country);	
     	vec.add("#EMAIL#"); 		vec.add(email);	
     
-    	vec.add("#BACK#"); 	
-    	if ( null != (String)session.getAttribute("go_back") ){
-    		vec.add((String)session.getAttribute("go_back"));
+    	vec.add("#NEXT_URL#"); 	
+    	if ( null != (String)session.getAttribute("next_url") ){
+    		vec.add((String)session.getAttribute("next_url"));
     	}else{
     		vec.add("");	
     	}
@@ -430,7 +418,7 @@ public class AdminUserProps extends Administrator {
 	    AdminError err = new AdminError(req,res,header,msg) ;
 	    return ;
 	}
-	
+
 	// check if user is a Superadmin, adminRole = 1
 	boolean isSuperadmin = imcref.checkUserAdminrole ( user.getUserId(), 1 );
 	
@@ -443,19 +431,27 @@ public class AdminUserProps extends Administrator {
 	// Lets check adminTask 
 	String adminTask = req.getParameter("adminTask") ;
 	if(adminTask == null)	adminTask = "" ;
-	
+
 	
 	// Lets get the user which should be changed if we is not in ADD_USER mode
 	String userToChangeId = "";
-	if ( ! "ADD_USER".equals(adminTask) ) {
+	
+	// if we are processing a user template then userToChange is equal to user
+	if ( req.getParameter("userTemplate") != null && "SAVE_CHANGED_USER".equals(adminTask) ){
+		userToChangeId = ""+user.getUserId();
+    }
+	// if we are processing a admin template
+	if ( req.getParameter("userTemplate") == null  && !"ADD_USER".equals(adminTask) ) {
 			userToChangeId = getCurrentUserId(req,res);
 	} 
-		
+			
 	// get a user object by userToChangeId
 	imcode.server.User userToChange = null;
 	if( userToChangeId != ""){
 		userToChange = imcref.getUserById(Integer.parseInt(userToChangeId));
-	}	
+	}
+	
+	
 			
 	Properties userInfoP = new Properties() ;
 			    
@@ -482,8 +478,8 @@ public class AdminUserProps extends Administrator {
 	vm.addProperty("COUNTRY", userInfoP.getProperty("country")) ;
 	vm.addProperty("COUNTRY_COUNCIL", userInfoP.getProperty("country_council")) ;
 	vm.addProperty("EMAIL", userInfoP.getProperty("email")) ;
+	
 
-		
 	Html htm = new Html() ;
 	
 
@@ -510,7 +506,7 @@ public class AdminUserProps extends Administrator {
 		res.sendRedirect("AdminUserReadrunner") ;
 		return ;
 	}
-	
+
 	//******** USERADMIN_STTINGS BUTTON WAS PUNSCHED ***********
 	if ( null != req.getParameter("useradmin_settings") ) {
 		
@@ -549,7 +545,7 @@ public class AdminUserProps extends Administrator {
 	}
 
 	
-	
+
 	//******** OK_PHONES or DELETE_PHONES or EDIT_PHONES  WAS PRESSED ***********
 	if( req.getParameter("ok_phones") != null || req.getParameter("delete_phones") != null ||
 	    req.getParameter("edit_phones") != null) {
@@ -559,9 +555,7 @@ public class AdminUserProps extends Administrator {
 			 adminTask = "";
 		}
 		
-		
-		
-		
+
 		if (imcref.checkAdminRights(user) == false && !isUseradmin && !userToChangeId.equals(""+ user.getUserId() ) ){
 			String header = "Error in AdminCounter." ;
 			String msg = "The user has no rights to change user values."+ "<BR>";
@@ -631,7 +625,7 @@ public class AdminUserProps extends Administrator {
 		} 
 		// ********* end ok_phones *************************
 		
-		
+	
 		//********* EDIT_PHONES BUTTON WAS PRESSED ***********
 		
 		boolean found = false;
@@ -652,7 +646,7 @@ public class AdminUserProps extends Administrator {
 				}
 			}
 		}
-		
+
 		if (!found) {
 			vm.addProperty( "PHONE_ID", "");
 			vm.addProperty( "NUMBER", "");
@@ -695,7 +689,6 @@ public class AdminUserProps extends Administrator {
 		}
 	
 		// ******** end delete_phones ***************
-		
 		
 		
 		String newPwd = userInfoP.getProperty("password1");
@@ -777,7 +770,6 @@ public class AdminUserProps extends Administrator {
 	} 
 	// end of ******** OK_PHONES or DELETE_PHONES or EDIT_PHONES  WAS PRESSED ***********
 	
-	
 
 
 	// ******* SAVE NEW USER TO DB **********
@@ -787,23 +779,22 @@ public class AdminUserProps extends Administrator {
 	    //get session
 	    if(session == null) return;
 
-		// Lets check if the user is an admin, otherwise throw him out.
+	/*	// Lets check if the user is an admin, otherwise throw him out.
 		if (!isAdmin ){
 		    String header = "Error in AdminUserProps." ;
 		    String msg = "The user has no admin rights."+ "<BR>" ;
 		    AdminError err = new AdminError(req,res,header,msg) ;
 		    return ;
 		}
-		
+	*/	
 		// Lets get the parameters from html page and validate them
 	    Properties params = this.getParameters(req, imcref, user, null ) ;
-	    params = this.validateParameters(params,req,res) ;
-	    if(params == null) return ;	
+	    
 		
 		// if user has add a phone number we have to get the password from NEW_PWD1 parameter
-		if ( ! ( ("").equals(req.getParameter("new_pwd1")))	){
-			params.setProperty("password1", req.getParameter("new_pwd1")) ;
-			params.setProperty("password2", req.getParameter("new_pwd2")) ;
+		if ( req.getParameter("new_pwd1") != null &&  !("").equals(req.getParameter("new_pwd1")) ){
+			params.setProperty("password1", req.getParameter("new_pwd1") ) ;
+			params.setProperty("password2", req.getParameter("new_pwd2") );
 		}
 		
 
@@ -813,32 +804,39 @@ public class AdminUserProps extends Administrator {
 
 	    // Lets validate the password
 	    if( UserHandler.verifyPassword(params,req,res) == false)	return ;
-
-
+		
+	
 
 	    // Lets check that the new username doesnt exists already in db
-	    String userName = params.getProperty("login_name") ;
-	    String userNameExists[] = imcref.sqlProcedure("FindUserName '" + userName + "'") ;
-	    if(userNameExists != null ) {
-			if(userNameExists.length > 0 ) {
-			    String header = "Error in AdminUserProps." ;
-			    String msg = "The username already exists, please change the username."+ "<BR>" ;
-			    this.log(header + msg) ;
-			    AdminError err = new AdminError(req,res,header,msg) ;
-			    return ;
-			}
-	    }
+		String userName;
+		String msg = "The username already exists, please change the username."+ "<BR>" ;
+		if ( null != req.getParameter("login_name") ){
+			userName = params.getProperty("login_name");
+		}else{
+			userName = req.getParameter("email");
+			params.setProperty("login_name", userName);
+			msg = "The username(email) already exists, please change email."+ "<BR>" ;
+		}
+		
+	    if( ! UserHandler.checkExistingUserName(imcref, params ) ) {
+		    String header = "Error in AdminUserProps." ;
+		    this.log(header + msg) ;
+		    AdminError err = new AdminError(req,res,header,msg) ;
+		    return ;
+		}
+	    
+				
+		params = this.validateParameters(params,req,res) ;
+	    if(params == null) return ;	
 
 	    // Lets get the highest userId
 	    String newUserId = getNewUserID(req,res) ;
 	    if( newUserId == null) return ;
-
-	    //Lets get phonenumbers from the session
-	    Vector phonesV  = (Vector)session.getAttribute("Ok_phoneNumbers");
-	    if (phonesV == null) {
-			this.sendErrorMsg(req, res, "AdminUserProps:  Add new user", "An eror occured!");
-			return;
-	    }
+		
+		
+	    //Lets get phonenumbers from the session if we have a session Attribute 
+		Vector phonesV  = (Vector)session.getAttribute("Ok_phoneNumbers");
+	    	
 
 	    // Lets build the users information into a string and add it to db
 	    params.setProperty("user_id", newUserId) ;
@@ -859,6 +857,7 @@ public class AdminUserProps extends Administrator {
 			String aRole = rolesV.elementAt(i).toString() ;
 			imcref.sqlUpdateProcedure("AddUserRole " + newUserId + ", " + aRole) ;
 	    }
+		
 		// always let user get the role Users
 		String[] roleId = imcref.sqlProcedure ("GetRoleIdByRoleName Users");
 		if ( roleId != null ){  
@@ -873,33 +872,74 @@ public class AdminUserProps extends Administrator {
 			String aRole = useradminRolesV.elementAt(i).toString();
 			imcref.sqlUpdateProcedure("AddUseradminPermissibleRoles  " + newUserId + ", " + aRole) ;
 		}
-	
+			
 		
+		// save phone number
+		//if we are processing data from a admin template 
+		if ( null == req.getParameter("userTemplate") ){
+		    //save phone number from phonesV  ( phonesV : id, number, user_id, phonetype_id )
+			if ( null != phonesV && phonesV.size() > 0 ){
+			    for(int i = 0; i<phonesV.size(); i++) {
+					String[] aPhone = (String[])phonesV.elementAt(i);
+					String sqlStr = "phoneNbrAdd " + newUserId + ", '" ;//userId
+					sqlStr += aPhone[1] + "', '" + aPhone[3] + "'" ;//number, phonetype_id
 
-	    //spara telefonnummer från listan  ( phonesV : id, number, user_id, phonetype_id )
-	    for(int i = 0; i<phonesV.size(); i++) {
-			String[] aPhone = (String[])phonesV.elementAt(i);
-			String sqlStr = "phoneNbrAdd " + newUserId + ", '" ;//userId
-			sqlStr += aPhone[1] + "', '" + aPhone[3] + "'" ;//number, phonetype_id
+					log("PhoneNrAdd: " + sqlStr);
 
-			log("PhoneNrAdd: " + sqlStr);
-
-			imcref.sqlUpdateProcedure(sqlStr) ;
+					imcref.sqlUpdateProcedure(sqlStr) ;
+			    }
+			}
+		// we are processing data from a user template 	
+	    }else {
+		
+			String workPhone = req.getParameter("workphone");
+			String mobilePhone = req.getParameter("mobilephone");
+			String sqlStr;
+			
+			if ( ! ("").equals(workPhone) ){
+				sqlStr = "phoneNbrAdd " + newUserId + ", '" ;//userId
+				sqlStr += workPhone + "', 2" ;//number, phonetype_id
+				log("PhoneNrAdd: " + sqlStr);
+				imcref.sqlUpdateProcedure(sqlStr) ;
+			}
+			if ( ! ("").equals(mobilePhone) ){
+				sqlStr = "phoneNbrAdd " + newUserId + ", '" ;//userId
+				sqlStr += mobilePhone + "', 3" ;//number, phonetype_id
+				log("PhoneNrAdd: " + sqlStr);
+				imcref.sqlUpdateProcedure(sqlStr) ;
+			}
 	    }
-
-	    this.goAdminUsers(req, res, session) ;
+		
+		//if we are processing data from a user template we have to login the new user
+		if ( null != req.getParameter("userTemplate") ){
+			String nexturl = "VerifyUser?name=" + params.getProperty("login_name" );
+			nexturl += "&passwd=" + params.getProperty("password1");
+			
+			if ( null != req.getParameter("next_meta") ){
+				nexturl += "&next_meta=" + req.getParameter("next_meta") ;
+				
+			}
+			else if ( null != req.getParameter("next_url") ) {
+				nexturl += "&next_url=" + req.getParameter("next_url");
+			}
+			res.sendRedirect(nexturl);
+			return; 
+			
+		}else{
+			this.goNext(req, res, session) ;
+		}
 	    return ;
 	}
+	
 
 	// ******** SAVE EXISTING USER TO DB ***************
 	if( req.getParameter("SAVE_USER") != null && adminTask.equalsIgnoreCase("SAVE_CHANGED_USER")) {
 	    log("******** SAVE EXISTING USER TO DB ***************");
-//  HttpSession session = req.getSession(false);
+
 	    if(session == null) return;
 		
 	    // Lets check that we have a user to be changed.
 	    if (userToChange == null)	return ;
-		
 		
 		// Lets check if the user is an admin or if he is going to change his own data, otherwise throw him out.
 		if (!isAdmin && user.getUserId() != Integer.parseInt(userToChangeId) ) {
@@ -914,48 +954,96 @@ public class AdminUserProps extends Administrator {
 	    Properties params = this.getParameters(req, imcref, user, userToChange) ;
 	    params.setProperty("user_id", userToChangeId) ;
 		
-		
-		// Lets check if loginname is going to be changed and if so, 
-		// lets check that the new loginname doesnt exists already in db
+				
+		/* Lets check if loginname is going to be changed and if so, 
+		   lets check that the new loginname don't already exists in db
+		*/
 		String currentLogin = userToChange.getLoginName();
-	    String newLogin = params.getProperty("login_name") ;
-		if ( !newLogin.equalsIgnoreCase(currentLogin) ){
+		String msg = "The username already exists, please change the username."+ "<BR>" ;
+	 	String newLogin;
+		if ( null != req.getParameter("login_name") ){
+			newLogin = params.getProperty("login_name") ;
+		
+		}
+		else {
+		// we are processing data from a user template where users login name will be the same 
+		// like his email. And then, if users current login name not is equal to his current email
+		// we dont make any changes on his login name,  only on his email.	
+			
+			newLogin = req.getParameter("email");
+			if ( ! userToChange.getEmailAddress().equalsIgnoreCase(currentLogin) ) {
+				newLogin = currentLogin;
+			}
+			msg = "The username(email) already exists, please change email."+ "<BR>" ;
+		}
+		
+		// check that the changed login name don´t already exists 
+	    if ( !newLogin.equalsIgnoreCase(currentLogin) ){
 		    String userNameExists[] = imcref.sqlProcedure("FindUserName '" + newLogin + "'") ;
 		    if(userNameExists != null ) {
 				if(userNameExists.length > 0 ) {
 				    String header = "Error in AdminUserProps." ;
-				    String msg = "The username already exists, please change the username."+ "<BR>" ;
+				    msg = "The username(email) already exists, please change email."+ "<BR>" ;
 				    this.log(header + msg) ;
 				    AdminError err = new AdminError(req,res,header,msg) ;
 				    return ;
 				}
 		    }
 		}
-
-	    // Lets check the password. if its empty, then it wont be updated. get the
-	    // old password from db and use that one instad
-	    String currPwd = imcref.sqlProcedureStr("GetUserPassword " + userToChangeId ) ;
-	    if( currPwd.equals("-1") ) {
+		// update params property with login_name so DB will be updated. 
+		params.setProperty("login_name", newLogin);
+		
+	    
+		
+		//lets get the current password for user
+	    String currPwd = userToChange.getPassword() ;
+	    if( currPwd.equals("") ) {
 			String header = "Fel! Ett lösenord kund inte hittas" ;
-			String msg = "Lösenord kunde inte hittas"+ "<BR>" ;
+			msg = "Lösenord kunde inte hittas"+ "<BR>" ;
 			this.log(header + msg) ;
 			AdminError err = new AdminError(req,res,header,msg) ;
 			log("innan return i currPwd.equals");
 			return ;
 	    }
 		
-		// if user has add a phone number we have to get the password from NEW_PWD1 parameter
-		if ( ! ( ("").equals(req.getParameter("new_pwd1")))	){
-			params.setProperty("password1", req.getParameter("new_pwd1")) ;
-			params.setProperty("password2", req.getParameter("new_pwd2")) ;
-		}else{
+		// Lets check the password. if its empty, then it wont be updated. get the
+	    // old password from db and use that one instad
+		
+		String newPwd = params.getProperty("password1");
+		boolean isChanged = false; 
+		for ( int i=0; i < newPwd.length(); i++) {
+	    	if( newPwd.charAt(i) != ("*").charAt(0) ) {
+				isChanged = true;
+	    	}
+		}
+		if ( ! isChanged ){
 			params.setProperty("password1", currPwd) ;
 			params.setProperty("password2", currPwd) ;
 		}
+		
+		
+		// when user has add a phone number in admin interface, 
+		// we have to get the password from NEW_PWD1 parameter
+		if ( null != req.getParameter("new_pwd1") && !("").equals(req.getParameter("new_pwd1"))	){
+			params.setProperty("password1", req.getParameter("new_pwd1")) ;
+			params.setProperty("password2", req.getParameter("new_pwd2")) ;
+		}
+		
+		// If we are processing data from a user template and user is going to change his password
+		// lets check if old password is valid ( if we have got any value from html-page)
+		if( req.getParameter("password_current") != null && isChanged){
+			if ( ! currPwd.equals(req.getParameter("password_current")) ){
+				String header = "Fel! Verifiering av lösenord" ;
+				msg = "Kunde ej verifiera gammalt lösenord"+ "<BR>" ;
+				this.log(header + msg) ;
+				AdminError err = new AdminError(req,res,header,msg) ;
+				log("innan return i currPwd.equals");
+				return ;
+			}
+			
+		}
 
-
-	    // Lets check if the password contains something. If it doesnt
-	    // contain anything, then assume that the old one wont be updated
+	    // Lets validate the password
 	    if( UserHandler.verifyPassword(params,req,res) == false)	return ;
 
 		// Ok, Lets validate all fields
@@ -971,34 +1059,114 @@ public class AdminUserProps extends Administrator {
 		params = this.validateParameters(params,req,res) ;
 	    if(params == null) return ;
 		
-	    // Lets get phonnumbers from the session
-	    Vector phonesV  = (Vector)session.getAttribute("Ok_phoneNumbers");
-	    if (phonesV == null) {
-			this.sendErrorMsg(req, res, "AdminUserProps:  Edit user", "An eror occured!");
-			return;
-	    }
 		
-	    //First delete existing phone number from db 
-	    imcref.sqlUpdateProcedure("DelPhoneNr " + userToChangeId ) ;
+				
+		//Lets get phonenumbers from the session if we have a session Attribute 
+		Vector phonesV  = (Vector)session.getAttribute("Ok_phoneNumbers");
+		
+		
+		// save phone number
+		//if we are processing data from a admin template 
+		if ( null == req.getParameter("userTemplate") ){
+		
+			//save phone numbers from phonesV  ( phonesV : id, number, user_id, phonetype_id )
+			if ( null != phonesV && phonesV.size() > 0 ){
+			
+				//First delete existing phone number from db 
+		    	imcref.sqlUpdateProcedure("DelPhoneNr " + userToChangeId ) ;
+				
+				// Then save all number from session into db ( phonesV : id, number, user_id, phonetype_id )
+			    for(int i = 0; i<phonesV.size(); i++) {
+					String[] aPhone = (String[])phonesV.elementAt(i);
+					String sqlStr = "phoneNbrAdd " + userToChangeId + ", '" ;//userId
+					sqlStr += aPhone[1] + "', '" + aPhone[3] + "'" ;//number, phonetype_id
 
-	    // Then lets save all number from session into db ( phonesV : id, number, user_id, phonetype_id )
-	    for(int i = 0; i<phonesV.size(); i++) {
-			String[] aPhone = (String[])phonesV.elementAt(i);
-			String sqlStr = "phoneNbrAdd " + aPhone[2] + ", '" ; // user_id
-			sqlStr += aPhone[1] + "', '" + aPhone[3] + "'" ;//number, phonetype_id
+					log("PhoneNrAdd: " + sqlStr);
 
-			imcref.sqlUpdateProcedure(sqlStr) ;
+					imcref.sqlUpdateProcedure(sqlStr) ;
+			    }
+			}
+		
+	    }else{
+			// We are processing data from a user template 
+		    // Get all phone numbers for user
+			String [][] phoneNbr = imcref.sqlProcedureMulti("GetUserPhoneNumbers " + userToChangeId) ;
+		
+			// Get workPhoneId and mobilePhoneId 
+			String workPhoneId="";
+			String mobilePhoneId="";
+			if ( phoneNbr != null ){
+				for (int i=0; i < phoneNbr.length; i++) {
+					if ( ("2").equals( phoneNbr[i][3] ) ){
+						workPhoneId = phoneNbr[i][0];
+					}
+					if ( ("3").equals( phoneNbr[i][3] ) ){
+						mobilePhoneId = phoneNbr[i][0];
+					}
+				}
+			}
+			
+			String workPhone = req.getParameter("workphone");
+			String mobilePhone = req.getParameter("mobilephone");
+			// add new workphone 
+			if ( ("").equals(workPhoneId) &&  ! ("").equals(workPhone) ){
+
+				String sqlStr = "phoneNbrAdd " + userToChangeId + ", '" ; // user_id
+				sqlStr += workPhone + "', 2" ;//number, phonetype_id
+				log("PhoneNrAdd: " + sqlStr);
+				imcref.sqlUpdateProcedure(sqlStr) ;
+				
+			// uppdate a workphone	
+			}else if ( ! ("").equals(workPhoneId) &&  ! ("").equals(workPhone) ){
+
+				String sqlStr = "phoneNbrUpdate " + userToChangeId + ", " + workPhoneId + ", '" ; // user_id , phone_id
+				sqlStr += workPhone + "', 2" ;//number , phoneType
+				imcref.sqlUpdateProcedure(sqlStr) ;
+				
+			// delete a workphone	
+			}else if ( ! ("").equals(workPhoneId) &&  ("").equals(workPhone) ){
+
+				String sqlStr = "phoneNbrDelete " + workPhoneId + "'" ; // phone_id
+				imcref.sqlUpdateProcedure(sqlStr) ;
+			}
+			
+			
+			// add new mobilephone 
+			if ( ("").equals(mobilePhoneId) &&  ! ("").equals(mobilePhone) ){
+			
+				String sqlStr = "phoneNbrAdd " + userToChangeId + ", '" ; // user_id
+				sqlStr += mobilePhone + "', 3" ;//number, phonetype_id
+				log("PhoneNrAdd: " + sqlStr);
+				imcref.sqlUpdateProcedure(sqlStr) ;
+				
+			// uppdate a mobilephone	
+			}else if ( ! ("").equals(mobilePhoneId) &&  ! ("").equals(mobilePhone) ){
+				
+				String sqlStr = "phoneNbrUpdate " + userToChangeId + ", " + mobilePhoneId + ", '" ; // user_id , phone_id
+				sqlStr += mobilePhone + "', 3" ;//number , phoneType
+				imcref.sqlUpdateProcedure(sqlStr) ;
+				
+			// delete a mobilephone	
+			}else if ( ! ("").equals(mobilePhoneId) &&  ("").equals(mobilePhone) ){
+				String sqlStr = "phoneNbrDelete " + mobilePhoneId + "'" ; // phone_id
+				imcref.sqlUpdateProcedure(sqlStr) ;
+			}
 	    }
+			
+			    
 
 	    // Lets build the users information into a string and add it to db
 	    String userStr = "UpdateUser " + UserHandler.createUserInfoString(params) ;
 	    log("userSQL: " + userStr) ;
 	    imcref.sqlUpdateProcedure(userStr) ;
+		
 
+        // if we are processing data from a admin template and
 		// if user isSuperadmin or
 		// isUseradmin and not is going to change his own data 
 		// then we have to take care of userroles and ReadRunner data
-		if ( isSuperadmin || isUseradmin && user.getUserId() != userToChange.getUserId()){
+		if ( null == req.getParameter("userTemplate") && 
+		    ( ( isSuperadmin || isUseradmin && user.getUserId() != userToChange.getUserId() )) ){
 	    	
 			// Lets get the roles from htmlpage
 	    	Vector rolesV = this.getRolesParameters("roles", req, res) ;
@@ -1050,19 +1218,21 @@ public class AdminUserProps extends Administrator {
 			}
 		}
 
-	    this.goAdminUsers(req, res, session) ;
+	    this.goNext(req, res, session) ;
 	    return ;
 	}
 	
 
 	// ******** GO_BACK TO THE MENY ***************
-	if( req.getParameter("GO_BACK") != null ) {
+	if( req.getParameter("CANCEL") != null ) {
 
-		String url = "AdminUser" ;
+		String url = "AdminUser" ; // default if we are processing a admin template
 	
-		if ( null != session.getAttribute("go_back") ){
-	    	url =  (String)session.getAttribute("go_back");
+		if ( null != session.getAttribute("next_url") ){
+	    	url =  (String)session.getAttribute("next_url");
 		}
+		
+		
 		this.removeSessionParams(req);
 	    res.sendRedirect(url) ;
 	    return ;
@@ -1081,26 +1251,26 @@ public class AdminUserProps extends Administrator {
        Removes temporary parameters from the session
     */
     public void removeSessionParams(HttpServletRequest req)	throws ServletException, IOException {
-	HttpSession session = req.getSession(false);
-	if (session == null) return;
-	try {
+		HttpSession session = req.getSession(false);
+		if (session == null) return;
+		try {
 	    
 	    
-	    //session.removeAttribute("country_code");
-	    //session.removeAttribute("area_code");
-	    //session.removeAttribute("local_code");
-	    //session.removeAttribute ("RESET_usersArr");
-	   // session.removeAttribute ("RESET_userCreateDate");
-	    session.removeAttribute ("Ok_phoneNumbers");
-	   // session.removeAttribute ("RESET_langList");
-	   // session.removeAttribute ("RESET_selectedLangV");
-		session.removeAttribute("userToChange");
-		session.removeAttribute("tempRRUserData");
-		session.removeAttribute("go_back");
+		    //session.removeAttribute("country_code");
+		    //session.removeAttribute("area_code");
+		    //session.removeAttribute("local_code");
+		    //session.removeAttribute ("RESET_usersArr");
+		   // session.removeAttribute ("RESET_userCreateDate");
+		    session.removeAttribute ("Ok_phoneNumbers");
+		   // session.removeAttribute ("RESET_langList");
+		   // session.removeAttribute ("RESET_selectedLangV");
+			session.removeAttribute("userToChange");
+			session.removeAttribute("tempRRUserData");
+			session.removeAttribute("next_url");
 
-	}catch(IllegalStateException ise) {
-	    log("session has been invalidated so no need to remove parameters");
-	}
+		}catch(IllegalStateException ise) {
+	    	log("session has been invalidated so no need to remove parameters");
+		}
     }
 
     /**
@@ -1175,19 +1345,32 @@ public class AdminUserProps extends Administrator {
 
     
     /**
-       Returns to the adminUsers meny
+       Redirect to next Url 
     */
 
-    public void goAdminUsers(HttpServletRequest req, HttpServletResponse res, HttpSession session)
+    public void goNext(HttpServletRequest req, HttpServletResponse res, HttpSession session)
 	throws ServletException, IOException {
 	
-		String url = "AdminUser" ;
-	
-		if ( null != session.getAttribute("go_back") ){
-	    	url =  (String)session.getAttribute("go_back");
+		String nexturl = "AdminUser" ;  // default if we are processing a admin template
+		
+		
+		if ( null != req.getParameter("next_url") ){
+			nexturl = req.getParameter("next_url") ;
 		}
+		
+		// lets session-object override req-object
+		if ( null != session.getAttribute("next_url") ){
+	    	nexturl =  (String)session.getAttribute("next_url");
+		}
+		
+		// lets next_meta override next_url if we got both
+		if ( null != req.getParameter("next_meta") ){
+	    	nexturl =  "GetDoc?meta_id=" + req.getParameter("next_meta");
+		}
+		
 		this.removeSessionParams(req);
-	    res.sendRedirect(url) ;
+		
+	    res.sendRedirect(nexturl) ;
     }
 
  
@@ -1221,8 +1404,8 @@ public class AdminUserProps extends Administrator {
 	String language = (req.getParameter("lang_id")==null) ? "1" : (req.getParameter("lang_id")) ;
 	String user_type=(req.getParameter("user_type")==null) ? "" : (req.getParameter("user_type")) ;
 	String active = (req.getParameter("active")==null) ? "0" : (req.getParameter("active")) ;
-
 	
+    
 	//boolean isAdmin = checkAdminRights(user, imcref);
 	
 	// check if user is a Superadmin, adminRole = 1
@@ -1243,7 +1426,7 @@ public class AdminUserProps extends Administrator {
 	}
 	
 
-	// Lets fix those fiels which arent mandatory
+	// Lets fix those fields which arent mandatory
 	if (req.getParameter("SAVE_USER") != null) {
 	    if( title.trim().equals("")) title = "--" ;
 	    if( company.trim().equals("")) company = "--" ;
@@ -1253,6 +1436,7 @@ public class AdminUserProps extends Administrator {
 	    if( country.trim().equals("")) country = "--" ;
 	    if( country_council.trim().equals("")) country_council = "--" ;
 	    if( email.trim().equals("")) email = "--" ;
+		
 	}
 	
 	userInfo.setProperty("login_name", login_name) ;
@@ -1272,7 +1456,7 @@ public class AdminUserProps extends Administrator {
 	userInfo.setProperty("lang_id", language) ;
 	userInfo.setProperty("user_type", user_type) ;
 	userInfo.setProperty("active", active) ;
-	
+		
 
 	return userInfo ;
     }
@@ -1297,7 +1481,7 @@ public class AdminUserProps extends Administrator {
 		return aPropObj ;
 	
 
-    } // end checkParameters
+    } // end validateParameters
 	
 	
 		
@@ -1325,7 +1509,6 @@ public class AdminUserProps extends Administrator {
 
 		Vector phonesV = new Vector();
 		Enumeration enum = phonesArrV.elements();
-		
 		while (enum.hasMoreElements()) {
 			String[] tempPhone = (String[])enum.nextElement();
 			String[] typename= imcref.sqlProcedure("GetPhonetypeName " + tempPhone[3] + ", " + lang_id) ;
@@ -1359,49 +1542,7 @@ public class AdminUserProps extends Administrator {
 		else{ return false;	}
 	}
 	
-	
-	
-	/**
-       Adds the userInformation to the htmlPage. if an empty vector is sent as argument
-       then an empty one will be created
-    **/
-    public VariableManager addUserInfo(VariableManager vm, Vector v){
-		// Here is the order in the vector
-		// [3, Rickard, tynne, Rickard, Larsson, Drakarve, Havdhem, 620 11, Sweden, Gotland,
-		// rickard@imcode.com, 0, 1001, 0, 1]
-		//(v.get(1)==null) ? "" : (req.getParameter("password1")) ;
-
-		if(v.size() == 0) {
-			for(int i = 0; i < 20; i++)
-			    v.add(i, "") ;
-		}
-
-		vm.addProperty("LOGIN_NAME", v.get(1).toString()) ;
-		//	vm.addProperty("PWD1", v.get(2).toString()) ;
-		//	vm.addProperty("PWD2", v.get(2).toString()) ;
-		//	vm.addProperty("PWD1", "") ;
-		//	vm.addProperty("PWD2", "") ;
-		vm.addProperty("FIRST_NAME", v.get(3).toString()) ;
-		vm.addProperty("LAST_NAME", v.get(4).toString()) ;
-		vm.addProperty("TITLE", v.get(5).toString()) ;
-		vm.addProperty("COMPANY", v.get(6).toString()) ;
-
-		vm.addProperty("ADDRESS", v.get(7).toString()) ;
-		vm.addProperty("CITY", v.get(8).toString()) ;
-		vm.addProperty("ZIP", v.get(9).toString()) ;
-		vm.addProperty("COUNTRY", v.get(10).toString()) ;
-		vm.addProperty("COUNTRY_COUNCIL", v.get(11).toString()) ;
-		vm.addProperty("EMAIL", v.get(12).toString()) ;
-
-		// Lets fix the active flag
-		// log("AKTIVIETE: " + v.get(16).toString()) ;
-		vm.addProperty("ACTIVE", "1") ;
-		if( v.get(18).equals("1") || v.get(18).equals(""))
-		    vm.addProperty("ACTIVE_FLAG" , "CHECKED") ;
-		else
-		    vm.addProperty("ACTIVE_FLAG" , "") ;
-		return vm ;
-    }
+		
 	
 	
 	public void log( String str) {
@@ -1478,11 +1619,13 @@ public class AdminUserProps extends Administrator {
 		if ( userToChange == null ){   // ADD_USER mode 
 			
 			
-			// Lets get this users usertype from requerst object if we don´t have got them from session.
+			// Lets set default usertype to 1 "Authenticated user" if we don´t have got any from session.
 			if ( userType == null ){
-				userType = ( req.getParameter("user_type") == null ) ? "" : req.getParameter("user_type");
+				userType = "1";
 			}
 			log("userType:"+userType);
+			
+			
 			
 		
 			// Lets get the information for users roles and put them in a vector
@@ -1654,13 +1797,8 @@ public class AdminUserProps extends Administrator {
 		if (userId == null){
 			// Lets get the userId from the Session Object.
 			userId = (String)session.getAttribute("userToChange");
-	//System.out.println("AdminUserProps-getCurrentUserId() userId= " + userId);
 		}
 		
-		//	if (userId == null)
-		//		userId = req.getParameter("CURR_USER_ID") ;
-		//			if (userId == null || userId.startsWith("#")) {
-
 		if (userId == null ) {
 			String header = "ChangeUser error. " ;
 			String msg = "No user_id was available." + "<BR>";

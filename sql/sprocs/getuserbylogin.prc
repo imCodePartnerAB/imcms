@@ -8,7 +8,7 @@ drop procedure [dbo].[GetUserByLogin]
 GO
 
 
-CREATE PROCEDURE GetUserByLogin @login varchar(15) AS
+CREATE PROCEDURE GetUserByLogin @login varchar(50) AS
 /**
 	Get data for a user by his login_name. Used for login.
 	Parameters:
@@ -16,24 +16,24 @@ CREATE PROCEDURE GetUserByLogin @login varchar(15) AS
 
 	Returns zero or one row with the following columns:
 	
-		user_id			INT		The id of the user
-		login_name		CHAR(15)	The login-name. Essentially the same as the in-parameter @login.
-		login_password	CHAR(15)	The users password.
-		first_name		CHAR(25)	The users first name.
-		last_name		CHAR(30)	The users last name.
-		title			char 30
-		company			char 30
-		address			char 40
-		city			char 30
-		zip				char 15
-		country			char 30
-		county_council	char 30
-		email			CHAR(50)	The users e-mail address.
-		lang_id			int
-		lang_prefix		char 3
-		user_type 		int
-		active			INT			Whether the user is allowed to log in.
-		create_date		smalldatetime
+	user_id			INT			The id of the user
+	login_name		VARCHAR(50)	The login-name. Essentially the same as the in-parameter @login.
+	login_password	VARCHAR(15)	The users password.
+	first_name		VARCHAR(25)	The users first name.
+	last_name		VARCHAR(30)	The users last name.
+	title			VARCHAR(30)
+	company			VARCHAR(30)
+	address			VARCHAR(40)
+	city			VARCHAR(30)
+	zip				VARCHAR(15)
+	country			VARCHAR(30)
+	county_council	VARCHAR(30)
+	email			VARCHAR(50)	The users e-mail address.
+	lang_id			int
+	lang_prefix		char 3
+	user_type 		int
+	active			INT			Whether the user is allowed to log in.
+	create_date		smalldatetime
 **/
 
 SELECT  user_id,

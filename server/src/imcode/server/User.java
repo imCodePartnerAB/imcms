@@ -12,18 +12,18 @@ public class User extends Hashtable {
 
     /** Good stuff **/
     private int userId ;
-    private String loginName ;		//char 15
-    private String password ;		//char 15
-    private String firstName;		//char 25
-    private String lastName;		//char 30
-	private String title;			//char 30
-	private String company;			//char 30
-	private String address;			//char 40
-	private String city;			//char 30
-	private String zip;				//char 15
-	private String country;			//char 30
-	private String country_council;	//char 30
-	private String emailAddress;	//chat 50
+    private String loginName ;		//varchar 50
+    private String password ;		//varchar 15
+    private String firstName;		//varchar 25
+    private String lastName;		//varchar 30
+	private String title;			//varchar 30
+	private String company;			//varchar 30
+	private String address;			//varchar 40
+	private String city;			//varchar 30
+	private String zip;				//varchar 15
+	private String country;			//varchar 30
+	private String country_council;	//varchar 30
+	private String emailAddress;	//varchar 50
 	private int lang_id;			//int
 	private int user_type;			//int
     private boolean active ;		//int
@@ -234,7 +234,7 @@ public class User extends Hashtable {
        get lang_id
     **/
     public int getLangId() {
-		return this.userId ;
+		return this.lang_id ;
     }
 
     /**

@@ -68,7 +68,10 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
     private ParserParameters parserParameters ;
 
     private ReadrunnerFilter readrunnerFilter ;
-
+	
+	private IMCServiceInterface serverObject;  
+	
+	
     public ImcmsTagSubstitution (TextDocumentParser textdocparser, DocumentRequest documentRequest,
 				 File templatepath,
 				 List included_list, boolean includemode, int includelevel, File includepath,
@@ -79,6 +82,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	this.textDocParser = textdocparser ;
 	this.documentRequest = documentRequest ;
 	this.document = documentRequest.getDocument() ;
+	this.serverObject = textDocParser.getServerObject();
 
 	this.templatePath = templatepath ;
 
@@ -299,7 +303,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    }
 	}
 
-	if (!"".equals(result)) { // Else, we're not in textmode, and do we have something other than the empty string?
+/*	if (!"".equals(result)) { // Else, we're not in textmode, and do we have something other than the empty string?
 	    String tempAtt = null ;
 	    if ((tempAtt = attributes.getProperty("pre")) != null) {
 		finalresult = tempAtt + finalresult ;
@@ -308,6 +312,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		finalresult = finalresult + tempAtt ;
 	    }
 	}
+*/
 	return finalresult ;
     }
 
@@ -371,15 +376,16 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    }
 	}
 
-	if(!"".equals(result)) { // Else, if we have something other than the empty string...
+/*	if(!"".equals(result)) { // Else, if we have something other than the empty string...
 	    String tempAtt = null ;
 	    if ((tempAtt = attributes.getProperty("pre")) != null) {
-		finalresult = tempAtt + finalresult ;   // Prepend the contents of the 'pre'-attribute.
+			finalresult = tempAtt + finalresult ;   // Prepend the contents of the 'pre'-attribute.
 	    }
 	    if ((tempAtt = attributes.getProperty("post")) != null) {
-		finalresult = finalresult + tempAtt ;   // Append the contents of the 'post'-attribute.
+			finalresult = finalresult + tempAtt ;   // Append the contents of the 'post'-attribute.
 	    }
 	}
+*/
 	return finalresult ;
     }
 
@@ -436,136 +442,109 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	}
     }
 	
-		
-	/**
-       Handle a <?imcms:userfirstname?> tag.
-
-    **/
-	public String tagUserFirstname() {
-		return documentRequest.getUser().getFirstName() ;
-    }
+	
 	
 	
 	/**
-       Handle a <?imcms:userlastname?> tag.
+       Handle a <?imcms:user get='xxxxxxx'?> tag.
 
     **/
-	public String tagUserLastname() {
-		return documentRequest.getUser().getLastName() ;
-    }
+	public String tagUser(Properties attributes) {
 	
-	/**
-       Handle a <?imcms:usercompany?> tag.
-
-    **/
-	public String tagUserCompany() {
-		return documentRequest.getUser().getCompany() ;
-    }
+		String attrib = attributes.getProperty("get");
+		String result = "";
+	 	User user = documentRequest.getUser();	
+		if (  attrib != null && !"".equals(attrib) ){
 	
-	/**
-       Handle a <?imcms:useradress?> tag.
-
-    **/
-	public String tagUserAdress() {
-		return documentRequest.getUser().getAddress() ;
-    }
-	
-	/**
-       Handle a <?imcms:userzip?> tag.
-
-    **/
-	public String tagUserZip() {
-		return documentRequest.getUser().getZip() ;
-    }
-	
-	/**
-       Handle a <?imcms:usercity?> tag.
-
-    **/
-	public String tagUserCity() {
-		return documentRequest.getUser().getCity() ;
-    }
-	
-	/**
-       Handle a <?imcms:userworkphone?> tag.
-
-    **/
-	public String tagUserWorkphone() {
-		int userId = documentRequest.getUser().getUserId() ;
-		
-		return ""; 
-    }
-	
-	/**
-       Handle a <?imcms:usermobilephone?> tag.
-
-    **/
-	public String tagUserMobilephone() {
-		int userId = documentRequest.getUser().getUserId() ;
-		
-		return ""; 
+			if ( attrib.equals("firstname") ) {
+				result = user.getFirstName();
+			}else if ( attrib.equals("lastname") ) {
+				result = user.getLastName() ;
+			}else if ( attrib.equals("company") ) {
+				result = user.getCompany();
+			}else if ( attrib.equals("address") ) {
+				result = user.getAddress() ;
+			}else if ( attrib.equals("zip") ) {
+				result = user.getZip() ;
+			}else if ( attrib.equals("city") ) {
+				result = user.getCity() ;
+			}else if ( attrib.equals("workphone") ) {	 
+				int userId = documentRequest.getUser().getUserId() ;
+				String [][] phoneNbr = serverObject.sqlProcedureMulti("GetUserPhoneNumbers " + userId) ;
+		    	if ( phoneNbr != null ){
+					for (int i=0; i < phoneNbr.length; i++) {
+						if ( ("2").equals( phoneNbr[i][3] ) ){
+							result = phoneNbr[i][1];
+						}
+					}
+				}
+			}else if ( attrib.equals("mobilephone") ) {		
+				int userId = documentRequest.getUser().getUserId() ;
+				String [][] phoneNbr = serverObject.sqlProcedureMulti("GetUserPhoneNumbers " + userId) ;
+				if ( phoneNbr != null ){
+					for (int i=0; i < phoneNbr.length; i++) {
+						if ( ("3").equals( phoneNbr[i][3] ) ){
+							result = phoneNbr[i][1];
+						}
+					}
+				}
+			}else if ( attrib.equals("email") ) {		
+				result = user.getEmailAddress() ; 
+			}
+		}
+			
+		return result;	
     }
 	
 	
-	/**
-       Handle a <?imcms:useremail?> tag.
-
-    **/
-	public String tagUserEmail() {
-		return documentRequest.getUser().getEmailAddress() ;
-    }
-	
-		
 
     public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, PatternMatcherInput originalInput, PatternMatcher patMat, Pattern pat) {
-	String tagname = matres.group(1) ;
-	String tagattributes = matres.group(2) ;
-	Properties attributes = new Properties() ;
-	PatternMatcherInput pminput = new PatternMatcherInput(tagattributes) ;
-	while(patMat.contains(pminput,IMCMS_TAG_ATTRIBUTES_PATTERN)) {
-	    MatchResult attribute_matres = patMat.getMatch() ;
-	    attributes.setProperty(attribute_matres.group(1), attribute_matres.group(3)) ;
-	}
-	String result ;
+		String tagname = matres.group(1) ;
+		String tagattributes = matres.group(2) ;
+		Properties attributes = new Properties() ;
+		PatternMatcherInput pminput = new PatternMatcherInput(tagattributes) ;
+		while(patMat.contains(pminput,IMCMS_TAG_ATTRIBUTES_PATTERN)) {
+	    	MatchResult attribute_matres = patMat.getMatch() ;
+	    	attributes.setProperty(attribute_matres.group(1), attribute_matres.group(3)) ;
+		}
+		String result ;
 
-	// FIXME: This is quickly growing ugly.
-	// A better solution would be a class per tag (TagHandler's if you will),
-	// with a known interface, looked up through some HashMap.
-	// JSP already fixes this with tag-libs.
-	if ("text".equals(tagname)) {
-	    result = tagText(attributes, patMat) ;
-	} else if ("image".equals(tagname)) {
-	    result = tagImage(attributes, patMat) ;
-	} else if ("include".equals(tagname)) {
-	    result = tagInclude(attributes, patMat) ;
-	} else if ("metaid".equals(tagname)) {
-	    result = tagMetaId() ;
-	} else if ("datetime".equals(tagname)) {
-	    result = tagDatetime(attributes) ;
-	} else if ("section".equals(tagname)) {
-	    result= tagSection() ;
-	} else if ("userfirstname".equals(tagname)) {
-	    result= tagUserFirstname() ;
-	} else if ("userlastname".equals(tagname)) {
-	    result= tagUserLastname() ;	
-	} else if ("usercompany".equals(tagname)) {
-	    result= tagUserCompany() ;
-	} else if ("useradress".equals(tagname)) {
-	    result= tagUserAdress() ;	
-	} else if ("userzip".equals(tagname)) {
-	    result= tagUserZip() ;
-	} else if ("useracity".equals(tagname)) {
-	    result= tagUserCity() ;
-	} else if ("userworkphone".equals(tagname)) {
-	    result= tagUserWorkphone() ;
-	} else if ("usermobilephone".equals(tagname)) {
-	    result= tagUserMobilephone() ;	
-	} else if ("useremail".equals(tagname)) {
-	    result= tagUserEmail() ;	
-	} else {
-	    result = matres.group(0) ;
-	}
-	sb.append(result) ;
+		// FIXME: This is quickly growing ugly.
+		// A better solution would be a class per tag (TagHandler's if you will),
+		// with a known interface, looked up through some HashMap.
+		// JSP already fixes this with tag-libs.
+		if ("text".equals(tagname)) {
+		    result = tagText(attributes, patMat) ;
+		} else if ("image".equals(tagname)) {
+		    result = tagImage(attributes, patMat) ;
+		} else if ("include".equals(tagname)) {
+		    result = tagInclude(attributes, patMat) ;
+		} else if ("metaid".equals(tagname)) {
+		    result = tagMetaId() ;
+		} else if ("datetime".equals(tagname)) {
+		    result = tagDatetime(attributes) ;
+		} else if ("section".equals(tagname)) {
+		    result= tagSection() ;
+		} else if ("user".equals(tagname)) {
+		    result= tagUser(attributes) ;
+		} else {
+		    result = matres.group(0) ;
+		}
+	
+		/* If result equals something other than the empty string we have to 
+		   handel pre and post attributes		
+		*/
+		
+		if (!"".equals(result)) { 
+		    String tempAtt = null ;
+			if ((tempAtt = attributes.getProperty("pre")) != null) {
+				result = tempAtt + result ;
+		    }
+		    if ((tempAtt = attributes.getProperty("post")) != null) {
+				result = result + tempAtt ;
+		    }
+		}
+		sb.append(result) ;
     }
 
 }

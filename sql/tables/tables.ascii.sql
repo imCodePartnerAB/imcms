@@ -6,6 +6,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_display
 ALTER TABLE [dbo].[display_name] DROP CONSTRAINT FK_display_name_lang_prefixes
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_phonetypes_lang_prefixes]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[phonetypes] DROP CONSTRAINT FK_phonetypes_lang_prefixes
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_browser_docs_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[browser_docs] DROP CONSTRAINT FK_browser_docs_meta
 GO
@@ -122,6 +126,18 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_phones_
 ALTER TABLE [dbo].[phones] DROP CONSTRAINT FK_phones_users
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_rights_users]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[user_rights] DROP CONSTRAINT FK_user_rights_users
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_roles_crossref_users]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[user_roles_crossref] DROP CONSTRAINT FK_user_roles_crossref_users
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_useradmin_role_crossref_users]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[useradmin_role_crossref] DROP CONSTRAINT FK_useradmin_role_crossref_users
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_doc_permission_sets_ex_doc_permission_sets1]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[doc_permission_sets_ex] DROP CONSTRAINT FK_doc_permission_sets_ex_doc_permission_sets1
 GO
@@ -180,6 +196,10 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[phones]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[phones]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[phonetypes]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[phonetypes]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[roles_rights]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
@@ -268,10 +288,6 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[permissions]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[permissions]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[phonetypes]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[phonetypes]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[readrunner_user_data]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
@@ -451,13 +467,6 @@ CREATE TABLE [dbo].[permissions] (
 ) ON [PRIMARY]
 GO
 
-CREATE TABLE [dbo].[phonetypes] (
-	[phonetype_id] [int] NOT NULL ,
-	[typename] [varchar] (12) NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL 
-) ON [PRIMARY]
-GO
-
 CREATE TABLE [dbo].[readrunner_user_data] (
 	[user_id] [int] NOT NULL ,
 	[uses] [int] NULL ,
@@ -543,18 +552,18 @@ GO
 
 CREATE TABLE [dbo].[users] (
 	[user_id] [int] NOT NULL ,
-	[login_name] [char] (15) NOT NULL ,
-	[login_password] [char] (15) NOT NULL ,
-	[first_name] [char] (25) NOT NULL ,
-	[last_name] [char] (30) NOT NULL ,
-	[title] [char] (30) NOT NULL ,
-	[company] [char] (30) NOT NULL ,
-	[address] [char] (40) NOT NULL ,
-	[city] [char] (30) NOT NULL ,
-	[zip] [char] (15) NOT NULL ,
-	[country] [char] (30) NOT NULL ,
-	[county_council] [char] (30) NOT NULL ,
-	[email] [char] (50) NOT NULL ,
+	[login_name] [varchar] (50) NOT NULL ,
+	[login_password] [varchar] (15) NOT NULL ,
+	[first_name] [varchar] (25) NOT NULL ,
+	[last_name] [varchar] (30) NOT NULL ,
+	[title] [varchar] (30) NOT NULL ,
+	[company] [varchar] (30) NOT NULL ,
+	[address] [varchar] (40) NOT NULL ,
+	[city] [varchar] (30) NOT NULL ,
+	[zip] [varchar] (15) NOT NULL ,
+	[country] [varchar] (30) NOT NULL ,
+	[county_council] [varchar] (30) NOT NULL ,
+	[email] [varchar] (50) NOT NULL ,
 	[admin_mode] [int] NOT NULL ,
 	[last_page] [int] NOT NULL ,
 	[archive_mode] [int] NOT NULL ,
@@ -653,6 +662,13 @@ CREATE TABLE [dbo].[phones] (
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [dbo].[phonetypes] (
+	[phonetype_id] [int] NOT NULL ,
+	[typename] [varchar] (12) NOT NULL ,
+	[lang_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [dbo].[roles_rights] (
 	[role_id] [int] NOT NULL ,
 	[meta_id] [int] NOT NULL ,
@@ -737,14 +753,6 @@ CREATE TABLE [dbo].[new_doc_permission_sets_ex] (
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[phonetypes] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phonetypes] PRIMARY KEY  CLUSTERED 
-	(
-		[phonetype_id],
-		[lang_prefix]
-	)  ON [PRIMARY] 
-GO
-
 ALTER TABLE [dbo].[readrunner_user_data] WITH NOCHECK ADD 
 	 PRIMARY KEY  CLUSTERED 
 	(
@@ -794,6 +802,14 @@ ALTER TABLE [dbo].[meta_section] WITH NOCHECK ADD
 	(
 		[meta_id],
 		[section_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[phonetypes] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phonetypes] PRIMARY KEY  CLUSTERED 
+	(
+		[phonetype_id],
+		[lang_id]
 	)  ON [PRIMARY] 
 GO
 
@@ -927,10 +943,6 @@ ALTER TABLE [dbo].[permissions] WITH NOCHECK ADD
 		[permission_id],
 		[lang_prefix]
 	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [dbo].[phonetypes] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phonetypes_lang_prefix] DEFAULT ('se') FOR [lang_prefix]
 GO
 
 ALTER TABLE [dbo].[readrunner_user_data] WITH NOCHECK ADD 
@@ -1347,6 +1359,15 @@ ALTER TABLE [dbo].[phones] ADD
 	)
 GO
 
+ALTER TABLE [dbo].[phonetypes] ADD 
+	CONSTRAINT [FK_phonetypes_lang_prefixes] FOREIGN KEY 
+	(
+		[lang_id]
+	) REFERENCES [dbo].[lang_prefixes] (
+		[lang_id]
+	)
+GO
+
 ALTER TABLE [dbo].[roles_rights] ADD 
 	CONSTRAINT [FK_roles_rights_meta] FOREIGN KEY 
 	(
@@ -1425,6 +1446,12 @@ ALTER TABLE [dbo].[user_rights] ADD
 		[meta_id]
 	) REFERENCES [dbo].[meta] (
 		[meta_id]
+	),
+	CONSTRAINT [FK_user_rights_users] FOREIGN KEY 
+	(
+		[user_id]
+	) REFERENCES [dbo].[users] (
+		[user_id]
 	)
 GO
 
@@ -1434,6 +1461,12 @@ ALTER TABLE [dbo].[user_roles_crossref] ADD
 		[role_id]
 	) REFERENCES [dbo].[roles] (
 		[role_id]
+	),
+	CONSTRAINT [FK_user_roles_crossref_users] FOREIGN KEY 
+	(
+		[user_id]
+	) REFERENCES [dbo].[users] (
+		[user_id]
 	)
 GO
 
@@ -1443,6 +1476,12 @@ ALTER TABLE [dbo].[useradmin_role_crossref] ADD
 		[role_id]
 	) REFERENCES [dbo].[roles] (
 		[role_id]
+	),
+	CONSTRAINT [FK_useradmin_role_crossref_users] FOREIGN KEY 
+	(
+		[user_id]
+	) REFERENCES [dbo].[users] (
+		[user_id]
 	)
 GO
 

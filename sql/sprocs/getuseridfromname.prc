@@ -13,8 +13,8 @@ CREATE PROCEDURE [GetUserIdFromName]
 Used by the conferences loginfunction, to detect a users userid from
 the username
 */
- @userName char(15),
- @userPwd char(15)
+ @userName varchar(50),
+ @userPwd varchar(15)
 AS
 SELECT  u.user_id 
 FROM users u

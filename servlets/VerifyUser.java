@@ -19,6 +19,17 @@ public class VerifyUser extends HttpServlet {
     public void init( ServletConfig config ) throws ServletException {
 		super.init( config ) ;
     }
+	
+	/**
+		doGet()
+	*/
+
+	public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+		doPost(req, res);
+		return;
+	} 
+	/** end of doGet() */
+	
 
     /**
        doPost()
@@ -44,21 +55,26 @@ public class VerifyUser extends HttpServlet {
 		int p = req.getServerPort( );
 		String port = (p == 80 || p == 443) ? "" : ":" + p;
 
-		// Get the user's name and password
 		String name = req.getParameter( "name" );
 		String passwd = req.getParameter( "passwd" );
 		String value = req.getHeader( "User-Agent" ) ; 
 		
+		
 		// Check the name and password for validity
 		user = imcref.verifyUser( name, passwd );
+		
+		// Get session 
+		HttpSession session = req.getSession( true );
 
 		if( user == null ) {
-		    res.sendRedirect(access_denied_url) ;
+		    if ( req.getParameter("next_meta") != null ){
+				session.setAttribute( "next_meta", req.getParameter("next_meta") );
+			}
+			res.sendRedirect(access_denied_url) ;
 		    return ;
 		} else {
 				
 		    // Valid login.  Make a note in the session object.
-		    HttpSession session = req.getSession( true );
 		    session.setAttribute( "logon.isDone", user );  // just a marker object
 		    session.setAttribute("browser_id",value) ;
 			
@@ -66,22 +82,52 @@ public class VerifyUser extends HttpServlet {
 
 		   	user.setLoginType("verify") ;
 			
+			
+			String nexturl = "StartDoc";  // default value
+			
 			if (req.getParameter("Logga in")!=null){
-
-		    	// Try redirecting the client to the page he first tried to access
-		    	String target = (String) session.getAttribute("login.target");
-		    	if (target != null) {
-					session.removeAttribute("login.target") ;
+				String target="";
+				// if we have got a next_meta lets redirect to that meta_id
+				if ( session.getAttribute( "next_meta" ) !=null ){
+					target = "GetDoc?meta_id=" +(String)session.getAttribute( "next_meta" );
+					session.removeAttribute("next_meta") ;
 					res.sendRedirect(target);
-					return ;
+					return;
+				}
+				else {
+					// Try redirecting the client to the page he first tried to access
+					target = (String) session.getAttribute("login.target");
+		    		if (target != null) {
+						session.removeAttribute("login.target") ;
+						res.sendRedirect(target);
+						return ;
+		    		}
 		    	}
 				
 			}else if (req.getParameter("Ändra")!=null){
+				// if user has been pushed button "change" from login page 
 				session.setAttribute("userToChange", ""+user.getUserId() );
-				session.setAttribute("go_back", "StartDoc");
+				session.setAttribute("next_url", "StartDoc");
 				
-				res.sendRedirect("AdminUserProps?CHANGE_USER=true");	
+				res.sendRedirect("AdminUserProps?CHANGE_USER=true");
+				return;
+					
+			
+			}else if ( req.getParameter("next_url") !=null ){
+				//if user was redirected here from an user template and next_meta was passed
+				nexturl = req.getParameter("next_url") ;
+				res.sendRedirect(nexturl);
+				return;
+				
 			}
+			else if ( req.getParameter("next_meta") !=null ){
+				//if user was redirected here from an user template and next_url was passed
+				nexturl = "GetDoc?meta_id=" + req.getParameter("next_meta") ;
+				res.sendRedirect(nexturl);
+				return;
+			}	
+				
+						
 
 			// Couldn't redirect to the target.  Redirect to the site's home page.
 		    res.sendRedirect( scheme + "://" + serverName + port + servlet_url + "StartDoc" );

@@ -353,5 +353,18 @@ public interface IMCServiceInterface {
     public void setReadrunnerUserData(User user, ReadrunnerUserData rrUserData) ;
 
     public ReadrunnerUserData getReadrunnerUserData(User user) ;
+	
+	/**
+       Retrieve the texts for a document
+       @param meta_id The id of the document.
+       @return A Map (Integer -> IMCText) with all the  texts in the document.
+    **/
+    public Map getTexts(int meta_id);
+	
+		 
+	public int getSessionCounter();
+
+    public String getSessionCounterDate();
+	
 
 }

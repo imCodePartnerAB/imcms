@@ -10,7 +10,7 @@ GO
 
 CREATE PROCEDURE phoneNbrAdd
 /*
-This function adds a new phone numbers to the db. Used by AdminUserPhones
+This function adds a new phone numbers to the db. Used by AdminUserProps
 */
  @user_id int,
  @nbr varchar(25),

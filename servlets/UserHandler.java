@@ -42,18 +42,18 @@ public class UserHandler extends Administrator {
 
 	String sqlStr = "" ;
 	sqlStr += params.getProperty("user_id") + ", " ;
-	sqlStr +=	"'" + params.getProperty("login_name") + "', "  ;
-	sqlStr += "'" + params.getProperty("password1") + "', ";
-	sqlStr +=	"'" + params.getProperty("first_name") + "', ";
-	sqlStr +=	"'" + params.getProperty("last_name") + "', ";
-	sqlStr +=	"'" + params.getProperty("title") + "', ";
-	sqlStr +=	"'" + params.getProperty("company") + "', ";
-	sqlStr +=	"'" + params.getProperty("address") + "', ";
-	sqlStr +=	"'" + params.getProperty("city") + "', ";
-	sqlStr +=	"'" + params.getProperty("zip") + "', ";
-	sqlStr +=	"'" + params.getProperty("country") + "', " ;
-	sqlStr +=	"'" + params.getProperty("country_council") + "', ";
-	sqlStr +=	"'" + params.getProperty("email") + "', "  ;
+	sqlStr +=	"'" + (params.getProperty("login_name")).trim() + "', "  ;
+	sqlStr += "'" + (params.getProperty("password1")).trim() + "', ";
+	sqlStr +=	"'" + (params.getProperty("first_name")).trim() + "', ";
+	sqlStr +=	"'" + (params.getProperty("last_name")).trim() + "', ";
+	sqlStr +=	"'" + (params.getProperty("title")).trim() + "', ";
+	sqlStr +=	"'" + (params.getProperty("company")).trim() + "', ";
+	sqlStr +=	"'" + (params.getProperty("address")).trim() + "', ";
+	sqlStr +=	"'" + (params.getProperty("city")).trim() + "', ";
+	sqlStr +=	"'" + (params.getProperty("zip")).trim() + "', ";
+	sqlStr +=	"'" + (params.getProperty("country")).trim() + "', " ;
+	sqlStr +=	"'" + (params.getProperty("country_council")).trim() + "', ";
+	sqlStr +=	"'" + (params.getProperty("email")).trim() + "', "  ;
 
 	// Default values for admin_mode, last_page, archive_mode, lang_id
 	sqlStr +=	"0" + ", ";

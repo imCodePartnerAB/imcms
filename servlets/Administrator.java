@@ -49,6 +49,7 @@ public class Administrator extends HttpServlet {
 	    Object oKeys = (enumKeys.nextElement()) ;
 	    Object oValue = (enumValues.nextElement()) ;
 	    String theVal = oValue.toString() ;
+	//System.out.println(oKeys.toString() + " = " + theVal);
 	    if(theVal.equals(""))
 		return false ;
 	}
