@@ -1,9 +1,8 @@
 <table border="0" cellspacing="0" cellpadding="0">
-     <tr align="center" valign="top" bgcolor="#999966"> 
-         <td colspan="3"><img src="@imageurl@/te_veckans.gif" width="135" height="46"></td>
+     <tr align="center" valign="top" bgcolor="#996666"> 
+         <td colspan="3"><img src="@imageurl@/.gif" width="135" height="46"></td>
      </tr>
-
-	<form name="weeklyQ" method="GET" action="@servleturl@/QuestionResult" target="_blank" style="background-color:#999966" onSubmit="checkChecked(); return false">
+	<form name="weeklyQ" method="GET" action="@servleturl@/QuestionResult" target="_blank" style="background-color:#996666" onSubmit="checkChecked(); return false">
 			  <script language="JavaScript">
 				<!--
 				function checkChecked() {
@@ -16,35 +15,36 @@
 				      return ;
 				    }
 				  }
-				  alert('You forgot to choose!') ;
+				  alert('Du glömde välja!') ;
 				  return ;
 				}
 				//-->
 			  </script>
-	<tr align="left" valign="top" bgcolor="#999966"> 
+	<tr align="left" valign="top" bgcolor="#996666"> 
          <td><img src="@imageurl@/transpix.gif" width="6" height="6"></td>
          <td> <p><span class="vitbrodtext">#question#<br></span></p>
 			  <input type="hidden" name="question" value="#question#">
 			  <input type="hidden" name="infile" value="#file#">
               <table width="100" border="0" cellspacing="0" cellpadding="0">
                 	<tr align="left" valign="top"> 
-                    	<td><span class="vitbrodtext">yes</span>&nbsp; 
-                        	<input type="radio" name="answer" value="yes" style="background-color:#999966">
+                    	<td><span class="vitbrodtext">ja</span>&nbsp; 
+                        	<input type="radio" name="answer" value="yes" style="background-color:#996666">
                       	</td>
-                        <td> <span class="vitbrodtext">no</span> 
-                          	<input type="radio" name="answer" value="no" style="background-color:#999966">
+                        <td> <span class="vitbrodtext">nej</span> 
+                          	<input type="radio" name="answer" value="no" style="background-color:#996666">
                       	</td>
                     </tr>
 			   </table>
                <br>
-               <input type="image" src="@imageurl@/kn_visa_resultat.gif" width="104" height="15" border="0" alt="Display results"> 
+               <input type="image" src="@imageurl@/kn_visa_resultat.gif" width="104" height="15" border="0" alt="Visa resultat"> 
          </td>
          <td><img src="@imageurl@/transpix.gif" width="6" height="6"></td>
     </tr>
 	</form>
-	<tr align="left" valign="top" bgcolor="#999966"> 
+	<tr align="left" valign="top" bgcolor="#996666"> 
          <td><img src="@imageurl@/transpix.gif" width="6" height="6"></td>
          <td><img src="@imageurl@/transpix.gif" width="123" height="6"></td>
          <td><img src="@imageurl@/transpix.gif" width="6" height="6"></td>
     </tr>
 </table>
+<p>&nbsp;</p>
