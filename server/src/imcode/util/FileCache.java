@@ -46,7 +46,7 @@ public class FileCache {
        Fetch a file from the cache, if it hasn't changed on disc.
     */
     public synchronized String getCachedFileString(File file) throws IOException {
-	    
+
 	if (m_FileCacheSize > 0) {
 	    Object[] file_and_date = (Object[])(fileCache.getElement(file)) ; // Get the cached file, if any.
 	    if (file_and_date == null || file.lastModified() > ((Long)file_and_date[1]).longValue() ) {
@@ -60,4 +60,9 @@ public class FileCache {
 	    return loadFile(file).toString() ;
 	}
     }
+
+    public String getUncachedFileString(File file) throws IOException {
+	return loadFile(file).toString() ;
+    }
+
 }

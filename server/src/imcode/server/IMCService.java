@@ -2867,7 +2867,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public List getQuoteList(String quoteListName) {
 	List theList = new LinkedList() ;
 	try {
-	    StringReader reader = new StringReader(getFortune(quoteListName));
+	    File file = new File(m_FortunePath,quoteListName) ;
+	    StringReader reader = new StringReader(fileCache.getUncachedFileString(file));
 	    QuoteReader quoteReader = new QuoteReader(reader) ;
 	    for (Quote quote; null != (quote = quoteReader.readQuote()) ; ) {
 		theList.add(quote) ;
@@ -2903,7 +2904,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public List getPollList(String pollListName) {
 	List theList = new LinkedList() ;
 	try {
-	    StringReader reader = new StringReader(getFortune(pollListName));
+	    File file = new File(m_FortunePath,pollListName) ;
+	    StringReader reader = new StringReader(fileCache.getUncachedFileString(file));
 	    PollReader pollReader = new PollReader(reader) ;
 	    for (Poll poll; null != (poll = pollReader.readPoll()) ; ) {
 		theList.add(poll) ;
