@@ -229,6 +229,7 @@
 
 	<copy todir="${WEB-INF}" file="install/web.xml"/>
 
+
 	<!-- Write version.txt -->
 	<echo message="${version}" file="${WEB-INF}/version.txt"/>
 
@@ -283,6 +284,13 @@
 		<pathelement path="${classes}"/>
 	    </classpath>
 	</java>
+    </target>
+
+    <target name="test-db" depends="build" description="Runs all test on DatabaseService">
+        <junit haltonfailure="yes" printsummary="on" >
+            <formatter type="brief" usefile="false" />
+              <test name="imcode.server.db.TestDatabaseService"/>
+        </junit>
     </target>
 
     <!-- Generate documentation -->
