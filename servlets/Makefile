@@ -1,4 +1,11 @@
-CLASSPATH = 	/usr/local/java/jakarta-oro-2.0.2-dev-2.jar:/usr/local/java/jdbc2_0-stdext.jar:/usr/local/java/Opta2000.jar:/usr/local/java/JSDK2.0/lib/jsdk.jar:/home/kreiger/imCMS1.3/1.3/server/classes:/usr/local/java/jcchart400K.jar:.:diagram/:conf/
+LIBDIR = /usr/local/lib/java
+SRCDIR = .
+INSTALLDIR = install
+
+JARSPATH = $(LIBDIR)/jakarta-oro-2.0.2-dev-2.jar:$(LIBDIR)/jdbc2_0-stdext.jar:$(LIBDIR)/Opta2000.jar:$(LIBDIR)/jsdk.jar:$(LIBDIR)/jcchart400K.jar
+IMCMSCLASSPATH = /home/kreiger/imCMS1.3/1.3/server/classes
+DIRSCLASSPATH = $(SRCDIR):$(SRCDIR)/diagram:$(SRCDIR)/conf
+CLASSPATH = $(JARSPATH):$(IMCMSCLASSPATH):$(DIRSCLASSPATH)
 
 COMPILER = javac
 VM = java
@@ -11,7 +18,6 @@ CLASSES = AddDoc.class \
           ChangeExternalDoc2.class \
           ChangeImage.class \
           ChangeText.class \
-          ChangeUrl.class \
           FileAdmin.class \
           GenericUpload.class \
           GetDoc.class \
@@ -93,21 +99,30 @@ CLASSES = AddDoc.class \
           conf/Conference.class \
           \
 
+INSTALLED = $(addprefix $(INSTALLDIR)/,$(notdir $(CLASSES)))
+
 .SUFFIXES: .java .class
+
+.PHONY: all jar clean install
 
 all : $(CLASSES)
 
 jar : all
-	jar cvf imcms-servlets.jar *.class
+	jar cvf imcms-servlets.jar $(CLASSES)
+
+install : $(INSTALLED)
+
+$(INSTALLDIR)/%.class : %.class
+	cp $? $@
 
 # Remove all class files from the project directory.
 clean:
-	rm *.class
+	$(RM) $(CLASSES)
 
 # Implicit rule for making Java class files from Java
 # source files.
 .java.class:
-	$(COMPILER) $(COPTIONS) -classpath "$(CLASSPATH)"  $?
+	$(COMPILER) $? $(COPTIONS) -classpath "$(CLASSPATH)"
 
 
 
