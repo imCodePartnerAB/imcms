@@ -20,11 +20,11 @@ INSERT INTO users
  VALUES (1,'admin', 'admin', 'Admin', 'Super','','','','','','','','@servermaster-email@',0,1001,0,<? sql/default_lang_id ?>,1,convert(char(10),getDate(),120))
 INSERT INTO users VALUES (2,'user', 'user', 'User', 'Extern','','','','','','','','',0,1001,0,<? sql/default_lang_id ?>,1,convert(char(10),getDate(),120))
 SET IDENTITY_INSERT roles ON
-INSERT INTO roles
+INSERT INTO roles (role_id, role_name, permissions, admin_role)
  VALUES(0, 'Superadmin', 0, 1)
-INSERT INTO roles
+INSERT INTO roles (role_id, role_name, permissions, admin_role)
  VALUES(1, 'Useradmin', 0, 2)
-INSERT INTO roles
+INSERT INTO roles (role_id, role_name, permissions, admin_role)
  VALUES(2, 'Users', 1, 0)
 SET IDENTITY_INSERT roles OFF
 INSERT INTO user_roles_crossref
