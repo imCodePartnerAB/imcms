@@ -116,26 +116,22 @@ public class ImageBrowse extends HttpServlet {
 		int max = 1000;//the nr of img th show at the time
 		int counter = 0; //the current startNr 
 		int img_numbers = imgList.size();//the total numbers of img
-		
+
 		if (startStr != null)
 		{
 			counter = Integer.parseInt(startStr);
 		}
 		
 		
-	
 		
 				
-		//lest see if a button whas punshed
+		//lest see if a previous button whas punshed
 		if (req.getParameter("PREVIOUS_IMG") != null)
 		{
 			counter = counter - (max * 2);	
 			if(counter<0) counter=0;
-		}else if(req.getParameter("NEXT_IMG") != null)
-		{
-			counter += max;
-			if(counter > img_numbers)counter = max-1;
-		}	
+		}
+		
 		
 		// Lets bee ready to create buttons
 		VariableManager nextButtonVm = new VariableManager();
@@ -143,13 +139,14 @@ public class ImageBrowse extends HttpServlet {
 		nextButtonVm.addProperty( "meta_id", meta_id);
 		nextButtonVm.addProperty( "img_no", img_no);
 		nextButtonVm.addProperty( "img_curr_max", Integer.toString(counter+max));
+		nextButtonVm.addProperty( "SERVLET_URL", MetaInfo.getServletPath( req ) );
 		
 		VariableManager prevButtonVm = new VariableManager();
 		prevButtonVm.addProperty( "IMAGE_URL", image_url+ adminImgPath);
 		prevButtonVm.addProperty( "meta_id", meta_id);
 		prevButtonVm.addProperty( "img_no", img_no);
 		prevButtonVm.addProperty( "img_curr_max", Integer.toString(counter+max));
-	//	vmButtons.addProperty( "SERVLET_URL", MetaInfo.getServletPath( req ) );
+		prevButtonVm.addProperty( "SERVLET_URL", MetaInfo.getServletPath( req ) );
 			//lets get the teplatePath to the buttons
 		String templatePath = ImageBrowse.getAdminTemplateFolder (imcserver, user);
 		//now we have to find out what buttons to show
