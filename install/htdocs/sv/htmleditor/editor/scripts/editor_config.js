@@ -42,7 +42,7 @@ var servletPath = "@servleturl@/";
      *         the host. may not be empty.                                 *
      * ------------------------------------------------------------------- */
 
-var strRightPath = "http://" + location.host + /";
+var strRightPath = "http://" + location.host + "@rooturl@/";
 
 /* *******************************************************************************************
  *         PATHS TO REPLACE ON LOAD AND SAVE:   *
@@ -50,7 +50,7 @@ var strRightPath = "http://" + location.host + /";
 
 	/* leave one empty ("") if there are no "dev-domains" */
 arrWrongPaths = new Array();
-arrWrongPaths[0] = "http://" + location.host + "/";
+arrWrongPaths[0] = "http://" + location.host + "@rooturl@/";
 /* arrWrongPaths[1] = "http://tommy.imcode.com:8080/"; */
 
 	/* servlets that will be "HREF-fixed" in the editor - (ie:  href="BackDoc"  ->  href="/servlet/BackDoc") */
