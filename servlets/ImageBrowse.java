@@ -68,10 +68,10 @@ public class ImageBrowse extends HttpServlet {
 	if (img_preset == null) {
 	    img_preset = "" ;
 	} else {
-	    img_tag = "<img src='"+img_preset+"'>" ;
+	    img_tag = "<img src='"+image_url+img_preset+"'>" ;
 	}
 
-	String canon_path = file_path.getAbsolutePath() ;
+	String canon_path = file_path.getCanonicalPath() ;
 	List imgList = (List)session.getValue("ImageBrowse.optionlist") ;
 	session.removeValue("ImageBrowse.optionlist") ;
 
@@ -91,7 +91,7 @@ public class ImageBrowse extends HttpServlet {
 		    String fileLen = "Read ERROR";
 		}
 						
-		String filePath = fileObj.getAbsolutePath() ;
+		String filePath = fileObj.getCanonicalPath() ;
 		if (filePath.startsWith(canon_path)) {
 		    filePath = filePath.substring(canon_path.length()) ;
 		}
@@ -99,23 +99,31 @@ public class ImageBrowse extends HttpServlet {
 		    filePath = filePath.substring(File.separator.length()) ;
 		}
 
-		File urlFile = new File(image_url+filePath) ;
-		filePath = urlFile.getParentFile().getPath() ;
+		File urlFile = new File(filePath) ;
+		String fileName = urlFile.getName() ;
+		File parentDir = urlFile.getParentFile() ;
 
-		String fileName = java.net.URLEncoder.encode(urlFile.getName()) ;
-		filePath = filePath.replace(File.separatorChar,'/')+"/"+fileName ;
-
-		StringBuffer filePathSb = new StringBuffer(filePath) ;
-		// Replace all '+' and ' ' with '%20'
-		for (int i=0; i<filePathSb.length() ; ++i) {
-		    if (filePathSb.charAt(i)=='+' || filePathSb.charAt(i)==' ') {
-			filePathSb.replace(i,i+1,"%20") ;
-			i += 2 ;
-		    }
+		if (parentDir != null) {
+		    filePath = parentDir.getPath()+"/" ;
+		} else {
+		    filePath = "" ;
 		}
-		filePath = filePathSb.toString() ;
 
-		options.append("<option value=\"" + filePath + "\"" + (filePath.equals(img_preset)?" selected":"") + ">[" + fileObj.length() + "] " + filePath + "</option>\r\n");
+		filePath = filePath.replace(File.separatorChar,'/')+fileName ;
+
+		String parsedFilePath = java.net.URLEncoder.encode(filePath) ;
+
+		StringBuffer filePathSb = new StringBuffer(parsedFilePath) ;
+		// Replace all '+' and ' ' with '%20'
+		//for (int i=0; i<filePathSb.length() ; ++i) {
+		//    if (filePathSb.charAt(i)=='+') {
+		//	filePathSb.replace(i,i+1,"%20") ;
+		//	i += 2 ;
+		//    }
+		//}
+		parsedFilePath = filePathSb.toString() ;
+
+		options.append("<option value=\"" + parsedFilePath + "\"" + (parsedFilePath.equals(img_preset)?" selected":"") + ">" + filePath + "\t[" + fileObj.length() + "]</option>\r\n");
 	    }
 				
 				
