@@ -29,8 +29,8 @@ public class ConnectionPoolForNonPoolingDriver extends ConnectionPool {
 
         basicDataSource.setMaxActive( maxActiveConnections );
         basicDataSource.setMaxIdle( maxActiveConnections );
-
-        basicDataSource.setPoolPreparedStatements( true );
+        basicDataSource.setValidationQuery( "SELECT 1" );
+        basicDataSource.setTestOnBorrow( true );
 
         dataSource = basicDataSource;
 
