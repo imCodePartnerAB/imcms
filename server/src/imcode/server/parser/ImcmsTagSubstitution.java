@@ -115,7 +115,8 @@ public class ImcmsTagSubstitution implements Substitution {
 	String attributevalue ;
 	
 	//lets get the templates simplename or null if there isn't one
-	String template_name = attributes.getProperty("template");
+	ParserParameters paramsToParse = new ParserParameters(attributes.getProperty("template"),attributes.getProperty("param"));
+//	String template_name = attributes.getProperty("template");
 
 	if (null != (attributevalue = attributes.getProperty("no"))) { 	    // If we have the attribute no="number"...
 	    // Set the number of this include-tag
@@ -136,7 +137,7 @@ public class ImcmsTagSubstitution implements Substitution {
 		if (includeLevel>0) {
 		    int included_meta_id = Integer.parseInt(attributevalue) ;
 		    // Recursively parse the wanted page.
-		    String document = new String(textDocParser.parsePage(included_meta_id,user,-1,includeLevel-1,template_name),"8859_1") ;
+		    String document = new String(textDocParser.parsePage(included_meta_id,user,-1,includeLevel-1,paramsToParse),"8859_1") ;
 		    document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
 		    document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
 		    return document ;
@@ -188,7 +189,7 @@ public class ImcmsTagSubstitution implements Substitution {
 						   ) ;
 	    } else if (includeLevel>0) {
 		int included_meta_id = Integer.parseInt((String)included_docs.get(String.valueOf(no))) ;
-		String document = new String(textDocParser.parsePage(included_meta_id,user,-1,includeLevel-1,template_name),"8859_1") ;
+		String document = new String(textDocParser.parsePage(included_meta_id,user,-1,includeLevel-1,paramsToParse),"8859_1") ;
 		document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
 		document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
 		return document ;

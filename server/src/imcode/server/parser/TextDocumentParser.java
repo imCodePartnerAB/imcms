@@ -69,16 +69,21 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	this.serverObject = serverobject ;
     }
 
-    public byte[] parsePage (int meta_id, User user, int flags, String template_name) throws IOException{
-		return parsePage(meta_id,user,flags,1,template_name) ;
+    public byte[] parsePage (int meta_id, User user, int flags, ParserParameters paramsToParse) throws IOException{
+		return parsePage(meta_id,user,flags,1,paramsToParse) ;
 	}
 
-	public byte[] parsePage (int meta_id, User user, int flags, int includelevel,String template_name) throws IOException{
+	public byte[] parsePage (int meta_id, User user, int flags, int includelevel,ParserParameters paramsToParse) throws IOException{
 	try {
 	    long totaltime = System.currentTimeMillis() ;
 	    String meta_id_str = String.valueOf(meta_id) ;
 	    int user_id = user.getInt("user_id") ;
 	    String user_id_str = String.valueOf(user_id) ;
+		
+		//handles the extra parameters
+		ParserParameters parse_params = paramsToParse;
+		String template_name = parse_params.getTemplate();
+		String param_value = parse_params.getParameter();
 
 	    DBConnect dbc = new DBConnect(connPool) ;
 	    dbc.getConnection() ;
@@ -143,7 +148,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		log.log(Log.ERROR, "parsePage: GetTextDocData returned nothing") ;
 		return "parsePage: GetTextDocData returned nothing".getBytes("8859_1") ;
 	    }
-
+			
 		String template_id = (String)text_docs.remove(0) ;			
 		if (template_name != null){
 			//lets validate that the template exists before we changes the original one
@@ -566,7 +571,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		props.setProperty("#menuitemdatecreated#", child_date_created) ;
 		props.setProperty("#menuitemdatemodified#", child_date_modified) ;
 		props.setProperty("#menuitemimage#", child_meta_image) ;
-
+	
+		
+		
 		currentMenu.add(props) ;	// Add the Properties for this menuitem to the current menus list.
 	    }
 
@@ -602,6 +609,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    tags.setProperty("#addDoc*#","") ;
 	    tags.setProperty("#saveSortStart*#","") ;
 	    tags.setProperty("#saveSortStop*#","") ;
+		
+			System.out.println(param_value)	;
+		tags.setProperty("#param#", param_value);
 
 	    if ( imagemode ) {	// imagemode
 		// FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
@@ -666,6 +676,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    }  // if (templatemode)
 
 	    temptags.setProperty("#servlet_url#",servletUrl) ;
+		
 
 	    if ( menumode ) {
 
@@ -704,7 +715,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    } // if (menumode)
 
 	    temptags.setProperty("#getMetaId#",String.valueOf(meta_id)) ;
-
+		
+		
 	    // Now load the files specified in "toload", and place them in "tags"
 	    //System.out.println("Loading template-files.") ;
 
