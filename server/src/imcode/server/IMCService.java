@@ -76,7 +76,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
     final static Pattern MENU_NO_PATTERN = patCache.getPattern("#doc_menu_no#",Perl5Compiler.READ_ONLY_MASK) ;
 
-    final static Substitution EMPHASIZE_SUBSTITUTION = new Perl5Substitution("<b><em><!--emphasized-->$1<!--/emphasized--></em></b>") ;
+    final static Perl5Substitution EMPHASIZE_SUBSTITUTION = new Perl5Substitution("<b><em><!--emphasized-->$1<!--/emphasized--></em></b>", Perl5Substitution.INTERPOLATE_ALL) ;
 
     final static Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
 
@@ -97,6 +97,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		m_TemplateHome      = props.getProperty("TemplatePath") ;
 		m_DefaultHomePage   = Integer.parseInt(props.getProperty("StartDocument")) ;    //FIXME: Get from DB
 		m_ServletUrl        = props.getProperty("ServletUrl") ; //FIXME: Get from webserver, or get rid of if possible.
+		// FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 		m_ImageFolder       = props.getProperty("ImageUrl") ; //FIXME: Get from webserver, or get rid of if possible.
 		m_ExternalDocTypes  = props.getProperty("ExternalDoctypes") ; //FIXME: Get rid of, if possible.
 		m_StartUrl          = props.getProperty("StartUrl") ; //FIXME: Get from webserver, or get rid of if possible.
@@ -415,6 +416,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		String txt_type = (String)it.next() ;
 		String value = (String)it.next() ;
 		if ( value.length()>0 ) {
+		    // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 		    value = "<img src=\""+m_ImageFolder+"red.gif\" border=\"0\">&nbsp;"+value+"<a href=\""+m_ServletUrl+"ChangeText?meta_id="+meta_id+"&txt="+txt_no+"&type="+txt_type+"\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>" ;
 		    tags.setProperty(key,value) ;
 		}
@@ -455,7 +457,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    String lowscr = (String)imit.next() ;
 	    String target = (String)imit.next() ;
 	    String target_name = (String)imit.next() ;
-	    StringBuffer value = new StringBuffer (64) ;
+	    StringBuffer value = new StringBuffer (96) ;
 	    if ( !"".equals(imgurl) ) {
 		if ( !"".equals(linkurl) ) {
 		    value.append("<a href=\""+linkurl+"\"") ;
@@ -466,7 +468,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		    }
 		}
 
-		value.append("<img src=\""+imgurl+"\"") ;
+		value.append("<img src=\""+m_ImageFolder+imgurl+"\"") ; // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 		if ( !"0".equals(width) ) {
 		    value.append(" width=\""+width+"\"") ;
 		}
@@ -499,6 +501,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		    value.append(">") ;
 		}
 		if ( imagemode ) {	// Imagemode...
+		    // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 		    value.append("<a href=\"ChangeImage?meta_id="+meta_id+"&img="+imgnumber+"\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>") ;
 		}
 		tags.setProperty(imgtag,value.toString()) ;
@@ -610,6 +613,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		props.setProperty("#archiveDelBox#",archiveDelBox) ;
 
 		if ( "0".equals(child_admin) ) {
+		    // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 		    admin_stop+="&nbsp;<a href=\"AdminDoc?meta_id="+child_meta_id+"\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>" ;
 		}
 
@@ -715,10 +719,12 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	tags.setProperty("#saveSortStop*#","") ;
 
 	if ( imagemode ) {	// imagemode
+	    // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 	    tags.setProperty("#img*#",				"<a href=\"ChangeImage?meta_id="+meta_id+"&img=#img_no#\"><img src=\""+m_ImageFolder+"bild.gif\" border=\"0\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>") ;
 	    numberedtags.setProperty("#img*#","#img_no#") ;
 	}
 	if ( textmode ) {	// Textmode
+	    // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 	    tags.setProperty("#txt*#",				"<img src=\""+m_ImageFolder+"red.gif\" border=\"0\">&nbsp;<a href=\""+m_ServletUrl+"ChangeText?meta_id="+meta_id+"&txt=#txt_no#&type=1\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>") ;
 	    numberedtags.setProperty("#txt*#","#txt_no#") ;
 	}
@@ -838,7 +844,6 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		templatebuffer.setLength(0) ;
 	    }
 	} catch(IOException e) {
-	    // this.updateLogs("An error occurred reading the file" + e );
 	    log.log(Log.ERROR, "An error occurred reading file during parsing.", e) ;
 	    return ("Error occurred reading file during parsing.\n"+e).getBytes("8859_1") ;
 	}
@@ -925,7 +930,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	if (emp!=null) {
 	    // for each string to emphasize
 	    for (int i = 0 ; i < emp.length ; ++i) {
-		returnresult = org.apache.oro.text.regex.Util.substitute(patMat,patCache.getPattern(Perl5Compiler.quotemeta(emp[i])),EMPHASIZE_SUBSTITUTION,returnresult,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
+		returnresult = org.apache.oro.text.regex.Util.substitute(patMat,patCache.getPattern("("+Perl5Compiler.quotemeta(emp[i])+")"),EMPHASIZE_SUBSTITUTION,returnresult,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
 	    }
 	}
 	
@@ -1316,8 +1321,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		superadmin = new StringBuffer(getCachedFileString(superadmin_filename)) ;
 		
 	    } catch(IOException e) {
-		this.updateLogs("An error occurred reading the file" + e );
-		System.out.println("An error occurred reading the file" + e) ;
+		log.log(Log.ERROR, "An error occurred reading adminbuttonfile", e );
 		return null ;
 	    }
 	    
@@ -1351,8 +1355,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    
 	    return templatebuffer.toString() ;
 	} catch ( RuntimeException ex ) {
-	    System.out.println("Error occurred while parsing the adminbuttons.") ;
-	    ex.printStackTrace(System.out) ;
+	    log.log(Log.ERROR,"Error occurred while parsing the adminbuttons.",ex) ;
 	    return null ;
 	}
     }
@@ -6724,10 +6727,8 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 				File fileObj = new File(path);
 				long date = 0;
 				long fileDate = fileObj.lastModified();
-				System.out.println("*****>>> File: " + fileObj.getName() + "  filedate " + fileDate);
 				if (fileObj.exists() && fileDate>date)
 				{
-					System.out.println("New latest " + fileObj.getName());
 					// if a template was not properly removed, the template
 					// with the most recens modified-date is returned
 					date = fileDate;
