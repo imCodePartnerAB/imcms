@@ -2,7 +2,7 @@ package imcode.server.parser;
 
 import imcode.server.DocumentRequest;
 
-public class ParserParameters {
+public class ParserParameters implements Cloneable {
 
     private String template;	//used to store the template if not default is wanted
     private String param;		//used to store the parameter param
@@ -63,5 +63,9 @@ public class ParserParameters {
 
     public void setFlags( int flags ) {
         this.flags = flags;
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone() ;
     }
 }

@@ -131,7 +131,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             Perl5Matcher patMat = new Perl5Matcher();
 
-            Map textMap = documentMapper.getTexts( meta_id );
             Map imageMap = getImageMap( meta_id, imagemode );
 
             SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
@@ -149,7 +148,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, templatemode, parserParameters );
             MapSubstitution hashtagsubstitution = new imcode.server.parser.MapSubstitution( hashTags, true );
             MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( parserParameters, menus, menumode );
-            ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, documentRequest, templatePath, Arrays.asList( included_docs ), includemode, includelevel, includePath, textMap, textmode, imageMap, imagemode );
+            ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, parserParameters, templatePath, Arrays.asList( included_docs ), includemode, includelevel, includePath, document.getTexts(), textmode, imageMap, imagemode );
 
             LinkedList parse = new LinkedList();
             perl5util.split( parse, "/(<!--\\/?IMSCRIPT-->)/", templateContents );
@@ -302,7 +301,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
     private Properties getHashTags( UserDomainObject user, SimpleDateFormat datetimeFormatWithSeconds,
                                     TextDocumentDomainObject document,
-                                    boolean templatemode, ParserParameters paramsToParse ) {
+                                    boolean templatemode, ParserParameters parserParameters ) {
 
         Properties tags = new Properties();	// A properties object to hold the results from the db...
         // Put tags and corresponding data in Properties
@@ -324,11 +323,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         tags.setProperty( "#serverMaster#", service.getSystemData().getServerMaster() );
         tags.setProperty( "#serverMasterEmail#", service.getSystemData().getServerMasterAddress() );
 
-        tags.setProperty( "#param#", paramsToParse.getParameter() );
-        tags.setProperty( "#externalparam#", paramsToParse.getExternalParameter() );
+        tags.setProperty( "#param#", parserParameters.getParameter() );
+        tags.setProperty( "#externalparam#", parserParameters.getExternalParameter() );
 
         // Give the user a row of buttons if he is privileged enough.
-        tags.setProperty( "#adminMode#", service.getMenuButtons( user, document ) );
+        if (parserParameters.getFlags() >= 0) {
+            tags.setProperty( "#adminMode#", service.getMenuButtons( user, document ) );
+        }
 
         String changeTemplateUi = createChangeTemplateUi( templatemode, user, document );
         tags.setProperty( "#changePage#", changeTemplateUi );
