@@ -35,10 +35,9 @@ public class MainInitServlet extends HttpServlet {
 
             configureLogging( confPath );
 
-            final File indexDirectory = new File( realPathToWebApp, "WEB-INF/index" );
             Thread indexThread = new Thread("Startup indexing thread") {
                 public void run() {
-                    DocumentIndex documentIndexer = new DocumentIndex( indexDirectory );
+                    DocumentIndex documentIndexer = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentIndex() ;
                     documentIndexer.indexAllDocuments();
                 }
             };
