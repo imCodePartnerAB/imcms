@@ -258,7 +258,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         final int PHONE_TYPE_WORK_PHONE = 2;
         final int PHONE_TYPE_WORK_MOBILE = 3;
         final int PHONE_TYPE_FAX_PHONE = 4;
-        Database database = service.getDatabase() ;
         if ( newUser.getHomePhone().length() > 0 ){
             addPhoneNumber( newUser.getId(), newUser.getHomePhone(), PHONE_TYPE_HOME_PHONE, database ) ;
         }

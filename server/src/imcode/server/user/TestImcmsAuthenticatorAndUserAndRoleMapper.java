@@ -1,6 +1,5 @@
 package imcode.server.user;
 
-import imcode.server.MockImcmsServices;
 import imcode.server.db.IntegrityConstraintViolationSQLException;
 import imcode.server.db.MockDatabase;
 import junit.framework.TestCase;
@@ -10,14 +9,14 @@ public class TestImcmsAuthenticatorAndUserAndRoleMapper extends TestCase {
 
     public void testAddRoleNameTwice() throws Exception {
         MockDatabase database = new AddRoleMockDatabase();
-        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( database, new MockImcmsServices() );
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( database, null );
         imcmsAuthenticatorAndUserAndRoleMapper.addRole( "Test" ) ;
         imcmsAuthenticatorAndUserAndRoleMapper.addRole( "Test" ) ;
     }
 
     public void testAddRoleTwice() {
         MockDatabase database = new AddRoleMockDatabase();
-        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( database, new MockImcmsServices() );
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( database, null );
         RoleDomainObject role = new RoleDomainObject( 3, "Test", 0 );
         imcmsAuthenticatorAndUserAndRoleMapper.addRole( role );
         try {
@@ -28,7 +27,7 @@ public class TestImcmsAuthenticatorAndUserAndRoleMapper extends TestCase {
 
     public void testAddExternalUser() {
         AddUserMockDatabase database = new AddUserMockDatabase();
-        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( database, new MockImcmsServices() );
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( database, null );
         UserDomainObject user = new UserDomainObject();
         user.setLoginName( "Test" );
         user.setImcmsExternal( true );
