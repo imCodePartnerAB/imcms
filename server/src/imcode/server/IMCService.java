@@ -1466,8 +1466,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      checkDocAdminRights
      */
     public boolean checkDocAdminRights( int meta_id, UserDomainObject user ) {
-        DocumentDomainObject document = documentMapper.getDocument( meta_id );
-        return documentMapper.hasAdminPermissions( document, user );
+        return documentMapper.hasEditPermission( meta_id, user );
     }
 
     /**

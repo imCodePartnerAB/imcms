@@ -7,6 +7,7 @@ import com.imcode.imcms.api.SecurityChecker;
 import com.imcode.imcms.api.Template;
 
 import java.util.Map;
+import java.util.List;
 
 public class TextDocument extends Document {
 
@@ -15,23 +16,22 @@ public class TextDocument extends Document {
     }
 
     public TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
-        securityChecker.hasEditPermission( internalDocument );
+        securityChecker.hasDocumentPermission( this );
         TextDocumentTextDomainObject imcmsText = documentMapper.getTextField( internalDocument, textFieldIndexInDocument ) ;
         TextField textField = new TextField(imcmsText) ;
         return textField;
     }
 
     public void setPlainTextField( int textFieldIndexInDocument, String newText )  throws NoPermissionException {
-        securityChecker.hasEditPermission( internalDocument );
         setTextField( textFieldIndexInDocument, newText, TextDocumentTextDomainObject.TEXT_TYPE_PLAIN );
     }
 
     public void setHtmlTextField( int textFieldIndexInDocument, String newText )  throws NoPermissionException {
-        securityChecker.hasEditPermission( internalDocument );
         setTextField( textFieldIndexInDocument, newText, TextDocumentTextDomainObject.TEXT_TYPE_HTML );
     }
 
-    private void setTextField( int textFieldIndexInDocument, String newText, int textType ) {
+    private void setTextField( int textFieldIndexInDocument, String newText, int textType ) throws NoPermissionException {
+        securityChecker.hasEditPermission( this );
         TextDocumentTextDomainObject imcmsText = new TextDocumentTextDomainObject( newText, textType );
         this.documentMapper.saveText(
             imcmsText,
@@ -47,13 +47,14 @@ public class TextDocument extends Document {
         return result;
     }
 
-    public void setTemplate( Template newTemplate ) {
+    public void setTemplate( Template newTemplate ) throws NoPermissionException {
+        securityChecker.hasEditPermission( this );
         TemplateDomainObject internalTemplate = newTemplate.getInternal();
         internalDocument.setTemplate( internalTemplate );
     }
 
     public Document getInclude( int includeIndexInDocument ) throws NoPermissionException {
-        securityChecker.hasEditPermission( internalDocument );
+        securityChecker.hasDocumentPermission( this );
         Map includedDocumentIds = documentMapper.getIncludedDocuments( internalDocument ) ;
         Integer includedDocumentMetaId = (Integer)includedDocumentIds.get( new Integer( includeIndexInDocument ) );
         if (null != includedDocumentMetaId) {
@@ -66,12 +67,18 @@ public class TextDocument extends Document {
     }
 
     public void setInclude( int includeIndexInDocument, TextDocument documentToBeIncluded ) throws NoPermissionException {
-        securityChecker.hasEditPermission( internalDocument );
+        securityChecker.hasEditPermission( this );
         if ( null == documentToBeIncluded ) {
             documentMapper.removeInclusion(this.getId(), includeIndexInDocument) ;
         } else {
             documentMapper.setInclude(this.getId(), includeIndexInDocument, documentToBeIncluded.getId()) ;
         }
+    }
+
+    public Menu getMenu( int menuIndexInDocument ) throws NoPermissionException {
+        securityChecker.hasDocumentPermission( this );
+        TextDocumentLinkMenuDomainObject internalMenu = documentMapper.getMenu(internalDocument,menuIndexInDocument) ;
+        return new Menu(internalMenu) ;
     }
 
     public static class TextField {
@@ -97,4 +104,19 @@ public class TextDocument extends Document {
             return imcmsText.toHtmlString() ;
         }
     }
+
+    public class Menu {
+
+        private TextDocumentLinkMenuDomainObject internalMenu;
+
+        public Menu( TextDocumentLinkMenuDomainObject internalMenu ) {
+            this.internalMenu = internalMenu;
+        }
+
+        public List getLinks() {
+            return null ;
+        }
+
+    }
+
 }

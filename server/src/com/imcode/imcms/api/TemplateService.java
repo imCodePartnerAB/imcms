@@ -17,18 +17,20 @@ public class TemplateService {
     private SecurityChecker securityChecker;
     private TemplateMapper templateMapper;
 
-    public TemplateService( IMCService service, SecurityChecker securityChecker ) {
+    TemplateService( IMCService service, SecurityChecker securityChecker ) {
         this.securityChecker = securityChecker;
         this.templateMapper = new TemplateMapper( service );
     }
 
     /**
+     * Get a list of all
      *
      * @param textDocument The textDocument for witch we would like to se the possible groups.
      * @return Only the templategroups that the current logged in user has the permissions to see
+     * @throws NoPermissionException If the current user isn't superadmin
      */
-    public TemplateGroup[] getTemplatesGroups( TextDocument textDocument ) {
-        // todo securityChecker.????
+    public TemplateGroup[] getTemplatesGroups( TextDocument textDocument ) throws NoPermissionException {
+        securityChecker.isSuperAdmin();
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
         TemplateGroupDomainObject[] internalTemplates = templateMapper.getAllTemplateGroups( user, textDocument.getId() );
         TemplateGroup[] result = new TemplateGroup[internalTemplates.length];
@@ -38,8 +40,15 @@ public class TemplateService {
         return result;
     }
 
-    public Template[] getTemplates( TemplateGroup templateGroup ) {
-        // todo securityChecker.????
+    /**
+     * Get an array of all the Templates in a TemplateGroup
+     *
+     * @param templateGroup The wanted TemplateGroup
+     * @return An array of all the Templates in the given TemplateGroup
+     * @throws NoPermissionException If the current user doesn't have permission to list the templates in the templategroup.
+     */
+    public Template[] getTemplates( TemplateGroup templateGroup ) throws NoPermissionException {
+        securityChecker.hasTemplateGroupPermission(templateGroup);
         TemplateDomainObject[] templates = templateMapper.getTemplates( templateGroup.getId() );
         Template[] result = new Template[templates.length];
         for( int i = 0; i < templates.length; i++ ) {
@@ -50,11 +59,13 @@ public class TemplateService {
     }
 
     /**
-     * Convinient method that concat all the diffenrent templates from all the groups in one singel mehtod call.
-     * @param textDocument
-     * @return
+     * Get an array of all templates that may be used for a TextDocument.
+     *
+     * @param textDocument The TextDocument
+     * @return An array of all templates that may be used for the given TextDocument.
      */
-    public Template[] getPossibleTemplates( TextDocument textDocument ) {
+    public Template[] getPossibleTemplates( TextDocument textDocument ) throws NoPermissionException {
+        securityChecker.hasEditPermission(textDocument);
         TemplateGroup[] groups = getTemplatesGroups( textDocument );
         ArrayList temp = new ArrayList();
         for( int i = 0; i < groups.length; i++ ) {
@@ -67,7 +78,7 @@ public class TemplateService {
 
     public Template getTemplate( String templateName ) {
         TemplateDomainObject template = templateMapper.getTemplate(templateName) ;
-        return new Template(template) ;
+        return (null != template) ? new Template(template) : null ;
     }
 
 }

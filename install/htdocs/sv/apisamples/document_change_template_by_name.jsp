@@ -5,18 +5,22 @@
     DocumentService documentService = imcmsSystem.getDocumentService();
     TemplateService templateService = imcmsSystem.getTemplateService();
     int documentId = 1001 ;
-    String templateName = "Start" ;
+    String templateName = "default_start" ;
     TextDocument document = documentService.getTextDocument(documentId) ;
     Template currentTemplate = document.getTemplate();
+
     Template newTemplate = templateService.getTemplate(templateName) ;
 
-    if( newTemplate !=null ){
+    if( newTemplate == null ){
+        %> No template by the name "<%= templateName %>" <%
+    } else {
         document.setTemplate( newTemplate );
+        // don't forget to save your changes!
+        documentService.saveChanges( document ); %>
+
+        <h3>Changing template on document <%=document.getId()%></h3>
+        The template the document has assigned, <br>
+        Before: <%= currentTemplate.toString()%>
+        After: <%= document.getTemplate().toString() %><%
     }
-    // don't forget to save your changes!
-    documentService.saveChanges( document );
 %>
-<h3>Changing template on document <%=document.getId()%></h3>
-The template the document has assigned, <br>
-Before: <%= currentTemplate.toString()%>
-After: <%= document.getTemplate().toString() %>

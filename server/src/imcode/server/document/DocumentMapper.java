@@ -314,8 +314,27 @@ public class DocumentMapper {
         return document;
     }
 
-    public boolean hasAdminPermissions( DocumentDomainObject document, UserDomainObject user ) {
+    public boolean hasEditPermission( int documentId, UserDomainObject user ) {
 
+        int[] wantedPermissionSetIds = {IMCConstants.DOC_PERM_SET_FULL,
+                                        IMCConstants.DOC_PERM_SET_RESTRICTED_1,
+                                        IMCConstants.DOC_PERM_SET_RESTRICTED_2};
+
+        return userIsSuperAdminOrHasPermissionSetId( documentId, user, wantedPermissionSetIds );
+    }
+
+    public boolean hasDocumentPermission( int documentId, UserDomainObject user ) {
+
+        int[] wantedPermissionSetIds = {IMCConstants.DOC_PERM_SET_FULL,
+                                        IMCConstants.DOC_PERM_SET_RESTRICTED_1,
+                                        IMCConstants.DOC_PERM_SET_RESTRICTED_2,
+                                        IMCConstants.DOC_PERM_SET_READ};
+
+        return userIsSuperAdminOrHasPermissionSetId( documentId, user, wantedPermissionSetIds );
+
+    }
+
+    private boolean userIsSuperAdminOrHasPermissionSetId( int documentId, UserDomainObject user, int[] wantedPermissionSetIds ) {
         boolean result = false;
 
         boolean userHasSuperAdminRole = imcmsAAUM.hasSuperAdminRole( user );
@@ -324,23 +343,25 @@ public class DocumentMapper {
             result = true;
         } else {
 
-            String[] sqlResult = sprocGetUserPermissionSet( service, document.getMetaId(), user.getUserId() );
-            Vector perms = new Vector( Arrays.asList( sqlResult ) );
+            String[] perms = sprocGetUserPermissionSet( service, documentId, user.getUserId() );
 
-            if ( perms.size() > 0 ) {
-                int userPermissionSetId = Integer.parseInt( (String)perms.elementAt( 0 ) );
-                switch ( userPermissionSetId ) {
-                    case IMCConstants.DOC_PERM_SET_FULL:
-                    case IMCConstants.DOC_PERM_SET_RESTRICTED_1:
-                    case IMCConstants.DOC_PERM_SET_RESTRICTED_2:
-                        result = true;
-                        break;
-                    default:
-                        result = false;
-                }
+            if ( perms.length > 0 ) {
+                int userPermissionSetId = Integer.parseInt( perms[0] );
+
+                result = arrayContains( wantedPermissionSetIds, userPermissionSetId );
             }
         }
+        return result;
+    }
 
+    private boolean arrayContains( int[] array, int wantedValue ) {
+        boolean result = false;
+        for ( int i = 0; i < array.length; ++i ) {
+            if ( wantedValue == array[i] ) {
+                result = true;
+                break;
+            }
+        }
         return result;
     }
 
@@ -688,6 +709,10 @@ public class DocumentMapper {
 
     public static void sprocDeleteInclude( IMCServiceInterface imcref, int including_meta_id, int include_id ) {
         imcref.sqlUpdateProcedure( "DeleteInclude " + including_meta_id + "," + include_id );
+    }
+
+    public TextDocumentLinkMenuDomainObject getMenu( DocumentDomainObject internalDocument, int menuIndexInDocument ) {
+        return null;
     }
 
 }

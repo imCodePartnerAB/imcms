@@ -29,7 +29,7 @@ public class Document {
      * @return map of rolename String -> DocumentPermissionSet instances.
      */
     public Map getAllRolesMappedToPermissions() throws NoPermissionException {
-        securityChecker.hasEditPermission( internalDocument );
+        securityChecker.hasEditPermission( this );
         Map rolesMappedToPermissionsIds = documentPermissionMapper.getAllRolesMappedToPermissions( internalDocument );
         Map result = wrapDomainObjectsInMap( rolesMappedToPermissionsIds );
         return result;
@@ -48,47 +48,56 @@ public class Document {
         return result;
     }
 
-    public DocumentPermissionSet getPermissionSetRestrictedOne() {
+    public DocumentPermissionSet getPermissionSetRestrictedOne() throws NoPermissionException {
+        securityChecker.hasEditPermission( this );
         DocumentPermissionSetDomainObject restrictedOne = documentPermissionMapper.getPermissionSetRestrictedOne( internalDocument );
         DocumentPermissionSet result = new DocumentPermissionSet( restrictedOne );
         return result;
     }
 
-    public DocumentPermissionSet getPermissionSetRestrictedTwo() {
+    public DocumentPermissionSet getPermissionSetRestrictedTwo() throws NoPermissionException {
+        securityChecker.hasEditPermission( this );
         DocumentPermissionSetDomainObject restrictedTwo = documentPermissionMapper.getPermissionSetRestrictedTwo( internalDocument );
         DocumentPermissionSet result = new DocumentPermissionSet( restrictedTwo );
         return result;
-    }
-
-    public String getHeadline() {
-        return internalDocument.getHeadline();
-    }
-
-    public String getMenuText() {
-        return internalDocument.getText();
-    }
-
-    public String getMenuImageURL() {
-        return internalDocument.getImage();
-    }
-
-    public void setHeadline( String headline ) {
-        internalDocument.setHeadline( headline );
-    }
-
-    public void setMenuText( String menuText ) {
-        internalDocument.setText( menuText );
-    }
-
-    public void setMenuImageURL( String imageUrl ) {
-        internalDocument.setImage( imageUrl );
     }
 
     public int getId() {
         return internalDocument.getMetaId();
     }
 
-    public User getCreator() {
+    public String getHeadline() throws NoPermissionException {
+        securityChecker.hasDocumentPermission( this );
+        return internalDocument.getHeadline();
+    }
+
+    public String getMenuText() throws NoPermissionException {
+        securityChecker.hasDocumentPermission( this );
+        return internalDocument.getText();
+    }
+
+    public String getMenuImageURL() throws NoPermissionException {
+        securityChecker.hasDocumentPermission( this );
+        return internalDocument.getImage();
+    }
+
+    public void setHeadline( String headline ) throws NoPermissionException {
+        securityChecker.hasEditPermission( this );
+        internalDocument.setHeadline( headline );
+    }
+
+    public void setMenuText( String menuText ) throws NoPermissionException {
+        securityChecker.hasEditPermission( this );
+        internalDocument.setText( menuText );
+    }
+
+    public void setMenuImageURL( String imageUrl ) throws NoPermissionException {
+        securityChecker.hasEditPermission( this );
+        internalDocument.setImage( imageUrl );
+    }
+
+    public User getCreator() throws NoPermissionException {
+        securityChecker.hasDocumentPermission( this );
         return new User(internalDocument.getCreator()) ;
     }
 

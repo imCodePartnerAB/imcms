@@ -23,20 +23,22 @@ public class DocumentService {
      * @throws com.imcode.imcms.api.NoPermissionException If the current user dosen't have the rights to read this document.
      */
     public TextDocument getTextDocument( int documentId ) throws NoPermissionException {
-        securityChecker.hasDocumentRights( documentId );
         imcode.server.document.DocumentDomainObject doc = documentMapper.getDocument( documentId );
         TextDocument result = new TextDocument( securityChecker, this, doc, documentMapper, documentPermissionSetMapper );
+        securityChecker.hasDocumentPermission( result );
         return result;
     }
 
     public TextDocument createNewTextDocument( int parentId, int parentMenuNumber ) {
+        securityChecker.hasEditPermission(parentId);
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
         DocumentDomainObject newDoc = documentMapper.createNewTextDocument( user, parentId, parentMenuNumber );
         TextDocument result = new TextDocument( securityChecker, this, newDoc, documentMapper, documentPermissionSetMapper );
         return result;
     }
 
-    public void saveChanges( TextDocument document ) {
+    public void saveChanges( TextDocument document ) throws NoPermissionException {
+        securityChecker.hasEditPermission(document);
         documentMapper.saveTextDocument( document.getInternal() );
     }
 

@@ -9,6 +9,10 @@
     Template currentTemplate = document.getTemplate();
     Template[] templates = templateService.getPossibleTemplates( document );
 
+    if (0 == templates.length) {
+        %> No possible templates to choose from for this user. <%
+    } else {
+
     // take the first template that's not current
     Template newTemplate = null;
     int i = 0;
@@ -29,3 +33,5 @@
 The template the document has assigned, <br>
 Before: <%= currentTemplate.toString()%>
 After: <%= document.getTemplate().toString() %>
+<% } %>
+

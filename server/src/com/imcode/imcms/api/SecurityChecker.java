@@ -49,9 +49,13 @@ class SecurityChecker {
         }
     }
 
-    void hasEditPermission( DocumentDomainObject document ) throws NoPermissionException  {
-        if( !docMapper.hasAdminPermissions( document, accessingUser ) ) {
-            throw new NoPermissionException("The logged in user does not have permission to edit internalDocument: " + document.getMetaId() );
+    public void hasEditPermission( int parentId ) {
+
+    }
+
+    void hasEditPermission( Document document ) throws NoPermissionException  {
+        if( !docMapper.hasEditPermission( document.internalDocument.getMetaId(), accessingUser ) ) {
+            throw new NoPermissionException("The logged in user does not have permission to edit document " + document.getId() );
         };
     }
 
@@ -59,7 +63,14 @@ class SecurityChecker {
         return accessingUser;
     }
 
-    void hasDocumentRights( int metaId ) throws NoPermissionException {
+    void hasDocumentPermission( Document document ) throws NoPermissionException {
+        if (!docMapper.hasDocumentPermission(document.getId(), accessingUser)) {
+            throw new NoPermissionException("The logged in user does not have permission to access document "+document.getId()) ;
+        }
+    }
+
+    public void hasTemplateGroupPermission( TemplateGroup templateGroup ) {
         // todo
     }
+
 }
