@@ -39,8 +39,8 @@ public class ChatBase extends HttpServlet {
 
 	private final static String ADMIN_BUTTON_TEMPLATE = "Chat_Admin_Button.htm";
 	private final static String UNADMIN_BUTTON_TEMPLATE = "Chat_Unadmin_Button.htm";
-	
-	
+
+
 	/**
 	*	Does the things that has to bee done only ones
 	*/
@@ -50,7 +50,7 @@ public class ChatBase extends HttpServlet {
 		super.init(config);
 		log("init");
 	}
-	
+
 	/**
 	Collects the parameters from the request object
 	**/
@@ -58,7 +58,7 @@ public class ChatBase extends HttpServlet {
 	protected Properties getNewChatParameters( HttpServletRequest req) throws ServletException, IOException
 	{
 		Properties chatP = new Properties();
-		
+
 		String chatName = (req.getParameter("chatName")==null) ? "" : (req.getParameter("chatName"));
 		String permission = (req.getParameter("permission")==null) ? "3" : (req.getParameter("permission"));
 		String updateTime = ( req.getParameter("updateTime")==null ) ? "30" : (req.getParameter("updateTime"));		
@@ -82,6 +82,8 @@ public class ChatBase extends HttpServlet {
 		return chatP ;
 	}
 
+
+	
 	/**
 	Returns the metaId from a request object, if not found, we will
 	get the one from our session object. If still not found then null is returned.
@@ -107,12 +109,12 @@ public class ChatBase extends HttpServlet {
 		}
 		return metaId ;
 	}
-	
-	
+
+
 	/**
 	Returns the ForumId from a request object, if not found, we will
 	get the one from our session object. If still not found then null is returned.
-	
+
 	*/
 	public String getForumId (HttpServletRequest req)
 	throws ServletException, IOException
@@ -134,9 +136,9 @@ public class ChatBase extends HttpServlet {
 		}
 		return forumId ;
 	}
-	
-	
-	
+
+
+
 	/**
 	Collects all information from the user object. To get information from
 	the userobject.
@@ -666,7 +668,7 @@ public class ChatBase extends HttpServlet {
 	public void log(String msg)
 	{
 		super.log(msg) ;
-		System.out.println("Chat: " + msg) ;
+		System.out.println("ChatBase: " + msg) ;
 
 	}
 
@@ -807,7 +809,7 @@ public class ChatBase extends HttpServlet {
 		// Ok, if lastlogindate is null, then it has to be the a user who has logged in
 		// to the system and comes here to the conference for the first time
 		// Lets add the user to conference db.
-if(lastLoginDate == null)
+		if(lastLoginDate == null)
 		{
 			log("Ok, det är första gången användaren är här.") ;
 
@@ -1117,7 +1119,7 @@ if(lastLoginDate == null)
 	 * @param res is used if error (send user to conference_starturl )
 	 * @param user
 	*/
-	
+
 	//används av ChatViewer
 	protected boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, imcode.server.User user )
 	throws ServletException, IOException
@@ -1131,7 +1133,7 @@ if(lastLoginDate == null)
 
 		//lets get if user authorized or not
 		boolean authorized = true;
-		
+
 		//OBS "Chat.meta_id" ska bytas ut mot en konstant senare
 		String stringMetaId = (String)session.getValue( "Chat.meta_id" );
 		if ( stringMetaId == null )
@@ -1209,7 +1211,7 @@ if(lastLoginDate == null)
 			IMCServiceRMI.checkDocAdminRights( imcServer, metaId, user, 65536 ) );
 
 	}
-	
+
 	//******** methods to handle the cheared chat objects ************
 	/**
 	*checks if the chatobject exists or if it has to bee created
@@ -1221,7 +1223,7 @@ if(lastLoginDate == null)
 		String id = Integer.toString(chatId);
 		return ChatHolder.hasAChat(id);
 	}
-	
+
 	/**
 	*adds a chatobject into a global HashMap
 	*@param chatId - a string representation of the key
@@ -1240,7 +1242,7 @@ if(lastLoginDate == null)
 			return false;
 		}
 	}
-	
+
 	/**
 	*removes a chat object 
 	*@param chatId - the key of the chat to remove
@@ -1250,7 +1252,7 @@ if(lastLoginDate == null)
 		String id = Integer.toString(chatId);
 		ChatHolder.removeAChat(id);
 	}
-	
+
 	/**
 	*gets a chat
 	*@param chatId - the key of the chat to get
@@ -1260,14 +1262,200 @@ if(lastLoginDate == null)
 	{
 		String id = Integer.toString(chatId);
 		return ChatHolder.getAChat(id);
-		
-		
+
+
 	}
-	
+
 	public Enumeration getAllChats()
 	{
 		Enumeration chatE = ChatHolder.getAllTheChats();
 		return chatE;
 	}
 	
+	//**************** does the setup for chatboard  *****************************
+	//lets get the settings for the chat and convert them 
+	//and add them into HashTable and add it into the session
+	public Hashtable prepareChatBoardSettings(Chat chat, HttpServletRequest req, boolean bool)
+	{
+		//now we sets up the settings for this chat
+		Hashtable hash = new Hashtable();
+		Properties settings = chat.getChatParameters();		
+		//lets convert them
+		boolean onOff = false;
+
+		//sets up show datTime or not
+		if(settings.getProperty("dateTime").equals("2"))
+		{
+			onOff = false;
+		}else{
+			if (bool)
+			{
+				if (settings.getProperty("dateTime").equals("3"))
+				{
+					onOff = req.getParameter("dateTime") == null ? false : true;
+				}else{
+					onOff = true;	 
+				}
+
+			}else{
+				onOff = true;
+			}		
+		}
+		log("1dateTime = "+onOff);
+		hash.put("dateTimeBoolean", new Boolean(onOff));
+
+
+		// onOff = req.getParameter("") == null ? false : true;
+
+		//sets up show public msg or not
+		if(settings.getProperty("publik").equals("2"))
+		{
+			onOff = false;
+		}else
+		{
+			if (bool)
+			{
+				if(settings.getProperty("publik").equals("3"))
+				{
+					onOff = req.getParameter("publik") == null ? false : true;
+				}else
+				{
+					onOff = true;
+				}
+			}else
+			{
+				onOff = true;
+			}		
+		}
+		log("1publik = "+onOff);
+		hash.put("publicMsgBoolean", new Boolean(onOff));
+
+
+		//sets up show private msg or not
+		if(settings.getProperty("privat").equals("2"))
+		{
+			onOff = false;
+		}else
+		{
+			if (bool)
+			{
+				if (settings.getProperty("privat").equals("3"))
+				{
+					onOff = req.getParameter("privat") == null ? false : true;
+				}else
+				{
+					onOff = true;
+				}				
+			}else
+			{
+				onOff = true;
+			}		
+		}
+		log("1privat = "+onOff);
+		hash.put("privateMsgBoolean", new Boolean(onOff));
+
+
+
+		//sets up show entrense and exits, or not
+		if(settings.getProperty("inOut").equals("2"))
+		{
+			onOff = false;
+		}else
+		{
+			if (bool)
+			{
+				if (settings.getProperty("inOut").equals("3"))
+				{
+					onOff = req.getParameter("inOut") == null ? false : true;
+				}else
+				{
+					onOff = true;
+				}				
+			}else
+			{
+				onOff = true;
+			}		
+		}
+		log("1inOut = "+onOff);
+		hash.put("inOutBoolean", new Boolean(onOff));
+
+
+
+		//sets up autoreload on off
+		String timeStr = "30";
+		if(settings.getProperty("reload").equals("2"))
+		{
+			onOff = false;
+			timeStr = "30";
+		}else
+		{
+			if (bool)
+			{
+				if (settings.getProperty("reload").equals("3"))
+				{
+					onOff = req.getParameter("reload") == null ? false : true;
+					timeStr = settings.getProperty("updateTime");
+				}else
+				{
+					onOff = true;
+					timeStr = settings.getProperty("updateTime");
+				}				
+			}else
+			{	
+				onOff = true;
+				timeStr = settings.getProperty("updateTime");
+			}
+		}
+		try
+		{
+			hash.put("reloadInteger", new Integer(timeStr));
+		}catch(NumberFormatException nfe)
+		{
+			log(nfe.getMessage());
+			hash.put("reloadInteger", new Integer("30"));
+		}
+		hash.put("reloadBoolean", new Boolean(onOff));
+
+
+		//ok first time we dont have the font size so lets set it to 3
+		int size;
+		if (settings.getProperty("font").equals("2"))
+		{
+			if (settings.getProperty("font").equals("3"))
+			{
+				if (bool)
+				{
+					if (req.getParameter("fontInc") != null)
+					{
+						size = ((Integer)hash.get("fontSizeInteger")).intValue() +1;
+						if(size > 7) size = 7;
+					}else if (req.getParameter("fontDec") != null)
+					{
+						size = ((Integer)hash.get("fontSizeInteger")).intValue() -1;
+						if(size < 1)size = 1;
+					}else
+					{
+						size = ((Integer)hash.get("fontSizeInteger")).intValue();
+					}
+				}else
+				{
+					size = 3;
+				}
+			}else
+			{
+				size = 3;
+			}	
+		}else
+		{
+			size = 3;
+		}
+		log("1size = "+size);
+		hash.put("fontSizeInteger", new Integer(size));
+
+		return 	hash;	
+
+	}//end prepareSettings
+
+
+
 } // End class
