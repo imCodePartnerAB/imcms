@@ -533,7 +533,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             try {
                 return compareDocuments( d1, d2 );
             } catch ( NullPointerException npe ) {
-                throw new NullPointerException( "Tried sorting on null fields! You need to call .nullsFirst() or .nullsLast() on your MenuItemComparator.") ;
+                throw new NullPointerException( "Tried sorting on null fields! You need to call .nullsFirst() or .nullsLast() on your Comparator.") ;
             }
         }
 
