@@ -605,15 +605,16 @@
             depends="init,tools"
             description="copy and translate files for the public web">
 
-        <property name="poll"	            value="${imcms}/${buildlanguage}/poll"/>
+        <property name="poll"               value="${imcms}/${buildlanguage}/poll"/>
         <property name="shop"	            value="${imcms}/${buildlanguage}/shop"/>
         <property name="htmleditor"         value="${imcms}/${buildlanguage}/htmleditor"/>
-        <property name="jsp"                value="${imcms}/${buildlanguage}/jsp"/>
-        <property name="login"              value="${imcms}/${buildlanguage}/login"/>
-        <property name="html"               value="${imcms}/${buildlanguage}/html"/>
+        <property name="imcmsjsp"           value="${imcms}/${buildlanguage}/jsp"/>
+        <property name="imcmslogin"         value="${imcms}/${buildlanguage}/login"/>
+        <property name="imcmshtml"          value="${imcms}/${buildlanguage}/html"/>
         <property name="adminimages"        value="${imcms}/${buildlanguage}/images/admin"/>
         <property name="adminbuttons"       value="${imcms}/${buildlanguage}/images/admin/adminbuttons"/>
-        <property name="scripts"            value="${imcms}/${buildlanguage}/scripts"/>
+        <property name="imcmsscripts"       value="${imcms}/${buildlanguage}/scripts"/>
+
         <property name="imcmsimageurl"      value="${imcmsurl}/${buildlanguage}/images"/>
 
         <filter token="imcmsimageurl"       value="${imcmsimageurl}"/>
@@ -628,7 +629,7 @@
         <!-- imcms login  -->
         <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${login}" filtering="true">
+            todir="${imcmslogin}" filtering="true">
             <fileset dir="templates/login"/>
         </imtranslate>
 
@@ -645,7 +646,7 @@
         <!-- html -->
         <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
-                     todir="${html}" filtering="true">
+                     todir="${imcmshtml}" filtering="true">
             <fileset dir="install/htdocs/imcms/html"/>
         </imtranslate>
 
@@ -685,7 +686,7 @@
         </copy>
 
          <!-- imcms/language/scripts -->
-        <copy todir="${scripts}" filtering="true">
+        <copy todir="${imcmsscripts}" filtering="true">
             <fileset dir="install/htdocs/imcms/scripts"/>
         </copy>
 
@@ -758,7 +759,7 @@
         <!-- imcms jsp files -->
         <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
-                     todir="${jsp}" filtering="true">
+                     todir="${imcmsjsp}" filtering="true">
             <fileset dir="install/htdocs/sv/jsp">
                 <patternset>
                     <include name="*.jsp"/>
