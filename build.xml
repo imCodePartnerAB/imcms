@@ -23,16 +23,19 @@
     <property name="login"                 value="${webroot}/login"/>
     <property name="css"                   value="${webroot}/css"/>
     <property name="user"                  value="${webroot}/user"/>
+    <property name="javascript"            value="${webroot}/javascript"/>
+    <property name="jsp"                   value="${webroot}/jsp"/>
     <property name="imcms"                 value="${webroot}/imcms"/>
     <property name="imcmscss"              value="${imcms}/css"/>
     <property name="imcmsimages"           value="${imcms}/images"/>
     <property name="imcmsscripts"          value="${imcms}/scripts"/>
-    <property name="javascript"            value="${webroot}/javascript"/>
-    <property name="jsp"                   value="${webroot}/jsp"/>
+    <property name="imcmsjsp"              value="${imcms}/jsp"/>
+    <property name="imcmshtml"             value="${imcms}/html"/>
+
     <property name="adminbuttons"          value="${imcmsimages}/admin"/>
-    <property name="readrunner"	   	   value="${webroot}/readrunner"/>
-    <property name="shop"	           value="${webroot}/shop"/>
-    <property name="poll"	           value="${webroot}/poll"/>
+    <property name="readrunner"	   	       value="${webroot}/readrunner"/>
+    <property name="shop"	               value="${webroot}/shop"/>
+    <property name="poll"	               value="${webroot}/poll"/>
     <property name="apisamples"	           value="${webroot}/apisamples"/>
 
 
@@ -66,8 +69,12 @@
     <property name="jspurl"                   value="${rooturl}/jsp"/>
     <property name="postcardsurl"             value="${rooturl}/postcards"/>
     <property name="imcmsimageurl"            value="${rooturl}/imcms/images"/>
-    <property name="adminbuttonsurl"          value="${imcmsimageurl}/admin"/>
+    <property name="imcmshtmlurl"             value="${rooturl}/imcms/html"/>
+    <property name="imcmsscripturl"           value="${rooturl}/imcms/scripts"/>
+    <property name="imcmscssurl"              value="${rooturl}/imcms/css"/>
+    <property name="imcmsjspurl"              value="${rooturl}/imcms/jsp"/>
     <property name="shopurl"                  value="${rooturl}/shop"/>
+    <property name="adminbuttonsurl"          value="${imcmsimageurl}/admin"/>
     <property name="readrunnerurl"	          value="${rooturl}/readrunner"/>
     <property name="readrunnerimagesurl"      value="${readrunnerurl}/images"/>
     <property name="readrunnercssurl"         value="${readrunnerurl}/css"/>
@@ -122,11 +129,17 @@
 	<filter token="loginurl"            value="${loginurl}"/>
 	<filter token="imageurl"            value="${imageurl}"/>
 	<filter token="cssurl"              value="${cssurl}"/>
+    <filter token="jspurl"              value="${jspurl}"/>
+	<filter token="javascripturl"       value="${javascripturl}"/>
 	<filter token="postcardsurl"        value="${postcardsurl}"/>
 	<filter token="adminbuttonsurl"     value="${adminbuttonsurl}"/>
 	<filter token="imcmsimageurl"       value="${imcmsimageurl}"/>
-	<filter token="javascripturl"       value="${javascripturl}"/>
-    <filter token="jspurl"              value="${jspurl}"/>
+    <filter token="imcmshtmlurl"        value="${imcmshtmlurl}"/>
+    <filter token="imcmsscriptsurl"     value="${imcmsscripturl}"/>
+    <filter token="imcmscssurl"         value="${imcmscssurl}"/>
+    <filter token="imcmsjspurl"         value="${imcmsjspurl}"/>
+
+
 
 
 	<filter token="readrunnerurl"       value="${readrunnerurl}"/>
@@ -458,12 +471,24 @@
 	    <fileset dir="install/htdocs/images" />
 	</copy>
 
+    <copy todir="${css}">
+        <fileset dir="install/htdocs/css"/>
+    </copy>
+
+    <copy todir="${imcmshtml}" filtering="true">
+        <fileset dir="install/htdocs/imcms/html"/>
+    </copy>
+
     <copy todir="${imcmsimages}">
 	    <fileset dir="install/htdocs/imcms/images"/>
     </copy>
 
-    <copy todir="${css}">
-        <fileset dir="install/htdocs/css"/>
+    <copy todir="${imcmscss}" filtering="true">
+	    <fileset dir="install/htdocs/imcms/css"/>
+    </copy>
+
+    <copy todir="${imcmsscripts}" filtering="true">
+	    <fileset dir="install/htdocs/imcms/scripts"/>
     </copy>
 
 	<copy todir="${webroot}" filtering="true">
@@ -529,7 +554,7 @@
         depends="global-filters"
         description="Copies the jsp-files for one language.">
 
-        <copy todir="${jsp}" filtering="true">
+        <copy todir="${imcmsjsp}" filtering="true">
             <fileset dir="install/htdocs/${srclanguage}/jsp">
             <patternset>
                 <include name="*.jsp"/>
@@ -1059,9 +1084,6 @@
         <copy todir="${htmleditorurl}/images">
             <fileset dir="install/htdocs/${srclanguage}/htmleditor/editor/images" includes="*.jpg,*.gif"/>
         </copy>
-        <copy todir="${admintemplates}" filtering="true"
-            file="install/htdocs/${srclanguage}/htmleditor/change_text.html"
-            overwrite="yes"/>
     </target>
 
 
