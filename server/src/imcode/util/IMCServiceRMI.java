@@ -880,10 +880,6 @@ public class IMCServiceRMI {
 		}
 	}
 
-        /**
-         *
-         *
-         */
     	public static Hashtable getDocumentTypesInHash (String server,String langPrefixStr)  throws IOException {
                 IMCServiceInterface imc = getInterface( server ) ;
 		try {
@@ -894,5 +890,14 @@ public class IMCServiceRMI {
 		}
 	}
 
+    public static boolean checkUserDocSharePermission(String server, User user, int meta_id) throws IOException {
+	IMCServiceInterface imc = getInterface( server ) ;
+	try {
+	    return imc.checkUserDocSharePermission(user,meta_id) ;
+	} catch ( IOException ex ) {
+	    imc = renewInterface(server) ;
+	    return imc.checkUserDocSharePermission(user,meta_id) ;
+	}
+    }
 
 }
