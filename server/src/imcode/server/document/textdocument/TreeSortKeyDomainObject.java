@@ -4,6 +4,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public class TreeSortKeyDomainObject implements Comparable, Serializable {
@@ -12,14 +14,15 @@ public class TreeSortKeyDomainObject implements Comparable, Serializable {
 
     public TreeSortKeyDomainObject( String treeSortKey ) {
         String[] keyStrings = treeSortKey.trim().split( "\\D+",0 ) ;
-        if (1 == keyStrings.length && "".equals(keyStrings[0])) {
-            keyStrings = new String[0];
-        }
-        keys = new int[keyStrings.length] ;
+        List keyList = new ArrayList() ;
         for (int i = 0; i < keyStrings.length; ++i) {
             String keyString = keyStrings[i];
-            keys[i] = Integer.parseInt(keyString) ;
+            try {
+                Integer key = Integer.valueOf(keyString) ;
+                keyList.add( key );
+            } catch( NumberFormatException ignored ) {}
         }
+        keys = ArrayUtils.toPrimitive( (Integer[])keyList.toArray( new Integer[keyList.size()] )) ;
     }
 
     public int getLevelCount() {
