@@ -12,12 +12,28 @@
     UserService userService = imcmsSystem.getUserService();
 %>
 Before:<br>
-<%=java.util.Arrays.asList( userService.getAllRolesNames() )%>
+<ul>
+<%
+    String[] roleNames = userService.getAllRolesNames();
+    for( int i = 0; i < roleNames.length; i++ ) {%>
+        <li><%=roleNames[i]%></li><%
+    }
+%>
+</ul>
+
 <%
    String role = "Test role";
    userService.deleteRole( role );
 %><br>
 After delete the role named "<%=role%>":<br>
-<%=java.util.Arrays.asList( userService.getAllRolesNames() )%>
+
+<ul>
+<%
+    roleNames = userService.getAllRolesNames();
+    for( int i = 0; i < roleNames.length; i++ ) {%>
+        <li><%=roleNames[i]%></li><%
+    }
+%>
+</ul>
 </body>
 </html>
