@@ -11,6 +11,7 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
+import imcode.util.LocalizedMessage;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
@@ -318,6 +319,16 @@ public class AdminManager extends Administrator {
             this.expand_listMap = expand_listMap;
             this.subreports = subreports;
             documentFinder = new DocumentFinder( new AdminManagerSearchPage( this ) );
+            documentFinder.addExtraSearchResultColumn( new DocumentFinder.SearchResultColumn() {
+                public String render( DocumentDomainObject document, HttpServletRequest request ) {
+                    DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_NO_SECONDS_FORMAT_STRING ) ;
+                    return dateFormat.format( document.getModifiedDatetime() ) ;
+                }
+
+                public LocalizedMessage getName() {
+                    return new LocalizedMessage( "global/Date" );
+                }
+            } );
         }
 
         public String getHtml_admin_part() {

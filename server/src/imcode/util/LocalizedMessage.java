@@ -2,11 +2,11 @@ package imcode.util;
 
 import imcode.server.user.UserDomainObject;
 import imcode.server.Imcms;
-import imcode.util.Utility;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 
-public class LocalizedMessage {
+public class LocalizedMessage implements Serializable {
 
     private String languageKey;
 
