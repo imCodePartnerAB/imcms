@@ -8,6 +8,8 @@ import java.io.FilenameFilter;
 public class ImageFileMetaData
 {
 
+    static final byte[] PNG_HEADER = { -119, 80, 78, 71, 13, 10, 26, 10 } ;
+
     public static final int MARKER = 0xFF ; // Start of segment marker
 
     public static final int SOI  = 0xD8 ; // Start of Image
@@ -146,14 +148,18 @@ public class ImageFileMetaData
 			// Filter method		1 byte
 			// Interlace method		1 byte
 			
-			for(int slask=0;slask<8;slask++)
-			    type += "" + dis.read() + " ";
-			if(type.equals("137 80 78 71 13 10 26 10 "))
+			byte[] t = new byte[8] ;
+			dis.readFully(t);
+
+			//for(int slask=0;slask<8;slask++)
+			//    type += "" + dis.read() + " ";
+			//if(type.equals("137 80 78 71 13 10 26 10 "))
+			if (t.equals( PNG_HEADER ))
 			    {
 				dis.skipBytes(4); // skip the blockLength
-				String header = "";
-				for(int slask=0;slask<4;slask++)
-				    header += (char)(dis.read());
+				byte[] u = new byte[4] ;
+				dis.readFully(u) ;
+				String header = new String(u,"8859_1") ;
 				if (header.equals("IHDR"))
 				    {
 					width = (dis.read()<<32) + (dis.read()<<16) + (dis.read()<<8) + dis.read();

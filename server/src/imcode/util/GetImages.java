@@ -8,32 +8,38 @@ import java.io.FilenameFilter;
 public class GetImages implements FilenameFilter, Comparator
 {
 
-/**
-	* Recurses :) down the file-hierarchy and puts all files (filtered) in ArrayList
-	@param path the filepath i.e. "D:\\Apache\\htdocs\\images"
-	@param fullPath file stored with full path
-	@param sorted ArrayList sorted
-**/
-public List getImageFiles(String path, boolean fullPath, boolean sorted) 
-	{
-		String FILE_SEP = System.getProperty("file.separator");
+    private static GetImages _this = new GetImages() ;
+    
+    /**
+	Private constructor, to prevent unnecessary instantiation.
+    */
+    private GetImages () {
+    
+    }
+
+    /**
+    	* Recurses :) down the file-hierarchy and puts all files (filtered) in ArrayList
+    	@param path the filepath i.e. "D:\\Apache\\htdocs\\images"
+    	@param fullPath file stored with full path
+    	@param sorted ArrayList sorted
+    **/
+
+    static public List getImageFiles(File path, boolean fullPath, boolean sorted) 
+	    {
 		List arrlist = new ArrayList();
-		File _file = new File(path);
-		File _thisFile;
-		String[] _imgArr = _file.list(this);
+		File[] _imgArr = path.listFiles(_this);
 		
 
 		for(int i=0;i<_imgArr.length;i++) 
 		{
-			_thisFile = new File(path + FILE_SEP + _imgArr[i]);
-			if(_thisFile.isDirectory())
-				arrlist.addAll(getImageFiles(path + FILE_SEP + _imgArr[i], true, true));
+			if(_imgArr[i].isDirectory())
+				arrlist.addAll(getImageFiles(_imgArr[i], true, true));
 			else
-				arrlist.add(_thisFile);
+				arrlist.add(_imgArr[i]);
 		}
 
 		// sorts arrlist using compare-method of Comparator
-		if(sorted) Collections.sort(arrlist,this);
+		if(sorted) Collections.sort(arrlist,_this);
 		return arrlist ;
 	}
 	
@@ -56,17 +62,15 @@ public List getImageFiles(String path, boolean fullPath, boolean sorted)
 	}
 	
 /**
-	* implemented Comparator-method, jämför filnamnen, oavsett path
+	* implemented Comparator-method, compares the filenames, regardless of path
 	@param o1
 	@param o2
 **/
 	public int compare(Object o1, Object o2) 
 	{
-		String s1 = ((File)o1).getName();
-		String s2 = ((File)o2).getName();
+		String s1 = ((File)o1).getPath();
+		String s2 = ((File)o2).getPath();
 		return s1.compareTo(s2);
 	}
-
-
 }
 
