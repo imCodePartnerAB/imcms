@@ -37,7 +37,6 @@ public class DocumentMapper {
     private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
     private static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo";
     private static final String SPROC_GET_TEXT = "GetText";
-    private static final String SPROC_GET_INCLUDES = "GetIncludes";
     private static final String SPROC_INSERT_TEXT = "InsertText";
     private static final String SPROC_UPDATE_PARENTS_DATE_MODIFIED = "UpdateParentsDateModified";
     private static final String SPROC_INHERIT_PERMISSONS = "InheritPermissions";
@@ -531,6 +530,28 @@ public class DocumentMapper {
             document.setDefaultTemplateIdForRestrictedPermissionSetTwo( defaultTemplateIdForRestrictedPermissionSetTwo );
         }
 
+        setDocumentTexts( document );
+        setDocumentImages( document );
+        setDocumentIncludes( document );
+
+    }
+
+    private void setDocumentIncludes( TextDocumentDomainObject document ) {
+        String sqlSelectDocumentIncludes = "SELECT include_id, included_meta_id FROM includes WHERE meta_id = ?" ;
+        String[][] documentIncludesSqlResult = service.sqlQueryMulti( sqlSelectDocumentIncludes, new String[] {""+document.getId()} ) ;
+        for ( int i = 0; i < documentIncludesSqlResult.length; i++ ) {
+            String[] documentIncludeSqlRow = documentIncludesSqlResult[i];
+            int includeIndex = Integer.parseInt( documentIncludeSqlRow[0] ) ;
+            int includedDocumentId = Integer.parseInt( documentIncludeSqlRow[1] ) ;
+            document.setInclude(includeIndex, includedDocumentId) ;
+        }
+    }
+
+    private void setDocumentImages( TextDocumentDomainObject document ) {
+        document.setImages( getDocumentImages( document ) );
+    }
+
+    private void setDocumentTexts( TextDocumentDomainObject document ) {
         String sqlSelectTexts = "SELECT name, text, type FROM texts WHERE meta_id = ?";
         String[][] sqlTextsResult = service.sqlQueryMulti( sqlSelectTexts, new String[]{"" + document.getId()} );
         for ( int i = 0; i < sqlTextsResult.length; i++ ) {
@@ -540,7 +561,6 @@ public class DocumentMapper {
             int textType = Integer.parseInt( sqlTextsRow[2] );
             document.setText( textIndex, new TextDocumentDomainObject.Text( text, textType ) );
         }
-        document.setImages( getDocumentImages( document ) );
     }
 
     void initUrlDocument( UrlDocumentDomainObject document ) {
@@ -613,18 +633,6 @@ public class DocumentMapper {
             docTypesIdAndNames.put( keyId, valueName );
         }
         return docTypesIdAndNames;
-    }
-
-    public Map getIncludedDocuments( DocumentDomainObject textDocument ) {
-        Map result = new HashMap();
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
-        String[] includedMetaIds = documentMapper.sprocGetIncludes( textDocument.getId() );
-        for ( int i = 0; i < includedMetaIds.length; i += 2 ) {
-            int include_id = Integer.parseInt( includedMetaIds[i] );
-            int included_meta_id = Integer.parseInt( includedMetaIds[i + 1] );
-            result.put( new Integer( include_id ), new Integer( included_meta_id ) );
-        }
-        return result;
     }
 
     public MenuItemDomainObject[] getMenuItemsForDocument( int parentId, int menuIndex ) {
@@ -708,17 +716,6 @@ public class DocumentMapper {
             }
         }
         return searchingUserHasPermissionToFindDocument;
-    }
-
-    //Check if user has a special adminRole
-    public boolean userHasAdminRoleWithId( int userId, int adminRoleId ) {
-        String[] adminrole = service.sqlProcedure( "userHasAdminRoleWithId ", new String[]{"" + userId, "" + adminRoleId} );
-        if ( adminrole.length > 0 ) {
-            if ( ( "" + adminRoleId ).equals( adminrole[0] ) ) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean userHasAtLeastDocumentReadPermission( UserDomainObject user, DocumentDomainObject document ) {
@@ -848,6 +845,7 @@ public class DocumentMapper {
 
         updateTextDocumentTexts( textDocument );
         updateTextDocumentImages( textDocument, user );
+        updateTextDocumentIncludes( textDocument );
     }
 
     void saveNewUrlDocument( UrlDocumentDomainObject document ) {
@@ -1107,11 +1105,6 @@ public class DocumentMapper {
 
     public static void sprocDeleteInclude( IMCServiceInterface imcref, int including_meta_id, int include_id ) {
         imcref.sqlUpdateProcedure( "DeleteInclude", new String[]{"" + including_meta_id, "" + include_id} );
-    }
-
-    public String[] sprocGetIncludes( int meta_id ) {
-        String[] included_docs = service.sqlProcedure( SPROC_GET_INCLUDES, new String[]{String.valueOf( meta_id )} );
-        return included_docs;
     }
 
     public void updateDocumentKeywords( int meta_id, String separatedKeywords ) {
@@ -1582,7 +1575,7 @@ public class DocumentMapper {
 
     private final static String IMAGE_SQL_COLUMNS = "name,image_name,imgurl,width,height,border,v_space,h_space,target,align,alt_text,low_scr,linkurl";
 
-    public Map getDocumentImages( DocumentDomainObject document ) {
+    private Map getDocumentImages( DocumentDomainObject document ) {
         String[][] imageRows = service.sqlQueryMulti( "select " + IMAGE_SQL_COLUMNS + " from images\n"
                                                       + "where meta_id = ?",
                                                       new String[]{"" + document.getId()} );
@@ -1739,6 +1732,7 @@ public class DocumentMapper {
 
         updateTextDocumentTexts( textDocument );
         updateTextDocumentImages( textDocument, user );
+        updateTextDocumentIncludes( textDocument );
     }
 
     private void updateTextDocumentTexts( TextDocumentDomainObject textDocument ) {
@@ -1749,6 +1743,31 @@ public class DocumentMapper {
     private void updateTextDocumentImages( TextDocumentDomainObject textDocument, UserDomainObject user ) {
         deleteTextDocumentImages( textDocument );
         insertTextDocumentImages( textDocument, user );
+    }
+
+    private void updateTextDocumentIncludes( TextDocumentDomainObject textDocument ) {
+        deleteTextDocumentIncludes( textDocument ) ;
+        insertTextDocumentIncludes( textDocument ) ;
+    }
+
+    private void insertTextDocumentIncludes( TextDocumentDomainObject textDocument ) {
+        Map includes = textDocument.getIncludes() ;
+        for ( Iterator iterator = includes.keySet().iterator(); iterator.hasNext(); ) {
+            Integer includeIndex = (Integer)iterator.next();
+            Integer includedDocumentId = (Integer)includes.get(includeIndex) ;
+            sqlInsertTextDocumentInclude( textDocument, includeIndex, includedDocumentId );
+        }
+
+    }
+
+    private void sqlInsertTextDocumentInclude( TextDocumentDomainObject textDocument, Integer includeIndex,
+                                               Integer includedDocumentId ) {
+        service.sqlUpdateQuery( "INSERT INTO includes (meta_id, include_id, included_meta_id) VALUES(?,?,?)", new String[] {""+textDocument.getId(), ""+includeIndex, ""+includedDocumentId} ) ;
+    }
+
+    private void deleteTextDocumentIncludes( TextDocumentDomainObject textDocument ) {
+        String sqlDeleteDocumentIncludes = "DELETE FROM includes WHERE meta_id = ?" ;
+        service.sqlUpdateQuery( sqlDeleteDocumentIncludes, new String[] {""+textDocument.getId()}) ;
     }
 
     private void insertTextDocumentImages( TextDocumentDomainObject textDocument, UserDomainObject user ) {

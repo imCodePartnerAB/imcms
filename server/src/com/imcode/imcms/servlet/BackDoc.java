@@ -10,11 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Stack;
-
-import com.imcode.imcms.servlet.admin.AdminDoc;
-import com.imcode.imcms.servlet.admin.AdminDoc;
 
 public class BackDoc extends HttpServlet {
 
@@ -26,29 +22,29 @@ public class BackDoc extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         // Find the start-page
-        int start_doc = imcref.getSystemData().getStartDocument();
 
         res.setContentType( "text/html" );
-        Writer out = res.getWriter();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         Stack history = (Stack)user.get( "history" );
         boolean useNextToLastTextDocument = req.getParameter( "top" ) == null;
-        int meta_id = getLastTextDocumentFromHistory( history, useNextToLastTextDocument, imcref );
+        int lastTextDocumentId = getLastTextDocumentFromHistory( history, useNextToLastTextDocument, imcref );
 
-        if ( meta_id != 0 ) {
+        if ( lastTextDocumentId != 0 ) {
             //	history.push(new Integer(meta_id)) ;
             user.put( "history", history );
-            String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
-            out.write( output );
-            return;
+            redirectToDocumentId( res, lastTextDocumentId );
+        } else {
+            redirectToDocumentId( res, imcref.getSystemData().getStartDocument() );
         }
-
-        String output = GetDoc.getDoc( start_doc, start_doc, req, res );
-        out.write( output );
     }
 
-    public static int getLastTextDocumentFromHistory( Stack history, boolean useNextToLastTextDocument, IMCServiceInterface imcref ) {
+    private void redirectToDocumentId( HttpServletResponse res, int meta_id ) throws IOException {
+        res.sendRedirect( "GetDoc?meta_id=" + meta_id );
+    }
+
+    public static int getLastTextDocumentFromHistory( Stack history, boolean useNextToLastTextDocument,
+                                                      IMCServiceInterface imcref ) {
         int meta_id = 0;
         if ( null != history && !history.empty() ) {
 

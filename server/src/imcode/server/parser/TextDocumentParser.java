@@ -6,7 +6,6 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.LanguageMapper;
 import imcode.server.document.*;
 import imcode.server.user.UserDomainObject;
-import imcode.server.user.RoleDomainObject;
 import imcode.util.DateConstants;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -106,8 +105,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                               && ( user_set_id == 0 || ( user_perm_set & PERM_DT_TEXT_EDIT_INCLUDES ) != 0 );
             }
 
-            String[] included_docs = documentMapper.sprocGetIncludes( meta_id );
-
             TemplateDomainObject documentTemplate = document.getTemplate();
             int documentTemplateId = documentTemplate.getId();
 
@@ -139,7 +136,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, templatemode, parserParameters );
             MapSubstitution hashtagsubstitution = new imcode.server.parser.MapSubstitution( hashTags, true );
             MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( parserParameters, menus, menumode );
-            ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, parserParameters, Arrays.asList( included_docs ), includemode, includelevel, textmode, imagemode );
+            ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, parserParameters, includemode, includelevel, textmode, imagemode );
 
             LinkedList parse = new LinkedList();
             perl5util.split( parse, "/(<!--\\/?IMSCRIPT-->)/", templateContents );

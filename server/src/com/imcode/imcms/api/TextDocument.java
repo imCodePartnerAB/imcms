@@ -96,10 +96,9 @@ public class TextDocument extends Document {
 
     public Document getInclude(int includeIndexInDocument) throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
-        Map includedDocumentIds = documentMapper.getIncludedDocuments(internalDocument);
-        Integer includedDocumentMetaId = (Integer) includedDocumentIds.get(new Integer(includeIndexInDocument));
-        if (null != includedDocumentMetaId) {
-            DocumentDomainObject includedDocument = documentMapper.getDocument(includedDocumentMetaId.intValue());
+        Integer includedDocumentId = ((TextDocumentDomainObject)internalDocument).getIncludedDocumentId( includeIndexInDocument );
+        if (null != includedDocumentId) {
+            DocumentDomainObject includedDocument = documentMapper.getDocument(includedDocumentId.intValue());
             if (null != includedDocument ) {
                 return documentService.createDocumentOfSubtype( includedDocument );
             }

@@ -26,6 +26,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private int defaultTemplateIdForRestrictedPermissionSetTwo;
     private Map texts = new HashMap();
     private Map images = new HashMap();
+    private Map includes = new HashMap();
 
     public TemplateDomainObject getTemplate() {
         return template;
@@ -111,6 +112,22 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public void removeAllImages() {
         images.clear();
+    }
+
+    public void setInclude( int includeIndex, int includedDocumentId ) {
+        includes.put( new Integer( includeIndex ), new Integer( includedDocumentId )) ;
+    }
+
+    public Integer getIncludedDocumentId( int includeIndex ) {
+        return (Integer)includes.get( new Integer( includeIndex )) ;
+    }
+
+    public Map getIncludes() {
+        return Collections.unmodifiableMap( includes );
+    }
+
+    public void removeAllIncludes() {
+        includes.clear();
     }
 
     public static class Text implements Serializable {

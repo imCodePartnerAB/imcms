@@ -66,15 +66,13 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
     private boolean imageMode;
     private int implicitImageNumber = 1;
 
-    private HashMap included_docs = new HashMap();
-
     private IMCServiceInterface service;
     private ParserParameters parserParameters;
     private DocumentRequest documentRequest;
     private TextDocumentDomainObject document;
 
     ImcmsTagSubstitution( TextDocumentParser textdocparser, ParserParameters parserParameters,
-                          List included_list, boolean includemode, int includelevel,
+                          boolean includemode, int includelevel,
                           boolean textmode,
                           boolean imagemode ) {
         this.textDocParser = textdocparser;
@@ -85,9 +83,6 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
         this.includeMode = includemode;
         this.includeLevel = includelevel;
-        for ( Iterator i = included_list.iterator(); i.hasNext(); ) {
-            included_docs.put( i.next(), i.next() );
-        }
 
         this.textMode = textmode;
         this.textMap = document.getTexts();
@@ -288,20 +283,22 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             no = implicitIncludeNumber++; // Implicitly use the next number.
         }
         try {
+            Integer includedDocumentId = document.getIncludedDocumentId(no) ;
             if ( includeMode ) {
-                String included_meta_id_str = (String)included_docs.get( String.valueOf( no ) );
                 String langPrefix = documentRequest.getUser().getLanguageIso639_2();
                 return imcode.util.Parser.parseDoc( fileCache.getCachedFileString( new File( service.getTemplatePath(), langPrefix
                                                                                                            + "/admin/change_include.html" ) ),
                                                     new String[]{
                                                         "#meta_id#", String.valueOf( document.getId() ),
                                                         "#include_id#", String.valueOf( no ),
-                                                        "#include_meta_id#", included_meta_id_str == null
-                                                                             ? "" : included_meta_id_str
+                                                        "#include_meta_id#", includedDocumentId == null
+                                                                             ? "" : ""+includedDocumentId
                                                     } );
             } else if ( includeLevel > 0 ) {
-                int included_meta_id = Integer.parseInt( (String)included_docs.get( String.valueOf( no ) ) );
-                ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters( parserParameters, included_meta_id, attributes );
+                if (null == includedDocumentId) {
+                    return "" ;
+                }
+                ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters( parserParameters, includedDocumentId.intValue(), attributes );
                 String documentStr = textDocParser.parsePage( includedDocumentParserParameters, includeLevel - 1 );
                 documentStr = org.apache.oro.text.regex.Util.substitute( patMat, HTML_PREBODY_PATTERN, NULL_SUBSTITUTION, documentStr );
                 documentStr = org.apache.oro.text.regex.Util.substitute( patMat, HTML_POSTBODY_PATTERN, NULL_SUBSTITUTION, documentStr );
@@ -311,9 +308,6 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             }
         } catch ( IOException ex ) {
             return "<!-- imcms:include failed: " + ex + " -->";
-        } catch ( NumberFormatException ex ) {
-            // There was no such include in the db.
-            return "";
         }
     }
 

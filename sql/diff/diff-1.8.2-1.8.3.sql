@@ -51,7 +51,9 @@ GO
 
 -- 2004-03-23 Kreiger
 
+DROP PROCEDURE CheckUserAdminRole
 DROP PROCEDURE GetImgs
+DROP PROCEDURE GetIncludes
 GO
 
 -- 2004-03-24 Kreiger

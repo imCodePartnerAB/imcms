@@ -362,6 +362,7 @@ public class DocumentComposer extends HttpServlet {
                 TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject)newDocument;
                 newTextDocument.removeAllTexts();
                 newTextDocument.removeAllImages();
+                newTextDocument.removeAllIncludes();
                 int permissionSetId = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, parent );
                 TemplateMapper templateMapper = service.getTemplateMapper();
                 TemplateDomainObject template = null;
