@@ -248,6 +248,10 @@
 
     <!-- Component targets used in build -->
 
+	<target name="addon-web" if="addon" depends="classes">
+	    <ant antfile="addons/${addon}/build.xml" target="copy-web" inheritall="false" inheritrefs="true" />
+	</target>
+
     <target name="addon" if="addon" depends="classes">
         <ant antfile="addons/${addon}/build.xml" target="build" inheritall="false" inheritrefs="true" />
     </target>
@@ -388,7 +392,7 @@
 
     <!-- Creates the directories and copies the files that are to be public. -->
     <target name="web"
-        depends="init,tools,check-language-property-files-in-sync"
+        depends="init,tools,check-language-property-files-in-sync,addon-web"
         description="Translates and copies the webfiles.">
 
         <dependset>
