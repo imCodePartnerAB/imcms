@@ -24,6 +24,9 @@ public class QuotPicEngine extends HttpServlet
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		
+		res.setContentType("text/html");
+		PrintWriter out = res.getWriter();
+		
 		//get parameters
 		String type = req.getParameter("type");
 		inFile = req.getParameter("file");
@@ -38,10 +41,13 @@ public class QuotPicEngine extends HttpServlet
 		int row = 0;
 			
 		String line = readFile.readLine();
+		
+		//out.println("line: " + line + "<br>");
 
 		//get questions
-		while (line.length() != 0) //&& !( ( date1.before(date)||date1.equals(date) ) && ( date2.after(date)||date2.equals(date) ) ) )
+		while (line != null && line.length() != 0 ) //&& !( ( date1.before(date)||date1.equals(date) ) && ( date2.after(date)||date2.equals(date) ) ) )
 		{
+			//out.println("line: " + line + "<br>");
 			StringTokenizer tokens = new StringTokenizer(line,"#");
 			try
 			{
@@ -96,9 +102,6 @@ public class QuotPicEngine extends HttpServlet
 	
 			theText = (String)row_texts.get(new Integer(the_row));
 		}
-		
-		res.setContentType("text/html");
-		PrintWriter out = res.getWriter();
 
 		if( type.equals("pic"))
 		{
