@@ -13,7 +13,7 @@ public class CategoryDomainObject implements Comparable, Serializable {
     private String description;
     private String image;
 
-    CategoryDomainObject(int id, String name, String description, String image, CategoryTypeDomainObject type) {
+    public CategoryDomainObject(int id, String name, String description, String image, CategoryTypeDomainObject type) {
         this.description = description;
         this.type = type;
         this.name = name;

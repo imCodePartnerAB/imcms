@@ -311,7 +311,7 @@ public class AdminDoc extends HttpServlet {
         return htmlStr;
     }
 
-    static String getImageUri( HttpServletRequest req ) {
+    public static String getImageUri( HttpServletRequest req ) {
         // Check if AdminDoc is invoked by ImageBrowse, hence containing
         // an image filename
         String meta_image = req.getParameter( "imglist" );
