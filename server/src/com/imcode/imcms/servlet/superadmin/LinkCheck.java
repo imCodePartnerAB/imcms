@@ -10,7 +10,7 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
@@ -35,11 +35,11 @@ public class LinkCheck extends HttpServlet {
     private static final String USER_AGENT = "imCMS LinkCheck - http://www.imcms.net/";
     private static final String HTTP_REQUEST_HEADER__USER_AGENT = "user-agent";
 
-    private static final int CONNECTION_TIMEOUT_MILLISECONDS = 5000;
-    private static final int READ_TIMEOUT_MILLISECONDS = 5000;
+    private static final int CONNECTION_TIMEOUT_MILLISECONDS = 10000;
+    private static final int READ_TIMEOUT_MILLISECONDS = 10000;
 
     private final static Logger log = Logger.getLogger( LinkCheck.class.getName() );
-    public static final String REQUEST_ATTRIBUTE__LINKS_ITERATOR = "linksIterator";
+
     public static final String REQUEST_PARAMETER__BROKEN_ONLY = "broken_only";
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
@@ -56,8 +56,6 @@ public class LinkCheck extends HttpServlet {
         DocumentIndex reindexingIndex = documentMapper.getDocumentIndex();
         addUrlDocumentLinks( links, reindexingIndex, user, request );
         addTextAndImageLinks( links, reindexingIndex, user, request );
-
-        request.setAttribute( REQUEST_ATTRIBUTE__LINKS_ITERATOR, links.iterator() );
 
         LinkCheckPage linkCheckPage = new LinkCheckPage();
         linkCheckPage.setLinksIterator( links.iterator() );
@@ -151,8 +149,8 @@ public class LinkCheck extends HttpServlet {
     private void addTextAndImageLinks( List links, DocumentIndex reindexingIndex, UserDomainObject user,
                                        HttpServletRequest request ) {
         BooleanQuery query = new BooleanQuery();
-        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__TEXT, "http" ) ), false, false );
-        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__TEXT, "href" ) ), false, false );
+        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "http" ) ), false, false );
+        query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "href" ) ), false, false );
         query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__IMAGE_LINK_URL, "http" ) ), false, false );
 
         DocumentDomainObject[] textDocuments = reindexingIndex.search( query, user );
@@ -171,12 +169,9 @@ public class LinkCheck extends HttpServlet {
             Integer textIndex = (Integer)entry.getKey();
             TextDomainObject text = (TextDomainObject)entry.getValue();
             String textString = text.getText();
-            PatternMatcherInput patternMatcherInput = new PatternMatcherInput( textString );
             Perl5Util perl5Util = new Perl5Util();
-            String urlWithoutSchemePattern = "[^\\s\"'()]+";
-            while ( perl5Util.match( "m,\\bhttp://" + urlWithoutSchemePattern + "|\\bhref=[\"']?("
-                                     + urlWithoutSchemePattern
-                                     + "),i", patternMatcherInput ) ) {
+            PatternMatcherInput patternMatcherInput = new PatternMatcherInput( textString );
+            while ( matchesUrl( perl5Util, patternMatcherInput ) ) {
                 String url = perl5Util.group( 1 );
                 if ( null == url ) {
                     url = perl5Util.group( 0 );
@@ -185,6 +180,14 @@ public class LinkCheck extends HttpServlet {
                 links.add( link );
             }
         }
+    }
+
+    boolean matchesUrl( Perl5Util perl5Util,
+                                PatternMatcherInput patternMatcherInput ) {
+        String urlWithoutSchemePattern = "[^\\s\"'()]+";
+        return perl5Util.match( "m,\\bhttp://" + urlWithoutSchemePattern + "|\\bhref=[\"']?("
+                                 + urlWithoutSchemePattern
+                                 + "),i", patternMatcherInput );
     }
 
     private void addImageLinks( List links, TextDocumentDomainObject textDocument, HttpServletRequest request ) {
@@ -260,18 +263,18 @@ public class LinkCheck extends HttpServlet {
             HttpClient httpClient = new HttpClient();
             httpClient.setConnectionTimeout( CONNECTION_TIMEOUT_MILLISECONDS );
             httpClient.setTimeout( READ_TIMEOUT_MILLISECONDS );
-            GetMethod getMethod;
+            HttpMethod httpMethod;
             try {
-                getMethod = new GetMethod( url );
+                httpMethod = new HeadMethod( url );
             } catch ( IllegalArgumentException e ) {
                 return;
             }
-            getMethod.setRequestHeader( HTTP_REQUEST_HEADER__USER_AGENT, USER_AGENT );
+            httpMethod.setRequestHeader( HTTP_REQUEST_HEADER__USER_AGENT, USER_AGENT );
             try {
-                int status = httpClient.executeMethod( getMethod );
+                int status = httpClient.executeMethod( httpMethod );
                 hostFound = true;
                 hostReachable = true;
-                getMethod.releaseConnection();
+                httpMethod.releaseConnection();
                 if ( HttpStatus.SC_OK == status ) {
                     ok = true;
                 }

@@ -8,6 +8,7 @@ public interface DocumentIndex {
 
     String FIELD__DOC_TYPE_ID = "doc_type_id";
     String FIELD__IMAGE_LINK_URL = "image_link_url";
+    String FIELD__NONSTRIPPED_TEXT = "nonstripped_text";
     String FIELD__TEXT = "text";
     String FIELD__KEYWORD = "keyword";
     String FIELD__SECTION = "section";

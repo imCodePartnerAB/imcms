@@ -123,6 +123,7 @@ class IndexDocumentFactory {
                 Map.Entry textEntry = (Map.Entry)textsIterator.next();
                 Integer textIndex = (Integer)textEntry.getKey();
                 TextDomainObject text = (TextDomainObject)textEntry.getValue();
+                indexDocument.add( Field.UnStored( DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText() ) ) ;
                 String htmlStrippedText = stripHtml(text) ;
                 indexDocument.add( Field.UnStored( DocumentIndex.FIELD__TEXT, htmlStrippedText ) );
                 indexDocument.add( Field.UnStored( DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText ) );
