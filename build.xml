@@ -181,7 +181,7 @@
         <property name="jardist"                  value="${dist}/imcms${versionfilesuffix}.jar"/>
         <property name="jarapidist"               value="${dist}/imcms${versionfilesuffix}-api.jar"/>
 
-        <property name="srcdistfile"              value="${webappname}${versionfilesuffix}-src"/>
+        <property name="srcdistfile"              value="imcms${versionfilesuffix}-src"/>
         <property name="srczipdist"               value="${dist}/${srcdistfile}.zip"/>
         <property name="srctgzdist"               value="${dist}/${srcdistfile}.tar.gz"/>
         <property name="srctbz2dist"              value="${dist}/${srcdistfile}.tar.bz2"/>
