@@ -130,7 +130,7 @@ public class ApplicationServer {
                                       host, port, databaseName,
                                       user, password, "30");
             */
-            String serverUrl = jdbcUrl + host + "\\" + ":" + port + ";DatabaseName=" + databaseName;
+            String serverUrl = jdbcUrl + host + ":" + port + ";DatabaseName=" + databaseName;
             result = new NonPoolingDriverDBConnectionManager( servername, jdbcDriver, serverUrl, user, password, maxConnectionCount );
             result.testConnection();
 
