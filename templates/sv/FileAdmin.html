@@ -55,8 +55,8 @@ var pa = "\\.(GIF|JPE?G|PNG|BMP|AVI|MPE?G|HTML?|CSS|JS|VBS|TXT|JSP|ASP)$";
 var pat = "\\.(HTML?|CSS|JS|VBS|TXT|JSP|ASP)$";
 	/* isEditFile - editable file types (change in "FileAdmin_edit.jsp" too) */
 var pae = "\\.(HTM|HTML|VBS|JS|CSS|TXT|INC)$";
-	/* isFile */
-var paf = "\\.[A-Z1-9_-]{1,}$"; // accepts ie: *.x | *.js | *.html_OLD ( whatever.x (one or more times) then end of string)
+	/* isDir */
+var isDirectoryPattern = "/$";
 	/* isSysFold */
 var pas = "webapps|[\\.]{2}";
 	/* isHiddenFold */
@@ -184,9 +184,9 @@ function isEditFile(iside) {
 }
 
 function isFile(iside) {
-	re = new RegExp(paf, 'gi');
+	re = new RegExp(isDirectoryPattern, 'gi');
 	var sfile = getFile(iside);
-	return re.test(sfile);
+	return !re.test(sfile);
 }
 
 function isSysFold(iside) {
