@@ -574,9 +574,9 @@ function RRoutBtn(elBtn) {
 }
 
 
-function RRdividersOnInCookie() { /* checks the cookie if there are "skiljetecken" pauses (1 / 0) */
+function RRdividersOffInCookie() { /* checks the cookie if there are "skiljetecken" pauses (1 / 0) */
 	//var retStop = 0;
-	var retDiv = 0; // Off by default. If there are no cookie
+	var retDiv = 1; // Off by default. If there are no cookie
 	var f = document.forms.form1;
 	var theCookieSettings = unescape(getCookie('RRsettings'));
 	if (theCookieSettings.indexOf('/') != -1) {
@@ -586,7 +586,7 @@ function RRdividersOnInCookie() { /* checks the cookie if there are "skiljetecke
 		var DivCheck = (arrSettings[2].split("/")[0] == 'true') ? 1 : 0;
 		var DivVal = (arrSettings[2].split("/")[1] >= 0) ? parseFloat(arrSettings[2].split("/")[1]) : parseFloat(iDefaultPausDiv);
 		//retStop = (StopCheck == 0 || StopVal == 0) ? 1 : 0;
-		retDiv = (DivCheck == 0 || DivVal == 0) ? 0 : 1; // On if cookie says > 0. Off by default
+		retDiv = (DivCheck == 0 || DivVal == 0) ? 1 : 0; // Off if cookie says > 0. On other if it doesn't.
 	}
 	return retDiv;
 }
@@ -603,7 +603,7 @@ function RRcheckLineBreaks() {
 	var oObject = document.all.item("RR1");
 	var bSeperator;
 	//if (unescape(getParam('readrunner_no_separators')) == '1'){
-	if (RRdividersOnInCookie()) {
+	if (RRdividersOffInCookie()) {
 		bSeperator = false;}
 	else{
 		bSeperator = true;}
