@@ -640,7 +640,7 @@ public class DocumentComposer extends HttpServlet {
 
     }
 
-    private static class FileItemInputStreamSource implements InputStreamSource {
+    private static class FileItemInputStreamSource implements InputStreamSource, Serializable {
 
         private final FileItem fileItem;
 

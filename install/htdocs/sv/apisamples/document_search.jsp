@@ -37,6 +37,7 @@ java.util.*,
         <%
             int sectionId = 1;
             Section section = documentService.getSection( sectionId );
+            if (null != section) {
         %>
         <h2>Search for documents in section "<%= section.getName() %>", sorted by headline and id.</h2>
         <ul>
@@ -51,6 +52,7 @@ java.util.*,
                 <li><%= document.getId() %> - <%= document.getHeadline() %></li>
             <% } %>
         </ul>
+        <% } %>
 
         <h2>Search for documents containing "test" in textfield 1,
             and modified between 2004-01-01 and 2005-01-01, sorted by modified time, newest first.</h2>
