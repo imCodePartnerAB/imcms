@@ -65,7 +65,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         databaseServices = new DatabaseService[]{
             DatabaseTestInitializer.static_initMySql(),
             DatabaseTestInitializer.static_initSqlServer(),
-            //DatabaseTestInitializer.static_initMimer(),
+            DatabaseTestInitializer.static_initMimer(),
         };
     }
 

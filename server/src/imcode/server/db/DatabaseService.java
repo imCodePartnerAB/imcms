@@ -2046,7 +2046,7 @@ public abstract class DatabaseService {
     }
 
     public String sproc_GetUserPassword( int user_id ) {
-        String sql = "SELECT login_password FROM USERS WHERE user_id = ? ";
+        String sql = "SELECT login_password FROM users WHERE user_id = ? ";
         Object[] paramValues = new Object[]{new Integer( user_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
@@ -2465,14 +2465,14 @@ public abstract class DatabaseService {
         final SQLTransaction transaction = sqlProcessor.startTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                String sql = "DELETE FROM ROLES_RIGHTS WHERE role_id = ? ";
+                String sql = "DELETE FROM roles_rights WHERE role_id = ? ";
                 Object[] paramValues = new Object[]{new Integer( role_id )};
                 transaction.executeUpdate( sql, paramValues );
 
                 sql = "DELETE FROM user_roles_crossref WHERE role_id = ? ";
                 transaction.executeUpdate( sql, paramValues );
 
-                sql = "DELETE FROM ROLES WHERE role_id = ? ";
+                sql = "DELETE FROM roles WHERE role_id = ? ";
                 transaction.executeUpdate( sql, paramValues );
             }
         } );
@@ -2603,7 +2603,7 @@ public abstract class DatabaseService {
     // todo: denna returnerar endast users som finns kvar i systemet. Gamla user_ids försvinner, ska det vara så?
     public Table_ip_accesses[] sproc_IPAccessesGetAll() {
         String sql = "SELECT ip.ip_access_id, ip.user_id, usr.login_name, ip.ip_start, ip.ip_end " +
-            "FROM IP_ACCESSES ip, USERS usr WHERE ip.user_id = usr.user_id";
+            "FROM ip_accesses ip, users usr WHERE ip.user_id = usr.user_id";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
                 return new Table_ip_accesses(rs);
