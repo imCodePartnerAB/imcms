@@ -1,1 +1,1 @@
-Det finns ingen statistik att visa.
+Sorry, there are no statistics to be displayed!

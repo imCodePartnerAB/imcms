@@ -1,1 +1,1 @@
-"Fel: Du har inte angett texten!"
+"Oops! You have not selected a text."
