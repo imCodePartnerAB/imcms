@@ -1,17 +1,16 @@
 package com.imcode.imcms.servlet.billboard;
 
-import imcode.server.*;
-import imcode.server.user.UserDomainObject;
-
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
-import imcode.util.Utility;
+import imcode.external.diverse.VariableManager;
+import imcode.server.Imcms;
 import imcode.util.Html;
-import com.imcode.imcms.servlet.billboard.BillBoard;
+import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Vector;
 
 /**
  * Html template in use:
@@ -60,7 +59,7 @@ public class BillBoardForum extends BillBoard {//ConfForum
 		Vector sectionV = super.convert2Vector(sqlAnswer) ;
 
 		// Lets fill the select box
-		String sectionList = Html.createOptionList( "", sectionV ) ;
+		String sectionList = Html.createOptionList( sectionV, "" ) ;
 
 		// Lets build the Responsepage
 		VariableManager vm = new VariableManager() ;

@@ -11,8 +11,8 @@ import imcode.util.DateConstants;
 import imcode.util.Html;
 import imcode.util.Utility;
 
-import javax.servlet.ServletException;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -88,7 +88,7 @@ public class AddDoc extends HttpServlet {
         String[] sortOrder = imcref.sqlProcedure( "SortOrder_GetExistingDocs", new String[]{
             user.getLanguageIso639_2()
         } );
-        String sortOrderStr = Html.createOptionList( "", Arrays.asList( sortOrder ) );
+        String sortOrderStr = Html.createOptionList( Arrays.asList( sortOrder ), "" );
         vec.add( "#sortBy#" );
         vec.add( sortOrderStr );
 

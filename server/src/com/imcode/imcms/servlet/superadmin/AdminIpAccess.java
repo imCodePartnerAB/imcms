@@ -1,15 +1,21 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.util.*;
-
-import imcode.external.diverse.*;
-import imcode.util.*;
-import imcode.server.*;
+import imcode.external.diverse.VariableManager;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Html;
+import imcode.util.Utility;
 import org.apache.log4j.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Vector;
 
 public class AdminIpAccess extends Administrator {
 
@@ -82,9 +88,7 @@ public class AdminIpAccess extends Administrator {
         if (req.getParameter( "ADD_IP_ACCESS" ) != null) {
 
             // Lets get all USERS from DB
-            String[] usersArr = imcref.sqlProcedure( "GetAllUsersInList", new String[0] );
-            Vector usersV = new Vector( java.util.Arrays.asList( usersArr ) );
-            String usersOption = Html.createOptionList( "", usersV );
+            String usersOption = Html.createUsersOptionList( imcref );
 
             // Lets generate the html page
             VariableManager vm = new VariableManager();

@@ -6,8 +6,9 @@ import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Map;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Map;
 
 public class HttpSessionUtils {
 
@@ -42,8 +43,8 @@ public class HttpSessionUtils {
 
     public static void put( HttpServletRequest request, String sessionAttributeName,
                              final Serializable objectToAddToSession ) {
-        LRUMap sessionMap = getSessionMap( request );
-        if (sessionMap.isFull()) {
+        Map sessionMap = getSessionMap( request );
+        if ( MAX_COUNT__SESSION_OBJECTS == sessionMap.size() ) {
             log.debug( "SessionMap is full. Least recently used object will be evicted.") ;
         }
         if (objectToAddToSession instanceof HttpSessionAttribute) {
@@ -54,11 +55,11 @@ public class HttpSessionUtils {
                    + sessionMap.size() );
     }
 
-    private static LRUMap getSessionMap( HttpServletRequest request ) {
+    private static Map getSessionMap( HttpServletRequest request ) {
         HttpSession session = request.getSession();
-        LRUMap sessionMap = (LRUMap)session.getAttribute( SESSION_ATTRIBUTE_NAME__SESSION_MAP );
+        Map sessionMap = (Map)session.getAttribute( SESSION_ATTRIBUTE_NAME__SESSION_MAP );
         if ( null == sessionMap ) {
-            sessionMap = new LRUMap(MAX_COUNT__SESSION_OBJECTS);
+            sessionMap = Collections.synchronizedMap( new LRUMap(MAX_COUNT__SESSION_OBJECTS) );
             session.setAttribute( SESSION_ATTRIBUTE_NAME__SESSION_MAP, sessionMap );
         }
         return sessionMap;

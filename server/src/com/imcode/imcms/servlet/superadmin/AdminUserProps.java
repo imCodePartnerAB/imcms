@@ -187,7 +187,7 @@ public class AdminUserProps extends Administrator {
 
         //System.out.println("selected= " + selected);
 
-        String phones = Html.createOptionList( selected, phonesV );
+        String phones = Html.createOptionList( phonesV, selected );
 
         Utility.setDefaultHtmlContentType( res ); // set content type
         Writer out = res.getWriter();
@@ -250,7 +250,7 @@ public class AdminUserProps extends Administrator {
         vec.add( "" );
 
         // phonetype list
-        String phonetypes = Html.createOptionList( "1", phoneTypesV );
+        String phonetypes = Html.createOptionList( phoneTypesV, "1" );
         vec.add( "#PHONETYPES_MENU#" );
         vec.add( phonetypes );
 
@@ -404,7 +404,7 @@ public class AdminUserProps extends Administrator {
         vec.add( "" );
 
         // phonetype list
-        String phonetypes = Html.createOptionList( "1", phoneTypesV );
+        String phonetypes = Html.createOptionList( phoneTypesV, "1" );
         vec.add( "#PHONETYPES_MENU#" );
         vec.add( phonetypes );
 
@@ -1014,7 +1014,7 @@ public class AdminUserProps extends Administrator {
         }
 
         // phonetype list
-        String phonetypes = Html.createOptionList( phonetypes_id, phoneTypesV );
+        String phonetypes = Html.createOptionList( phoneTypesV, phonetypes_id );
         vm.addProperty( "PHONETYPES_MENU", phonetypes );
 
         selectedPhoneId = req.getParameter( "user_phones" );
@@ -1091,7 +1091,7 @@ public class AdminUserProps extends Administrator {
         phonesV = this.getPhonesVector( phoneNumbers, user, imcref );
 
         // add phones list
-        String phones = Html.createOptionList( selectedPhoneId, phonesV );
+        String phones = Html.createOptionList( phonesV, selectedPhoneId );
         log.debug( "phones stringen: " + phones );
         vm.addProperty( "PHONES_MENU", phones );
 

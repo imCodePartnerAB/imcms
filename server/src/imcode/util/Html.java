@@ -2,6 +2,7 @@ package imcode.util;
 
 import com.imcode.imcms.servlet.admin.AdminDoc;
 import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.Transformer;
@@ -66,7 +67,7 @@ public class Html {
      * one of the arguments below.
      */
 
-    public static String createOptionList( String selected, List data ) {
+    public static String createOptionList( List data, String selected ) {
         return createOptionList( data, Arrays.asList( new String[]{selected} ) );
     }
 
@@ -178,5 +179,16 @@ public class Html {
         org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util();
         label_urlparam = perl5util.substitute( "s!<.+?>!!g", html );
         return label_urlparam;
+    }
+
+    public static String createUsersOptionList( ImcmsServices imcref ) {
+        UserDomainObject[] users = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUsers( true, false );
+        String usersOption = createOptionList(Arrays.asList( users ),null, new Transformer() {
+            public Object transform( Object input ) {
+                UserDomainObject user = (UserDomainObject)input ;
+                return new String[] {""+user.getId(), user.getLastName()+", "+user.getFirstName()} ;
+            }
+        } ) ;
+        return usersOption;
     }
 }

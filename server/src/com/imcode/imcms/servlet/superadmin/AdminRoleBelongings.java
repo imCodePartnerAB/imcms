@@ -15,6 +15,7 @@ import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Html;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
 
@@ -353,8 +354,7 @@ public class AdminRoleBelongings extends Administrator {
 
         // lets get all user or users who has role role_id
         if ( roleId.equals( "ALL_USERS" ) ) {
-            userQueryResult = imcref.sqlProcedureMulti( "GetAllUsersInList", new String[0] );
-            userOptionList = createListOfOptions( userQueryResult );
+            userOptionList = Html.createUsersOptionList( imcref );
         } else {
             userQueryResult = imcref.sqlProcedureMulti( "GetUsersWhoBelongsToRole", new String[]{roleId} );
             userOptionList = createListOfOptions( userQueryResult, true );

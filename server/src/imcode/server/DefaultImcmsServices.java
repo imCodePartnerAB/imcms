@@ -17,6 +17,7 @@ import imcode.util.poll.PollHandlingSystemImpl;
 import imcode.util.shop.ShoppingOrderSystem;
 import imcode.util.shop.ShoppingOrderSystemImpl;
 import org.apache.commons.beanutils.*;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -885,7 +886,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         List theList = new LinkedList();
         try {
             File file = new File( config.getFortunePath(), quoteListName );
-            StringReader reader = new StringReader( fileCache.getUncachedFileString( file ) );
+            StringReader reader = new StringReader( IOUtils.toString( new BufferedReader( new FileReader( file ) ) ) );
             QuoteReader quoteReader = new QuoteReader( reader );
             for ( Quote quote; null != ( quote = quoteReader.readQuote() ); ) {
                 theList.add( quote );
@@ -921,7 +922,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         List theList = new LinkedList();
         try {
             File file = new File( config.getFortunePath(), pollListName );
-            StringReader reader = new StringReader( fileCache.getUncachedFileString( file ) );
+            StringReader reader = new StringReader( IOUtils.toString( new BufferedReader( new FileReader( file ) ) ) );
             PollReader pollReader = new PollReader( reader );
             for ( Poll poll; null != ( poll = pollReader.readPoll() ); ) {
                 theList.add( poll );

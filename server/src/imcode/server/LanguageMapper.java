@@ -2,8 +2,8 @@ package imcode.server;
 
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
@@ -62,7 +62,7 @@ public class LanguageMapper {
     public static String getLanguageOptionList( UserDomainObject user,
                                                 String documentLanguage ) {
         List languageKeysAndNamesInUsersLanguage = getListOfLanguageKeysAndNamesInUsersLanguage( user );
-        return Html.createOptionList( documentLanguage, languageKeysAndNamesInUsersLanguage );
+        return Html.createOptionList( languageKeysAndNamesInUsersLanguage, documentLanguage );
     }
 
     private static List getListOfLanguageKeysAndNamesInUsersLanguage( UserDomainObject user ) {

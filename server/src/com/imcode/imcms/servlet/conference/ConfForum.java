@@ -1,16 +1,17 @@
 package com.imcode.imcms.servlet.conference;
 
-import imcode.server.user.UserDomainObject;
+import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
-
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
-import imcode.util.Utility;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
+import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Vector;
 
 public class ConfForum extends Conference {
 
@@ -37,7 +38,7 @@ public class ConfForum extends Conference {
         Vector forumV = super.convert2Vector( sqlAnswer );
 
         // Lets fill the select box
-        String forumList = Html.createOptionList( "", forumV );
+        String forumList = Html.createOptionList( forumV, "" );
 
         // Lets build the Responsepage
         VariableManager vm = new VariableManager();

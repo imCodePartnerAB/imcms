@@ -3,8 +3,8 @@ package com.imcode.imcms.servlet.billboard;
 import imcode.external.diverse.*;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.util.Html;
 import imcode.util.Utility;
 
@@ -538,7 +538,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
                 Vector templateV = super.convert2Vector( sqlAnswer );
 
                 // Lets fill the select box	with forums
-                String templateList = Html.createOptionList( "", templateV );
+                String templateList = Html.createOptionList( templateV, "" );
 
                 // Lets build the Responsepage
                 //VariableManager vm = new VariableManager() ;
@@ -559,7 +559,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             Vector sectionV = super.convert2Vector( sqlAnswer );
 
             // Lets fill the select box with forums
-            String forumList = Html.createOptionList( "", sectionV );
+            String forumList = Html.createOptionList( sectionV, "" );
 
             //lets get all the daysnumber values
             String[] sqlAllDays = imcref.sqlProcedure( "B_GetAllNbrOfDaysToShow", new String[]{params.getProperty( "META_ID" )} );
@@ -572,7 +572,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             if ( sqlAllDays != null ) {
                 sqlAllDaysV = super.convert2Vector( sqlAllDays );
             }
-            String daysToShowList = Html.createOptionList( "", sqlAllDaysV );
+            String daysToShowList = Html.createOptionList( sqlAllDaysV, "" );
 
             // Lets get all the showDiscs values
             String[] sqlAllDiscs = imcref.sqlProcedure( "B_GetAllNbrOfDiscsToShow", new String[]{params.getProperty( "META_ID" )} );
@@ -581,7 +581,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             if ( sqlAllDiscs != null ) {
                 sqlAllDiscsV = super.convert2Vector( sqlAllDiscs );
             }
-            String discToShowList = Html.createOptionList( "", sqlAllDiscsV );
+            String discToShowList = Html.createOptionList( sqlAllDiscsV, "" );
 
             // Lets build the Responsepage
             //VariableManager vm = new VariableManager() ;
@@ -614,7 +614,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             //lets get all the sections and the code for the selectlist
             String[] sqlSections = imcref.sqlProcedure( "B_GetAllSection", new String[]{aMetaId} );
             Vector sectionV = super.convert2Vector( sqlSections );
-            String sectionListStr = Html.createOptionList( aSectionId, sectionV );
+            String sectionListStr = Html.createOptionList( sectionV, aSectionId );
 
             // Lets build our tags vector.
             Vector tagsV = this.buildAdminTags();
@@ -654,7 +654,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             //lets get all the sections and the code for the selectlist
             String[] sqlSections = imcref.sqlProcedure( "B_GetAllSection", new String[]{aMetaId} );
             Vector sectionV = super.convert2Vector( sqlSections );
-            String sectionListStr = Html.createOptionList( aSectionId, sectionV );
+            String sectionListStr = Html.createOptionList( sectionV, aSectionId );
 
             // Lets build our tags vector.
             Vector tagsV = this.buildAdminTags();
@@ -709,7 +709,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             //lets get all the sections and the code for the selectlist
             String[] sqlSections = imcref.sqlProcedure( "B_GetAllSection", new String[]{params.getProperty( "META_ID" )} );
             Vector sectionV = super.convert2Vector( sqlSections );
-            String sectionListStr = Html.createOptionList( params.getProperty( "SECTION_ID" ), sectionV );
+            String sectionListStr = Html.createOptionList( sectionV, params.getProperty( "SECTION_ID" ) );
 
             // Lets preparse all records
             String allRecs = " ";

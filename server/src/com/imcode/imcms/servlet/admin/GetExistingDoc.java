@@ -3,24 +3,20 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.document.*;
-import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.index.DefaultQueryParser;
+import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.DateConstants;
-import imcode.util.Html;
-import imcode.util.Parser;
-import imcode.util.Utility;
+import imcode.util.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.RangeQuery;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -342,7 +338,7 @@ public class GetExistingDoc extends HttpServlet {
             }
         }
 
-        String sortOrderStr = Html.createOptionList( sortBy, sortOrderV );
+        String sortOrderStr = Html.createOptionList( sortOrderV, sortBy );
         outVector.add( "#sortBy#" );
         outVector.add( sortOrderStr );
 

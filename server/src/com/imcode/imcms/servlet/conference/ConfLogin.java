@@ -8,7 +8,9 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
-import imcode.server.user.*;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.UserDomainObject;
+import imcode.server.user.UserMapper;
 import imcode.util.Html;
 import imcode.util.Utility;
 
@@ -117,7 +119,7 @@ public class ConfLogin extends Conference {
             String[] usersArr = imcref.sqlProcedure( "A_GetAllConfUsersInList", new String[]{"" + params.getMetaId()} );
             Vector usersV = super.convert2Vector( usersArr );
             VariableManager vm = new VariableManager();
-            String usersOption = Html.createOptionList( "", usersV );
+            String usersOption = Html.createOptionList( usersV, "" );
             vm.addProperty( "USERS_MENU", usersOption );
             vm.addProperty( "UNADMIN_LINK_HTML", USER_UNADMIN_LINK_TEMPLATE );
             this.sendHtml( req, res, vm, ADMIN1_HTML );

@@ -52,7 +52,7 @@ public class DocumentMapper {
     private final Database database;
     private final DocumentPermissionSetMapper documentPermissionSetMapper;
     private final DocumentIndex documentIndex;
-    private final DocumentCache documentCache;
+    private final Map documentCache;
     private final Clock clock;
     private final ImcmsServices services;
     public static final String SQL_GET_ALL_CATEGORIES_OF_TYPE = "SELECT categories.category_id, categories.name, categories.description, categories.image\n"
@@ -106,7 +106,7 @@ public class DocumentMapper {
         this.documentPermissionSetMapper = documentPermissionSetMapper;
         this.documentIndex = documentIndex;
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
-        documentCache = new DocumentCache( new LRUMap( documentCacheMaxSize ), this );
+        documentCache = Collections.synchronizedMap( new DocumentCache( new LRUMap( documentCacheMaxSize ), this ) );
     }
 
     public DocumentDomainObject createDocumentOfTypeFromParent( int documentTypeId, final DocumentDomainObject parent,
