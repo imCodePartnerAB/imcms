@@ -183,62 +183,69 @@ public class MetaDataParser {
 		classification += ", "+classifications[i] ;
 	    }
 	}
-
-	String activated_datetime = ((String[])hash.get("activated_datetime"))[0] ;
-	if ( activated_datetime.indexOf(' ') != -1) {
-	    vec.add("#activated_date#") ;
-	    vec.add(activated_datetime.substring(0,activated_datetime.indexOf(' '))) ;
-	    vec.add("#activated_time#") ;
-	    vec.add(activated_datetime.substring(activated_datetime.indexOf(' ')+1,activated_datetime.length()-5)) ;
-	} else {
-	    vec.add("#activated_date#") ;
+	/*
+	try {
+			document.setCreatedDatetime(dateform.parse(result[16]));	
+		}catch(java.text.ParseException pe) {
+			document.setCreatedDatetime(null);	
+		}
+		
+		*/
+	SimpleDateFormat dateFormat_date = new SimpleDateFormat("yyyy-MM-dd") ;
+	SimpleDateFormat dateFormat_time = new SimpleDateFormat("hh:mm");
+	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm") ;
+	Date theDate = null;
+	try {
+		theDate = dateFormat.parse(((String[])hash.get("activated_datetime"))[0]);
+		vec.add("#activated_date#") ;
+		vec.add(dateFormat_date.format(theDate)) ;
+		vec.add("#activated_time#") ;
+		vec.add(dateFormat_time.format(theDate)) ;	
+	}catch(java.text.ParseException pe) {
+		vec.add("#activated_date#") ;
 	    vec.add("") ;
 	    vec.add("#activated_time#") ;
 	    vec.add("") ;
-
-	} // end of else
+	}
 	
-	
-	String archived_datetime  = ((String[])hash.get("archived_datetime"))[0] ;
-	if ( archived_datetime.indexOf(' ') != -1) {
-	    vec.add("#archived_date#") ;
-	    vec.add(archived_datetime.substring(0,archived_datetime.indexOf(' '))) ;
-	    vec.add("#archived_time#") ;
-	    vec.add(archived_datetime.substring(archived_datetime.indexOf(' ')+1,archived_datetime.length()-5)) ;
-	} else {
-	    vec.add("#archived_date#") ;
+	try {
+		theDate = dateFormat.parse(((String[])hash.get("archived_datetime"))[0]);
+		vec.add("#archived_date#") ;
+		vec.add(dateFormat_date.format(theDate)) ;
+		vec.add("#archived_time#") ;
+		vec.add(dateFormat_time.format(theDate)) ;	
+	}catch(java.text.ParseException pe) {
+		vec.add("#archived_date#") ;
 	    vec.add("") ;
 	    vec.add("#archived_time#") ;
 	    vec.add("") ;
 	}
-	
-	String date_created = ((String[])hash.get("date_created"))[0] ;
-	if ( date_created.indexOf(' ') != -1) {
-	    vec.add("#date_created#") ;
-	    vec.add(date_created.substring(0,date_created.indexOf(' '))) ;
-	    vec.add("#created_time#") ;
-	    vec.add(date_created.substring(date_created.indexOf(' ')+1,date_created.length()-5)) ;
-	} else {
-	    vec.add("#date_created#") ;
-	    vec.add("") ;
-	    vec.add("#created_time#") ;
-	    vec.add("") ;
 
-	} // end of else
-	
-	String date_modified = ((String[])hash.get("date_modified"))[0] ;
-	if ( date_modified.indexOf(' ') != -1) {
-	    vec.add("#date_modified#") ;
-	    vec.add(date_modified.substring(0,date_modified.indexOf(' '))) ;
-	    vec.add("#modified_time#") ;
-	    vec.add(date_modified.substring(date_modified.indexOf(' ')+1,date_modified.length()-5)) ;
-	} else {
-	    vec.add("#date_modified#") ;
+	try {
+		theDate = dateFormat.parse(((String[])hash.get("date_created"))[0]);
+		vec.add("#date_created#") ;
+		vec.add(dateFormat_date.format(theDate)) ;
+		vec.add("#created_time#") ;
+		vec.add(dateFormat_time.format(theDate)) ;	
+	}catch(java.text.ParseException pe) {
+		vec.add("#date_created#") ;
 	    vec.add("") ;
-	    vec.add("#modified_time#") ;
+	    vec.add("#created_time#") ;
 	    vec.add("") ;
+	}
 
-	} // end of else
+	try {
+		theDate = dateFormat.parse(((String[])hash.get("date_modified"))[0]);
+		vec.add("#date_modified#") ;
+		vec.add(dateFormat_date.format(theDate)) ;
+		vec.add("#modified_time#") ;
+		vec.add(dateFormat_time.format(theDate)) ;	
+	}catch(java.text.ParseException pe) {
+		vec.add("#date_modified#") ;
+	    vec.add("") ;
+	    vec.add("#modified_time#") ;
+	    vec.add("") ;
+	}
 
 	vec.add("#classification#") ;
 	vec.add(classification) ;
