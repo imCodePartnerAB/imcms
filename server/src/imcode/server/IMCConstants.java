@@ -89,18 +89,6 @@ public interface IMCConstants {
     /** The error-log, used for logging errors, exceptions, and the like. */
     public final static String ERROR_LOG		= "errorlog";
 
-
-    /* Menu-sort-orders. */
-
-    /** Menu sorted by headline. **/
-    public final static int MENU_SORT_BY_HEADLINE        = 1 ;
-
-    /** Menu sorted by 'manual' order. **/
-    public final static int MENU_SORT_BY_MANUAL_ORDER    = 2 ;
-
-    /** Menu sorted by datetime. **/
-    public final static int MENU_SORT_BY_DATETIME        = 3 ;
-
     /** Properties file for host properties **/
     public final static String HOST_PROPERTIES           = "host.properties" ;
 

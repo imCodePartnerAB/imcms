@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.IMCService;
+import imcode.server.IMCServiceInterface;
 import imcode.server.db.DBConnect;
 import imcode.server.user.UserDomainObject;
 
@@ -113,7 +114,7 @@ public class TemplateMapper {
 
     }
 
-    public static TemplateDomainObject getTemplate( IMCService service, int template_id ) {
+    public static TemplateDomainObject getTemplate( IMCServiceInterface service, int template_id ) {
         String sqlStr = "select template_id,template_name,simple_name from templates where template_id = " + template_id;
         DBConnect dbc = new DBConnect( service.getConnectionPool() );
         dbc.setSQLString( sqlStr );

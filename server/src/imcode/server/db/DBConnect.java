@@ -245,16 +245,18 @@ public class DBConnect {
     /**
      * <p>Update databasequery.
      */
-    public void executeUpdateQuery() {
+    public int executeUpdateQuery() {
         // Execute SQL-string
+        int result = -1 ;
         try {
-            preparedStatement.executeUpdate();
+            result = preparedStatement.executeUpdate();
             preparedStatement.close() ;
         } catch( SQLException e ) {
             log.error( "executeUpdateQuery() failed: "+preparedStatement, e );
         } finally {
             returnConnection() ;
         }
+        return result ;
     }
 
     /**

@@ -1,26 +1,28 @@
 package imcode.server.document;
 
-import imcode.server.*;
+import imcode.server.IMCConstants;
+import imcode.server.IMCService;
+import imcode.server.IMCServiceInterface;
+import imcode.server.Table;
 import imcode.server.db.DBConnect;
-import imcode.server.util.DateHelper;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
-import imcode.util.poll.PollHandlingSystem;
+import imcode.server.util.DateHelper;
 import imcode.util.Parser;
+import imcode.util.poll.PollHandlingSystem;
 import org.apache.log4j.Logger;
 
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.TextDocument;
 
 public class DocumentMapper {
 
     private Logger log = Logger.getLogger( DocumentMapper.class );
-    protected IMCService service;
+    protected IMCServiceInterface service;
     protected ImcmsAuthenticatorAndUserMapper imcmsAAUM;
 
     public DocumentMapper( IMCService service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
@@ -46,19 +48,19 @@ public class DocumentMapper {
     private static final String SPROC_CLASSIFICATION_FIX = "Classification_Fix";
 
     // todo make sure all sproc and sql mehtods are private
-    private static String[] sprocGetUserPermissionSet( IMCService service, int metaId, int userId ) {
+    private static String[] sprocGetUserPermissionSet( IMCServiceInterface service, int metaId, int userId ) {
         String[] sqlParams = {String.valueOf( metaId ), String.valueOf( userId )};
         String[] sqlResult = service.sqlProcedure( SPROC_GET_USER_PERMISSION_SET, sqlParams );
         return sqlResult;
     }
 
     /** @return the filename for a fileupload-internalDocument, or null if the internalDocument isn't a fileupload-docuemnt. **/
-    private static String sprocGetFilename( IMCService service, int meta_id ) {
+    private static String sprocGetFilename( IMCServiceInterface service, int meta_id ) {
         String[] params = new String[]{String.valueOf( meta_id )};
         return service.sqlProcedureStr( SPROC_GET_FILE_NAME, params );
     }
 
-    private static Map sprocGetDocumentInfo( IMCService service, int metaId ) {
+    private static Map sprocGetDocumentInfo( IMCServiceInterface service, int metaId ) {
         String[] params = new String[]{String.valueOf( metaId )};
         String[] result = service.sqlProcedure( SPROC_GET_DOCUMENT_INFO, params );
 
@@ -123,7 +125,7 @@ public class DocumentMapper {
         return user_doc_types;
     }
 
-    private static void sprocUpdateInsertText( IMCService service, int meta_id, int txt_no, TextDocumentTextDomainObject text, String textstring ) {
+    private static void sprocUpdateInsertText( IMCServiceInterface service, int meta_id, int txt_no, TextDocumentTextDomainObject text, String textstring ) {
         String[] params = new String[]{"" + meta_id, "" + txt_no, "" + text.getType(), textstring};
         service.sqlUpdateProcedure( SPROC_INSERT_TEXT, params );
     }
@@ -176,7 +178,7 @@ public class DocumentMapper {
         imcref.sqlUpdateQuery( sqlStr );
     }
 
-    private void sqlUpdateDockType( IMCService service, int metaId, int docType ) {
+    private void sqlUpdateDocType( IMCServiceInterface service, int metaId, int docType ) {
         String sql = "update meta set doc_type = " + docType + " where meta_id = " + metaId;
         service.sqlUpdateQuery( sql );
     }
@@ -211,7 +213,7 @@ public class DocumentMapper {
         service.sqlUpdateQuery( sqlStr );
     }
 
-    private void sqlUpdateCreatedDate( IMCService service, int metaId, Date dateTime ) {
+    private void sqlUpdateCreatedDate( IMCServiceInterface service, int metaId, Date dateTime ) {
         String dateTimeStr = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( dateTime );
         String sql = "update meta set date_created = '" + dateTimeStr + "' where meta_id = " + metaId;
         service.sqlUpdateQuery( sql );
@@ -233,7 +235,7 @@ public class DocumentMapper {
      Set the modified datetime of a internalDocument to now
      @param meta_id The id of the internalDocument
      **/
-    private static void sqlUpdateTouchDocument( IMCService service, int meta_id ) {
+    private static void sqlUpdateTouchDocument( IMCServiceInterface service, int meta_id ) {
         Date date = new Date();
         SimpleDateFormat dateformat = new SimpleDateFormat( DateHelper.DATE_TIME_SECONDS_FORMAT_STRING );
         service.sqlUpdateQuery( "update meta set date_modified = '" + dateformat.format( date ) + "' where meta_id = " + meta_id );
@@ -476,7 +478,7 @@ public class DocumentMapper {
         // fix the data that is unique for this document
         sqlUpdateCreatedDate( service, newMetaId, nowDateTime );
         sqlUpdateModifiedDate( service, newMetaId, nowDateTime );
-        sqlUpdateDockType( service, newMetaId, docType );
+        sqlUpdateDocType( service, newMetaId, docType );
 
         // inherit all the different data that's not in meta from parent.
         sprocUpdateInheritPermissions( service, newMetaId, parentId, docType );
@@ -538,7 +540,7 @@ public class DocumentMapper {
     }
 
     // todo make Section into an DomainObject
-    private static void updateSection( IMCService service, DocumentDomainObject document, String section ) {
+    private static void updateSection( IMCServiceInterface service, DocumentDomainObject document, String section ) {
         if (null != section) {
             String sqlQuery = "select section_id from sections where section_name = ?";
             String[] queryResult = service.sqlQuery( sqlQuery, new String[] { section } );
@@ -553,23 +555,21 @@ public class DocumentMapper {
         }
     }
 
-    private static void removeSectionCrossref( IMCService service, DocumentDomainObject document ) {
+    private static void removeSectionCrossref( IMCServiceInterface service, DocumentDomainObject document ) {
         sprocSectionAddCrossref(service,document.getMetaId(), -1);
     }
 
-    private static void updateTextDoc( IMCService service, int meta_id, TemplateDomainObject template, int menuSortOrder, int templateGroupId ) {
-        String tabelName = "text_docs";
-        String sqlStr = "update " + tabelName + " set ";
-
-        sqlStr += "template_id = " + template.getId() + ", ";
-        sqlStr += "sort_order = " + menuSortOrder + ", ";
-        sqlStr += "group_id = " + templateGroupId;
-
-        sqlStr += " where meta_id = " + meta_id;
-        service.sqlUpdateQuery( sqlStr );
+    private static void updateTextDoc( IMCServiceInterface service, int meta_id, TemplateDomainObject template, int menuSortOrder, int templateGroupId ) {
+        int templateId = template.getId();
+        String sqlStr = "update text_docs set "+
+            "template_id = ?, " +
+            "sort_order = ?, " +
+            "group_id = ? "+
+            "where meta_id = ?";
+        service.sqlUpdateQuery( sqlStr, new String[] { ""+templateId, ""+menuSortOrder, ""+templateGroupId, ""+meta_id } );
     }
 
-    private static void sqlUpdateMeta( IMCService service, int meta_id, Date activatedDatetime, Date archivedDateTime, Date createdDatetime, String headline, String image, Date modifiedDateTime, String target, String text, boolean isArchived ) {
+    private static void sqlUpdateMeta( IMCServiceInterface service, int meta_id, Date activatedDatetime, Date archivedDateTime, Date createdDatetime, String headline, String image, Date modifiedDateTime, String target, String text, boolean isArchived ) {
 
         StringBuffer sqlStr = new StringBuffer( "update meta set " );
 
@@ -622,7 +622,7 @@ public class DocumentMapper {
         sprocSaveClassification( service, to_newMetaId, classifications );
     }
 
-    private int sqlCreateNewRowInMetaCopyParentData( IMCService service, int parentId ) {
+    private int sqlCreateNewRowInMetaCopyParentData( IMCServiceInterface service, int parentId ) {
         // todo: All this chould propably be done in a singel sql query but i dont have time to think how that should be done right now. Hasse
         final String columnsToBeCopied = "description,doc_type,meta_headline,meta_text,meta_image,owner_id,permissions,shared,expand,show_meta,help_text_id,archive,status_id,lang_prefix,classification,date_created,date_modified,sort_position,menu_position,disable_search,target,frame_name,activate,activated_datetime,archived_datetime";
         String sqlStatmentGetAllParentData = "select " + columnsToBeCopied + " from meta where meta_id = " + parentId;
@@ -681,7 +681,7 @@ public class DocumentMapper {
         service.sqlUpdateQuery( sqlStr );
     }
 
-    private static void initTextDoc( IMCService service, DocumentDomainObject inout_document ) {
+    private static void initTextDoc( IMCServiceInterface service, DocumentDomainObject inout_document ) {
         // all from the table text_doc
         String[] textdoc_data1 = service.sqlProcedure( "GetTextDocData", new String[]{String.valueOf( inout_document.getMetaId() )} );
         String[] textdoc_data = textdoc_data1;
@@ -714,16 +714,86 @@ public class DocumentMapper {
     }
 
     public String[] getMenuLinks( int documentId, int menuIndex) {
-        return service.sqlQuery("select to_meta_id from childs where meta_id = ? and menu_sort = ?",
+        int sortOrder = getSortOrderOfDocument( documentId ) ;
+        String orderBy = getSortOrderAsSqlOrderBy( sortOrder );
+        String sqlStr = "select to_meta_id from childs,meta where childs.meta_id = meta.meta_id and childs.meta_id = ? and menu_sort = ? order by "+orderBy;
+        return service.sqlQuery(sqlStr,
                                new String[] { ""+documentId, ""+menuIndex} ) ;
+    }
+
+    private String getSortOrderAsSqlOrderBy( int sortOrder ) {
+        String orderBy = "meta_headline" ;
+        switch (sortOrder) {
+            case TextDocument.Menu.SORT_BY_MANUAL_ORDER_DESCENDING:
+                orderBy = "manual_sort_order desc" ;
+                break;
+
+            case TextDocument.Menu.SORT_BY_MODIFIED_DATETIME_DESCENDING:
+                orderBy = "date_modified desc" ;
+                break;
+
+            case TextDocument.Menu.SORT_BY_HEADLINE:
+                orderBy = "meta_headline" ;
+                break;
+        }
+        return orderBy;
+    }
+
+    private int getSortOrderOfDocument( int documentId ) {
+        return Integer.parseInt(sqlSelectTemplateInfoFromTextDocs(service,String.valueOf( documentId ))[1]);
     }
 
     public boolean hasSharePermission( UserDomainObject user, int documentId ) {
         return service.checkUserDocSharePermission(user,documentId) ;
     }
 
-    public void addDocumentToMenu( int menuDocumentId, int menuIndex, int toBeAddedId ) {
-        service.sqlUpdateProcedure("AddExistingDocToMenu", new String[] {""+menuDocumentId,""+toBeAddedId,""+menuIndex} ) ;
+    public void addDocumentToMenu( UserDomainObject user, int menuDocumentId, int menuIndex, int toBeAddedId ) {
+        addDocumentToMenu(service, user, menuDocumentId, menuIndex, toBeAddedId );
+    }
+
+    public void removeDocumentFromMenu(UserDomainObject user, int menuDocumentId, int menuIndex, int toBeRemovedId ) {
+        removeDocumentFromMenu(service, user, menuDocumentId,menuIndex,toBeRemovedId);
+    }
+
+    private static void removeDocumentFromMenu( IMCServiceInterface service, UserDomainObject user, int menuDocumentId, int menuIndex, int toBeRemovedId ) {
+        String sqlStr = "delete from childs\n"+
+        "where to_meta_id = ?\n"+
+        "and meta_id = ?\n"+
+        "and menu_sort = ?" ;
+
+        int updatedRows = service.sqlUpdateQuery(sqlStr, new String[] { ""+toBeRemovedId, ""+menuDocumentId, ""+menuIndex });
+
+        if ( 1 == updatedRows ) {	// if existing doc is added to the menu
+            service.updateLogs( "Link from [" + menuDocumentId + "] in menu ["+menuIndex+"] to ["+toBeRemovedId+"] removed by user: [" + user.getFullName() + "]" );
+        }
+    }
+
+    /**
+     * Delete childs from a menu.
+     */
+    public static void deleteChilds( IMCServiceInterface service, int meta_id, int menu, UserDomainObject user, String childsThisMenu[] ) {
+        StringBuffer childStr = new StringBuffer("[");
+        // create a db connection an get meta data
+
+        for ( int i = 0; i < childsThisMenu.length; i++ ) {
+            int childId = Integer.parseInt(childsThisMenu[i]) ;
+
+            removeDocumentFromMenu( service, user, meta_id, menu, childId );
+
+            childStr.append(childsThisMenu[i]);
+            if ( i < childsThisMenu.length - 1 )
+                childStr.append(", ");
+        }
+        childStr.append("]");
+
+    }
+
+    public static void addDocumentToMenu( IMCServiceInterface service, UserDomainObject user, int menuDocumentId, int menuIndex, int toBeAddedId ) {
+        int updatedRows = service.sqlUpdateProcedure("AddExistingDocToMenu", new String[] {""+menuDocumentId,""+toBeAddedId,""+menuIndex} ) ;
+
+        if ( 1 == updatedRows ) {	// if existing doc is added to the menu
+            service.updateLogs( "Link from [" + menuDocumentId + "] in menu ["+menuIndex+"] to ["+toBeAddedId+"] added by user: [" + user.getFullName() + "]" );
+        }
     }
 
 

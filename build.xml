@@ -72,25 +72,37 @@
 
 
     <!-- Locations for the final packages -->
-    <property name="warfile"              value="${webappname}.war"/>
-    <property name="wardist"              value="${dist}/${warfile}"/>
+    <property name="warfile"                  value="${webappname}.war"/>
+    <property name="wardist"                  value="${dist}/${warfile}"/>
 
-    <property name="dist-sql"             value="${dist}/imcms.sql"/>
-    <property name="sprocs-sql"           value="${dist}/sprocs.sql"/>
-    <property name="help-sql"             value="${dist}/help.sql"/>
+    <property name="srcdistfile"              value="${webappname}-src"/>
+    <property name="srczipdist"               value="${dist}/${srcdistfile}.zip"/>
+    <property name="srctgzdist"               value="${dist}/${srcdistfile}.tar.gz"/>
+    <property name="srctbz2dist"              value="${dist}/${srcdistfile}.tar.bz2"/>
+
+    <property name="srcincludes"              value="${basedir}/MANIFEST.TXT"/>
+
+    <property name="dist-sql"                 value="${dist}/imcms.sql"/>
+    <property name="sprocs-sql"               value="${dist}/sprocs.sql"/>
+    <property name="help-sql"                 value="${dist}/help.sql"/>
 
 
     <!-- Where to install imCMS -->
-    <property name="webapproot"           value="${deployroot}/${webappname}"/>
+    <property name="webapproot"               value="${deployroot}/${webappname}"/>
 
 
     <!-- A handy target to have everything else depend on, just in case. -->
     <target name="init" depends="global-filters" description="Handy target for everything else to depend on.">
 
-	<!-- Record the build to a log-file. -->
-	<record name="${basedir}/build.log"/>
+        <!-- Record the build to a log-file. -->
+        <record name="${basedir}/build.log"/>
 
-	<tstamp/>
+        <tstamp/>
+
+        <dependset>
+            <srcfileset dir="." file="build.xml" />
+            <targetfileset dir="${build}" />
+        </dependset>
 
     </target>
 
@@ -174,23 +186,13 @@
     <!-- Checks that build.properties is up-to-date. -->
     <target name="check-build-properties" description="Checks that ${build.properties} is up-to-date." unless="build-properties-up-to-date">
 
-	<uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
-	    <srcfiles dir="${basedir}" includes="${build.properties}.template"/>
-	</uptodate>
+        <uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
+            <srcfiles dir="${basedir}" includes="${build.properties}.template"/>
+        </uptodate>
 
-	<antcall target="fail-build-properties"/>
-
-    </target>
-
-
-    <!-- Fail unless build.properties is up-to-date. -->
-    <target name="fail-build-properties" description="Checks that ${build.properties} is newer than ${build.properties}.template and build.xml." unless="build-properties-up-to-date">
-
-	<fail>
-	    '${build.properties}.template' is newer than '${build.properties}'.
-	    Copy '${build.properties}.template' to '${build.properties}' and edit it!
-	    (See INSTALL.TXT for details.)
-	</fail>
+        <fail unless="build-properties-up-to-date">'${build.properties}.template' is newer than '${build.properties}'. (See INSTALL.TXT for details.)
+            Copy '${build.properties}.template' to '${build.properties}' and edit it!
+        </fail>
 
     </target>
 
@@ -222,6 +224,37 @@
 
     </target>
 
+    <target name="srcdist" depends="srczipdist,srctgzdist" description="Packages all source distributions."/>
+
+    <target name="srczipdist" depends="init,check-webappname">
+        <mkdir dir="${dist}"/>
+        <delete file="${srczipdist}"/> <!-- <zip> will for some reason throw an IllegalArgumentException if the file exists.-->
+        <zip destfile="${srczipdist}">
+            <zipfileset includesfile="${srcincludes}" dir="${basedir}" prefix="${webappname}"/>
+        </zip>
+    </target>
+
+    <target name="srctgzdist" depends="init,check-webappname">
+        <mkdir dir="${dist}"/>
+        <dependset>
+            <srcfileset file="${srcincludes}"/>
+            <targetfileset file="${srctgzdist}" />
+        </dependset>
+        <tar destfile="${srctgzdist}" compression="gzip">
+            <tarfileset includesfile="${srcincludes}" dir="${basedir}" prefix="${webappname}"/>
+        </tar>
+    </target>
+
+    <target name="srctbz2dist" depends="init,check-webappname">
+        <mkdir dir="${dist}"/>
+        <dependset>
+            <srcfileset file="${srcincludes}"/>
+            <targetfileset file="${srctbz2dist}" />
+        </dependset>
+        <tar destfile="${srctbz2dist}" compression="bzip2">
+            <tarfileset includesfile="${srcincludes}" dir="${basedir}" prefix="${webappname}"/>
+        </tar>
+    </target>
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
@@ -379,7 +412,11 @@
 
     <!-- Copies and filters the config-files with the correct properties. -->
     <target name="conf" depends="init" description="Builds the config-directory.">
-	<copy todir="${conf}" filtering="true">
+	    <dependset>
+            <srcfileset file="${build.properties}"/>
+            <targetfileset dir="${conf}"/>
+	    </dependset>
+        <copy todir="${conf}" filtering="true">
 	    <fileset dir="install/conf">
 		<exclude name="policy"/>
 	    </fileset>

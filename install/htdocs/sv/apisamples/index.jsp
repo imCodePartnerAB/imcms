@@ -63,6 +63,8 @@ Clear the first and the second field, </a><%= makeLink("document_clear_text_fiel
 <br>
 Get the first menu from the document, <%= makeLink("document_get_menu.jsp") %><br>
 Add a document to a menu, <%= makeLink("document_add_to_menu.jsp") %><br>
+Remove a document from a menu, <%= makeLink("document_remove_from_menu.jsp") %><br>
+Set the sort order of all menus in a document, <%= makeLink("document_set_sortorder.jsp") %><br>
 <br>
 Get the first include from the document, <%= makeLink("document_get_include.jsp") %><br>
 Change the first include, <%= makeLink("document_set_include.jsp") %><br>
@@ -80,6 +82,9 @@ To see what specified "Restricted One" permissions a page has, see <%= makeLink(
 This doesn't work yet:<br>
 (To change the "Restricted One" permission,<%= makeLink("document_permission_change_restricted_1.jsp") %>)<br>
 <br>
+
+<h3>Database connection</h3>
+Get access to the database, <%= makeLink("database_get_connection.jsp") %><br>
 
 <H3>NoPermissionException and exception handling in jsp-pages</H3>
 <P>

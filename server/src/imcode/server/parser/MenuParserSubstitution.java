@@ -7,6 +7,7 @@ import imcode.server.* ;
 import java.text.SimpleDateFormat ;
 
 import org.apache.log4j.Category;
+import com.imcode.imcms.api.TextDocument;
 
 public class MenuParserSubstitution implements Substitution {
     private final static String CVS_REV = "$Revision$" ;
@@ -251,7 +252,7 @@ public class MenuParserSubstitution implements Substitution {
 	tags.setProperty("#/menuitemlinkonly#", "</a>") ;
 
 	if ( menuItem.getParentMenu().isMenuMode() ) {
-	    if (menuItem.getParentMenu().getSortOrder() == IMCConstants.MENU_SORT_BY_MANUAL_ORDER) {
+	    if (menuItem.getParentMenu().getSortOrder() == TextDocument.Menu.SORT_BY_MANUAL_ORDER_DESCENDING) {
 		a_href = "<input type=\"text\" name=\""+menuItem.getMetaId()+"\" value=\""+menuItem.getSortKey()+"\" size=\"4\" maxlength=\"4\">" + a_href ;
 	    }
 	    a_href = "<input type=\"checkbox\" name=\"archiveDelBox\" value=\""+menuItem.getMetaId()+"\">" + a_href ;

@@ -488,12 +488,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public void addExistingDoc( int meta_id, UserDomainObject user, int existing_meta_id, int doc_menu_no ) {
 
-        String sqlStr = "AddExistingDocToMenu  " + meta_id + ", " + existing_meta_id + ", " + doc_menu_no;
-        int addDoc = sqlUpdateProcedure( sqlStr );
+        DocumentMapper.addDocumentToMenu( this, user, meta_id, doc_menu_no, existing_meta_id );
 
-        if ( 1 == addDoc ) {	// if existing doc is added to the menu
-            this.updateLogs( "(AddExisting) Child links for [" + meta_id + "] updated by user: [" + user.getFullName() + "]" );
-        }
     }
 
     public void saveManualSort( int meta_id, UserDomainObject user, java.util.Vector childs, java.util.Vector sort_no ) {
@@ -525,43 +521,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         //close connection
         dbc = null;
 
-    }
-
-    /**
-     * Delete childs from a menu.
-     */
-    public void deleteChilds( int meta_id, int menu, UserDomainObject user, String childsThisMenu[] ) {
-        String sqlStr = "";
-        String childStr = "[";
-        // create a db connection an get meta data
-        DBConnect dbc = new DBConnect( m_conPool );
-
-        for ( int i = 0; i < childsThisMenu.length; i++ ) {
-            sqlStr = "delete from childs\n";
-            sqlStr += " where to_meta_id =" + childsThisMenu[i] + "\n";
-            sqlStr += " and meta_id = " + meta_id;
-            sqlStr += " and menu_sort = " + menu;
-
-
-            //	sqlStr += "delete from meta where meta_id ="  + meta_id  + "\n" ;
-            //  sqlStr += "delete from text_docs where meta_id ="  + meta_id  + "\n" ;
-            //	sqlStr += "delete from texts where meta_id ="  + meta_id  + "\n" ;
-
-
-
-            dbc.setSQLString( sqlStr );
-            dbc.executeUpdateQuery();
-
-            childStr += childsThisMenu[i];
-            if ( i < childsThisMenu.length - 1 )
-                childStr += ",";
-        }
-        childStr += "]";
-
-        this.updateLogs( "Childs " + childStr + " from " + "[" + meta_id + "] deleted by user: [" + user.getFullName() + "]" );
-
-        //close connection
-        dbc = null;
     }
 
     /**
@@ -872,6 +831,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return convertResultListToArray( data );
     }
 
+    public void deleteChilds( int meta_id, int doc_menu_no, UserDomainObject user, String[] childsThisMenu ) {
+        DocumentMapper.deleteChilds(this, meta_id,doc_menu_no,user,childsThisMenu) ;
+    }
+
     private static String[] convertResultListToArray( List data ) {
         if ( null == data ) {
             return null;
@@ -906,10 +869,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      Send a sql update query to the database
      @deprecated Use {@link #sqlUpdateProcedure(String, String[])} instead.
      **/
-    public void sqlUpdateQuery( String sqlStr ) {
+    public int sqlUpdateQuery( String sqlStr ) {
+        return sqlUpdateQuery(sqlStr,null);
+    }
+
+    public int sqlUpdateQuery( String sqlStr, String[] queryParameters ) {
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.setSQLString( sqlStr );
-        dbc.executeUpdateQuery();
+        dbc.setSQLString( sqlStr, queryParameters );
+        return dbc.executeUpdateQuery();
     }
 
     /**

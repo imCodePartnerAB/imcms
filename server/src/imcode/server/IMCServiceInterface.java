@@ -6,6 +6,7 @@ import java.util.* ;
 import imcode.server.parser.ParserParameters ;
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.TextDocumentTextDomainObject;
+import imcode.server.db.ConnectionPool;
 
 import imcode.readrunner.* ;
 
@@ -56,12 +57,6 @@ public interface IMCServiceInterface {
 	;
 
     void saveManualSort(int meta_id,UserDomainObject user,java.util.Vector childs, java.util.Vector sort_no)
-	;
-
-    /**
-       Remove children from a menu
-    **/
-    void deleteChilds(int meta_id,int menu,UserDomainObject user,String childsThisMenu[])
 	;
 
     // archive childs
@@ -120,7 +115,7 @@ public interface IMCServiceInterface {
 	;
 
     // Send a sql update query to the database
-    void sqlUpdateQuery(String sqlStr)  ;
+    int sqlUpdateQuery(String sqlStr)  ;
 
     // Send a sqlquery to the database and return a string
     String sqlQueryStr(String sqlQuery)
@@ -384,4 +379,13 @@ public interface IMCServiceInterface {
     void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime );
 
     String[] sqlQuery( String sqlQuery, String[] params );
+
+    void deleteChilds( int meta_id, int doc_menu_no, UserDomainObject user, String[] childsThisMenu );
+
+    void updateLogs( String logMessage );
+
+    int sqlUpdateQuery( String sqlStr, String[] params );
+
+    ConnectionPool getConnectionPool();
+
 }

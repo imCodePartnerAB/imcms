@@ -70,6 +70,38 @@ public class TextDocument extends Document {
         }
     }
 
+    /**
+     * Set the current sort order of the menus in this textdocument.
+     *
+     * @param sortOrder One of {@link TextDocument.Menu.SORT_BY_HEADLINE},
+     *                  {@link TextDocument.Menu.SORT_BY_MODIFIED_DATETIME_DESCENDING},
+     *                  or {@link TextDocument.Menu.SORT_BY_MANUAL_ORDER_DESCENDING}.
+     * @throws NoPermissionException if the current user lacks permission to edit this document.
+     */
+    public void setMenuSortOrder(int sortOrder) throws NoPermissionException {
+        securityChecker.hasEditPermission( this );
+        internalDocument.setMenuSortOrder(sortOrder);
+    }
+
+    /**
+     * Get the current sort order of the menus in this textdocument.
+     *
+     * @return the current sort order of the menus in this textdocument,
+     *                  one of {@link TextDocument.Menu.SORT_BY_HEADLINE},
+     *                  {@link TextDocument.Menu.SORT_BY_MODIFIED_DATETIME_DESCENDING},
+     *                  or {@link TextDocument.Menu.SORT_BY_MANUAL_ORDER_DESCENDING}.
+     */
+    public int getMenuSortOrder() throws NoPermissionException {
+        securityChecker.hasDocumentPermission( this );
+        return internalDocument.getMenuSortOrder() ;
+    }
+
+    /**
+     * Get the menu with the given index in the document.
+     * @param menuIndexInDocument the index of the menu in the document.
+     * @return the menu with the given index in the document.
+     * @throws NoPermissionException if you lack permission to read this document.
+     */
     public Menu getMenu( int menuIndexInDocument ) throws NoPermissionException {
         securityChecker.hasDocumentPermission( this );
         return new Menu(menuIndexInDocument) ;
@@ -82,18 +114,35 @@ public class TextDocument extends Document {
             this.imcmsText = imcmsText ;
         }
 
+        /**
+         * Set the format of the text in this textfield to HTML. (Should not be html-formatted.)
+         */
         public void setHtmlFormat() {
             this.imcmsText.setType(TextDocumentTextDomainObject.TEXT_TYPE_HTML) ;
         }
 
+        /**
+         *  Set the format of the text in this textfield to plain text. (Should be html-formatted.)
+         */
         public void setPlainFormat() {
             this.imcmsText.setType(TextDocumentTextDomainObject.TEXT_TYPE_PLAIN) ;
         }
 
+        /**
+         * Get the text of this textfield.
+         *
+         * @return the text of this textfield.
+         */
         public String getText() {
             return imcmsText.getText() ;
         }
 
+        /**
+         * Get the text of this textfield as a html-formatted string,
+         * suitable for displaying in a html-page.
+         *
+         * @return the text of this textfield as a html-formatted string, suitable for displaying in a html-page.
+         */
         public String getHtmlFormattedText() {
             return imcmsText.toHtmlString() ;
         }
@@ -101,11 +150,22 @@ public class TextDocument extends Document {
 
     public class Menu {
         private int menuIndex ;
+        /** Menu sorted by 'manual' order. **/
+        public final static int SORT_BY_MANUAL_ORDER_DESCENDING    = 2 ;
+        /** Menu sorted by headline. **/
+        public final static int SORT_BY_HEADLINE        = 1 ;
+        /** Menu sorted by datetime. **/
+        public final static int SORT_BY_MODIFIED_DATETIME_DESCENDING        = 3 ;
 
         private Menu( int menuIndex ) {
             this.menuIndex = menuIndex;
         }
 
+        /**
+         * Get the documents in this menu.
+         *
+         * @return an array of the documents in this menu.
+         */
         public Document[] getDocuments() {
             String[] documentIds = documentMapper.getMenuLinks(getId(),menuIndex) ;
             Document[] documents = new Document[documentIds.length] ;
@@ -123,11 +183,29 @@ public class TextDocument extends Document {
             return documents ;
         }
 
+        /**
+         * Add a document to the menu.
+         *
+         * @param document the document to add
+         * @throws NoPermissionException If you lack permission to edit the menudocument or permission to add the document.
+         */
         public void addDocument(Document document) throws NoPermissionException {
-            securityChecker.hasEditPermission(getInternal().getMetaId());
+            securityChecker.hasEditPermission(getId());
             securityChecker.hasSharePermission(document) ;
 
-            documentMapper.addDocumentToMenu(getId(),menuIndex,document.getId()) ;
+            documentMapper.addDocumentToMenu( securityChecker.getCurrentLoggedInUser(), getId(),menuIndex,document.getId()) ;
+        }
+
+        /**
+         * Remove a document from the menu.
+         *
+         * @param document the document to add
+         * @throws NoPermissionException If you lack permission to edit the menudocument.
+         */
+        public void removeDocument(Document document) throws NoPermissionException {
+            securityChecker.hasEditPermission(getId());
+
+            documentMapper.removeDocumentFromMenu(securityChecker.getCurrentLoggedInUser(), getId(), menuIndex, document.getId()) ;
 
         }
     }

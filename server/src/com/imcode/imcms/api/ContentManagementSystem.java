@@ -6,12 +6,15 @@ import imcode.server.document.DocumentPermissionSetMapper;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
 
+import java.sql.Connection;
+
 public class ContentManagementSystem  {
 
     private UserService userService;
     private DocumentService documentService;
-    private User currentUser;
     private TemplateService templateService;
+    private DatabaseService databaseService;
+    private User currentUser;
 
     public TemplateService getTemplateService() {
         return templateService;
@@ -35,6 +38,7 @@ public class ContentManagementSystem  {
         userService = new UserService( securityChecker, imcmsAAUM );
         documentService = new DocumentService( securityChecker, documentMapper, documentPermissionSetMapper );
         templateService = new TemplateService( service, securityChecker );
+        databaseService = new DatabaseService( service ) ;
     }
 
     public UserService getUserService(){
@@ -47,5 +51,9 @@ public class ContentManagementSystem  {
 
     public User getCurrentUser() {
         return currentUser;
+    }
+
+    public DatabaseService getDatabaseService() {
+        return databaseService;
     }
 }

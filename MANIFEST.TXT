@@ -1,0 +1,11 @@
+install/**
+server/**
+servlets/**/*.java
+server/**/*.java
+sql/**
+tools/**
+templates/**
+INSTALL.TXT
+MANIFEST.TXT
+build.properties.template
+build.xml

@@ -4,6 +4,7 @@ import com.mockobjects.ExpectationList;
 import com.mockobjects.MockObject;
 import imcode.readrunner.ReadrunnerUserData;
 import imcode.server.*;
+import imcode.server.db.ConnectionPool;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.TextDocumentTextDomainObject;
@@ -71,7 +72,19 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    public void deleteChilds( int meta_id, int menu, UserDomainObject user, String childsThisMenu[] ) {
    }
 
-   // archive childs
+    public void updateLogs( String logMessage ) {
+        //To change body of implemented methods use Options | File Templates.
+    }
+
+    public int sqlUpdateQuery( String sqlStr, String[] params ) {
+        return 0;  //To change body of implemented methods use Options | File Templates.
+    }
+
+    public ConnectionPool getConnectionPool() {
+        return null;  //To change body of implemented methods use Options | File Templates.
+    }
+
+    // archive childs
    public void archiveChilds( int meta_id, UserDomainObject user, String childsThisMenu[] ) {
    }
 
@@ -133,7 +146,8 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // Send a sql update query to the database
-   public void sqlUpdateQuery( String sqlStr ) {
+   public int sqlUpdateQuery( String sqlStr ) {
+       return 0;
    }
 
    // Send a sqlquery to the database and return a string
