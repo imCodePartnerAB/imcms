@@ -165,7 +165,7 @@ public class SearchDocuments extends HttpServlet {
 	    v.add(docs.get(i+2)) ;
 	    v.add(docs.get(i+3)) ;
 	    v.add(""+ (i / fieldRecSize +1) ) ;
-	    v.add(java.net.URLEncoder.encode(question_field)) ;
+	    v.add(question_field) ;
 	    oneRecHtml = parseOneRecord(imcserver, servlet_url, v, "search_list.html",langPrefix) ;
 
 	    htmlStr += oneRecHtml;
@@ -283,7 +283,9 @@ public class SearchDocuments extends HttpServlet {
 		sqlStr += "WHERE (" ;
 	    }
 	    for ( int i = 0 ; i < tokens.size() ; i++ ) {
-		sqlStr += " text LIKE  '%" + tokens.elementAt(i).toString() + match + "%'" ;
+		String token = tokens.elementAt(i).toString() ;
+		sqlStr += " (text LIKE  '%" + token + 
+		    "%' OR text LIKE '%" + imcode.server.HTMLConv.toHTML(token)+"%')" ;
 
 		if ( i < tokens.size() -1 )
 		    sqlStr += " " + search_prep + " " ;
@@ -496,10 +498,17 @@ public class SearchDocuments extends HttpServlet {
 	aRecord.add( dataV.elementAt(3).toString()) ;
 	aRecord.add("#HIT_NBR#") ;
 	aRecord.add( dataV.elementAt(4).toString()) ;
-	// Added by Kreiger 010323, for emphasizing of the keywords
+
+	StringTokenizer tokens = new java.util.StringTokenizer(dataV.elementAt(5).toString()) ;
+	StringBuffer emps = new StringBuffer() ;
+	while (tokens.hasMoreTokens()) {
+	    String token = tokens.nextToken() ;
+	    emps.append("&emp="+java.net.URLEncoder.encode(imcode.server.HTMLConv.toHTML(token))) ;
+	    emps.append("&emp="+java.net.URLEncoder.encode(token)) ;
+	}
 	aRecord.add("#EMPHASIZE#") ;
-	aRecord.add( dataV.elementAt(5).toString()) ;
-	// End of added 010323
+	aRecord.add( emps.toString() ) ;
+
 	try {
 	    return IMCServiceRMI.parseDoc(imcserver,aRecord,htmlFile,langPrefix);
 	} catch(java.io.IOException e) {
