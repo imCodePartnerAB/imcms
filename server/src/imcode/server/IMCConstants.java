@@ -1,7 +1,5 @@
 package imcode.server ;
 
-import imcode.server.document.DocumentPermissionSetDomainObject;
-
 public interface IMCConstants {
 
     /* Permissions for restricted permission-sets 1 and 2, applicable for all document-types. */
@@ -59,9 +57,6 @@ public interface IMCConstants {
     public final static int DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 = (1 << 0) ; // 1
 
     /* Log instances. */
-
-    /** The main-log, used for logging interesting stuff, like db-modifications. **/
-    public final static String MAIN_LOG		= "mainlog";
 
     /** The access-log, used for keeping track of page hits. **/
     public final static String ACCESS_LOG		= "accesslog";

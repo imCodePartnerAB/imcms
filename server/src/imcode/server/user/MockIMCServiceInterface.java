@@ -65,7 +65,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         // TODO
     }
 
-    public void updateLogs( String logMessage ) {
+    public void updateMainLog( String logMessage ) {
         //To change body of implemented methods use Options | File Templates.
     }
 

@@ -10,7 +10,6 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.MetaDataParser;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -26,11 +25,6 @@ import java.util.*;
  */
 public class SaveMeta extends HttpServlet {
 
-    private final static Logger mainLog = Logger.getLogger( IMCConstants.MAIN_LOG );
-
-    /**
-     * doPost()
-     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         req.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
@@ -141,7 +135,7 @@ public class SaveMeta extends HttpServlet {
             }
 
             if ( !permissionSettingSucceded ) {
-                mainLog.info( "User " + user.getId() + " with set_id " + userSetId + " and permission_set "
+                imcref.updateMainLog( "User " + user.getId() + " with set_id " + userSetId + " and permission_set "
                               + userPermSet
                               + " was denied permission to change set_id for role "
                               + role_id
@@ -375,7 +369,7 @@ public class SaveMeta extends HttpServlet {
         res.sendRedirect( "AdminDoc?meta_id="+metaId);
 
         //lets log to mainlog that the user done stuff
-        mainLog.info( "Metadata on [" + metaIdStr + "] updated by user: [" + user.getFullName() + "]" );
+        imcref.updateMainLog( "Metadata on [" + metaIdStr + "] updated by user: [" + user.getFullName() + "]" );
     }
 
     private static void putTemporaryPermissionSettingsInUser( UserDomainObject user, String meta_id,

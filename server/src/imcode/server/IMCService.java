@@ -49,7 +49,8 @@ final public class IMCService implements IMCServiceInterface {
     private int sessionCounter = 0;
     private FileCache fileCache = new FileCache();
 
-    private final static Logger mainLog = Logger.getLogger( IMCConstants.MAIN_LOG );
+    private final static Logger mainLog = Logger.getLogger( "mainlog" );
+
     private final static Logger log = Logger.getLogger( IMCService.class.getName() );
     private static final String EXTERNAL_AUTHENTICATOR_SMB = "SMB";
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "LDAP";
@@ -350,7 +351,7 @@ final public class IMCService implements IMCServiceInterface {
     public void saveManualSort( int meta_id, UserDomainObject user, List childs,
                                 List sort_no, int menuNumber ) {
         String columnName = "manual_sort_order";
-        saveChildSortOrder( columnName, childs, sort_no, meta_id, user, menuNumber );
+        saveChildSortOrder( columnName, childs, sort_no, meta_id, menuNumber );
     }
 
     public void saveTreeSortIndex( int meta_id, UserDomainObject user, List childs, List sort_no, int menuNumber ) {
@@ -361,11 +362,10 @@ final public class IMCService implements IMCServiceInterface {
             menuItemTreeSortKey = perl5util.substitute( "s/\\D+/./g", menuItemTreeSortKey );
             iterator.set( menuItemTreeSortKey );
         }
-        saveChildSortOrder( columnName, childs, sort_no, meta_id, user, menuNumber );
+        saveChildSortOrder( columnName, childs, sort_no, meta_id, menuNumber );
     }
 
-    private void saveChildSortOrder( String columnName, List childs, List sort_no, int meta_id, UserDomainObject user,
-                                     int menuIndex ) {
+    private void saveChildSortOrder( String columnName, List childs, List sort_no, int meta_id, int menuIndex ) {
         for ( int i = 0; i < childs.size(); i++ ) {
             String columnValue = sort_no.get( i ).toString();
             String to_meta_id = childs.get( i ).toString();
@@ -373,9 +373,6 @@ final public class IMCService implements IMCServiceInterface {
                          + " = ? WHERE to_meta_id = ? AND menu_id = (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
             sqlUpdateQuery( sql, new String[]{columnValue, to_meta_id, "" + meta_id, "" + menuIndex} );
         }
-
-        updateLogs( "Child manualsort for [" + meta_id + "] updated by user: [" +
-                    user.getFullName() + "]" );
     }
 
     /**
@@ -393,10 +390,6 @@ final public class IMCService implements IMCServiceInterface {
                 throw new RuntimeException( e );
             }
         }
-
-        this.updateLogs( "Childs [" + StringUtils.join( childsThisMenu, ", " ) + "] from " +
-                         "[" + meta_id + "] archived by user: [" +
-                         user.getFullName() + "]" );
     }
 
     /**
@@ -412,16 +405,10 @@ final public class IMCService implements IMCServiceInterface {
         return url_ref;
     }
 
-    /**
-     * Update logs.
-     */
-    public void updateLogs( String event ) {
+    public void updateMainLog( String event ) {
         mainLog.info( event );
     }
 
-    /**
-     * Check if frameset doc.                                                                        *
-     */
     public String isFramesetDoc( int meta_id ) {
 
         String htmlStr = null;
@@ -436,12 +423,12 @@ final public class IMCService implements IMCServiceInterface {
     /**
      * Activate child to child-table.
      */
-    public void activateChild( int meta_id, imcode.server.user.UserDomainObject user ) {
+    public void activateChild( int meta_id, UserDomainObject user ) {
 
         String sqlStr = "update meta set activate = 1 where meta_id = ?";
         sqlUpdateQuery( sqlStr, new String[]{"" + meta_id} );
 
-        this.updateLogs( "Child [" + meta_id + "] activated  " + "by user: [" + user.getFullName() + "]" );
+        this.updateMainLog( "Child [" + meta_id + "] activated  " + "by user: [" + user.getFullName() + "]" );
 
     }
 

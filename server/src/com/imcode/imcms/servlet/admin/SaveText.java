@@ -57,6 +57,8 @@ public final class SaveText extends HttpServlet {
         if ( req.getParameter( "ok" ) != null ) {
             DocumentMapper documentMapper = imcref.getDocumentMapper();
             documentMapper.saveText( text, documentMapper.getDocument(meta_id), txt_no, user, text_type );
+            imcref.updateMainLog( "Text " + txt_no + " in  " + "[" + meta_id +
+                    "] modified by user: [" + user.getFullName() + "]");            
         }
 
         String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );

@@ -90,7 +90,7 @@ public class SaveInPage extends HttpServlet {
             }
             try {
                 documentMapper.saveDocument( textDocument, user );
-                imcref.updateLogs( "Text docs  [" + textDocument.getId() + "] updated by user: [" + user.getFullName()
+                imcref.updateMainLog( "Text docs  [" + textDocument.getId() + "] updated by user: [" + user.getFullName()
                                    + "]" );
             } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
                 throw new RuntimeException( e );

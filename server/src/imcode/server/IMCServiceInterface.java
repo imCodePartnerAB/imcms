@@ -196,7 +196,7 @@ public interface IMCServiceInterface {
 
     void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime );
 
-    void updateLogs( String logMessage );
+    void updateMainLog( String logMessage );
 
     ConnectionPool getConnectionPool();
 

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SaveImage extends HttpServlet {
-    private Logger log = Logger.getLogger( SaveImage.class );
 
     final static String REQUEST_PARAMETER__IMAGE_URL = "imageref" ;
 
@@ -238,6 +237,10 @@ public class SaveImage extends HttpServlet {
         image.setUrl( imageUrl );
 
         imcref.saveImage( meta_id, user, img_no, image );
+        ApplicationServer.getIMCServiceInterface().updateMainLog("ImageRef " + img_no + " =" + image.getUrl() +
+                " in  " + "[" + meta_id + "] modified by user: [" +
+                user.getFullName() + "]");
+
 
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         documentMapper.touchDocument( documentMapper.getDocument( meta_id ) );

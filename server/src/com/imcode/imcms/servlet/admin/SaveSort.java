@@ -20,6 +20,8 @@ import java.io.Writer;
 import java.util.Date;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Save document sorting (date,name,manual)
  */
@@ -84,6 +86,8 @@ public class SaveSort extends HttpServlet {
             if ( currentSortOrder != sort_order ) {
                 imcref.sqlUpdateQuery( "update menus set sort_order = ? where meta_id = ? AND menu_index = ?",
                                        new String[]{"" + sort_order, "" + documentId, "" + menuIndex} );
+                logSortOrderUpdateToMainLog( imcref, documentId, user );
+
             } else {
                 if ( childs.size() > 0 ) {
                     if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED == sort_order ) {
@@ -96,10 +100,13 @@ public class SaveSort extends HttpServlet {
         } else if ( req.getParameter( "delete" ) != null ) {
             if ( selectedChildrenIds != null ) {
                 documentMapper.deleteChilds( document, menuIndex, user, selectedChildrenIds );
+                logDeletionToMainLog( selectedChildrenIds, imcref, document, menuIndex, user );
             }
         } else if ( req.getParameter( "archive" ) != null ) {
             if ( selectedChildrenIds != null ) {
                 imcref.archiveChilds( documentId, user, selectedChildrenIds );
+                logArchivationToMainLog( imcref, selectedChildrenIds, documentId, user );
+
             }
         } else if ( req.getParameter( "copy" ) != null ) {
             if ( selectedChildrenIds != null ) {
@@ -122,5 +129,26 @@ public class SaveSort extends HttpServlet {
         res.sendRedirect( "AdminDoc?meta_id=" + documentId + "&flags=" + IMCConstants.DISPATCH_FLAG__EDIT_MENU
                           + "&editmenu="
                           + menuIndex );
+    }
+
+    private void logSortOrderUpdateToMainLog( IMCServiceInterface imcref, int documentId, UserDomainObject user ) {
+        imcref.updateMainLog( "Child sort order for [" + documentId + "] updated by user: [" +
+                    user.getFullName() + "]" );
+    }
+
+    private void logArchivationToMainLog( IMCServiceInterface imcref, String[] selectedChildrenIds, int documentId, UserDomainObject user ) {
+        imcref.updateMainLog( "Childs [" + StringUtils.join( selectedChildrenIds, ", " ) + "] from " +
+                         "[" + documentId + "] archived by user: [" + user.getFullName() + "]" );
+    }
+
+    private void logDeletionToMainLog( String[] selectedChildrenIds, IMCServiceInterface imcref, TextDocumentDomainObject document, int menuIndex, UserDomainObject user ) {
+        for ( int i = 0; i < selectedChildrenIds.length; i++ ) {
+            int childId = Integer.parseInt( selectedChildrenIds[i] );
+            imcref.updateMainLog( "Link from [" + document.getId() + "] in menu [" + menuIndex + "] to ["
+                    + childId
+                    + "] removed by user: ["
+                    + user.getFullName()
+                    + "]" );
+        }
     }
 }

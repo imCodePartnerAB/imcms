@@ -93,6 +93,8 @@ public class AdminDeleteDoc extends Administrator {
             DocumentMapper documentMapper = imcref.getDocumentMapper();
             DocumentDomainObject document = documentMapper.getDocument( metaId ) ;
             documentMapper.deleteDocument( document, user);
+            imcref.updateMainLog( "Document  " + "[" + document.getId() +
+                    "] ALL deleted by user: [" + user.getFullName() + "]" );            
 
             this.doGet(req, res);
             //this.goAdminUsers(req, res) ;

@@ -1,13 +1,11 @@
 package com.imcode.imcms.servlet.admin;
 
 import imcode.server.ApplicationServer;
-import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.log4j.Category;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,7 +19,6 @@ import java.util.Vector;
 
 public class SaveInclude extends HttpServlet {
 
-    private final static Category mainLog = Category.getInstance( IMCConstants.MAIN_LOG );
     private final static DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSS " );
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, java.io.IOException {
@@ -50,7 +47,7 @@ public class SaveInclude extends HttpServlet {
             include_id = include_id.trim();
             if ( "".equals( included_meta_id ) ) {
                 DocumentMapper.sprocDeleteInclude( imcref, meta_id, Integer.parseInt( include_id ) );
-                mainLog.info( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id + "] on ["
+                imcref.updateMainLog( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id + "] on ["
                               + meta_id_str
                               + "] removed by user: ["
                               + user.getFullName()
@@ -72,7 +69,7 @@ public class SaveInclude extends HttpServlet {
                     DocumentDomainObject includedDocument = documentMapper.getDocument( included_meta_id_int );
                     if ( documentMapper.userHasPermissionToAddDocumentToAnyMenu( user, includedDocument ) ) {
                         DocumentMapper.sprocSetInclude( imcref, meta_id, Integer.parseInt( include_id ), included_meta_id_int );
-                        mainLog.info( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id
+                        imcref.updateMainLog( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id
                                       + "] on ["
                                       + meta_id_str
                                       + "] changed to ["
