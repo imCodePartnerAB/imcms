@@ -159,7 +159,7 @@
                         <td><%= file.getInputStreamSource().getSize() %></td>
                         <td><%= StringEscapeUtils.escapeHtml(file.getMimeType()) %></td>
                         <% if (!creatingNewDocument) { %>
-                        <td><%= StringEscapeUtils.escapeHtml(request.getContextPath()) %>/servlet/GetDoc?meta_id=<%= document.getId() %>&<%= GetDoc.REQUEST_PARAMETER__FILE_ID %>=<%= escapedFileId %></td>
+                        <td><a href="GetDoc?meta_id=<%= document.getId() %>&<%= GetDoc.REQUEST_PARAMETER__FILE_ID %>=<%= escapedFileId %>" target="_blank">GetDoc?meta_id=<%= document.getId() %>&<%= GetDoc.REQUEST_PARAMETER__FILE_ID %>=<%= escapedFileId %></a></td>
                         <% } %>
                         <% if (allowChoiceOfDefault) { %>
                         <td align="center"><input type="radio"
