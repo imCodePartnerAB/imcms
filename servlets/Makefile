@@ -32,6 +32,7 @@ CLASSES = AddDoc.class \
           SaveFileUpload.class \
           SaveFrameset.class \
           SaveImage.class \
+          SaveInclude.class \
           SaveInPage.class \
           SaveMeta.class \
           SaveNewBrowserDoc.class \
