@@ -40,4 +40,8 @@ public class UrlDocumentDomainObject extends DocumentDomainObject {
         documentMapper.initUrlDocument( this );
     }
 
+    public void accept( DocumentVisitor documentVisitor ) {
+        documentVisitor.visitUrlDocument(this) ;
+    }
+
 }

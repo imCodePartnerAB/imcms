@@ -36,6 +36,10 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
         documentMapper.initBrowserDocument( this );
     }
 
+    public void accept( DocumentVisitor documentVisitor ) {
+        documentVisitor.visitBrowserDocument(this) ;
+    }
+
     public void setBrowserDocumentId( Browser browser, int documentId ) {
         this.browserDocumentIdMap.put( browser, new Integer( documentId ) );
     }

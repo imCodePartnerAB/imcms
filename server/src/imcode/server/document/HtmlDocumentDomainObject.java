@@ -40,4 +40,8 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
         documentMapper.initHtmlDocument( this );
     }
 
+    public void accept( DocumentVisitor documentVisitor ) {
+        documentVisitor.visitHtmlDocument(this) ;
+    }
+
 }

@@ -17,4 +17,8 @@ public abstract class FormerExternalDocumentDomainObject extends DocumentDomainO
     public void initDocument( DocumentMapper documentMapper ) {
     }
 
+    public void accept( DocumentVisitor documentVisitor ) {
+        documentVisitor.visitFormerExternalDocument(this);
+    }
+
 }

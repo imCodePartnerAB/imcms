@@ -59,4 +59,8 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         documentMapper.initFileDocument( this );
     }
 
+    public void accept( DocumentVisitor documentVisitor ) {
+        documentVisitor.visitFileDocument(this) ;
+    }
+
 }

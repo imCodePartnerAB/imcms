@@ -199,7 +199,7 @@ function checkLinkOnBlur() {
                                 <input type="submit" name="<%= ChangeImage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER %>" class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/2004 ?>">
                         </td>
                         <td>
-                                <input type="submit" name="<%= ChangeImage.REQUEST_PARAMETER__GOING_TO_OR_COMING_FROM_IMAGE_ARCHIVE %>" class="imcmsFormBtnSmall" value="Hämta från det nya bildarkivet" >
+                                <input type="submit" name="<%= ChangeImage.REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH %>" class="imcmsFormBtnSmall" value="Hämta från det nya bildarkivet" >
                         </td>
                     </tr>
                 </table>

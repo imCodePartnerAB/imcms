@@ -1,15 +1,14 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
-import com.imcode.imcms.servlet.ImageArchive;
 import com.imcode.imcms.servlet.DocumentFinder;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -18,10 +17,11 @@ import imcode.util.ImageData;
 import imcode.util.ImageParser;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
-import org.apache.oro.text.perl.Perl5Util;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.index.Term;
+import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -38,7 +38,7 @@ public class ChangeImage extends HttpServlet {
 
     final static String REQUEST_PARAMETER__IMAGE_URL = "imageref";
     final static String REQUEST_PARAMETER__IMAGE_FILE_DOCUMENT_ID = "imageFileDocumentId";
-    public final static String REQUEST_PARAMETER__GOING_TO_OR_COMING_FROM_IMAGE_ARCHIVE = "GotoImageArchive";
+    public final static String REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH = "goToImageSearch";
 
     public static final String REQUEST_PARAMETER__OK_BUTTON = "ok";
     public static final String REQUEST_PARAMETER__PREVIEW_BUTTON = "show_img";
@@ -80,11 +80,8 @@ public class ChangeImage extends HttpServlet {
         } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER ) ) {
             request.setAttribute( ImageBrowse.PARAMETER__CALLER, "ChangeImage" );
             ImageBrowse.getPage( request, response );
-        } else if ( null != request.getParameter( REQUEST_PARAMETER__GOING_TO_OR_COMING_FROM_IMAGE_ARCHIVE ) ) {
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH ) ) {
             DocumentFinder documentFinder = new DocumentFinder() ;
-            documentFinder.setDocumentsSelectable( true );
-            Query imageFileDocumentQuery = new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""+DocumentDomainObject.DOCTYPE_FILE));
-            documentFinder.setRestrictingQuery(imageFileDocumentQuery) ;
             documentFinder.setSelectDocumentCommand(new DocumentFinder.SelectDocumentCommand() {
                 public void selectDocument( DocumentDomainObject documentFound, HttpServletRequest request,
                                               HttpServletResponse response ) throws IOException, ServletException {
@@ -97,6 +94,8 @@ public class ChangeImage extends HttpServlet {
                     goToImageEditPage( document, imageIndex, image, request, response );
                 }
             } );
+            Query imageFileDocumentQuery = createImageFileDocumentQuery();
+            documentFinder.setRestrictingQuery(imageFileDocumentQuery) ;
             documentFinder.forward( request, response );
         } else {
             document.setImage( imageIndex, image );
@@ -106,6 +105,20 @@ public class ChangeImage extends HttpServlet {
                                   user.getFullName() + "]" );
             goBack( document, response );
         }
+    }
+
+    private Query createImageFileDocumentQuery() {
+        BooleanQuery imageMimeTypeQuery = new BooleanQuery();
+        imageMimeTypeQuery.add(new TermQuery( new Term( DocumentIndex.FIELD__MIME_TYPE, "image/jpeg")), false, false) ;
+        imageMimeTypeQuery.add(new TermQuery( new Term( DocumentIndex.FIELD__MIME_TYPE, "image/png")), false, false) ;
+        imageMimeTypeQuery.add(new TermQuery( new Term( DocumentIndex.FIELD__MIME_TYPE, "image/gif")), false, false) ;
+
+        TermQuery fileDocumentQuery = new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""+DocumentDomainObject.DOCTYPE_FILE));
+
+        BooleanQuery booleanQuery = new BooleanQuery() ;
+        booleanQuery.add(fileDocumentQuery, true, false);
+        booleanQuery.add(imageMimeTypeQuery, true, false) ;
+        return booleanQuery ;
     }
 
     private ImageDomainObject getImageFromRequest( HttpServletRequest req ) {

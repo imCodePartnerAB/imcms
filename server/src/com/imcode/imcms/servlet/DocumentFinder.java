@@ -17,7 +17,6 @@ import java.io.IOException;
 public class DocumentFinder {
 
     public static final String REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER = "finder";
-    private boolean documentsSelectable;
     private SelectDocumentCommand selectDocumentCommand;
     private Query restrictingQuery;
 
@@ -58,11 +57,7 @@ public class DocumentFinder {
     }
 
     public boolean isDocumentsSelectable() {
-        return documentsSelectable;
-    }
-
-    public void setDocumentsSelectable( boolean documentsSelectable ) {
-        this.documentsSelectable = documentsSelectable;
+        return null != selectDocumentCommand ;
     }
 
     public void setSelectDocumentCommand( SelectDocumentCommand selectDocumentCommand ) {

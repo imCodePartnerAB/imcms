@@ -1,10 +1,7 @@
 package imcode.server.document.index;
 
 import imcode.server.ApplicationServer;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.SectionDomainObject;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -50,26 +47,7 @@ class IndexDocumentAdapter {
 
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
 
-        if ( document instanceof TextDocumentDomainObject ) {
-            TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
-            Iterator textsIterator = textDocument.getTexts().entrySet().iterator();
-            while ( textsIterator.hasNext() ) {
-                Map.Entry textEntry = (Map.Entry)textsIterator.next();
-                Integer textIndex = (Integer)textEntry.getKey();
-                TextDomainObject text = (TextDomainObject)textEntry.getValue();
-                indexDocument.add( Field.UnStored( DocumentIndex.FIELD__TEXT, text.getText() ) );
-                indexDocument.add( Field.UnStored( DocumentIndex.FIELD__TEXT + textIndex, text.getText() ) );
-            }
-
-            Iterator imagesIterator = textDocument.getImages().values().iterator();
-            while ( imagesIterator.hasNext() ) {
-                ImageDomainObject image = (ImageDomainObject)imagesIterator.next();
-                String imageLinkUrl = image.getLinkUrl();
-                if ( null != imageLinkUrl && imageLinkUrl.length() > 0 ) {
-                    indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl ) );
-                }
-            }
-        }
+        document.accept(new IndexDocumentAdaptingVisitor(indexDocument)) ;
 
         CategoryDomainObject[] categories = document.getCategories();
         for ( int i = 0; i < categories.length; i++ ) {
@@ -108,7 +86,7 @@ class IndexDocumentAdapter {
         }
     }
 
-    private Date truncateDateToMinutePrecision( Date fieldValue ) {
+    private static Date truncateDateToMinutePrecision( Date fieldValue ) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime( fieldValue );
         calendar.set( Calendar.MILLISECOND, 0 );
@@ -117,13 +95,46 @@ class IndexDocumentAdapter {
         return truncatedDate;
     }
 
-    private Field unStoredKeyword( String fieldName, String fieldValue ) {
+    private static Field unStoredKeyword( String fieldName, String fieldValue ) {
         return new Field( fieldName, fieldValue.toLowerCase(), false, true, false );
     }
 
-    private Field unStoredKeyword( String fieldName, Date fieldValue ) {
+    private static Field unStoredKeyword( String fieldName, Date fieldValue ) {
         Date truncatedDate = truncateDateToMinutePrecision( fieldValue );
         return new Field( fieldName, DateField.dateToString( truncatedDate ), false, true, false );
+    }
+
+    private static class IndexDocumentAdaptingVisitor extends DocumentVisitor {
+        Document indexDocument ;
+
+        private IndexDocumentAdaptingVisitor( Document indexDocument ) {
+            this.indexDocument = indexDocument;
+        }
+
+        public void visitTextDocument( TextDocumentDomainObject textDocument ) {
+            Iterator textsIterator = textDocument.getTexts().entrySet().iterator();
+            while ( textsIterator.hasNext() ) {
+                Map.Entry textEntry = (Map.Entry)textsIterator.next();
+                Integer textIndex = (Integer)textEntry.getKey();
+                TextDomainObject text = (TextDomainObject)textEntry.getValue();
+                indexDocument.add( Field.UnStored( DocumentIndex.FIELD__TEXT, text.getText() ) );
+                indexDocument.add( Field.UnStored( DocumentIndex.FIELD__TEXT + textIndex, text.getText() ) );
+            }
+
+            Iterator imagesIterator = textDocument.getImages().values().iterator();
+            while ( imagesIterator.hasNext() ) {
+                ImageDomainObject image = (ImageDomainObject)imagesIterator.next();
+                String imageLinkUrl = image.getLinkUrl();
+                if ( null != imageLinkUrl && imageLinkUrl.length() > 0 ) {
+                    indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl ) );
+                }
+            }
+        }
+
+        public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
+            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__MIME_TYPE, fileDocument.getMimeType()));
+        }
+
     }
 
 }

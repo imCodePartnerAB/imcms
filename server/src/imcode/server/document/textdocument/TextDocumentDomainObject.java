@@ -4,6 +4,7 @@ import imcode.server.ApplicationServer;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateDomainObject;
+import imcode.server.document.DocumentVisitor;
 import imcode.server.user.UserDomainObject;
 
 import java.io.Serializable;
@@ -58,6 +59,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public void initDocument( DocumentMapper documentMapper ) {
         // lazily loaded
+    }
+
+    public void accept( DocumentVisitor documentVisitor ) {
+        documentVisitor.visitTextDocument(this) ;
     }
 
     public void removeAllImages() {

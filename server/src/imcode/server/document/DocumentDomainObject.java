@@ -442,6 +442,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public abstract void initDocument( DocumentMapper documentMapper );
 
+    public abstract void accept( DocumentVisitor documentVisitor ) ;
+
     public static class Attributes implements Cloneable, Serializable {
 
         private Date archivedDatetime;

@@ -28,6 +28,7 @@ public abstract class DocumentIndex {
     static final String FIELD__PUBLICATION_END_DATETIME = "publication_end_datetime";
     static final String FIELD__PUBLICATION_START_DATETIME = "publication_start_datetime";
     static final String FIELD__STATUS = "status";
+    public static final String FIELD__MIME_TYPE = "mime_type" ;
 
     public abstract void indexDocument( DocumentDomainObject document );
 
