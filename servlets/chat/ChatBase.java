@@ -53,6 +53,35 @@ public class ChatBase extends HttpServlet {
 		//lets create an empty one
 		_allChats = Collections.synchronizedMap(new HashMap());
 	}
+	
+	/**
+	Collects the parameters from the request object
+	**/
+
+	protected Properties getNewChatParameters( HttpServletRequest req) throws ServletException, IOException
+	{
+		Properties chatP = new Properties();
+		
+		String chatName = (req.getParameter("chatName")==null) ? "" : (req.getParameter("chatName"));
+		String updateTime = ( req.getParameter("updateTime")==null ) ? "30" : (req.getParameter("updateTime"));		
+		String reload = (req.getParameter("reload")==null ) ? "2" :(req.getParameter("reload"));
+		String inOut = (req.getParameter("inOut")==null ) ? "2" :(req.getParameter("inOut"));
+		String privat = (req.getParameter("private")==null ) ? "2" :(req.getParameter("private"));
+		String publik = (req.getParameter("public")==null ) ? "2" :(req.getParameter("public"));
+		String dateTime = (req.getParameter("dateTime")==null ) ? "2" :(req.getParameter("dateTime"));
+		String font = (req.getParameter("font")==null ) ? "2" :(req.getParameter("font"));
+
+		chatP.setProperty("chatName", chatName.trim());
+		chatP.setProperty("updateTime",updateTime);
+		chatP.setProperty("reload",reload.trim());
+		chatP.setProperty("inOut",inOut.trim());
+		chatP.setProperty("privat",privat.trim());
+		chatP.setProperty("publik",publik.trim());
+		chatP.setProperty("dateTime",dateTime.trim());
+		chatP.setProperty("font",font.trim());
+
+		return chatP ;
+	}
 
 	/**
 	Returns the metaId from a request object, if not found, we will
