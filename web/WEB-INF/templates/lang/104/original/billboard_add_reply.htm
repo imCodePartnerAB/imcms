@@ -24,16 +24,16 @@
 		{
 			var returnValue = false;
 			if(document.forms[0].ADDHEADER.value == ""){
-				alert("En Rubrik måste vara finnas!");
+				alert("<? templates/sv/billboard/original/BillBoard_Add_Reply.htm/JS_error_heading ?>");
 				document.forms[0].ADDHEADER.focus();
 				returnValue=false;
 			}else if(document.forms[0].ADDTEXT.value == ""){
-				alert("En Text måste finnas!");
+				alert("<? templates/sv/billboard/original/BillBoard_Add_Reply.htm/JS_error_text ?>");
 				document.forms[0].ADDTEXT.focus();
 				returnValue=false;
 			}
 			else if(document.forms[0].ADDEPOST.value == ""){
-				alert("Din Epost Adress måste finnas!");
+				alert("<? templates/sv/billboard/original/BillBoard_Add_Reply.htm/JS_error_email ?>");
 				document.forms[0].ADDEPOST.focus();
 				returnValue=false;
 			}
