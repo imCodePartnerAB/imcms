@@ -19,12 +19,12 @@ public class UrlDocument extends Document {
     }
 
     public void setUrl(String url ) throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission( this );
+        securityChecker.hasEditPermission( this );
         internalDocument.setUrlRef( url );
     }
 
     public String getUrl() throws NoPermissionException {
-        securityChecker.hasEditPermission( this );
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         return internalDocument.getUrlRef();
     }
 }
