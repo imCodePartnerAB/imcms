@@ -1,5 +1,7 @@
 import java.io.* ;
 import java.util.zip.* ;
+import java.util.Date ;
+import java.text.DateFormat ;
 import javax.servlet.* ;
 import javax.servlet.http.* ;
 
@@ -56,7 +58,7 @@ public class Version extends HttpServlet {
 	    out.print(files[i].getPath().substring(parent_dir.getPath().length()+1)+' ') ;
 
 	    Checksum checksum = new CRC32() ;
-	    int class_length = (int)files[i].length() ;
+	    int file_length = (int)files[i].length() ;
 	    char[] buffer = new char[BUFFERLENGTH] ;
 	    Reader in = new InputStreamReader(new CheckedInputStream(new FileInputStream(files[i]), checksum), "8859_1") ;
 	    StringBuffer file_buffer = new StringBuffer() ;
@@ -66,7 +68,7 @@ public class Version extends HttpServlet {
 	    } ;
 
 	    // Find and print the revision.
-	    if (perl.match("/\\$"+"Revision: (\\d(?:\\.\\d)+) "+"\\$/",file_buffer.toString())) {
+	    if (perl.match("/\\$"+"Revision: (\\d+(?:\\.\\d+)+) "+"\\$/",file_buffer.toString())) {
 		String revision = perl.group(1) ;
 		out.print(revision+' ') ;
 	    } else {
@@ -83,7 +85,13 @@ public class Version extends HttpServlet {
 	    }
 
 	    // Print the checksum.
-	    out.println(checksum.getValue()) ;
+	    out.print(checksum.getValue()+" ") ;
+	    
+    	    // Find and print the last-modified date.
+	    DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT) ;
+	    out.print(df.format(new Date(files[i].lastModified()))+" ") ;
+
+	    out.println(file_length) ;
 	}
 
 	File[] subdirs = dir.listFiles(new DirectoryFilter()) ;
