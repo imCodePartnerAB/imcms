@@ -23,8 +23,8 @@ Building:
        and generate a file named "imcms.war" in this directory.
 
        This will also generate files named "imcms.sql" and "help.sql in this directory.
-       To create an default imCMS-database, first run "imcms.sql" on the empty database
-	 and then run "help.sql" on same database.
+       To create an default imCMS-database run "imcms.sql" on the empty database. 
+	 Run "help.sql" ONLY on an old database with no help implemented.
 
     (For more possible ant-targets, run "ant -projecthelp".)
 

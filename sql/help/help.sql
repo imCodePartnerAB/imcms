@@ -1,5 +1,10 @@
 
--- kollar att det inte redan finns mallar med id 2 eller 3
+
+-- include "help.sql" 
+-- Här börjar vi att lägga in hjälp data
+-- Först kollar vi att det inte redan finns mallar med id 2 eller 3
+
+GO
 DECLARE @temp int 
 declare @message varchar(100)
 SET @temp = 0  

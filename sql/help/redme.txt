@@ -23,7 +23,9 @@ OBS VIKTIGT att kolla punkt 1 !!!
 
 5. Lägg upp de statiska html sidorna login error osv på sina platser.
 
-6. Kör scriptet help.sql
+6. Bygg sql filer med ant ( ant sql )
 
+7. Kör scriptet imcms\1.3\help.sql som ligger i roten efter byggningen 
+	(!! OBS bygg nytt sql med ant för att få rätt sökvägar i help.sql.)
 
 
