@@ -14,31 +14,30 @@
 #gui_mid()
 
 <form method="post" action="AdminSection">
-  <table>
-    <tr>
-      <td colspan="3" nowrap><font face="Verdana, Arial, Helvetica, sans-serif" color="red" size="2">#errormsg#</td>
-    </tr>
-    <tr>
-      <td>
-        <? templates/sv/sections/admin_section_add.html/3 ?>
-      </td>
-      <td><input name="new_section_name" size="30" value=""></td>
-      <td><input type="submit" class="imcmsFormBtnSmall"  name="add_section" value="<? templates/sv/sections/admin_section_add.html/2001 ?>">
-      </td>
-    </tr>
-    <br>
-    <tr>
-      <td align="right">
-        <? templates/sv/sections/admin_section_add.html/4 ?>
-      </td>
-      <td align="left"> <select name="section_list" size="4">#section_list#</select> </td>
-    </tr>
-  </table>
+<table border="0" cellspacing="0" cellpadding="2" width="320">
+<tr>
+	<td colspan="2" nowrap><span style="color:#cc0000"><b>#errormsg#</b></span></td>
+</tr>
+<tr>
+	<td width="80"><? templates/sv/sections/admin_section_add.html/3 ?></td>
+	<td width="240">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td><input name="new_section_name" size="30" value=""></td>
+		<td>&nbsp;&nbsp;</td>
+		<td><input type="submit" class="imcmsFormBtnSmall"  name="add_section" value="<? templates/sv/sections/admin_section_add.html/2001 ?>"></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td><? templates/sv/sections/admin_section_add.html/4 ?></td>
+	<td><select name="section_list" size="4">#section_list#</select> </td>
+</tr>
+</table>
+</form>
 
-  </form>
-
- #gui_bottom()
- #gui_outer_end()
+#gui_bottom()
+#gui_outer_end()
 
 </body>
 </html>

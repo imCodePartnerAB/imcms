@@ -13,19 +13,24 @@
 #gui_head_help_and_back_buttons( 93  "AdminSection" "" "" )
 #gui_mid()
 
-<table width="250">
 <form method="post" action="AdminSection">
-    <tr>
-        <td>
-        <? templates/sv/sections/admin_section_delete.html/3 ?>
+<table border="0" cellspacing="0" cellpadding="2" width="320">
+<tr>
+	<td width="80"><? templates/sv/sections/admin_section_delete.html/3 ?></td>
+	<td width="240">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td>
 		<select name="section_list">
 			#section_list#
-        </select>
-		<input type="submit" class="imcmsFormBtnSmall" name="delete_section" value="<? templates/sv/sections/admin_section_delete.html/2001 ?>">
-        </td>
-    </tr>
-</form>
+		</select></td>
+		<td>&nbsp;&nbsp;</td>
+		<td><input type="submit" class="imcmsFormBtnSmall" name="delete_section" value="<? templates/sv/sections/admin_section_delete.html/2001 ?>"></td>
+	</tr>
+	</table></td>
+</tr>
 </table>
+</form>
 
 #gui_bottom()
 #gui_outer_end()
