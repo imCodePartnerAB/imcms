@@ -1786,33 +1786,34 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * <p>Save template -> text_docs, sort
      */
-    public void saveTextDoc(int meta_id,imcode.server.User user,imcode.server.Table doc) {
-	String sqlStr = "" ;
+    public void saveTextDoc(int meta_id,imcode.server.User user,imcode.server.Table doc){
+		String sqlStr = "" ;
 
-	DBConnect dbc = new DBConnect(m_conPool) ;
-	dbc.getConnection() ;
-
-
-	sqlStr  = "update text_docs\n" ;
-	sqlStr += "set template_id= "  + doc.getString("template") ;
-	sqlStr += " where meta_id = " + meta_id ;
-	dbc.setSQLString(sqlStr) ;
-	dbc.createStatement() ;
-	dbc.executeUpdateQuery() ;
+		DBConnect dbc = new DBConnect(m_conPool) ;
+		dbc.getConnection() ;
 
 
+		sqlStr  = "update text_docs\n" ;
+		sqlStr += "set template_id= "  + doc.getString("template") ;
+		sqlStr += ", group_id= " + doc.getString("group_id") ;
+		sqlStr += " where meta_id = " + meta_id ;
+		dbc.setSQLString(sqlStr) ;
+		dbc.createStatement() ;
+		dbc.executeUpdateQuery() ;
 
-	//close connection
-	dbc.closeConnection() ;
-	dbc = null ;
 
 
-	this.updateLogs("Text docs  [" + meta_id + "] updated by user: [" +
+		//close connection
+		dbc.closeConnection() ;
+		dbc = null ;
+
+
+		this.updateLogs("Text docs  [" + meta_id + "] updated by user: [" +
 			user.getString("first_name").trim() + " " +
 			user.getString("last_name").trim() + "]") ;
 
 
-    }
+	}
 
     /**
      * <p>Delete a doc and all data related.
