@@ -11,110 +11,136 @@
                  imcode.server.document.DocumentDomainObject,
                  com.imcode.imcms.servlet.superadmin.DocumentReferences,
                  imcode.util.Html"%>
-<%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
-<%
-    LinkCheck.LinkCheckPage linkCheckPage = (LinkCheck.LinkCheckPage) request.getAttribute(LinkCheck.LinkCheckPage.REQUEST_ATTRIBUTE__PAGE) ;
-    boolean doCheckLinks = linkCheckPage.isDoCheckLinks();
-    String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
+<%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
+
+LinkCheck.LinkCheckPage linkCheckPage = (LinkCheck.LinkCheckPage) request.getAttribute(LinkCheck.LinkCheckPage.REQUEST_ATTRIBUTE__PAGE) ;
+boolean doCheckLinks = linkCheckPage.isDoCheckLinks();
+String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
+
 %>
-
 <vel:velocity>
-    #gui_start_of_page( "<? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading ?>" "AdminManager" "" "18" "" )
-</vel:velocity>
-<form method="GET" action="LinkCheck">
-<div>
-<table border="0">
-    <tr>
-        <td><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/only_broken ?></td>
-        <td><input type="checkbox" name="<%= LinkCheck.REQUEST_PARAMETER__BROKEN_ONLY %>"  value="0"  <%= linkCheckPage.isBrokenOnly() ? "checked" : "" %> ></td>
-    </tr>
-    <tr>
-        <td><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/start_id ?></td>
-        <td><input type="text" name="<%= LinkCheck.REQUEST_PARAMETER__START_ID %>"  size="5" value="<%= linkCheckPage.getStartId() %>"></td>
-    </tr>
-    <tr>
-        <td><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/end_id ?></td>
-        <td><input type="text" name="<%= LinkCheck.REQUEST_PARAMETER__END_ID %>" size="5" value="<%= linkCheckPage.getEndId() %>"></td>
-    </tr>
-</table>
-<input type="submit" name="<%= LinkCheck.REQUEST_PARAMETER__START_BUTTON %>" value="Start check" class="imcmsFormBtn" style="width:100">
-</div>
-</form>
-<% if (doCheckLinks) { %>
+#gui_start_of_page( "<? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading ?>" "AdminManager" "" "18" "" )
 
-        <%  UserDomainObject user = Utility.getLoggedOnUser( request ) ;
-            Iterator linksIterator = (Iterator)linkCheckPage.getLinksIterator() ;
-            while ( linksIterator.hasNext() ) {
-        %>
-                    <table border="0" cellspacing="2" cellpadding="2" width="100%">
-                        <tr align="left">
-                            <td><b><? web/imcms/lang/jsp/heading_type ?></b></td>
-                            <td><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
-                            <td><b><? web/imcms/lang/jsp/heading_references ?></b></td>
-                            <td><b><? web/imcms/lang/jsp/heading_status ?></b></td>
-                            <td><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_url ?></b></td>
-                            <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_found ?></b></td>
-                            <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_reachable ?></b></td>
-                            <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_ok ?></b></td>
-                        </tr>
-                <%
-                for (int i = 0; linksIterator.hasNext() && i < 10; ++i) {
-                    out.flush();
-                    LinkCheck.Link link = (LinkCheck.Link)linksIterator.next();
-                    if ( link.isOk() && linkCheckPage.isBrokenOnly() ) {
-                        --i ;
-                        continue;
-                    }
-                    DocumentDomainObject document = link.getDocument() ;
-                    %><tr>
-                        <% if (link instanceof LinkCheck.UrlDocumentLink) {
-                            LinkCheck.UrlDocumentLink urlDocumentLink = (LinkCheck.UrlDocumentLink)link ;
-                            DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument = urlDocumentLink.getDocumentMenuPairsContainingUrlDocument();
-                        %>  <td><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/url_document ?></td>
-                            <td>
-                                <a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= document.getId() %>&<%= AdminDoc.PARAMETER__DISPATCH_FLAGS%>=<%= ImcmsConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT %>">
-                                    <%= document.getId() %> - <%= document.getHeadline() %>
-                                </a>
-                            </td>
-                            <td nowrap>
-                                <% if (documentMenuPairsContainingUrlDocument.length > 0) { %><a href="<%= request.getContextPath() %>/servlet/DocumentReferences?<%= DocumentReferences.REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID %>=<%= document.getId() %>&<%= DocumentReferences.REQUEST_PARAMETER__RETURNURL %>=LinkCheck"><% } %>
-                                    <%= documentMenuPairsContainingUrlDocument.length %> <? web/imcms/lang/jsp/parent_count_unit ?>
-                                <% if (documentMenuPairsContainingUrlDocument.length > 0) { %></a><% } %>
-                            </td>
-                        <% } else {
-                            LinkCheck.TextDocumentElementLink textDocumentElementLink = (LinkCheck.TextDocumentElementLink)link ;
-                        %>  <td>
-                                <% if (link instanceof LinkCheck.TextLink) { %>
-                                    <? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/text ?>
-                                <% } else { %>
-                                    <? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/image ?>
-                                <% } %>
-                            </td>
-                            <td>
-                                <% if (link instanceof LinkCheck.TextLink) { %>
-                                    <a href="<%= request.getContextPath() %>/servlet/ChangeText?meta_id=<%= document.getId() %>&txt=<%=textDocumentElementLink.getIndex()%>">
-                                <% } else { %>
-                                    <a href="<%= request.getContextPath() %>/servlet/ChangeImage?meta_id=<%= document.getId() %>&img=<%=textDocumentElementLink.getIndex()%>">
-                                <% } %>
-                                    <%= document.getId() %> - <%= textDocumentElementLink.getIndex() %> - <%= document.getHeadline() %>
-                                </a>
-                            </td>
-                            <td>&nbsp;</td>
-                        <% } %>
-                    <td><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
-                    <td><a href="<%= link.getUrl() %>"><%= link.getUrl() %></a></td>
-                    <td align="center"><img
-										src="<%= request.getContextPath() %>/imcms/<%= language %>/images/admin/btn_checked_<%= (link.isHostFound()) ? "1" : "0" %>.gif"></td>
-                    <td align="center"><img
-										src="<%= request.getContextPath() %>/imcms/<%= language %>/images/admin/btn_checked_<%= (link.isHostReachable()) ? "1" : "0" %>.gif"></td>
-                    <td align="center"><img
-										src="<%= request.getContextPath() %>/imcms/<%= language %>/images/admin/btn_checked_<%= (link.isOk() ) ? "1" : "0" %>.gif"></td>
-                </tr>
-                    <% out.flush();
-                } %>
-            </table>
-        <% } %>
-    <% } %>
+<form method="GET" action="LinkCheck">
+<table border="0" cellspacing="0" cellpadding="2" width="100%">
+<tr>
+	<td>#gui_heading( "<? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading ?>" )</td>
+</tr>
+<tr>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td width="120"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/only_broken ?></td>
+		<td><input type="checkbox" name="<%= LinkCheck.REQUEST_PARAMETER__BROKEN_ONLY %>"  value="0"  <%= linkCheckPage.isBrokenOnly() ? "checked" : "" %> ></td>
+	</tr>
+	<tr>
+		<td><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/start_id ?></td>
+		<td><input type="text" name="<%= LinkCheck.REQUEST_PARAMETER__START_ID %>"  size="5" value="<%= linkCheckPage.getStartId() %>"></td>
+	</tr>
+	<tr>
+		<td><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/end_id ?></td>
+		<td><input type="text" name="<%= LinkCheck.REQUEST_PARAMETER__END_ID %>" size="5" value="<%= linkCheckPage.getEndId() %>"></td>
+	</tr>
+	</table><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="396" height="1"></td>
+</tr>
+<tr>
+	<td>#gui_hr( "blue" )</td>
+</tr>
+<tr>
+	<td align="right">
+	<input type="submit" name="<%= LinkCheck.REQUEST_PARAMETER__START_BUTTON %>" value="Start<%= language.equals("swe") ? "a" : "" %> check" class="imcmsFormBtn"></td>
+</tr>
+</table>
+</form>
+</vel:velocity><%
+
+if (doCheckLinks) {
+	UserDomainObject user = Utility.getLoggedOnUser( request ) ;
+	Iterator linksIterator = (Iterator)linkCheckPage.getLinksIterator() ;
+	while ( linksIterator.hasNext() ) { %>
+<table border="0" cellspacing="2" cellpadding="2" width="100%">
+<tr>
+	<td colspan="8"><vel:velocity><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="15"></vel:velocity></td>
+</tr>
+<tr>
+	<td style="width: 50px"><b><? web/imcms/lang/jsp/heading_status ?></b></td>
+	<td style="width: 70px"><b><? web/imcms/lang/jsp/heading_type ?></b></td>
+	<td><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
+	<td><b><? web/imcms/lang/jsp/heading_references ?></b></td>
+	<td><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_url ?></b></td>
+	<td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_found ?></b></td>
+	<td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_reachable ?></b></td>
+	<td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_ok ?></b></td>
+</tr>
+<tr>
+	<td colspan="8"><vel:velocity>#gui_hr( "cccccc" )</vel:velocity></td>
+</tr><%
+		for (int i = 0; linksIterator.hasNext() && i < 10; ++i) {
+			out.flush();
+			LinkCheck.Link link = (LinkCheck.Link)linksIterator.next();
+			if ( link.isOk() && linkCheckPage.isBrokenOnly() ) {
+				--i ;
+				continue;
+			}
+			DocumentDomainObject document = link.getDocument() ; %>
+<tr>
+	<td><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td><%
+			if (link instanceof LinkCheck.UrlDocumentLink) {
+				LinkCheck.UrlDocumentLink urlDocumentLink = (LinkCheck.UrlDocumentLink)link ;
+				DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument = urlDocumentLink.getDocumentMenuPairsContainingUrlDocument(); %>
+	<td><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/url_document ?></td>
+	<td><a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%=
+				document.getId() %>&<%=
+				AdminDoc.PARAMETER__DISPATCH_FLAGS%>=<%=
+				ImcmsConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT %>"><%=
+				document.getId() %> - <%= document.getHeadline() %></a></td>
+	<td nowrap><%
+				if (documentMenuPairsContainingUrlDocument.length > 0) {
+					%><a href="<%= request.getContextPath() %>/servlet/DocumentReferences?<%=
+					DocumentReferences.REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID %>=<%=
+					document.getId() %>&<%=
+					DocumentReferences.REQUEST_PARAMETER__RETURNURL %>=LinkCheck"><%
+				}
+				%><%= documentMenuPairsContainingUrlDocument.length %> <? web/imcms/lang/jsp/parent_count_unit ?><%
+				if (documentMenuPairsContainingUrlDocument.length > 0) {
+					%></a><%
+				} %></td><%
+			} else {
+				LinkCheck.TextDocumentElementLink textDocumentElementLink = (LinkCheck.TextDocumentElementLink)link ; %>
+	<td><%
+				if (link instanceof LinkCheck.TextLink) { %>
+	<? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/text ?><%
+				} else { %>
+	<? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/image ?><%
+				} %></td>
+	<td><%
+				if (link instanceof LinkCheck.TextLink) {
+					%><a href="<%=
+					request.getContextPath() %>/servlet/ChangeText?meta_id=<%=
+					document.getId() %>&txt=<%=
+					textDocumentElementLink.getIndex()%>"><%
+				} else {
+					%><a href="<%= 
+					request.getContextPath() %>/servlet/ChangeImage?meta_id=<%=
+					document.getId() %>&img=<%=
+					textDocumentElementLink.getIndex()%>"><%
+				}
+				%><%= document.getId() %> - <%= textDocumentElementLink.getIndex() %> - <%= document.getHeadline() %></a></td>
+	<td>&nbsp;</td><%
+			} %>
+	<td><a href="<%= link.getUrl() %>"><%= link.getUrl() %></a></td>
+	<td align="center"><img src="<%= request.getContextPath() %>/imcms/<%= language %>/images/admin/<%
+			%>btn_checked_<%= (link.isHostFound()) ? "1" : "0" %>.gif"></td>
+	<td align="center"><img src="<%= request.getContextPath() %>/imcms/<%= language %>/images/admin/<%
+			%>btn_checked_<%= (link.isHostReachable()) ? "1" : "0" %>.gif"></td>
+	<td align="center"><img src="<%= request.getContextPath() %>/imcms/<%= language %>/images/admin/<%
+			%>btn_checked_<%= (link.isOk() ) ? "1" : "0" %>.gif"></td>
+</tr><%
+			out.flush();
+		} %>
+</table><%
+	}
+} %>
 <vel:velocity>
 #gui_end_of_page()
 </vel:velocity>
