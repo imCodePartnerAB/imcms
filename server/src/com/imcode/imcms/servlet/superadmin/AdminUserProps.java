@@ -739,14 +739,10 @@ public class AdminUserProps extends Administrator {
              && ( user.isSuperAdmin() || user.isUserAdmin() && user.getId() != userFromDatabase.getId() ) ) {
 
             // Lets get the roles from htmlpage
-            int[] roleIdsFromRequest = this.getRoleIdsFromRequest( "roles", req, res, imcref, user );
-            if (null == roleIdsFromRequest) {
-                return ;
-            }
+            int[] roleIdsFromRequest = this.getRoleIdsFromRequest( "roles", req);
 
             // Lets add the new users roles. but first, delete users current Roles
             // and then add the new ones
-
             if ( user.isSuperAdmin() ) { // delete all userroles
                 int roleId = -1;
                 imcref.sqlUpdateProcedure( "DelUserRoles", new String[]{"" + userToChangeId, "" + roleId} );
@@ -779,7 +775,7 @@ public class AdminUserProps extends Administrator {
             if ( useradminRoleIsSelected ) {
 
                 // Lets get the useradmin_roles from htmlpage
-                int[] useradminRolesV = this.getRoleIdsFromRequest( "useradmin_roles", req, res, imcref, user );
+                int[] useradminRolesV = this.getRoleIdsFromRequest( "useradmin_roles", req);
 
                 // Lets add the new useradmin roles.
                 addUserAdminRoles( imcref, userToChangeId, useradminRolesV );
@@ -840,13 +836,9 @@ public class AdminUserProps extends Administrator {
         //Lets get phonenumbers from the session if we have a session Attribute
         Vector phonesV = (Vector)session.getAttribute( "Ok_phoneNumbers" );
 
-        int[] roleIdsFromRequest = adminUserProps.getRoleIdsFromRequest( "roles", req, res, imcref, user );
-        if (null == roleIdsFromRequest) {
-            return;
-        }
-
+        int[] roleIdsFromRequest = adminUserProps.getRoleIdsFromRequest( "roles", req);
         boolean useradminRoleIsSelected = false;
-        for ( int i = 0; i < roleIdsFromRequest.length; i++ ) {
+        for ( int i = 0; roleIdsFromRequest !=null &&  i < roleIdsFromRequest.length; i++ ) {
             int roleId = roleIdsFromRequest[i];
             RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapperAndRole.getRoleById( roleId );
             userFromRequest.addRole( role );
@@ -859,7 +851,7 @@ public class AdminUserProps extends Administrator {
 
         if ( useradminRoleIsSelected ) {
             // Lets get the useradmin_roles from htmlpage
-            int[] userAdminRoleIdsFromRequest = adminUserProps.getRoleIdsFromRequest( "useradmin_roles", req, res, imcref, user );
+            int[] userAdminRoleIdsFromRequest = adminUserProps.getRoleIdsFromRequest( "useradmin_roles", req);
             // Lets add the new useradmin roles.
             adminUserProps.addUserAdminRoles( imcref, userFromRequest.getId(), userAdminRoleIdsFromRequest );
         }
@@ -1156,24 +1148,13 @@ public class AdminUserProps extends Administrator {
     }
 
     /**
-     * Returns a Vector, containing the choosed roles from the html page. if Something
-     * failes, a error page will be generated and null will be returned.
+     * Returns a Vector, containing the choosed roles from the html page.
      */
-    private int[] getRoleIdsFromRequest( String name, HttpServletRequest req, HttpServletResponse res,
-                                         ImcmsServices imcref, UserDomainObject user ) throws IOException {
-        // Lets get the roles
+    private int[] getRoleIdsFromRequest(String name, HttpServletRequest req) {
+
         String[] roleIdStrings = req.getParameterValues( name ) == null
                                  ? new String[0] : req.getParameterValues( name );
 
-        Vector rolesV = new Vector( java.util.Arrays.asList( roleIdStrings ) );
-        if ( rolesV.size() == 0 && name.equals( "roles" ) ) { // user must get at least one user role
-            String header = "Error in AdminUserProps ";
-            Properties langproperties = imcref.getLanguageProperties( user );
-            String msg = langproperties.getProperty( "error/servlet/AdminUserProps/no_role_selected" ) + "<br>";
-            log.debug( header + "- no role selected" );
-            new AdminError( req, res, header, msg );
-            return null;
-        }
         int[] roleIds = new int[roleIdStrings.length];
         for ( int i = 0; i < roleIdStrings.length; i++ ) {
             String roleIdString = roleIdStrings[i];
