@@ -600,7 +600,8 @@ GO
 
 CREATE TABLE [dbo].[user_types] (
 	[user_type] [int] NOT NULL ,
-	[type_name] [char] (30) NULL 
+	[type_name] [char] (30) NULL ,
+	[lang_prefix] [char] (3) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -965,7 +966,8 @@ GO
 ALTER TABLE [dbo].[user_types] WITH NOCHECK ADD 
 	CONSTRAINT [PK_user_types] PRIMARY KEY  NONCLUSTERED 
 	(
-		[user_type]
+		[user_type],
+		[lang_prefix]
 	)  ON [PRIMARY] 
 GO
 
