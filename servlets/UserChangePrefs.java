@@ -177,7 +177,7 @@ public class UserChangePrefs extends Administrator {
 		String[] phonesArr = imcref.sqlProcedure("GetUserPhones " + userId) ;
 		Vector phonesV  = new Vector(java.util.Arrays.asList(phonesArr)) ;
 		Html htm = new Html() ;
-		String phones = htm.createHtmlCode("ID_OPTION", "", phonesV ) ;
+		String phones = htm.createHtmlOptionList( "", phonesV ) ;
 		vm.addProperty("PHONES_MENU", phones  ) ;
 		vm.addProperty("CURR_USER_ID", userId  ) ;
 

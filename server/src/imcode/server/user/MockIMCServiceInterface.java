@@ -88,6 +88,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         return null;  //To change body of implemented methods use Options | File Templates.
     }
 
+    public String[][] sqlQueryMulti( String sqlStr, String[] params ) {
+        return new String[0][];  //To change body of implemented methods use Options | File Templates.
+    }
+
     // archive childs
    public void archiveChilds( int meta_id, UserDomainObject user, String childsThisMenu[] ) {
    }
@@ -297,7 +301,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // get language
-   public String getLanguage() {
+   public String getDefaultLanguage() {
       return null;
    }
 

@@ -74,7 +74,7 @@ public class AdminUser extends Administrator {
       // Lets get all USERTYPES from DB
       String[] userTypes = imcref.sqlProcedure( "GetUserTypes " + lang_prefix );
       Vector userTypesV = new Vector( java.util.Arrays.asList( userTypes ) );
-      String user_type = ht.createHtmlCode( "ID_OPTION", category, userTypesV );
+      String user_type = ht.createHtmlOptionList( category, userTypesV );
       vm.addProperty( "USER_TYPES", user_type );
 
 
@@ -86,7 +86,7 @@ public class AdminUser extends Administrator {
       String[] usersArr = imcref.sqlProcedure( "GetCategoryUsers " + param );
 
       Vector usersV = new Vector( java.util.Arrays.asList( usersArr ) );
-      String usersOption = ht.createHtmlCode( "ID_OPTION", "", usersV );
+      String usersOption = ht.createHtmlOptionList( "", usersV );
       vm.addProperty( "USERS_MENU", usersOption );
 
       //create the page

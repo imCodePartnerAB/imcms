@@ -129,7 +129,20 @@ public class SaveMeta extends HttpServlet {
         // NOTE! This table matches the one below. Don't go changing one without changing the other.
         // FIXME: They should be merged into one table.
         String[] metatable = {/*  Nullable			Nullvalue */
-            "shared", "0", "disable_search", "0", "archive", "0", "show_meta", "0", "permissions", "0", "meta_headline", null, "meta_text", null, "meta_image", null, "activated_datetime", null, "archived_datetime", null, "frame_name", null, "target", null};
+            "shared", "0",
+            "disable_search", "0",
+            "archive", "0",
+            "show_meta", "0",
+            "permissions", "0",
+            "meta_headline", null,
+            "meta_text", null,
+            "meta_image", null,
+            "activated_datetime", null,
+            "archived_datetime", null,
+            "frame_name", null,
+            "target", null,
+            "lang_prefix", null,
+        };
 
         final int metatable_cols = 2;
 
@@ -166,7 +179,8 @@ public class SaveMeta extends HttpServlet {
             2, 2, //"activated_datetime",
             2, 2, //"archived_datetime",
             2, 2, //"frame_name",
-            2, 2		//"target"
+            2, 2, //"target",
+            2, 2, //"lang_prefix",
         };
 
         HashMap inputMap = new HashMap();
@@ -175,7 +189,8 @@ public class SaveMeta extends HttpServlet {
         // That way i can mutilate the values before all the
         // permissions are checked.
         for( int i = 0; i < metatable.length; i += metatable_cols ) {
-            inputMap.put( metatable[i], req.getParameter( metatable[i] ) );
+            final String parameter = req.getParameter( metatable[i] );
+            inputMap.put( metatable[i], parameter );
         }
 
         // Here's some mutilation!
@@ -363,9 +378,7 @@ public class SaveMeta extends HttpServlet {
         }
 
         if( sqlStr.length() > 0 ) {
-            String sqlStr1 = sqlStr;
-            sqlStr1 = "update meta set " + sqlStr1 + " where meta_id = " + meta_id;
-            imcref.sqlUpdateQuery( sqlStr1 );
+            imcref.sqlUpdateQuery( "update meta set " + sqlStr + " where meta_id = " + meta_id );
         }
 
         // Save the classifications to the db

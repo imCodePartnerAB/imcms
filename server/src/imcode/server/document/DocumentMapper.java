@@ -1,9 +1,6 @@
 package imcode.server.document;
 
-import imcode.server.IMCConstants;
-import imcode.server.IMCService;
-import imcode.server.IMCServiceInterface;
-import imcode.server.Table;
+import imcode.server.*;
 import imcode.server.db.DBConnect;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
@@ -274,6 +271,18 @@ public class DocumentMapper {
         document.setText( (String) documentData.get( "meta_text" ) );
         document.setImage( (String) documentData.get( "meta_image" ) );
         document.setTarget( (String) documentData.get( "target" ) );
+        String langStr = (String) documentData.get( "lang_prefix" );
+        try {
+            langStr = LanguageMapper.getAsIso639_2( langStr );
+        } catch ( LanguageMapper.LanguageNotSupportedException e ) {
+            log.error( "Unsupported language '"
+                       + langStr
+                       + "' found in database for document "
+                       + metaId
+                       + ". Using default.", e );
+            langStr = service.getDefaultLanguage() ;
+        }
+        document.setLanguageIso639_2( langStr );
         document.setArchived( "0".equals( documentData.get( "archive" ) ) ? false : true );
         String[] section_data = sprocSectionGetInheritId( service, metaId );
         String sectionName = null;
@@ -539,9 +548,10 @@ public class DocumentMapper {
         int templateGroupId = document.templateGroupId;
         String text = document.text;
         boolean archived = document.archived;
+        String language = document.languageIso639_2 ;
 
         sqlUpdateMeta( service, document.getMetaId(), activatedDatetime, archivedDatetime, createdDatetime, headline,
-                       image, modifiedDatetime, target, text, archived );
+                       image, modifiedDatetime, target, text, archived, language ) ;
         updateSection( service, document, section );
 
         // Restricted One and Two
@@ -590,7 +600,7 @@ public class DocumentMapper {
 
     private static void sqlUpdateMeta( IMCServiceInterface service, int meta_id, Date activatedDatetime,
             Date archivedDateTime, Date createdDatetime, String headline, String image, Date modifiedDateTime,
-            String target, String text, boolean isArchived ) {
+            String target, String text, boolean isArchived, String language ) {
 
         StringBuffer sqlStr = new StringBuffer( "update meta set " );
 
@@ -603,6 +613,7 @@ public class DocumentMapper {
         sqlStr.append( makeDateSQL( "date_modified", modifiedDateTime ) );
         sqlStr.append( makeStringSQL( "target", target ) );
         sqlStr.append( makeStringSQL( "meta_text", text ) );
+        sqlStr.append( makeStringSQL( "lang_prefix", language ) ) ;
         sqlStr.append( makeBooleanSQL( "archive", isArchived ) );
         // todo: Remove from the meta table all collumns that are not used.
         // Candidates: All not used above.

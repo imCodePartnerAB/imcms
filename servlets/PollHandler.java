@@ -204,8 +204,8 @@ public class PollHandler extends HttpServlet {
 		String mailFromAddress = getText( imcref, Integer.parseInt(meta_id), Integer.parseInt(poll_param[9]) );
 		String mailToAddress   = getText( imcref, Integer.parseInt(meta_id), Integer.parseInt(poll_param[8]) ); // comma-separated string;
 		String mailSubject     = getText( imcref, Integer.parseInt(meta_id), Integer.parseInt(poll_param[10]) );
-		//String mailFormat      = imcref.parseDoc(null, MAIL_FORMAT, imcref.getLanguage()) ;
-		//String mailItemFormat  = imcref.parseDoc(null, MAIL_ITEM_FORMAT, imcref.getLanguage()) ;
+		//String mailFormat      = imcref.parseDoc(null, MAIL_FORMAT, imcref.getLanguageIso639_2()) ;
+		//String mailItemFormat  = imcref.parseDoc(null, MAIL_ITEM_FORMAT, imcref.getLanguageIso639_2()) ;
 		
 		
 		

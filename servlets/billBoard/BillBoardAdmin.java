@@ -638,7 +638,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		Vector templateV = super.convert2Vector(sqlAnswer) ;
 
 		// Lets fill the select box	with forums
-		String templateList = Html.createHtmlCode("ID_OPTION", "", templateV ) ;
+		String templateList = Html.createHtmlOptionList( "", templateV ) ;
 
 		// Lets build the Responsepage
 		//VariableManager vm = new VariableManager() ;
@@ -663,7 +663,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	    Vector sectionV = super.convert2Vector(sqlAnswer) ;
 
 	    // Lets fill the select box with forums
-	    String forumList = Html.createHtmlCode("ID_OPTION", "", sectionV ) ;
+	    String forumList = Html.createHtmlOptionList( "", sectionV ) ;
 
 	    // Lets get the name of the currently selected forum
 	    String sectionNameSql = "B_GetSectionName " + params.getProperty("SECTION_ID") ;
@@ -688,7 +688,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	    if (sqlAllDays != null) {
 		sqlAllDaysV = super.convert2Vector(sqlAllDays) ;
 	    }
-	    String daysToShowList = Html.createHtmlCode("ID_OPTION", "", sqlAllDaysV ) ;
+	    String daysToShowList = Html.createHtmlOptionList( "", sqlAllDaysV ) ;
 
 
 
@@ -700,7 +700,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	    if (sqlAllDiscs != null) {
 		sqlAllDiscsV = super.convert2Vector(sqlAllDiscs) ;
 	    }
-	    String discToShowList = Html.createHtmlCode("ID_OPTION", "", sqlAllDiscsV ) ;
+	    String discToShowList = Html.createHtmlOptionList( "", sqlAllDiscsV ) ;
 
 	    // Lets build the Responsepage
 	    //VariableManager vm = new VariableManager() ;
@@ -740,7 +740,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	    sqlStoredProc = "B_GetAllSection "+aMetaId;
 	    String sqlSections[] = billref.sqlProcedure( sqlStoredProc ) ;
 	    Vector sectionV = super.convert2Vector(sqlSections) ;
-	    String sectionListStr = Html.createHtmlCode("ID_OPTION", aSectionId, sectionV ) ;
+	    String sectionListStr = Html.createHtmlOptionList( aSectionId, sectionV ) ;
 
 	    // Lets build our tags vector.
 	    Vector tagsV = this.buildAdminTags() ;
@@ -785,7 +785,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	    sqlStoredProc = "B_GetAllSection "+aMetaId;
 	    String sqlSections[] = billref.sqlProcedure( sqlStoredProc ) ;
 	    Vector sectionV = super.convert2Vector(sqlSections) ;
-	    String sectionListStr = Html.createHtmlCode("ID_OPTION", aSectionId, sectionV ) ;
+	    String sectionListStr = Html.createHtmlOptionList( aSectionId, sectionV ) ;
 
 	    // Lets build our tags vector.
 	    Vector tagsV = this.buildAdminTags() ;
@@ -842,7 +842,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	    String sqlStoredProc = "B_GetAllSection "+params.getProperty("META_ID");
 	    String sqlSections[] = billref.sqlProcedure(sqlStoredProc ) ;
 	    Vector sectionV = super.convert2Vector(sqlSections) ;
-	    String sectionListStr = Html.createHtmlCode("ID_OPTION", params.getProperty("SECTION_ID"), sectionV ) ;
+	    String sectionListStr = Html.createHtmlOptionList( params.getProperty("SECTION_ID"), sectionV ) ;
 
 	    // Lets preparse all records
 	    String allRecs = " " ;

@@ -12,6 +12,8 @@
 #changePage#
 <br>
 
+<?imcms:documentlanguage representation="ISO 639-2"?>
+
 <?imcms:include no="1"?>
 
 <?imcms:image no="1"?>
@@ -34,6 +36,15 @@
 <?imcms:text no="2"?>
 <br>
 <?imcms:image no="3"?>
+<br>
+<?imcms:menu no="2"?>
+<table>
+<?imcms:menuloop?>
+<b>#menuitemimage##menuitemlink##menuitemheadline##/menuitemlink#</b>
+<br>#menuitemtext#
+<?/imcms:menuloop?>
+</table>
+<?/imcms:menu?>
 <br>
 #adminMode#
 </center>

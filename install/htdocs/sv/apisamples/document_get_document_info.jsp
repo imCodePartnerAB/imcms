@@ -12,5 +12,6 @@
 Headline: "<%=document.getHeadline()%>"
 Menu text: "<%=document.getMenuText()%>"
 Menu picture: "<%=document.getMenuImageURL()%>"
+Language: "<%=document.getLanguage()%>"
 Creator: <a href="mailto:<%=document.getCreator().getEmailAddress()%>"><%=document.getCreator().getLoginName()%></a>
 </pre>

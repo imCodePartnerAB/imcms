@@ -101,7 +101,7 @@ public class PasswordMailReminder extends HttpServlet {
 	/* server info */
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	String deafultLanguagePrefix = imcref.getLanguage();
+	String deafultLanguagePrefix = imcref.getDefaultLanguage();
 
 	res.setContentType("text/html");
 	ServletOutputStream out = res.getOutputStream();
@@ -138,7 +138,7 @@ public class PasswordMailReminder extends HttpServlet {
 	String emailFromServer = sysData.getServerMasterAddress() ;
 
 	String mailFrom = eMailServerMaster;
-	String deafultLanguagePrefix = imcref.getLanguage();
+	String deafultLanguagePrefix = imcref.getDefaultLanguage();
 
 	String mailserver = Utility.getDomainPref( "smtp_server" );
 	String stringMailPort = Utility.getDomainPref( "smtp_port" );

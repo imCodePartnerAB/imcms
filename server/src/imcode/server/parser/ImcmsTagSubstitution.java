@@ -566,6 +566,8 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
             result = tagSection();
         } else if ( "user".equals( tagname ) ) {
             result = tagUser( attributes );
+        } else if ( "documentlanguage".equals( tagname ) ) {
+            result = tagLanguage( attributes );
         } else {
             result = matres.group( 0 );
         }
@@ -582,6 +584,17 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
             }
         }
         sb.append( result );
+    }
+
+    private String tagLanguage( Properties attributes ) {
+        String representation = attributes.getProperty("representation") ;
+        if (null == representation) {
+            return LanguageMapper.getCurrentLanguageNameInUsersLanguage(serverObject,documentRequest.getUser(),document.getLanguageIso639_2()) ;
+        } else if (LanguageMapper.ISO639_2.equalsIgnoreCase(representation)) {
+            return document.getLanguageIso639_2() ;
+        } else {
+            return "<!-- <?imcms:language ... representation=\"" + representation + "\" is empty, wrong or does not exist! -->";
+        }
     }
 
 }

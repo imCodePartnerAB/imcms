@@ -449,7 +449,7 @@ public class ConfAdmin extends Conference {
 	    String sqlSproc = "A_SelfRegRoles_GetAll " + params.getProperty("META_ID") ;
 	    String sqlAnswer[] = confref.sqlProcedure(sqlSproc ) ;
 	    Vector selfRegV = super.convert2Vector(sqlAnswer) ;
-	    String selfRegList = Html.createHtmlCode("ID_OPTION", "", selfRegV ) ;
+	    String selfRegList = Html.createHtmlOptionList( "", selfRegV ) ;
 
 	    // Lets ALL avaible self_register roles from DB
 	    String langPrefix = user.getLangPrefix() ;
@@ -457,7 +457,7 @@ public class ConfAdmin extends Conference {
 	    String sqlSproc2 = "RoleGetConferenceAllowed '" + langPrefix + "'";
 	    String sqlAnswer2[] = imcref.sqlProcedure( sqlSproc2 ) ;
 	    Vector allSelfRegV = super.convert2Vector(sqlAnswer2) ;
-	    String allSelfRegList = Html.createHtmlCode("ID_OPTION", "", allSelfRegV ) ;
+	    String allSelfRegList = Html.createHtmlOptionList( "", allSelfRegV ) ;
 
 	    // Lets build the Responsepage
 
@@ -510,7 +510,7 @@ public class ConfAdmin extends Conference {
 		Vector templateV = super.convert2Vector(sqlAnswer) ;
 
 		// Lets fill the select box	with forums
-		String templateList = Html.createHtmlCode("ID_OPTION", "", templateV ) ;
+		String templateList = Html.createHtmlOptionList( "", templateV ) ;
 
 		// Lets build the Responsepage
 		//VariableManager vm = new VariableManager() ;
@@ -533,7 +533,7 @@ public class ConfAdmin extends Conference {
 	    Vector forumV = super.convert2Vector(sqlAnswer) ;
 
 	    // Lets fill the select box with forums
-	    String forumList = Html.createHtmlCode("ID_OPTION", "", forumV ) ;
+	    String forumList = Html.createHtmlOptionList( "", forumV ) ;
 
 	    // Lets get the name of the currently selected forum
 	    String forumNameSql = "A_GetForumName " + params.getProperty("FORUM_ID") ;
@@ -551,7 +551,7 @@ public class ConfAdmin extends Conference {
 	    if (sqlAllDiscs != null) {
 		sqlAllDiscsV = super.convert2Vector(sqlAllDiscs) ;
 	    }
-	    String discToShowList = Html.createHtmlCode("ID_OPTION", "", sqlAllDiscsV ) ;
+	    String discToShowList = Html.createHtmlOptionList( "", sqlAllDiscsV ) ;
 
 	    // Lets build the Responsepage
 	    vm.addProperty("FORUM_LIST", forumList ) ;

@@ -62,7 +62,7 @@ public class ChatAdmin extends Administrator{
 	String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
 
 	// lets get ready for errors
-	String deafultLanguagePrefix = imcref.getLanguage();
+	String deafultLanguagePrefix = imcref.getDefaultLanguage();
 
 	// Lets validate the session
 	if ( super.checkSession( request, response ) == false ) {

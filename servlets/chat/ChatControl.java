@@ -177,7 +177,7 @@ public class ChatControl extends ChatBase
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	    IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;
 	    int metaId = chat.getChatId();
-	    return imcref.parseExternalDoc(null, SETTINGS_BUTTON , imcref.getLanguage(), "103", getTemplateLibName(chatref,metaId+""));
+	    return imcref.parseExternalDoc(null, SETTINGS_BUTTON , imcref.getDefaultLanguage(), "103", getTemplateLibName(chatref,metaId+""));
 	}else {
 	    return "&nbsp;";
 	}

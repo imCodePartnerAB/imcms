@@ -104,4 +104,8 @@ public class Document {
     DocumentDomainObject getInternal() {
         return internalDocument;
     }
+
+    public Language getLanguage() {
+        return Language.getLanguageByISO639_2(internalDocument.getLanguageIso639_2()) ;
+    }
 }

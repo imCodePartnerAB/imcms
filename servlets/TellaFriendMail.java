@@ -61,7 +61,7 @@ public class TellaFriendMail extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
                 Vector vec = new Vector() ;
                 String htmlStr = "" ;
-                String lang_prefix = imcref.getLanguage() ;
+                String lang_prefix = imcref.getDefaultLanguage() ;
 
             // Lets get the parameters
       		String mailFrom = (req.getParameter("mailFrom")==null) ? "" : (req.getParameter("mailFrom")) ;
@@ -93,7 +93,7 @@ public class TellaFriendMail extends HttpServlet {
 
 		/* mailserver info */
 		String mailserver = Utility.getDomainPref( "smtp_server" );
-		String deafultLanguagePrefix = imcref.getLanguage();
+		String deafultLanguagePrefix = imcref.getDefaultLanguage();
 		String stringMailPort = Utility.getDomainPref( "smtp_port" );
 		String stringMailtimeout = Utility.getDomainPref( "smtp_timeout" );
 

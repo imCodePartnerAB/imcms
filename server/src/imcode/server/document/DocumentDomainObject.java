@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.IMCConstants;
+import imcode.server.LanguageMapper;
 import imcode.server.user.UserDomainObject;
 
 import java.util.Date;
@@ -23,6 +24,7 @@ public class DocumentDomainObject implements IMCConstants {
     String target;
     String section;
     UserDomainObject creator ;
+    String languageIso639_2;
 
     // todo: classification/Search words is missing
 
@@ -40,6 +42,7 @@ public class DocumentDomainObject implements IMCConstants {
     public final static int DOCTYPE_BROWSER    = 6 ;
     public final static int DOCTYPE_HTML       = 7 ;
     public final static int DOCTYPE_FILE       = 8 ;
+    public final static int DOCTYPE_LOWEST_EXTERNAL = 100;
     public final static int DOCTYPE_DIAGRAM    = 101 ;
     public final static int DOCTYPE_CONFERENCE = 102 ;
     public final static int DOCTYPE_CHAT       = 103 ;
@@ -329,5 +332,12 @@ public class DocumentDomainObject implements IMCConstants {
         this.creator = creator;
     }
 
+    public void setLanguageIso639_2( String languageIso639_2 ) {
+        this.languageIso639_2 = languageIso639_2;
+    }
+
+    public String getLanguageIso639_2() {
+        return languageIso639_2;
+    }
 
 }

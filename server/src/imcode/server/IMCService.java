@@ -105,6 +105,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         log.info( "ImageUrl: " + m_ImageUrl );
 
         m_Language = props.getProperty( "DefaultLanguage" ).trim(); //FIXME: Get from DB
+        try {
+            m_Language = LanguageMapper.convert639_1to639_2( m_Language );
+        } catch ( LanguageMapper.LanguageNotSupportedException e1 ) {
+            log.fatal( "Configured default language " + m_Language + " is not supported either." );
+            m_Language = null;
+        }
         log.info( "DefaultLanguage: " + m_Language );
 
         String externalDocTypes = props.getProperty( "ExternalDoctypes" ).trim(); //FIXME: Get rid of, if possible.
@@ -173,7 +179,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             externalUserAndRoleMapperName = null;
         }
         imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( this );
-        externalizedImcmsAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, externalAuthenticator, externalUserAndRoleMapper, getLanguage() );
+        externalizedImcmsAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, externalAuthenticator, externalUserAndRoleMapper, getDefaultLanguage() );
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
     }
 
@@ -858,6 +864,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return getFirstElementOfResultArrayOrNull( data );
     }
 
+    public String[][] sqlQueryMulti( String sqlStr ) {
+        return sqlQueryMulti(sqlStr,null) ;
+    }
+
 
     /**
      Send a sql update query to the database
@@ -1185,10 +1195,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      Send a sqlquery to the database and return a multi string array
      */
-    public String[][] sqlQueryMulti( String sqlQuery ) {
+    public String[][] sqlQueryMulti( String sqlQuery, String[] params ) {
 
-        DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-
+        DBConnect dbc = new DBConnect( m_conPool );
+        dbc.setSQLString(sqlQuery,params);
         List data = dbc.executeQuery();
         int columns = dbc.getColumnCount();
 
@@ -1332,7 +1342,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Return  language.
      */
-    public String getLanguage() {
+    public String getDefaultLanguage() {
         return m_Language;
     }
 
@@ -1891,7 +1901,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      *	Return  language. Returns the langprefix from the db. Takes a lang id
      as argument. Will return null if something goes wrong.
      Example: If the language id number for swedish is 1. then the call
-     myObject.getLanguage("1") will return 'se'
+     myObject.getLanguageIso639_2("1") will return 'se'
      That is, provided that the prefix for swedish is 'se', which it isn't.
      Or rather, it shouldn't be.
      */

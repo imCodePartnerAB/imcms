@@ -109,7 +109,7 @@ public class ConfLogin extends Conference {
 	    Vector usersV  = super.convert2Vector(usersArr) ;
 	    VariableManager vm = new VariableManager() ;
 	    Html ht = new Html() ;
-	    String usersOption = ht.createHtmlCode("ID_OPTION", "", usersV ) ;
+	    String usersOption = ht.createHtmlOptionList( "", usersV ) ;
 	    vm.addProperty("USERS_MENU", usersOption  ) ;
 	    vm.addProperty("UNADMIN_LINK_HTML", this.USER_UNADMIN_LINK_TEMPLATE );
 	    this.sendHtml(req,res,vm, ADMIN1_HTML) ;

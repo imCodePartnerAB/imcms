@@ -200,7 +200,7 @@ public class SearchDocuments extends HttpServlet {
             for ( int i = 0; i < all_sections.length; i++ ) {
                 onlyTemp.add( all_sections[i] );
             }
-            section_option_list = Html.createHtmlCode( "ID_OPTION", selected_sectionToShow, onlyTemp );
+            section_option_list = Html.createHtmlOptionList( selected_sectionToShow, onlyTemp );
         }
 
 
@@ -391,7 +391,7 @@ public class SearchDocuments extends HttpServlet {
 
                 onlyTemp.add( all_sections[i] );
             }
-            section_option_list = Html.createHtmlCode( "ID_OPTION", selected, onlyTemp );
+            section_option_list = Html.createHtmlOptionList( selected, onlyTemp );
         }
 
 

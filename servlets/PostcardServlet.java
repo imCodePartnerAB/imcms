@@ -159,7 +159,7 @@ public class PostcardServlet extends HttpServlet {
 	vect.add("#cont4#");		vect.add(HTMLConv.toHTML(HTMLConv.toHTMLSpecial(senderMessage)));
 
 	//ok nu ska vi parsa skiten med ett mall skrälle
-	String html = imcref.parseExternalDoc(vect,HTML_TEMPLATE,imcref.getLanguage(),"105");
+	String html = imcref.parseExternalDoc(vect,HTML_TEMPLATE,imcref.getDefaultLanguage(),"105");
 	//lets get the name to use on the file
 	String pcFileName = (String) session.getAttribute("pcFileName");
 	if (pcFileName == null)
@@ -199,7 +199,7 @@ public class PostcardServlet extends HttpServlet {
 
 	//ok lets save the bottom frame page, incase it has been removed
 	//by some stupid sysAdmin¨
-	String bottomString = imcref.parseExternalDoc( new Vector(),POSTCARD_BOTTOM,imcref.getLanguage(),"105");
+	String bottomString = imcref.parseExternalDoc( new Vector(),POSTCARD_BOTTOM,imcref.getDefaultLanguage(),"105");
 	File imagePathFile = imcode.util.Utility.getDomainPrefPath("image_path" );
 
 	File postcardFolder = new File(imagePathFile.getParent(),POSTCARD_FOLDER);
@@ -224,7 +224,7 @@ public class PostcardServlet extends HttpServlet {
 	vm.add("#postcard#");vm.add(req.getContextPath()+"/postcards/"+pcFileName+"?"+Math.random());
 	vm.add("#bottom#");vm.add(req.getContextPath()+"/postcards/bottom.html");
 
-	String frameSetHtml = imcref.parseExternalDoc(vm,POSTCARD_SET,imcref.getLanguage(),"105");
+	String frameSetHtml = imcref.parseExternalDoc(vm,POSTCARD_SET,imcref.getDefaultLanguage(),"105");
 
 	res.setContentType("text/html");
 	PrintWriter out = res.getWriter();
@@ -238,7 +238,7 @@ public class PostcardServlet extends HttpServlet {
 
 	//ok lets parse the mailSubject line
 	vect.add("#mailSubject#"); vect.add(senderName);
-	mailArr[2] = imcref.parseExternalDoc(vect,POSTCARD_MAIL_SUBJECT,imcref.getLanguage(),"105" );
+	mailArr[2] = imcref.parseExternalDoc(vect,POSTCARD_MAIL_SUBJECT,imcref.getDefaultLanguage(),"105" );
 
 	//lets parse the mailBody
 	File mailBody = new File( templateLib, POSTCARD_MAIL_BODY);
@@ -246,7 +246,7 @@ public class PostcardServlet extends HttpServlet {
 	vect.add("#mailText1#");	vect.add(senderName);
 	vect.add("#mailText2#");	vect.add("http://"+host);
 	vect.add("#mailText3#");	vect.add(pcFileName);
-	mailArr[3]	= imcref.parseExternalDoc(vect,POSTCARD_MAIL_BODY,imcref.getLanguage(),"105" );
+	mailArr[3]	= imcref.parseExternalDoc(vect,POSTCARD_MAIL_BODY,imcref.getDefaultLanguage(),"105" );
 
 	session.setAttribute("postcardMail",mailArr) ;
 	return;
@@ -328,17 +328,17 @@ public class PostcardServlet extends HttpServlet {
 
 	    } catch (ProtocolException ex )
 		{
-		    out.println(imcref.parseExternalDoc(new Vector(),POSTCARD_MAIL_ERROR,imcref.getLanguage(),"105"));
+		    out.println(imcref.parseExternalDoc(new Vector(),POSTCARD_MAIL_ERROR,imcref.getDefaultLanguage(),"105"));
 		    log ("Protocol error while sending mail. " + ex.getMessage()) ;
 		    return ;
 		} catch (IOException ex )
 		    {
-			out.println(imcref.parseExternalDoc(new Vector(),POSTCARD_MAIL_ERROR,imcref.getLanguage(),"105"));
+			out.println(imcref.parseExternalDoc(new Vector(),POSTCARD_MAIL_ERROR,imcref.getDefaultLanguage(),"105"));
 			log ("The mailservlet probably timed out. " + ex.getMessage()) ;
 			return ;
 		    }
 
-	out.println(imcref.parseExternalDoc(new Vector(),POSTCARD_MAIL_SENT,imcref.getLanguage(),"105"));
+	out.println(imcref.parseExternalDoc(new Vector(),POSTCARD_MAIL_SENT,imcref.getDefaultLanguage(),"105"));
 	return;
     }
 

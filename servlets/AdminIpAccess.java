@@ -107,7 +107,7 @@ public class AdminIpAccess  extends Administrator {
 	    String[] usersArr = imcref.sqlProcedure("GetAllUsersInList") ;
 	    Vector usersV  = new Vector(java.util.Arrays.asList(usersArr)) ;
 	    Html ht = new Html() ;
-	    String usersOption = ht.createHtmlCode("ID_OPTION", "", usersV ) ;
+	    String usersOption = ht.createHtmlOptionList( "", usersV ) ;
 
 	    // Lets generate the html page
 	    VariableManager vm = new VariableManager() ;

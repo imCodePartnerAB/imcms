@@ -75,7 +75,7 @@ public class AdminRoles extends Administrator {
 	    // Lets generate the html page
 	    VariableManager vm = new VariableManager() ;
 	    Html ht = new Html() ;
-	    String opt = ht.createHtmlCode("ID_OPTION", "", rolesV ) ;
+	    String opt = ht.createHtmlOptionList( "", rolesV ) ;
 	    vm.addProperty("ROLES_MENU", opt  ) ;
 
 	    this.sendHtml(req,res,vm, HTML_ADMIN_ROLES) ;
@@ -130,7 +130,7 @@ public class AdminRoles extends Administrator {
 	    // Lets generate the html page
 	    VariableManager vm = new VariableManager() ;
 	    Html ht = new Html() ;
-	    String opt = ht.createHtmlCode("ID_OPTION", "", rolesV ) ;
+	    String opt = ht.createHtmlOptionList( "", rolesV ) ;
 	    vm.addProperty("ROLES_MENU", opt  ) ;
 
 	    this.sendHtml(req,res,vm, HTML_ADMIN_ROLES) ;
@@ -351,8 +351,8 @@ public class AdminRoles extends Administrator {
 
 		// Lets generate the affected users & metaid warning html page
 		Html ht = new Html() ;
-		String opt = ht.createHtmlCode("ID_OPTION", "", new Vector(java.util.Arrays.asList(affectedMetaIds)) ) ;
-		String users = ht.createHtmlCode("ID_OPTION", "", new Vector(java.util.Arrays.asList(affectedUsers)) ) ;
+		String opt = ht.createHtmlOptionList( "", new Vector(java.util.Arrays.asList(affectedMetaIds)) ) ;
+		String users = ht.createHtmlOptionList( "", new Vector(java.util.Arrays.asList(affectedUsers)) ) ;
 		VariableManager vm = new VariableManager() ;
 		vm.addProperty("META_ID_LIST", opt ) ;
 		vm.addProperty("USER_ID_LIST", users ) ;

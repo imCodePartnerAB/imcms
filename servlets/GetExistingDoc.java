@@ -295,7 +295,7 @@ public class GetExistingDoc extends HttpServlet {
             // String[] sortOrder = imcref.sqlProcedure(  "SortOrder_GetExistingDocs '" + langPrefix + "'") ;
             //Vector sortOrderV = this.convert2Vector(sortOrder) ;
             Html htm = new Html();
-            String sortOrderStr = htm.createHtmlCode( "ID_OPTION", sortBy, sortOrderV );
+            String sortOrderStr = htm.createHtmlOptionList( sortBy, sortOrderV );
             outVector.add( "#sortBy#" );
             outVector.add( sortOrderStr );
 

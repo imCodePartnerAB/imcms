@@ -54,7 +54,7 @@ public class ConfForum extends Conference {
 	Vector forumV = super.convert2Vector(sqlAnswer) ;
 
 	// Lets fill the select box
-	String forumList = Html.createHtmlCode("ID_OPTION", "", forumV ) ;
+	String forumList = Html.createHtmlOptionList( "", forumV ) ;
 
 	// Lets build the Responsepage
 	VariableManager vm = new VariableManager() ;

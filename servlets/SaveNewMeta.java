@@ -10,8 +10,10 @@ import imcode.server.*;
 import imcode.server.user.UserDomainObject;
 import imcode.server.util.DateHelper;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 
 import org.apache.log4j.Category;
+import com.imcode.imcms.api.Document;
 
 /**
  Save new meta for a internalDocument.
@@ -35,8 +37,6 @@ public class SaveNewMeta extends HttpServlet {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
-
-        String htmlStr = "";
 
         res.setContentType( "text/html" );
         Writer out = res.getWriter();
@@ -63,7 +63,7 @@ public class SaveNewMeta extends HttpServlet {
             "expand", "1",
             "help_text_id", "1",
             "status_id", "1",
-            "lang_prefix", "se",
+            "lang_prefix", null,
             "sort_position", "1",
             "menu_position", "1",
             "description", null,
@@ -134,9 +134,9 @@ public class SaveNewMeta extends HttpServlet {
         if( (user = Check.userLoggedOn( req, res, start_url )) == null ) {
             return;
         }
-        String lang_prefix = user.getLangPrefix();
+        String usersLangPrefix = user.getLangPrefix();
 
-        boolean userHasRights = DocumentMapper.checkUsersRights( imcref, user, ""+parentMetaId, lang_prefix, doc_type );
+        boolean userHasRights = DocumentMapper.checkUsersRights( imcref, user, ""+parentMetaId, usersLangPrefix, doc_type );
 
         // So... if the user may not create this particular doc-type... he's outta here!
         if( !userHasRights ) {
@@ -154,15 +154,8 @@ public class SaveNewMeta extends HttpServlet {
         metaprops.setProperty( "date_created", DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( nowDateTime ) );
         metaprops.setProperty( "owner_id", String.valueOf( user.getUserId() ) );
 
-        if( req.getParameter( "cancel" ) != null ) {
-            String output = AdminDoc.adminDoc( parentMetaId, parentMetaId, user, req, res );
-            if( output != null ) {
-                out.write( output );
-            }
-            return;
-
+        if( pressedOkButton( req ) ) {
             // Lets add a new meta to the db
-        } else if( req.getParameter( "ok" ) != null ) {
 
             String metaIdStr = DocumentMapper.sqlInsertIntoMeta( imcref, doc_type, activated_datetime, archived_datetime, metaprops );
             int metaId = Integer.parseInt(metaIdStr) ;
@@ -202,132 +195,168 @@ public class SaveNewMeta extends HttpServlet {
             // Here is the stuff we have to do for each individual doctype. All general tasks
             // for all documenttypes is done now.
 
-            // BROWSER DOCUMENT
-            if( doc_type.equals( "6" ) ) {
-                String sqlStr = "insert into browser_docs (metaId, to_meta_id, browser_id) values (" + metaId + "," + parentMetaId + ",0)";
-                imcref.sqlUpdateQuery( sqlStr );
-                Vector vec = new Vector();
-                sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where metaId = " + metaId + " order by value desc,name asc";
-                Hashtable hash = imcref.sqlQueryHash( sqlStr );
-                String[] b_id = (String[])hash.get( "browser_id" );
-                String[] nm = (String[])hash.get( "name" );
-                String[] to = (String[])hash.get( "to_meta_id" );
-                String bs = "";
-                if( b_id != null ) {
-                    bs += "<table width=\"50%\" border=\"0\">";
-                    for( int i = 0; i < b_id.length; i++ ) {
-                        String[] temparr = {" ", "&nbsp;"};
-                        bs += "<tr><td>" + Parser.parseDoc( nm[i], temparr ) + ":</td><td><input type=\"text\" name=\"bid" + b_id[i] + "\" value=\"" + (to[i].equals( "0" ) ? "" : to[i]) + "\"></td></tr>";
-                    }
-                    bs += "</table>";
-                }
-                vec.add( "#browsers#" );
-                vec.add( bs );
-                sqlStr = "select browser_id,name from browsers where browser_id not in (select browsers.browser_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where metaId = " + metaId + " ) order by value desc,name asc";
-                hash = imcref.sqlQueryHash( sqlStr );
-                b_id = (String[])hash.get( "browser_id" );
-                nm = (String[])hash.get( "name" );
-                String nb = "";
-                if( b_id != null ) {
-                    for( int i = 0; i < b_id.length; i++ ) {
-                        nb += "<option value=\"" + b_id[i] + "\">" + nm[i] + "</option>";
-                    }
-                }
-                vec.add( "#new_browsers#" );
-                vec.add( nb );
-                vec.add( "#new_meta_id#" );
-                vec.add( String.valueOf( metaId ) );
-                log( String.valueOf( metaId ) );
-                vec.add( "#getDocType#" );
-                vec.add( "<INPUT TYPE=\"hidden\" NAME=\"doc_type\" VALUE=\"" + doc_type + "\">" );
-                vec.add( "#DocMenuNo#" );
-                vec.add( "" );
-                vec.add( "#getMetaId#" );
-                vec.add( String.valueOf( parentMetaId ) );
-                htmlStr = imcref.parseDoc( vec, "new_browser_doc.html", lang_prefix );
+            int docTypeInt = Integer.parseInt(doc_type) ;
 
-                // FILE UP LOAD
-            } else if( doc_type.equals( "8" ) ) {
-                String sqlStr = "select mime,mime_name from mime_types where lang_prefix = '" + lang_prefix + "' and mime != 'other'";
-                String temp[] = imcref.sqlQuery( sqlStr );
-                Vector vec = new Vector();
-                String temps = null;
-                for( int i = 0; i < temp.length; i += 2 ) {
-                    temps += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
-                }
-                vec.add( "#mime#" );
-                vec.add( temps );
-                vec.add( "#new_meta_id#" );
-                vec.add( String.valueOf( metaId ) );
-                vec.add( "#getMetaId#" );
-                vec.add( String.valueOf( parentMetaId ) );
-                htmlStr = imcref.parseDoc( vec, "new_fileupload.html", lang_prefix );
-                out.write( htmlStr );
-                return;
-
-                // URL DOCUMENT
-            } else if( doc_type.equals( "5" ) ) {
-                Vector vec = new Vector();
-                vec.add( "#new_meta_id#" );
-                vec.add( String.valueOf( metaId ) );
-                vec.add( "#getMetaId#" );
-                vec.add( String.valueOf( parentMetaId ) );
-                htmlStr = imcref.parseDoc( vec, "new_url_doc.html", lang_prefix );
-                out.write( htmlStr );
-                return;
-
-                // FRAMESET DOCUMENT
-            } else if( doc_type.equals( "7" ) ) {
-                Vector vec = new Vector();
-                vec.add( "#new_meta_id#" );
-                vec.add( String.valueOf( metaId ) );
-                vec.add( "#getMetaId#" );
-                vec.add( String.valueOf( parentMetaId ) );
-                htmlStr = imcref.parseDoc( vec, "new_frameset.html", lang_prefix );
-                out.write( htmlStr );
-                return;
-
-                // EXTERNAL DOCUMENTS
-            } else if( Integer.parseInt( doc_type ) > 100 ) {
-                // check if external doc
-                imcode.server.ExternalDocType ex_doc;
-                ex_doc = imcref.isExternalDoc( metaId, user );
-                String paramStr = "?metaId=" + metaId + "&";
-                paramStr += "parent_meta_id=" + parentMetaId + "&";
-                paramStr += "cookie_id=" + "1A" + "&action=new";
-                res.sendRedirect( ex_doc.getCallServlet() + paramStr );
-                return;
-
-                // TEXT DOCUMENT
-            } else if( doc_type.equals( "2" ) ) {
-                DocumentMapper.copyTemplateData( imcref, user, ""+parentMetaId, ""+metaId );
-
-                // Lets check if we should copy the metaheader and meta text into text1 and text2.
-                // There are 2 types of texts. 1= html text. 0= plain text. By
-                // default were creating html texts.
-                String copyMetaHeader = req.getParameter( "copyMetaHeader" );
-                String copyMetaFlag = (copyMetaHeader == null) ? "0" : (copyMetaHeader);
-                if( copyMetaFlag.equals( "1" ) && doc_type.equals( "2" ) ) {
-                    String[] vp = {"'", "''"};
-
-                    String mHeadline = Parser.parseDoc( metaprops.getProperty( "meta_headline" ), vp );
-                    String mText = Parser.parseDoc( metaprops.getProperty( "meta_text" ), vp );
-
-                    DocumentMapper.sqlInsertIntoTexts( imcref, ""+metaId, mHeadline, mText );
-                }
-
-                // Lets activate the textfield
-                DocumentMapper.sqlUpdateActivateTheTextField( imcref, metaId );
-
-                // Lets build the page
-                String output = AdminDoc.adminDoc( metaId, metaId, user, req, res );
-                if( output != null ) {
-                    out.write( output );
-                }
-                return;
-            } // end text internalDocument
+            switch (docTypeInt) {
+                case DocumentDomainObject.DOCTYPE_BROWSER:
+                    outputEditPageForNewBrowserRedirectDocument( metaId, parentMetaId, imcref, doc_type, usersLangPrefix, out );
+                    break ;
+                case DocumentDomainObject.DOCTYPE_FILE:
+                    outputEditPageForNewFileDocument( usersLangPrefix, imcref, metaId, parentMetaId, out );
+                    break;
+                case DocumentDomainObject.DOCTYPE_URL:
+                    outputEditPageForNewUrlDocument( metaId, parentMetaId, imcref, usersLangPrefix, out );
+                    break;
+                case DocumentDomainObject.DOCTYPE_HTML:
+                    outputEditPageForNewHtmlDocument( metaId, parentMetaId, imcref, usersLangPrefix, out );
+                    break;
+                case DocumentDomainObject.DOCTYPE_TEXT:
+                    outputNewTextDocumentInAdminMode( imcref, user, parentMetaId, metaId, req, doc_type, metaprops, res, out );
+                    break;
+                default:
+                    redirectToExternalDocType( imcref, metaId, user, parentMetaId, res );
+            }
+        } else {
+            String htmlStr = AdminDoc.adminDoc( parentMetaId, parentMetaId, user, req, res );
+            out.write( htmlStr );
         }
+    }
+
+    private void outputNewTextDocumentInAdminMode( IMCServiceInterface imcref,
+            UserDomainObject user, int parentMetaId, int metaId, HttpServletRequest req,
+            String doc_type, Properties metaprops, HttpServletResponse res, Writer out ) throws IOException {
+        DocumentMapper.copyTemplateData( imcref, user, ""+parentMetaId, ""+metaId );
+
+        // Lets check if we should copy the metaheader and meta text into text1 and text2.
+        // There are 2 types of texts. 1= html text. 0= plain text. By
+        // default were creating html texts.
+        String copyMetaHeader = req.getParameter( "copyMetaHeader" );
+        String copyMetaFlag = (copyMetaHeader == null) ? "0" : (copyMetaHeader);
+        if( copyMetaFlag.equals( "1" ) && doc_type.equals( "2" ) ) {
+            String[] vp = {"'", "''"};
+
+            String mHeadline = Parser.parseDoc( metaprops.getProperty( "meta_headline" ), vp );
+            String mText = Parser.parseDoc( metaprops.getProperty( "meta_text" ), vp );
+
+            DocumentMapper.sqlInsertIntoTexts( imcref, ""+metaId, mHeadline, mText );
+        }
+
+        // Lets activate the textfield
+        DocumentMapper.sqlUpdateActivateTheTextField( imcref, metaId );
+
+        // Lets build the page
+        String htmlStr = AdminDoc.adminDoc( metaId, metaId, user, req, res );
         out.write( htmlStr );
+        return;
+    }
+
+    private void outputEditPageForNewBrowserRedirectDocument( int metaId, int parentMetaId,
+            IMCServiceInterface imcref, String doc_type, String usersLangPrefix, Writer out ) throws IOException {
+        String htmlStr;
+        String sqlStr = "insert into browser_docs (metaId, to_meta_id, browser_id) values (" + metaId + "," + parentMetaId + ",0)";
+        imcref.sqlUpdateQuery( sqlStr );
+        Vector vec = new Vector();
+        sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where metaId = " + metaId + " order by value desc,name asc";
+        Hashtable hash = imcref.sqlQueryHash( sqlStr );
+        String[] b_id = (String[])hash.get( "browser_id" );
+        String[] nm = (String[])hash.get( "name" );
+        String[] to = (String[])hash.get( "to_meta_id" );
+        String bs = "";
+        if( b_id != null ) {
+            bs += "<table width=\"50%\" border=\"0\">";
+            for( int i = 0; i < b_id.length; i++ ) {
+                String[] temparr = {" ", "&nbsp;"};
+                bs += "<tr><td>" + Parser.parseDoc( nm[i], temparr ) + ":</td><td><input type=\"text\" name=\"bid" + b_id[i] + "\" value=\"" + (to[i].equals( "0" ) ? "" : to[i]) + "\"></td></tr>";
+            }
+            bs += "</table>";
+        }
+        vec.add( "#browsers#" );
+        vec.add( bs );
+        sqlStr = "select browser_id,name from browsers where browser_id not in (select browsers.browser_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where metaId = " + metaId + " ) order by value desc,name asc";
+        hash = imcref.sqlQueryHash( sqlStr );
+        b_id = (String[])hash.get( "browser_id" );
+        nm = (String[])hash.get( "name" );
+        String nb = "";
+        if( b_id != null ) {
+            for( int i = 0; i < b_id.length; i++ ) {
+                nb += "<option value=\"" + b_id[i] + "\">" + nm[i] + "</option>";
+            }
+        }
+        vec.add( "#new_browsers#" );
+        vec.add( nb );
+        vec.add( "#new_meta_id#" );
+        vec.add( String.valueOf( metaId ) );
+        vec.add( "#getDocType#" );
+        vec.add( "<INPUT TYPE=\"hidden\" NAME=\"doc_type\" VALUE=\"" + doc_type + "\">" );
+        vec.add( "#DocMenuNo#" );
+        vec.add( "" );
+        vec.add( "#getMetaId#" );
+        vec.add( String.valueOf( parentMetaId ) );
+        htmlStr = imcref.parseDoc( vec, "new_browser_doc.html", usersLangPrefix );
+        out.write(htmlStr) ;
+        return ;
+    }
+
+    private void outputEditPageForNewFileDocument( String usersLangPrefix, IMCServiceInterface imcref,
+            int metaId, int parentMetaId, Writer out ) throws IOException {
+        String htmlStr;
+        String sqlStr = "select mime,mime_name from mime_types where lang_prefix = '" + usersLangPrefix + "' and mime != 'other'";
+        String temp[] = imcref.sqlQuery( sqlStr );
+        Vector vec = new Vector();
+        String temps = null;
+        for( int i = 0; i < temp.length; i += 2 ) {
+            temps += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
+        }
+        vec.add( "#mime#" );
+        vec.add( temps );
+        vec.add( "#new_meta_id#" );
+        vec.add( String.valueOf( metaId ) );
+        vec.add( "#getMetaId#" );
+        vec.add( String.valueOf( parentMetaId ) );
+        htmlStr = imcref.parseDoc( vec, "new_fileupload.html", usersLangPrefix );
+        out.write( htmlStr );
+        return;
+    }
+
+    private void outputEditPageForNewUrlDocument( int metaId, int parentMetaId, IMCServiceInterface imcref,
+            String usersLangPrefix, Writer out ) throws IOException {
+        String htmlStr;
+        Vector vec = new Vector();
+        vec.add( "#new_meta_id#" );
+        vec.add( String.valueOf( metaId ) );
+        vec.add( "#getMetaId#" );
+        vec.add( String.valueOf( parentMetaId ) );
+        htmlStr = imcref.parseDoc( vec, "new_url_doc.html", usersLangPrefix );
+        out.write( htmlStr );
+        return;
+    }
+
+    private void outputEditPageForNewHtmlDocument( int metaId, int parentMetaId,
+            IMCServiceInterface imcref, String usersLangPrefix, Writer out ) throws IOException {
+        String htmlStr;
+        Vector vec = new Vector();
+        vec.add( "#new_meta_id#" );
+        vec.add( String.valueOf( metaId ) );
+        vec.add( "#getMetaId#" );
+        vec.add( String.valueOf( parentMetaId ) );
+        htmlStr = imcref.parseDoc( vec, "new_frameset.html", usersLangPrefix );
+        out.write( htmlStr );
+        return;
+    }
+
+    private void redirectToExternalDocType( IMCServiceInterface imcref, int metaId,
+            UserDomainObject user, int parentMetaId, HttpServletResponse res ) throws IOException {
+        // check if external doc
+        ExternalDocType ex_doc;
+        ex_doc = imcref.isExternalDoc( metaId, user );
+        String paramStr = "?metaId=" + metaId + "&";
+        paramStr += "parent_meta_id=" + parentMetaId + "&";
+        paramStr += "cookie_id=" + "1A" + "&action=new";
+        res.sendRedirect( ex_doc.getCallServlet() + paramStr );
+    }
+
+    private boolean pressedOkButton( HttpServletRequest req ) {
+        return req.getParameter( "ok" ) != null;
     }
 
 }

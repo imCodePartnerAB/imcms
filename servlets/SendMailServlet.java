@@ -58,7 +58,7 @@ public class SendMailServlet extends HttpServlet {
 	/* server info */
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	String lang_prefix = imcref.getLanguage() ;
+	String lang_prefix = imcref.getDefaultLanguage() ;
 	SystemData sysData	= imcref.getSystemData();
 
 	// Lets get the parameters we need

@@ -107,6 +107,10 @@ public class TextDocument extends Document {
         return new Menu(menuIndexInDocument, this ) ;
     }
 
+    public void setLanguage( Language language ) {
+        internalDocument.setLanguageIso639_2(language.getIsoCode639_2()) ;
+    }
+
     public static class TextField {
         TextDocumentTextDomainObject imcmsText ;
         private TextDocument document;

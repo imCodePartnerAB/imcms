@@ -225,7 +225,7 @@ public interface IMCServiceInterface {
 	;
 
     // get language
-    public String getLanguage()
+    public String getDefaultLanguage()
 	;
 
     // get doctype
@@ -389,5 +389,7 @@ public interface IMCServiceInterface {
     ConnectionPool getConnectionPool();
 
     String sqlQueryStr( String sqlStr, String[] params );
+
+    String[][] sqlQueryMulti( String sqlStr, String[] params );
 
 }

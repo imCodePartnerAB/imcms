@@ -95,7 +95,7 @@ public class AddDoc extends HttpServlet {
             Vector sortOrderV = this.convert2Vector( sortOrder );
             sortOrderV.copyInto( sortOrder );
             Html htm = new Html();
-            String sortOrderStr = htm.createHtmlCode( "ID_OPTION", "", sortOrderV );
+            String sortOrderStr = htm.createHtmlOptionList( "", sortOrderV );
             vec.add( "#sortBy#" );
             vec.add( sortOrderStr );
 
@@ -136,12 +136,28 @@ public class AddDoc extends HttpServlet {
         final int NORMAL = 0;
         final int CHECKBOX = 1;
         final int OPTION = 2;
+        final int OTHER = 3;
 
         String[] metatable = {/*  Nullable			Nullvalue */
-            "shared", "0", "disable_search", "0", "archive", "0", "show_meta", "0", "permissions", "1", "meta_image", null, "frame_name", null, "target", null, };
+            "shared", "0",
+            "disable_search", "0",
+            "archive", "0",
+            "show_meta", "0",
+            "permissions", "1",
+            "meta_image", null,
+            "frame_name", null,
+            "target", null,
+            "lang_prefix", null};
 
-        int metatabletype[] = {CHECKBOX, CHECKBOX, CHECKBOX, CHECKBOX, NORMAL, NORMAL, NORMAL, OPTION};
-
+        int metatabletype[] = {CHECKBOX,
+                               CHECKBOX,
+                               CHECKBOX,
+                               CHECKBOX,
+                               NORMAL,
+                               NORMAL,
+                               NORMAL,
+                               OPTION,
+                               OTHER};
 
         // Lets get the meta information
         String sqlStr = "select * from meta where meta_id = " + meta_id;
@@ -166,36 +182,35 @@ public class AddDoc extends HttpServlet {
         Vector vec = new Vector();
         String checks = "";
         for( int i = 0; i < metatable.length; i += 2 ) {
-            String temp = ((String[])hash.get( metatable[i] ))[0];
-            String[] pd = {"<", "&lt;", ">", "&gt;", "\"", "&quot;", "&", "&amp;"};
-            temp = Parser.parseDoc( temp, pd );
+            String value = ((String[])hash.get( metatable[i] ))[0];
+            value = escapeForHtml( value );
             String tag = "#" + metatable[i] + "#";
             if( metatabletype[i / 2] == NORMAL ) {			// This is not a checkbox or an optionbox
                 if( htmlStr.indexOf( tag ) == -1 ) {
-                    checks += "<input type=hidden name=\"" + metatable[i] + "\" value=\"" + temp + "\">";
+                    checks += "<input type=hidden name=\"" + metatable[i] + "\" value=\"" + value + "\">";
                 } else {
                     vec.add( tag );							// Replace its corresponding tag
-                    vec.add( temp );
+                    vec.add( value );
                 }
             } else if( metatabletype[i / 2] == CHECKBOX ) {	// This is a checkbox
-                if( !temp.equals( metatable[i + 1] ) ) {	// If it is equal to the nullvalue, it must not appear (i.e. equal null)
+                if( !value.equals( metatable[i + 1] ) ) {	// If it is equal to the nullvalue, it must not appear (i.e. equal null)
                     if( htmlStr.indexOf( tag ) == -1 ) {
-                        checks += "<input type=hidden name=\"" + metatable[i] + "\" value=\"" + temp + "\">";
+                        checks += "<input type=hidden name=\"" + metatable[i] + "\" value=\"" + value + "\">";
                     } else {
                         vec.add( tag );
                         vec.add( "checked" );
                     }
                 }
             } else if( metatabletype[i / 2] == OPTION ) {	// This is an optionbox
-                if( htmlStr.indexOf( "#" + temp + "#" ) == -1 ) {	// There is no tag equal to the value of this
+                if( htmlStr.indexOf( "#" + value + "#" ) == -1 ) {	// There is no tag equal to the value of this
                     if( htmlStr.indexOf( tag ) == -1 ) {
-                        checks += "<input type=hidden name=\"" + metatable[i] + "\" value=\"" + temp + "\">";
+                        checks += "<input type=hidden name=\"" + metatable[i] + "\" value=\"" + value + "\">";
                     } else {
                         vec.add( tag );							// Replace its corresponding tag
-                        vec.add( temp );
+                        vec.add( value );
                     }
                 } else {
-                    vec.add( "#" + temp + "#" );
+                    vec.add( "#" + value + "#" );
                     vec.add( "checked" );
                 }
             }
@@ -268,6 +283,8 @@ public class AddDoc extends HttpServlet {
             vec.add( parent_section[1] );
         }
 
+        MetaDataParser.addLanguageRelatedTagsForDocInfoPageToParseList(vec,hash,imcref,user);
+        
         //lets build the option list used when the admin whants to breake the inherit chain
         String[] all_sections = imcref.sqlProcedure( "SectionGetAll" );
         Vector onlyTemp = new Vector();
@@ -281,7 +298,7 @@ public class AddDoc extends HttpServlet {
                     selected = parent_section[0];
             }
 
-            option_list = Html.createHtmlCode( "ID_OPTION", selected, onlyTemp );
+            option_list = Html.createHtmlOptionList( selected, onlyTemp );
         }
         vec.add( "#section_option_list#" );
         vec.add( option_list );
@@ -296,6 +313,15 @@ public class AddDoc extends HttpServlet {
             out.write( imcref.parseDoc( vec, advanced + "new_meta.html", lang_prefix ) );
         }
 
+    }
+
+    private static String escapeForHtml( String text ) {
+        String[] pd = {"<", "&lt;",
+                       ">", "&gt;",
+                       "\"", "&quot;",
+                       "&", "&amp;"};
+        text = Parser.parseDoc( text, pd );
+        return text;
     }
 
     /**
