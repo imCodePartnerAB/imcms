@@ -1,319 +1,523 @@
 package imcode.server.document;
 
-import imcode.server.IMCConstants;
+import com.imcode.imcms.servlet.admin.DocumentComposer;
+import imcode.server.ApplicationServer;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
 
-/** Stores all info about a text-document. **/
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
 
-public class DocumentDomainObject implements IMCConstants {
+/**
+ * Stores info about a document. *
+ */
+public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
-    // If an field is added, make sure to update DocumentMapper
-    int metaId;
-    int documentType;
-    boolean archived;
-    java.util.Date createdDatetime;
-    java.util.Date modifiedDatetime;
-    java.util.Date activatedDatetime;
-    java.util.Date archivedDatetime;
-    String headline;
-    String text;
-    String image;
-    String target;
-    String section;
-    // todo: classification/Search words is missing
+    public final static int DOCTYPE_TEXT = 2;
+    public final static int DOCTYPE_URL = 5;
+    public final static int DOCTYPE_BROWSER = 6;
+    public final static int DOCTYPE_HTML = 7;
+    public final static int DOCTYPE_FILE = 8;
+    public final static int DOCTYPE_DIAGRAM = 101;
+    public final static int DOCTYPE_CONFERENCE = 102;
+    public final static int DOCTYPE_CHAT = 103;
+    public final static int DOCTYPE_BILLBOARD = 104;
+    public static final int DOCTYPE_FORTUNES = 106;
 
-    /* Filedocs only */
-    String filename;
+    public static final int STATUS_NEW = 0;
+    public static final int STATUS_PUBLICATION_DISAPPROVED = 1;
+    public static final int STATUS_PUBLICATION_APPROVED = 2;
 
-    /* Textdocs only */
-    TemplateDomainObject template;
-    int templateGroupId;
-    int menuSortOrder;
-    // If an field is added, make sure to update DocumentMapper
+    private Attributes attributes;
 
-    public final static int DOCTYPE_TEXT       = 2 ;
-    public final static int DOCTYPE_URL        = 5 ;
-    public final static int DOCTYPE_BROWSER    = 6 ;
-    public final static int DOCTYPE_HTML       = 7 ;
-    public final static int DOCTYPE_FILE       = 8 ;
-    public final static int DOCTYPE_DIAGRAM    = 101 ;
-    public final static int DOCTYPE_CONFERENCE = 102 ;
-    public final static int DOCTYPE_CHAT       = 103 ;
-    public final static int DOCTYPE_BILLBOARD  = 104 ;
-    public final static int DOCTYPE_POSTCARD   = 105 ;
-    public final static int DOCTYPE_FORTUNES   = 106 ;
-    public final static int DOCTYPE_CALENDER   = 107 ;
-
-    /**
-     * Get the value of metaId.
-     * @return value of metaId.
-     */
-    public int getMetaId() {
-        return metaId;
+    protected DocumentDomainObject() {
+        attributes = new Attributes();
     }
 
-    /**
-     * Set the value of metaId.
-     * @param v  Value to assign to metaId.
-     */
-    public void setMetaId( int v ) {
-        this.metaId = v;
+    public Object clone() throws CloneNotSupportedException {
+        DocumentDomainObject clone = (DocumentDomainObject)super.clone();
+        if ( null != attributes ) {
+            clone.attributes = (Attributes)attributes.clone();
+        }
+        return clone;
     }
 
-    /**
-     * Get the value of documentType.
-     * @return value of documentType.
-     */
-    public int getDocumentType() {
-        return documentType;
+    public static DocumentDomainObject fromDocumentTypeId( int documentTypeId ) {
+        DocumentDomainObject document = null;
+
+        switch ( documentTypeId ) {
+            case DOCTYPE_TEXT:
+                document = new TextDocumentDomainObject();
+                break;
+            case DOCTYPE_URL:
+                document = new UrlDocumentDomainObject();
+                break;
+            case DOCTYPE_BROWSER:
+                document = new BrowserDocumentDomainObject();
+                break;
+            case DOCTYPE_FILE:
+                document = new FileDocumentDomainObject();
+                break;
+            case DOCTYPE_HTML:
+                document = new HtmlDocumentDomainObject();
+                break;
+            case DOCTYPE_CHAT:
+                document = new ChatDocumentDomainObject();
+                break;
+            case DOCTYPE_CONFERENCE:
+                document = new ConferenceDocumentDomainObject();
+                break;
+            case DOCTYPE_BILLBOARD:
+                document = new BillboardDocumentDomainObject();
+                break;
+            default:
+                throw new RuntimeException( "Unknown document-type-id: " + documentTypeId );
+        }
+
+        return document;
     }
 
-    /**
-     * Set the value of documentType.
-     * @param v  Value to assign to documentType.
-     */
-    public void setDocumentType( int v ) {
-        this.documentType = v;
+    public Date getArchivedDatetime() {
+        return attributes.archivedDatetime;
     }
 
-    /**
-     * Check whether this document is active.
-     * A document is active if it isn't archived, and if activatedDatetime is in the past.
-     * @return value of archived.
-     */
-    public boolean isActive() {
-        java.util.Date now = new java.util.Date();
-        return (activatedDatetime == null || activatedDatetime.before( now )) && !isArchivedAtTime( now );
+    public void setArchivedDatetime( Date v ) {
+        attributes.archivedDatetime = v;
     }
 
-    /**
-     * Check whether this document is archived.
-     * A document is archived if either 'archived' is true, or archiveDatetime is in the past.
-     * @return value of archived.
-     */
-    public boolean isArchived() {
-        java.util.Date now = new java.util.Date();
-        return isArchivedAtTime( now );
+    public CategoryDomainObject[] getCategories() {
+        return (CategoryDomainObject[])getLazilyLoadedDocumentCategories().categories.toArray( new CategoryDomainObject[getLazilyLoadedDocumentCategories().categories.size()] );
     }
 
-    private boolean isArchivedAtTime( java.util.Date time ) {
-        return archived || (archivedDatetime != null && archivedDatetime.before( time ));
+    public Date getCreatedDatetime() {
+        return attributes.createdDatetime;
     }
 
-
-    /**
-     * Set the value of archived.
-     * @param v  Value to assign to archived.
-     */
-    public void setArchived( boolean v ) {
-        this.archived = v;
+    public void setCreatedDatetime( Date v ) {
+        attributes.createdDatetime = v;
     }
 
-    /**
-     * Get the value of createdDatetime.
-     * @return value of createdDatetime.
-     */
-    public java.util.Date getCreatedDateTime() {
-        return createdDatetime;
+    public UserDomainObject getCreator() {
+        return attributes.creator;
     }
 
-    /**
-     * Set the value of createdDatetime.
-     * @param v  Value to assign to createdDatetime.
-     */
-    public void setCreatedDatetime( java.util.Date v ) {
-        this.createdDatetime = v;
+    public void setCreator( UserDomainObject creator ) {
+        attributes.creator = creator;
     }
 
-    /**
-     * Get the value of modifiedDatetime.
-     * @return value of modifiedDatetime.
-     */
-    public java.util.Date getModifiedDateTime() {
-        return modifiedDatetime;
+    public void setAttributes( Attributes attributes ) {
+        this.attributes = attributes;
     }
 
-    /**
-     * Set the value of modifiedDatetime.
-     * @param v  Value to assign to modifiedDatetime.
-     */
-    public void setModifiedDatetime( java.util.Date v ) {
-        this.modifiedDatetime = v;
-    }
-
-    /**
-     * Get the value of archivedDatetime.
-     * @return value of archivedDatetime.
-     */
-    public java.util.Date getArchivedDateTime() {
-        return archivedDatetime;
-    }
-
-    /**
-     * Set the value of archivedDatetime.
-     * @param v  Value to assign to archivedDatetime.
-     */
-    public void setArchivedDatetime( java.util.Date v ) {
-        this.archivedDatetime = v;
-    }
-
-    /**
-     * Get the value of activatedDatetime.
-     * @return value of activatedDatetime.
-     */
-    public java.util.Date getActivatedDateTime() {
-        return activatedDatetime;
-    }
-
-    /**
-     * Set the value of archivedDatetime.
-     * @param v  Value to assign to archivedDatetime.
-     */
-    public void setActivatedDatetime( java.util.Date v ) {
-        this.activatedDatetime = v;
-    }
-
-    /**
-     * Get the value of headline.
-     * @return value of headline.
-     */
     public String getHeadline() {
-        return headline;
+        return attributes.headline;
     }
 
-    /**
-     * Set the value of headline.
-     * @param v  Value to assign to headline.
-     */
     public void setHeadline( String v ) {
-        this.headline = v;
+        attributes.headline = v;
     }
 
-    /**
-     * Get the value of text.
-     * @return value of text.
-     */
-    public String getText() {
-        return text;
+    public int getId() {
+        return attributes.id;
     }
 
-    /**
-     * Set the value of text.
-     * @param v  Value to assign to text.
-     */
-    public void setText( String v ) {
-        this.text = v;
+    public void setId( int v ) {
+        if ( 0 != attributes.id ) {
+            getLazilyLoadedDocumentAttributes();
+            getLazilyLoadedDocumentCategories();
+            getLazilyLoadedRolesMappedToDocumentPermissionSetIds();
+            loadAllLazilyLoadedDocumentTypeSpecificAttributes();
+        }
+        attributes.id = v;
     }
 
-    /**
-     * Get the value of image.
-     * @return value of image.
-     */
-    public String getImage() {
-        return image;
+    protected abstract void loadAllLazilyLoadedDocumentTypeSpecificAttributes();
+
+    public String getMenuImage() {
+        return attributes.image;
     }
 
-    /**
-     * Set the value of image.
-     * @param v  Value to assign to image.
-     */
-    public void setImage( String v ) {
-        this.image = v;
+    public void setMenuImage( String v ) {
+        attributes.image = v;
     }
 
-    /**
-     * Get the value of target.
-     * @return value of target.
-     */
+    public String[] getKeywords() {
+        return (String[])getLazilyLoadedDocumentAttributes().keywords.toArray( new String[getLazilyLoadedDocumentAttributes().keywords.size()] );
+    }
+
+    public void setKeywords( String[] keywords ) {
+        getLazilyLoadedDocumentAttributes().keywords = new HashSet( Arrays.asList( keywords ) );
+    }
+
+    public String getLanguageIso639_2() {
+        return attributes.languageIso639_2;
+    }
+
+    public void setLanguageIso639_2( String languageIso639_2 ) {
+        attributes.languageIso639_2 = languageIso639_2;
+    }
+
+    public String getMenuText() {
+        return attributes.menuText;
+    }
+
+    public void setMenuText( String v ) {
+        attributes.menuText = v;
+    }
+
+    public Date getModifiedDatetime() {
+        return attributes.modifiedDatetime;
+    }
+
+    public void setModifiedDatetime( Date v ) {
+        attributes.modifiedDatetime = v;
+    }
+
+    public Date getPublicationEndDatetime() {
+        return attributes.publicationEndDatetime;
+    }
+
+    public void setPublicationEndDatetime( Date datetime ) {
+        attributes.publicationEndDatetime = datetime;
+    }
+
+    public Date getPublicationStartDatetime() {
+        return attributes.publicationStartDatetime;
+    }
+
+    public void setPublicationStartDatetime( Date v ) {
+        attributes.publicationStartDatetime = v;
+    }
+
+    public UserDomainObject getPublisher() {
+        return attributes.publisher;
+    }
+
+    public void setPublisher( UserDomainObject user ) {
+        attributes.publisher = user;
+    }
+
+    public Map getRolesMappedToPermissionSetIds() {
+        return Collections.unmodifiableMap( getLazilyLoadedRolesMappedToDocumentPermissionSetIds().rolesMappedToDocumentPermissionSetIds );
+    }
+
+    public SectionDomainObject[] getSections() {
+        return (SectionDomainObject[])getLazilyLoadedDocumentAttributes().sections.toArray( new SectionDomainObject[getLazilyLoadedDocumentAttributes().sections.size()] );
+    }
+
+    public void setSections( SectionDomainObject[] sections ) {
+        getLazilyLoadedDocumentAttributes().sections = new HashSet( Arrays.asList( sections ) );
+    }
+
+    public int getStatus() {
+        return attributes.status;
+    }
+
+    public void setStatus( int status ) {
+        switch ( status ) {
+            case STATUS_NEW:
+            case STATUS_PUBLICATION_APPROVED:
+            case STATUS_PUBLICATION_DISAPPROVED:
+                attributes.status = status;
+                break;
+            default:
+                throw new IllegalArgumentException( "Bad status." );
+        }
+    }
+
     public String getTarget() {
-        return target;
+        return attributes.target;
     }
 
-    /**
-     * Set the value of target.
-     * @param v  Value to assign to target.
-     */
     public void setTarget( String v ) {
-        this.target = v;
+        attributes.target = v;
     }
 
-    /**
-     * Get the value of filename.
-     * @return value of filename.
-     */
-    public String getFileName() {
-        return filename;
+    public boolean isArchived() {
+        return isArchivedAtTime( new Date() );
     }
 
-    /**
-     * Set the value of filename.
-     * @param v  Value to assign to filename.
-     */
-    public void setFilename( String v ) {
-        this.filename = v;
+    public boolean isLinkableByOtherUsers() {
+        return attributes.linkableByOtherUsers;
     }
 
-    /**
-     * Get the value of section.
-     * @return value of section.
-     */
-    public String getSection() {
-        return section;
+    public void setLinkableByOtherUsers( boolean linkableByOtherUsers ) {
+        attributes.linkableByOtherUsers = linkableByOtherUsers;
     }
 
-    /**
-     * Set the value of section.
-     * @param v  Value to assign to section.
-     */
-    public void setSection( String v ) {
-        this.section = v;
+    public boolean isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo() {
+        return attributes.permissionSetOneIsMorePrivilegedThanPermissionSetTwo;
     }
 
-    /**
-     * Get the value of template.
-     * @return value of template.
-     */
-    public TemplateDomainObject getTemplate() {
-        return template;
+    public void setPermissionSetOneIsMorePrivilegedThanPermissionSetTwo(
+            boolean permissionSetOneIsMorePrivilegedThanPermissionSetTwo ) {
+        attributes.permissionSetOneIsMorePrivilegedThanPermissionSetTwo =
+        permissionSetOneIsMorePrivilegedThanPermissionSetTwo;
     }
 
-    /**
-     * Set the value of template.
-     * @param v  Value to assign to template.
-     */
-    public void setTemplate( TemplateDomainObject v ) {
-        this.template = v;
+    public boolean isPublished() {
+        return isPublishedAtTime( new Date() );
     }
 
-    /**
-     * Get the value of menuSortOrder.
-     * @return value of menuSortOrder.
-     */
-    public int getMenuSortOrder() {
-        return menuSortOrder;
+    public boolean isPublishedAndNotArchived() {
+        return isPublished() && !isArchived();
     }
 
-    /**
-     * Set the value of menuSortOrder.
-     * @param v  Value to assign to menuSortOrder.
-     */
-    public void setMenuSortOrder( int v ) {
-        this.menuSortOrder = v;
+    public boolean isNoLongerPublished() {
+        return isNoLongerPublishedAtTime( new Date() );
     }
 
-    /**
-     * Get the value of templateGroupId.
-     * @return value of templateGroupId.
-     */
-    public int getTemplateGroupId() {
-        return templateGroupId;
+    private boolean isNoLongerPublishedAtTime( Date date ) {
+        Date publicationEndDatetime = attributes.publicationEndDatetime;
+        return publicationEndDatetime != null && publicationEndDatetime.before( date );
     }
 
-    /**
-     * Set the value of templateGroupId.
-     * @param v  Value to assign to templateGroupId.
-     */
-    public void setTemplateGroupId( int v ) {
-        this.templateGroupId = v;
+    public boolean isSearchDisabled() {
+        return attributes.searchDisabled;
     }
 
+    public void setSearchDisabled( boolean searchDisabled ) {
+        attributes.searchDisabled = searchDisabled;
+    }
+
+    public boolean isVisibleInMenusForUnauthorizedUsers() {
+        return attributes.visibleInMenusForUnauthorizedUsers;
+    }
+
+    public void setVisibleInMenusForUnauthorizedUsers( boolean visibleInMenusForUnauthorizedUsers ) {
+        attributes.visibleInMenusForUnauthorizedUsers = visibleInMenusForUnauthorizedUsers;
+    }
+
+    public void addCategory( CategoryDomainObject category ) {
+        getLazilyLoadedDocumentCategories().categories.add( category );
+    }
+
+    public void addSection( SectionDomainObject section ) {
+        getLazilyLoadedDocumentAttributes().sections.add( section );
+    }
+
+    public boolean equals( Object o ) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( !( o instanceof DocumentDomainObject ) ) {
+            return false;
+        }
+
+        final DocumentDomainObject document = (DocumentDomainObject)o;
+
+        if ( attributes.id != document.attributes.id ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public CategoryDomainObject[] getCategoriesOfType( CategoryTypeDomainObject type ) {
+        CategoryDomainObject[] categories = (CategoryDomainObject[])getLazilyLoadedDocumentCategories().categories.toArray( new CategoryDomainObject[getLazilyLoadedDocumentCategories().categories.size()] );
+        List categoriesOfType = new ArrayList();
+        for ( int i = 0; i < categories.length; i++ ) {
+            CategoryDomainObject category = categories[i];
+            if ( type.equals( category.getType() ) ) {
+                categoriesOfType.add( category );
+            }
+        }
+        final CategoryDomainObject[] arrayOfCategoriesOfType = new CategoryDomainObject[categoriesOfType.size()];
+        return (CategoryDomainObject[])categoriesOfType.toArray( arrayOfCategoriesOfType );
+    }
+
+    public abstract int getDocumentTypeId();
+
+    public int hashCode() {
+        return attributes.id ;
+    }
+
+    private boolean isArchivedAtTime( Date time ) {
+        Attributes documentProperties = this.attributes;
+        return ( documentProperties.archivedDatetime != null && documentProperties.archivedDatetime.before( time ) );
+    }
+
+    public abstract void processNewDocumentInformation( DocumentComposer documentInformation,
+                                                        DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
+                                                        UserDomainObject user, HttpServletRequest request,
+                                                        HttpServletResponse response ) throws IOException, ServletException;
+
+    public void removeAllCategories() {
+        getLazilyLoadedDocumentCategories().categories.clear();
+    }
+
+    public void removeAllSections() {
+        getLazilyLoadedDocumentAttributes().sections.clear();
+    }
+
+    public void removeCategory( CategoryDomainObject category ) {
+        getLazilyLoadedDocumentCategories().categories.remove( category );
+    }
+
+    public abstract void saveDocument( DocumentMapper documentMapper, UserDomainObject user );
+
+    public abstract void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user );
+
+    public void setPermissionSetIdForRole( RoleDomainObject role, int permissionSetId ) {
+        getLazilyLoadedRolesMappedToDocumentPermissionSetIds().rolesMappedToDocumentPermissionSetIds.put( role, new Integer( permissionSetId ) );
+    }
+
+    private boolean isPublishedAtTime( Date date ) {
+        Attributes documentProperties = this.attributes;
+        boolean publicationStartDatetimeIsNotNullAndInThePast = documentProperties.publicationStartDatetime != null
+                                                                && documentProperties.publicationStartDatetime.before( date );
+        boolean publicationEndDatetimeIsNullOrInTheFuture = documentProperties.publicationEndDatetime == null
+                                                            || documentProperties.publicationEndDatetime.after( date );
+        boolean statusIsApproved = documentProperties.status == STATUS_PUBLICATION_APPROVED;
+        boolean isPublished = statusIsApproved && publicationStartDatetimeIsNotNullAndInThePast
+                              && publicationEndDatetimeIsNullOrInTheFuture;
+        return isPublished;
+    }
+
+    public void setPermissionSetForRestrictedOne( DocumentPermissionSetDomainObject permissionSetForRestrictedOne ) {
+        this.getLazilyLoadedDocumentAttributes().permissionSetForRestrictedOne = permissionSetForRestrictedOne;
+    }
+
+    public void setPermissionSetForRestrictedTwo( DocumentPermissionSetDomainObject permissionSetForRestrictedTwo ) {
+        this.getLazilyLoadedDocumentAttributes().permissionSetForRestrictedTwo = permissionSetForRestrictedTwo;
+    }
+
+    public void setPermissionSetForRestrictedOneForNewDocuments(
+            DocumentPermissionSetDomainObject permissionSetForRestrictedOneForNewDocuments ) {
+        this.getLazilyLoadedDocumentAttributes().permissionSetForRestrictedOneForNewDocuments = permissionSetForRestrictedOneForNewDocuments;
+    }
+
+    public void setPermissionSetForRestrictedTwoForNewDocuments(
+            DocumentPermissionSetDomainObject permissionSetForRestrictedTwoForNewDocuments ) {
+        this.getLazilyLoadedDocumentAttributes().permissionSetForRestrictedTwoForNewDocuments = permissionSetForRestrictedTwoForNewDocuments;
+    }
+
+    public DocumentPermissionSetDomainObject getPermissionSetForRestrictedOne() {
+        return this.getLazilyLoadedDocumentAttributes().permissionSetForRestrictedOne;
+    }
+
+    public DocumentPermissionSetDomainObject getPermissionSetForRestrictedOneForNewDocuments() {
+        return this.getLazilyLoadedDocumentAttributes().permissionSetForRestrictedOneForNewDocuments;
+    }
+
+    public DocumentPermissionSetDomainObject getPermissionSetForRestrictedTwo() {
+        return this.getLazilyLoadedDocumentAttributes().permissionSetForRestrictedTwo;
+    }
+
+    public DocumentPermissionSetDomainObject getPermissionSetForRestrictedTwoForNewDocuments() {
+        return this.getLazilyLoadedDocumentAttributes().permissionSetForRestrictedTwoForNewDocuments;
+    }
+
+    public Attributes getAttributes() {
+        return attributes;
+    }
+
+    private synchronized Attributes.LazilyLoadedDocumentAttributes getLazilyLoadedDocumentAttributes() {
+        if ( null == attributes.lazilyLoadedDocumentAttributes ) {
+            attributes.lazilyLoadedDocumentAttributes = new Attributes.LazilyLoadedDocumentAttributes();
+            DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+            documentMapper.initLazilyLoadedDocumentAttributes( this );
+        }
+        return attributes.lazilyLoadedDocumentAttributes;
+    }
+
+    private synchronized Attributes.LazilyLoadedDocumentCategories getLazilyLoadedDocumentCategories() {
+        if ( null == attributes.lazilyLoadedDocumentCategories ) {
+            attributes.lazilyLoadedDocumentCategories = new Attributes.LazilyLoadedDocumentCategories();
+            DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+            documentMapper.initLazilyLoadedDocumentCategories( this );
+        }
+        return attributes.lazilyLoadedDocumentCategories;
+    }
+
+    private synchronized Attributes.LazilyLoadedRolesMappedToDocumentPermissionSetIds getLazilyLoadedRolesMappedToDocumentPermissionSetIds() {
+        if ( null == attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds ) {
+            attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds = new Attributes.LazilyLoadedRolesMappedToDocumentPermissionSetIds();
+            DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+            documentMapper.initLazilyLoadedRolesMappedToDocumentPermissionSetIds( this );
+        }
+        return attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds;
+    }
+
+    public abstract void initDocument( DocumentMapper documentMapper );
+
+    public static class Attributes implements Cloneable, Serializable {
+
+        private Date archivedDatetime;
+        private Date createdDatetime;
+        private UserDomainObject creator;
+        private String headline;
+        private String image;
+        private String languageIso639_2;
+        private boolean linkableByOtherUsers;
+        private String menuText;
+        private int id;
+        private Date modifiedDatetime;
+        private boolean permissionSetOneIsMorePrivilegedThanPermissionSetTwo;
+        private Date publicationStartDatetime;
+        private Date publicationEndDatetime;
+        private UserDomainObject publisher;
+        private boolean searchDisabled;
+        private int status;
+        private String target;
+        private boolean visibleInMenusForUnauthorizedUsers;
+
+        private LazilyLoadedDocumentAttributes lazilyLoadedDocumentAttributes = null;
+        private LazilyLoadedDocumentCategories lazilyLoadedDocumentCategories = null;
+        private LazilyLoadedRolesMappedToDocumentPermissionSetIds lazilyLoadedRolesMappedToDocumentPermissionSetIds = null;
+
+        public Object clone() throws CloneNotSupportedException {
+            Attributes clone = (Attributes)super.clone();
+            if ( null != lazilyLoadedDocumentAttributes ) {
+                clone.lazilyLoadedDocumentAttributes = (LazilyLoadedDocumentAttributes)lazilyLoadedDocumentAttributes.clone();
+            }
+            if ( null != lazilyLoadedDocumentCategories ) {
+                clone.lazilyLoadedDocumentCategories = (LazilyLoadedDocumentCategories)lazilyLoadedDocumentCategories.clone();
+            }
+            return clone;
+        }
+
+        private static class LazilyLoadedDocumentAttributes implements Cloneable, Serializable {
+
+            private Set keywords = new HashSet();
+            private Set sections = new HashSet();
+            private DocumentPermissionSetDomainObject permissionSetForRestrictedOne;
+            private DocumentPermissionSetDomainObject permissionSetForRestrictedTwo;
+            private DocumentPermissionSetDomainObject permissionSetForRestrictedOneForNewDocuments;
+            private DocumentPermissionSetDomainObject permissionSetForRestrictedTwoForNewDocuments;
+
+            public Object clone() throws CloneNotSupportedException {
+                LazilyLoadedDocumentAttributes clone = (LazilyLoadedDocumentAttributes)super.clone();
+                clone.keywords = new HashSet( keywords );
+                clone.sections = new HashSet( sections );
+                return clone;
+            }
+        }
+
+        private static class LazilyLoadedDocumentCategories implements Cloneable, Serializable {
+
+            private Set categories = new HashSet();
+
+            public Object clone() throws CloneNotSupportedException {
+                LazilyLoadedDocumentCategories clone = (LazilyLoadedDocumentCategories)super.clone();
+                clone.categories = new HashSet( categories );
+                return clone;
+            }
+        }
+
+        private static class LazilyLoadedRolesMappedToDocumentPermissionSetIds implements Cloneable, Serializable {
+
+            private Map rolesMappedToDocumentPermissionSetIds = new HashMap();
+
+            public Object clone() throws CloneNotSupportedException {
+                LazilyLoadedRolesMappedToDocumentPermissionSetIds clone = (LazilyLoadedRolesMappedToDocumentPermissionSetIds)super.clone();
+                clone.rolesMappedToDocumentPermissionSetIds = new HashMap( rolesMappedToDocumentPermissionSetIds );
+                return clone;
+            }
+        }
+    }
 }

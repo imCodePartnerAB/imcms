@@ -2,9 +2,6 @@ package com.imcode.imcms.api;
 
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
-import com.imcode.imcms.api.NoPermissionException;
-import com.imcode.imcms.api.SecurityChecker;
-import com.imcode.imcms.api.User;
 
 public class UserService {
 
@@ -17,40 +14,42 @@ public class UserService {
     }
 
     public User[] getAllUsers() throws NoPermissionException {
-        securityChecker.loggedIn();
+        securityChecker.isSuperAdmin();
 
         UserDomainObject[] internalUsers = internalMapper.getAllUsers();
         User[] result = new User[internalUsers.length];
         for( int i = 0; i < result.length; i++ ) {
             imcode.server.user.UserDomainObject internalUser = internalUsers[i];
-            result[i] = new User( internalUser );
+            result[i] = new User( internalUser, internalMapper, securityChecker );
         }
         return result;
     }
 
     public User getUser( String userLoginName ) throws NoPermissionException {
-        securityChecker.loggedIn();
+        securityChecker.isSuperAdmin();
+        // todo: If the user has permission to edit this user, let him
 
         UserDomainObject internalUser = internalMapper.getUser( userLoginName );
-        User result = new User( internalUser );
+        User result = new User( internalUser, internalMapper, securityChecker );
         return result;
     }
 
     public String[] getAllRolesNames() throws NoPermissionException {
-        securityChecker.loggedIn();
+        securityChecker.isSuperAdmin();
 
         return internalMapper.getAllRoleNames();
     }
 
     public String[] getRoleNames( User user ) throws NoPermissionException {
-        securityChecker.loggedIn();
+        securityChecker.isSuperAdmin();
+        // todo: If the user has permission to edit this user, let him
 
         User userImpl = user;
         return internalMapper.getRoleNames( userImpl.getInternalUser() );
     }
 
     public void setUserRoles( User user, String[] roleNames ) throws NoPermissionException {
-        securityChecker.isSuperAdminOrIsUserAdminOrIsSameUser( user );
+        securityChecker.isSuperAdmin();
 
         User userImpl = user;
         internalMapper.setUserRoles( userImpl.getInternalUser(), roleNames );
@@ -69,7 +68,7 @@ public class UserService {
         User[] result = new User[internalUsersWithRole.length];
         for( int i = 0; i < internalUsersWithRole.length; i++ ) {
             imcode.server.user.UserDomainObject user = internalUsersWithRole[i];
-            result[i] = new User( user );
+            result[i] = new User( user, internalMapper, securityChecker );
         }
 
         return result;
@@ -80,4 +79,5 @@ public class UserService {
 
         internalMapper.deleteRole( role );
     }
+
 }

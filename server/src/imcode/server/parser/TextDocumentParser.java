@@ -1,40 +1,33 @@
 package imcode.server.parser;
 
-import java.io.*;
-import java.util.*;
-import java.text.*;
-
-import org.apache.oro.text.regex.*;
-
-import imcode.server.parser.*;
-import imcode.server.*;
-import imcode.server.util.DateHelper;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.TemplateMapper;
-import imcode.server.document.DatabaseAccessor;
+import imcode.server.DocumentRequest;
+import imcode.server.IMCConstants;
+import imcode.server.IMCServiceInterface;
+import imcode.server.LanguageMapper;
+import imcode.server.document.*;
 import imcode.server.user.UserDomainObject;
-import imcode.server.db.DBConnect;
-import imcode.server.db.DatabaseService;
-import imcode.server.db.sql.ConnectionPool;
-import imcode.util.*;
+import imcode.util.DateConstants;
+import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
+import org.apache.oro.text.regex.*;
+import org.apache.oro.text.perl.Perl5Util;
 
-import org.apache.log4j.Category;
+import java.io.IOException;
+import java.text.Collator;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class TextDocumentParser implements imcode.server.IMCConstants {
-    private static Category log = Category.getInstance( "TextDocumentParser" );
-    private FileCache fileCache = new FileCache();
 
-    private final static org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util(); // Internally synchronized
+    private final static Logger log = Logger.getLogger( TextDocumentParser.class );
 
-    private static Pattern HASHTAG_PATTERN = null;
+    private final static Perl5Util perl5util = new Perl5Util();
+
+    static Pattern HASHTAG_PATTERN = null;
     private static Pattern MENU_PATTERN = null;
     private static Pattern IMCMS_TAG_PATTERN = null;
     private static Pattern HTML_TAG_PATTERN = null;
-
-    private static Pattern READRUNNER_END_TITLE_PATTERN = null;
-    private static Pattern READRUNNER_END_HEAD_PATTERN = null;
-    private static Pattern READRUNNER_START_BODY_PATTERN = null;
-    private static Pattern READRUNNER_END_BODY_PATTERN = null;
 
     static {
         Perl5Compiler patComp = new Perl5Compiler();
@@ -43,64 +36,52 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             // Very good. Very good. Know something? NO SOUP FOR YOU!
             HTML_TAG_PATTERN = patComp.compile( "<[^>]+?>", Perl5Compiler.READ_ONLY_MASK );
 
-            IMCMS_TAG_PATTERN = patComp.compile( "<\\?imcms:([-\\w]+)(.*?)\\?>", Perl5Compiler.SINGLELINE_MASK | Perl5Compiler.READ_ONLY_MASK );
+            IMCMS_TAG_PATTERN = patComp.compile( "<\\?imcms:([-\\w]+)(.*?)\\?>", Perl5Compiler.SINGLELINE_MASK
+                                                                                 | Perl5Compiler.READ_ONLY_MASK );
             HASHTAG_PATTERN = patComp.compile( "#[^ #\"<>&;\\t\\r\\n]+#", Perl5Compiler.READ_ONLY_MASK );
-            MENU_PATTERN = patComp.compile( "<\\?imcms:menu(.*?)\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK | Perl5Compiler.READ_ONLY_MASK );
+            MENU_PATTERN = patComp.compile( "<\\?imcms:menu(.*?)\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK
+                                                                                                 | Perl5Compiler.READ_ONLY_MASK );
 
-            READRUNNER_END_TITLE_PATTERN = patComp.compile( "(</title>)", Perl5Compiler.READ_ONLY_MASK | Perl5Compiler.CASE_INSENSITIVE_MASK );
-            READRUNNER_END_HEAD_PATTERN = patComp.compile( "(</head>)", Perl5Compiler.READ_ONLY_MASK | Perl5Compiler.CASE_INSENSITIVE_MASK );
-            READRUNNER_START_BODY_PATTERN = patComp.compile( "(<body.*?)(>)", Perl5Compiler.READ_ONLY_MASK | Perl5Compiler.CASE_INSENSITIVE_MASK );
-            READRUNNER_END_BODY_PATTERN = patComp.compile( "(</body>)", Perl5Compiler.READ_ONLY_MASK | Perl5Compiler.CASE_INSENSITIVE_MASK );
-
-        } catch (MalformedPatternException ignored) {
+        } catch ( MalformedPatternException ignored ) {
             // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
-            log.fatal( "Danger, Will Robinson!", ignored );
+            log.fatal( "Bad pattern.", ignored );
         }
     }
 
-    private IMCServiceInterface serverObject;
-    private ConnectionPool connPool;
-    private File templatePath;
-    private File includePath;
-    private String imageUrl;
-    private String servletUrl;
-    private DatabaseService databaseService;
+    private IMCServiceInterface service;
+    private static final int EXPECTED_CONTENT_BLOAT = 16384;
 
-    public TextDocumentParser( IMCServiceInterface serverobject, ConnectionPool connpool, File templatepath, File includepath, String imageurl, String servleturl ) {
-        this.connPool = connpool;
-        this.templatePath = templatepath;
-        this.includePath = includepath;
-        this.imageUrl = imageurl;
-        this.servletUrl = servleturl;
-        this.serverObject = serverobject;
-        databaseService = serverobject.getDatabaseService();
+    public TextDocumentParser( IMCServiceInterface serverobject ) {
+        this.service = serverobject;
     }
 
-    public String parsePage( DocumentRequest documentRequest, int flags, ParserParameters paramsToParse ) throws IOException {
-        return parsePage( documentRequest, flags, 5, paramsToParse );
+    /*
+       return a referens to IMCServerInterface used by TextDocumentParser
+    */
+    public IMCServiceInterface getService() {
+        return this.service;
     }
 
-    public String parsePage( DocumentRequest documentRequest, int flags, int includelevel, ParserParameters paramsToParse ) throws IOException {
+    public String parsePage( ParserParameters paramsToParse ) throws IOException {
+        NDC.push( "parsePage" );
+        String page = parsePage( paramsToParse, 5 );
+        NDC.pop();
+        return page;
+    }
+
+    public String parsePage( ParserParameters parserParameters, int includelevel ) throws IOException {
+        DocumentRequest documentRequest = parserParameters.getDocumentRequest() ;
+        int flags = parserParameters.getFlags() ;
         try {
-            DocumentDomainObject myDoc = documentRequest.getDocument();
-            int meta_id = myDoc.getMetaId();
+            TextDocumentDomainObject document = (TextDocumentDomainObject)documentRequest.getDocument();
+            int meta_id = document.getId();
+            String meta_id_str = String.valueOf( meta_id );
 
             UserDomainObject user = documentRequest.getUser();
-            int user_id = user.getUserId();
+            int user_id = user.getId();
+            String user_id_str = String.valueOf( user_id );
 
-            //handles the extra parameters
-            String template_name = paramsToParse.getTemplate();
-            String param_value = paramsToParse.getParameter();
-            String extparam_value = paramsToParse.getExternalParameter();
-
-            DatabaseService.JoinedTables_permissions user_permission_set = serverObject.getDatabaseService().getUserPermissionSetForDocument( meta_id, user_id );
-            if (null == user_permission_set) {
-                log.error( "parsePage: getUserPermissionSetForDocument returned null" );
-                return ("getUserPermissionSetForDocument returned null");
-            }
-
-            int user_set_id = user_permission_set.set_id;
-            int user_perm_set = user_permission_set.permission_id;
+            DocumentMapper documentMapper = service.getDocumentMapper();
 
             boolean textmode = false;
             boolean imagemode = false;
@@ -108,553 +89,439 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             boolean templatemode = false;
             boolean includemode = false;
 
-            if (flags > 0) {
+            if ( flags > 0 ) {
+                int user_set_id = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, document );
+                int user_perm_set = documentMapper.getUsersPermissionBitsOnDocumentIfRestricted( user_set_id, document );
 
-                textmode = (flags & PERM_DT_TEXT_EDIT_TEXTS) != 0 && (user_set_id == 0 || (user_perm_set & PERM_DT_TEXT_EDIT_TEXTS) != 0);
-                imagemode = (flags & PERM_DT_TEXT_EDIT_IMAGES) != 0 && (user_set_id == 0 || (user_perm_set & PERM_DT_TEXT_EDIT_IMAGES) != 0);
-                menumode = (flags & PERM_DT_TEXT_EDIT_MENUS) != 0 && (user_set_id == 0 || (user_perm_set & PERM_DT_TEXT_EDIT_MENUS) != 0);
-                templatemode = (flags & PERM_DT_TEXT_CHANGE_TEMPLATE) != 0 && (user_set_id == 0 || (user_perm_set & PERM_DT_TEXT_CHANGE_TEMPLATE) != 0);
-                includemode = (flags & PERM_DT_TEXT_EDIT_INCLUDES) != 0 && (user_set_id == 0 || (user_perm_set & PERM_DT_TEXT_EDIT_INCLUDES) != 0);
+                textmode = ( flags & PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0
+                           && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 );
+                imagemode = ( flags & PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0
+                            && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0 );
+                menumode = ( flags & PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0
+                           && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 );
+                templatemode = ( flags & PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0
+                               && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0 );
+                includemode = ( flags & PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0
+                              && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0 );
             }
 
-            DBConnect dbc = new DBConnect( connPool );
+            TemplateDomainObject documentTemplate = document.getTemplate();
+            int documentTemplateId = documentTemplate.getId();
 
-            String templateIdStr = "" + myDoc.getTemplate().getId();
-            int currentTemplateId = Integer.parseInt( templateIdStr );
-            String simple_name = myDoc.getTemplate().getSimple_name();
-            int sort_order = myDoc.getMenuSortOrder();
-            String group_id = "" + myDoc.getTemplateGroupId();
-
-            if (template_name != null) {
-                //lets validate that the template exists before we changes the original one
-                Vector vectT = DatabaseAccessor.sprocGetTemplateId( dbc, template_name );
-                if (vectT.size() > 0) {
-                    try {
-                        int temp_template = Integer.parseInt( (String) vectT.get( 0 ) );
-                        if (temp_template > 0) {
-                            templateIdStr = temp_template + "";
-                            documentRequest.getDocument().setTemplate( TemplateMapper.getTemplate( (IMCService) serverObject, Integer.parseInt( templateIdStr ) ) );
-                        }
-                    } catch (NumberFormatException nfe) {
-                        //do nothing, we keep the original template
-                    }
+            String template_name = parserParameters.getTemplate();
+            if ( template_name != null ) {
+                TemplateMapper templateMapper = service.getTemplateMapper();
+                TemplateDomainObject template = templateMapper.getTemplateByName( template_name );
+                if ( null != template ) {
+                    documentTemplateId = template.getId();
                 }
             }
 
-            String[] emp = (String[]) user.get( "emphasize" );
-
-            // Here we have the most timeconsuming part of parsing the page.
-            // Selecting all the documents with permissions from the DB
-            DatabaseService.JoinedTables_meta_childs[] childs = serverObject.getDatabaseService().sproc_getChilds( meta_id, user_id );
-
-            if (childs == null) {
-                dbc.closeConnection();
-                log.error( "parsePage: sprocGetChilds returned null" );
-                return ("sprocGetChilds returned null");
-            }
-
-            dbc.clearResultSet();
-
-            DatabaseService.Table_images[] images = DatabaseAccessor.sprocGetImgs( serverObject, meta_id );
-            if (images == null) {
-                dbc.closeConnection();
-                log.error( "parsePage: sprocGetImgs returned null" );
-                return ("sprocGetImgs returned null");
-            }
-
-            String lang_prefix = user.getLangPrefix();	// Find language
-            File admintemplate_path = new File( templatePath, "/" + lang_prefix + "/admin/" );
-
-            String emphasize_string = fileCache.getCachedFileString( new File( admintemplate_path, "textdoc/emphasize.html" ) );
+            String[] metaIdUserIdPair = {meta_id_str, user_id_str};
 
             Perl5Matcher patMat = new Perl5Matcher();
 
-            Perl5Substitution emphasize_substitution = new Perl5Substitution( emphasize_string );
+            SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
 
-            Properties tags = new Properties();	// A properties object to hold the results from the db...
-            Map textMap = serverObject.getTexts( meta_id );
-            HashMap imageMap = new HashMap();
+            Map menus = getMenus( metaIdUserIdPair, menumode, datetimeFormatWithSeconds, parserParameters );
 
-            Iterator imit = Arrays.asList( images ).iterator();
-            // This is where we gather all images from the database and put them in our maps.
-            while (imit.hasNext()) {
-                DatabaseService.Table_images image = (DatabaseService.Table_images) imit.next(); // String imgtag = (String)imit.next();
-                int imgnumber = image.name;
-                String imgurl = image.imgurl;
-                String linkurl = image.linkurl;
-                int width = image.width;
-                int height = image.height;
-                int border = image.border;
-                int vspace = image.v_space;
-                int hspace = image.h_space;
-                String image_name = image.image_name;
-                String align = image.align;
-                String alt = image.alt_text;
-                String lowscr = image.low_scr;
-                String target = image.target;
-                String target_name = image.target_name;
-                StringBuffer value = new StringBuffer( 96 );
-                if (!"".equals( imgurl )) {
-                    if (!"".equals( linkurl )) {
-                        value.append( "<a href=\"" + linkurl + "\"" );
-                        if (target.equals( "_other" )) {
-                            value.append( " target=\"" + target_name + "\">" );
-                        } else if (!"".equals( target )) {
-                            value.append( " target=\"" + target + "\">" );
-                        }
-                    }
+            StringBuffer templatebuffer = new StringBuffer( service.getTemplateData( documentTemplateId ) );
 
-                    value.append( "<img src=\"" + imageUrl + imgurl + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
-                    if (0 != width) {
-                        value.append( " width=\"" + width + "\"" );
-                    }
-                    if (0 != height) {
-                        value.append( " height=\"" + height + "\"" );
-                    }
-                    value.append( " border=\"" + border + "\"" );
+            String templateContents = templatebuffer.toString();
+            StringBuffer result = new StringBuffer( templateContents.length() + EXPECTED_CONTENT_BLOAT );
 
-                    if (0 != vspace) {
-                        value.append( " vspace=\"" + vspace + "\"" );
-                    }
-                    if (0 != hspace) {
-                        value.append( " hspace=\"" + hspace + "\"" );
-                    }
-                    if (!"".equals( image_name )) {
-                        value.append( " name=\"" + image_name + "\"" );
-                    }
-                    if (!"".equals( alt )) {
-                        value.append( " alt=\"" + alt + "\"" );
-                    }
-                    if (!"".equals( lowscr )) {
-                        value.append( " lowscr=\"" + lowscr + "\"" );
-                    }
-                    if (!"".equals( align ) && !"none".equals( align )) {
-                        value.append( " align=\"" + align + "\"" );
-                    }
-                    if (!"".equals( linkurl ) || imagemode) {
-                        value.append( "></a>" );
-                    } else {
-                        value.append( ">" );
-                    }
-                }
-                imageMap.put( "" + imgnumber, value.toString() );
-            }
+            String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
+            result.append( imcmsMessage );
 
-            /*
-              OK.. we will now make a LinkedList for the entire page.
-              This LinkedList, menus, will contain one item for each menu on the page.
-              These items will also be instances of LinkedList.
-              These LinkedLists will in turn each hold one Properties for each item in each menu.
-              These Properties will hold the tags, and the corresponding data, that will go in each menuitem.
-            */
-            HashMap menus = new HashMap();	// Map to contain all the menus on the page.
-            Menu currentMenu = null;
-            int old_menu = -1;
-            SimpleDateFormat DATETIMEFORMAT = DateHelper.DATE_TIME_FORMAT_IN_DATABASE;
-
-            for (int i = 0; i < childs.length; i++) {
-                DatabaseService.JoinedTables_meta_childs child = childs[i];
-                // The menuitemproperties are retrieved in the following order:
-                // to_meta_id,
-                // c.menu_sort,
-                // manual_sort_order,
-                // doc_type,
-                // archive,
-                // target,
-                // date_created,
-                // date_modified,
-                // meta_headline,
-                // meta_text,
-                // meta_image,
-                // frame_name,
-                // activated_date+activated_time,
-                // archived_date+archived_time
-                // 0 if admin
-                // filename
-                int childMetaId = child.to_meta_id;
-                int menuno = child.menu_sort;              // What menu in the page the child is in.
-                if (menuno != old_menu) {	               // If we come upon a new menu...
-                    old_menu = menuno;
-                    currentMenu = new Menu( menuno, sort_order, menumode, imageUrl );	     // We make a new Menu,
-                    menus.put( new Integer( menuno ), currentMenu );		     // and add it to the page.
-                }
-                MenuItem menuItem = new MenuItem( currentMenu );
-                menuItem.setMetaId( childMetaId );                                    // The meta-id of the child
-                menuItem.setSortKey( child.manual_sort_order );    // What order the document is sorted in in the menu, using sort-order 2 (manual sort)
-                menuItem.setDocumentType( child.doc_type ); // The doctype of the child.
-                menuItem.setArchived( child.archive );          // Child is considered archived?
-                menuItem.setTarget( child.target );                         // The target for this document.
-                menuItem.setCreatedDatetime( child.date_created ); // The datetime the child was created.
-                menuItem.setModifiedDatetime( child.date_modified ); // The datetime the child was modified.
-                menuItem.setHeadline( child.meta_headline );                       // The headline of the child.
-                menuItem.setText( child.meta_text );                           // The subtext for the child.
-                menuItem.setImage( child.meta_image );                          // An optional imageurl for this document.
-                menuItem.setActivatedDatetime( child.activated_datetime ); // The datetime the child will be/was activated
-                menuItem.setArchivedDatetime( child.archived_datetime ); // The datetime the child will be/was archived
-                menuItem.setEditable( serverObject.checkDocAdminRightsAny( meta_id, user, ~0 ) );           // if the user may admin it.
-                menuItem.setFilename( child.filename );                       // The filename, if it is a file-doc.
-
-                if ((!menuItem.isActive() || menuItem.isArchived()) && !menumode) { // if not menumode, and document is inactive or archived, don't include it.
-                    continue;
-                }
-
-                currentMenu.add( menuItem );	// Add the Properties for this menuitem to the current menus list.
-            }
-
-
-            // I need a list of tags that have numbers that need to be parsed in in their data.
-            Properties numberedtags = new Properties();
-
-            // I also need a list of files to load, and their corresponding tag...
-            Properties toload = new Properties();
-
-            // Oh! I need a set of tags to be replaced in the templatefiles we'll load...
-            Properties temptags = new Properties();
-
-            // Put tags and corresponding data in Properties
-            tags.setProperty( "#userName#", user.getFullName() );
-            tags.setProperty( "#session_counter#", String.valueOf( serverObject.getSessionCounter() ) );
-            tags.setProperty( "#session_counter_date#", serverObject.getSessionCounterDate() );
-            tags.setProperty( "#lastDate#", DATETIMEFORMAT.format( myDoc.getModifiedDateTime() ) );
-            tags.setProperty( "#metaHeadline#", myDoc.getHeadline() );
-
-            String meta_image = myDoc.getImage();
-            if (!"".equals( meta_image )) {
-                meta_image = "<img src=\"" + meta_image + "\" border=\"0\">";
-            }
-            tags.setProperty( "#metaImage#", meta_image );
-            tags.setProperty( "#sys_message#", serverObject.getSystemData().getSystemMessage() );
-            tags.setProperty( "#servlet_url#", servletUrl );
-            tags.setProperty( "#webMaster#", serverObject.getSystemData().getWebMaster() );
-            tags.setProperty( "#webMasterEmail#", serverObject.getSystemData().getWebMasterAddress() );
-            tags.setProperty( "#serverMaster#", serverObject.getSystemData().getServerMaster() );
-            tags.setProperty( "#serverMasterEmail#", serverObject.getSystemData().getServerMasterAddress() );
-
-            tags.setProperty( "#addDoc*#", "" );
-            tags.setProperty( "#saveSortStart*#", "" );
-            tags.setProperty( "#saveSortStop*#", "" );
-
-            tags.setProperty( "#param#", param_value );
-            tags.setProperty( "#externalparam#", extparam_value );
-
-            tags.setProperty( "#readrunner_quote_substitution_count#", "#readrunner_quote_substitution_count#" );
-
-            // Give the user a row of buttons if he is privileged enough.
-            if ((serverObject.checkDocAdminRights( meta_id, user ) || serverObject.checkUserAdminrole( user.getUserId(), 2 )) && flags >= 0) {
-                tags.setProperty( "#adminMode#", serverObject.getMenuButtons( meta_id, user ) );
-            }
-
-            if (templatemode) {	//Templatemode! :)
-
-                Vector groupnamevec = null;
-
-                groupnamevec = DatabaseAccessor.sqlSelectGroupName( dbc, group_id );
-
-                String group_name;
-                if (!groupnamevec.isEmpty()) {
-                    group_name = (String) groupnamevec.elementAt( 0 );
-                } else {
-                    group_name = "";
-                }
-
-                // Make a HTML option-list of them...
-                int selected_group = user.getTemplateGroup();
-                if (selected_group == -1) {
-                    selected_group = Integer.parseInt( group_id );
-                }
-                DatabaseService.Table_templates[] templates = databaseService.sproc_GetTemplatesInGroup( selected_group );
-
-                StringBuffer templatelist = new StringBuffer();
-                for (int i = 0; i < templates.length; i++) {
-                    DatabaseService.Table_templates template = templates[i];
-                    templatelist.append( "<option value=\"" + template.template_id );
-                    if ( currentTemplateId == template.template_id ) {
-                        templatelist.append( "\" selected>" + template.simple_name + "</option>" );
-                    } else {
-                        templatelist.append( "\">" + template.simple_name + "</option>" );
-                    }
-                }
-
-                // Fetch all templategroups the user may use.
-                StringBuffer grouplist = new StringBuffer();
-
-                // Make a HTML option-list of the templategroups
-                DatabaseService.Table_templategroups[] templateGroups = databaseService.sproc_GetTemplateGroupsForUser( meta_id, user.getUserId() );
-                for (int i = 0; i < templateGroups.length; i++) {
-                    DatabaseService.Table_templategroups templateGroup = templateGroups[i];
-                    grouplist.append( "<option value=\"" + templateGroup.group_id );
-                    if (selected_group == templateGroup.group_id ) {
-                        grouplist.append( "\" selected>" + templateGroup.group_name + "</option>" );
-                    } else {
-                        grouplist.append( "\">" + templateGroup.group_name + "</option>" );
-                    }
-                }
-
-                temptags.setProperty( "#getDocType#", "" );
-                temptags.setProperty( "#DocMenuNo#", "" );
-                temptags.setProperty( "#group#", group_name );
-                temptags.setProperty( "#getTemplateGroups#", grouplist.toString() );
-                temptags.setProperty( "#simple_name#", simple_name );
-                temptags.setProperty( "#getTemplates#", templatelist.toString() );
-
-                // Put templateadmintemplate in list of files to load.
-                toload.setProperty( "#changePage#", (new File( admintemplate_path, "textdoc/inPage_admin.html" )).getPath() );
-            }  // if (templatemode)
-
-            temptags.setProperty( "#servlet_url#", servletUrl );
-
-            if (menumode) {
-                DatabaseService.Table_doc_types[] docTypes = null;
-
-                // I'll retrieve a list of all doc-types the user may create.
-                DatabaseService databaseService = serverObject.getDatabaseService();
-                docTypes = databaseService.sproc_GetDocTypesForUser( user.getUserId(), meta_id, lang_prefix );
-
-                // I'll put the doc-types in a html-list
-                StringBuffer doc_types_sb = new StringBuffer( 256 );
-
-                for (int i = 0; i < docTypes.length; i++) {
-                    DatabaseService.Table_doc_types docType = docTypes[i];
-                    String dt = "" + docType.doc_type;
-                    String dtt = docType.type;
-                    doc_types_sb.append( "<option value=\"" );
-                    doc_types_sb.append( dt );
-                    doc_types_sb.append( "\">" );
-                    doc_types_sb.append( dtt );
-                    doc_types_sb.append( "</option>" );
-                }
-
-                // Add an option for an existing doc, too
-                String existing_doc_filename = (new File( admintemplate_path, "textdoc/existing_doc_name.html" )).getPath();
-                String existing_doc_name = null;
-
-                existing_doc_name = fileCache.getCachedFileString( new File( existing_doc_filename ) );
-
-                if (docTypes != null && docTypes.length > 0) {
-                    doc_types_sb.append( "<option value=\"0\">" + existing_doc_name + "</option>" );
-                }
-
-                // List of files to load, and tags to parse them into
-                toload.setProperty( "addDoc", (new File( admintemplate_path, "textdoc/add_doc.html" )).getPath() );
-                toload.setProperty( "saveSortStart", (new File( admintemplate_path, "textdoc/sort_order.html" )).getPath() );
-                toload.setProperty( "saveSortStop", (new File( admintemplate_path, "textdoc/archive_del_button.html" )).getPath() );
-                toload.setProperty( "sort_button", (new File( admintemplate_path, "textdoc/sort_button.html" )).getPath() );
-
-                // Some tags to parse in the files we'll load.
-                temptags.setProperty( "#doc_types#", doc_types_sb.toString() );	// The doc-types.
-                temptags.setProperty( "#sortOrder" + sort_order + "#", "checked" );	// The sortorder for this document.
-            } // if (menumode)
-
-            temptags.setProperty( "#getMetaId#", String.valueOf( meta_id ) );
-
-
-            // Now load the files specified in "toload", and place them in "tags"
-            //System.out.println("Loading template-files.") ;
-
-            imcode.server.parser.MapSubstitution temptagsmapsubstitution = new imcode.server.parser.MapSubstitution( temptags, false );
-
-            try {
-                StringBuffer templatebuffer = new StringBuffer();
-                Enumeration propenum = toload.propertyNames();
-                while (propenum.hasMoreElements()) {
-
-                    String filetag = (String) propenum.nextElement();
-                    String templatebufferfilename = toload.getProperty( filetag );
-                    String templatebufferstring = fileCache.getCachedFileString( new File( templatebufferfilename ) );
-                    // Humm... Now we must replace the tags in the loaded files too.
-                    templatebufferstring = org.apache.oro.text.regex.Util.substitute( patMat, HASHTAG_PATTERN, temptagsmapsubstitution, templatebufferstring, org.apache.oro.text.regex.Util.SUBSTITUTE_ALL );
-
-                    tags.setProperty( filetag, templatebufferstring );
-                    templatebuffer.setLength( 0 );
-                }
-            } catch (IOException e) {
-                log.error( "An error occurred reading file during parsing.", e );
-                return ("Error occurred reading file during parsing.\n" + e);
-            }
-
-            if (menumode) {	//Menumode! :)
-
-                // Make a Properties of all tags that contain numbers, and what the number is supposed to replace
-                // in the tag's corresponding data
-                // I.e. "tags" contains the data to replace the numbered tag, but you probably want that number
-                // to be inserted somewhere in that data.
-                // BTW, "*" represents the number in the tag.
-                //numberedtags.setProperty("#addDoc*#","#doc_menu_no#") ;
-                //numberedtags.setProperty("#saveSortStart*#","#doc_menu_no#") ;
-
-                String savesortstop = tags.getProperty( "saveSortStop" );
-                // We must display the sortbutton, which we read into the tag "#sort_button#"
-                savesortstop = tags.getProperty( "sort_button" ) + savesortstop;
-                tags.setProperty( "saveSortStop", savesortstop );
-            } else {	// Not menumode...
-                tags.setProperty( "saveSortStop", "" );
-            } // if (menumode)
-
-            // Now... let's load the template!
-            // Get templatedir and read the file.
-            StringBuffer templatebuffer = new StringBuffer( fileCache.getCachedFileString( new File( templatePath, "text/" + templateIdStr + ".html" ) ) );
-
-            // Check file for tags
-            String template = templatebuffer.toString();
-            StringBuffer result = new StringBuffer( template.length() + 16384 ); // This value is the amount i expect the document to increase in size.
-
-            ReadrunnerFilter readrunnerFilter = new ReadrunnerFilter();
-            MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( documentRequest, menus, menumode, tags );
-            HashTagSubstitution hashtagsubstitution = new imcode.server.parser.HashTagSubstitution( tags, numberedtags );
-
-            DatabaseService.Table_includes[] included_docs = serverObject.getDatabaseService().sproc_GetIncludes( meta_id );
-            ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution( this, documentRequest, templatePath, included_docs, includemode, includelevel, includePath, textMap, textmode, imageMap, imagemode, paramsToParse, readrunnerFilter );
+            Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, templatemode, parserParameters );
+            MapSubstitution hashtagsubstitution = new imcode.server.parser.MapSubstitution( hashTags, true );
+            MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( parserParameters, menus, menumode );
+            ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, parserParameters, includemode, includelevel, textmode, imagemode );
 
             LinkedList parse = new LinkedList();
-            perl5util.split( parse, "/(<!--\\/?IMSCRIPT-->)/", template );
-            Iterator pit = parse.iterator();
+            perl5util.split( parse, "/(<!--\\/?IMSCRIPT-->)/", templateContents );
+            Iterator parseIterator = parse.iterator();
             boolean parsing = false;
 
             // Well. Here we have it. The main parseloop.
             // The Inner Sanctum of imCMS. Have fun.
-            while (pit.hasNext()) {
+            while ( parseIterator.hasNext() ) {
                 // So, let's jump in and out of blocks delimited by <!--IMSCRIPT--> and <!--/IMSCRIPT-->
-                String nextbit = (String) pit.next();
-                if (nextbit.equals( "<!--/IMSCRIPT-->" )) { // We matched <!--/IMSCRIPT-->
+                String nextbit = (String)parseIterator.next();
+                if ( nextbit.equals( "<!--/IMSCRIPT-->" ) ) { // We matched <!--/IMSCRIPT-->
                     parsing = false;       // So, we're not parsing.
                     continue;
-                } else if (nextbit.equals( "<!--IMSCRIPT-->" )) { // We matched <!--IMSCRIPT-->
+                } else if ( nextbit.equals( "<!--IMSCRIPT-->" ) ) { // We matched <!--IMSCRIPT-->
                     parsing = true;              // So let's get to parsing.
                     continue;
                 }
-                if (!parsing) {
+                if ( !parsing ) {
                     result.append( nextbit );
                     continue;
                 }
 
-                // String nextbit now contains the bit to parse. (Within the imscript-tags.)
+                nextbit = replaceTags( nextbit, patMat, menuparsersubstitution, imcmstagsubstitution, hashtagsubstitution );
 
-                // Parse the new-style menus.
-                // Aah... the magic of OO...
-                nextbit = org.apache.oro.text.regex.Util.substitute( patMat, MENU_PATTERN, menuparsersubstitution, nextbit, org.apache.oro.text.regex.Util.SUBSTITUTE_ALL );
-
-                // Parse the <?imcms:tags?>
-                nextbit = org.apache.oro.text.regex.Util.substitute( patMat, IMCMS_TAG_PATTERN, imcmstagsubstitution, nextbit, org.apache.oro.text.regex.Util.SUBSTITUTE_ALL );
-
-                // Parse the hashtags
-                nextbit = org.apache.oro.text.regex.Util.substitute( patMat, HASHTAG_PATTERN, hashtagsubstitution, nextbit, org.apache.oro.text.regex.Util.SUBSTITUTE_ALL );
-
-                // So, append the result from this loop-iteration to the result.
                 result.append( nextbit );
-            } // end while (pit.hasNext()) // End of the main parseloop
+            }
 
-            // Get the number of <q>tags</q> inserted by the readrunner filter.
-            int readrunnerQuoteSubstitutionCount = readrunnerFilter.getReadrunnerQuoteSubstitutionCount();
             String returnresult = result.toString();
 
-            if (readrunnerQuoteSubstitutionCount > 0) {
-                // We found a couple of readrunner-text-tags, and did a few substitutions
-
-                Vector readrunnerSubstitutionCountVector = new Vector();
-                readrunnerSubstitutionCountVector.add( "#readrunner_quote_substitution_count#" );
-                readrunnerSubstitutionCountVector.add( "" + readrunnerQuoteSubstitutionCount );
-
-                String readrunner_script_frag = serverObject.parseDoc( readrunnerSubstitutionCountVector, "readrunner/script.html.frag", lang_prefix );
-
-                String readrunner_titlesuffix_frag = serverObject.parseDoc( null, "readrunner/titlesuffix.html.frag", lang_prefix );
-
-                String readrunner_panel_frag = serverObject.parseDoc( null, "readrunner/panel.html.frag", lang_prefix );
-
-                String readrunner_buffer_frag = serverObject.parseDoc( null, "readrunner/buffer.html.frag", lang_prefix );
-
-                String readrunner_bodyevents_frag = serverObject.parseDoc( null, "readrunner/bodyevents.html.frag", lang_prefix );
-
-                String readrunner_copyright_frag = serverObject.parseDoc( null, "readrunner/copyright.html.frag", lang_prefix );
-
-                readrunner_titlesuffix_frag = escapeSubstitution( readrunner_titlesuffix_frag );
-                readrunner_bodyevents_frag = escapeSubstitution( readrunner_bodyevents_frag );
-                readrunner_panel_frag = escapeSubstitution( readrunner_panel_frag );
-                readrunner_script_frag = escapeSubstitution( readrunner_script_frag );
-                readrunner_buffer_frag = escapeSubstitution( readrunner_buffer_frag );
-
-                // FIXME: Use a StringBuffer for all this crap instead.
-
-                // Insert the copyright fragment at the top of the page
-                returnresult = readrunner_copyright_frag + returnresult;
-
-                // Insert the titlesuffix fragment at the end of the title
-                returnresult = org.apache.oro.text.regex.Util.substitute( patMat, READRUNNER_END_TITLE_PATTERN, new Perl5Substitution( readrunner_titlesuffix_frag + "$1" ), returnresult );
-
-                // Insert the script fragment at the end of the head
-                returnresult = org.apache.oro.text.regex.Util.substitute( patMat, READRUNNER_END_HEAD_PATTERN, new Perl5Substitution( readrunner_script_frag + "$1" ), returnresult );
-
-                // Insert the body-events and panel in and after the body tag.
-                returnresult = org.apache.oro.text.regex.Util.substitute( patMat, READRUNNER_START_BODY_PATTERN, new Perl5Substitution( "$1" + readrunner_bodyevents_frag + "$2" + readrunner_panel_frag ), returnresult );
-
-                // Insert the buffer fragment at the end of the body
-                returnresult = org.apache.oro.text.regex.Util.substitute( patMat, READRUNNER_END_BODY_PATTERN, new Perl5Substitution( readrunner_buffer_frag + "$1" ), returnresult );
-
-            }
-
-            /*
-              So, it is here i shall have to put my magical markupemphasizing code.
-              First, i'll split the html (returnresult) on html-tags, and then go through every non-tag part and parse it for keywords to emphasize,
-              and then i'll puzzle it together again. Whe-hey. This will be fun. Not to mention fast. Oh yes, siree.
-            */
-            if (emp != null) { // If we have something to emphasize...
-                StringBuffer emphasized_result = new StringBuffer( returnresult.length() ); // A StringBuffer to hold the result
-                PatternMatcherInput emp_input = new PatternMatcherInput( returnresult );    // A PatternMatcherInput to match on
-                int last_html_offset = 0;
-                int current_html_offset = 0;
-                String non_html_tag_string = null;
-                String html_tag_string = null;
-                while (patMat.contains( emp_input, HTML_TAG_PATTERN )) {
-                    current_html_offset = emp_input.getMatchBeginOffset();
-                    non_html_tag_string = result.substring( last_html_offset, current_html_offset );
-                    last_html_offset = emp_input.getMatchEndOffset();
-                    html_tag_string = result.substring( current_html_offset, last_html_offset );
-                    non_html_tag_string = emphasizeString( non_html_tag_string, emp, emphasize_substitution, patMat );
-                    // for each string to emphasize
-                    emphasized_result.append( non_html_tag_string );
-                    emphasized_result.append( html_tag_string );
-                } // while
-                non_html_tag_string = result.substring( last_html_offset );
-                non_html_tag_string = emphasizeString( non_html_tag_string, emp, emphasize_substitution, patMat );
-                emphasized_result.append( non_html_tag_string );
-                returnresult = emphasized_result.toString();
-            }
+            returnresult = applyEmphasis( documentRequest, user, returnresult, patMat, result );
             return returnresult;
-        } catch (RuntimeException ex) {
+        } catch ( RuntimeException ex ) {
             log.error( "Error occurred during parsing.", ex );
-            return ex.toString();
+            throw ex;
         }
     }
 
-    private String emphasizeString( String str, String[] emp, Substitution emphasize_substitution, PatternMatcher patMat ) {
+    private String applyEmphasis( DocumentRequest documentRequest, UserDomainObject user, String returnresult,
+                                  Perl5Matcher patMat, StringBuffer result ) {
+        String[] emp = documentRequest.getEmphasize();
+        if ( emp != null ) { // If we have something to emphasize...
+            String emphasize_string = service.getAdminTemplate( "textdoc/emphasize.html", user, null );
+            Perl5Substitution emphasize_substitution = new Perl5Substitution( emphasize_string );
+            StringBuffer emphasized_result = new StringBuffer( returnresult.length() ); // A StringBuffer to hold the result
+            PatternMatcherInput emp_input = new PatternMatcherInput( returnresult );    // A PatternMatcherInput to match on
+            int last_html_offset = 0;
+            int current_html_offset;
+            String non_html_tag_string;
+            String html_tag_string;
+            while ( patMat.contains( emp_input, HTML_TAG_PATTERN ) ) {
+                current_html_offset = emp_input.getMatchBeginOffset();
+                non_html_tag_string = result.substring( last_html_offset, current_html_offset );
+                last_html_offset = emp_input.getMatchEndOffset();
+                html_tag_string = result.substring( current_html_offset, last_html_offset );
+                non_html_tag_string = emphasizeString( non_html_tag_string, emp, emphasize_substitution, patMat );
+                // for each string to emphasize
+                emphasized_result.append( non_html_tag_string );
+                emphasized_result.append( html_tag_string );
+            } // while
+            non_html_tag_string = result.substring( last_html_offset );
+            non_html_tag_string = emphasizeString( non_html_tag_string, emp, emphasize_substitution, patMat );
+            emphasized_result.append( non_html_tag_string );
+            returnresult = emphasized_result.toString();
+        }
+        return returnresult;
+    }
+
+    private String replaceTags( String nextbit, Perl5Matcher patMat, MenuParserSubstitution menuparsersubstitution,
+                                ImcmsTagSubstitution imcmstagsubstitution, MapSubstitution hashtagsubstitution ) {
+        // Menus.
+        nextbit = Util.substitute( patMat, MENU_PATTERN, menuparsersubstitution, nextbit, Util.SUBSTITUTE_ALL );
+        // <?imcms:tags?>
+        nextbit = Util.substitute( patMat, IMCMS_TAG_PATTERN, imcmstagsubstitution, nextbit, Util.SUBSTITUTE_ALL );
+        // #hashtags#
+        nextbit = Util.substitute( patMat, HASHTAG_PATTERN, hashtagsubstitution, nextbit, Util.SUBSTITUTE_ALL );
+        return nextbit;
+    }
+
+    private Properties getHashTags( UserDomainObject user, SimpleDateFormat datetimeFormatWithSeconds,
+                                    TextDocumentDomainObject document,
+                                    boolean templatemode, ParserParameters parserParameters ) {
+
+        Properties tags = new Properties();	// A properties object to hold the results from the db...
+        // Put tags and corresponding data in Properties
+        tags.setProperty( "#userName#", user.getFullName() );
+        tags.setProperty( "#session_counter#", String.valueOf( service.getSessionCounter() ) );
+        tags.setProperty( "#session_counter_date#", service.getSessionCounterDateAsString() );
+        tags.setProperty( "#lastDate#", datetimeFormatWithSeconds.format( document.getModifiedDatetime() ) );
+        tags.setProperty( "#metaHeadline#", document.getHeadline() );
+        tags.setProperty( "#metaText#", document.getMenuText() );
+
+        String meta_image = document.getMenuImage();
+        if ( !"".equals( meta_image ) ) {
+            meta_image = "<img src=\"" + meta_image + "\" border=\"0\">";
+        }
+        tags.setProperty( "#metaImage#", meta_image );
+        tags.setProperty( "#sys_message#", service.getSystemData().getSystemMessage() );
+        tags.setProperty( "#webMaster#", service.getSystemData().getWebMaster() );
+        tags.setProperty( "#webMasterEmail#", service.getSystemData().getWebMasterAddress() );
+        tags.setProperty( "#serverMaster#", service.getSystemData().getServerMaster() );
+        tags.setProperty( "#serverMasterEmail#", service.getSystemData().getServerMasterAddress() );
+
+        tags.setProperty( "#param#", parserParameters.getParameter() );
+        tags.setProperty( "#externalparam#", parserParameters.getExternalParameter() );
+
+        if (parserParameters.getFlags() >= 0) {
+            tags.setProperty( "#adminMode#", service.getAdminButtons( user, document ) );
+        }
+
+        String changeTemplateUi = createChangeTemplateUi( templatemode, user, document );
+        tags.setProperty( "#changePage#", changeTemplateUi );
+        return tags;
+    }
+
+    private String createChangeTemplateUi( boolean templatemode, UserDomainObject user,
+                                           TextDocumentDomainObject document ) {
+        String changeTemplateUi = "";
+        if ( templatemode ) {	//Templatemode! :)
+
+            TemplateMapper templateMapper = service.getTemplateMapper();
+
+            TemplateGroupDomainObject selected_group = user.getTemplateGroup();
+            if ( null == selected_group ) {
+                selected_group = templateMapper.getTemplateGroupById( document.getTemplateGroupId() );
+            }
+
+            String group_name = selected_group.getName();
+
+            TemplateDomainObject[] templates = templateMapper.getTemplatesInGroup( selected_group );
+
+            String templatelist = templateMapper.createHtmlOptionListOfTemplates( templates, document.getTemplate() );
+
+            String grouplist = templateMapper.createHtmlOptionListOfTemplateGroups( selected_group );
+
+            // Oh! I need a set of tags to be replaced in the templatefiles we'll load...
+            List temptags = new ArrayList();
+
+            temptags.add( "#getMetaId#" );
+            temptags.add( "" + document.getId() );
+            temptags.add( "#group#" );
+            temptags.add( group_name );
+            temptags.add( "#getTemplateGroups#" );
+            temptags.add( grouplist );
+            temptags.add( "#simple_name#" );
+            temptags.add( document.getTemplate().getName() );
+            temptags.add( "#getTemplatesInGroup#" );
+            temptags.add( templatelist );
+
+            // Put templateadmintemplate in list of files to load.
+            changeTemplateUi = service.getAdminTemplate( "textdoc/inPage_admin.html", user, temptags );
+        }  // if (templatemode)
+        return changeTemplateUi;
+    }
+
+    private Map getMenus( String[] metaIdUserIdPair, boolean menumode, SimpleDateFormat datetimeFormatWithSeconds,
+                          ParserParameters parserParameters ) {
+        /*
+          OK.. we will now make a LinkedList for the entire page.
+          This LinkedList, menus, will contain one item for each menu on the page.
+          These items will also be instances of LinkedList.
+          These LinkedLists will in turn each hold one Properties for each item in each menu.
+          These Properties will hold the tags, and the corresponding data, that will go in each menuitem.
+        */
+        HashMap menus = new HashMap();	// Map to contain all the menus on the page.
+        Menu currentMenu = null;
+        int previousMenuIndex = -1;
+
+        // Here we have the most timeconsuming part of parsing the page.
+        // Selecting all the documents with permissions from the DB
+        String[][] childs = service.sqlProcedureMulti( "GetChilds", metaIdUserIdPair );
+
+        for ( int i = 0; i < childs.length; ++i ) {
+            String[] childRow = childs[i];
+
+            int menuIndex = Integer.parseInt( childRow[1] );              // What menu in the page the child is in.
+            int menuSortOrder = Integer.parseInt( childRow[2] );
+            if ( menuIndex != previousMenuIndex ) {	                                     // If we come upon a new menu...
+                previousMenuIndex = menuIndex;
+                currentMenu = new Menu( menuIndex, menumode, menuSortOrder );	     // We make a new Menu,
+                menus.put( new Integer( menuIndex ), currentMenu );		     // and add it to the page.
+            }
+            MenuItem menuItem = createMenuItemFromSprocGetChildsRow( currentMenu, childRow, datetimeFormatWithSeconds );
+
+            Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
+            boolean editingThisMenu = menumode && null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex;
+            if ( !menuItem.getDocument().isPublishedAndNotArchived() && !editingThisMenu ) { // if not menumode, and document is inactive or archived, don't include it.
+                continue;
+            }
+            currentMenu.add( menuItem );	// Add the Properties for this menuitem to the current menus list.
+        }
+
+        for ( Iterator menuIterator = menus.values().iterator(); menuIterator.hasNext(); ) {
+            Menu menu = (Menu)menuIterator.next();
+            sortMenu( menu );
+        }
+        return menus;
+    }
+
+    private MenuItem createMenuItemFromSprocGetChildsRow( Menu currentMenu, String[] childRow,
+                                                          SimpleDateFormat datetimeFormatWithSeconds ) {
+        MenuItem menuItem = new MenuItem( currentMenu );
+        DocumentDomainObject menuItemDocument = DocumentDomainObject.fromDocumentTypeId( Integer.parseInt( childRow[5] ) );
+        menuItemDocument.setId( Integer.parseInt( childRow[0] ) );
+        menuItem.setSortKey( Integer.parseInt( childRow[3] ) );      // What order the document is sorted in in the menu, using sort-order 2 (manual sort)
+        menuItem.setTreeSortKey( childRow[4] );
+        menuItemDocument.setTarget( childRow[6] );
+        try {
+            menuItemDocument.setCreatedDatetime( datetimeFormatWithSeconds.parse( childRow[7] ) );
+        } catch ( ParseException ignored ) {
+        }
+        try {
+            menuItemDocument.setModifiedDatetime( datetimeFormatWithSeconds.parse( childRow[8] ) );
+        } catch ( ParseException ignored ) {
+        }
+        menuItemDocument.setHeadline( childRow[9] );
+        menuItemDocument.setMenuText( childRow[10] );
+        menuItemDocument.setMenuImage( childRow[11] );
+        try {
+            menuItemDocument.setPublicationStartDatetime( datetimeFormatWithSeconds.parse( childRow[12] ) );
+        } catch ( NullPointerException ignored ) {
+        } catch ( ParseException ignored ) {
+        }
+        try {
+            menuItemDocument.setArchivedDatetime( datetimeFormatWithSeconds.parse( childRow[13] ) );
+        } catch ( NullPointerException ignored ) {
+        } catch ( ParseException ignored ) {
+        }
+        try {
+            menuItemDocument.setPublicationEndDatetime( datetimeFormatWithSeconds.parse( childRow[14] ) );
+        } catch ( NullPointerException ignored ) {
+        } catch ( ParseException ignored ) {
+        }
+        menuItem.setEditable( "0".equals( childRow[15] ) );           // if the user may admin it.
+        menuItemDocument.setStatus( Integer.parseInt( childRow[16] ) );
+        menuItem.setDocument( menuItemDocument );
+        return menuItem;
+    }
+
+    private String emphasizeString( String str, String[] emp, Substitution emphasize_substitution,
+                                    PatternMatcher patMat ) {
 
         Perl5Compiler empCompiler = new Perl5Compiler();
         // for each string to emphasize
-        for (int i = 0; i < emp.length; ++i) {
+        for ( int i = 0; i < emp.length; ++i ) {
             try {
                 Pattern empPattern = empCompiler.compile( "(" + Perl5Compiler.quotemeta( emp[i] ) + ")", Perl5Compiler.CASE_INSENSITIVE_MASK );
-                str = org.apache.oro.text.regex.Util.substitute( // Threadsafe
-                        patMat, empPattern, emphasize_substitution, str, org.apache.oro.text.regex.Util.SUBSTITUTE_ALL );
-            } catch (MalformedPatternException ex) {
-                log.warn( "Dynamic Pattern-compilation failed in IMCService.emphasizeString(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '" + emp[i] + "'", ex );
+                str = org.apache.oro.text.regex.Util.substitute( patMat, empPattern, emphasize_substitution, str, org.apache.oro.text.regex.Util.SUBSTITUTE_ALL );
+            } catch ( MalformedPatternException ex ) {
+                log.warn( "Dynamic Pattern-compilation failed in IMCService.emphasizeString(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '"
+                          + emp[i]
+                          + "'", ex );
             }
         }
         return str;
     }
 
-    private String escapeSubstitution( String substitution ) {
-        StringBuffer result = new StringBuffer();
-
-        for (int i = 0; i < substitution.length(); ++i) {
-            char c = substitution.charAt( i );
-            switch (c) {
-                case '\\':
-                case '$':
-                    result.append( '\\' );
-            }
-            result.append( c );
+    private void sortMenu( Menu currentMenu ) {
+        int sort_order = currentMenu.getSortOrder();
+        Comparator childsComparator;
+        switch ( sort_order ) {
+            case IMCConstants.MENU_SORT_BY_DATETIME:
+                childsComparator = new ReverseComparator( new MenuItemModifiedDateComparator() );
+                break;
+            case IMCConstants.MENU_SORT_BY_MANUAL_ORDER:
+                childsComparator = new ReverseComparator( new MenuItemManualSortOrderComparator() );
+                break;
+            case IMCConstants.MENU_SORT_BY_MANUAL_TREE_ORDER:
+                childsComparator = new MenuItemManualTreeSortOrderComparator();
+                break;
+            case IMCConstants.MENU_SORT_BY_HEADLINE:
+            default:
+                childsComparator = new MenuItemHeadlineComparator( service.getDefaultLanguageAsIso639_2() );
         }
 
-        return result.toString();
+        Collections.sort( currentMenu, childsComparator );
     }
 
+    class MenuItemHeadlineComparator implements Comparator {
+
+        private Collator collator;
+
+        private MenuItemHeadlineComparator( String lang ) {
+            Locale locale = Locale.ENGLISH ;
+            try {
+                locale = new Locale( LanguageMapper.convert639_2to639_1( lang ) );
+            } catch ( LanguageMapper.LanguageNotSupportedException ignored ) {}
+            collator = Collator.getInstance( locale );
+        }
+
+        public int compare( Object o1, Object o2 ) {
+            String headline1 = ( (MenuItem)o1 ).getDocument().getHeadline();
+            String headline2 = ( (MenuItem)o2 ).getDocument().getHeadline();
+            return collator.compare( headline1, headline2 );
+        }
+    }
+
+    static class MenuItemModifiedDateComparator implements Comparator {
+
+        public int compare( Object o1, Object o2 ) {
+            Date modifiedDate1 = ( (MenuItem)o1 ).getDocument().getModifiedDatetime();
+            Date modifiedDate2 = ( (MenuItem)o2 ).getDocument().getModifiedDatetime();
+            return modifiedDate1.compareTo( modifiedDate2 );
+        }
+    }
+
+    private class MenuItemManualSortOrderComparator implements Comparator {
+
+        public int compare( Object o1, Object o2 ) {
+            int sortKey1 = ( (MenuItem)o1 ).getSortKey();
+            int sortKey2 = ( (MenuItem)o2 ).getSortKey();
+            return sortKey1 - sortKey2;
+        }
+    }
+
+    /**
+     * @deprecated Remove usage of this when removeing MenuItem instead -> MenuItemDomainObject
+     */
+    static class MenuItemManualTreeSortOrderComparator implements Comparator {
+
+        private final static Pattern FIRST_NUMBER_PATTERN;
+        private final PatternMatcher perl5Matcher = new Perl5Matcher();
+
+        private final Comparator dateComparator = new ReverseComparator( new MenuItemModifiedDateComparator() );
+
+        static {
+            PatternCompiler perl5Compiler = new Perl5Compiler();
+            Pattern firstNumberPattern = null;
+            try {
+                firstNumberPattern = perl5Compiler.compile( "^(\\d+)\\.?(.*)" );
+            } catch ( MalformedPatternException ignored ) {
+                log.fatal( "Bad pattern.", ignored );
+            }
+            FIRST_NUMBER_PATTERN = firstNumberPattern;
+        }
+
+        public int compare( Object o1, Object o2 ) {
+            String treeSortKey1 = ( (MenuItem)o1 ).getTreeSortKey();
+            String treeSortKey2 = ( (MenuItem)o2 ).getTreeSortKey();
+
+            int difference = compareTreeSortKeys( treeSortKey1, treeSortKey2 );
+            if ( 0 == difference ) {
+                return dateComparator.compare( o1, o2 );
+            }
+            return difference;
+        }
+
+        private int compareTreeSortKeys( String treeSortKey1, String treeSortKey2 ) {
+
+            boolean key1Matches = perl5Matcher.matches( treeSortKey1, FIRST_NUMBER_PATTERN );
+            MatchResult match1 = perl5Matcher.getMatch();
+            boolean key2Matches = perl5Matcher.matches( treeSortKey2, FIRST_NUMBER_PATTERN );
+            MatchResult match2 = perl5Matcher.getMatch();
+
+            if ( key1Matches && key2Matches ) {
+                int firstNumber1 = Integer.parseInt( match1.group( 1 ) );
+                String tail1 = match1.group( 2 );
+
+                int firstNumber2 = Integer.parseInt( match2.group( 1 ) );
+                String tail2 = match2.group( 2 );
+
+                if ( firstNumber1 != firstNumber2 ) {
+                    return firstNumber1 - firstNumber2;
+                }
+                return compareTreeSortKeys( tail1, tail2 );
+            } else if ( !key1Matches && !key2Matches ) {
+                return treeSortKey1.compareTo( treeSortKey2 );
+            } else if ( key2Matches ) {
+                return -1;
+            } else {
+                return +1;
+            }
+        }
+    }
+
+    private static class ReverseComparator implements Comparator {
+
+        private Comparator comparator;
+
+        ReverseComparator( Comparator comparator ) {
+            this.comparator = comparator;
+        }
+
+        public int compare( Object o1, Object o2 ) {
+            return -comparator.compare( o1, o2 );
+        }
+    }
 }

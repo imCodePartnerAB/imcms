@@ -1,71 +1,96 @@
 <html>
 <head>
-<title>chatControl</title>
+<title><? templates/sv/chat/original/theChat.htm/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<link rel="STYLESHEET" type="text/css" href="@cssurl@/style_chat_ns.css">
+<script language="JavaScript">
+<!--
+if (document.layers) {
+	document.writeln("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"@cssurl@/style_chat_ns.css\">");
+} else {
+	document.writeln("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"@cssurl@/style_chat.css\">");
+}
+//-->
+</script>
+
 </head>
+<body marginwidth="0" marginheight="0" leftmargin="0" topmargin="0" scroll="no" class="chatControlBody" onload="huvud.msg.focus();">
 
-<body bgcolor="#ffffff" text="#000000" onload="parent._ChatMsgFrame.location='ChatBoard';">
-
-<FORM method=post action=ChatControl name=huvud>
-	<INPUT name=nick type=hidden value=#alias#> 
-	<INPUT name=chatRoom2 type=hidden value=#chatRoom#>
-	
-<TABLE border=0 cellPadding=0 cellSpacing=0 width=701>
-	<TR valign="bottom">
-		<TD colSpan=3 valign="bottom" width="500" nowrap>
-			<B>#alias#</B> i <B>#chatRoom#</B> 
-			<SELECT name=msgTypes>
-				#MSG_PREFIX#
-			</SELECT> 
-			<SELECT name=recipient> 
-				<option value="0" >Alla</option> 
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+	<td class="chatControlBodyTopline"><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="10"></td>
+</tr>
+<tr>
+	<td align="center">
+	<table border="0" cellspacing="0" cellpadding="0" width="760">
+	<form method="post" action="ChatControl" name="huvud" target="_parent">
+	<tr valign="bottom">
+		<td colspan="2">
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<tr>
+			<td>
+			<table border="0" cellspacing="0" cellpadding="3">
+			<tr>
+				<td class="chatControlFont" nowrap>#alias#</td>
+				<td>&nbsp;</td>
+				<td class="chatSelectBox">
+				<select class="chatSelectBox" name="msgTypes">
+					#MSG_PREFIX#
+				</select></td>
+				<td>&nbsp;</td>
+				<td class="chatSelectBox">
+				<select class="chatSelectBox" name="recipient"> 
+					<option value="0" ><? templates/sv/chat/original/theChat.htm/5 ?></option> 
 					#MSG_RECIVER#
-			</SELECT><br>			
-			<INPUT maxLength=250 name=msg size=80> 
-		</TD>
-		<td valign="bottom">
-			#CHAT_ADMIN_DISCUSSION#<br>
-			<INPUT name=sendMsg type=submit value=Skicka/Uppdatera> 
-		</td>
-	</TR>
-</FORM>
-	<TR>
-		<TD colSpan=4 height=3>
-			<HR>
-		</TD>
-	</TR>
-	<TR>
-		<td nowrap> 	
-			
-			<form action="ChatControl" target="_self" method="post">	 			
-				<b>Byta rum:</b> 
-        		<select name="newRooms">
-          			#CHAT_ROOMS#          
-        		</select>
-        		<input type="submit" value=" Gå till " name="changeRoom">
-			</form>
-		</td>
-		<td>
-			#SETTINGS#	
-		</td>
-		<td>
-			<form action="ChatControl" target="_top" method="post">			
-        		<input type="submit" value=" Logga ut " name="logOut">
-			</form>
-		</td>
-		<td>
-			<form action="ChatCreator" target="_parent" method="get">
-				<input type="hidden" name="action" value="admin_chat">
-				<input type="hidden" name="chatName" value="#chatName#">
-        		#CHAT_ADMIN_LINK#
-			</form>
-		</td>
-	</TR>
-</TABLE>
+				</select></td>
+			</tr>
+			</table></td>
+			<td align="right">
+			<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td>#CHAT_ADMIN_DISCUSSION#</td>
+				<td><img src="@imcmsimageurl@/admin/1x1.gif" width="2" height="1"></td>
+				<td>#CHAT_ADMIN_LINK#</td>
+				<td><img src="@imcmsimageurl@/admin/1x1.gif" width="2" height="1"></td>
+				<td>#SETTINGS#</td>
+				<td><img src="@imcmsimageurl@/admin/1x1.gif" width="2" height="1"></td>
+				<td><input type="button" class="chatButtonAbort" value="<? templates/sv/chat/original/theChat.htm/2001 ?>" name="logOut" onClick="document.forms.abortForm.submit();"></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table>
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<tr>
+			<td class="chatTextarea"><textarea class="chatTextarea" name="msg" cols="63" rows="3" style="width:615; height:46; overflow:auto" wrap="virtual">
+</textarea></td>
+			<td align="right"><input type="submit" class="chatButtonSend" name="sendMsg" value="<? templates/sv/chat/original/theChat.htm/2002 ?>" height="44"></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></td>
+</tr>
+</form>
+</table>
+
+<form name="adminForm" action="ChatCreator" target="_parent" method="get">
+<input type="hidden" name="action" value="admin_chat">
+<input type="hidden" name="chatId" value="#chatId#">
+<input type="hidden" name="chatName" value="#chatName#">
+<input type="hidden" name="send" value="Admin">
+</form>
+
+<form name="settingsForm" action="ChatControl">
+<input type="hidden" name="settings" value="true">
+<input type="hidden" name="admin_chat" value="1">
+</form>
+
+<form name="abortForm" action="ChatControl" target="_top" method="post">
+<input type="hidden" name="logOut" value="1">
+</form>
      
 </body>
-</HTML>
-
-
-
-
+</html>

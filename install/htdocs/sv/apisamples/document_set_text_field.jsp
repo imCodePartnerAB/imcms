@@ -1,10 +1,5 @@
 <%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
-<html>
-<head>
-<title>Delete a role named "Test role"</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-</head>
-<body>
+
 
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
@@ -13,11 +8,13 @@
     TextDocument document = documentService.getTextDocument(documentId) ;
 
     int textFieldIndexInDocument = 1;
-    String newHtmlText = "<h2>Quotations</h2>";
+    String newHtmlText = "<a href=\"../login/\">Log in!</a><br><a href=\"../apisamples/\">API-samples.</a>";
     document.setHtmlTextField( textFieldIndexInDocument, newHtmlText ) ;
 
     textFieldIndexInDocument = 2;
-    String newPlainText = "If we knew what it was we were doing, it would not be called research, would it? /Albert Einstein";
+    String newPlainText = "If we knew what it was we were doing, it would not be called research, would it? -- Albert Einstein";
     document.setPlainTextField( textFieldIndexInDocument, newPlainText ) ;
+
+    documentService.saveChanges( document );
 %>
 Done.

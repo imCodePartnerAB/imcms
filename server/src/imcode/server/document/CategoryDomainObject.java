@@ -1,0 +1,82 @@
+package imcode.server.document; 
+
+import java.io.Serializable;
+
+/**
+ * @author kreiger
+ */
+public class CategoryDomainObject implements Comparable, Serializable {
+
+    private String name;
+    private int id;
+    private CategoryTypeDomainObject type;
+    private String description;
+    private String image;
+
+    public CategoryDomainObject(int id, String name, String description, String image, CategoryTypeDomainObject type) {
+        this.description = description;
+        this.type = type;
+        this.name = name;
+        this.image = image;
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public CategoryTypeDomainObject getType() {
+        return type;
+    }
+
+    public String toString() {
+        return type+": "+name ;
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CategoryDomainObject)) return false;
+
+        final CategoryDomainObject categoryDomainObject = (CategoryDomainObject) o;
+
+        if (id != categoryDomainObject.id) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description ;
+    }
+
+     public String getImage() {
+        return image;
+    }
+
+    public int compareTo( Object o ) {
+        return name.compareToIgnoreCase( ( (CategoryDomainObject) o ).name ) ;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public void setType(CategoryTypeDomainObject type) {
+        this.type = type;
+    }
+}

@@ -2,19 +2,18 @@ package imcode.server.user;
 
 import com.mockobjects.ExpectationList;
 import com.mockobjects.MockObject;
-import imcode.readrunner.ReadrunnerUserData;
 import imcode.server.*;
-import imcode.server.db.DatabaseService;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.TemplateDomainObject;
-import imcode.server.document.DocumentMapper;
+import imcode.server.db.ConnectionPool;
+import imcode.server.document.*;
 import imcode.server.parser.ParserParameters;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.shop.ShoppingOrderSystem;
+import imcode.util.net.SMTP;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.text.Collator;
 
 class MockIMCServiceInterface extends MockObject implements IMCServiceInterface {
 
@@ -37,73 +36,80 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   public UserDomainObject getUserById( int userId ) {
+    public TextDocumentDomainObject.Text getText( int meta_id, int txt_no ) {
       return null;
    }
 
-   public boolean checkUserAdminrole( int userId, int adminRole ) {
-      return false;
-   }
-
-   public void saveText( UserDomainObject user, int meta_id, int txt_no, IMCText text, String text_type ) {
-   }
-
-   public IMCText getText( int meta_id, int txt_no ) {
-      return null;
-   }
-
-   public String parsePage( DocumentRequest docReq, int flags, ParserParameters paramsToParse ) throws IOException {
+   public String parsePage( ParserParameters paramsToParse ) throws IOException {
       return null;
    }
 
    // Save an image
-   public void saveImage( int meta_id, UserDomainObject user, int img_no, Image image ) {
+   public void saveImage( int meta_id, UserDomainObject user, int img_no, TextDocumentDomainObject.Image image ) {
    }
 
    public void deleteDocAll( int meta_id, UserDomainObject user ) {
    }
 
-   public void addExistingDoc( int meta_id, UserDomainObject user, int existing_meta_id, int doc_menu_no ) {
-   }
+    public void saveManualSort( int meta_id, UserDomainObject user, List childs, List sort_no, int menuNumber ) {
+        // TODO
+    }
 
-   public void saveManualSort( int meta_id, UserDomainObject user, Vector childs, Vector sort_no ) {
-   }
+    public void updateLogs( String logMessage ) {
+        //To change body of implemented methods use Options | File Templates.
+    }
 
-   public void deleteChilds( int meta_id, int menu, UserDomainObject user, String childsThisMenu[] ) {
-   }
+    public int sqlUpdateQuery( String sqlStr, String[] params ) {
+        return 0;  //To change body of implemented methods use Options | File Templates.
+    }
 
-   // archive childs
-   public void archiveChilds( int meta_id, UserDomainObject user, String childsThisMenu[] ) {
-   }
+    public void saveTreeSortIndex( int meta_id, UserDomainObject user, List childs, List sort_no, int menuNumber ) {
+        // TODO
+    }
 
-   public String[] copyDocs( int meta_id, int doc_menu_no, UserDomainObject user, String[] childsThisMenu, String copyPrefix ) {
-      return new String[0];
-   }
+    public ConnectionPool getConnectionPool() {
+        return null;  //To change body of implemented methods use Options | File Templates.
+    }
 
-   // save textdoc
-   public void saveTextDoc( IMCService service, UserDomainObject user, int meta_id, Table doc ) {
+    public String sqlQueryStr( String sqlStr, String[] params ) {
+        return null;  //To change body of implemented methods use Options | File Templates.
+    }
+
+    public Map sqlQueryHash( String sqlStr, String[] params ) {
+        return null;  // TODO
+    }
+
+    public String[][] sqlQueryMulti( String sqlStr, String[] params ) {
+        return new String[0][];  //To change body of implemented methods use Options | File Templates.
+    }
+
+    public DocumentMapper getDocumentMapper() {
+        return null;
+    }
+
+    public ImcmsAuthenticatorAndUserMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
+        return null;
+    }
+
+    public String getDefaultLanguageAsIso639_2() {
+        return null;
+    }
+
+    public Map sqlProcedureHash( String procedure, String[] params ) {
+        return null;  // TODO
+    }
+
+    // archive childs
+   public void archiveChilds( int meta_id, UserDomainObject user, String[] childsThisMenu ) {
    }
 
     // check if url doc
-   public Table isUrlDoc( int meta_id, UserDomainObject user ) {
-      return null;
-   }
+    public String isUrlDoc( int meta_id ) {
+        return null;  // TODO
+    }
 
-   // Save a new frameset
-   public void saveNewFrameset( int meta_id, UserDomainObject user, Table doc ) {
-   }
-
-   // Save a frameset
-   public void saveFrameset( int meta_id, UserDomainObject user, Table doc ) {
-   }
-
-   // check if url doc
-   public String isFramesetDoc( int meta_id, UserDomainObject user ) {
-      return null;
-   }
-
-   // check if external doc
-   public ExternalDocType isExternalDoc( int meta_id, UserDomainObject user ) {
+    // check if url doc
+   public String isFramesetDoc( int meta_id ) {
       return null;
    }
 
@@ -111,129 +117,72 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    public void activateChild( int meta_id, UserDomainObject user ) {
    }
 
-    // Send a sqlquery to the database and return a string array
-   public String[] sqlQuery( String sqlQuery ) {
-      return new String[0];
-   }
-
-   // Send a sql update query to the database
-   public void sqlUpdateQuery( String sqlStr ) {
-   }
-
-   // Send a sqlquery to the database and return a string
-   public String sqlQueryStr( String sqlQuery ) {
-      return null;
-   }
-
-   // Send a procedure to the database and return a string array
-   public String[] sqlProcedure( String procedure ) {
-      return sqlProcedure( procedure, new String[0] );
-   }
-
-   // Send a procedure to the database and return a string array
+    // Send a procedure to the database and return a string array
    public String[] sqlProcedure( String procedure, String[] params ) {
       this.sqlProcedureCalls.addActual( procedure );
       return (String[])expectedSQLResults.remove( 0 );
    }
 
-   // Send a procedure to the database and return a string array
-   public String[] sqlProcedure( String procedure, String[] params, boolean trim ) {
-      return new String[0];
-   }
-
-   // Send a procedure to the database and return a string
-   public String sqlProcedureStr( String procedure ) {
-      return "3";
-   }
-
-   // Send a procedure to the database and return a string
+    // Send a procedure to the database and return a string
    public String sqlProcedureStr( String procedure, String[] params ) {
-      return null;
+      return "100";
    }
 
-   // Send a procedure to the database and return a string
-   public String sqlProcedureStr( String procedure, String[] params, boolean trim ) {
-      return null;
-   }
-
-   // Send a update procedure to the database
-   public int sqlUpdateProcedure( String procedure ) {
-      return sqlUpdateProcedure( procedure, new String[0] );
-   }
-
-   // Send a update procedure to the database
+    // Send a update procedure to the database
    public int sqlUpdateProcedure( String procedure, String[] params ) {
       sqlUpdateProcedureCalls.addActual( procedure );
       return 0;
    }
 
    // Parse doc replace variables with data, uses two vectors
-   public String parseDoc( String htmlStr, Vector variables, Vector data ) {
+   public String replaceTagsInStringWithData( String htmlStr, Vector variables, Vector data ) {
       return null;
    }
 
    // get external template folder
-   public File getExternalTemplateFolder( int meta_id ) {
+   public File getExternalTemplateFolder(int meta_id, UserDomainObject user) {
       return null;
    }
 
-   // increment session counter
-   public int incCounter() {
-      return 0;
+    // set session counter
+   public void setSessionCounter( int value ) {
+
    }
 
-   // get session counter
-   public int getCounter() {
-      return 0;
-   }
+    // set  session counter date
+    public void setSessionCounterDate( Date date ) {
+        // TODO
+    }
 
-   // set session counter
-   public int setCounter( int value ) {
-      return 0;
-   }
-
-   // set  session counter date
-   public boolean setCounterDate( String date ) {
-      return false;
-   }
-
-   // set  session counter date
-   public String getCounterDate() {
+    // set  session counter date
+   public Date getSessionCounterDate() {
       return null;
    }
 
-    // Send a sqlquery to the database and return a Hashtable
-   public Hashtable sqlQueryHash( String sqlQuery ) {
+    // parsedoc use template
+   public String getAdminTemplate( String adminTemplateName, UserDomainObject user, List tagsWithReplacements ) {
       return null;
    }
 
-   // Send a procedure to the database and return a Hashtable
-   public Hashtable sqlProcedureHash( String procedure ) {
-      return null;
-   }
+    // parseExternaldoc use template
+    public String getAdminTemplateFromDirectory( String adminTemplateName, UserDomainObject user, List variables,
+                                                 String directory ) {
+        return null;  // TODO
+    }
 
-   // parsedoc use template
-   public String parseDoc( List variables, String admin_template_name, String lang_prefix ) {
-      return null;
-   }
+    // parseExternaldoc use template
+    public String getAdminTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, List variables,
+                                                               String directory, String subDirectory ) {
+        return null;  // TODO
+    }
 
-   // parseExternaldoc use template
-   public String parseExternalDoc( Vector variables, String external_template_name, String lang_prefix, String doc_type ) {
-      return null;
-   }
-
-   // parseExternaldoc use template
-   public String parseExternalDoc( Vector variables, String external_template_name, String lang_prefix, String doc_type, String templateSet ) {
+    // get templatehome
+   public String getTemplateData( int template_id ) throws IOException {
       return null;
    }
 
    // get templatehome
-   public byte[] getTemplateData( int template_id ) throws IOException {
-      return new byte[0];
-   }
-
-   // get templatehome
-   public File getTemplateHome() {
+   public File getTemplatePath() {
       return null;
    }
 
@@ -242,22 +191,32 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   // get file-path to images
-   public File getImagePath() {
-      return null;
-   }
+    // Return url-path to imcmsimages.
+    public String getImcmsUrl() {
+        return null;  // TODO
+    }
 
-   // get starturl
+    // get file-path to imcmsimages
+    public File getImcmsPath() {
+        return null;  // TODO
+    }
+
+    // get starturl
    public String getStartUrl() {
       return null;
    }
 
-   // get language
-   public String getDefaultLanguage() {
-      return null;
+    // get language prefix by id
+    public String getLanguagePrefixByLangId ( int lang_id ){
+       return null;
    }
 
-   // get doctype
+    // get language prefix for user
+    public String getUserLangPrefixOrDefaultLanguage(UserDomainObject user) {
+        return null;
+    }
+
+    // get doctype
    public int getDocType( int meta_id ) {
       return 0;
    }
@@ -267,12 +226,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return false;
    }
 
-   //get greatest permission_set
-   public int getUserHighestPermissionSet( int meta_id, int user_id ) {
-      return 0;
-   }
-
-   // save template to disk
+    // save template to disk
    public int saveTemplate( String name, String file_name, byte[] data, boolean overwrite, String lang_prefix ) {
       return 0;
    }
@@ -280,11 +234,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    // get demo template data
    public Object[] getDemoTemplate( int template_id ) throws IOException {
       return new Object[0];
-   }
-
-   // check if user can view document
-   public boolean checkDocRights( int meta_id, UserDomainObject user ) {
-      return false;
    }
 
    public boolean checkDocAdminRights( int meta_id, UserDomainObject user, int permissions ) {
@@ -295,83 +244,45 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return false;
    }
 
-   // delete template from db/disk
-   public void deleteTemplate( int template_id ) {
-   }
-
    // save demo template
-   public int saveDemoTemplate( int template_id, byte[] data, String suffix ) {
-      return 0;
+   public void saveDemoTemplate( int template_id, byte[] data, String suffix ) {
+
    }
 
-    // delete templategroup
-   public void deleteTemplateGroup( int group_id ) {
-   }
-
-   // save templategroup
-   public void changeTemplateGroupName( int group_id, String new_name ) {
-   }
-
-   //  unassign template from templategroups
-   public void unAssignTemplate( int template_id, int group_id[] ) {
-   }
-
-   // Send a procedure to the database and return a multistring array
-   public String[][] sqlProcedureMulti( String procedure ) {
-      return new String[0][];
-   }
-
-   // Send a procedure to the database and return a multistring array
+    // Send a procedure to the database and return a multistring array
    public String[][] sqlProcedureMulti( String procedure, String[] params ) {
       return new String[0][];
    }
 
-   // Send a sqlQuery to the database and return a multistring array
-   public String[][] sqlQueryMulti( String sqlQuery ) {
-      return new String[0][];
-   }
-
-   // get server date
+    // get server date
    public Date getCurrentDate() {
       return null;
    }
 
    // get demotemplates
-   public String[] getDemoTemplateList() {
+   public String[] getDemoTemplateIds() {
       return new String[0];
    }
 
-   // delete demotemplate
-   public int deleteDemoTemplate( int template_id ) {
-      return 0;
-   }
+    // delete demotemplate
+    public void deleteDemoTemplate( int template_id ) {
+        // TODO
+    }
 
-   public String getMenuButtons( int meta_id, UserDomainObject user ) {
-      return null;
-   }
+    public String getAdminButtons( UserDomainObject user, DocumentDomainObject document ) {
+        return null;  // TODO
+    }
 
-   public String getMenuButtons( String meta_id, UserDomainObject user ) {
-      return null;
-   }
-
-   public String getLanguage( String lang_id ) {
-      return null;
-   }
-
-   public SystemData getSystemData() {
+    public SystemData getSystemData() {
       return null;
    }
 
    public void setSystemData( SystemData sd ) {
    }
 
-    public String[] getDocumentTypesInList( String langPrefixStr ) {
-      return new String[0];
-   }
-
-    public boolean checkUserDocSharePermission( UserDomainObject user, int meta_id ) {
-      return false;
-   }
+    public String[][] getDocumentTypesInList( String langPrefixStr ) {
+        return new String[0][];  // TODO
+    }
 
     public String getFortune( String path ) throws IOException {
       return null;
@@ -381,70 +292,79 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   public File getInternalTemplateFolder( int meta_id ) {
-      return null;
+    public List getQuoteList( String quoteListName ) {
+        return null;  // TODO
+    }
+
+    public void setQuoteList( String quoteListName, List quoteList ) throws IOException {
    }
 
-   public void touchDocument( int meta_id, Date date ) {
+    public List getPollList( String pollListName ) {
+        return null;  // TODO
+    }
+
+    public void setPollList( String pollListName, List pollList ) throws IOException {
    }
 
-   public void touchDocument( int meta_id ) {
-   }
+    public TemplateMapper getTemplateMapper() {
+        return null;  // TODO
+    }
 
-   public List getQuoteList( String quoteListName ) throws IOException {
-      return null;
-   }
+    public SMTP getSMTP() {
+        return null;  // TODO
+    }
 
-   public void setQuoteList( String quoteListName, List quoteList ) throws IOException {
-   }
+    public Properties getLangProperties(UserDomainObject user) {
+        return null;
+    }
 
-   public List getPollList( String pollListName ) throws IOException {
-      return null;
-   }
+    public File getFilePath() {
+        return null;  // TODO
+    }
 
-   public void setPollList( String pollListName, List pollList ) throws IOException {
-   }
+    public File getIncludePath() {
+        return null;  // TODO
+    }
 
-   public DocumentDomainObject getDocument( int meta_id ) {
-      return null;
-   }
+    public Collator getDefaultLanguageCollator() {
+        return null;  // TODO
+    }
 
-   public String getSection( int meta_id ) {
-      return null;
-   }
-
-   public String getFilename( int meta_id ) {
-      return null;
-   }
-
-   public TemplateDomainObject getTemplate( int meta_id ) {
-      return null;
-   }
-
-   public boolean checkAdminRights( UserDomainObject user ) {
+    public boolean checkAdminRights( UserDomainObject user ) {
       return false;
-   }
-
-   public void setReadrunnerUserData( UserDomainObject user, ReadrunnerUserData rrUserData ) {
-   }
-
-   public ReadrunnerUserData getReadrunnerUserData( UserDomainObject user ) {
-      return null;
-   }
-
-   public Map getTexts( int meta_id ) {
-      return null;
    }
 
    public int getSessionCounter() {
       return 0;
    }
 
-   public String getSessionCounterDate() {
+   public String getSessionCounterDateAsString() {
       return null;
    }
 
-    public PollHandlingSystem getPollHandlingSystem() {
+   public Map getUserFlags() {
+      return null;
+   }
+
+   public Map getUserFlags( UserDomainObject user ) {
+      return null;
+   }
+
+   public Map getUserFlags( int type ) {
+      return null;
+   }
+
+   public Map getUserFlags( UserDomainObject user, int type ) {
+      return null;
+   }
+
+   public void setUserFlag( UserDomainObject user, String flagName ) {
+   }
+
+   public void unsetUserFlag( UserDomainObject user, String flagName ) {
+   }
+
+   public PollHandlingSystem getPollHandlingSystem() {
       return null;
    }
 
@@ -455,11 +375,8 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
     public void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime ) {
     }
 
-    public DocumentMapper getDocumentMapper() {
-        return null;
+    public String[] sqlQuery( String sqlQuery, String[] params ) {
+        return new String[0];
     }
 
-    public DatabaseService getDatabaseService() {
-        return null;
-    }
 }

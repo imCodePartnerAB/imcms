@@ -1,14 +1,8 @@
 <html>
 <head>
-<title>Administrera Sektioner (Index ord)</title>
+<title><? templates/sv/sections/admin_section_add.html/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id) {
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
+
 </head>
 <body bgcolor="#ffffff">
 <form method="post" action="AdminSection">
@@ -16,30 +10,33 @@ function openHelp(id) {
 	<tr bgcolor="#333366">
 	  <td width="5%">&nbsp;</td>
       <td colspan="6"> 
-        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff" size="2">Lägg till ny avdelning</font></b>&nbsp;</div>
+        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff" size="2"><? templates/sv/sections/admin_section_add.html/2 ?></font></b>&nbsp;</div>
       </td>
 	  <td width="5%">&nbsp;</td>
     </tr>
-	<tr bgcolor="#bababa"> 
-      <td colspan="8">&nbsp;</td>      
+    <tr bgcolor="#bababa">
+        <td width="5%">&nbsp;</td>
+        <td colspan="7" nowrap><font face="Verdana, Arial, Helvetica, sans-serif" color="red" size="2"> #errormsg#</td>
+    </tr>
+    <tr bgcolor="#bababa">
+      <td colspan="8">&nbsp;</td>
     </tr>
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
-      <td colspan="2" nowrap>Ny avdelning:</td>      
-      <td colspan="2"><input name="new_section_name" size="30" 
-     ></td>
-	  <td colspan="2"><input type="submit" name="add_section" value="Lägg till"> </td>
+      <td colspan="2" nowrap><? templates/sv/sections/admin_section_add.html/3 ?></td>
+      <td colspan="2"><input name="new_section_name" size="30" value="#new_section_name#"></td>
+	  <td colspan="2"><input type="submit" name="add_section" value="<? templates/sv/sections/admin_section_add.html/2001 ?>"> </td>
       <td width="5%">&nbsp;</td>
-    </tr>
+    </tr><br>
 	<tr bgcolor="#bababa"> 
       <td colspan="8"><hr size="3"></td>      
     </tr>
 	
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
-      <td colspan="3" align="right" width="200">Lista över befintliga:</td>
+      <td colspan="3" align="right" width="200"><? templates/sv/sections/admin_section_add.html/4 ?></td>
 	  <td colspan="3" align="left" width="200">
-	  		<select name="section_list">
+	  		<select name="section_list" size="4">
 	  				#section_list#
 	  		</select>	  
 	  </td>
@@ -52,8 +49,8 @@ function openHelp(id) {
 	    
     <tr bgcolor="#bababa">
 	  <td width="5%">&nbsp;</td> 
-      <td colspan="6"><input type="submit" name="submit" value="Tillbaka">
-	  &nbsp; <a href="GetDoc?meta_id=92" target="_blank" onClick="openHelp('92'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+      <td colspan="6"><input type="submit" name="submit" value="<? templates/sv/sections/admin_section_add.html/2002 ?>">
+	  &nbsp; <a href="@documentationurl@/GetDoc?meta_id=92" target="_blank"><img src="@imcmsimageurl@/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/sections/admin_section_add.html/2003 ?>"></a>
 	  </td> 
 	  <td width="5%">&nbsp;</td>     
     </tr>

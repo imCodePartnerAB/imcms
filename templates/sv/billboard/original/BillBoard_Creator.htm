@@ -1,59 +1,51 @@
 <html>
 <head>
-<title>Create Conference</title>
+<title><? templates/sv/billboard/original/BillBoard_Creator.htm/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
 <body bgcolor="#ffffff">
 <center>
-<table width="400" border="0" cellspacing="0" cellpadding="0">
+<table width="600" border="0" cellspacing="0" cellpadding="0">
   <tr> 
-      <td><font size="3"    ></font><FONT 
-      face=Verdana>ANSLAGSTAVLA </FONT>
-        <IMG height=8 src="#IMAGE_URL#blueline.gif" width=365></td>
+      <td><font size="3" face=Verdana><? templates/sv/billboard/original/BillBoard_Creator.htm/2 ?> </font><td>
+  </tr>
+  <tr>
+      <td> <IMG height=8 src="#IMAGE_URL#blueline.gif" width=450></td>
   </tr>
 </table>
 <form method="post" action="#SERVLET_URL#BillBoardCreator" name="CreateBillBoard">
-    <table width="400" border="0" cellpadding="0" cellspacing="0">
+    <table width="600" border="0" cellpadding="0" cellspacing="0">
       <tr> 
-        <td width="36%"> 
+        <td>
           <input type="hidden" name="action" value="ADD_BILLBOARD">
           <input type="hidden" name="billBoard_name" value="Anslagstavla">
         </td>
-        <td width="64%" nowrap>&nbsp;</td>
+        <td nowrap>&nbsp;</td>
       </tr>
-      <tr> 
-        <td width="36%"><FONT 
-face=Verdana>AVDELNING</FONT></td>
-        <td width="64%" nowrap>&nbsp; </td>
-      </tr>
-      <tr> 
-        <td width="36%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-          Avdelnings&nbsp;namn:</font><font face="Verdana, Arial, Helvetica, sans-serif" size="3"> 
-          
-		  </font></td>
-        <td width="64%" nowrap> 
-          <input name="section_name" maxlength="255" size="30" value="Anslagstavla" >
-        </td>
-      </tr>
-	  <tr> 
-       <td width="36%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-          Ämne:</font><font face="Verdana, Arial, Helvetica, sans-serif" size="3"> 
-          
-		  </font></td>
-        <td width="64%" nowrap> 
+      <tr>
+       <td width="40%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+          <? templates/sv/billboard/original/BillBoard_Creator.htm/3 ?></font></td>
+       <td" nowrap>
           <input name="subject_name" maxlength="255" size="30" value="???">
         </td>
       </tr>
       <tr> 
-        <td width="36%">&nbsp;</td>
-        <td width="64%" nowrap>&nbsp;</td>
+        <td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+          <? templates/sv/billboard/original/BillBoard_Creator.htm/4 ?></font></td>
+        <td nowrap>
+          <input name="section_name" maxlength="255" size="30" value="Anslagstavla" >
+        </td>
+      </tr>
+
+      <tr> 
+        <td></td>
+        <td nowrap>&nbsp;</td>
       </tr>
       <tr> 
-        <td width="36%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">SKAPA 
-          ANSLAGSTAVLA</font></td>
-        <td width="64%" nowrap> 
-          <input type="submit" name="submit" value="OK">
+        <td><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/billboard/original/BillBoard_Creator.htm/5 ?></font></td>
+        <td nowrap>
+          <input type="submit" name="submit" value="<? templates/sv/billboard/original/BillBoard_Creator.htm/2001 ?>">
         </td>
       </tr>
     </table>

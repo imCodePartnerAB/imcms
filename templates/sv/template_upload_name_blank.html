@@ -1,48 +1,39 @@
 <html>
 <head>
-<title>Varning!</title>
+<title><? templates/sv/template_upload_name_blank.html/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-</head>
 
+<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
+
+<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
+
+</head>
 <body bgcolor="#FFFFFF">
-<form method="post" action="TemplateAdmin">
-  <table width="550" cellspacing="0" cellpadding="0" border="0">
-	<tr bgcolor="#333366"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> 
-		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Varning!</font></b></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td colspan="3">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Du 
-		gl&ouml;mde fylla i ett namn. V&auml;nligen f&ouml;rs&ouml;k igen. </font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa">
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"><hr></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> 
-		<p> 
-		  <input type="submit" name="add_template" value="Tillbaka">
-		  <input type="HIDDEN" name="language" value="#language#">
-		  <input type="HIDDEN" name="add_template" value="Tillbaka">
-		</p>
-		</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td colspan="3">&nbsp;</td>
-	</tr>
-  </table>
+
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", "Varning");
+</script>
+<table border="0" cellpadding="0" cellspacing="0">
+<form>
+<tr>
+	<td><input type="button" value="<? templates/sv/template_upload_name_blank.html/2001 ?>" class="imcmsFormBtn" onClick="history.go(-1); return false"></td>
+</tr>
 </form>
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="310">
+<tr>
+	<td align="center" class="imcmsAdmText">
+	<? templates/sv/template_upload_name_blank.html/4 ?></td>
+</tr>
+</table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
+
 </body>
 </html>

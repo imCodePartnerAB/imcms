@@ -1,47 +1,49 @@
 <tr>
-	<td>&nbsp;</td>
-	<td colspan="3"><hr></td>
-	<td>&nbsp;</td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Aktiverad:</font></td>
-	<td><font size="2">&nbsp;</font></td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><input type="checkbox" name="active" value="#ACTIVE#" #ACTIVE_FLAG#></font></td>
-	<td>&nbsp;</td>
+	<td class="imcmsAdmText"><? templates/sv/AdminUserResp_admin_part.htm/2 ?></td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td><input type="checkbox" name="active" value="#ACTIVE#" #ACTIVE_FLAG#></td>
+		<td class="imcmsAdmText" nowrap>&nbsp;<script language="JavaScript">
+<!--
+var sDate = "#USER_CREATE_DATE#" ;
+if (/\d+/.test(sDate)) document.writeln(" &nbsp; <? templates/sv/AdminUserResp_admin_part.htm/9 ?> &nbsp; " + sDate);
+//-->
+</script></td>
+	</tr>
+	</table></td>
 </tr>
 <tr>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Inläggningsdatum:</font></td>
-	<td><font size="2">&nbsp;</font></td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#USER_CREATE_DATE#</font></td>
-	<td>&nbsp;</td>
+	<td colspan="2">&nbsp;<br><script>imcHeading("<? templates/sv/AdminUserResp_admin_part.htm/3/1 ?>",656);</script></td>
 </tr>
 <tr>
-	<td height="22">&nbsp;</td>
-	<td valign="top"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Användartyp:</font></td>
-	<td valign="bottom"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
-	<td valign="bottom"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
+	<td class="imcmsAdmText"><? templates/sv/AdminUserResp_admin_part.htm/4 ?></td>
+	<td>
 	<select name="user_type">
 	#USER_TYPES#
-	</select></font></td>
-	<td>&nbsp;</td>
+	</select></td>
 </tr>
 <tr>
-	<td colspan="5">&nbsp;</td>
+	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 </tr>
 <tr valign="top">
-	<td>&nbsp;</td>
-	<td nowrap colspan="2"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Användarens Roller: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</font><br><br>
-	<font size="1" face="Verdana, Arial, Helvetica, sans-serif">Välj vilka roller som<br>användaren skall tillhöra. </font></td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
-	<select name="roles" size="5" multiple onchange="activateUseradmin_roles(); return true;">
-	#ROLES_MENU#
-	</select></font></td>
-	<td>&nbsp;</td>
+	<td class="imcmsAdmText" nowrap>
+	<? templates/sv/AdminUserResp_admin_part.htm/1001 ?> &nbsp;</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td>
+		<select name="roles" size="5" multiple onchange="activateUseradmin_roles(); return true;">
+		#ROLES_MENU#
+		</select></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmDim"><? templates/sv/AdminUserResp_admin_part.htm/8 ?></td>
+	</tr>
+	</table></td>
 </tr>
-<tr>
-	<td colspan="5">&nbsp;</td>
-</tr>
-	#ROLES_MENU_USERADMIN#
+#ROLES_MENU_USERADMIN#
 	

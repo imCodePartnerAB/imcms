@@ -7,12 +7,10 @@ import java.util.Enumeration ;
 import java.util.Iterator ;
 
 public class SimpleElement implements Element {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
-    protected String name ;
-    protected Properties attributes ;
-    protected List children ;
+    private String name ;
+    private Properties attributes ;
+    private List children ;
 
     public SimpleElement(String name, Properties attributes, List children) {
 	this.name = name != null ? name : "" ;

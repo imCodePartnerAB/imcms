@@ -1,14 +1,8 @@
 <html>
 <head>
-<title>Editera sektioner</title>
+<title><? templates/sv/sections/admin_section_name.html/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id) {
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
+
 </head>
 <body bgcolor="#FFFFFF">
 <form method="post" action="AdminSection">
@@ -16,14 +10,14 @@ function openHelp(id) {
 	<tr bgcolor="#333366">
 	  <td width="5%">&nbsp;</td>
 	  <td colspan="2"> 
-		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"color="#FFFFFF"><b>Ändra namn på avdelning!</font></b>&nbsp;</div>
+		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"color="#FFFFFF"><? templates/sv/sections/admin_section_name.html/2 ?></font></b>&nbsp;</div>
 	  </td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
 	
 	<tr bgcolor="#bababa">
 	  <td width="5%">&nbsp;</td> 
-	  <td width="30%" align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Välj:</font></td>
+	  <td width="30%" align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/sections/admin_section_name.html/3 ?></font></td>
 	  <td width="60%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
 		<select name="section_list">
 			#section_list#
@@ -34,7 +28,7 @@ function openHelp(id) {
 	
 	<tr bgcolor="#bababa">
 	  <td width="5%">&nbsp;</td> 
-	  <td width="30%" align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Nytt namn:</td>
+	  <td width="30%" align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/sections/admin_section_name.html/5 ?></td>
 	  <td width="60%"> 
 		<input type="text" name="new_section_name">
 		</font></td>
@@ -44,7 +38,7 @@ function openHelp(id) {
 	<tr bgcolor="#bababa">
 	  <td width="5%">&nbsp;</td> 	  
 	  <td colspan="2" align="center"> 
-		<input type="submit" name="edit_section" value="Byt namn">
+		<input type="submit" name="edit_section" value="<? templates/sv/sections/admin_section_name.html/2001 ?>">
 	  </td>
 	  <td width="5%">&nbsp;</td>	  
 	</tr>
@@ -52,8 +46,8 @@ function openHelp(id) {
 	<tr bgcolor="#bababa">
 	  <td width="5%">&nbsp;</td> 	  
 	  <td colspan="2" align="left"> 
-		<input type="submit" name="submit" value="Tillbaka">
-		&nbsp; <a href="GetDoc?meta_id=95" target="_blank" onClick="openHelp('95'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		<input type="submit" name="submit" value="<? templates/sv/sections/admin_section_name.html/2002 ?>">
+		&nbsp; <a href="@documentationurl@/GetDoc?meta_id=95" target="_blank"><img src="@imcmsimageurl@/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/sections/admin_section_name.html/2003 ?>"></a>
 	  </td>
 	  <td width="5%">&nbsp;</td>	  
 	</tr>

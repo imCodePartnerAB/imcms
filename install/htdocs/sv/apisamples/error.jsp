@@ -2,26 +2,21 @@
                  com.imcode.imcms.api.NoPermissionException"%>
 <%@page isErrorPage="true"  %>
 
-<head>
-<title>Error</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-</head>
+<h2>error.jsp : There was an error in one of the API sample pages.</h2>
 
-<h2>An error uccured in one of the API sample pages.</h2>
+<pre>
 <%
     if( exception instanceof NoPermissionException ){
         out.println( "You dont have the right permission to do this. <br><br>");
+        out.println( "Message: " + exception.getMessage() );
+        exception.printStackTrace( new PrintWriter(out) );
     } else {
-        if( exception instanceof NullPointerException ) {
-            out.println( "A NullPointerException uccured<br>");
-            out.println( "It could be because of that you are not logged in.<br><br>");
-        }
         out.println( "Exception type: " + exception.getClass().getName()  + "<br>" );
         out.println( "Message: " + exception.getMessage()  + "<br>" );
         out.println( "Stack trace");
         PrintWriter writer = new PrintWriter( out );
         exception.printStackTrace( writer );
     }
+
 %>
-</body>
-</html>
+</pre>

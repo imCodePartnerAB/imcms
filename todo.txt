@@ -1,8 +1,3 @@
-Klasser att testa efter flytt av sprocs:
-
-- Category vs Logger, vad ska användas?
-
-
 Hasse
 - Se till att ingenting i API:et är mer public än det behöver vara
 - Gå igenom API klasserna så att de är dokumenterade och logiska namn
@@ -16,8 +11,7 @@ Hasse
 - "Stored procedures, A stored procedure is written using Transact-SQL (T-SQL). T-SQL is a subset of ANSI SQL-92 that has extensions to the Standard. T-SQL includes variables, conditional logic, loops and flow control."
 PostgreSQL är open source och stödjer stored procedures
 
-- Varför används inte transaktioner i systemet?
-- Varför används inte (ens) PreparedStatement vid get text doc?
+Hillar, prioritera
 
 API:et (prio)
 

@@ -4,44 +4,1143 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-   <display-name>imCMS</display-name>
+    <display-name>imCMS</display-name>
 
-   <filter>
-      <filter-name>ImcmsSetupFilter</filter-name>
-      <description>Setting up objects in request for api usage</description>
-      <filter-class>com.imcode.imcms.servlet.ImcmsSetupFilter</filter-class>
-   </filter>
+    <filter>
+        <filter-name>ImcmsSetupFilter</filter-name>
+        <description>Setting up objects in request for api usage</description>
+        <filter-class>com.imcode.imcms.servlet.ImcmsSetupFilter</filter-class>
+    </filter>
 
     <filter-mapping>
         <filter-name>ImcmsSetupFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-   <servlet>
-      <servlet-name>init</servlet-name>
-      <servlet-class>MainInitServlet</servlet-class>
-      <load-on-startup>1</load-on-startup>
-   </servlet>
+    <servlet>
+        <servlet-name>init</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.MainInitServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
-   <servlet>
-      <servlet-name>RD</servlet-name>
-      <servlet-class>ReDirecter</servlet-class>
-   </servlet>
+    <servlet>
+        <servlet-name>RD</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.ReDirecter</servlet-class>
+    </servlet>
 
-   <servlet-mapping>
-      <servlet-name>RD</servlet-name>
-      <url-pattern>/RD/*</url-pattern>
-   </servlet-mapping>
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.AddDoc</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.AddDoc</servlet-class>
+    </servlet>
 
-   <session-config>
-      <session-timeout>
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.billboard.AdminBillBoard</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.billboard.AdminBillBoard</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminCategories</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminCategories</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.conference.AdminConference</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.AdminConference</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminCounter</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminCounter</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminDeleteDoc</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminDeleteDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.AdminDoc</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.AdminDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminError2</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminError2</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminError</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminError</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminFortuneFile</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminFortuneFile</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminFortunes</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminFortunes</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminIpAccess</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminIpAccess</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.Administrator</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.Administrator</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminListDocs</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminListDocs</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminManager</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminManager</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminQuestions</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminQuestions</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminQuestionsFile</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminQuestionsFile</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRandomTexts</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminRandomTexts</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRandomTextsFile</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminRandomTextsFile</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRoleBelongings</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminRoleBelongings</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRoles</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminRoles</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminSection</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminSection</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminSystemInfo</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminSystemInfo</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminUser</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminUser</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminUserProps</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminUserProps</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.BackDoc</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.BackDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardAdd</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.billboard.BillBoardAdd</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardAdmin</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.billboard.BillBoardAdmin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoard</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.billboard.BillBoard</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardCreator</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.billboard.BillBoardCreator</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardDisc</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.billboard.BillBoardDisc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardDiscView</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.billboard.BillBoardDiscView</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardError</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.billboard.BillBoardError</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardForum</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.billboard.BillBoardForum</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardHelp</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.billboard.BillBoardHelp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardLogin</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.billboard.BillBoardLogin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardManager</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.billboard.BillBoardManager</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardReply</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.billboard.BillBoardReply</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardViewer</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.billboard.BillBoardViewer</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.BrowserDocumentComposer</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.BrowserDocumentComposer</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.ChangeExternalDoc2</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.ChangeExternalDoc2</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.ChangeImage</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.ChangeImage</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.ChangeText</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.ChangeText</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatAdmin</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.chat.ChatAdmin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatBoard</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.chat.ChatBoard</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatControl</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.chat.ChatControl</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatCreator</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.chat.ChatCreator</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatHelp</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.chat.ChatHelp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatLogin</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.chat.ChatLogin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatManager</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.chat.ChatManager</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatViewer</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.chat.ChatViewer</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfAdd</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.ConfAdd</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfAdmin</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.ConfAdmin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.ConfAndBillbTemplateUpload</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.ConfAndBillbTemplateUpload</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfCreator</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.ConfCreator</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfDisc</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.ConfDisc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfDiscView</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.ConfDiscView</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.conference.Conference</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.Conference</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfError</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.ConfError</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfForum</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.ConfForum</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfHelp</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.ConfHelp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfLogin</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.ConfLogin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfManager</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.ConfManager</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfReply</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.ConfReply</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfViewer</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.conference.ConfViewer</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.FileAdmin</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.FileAdmin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.GetDoc</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.GetDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.GetExistingDoc</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.GetExistingDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.ImageBrowse</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.ImageBrowse</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.ImageUpload</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.ImageUpload</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.LogOut</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.LogOut</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.MetaAdmin</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.MetaAdmin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.PasswordMailReminder</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.PasswordMailReminder</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.misc.PollHandler</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.misc.PollHandler</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.misc.PostcardServlet</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.misc.PostcardServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.misc.PutInShoppingCart</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.misc.PutInShoppingCart</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.misc.QEngine</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.misc.QEngine</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.misc.QuestionEngine</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.misc.QuestionEngine</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.misc.QuestionResult</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.misc.QuestionResult</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.misc.QuotPicEngine</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.misc.QuotPicEngine</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.ReDirecter</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.ReDirecter</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.Restart</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.Restart</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveBrowserDoc</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SaveBrowserDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.DocumentComposer</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.DocumentComposer</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveFileUpload</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SaveFileUpload</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveFrameset</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SaveFrameset</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveImage</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SaveImage</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SaveInclude</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveInPage</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SaveInPage</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveMeta</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SaveMeta</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewBrowserDoc</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SaveNewBrowserDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewFileUpload</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SaveNewFileUpload</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewFrameset</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SaveNewFrameset</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewUrlDoc</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SaveNewUrlDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SavePermissions</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SavePermissions</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveSort</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SaveSort</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveText</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SaveText</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveUrlDoc</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.SaveUrlDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.SearchDocuments</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.SearchDocuments</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.SendMailServlet</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.SendMailServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.StartDoc</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.StartDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.TemplateAdd</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.TemplateAdd</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.TemplateAdmin</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.TemplateAdmin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.TemplateChange</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.TemplateChange</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.TestFileAdmin</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.TestFileAdmin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.UrlDocTest</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.UrlDocTest</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.UserChangePrefs</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.UserChangePrefs</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.VerifyUser</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.VerifyUser</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.Version</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.Version</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>RD</servlet-name>
+        <url-pattern>/RD/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.AddDoc</servlet-name>
+        <url-pattern>/servlet/AddDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.billboard.AdminBillBoard</servlet-name>
+        <url-pattern>/servlet/AdminBillBoard</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminCategories</servlet-name>
+        <url-pattern>/servlet/AdminCategories</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.conference.AdminConference</servlet-name>
+        <url-pattern>/servlet/AdminConference</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminCounter</servlet-name>
+        <url-pattern>/servlet/AdminCounter</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminDeleteDoc</servlet-name>
+        <url-pattern>/servlet/AdminDeleteDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.AdminDoc</servlet-name>
+        <url-pattern>/servlet/AdminDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminError2</servlet-name>
+        <url-pattern>/servlet/AdminError2</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminError</servlet-name>
+        <url-pattern>/servlet/AdminError</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminFortuneFile</servlet-name>
+        <url-pattern>/servlet/AdminFortuneFile</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminFortunes</servlet-name>
+        <url-pattern>/servlet/AdminFortunes</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminIpAccess</servlet-name>
+        <url-pattern>/servlet/AdminIpAccess</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.Administrator</servlet-name>
+        <url-pattern>/servlet/Administrator</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminListDocs</servlet-name>
+        <url-pattern>/servlet/AdminListDocs</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminManager</servlet-name>
+        <url-pattern>/servlet/AdminManager</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminQuestions</servlet-name>
+        <url-pattern>/servlet/AdminQuestions</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminQuestionsFile</servlet-name>
+        <url-pattern>/servlet/AdminQuestionsFile</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRandomTexts</servlet-name>
+        <url-pattern>/servlet/AdminRandomTexts</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRandomTextsFile</servlet-name>
+        <url-pattern>/servlet/AdminRandomTextsFile</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRoleBelongings</servlet-name>
+        <url-pattern>/servlet/AdminRoleBelongings</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRoles</servlet-name>
+        <url-pattern>/servlet/AdminRoles</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminSection</servlet-name>
+        <url-pattern>/servlet/AdminSection</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminSystemInfo</servlet-name>
+        <url-pattern>/servlet/AdminSystemInfo</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminUser</servlet-name>
+        <url-pattern>/servlet/AdminUser</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminUserProps</servlet-name>
+        <url-pattern>/servlet/AdminUserProps</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.BackDoc</servlet-name>
+        <url-pattern>/servlet/BackDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardAdd</servlet-name>
+        <url-pattern>/servlet/BillBoardAdd</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardAdmin</servlet-name>
+        <url-pattern>/servlet/BillBoardAdmin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoard</servlet-name>
+        <url-pattern>/servlet/BillBoard</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardCreator</servlet-name>
+        <url-pattern>/servlet/BillBoardCreator</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardDisc</servlet-name>
+        <url-pattern>/servlet/BillBoardDisc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardDiscView</servlet-name>
+        <url-pattern>/servlet/BillBoardDiscView</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardError</servlet-name>
+        <url-pattern>/servlet/BillBoardError</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardForum</servlet-name>
+        <url-pattern>/servlet/BillBoardForum</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardHelp</servlet-name>
+        <url-pattern>/servlet/BillBoardHelp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardLogin</servlet-name>
+        <url-pattern>/servlet/BillBoardLogin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardManager</servlet-name>
+        <url-pattern>/servlet/BillBoardManager</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardReply</servlet-name>
+        <url-pattern>/servlet/BillBoardReply</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardViewer</servlet-name>
+        <url-pattern>/servlet/BillBoardViewer</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.BrowserDocumentComposer</servlet-name>
+        <url-pattern>/servlet/BrowserDocumentComposer</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.ChangeExternalDoc2</servlet-name>
+        <url-pattern>/servlet/ChangeExternalDoc2</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.ChangeImage</servlet-name>
+        <url-pattern>/servlet/ChangeImage</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.ChangeText</servlet-name>
+        <url-pattern>/servlet/ChangeText</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatAdmin</servlet-name>
+        <url-pattern>/servlet/ChatAdmin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatBoard</servlet-name>
+        <url-pattern>/servlet/ChatBoard</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatControl</servlet-name>
+        <url-pattern>/servlet/ChatControl</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatCreator</servlet-name>
+        <url-pattern>/servlet/ChatCreator</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatHelp</servlet-name>
+        <url-pattern>/servlet/ChatHelp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatLogin</servlet-name>
+        <url-pattern>/servlet/ChatLogin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatManager</servlet-name>
+        <url-pattern>/servlet/ChatManager</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.chat.ChatViewer</servlet-name>
+        <url-pattern>/servlet/ChatViewer</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfAdd</servlet-name>
+        <url-pattern>/servlet/ConfAdd</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfAdmin</servlet-name>
+        <url-pattern>/servlet/ConfAdmin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.ConfAndBillbTemplateUpload</servlet-name>
+        <url-pattern>/servlet/ConfAndBillbTemplateUpload</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfCreator</servlet-name>
+        <url-pattern>/servlet/ConfCreator</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfDisc</servlet-name>
+        <url-pattern>/servlet/ConfDisc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfDiscView</servlet-name>
+        <url-pattern>/servlet/ConfDiscView</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.conference.Conference</servlet-name>
+        <url-pattern>/servlet/Conference</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfError</servlet-name>
+        <url-pattern>/servlet/ConfError</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfForum</servlet-name>
+        <url-pattern>/servlet/ConfForum</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfHelp</servlet-name>
+        <url-pattern>/servlet/ConfHelp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfLogin</servlet-name>
+        <url-pattern>/servlet/ConfLogin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfManager</servlet-name>
+        <url-pattern>/servlet/ConfManager</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfReply</servlet-name>
+        <url-pattern>/servlet/ConfReply</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.conference.ConfViewer</servlet-name>
+        <url-pattern>/servlet/ConfViewer</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.FileAdmin</servlet-name>
+        <url-pattern>/servlet/FileAdmin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.GetDoc</servlet-name>
+        <url-pattern>/servlet/GetDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.GetExistingDoc</servlet-name>
+        <url-pattern>/servlet/GetExistingDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.ImageBrowse</servlet-name>
+        <url-pattern>/servlet/ImageBrowse</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.ImageUpload</servlet-name>
+        <url-pattern>/servlet/ImageUpload</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.LogOut</servlet-name>
+        <url-pattern>/servlet/LogOut</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.MetaAdmin</servlet-name>
+        <url-pattern>/servlet/MetaAdmin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.PasswordMailReminder</servlet-name>
+        <url-pattern>/servlet/PasswordMailReminder</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.misc.PollHandler</servlet-name>
+        <url-pattern>/servlet/PollHandler</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.misc.PostcardServlet</servlet-name>
+        <url-pattern>/servlet/PostcardServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.misc.PutInShoppingCart</servlet-name>
+        <url-pattern>/servlet/PutInShoppingCart</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.misc.QEngine</servlet-name>
+        <url-pattern>/servlet/QEngine</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.misc.QuestionEngine</servlet-name>
+        <url-pattern>/servlet/QuestionEngine</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.misc.QuestionResult</servlet-name>
+        <url-pattern>/servlet/QuestionResult</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.misc.QuotPicEngine</servlet-name>
+        <url-pattern>/servlet/QuotPicEngine</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.ReDirecter</servlet-name>
+        <url-pattern>/servlet/ReDirecter</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.Restart</servlet-name>
+        <url-pattern>/servlet/Restart</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveBrowserDoc</servlet-name>
+        <url-pattern>/servlet/SaveBrowserDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.DocumentComposer</servlet-name>
+        <url-pattern>/servlet/DocumentComposer</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveFileUpload</servlet-name>
+        <url-pattern>/servlet/SaveFileUpload</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveFrameset</servlet-name>
+        <url-pattern>/servlet/SaveFrameset</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveImage</servlet-name>
+        <url-pattern>/servlet/SaveImage</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>
+        <url-pattern>/servlet/SaveInclude</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveInPage</servlet-name>
+        <url-pattern>/servlet/SaveInPage</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveMeta</servlet-name>
+        <url-pattern>/servlet/SaveMeta</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewBrowserDoc</servlet-name>
+        <url-pattern>/servlet/SaveNewBrowserDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewFileUpload</servlet-name>
+        <url-pattern>/servlet/SaveNewFileUpload</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewFrameset</servlet-name>
+        <url-pattern>/servlet/SaveNewFrameset</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewUrlDoc</servlet-name>
+        <url-pattern>/servlet/SaveNewUrlDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SavePermissions</servlet-name>
+        <url-pattern>/servlet/SavePermissions</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveSort</servlet-name>
+        <url-pattern>/servlet/SaveSort</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveText</servlet-name>
+        <url-pattern>/servlet/SaveText</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.SaveUrlDoc</servlet-name>
+        <url-pattern>/servlet/SaveUrlDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.SearchDocuments</servlet-name>
+        <url-pattern>/servlet/SearchDocuments</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.SendMailServlet</servlet-name>
+        <url-pattern>/servlet/SendMailServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.StartDoc</servlet-name>
+        <url-pattern>/servlet/StartDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.TemplateAdd</servlet-name>
+        <url-pattern>/servlet/TemplateAdd</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.TemplateAdmin</servlet-name>
+        <url-pattern>/servlet/TemplateAdmin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.TemplateChange</servlet-name>
+        <url-pattern>/servlet/TemplateChange</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.TestFileAdmin</servlet-name>
+        <url-pattern>/servlet/TestFileAdmin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.UrlDocTest</servlet-name>
+        <url-pattern>/servlet/UrlDocTest</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.UserChangePrefs</servlet-name>
+        <url-pattern>/servlet/UserChangePrefs</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.VerifyUser</servlet-name>
+        <url-pattern>/servlet/VerifyUser</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.Version</servlet-name>
+        <url-pattern>/servlet/Version</url-pattern>
+    </servlet-mapping>
+
+    <session-config>
+        <session-timeout>
          30
-      </session-timeout>
-   </session-config>
+        </session-timeout>
+    </session-config>
 
-   <welcome-file-list>
-      <welcome-file>index.jsp</welcome-file>
-      <welcome-file>index.htm</welcome-file>
-      <welcome-file>index.html</welcome-file>
-   </welcome-file-list>
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>index.htm</welcome-file>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+    <error-page>
+        <exception-type>java.lang.Throwable</exception-type>
+        <location>/imcms/internalerrorpage.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/imcms/internalerrorpage.jsp</location>
+    </error-page>
 </web-app>

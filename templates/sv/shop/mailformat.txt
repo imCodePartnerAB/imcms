@@ -1,7 +1,1 @@
-#datetime#
-
-Användare #user_login_name# (#user_title# #user_first_name# #user_last_name#, med e-mail #user_email#, från företag #user_company#) beställde följande saker:
-
-#items#
-
-Totalt #total_price#
+<? templates/sv/shop/mailformat.txt/1 ?>

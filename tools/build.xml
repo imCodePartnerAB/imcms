@@ -7,9 +7,9 @@
 
   <target name="build" description="Builds the project.">
     <mkdir dir="build"/>
-    <javac srcdir="src" destdir="build">
+    <javac srcdir="src" destdir="build" debug="true" >
 	<classpath>
-	    <fileset dir="../install/lib">
+	    <fileset dir="../lib">
 		<include name="**/*.jar"/>
 	    </fileset>
 	    <pathelement path="../build/WEB-INF/classes"/>

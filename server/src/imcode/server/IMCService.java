@@ -1,50 +1,59 @@
 package imcode.server;
 
-import imcode.server.db.sql.*;
-import imcode.server.db.*;
-import imcode.server.parser.*;
-import imcode.server.user.*;
+import imcode.server.db.ConnectionPool;
+import imcode.server.db.SqlHelpers;
 import imcode.server.document.*;
+import imcode.server.parser.AdminButtonParser;
+import imcode.server.parser.ParserParameters;
+import imcode.server.parser.TextDocumentParser;
+import imcode.server.user.*;
 import imcode.util.*;
-import imcode.util.poll.*;
-import imcode.util.shop.*;
 import imcode.util.fortune.*;
-import imcode.readrunner.*;
+import imcode.util.net.SMTP;
+import imcode.util.poll.PollHandlingSystem;
+import imcode.util.poll.PollHandlingSystemImpl;
+import imcode.util.shop.ShoppingOrderSystem;
+import imcode.util.shop.ShoppingOrderSystemImpl;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
+import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.*;
+import java.text.Collator;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
-import java.text.*;
 
-import org.apache.log4j.*;
+final public class IMCService implements IMCServiceInterface {
 
-/**
- Main services for the Imcode Net Server.
- Made final, since only a complete and utter moron would want to extend it.
- **/
-final public class IMCService implements IMCServiceInterface, IMCConstants {
     public ConnectionPool getConnectionPool() {
         return m_conPool;
     }
 
-    private DatabaseService m_databaseService;
-    private final ConnectionPool m_conPool; // inet pool of connections
+    private final ConnectionPool m_conPool;
     private TextDocumentParser textDocParser;
 
-    private File m_TemplateHome;           // template home
-    private File m_IncludePath;
-    private File m_FortunePath;
-    private File m_FilePath;
-    private String m_StartUrl;			   // start url
-    private String m_ServletUrl;			   // servlet url
-    private String m_ImageUrl;            // image folder
-    private String m_Language = "";      // language
+    private File templatePath;           // template home
+
+    private File includePath;
+    private File fortunePath;
+    private File imcmsPath;             //  folder  /imcms
+    private File filePath;
+    private String startUrl;
+    private String imageUrl;            //  folder  /images
+    private String imcmsUrl;            //  folder  /imcms
+    private String defaultLanguageAsIso639_2;
+    private static final int DEFAULT_STARTDOCUMENT = 1001;
+
+    private String smtpServer;
+    private int smtpPort;
 
     private SystemData sysData;
 
-    private ExternalDocType m_ExDoc[];
-    private String m_SessionCounterDate = "";
-    private int m_SessionCounter = 0;
-
+    private Date sessionCounterDate;
+    private int sessionCounter = 0;
     private FileCache fileCache = new FileCache();
 
     private final static Logger mainLog = Logger.getLogger( IMCConstants.MAIN_LOG );
@@ -55,6 +64,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
     private ExternalizedImcmsAuthenticatorAndUserMapper externalizedImcmsAuthAndMapper = null;
     private DocumentMapper documentMapper;
+    private TemplateMapper templateMapper;
+    private Properties langproperties_swe;
+    private Properties langproperties_eng;
 
     static {
         mainLog.info( "Main log started." );
@@ -63,77 +75,124 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Contructs an IMCService object.
      */
-    public IMCService( DatabaseService databaseService, Properties props ) {
-        super();
-        m_databaseService = databaseService;
-        m_conPool = databaseService.getConnectionPool();
+    public IMCService( ConnectionPool conPool, Properties props ) {
+        m_conPool = conPool;
         initMemberFields( props );
         initAuthenticatorsAndUserAndRoleMappers( props );
         initDocumentMapper();
+        initTemplateMapper();
     }
 
     private void initMemberFields( Properties props ) {
         sysData = getSystemDataFromDb();
 
-        String templatePathString = props.getProperty( "TemplatePath" ).trim();
-        m_TemplateHome = Utility.getAbsolutePathFromString( templatePathString );
-        log.info( "TemplatePath: " + m_TemplateHome );
+        templatePath = getFilePropertyAndLogIt( props, "TemplatePath" );
+        includePath = getFilePropertyAndLogIt( props, "IncludePath" );
+        fortunePath = getFilePropertyAndLogIt( props, "FortunePath" );
+        filePath = getFilePropertyAndLogIt( props, "FilePath" );
+        imcmsPath = getFilePropertyAndLogIt( props, "ImcmsPath" );
 
-        String includePathString = props.getProperty( "IncludePath" ).trim();
-        m_IncludePath = Utility.getAbsolutePathFromString( includePathString );
-        log.info( "IncludePath: " + m_IncludePath );
+        startUrl = getPropertyAndLogIt( props, "StartUrl" );
+        imageUrl = getPropertyAndLogIt( props, "ImageUrl" );
+        imcmsUrl = getPropertyAndLogIt( props, "ImcmsUrl" );
+        smtpServer = getPropertyAndLogIt( props, "SmtpServer" );
+        smtpPort = getIntPropertyAndLogIt( props, "SmtpPort", 25 );
 
-        String fortunePathString = props.getProperty( "FortunePath" ).trim();
-        m_FortunePath = Utility.getAbsolutePathFromString( fortunePathString );
-        log.info( "FortunePath: " + m_FortunePath );
-
-        String filePathString = props.getProperty( "FilePath" ).trim();
-        m_FilePath = Utility.getAbsolutePathFromString( filePathString );
-        log.info( "FilePath: " + m_FilePath );
-
-        m_StartUrl = props.getProperty( "StartUrl" ).trim(); //FIXME: Get from webserver, or get rid of if possible.
-        log.info( "StartUrl: " + m_StartUrl );
-
-        m_ServletUrl = props.getProperty( "ServletUrl" ).trim(); //FIXME: Get from webserver, or get rid of if possible.
-        log.info( "ServletUrl: " + m_ServletUrl );
-
-        // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
-        m_ImageUrl = props.getProperty( "ImageUrl" ).trim(); //FIXME: Get from webserver, or get rid of if possible.
-        log.info( "ImageUrl: " + m_ImageUrl );
-
-        m_Language = props.getProperty( "DefaultLanguage" ).trim(); //FIXME: Get from DB
-        log.info( "DefaultLanguage: " + m_Language );
-
-        String externalDocTypes = props.getProperty( "ExternalDoctypes" ).trim(); //FIXME: Get rid of, if possible.
-        log.info( "ExternalDoctypes: " + externalDocTypes );
-
-        StringTokenizer doc_types = new StringTokenizer( externalDocTypes, ";", false );
-        m_ExDoc = new ExternalDocType[doc_types.countTokens()];
+        defaultLanguageAsIso639_2 = props.getProperty( "DefaultLanguage" ).trim(); //FIXME: Get from DB
         try {
-            for( int doc_count = 0; doc_types.hasMoreTokens(); ++doc_count ) {
-                StringTokenizer tempStr = new StringTokenizer( doc_types.nextToken(), ":", false );
-                String items[] = new String[tempStr.countTokens()];
-                for( int i = 0; tempStr.hasMoreTokens(); ++i ) {
-                    items[i] = tempStr.nextToken();
-                }
-                m_ExDoc[doc_count] = new ExternalDocType( Integer.parseInt( items[0] ), items[1], items[2], "" );
+            if ( defaultLanguageAsIso639_2.length() < 3 ) {
+                defaultLanguageAsIso639_2 = LanguageMapper.convert639_1to639_2( defaultLanguageAsIso639_2 );
             }
-        } catch( NoSuchElementException e ) {
-            e.printStackTrace();
+        } catch ( LanguageMapper.LanguageNotSupportedException e1 ) {
+            log.fatal( "Configured default language " + defaultLanguageAsIso639_2 + " is not supported either." );
+            defaultLanguageAsIso639_2 = null;
+        }
+        log.info( "DefaultLanguage: " + defaultLanguageAsIso639_2 );
+
+        initSessionCounter();
+
+        textDocParser = new TextDocumentParser( this );
+
+    }
+
+    private void initSessionCounter() {
+        try {
+            sessionCounter = getSessionCounterFromDb();
+            sessionCounterDate = getSessionCounterDateFromDb();
+        } catch ( NumberFormatException ex ) {
+            log.fatal( "Failed to get SessionCounter from db.", ex );
+            throw ex;
         }
 
-        m_SessionCounter = m_databaseService.sproc_GetCurrentSessionCounter();
-        m_SessionCounterDate = m_databaseService.sproc_GetCurrentSessionCounterDate();
+        log.info( "SessionCounter: " + sessionCounter );
+        log.info( "SessionCounterDate: " + sessionCounterDate );
+    }
 
-        log.info( "SessionCounter: " + m_SessionCounter );
-        log.info( "SessionCounterDate: " + m_SessionCounterDate );
+    private Date getSessionCounterDateFromDb() {
+        try {
+            DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
+            return dateFormat.parse( this.sqlProcedureStr( "GetCurrentSessionCounterDate", new String[0] ) );
+        } catch ( ParseException ex ) {
+            log.fatal( "Failed to get SessionCounterDate from db.", ex );
+            throw new RuntimeException( ex );
+        }
+    }
 
-        textDocParser = new TextDocumentParser( this, m_conPool, m_TemplateHome, m_IncludePath, m_ImageUrl, m_ServletUrl );
+    private int getSessionCounterFromDb() {
+        return Integer.parseInt( this.sqlProcedureStr( "GetCurrentSessionCounter", new String[0] ) );
+    }
 
+    private void initLangProperties( String LanguageIso639_2 ) {
+
+        if ( "swe".equals( LanguageIso639_2 ) ) {
+            try {
+                langproperties_swe = Prefs.getProperties( "swe.properties" );
+            } catch ( IOException e ) {
+                log.fatal( "Failed to initialize swe.properties", e );
+            }
+        }
+        if ( "eng".equals( LanguageIso639_2 ) ) {
+            try {
+                langproperties_eng = Prefs.getProperties( "eng.properties" );
+            } catch ( IOException e ) {
+                log.fatal( "Failed to initialize eng.properties", e );
+            }
+        }
+
+    }
+
+    private int getIntPropertyAndLogIt( Properties props, final String property, int defaultValue ) {
+        final String propertyValueString = props.getProperty( property ).trim();
+        int result = defaultValue;
+        try {
+            result = Integer.parseInt( propertyValueString );
+        } catch ( NumberFormatException nfe ) {
+            log.warn( "Illegal value for " + property + ": " + propertyValueString + ". Using default: "
+                      + defaultValue );
+        }
+        log.info( property + ": " + result );
+        return result;
+    }
+
+    private String getPropertyAndLogIt( Properties props, final String property ) {
+        String propertyValue = props.getProperty( property ).trim();
+        log.info( property + ": " + propertyValue );
+        return propertyValue;
+    }
+
+    private File getFilePropertyAndLogIt( Properties props, final String pathProperty ) {
+        String templatePathString = props.getProperty( pathProperty ).trim();
+        File absolutePath = Utility.getAbsolutePathFromString( templatePathString );
+        log.info( pathProperty + ": " + absolutePath );
+        return absolutePath;
     }
 
     private void initDocumentMapper() {
         documentMapper = new DocumentMapper( this, imcmsAuthenticatorAndUserMapper );
+    }
+
+    private void initTemplateMapper() {
+        templateMapper = new TemplateMapper( this );
     }
 
     private void initAuthenticatorsAndUserAndRoleMappers( Properties props ) {
@@ -143,71 +202,85 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         Authenticator externalAuthenticator = null;
         UserAndRoleMapper externalUserAndRoleMapper = null;
 
-        PrefixRemovedProperties authenticatorPropertiesSubset = new PrefixRemovedProperties( props, "ExternalAuthenticator." );
-        PrefixRemovedProperties userAndRoleMapperPropertiesSubset = new PrefixRemovedProperties( props, "ExternalUserAndRoleMapper." );
-
-        if( null != externalAuthenticatorName && null != externalUserAndRoleMapperName ) {
+        if ( null != externalAuthenticatorName && null != externalUserAndRoleMapperName ) {
             log.info( "ExternalAuthenticator: " + externalAuthenticatorName );
             log.info( "ExternalUserAndRoleMapper: " + externalUserAndRoleMapperName );
-            externalAuthenticator = initExternalAuthenticator( externalAuthenticatorName, authenticatorPropertiesSubset );
-            externalUserAndRoleMapper = initExternalUserAndRoleMapper( externalUserAndRoleMapperName, userAndRoleMapperPropertiesSubset );
-            if( null == externalAuthenticator || null == externalUserAndRoleMapper ) {
+            externalAuthenticator =
+            initExternalAuthenticator( externalAuthenticatorName, props );
+            externalUserAndRoleMapper =
+            initExternalUserAndRoleMapper( externalUserAndRoleMapperName, props );
+            if ( null == externalAuthenticator || null == externalUserAndRoleMapper ) {
                 log.error( "Failed to initialize both authenticator and user-and-role-documentMapper, using default implementations." );
                 externalAuthenticator = null;
                 externalUserAndRoleMapper = null;
             }
-        } else if( null == externalAuthenticatorName && null == externalUserAndRoleMapperName ) {
+        } else if ( null == externalAuthenticatorName && null == externalUserAndRoleMapperName ) {
             log.info( "ExternalAuthenticator not set." );
             log.info( "ExternalUserAndRoleMapper not set." );
         } else {
             log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
-            externalAuthenticatorName = null;
-            externalUserAndRoleMapperName = null;
+            log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
         }
         imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( this );
-        externalizedImcmsAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, externalAuthenticator, externalUserAndRoleMapper, getDefaultLanguage() );
+        externalizedImcmsAuthAndMapper =
+        new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, externalAuthenticator,
+                                                         externalUserAndRoleMapper, getDefaultLanguageAsIso639_2() );
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
     }
 
     public int getSessionCounter() {
-        return m_SessionCounter;
+        return sessionCounter;
     }
 
-    public String getSessionCounterDate() {
-        return m_SessionCounterDate;
+    public String getSessionCounterDateAsString() {
+        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
+
+        return dateFormat.format( sessionCounterDate );
     }
 
     /**
      * Verify a Internet/Intranet user. User data retrived from SQL Database.
      */
     public UserDomainObject verifyUser( String login, String password ) {
+        NDC.push( "verifyUser" );
         UserDomainObject result = null;
 
         boolean userAuthenticates = externalizedImcmsAuthAndMapper.authenticate( login, password );
         UserDomainObject user = externalizedImcmsAuthAndMapper.getUser( login );
-        if( userAuthenticates ) {
+        if ( userAuthenticates ) {
             result = user;
-            mainLog.info( "->User '" + (login) + "' successfully logged in." );
-        } else if( null == user ) {
-            mainLog.info( "->User '" + (login) + "' failed to log in: User not found." );
-        } else if( !user.isActive() ) {
-            mainLog.info( "->User '" + (login) + "' failed to log in: User deactivated." );
+            if ( "user".equalsIgnoreCase( user.getLoginName() ) ) {
+                incrementSessionCounter();
+            }
+            mainLog.info( "->User '" + login + "' successfully logged in." );
+        } else if ( null == user ) {
+            mainLog.info( "->User '" + login + "' failed to log in: User not found." );
+        } else if ( !user.isActive() ) {
+            mainLog.info( "->User '" + login + "' failed to log in: User deactivated." );
         } else {
-            mainLog.info( "->User '" + (login) + "' failed to log in: Wrong password." );
+            mainLog.info( "->User '" + login + "' failed to log in: Wrong password." );
         }
 
+        NDC.pop();
         return result;
     }
 
-    private UserAndRoleMapper initExternalUserAndRoleMapper( String externalUserAndRoleMapperName, Properties userAndRoleMapperPropertiesSubset ) {
+    private void incrementSessionCounter() {
+        sqlUpdateProcedure( "IncSessionCounter", new String[0] );
+        sessionCounter = getSessionCounterFromDb();
+    }
+
+    private UserAndRoleMapper initExternalUserAndRoleMapper( String externalUserAndRoleMapperName,
+                                                             Properties userAndRoleMapperPropertiesSubset ) {
         UserAndRoleMapper externalUserAndRoleMapper = null;
-        if( null == externalUserAndRoleMapperName ) {
+        if ( null == externalUserAndRoleMapperName ) {
             externalUserAndRoleMapper = null;
-        } else if( EXTERNAL_USER_AND_ROLE_MAPPER_LDAP.equalsIgnoreCase( externalUserAndRoleMapperName ) ) {
+        } else if ( EXTERNAL_USER_AND_ROLE_MAPPER_LDAP.equalsIgnoreCase( externalUserAndRoleMapperName ) ) {
             try {
                 externalUserAndRoleMapper = new LdapUserAndRoleMapper( userAndRoleMapperPropertiesSubset );
-            } catch( LdapUserAndRoleMapper.LdapInitException e ) {
-                log.error( "LdapUserAndRoleMapper could not be created, using default user and role documentMapper.", e );
+            } catch ( LdapUserAndRoleMapper.LdapInitException e ) {
+                log.error( "LdapUserAndRoleMapper could not be created, using default user and role documentMapper.",
+                           e );
             }
         } else {
             externalUserAndRoleMapper = (UserAndRoleMapper)createInstanceOfClass( externalUserAndRoleMapperName );
@@ -215,20 +288,26 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return externalUserAndRoleMapper;
     }
 
-    private Authenticator initExternalAuthenticator( String externalAuthenticatorName, Properties authenticatorPropertiesSubset ) {
+    private Authenticator initExternalAuthenticator( String externalAuthenticatorName,
+                                                     Properties authenticatorPropertiesSubset ) {
         Authenticator externalAuthenticator = null;
-        if( null == externalAuthenticatorName ) {
-            externalAuthenticator = null;
-        } else if( EXTERNAL_AUTHENTICATOR_SMB.equalsIgnoreCase( externalAuthenticatorName ) ) {
-            externalAuthenticator = new SmbAuthenticator( authenticatorPropertiesSubset );
-        } else if( EXTERNAL_AUTHENTICATOR_LDAP.equalsIgnoreCase( externalAuthenticatorName ) ) {
-            try {
-                externalAuthenticator = new LdapUserAndRoleMapper( authenticatorPropertiesSubset );
-            } catch( LdapUserAndRoleMapper.LdapInitException e ) {
-                log.error( "LdapUserAndRoleMapper could not be created, using default user and role documentMapper.", e );
+        try {
+            if ( null == externalAuthenticatorName ) {
+                externalAuthenticator = null;
+            } else if ( EXTERNAL_AUTHENTICATOR_SMB.equalsIgnoreCase( externalAuthenticatorName ) ) {
+                externalAuthenticator = new SmbAuthenticator( authenticatorPropertiesSubset );
+            } else if ( EXTERNAL_AUTHENTICATOR_LDAP.equalsIgnoreCase( externalAuthenticatorName ) ) {
+                try {
+                    externalAuthenticator = new LdapUserAndRoleMapper( authenticatorPropertiesSubset );
+                } catch ( LdapUserAndRoleMapper.LdapInitException e ) {
+                    log.error( "LdapUserAndRoleMapper could not be created, using default user and role documentMapper.",
+                               e );
+                }
+            } else {
+                externalAuthenticator = (Authenticator)createInstanceOfClass( externalAuthenticatorName );
             }
-        } else {
-            externalAuthenticator = (Authenticator)createInstanceOfClass( externalAuthenticatorName );
+        } catch ( Exception e ) {
+            log.error( "Failed to initialize external authenticator.", e );
         }
         return externalAuthenticator;
     }
@@ -237,90 +316,79 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         Object instance = null;
         try {
             instance = Class.forName( className ).newInstance();
-        } catch( Exception e ) {
+        } catch ( Exception e ) {
             log.error( "Could not create instance of class '" + className + "'.", e );
         }
         return instance;
     }
 
-    public UserDomainObject getUserById( int id ) {
-        ImcmsAuthenticatorAndUserMapper userMapper = new ImcmsAuthenticatorAndUserMapper( this );
-        UserDomainObject result = userMapper.getUser( id );
-        return result;
-    }
-
-    // Fixme! public bolean addUser(User user) save a user in db
-    //		  public bolean updateUser(User user) save a user in db
-
-
-    //Check if user has a special adminRole
-    public boolean checkUserAdminrole( int userId, int adminRole ) {
-        return m_databaseService.sproc_checkUserAdminrole(userId, adminRole) ;
-    }
-
-    public String parsePage( DocumentRequest documentRequest, int flags, ParserParameters paramsToParse ) throws IOException {
-        return textDocParser.parsePage( documentRequest, flags, paramsToParse );
+    public String parsePage( ParserParameters paramsToParse )
+            throws IOException {
+        return textDocParser.parsePage( paramsToParse );
     }
 
     /**
-     Returns the menubuttonrow
+     * Returns the menubuttonrow
      */
-    public String getMenuButtons( String meta_id, UserDomainObject user ) {
-        int meta_id_int = Integer.parseInt( meta_id );
-
-        // Get the users language prefix
-        String lang_prefix = user.getLangPrefix();
-
-        // Find out what permissions the user has
-        DatabaseService.JoinedTables_permissions permissions = m_databaseService.getUserPermissionSetForDocument( meta_id_int, user.getUserId() );
-
-        if( null == permissions ) {
+    public String getAdminButtons( UserDomainObject user, DocumentDomainObject document ) {
+        int user_permission_set_id = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, document );
+        if ( user_permission_set_id >= IMCConstants.DOC_PERM_SET_READ && !user.isUserAdmin() ) {
             return "";
         }
 
-        StringBuffer tempbuffer = null;
-        StringBuffer templatebuffer = null;
-        StringBuffer superadmin = null;
-        int doc_type = getDocType( Integer.parseInt( meta_id ) );
+        // Get the users language prefix
+        String lang_prefix = user.getLanguageIso639_2();
+
+        StringBuffer tempbuffer;
+        StringBuffer templatebuffer;
+        StringBuffer superadmin;
+        int doc_type = document.getDocumentTypeId();
         try {
 
             String tempbuffer_filename = lang_prefix + "/admin/adminbuttons/adminbuttons" + doc_type + ".html";
             String templatebuffer_filename = lang_prefix + "/admin/adminbuttons/adminbuttons.html";
             String superadmin_filename = lang_prefix + "/admin/adminbuttons/superadminbutton.html";
 
-            tempbuffer = new StringBuffer( fileCache.getCachedFileString( new File( m_TemplateHome, tempbuffer_filename ) ) );
-            templatebuffer = new StringBuffer( fileCache.getCachedFileString( new File( m_TemplateHome, templatebuffer_filename ) ) );
-            superadmin = new StringBuffer( fileCache.getCachedFileString( new File( m_TemplateHome, superadmin_filename ) ) );
+            tempbuffer =
+            new StringBuffer( fileCache.getCachedFileString( new File( templatePath, tempbuffer_filename ) ) );
+            templatebuffer =
+            new StringBuffer( fileCache.getCachedFileString( new File( templatePath, templatebuffer_filename ) ) );
+            superadmin =
+            new StringBuffer( fileCache.getCachedFileString( new File( templatePath, superadmin_filename ) ) );
 
-        } catch( IOException e ) {
+        } catch ( IOException e ) {
             log.error( e.toString() );
             return "";
         }
 
-        int user_permission_set_id = permissions.set_id;
-        int user_permission_set = permissions.permission_id;
+        int user_permission_set = documentMapper.getUsersPermissionBitsOnDocumentIfRestricted( user_permission_set_id, document );
 
-        // Replace #getMetaId# with meta_id
+        AdminButtonParser doc_tags = new AdminButtonParser( new File( templatePath, lang_prefix
+                                                                                    + "/admin/adminbuttons/adminbutton"
+                                                                                    + doc_type
+                                                                                    + "_" ).toString(),
+                                                            ".html", user_permission_set_id, user_permission_set );
 
-        imcode.util.AdminButtonParser doc_tags = new imcode.util.AdminButtonParser( new File( m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton" + doc_type + "_" ).toString(), ".html", user_permission_set_id, user_permission_set );
-
-        doc_tags.put( "getMetaId", meta_id );
+        doc_tags.put( "getMetaId", "" + document.getId() );
         Parser.parseTags( tempbuffer, '#', " <>\n\r\t", doc_tags, true, 1 );
 
-        AdminButtonParser tags = new imcode.util.AdminButtonParser( new File( m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton_" ).toString(), ".html", user_permission_set_id, user_permission_set );
+        AdminButtonParser tags = new AdminButtonParser( new File( templatePath, lang_prefix
+                                                                                + "/admin/adminbuttons/adminbutton_" ).toString(), ".html",
+                                                        user_permission_set_id, user_permission_set );
 
-        tags.put( "getMetaId", meta_id );
+        tags.put( "getMetaId", "" + document.getId() );
         tags.put( "doc_buttons", tempbuffer.toString() );
-
-        String doctypeStr = sqlQueryStr( "select type from doc_types where doc_type = " + doc_type );
-        tags.put( "doc_type", doctypeStr );
+        tags.put( "statusicon", documentMapper.getStatusIconTemplate( document, user ) );
 
         // if user is superadmin or useradmin lets add superadmin button
-        if( checkAdminRights( user ) || checkUserAdminrole( user.getUserId(), 2 ) ) {
+        if ( user.isSuperAdmin() || user.isUserAdmin() ) {
             tags.put( "superadmin", superadmin.toString() );
         } else {
             tags.put( "superadmin", "" );
         }
+
+        String doctypeStr = sqlQueryStr( "select type from doc_types where doc_type = ?", new String[]{"" + doc_type} );
+        tags.put( "doc_type", doctypeStr );
 
         Parser.parseTags( templatebuffer, '#', " <>\n\r\t", tags, true, 1 );
 
@@ -328,472 +396,126 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     Returns the menubuttonrow
+     * Retrieve a text from the db.
+     *
+     * @param meta_id The id of the page.
+     * @param no      The id of the text in the page.
+     * @return The text from the db, or null if there was none.
      */
-    public String getMenuButtons( int meta_id, UserDomainObject user ) {
-        return getMenuButtons( String.valueOf( meta_id ), user );
-    }
-
-    /**
-     Store the given IMCText in the DB.
-     @param user		The user
-     @param meta_id		The id of the page
-     @param txt_no		The id of the text in the page.
-     @param text		The text.
-     @param text_type		The text_type
-
-     Supported text_types is:
-
-     pollquestion-n		      where n represent the questíon number in this document
-
-     pollanswer-n-m		          where n represent the questíon number in this document
-     and m represent the answer number in question number n
-
-     pollpointanswer-n-m			  where n represent the questíon number in this document
-     and m represent the answer number in question number n
-
-     pollparameter-popup_frequency    default(0) when > 0 show this poll as a popup on every new session that is a multiple
-     of the frequens.
-
-     pollparameter-cookie			  default(0) user is allowed to fill in the poll more then once.
-     (1) = set cookie, if cookie exist on client don't allow more answers from that computer.
-
-     pollparameter-hideresults		  default(0) if 1 then we don't send result to browser only a confimation text.
-
-     pollparameter-confirmation_text  message to send back to browser as confirmation of poll participation.
-
-     pollparameter-email_recipients   email adress to reciver of result from free-text answers.
-
-     pollparameter-result_template    template to use when return the result
-
-     pollparameter-name			  name for this poll
-     pollparameter-description		  description for this poll
-
-     **/
-
-    public void saveText( UserDomainObject user, int meta_id, int txt_no, IMCText text, String text_type ) {
-        documentMapper.saveText( text, meta_id, txt_no, user, text_type );
-    }
-
-    /**
-     Retrieve a text from the db.
-     @param meta_id The id of the page.
-     @param no      The id of the text in the page.
-     @return The text from the db, or null if there was none.
-     **/
-    public IMCText getText( int meta_id, int no ) {
+    public TextDocumentDomainObject.Text getText( int meta_id, int no ) {
         return documentMapper.getText( meta_id, no );
     }
 
     /**
      * Save an imageref.
      */
-    public void saveImage( int meta_id, UserDomainObject user, int img_no, imcode.server.Image image ) {
-        String sqlStr = "";
-
-        // create a db connection an get meta data
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-        sqlStr = "select * from images where meta_id = " + meta_id + " and name = " + img_no;
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        if( dbc.executeQuery().size() > 0 ) {
-            sqlStr = "update images";
-            sqlStr += " set imgurl      = '" + image.getImageRef() + "'";
-            sqlStr += ",width       = " + image.getImageWidth();
-            sqlStr += ",height      = " + image.getImageHeight();
-            sqlStr += ",border      = " + image.getImageBorder();
-            sqlStr += ",v_space     = " + image.getVerticalSpace();
-            sqlStr += ",h_space     = " + image.getHorizontalSpace();
-            sqlStr += ",image_name  = '" + image.getImageName() + "'";
-            sqlStr += ",target      = '" + image.getTarget() + "'";
-            sqlStr += ",target_name = '" + image.getTargetName() + "'";
-            sqlStr += ",align       = '" + image.getImageAlign() + "'";
-            sqlStr += ",alt_text    = '" + image.getAltText() + "'";
-            sqlStr += ",low_scr     = '" + image.getLowScr() + "'";
-            sqlStr += ",linkurl     = '" + image.getImageRefLink() + "'";
-            sqlStr += "	where meta_id = " + meta_id;
-            sqlStr += " and name = " + img_no;
-
-            dbc.setSQLString( sqlStr );
-            dbc.createStatement();
-            dbc.executeUpdateQuery();
-            dbc.clearResultSet();
-
-        } else {
-            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, target_name, align, alt_text, low_scr, linkurl, meta_id, name)" + " values('" + image.getImageRef() + "'";
-            sqlStr += "," + image.getImageWidth();
-            sqlStr += "," + image.getImageHeight();
-            sqlStr += "," + image.getImageBorder();
-            sqlStr += "," + image.getVerticalSpace();
-            sqlStr += "," + image.getHorizontalSpace();
-            sqlStr += ",'" + image.getImageName() + "'";
-            sqlStr += ",'" + image.getTarget() + "'";
-            sqlStr += ",'" + image.getTargetName() + "'";
-            sqlStr += ",'" + image.getImageAlign() + "'";
-            sqlStr += ",'" + image.getAltText() + "'";
-            sqlStr += ",'" + image.getLowScr() + "'";
-            sqlStr += ",'" + image.getImageRefLink() + "'";
-            sqlStr += "," + meta_id;
-            sqlStr += "," + img_no + ")";
-
-            dbc.setSQLString( sqlStr );
-            dbc.createStatement();
-            dbc.executeUpdateQuery();
-            dbc.clearResultSet();
-        }
-
-        this.updateLogs( "ImageRef " + img_no + " =" + image.getImageRef() + " in  " + "[" + meta_id + "] modified by user: [" + user.getFullName() + "]" );
-
-        // close connection
-        dbc.closeConnection();
-        dbc = null;
-
+    public void saveImage( int meta_id, UserDomainObject user, int img_no, TextDocumentDomainObject.Image image ) {
+        documentMapper.saveDocumentImage( meta_id, img_no, image, user );
     }
 
     /**
      * Delete a doc and all data related. Delete from db and file system.
+     * Fixme:  delete doc from plugin db
      */
-    /* Fixme:  delete doc from plugin db */
     public void deleteDocAll( int meta_id, UserDomainObject user ) {
-        String sqlStr = "DocumentDelete " + meta_id;
 
         String filename = meta_id + "_se";
-        File file = new File( m_FilePath, filename );
-        //System.out.println("FilePath: " + file.toString()) ;
+        File file = new File( filePath, filename );
 
         //If meta_id is a file document we have to delete the file from file system
-        if( file.exists() ) {
+        if ( file.exists() ) {
             file.delete();
         }
 
         // Create a db connection and execte sp DocumentDelete on meta_id
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
-        this.updateLogs( "Document  " + "[" + meta_id + "] ALL deleted by user: [" + user.getFullName() + "]" );
-
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
-
+        sqlUpdateProcedure( "DocumentDelete", new String[]{"" + meta_id} );
+        this.updateLogs( "Document  " + "[" + meta_id + "] ALL deleted by user: [" +
+                         user.getFullName() + "]" );
     }
 
-    /**
-     * Add a existing doc.
-     */
-    public void addExistingDoc( int meta_id, UserDomainObject user, int existing_meta_id, int doc_menu_no ) {
-
-        String sqlStr = "AddExistingDocToMenu  " + meta_id + ", " + existing_meta_id + ", " + doc_menu_no;
-        int addDoc = sqlUpdateProcedure( sqlStr );
-
-        if( 1 == addDoc ) {	// if existing doc is added to the menu
-            this.updateLogs( "(AddExisting) Child links for [" + meta_id + "] updated by user: [" + user.getFullName() + "]" );
-        }
+    public void saveManualSort( int meta_id, UserDomainObject user, List childs,
+                                List sort_no, int menuNumber ) {
+        String columnName = "manual_sort_order";
+        saveChildSortOrder( columnName, childs, sort_no, meta_id, user, menuNumber );
     }
 
-    public void saveManualSort( int meta_id, UserDomainObject user, java.util.Vector childs, java.util.Vector sort_no ) {
-        String sqlStr = "";
-
-        // create a db connection
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-        //	 m_output.append("Childs"  + childs.toString() + "\n");
-        //	 m_output.append("sort_no" + sort_no.toString() + "\n");
-
-
-        // update child table
-        for( int i = 0; i < childs.size(); i++ ) {
-            sqlStr = "update childs\n";
-            sqlStr += "set manual_sort_order = " + sort_no.elementAt( i ).toString() + "\n";
-            sqlStr += "where meta_id = " + meta_id + " and \n";
-            sqlStr += "to_meta_id=" + childs.elementAt( i ).toString();
-            dbc.setSQLString( sqlStr );
-            dbc.createStatement();
-            dbc.executeUpdateQuery();
+    public void saveTreeSortIndex( int meta_id, UserDomainObject user, List childs, List sort_no, int menuNumber ) {
+        String columnName = "tree_sort_index";
+        for ( ListIterator iterator = sort_no.listIterator(); iterator.hasNext(); ) {
+            String menuItemTreeSortKey = (String)iterator.next();
+            Perl5Util perl5util = new Perl5Util();
+            menuItemTreeSortKey = perl5util.substitute( "s/\\D+/./g", menuItemTreeSortKey );
+            iterator.set( menuItemTreeSortKey );
         }
-
-        //		m_output.append(" Done \n");
-
-
-        this.updateLogs( "Child manualsort for [" + meta_id + "] updated by user: [" + user.getFullName() + "]" );
-
-
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
-
+        saveChildSortOrder( columnName, childs, sort_no, meta_id, user, menuNumber );
     }
 
-    /**
-     * Delete childs from a menu.
-     */
-    public void deleteChilds( int meta_id, int menu, UserDomainObject user, String childsThisMenu[] ) {
-        String sqlStr = "";
-        String childStr = "[";
-        // create a db connection an get meta data
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-        for( int i = 0; i < childsThisMenu.length; i++ ) {
-            sqlStr = "delete from childs\n";
-            sqlStr += " where to_meta_id =" + childsThisMenu[i] + "\n";
-            sqlStr += " and meta_id = " + meta_id;
-            sqlStr += " and menu_sort = " + menu;
-
-
-            //	sqlStr += "delete from meta where meta_id ="  + meta_id  + "\n" ;
-            //  sqlStr += "delete from text_docs where meta_id ="  + meta_id  + "\n" ;
-            //	sqlStr += "delete from texts where meta_id ="  + meta_id  + "\n" ;
-
-
-
-            dbc.setSQLString( sqlStr );
-            dbc.createStatement();
-            dbc.executeUpdateQuery();
-
-            childStr += childsThisMenu[i];
-            if( i < childsThisMenu.length - 1 )
-                childStr += ",";
+    private void saveChildSortOrder( String columnName, List childs, List sort_no, int meta_id, UserDomainObject user,
+                                     int menuIndex ) {
+        for ( int i = 0; i < childs.size(); i++ ) {
+            String columnValue = sort_no.get( i ).toString();
+            String to_meta_id = childs.get( i ).toString();
+            String sql = "UPDATE childs SET " + columnName
+                         + " = ? WHERE to_meta_id = ? AND menu_id = (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
+            sqlUpdateQuery( sql, new String[]{columnValue, to_meta_id, "" + meta_id, "" + menuIndex} );
         }
-        childStr += "]";
 
-        this.updateLogs( "Childs " + childStr + " from " + "[" + meta_id + "] deleted by user: [" + user.getFullName() + "]" );
-
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
-    }
-
-    /**
-     Makes copies of the documents given in the String-array, and inserts them into the given document and menu.
-     If one of the documents couldn't be copied for some reason, no documents are copied, and the uncopyable
-     documents are returned.
-
-     @param meta_id The document to insert into
-     @param doc_menu_no The menu to insert into
-     @param user The user
-     @param childsThisMenu The id's to copy.
-
-     @return A String array containing the meta-ids of uncopyable pages.
-     **/
-    public String[] copyDocs( int meta_id, int doc_menu_no, UserDomainObject user, String[] childsThisMenu, String copyPrefix ) {
-
-        if( childsThisMenu != null && childsThisMenu.length > 0 ) {
-
-            StringBuffer logchilds = new StringBuffer( childsThisMenu[0] );
-            for( int i = 1; i < childsThisMenu.length; ++i ) {
-                logchilds.append( "," + childsThisMenu[i] );
-            }
-            String[] uncopyable = sqlProcedure( "CheckForFileDocs", new String[]{logchilds.toString()} );
-            if( uncopyable.length == 0 ) {
-                sqlUpdateProcedure( "CopyDocs", new String[]{logchilds.toString(), "" + meta_id, "" + doc_menu_no, "" + user.getUserId(), copyPrefix} );
-                this.updateLogs( "Childs [" + logchilds.toString() + "] on [" + meta_id + "] copied by user: [" + user.getFullName() + "]" );
-            }
-            return uncopyable;
-        }
-        return null;
-
+        updateLogs( "Child manualsort for [" + meta_id + "] updated by user: [" +
+                    user.getFullName() + "]" );
     }
 
     /**
      * Archive childs for a menu.
-     **/
-    public void archiveChilds( int meta_id, UserDomainObject user, String childsThisMenu[] ) {
-        String sqlStr = "";
-        String childStr = "[";
-        // create a db connection an get meta data
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
+     */
+    public void archiveChilds( int meta_id, UserDomainObject user, String[] childsThisMenu ) {
 
-        for( int i = 0; i < childsThisMenu.length; i++ ) {
-            sqlStr = "update meta";
-            sqlStr += " set archive = 1";
-            sqlStr += " where meta_id =" + childsThisMenu[i] + "\n";
-
-            dbc.setSQLString( sqlStr );
-            dbc.createStatement();
-            dbc.executeUpdateQuery();
-            childStr += childsThisMenu[i];
-            if( i < childsThisMenu.length - 1 )
-                childStr += ",";
+        Date now = getCurrentDate();
+        for ( int i = 0; i < childsThisMenu.length; i++ ) {
+            DocumentDomainObject document = documentMapper.getDocument( Integer.parseInt( childsThisMenu[i] ) );
+            document.setArchivedDatetime( now );
+            try {
+                documentMapper.saveDocument( document, user );
+            } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
+                throw new RuntimeException( e );
+            }
         }
-        childStr += "]";
 
-        this.updateLogs( "Childs " + childStr + " from " + "[" + meta_id + "] archived by user: [" + user.getFullName() + "]" );
-
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
+        this.updateLogs( "Childs [" + StringUtils.join( childsThisMenu, ", " ) + "] from " +
+                         "[" + meta_id + "] archived by user: [" +
+                         user.getFullName() + "]" );
     }
 
     /**
      * Check if url doc.
      */
-    public imcode.server.Table isUrlDoc( int meta_id, UserDomainObject user ) {
-        String sqlStr = "";
-        imcode.server.Table url_doc;
+    public String isUrlDoc( int meta_id ) {
+        String url_ref = null;
+        if ( DocumentDomainObject.DOCTYPE_URL == getDocType( meta_id ) ) {
+            String sqlStr = "select url_ref from url_docs where meta_id = ?";
+            url_ref = sqlQueryStr( sqlStr, new String[]{"" + meta_id} );
+        }
 
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-        sqlStr = "select doc_type from meta where meta_id = " + meta_id;
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        Vector vec_doc_type = dbc.executeQuery();
-        dbc.clearResultSet();
-
-        if( Integer.parseInt( vec_doc_type.elementAt( 0 ).toString() ) == 5 ) {
-            sqlStr = "select * from url_docs where meta_id = " + meta_id;
-            dbc.setSQLString( sqlStr );
-            dbc.createStatement();
-            url_doc = new Table( dbc.executeQuery() );
-            url_doc.addFieldNames( dbc.getMetaData() );
-            dbc.clearResultSet();
-        } else
-            url_doc = null;
-
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
-
-        return url_doc;
-
-    }
-
-    /**
-     * Save a new frameset.
-     */
-    public void saveNewFrameset( int meta_id, UserDomainObject user, imcode.server.Table doc ) {
-        String sqlStr = "";
-
-        // create a db connection an get meta data
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-
-        // create new url doc
-        sqlStr = "insert into frameset_docs(meta_id,frame_set)\n";
-        sqlStr += "values(" + meta_id + ",'" + doc.getString( "frame_set" ) + "')";
-
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
-
-        // close connection
-        dbc.closeConnection();
-        dbc = null;
-
-        this.activateChild( meta_id, user );
-
-        this.updateLogs( "FramesetDoc [" + meta_id + "] created by user: [" + user.getFullName() + "]" );
-
-    }
-
-    /**
-     * Save a frameset
-     */
-    public void saveFrameset( int meta_id, UserDomainObject user, imcode.server.Table doc ) {
-        String sqlStr = "";
-
-        // create a db connection an get meta data
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-
-        // create new url doc
-        sqlStr = "update frameset_docs\n";
-        sqlStr += "set frame_set ='" + doc.getString( "frame_set" ) + "'\n";
-        sqlStr += "where meta_id  = " + meta_id;
-
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
-
-        // close connection
-        dbc.closeConnection();
-
-        this.updateLogs( "FramesetDoc [" + meta_id + "] updated by user: [" + user.getFullName() + "]" );
-
+        return url_ref;
     }
 
     /**
      * Update logs.
      */
     public void updateLogs( String event ) {
-
         mainLog.info( event );
-
     }
 
     /**
      * Check if frameset doc.                                                                        *
      */
-    public String isFramesetDoc( int meta_id, UserDomainObject user ) {
-        String sqlStr = "";
-        Vector frame_set;
-        String html_str = "";
+    public String isFramesetDoc( int meta_id ) {
 
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-        sqlStr = "select doc_type from meta where meta_id = " + meta_id;
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        Vector vec_doc_type = dbc.executeQuery();
-        dbc.clearResultSet();
-
-        if( Integer.parseInt( vec_doc_type.elementAt( 0 ).toString() ) == 7 ) {
-            sqlStr = "select frame_set from frameset_docs where meta_id = " + meta_id;
-            dbc.setSQLString( sqlStr );
-            dbc.createStatement();
-            frame_set = dbc.executeQuery();
-            dbc.clearResultSet();
-            html_str = frame_set.elementAt( 0 ).toString();
-        } else
-            html_str = null;
-
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
-
-        return html_str;
-
-    }
-
-    /**
-     * Check if external doc.
-     */
-    public ExternalDocType isExternalDoc( int meta_id, UserDomainObject user ) {
-        String sqlStr = "";
-        ExternalDocType external_doc = null;
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-        sqlStr = "select doc_type from meta where meta_id = " + meta_id;
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        Vector vec_doc_type = dbc.executeQuery();
-        dbc.clearResultSet();
-
-        int doc_type = Integer.parseInt( vec_doc_type.elementAt( 0 ).toString() );
-        if( doc_type > 100 ) {
-            for( int i = 0; i < m_ExDoc.length && m_ExDoc[i] != null; i++ )
-                if( m_ExDoc[i].getDocType() == doc_type ) {
-                    //		external_doc = new ExternalDocType(m_ExDoc[i].getDocType(),m_ExDoc[i].getCallServlet(),
-                    //	m_ExDoc[i].getDocName(),m_ExDoc[i].getParamStr()) ;
-                    external_doc = m_ExDoc[i];
-                }
+        String htmlStr = null;
+        if ( DocumentDomainObject.DOCTYPE_HTML == getDocType( meta_id ) ) {
+            String sqlStr = "select frame_set from frameset_docs where meta_id = ?";
+            htmlStr = sqlQueryStr( sqlStr, new String[]{"" + meta_id} );
         }
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
-
-        return external_doc;
+        return htmlStr;
 
     }
 
@@ -802,777 +524,380 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public void activateChild( int meta_id, imcode.server.user.UserDomainObject user ) {
 
-        String sqlStr = "";
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-        sqlStr = "update meta\n";
-        sqlStr += "set activate=1\n";
-        sqlStr += "where meta_id = " + meta_id;
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
+        String sqlStr = "update meta set activate = 1 where meta_id = ?";
+        sqlUpdateQuery( sqlStr, new String[]{"" + meta_id} );
 
         this.updateLogs( "Child [" + meta_id + "] activated  " + "by user: [" + user.getFullName() + "]" );
 
+    }
 
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
+    public String[] sqlQuery( String sqlQuery, String[] parameters ) {
+        return SqlHelpers.sqlQuery( m_conPool, sqlQuery, parameters );
+    }
 
+    public String sqlQueryStr( String sqlStr, String[] params ) {
+        return SqlHelpers.sqlQueryStr( m_conPool, sqlStr, params );
     }
 
     /**
-     Send a sqlquery to the database and return a string array.
-     @deprecated Use {@link #sqlProcedure(String, String[])} instead.
-     **/
-    public String[] sqlQuery( String sqlQuery ) {
-
-        Vector data = new Vector();
-
-        DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-        dbc.getConnection();
-        dbc.createStatement();
-        data = dbc.executeQuery();
-
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-
-        if( data != null ) {
-            String result[] = new String[data.size()];
-            for( int i = 0; i < data.size(); i++ ) {
-                result[i] = null != data.elementAt( i ) ? data.elementAt( i ).toString() : null;
-            }
-            return result;
-        } else {
-            return null;
-        }
+     * Send a sql update query to the database
+     */
+    public int sqlUpdateQuery( String sqlStr, String[] params ) {
+        return SqlHelpers.sqlUpdateQuery( m_conPool, sqlStr, params );
     }
 
     /**
-     Send a sqlquery to the database and return a string
-     @deprecated Use {@link #sqlProcedure(String, String[])} instead.
-     **/
-    public String sqlQueryStr( String sqlQuery ) {
-        Vector data = new Vector();
-
-        DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-        dbc.getConnection();
-        dbc.createStatement();
-        data = dbc.executeQuery();
-
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-
-        if( data.size() > 0 ) {
-            return null != data.elementAt( 0 ) ? data.elementAt( 0 ).toString() : null;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     Send a sql update query to the database
-     @deprecated Use {@link #sqlUpdateProcedure(String, String[])} instead.
-     **/
-    public void sqlUpdateQuery( String sqlStr ) {
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.setSQLString( sqlStr );
-        dbc.getConnection();
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
-        dbc.closeConnection();
-    }
-
-    /**
-     Send a procedure to the database and return a string array
-     @deprecated Use {@link #sqlProcedure(String, String[])} instead.
-     **/
-    public String[] sqlProcedure( String procedure ) {
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-        dbc.setProcedure( procedure );
-        // dbc.createStatement() ;
-        Vector data = dbc.executeProcedure();
-
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-
-        if( data != null ) {
-            String result[] = new String[data.size()];
-            for( int i = 0; i < data.size(); i++ ) {
-                result[i] = null != data.elementAt( i ) ? data.elementAt( i ).toString() : null;
-            }
-            return result;
-        }
-        return null;
-    }
-
-    /**
-     The preferred way of getting data from the db.
-     String.trim()'s the results.
-     @param procedure The name of the procedure
-     @param params    The parameters of the procedure
-     **/
+     * The preferred way of getting data from the db.
+     * String.trim()'s the results.
+     *
+     * @param procedure The name of the procedure
+     * @param params    The parameters of the procedure
+     */
     public String[] sqlProcedure( String procedure, String[] params ) {
         return sqlProcedure( procedure, params, true );
     }
 
-    /**
-     The preferred way of getting data from the db.
-     @param procedure The name of the procedure.
-     @param params    The parameters of the procedure.
-     @param trim      Whether to String.trim() the results.
-     **/
-    public String[] sqlProcedure( String procedure, String[] params, boolean trim ) {
-        Vector data = new Vector();
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.setTrim( trim );
-        dbc.getConnection();
-
-        dbc.setProcedure( procedure, params );
-        data = dbc.executeProcedure();
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-
-        if( data != null ) {
-            String result[] = new String[data.size()];
-            for( int i = 0; i < data.size(); i++ ) {
-                result[i] = null != data.elementAt( i ) ? data.elementAt( i ).toString() : null;
-            }
-            return result;
-        }
-        return null;
+    private String[] sqlProcedure( String procedure, String[] params, boolean trim ) {
+        return SqlHelpers.sqlProcedure( m_conPool, procedure, params );
     }
 
     /**
-     The preferred way of getting data to the db.
-     @param procedure The name of the procedure
-     @param params    The parameters of the procedure
-     @return updateCount or -1 if error
-     **/
+     * The preferred way of getting data to the db.
+     *
+     * @param procedure The name of the procedure
+     * @param params    The parameters of the procedure
+     * @return updateCount or -1 if error
+     */
     public int sqlUpdateProcedure( String procedure, String[] params ) {
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-        dbc.setProcedure( procedure, params );
-        int res = dbc.executeUpdateProcedure();
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-        return res;
+        return SqlHelpers.sqlUpdateProcedure( m_conPool, procedure, params );
     }
 
-    /**
-     Send a procedure to the database and return a string.
-     @deprecated Use {@link #sqlProcedureStr(String, String[])} instead.
-     **/
-    public String sqlProcedureStr( String procedure ) {
-        Vector data;
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-        dbc.setProcedure( procedure );
-        data = dbc.executeProcedure();
-
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-
-        if( data != null ) {
-
-            if( data.size() > 0 ) {
-                return null != data.elementAt( 0 ) ? data.elementAt( 0 ).toString() : null;
-            } else {
-                return null;
-            }
-        } else
-            return null;
-    }
-
-    /**
-     Send a procedure to the database and return a string.
-     **/
     public String sqlProcedureStr( String procedure, String[] params ) {
-        return sqlProcedureStr( procedure, params, true );
+        return SqlHelpers.sqlProcedureStr( m_conPool, procedure, params );
     }
 
-    /**
-     Send a procedure to the database and return a string.
-     **/
-    public String sqlProcedureStr( String procedure, String[] params, boolean trim ) {
+    public DocumentMapper getDocumentMapper() {
+        return documentMapper;
+    }
 
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.setTrim( trim );
-        dbc.getConnection();
-        dbc.setProcedure( procedure, params );
-        List data = dbc.executeProcedure();
+    public TemplateMapper getTemplateMapper() {
+        return templateMapper;
+    }
 
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-
-        if( data != null ) {
-
-            if( data.size() > 0 ) {
-                Object obj = data.get( 0 );
-                return null != obj ? obj.toString() : null;
-            } else {
-                return null;
-            }
-        } else
+    public SMTP getSMTP() {
+        try {
+            return new SMTP( smtpServer, smtpPort, 30000 );
+        } catch ( IOException e ) {
             return null;
+        }
+    }
+
+    public ImcmsAuthenticatorAndUserMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
+        return imcmsAuthenticatorAndUserMapper;
     }
 
     /**
-     Send a update procedure to the database
-     @deprecated Use {@link #sqlUpdateProcedure(String, String[])} instead.
-     **/
-    public int sqlUpdateProcedure( String procedure ) {
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-        dbc.setProcedure( procedure );
-        int res = dbc.executeUpdateProcedure();
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-        return res;
-    }
-
-    /**
-     Send a sqlQuery to the database and return a Hastable
+     * Parse doc replace variables with data, uses two vectors
      */
-    public Hashtable sqlQueryHash( String sqlQuery ) {
-
-        DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-        dbc.getConnection();
-        dbc.createStatement();
-
-        Vector data = dbc.executeQuery();
-        String[] meta = dbc.getMetaData();
-
-        int columns = dbc.getColumnCount();
-
-        Hashtable result = new Hashtable( columns, 0.5f );
-
-        dbc.clearResultSet();
-        dbc.closeConnection();
-
-        if( data.size() > 0 ) {
-
-            for( int i = 0; i < columns; i++ ) {
-                String temp_str[] = new String[data.size() / columns];
-                int counter = 0;
-
-                for( int j = i; j < data.size(); j += columns )
-                    temp_str[counter++] = null != data.elementAt( j ) ? data.elementAt( j ).toString() : null;
-
-                result.put( meta[i], temp_str );
-            }
-
-            return result;
-        } else {
-            return new Hashtable( 1, 0.5f );
-        }
-
-    }
-
-    /**
-     Send a procedure to the database and return a Hashtable
-     @deprecated Use {@link #sqlProcedure(String, String[])} instead.
-     **/
-    public Hashtable sqlProcedureHash( String procedure ) {
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-        dbc.setProcedure( procedure );
-
-        Vector data = dbc.executeProcedure();
-        String[] meta = dbc.getMetaData();
-        int columns = dbc.getColumnCount();
-
-        Hashtable result = new Hashtable( columns, 0.5f );
-
-        dbc.clearResultSet();
-        dbc.closeConnection();
-
-        if( data.size() > 0 ) {
-
-            for( int i = 0; i < columns; i++ ) {
-                String temp_str[] = new String[data.size() / columns];
-                int counter = 0;
-
-                for( int j = i; j < data.size(); j += columns ) {
-                    temp_str[counter++] = null != data.elementAt( j ) ? data.elementAt( j ).toString() : null;
-                }
-                result.put( meta[i], temp_str );
-            }
-            return result;
-        } else {
-            return new Hashtable( 1, 0.5f );
-        }
-    }
-
-    /**
-     Send a procedure to the database and return a 2-dimensional string array
-     **/
-    public String[][] sqlProcedureMulti( String procedure, String[] params ) {
-        return sqlProcedureMulti( procedure, params, true );
-    }
-
-    /**
-     Send a procedure to the database and return a 2-dimensional string array
-     **/
-    public String[][] sqlProcedureMulti( String procedure, String[] params, boolean trim ) {
-        Vector data = new Vector();
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.setTrim( trim );
-        dbc.getConnection();
-        if( params.length > 0 ) {
-            StringBuffer procedureBuffer = new StringBuffer( procedure );
-            procedureBuffer.append( " ?" );
-            for( int i = 1; i < params.length; ++i ) {
-                procedureBuffer.append( ",?" );
-            }
-            procedure = procedureBuffer.toString();
-        }
-
-        dbc.setProcedure( procedure, params );
-        data = dbc.executeProcedure();
-        int columns = dbc.getColumnCount();
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-
-        if( data != null && columns > 0 ) {
-            String result[][] = new String[data.size() / columns][columns];
-            for( int i = 0; i < data.size(); i++ ) {
-                result[i / columns][i % columns] = null != data.elementAt( i ) ? data.elementAt( i ).toString() : null;
-            }
-            return result;
-        }
-        return null;
-    }
-
-    /**
-     Send a procedure to the database and return a 2-dimensional string array
-     @deprecated Use {@link #sqlProcedureMulti(String, String[])} instead.
-     **/
-    public String[][] sqlProcedureMulti( String procedure ) {
-
-        Vector data = new Vector();
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-        dbc.setProcedure( procedure );
-
-        data = dbc.executeProcedure();
-        int columns = dbc.getColumnCount();
-
-        if( columns == 0 )
-            return new String[0][0];
-
-        int rows = data.size() / columns;
-        dbc.clearResultSet();
-        dbc.closeConnection();
-
-        String result[][] = new String[rows][columns];
-        for( int i = 0; i < rows; i++ ) {
-            for( int j = 0; j < columns; j++ ) {
-                result[i][j] = null != data.elementAt( i * columns + j ) ? data.elementAt( i * columns + j ).toString() : null;
-            }
-
-        }
-
-        return result;
-
-    }
-
-    /**
-     Send a sqlquery to the database and return a multi string array
-     */
-    public String[][] sqlQueryMulti( String sqlQuery ) {
-
-        Vector data = new Vector();
-
-        DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-        dbc.getConnection();
-        dbc.createStatement();
-
-        data = dbc.executeQuery();
-        int columns = dbc.getColumnCount();
-
-        if( columns == 0 )
-            return new String[0][0];
-
-        int rows = data.size() / columns;
-        dbc.clearResultSet();
-        dbc.closeConnection();
-
-        String result[][] = new String[rows][columns];
-        for( int i = 0; i < rows; i++ ) {
-            for( int j = 0; j < columns; j++ ) {
-                result[i][j] = null != data.elementAt( i * columns + j ) ? data.elementAt( i * columns + j ).toString() : null;
-            }
-
-        }
-        return result;
-    }
-
-    /**
-     Parse doc replace variables with data, uses two vectors
-     */
-    public String parseDoc( String htmlStr, java.util.Vector variables, java.util.Vector data ) {
+    public String replaceTagsInStringWithData( String htmlStr, java.util.Vector variables, java.util.Vector data ) {
         String[] foo = new String[variables.size()];
         String[] bar = new String[data.size()];
         return imcode.util.Parser.parseDoc( htmlStr, (String[])variables.toArray( foo ), (String[])data.toArray( bar ) );
     }
 
     /**
-     Parse doc replace variables with data , use template
+     * Parse doc replace variables with data , use template
      */
-    public String parseDoc( java.util.List variables, String admin_template_name, String lang_prefix ) {
+    public String getAdminTemplate( String adminTemplateName, UserDomainObject user,
+                                    java.util.List tagsWithReplacements ) {
+        return getAdminTemplateFromDirectory( adminTemplateName, user, tagsWithReplacements, "admin" );
+    }
+
+    /**
+     * Parse doc replace variables with data , use template
+     */
+    public String getAdminTemplateFromDirectory( String adminTemplateName, UserDomainObject user, List variables,
+                                                 String directory ) {
+        // FIXME Fugly workaround
+        String langPrefix = getUserLangPrefixOrDefaultLanguage( user );
+        File file = new File( templatePath, langPrefix + "/" + directory + "/"
+                                            + adminTemplateName );
+        return getAndParseCachedFile( file, variables );
+    }
+
+    /**
+     * Parse doc replace variables with data , use template
+     */
+    public String getAdminTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, List variables,
+                                                               String directory, String subDirectory ) {
+
+        String langPrefix = this.getUserLangPrefixOrDefaultLanguage( user );
+
+        File file = new File( templatePath,
+                              langPrefix + "/" + directory + "/" + subDirectory
+                              + "/"
+                              + adminTemplateName );
+        return getAndParseCachedFile( file, variables );
+    }
+
+    private String getAndParseCachedFile( File file, List variables ) {
         try {
-            String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/admin/" + admin_template_name ) );
-            if( variables == null ) {
+            String htmlStr = fileCache.getCachedFileString( file );
+            if ( variables == null ) {
                 return htmlStr;
             }
-            String[] foo = new String[variables.size()];
-            return imcode.util.Parser.parseDoc( htmlStr, (String[])variables.toArray( foo ) );
-        } catch( IOException ex ) {
-            log.error( ex.toString() );
-            return "";
+            return Parser.parseDoc( htmlStr, (String[])variables.toArray( new String[variables.size()] ) );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e ) ;
         }
     }
 
     /**
-     Parse doc replace variables with data , use template
+     * @deprecated Ugly use {@link IMCServiceInterface#getAdminTemplateFromDirectory(String,imcode.server.user.UserDomainObject,java.util.List,String)}
+     *             or something else instead.
      */
-    public String parseExternalDoc( java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type ) {
-        try {
-            String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/" + doc_type + "/" + external_template_name ) );
-            if( variables == null ) {
-                return htmlStr;
-            }
-            String[] foo = new String[variables.size()];
-            return imcode.util.Parser.parseDoc( htmlStr, (String[])variables.toArray( foo ) );
-        } catch( RuntimeException e ) {
-            log.error( "parseExternalDoc(Vector, String, String, String): RuntimeException", e );
-            throw e;
-        } catch( IOException e ) {
-            log.error( "parseExternalDoc(Vector, String, String, String): IOException", e );
-            return "";
-        }
-    }
-
-    /**
-     Parse doc replace variables with data , use template
-     */
-    public String parseExternalDoc( java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type, String templateSet ) {
-        try {
-            String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/" + doc_type + "/" + templateSet + "/" + external_template_name ) );
-            if( variables == null ) {
-                return htmlStr;
-            }
-            String[] foo = new String[variables.size()];
-            return imcode.util.Parser.parseDoc( htmlStr, (String[])variables.toArray( foo ) );
-        } catch( RuntimeException e ) {
-            log.error( "parseExternalDoc(Vector, String, String, String): RuntimeException", e );
-            throw e;
-        } catch( IOException e ) {
-            log.error( "parseExternalDoc(Vector, String, String, String): IOException", e );
-            return "";
-        }
-    }
-
-    /**
-     @deprecated Ugly use {@link #parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)}
-     or something else instead.
-     */
-    public File getExternalTemplateFolder( int meta_id ) {
-        Vector data = new Vector();
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        String sqlStr = "select doc_type,lang_prefix from meta where meta_id = " + meta_id;
-        dbc.setSQLString( sqlStr );
-        dbc.getConnection();
-        dbc.createStatement();
-        data = dbc.executeQuery();
-
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-
-        if( Integer.parseInt( data.elementAt( 0 ).toString() ) > 100 ) {
-            return new File( m_TemplateHome, (data.elementAt( 1 ).toString() + "/" + data.elementAt( 0 ).toString() + "/") );
-        } else {
-            return new File( m_TemplateHome, (data.elementAt( 1 ).toString() + "/") );
-        }
+    public File getExternalTemplateFolder( int meta_id, UserDomainObject user ) {
+        int docType = getDocType( meta_id );
+        String langPrefix = getUserLangPrefixOrDefaultLanguage( user );
+        return new File( templatePath, langPrefix + "/" + docType + "/" );
     }
 
     /**
      * Return  templatehome.
      */
-    public File getTemplateHome() {
-        return m_TemplateHome;
+    public File getTemplatePath() {
+        return templatePath;
     }
 
     /**
      * Return url-path to images.
      */
     public String getImageUrl() {
-        return m_ImageUrl;
+        return imageUrl;
     }
 
     /**
-     * Return file-path to images.
+     * Return url-path to imcmsimages.
      */
-    public File getImagePath() {
-        log.warn( "getImagePath() called, no implementation, returning null" );
-        return null;
+    public String getImcmsUrl() {
+        return imcmsUrl;
+    }
+
+    /**
+     * @return file-path to imcmsimages
+     *         <p/>
+     *         Return file-path to imcmsimages
+     *         <p/>
+     *         Return file-path to imcmsimages
+     *         <p/>
+     *         Return file-path to imcmsimages
+     *         <p/>
+     *         Return file-path to imcmsimages
+     */
+    // Return file-path to imcmsimages
+    public File getImcmsPath() {
+        return imcmsPath;
     }
 
     /**
      * Return  starturl.
      */
     public String getStartUrl() {
-        return m_StartUrl;
+        return startUrl;
     }
 
-    /**
-     * Return  language.
-     */
-    public String getDefaultLanguage() {
-        return m_Language;
+    public String getDefaultLanguageAsIso639_2() {
+        return defaultLanguageAsIso639_2;
     }
 
-    /**
-     * Increment session counter.
-     */
-    public synchronized int incCounter() {
-        m_SessionCounter += 1;
-        m_databaseService.sproc_SetSessionCounterValue( m_SessionCounter );
-        return m_SessionCounter;
+    public String getLanguagePrefixByLangId( int lang_id ) {
+        String lang_prefix = sqlProcedureStr( "GetLangPrefixFromId", new String[]{"" + lang_id} );
+        return lang_prefix;
     }
 
-    /**
-     * Get session counter.
-     */
-    public int getCounter() {
-        return m_SessionCounter;
+    // get language prefix for user
+    public String getUserLangPrefixOrDefaultLanguage( UserDomainObject user ) {
+        String lang_prefix = this.getDefaultLanguageAsIso639_2();
+        if ( user != null ) {
+            return user.getLanguageIso639_2();
+        } else {
+            return lang_prefix;
+        }
     }
 
     /**
      * Set session counter.
      */
-    public int setCounter( int value ) {
-        m_SessionCounter = value;
-        this.sqlUpdateProcedure( "SetSessionCounterValue '" + value + "'" );
-        return m_SessionCounter;
+    public void setSessionCounter( int value ) {
+        setSessionCounterInDb( value );
+        sessionCounter = getSessionCounterFromDb();
+    }
+
+    private void setSessionCounterInDb( int value ) {
+        this.sqlUpdateProcedure( "SetSessionCounterValue", new String[]{"" + value} );
     }
 
     /**
      * Set session counter date.
      */
-    public boolean setCounterDate( String date ) {
-        m_SessionCounterDate = date;
-        this.sqlUpdateProcedure( "SetSessionCounterDate '" + date + "'" );
-        return true;
+    public void setSessionCounterDate( Date date ) {
+        setSessionCounterDateInDb( date );
+        sessionCounterDate = getSessionCounterDateFromDb();
+    }
+
+    private void setSessionCounterDateInDb( Date date ) {
+        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
+        this.sqlUpdateProcedure( "SetSessionCounterDate", new String[]{dateFormat.format( date )} );
     }
 
     /**
      * Get session counter date.
      */
-    public String getCounterDate() {
-        return m_SessionCounterDate;
+    public Date getSessionCounterDate() {
+        return sessionCounterDate;
+    }
+
+    public Map sqlQueryHash( String sqlQuery, String[] params ) {
+        return SqlHelpers.sqlQueryHash( m_conPool, sqlQuery, params );
+    }
+
+    public Map sqlProcedureHash( String procedure, String[] params ) {
+        return SqlHelpers.sqlProcedureHash( m_conPool, procedure, params );
     }
 
     /**
-     get doctype
+     * Send a procedure to the database and return a multi string array
+     */
+    public String[][] sqlProcedureMulti( String procedure, String[] params ) {
+        return SqlHelpers.sqlProcedureMulti( m_conPool, procedure, params );
+    }
+
+    public String[][] sqlQueryMulti( String sqlQuery, String[] params ) {
+        return SqlHelpers.sqlQueryMulti( m_conPool, sqlQuery, params );
+    }
+
+    /**
+     * get doctype
      */
     public int getDocType( int meta_id ) {
-
-        Integer docType = m_databaseService.sproc_GetDocType(meta_id) ;
-
-        return docType == null ? -1 : docType.intValue() ;
+        String[] data = sqlProcedure( "GetDocType", new String[]{"" + meta_id} );
+        if ( data.length > 0 ) {
+            return Integer.parseInt( data[0] );
+        } else {
+            return 0;
+        }
     }
 
     /**
-     CheckAdminRights, returns true if the user is an superadmin. Only an superadmin
-     is allowed to create new users
-     False if the user isn't an administrator.
-     1 = administrator
-     0 = superadministrator
+     * CheckAdminRights, returns true if the user is an superadmin. Only an superadmin
+     * is allowed to create new users
+     * False if the user isn't an administrator.
+     * 1 = administrator
+     * 0 = superadministrator
      */
+    public boolean checkAdminRights( imcode.server.user.UserDomainObject user ) {
+        String[][] roles = sqlProcedureMulti( "CheckAdminRights", new String[]{"" + user.getId()} );
 
-    public boolean checkAdminRights( UserDomainObject user ) {
-        int currUser_id = user.getUserId();
-        boolean hasAdminRights = this.m_databaseService.sproc_CheckAdminRights(currUser_id);
-        return hasAdminRights;
-    }
+        for ( int i = 0; i < roles.length; i++ ) {
+            String roleId = roles[i][1];
+            if ( roleId.equalsIgnoreCase( "0" ) ) {
+                return true;
+            }
+        }
+        return false;
+    } // checkAdminRights
 
     /**
-     checkDocAdminRights
+     * checkDocAdminRights
      */
     public boolean checkDocAdminRights( int meta_id, UserDomainObject user ) {
-        DocumentDomainObject document = documentMapper.getDocument( meta_id );
-        return documentMapper.hasAdminPermissions( document, user );
-    }
-
-    public boolean checkDocRights( int meta_id, UserDomainObject user ) {
-        DatabaseService.JoinedTables_permissions perms = m_databaseService.getUserPermissionSetForDocument( meta_id, user.getUserId() );
-        return (null != perms) && (perms.set_id < 4);
+        return documentMapper.userHasMoreThanReadPermissionOnDocument( user, documentMapper.getDocument( meta_id ) );
     }
 
     /**
-     Checks to see if a user has any permission of a particular set of permissions for a document.
-     @param meta_id	The document-id
-     @param user		The user
-     @param permission A bitmap containing the permissions.
+     * Checks to see if a user has any permission of a particular set of permissions for a document.
+     *
+     * @param meta_id    The document-id
+     * @param user       The user
+     * @param permission A bitmap containing the permissions.
      */
     public boolean checkDocAdminRightsAny( int meta_id, UserDomainObject user, int permission ) {
-        DatabaseService.JoinedTables_permissions perms = m_databaseService.getUserPermissionSetForDocument( meta_id, user.getUserId() );
+        try {
+            String[] perms = sqlProcedure( "GetUserPermissionSet",
+                                           new String[]{String.valueOf( meta_id ), String.valueOf( user.getId() )} );
 
-        int set_id = perms.set_id;
-        int set = perms.permission_id;
+            int set_id = Integer.parseInt( perms[0] );
+            int set = Integer.parseInt( perms[1] );
 
-        if( null != perms && set_id == 0		// User has full permission for this document
-            || (set_id < 3 && ((set & permission) > 0))	// User has at least one of the permissions given.
-        ) {
-            return true;
-        } else {
-            return false;
+            if ( perms.length > 0
+                 && set_id == 0		// User has full permission for this document
+                 || ( set_id < 3 && ( ( set & permission ) > 0 ) )	// User has at least one of the permissions given.
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch ( RuntimeException ex ) {
+            log.error( "Exception in checkDocAdminRightsAny(int,User,int)", ex );
+            throw ex;
         }
     }
 
     /**
-     Checks to see if a user has a particular set of permissions for a document.
-     @param meta_id      The document-id
-     @param user		    The user
-     @param permission	A bitmap containing the permissions.
+     * Checks to see if a user has a particular set of permissions for a document.
+     *
+     * @param meta_id    The document-id
+     * @param user       The user
+     * @param permission A bitmap containing the permissions.
      */
     public boolean checkDocAdminRights( int meta_id, UserDomainObject user, int permission ) {
-
-        DatabaseService.JoinedTables_permissions perms = m_databaseService.getUserPermissionSetForDocument( meta_id, user.getUserId() );
-        if( null == perms ) {
-            return false;
-        }
-
-        int set_id = perms.set_id;
-        int set = perms.permission_id;
-
-        if( set_id == 0		// User has full permission for this document
-            || (set_id < 3 && ((set & permission) == permission))	// User has all the permissions given.
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     Gets the users most privileged permission_set for the document.
-     @param meta_id	The document-id
-     @param user_id		The user_id
-     @return the most privileged permission_set a user has for the document.
-
-     */
-    public int getUserHighestPermissionSet( int meta_id, int user_id ) {
-        DatabaseService.JoinedTables_permissions perms = m_databaseService.getUserPermissionSetForDocument( meta_id, user_id );
-        if( null == perms ) {
-            return IMCConstants.DOC_PERM_SET_NONE;//nothing was returned so give no rights at all.
-        }
-
-        int set_id = perms.set_id;
-
-        switch( set_id ) {
-            case IMCConstants.DOC_PERM_SET_FULL:         // User has full permission for this document
-            case IMCConstants.DOC_PERM_SET_RESTRICTED_1: // User has restricted 1 permission for this document
-            case IMCConstants.DOC_PERM_SET_RESTRICTED_2: // User has restricted 2 permission for this document
-            case IMCConstants.DOC_PERM_SET_READ:         // User has only read permission for this document
-                return set_id;                          // We have a valid permission-set-id. Return it.
-
-            default:                                     // We didn't get a valid permission-set-id.
-                return DOC_PERM_SET_NONE;               // User has no permission at all for this document
-        }
-    }
-
-    /**
-     save template to disk
-     */
-    public int saveTemplate( String name, String file_name, byte[] template, boolean overwrite, String lang_prefix ) {
-        String sqlStr = "";
-        String file;
-        String new_template_id = "";
-
         try {
-            file = new String( template, "8859_1" );
-        } catch( UnsupportedEncodingException e ) {
-            return -2;
+            String[] perms = sqlProcedure( "GetUserPermissionSet",
+                                           new String[]{String.valueOf( meta_id ), String.valueOf( user.getId() )} );
+
+            if ( perms.length == 0 ) {
+                return false;
+            }
+
+            int set_id = Integer.parseInt( perms[0] );
+            int set = Integer.parseInt( perms[1] );
+
+            if ( set_id == 0		// User has full permission for this document
+                 || ( set_id < 3 && ( ( set & permission ) == permission ) )	// User has all the permissions given.
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch ( RuntimeException ex ) {
+            log.error( "Exception in checkDocAdminRights(int,User,int)", ex );
+            throw ex;
         }
+    }
 
-        int no_of_txt = 0;
-        int no_of_img = 0;
-        int no_of_url = 0;
-
-        for( int index = 0; (index = file.indexOf( "#txt", index )) != -1; no_of_txt++ )
-            index += 4;
-        for( int index = 0; (index = file.indexOf( "#img", index )) != -1; no_of_img++ )
-            index += 4;
-        for( int index = 0; (index = file.indexOf( "#url", index )) != -1; no_of_url++ )
-            index += 4;
-
-        // create connectionobject
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-
+    public int saveTemplate( String name, String file_name, byte[] template, boolean overwrite, String lang_prefix ) {
+        String sqlStr;
         // check if template exists
-        sqlStr = "select template_id from templates\n";
-        sqlStr += "where simple_name = '" + name + "'";
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        Vector template_id = dbc.executeQuery();
-        dbc.clearResultSet();
-        if( template_id.size() == 0 ) {
+        sqlStr = "select template_id from templates where simple_name = ?";
+        String templateId = sqlQueryStr( sqlStr, new String[]{name} );
+        if ( null == templateId ) {
 
             // get new template_id
             sqlStr = "select max(template_id) + 1 from templates\n";
-            dbc.setSQLString( sqlStr );
-            dbc.createStatement();
-            new_template_id = dbc.executeQuery().elementAt( 0 ).toString();
-            dbc.clearResultSet();
+            templateId = sqlQueryStr( sqlStr, new String[0] );
 
-            sqlStr = "insert into templates\n";
-            sqlStr += "values (" + new_template_id + ",'" + file_name + "','" + name + "','" + lang_prefix + "'," + no_of_txt + "," + no_of_img + "," + no_of_url + ")";
-            dbc.setSQLString( sqlStr );
-            dbc.createStatement();
-            dbc.executeUpdateQuery();
+            sqlStr = "insert into templates values (?,?,?,?,0,0,0)";
+            sqlUpdateQuery( sqlStr, new String[]{templateId, file_name, name, lang_prefix} );
         } else { //update
-            if( !overwrite ) {
-                dbc.closeConnection();
-                dbc = null;
+            if ( !overwrite ) {
                 return -1;
             }
-            new_template_id = template_id.elementAt( 0 ).toString();
 
-            sqlStr = "update templates\n" + "set template_name = '" + file_name + "'," + "no_of_txt =" + no_of_txt + "," + "no_of_img =" + no_of_img + "," + "no_of_url =" + no_of_url + "where template_id = " + new_template_id;
-            dbc.setSQLString( sqlStr );
-            dbc.createStatement();
-            dbc.executeUpdateQuery();
+            sqlStr = "update templates set template_name = ? where template_id = ?";
+            sqlUpdateQuery( sqlStr, new String[]{file_name, templateId} );
         }
 
-        dbc.closeConnection();
-        dbc = null;
-
-        File f = new File( m_TemplateHome, "text/" + new_template_id + ".html" );
+        File f = new File( templatePath, "text/" + templateId + ".html" );
 
         try {
             FileOutputStream fw = new FileOutputStream( f );
@@ -1580,7 +905,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             fw.flush();
             fw.close();
 
-        } catch( IOException e ) {
+        } catch ( IOException e ) {
             return -2;
         }
 
@@ -1588,32 +913,30 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         // -1 = file exist
         // -2 = write error
         return 0;
-
     }
 
     /**
-     get demo template
+     * get demo template
      */
     public Object[] getDemoTemplate( int template_id ) throws IOException {
         //String str = "" ;
         StringBuffer str = new StringBuffer();
         BufferedReader fr = null;
         String suffix = null;
-        String[] suffixList = {"jpg", "jpeg", "gif", "png", "html", "htm"};
+        String[] suffixList =
+                {"jpg", "jpeg", "gif", "png", "html", "htm"};
 
-        for( int i = 0; i < suffixList.length; i++ ) { // Looking for a template with one of six suffixes
-            File fileObj = new File( m_TemplateHome, "/text/demo/" + template_id + "." + suffixList[i] );
+        for ( int i = 0; i < suffixList.length; i++ ) { // Looking for a template with one of six suffixes
+            File fileObj = new File( templatePath, "/text/demo/" + template_id + "." + suffixList[i] );
             long date = 0;
             long fileDate = fileObj.lastModified();
-            if( fileObj.exists() && fileDate > date ) {
+            if ( fileObj.exists() && fileDate > date ) {
                 // if a template was not properly removed, the template
                 // with the most recens modified-date is returned
-                date = fileDate;
-
                 try {
                     fr = new BufferedReader( new InputStreamReader( new FileInputStream( fileObj ), "8859_1" ) );
                     suffix = suffixList[i];
-                } catch( IOException e ) {
+                } catch ( IOException e ) {
                     return null; //Could not read
                 }
             } // end IF
@@ -1622,182 +945,62 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         char[] buffer = new char[4096];
         try {
             int read;
-            while( (read = fr.read( buffer, 0, 4096 )) != -1 ) {
+            while ( ( read = fr.read( buffer, 0, 4096 ) ) != -1 ) {
                 str.append( buffer, 0, read );
             }
-        } catch( IOException e ) {
+            fr.close();
+        } catch ( IOException e ) {
             return null;
-        } catch( NullPointerException e ) {
+        } catch ( NullPointerException e ) {
             return null;
         }
 
         return new Object[]{suffix, str.toString().getBytes( "8859_1" )}; //return the buffer
-
     }
 
     /**
-     get template
+     * get template
      */
-    public byte[] getTemplateData( int template_id ) throws IOException {
-        String str = "";
-
-        BufferedReader fr;
-
-        try {
-            fr = new BufferedReader( new FileReader( m_TemplateHome + "/text/" + template_id + ".html" ) );
-        } catch( FileNotFoundException e ) {
-            log.info( "Failed to find template number " + template_id );
-            return null;
-        }
-
-        try {
-            int temp;
-            while( (temp = fr.read()) != -1 ) {
-                str += (char)temp;
-            }
-        } catch( IOException e ) {
-            log.info( "Failed to read template number " + template_id );
-            return null;
-        }
-
-        return str.getBytes( "8859_1" );
+    public String getTemplateData( int template_id ) throws IOException {
+        return fileCache.getCachedFileString( new File( templatePath, "/text/" + template_id + ".html" ) );
     }
 
     /**
-     delete template from db/disk
+     * save demo template
      */
-    public void deleteTemplate( int template_id ) {
-        String sqlStr = "";
+    public void saveDemoTemplate( int template_id, byte[] data, String suffix ) throws IOException {
 
-        // create connectiobject
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
+        deleteDemoTemplate( template_id );
 
-
-        // delete from database
-        sqlStr = "delete from templates_cref\n";
-        sqlStr += "where template_id = " + template_id + "\n";
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
-
-
-
-        // delete from database
-        sqlStr = "delete from templates\n";
-        sqlStr += "where template_id = " + template_id + "\n";
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
-
-        dbc.closeConnection();
-        dbc = null;
-
-        // test if template exists and delete it
-        File f = new File( m_TemplateHome + "/text/" + template_id + ".html" );
-        if( f.exists() ) {
-            f.delete();
-        }
-
+        FileOutputStream fw = new FileOutputStream( templatePath + "/text/demo/" + template_id + "." + suffix );
+        fw.write( data );
+        fw.flush();
+        fw.close();
     }
 
     /**
-     save demo template
-     */
-    public int saveDemoTemplate( int template_id, byte[] data, String suffix ) {
-
-        // save template demo
-
-        // See if there are templete_id:s with other file-formats and delete them
-        // WARNING: Uggly Code
-        String[] suffixes = {"jpg", "jpeg", "gif", "png", "htm", "html"};
-        for( int i = 0; i <= 5; i++ ) {
-            File file = new File( m_TemplateHome + "/text/demo/" + template_id + "." + suffixes[i] );
-            if( file.exists() )
-                file.delete();
-            // doesn't always delete the file, made sure the right template is
-            // shown using the file-date & time in getDemoTemplate
-        }
-
-        try {
-            FileOutputStream fw = new FileOutputStream( m_TemplateHome + "/text/demo/" + template_id + "." + suffix );
-            fw.write( data );
-            fw.close();
-        } catch( IOException e ) {
-            return -2;
-        }
-
-        return 0;
-
-    }
-
-    /**
-     delete templategroup
-     */
-    public void deleteTemplateGroup( int group_id ) {
-        String sqlStr = "";
-
-        // create connectiobject
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-
-        // change name
-        sqlStr = "delete from templategroups\n";
-        sqlStr += "where group_id = " + group_id + "\n";
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
-        dbc.closeConnection();
-        dbc = null;
-
-    }
-
-    /**
-     change templategroupname
-     */
-    public void changeTemplateGroupName( int group_id, String new_name ) {
-        String sqlStr = "";
-
-        // create connectiobject
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-
-        // change name
-        sqlStr = "update templategroups\n";
-        sqlStr += "set group_name = '" + new_name + "'";
-        sqlStr += "where group_id = " + group_id + "\n";
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
-
-        dbc.closeConnection();
-        dbc = null;
-    }
-
-    /** get server date
+     * get server date
      */
     public Date getCurrentDate() {
         return new Date();
     }
 
-    final static FileFilter DEMOTEMPLATEFILTER = new FileFilter() {
+    private final static FileFilter DEMOTEMPLATEFILTER = new FileFilter() {
         public boolean accept( File file ) {
             return file.length() > 0;
         }
     };
 
     // get demotemplates
-    public String[] getDemoTemplateList() {
-        File demoDir = new File( m_TemplateHome + "/text/demo/" );
+    public String[] getDemoTemplateIds() {
+        File demoDir = new File( templatePath + "/text/demo/" );
 
         File[] file_list = demoDir.listFiles( DEMOTEMPLATEFILTER );
 
         String[] name_list = new String[file_list.length];
 
-        if( file_list != null ) {
-            for( int i = 0; i < name_list.length; i++ ) {
+        if ( file_list != null ) {
+            for ( int i = 0; i < name_list.length; i++ ) {
                 String filename = file_list[i].getName();
                 int dot = filename.indexOf( "." );
                 name_list[i] = dot > -1 ? filename.substring( 0, dot ) : filename;
@@ -1812,39 +1015,52 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     // delete demotemplate
-    public int deleteDemoTemplate( int template_id ) {
+    public void deleteDemoTemplate( int template_id ) throws IOException {
 
-        File f = new File( m_TemplateHome + "/text/demo/" + template_id + ".html" );
-        if( f.exists() ) {
-            f.delete();
-            return 0;
+        File demoTemplateDirectory = new File( new File( templatePath, "text" ), "demo" );
+        File[] demoTemplates = demoTemplateDirectory.listFiles();
+        for ( int i = 0; i < demoTemplates.length; i++ ) {
+            File demoTemplate = demoTemplates[i];
+            String demoTemplateFileName = demoTemplate.getName();
+            if ( demoTemplateFileName.startsWith( template_id + "." ) ) {
+                if ( !demoTemplate.delete() ) {
+                    throw new IOException( "fail to deleate" );
+                }
+            }
         }
-
-        return -2;
     }
 
     /**
-     *	Return  language. Returns the langprefix from the db. Takes a lang id
-     as argument. Will return null if something goes wrong.
-     Example: If the language id number for swedish is 1. then the call
-     myObject.getLanguage("1") will return 'se'
-     That is, provided that the prefix for swedish is 'se', which it isn't.
-     Or rather, it shouldn't be.
+     * Fetch the systemdata from the db
      */
-    public String getLanguage( String lang_id ) {
-        return sqlProcedureStr( "GetLangPrefixFromId " + lang_id );
-    }
+    private SystemData getSystemDataFromDb() {
 
-    /** Fetch the systemdata from the db */
-    protected SystemData getSystemDataFromDb() {
+        /** Fetch everything from the DB */
+        String startDocument = sqlProcedureStr( "StartDocGet", new String[0] );
+        String[] serverMaster = sqlProcedure( "ServerMasterGet", new String[0] );
+        String[] webMaster = sqlProcedure( "WebMasterGet", new String[0] );
+        String systemMessage = sqlProcedureStr( "SystemMessageGet", new String[0] );
 
+        /** Create a new SystemData object */
         SystemData sd = new SystemData();
-        sd.setStartDocument( m_databaseService.sproc_StartDocGet() );
-        sd.setSystemMessage( m_databaseService.sproc_SystemMessageGet() );
-        sd.setServerMaster( m_databaseService.sproc_ServerMasterGet_name() );
-        sd.setServerMasterAddress( m_databaseService.sproc_ServerMasterGet_address() );
-        sd.setWebMaster( m_databaseService.sproc_WebMasterGet_name() );
-        sd.setWebMasterAddress( m_databaseService.sproc_WebMasterGet_address() );
+
+        /** Store everything in the object */
+
+        sd.setStartDocument( startDocument == null ? DEFAULT_STARTDOCUMENT : Integer.parseInt( startDocument ) );
+        sd.setSystemMessage( systemMessage );
+
+        if ( serverMaster.length > 0 ) {
+            sd.setServerMaster( serverMaster[0] );
+            if ( serverMaster.length > 1 ) {
+                sd.setServerMasterAddress( serverMaster[1] );
+            }
+        }
+        if ( webMaster.length > 0 ) {
+            sd.setWebMaster( webMaster[0] );
+            if ( webMaster.length > 1 ) {
+                sd.setWebMasterAddress( webMaster[1] );
+            }
+        }
 
         return sd;
     }
@@ -1873,58 +1089,78 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
+     * Return a file relative to the webapps. ex ../templates/swe/admin/search/original
+     */
+    public String getSearchTemplate( String path ) throws IOException {
+        return fileCache.getCachedFileString( new File( templatePath, path ) );
+    }
+
+    /**
+     * Set a user flag
+     */
+    public void setUserFlag( UserDomainObject user, String flagName ) {
+        int userId = user.getId();
+
+        sqlUpdateProcedure( "SetUserFlag", new String[]{"" + userId, flagName} );
+    }
+
+    /**
      * Returns an array with with all the documenttypes stored in the database
      * the array consists of pairs of id:, value. Suitable for parsing into select boxes etc.
      */
-    public String[] getDocumentTypesInList( String langPrefixStr ) {
-        return this.sqlProcedure( "GetDocTypes '" + langPrefixStr + "'" );
-    }
-
-    public boolean checkUserDocSharePermission( UserDomainObject user, int meta_id ) {
-        return sqlProcedure( "CheckUserDocSharePermission " + user.getUserId() + "," + meta_id ).length > 0;
+    public String[][] getDocumentTypesInList( String langPrefixStr ) {
+        return sqlProcedureMulti( "GetDocTypes", new String[]{langPrefixStr} );
     }
 
     /**
-     Return a file relative to the fortune-path.
-     **/
+     * Unset a user flag
+     */
+    public void unsetUserFlag( UserDomainObject user, String flagName ) {
+        int userId = user.getId();
+
+        sqlUpdateProcedure( "UnsetUserFlag", new String[]{"" + userId, flagName} );
+    }
+
+    /**
+     * Return a file relative to the fortune-path.
+     */
     public String getFortune( String path ) throws IOException {
-        return fileCache.getCachedFileString( new File( m_FortunePath, path ) );
+        return fileCache.getCachedFileString( new File( fortunePath, path ) );
     }
 
     /**
-     Get a list of quotes
-
-     @param quoteListName The name of the quote-List.
-
-     @return the quote-List.
-     **/
+     * Get a list of quotes
+     *
+     * @param quoteListName The name of the quote-List.
+     * @return the quote-List.
+     */
     public List getQuoteList( String quoteListName ) {
         List theList = new LinkedList();
         try {
-            File file = new File( m_FortunePath, quoteListName );
+            File file = new File( fortunePath, quoteListName );
             StringReader reader = new StringReader( fileCache.getUncachedFileString( file ) );
             QuoteReader quoteReader = new QuoteReader( reader );
-            for( Quote quote; null != (quote = quoteReader.readQuote()); ) {
+            for ( Quote quote; null != ( quote = quoteReader.readQuote() ); ) {
                 theList.add( quote );
             }
             reader.close();
-        } catch( IOException ignored ) {
+        } catch ( IOException ignored ) {
             log.debug( "Failed to load quote-list " + quoteListName );
         }
         return theList;
     }
 
     /**
-     Set a quote-list
-
-     @param quoteListName The name of the quote-List.
-     @param quoteList     The quote-List
-     **/
+     * Set a quote-list
+     *
+     * @param quoteListName The name of the quote-List.
+     * @param quoteList     The quote-List
+     */
     public void setQuoteList( String quoteListName, List quoteList ) throws IOException {
-        FileWriter writer = new FileWriter( new File( m_FortunePath, quoteListName ) );
+        FileWriter writer = new FileWriter( new File( fortunePath, quoteListName ) );
         QuoteWriter quoteWriter = new QuoteWriter( writer );
         Iterator quotesIterator = quoteList.iterator();
-        while( quotesIterator.hasNext() ) {
+        while ( quotesIterator.hasNext() ) {
             quoteWriter.writeQuote( (Quote)quotesIterator.next() );
         }
         writer.flush();
@@ -1932,35 +1168,35 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     @return a List of Polls
-     **/
+     * @return a List of Polls
+     */
     public List getPollList( String pollListName ) {
         List theList = new LinkedList();
         try {
-            File file = new File( m_FortunePath, pollListName );
+            File file = new File( fortunePath, pollListName );
             StringReader reader = new StringReader( fileCache.getUncachedFileString( file ) );
             PollReader pollReader = new PollReader( reader );
-            for( Poll poll; null != (poll = pollReader.readPoll()); ) {
+            for ( Poll poll; null != ( poll = pollReader.readPoll() ); ) {
                 theList.add( poll );
             }
             reader.close();
-        } catch( IOException ignored ) {
+        } catch ( IOException ignored ) {
             log.debug( "Failed to load poll-list " + pollListName );
         }
         return theList;
     }
 
     /**
-     Set a poll-list
-
-     @param pollListName The name of the poll-List.
-     @param pollList     The poll-List
-     **/
+     * Set a poll-list
+     *
+     * @param pollListName The name of the poll-List.
+     * @param pollList     The poll-List
+     */
     public void setPollList( String pollListName, List pollList ) throws IOException {
-        FileWriter writer = new FileWriter( new File( m_FortunePath, pollListName ) );
+        FileWriter writer = new FileWriter( new File( fortunePath, pollListName ) );
         PollWriter pollWriter = new PollWriter( writer );
         Iterator pollIterator = pollList.iterator();
-        while( pollIterator.hasNext() ) {
+        while ( pollIterator.hasNext() ) {
             pollWriter.writePoll( (Poll)pollIterator.next() );
         }
         writer.flush();
@@ -1968,128 +1204,67 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     Return a file relative to the webapps. ex ../templates/se/admin/search/original
-     **/
-    public String getSearchTemplate( String path ) throws IOException {
-        return fileCache.getCachedFileString( new File( m_TemplateHome, path ) );
-    }
-
-    /**
-     @deprecated Ugly use something else.
-     DOCME: Use what?
+     * Get all possible userflags
      */
-    public File getInternalTemplateFolder( int meta_id ) {
-        Vector data = new Vector();
+    public Map getUserFlags() {
+        String[] dbData = sqlProcedure( "GetUserFlags", new String[0] );
 
-        if( meta_id != -1 ) {
-            DBConnect dbc = new DBConnect( m_conPool );
-            String sqlStr = "select doc_type,lang_prefix from meta where meta_id = " + meta_id;
-            dbc.setSQLString( sqlStr );
-            dbc.getConnection();
-            dbc.createStatement();
-            data = dbc.executeQuery();
-
-            dbc.clearResultSet();
-            dbc.closeConnection();
-            dbc = null;
-            return new File( m_TemplateHome, data.elementAt( 1 ).toString() + "/" );
-
-        } else {
-            return m_TemplateHome;
-        }
+        return getUserFlags( dbData );
     }
 
     /**
-     Retrieve the texts for a document
-     @param meta_id The id of the document.
-     @return A Map (Integer -> IMCText) with all the  texts in the document.
-     **/
-    public Map getTexts( int meta_id ) {
+     * Get all userflags for a single user
+     */
+    public Map getUserFlags( UserDomainObject user ) {
+        int userId = user.getId();
+        String[] dbData = sqlProcedure( "GetUserFlagsForUser", new String[]{String.valueOf( userId )} );
 
-        // Now we'll get the texts from the db.
-        DatabaseService.Table_texts[] texts = m_databaseService.sproc_GetTexts( meta_id ) ;
-
-        Map textMap = new HashMap();
-        Iterator it = Arrays.asList( texts ).iterator();
-        while( it.hasNext() ) {
-            DatabaseService.Table_texts text = (DatabaseService.Table_texts)it.next() ;
-            int txt_no = text.name ;
-            int txt_type = text.type ;
-            String value = text.text;
-            textMap.put( ""+txt_no, new IMCText( value, txt_type ) );
-        }
-        return textMap;
+        return getUserFlags( dbData );
     }
 
     /**
-     Get the data for one document
-     @param meta_id The id fore the wanted document
-     @return a imcode.server.internalDocument.Document representation of the document, or null if there was none.
-     @throws IndexOutOfBoundsException if there was no such document.
-     **/
-    public DocumentDomainObject getDocument( int meta_id ) throws IndexOutOfBoundsException {
-        return documentMapper.getDocument( meta_id );
+     * Get all userflags of a single type
+     */
+    public Map getUserFlags( int type ) {
+        String[] dbData = sqlProcedure( "GetUserFlagsOfType", new String[]{String.valueOf( type )} );
+
+        return getUserFlags( dbData );
     }
 
     /**
-     Get the readrunner-user-data for a user
-     @param user The id of the user
-     @return     The readrunner-user-data for a user, or null if the user had none.
-     **/
-    public ReadrunnerUserData getReadrunnerUserData( UserDomainObject user ) {
-        int userId = user.getUserId();
-        String[] dbData = sqlProcedure( "GetReadrunnerUserDataForUser", new String[]{String.valueOf( userId )} );
-        if( 0 == dbData.length ) {
-            // There was no readrunner-user-data
-            return null;
-        }
+     * Get all userflags for a single user of a single type
+     */
+    public Map getUserFlags( UserDomainObject user, int type ) {
+        int userId = user.getId();
+        String[] dbData = sqlProcedure( "GetUserFlagsForUserOfType",
+                                        new String[]{String.valueOf( userId ), String.valueOf( type )} );
 
-        // Create the ReadrunnerUserData-object
-        ReadrunnerUserData rrUserData = new ReadrunnerUserData();
-        try {
-            // Fill it with data from the DB
-            DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
-            rrUserData.setUses( Integer.parseInt( dbData[0] ) );
-            rrUserData.setMaxUses( Integer.parseInt( dbData[1] ) );
-            rrUserData.setMaxUsesWarningThreshold( Integer.parseInt( dbData[2] ) );
-            if( null != dbData[3] ) {
-                rrUserData.setExpiryDate( dateFormat.parse( dbData[3] ) );
-            } else {
-                rrUserData.setExpiryDate( null );
-            }
-            rrUserData.setExpiryDateWarningThreshold( Integer.parseInt( dbData[4] ) );
-            rrUserData.setExpiryDateWarningSent( Integer.parseInt( dbData[5] ) != 0 );
-            // Return it
-            return rrUserData;
-        } catch( NumberFormatException nfe ) {
-            log.error( "GetReadrunnerUserData returned malformed integer-data.", nfe );
-            throw nfe;
-        } catch( ParseException pe ) {
-            log.error( "GetReadrunnerUserData returned malformed date-data: '" + dbData[3] + "'", pe );
-            throw new RuntimeException( "GetReadrunnerUserData returned malformed date-data: '" + dbData[3] + "'" );
-        }
+        return getUserFlags( dbData );
     }
 
     /**
-     Set the readrunner-user-data for a user
-     @param user       The user
-     @param rrUserData The ReadrunnerUserData-object
-     **/
-    public void setReadrunnerUserData( UserDomainObject user, ReadrunnerUserData rrUserData ) {
-        int userId = user.getUserId();
+     * Used by the other getUserFlags*-methods to put the database-data in a Set *
+     */
+    private Map getUserFlags( String[] dbData ) {
+        Map theFlags = new HashMap();
 
-        String expiryDateString = null != rrUserData.getExpiryDate() ? new SimpleDateFormat( "yyyy-MM-dd" ).format( rrUserData.getExpiryDate() ) : null;
+        for ( int i = 0; i < dbData.length; i += 4 ) {
+            String flagName = dbData[i + 1];
+            int flagType = Integer.parseInt( dbData[i + 2] );
+            String flagDescription = dbData[i + 3];
 
-        String temp[] = {"" + userId, "" + rrUserData.getUses(), "" + rrUserData.getMaxUses(), "" + rrUserData.getMaxUsesWarningThreshold(), expiryDateString, "" + rrUserData.getExpiryDateWarningThreshold(), "" + rrUserData.getExpiryDateWarningSent()};
-        for( int i = 0; i < temp.length; i++ ) {
-            System.out.println( "temp[]= " + temp[i] );
+            UserFlag flag = new UserFlag();
+            flag.setName( flagName );
+            flag.setType( flagType );
+            flag.setDescription( flagDescription );
+
+            theFlags.put( flagName, flag );
         }
-
-        sqlUpdateProcedure( "SetReadrunnerUserDataForUser", new String[]{"" + userId, "" + rrUserData.getUses(), "" + rrUserData.getMaxUses(), "" + rrUserData.getMaxUsesWarningThreshold(), expiryDateString, "" + rrUserData.getExpiryDateWarningThreshold(), rrUserData.getExpiryDateWarningSent() ? "1" : "0"} );
+        return theFlags;
     }
 
     public PollHandlingSystem getPollHandlingSystem() {
-        return new PollHandlingSystemImpl( this, m_databaseService );
+        return new PollHandlingSystemImpl( this );
     }
 
     public ShoppingOrderSystem getShoppingOrderSystem() {
@@ -2097,15 +1272,38 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     public void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime ) {
-        DatabaseAccessor.sqlUpdateModifiedDatesOnDocumentAndItsParent( this, metaId, dateTime );
-        DatabaseAccessor.sprocUpdateParentsDateModified( this, metaId );
+        documentMapper.touchDocument( documentMapper.getDocument( metaId ) );
+        documentMapper.sqlUpdateModifiedDatesOnDocumentAndItsParent( metaId, dateTime );
     }
 
-    public DocumentMapper getDocumentMapper() {
-        return documentMapper;
+    public Properties getLangProperties( UserDomainObject user ) {
+
+        if ( langproperties_eng == null ) {
+            initLangProperties( "eng" );
+        }
+        if ( langproperties_swe == null ) {
+            initLangProperties( "swe" );
+        }
+        if ( "swe".equals( user.getLanguageIso639_2() ) ) {
+            return langproperties_swe;
+        }
+        return langproperties_eng;
     }
 
-    public DatabaseService getDatabaseService() {
-        return m_databaseService;
+    public File getFilePath() {
+        return filePath;
     }
+
+    public File getIncludePath() {
+        return includePath;
+    }
+
+    public Collator getDefaultLanguageCollator() {
+        try {
+            return Collator.getInstance( new Locale( LanguageMapper.convert639_2to639_1( defaultLanguageAsIso639_2 ) ) );
+        } catch ( LanguageMapper.LanguageNotSupportedException e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
 }

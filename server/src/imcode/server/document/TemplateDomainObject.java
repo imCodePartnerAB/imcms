@@ -1,26 +1,28 @@
 package imcode.server.document;
 
-public class TemplateDomainObject {
+import java.io.Serializable;
+
+public class TemplateDomainObject implements Comparable, Serializable {
     private int id;
-    private String simple_name;
-    private String template_name;
+    private String name;
+    private String fileName;
 
     public TemplateDomainObject( int id, String template_name, String simple_name ) {
         this.id = id;
-        this.simple_name = simple_name;
-        this.template_name = template_name;
+        this.name = simple_name;
+        this.fileName = template_name;
     }
 
     public int getId() {
         return id;
     }
 
-    public String getSimple_name() {
-        return simple_name;
+    public String getName() {
+        return name;
     }
 
-    public String getTemplate_name() {
-        return template_name;
+    public String getFileName() {
+        return fileName;
     }
 
     public boolean equals( Object o ) {
@@ -33,7 +35,7 @@ public class TemplateDomainObject {
 
         if( id != templateDomainObject.id )
             return false;
-        if( simple_name != null ? !simple_name.equals( templateDomainObject.simple_name ) : templateDomainObject.simple_name != null )
+        if( name != null ? !name.equals( templateDomainObject.name ) : templateDomainObject.name != null )
             return false;
 
         return true;
@@ -42,8 +44,12 @@ public class TemplateDomainObject {
     public int hashCode() {
         int result;
         result = id;
-        result = 29 * result + (simple_name != null ? simple_name.hashCode() : 0);
+        result = 29 * result + (name != null ? name.hashCode() : 0);
         return result;
+    }
+
+    public int compareTo( Object o ) {
+        return name.compareToIgnoreCase( ((TemplateDomainObject)o).name ) ;
     }
 
 }

@@ -16,9 +16,6 @@
 </style>
 <script language="JavaScript">
 <!--
-function openHelp(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
-}
 
 function targetNewWindow() {
 	var exampelWindow = window.open("", "Exempelmall", "scrollbars=yes,toolbar=0,resizable=yes,location=0,directories=0,status=0,menubar=0,height=500,width=800");
@@ -37,31 +34,29 @@ function resetTarget() {
 <form name="myForm" method="POST" action="SaveInPage">
 <tr>
 	<td colspan="4" id="changePageTd1" nowrap>
-	&nbsp;<span class="changePageHeading">Utseende&nbsp;</span> <b>MetaId:</b> #getMetaId# &nbsp; <b>Akt grupp:</b> (#group#) &nbsp; <b>Akt mall:</b> (#simple_name#)</td>
+	&nbsp;<span class="changePageHeading"><? templates/sv/textdoc/inPage_admin.html/1001 ?>&nbsp;</span> <? templates/sv/textdoc/inPage_admin.html/1002 ?></td>
 </tr>
 <tr> 
 	<td id="changePageTd21" nowrap>
 	&nbsp;<select name="group" size="1" class="changePageSelect">
 	#getTemplateGroups#
 	</select>
-	<input type="submit" name="change_group" value="&Auml;ndra grupp" onClick="resetTarget()" class="changePageButton" width="80" style="width:80"></td>
+	<input type="submit" name="change_group" value="<? templates/sv/textdoc/inPage_admin.html/2001 ?>" onClick="resetTarget()" class="changePageButton" width="90" style="width:90"></td>
 	
 	<td id="changePageTd22" nowrap>
 	&nbsp;<select name="template" size="1" class="changePageSelect">
-		#getTemplates#
+		#getTemplatesInGroup#
 		<option></option>
 	</select>
-	<input type="submit" name="preview" value="Visa mall" onClick="targetNewWindow()" class="changePageButton"></td>
+	<input type="submit" name="preview" value="<? templates/sv/textdoc/inPage_admin.html/2002 ?>" onClick="targetNewWindow()" class="changePageButton"></td>
 	
 	<td id="changePageTd23" nowrap>
-	<input type="submit" name="update" value="Spara" onClick="resetTarget()" class="changePageButton"></td>
+	<input type="submit" name="update" value="<? templates/sv/textdoc/inPage_admin.html/2003 ?>" onClick="resetTarget()" class="changePageButton"></td>
 	
 	<td id="changePageTd24" nowrap>
-	<a href="GetDoc?meta_id=87" target="_blank" onClick="openHelp('87'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan" hspace="2"></a></td>
+	<a href="@documentationurl@/GetDoc?meta_id=87" target="_blank"><img src="@imcmsimageurl@/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/textdoc/inPage_admin.html/2004 ?>" hspace="2"></a></td>
 </tr>
 <input type="HIDDEN" name="meta_id" value="#getMetaId#">
-#getDocType# 
-#DocMenuNo#  
 </form>
 </table></div>
 

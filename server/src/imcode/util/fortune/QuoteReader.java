@@ -12,11 +12,8 @@ import java.util.StringTokenizer ;
 import java.util.NoSuchElementException ;
 
 import imcode.util.Parser ;
-import imcode.util.DateRange ;
 
 public class QuoteReader extends BufferedReader {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     public QuoteReader(Reader reader) {
 	super(reader) ;
@@ -47,7 +44,7 @@ public class QuoteReader extends BufferedReader {
 
        @return A Quote, or null if none could be read.
     **/
-    protected Quote parseQuoteFromString(String fortune) throws ParseException {
+    private Quote parseQuoteFromString(String fortune) throws ParseException {
 	// Tokenize the line
 	StringTokenizer tokens = new StringTokenizer(fortune,"#",true) ;
 

@@ -19,15 +19,14 @@ function confirmDeleteReply(){
 //-->
 </script>
 
-<title>Conference - Message</title>
+<title><? templates/sv/billboard/original/BillBoard_Admin_Reply.htm/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
 <body bgcolor="#ffffff" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
   <tr bgcolor="#9999ff"> 
-    <td width="60%" nowrap bgcolor="#ffffff">&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">ADMINISTRERA 
-      ANSLAG</font></td>
+    <td width="60%" nowrap bgcolor="#ffffff">&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/billboard/original/BillBoard_Admin_Reply.htm/2 ?></font></td>
     <td height="12" width="40%" nowrap align="middle" bgcolor="#ffffff">&nbsp;</td>
   </tr>
 </table>
@@ -38,10 +37,10 @@ function confirmDeleteReply(){
   	
     <tr> 
       <td width="130"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-	  	<input type="submit" name="DELETE_REPLY" value="TA BORT" style="FONT-SIZE: 10px" onClick="if(deleteConfirm()==false) return false; return true;"></font>
+	  	<input type="submit" name="DELETE_REPLY" value="<? templates/sv/billboard/original/BillBoard_Admin_Reply.htm/2001 ?>" style="FONT-SIZE: 10px" onClick="if(deleteConfirm()==false) return false; return true;"></font>
 	  </td>
 	  <td width="130">
-	  	<input type="submit" name="RESAVE_REPLY" value="SPARA OM" style="FONT-SIZE: 10px" onClick="if(confirmDeleteReply()==false)return false; return true;">
+	  	<input type="submit" name="RESAVE_REPLY" value="<? templates/sv/billboard/original/BillBoard_Admin_Reply.htm/2002 ?>" style="FONT-SIZE: 10px" onClick="if(confirmDeleteReply()==false)return false; return true;">
 	  <td width="170">
 	  	&nbsp;
       </FONT>
@@ -50,8 +49,8 @@ function confirmDeleteReply(){
 	<tr>
 		<td colspan="3">
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-			<input name=MOVE_A_BILL type=submit value="FLYTTA" style="FONT-SIZE: 10px"> 
-			&nbsp;markerade till avdelning
+			<input name="MOVE_A_BILL" type="submit" value="<? templates/sv/billboard/original/BillBoard_Admin_Reply.htm/2003 ?>" style="FONT-SIZE: 10px"> 
+			&nbsp;<? templates/sv/billboard/original/BillBoard_Admin_Reply.htm/1001 ?>
 			<select name="MOVE_TO_SECTION" size="1">#SECTION_LIST#</select>
 			 </FONT>
 		</td>
@@ -60,7 +59,7 @@ function confirmDeleteReply(){
   </form>
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
   <tr> 
-    <td width="27%">&nbsp;&nbsp;<A href="#SERVLET_URL#BillBoardHelp?helpmode=admin&amp;helparea=Reply#Reply" target=_BillBoardHelp><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HJÄLP</font></a> 
+    <td width="27%">&nbsp;&nbsp;<A href="#SERVLET_URL#BillBoardHelp?helpmode=admin&amp;helparea=Reply#Reply" target=_BillBoardHelp><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/billboard/original/BillBoard_Admin_Reply.htm/5 ?></font></a> 
     </td>
     <td width="73%">#SECTION_UNADMIN_LINK#</td>
   </tr>

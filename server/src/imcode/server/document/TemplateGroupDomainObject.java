@@ -39,4 +39,10 @@ public class TemplateGroupDomainObject {
         result = 29 * result + (name != null ? name.hashCode() : 0);
         return result;
     }
+
+
+    public int compareTo( Object o ) {
+        return name.compareToIgnoreCase( ((TemplateGroupDomainObject)o).name ) ;
+    }
+
 }

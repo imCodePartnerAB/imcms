@@ -2,157 +2,119 @@
 <head>
 <title>adminChat</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<link rel="STYLESHEET" type="text/css" href="@cssurl@/style_chat_admin.css">
+
 </head>
-
 <body bgcolor="#FFFFFF">
-<form method="post" action="ChatCreator" name="AdminChat">
-	<input type="hidden" name="action" value="admin_chat">
-    <input type="hidden" name="chatName" value="#chatName#">
 
-  <table width="30%" border="0" cellspacing="0" height="216">
-    <tr bgcolor="#333366"> 
-      <td width="0%">&nbsp;</td>
-      <td colspan="4"> 
-        <div align="center"><b>Administrera chatt</b></div>
-      </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%">&nbsp;</td>
-      <td colspan="4" align="right">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%" height="35">&nbsp;</td>
-      <td width="28%" height="35">Chattrum:</td>
-      <td width="25%" height="35"> 
-        <input type="text" name="chatRoom" size="20" value="#chatRoom#">
-       </td>
-      <td width="25%" height="35"> 
-        <input type="submit" name="addRoom" value=" L&auml;gg till  ">
-      </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%" height="29">&nbsp;</td>
-      <td width="28%" height="29">&nbsp;</td>
-      <td width="25%" height="29"> 
-        <select name="roomList">
-         #roomList#
-        </select>
-      </td>
-	  <td width="25%" height="35"> 
-	  <input type="submit" name="removeRoom" value="  Ta bort  ">
-	  </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%" height="37">&nbsp;</td>
-      <td width="28%" height="37">Meddelandetyper:</td>
-      <td width="25%" height="37"> 
-        <input type="text" name="msgType" value="#msgType#">
-      </td>
-      <td width="25%" height="37"> 
-        <input type="submit" name="addMsgType" value=" L&auml;gg till  ">
-      </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%" height="26">&nbsp;</td>
-      <td width="28%" height="26">&nbsp;</td>
-      <td width="25%" height="26"> 
-          <select name="msgTypes">
-         #msgTypes#
-                </select>
-      </td>
-	  <td width="25%" height="26"> 
-	  <input type="submit" name="removeMsgType" value="  Ta bort  ">
-	  </td>
-    </tr>
-    <tr bgcolor="#bababa">
-		<td colspan="4"><hr></td>
-	</tr>
-   <tr bgcolor="#bababa"> 
-      <td width="0%" height="26">&nbsp;</td>
-      <td width="28%" height="26">Beh&ouml;riga anv&auml;ndare:</td>
-      <td width="50%" height="26" colspan="2"> 
-        <select name="authorized" size="3" multiple>
-       		#authorized#
-        </select>
-      </td>
-    </tr>
-	#templates#
-    <tr bgcolor="#bababa"> 
-      <td width="0%" height="26">&nbsp;</td>
-      <td width="28%" height="26">&nbsp;</td>
-      <td width="50%" height="26" colspan="2">&nbsp; </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%" height="26">&nbsp;</td>
-      <td colspan="2" height="26"><b>Valfria inst&auml;llningar:</b></td>
-      <td height="26">Ja/Nej/Valfri</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%" height="26">&nbsp;</td>
-      <td colspan="2" height="26">uppdatera automatiskt var 
-        <select name="update">
-         #updateTime#
-        </select>
-        sekund </td>
-      <td height="26"> 
-	  #reload#
-        
-      </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%" height="26">&nbsp;</td>
-      <td colspan="2" height="26">visa in/utg&aring;ng </td>
-      <td height="26"> 
-	  #inOut#
-        
-      </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%" height="26">&nbsp;</td>
-      <td height="26" colspan="2">visa enbart privata meddelanden </td>
-      <td height="26"> 
-	  #private#
-        
-      </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%" height="26">&nbsp;</td>
-      <td height="26" colspan="2">visa enbart publika meddelanden</td>
-      <td height="26"> 
-	  #public#
-        
-      </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%" height="26">&nbsp;</td>
-      <td height="26" colspan="2">visa datum/tid vid meddelanden</td>
-      <td height="26"> 
-	  #dateTime#
-        
-      </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%" height="26">&nbsp;</td>
-      <td height="26" colspan="2">&ouml;ka/minska typsnitt</td>
-      <td height="26"> 
-	  #font#
-        
-      </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="0%" height="26">&nbsp;</td>
-      <td width="28%" height="53">&nbsp;</td>
-      <td width="25%" height="53"> 
-        <div align="center"> 
-          <input type="submit" name="okChat" value="OK">
-        </div>
-      </td>
-      <td width="25%" height="53">&nbsp; </td>
-    </tr>
-  </table>
- 
+<table border="0" cellspacing="0" cellpadding="3" width="500" align="center" bgcolor="#bababa">
+<form method="post" action="ChatCreator" name="AdminChat">
+<input type="hidden" name="action" value="admin_chat">
+<input type="hidden" name="chatName" value="#chatName#">
+<tr bgcolor="#333366">
+	<td>&nbsp;</td>
+	<th colspan="3" align="left"><? templates/sv/chat/original/admin_chat.html/2 ?></th>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td width="10">&nbsp;</td>
+	<td colspan="3">&nbsp;</td>
+	<td width="10">&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td><? templates/sv/chat/original/admin_chat.html/3 ?></td>
+	<td><input type="text" name="msgType" value="#msgType#"></td>
+	<td><input type="submit" name="addMsgType" value=" <? templates/sv/chat/original/admin_chat.html/2001 ?>  "></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="2">&nbsp;</td>
+	<td>
+	<select name="msgTypes">
+		#msgTypes#
+	</select></td>
+	<td><input type="submit" name="removeMsgType" value="  <? templates/sv/chat/original/admin_chat.html/2002 ?>  "></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td colspan="3"><hr></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td><? templates/sv/chat/original/admin_chat.html/5 ?></td>
+	<td colspan="2">
+	<select name="authorized" size="3" multiple>
+		#authorized#
+	</select></td>
+	<td>&nbsp;</td>
+</tr>
+<!-- # templates# -->
+<tr>
+	<td>&nbsp;</td>
+	<td colspan="3"><hr></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td colspan="2"><? templates/sv/chat/original/admin_chat.html/7 ?></td>
+	<td><? templates/sv/chat/original/admin_chat.html/8 ?></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td colspan="2"><? templates/sv/chat/original/admin_chat.html/9 ?>
+	<select name="update">
+	#updateTime#
+	</select> <? templates/sv/chat/original/admin_chat.html/11 ?></td>
+	<td>#reload#</td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td colspan="2"><? templates/sv/chat/original/admin_chat.html/13 ?></td>
+	<td>#inOut#</td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td colspan="2"><? templates/sv/chat/original/admin_chat.html/15 ?></td>
+	<td>#private#</td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td colspan="2"><? templates/sv/chat/original/admin_chat.html/17 ?></td>
+	<td>#dateTime#</td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td colspan="2"><? templates/sv/chat/original/admin_chat.html/19 ?></td>
+	<td>#font#</td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td colspan="3"><hr></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="2">&nbsp;</td>
+	<td align="center"><input type="submit" name="okChat" value="  <? templates/sv/chat/original/admin_chat.html/2003 ?>  "></td>
+	<td colspan="2">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="5">&nbsp;</td>
+</tr>
 </form>
-<p>&nbsp; </p>
+</table>
+
+<p>&nbsp;</p>
+
 </body>
 </html>
 

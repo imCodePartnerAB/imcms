@@ -1,0 +1,1 @@
+<img src="@imcmsimageurl@/admin/status/archived.gif" border="0" alt="<? templates/sv/textdoc/status/archived.frag/description ?>" title="<? templates/sv/textdoc/status/archived.frag/description ?>" hspace="2">

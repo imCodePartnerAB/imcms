@@ -1,60 +1,71 @@
-package imcode.server.parser ;
+package imcode.server.parser;
 
-import imcode.util.* ;
+import imcode.server.DocumentRequest;
 
-import org.apache.oro.text.regex.* ;
-
-import java.util.* ;
-
-public class ParserParameters {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
+public class ParserParameters implements Cloneable {
 
     private String template;	//used to store the template if not default is wanted
     private String param;		//used to store the parameter param
     private String externalParam; //used to store the param prodused from external class.
-
-    private ReadrunnerParameters readrunnerParameters ;
+    private Integer editingMenuIndex;
+    private DocumentRequest documentRequest;
+    private int flags;
 
     public ParserParameters() {
 
     }
 
     // set methods
-    public void setTemplate(String template) {
-	this.template = template;
+    public void setTemplate( String template ) {
+        this.template = template;
     }
 
-    public void setParameter(String param) {
-	this.param = param;
+    public void setParameter( String param ) {
+        this.param = param;
     }
 
-    public void setExternalParameter(String externalparam) {
-	this.externalParam = externalparam;
-    }
-
-    public void setReadrunnerParameters(ReadrunnerParameters readrunnerParameters) {
-	this.readrunnerParameters = readrunnerParameters ;
+    public void setExternalParameter( String externalparam ) {
+        this.externalParam = externalparam;
     }
 
     // get methods
     public String getTemplate() {
-	return	this.template;
+        return this.template;
     }
 
     public String getParameter() {
-	return	this.param == null ? "":this.param;
+        return this.param == null ? "" : this.param;
     }
 
     public String getExternalParameter() {
-	return	this.externalParam == null ? "":this.externalParam;
+        return this.externalParam == null ? "" : this.externalParam;
     }
 
-    /**
-       @return The readrunner-parameters set for this parser, or null if none were set.
-    **/
-    public ReadrunnerParameters getReadrunnerParameters() {
-	return this.readrunnerParameters ;
+    public Integer getEditingMenuIndex() {
+        return editingMenuIndex ;
     }
 
+    public void setEditingMenuIndex( Integer editingMenuIndex ) {
+        this.editingMenuIndex = editingMenuIndex;
+    }
+
+    public DocumentRequest getDocumentRequest() {
+        return documentRequest;
+    }
+
+    public void setDocumentRequest( DocumentRequest documentRequest ) {
+        this.documentRequest = documentRequest;
+    }
+
+    public int getFlags() {
+        return flags;
+    }
+
+    public void setFlags( int flags ) {
+        this.flags = flags;
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone() ;
+    }
 }

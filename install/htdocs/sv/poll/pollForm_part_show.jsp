@@ -7,7 +7,7 @@ final String RESULT_DEFAULT_TEMPLATE = "poll_result_default_template";
 final String CONFIRMATION_TEMPLATE = "poll_confirmation_template";
 
 // Get a reference to IMCServiceInterface //
-IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(request) ;
+    IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 //Get a PollHandlingSystem
 PollHandlingSystem poll = imcref.getPollHandlingSystem();
@@ -58,18 +58,18 @@ if ( set_cookie == 1 && meta_id != null){
 <%
 if( saveAnswers ) {
 	%>
-	<input type="submit" name="Save" value="Skicka ditt svar">&nbsp;&nbsp;<input type="reset" name="Reset" value="Rensa">&nbsp;&nbsp;<input type="button" name="cancel" value="St&auml;ng" onclick="javascript:window.close()">
+	<input type="submit" name="Save" value="<? install/htdocs/sv/poll/pollForm_part_show.jsp/2001 ?>">&nbsp;&nbsp;<input type="reset" name="Reset" value="<? install/htdocs/sv/poll/pollForm_part_show.jsp/2002 ?>">&nbsp;&nbsp;<input type="button" name="cancel" value="<? install/htdocs/sv/poll/pollForm_part_show.jsp/2003 ?>" onclick="javascript:window.close()">
 	<%
 }else{
 	%>
-	Du har redan besvarat den h&auml;r enk&auml;ten <br>och kan endast se p&aring; resultatet!<br><br>
-	<input type="button" name="cancel" value="St&auml;ngt" onclick="javascript:window.close()">
+	<? install/htdocs/sv/poll/pollForm_part_show.jsp/2/1 ?><br><br>
+	<input type="button" name="cancel" value="<? install/htdocs/sv/poll/pollForm_part_show.jsp/2004 ?>" onclick="javascript:window.close()">
 	<% 
 }
 
 if ( hide_result < 1 ){ // show link only if hide_result = 0 and saveAnswers == true
 	%> 
-	<br><br><a href="@servleturl@/GetDoc?meta_id=<%= meta_id %>&template=<%= result_template%>" target="_blank" onClick="openW(); return false;"><b>Titta på ställningen</b></a><br>
+	<br><br><a href="@servleturl@/GetDoc?meta_id=<%= meta_id %>&template=<%= result_template%>" target="_blank" onClick="openW(); return false;"><b><? install/htdocs/sv/poll/pollForm_part_show.jsp/3/1 ?></b></a><br>
 
 <SCRIPT language=JavaScript>
 <!--

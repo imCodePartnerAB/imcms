@@ -29,7 +29,7 @@ import org.apache.log4j.*;
 import org.apache.oro.text.perl.Perl5Util;
 
 /**
- Get a document = Parse data from database.
+ Get a internalDocument = Parse data from database.
  */
 public class GetDoc extends HttpServlet {
     private static Category trackLog = Logger.getInstance( IMCConstants.ACCESS_LOG );

@@ -10,7 +10,7 @@ public class TestShoppingItem extends TestCase {
 	super(name) ;
     }
 
-    ShoppingItem[] items = new ShoppingItem[8] ;
+    private ShoppingItem[] items = new ShoppingItem[8] ;
 
     protected void setUp() {
 	items[0] = new ShoppingItem() ;
@@ -168,7 +168,7 @@ public class TestShoppingItem extends TestCase {
 	}
     }
 
-    public String itemsToString(ShoppingItem[] items) {
+    private String itemsToString(ShoppingItem[] items) {
 	StringBuffer result = new StringBuffer() ;
 
 	for (int i=0; i < items.length; ++i) {

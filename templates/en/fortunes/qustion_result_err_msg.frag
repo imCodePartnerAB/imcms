@@ -1,1 +1,0 @@
-Sorry, there are no statistics to be displayed!

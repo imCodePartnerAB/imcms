@@ -1,62 +1,55 @@
 <html>
 <head>
-<title>Varning!</title>
+<title><? templates/sv/templategroup_delete_warning.html/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
+<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
+
+<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
 
 </head>
-
 <body bgcolor="#FFFFFF">
-<form method="post" action="TemplateChange">
-  <table width="550" cellspacing="0" cellpadding="0" border="0">
-	<tr bgcolor="#333366"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> 
-		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Varning!</font></b></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td colspan="3">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">
-		&Auml;r du s&auml;ker p&aring; att formatgruppen skall tas bort?<br>
-		Formatgruppen inneh&aring;ller f&ouml;ljande mallar:</font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> 
-		<p align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">#templates#</font></p>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"><hr></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td><td width="90%"> 
-		<input type="submit" name="group_delete" value="OK">
-		<input type="submit" name="group_delete_cancel" value="Avbryt">
-		<input type="HIDDEN" name="templategroup" value="#templategroup#">
-		<input type="HIDDEN" name="group_delete_cancel" value="Avbryt">&nbsp; <a href="GetDoc?meta_id=13" target="_blank" onClick="openHelp('13'); return false;"><img src="@imcmsimages@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-	  </td><td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td colspan="3">&nbsp;</td>
-	</tr>
-  </table>
+
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", "Varning");
+</script>
+<table border="0" cellpadding="0" cellspacing="0">
+<form>
+<tr>
+	<td><input type="button" value="<? templates/sv/templategroup_delete_warning.html/2001 ?>" class="imcmsFormBtn" onClick="history.go(-1); return false"></td>
+	<td>&nbsp;</td>
+    <td><input type="button" value="<? templates/sv/templategroup_delete_warning.html/2002 ?>" title="<? templates/sv/templategroup_delete_warning.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(13)"></td>
+</tr>
 </form>
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="310">
+<form method="post" action="TemplateChange">
+<input type="HIDDEN" name="templategroup" value="#templategroup#">
+<input type="HIDDEN" name="group_delete_cancel" value="Avbryt">
+<tr>
+	<td align="center" class="imcmsAdmText"><? templates/sv/templategroup_delete_warning.html/4 ?>
+<blockquote>#templates#</blockquote></td>
+</tr>
+<tr>
+	<td><script>hr("100%",306,"blue");</script></td>
+</tr>
+<tr>
+	<td align="right">
+	<input type="submit" class="imcmsFormBtn" name="group_delete" value="  <? templates/sv/templategroup_delete_warning.html/2004 ?>  ">
+	<input type="submit" class="imcmsFormBtn" name="group_delete_cancel" value="<? templates/sv/templategroup_delete_warning.html/2005 ?>"></td>
+</tr>
+
+</form>
+</table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
+
 </body>
 </html>
+

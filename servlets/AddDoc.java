@@ -8,9 +8,7 @@ import javax.servlet.http.*;
 import imcode.util.*;
 import imcode.external.diverse.*;
 import imcode.server.*;
-import imcode.server.db.DatabaseService;
 import imcode.server.document.DocumentMapper;
-import imcode.server.document.DatabaseAccessor;
 import imcode.server.user.UserDomainObject;
 
 /**
@@ -52,8 +50,7 @@ public class AddDoc extends HttpServlet {
         }
         String lang_prefix = user.getLangPrefix();
 
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
-        boolean userHasRights = documentMapper.checkUsersRights( user, meta_id, lang_prefix, doc_type );
+        boolean userHasRights = DocumentMapper.checkUsersRights( imcref, user, meta_id, lang_prefix, doc_type );
 
         if( !"0".equals( item_selected ) && !userHasRights ) {
             String output = AdminDoc.adminDoc( meta_id_int, meta_id_int, user, req, res );
@@ -223,7 +220,7 @@ public class AddDoc extends HttpServlet {
         */
         // Here i'll select all classification-strings and
         // concatenate them into one semicolon-separated string.
-        String classification = documentMapper.getClassificationsAsOneString( Integer.parseInt(meta_id) );
+        String classification = DocumentMapper.getClassificationsAsOneString( imcref, Integer.parseInt(meta_id) );
 
         vec.add( "#classification#" );
         vec.add( classification );
@@ -257,7 +254,7 @@ public class AddDoc extends HttpServlet {
 
         //**************** section index word stuff *****************
         //lets get the section stuff from db
-        DatabaseService.Table_section parent_section = DatabaseAccessor.sprocSectionGetInheritId( imcref, Integer.parseInt(meta_id) );
+        String[] parent_section = DocumentMapper.sprocSectionGetInheritId( imcref, Integer.parseInt(meta_id) );
         //lets add the stuff that ceep track of the inherit section id and name
         if( parent_section == null ) {
             vec.add( "#current_section_id#" );
@@ -266,9 +263,9 @@ public class AddDoc extends HttpServlet {
             vec.add( imcref.parseDoc( null, MetaDataParser.SECTION_MSG_TEMPLATE, lang_prefix ) );
         } else {
             vec.add( "#current_section_id#" );
-            vec.add( ""+parent_section.section_id );
+            vec.add( parent_section[0] );
             vec.add( "#current_section_name#" );
-            vec.add( parent_section.section_name );
+            vec.add( parent_section[1] );
         }
 
         //lets build the option list used when the admin whants to breake the inherit chain
@@ -282,7 +279,7 @@ public class AddDoc extends HttpServlet {
             }
             if( parent_section != null ) {
                 if( parent_section != null )
-                    selected = ""+parent_section.section_id;
+                    selected = parent_section[0];
             }
 
             option_list = Html.createHtmlCode( "ID_OPTION", selected, onlyTemp );

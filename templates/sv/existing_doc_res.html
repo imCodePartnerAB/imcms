@@ -1,59 +1,32 @@
+
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="post" action="GetExistingDoc">
-<table cellpadding="2" cellspacing="0" align="center" border="1" width="631" height="1">
-    <tr bgcolor="#333366"> 
-      <td width="623" height="16"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><b>&nbsp;V&auml;lj 
-        befintligt dokument 
-        <input type="HIDDEN" name="meta_id_value" value="#meta_id#">
-        <input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
-        </b></font></td>
-    </tr>
-    <tr bgcolor="#333366"> 
-      <td width="623" height="16"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font> 
-      </td>
-    </tr>
-    <tr valign="middle" bgcolor="#BABABA"> 
-      
-      <td width="623" height="132"> 
-        <table width="100%" border="1" cellspacing="1" cellpadding="1">
-          <tr bgcolor="#9999FF"> 
-            <td width="21"> 
-              <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">vald</font></b></div>
-            </td>
-            <td width="39" height="20"> 
-              <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">meta 
-                id</font></b></div>
-            </td>
-            <td width="147" height="20"> 
-              <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">rubrik</font></b></div>
-            </td>
-            <td bgcolor="#9999FF" width="98" height="20"> 
-              <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">text</font></b></div>
-            </td>
-            <td width="50" height="20"> 
-              <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">dok 
-                typ </font></b></div>
-            </td>
-            <td width="87" height="20"> 
-              <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">skapad</font></b></div>
-            </td>
-            <td width="112" height="20"> 
-              <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">&auml;ndrad</font></b></div>
-            </td>
-          </tr>
-         	#searchResults#&nbsp;
-          <tr bgcolor="#9999FF"> 
-            <td colspan="10">&nbsp; </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-    <tr valign="middle"> 
-      <td bgcolor="#BABABA" width="623" height="52"> 
-        <p>&nbsp; 
-          <input TYPE="SUBMIT" value="L&auml;gg till markerade dokument" name="addExistingDocs">
-          <input TYPE="SUBMIT" value="Avbryt" name="cancel">
-        </p>
-      </td>
-    </tr>
-  </table>
+<input type="HIDDEN" name="meta_id_value" value="#meta_id#">
+<input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
+<tr> 
+	<td><script>imcHeading("<? templates/sv/existing_doc_res.html/1/1 ?>",656);</script></td>
+</tr>
+<tr>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="2" width="100%">
+	<tr> 
+		<td class="imcmsAdmText"><? templates/sv/existing_doc_res.html/2 ?></td>
+		<td class="imcmsAdmText"><? templates/sv/existing_doc_res.html/3 ?></td>
+		<td class="imcmsAdmText"><? templates/sv/existing_doc_res.html/4 ?></td>
+		<td class="imcmsAdmText"><? templates/sv/existing_doc_res.html/5 ?></td>
+		<td class="imcmsAdmText"><? templates/sv/existing_doc_res.html/6 ?></td>
+		<td class="imcmsAdmText"><? templates/sv/existing_doc_res.html/7 ?></td>
+		<td class="imcmsAdmText"><? templates/sv/existing_doc_res.html/8 ?></td>
+	</tr>#searchResults#
+	</table></td>
+</tr>
+<tr> 
+	<td><script>hr("100%",656,"blue");</script></td>
+</tr>
+<tr>
+	<td align="right">
+	<input type="submit" class="imcmsFormBtn" value="<? templates/sv/existing_doc_res.html/2001 ?>" name="addExistingDocs">
+	<input type="submit" class="imcmsFormBtn" value="<? templates/sv/existing_doc_res.html/2002 ?>" name="cancel"></td>
+</tr>
 </form>
+</table>

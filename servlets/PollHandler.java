@@ -13,7 +13,6 @@ import imcode.util.poll.*;
 
 import imcode.server.parser.* ;
 import imcode.server.* ;
-import imcode.server.db.DatabaseService;
 
 public class PollHandler extends HttpServlet {
 
@@ -42,9 +41,9 @@ public class PollHandler extends HttpServlet {
 	String result_template = req.getParameter("result_template"); 
 	
 	//Get PollParameters from db
-	imcode.server.db.DatabaseService.Table_polls poll_param = poll.getPollParameters(Integer.parseInt(meta_id));
-	int set_cookie = poll_param.set_cookie ;
-	int hide_result = poll_param.hide_result ;
+	String[] poll_param = poll.getPollParameters(meta_id); 
+	int set_cookie = Integer.parseInt( poll_param[5] );
+	int hide_result = Integer.parseInt( poll_param[6] );
 
 	
 		
@@ -169,7 +168,7 @@ public class PollHandler extends HttpServlet {
 		// Forward the request to the given location //
 		res.sendRedirect(forwardTo) ;
 	
-		if(textAnswers != null && textAnswers.size() > 0 && poll_param.email_recipients != null ){
+		if(textAnswers != null && textAnswers.size() > 0 && poll_param[8] != null ){
 			sendMail( imcref, req, poll_param, meta_id, textQuestions, textAnswers );
 		} 
 	}
@@ -178,7 +177,7 @@ public class PollHandler extends HttpServlet {
 
     
 
-    private void sendMail (IMCServiceInterface imcref, HttpServletRequest req, DatabaseService.Table_polls poll_param, String meta_id, TreeMap textQuestions, TreeMap textAnswers) throws IOException {
+    private void sendMail (IMCServiceInterface imcref, HttpServletRequest req, String[] poll_param, String meta_id, TreeMap textQuestions, TreeMap textAnswers) throws IOException {
 
 		String host = req.getHeader("Host") ;
 		
@@ -201,15 +200,19 @@ public class PollHandler extends HttpServlet {
 		    // Do nothing, let mailtimeout stay at default.
 		}
 
-		String mailFromAddress = getText( imcref, Integer.parseInt(meta_id), poll_param.email_from );
-		String mailToAddress   = getText( imcref, Integer.parseInt(meta_id), poll_param.email_recipients.intValue() ); // comma-separated string;
-        String mailSubject     = getText( imcref, Integer.parseInt(meta_id), poll_param.email_subject );
-
+		String mailFromAddress = getText( imcref, Integer.parseInt(meta_id), Integer.parseInt(poll_param[9]) );
+		String mailToAddress   = getText( imcref, Integer.parseInt(meta_id), Integer.parseInt(poll_param[8]) ); // comma-separated string;
+		String mailSubject     = getText( imcref, Integer.parseInt(meta_id), Integer.parseInt(poll_param[10]) );
+		//String mailFormat      = imcref.parseDoc(null, MAIL_FORMAT, imcref.getLanguage()) ;
+		//String mailItemFormat  = imcref.parseDoc(null, MAIL_ITEM_FORMAT, imcref.getLanguage()) ;
+		
+		
+		
 		// get poll name
 		IMCText poll_name = new IMCText("",0);
 		
-		if ( poll_param != null && poll_param.name != null ){
-			int text_no = poll_param.name.intValue() ;
+		if ( poll_param != null && poll_param.length !=0 && poll_param[1] != null ){
+			int text_no = Integer.parseInt( poll_param[1] );
 			poll_name = imcref.getText(Integer.parseInt(meta_id), text_no);
 		}
 			

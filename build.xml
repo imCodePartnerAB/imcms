@@ -2,188 +2,221 @@
 
 <!-- The Ant 'build.xml'-file for imCMS -->
 
-<project name="imCMS" default="dist" basedir=".">
+<project name="imCMS" default="dist">
 
     <!-- The current version of imCMS. -->
-    <property name="version"        value="$$Name$"/>
+    <property name="cvsname"    value="$$Name$"/>
+
+    <!-- versionnumber : imCMS version without suffix, only the number (e.g. "1.2.3") -->
+    <property name="version"            value=""/>
+    <property name="versionnumber"      value=""/>
+    <property name="versionfilesuffix"  value=""/>
+
+
+    <!-- Read in 'build.properties' and set the properties therein. -->
+    <!-- Those properties are used as bases for later properties in this file. -->
+    <property name="build.properties" value="build.properties"/>
+    <property file="${build.properties}"/>
 
     <!-- Paths. Later ones are built on earlier ones. -->
 
     <!-- The directory to build in. -->
     <property name="build"          value="${basedir}/build"/>
     <property name="dist"           value="${basedir}/dist"/>
+    <property name="sql-temp-dir"   value="${basedir}/sqltemp"/>
 
     <!-- Where to put generated documentation -->
-    <property name="doc"            value="${basedir}/doc"/>
+    <property name="doc" value="${basedir}/doc"/>
 
     <!-- The webroot. Everything put here can be seen by any visitor. -->
-    <property name="webroot"        value="${build}"/>
+    <property name="webroot" value="${build}"/>
 
-    <property name="imcmsimages"           value="${webroot}/imcmsimages"/>
-    <property name="images"                value="${webroot}/images"/>
-    <property name="login"                 value="${webroot}/login"/>
-    <property name="css"                   value="${webroot}/css"/>
-    <property name="user"                  value="${webroot}/user"/>
-    <property name="javascript"            value="${webroot}/javascript"/>
-    <property name="adminbuttons"          value="${imcmsimages}/admin"/>
-    <property name="readrunner"	           value="${webroot}/readrunner"/>
-    <property name="shop"	           value="${webroot}/shop"/>
-    <property name="poll"	           value="${webroot}/poll"/>
-    <property name="apisamples"	           value="${webroot}/apisamples"/>
+    <property name="images" value="${webroot}/images"/>
+    <property name="login"   value="${webroot}/login"/>
+    <property name="css" value="${webroot}/css"/>
+    <property name="user" value="${webroot}/user"/>
+    <property name="javascript" value="${webroot}/javascript"/>
+    <property name="jsp" value="${webroot}/jsp"/>
+    <property name="imcms" value="${webroot}/imcms"/>
+    <property name="imcmstest" value="${imcms}/test"/>
+    <property name="imcmscss" value="${imcms}/css"/>
+    <property name="apisamples" value="${webroot}/apisamples"/>
 
     <!-- 'WEB-INF' - Everything put here is private to the webapp -->
-    <property name="WEB-INF"        value="${webroot}/WEB-INF"/>
+    <property name="WEB-INF" value="${webroot}/WEB-INF"/>
 
-    <property name="conf"           value="${WEB-INF}/conf"/>
-    <property name="classes"        value="${WEB-INF}/classes"/>
-    <property name="lib"            value="${WEB-INF}/lib"/>
-    <property name="templates"      value="${WEB-INF}/templates"/>
-    <property name="includes"       value="${WEB-INF}/includes"/>
-    <property name="fortunes"       value="${WEB-INF}/fortunes"/>
-    <property name="uploads"        value="${WEB-INF}/uploads"/>
-    <property name="logs"           value="${WEB-INF}/logs"/>
+    <property name="versionfile" value="${WEB-INF}/version.txt"/>
+
+    <property name="conf" value="${WEB-INF}/conf"/>
+    <property name="classes" value="${WEB-INF}/classes"/>
+    <property name="lib" value="${WEB-INF}/lib"/>
+    <property name="templates" value="${WEB-INF}/templates"/>
+    <property name="includes" value="${WEB-INF}/includes"/>
+    <property name="fortunes" value="${WEB-INF}/fortunes"/>
+    <property name="uploads" value="${WEB-INF}/uploads"/>
+    <property name="logs" value="${WEB-INF}/logs"/>
 
     <!-- Paths for other templates -->
-    <property name="texttemplates"  value="${templates}/text"/>
-    <property name="demotemplates"  value="${texttemplates}/demo"/>
+    <property name="texttemplates" value="${templates}/text"/>
+    <property name="demotemplates" value="${texttemplates}/demo"/>
 
-    <!-- Read in 'build.properties' and set the properties therein. -->
-    <!-- Those properties are used as bases for later properties in this file. -->
-    <property name="build.properties"     value="build.properties"/>
-    <property file="${build.properties}"/>
 
     <!-- URIs -->
-    <property name="servleturl"               value="${rooturl}/servlet"/>
-    <property name="loginurl"                 value="${rooturl}/login"/>
-    <property name="imageurl"                 value="${rooturl}/images"/>
-    <property name="cssurl"                   value="${rooturl}/css"/>
-    <property name="javascripturl"            value="${rooturl}/javascript"/>
-    <property name="postcardsurl"             value="${rooturl}/postcards"/>
-    <property name="imcmsimageurl"            value="${rooturl}/imcmsimages"/>
-    <property name="adminbuttonsurl"          value="${imcmsimageurl}/admin"/>
-    <property name="shopurl"                  value="${rooturl}/shop"/>
-
-    <property name="readrunnerurl"	  value="${rooturl}/readrunner"/>
-    <property name="readrunnerimagesurl"  value="${readrunnerurl}/images"/>
-    <property name="readrunnercssurl"     value="${readrunnerurl}/css"/>
-    <property name="readrunnerjsurl"      value="${readrunnerurl}/javascript"/>
+    <property name="apiuri" value="${rooturl}/apisamples"/>
+    <property name="servleturl" value="${rooturl}/servlet"/>
+    <property name="loginurl" value="${rooturl}/login"/>
+    <property name="imcmsurl"   value="${rooturl}/imcms"/>
+    <property name="imageurl" value="${rooturl}/images"/>
+    <property name="cssurl" value="${rooturl}/css"/>
+    <property name="javascripturl" value="${rooturl}/javascript"/>
+    <property name="jspurl" value="${rooturl}/jsp"/>
+    <property name="postcardsurl" value="${rooturl}/postcards"/>
+    <property name="imcmscssurl" value="${rooturl}/imcms/css"/>
+    <property name="srcincludes" value="${basedir}/MANIFEST.TXT"/>
 
 
-    <!-- Locations for the final packages -->
-    <property name="warfile"              value="${webappname}.war"/>
-    <property name="wardist"              value="${dist}/${warfile}"/>
+    <path id="libraries">
+        <fileset dir="lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
 
-    <property name="dist-sql"             value="${dist}/imcms.sql"/>
-    <property name="help-sql"             value="${dist}/help.sql"/>
 
-    <!-- Where to install imCMS -->
-    <property name="webapproot"           value="${deployroot}/${webappname}"/>
+    <path id="classes-and-libraries">
+        <pathelement path="${classes}"/>
+        <path refid="libraries"/>
+    </path>
 
 
     <!-- A handy target to have everything else depend on, just in case. -->
-    <target name="init" depends="global-filters" description="Handy target for everything else to depend on.">
+    <target name="init" depends="reformatproperties,global-filters" description="Handy target for everything else to depend on.">
 
-	<!-- Record the build to a log-file. -->
-	<record name="${basedir}/build.log"/>
+        <!-- Record the build to a log-file. -->
+        <record name="${basedir}/build.log"/>
 
-	<tstamp/>
+        <tstamp/>
+
+        <available classname="junit.framework.Test" classpathref="libraries" property="junit-available"/>
+    </target>
+
+    <!-- A target to use for reformat a properties   -->
+    <target name="reformatproperties">
+
+        <taskdef name="propertyregex" classname="net.sf.antcontrib.property.RegexTask" classpathref="libraries"/>
+        <propertyregex property="version"
+                 input="${cvsname}"
+                 regexp=".Name: v(.*) ."
+                 override="true"
+                 replace="\1"
+                 casesensitive="false" />
+       <propertyregex property="version"
+                 input="${version}"
+                 regexp="_"
+                 override="true"
+                 replace="."
+                 global="true"
+                 casesensitive="false" />
+        <propertyregex property="versionnumber"
+                 input="${version}"
+                 regexp="(.*)-.*"
+                 override="true"
+                 replace="\1"
+                 casesensitive="false" />
+        <propertyregex property="version"
+                 input="${version}"
+                 regexp="(.*)-RELEASE"
+                 override="true"
+                 replace="\1"
+                 casesensitive="false" />
+        <propertyregex property="versionfilesuffix"
+                 input="${version}"
+                 regexp="(.+)"
+                 override="true"
+                 replace="-\1"
+                 casesensitive="false"/>
+
+        <!-- Locations for the final packages -->
+        <property name="warfile" value="${webappname}${versionfilesuffix}.war"/>
+        <property name="wardist" value="${dist}/${warfile}"/>
+
+        <property name="jardist" value="${dist}/imcms${versionfilesuffix}.jar"/>
+        <property name="jarapidist" value="${dist}/imcms${versionfilesuffix}-api.jar"/>
+
+        <property name="srcdistfile" value="imcms${versionfilesuffix}-src"/>
+        <property name="srczipdist" value="${dist}/${srcdistfile}.zip"/>
+        <property name="srctgzdist" value="${dist}/${srcdistfile}.tar.gz"/>
+        <property name="srctbz2dist" value="${dist}/${srcdistfile}.tar.bz2"/>
+
+        <property name="dist-sql" value="${dist}/imcms${versionfilesuffix}.sql"/>
+        <property name="sprocs-sql" value="${dist}/imcms-sprocs${versionfilesuffix}.sql"/>
+        <property name="create-sql" value="${dist}/create_db${versionfilesuffix}.sql"/>
+        <property name="drop-sql" value="${dist}/drop_db${versionfilesuffix}.sql"/>
 
     </target>
 
 
     <!-- Defines global filters. -->
-    <target name="global-filters" depends="check-build-properties" description="Defines global filters.">
+    <target name="global-filters"
+            depends="check-build-properties,reformatproperties"
+            description="Defines global filters.">
 
-	<!-- Global filters -->
-	<filter token="rooturl"             value="${rooturl}"/>
-	<filter token="servleturl"          value="${servleturl}"/>
-	<filter token="loginurl"            value="${loginurl}"/>
-	<filter token="imageurl"            value="${imageurl}"/>
-	<filter token="cssurl"              value="${cssurl}"/>
-	<filter token="postcardsurl"        value="${postcardsurl}"/>
-	<filter token="adminbuttonsurl"     value="${adminbuttonsurl}"/>
-	<filter token="imcmsimageurl"       value="${imcmsimageurl}"/>
-	<filter token="javascripturl"       value="${javascripturl}"/>
+        <!-- Global filters -->
+        <filter token="apiuri"              value="${apiuri}"/>
+        <filter token="defaultlanguage"     value="${defaultlanguage}"/>
+        <filter token="rooturl"             value="${rooturl}"/>
+        <filter token="servleturl"          value="${servleturl}"/>
+        <filter token="loginurl"            value="${loginurl}"/>
+        <filter token="imcmsurl"            value="${imcmsurl}"/>
+        <filter token="imageurl"            value="${imageurl}"/>
+        <filter token="cssurl"              value="${cssurl}"/>
+        <filter token="postcardsurl"        value="${postcardsurl}"/>
+        <filter token="imcmscssurl"         value="${imcmscssurl}"/>
+        <filter token="javascripturl"       value="${javascripturl}"/>
+        <filter token="jspurl"              value="${jspurl}"/>
 
-	<filter token="readrunnerurl"       value="${readrunnerurl}"/>
-	<filter token="readrunnerimagesurl" value="${readrunnerimagesurl}"/>
-	<filter token="readrunnercssurl"    value="${readrunnercssurl}"/>
-	<filter token="readrunnerjsurl"     value="${readrunnerjsurl}"/>
+        <filter token="documentationwebappurl"    value="http://${documentation-host}/${versionnumber}"/>
+        <filter token="documentationurl"          value="http://${documentation-host}/${versionnumber}/servlet"/>
 
-	<filter token="db-service-class"    value="${db-service-class}"/>
-	<filter token="db-host"             value="${db-host}"/>
-	<filter token="db-port"             value="${db-port}"/>
-	<filter token="db-name"             value="${db-name}"/>
-	<filter token="db-user"             value="${db-user}"/>
-	<filter token="db-pass"             value="${db-pass}"/>
-	<filter token="db-maxconnections"   value="${db-maxconnections}"/>
+        <filter token="db-driver"           value="${db-driver}"/>
+        <filter token="db-url"              value="${db-url}"/>
+        <filter token="db-host"             value="${db-host}"/>
+        <filter token="db-port"             value="${db-port}"/>
+        <filter token="db-name"             value="${db-name}"/>
+        <filter token="db-user"             value="${db-user}"/>
+        <filter token="db-pass"             value="${db-pass}"/>
+        <filter token="db-maxconnections"   value="${db-maxconnections}"/>
 
-	<filter token="plugin-db-host"      value="${plugin-db-host}"/>
-	<filter token="plugin-db-port"      value="${plugin-db-port}"/>
-	<filter token="plugin-db-name"      value="${plugin-db-name}"/>
-	<filter token="plugin-db-user"      value="${plugin-db-user}"/>
-	<filter token="plugin-db-pass"      value="${plugin-db-pass}"/>
+        <filter token="smb-domain-server"   value="${smb-domain-server}" />
+        <filter token="smb-domain-name"     value="${smb-domain-name}" />
 
-    <filter token="smb-domain-server"   value="${smb-domain-server}" />
-    <filter token="smb-domain-name"     value="${smb-domain-name}" />
+        <filter token="ldap-url"                        value="${ldap-url}" />
+        <filter token="ldap-user"                       value="${ldap-user}" />
+        <filter token="ldap-pass"                       value="${ldap-pass}" />
+        <filter token="ldap-user-objectclass"           value="${ldap-user-objectclass}" />
+        <filter token="ldap-user-identifying-attribute" value="${ldap-user-identifying-attribute}" />
+        <filter token="ldap-attributes-mapped-to-roles" value="${ldap-attributes-mapped-to-roles}"/>
 
-    <filter token="ldap-url"                        value="${ldap-url}" />
-    <filter token="ldap-user"                       value="${ldap-user}" />
-    <filter token="ldap-pass"                       value="${ldap-pass}" />
-    <filter token="ldap-user-objectclass"           value="${ldap-user-objectclass}" />
-    <filter token="ldap-user-identifying-attribute" value="${ldap-user-identifying-attribute}" />
-    <filter token="ldap-attributes-mapped-to-roles" value="${ldap-attributes-mapped-to-roles}"/>
+        <filter token="smtp-server" value="${smtp-server}"/>
 
-	<filter token="smtp-server"         value="${smtp-server}"/>
+        <filter token="servermaster-name" value="${servermaster-name}"/>
+        <filter token="servermaster-email" value="${servermaster-email}"/>
 
-	<filter token="servermaster-name"   value="${servermaster-name}"/>
-	<filter token="servermaster-email"  value="${servermaster-email}"/>
-
-	<filter token="webmaster-name"      value="${webmaster-name}"/>
-	<filter token="webmaster-email"     value="${webmaster-email}"/>
+        <filter token="webmaster-name" value="${webmaster-name}"/>
+        <filter token="webmaster-email" value="${webmaster-email}"/>
 
     </target>
-
-
-    <!-- Sets the language-properties for language-specific targets depending on this, that are called using the antcall task -->
-    <target name="language-properties">
-
-	<!-- The language to install for, and where to install from and to. -->
-	<property name="languagetemplates"    value="${templates}/${language}"/>
-	<property name="admintemplates"       value="${languagetemplates}/admin"/>
-	<property name="searchtemplates"      value="${admintemplates}/search/original"/>
-
-	<!-- Paths for templates for the plugins -->
-	<property name="conference-templates" value="${languagetemplates}/102"/>
-	<property name="chat-templates"       value="${languagetemplates}/103"/>
-	<property name="billboard-templates"  value="${languagetemplates}/104"/>
-	<property name="postcard-templates"   value="${languagetemplates}/105"/>
-	<property name="fortune-templates"    value="${languagetemplates}/106"/>
-	<property name="calender-templates"	  value="${languagetemplates}/107"/>
-
-    </target>
-
 
     <!-- Checks that build.properties is up-to-date. -->
     <target name="check-build-properties" description="Checks that ${build.properties} is up-to-date." unless="build-properties-up-to-date">
 
-	<uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
-	    <srcfiles dir="${basedir}" includes="${build.properties}.template"/>
-	</uptodate>
+        <uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
+            <srcfiles dir="${basedir}" includes="${build.properties}.template"/>
+        </uptodate>
 
-	<antcall target="fail-build-properties"/>
-
-    </target>
-
-
-    <!-- Fail unless build.properties is up-to-date. -->
-    <target name="fail-build-properties" description="Checks that ${build.properties} is newer than ${build.properties}.template and build.xml." unless="build-properties-up-to-date">
-
-	<fail>
-	    '${build.properties}.template' is newer than '${build.properties}'.
-	    Copy '${build.properties}.template' to '${build.properties}' and edit it!
-	    (See INSTALL.TXT for details.)
-	</fail>
+        <fail unless="build-properties-up-to-date">
+            '${build.properties}.template' is newer than '${build.properties}'. (See INSTALL.TXT for details.)
+            Copy '${build.properties}.template' to '${build.properties}' and edit it!
+        </fail>
 
     </target>
 
@@ -191,7 +224,7 @@
     <!-- Checks that 'deployroot' is set. -->
     <target name="check-deployroot" description="Checks that deployroot is set." unless="deployroot">
 
-	<fail message="Set 'deployroot' in '${build.properties}'!"/>
+        <fail message="Set 'deployroot' in '${build.properties}'!"/>
 
     </target>
 
@@ -199,57 +232,203 @@
     <!-- Checks that 'webappname' is set. -->
     <target name="check-webappname" description="Checks that webappname is set." unless="webappname">
 
-	<fail message="Set 'webappname' in '${build.properties}'!"/>
+        <fail message="Set 'webappname' in '${build.properties}'!"/>
 
     </target>
 
 
     <!-- Build the war-file -->
-    <target name="dist" depends="init,build,check-webappname" description="Packages a complete distribution.">
+    <target name="dist"
+        depends="init,build,check-webappname,wardist,jardist"
+        description="Packages a complete distribution.">
 
-	<war warfile="${wardist}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
-
-	<echo>Done packaging distribution '${wardist}'.</echo>
-
-	<echo>Using ${ant.version} with JVM ${ant.java.version}.</echo>
+        <echo>Done packaging distribution '${wardist}'.</echo>
+        <echo>Using ${ant.version} with JVM ${ant.java.version}.</echo>
 
     </target>
 
+    <target name="wardist" depends="init,build,check-webappname" description="Creates a war-file.">
+
+        <war warfile="${wardist}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
+
+    </target>
+
+    <target name="jardist" depends="init,build,check-webappname" description="Creates jar-files.">
+        <jar destfile="${jardist}" basedir="${classes}"/>
+        <jar destfile="${jarapidist}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>
+    </target>
+
+    <target name="srcdist" depends="srczipdist,srctgzdist" description="Packages all source distributions."/>
+
+    <target name="srczipdist" depends="init,check-webappname">
+        <mkdir dir="${dist}"/>
+        <!-- <zip> will for some reason throw an IllegalArgumentException if the file exists.-->
+        <delete file="${srczipdist}"/>
+        <zip destfile="${srczipdist}">
+            <zipfileset includesfile="${srcincludes}" dir="${basedir}" prefix="imcms${versionfilesuffix}"/>
+        </zip>
+    </target>
+
+    <target name="srctgzdist" depends="init,check-webappname">
+        <mkdir dir="${dist}"/>
+        <dependset>
+            <srcfileset file="${srcincludes}"/>
+            <targetfileset file="${srctgzdist}"/>
+        </dependset>
+        <tar destfile="${srctgzdist}" compression="gzip">
+            <tarfileset includesfile="${srcincludes}" dir="${basedir}" prefix="imcms${versionfilesuffix}"/>
+        </tar>
+    </target>
+
+    <target name="srctbz2dist" depends="init,check-webappname">
+        <mkdir dir="${dist}"/>
+        <dependset>
+            <srcfileset file="${srcincludes}"/>
+            <targetfileset file="${srctbz2dist}"/>
+        </dependset>
+        <tar destfile="${srctbz2dist}" compression="bzip2">
+            <tarfileset includesfile="${srcincludes}" dir="${basedir}" prefix="imcms${versionfilesuffix}"/>
+        </tar>
+    </target>
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
-    <target name="build" depends="init,
-                                  server,
-				  servlets,
-				  templates,
-				  libraries,
-				  web,conf,dir,sql,
-				  conference,chat,billboard,postcard,
-				  help,fortune,readrunner,calender,shop" description="Builds everything.">
-
-	<copy todir="${WEB-INF}" file="install/web.xml"/>
+    <target name="build"
+	    depends="init,
+		     classes,javadoc,
+		     libraries,
+		     web,conf,dir,sql,
+             web-xml, version-file,
+             build-addon"
+	    description="Builds everything."/>
 
 
-	<!-- Write version.txt -->
-	<echo message="${version}" file="${WEB-INF}/version.txt"/>
-
+    <target name="version-file">
+        <echo message="${version}&#10;" file="${versionfile}"/>
+        <fixcrlf srcdir="${basedir}" includes="${versionfile}"/>
+        <checksumfiles destfile="${versionfile}" digest="MD5" append="true">
+            <fileset dir="${build}"/>
+        </checksumfiles>
     </target>
 
-    <!-- Delete everything built by the 'build'-target. -->
-    <target name="clean" description="Deletes everything for a fresh start.">
-	<delete dir="${build}"/>
-	<delete dir="${dist}"/>
-	<ant dir="tools" target="clean"/>
+
+    <target name="web-xml" depends="validate-web-xml" >
+        <copy todir="${WEB-INF}" file="install/web.xml"/>
+    </target>
+
+    <target name="validate-web-xml" >
+        <xmlvalidate file="install/web.xml" classpathref="libraries"  >
+                <dtd
+                    publicId="-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+                    location="javax/servlet/resources/web-app_2_3.dtd"/>
+        </xmlvalidate>
+    </target>
+
+
+    <target name="build-addon" if="addon" depends="classes" description="Build addon">
+        <ant antfile="addons/${addon}/build.xml" target="build" inheritall="false" inheritrefs="true" />
     </target>
 
 
     <!-- Install the war-file -->
     <target name="install-war" depends="init,dist,check-deployroot,check-webappname" description="Copies the WAR-package into the deployroot.">
-	<copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
+        <copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
     </target>
 
-        <!-- Generate documentation for the api -->
-    <target name="apiDoc" depends="build" description="Generates javadoc.">
-        <javadoc packagenames="imcode.imcms.api.*" sourcepath="server/src/" destdir="${apisamples}/docs" windowtitle="Imcms API">
+
+    <target name="nobuild-install" depends="init,check-deployroot" description="Install files already built, without running 'build' first.">
+        <copy todir="${webapproot}">
+            <fileset dir="${build}"/>
+        </copy>
+        <copy todir="${webapproot}/WEB-INF/lib" flatten="true">
+            <fileset dir="lib" includes="nodist/*"/>
+        </copy>
+    </target>
+
+    <!-- Install the webapp, bypassing the war-file -->
+    <target name="install"
+        depends="init,build,nobuild-install"
+        description="Copies the webapp directly into the webapp-directory in the deployroot."/>
+
+    <!-- Delete everything built by the 'build'-target. -->
+    <target name="clean" description="Deletes everything for a fresh start.">
+
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/>
+        <delete dir="${sql-temp-dir}"/>
+        <ant dir="tools" target="clean"/>
+
+    </target>
+
+    <target name="clean-build" depends="init,clean,build" description="Runs targets clean and build."/>
+
+    <target name="clean-install" depends="init,clean,install" description="Runs targets clean and install."/>
+
+    <!-- Delete an installed webapp -->
+    <target name="uninstall" depends="check-deployroot,check-webappname" description="Removes the installed files from the deployroot, including the war-file.">
+        <delete dir="${webapproot}"/>
+        <delete file="${deployroot}/${warfile}"/>
+    </target>
+
+
+    <target name="install-tomcat-deploy" depends="install, tomcat-deploy"
+        description="Install and deploy in running instance of tomcat"/>
+
+
+    <target name="tomcat-deploy" description="Deploy in running instance of tomcat">
+        <copy todir="${build}/WEB-INF/lib" flatten="true">
+            <fileset dir="lib" includes="nodist/*"/>
+        </copy>
+        <taskdef name="install" classname="org.apache.catalina.ant.InstallTask" classpathref="libraries"/>
+        <install url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
+            path="/${webappname}" war="file:${tomcat-deployroot-local-directory}/${webappname}"/>
+    </target>
+
+
+    <target name="tomcat-undeploy" description="remove build in running instance of tomcat">
+        <taskdef name="remove" classname="org.apache.catalina.ant.RemoveTask" classpathref="libraries"/>
+        <remove url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
+            path="/${webappname}"/>
+    </target>
+
+
+    <target name="install-tomcat-reload" depends="install, tomcat-reload"
+        description="install and reload the web app in tomcat"/>
+
+
+    <target name="tomcat-reload" description="reloads the web app in tomcat">
+        <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" classpathref="libraries"/>
+         <reload url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
+            path="/${webappname}"/>
+    </target>
+
+
+    <!-- Run JUnit-tests -->
+    <target name="test" depends="classes,junit-task-available" description="Runs JUnit-tests.">
+
+        <junit haltonfailure="yes" haltonerror="yes">
+            <classpath refid="classes-and-libraries"/>
+
+            <formatter usefile="false" type="plain"/>
+
+            <batchtest>
+                <fileset dir="${classes}">
+                    <exclude name="**/test/http/*.class"/>
+                    <exclude name="**/*$*.class"/>
+                    <include name="Test*.class"/>
+                    <include name="**/Test*.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+
+    <target name="classes" depends="init,server" description="Builds all classes."/>
+
+
+    <!-- Generate documentation -->
+    <target name="javadoc" description="Generates javadoc.">
+        <javadoc packagenames="imcode.imcms.api.*"
+            sourcepath="server/src/" destdir="${apisamples}/docs" windowtitle="Imcms API" classpathref="libraries" >
             <packageset dir="server/src/" defaultexcludes="yes">
                 <include name="com/imcode/imcms/api/**"/>
             </packageset>
@@ -257,121 +436,117 @@
     </target>
 
 
-    <!-- Install the webapp, bypassing the war-file -->
-    <target name="install" depends="init,build,check-deployroot,apiDoc" description="Copies the webapp directly into the webapp-directory in the deployroot.">
-	<copy todir="${webapproot}">
-	    <fileset dir="${build}"/>
-	</copy>
-    </target>
-
-
-    <!-- Delete an installed webapp -->
-    <target name="uninstall" depends="check-deployroot,check-webappname" description="Removes the installed files from the deployroot, including the war-file.">
-	<delete dir="${webapproot}"/>
-	<delete file="${deployroot}/${warfile}"/>
-    </target>
-
-    <!-- Run JUnit-tests -->
-    <target name="test" depends="server" description="Runs JUnit-tests.">
-
-	<java classname="junit.swingui.TestRunner" fork="yes">
-	    <classpath>
-		<fileset dir="install/lib">
-		    <include name="*.jar"/>
-		</fileset>
-		<pathelement path="${classes}"/>
-	    </classpath>
-	</java>
-    </target>
-
-    <target name="test-db" depends="build" description="Runs all test on DatabaseService">
-        <junit haltonfailure="yes" printsummary="on" >
-            <formatter type="brief" usefile="false" />
-              <test name="imcode.server.db.TestDatabaseService"/>
-        </junit>
-    </target>
-
-    <!-- Generate documentation -->
-    <target name="doc" depends="init" description="Generates javadoc.">
-	<javadoc destdir="${doc}">
-	    <package name="imcode.util"/>
-	    <package name="imcode.util.log"/>
-	    <package name="imcode.server"/>
-	    <package name="imcode.server.parser"/>
-	    <package name="imcode.external.diverse"/>
-	    <package name="imcode.external.chat"/>
-	    <package name=""/>
-	    <classpath>
-		<fileset dir="install/lib">
-		    <include name="**/*.jar"/>
-		</fileset>
-	    </classpath>
-	    <sourcepath>
-		<pathelement path="server/src/"/>
-		<pathelement path="servlets/"/>
-	    </sourcepath>
-	</javadoc>
-    </target>
-
-
     <!-- Build extra tools needed for building. -->
-    <target name="tools" depends="server" description="Builds extra tools needed for building.">
-	<ant dir="tools"/>
+    <target name="tools" description="Builds extra tools needed for building.">
+    	<ant dir="tools"/>
+    	<taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
+    	<taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
+    	<taskdef name="checksumfiles" classname="imcode.anttasks.ChecksumFiles">
+            <classpath>
+                <pathelement path="tools/build"/>
+                <path refid="libraries"/>
+            </classpath>
+        </taskdef>
     </target>
 
+
+    <target name="junit-task-available" unless="no-junit-task-available">
+
+        <available classname="junit.framework.Test" property="junit-task-available"/>
+
+        <fail unless="junit-task-available">
+            The JUnit task is not available.
+            Please add junit.jar to ant's classpath,
+            for example by adding junit.jar to $ANT_HOME/lib.
+            &#10;
+            If this is impossible, set the property "no-junit-task-available"
+            in build.properties. Note that this means that tests cannot be run!
+        </fail>
+
+    </target>
+
+    <target name="language-property-files" depends="init,junit-task-available,tools" unless="no-junit-task-available"
+        description="Test language property files">
+
+        <junit haltonerror="yes" haltonfailure="yes" fork="yes" dir="${basedir}">
+            <classpath path="tools/build">
+                <path refid="libraries"/>
+            </classpath>
+
+            <formatter type="brief" usefile="false"/>
+
+            <test name="imcode.buildtests.TestLanguagePropertyFilesInSync"/>
+            <test name="imcode.buildtests.TestForMissingLanguageProperties"/>
+        </junit>
+
+    </target>
+
+
+    <target name="createdb" depends="init,sql">
+
+	<sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port}"
+		userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="continue" src="${drop-sql}" />
+
+	<sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port}"
+		userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${create-sql}" />
+
+	<sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port};DatabaseName=${db-name}"
+		userid="${db-user}" password="${db-pass}" delimiter="GO" delimitertype="row" onerror="abort" src="${dist-sql}" />
+    </target>
 
 
     <!-- Generates the sql-scripts -->
-    <target name="sql" depends="init,check-webappname,tools,global-filters" description="Concatenates the SQL-scripts into one large script.">
-        <taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
-        <cat destfile="${dist-sql}" orderby="path" filtering="true">
-            <fileset dir="sql/tables" includes="tables.ascii.sql"/>
-            <fileset dir="sql/index"/>
-            <fileset dir="sql/help" includes="help.sql"/>
+    <target name="sql" depends="init,check-webappname,tools" description="Concatenates the SQL-scripts into one large script.">
+
+        <mkdir dir="${sql-temp-dir}" />
+
+        <cat destfile="${sql-temp-dir}/imcms${versionfilesuffix}.sql" orderby="path" filtering="true">
+            <fileset file="sql/tables/tables.ascii.sql"/>
+            <fileset  dir="sql/sprocs"/>
+
+            <fileset file="sql/conf/conf_sprocs.sql"/>
+
+            <fileset file="sql/billboard/billboard_sprocs.sql"/>
+
+            <fileset file="sql/chat/chat_sprocs.sql"/>
+            <fileset file="sql/chat/chat_newdb.sql"/>
+
+            <fileset file="sql/data/types.sql"/>
+            <fileset file="sql/data/newdb.sql"/>
         </cat>
 
         <cat destfile="${sprocs-sql}" orderby="path" filtering="true">
             <fileset dir="sql/sprocs"/>
         </cat>
 
-        <copy file="sql/help/help.sql" tofile="${help-sql}" filtering="true"/>
+        <cat destfile="${drop-sql}" orderby="path" filtering="true">
+            <fileset file="sql/tables/delete_db.sql"/>
+        </cat>
 
-        <copy toDir="${basedir}/dist" filtering="true" overwrite="true">
-            <fileset dir="${basedir}/sql/multipledatabases"/>
-        </copy>
+        <cat destfile="${create-sql}" orderby="path" filtering="true">
+            <fileset file="sql/tables/create_db.sql"/>
+        </cat>
+
+        <imtranslate bundle="imcms" bundlelanguage="${defaultlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${dist}" filtering="true">
+            <fileset file="${sql-temp-dir}/imcms${versionfilesuffix}.sql"/>
+        </imtranslate>
     </target>
-
 
     <!-- Builds the 'non-servlets'. -->
-    <target name="server" depends="init,dir" description="Builds the server and utility classes.">
+    <target name="server" depends="init,dir">
 
-	<mkdir dir="${classes}"/>
-	<javac srcdir="server/src" destdir="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
-	    <classpath>
-		<pathelement path="${classes}"/>
-		<fileset dir="install/lib">
-		    <include name="**/*.jar"/>
-		</fileset>
-	    </classpath>
-	</javac>
+        <mkdir dir="${classes}"/>
 
-    </target>
+        <javac srcdir="server/src" destdir="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
 
+            <exclude name="**/Test*.java" unless="junit-available"/>
+            <exclude name="**/*TestCase.java" unless="junit-available"/>
 
-    <!-- Builds the servlets. -->
-    <target name="servlets" depends="init,server" description="Builds the servlets.">
+            <classpath refid="libraries"/>
 
-	<mkdir dir="${classes}"/>
-	<javac srcdir="servlets" destdir="${classes}" includes="*.java" classpath="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
-
-	    <classpath>
-		<pathelement path="${classes}"/>
-		<fileset dir="install/lib">
-		    <include name="**/*.jar"/>
-		</fileset>
-	    </classpath>
-
-	</javac>
+        </javac>
 
     </target>
 
@@ -379,571 +554,395 @@
     <!-- Copies the libraries (jar-files) needed for building. -->
     <target name="libraries" depends="init,dir" description="Copies the jar-files.">
 
-	<copy todir="${lib}">
-	    <fileset dir="install/lib" >
-			<exclude name = "junit.jar"/>
-			<exclude name = "servlet.jar"/>
-	    </fileset>
-	</copy>
+        <copy todir="${lib}">
+            <fileset dir="lib" includes="*.jar"/>
+        </copy>
 
     </target>
 
 
     <!-- Copies and filters the config-files with the correct properties. -->
     <target name="conf" depends="init" description="Builds the config-directory.">
-	<copy todir="${conf}" filtering="true">
-	    <fileset dir="install/conf">
-		<exclude name="policy"/>
-	    </fileset>
-	</copy>
+        <dependset>
+            <srcfileset file="${build.properties}"/>
+            <targetfileset dir="${conf}"/>
+        </dependset>
+        <copy todir="${conf}" filtering="true">
+            <fileset dir="install/conf"/>
+        </copy>
+        <copy file="imcms_swe.properties" tofile="${conf}/swe.properties"/>
+        <copy file="imcms_eng.properties" tofile="${conf}/eng.properties"/>
 
-	<copy file="${conf}/${log4j-config}" tofile="${conf}/log4j.xml"/>
+        <copy file="${conf}/${log4j-config}" tofile="${conf}/log4j.xml"/>
 
     </target>
 
 
     <!-- Creates the directories and copies the files that are to be public. -->
-    <target name="web" depends="init" description="Creates the public web">
-	<mkdir dir="${images}"/>
-	<mkdir dir="${login}"/>
-	<mkdir dir="${css}"/>
-	<mkdir dir="${user}"/>
-	<mkdir dir="${javascript}"/>
-	<mkdir dir="${imcmsimages}"/>
+    <target name="web"
+        depends="init,tools,language-property-files"
+        description="Creates the public web">
 
-	<copy file="templates/login/index.html" todir="${login}" filtering="true"/>
+        <mkdir dir="${images}"/>
+        <mkdir dir="${login}"/>
+        <mkdir dir="${css}"/>
+        <mkdir dir="${user}"/>
+        <mkdir dir="${javascript}"/>
+        <mkdir dir="${jsp}"/>
+        <mkdir dir="${imcms}"/>
 
-	<copy todir="${images}">
-	    <fileset dir="install/htdocs/images" />
-	</copy>
+        <antcall target="web-copy">
+            <param name="buildlanguage" value="swe"/>
+            <param name="srclanguage" value="sv"/>
+        </antcall>
+        <antcall target="web-copy">
+            <param name="buildlanguage" value="eng"/>
+            <param name="srclanguage" value="en"/>
+        </antcall>
 
-	<copy todir="${imcmsimages}">
-	    <fileset dir="install/htdocs/imcmsimages"/>
-	</copy>
+        <copy todir="${imcms}" file="install/htdocs/internalerrorpage.jsp"/>
 
-	<copy todir="${webroot}" filtering="true">
-	    <fileset dir="templates">
-		<patternset>
-		    <include name="*.htm"/>
-		    <include name="*.html"/>
-		    <include name="*.jsp"/>
-		</patternset>
-	    </fileset>
+        <!-- copy translated login templates for defaultlanguage to directory /login-->
+        <copy todir="${login}">
+            <fileset dir="${imcms}/${defaultlanguage}/login/" />
+        </copy>
 
-	    <!-- Copy swedish text-files -->
-	    <fileset dir="install/htdocs/sv">
+         <!-- copy and translate texttemplates files -->
+        <antcall target="texttemplates">
+            <param name="buildlanguage" value="${defaultlanguage}"/>
+        </antcall>
+
+        <!-- Create empty files needed by fortune -->
+        <mkdir dir="${fortunes}"/>
+        <touch file="${fortunes}/poll.poll.txt" millis="0"/>
+        <touch file="${fortunes}/quotes.txt" millis="0"/>
+
+    </target>
+    <!-- end target web -->
+
+    <target name="web-copy"
+            depends="init,tools"
+            description="copy and translate files for the public web">
+
+        <property name="poll"               value="${imcms}/${buildlanguage}/poll"/>
+        <property name="shop"	            value="${imcms}/${buildlanguage}/shop"/>
+        <property name="htmleditor"         value="${imcms}/${buildlanguage}/htmleditor"/>
+        <property name="imcmsjsp"           value="${imcms}/${buildlanguage}/jsp"/>
+        <property name="imcmslogin"         value="${imcms}/${buildlanguage}/login"/>
+        <property name="imcmshtml"          value="${imcms}/${buildlanguage}/html"/>
+        <property name="adminimages"        value="${imcms}/${buildlanguage}/images/admin"/>
+        <property name="adminbuttons"       value="${imcms}/${buildlanguage}/images/admin/adminbuttons"/>
+        <property name="imcmsscripts"       value="${imcms}/${buildlanguage}/scripts"/>
+
+        <property name="imcmsimageurl"      value="${imcmsurl}/${buildlanguage}/images"/>
+
+        <filter token="imcmsimageurl"       value="${imcmsimageurl}"/>
+        <filter token="adminbuttonsurl"     value="${imcmsimageurl}/admin/adminbuttons"/>
+        <filter token="htmleditorurl"       value="${imcmsurl}/${buildlanguage}/htmleditor"/>
+        <filter token="imcmshtmlurl"        value="${imcmsurl}/${buildlanguage}/html"/>
+        <filter token="imcmsjspurl"         value="${imcmsurl}/${buildlanguage}/jsp"/>
+        <filter token="imcmsscripturl"      value="${imcmsurl}/${buildlanguage}/scripts"/>
+        <filter token="shopurl"             value="${imcmsurl}/${buildlanguage}/shop"/>
+        <filter token="pollurl"             value="${imcmsurl}/${buildlanguage}/poll"/>
+
+        <!-- imcms login  -->
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${imcmslogin}" filtering="true">
+            <fileset dir="templates/login"/>
+        </imtranslate>
+
+        <!-- images -->
+        <copy todir="${images}">
+            <fileset dir="install/htdocs/images"/>
+        </copy>
+
+        <!-- css -->
+        <copy todir="${css}">
+            <fileset dir="install/htdocs/css"/>
+        </copy>
+
+        <!-- test -->
+        <copy todir="${imcmstest}">
+            <fileset dir="install/htdocs/imcms/test"/>
+        </copy>
+
+        <!-- html -->
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${imcmshtml}" filtering="true">
+            <fileset dir="install/htdocs/imcms/html"/>
+        </imtranslate>
+
+        <!-- imcms admin images -->
+        <copy todir="${adminimages}">
+            <fileset dir="install/htdocs/imcms/images"/>
+            <fileset dir="install/htdocs/${srclanguage}/images"/>
+            <fileset dir="install/htdocs/${srclanguage}/fileadmin">
+                <patternset>
+                    <include name="*.gif"/>
+                    <include name="*.jpg"/>
+                </patternset>
+            </fileset>
+        </copy>
+
+        <!-- images for adminibuttons -->
+        <copy todir="${adminbuttons}">
+            <fileset dir="install/htdocs/${srclanguage}/adminbuttons">
+            <patternset>
+                <include name="*.gif"/>
+            </patternset>
+            </fileset>
+        </copy>
+
+        <!-- images for fileadmin  -->
+        <copy todir="${adminimages}" >
+            <fileset dir="install/htdocs/${srclanguage}/fileadmin">
+                <patternset>
+                    <include name="*.gif"/>
+                </patternset>
+            </fileset>
+        </copy>
+
+        <!-- imcms/css -->
+        <copy todir="${imcmscss}" filtering="true">
+            <fileset dir="install/htdocs/imcms/css"/>
+        </copy>
+
+         <!-- imcms/language/scripts -->
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${imcmsscripts}" filtering="true">
+            <fileset dir="install/htdocs/imcms/scripts" includes="*"/>
+        </imtranslate>
+
+         <!-- templates in webroot  -->
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${webroot}" filtering="true">
+            <fileset dir="templates">
+                <patternset>
+                    <include name="*.htm"/>
+                    <include name="*.html"/>
+                    <include name="*.jsp"/>
+                </patternset>
+            </fileset>
+        </imtranslate>
+
+        <!-- directories in webroot - no language dependece -->
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${webroot}" filtering="true">
+            <fileset dir="install/htdocs/sv">
             <include name="adminuser/**"/>
-            <include name="shop/**"/>
-            <include name="poll/**"/>
             <include name="apisamples/**"/>
             <exclude name="**/*.gif"/>
             <exclude name="**/*.jpg"/>
-	    </fileset>
-	</copy>
+            </fileset>
+        </imtranslate>
 
-	<copy todir="${poll}/images" >
-		<fileset dir="install/htdocs/sv/poll/images">
-		<patternset>
-		    <include name="*.gif"/>
-			<include name="*.jpg"/>
-		</patternset>
-		</fileset>
-	</copy>
+        <copy todir="${apisamples}" description="appending .txt on all jsp files making the source browsable" >
+            <fileset dir="${apisamples}">
+                <include name="*.jsp"/>
+            </fileset>
+            <mapper type="glob" from="*" to="*.txt"/>
+        </copy>
+
+        <!--  imcms shop  -->
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${shop}" filtering="true">
+            <fileset dir="install/htdocs/sv/shop" includes="*"/>
+        </imtranslate>
+
+         <!-- imcms poll  -->
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${poll}" filtering="true">
+            <fileset dir="install/htdocs/sv/poll">
+                <exclude name="**/*.gif"/>
+                <exclude name="**/*.jpg"/>
+            </fileset>
+        </imtranslate>
+
+         <!-- imcms poll images -->
+        <copy todir="${poll}/images" >
+            <fileset dir="install/htdocs/sv/poll/images">
+                <patternset>
+                    <include name="*.gif"/>
+                    <include name="*.jpg"/>
+                </patternset>
+            </fileset>
+        </copy>
 
 
-	<!-- Copy swedish navigation buttons for imagebrowse -->
-	<copy todir="${imcmsimages}/se/admin">
-	    <fileset dir="install/htdocs/sv/imagebrowse"/>
-	</copy>
+         <!-- fortune templates -->
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${templates}/${buildlanguage}/106" filtering="true">
+            <fileset dir="templates/sv/fortunes"/>
+        </imtranslate>
 
-	<!-- Copy swedish adminbuttons -->
-	<copy todir="${adminbuttons}/sv">
-	    <fileset dir="install/htdocs/sv/adminbuttons">
-		<patternset>
-		    <include name="*.gif"/>
-		</patternset>
-	    </fileset>
-	</copy>
+        <!-- fortune images -->
+        <copy todir="${imcms}/${defaultlanguage}/images/106">
+            <fileset dir="install/htdocs/${srclanguage}/fortunes/images" includes="*.gif"/>
+        </copy>
+
+
+        <!-- imcms jsp files -->
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${imcmsjsp}" filtering="true">
+            <fileset dir="install/htdocs/sv/jsp"/>
+        </imtranslate>
+
+        <!-- imcms html-editor files. -->
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${htmleditor}" filtering="true">
+            <fileset dir="install/htdocs/sv/htmleditor/editor" excludes="images/*.jpg,images/*.gif"/>
+        </imtranslate>
+        <copy todir="${htmleditor}/images">
+            <fileset dir="install/htdocs/sv/htmleditor/editor/images" includes="*.jpg,*.gif"/>
+        </copy>
+
+
+        <!-- Copies and filters all templates. -->
+
+        <!-- Copies and filters the admintemplates. -->
+        <property name="installdir" value="${templates}/${buildlanguage}/admin"/>
+        <mkdir dir="${installdir}"/>
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${installdir}" filtering="true">
+            <fileset dir="templates/sv">
+                <patternset>
+                    <include name="adminbuttons/**"/>
+                    <include name="docinfo/**"/>
+                    <include name="permissions/**"/>
+                    <include name="sections/**"/>
+                    <include name="shop/**"/>
+                    <include name="textdoc/**"/>
+                    <include name="*.htm"/>
+                    <include name="*.html"/>
+                    <include name="*.ini"/>
+                    <include name="*.txt"/>
+                </patternset>
+            </fileset>
+        </imtranslate>
+
+        <!-- copy and translate the search templates -->
+        <property name="searchtemplates" value="${templates}/${buildlanguage}/admin/search/original"/>
+        <mkdir dir="${searchtemplates}"/>
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${searchtemplates}" filtering="true">
+            <fileset dir="templates/sv/search"/>
+        </imtranslate>
+
+        <property name="adminbuttonstemplates" value="${templates}/${buildlanguage}/admin/adminbuttons"/>
+        <replace dir="${adminbuttonstemplates}" excludes="adminbuttons.html"
+            token="&#10;" value=""/>
+
+        <replace dir="${adminbuttonstemplates}" excludes="adminbuttons.html"
+            token="&#13;" value=""/>
+        <!-- end admintemplates -->
+
+        <!-- Copy and translate the conference files. -->
+        <property name="conference-templates" value="${templates}/${buildlanguage}/102"/>
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${conference-templates}" filtering="true">
+            <fileset dir="templates/sv/conf" excludes="original/images/"/>
+        </imtranslate>
+
+        <copy todir="${imcms}/${buildlanguage}/images/102/original">
+            <fileset dir="install/htdocs/${srclanguage}/conference/original/images" includes="*"/>
+        </copy>
+        <!-- end conference -->
+
+    <!-- Copy and translate the chat files . -->
+        <property name="chat-templates" value="${templates}/${buildlanguage}/103"/>
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${chat-templates}" filtering="true">
+            <fileset dir="templates/sv/chat"/>
+        </imtranslate>
+        <!-- end chat -->
+
+    <!-- Copy and translate the billboard files. -->
+        <property name="billboard-templates" value="${templates}/${buildlanguage}/104"/>
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${billboard-templates}" filtering="true">
+            <fileset dir="templates/sv/billboard" excludes="original/images/"/>
+        </imtranslate>
+
+        <copy todir="${imcms}/${buildlanguage}/images/104/original">
+            <fileset dir="install/htdocs/${srclanguage}/billboard/original/images" includes="*"/>
+        </copy>
+        <!-- end billboard -->
+
+        <!-- Copy and translates the files for the postcard. -->
+        <property name="postcard-templates" value="${templates}/${buildlanguage}/105"/>
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+                    starttoken="&lt;? " endtoken=" ?&gt;"
+                    todir="${postcard-templates}" filtering="true">
+           <fileset dir="templates/sv/postcard"/>
+        </imtranslate>
+
+        <copy todir="${imcms}/${buildlanguage}/images/105">
+           <fileset dir="install/htdocs/${srclanguage}/postcard/images" includes="*.gif"/>
+        </copy>
+        <!-- end postcard -->
+
+       <!-- Copy and translates the files for the fortune. -->
+       <property name="fortune-templates" value="${templates}/${buildlanguage}/106"/>
+       <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+                    starttoken="&lt;? " endtoken=" ?&gt;"
+                    todir="${fortune-templates}" filtering="true">
+           <fileset dir="templates/sv/fortunes"/>
+       </imtranslate>
+
+       <copy todir="${imcms}/${defaultlanguage}/images/106">
+           <fileset dir="install/htdocs/${srclanguage}/fortunes/images" includes="*.gif"/>
+       </copy>
 
     </target>
+    <!-- end target web-copy -->
+
+    <!-- Copies and filters the text templates. -->
+    <target name="texttemplates" depends="init,tools" description="Copies and filters the texttemplates">
+
+        <filter token="adminbuttonsurl"     value="${imcmsurl}/${buildlanguage}/images/admin/adminbuttons"/>
+        <filter token="imcmsimageurl"       value="${imcmsurl}/${buildlanguage}/images"/>
 
 
-    <!-- Copies and filters all non-plugin templates. -->
-    <target name="templates" depends="init,dir,texttemplates,admintemplates" description="Copies and filters the templates.">
+        <property name="installdir" value="${templates}/text"/>
+        <mkdir dir="${installdir}/demo"/>
 
-    </target>
-
-
-    <!-- Copies and filters the texttemplates. -->
-    <target name="texttemplates" depends="init" description="Copies and filters the texttemplates">
-
-	<mkdir dir="${demotemplates}"/>
-
-	<copy todir="${texttemplates}" filtering="true">
-	    <fileset dir="templates/text"/>
-	</copy>
-
-    </target>
-
-
-    <!-- Copies and filters the admintemplates. -->
-    <target name="admintemplates" depends="init" description="Copies and filters the admintemplates.">
-
-	<antcall target="admintemplates-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language"    value="se"/>
-	</antcall>
-
-	<!-- antcall target="admintemplates-lang">
-	    <param name="srclanguage" value="en"/>
-	    <param name="language"    value="en"/>
-	</antcall -->
-
-    </target>
-
-
-    <!-- Copies and filters the admintemplates for one language. -->
-    <target name="admintemplates-lang" depends="language-properties,global-filters" description="Copies and filters the admintemplates for one language">
-
-	<mkdir dir="${admintemplates}"/>
-	<mkdir dir="${searchtemplates}"/>
-
-	<copy todir="${admintemplates}/adminbuttons" filtering="true">
-	    <fileset dir="templates/${srclanguage}/adminbuttons"/>
-	</copy>
-
-	<replace dir="${admintemplates}/adminbuttons" excludes="adminbuttons.html" token="&#10;" value=""/>
-
-	<replace dir="${admintemplates}/adminbuttons" excludes="adminbuttons.html" token="&#13;" value=""/>
-
-	<copy todir="${admintemplates}/permissions" filtering="true">
-	    <fileset dir="templates/${srclanguage}/permissions"/>
-	</copy>
-
-	<copy todir="${admintemplates}/sections" filtering="true">
-	    <fileset dir="templates/${srclanguage}/sections"/>
-	</copy>
-
-	<copy todir="${admintemplates}/textdoc" filtering="true">
-	    <fileset dir="templates/${srclanguage}/textdoc"/>
-	</copy>
-
-	<copy todir="${searchtemplates}" filtering="true">
-	    <fileset dir="templates/${srclanguage}/search"/>
-	</copy>
-
-	<copy todir="${admintemplates}/shop" filtering="true">
-	    <fileset dir="templates/${srclanguage}/shop"/>
-	</copy>
-
-	<copy todir="${admintemplates}" filtering="true">
-	    <fileset dir="templates/${srclanguage}">
-		<patternset>
-		    <include name="*.htm"/>
-		    <include name="*.html"/>
-		    <include name="*.ini"/>
-		    <include name="*.txt"/>
-		</patternset>
-	    </fileset>
-	</copy>
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${installdir}" filtering="true">
+            <fileset dir="templates/text"/>
+        </imtranslate>
 
     </target>
 
 
     <!-- Create some empty directories that will be used by imCMS. -->
-    <target name="dir" depends="init" description="Creates some empty directories necessary for imCMS.">
-	<mkdir dir="${includes}"/>
-	<mkdir dir="${uploads}"/>
-	<mkdir dir="${logs}"/>
-    </target>
+    <target name="dir"
+	    depends="init"
+	    description="Creates some empty directories necessary for imCMS.">
 
-    <!-- Builds the 'calender'-plugin. -->
-    <target name="calender" depends="init,calender-servlets,calender-templates,calender-images" description="Builds the calender." if="build-calender"/>
-
-    <!-- The calender-servlets. -->
-    <target name="calender-servlets" depends="init,server" description="Builds the calender-servlets." if="build-calender">
-
-	<mkdir dir="${classes}"/>
-	<javac srcdir="servlets/calender" destdir="${classes}" includes="*.java" classpath="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
-
-	    <classpath>
-		<pathelement path="${classes}"/>
-		<fileset dir="install/lib">
-		    <include name="**/*.jar"/>
-		</fileset>
-	    </classpath>
-	</javac>
-    </target>
-
-    <!-- The calender-templates. -->
-    <target name="calender-templates" depends="init" description="Copies the calender-templates." if="build-calender">
-
-	<antcall target="calender-templates-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language"    value="se"/>
-	</antcall>
-
-	<!-- antcall target="calender-templates-lang">
-	    <param name="srclanguage" value="en"/>
-	    <param name="language"    value="en"/>
-	</antcall -->
-
+	    <mkdir dir="${includes}"/>
+	    <mkdir dir="${uploads}"/>
+	    <mkdir dir="${logs}"/>
     </target>
 
 
-    <!-- The calender-templates. -->
-    <target name="calender-templates-lang" depends="language-properties,global-filters" description="Copies the calender-templates for one language." if="build-calender">
-
-	<copy todir="${calender-templates}" filtering="true">
-	    <fileset dir="templates/${srclanguage}/calender" excludes="images/"/>
-	</copy>
-
-    </target>
-
-    <!-- The calender-images. -->
-    <target name="calender-images" depends="init,calender-templates" description="Copies the calender-images." if="build-calender">
-
-	<antcall target="calender-images-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language"    value="se"/>
-	</antcall>
-
-	<!-- antcall target="calender-images-lang">
-	    <param name="srclanguage" value="en"/>
-	    <param name="language"    value="en"/>
-	</antcall -->
-
-    </target>
-
-
-    <!-- The calender-images. -->
-    <target name="calender-images-lang" depends="language-properties" description="Copies the calender-images for one language." if="build-calender">
-
-	<copy todir="${imcmsimages}/${language}/107">
-	    <fileset dir="templates/${srclanguage}/calender/images" includes="*"/>
-	</copy>
-
-    </target>
-
-
-    <!-- Builds the 'conference'-plugin. -->
-    <target name="conference" depends="init,conference-servlets,conference-templates,conference-images" description="Builds the conference." if="build-conference"/>
-
-
-    <!-- The conference-servlets. -->
-    <target name="conference-servlets" depends="init,server,servlets" description="Builds the conference-servlets." if="build-conference">
-
-	<mkdir dir="${classes}"/>
-	<javac srcdir="servlets/conf" destdir="${classes}" includes="*.java" classpath="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
-
-	    <classpath>
-		<pathelement path="${classes}"/>
-		<fileset dir="install/lib">
-		    <include name="**/*.jar"/>
-		</fileset>
-	    </classpath>
-	</javac>
-
-    </target>
-
-
-    <!-- The conference-templates. -->
-    <target name="conference-templates" depends="init" description="Copies the conference-templates." if="build-conference">
-
-	<antcall target="conference-templates-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language"    value="se"/>
-	</antcall>
-
-	<!-- antcall target="conference-templates-lang">
-	    <param name="srclanguage" value="en"/>
-	    <param name="language"    value="en"/>
-	</antcall -->
-
-    </target>
-
-
-    <!-- The conference-templates. -->
-    <target name="conference-templates-lang" depends="language-properties,global-filters" description="Copies the conference-templates for one language." if="build-conference">
-
-	<copy todir="${conference-templates}" filtering="true">
-	    <fileset dir="templates/${srclanguage}/conf" excludes="original/images/"/>
-	</copy>
-
-    </target>
-
-
-    <!-- The conference-images. -->
-    <target name="conference-images" depends="init,conference-templates" description="Copies the conference-images." if="build-conference">
-
-	<antcall target="conference-images-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language"    value="se"/>
-	</antcall>
-
-	<!-- antcall target="conference-images-lang">
-	    <param name="srclanguage" value="en"/>
-	    <param name="language"    value="en"/>
-	</antcall -->
-
-    </target>
-
-
-    <!-- The conference-images. -->
-    <target name="conference-images-lang" depends="language-properties" description="Copies the conference-images for one language." if="build-conference">
-
-	<copy todir="${imcmsimages}/${language}/102/original">
-	    <fileset dir="templates/${srclanguage}/conf/original/images" includes="*"/>
-	</copy>
-
-    </target>
-
-
-    <!-- Builds the 'chat'-plugin. -->
-    <target name="chat" depends="init,chat-servlets,chat-templates" description="Builds the chat." if="build-chat"/>
-
-
-    <!-- The chat-servlets -->
-    <target name="chat-servlets" depends="init,server,servlets" description="Builds the chat-servlets." if="build-chat">
-
-	<mkdir dir="${classes}"/>
-	<javac srcdir="servlets/chat" destdir="${classes}" includes="*.java" classpath="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
-
-	    <classpath>
-		<pathelement path="${classes}"/>
-		<fileset dir="install/lib">
-		    <include name="**/*.jar"/>
-		</fileset>
-	    </classpath>
-	</javac>
-
-    </target>
-
-
-    <!-- The chat-templates. -->
-    <target name="chat-templates" depends="init" description="Copies the chat-templates." if="build-chat">
-
-	<antcall target="chat-templates-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language"    value="se"/>
-	</antcall>
-
-	<!-- antcall target="chat-templates-lang">
-	    <param name="srclanguage" value="en"/>
-	    <param name="language"    value="en"/>
-	</antcall -->
-
-    </target>
-
-
-    <!-- The chat-templates for one language. -->
-    <target name="chat-templates-lang" depends="language-properties,global-filters" description="Copies the chat-templates for one language." if="build-chat">
-
-	<copy todir="${chat-templates}/original" filtering="true">
-	    <fileset dir="templates/${srclanguage}/chat/original"/>
-	</copy>
-	<copy todir="${chat-templates}" filtering="true">
-	    <fileset dir="templates/${srclanguage}/chat" excludes="original/"/>
-	</copy>
-
-    </target>
-
-
-    <!-- Builds the 'billboard'-plugin. -->
-    <target name="billboard" depends="init,billboard-servlets,billboard-templates,billboard-images" description="Builds the billboard." if="build-billboard"/>
-
-
-    <!-- The billboard-servlets. -->
-    <target name="billboard-servlets" depends="init,server,servlets" description="Builds the billboard-servlets." if="build-billboard">
-
-	<mkdir dir="${classes}"/>
-	<javac srcdir="servlets/billBoard" destdir="${classes}" includes="*.java" classpath="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
-
-	    <classpath>
-		<pathelement path="${classes}"/>
-		<fileset dir="install/lib">
-		    <include name="**/*.jar"/>
-		</fileset>
-	    </classpath>
-	</javac>
-
-    </target>
-
-
-    <!-- The billboard-templates. -->
-    <target name="billboard-templates" depends="init" description="Copies the billboard-templates." if="build-billboard">
-
-	<antcall target="billboard-templates-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language"    value="se"/>
-	</antcall>
-
-	<!-- antcall target="billboard-templates-lang">
-	    <param name="srclanguage" value="en"/>
-	    <param name="language"    value="en"/>
-	</antcall -->
-
-    </target>
-
-
-    <!-- The billboard-templates for one language. -->
-    <target name="billboard-templates-lang" depends="language-properties,global-filters" description="Copies the billboard-templates for one language." if="build-billboard">
-
-	<copy todir="${billboard-templates}/original" filtering="true">
-	    <fileset dir="templates/${srclanguage}/billboard/original" excludes="images/"/>
-	</copy>
-	<copy todir="${billboard-templates}" filtering="true">
-	    <fileset dir="templates/${srclanguage}/billboard" excludes="original/"/>
-	</copy>
-
-    </target>
-
-
-    <!-- The billboard-images. -->
-    <target name="billboard-images" depends="init,billboard-templates" description="Copies the billboard-images." if="build-billboard">
-
-	<antcall target="billboard-images-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language"    value="se"/>
-	</antcall>
-
-	<!-- antcall target="billboard-images-lang">
-	    <param name="srclanguage" value="en"/>
-	    <param name="language"    value="en"/>
-	</antcall -->
-
-    </target>
-
-
-    <!-- The billboard-images for one language. -->
-    <target name="billboard-images-lang" depends="language-properties" description="Copies the billboard-images for one language." if="build-billboard">
-
-	<copy todir="${imcmsimages}/${language}/104/original">
-	    <fileset dir="templates/${srclanguage}/billboard/original/images" includes="*"/>
-	</copy>
-
-    </target>
-
-
-    <!-- Builds the 'postcard'-plugin. -->
-    <target name="postcard" depends="init,postcard-templates" description="Builds the postcard." if="build-postcard"/>
-
-
-    <!-- The postcard-templates. -->
-    <target name="postcard-templates" depends="init" description="Copies the postcard-templates." if="build-postcard">
-
-	<antcall target="postcard-templates-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language"    value="se"/>
-	</antcall>
-
-	<!-- antcall target="postcard-templates-lang">
-	    <param name="srclanguage" value="en"/>
-	    <param name="language"    value="en"/>
-	</antcall -->
-
-    </target>
-
-
-    <!-- The postcard-templates for one language. -->
-    <target name="postcard-templates-lang" depends="language-properties,global-filters" description="Copies the postcard-templates for one language." if="build-postcard">
-
-	<copy todir="${postcard-templates}" filtering="true">
-	    <fileset dir="templates/${srclanguage}/postcard"/>
-	</copy>
-
-    </target>
-
-
-    <!-- Copies the files for the online-help. -->
-    <target name="help" depends="init">
-
-	<!-- Copy the swedish images for the online-help -->
-	<copy todir="${imcmsimages}/se/helpimages">
-	    <fileset dir="install/htdocs/sv/helpimages" includes="*"/>
-	</copy>
-
-    </target>
-
-
-    <!-- Copies the files for the 'fortune'-plugin. -->
-    <target name="fortune" depends="init,fortune-templates" description="Copies the files for the 'fortune'-plugin." if="build-fortune">
-
-	<mkdir dir="${fortunes}"/>
-
-	<!-- Create empty files needed by fortune -->
-	<touch file="${fortunes}/poll.poll.txt"    millis="0"/>
-	<touch file="${fortunes}/quotes.txt"  millis="0"/>
-    </target>
-
-
-    <!-- The fortune-templates.-->
-    <target name="fortune-templates" depends="init,web" description="Copies the fortune-templates." if="build-fortune">
-
-	<antcall target="fortune-templates-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language"    value="se"/>
-	</antcall>
-
-	<!-- antcall target="fortune-templates-lang">
-	    <param name="srclanguage" value="en"/>
-	    <param name="language"    value="en"/>
-	</antcall -->
-
-    </target>
-
-
-    <!-- The fortune-templates for one language.-->
-    <target name="fortune-templates-lang" depends="language-properties,global-filters" description="Copies the fortune-templates for one language." if="build-fortune">
-
-	<copy todir="${fortune-templates}" filtering="true">
-	    <fileset dir="templates/${srclanguage}/fortunes"/>
-	</copy>
-
-    </target>
-
-
-    <!-- Copies the files for readrunner -->
-    <target name="readrunner" depends="init,global-filters" description="Copies the files for readrunner." if="build-readrunner">
-
-	<!-- First the images, since they aren't to be filtered. -->
-	<copy todir="${readrunner}/images">
-	    <fileset dir="install/htdocs/sv/readrunner/images"/>
-	</copy>
-
-	<copy todir="${readrunner}" filtering="true">
-	    <fileset dir="install/htdocs/sv/readrunner" excludes="*.jpg,*.gif"/>
-	</copy>
-
-	<copy todir="${templates}/se/admin" filtering="true" file="templates/sv/readrunner/AdminUserResp.htm" overwrite="yes"/>
-
-	<copy todir="${templates}/se/admin/readrunner" filtering="true">
-    	    <fileset dir="templates/sv/readrunner/"/>
-	</copy>
-
-	<mkdir dir="${readrunner}/preparsed"/>
-    </target>
-
-
-    <!-- Copies the shop files. -->
-    <target name="shop" depends="init" description="Copies the shop files." if="build-shop">
-
-	<antcall target="shop-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language" value="sv"/>
-	</antcall>
-
-    </target>
-
-
-    <!-- The shop-files for one language. -->
-    <target name="shop-lang" depends="global-filters,language-properties" description="Copies the help-images for one language.">
-
-	<copy todir="${shop}" filtering="true">
-	    <fileset dir="install/htdocs/${srclanguage}/shop" includes="*"/>
-	</copy>
-
-    </target>
-
+    <target name="templates-web-nobuild-install"
+            depends="init,web,nobuild-install"
+            description="Run targets 'templates', 'web', and 'nobuild-install'" />
 
 </project>

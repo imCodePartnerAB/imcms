@@ -1,9 +1,64 @@
-<HTML>
+<html>
+<head>
+<title><? templates/sv/no_page.html/1 ?></title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
+
+<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
+
+</head>
 <body bgcolor="#FFFFFF">
-<p align="center"><font size="6">Sidan Saknas!</font></p>
-<p align="center"><font size="3">Kan inte hitta sidan. Kontakta <a href="mailto:#EMAIL_SERVER_MASTER#">systemansvarig</a>, 
-  eller f&ouml;rs&ouml;k igen.</font></p>
 
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", "<? templates/sv/no_page.html/1 ?>");
+</script>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+	<td>
+	<table border="0" cellpadding="0" cellspacing="0">
+	<form action="StartDoc">
+	<tr>
+		<td><input type="Submit" value="<? templates/Startpage ?>" class="imcmsFormBtn"></td>
+	</tr>
+	</form>
+	</table></td>
+	<td>&nbsp;</td>
+	<td>
+	<table border="0" cellpadding="0" cellspacing="0">
+	<form action="BackDoc">
+	<tr>
+		<td><input type="Submit" value="<? templates/Back ?>" class="imcmsFormBtn"></td>
+	</tr>
+	</form>
+	</table></td>
+</tr>
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="310">
+<tr>
+	<td align="center" class="imcmsAdmText"><b><? templates/sv/no_page.html/2 ?>!</b><br>
+	</td>
+</tr>
+</table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
 
-</HTML>
+<script language="JavaScript">
+<!--
+if (document.forms[1]) {
+	var f = document.forms[1]
+	if (f.elements[0]) {
+		f.elements[0].blur();
+	}
+}
+//-->
+</script>
 
+</body>
+</html>

@@ -245,8 +245,8 @@ public class PutInShoppingCart extends HttpServlet {
 	String mailFromAddress = Prefs.get("mail-from-address", SHOP_CONFIG) ;
 	String mailToAddress   = Prefs.get("mail-to-address",   SHOP_CONFIG) ;
 	String mailSubject     = Prefs.get("mail-subject",      SHOP_CONFIG) ;
-	String mailFormat      = imcref.parseDoc(null, MAIL_FORMAT, imcref.getDefaultLanguage()) ;
-	String mailItemFormat  = imcref.parseDoc(null, MAIL_ITEM_FORMAT, imcref.getDefaultLanguage()) ;
+	String mailFormat      = imcref.parseDoc(null, MAIL_FORMAT, imcref.getLanguage()) ;
+	String mailItemFormat  = imcref.parseDoc(null, MAIL_ITEM_FORMAT, imcref.getLanguage()) ;
 
 	Perl5Matcher patternMatcher = new Perl5Matcher() ;
 

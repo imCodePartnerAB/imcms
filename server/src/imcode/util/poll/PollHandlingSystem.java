@@ -1,8 +1,5 @@
 package imcode.util.poll ;
 
-import java.util.* ;
-
-
 public interface PollHandlingSystem {
 
 
@@ -22,26 +19,26 @@ public interface PollHandlingSystem {
 	/** 
 		Get all parameters for a poll
 		returns parameters from db as String:
-				@poll_id int, 
-				@meta_id int,
-				@popup_freq int
-				@set_cookie bit ,
-				@hide_result bit ,
-				@confirmation_text int ,
-				@email_recipients int ,
-				@email_from int ,
-				@email_subject int ,
-				@result_template int
+				poll_id int,
+				meta_id int,
+				popup_freq int
+				set_cookie bit ,
+				hide_result bit ,
+				confirmation_text int ,
+				email_recipients int ,
+				email_from int ,
+				email_subject int ,
+				result_template int
 	*/
-	public imcode.server.db.DatabaseService.Table_polls getPollParameters(int meta_id);
+	public String[] getPollParameters(String meta_id);
 
 	/**
 		Get all questions for a poll
 		returns parameter from db as String
-			@id
-			@poll_id
-			@question_number
-			@text_id
+			id
+			poll_id
+			question_number
+			text_id
 	*/
 	public String[][] getAllPollQuestions(String poll_id);
 
@@ -49,13 +46,13 @@ public interface PollHandlingSystem {
 	/**
 		Get all answers for a poll-question
 		returns parameter from db as String
-			@id
-			@question_id
-			@question_number
-			@text_id
-			@option_number
-			@answer_count
-			@option_point
+			id
+			question_id
+			question_number
+			text_id
+			option_number
+			answer_count
+			option_point
 			
 	*/
 	public String[][] getAllPollAnswers(String question_id);
@@ -64,29 +61,29 @@ public interface PollHandlingSystem {
 	/**
 		Get one questions for a poll
 		returns parameter from db as String
-			@id
-			@poll_id
-			@question_number
-			@text_id
+			id
+			poll_id
+			question_number
+			text_id
 	*/
 	public String[] getPollQuestion( String poll_id, String question_no);	
 
 	/**
 		Get all polls from db
 		return parameters
-			@id int
-			@name varchar (100) (store only text_id)
-			@description varchar (100) (store only text_id)
-			@meta_id int
-			@popup_freq int
-			@set_cookie bit
-			@hide_result bit
-			@confirmation_text int 
-			@email_recipients int
-			@email_from int
-			@email_subject int
-			@result_template int 
+			id int
+			name varchar (100) (store only text_id)
+			description varchar (100) (store only text_id)
+			meta_id int
+			popup_freq int
+			set_cookie bit
+			hide_result bit
+			confirmation_text int
+			email_recipients int
+			email_from int
+			email_subject int
+			result_template int
 	*/
-	public imcode.server.db.DatabaseService.Table_polls[] getAllPolls();
+	public String[][] getAllPolls();
 
 }

@@ -1,10 +1,5 @@
-<%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp"%>
-<html>
-<head>
-<title>Delete a role named "Test role"</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-</head>
-<body>
+<%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
+
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
     DocumentService documentService = imcmsSystem.getDocumentService();
@@ -18,7 +13,7 @@
     textFieldIndexInDocument = 2;
     String newPlainText = "";
     document.setPlainTextField( textFieldIndexInDocument, newPlainText ) ;
+
+    documentService.saveChanges( document );
 %>
 Done.
-</body>
-</html>

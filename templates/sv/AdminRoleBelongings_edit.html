@@ -2,16 +2,8 @@
 "http://www.w3.org/TR/html40/loose.dtd">
 <html>
 <head>
-<title>Administrera roll tillhörighet</title>
+<title><? templates/sv/AdminRoleBelongings_edit.html/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
 
 </head>
 
@@ -21,8 +13,7 @@ function openHelp(id){
 	<tr bgcolor="#333366"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> 
-		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Administrera 
-          anv&auml;ndare och roller</font></b></div>
+		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? templates/sv/AdminRoleBelongings_edit.html/2 ?></font></b></div>
 	  </td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
@@ -31,7 +22,7 @@ function openHelp(id){
 	  <td width="90%">
         <font face="Verdana, Arial, Helvetica, sans-serif">
           <input type="HIDDEN" name="CURENT_ROLE_ID" value="#CURENT_ROLE_ID#">
-          &nbsp;Aktuell roll: #CURENT_ROLE_NAME#
+          &nbsp;<? templates/sv/AdminRoleBelongings_edit.html/1001 ?>: #CURENT_ROLE_NAME#
         </font>
       </td>
 	  <td width="5%">&nbsp;</td>
@@ -41,8 +32,8 @@ function openHelp(id){
 	  <td width="90%"> 
         <table width="100%" border="0">
           <tr> 
-            <td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif">Anv&auml;ndare:</font></td>
-            <td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif">Roller:</font></td>
+            <td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminRoleBelongings_edit.html/3 ?></font></td>
+            <td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminRoleBelongings_edit.html/4 ?></font></td>
           </tr>
           <tr> 
             <td width="50%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
@@ -68,10 +59,10 @@ function openHelp(id){
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> 
-        <input type="submit" name="BELONGING_ADD_ROLE" value="Tilldela" >
-        <input type="submit" name="BELONGING_REMOVE_ROLE" value="Ta bort" >
-        <input type="submit" name="BELONGING_MOVE_ROLE" value="Flytta" >
-        <input type="submit" name="BELONGING_CANCEL" value="Avbryt">&nbsp; <a href="GetDoc?meta_id=4" target="_blank" onClick="openHelp('4'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+        <input type="submit" name="BELONGING_ADD_ROLE" value="<? templates/sv/AdminRoleBelongings_edit.html/2001 ?>">
+        <input type="submit" name="BELONGING_REMOVE_ROLE" value="<? templates/sv/AdminRoleBelongings_edit.html/2002 ?>">
+        <input type="submit" name="BELONGING_MOVE_ROLE" value="<? templates/sv/AdminRoleBelongings_edit.html/2003 ?>">
+        <input type="submit" name="BELONGING_CANCEL" value="<? templates/sv/AdminRoleBelongings_edit.html/2004 ?>">&nbsp; <a href="@documentationurl@/GetDoc?meta_id=4" target="_blank"><img src="@imcmsimageurl@/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/AdminRoleBelongings_edit.html/2005 ?>"></a>
       </td>
 	  <td width="5%">&nbsp;</td>
 	</tr>

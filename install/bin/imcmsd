@@ -1,14 +1,0 @@
-#!/bin/sh
-
-java -client \
--classpath \
-/usr/local/java/jakarta-oro-2.0.2-dev-2.jar:\
-/usr/local/java/Opta2000.jar:\
-/usr/local/imcms/lib:\
-/usr/local/java/jdbc2_0-stdext.jar:\
-/usr/local/java/jakarta-oro-2.0.jar \
- -Djava.rmi.server.codebase=file:/usr/local/imcms/lib \
- -Djava.security.policy=file:/usr/local/imcms/conf/policy \
- -Dcom.imcode.netserver.config=/usr/local/imcms/conf \
- imcode.server.ImcServer $*
- 

@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Konferens - logga in</title>
+<title><? templates/sv/conf/original/Conf_Login.htm/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
@@ -9,21 +9,19 @@
   <table width="265" border="0" cellpadding="0" align="center" cellspacing="0">
     <tr valign="top"> 
       <td colspan=2><font face="Verdana, Arial, Helvetica, sans-serif" size="6" color="#000000"><b><i><font size="5"> 
-        Konferens</font></i></b></font><br>
-        <IMG height=6 src="#IMAGE_URL#blueline.gif" width=265> <font face="Verdana, Arial, Helvetica, sans-serif" size="3">VÄLKOMMEN 
-        <br>
-        <br>
+        <? templates/sv/conf/original/Conf_Login.htm/2 ?></font></i></b></font><br>
+        <IMG height=6 src="#IMAGE_URL#blueline.gif" width=265> <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? templates/sv/conf/original/Conf_Login.htm/3 ?>
         </font></td>
     </tr>
     <tr> 
-      <td width="140"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">NAMN</font> 
+      <td width="140"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Login.htm/4 ?></font> 
       </td>
       <td width="143"> 
         <input name="login_name" maxlength="15" size="15" >
       </td>
     </tr>
     <tr>
-      <td width="140"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">LÖSENORD 
+      <td width="140"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Login.htm/5 ?> 
         </font></td>
       <td width="143"> 
         <input type="password" name="password" maxlength="15" size="15">
@@ -34,7 +32,7 @@
         <input type="hidden" name="login_type" value="login">
       </td>
       <td width="143">
-        <input type="submit" name="submit" value="Ok">
+        <input type="submit" name="submit" value="<? templates/sv/conf/original/Conf_Login.htm/2001 ?>">
       </td>
     </tr>
   </table>
@@ -42,8 +40,7 @@
 <form method="get" action="#SERVLET_URL#ConfLogin">
 <table width="265" border="0" cellpadding="2" align="center" cellspacing="0">
     <tr valign="center"> 
-      <td width="130" valign="top"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">NY 
-        ANVÄNDARE?</font> </td>
+      <td width="130" valign="top"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Login.htm/6 ?></font> </td>
       <td width="135" valign="top"> 
         <input type="image" border="0" name="submit3" src="#IMAGE_URL#registrera.gif" width="81" height="13">    
 	<input type="hidden" name="login_type" value="add_user">

@@ -671,7 +671,7 @@
 	        <prompt>D:\projekt\imCMS&gt; </prompt><command>cvs -H update</command>
 		Usage: cvs update [-APCdflRp] [-k kopt] [-r rev] [-D date] [-j rev]
 		    [-I ign] [-W spec] [files...]
-		    	-A	Reset any sticky tags/date/kopts.
+			-A	Reset any sticky tags/date/kopts.
 			-P	Prune empty directories.
 			-C	Overwrite locally modified files with clean repository copies.
 			-d	Build directories, like checkout does.

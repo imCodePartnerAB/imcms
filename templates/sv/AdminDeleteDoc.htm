@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Ta bort ett dokument</title>
+<title><? templates/sv/AdminDeleteDoc.htm/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <SCRIPT language=JavaScript>
 <!--
@@ -32,7 +32,7 @@ function setAdminTask() {
 
 	// Lets delete a meta id the form
 	if(theChoice == "DELETE_DOC") {
-	var msg = "Varning! Dokumentet kommer att raderas! Fortsätta?" ;
+	var msg = "<? templates/sv/AdminDeleteDoc.htm/2010 ?>" ;
 		var Ok = window.confirm(msg);
 		if (! Ok) 
 		  return ;		 	  
@@ -43,15 +43,12 @@ function setAdminTask() {
 }
 */
 function confirmDeleteDoc() {
-	if(confirm("Varning! Dokumentet kommer att tas bort från systemet! Fortsätta?"))
+	if(confirm("<? templates/sv/AdminDeleteDoc.htm/2010 ?>"))
 		return true
 	else 
 		return false
 }
 
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
 //-->
 </SCRIPT>
 </head>
@@ -61,8 +58,7 @@ function openHelp(id){
 	<tr bgcolor="#333366"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> 
-		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Ta 
-		  bort ett dokument</font></b></div>
+		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? templates/sv/AdminDeleteDoc.htm/2 ?></font></b></div>
 	  </td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
@@ -73,14 +69,13 @@ function openHelp(id){
 	</tr>
 	<tr bgcolor="#bababa"> 
 	  <td width="5%" height="23">&nbsp;</td>
-	  <td width="90%" height="23"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Ange 
-		meta-id f&ouml;r det dokument som skall tas bort:</font></td>
+	  <td width="90%" height="23"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminDeleteDoc.htm/3 ?></font></td>
 	  <td width="5%" height="23">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		Meta-id: 
+		<? templates/sv/AdminDeleteDoc.htm/4 ?> 
 		<input type="text" name="delete_meta_id" maxlength="9" size="9">
 		</font></td>
 	  <td width="5%">&nbsp;</td>
@@ -94,8 +89,8 @@ function openHelp(id){
 	  <td width="5%" height="23">&nbsp;</td>
 	  <td width="90%" height="26"> 
 		<div align="left">
-		  <input type="submit" name="DELETE_DOC" value="Ta bort" onClick="if(confirmDeleteDoc()==false)return false; return true;">
-		  <input type="submit" name="GO_BACK" value="Tillbaka">&nbsp; <a href="GetDoc?meta_id=85" target="_blank" onClick="openHelp('85'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		  <input type="submit" name="DELETE_DOC" value="<? templates/sv/AdminDeleteDoc.htm/2001 ?>" onClick="if(confirmDeleteDoc()==false)return false; return true;">
+		  <input type="submit" name="GO_BACK" value="<? templates/sv/AdminDeleteDoc.htm/2002 ?>">&nbsp; <a href="@documentationurl@/GetDoc?meta_id=85" target="_blank"><img src="@imcmsimageurl@/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/AdminDeleteDoc.htm/2003 ?>"></a>
 		</div>
 	  </td>
 	  <td width="5%" height="23">&nbsp;</td>

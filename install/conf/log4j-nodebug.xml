@@ -11,7 +11,7 @@
     renderedClass="imcode.server.DocumentRequest"/>
 
   <!-- The accesslog (logs usermovements) -->
-  <appender name="ACCESS" class="org.apache.log4j.DailyRollingFileAppender">
+  <appender name="ACCESS" class="imcode.util.log.DailyRollingFileAppender">
     <param name="DatePattern" value="'.'yyyy-MM-dd"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern"

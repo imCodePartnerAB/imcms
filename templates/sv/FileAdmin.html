@@ -1,186 +1,564 @@
 <html>
 <head>
-<title>Filadministration</title>
+<title><? templates/sv/FileAdmin.html/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
+<noscript><link rel="STYLESHEET" type="text/css" href="@cssurl@/imcms_win_ie.css"></noscript>
+<script language="JavaScript">
 <!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
+
+/* *******************************************************************
+ *           SETTINGS                                                *
+ ******************************************************************* */
+
+var imC_PATH = "@rooturl@" ;       // if used: "/imcms". if not: ""
+var JSP_PATH = "@imcmsjspurl@" ;  // ie: "/imcms/jsp" or "/imcms/imcms/jsp"
+
+var CSS_IE   = "@cssurl@/imcms_win_ie.css"; // write this in the NOSCRIPT above too
+var CSS_NS   = "@cssurl@/imcms_win_ns.css";
+
+/*
+	Remember to fix this images' paths:
+
+		- 1x1.gif
+		- line_hr.gif
+
+*/
+
+/* *******************************************************************
+ *           FUNCTIONS                                               *
+ ******************************************************************* */
+
+var ns    = (document.layers) ? 1 : 0;
+var ie    = (document.all) ? 1 : 0;
+var moz   = (document.getElementById) ? 1 : 0;
+var gecko = (moz && !ie) ? 1 : 0;
+var isMac = (/mac/i.test(navigator.platform)) ? 1 : 0;
+
+var webRoot = "";
+
+aDir = new Array(3); // absolutedir[iside]
+aDir[0] = "";
+aDir[1] = "";
+aDir[2] = "";
+wDir = new Array(3); // webdir[iside]
+wDir[0] = "";
+wDir[1] = "";
+wDir[2] = "";
+
+/* ***** REGEXP PATTERNS ***** */
+	/* isImage - image types (change in "FileAdmin_preview.jsp" too) */
+var pai = "\\.(GIF|JPE?G|PNG)$";
+	/* isViewFile - viewable file types (change in "FileAdmin_preview.jsp" too, if image) */
+var pa = "\\.(GIF|JPE?G|PNG|BMP|AVI|MPE?G|HTML?|CSS|JS|VBS|TXT|JSP|ASP)$";
+	/* isEditFileText - viewable file types that will open in readonly mode in "FileAdmin_edit.jsp" */
+var pat = "\\.(HTML?|CSS|JS|VBS|TXT|JSP|ASP)$";
+	/* isEditFile - editable file types (change in "FileAdmin_edit.jsp" too) */
+var pae = "\\.(HTM|HTML|VBS|JS|CSS|TXT|INC)$";
+	/* isDir */
+var isDirectoryPattern = "[/\\\\]$";
+	/* isSysFold */
+var pas = "webapps|[\\.]{2}";
+	/* isHiddenFold */
+var pao = "WEB-INF";
+	/* isHtmlFile */
+var pah = "\\.html?$";
+	/* isStatFile */
+var par = "\\\\stats\\\\.+\\.html?";
+
+function checkFileType(iside) {
+	if (!(isMac && ie)) {
+		var f = document.forms[0];
+		/* Viewable file */
+		if ((isViewFile(iside) && !isHiddenFold(iside)) || isStatFile(iside)) {
+			if (iside == 2) {
+				f.preview2.disabled  = 0;
+				f.preview2.className = "formBtnBlue";
+			} else {
+				f.preview1.disabled  = 0;
+				f.preview1.className = "formBtnBlue";
+			}
+		} else {
+			if (iside == 2) {
+				f.preview2.disabled  = 1;
+				f.preview2.className = "formBtnDisabled";
+			} else {
+				f.preview1.disabled  = 1;
+				f.preview1.className = "formBtnDisabled";
+			}
+		}
+		/* All files */
+		if (isFile(iside)) {
+			if (iside == 2) {
+				f.download2.disabled  = 0;
+				f.download2.className = "formBtnBlue";
+			} else {
+				f.download1.disabled  = 0;
+				f.download1.className = "formBtnBlue";
+			}
+		} else {
+			if (iside == 2) {
+				f.download2.disabled  = 1;
+				f.download2.className = "formBtnDisabled";
+			} else {
+				f.download1.disabled  = 1;
+				f.download1.className = "formBtnDisabled";
+			}
+		}
+		/* Editable files */
+		if (isEditFile(iside)) {
+			if (iside == 2) {
+				f.edit2.disabled  = 0;
+				f.edit2.className = "formBtnBlue";
+			} else {
+				f.edit1.disabled  = 0;
+				f.edit1.className = "formBtnBlue";
+			}
+		} else {
+			if (iside == 2) {
+				f.edit2.disabled  = 1;
+				f.edit2.className = "formBtnDisabled";
+			} else {
+				f.edit1.disabled  = 1;
+				f.edit1.className = "formBtnDisabled";
+			}
+		}
+		/* System folders (default installed & locked) */
+		if (isSysFold(iside) || getFile(iside) == "") {
+			if (iside == 2) {
+				f.copy2.disabled    = 1;
+				f.move2.disabled    = 1;
+				f.delete2.disabled  = 1;
+				f.copy2.className   = "formBtnDisabled";
+				f.move2.className   = "formBtnDisabled";
+				f.delete2.className = "formBtnDisabled";
+			} else {
+				f.copy1.disabled    = 1;
+				f.move1.disabled    = 1;
+				f.delete1.disabled  = 1;
+				f.copy1.className   = "formBtnDisabled";
+				f.move1.className   = "formBtnDisabled";
+				f.delete1.className = "formBtnDisabled";
+			}
+		} else {
+			if (iside == 2) {
+				f.copy2.disabled    = 0;
+				f.move2.disabled    = 0;
+				f.delete2.disabled  = 0;
+				f.copy2.className   = "formBtnBlue";
+				f.move2.className   = "formBtnBlue";
+				f.delete2.className = "formBtnBlue";
+			} else {
+				f.copy1.disabled    = 0;
+				f.move1.disabled    = 0;
+				f.delete1.disabled  = 0;
+				f.copy1.className   = "formBtnBlue";
+				f.move1.className   = "formBtnBlue";
+				f.delete1.className = "formBtnBlue";
+			}
+		}
+	}
+}
+
+function isViewFile(iside) {
+	re = new RegExp(pa, 'gi');
+	var sfile = getFile(iside);
+	return re.test(sfile);
+}
+
+function isImageFile(iside) {
+	re = new RegExp(pai, 'gi');
+	var sfile = getFile(iside);
+	return re.test(sfile);
+}
+
+function isEditFile(iside) {
+	re = new RegExp(pae, 'gi');
+	var sfile = getFile(iside);
+	var retVal = re.test(sfile);
+	/* don't allow edit of statfiles */
+	if (isStatFile(iside)) {
+		retVal = false;
+	}
+	return retVal;
+}
+
+function isFile(iside) {
+	re = new RegExp(isDirectoryPattern, 'gi');
+	var sfile = getFile(iside);
+	return !re.test(sfile);
+}
+
+function isSysFold(iside) {
+	re = new RegExp(pas, 'gi');
+	var sfile = getFile(iside);
+	return re.test(sfile);
+}
+
+function isHiddenFold(iside) {
+	re = new RegExp(pao, 'g');
+	var sfile = (getFile(iside).indexOf(":") != -1) ? getFile(iside) : aDir[iside] + "\\" + getFile(iside);
+	return re.test(sfile);
+}
+
+function isHtmlFile(iside) {
+	re = new RegExp(pah, 'gi');
+	var sfile = getFile(iside);
+	return re.test(sfile);
+}
+
+function isEditFileText(iside) {
+	re = new RegExp(pat, 'gi');
+	var sfile = getFile(iside);
+	return re.test(sfile);
+}
+
+function isStatFile(iside) {
+	re = new RegExp(par, 'gi');
+	var sfile = (getFile(iside).indexOf(":") != -1) ? getFile(iside) : aDir[iside] + "\\" + getFile(iside);
+	return re.test(sfile);
+}
+
+function dblClickAction(iside) {
+	if (!(isMac && ie)) {
+		if (isImageFile(iside) || isStatFile(iside)) {
+			previewFile(iside);
+		} else if (isHtmlFile(iside) && !isHiddenFold(iside)) {
+			openFile(iside);
+		} else if (isEditFileText(iside)) {
+			editFile(iside,1);
+		} else if (isFile(iside) || isViewFile(iside)) {
+			var fBtn = eval('document.forms[0].download' + iside);
+			fBtn.click();
+		} else {
+			var fBtn = eval('document.forms[0].change' + iside);
+			fBtn.click();
+		}
+	}
+}
+
+function previewFile(iside) {
+	var f = document.forms[0];
+	var sdir = (iside == 2) ? f.dir2w.value : f.dir1w.value;
+	var sfile = getFile(iside);
+	sfile = (webRoot != "") ? webRoot + '/' + sfile : wDir[iside] + '/' + sfile;
+	if (isStatFile(iside)) { // stat
+		popWinOpen(800,570,JSP_PATH + "/FileAdmin_preview.jsp?isStat=1&file=" + escape(sfile),"filePreview",0);
+	} else if (isHtmlFile(iside) && !isHiddenFold(iside)) { // html
+		openFile(iside);
+	} else if (isEditFileText(iside)) { // view textfiles "readonly"
+		editFile(iside,1);
+	} else if (isImageFile(iside)) { // file
+		popWinOpen(800,570,JSP_PATH + "/FileAdmin_preview.jsp?file=" + escape(sfile),"filePreview",0);
+	} else if (isFile(iside)) { // other files
+		var fBtn = eval('document.forms[0].download' + iside);
+		fBtn.click();
+	}
+}
+
+function openFile(iside) {
+	var f = document.forms[0];
+	var sdir = (iside == 2) ? f.dir2w.value : f.dir1w.value;
+	var sfile = getFile(iside);
+	sfile = (webRoot != "") ? webRoot + '/' + sfile : wDir[iside] + '/' + sfile;
+	window.open(imC_PATH + sfile);
+}
+
+function editFile(iside,readonlyFlag) {
+	var f = document.forms[0];
+	var sdir = (iside == 2) ? f.dir2w.value : f.dir1w.value;
+	var sfile = getFile(iside);
+	sfile = (webRoot != "") ? webRoot + '/' + sfile : wDir[iside] + '/' + sfile;
+	readonlyFlag = (readonlyFlag) ? "&readonly=1" : "";
+	popWinOpen(800,570,JSP_PATH + "/FileAdmin_edit.jsp?file=" + escape(sfile) + readonlyFlag,"fileEdit",0);
+}
+
+function getFile(iside) {
+	var f = document.forms[0];
+	var theVal = "";
+	switch (iside) {
+		case 1:
+			if (f.files1.selectedIndex > -1) theVal = f.files1.options[f.files1.selectedIndex].value;
+		break;
+		case 2:
+			if (f.files2.selectedIndex > -1) theVal = f.files2.options[f.files2.selectedIndex].value;
+		break;
+	}
+	return theVal;
+}
+
+function setSelectedFolder(iside) {
+	if (moz) {
+		var f = document.forms[0];
+		switch (iside) {
+			case 1:
+				for (var i = 0; i < f.files1.length; i++) {
+					if (f.files1.options[i].value == f.dir1.value + "\\") {
+						f.files1.options[i].style.backgroundColor = "#FFFF99"; // the Dir
+					} else  if (f.dir1.value.indexOf(f.files1.options[i].value.substring(0,f.files1.options[i].value.length-1)) != -1 && f.files1.options[i].value.indexOf("\\") != -1) {
+						f.files1.options[i].style.backgroundColor = "#FFFFCC"; // a subDir
+					}
+				}
+			break;
+			case 2:
+				for (var i = 0; i < f.files2.length; i++) {
+					if (f.files2.options[i].value == f.dir2.value + "\\") {
+						f.files2.options[i].style.backgroundColor = "#FFFF99"; // the Dir
+					} else  if (f.dir2.value.indexOf(f.files2.options[i].value.substring(0,f.files2.options[i].value.length-1)) != -1 && f.files2.options[i].value.indexOf("\\") != -1) {
+						f.files2.options[i].style.backgroundColor = "#FFFFCC"; // a subDir
+					}
+				}
+			break;
+		}
+	}
+}
+
+function popWinOpen(width,height,url,wName,scroll) {
+	if (screen) {
+		var window_width = width;
+		var window_height = height;
+		if (screen.height < 700) {
+			var window_top = 0;
+			var window_left = (screen.width-window_width)/2;
+		} else {
+			var window_top = (screen.height-window_height)/2;
+			var window_left = (screen.width-window_width)/2;
+		}
+		var popWindow = window.open(url,wName,"resizable=yes,menubar=0,scrollbars=" + scroll + ",width=" + window_width + ",height=" + window_height + ",top=" + window_top + ",left=" + window_left + "");
+		if (popWindow) popWindow.focus();
+	} else {
+		window.open(url,wName,"resizable=yes,menubar=0,scrollbars=" + scroll + ",width=" + width + ",height=" + height);
+	}
+}
+
+if (ie || moz) {
+	document.write("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"" + CSS_IE + "\">");
+	if (ie)  document.write("<STYLE TYPE=\"text/css\">\n.formBtnBlue { cursor: hand; width:33; height:22; }\n.formBtnDisabled { width:33; height:22; }\n</STYLE>");
+	if (!ie) document.write("<STYLE TYPE=\"text/css\">\n.formBtnBlue { cursor: pointer; width:33; height:22; }\n.formBtnDisabled { width:33; height:22; }\n</STYLE>");
+} else {
+	document.write("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"" + CSS_NS + "\">");
+	document.write("<STYLE TYPE=\"text/css\">\n.formBtnBlue { cursor: pointer }\n</STYLE>");
+}
+
+function openHelpW(id){
+	var helpMetaId = parseInt(<? templates/helpDocumentationMetaIdStartIndex ?>) + id;
+	window.open("@documentationurl@/GetDoc?meta_id=" + helpMetaId,"help");
 }
 //-->
-</SCRIPT>
+</script>
+
 
 </head>
+<body bgcolor="#FFFFFF" onLoad="checkFileType(1); checkFileType(2); setSelectedFolder(1); setSelectedFolder(2);">
 
-<body bgcolor="#FFFFFF">
 <form method="post" action="FileAdmin" enctype="multipart/form-data">
-  <table border="0" cellspacing="0" width="50%">
-	<tr bgcolor="#333366"> 
-	  <td colspan="6"> 
-		<center>
-		  <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><b>Filadministration</b></font> 
-		</center>
-	  </td>
+
+<input type="hidden" name="dir1" value="#dir1#">
+<input type="hidden" name="dir2" value="#dir2#">
+<input type="hidden" name="dir1w" value="#dir1#">
+<input type="hidden" name="dir2w" value="#dir2#">
+<table border="0" cellspacing="0" cellpadding="0" width="760" align="center" bgcolor="#BABABA">
+<tr>
+	<td colspan="8" height="24" bgcolor="#333366" class="heading">&nbsp;<? templates/sv/FileAdmin.html/1001 ?></td>
+</tr>
+<tr>
+  <td><img src="  /admin/1x1.gif" width="1" height="1"></td>
+  <td colspan="2" class="small"><? templates/sv/FileAdmin.html/3 ?></td>
+  <td colspan="2">&nbsp;</td>
+  <td colspan="2" align="right" class="small"><? templates/sv/FileAdmin.html/4 ?></td>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td colspan="8"><HR></td>
+</tr>
+<tr>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
+
+  <td colspan="2">
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td align="right"><input class="formBtn" height="22" type="submit" name="change1" value="<? templates/sv/FileAdmin.html/2001 ?>"></td>
 	</tr>
-	<tr bgcolor="#BABABA">
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2">&nbsp;</td>
-	  <td colspan="2" align="right"><a href="GetDoc?meta_id=2" target="_blank" onClick="openHelp('2'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
-	  <td width="5%">&nbsp;</td>
+	<tr>
+		<td align="right"><span class="formSmall">
+		<select name="files1" id="fileSel_1" size="20" class="formSmall" style="width:330"
+			onChange="checkFileType(1)"
+			onDblClick="dblClickAction(1)" multiple>
+	#files1#
+		</select></span></td>
 	</tr>
-	<tr bgcolor="#BABABA"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2"> 
-		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b> 
-		  <input type="HIDDEN" name="dir1" value="#dir1#">
-		  #dir1# </b></font> </div>
-	  </td>
-	  <td colspan="2"> 
-		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>#dir2# 
-		  <input type="HIDDEN" name="dir2" value="#dir2#">
-		  </b></font> </div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
+	</table></td>
+
+  <td colspan="2" align="center">
+	<table border="0" cellpadding="2" cellspacing="0">
+	<tr>
+		<td colspan="2" align="center" class="small"><? templates/sv/FileAdmin.html/6 ?></td>
 	</tr>
-	<tr bgcolor="#BABABA"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2"> 
-		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b> 
-		  </b> 
-		  <input type="submit" name="change1" value="Byt katalog">
-		  <b> </b> </font></div>
-	  </td>
-	  <td colspan="2"> 
-		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <b> </b> 
-		  <input type="submit" name="change2" value="Byt katalog">
-		  <b> </b> </font></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
+	<tr>
+		<td align="right"><input class="formBtnBlue" height="22" type="submit" name="delete1" value="&nbsp;<? templates/sv/FileAdmin.html/2002 ?>&nbsp;"></td>
+		<td><input class="formBtnBlue" height="22" type="submit" name="delete2" value="&nbsp;<? templates/sv/FileAdmin.html/2003 ?>&nbsp;"></td>
 	</tr>
-	<tr bgcolor="#BABABA"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2"> 
-		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <select name="files1" size="17" multiple>
-			#files1#
-		  </select>
-		  </font> </div>
-	  </td>
-	  <td colspan="2"> 
-		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <select name="files2" size="17" multiple>
-			#files2#
-		  </select>
-		  </font> </div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
+	<tr>
+		<td colspan="2" align="center" class="small">
+		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/7 ?></td>
 	</tr>
-	<tr bgcolor="#BABABA"> 
-	  <td width="5%">&nbsp;</td>
-	  <td> 
-		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <input type="submit" name="download1" value="Ladda ner">
-		  </font></div>
-	  </td>
-	  <td valign="middle"> 
-		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <input type="submit" name="copy1" value="Kopiera -&gt;">
-		  <input type="submit" name="move1" value="  Flytta -&gt;">
-		  </font></div>
-	  </td>
-	  <td valign="middle"> 
-		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <input type="submit" name="copy2" value="&lt;- Kopiera">
-		  <input type="submit" name="move2" value="&lt;- Flytta  ">
-		  </font> </div>
-	  </td>
-	  <td> 
-		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <input type="submit" name="download2" value="Ladda ner">
-		  </font></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
+	<tr>
+		<td align="right"><input class="formBtnBlue" height="22" type="submit" name="move2" value="<? templates/sv/FileAdmin.html/2004 ?>"></td>
+		<td><input class="formBtnBlue" height="22" type="submit" name="move1" value="<? templates/sv/FileAdmin.html/2005 ?>"></td></td>
 	</tr>
-	<tr bgcolor="#BABABA"> 
-	  <td width="5%">&nbsp;</td>
-	  <td> 
-		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <input type="submit" name="upload1" value="Ladda upp">
-		  </font></div>
-	  </td>
-	  <td valign="middle" colspan="2"> 
-		<center>
-		  <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> </font> 
-		  <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Ny fil:<br>
-		  <input type="file" name="file">
-		  </font> 
-		</center>
-	  </td>
-	  <td> 
-		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <input type="submit" name="upload2" value="Ladda upp">
-		  </font></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
+	<tr>
+		<td colspan="2" align="center" class="small">
+		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/8 ?></td>
 	</tr>
-	<tr bgcolor="#BABABA"> 
-	  <td width="5%">&nbsp;</td>
-	  <td> 
-		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <input type="submit" name="rename1" value="Byt namn">
-		  <br>
-		  <input type="submit" name="mkdir1" value="Skapa katalog">
-		  </font></div>
-	  </td>
-	  <td valign="middle" colspan="2"> 
-		<center>
-		  <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> </font> 
-		  <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Nytt namn:<br>
-		  <input type="text" name="name">
-		  </font> 
-		</center>
-	  </td>
-	  <td> 
-		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <input type="submit" name="rename2" value="Byt namn">
-		  <br>
-		  <input type="submit" name="mkdir2" value="Skapa katalog">
-		  </font></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
+	<tr>
+		<td align="right"><input class="formBtnBlue" height="22" type="submit" name="copy2" value="&nbsp;<? templates/sv/FileAdmin.html/2006 ?>&nbsp;"></td>
+		<td><input class="formBtnBlue" height="22" type="submit" name="copy1" value="&nbsp;<? templates/sv/FileAdmin.html/2007 ?>&nbsp;"></td>
 	</tr>
-	<tr bgcolor="#BABABA"> 
-	  <td width="5%">&nbsp;</td>
-	  <td> 
-		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <input type="submit" name="delete1" value="Radera">
-		  </font> </div>
-	  </td>
-	  <td colspan="2"> 
-		<center>
-		  <hr>
-		  <input type="submit" name="cancel" value="Tillbaka">
-		</center>
-	  </td>
-	  <td> 
-		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <input type="submit" name="delete2" value="Radera">
-		  </font> </div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
+	<tr>
+		<td colspan="2" align="center" class="small">
+		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/1002 ?></td>
 	</tr>
-	<tr bgcolor="#BABABA"> 
-	  <td width="5%">&nbsp;</td>
-	  <td>&nbsp;</td>
-	  <td colspan="2">&nbsp;</td>
-	  <td>&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
+	<tr>
+		<td align="right"><input class="formBtnBlue" height="22" type="submit" name="download1" value="&nbsp;<? templates/sv/FileAdmin.html/2008 ?>&nbsp;"></td>
+		<td><input class="formBtnBlue" height="22" type="submit" name="download2" value="&nbsp;<? templates/sv/FileAdmin.html/2009 ?>&nbsp;"></td>
 	</tr>
-  </table>
+	<tr>
+		<td colspan="2" align="center" class="small">
+		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/9 ?></td>
+	</tr>
+	<tr>
+		<td align="right"><input class="formBtnBlue" height="22" type="button" name="preview1" value="&nbsp;<? templates/sv/FileAdmin.html/2010 ?>&nbsp;" onClick="previewFile(1)"></td>
+		<td><input class="formBtnBlue" height="22" type="button" name="preview2" value="&nbsp;<? templates/sv/FileAdmin.html/2011 ?>&nbsp;" onClick="previewFile(2)"></td>
+	</tr>
+	<tr>
+		<td colspan="2" align="center" class="small">
+		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/10 ?></td>
+	</tr>
+	<tr>
+		<td align="right"><input class="formBtnBlue" height="22" type="button" name="edit1" value="&nbsp;<? templates/sv/FileAdmin.html/2012 ?>&nbsp;" onClick="editFile(1,0);"></td>
+		<td><input class="formBtnBlue" height="22" type="button" name="edit2" value="&nbsp;<? templates/sv/FileAdmin.html/2013 ?>&nbsp;" onClick="editFile(2,0);"></td>
+	</tr>
+	</table></td>
+
+  <td colspan="2" align="right">
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td><input class="formBtn" height="22" type="submit" name="change2" value="<? templates/sv/FileAdmin.html/2014 ?>"></td>
+	</tr>
+	<tr>
+		<td>
+		<span class="formSmall">
+		<select name="files2" id="fileSel_2" size="20" class="formSmall" style="width:330"
+			onChange="checkFileType(2)"
+			onDblClick="dblClickAction(2)" multiple>
+	#files2#
+		</select></span></td>
+	</tr>
+	</table></td>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td colspan="8"><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="8"></td>
+</tr>
+<tr>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
+  <td><input class="formBtn" height="22" type="submit" name="upload1" value="<? templates/sv/FileAdmin.html/2015 ?>"></td>
+  <td colspan="4" align="center"><span class="formMid"><? templates/sv/FileAdmin.html/1003 ?>&nbsp;
+<script language="JavaScript">
+<!--
+if (gecko && !isMac) {
+	document.write("<input type=\"file\" name=\"file\" class=\"formMid\" size=\"60\" style=\"width:380\">");
+} else if (gecko && isMac) {
+	document.write("<input type=\"file\" name=\"file\" class=\"formMid\" size=\"50\">");
+} else if (ns) {
+	document.write("<input type=\"file\" name=\"file\" class=\"formMid\" size=\"20\">");
+} else {
+	document.write("<input type=\"file\" name=\"file\" class=\"formMid\" size=\"20\" style=\"width:380\">");
+}
+//-->
+</script>
+<noscript><input type="file" name="file" class="formMid" size="20"></noscript></span></td>
+  <td align="right"><input class="formBtn" height="22" type="submit" name="upload2" value="<? templates/sv/FileAdmin.html/2016 ?>"></td>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
+</tr>
+<tr>
+  <td colspan="8"><HR></td>
+</tr>
+<tr>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
+  <td align="left">
+	<input class="formBtn" height="22" type="submit" name="rename1" value="<? templates/sv/FileAdmin.html/2017 ?>"><br>
+	<input class="formBtn" height="22" type="submit" name="mkdir1" value="<? templates/sv/FileAdmin.html/2018 ?>"></td>
+  <td colspan="4" align="center"><? templates/sv/FileAdmin.html/13 ?>
+	<span class="formMid"><input type="text" name="name" class="formMid"></span></td>
+  <td align="right">
+	<input class="formBtn" height="22" type="submit" name="rename2" value="<? templates/sv/FileAdmin.html/2019 ?>"><br>
+	<input class="formBtn" height="22" type="submit" name="mkdir2" value="<? templates/sv/FileAdmin.html/2020 ?>"></td>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
+</tr>
+<tr>
+  <td colspan="8"><HR></td>
+</tr>
+<tr>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
+  <td colspan="6" align="center">
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td><a href="@documentationurl@/GetDoc?meta_id=2" target="_blank" onClick="openHelpW('2'); return false;"><img src="@imcmsimageurl@/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/FileAdmin.html/2021 ?>" hspace="5"></a></td>
+		<td><input class="formBtn" height="22" type="submit" name="cancel" value="<? templates/sv/FileAdmin.html/2022 ?>"></td>
+		<td><img src="@imcmsimageurl@/admin/1x1.gif" width="19" height="1" hspace="5"></td>
+	</tr>
+	</table></td>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
+</tr>
+<tr>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="10" height="8"></td>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="150" height="1"></td>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="180" height="1"></td>
+  <td colspan="2"><img src="@imcmsimageurl@/admin/1x1.gif" width="80" height="1"></td>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="180" height="1"></td>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="150" height="1"></td>
+  <td><img src="@imcmsimageurl@/admin/1x1.gif" width="10" height="1"></td>
+</tr>
+</table>
 </form>
+
+<script language="JavaScript">
+<!--
+/*
+ * Figure out the webpath when knowing the absolute path.
+ * Put them in an easy accessable, array[what_side] array.
+ */
+
+var actDir1 = document.forms[0].dir1.value;
+var actDir2 = document.forms[0].dir2.value;
+
+webDir1 = (/webapps/i.test(actDir1)) ? actDir1.substring(actDir1.indexOf("webapps") + 8, actDir1.length) : "";
+webDir1 = webDir1.replace(/\\/g, "/");
+webDir1 = (webDir1.indexOf("/") != -1) ? webDir1.substring(webDir1.indexOf("/"), webDir1.length) : "";
+
+webDir2 = (/webapps/i.test(actDir2)) ? actDir2.substring(actDir2.indexOf("webapps") + 8, actDir2.length) : "";
+webDir2 = webDir2.replace(/\\/g, "/");
+webDir2 = (webDir2.indexOf("/") != -1) ? webDir2.substring(webDir2.indexOf("/"), webDir2.length) : "";
+
+aDir[1] = actDir1;
+aDir[2] = actDir2;
+wDir[1] = webDir1;
+wDir[2] = webDir2;
+
+/*
+ * make the file-select's wider.
+ * if supported and > 800 in screen resolution.
+ */
+
+if (moz) {
+	if (parseInt(screen.width) > 800) {
+		document.getElementById("fileSel_1").style.width = 400;
+		document.getElementById("fileSel_2").style.width = 400;
+	}
+}
+//-->
+</script>
+
 </body>
 </html>

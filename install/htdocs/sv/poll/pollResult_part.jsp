@@ -1,5 +1,6 @@
 <%@ page language="java"
-import="java.util.*, java.text.*, imcode.server.*, imcode.util.*, imcode.util.poll.*"
+import="java.util.*, java.text.*, imcode.server.*, imcode.util.*, imcode.util.poll.*,
+        imcode.server.document.TextDocumentDomainObject.Text"
 %><%
 
 final String IMAGE_NAME = "blue_animation.gif";
@@ -13,7 +14,7 @@ String lable_width = request.getParameter("lableWidth") != null ? request.getPar
 String meta_id = request.getHeader("X-Meta-Id");
 
 // Get a reference to IMCServiceInterface //
-IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(request) ;
+    IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 //Get a PollHandlingSystem
 PollHandlingSystem poll = imcref.getPollHandlingSystem();
@@ -90,7 +91,7 @@ private StringBuffer getQuestionResult(IMCServiceInterface imcref, PollHandlingS
 			 "<td >&nbsp;&nbsp;<img src='" + image_url + "' height='" +  image_height + "' width='" + width + "' >&nbsp;" + vote_percent + " (" + option_count + ")</td></tr><tr><td colspan='2' width='100%'>&nbsp;</td></tr>\n");
 		}
 		oStr.append("</table></td></tr>\n" );
-	    oStr.append("<tr><td><br>Totalt antal röster: " + total_votes + "</td></tr>\n" );
+	    oStr.append("<tr><td><br><? install/htdocs/sv/poll/pollResult_part.jsp/11/1 ?> " + total_votes + "</td></tr>\n" );
 	    oStr.append("<tr><td><hr></td></tr>\n\n");
 	}
 	return oStr;
@@ -100,7 +101,7 @@ private StringBuffer getQuestionResult(IMCServiceInterface imcref, PollHandlingS
 
 //Get one text from db
 private String getText( IMCServiceInterface imcref, int meta_id, int text_no ){
-    IMCText imctext = imcref.getText(meta_id, text_no) ;
+    TextDocumentDomainObject.Text imctext = imcref.getText(meta_id, text_no) ;
     if (null == imctext) {
 	return "" ;
     }

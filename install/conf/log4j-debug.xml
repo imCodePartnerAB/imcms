@@ -11,7 +11,7 @@
     renderedClass="imcode.server.DocumentRequest"/>
 
   <!-- The accesslog (logs usermovements) -->
-  <appender name="ACCESS" class="org.apache.log4j.DailyRollingFileAppender">
+  <appender name="ACCESS" class="imcode.util.log.DailyRollingFileAppender">
     <param name="DatePattern" value="'.'yyyy-MM-dd"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern"
@@ -39,7 +39,7 @@
   <!-- The errorlog (captures everything that doesn't go to one of the above. -->
   <appender name="ERROR" class="org.apache.log4j.FileAppender">
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p %c %x - %m%n"/>
     </layout>
   </appender>
 
@@ -48,7 +48,35 @@
     <appender-ref ref="ERROR"/>
   </appender>
 
-  <!-- Set up accesslog with priority 'debug' -->
+
+<!-- Uncomment if you have a log4j server listening to logevents -->
+  <appender name="SOCKETERROR" class="org.apache.log4j.net.SocketAppender">
+      <param name="Port" value="4445"/>
+      <param name="RemoteHost" value="localhost"/>
+      <param name="LocationInfo" value="true"/>
+      <param name="ReconnectionDelay" value="5000"/>
+  </appender>
+
+
+<!-- Write HttpUnit code for requests to logfile
+    <appender name="HTTPUNIT" class="org.apache.log4j.FileAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="WEBAPPHTTPUNIT" class="imcode.util.log.WebAppFileAppender">
+        <param name="File" value="WEB-INF/logs/httpunit.log"/>
+        <appender-ref ref="HTTPUNIT"/>
+    </appender>
+
+    <category name="httpunit" additivity="false">
+    <priority value="debug"/>
+    <appender-ref ref="WEBAPPHTTPUNIT"/>
+    </category>
+-->
+
+    <!-- Set up accesslog with priority 'debug' -->
   <category name="accesslog" additivity="false">
     <priority value="debug"/>
     <appender-ref ref="WEBAPPACCESS"/>
@@ -64,6 +92,7 @@
   <root>
     <priority value="debug"/>
     <appender-ref ref="WEBAPPERROR"/>
+    <appender-ref ref="SOCKETERROR"/>
   </root>
 
 </log4j:configuration>

@@ -8,10 +8,10 @@ import java.io.File ;
 */
 
 public class WebAppGlobalConstants {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
+
 	private static WebAppGlobalConstants singletonInstance;
-    public final static String USER_LOGIN_NAME = "loginname";
+    public final static String USER_LOGIN_NAME_PARAMETER_NAME = "loginname";
+    public static final String DEFAULT_ENCODING_WINDOWS_1252 = "windows-1252";
 
     /**
 	* This must be called before any other method is called.

@@ -1,0 +1,1 @@
+<input type="text" name="#meta_id#" value="#sortkey#" size="12" maxlength="12">

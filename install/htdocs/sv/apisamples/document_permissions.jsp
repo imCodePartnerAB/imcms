@@ -1,23 +1,18 @@
 <%@ page import="com.imcode.imcms.api.*,
                  java.util.*" errorPage="error.jsp" %>
-<html>
-<head>
-<title>Delete a role named "Test role"</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-</head>
-<body>
+
 <h1>Show document permissions</h1>
 There are three basic kinds of permissions<br>
 <ul>
-  <li><%=DocumentPermissionSet.FULL%></li>
-  <li><%=DocumentPermissionSet.READ%></li>
-  <li><%=DocumentPermissionSet.NONE%></li>
+  <li>Full</li>
+  <li>Read</li>
+  <li>None</li>
 </ul>
 
-In between "<%=DocumentPermissionSet.FULL%>" and "<%=DocumentPermissionSet.READ%>" there can also be defined two that can be modified, they are called
+In between "Full" and "Read" there can also be defined two that can be modified, they are called
 <ul>
-  <li><%=DocumentPermissionSet.RESTRICTED_1 %></li>
-  <li><%=DocumentPermissionSet.RESTRICTED_2 %></li>
+  <li>Restricted One (1)</li>
+  <li>Restricted Two (2)</li>
 </ul>
 and can be set differently for different pages (and sub pages).<br>
 Every document has a mapping of permissions to roles.<br>
@@ -30,16 +25,16 @@ This is the mapping for document <%= documentId %>:<br>
     Document doc = documentService.getTextDocument(documentId);
     Map permissionsMap = doc.getAllRolesMappedToPermissions();
     Set roles = permissionsMap.keySet();
-    Iterator roleIteratore = roles.iterator();
-    while( roleIteratore.hasNext() ) {
-        String roleName = (String)roleIteratore.next();
+    Iterator roleIterator = roles.iterator();
+    %><ul><%
+    while( roleIterator.hasNext() ) {
+        String roleName = (String)roleIterator.next();
         DocumentPermissionSet documentPermission = (DocumentPermissionSet)permissionsMap.get( roleName );%>
-        The role "<%=roleName%>" has permission "<%= documentPermission.toString() %>" <br><br><%
+        <li>The role "<%=roleName%>" has permission "<%= documentPermission.toString() %>"</li><%
     }
+    %></ul><%
 %>
 <br>
-Notice: Only the roles that has some permissions is shown above. If a role has <%=DocumentPermissionSet.NONE%> then
+Notice: Only the roles that has some permissions is shown above. If a role has permission "None" then
 that role is not part of the result map.<br>
-</body>
-</html>
 

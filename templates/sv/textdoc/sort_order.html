@@ -1,11 +1,25 @@
-
-<table border="0" cellpadding="0" cellspacing="0">
 <form method="post" action="SaveSort">
-<input TYPE="HIDDEN" name="meta_id" value="#getMetaId#">
-<input TYPE="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
-<tr> 
-  <td nowrap><font size="1" face="Verdana, Arial, Helvetica, sans-serif">Sort:</font>&nbsp;</td>
-  <td nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><input type=RADIO name=sort_order value="1" #sortOrder1#>abc</nobr> <nobr><input type=RADIO name=sort_order value="2" #sortOrder2#>123</nobr> <nobr><input type=RADIO name=sort_order value="3" #sortOrder3#>Date</font></td>
+<input TYPE="HIDDEN" name="meta_id" value="#meta_id#">
+<input TYPE="HIDDEN" name="doc_menu_no" value="#menuindex#">
+<tr>
+	<td colspan="2">
+	<table border="0" cellspacing="0" cellpadding="0" align="center">
+	<tr>
+		<td><span style="font: 8pt Tahoma,Verdana,sans-serif; color:#000000"><? templates/sv/textdoc/sort_order.html/1 ?></span></td>
+		<td><input type=RADIO name="sort_order" value="1" #sortOrder1#></td>
+		<td><span style="font: 8pt Tahoma,Verdana,sans-serif; color:#000000"><? templates/sv/textdoc/sort_order.html/2 ?></span></td>
+		<td>&nbsp;</td>
+		<td><input type=RADIO name="sort_order" value="2" #sortOrder2#></td>
+		<td><span style="font: 8pt Tahoma,Verdana,sans-serif; color:#000000"><? templates/sv/textdoc/sort_order.html/3 ?></span></td>
+		<td>&nbsp;</td>
+		<td><input type=RADIO name="sort_order" value="3" #sortOrder3#></td>
+		<td><span style="font: 8pt Tahoma,Verdana,sans-serif; color:#000000"><? templates/sv/textdoc/sort_order.html/4 ?></span></td>
+		<td>&nbsp;</td>
+		<td><input type=RADIO name="sort_order" value="4" #sortOrder4#></td>
+		<td><span style="font: 8pt Tahoma,Verdana,sans-serif; color:#000000"><? templates/sv/textdoc/sort_order.html/5 ?></span></td>
+		<td>&nbsp;&nbsp;</td>
+		<td><a href="@documentationurl@/GetDoc?meta_id=79" target="_blank"><img src="@imcmsimageurl@/admin/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="<? templates/sv/textdoc/sort_order.html/2001 ?>"></a>
+	</tr>
+	</table></td>
 </tr>
 </table>
-<!-- </form> intentionally left out. Added by code later. -->

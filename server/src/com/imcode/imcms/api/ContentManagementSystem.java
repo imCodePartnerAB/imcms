@@ -1,51 +1,29 @@
 package com.imcode.imcms.api;
 
-import imcode.server.IMCService;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentPermissionSetMapper;
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 
-public class ContentManagementSystem  {
+/**
+ * @author kreiger
+ */
+public abstract class ContentManagementSystem {
 
-    private UserService userService;
-    private DocumentService documentService;
-    private User currentUser;
-    private TemplateService templateService;
+    public abstract UserService getUserService();
 
-    public TemplateService getTemplateService() {
-        return templateService;
-    }
+    public abstract DocumentService getDocumentService();
 
-    public void setTemplateService( TemplateService templateService ) {
-        this.templateService = templateService;
-    }
+    public abstract User getCurrentUser();
 
-    public ContentManagementSystem( IMCService service, UserDomainObject accessor ) {
-        currentUser = new User( accessor );
-        DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
+    public abstract DatabaseService getDatabaseService();
 
-        ImcmsAuthenticatorAndUserMapper imcmsAAUM = new ImcmsAuthenticatorAndUserMapper( service );
-        String[] roleNames = imcmsAAUM.getRoleNames( accessor );
+    public abstract TemplateService getTemplateService();
 
-        DocumentMapper documentMapper = new DocumentMapper( service, imcmsAAUM );
-
-        SecurityChecker securityChecker = new SecurityChecker( documentMapper, accessor, roleNames );
-
-        userService = new UserService( securityChecker, imcmsAAUM );
-        documentService = new DocumentService( securityChecker, documentMapper, documentPermissionSetMapper );
-        templateService = new TemplateService( service, securityChecker );
-    }
-
-    public UserService getUserService(){
-        return userService;
-    }
-
-    public DocumentService getDocumentService(){
-        return documentService;
-    }
-
-    public User getCurrentUser() {
-        return currentUser;
+    public static ContentManagementSystem getContentManagementSystem( String userName, String password ) {
+        IMCServiceInterface imcref;
+        imcref = ApplicationServer.getIMCServiceInterface();
+        UserDomainObject user = imcref.verifyUser( userName, password );
+        ContentManagementSystem cms = new DefaultContentManagementSystem( imcref, user );
+        return cms;
     }
 }

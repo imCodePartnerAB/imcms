@@ -1,15 +1,7 @@
 <html>
 <head>
-<title>Byt namn på roll</title>
+<title><? templates/sv/AdminRoles_Rename.htm/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
 
 </head>
 
@@ -19,8 +11,7 @@ function openHelp(id){
 	<tr bgcolor="#333366"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> 
-		<center><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Byt 
-		  namn p&aring; roll #CURRENT_ROLE_NAME#</font></b></center>
+		<center><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? templates/sv/AdminRoles_Rename.htm/2 ?>: #CURRENT_ROLE_NAME#</font></b></center>
 	  </td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
@@ -33,17 +24,16 @@ function openHelp(id){
 	</tr>
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
-	  <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Ange 
-		nytt rollnamn för: #CURRENT_ROLE_NAME#</font></td>
+	  <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminRoles_Rename.htm/3 ?>: #CURRENT_ROLE_NAME#</font></td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> 
 		<p> 
-		  <input type="text" name="ROLE_NAME" maxlength="25">
-		  <input type="submit" name="RENAME_ROLE" value="Spara">
-		  <input type="submit" name="CANCEL_ROLE" value="Avbryt">&nbsp; <a href="GetDoc?meta_id=31" target="_blank" onClick="openHelp('31'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		  <input type="text" name="ROLE_NAME" maxlength="25" value="#CURRENT_ROLE_NAME#">
+		  <input type="submit" name="RENAME_ROLE" value="<? templates/sv/AdminRoles_Rename.htm/2001 ?>">
+		  <input type="submit" name="CANCEL_ROLE" value="<? templates/sv/AdminRoles_Rename.htm/2002 ?>">&nbsp; <a href="@documentationurl@/GetDoc?meta_id=31" target="_blank"><img src="@imcmsimageurl@/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/AdminRoles_Rename.htm/2003 ?>"></a>
 		</p>
 	  </td>
 	  <td width="5%">&nbsp;</td>

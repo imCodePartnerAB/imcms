@@ -1,7 +1,0 @@
-max key
--------
-kolla igenom och undersök hur det fungerar med både deadlock och samtidiga användare.
-- Det borde skita sig i bland. Hur tas det om hand. En exception i loggen och thats it?
- - Även där max ingår i samma statement så är det ingen garanti för att det inte blir krockar, hur hanteras det?
-Läs mer kring resonemang kring max key och varför det blir deadlock. http://www.sybase.com/detail?id=860
-

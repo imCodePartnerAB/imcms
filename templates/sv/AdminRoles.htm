@@ -1,49 +1,54 @@
 <html>
 <head>
-<title>Administrera roller</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
+<title><? templates/sv/AdminRoles.htm/1 ?></title>
+
+<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
+<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 
 <body bgcolor="#FFFFFF">
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
+</script>
+
+<table border="0" cellspacing="0" cellpadding="0">
+<form metod="post" action="AdminManager" name="abortForm">
+<tr>
+	<td><input type="submit" class="imcmsFormBtn" name="GO_BACK" value="<? templates/sv/AdminRoles.htm/3 ?>"></td>
+	<td>&nbsp;</td>
+    <td><input type="button" value="<? templates/sv/AdminRoles.htm/4 ?>" title="<? templates/sv/AdminRoles.htm/5 ?>" class="imcmsFormBtn" onClick="openHelpW(30)"></td>
+</tr>
+</form>
+</table>
+
+<script>
+imcmsGui("mid", null);
+</script>
+
+
+<table border="0" cellspacing="0" cellpadding="2" width="400" align="center">
 <form method="post" action="AdminRoles" name="AdminRoles">
-  <table width="40%" border="0" cellspacing="0">
-    <tr bgcolor="#333366"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%"> 
-        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Administrera 
-          roller</font></b></div>
-      </td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%">&nbsp;</td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%"> 
-        <input type="submit" name="VIEW_ADMIN_ROLES" value="Administrera roller" >
-        <input type="submit" name="VIEW_ADMIN_ROLE_BELONGINGS" value="Administrera anv&auml;ndar - roller" >
-        <input type="submit" name="CANCEL" value="Tillbaka">&nbsp; <a href="GetDoc?meta_id=30" target="_blank" onClick="openHelp('30'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-      </td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp; </td>
-      <td width="90%">&nbsp; </td>
-      <td width="5%">&nbsp; </td>
-    </tr>
-  </table>
-  </form>
+<tr>
+    <td><script>imcHeading("<? templates/sv/AdminRoles.htm/1 ?>",396);</script></td>
+</tr>
+<tr>
+<td>
+    <input type="submit" class="imcmsFormBtnSmall" name="VIEW_ADMIN_ROLES" value="<? templates/sv/AdminRoles.htm/1 ?>">
+    <input type="submit" class="imcmsFormBtnSmall" name="VIEW_ADMIN_ROLE_BELONGINGS" value="<? templates/sv/AdminRoles.htm/6 ?>">
+</td>
+<tr>
+    <td>&nbsp;</td>
+</tr>
+</form>
+</table>
+
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
 </body>
 </html>

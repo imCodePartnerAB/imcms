@@ -46,7 +46,7 @@ public class TellaFriendMail extends HttpServlet {
 	}
 
 	/**
-        * Showing input document whit out error
+        * Showing input internalDocument whit out error
         */
 
 	public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
@@ -63,7 +63,7 @@ public class TellaFriendMail extends HttpServlet {
 		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
                 Vector vec = new Vector() ;
                 String htmlStr = "" ;
-                String lang_prefix = imcref.getDefaultLanguage() ;
+                String lang_prefix = imcref.getLanguage() ;
 
             // Lets get the parameters
       		String mailFrom = (req.getParameter("mailFrom")==null) ? "" : (req.getParameter("mailFrom")) ;
@@ -95,7 +95,7 @@ public class TellaFriendMail extends HttpServlet {
 
 		/* mailserver info */
 		String mailserver = Utility.getDomainPref( "smtp_server", host );
-		String deafultLanguagePrefix = imcref.getDefaultLanguage();
+		String deafultLanguagePrefix = imcref.getLanguage();
 		String stringMailPort = Utility.getDomainPref( "smtp_port", host );
 		String stringMailtimeout = Utility.getDomainPref( "smtp_timeout", host );
 

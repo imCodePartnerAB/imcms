@@ -1,13 +1,16 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.TemplateGroupDomainObject;
 
 public class DocumentPermissionSet {
-    public final static String FULL = DocumentPermissionSetDomainObject.FULL;
-    public final static String RESTRICTED_1 = DocumentPermissionSetDomainObject.RESTRICTED_1;
-    public final static String RESTRICTED_2 = DocumentPermissionSetDomainObject.RESTRICTED_2;
-    public final static String READ = DocumentPermissionSetDomainObject.READ;
-    public final static String NONE = DocumentPermissionSetDomainObject.NONE;
+
+    public final static int FULL = DocumentPermissionSetDomainObject.FULL;
+    public final static int RESTRICTED_1 = DocumentPermissionSetDomainObject.RESTRICTED_1;
+    public final static int RESTRICTED_2 = DocumentPermissionSetDomainObject.RESTRICTED_2;
+    public final static int READ = DocumentPermissionSetDomainObject.READ;
+    public final static int NONE = DocumentPermissionSetDomainObject.NONE;
 
     private DocumentPermissionSetDomainObject internalDocPermSet;
 
@@ -23,8 +26,11 @@ public class DocumentPermissionSet {
         return internalDocPermSet.toString();
     }
 
+    /**
+     * @deprecated Use {@link #getEditDocumentInformationPermission()}
+     */
     public boolean getEditHeadlinePermission() {
-        return internalDocPermSet.getEditHeadline();
+        return internalDocPermSet.getEditDocumentInformation();
     }
 
     public boolean getEditDocumentInformationPermission() {
@@ -36,65 +42,79 @@ public class DocumentPermissionSet {
     }
 
     public boolean getEditTextsPermission() {
-        return internalDocPermSet.getEditTexts();
+        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
+            return ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getEditTexts();
+        }
+
+        return false;
     }
 
     public boolean getEditIncludesPermission() {
-        return internalDocPermSet.getEditIncludes();
+        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
+            return ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getEditIncludes();
+        }
+        return false;
     }
 
     public boolean getEditPicturesPermission() {
-        return internalDocPermSet.getEditPictures();
+        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
+            return ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getEditImages();
+        }
+        return false;
     }
 
     public String[] getEditableTemplateGroupNames() {
-        return internalDocPermSet.getEditableTamplateNames();
+        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
+            TemplateGroupDomainObject[] internalTemplateGroups = ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getAllowedTemplateGroups();
+            String[] templateGroupNames = new String[internalTemplateGroups.length] ;
+            for ( int i = 0; i < internalTemplateGroups.length; i++ ) {
+                TemplateGroupDomainObject internalTemplateGroup = internalTemplateGroups[i];
+                templateGroupNames[i] = internalTemplateGroup.getName() ;
+            }
+            return templateGroupNames ;
+        }
+        return new String[]{};
     }
 
+    /**
+     * @return An empty String array.
+     * @deprecated This method will be removed. Returning document type names is broken.
+     */
     public String[] getEditableMenuDocumentTypeNames() {
-        return internalDocPermSet.getEditableMenuNames();
+        return new String[]{};
     }
-
-    // set
-
-    // todo
-    /*
-    public void setEditableMenuNames( boolean b ) {
-        internalDocPermSet.setEditableMenuNames( b );
-    }
-    public void setEditMenuesPermission( boolean b ) {
-        internalDocPermSet.setEditMenues( b );
-    }
-
-    public void setEditableTemplateGroupNames( boolean b ) {
-        internalDocPermSet.setEditableTemplateGroupNames( b );
-    }
-    public void setEditTemplatesPermission( boolean b ) {
-        internalDocPermSet.setEditTemplates( b );
-    }
-
-    public void setPermissionTypePermission( boolean b ) {
-        internalDocPermSet.setPermissionType( b );
-    }
-    */
 
     public void setEditDocumentInformationPermission( boolean b ) {
         internalDocPermSet.setEditDocumentInformation( b );
     }
+
+    /**
+     * @deprecated Use {@link #setEditDocumentInformationPermission(boolean)} *
+     */
     public void setEditHeadlinePermission( boolean b ) {
-        internalDocPermSet.setEditHeadline( b );
+        internalDocPermSet.setEditDocumentInformation( b );
     }
+
     public void setEditIncludesPermission( boolean b ) {
-        internalDocPermSet.setEditIncludes( b );
+        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
+            ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).setEditIncludes( b );
+        }
     }
+
     public void setEditPermissionsPermission( boolean b ) {
         internalDocPermSet.setEditPermissions( b );
     }
+
     public void setEditPicturesPermission( boolean b ) {
-        internalDocPermSet.setEditPictures( b );
+        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
+            ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).setEditImages( b );
+        }
     }
+
     public void setEditTextsPermission( boolean b ) {
-        internalDocPermSet.setEditTexts( b );
+        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
+            ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).setEditTexts( b );
+        }
     }
 
     public void setEditRolePermissionsPermission( boolean b ) {

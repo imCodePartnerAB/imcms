@@ -35,14 +35,14 @@ import imcode.server.* ;
  * Documents in use:
  *
  * doGet()
- * password_submit.html, response document for empty input field
+ * password_submit.html, response internalDocument for empty input field
  *
  * doPost():
- * password_no_user.html, response document for user doesn´t exist
- * password_no_email.html, response document for user hasen´t a valid e-mail
- * password_no_right.html, response document for user hasnt rights to recive password by mail
- * password_sent.html, response document for password sent
- * password_submit.html, response document for empty input field
+ * password_no_user.html, response internalDocument for user doesn´t exist
+ * password_no_email.html, response internalDocument for user hasen´t a valid e-mail
+ * password_no_right.html, response internalDocument for user hasnt rights to recive password by mail
+ * password_sent.html, response internalDocument for password sent
+ * password_submit.html, response internalDocument for empty input field
  *
  * password_no_user.txt, servermaster e-mail body if user doesn´t exist
  * password_no_email.txt, servermaster e-mail body if user hasn´t a valid e-mail
@@ -81,7 +81,7 @@ public class PasswordMailReminder extends HttpServlet {
     private final static String ERROR_STRING = "password_error_input.txt";
     private static final String HTML_EMAIL_ERROR = "Error.html";
 
-    /* returning document */
+    /* returning internalDocument */
     private final static String RETURNING_DOCUMENT_NO_USER_NAME = "password_no_user.html";
     private final static String RETURNING_DOCUMENT_NO_EMAIL = "password_no_email.html";
     private final static String RETURNING_DOCUMENT_NO_RIGHT = "password_no_right.html";
@@ -97,14 +97,14 @@ public class PasswordMailReminder extends HttpServlet {
     }
 
     /**
-     * showing input document whit out error
+     * showing input internalDocument whit out error
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
 	/* server info */
 	String host = req.getHeader("Host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
-	String deafultLanguagePrefix = imcref.getDefaultLanguage();
+	String deafultLanguagePrefix = imcref.getLanguage();
 
 	res.setContentType("text/html");
 	ServletOutputStream out = res.getOutputStream();
@@ -141,7 +141,7 @@ public class PasswordMailReminder extends HttpServlet {
 	String emailFromServer = sysData.getServerMasterAddress() ;
 
 	String mailFrom = eMailServerMaster;
-	String deafultLanguagePrefix = imcref.getDefaultLanguage();
+	String deafultLanguagePrefix = imcref.getLanguage();
 
 	String mailserver = Utility.getDomainPref( "smtp_server", host );
 	String stringMailPort = Utility.getDomainPref( "smtp_port", host );

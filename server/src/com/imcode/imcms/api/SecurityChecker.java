@@ -1,65 +1,60 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
-
-import java.util.Arrays;
-import java.util.HashSet;
-
-import com.imcode.imcms.api.NoPermissionException;
 
 class SecurityChecker {
 
     private final static String SUPERADMIN_ROLE = "Superadmin";
-    private final static String USER_ADMIN = "Useradmin";
 
     private DocumentMapper docMapper;
-    private imcode.server.user.UserDomainObject accessingUser;
-    private HashSet accessorRoles;
+    private UserDomainObject accessingUser;
 
-    private boolean isSuperAdmin;
-    private boolean isUserAdmin;
-
-    SecurityChecker( DocumentMapper docMapper, UserDomainObject accessor, String[] accessorRoles ) {
+    SecurityChecker( DocumentMapper docMapper, UserDomainObject accessor ) {
         this.docMapper = docMapper;
         this.accessingUser = accessor;
-        this.accessorRoles = new HashSet( Arrays.asList( accessorRoles ) );
-
-        isSuperAdmin = this.accessorRoles.contains( SUPERADMIN_ROLE );
-        isUserAdmin = this.accessorRoles.contains( USER_ADMIN );
-    }
-
-    void loggedIn() throws NoPermissionException {
-        if( null == accessingUser ) {
-            throw new NoPermissionException( "User not logged in" );
-        }
     }
 
     void isSuperAdmin() throws NoPermissionException {
-        if( !isSuperAdmin ) {
+        if( !accessingUser.isSuperAdmin() ) {
             throw new NoPermissionException( "User is not " + SUPERADMIN_ROLE );
         }
     }
 
-    void isSuperAdminOrIsUserAdminOrIsSameUser( User userBean ) throws NoPermissionException {
-        boolean isSameUser = userBean.getLoginName().equalsIgnoreCase( accessingUser.getLoginName() );
-        if( !isSuperAdmin && !isUserAdmin && !isSameUser ) {
-            throw new NoPermissionException( "User is not superadmin, useradmin nor the same user." );
-        }
+    void hasEditPermission( int documentId ) throws NoPermissionException {
+        if( !docMapper.userHasMoreThanReadPermissionOnDocument( accessingUser, docMapper.getDocument( documentId ) ) ) {
+            throw new NoPermissionException("The logged in user does not have permission to edit document " + documentId );
+        };
     }
 
-    void hasEditPermission( DocumentDomainObject document ) throws NoPermissionException  {
-        if( !docMapper.hasAdminPermissions( document, accessingUser ) ) {
-            throw new NoPermissionException("The logged in user does not have permission to edit document: " + document.getMetaId() );
-        };
+    void hasEditPermission( Document document ) throws NoPermissionException  {
+        hasEditPermission(document.internalDocument.getId());
     }
 
     UserDomainObject getCurrentLoggedInUser() {
         return accessingUser;
     }
 
-    void hasDocumentRights( int metaId ) throws NoPermissionException {
+    void hasAtLeastDocumentReadPermission( Document document ) throws NoPermissionException {
+        if (!docMapper.userHasAtLeastDocumentReadPermission( accessingUser, document.getInternal() )) {
+            throw new NoPermissionException("The logged in user does not have permission to access document "+document.getId()) ;
+        }
+    }
+
+    void hasTemplateGroupPermission( TemplateGroup templateGroup ) {
         // todo
     }
+
+    void hasSharePermission( Document document ) throws NoPermissionException {
+        if (!docMapper.userHasPermissionToAddDocumentToMenu(accessingUser, document.getInternal())) {
+            throw new NoPermissionException("The logged in user does not have permission to share document "+document.getId()) ;
+        }
+    }
+
+    void isSuperAdminOrSameUser(User user) throws NoPermissionException {
+        if (!accessingUser.isSuperAdmin() && !user.getInternalUser().equals( accessingUser )) {
+            throw new NoPermissionException( "Must be the same user or " + SUPERADMIN_ROLE );
+        }
+    }
+
 }

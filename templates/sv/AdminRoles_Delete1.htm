@@ -1,15 +1,7 @@
 <html>
 <head>
-<title>Varning!</title>
+<title><? templates/sv/AdminRoles_Delete1.htm/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
 
 </head>
 
@@ -19,16 +11,13 @@ function openHelp(id){
 	<tr bgcolor="#333366"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> 
-		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Varning!</font></b></div>
+		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? templates/sv/AdminRoles_Delete1.htm/2 ?></font></b></div>
 	  </td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> <font size="2" face="Verdana, Arial, Helvetica, sans-serif">Om 
-		du tar bort den valda rollen s&aring; kommer befintliga anv&auml;ndare 
-		och dokument att p&aring;verkas. &Auml;r du s&auml;ker p&aring; att du 
-		vill ta bort rollen? 
+	  <td width="90%"> <font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminRoles_Delete1.htm/3 ?> 
 		<input type="HIDDEN" name="ROLE_ID" value="#CURRENT_ROLE_ID#">
 		</font> </td>
 	  <td width="5%">&nbsp;</td>
@@ -37,9 +26,7 @@ function openHelp(id){
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> 
 		<hr>
-		<font size="2"> <font face="Verdana, Arial, Helvetica, sans-serif">De 
-		50 f&ouml;rsta<b> anv&auml;ndarna</b> som p&aring;verkas vid borttagning. 
-		(Totalt <b>#USER_COUNT#</b> st)</font></font></td>
+		<font size="2"> <font face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminRoles_Delete1.htm/4 ?><b> #USER_COUNT#</b> )</font></font></td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
@@ -55,9 +42,7 @@ function openHelp(id){
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> 
 		<hr>
-		<font size="2"> <font face="Verdana, Arial, Helvetica, sans-serif">De 
-		50 f&ouml;rsta <b>dokumenten</b> som p&aring;verkas vid borttagning. (Totalt 
-		<b>#ROLE_COUNT#</b> st)</font></font></td>
+		<font size="2"> <font face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminRoles_Delete1.htm/6 ?> <b>#ROLE_COUNT#</b> )</font></font></td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
@@ -69,8 +54,8 @@ function openHelp(id){
           </select>
 		</p>
 		<hr>
-		<input type="submit" name="WARN_DELETE_ROLE" value="OK">
-		<input type="submit" name="CANCEL_ROLE" value="Avbryt">&nbsp; <a href="GetDoc?meta_id=34" target="_blank" onClick="openHelp('34'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		<input type="submit" name="WARN_DELETE_ROLE" value="<? templates/sv/AdminRoles_Delete1.htm/2001 ?>">
+		<input type="submit" name="CANCEL_ROLE" value="<? templates/sv/AdminRoles_Delete1.htm/2002 ?>">&nbsp; <a href="@documentationurl@/GetDoc?meta_id=34" target="_blank"><img src="@imcmsimageurl@/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/AdminRoles_Delete1.htm/2003 ?>"></a>
 	  </td>
 	  <td width="5%">&nbsp;</td>
 	</tr>

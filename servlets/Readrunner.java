@@ -44,7 +44,7 @@ public class Readrunner extends HttpServlet {
 	int metaId = Integer.parseInt(req.getParameter("meta_id")) ;
 
 	if (!imcref.checkDocRights(metaId,user)) {
-	    // User does not have permission to see the given document.
+	    // User does not have permission to see the given internalDocument.
 	    return ;
 	}
 
@@ -136,7 +136,7 @@ public class Readrunner extends HttpServlet {
 	    Map textMap              = new IMCTextMap(imcref,metaId) ;
 	    MapSubstitution mapSubst = new MapSubstitution(textMap,true) ;
 
-	    // Replace tags of the form "#text1#" with the corresponding text from the document we came from.
+	    // Replace tags of the form "#text1#" with the corresponding text from the internalDocument we came from.
 	    theReadrunnedPage = Util.substitute(patMat,textTagPattern,mapSubst,theReadrunnedPage,Util.SUBSTITUTE_ALL) ;
 
 	    Writer fileOut = new FileWriter(tempFile) ;
@@ -301,7 +301,7 @@ public class Readrunner extends HttpServlet {
 		if (keyStr.startsWith("#text") && keyStr.endsWith("#")) {
 		    // To get a text from the db we need three things.
 		    // We got the IMCServiceInterface reference
-		    // and the metaId for the document.
+		    // and the metaId for the internalDocument.
 		    // Now we need to extract the text number from the tag.
 		    keyStr = keyStr.substring(5,keyStr.length()-1) ;
 		    try {

@@ -3,9 +3,9 @@ package imcode.external.diverse ;
 import java.io.* ;
 import java.util.*;
 
-public class ParseDoc {
-    String m_FileData = "";
-    File m_FileName ;
+class ParseDoc {
+    private String m_FileData = "";
+    private File m_FileName ;
     
     
     ParseDoc(File fileName) {
@@ -44,7 +44,7 @@ public class ParseDoc {
         
     }
     
-    String replaceTag (String tag, int tagStart, String str, String insertStr) {
+    private String replaceTag (String tag, int tagStart, String str, String insertStr) {
         
         String temp_str1 = str.substring (0, tagStart);
         String temp_str2 = str.substring (tagStart+(tag.length ()), str.length ());

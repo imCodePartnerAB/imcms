@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Administrera IP-accesser</title>
+<title><? templates/sv/AdminIpAccess.htm/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <SCRIPT language=JavaScript>
@@ -11,7 +11,7 @@ function closeThisWindow() {
 } //END FUNCTION CloseThisWindow
 
 function confirmDeletetion(){
-	if(confirm("Varning! Du är på väg att ta bort IP-accesser! Vill du fortsätta?"))
+	if(confirm("<? templates/sv/AdminIpAccess.htm/3000 ?>"))
 		return true
 	else 
 		return false
@@ -21,15 +21,12 @@ function evalEditUser() {
 	var userId
 	userId = document.argumentForm.user_Id.selectedIndex
 	if(userId == "-1" ) {
-		alert("Du måste först välja en användare!")
+		alert("<? templates/sv/AdminIpAccess.htm/3001 ?>")
 		return false
 	} else
 		return true
 }
 
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
 //-->
 </SCRIPT>
 </head>
@@ -39,8 +36,7 @@ function openHelp(id){
 	<tr bgcolor="#333366"> 
       <td width="5%">&nbsp;</td>
       <td width="90%"> 
-        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Administrera 
-		  IP-accesser</font></b></div>
+        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? templates/sv/AdminIpAccess.htm/2 ?></font></b></div>
       </td>
       <td width="5%">&nbsp;</td>
     </tr>
@@ -51,10 +47,7 @@ function openHelp(id){
     </tr>
     <tr bgcolor="#bababa"> 
       <td width="5%">&nbsp;</td>
-      <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">H&auml;r 
-		ger man anv&auml;ndare med ett specifikt IP-nummer eller inom ett intervall 
-		av IP-nummer direkt tillg&aring;ng till systemet s&aring; att de inte 
-		beh&ouml;ver logga in sig.</font></td>
+      <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminIpAccess.htm/3 ?></font></td>
       <td width="5%">&nbsp;</td>
     </tr>
     <tr bgcolor="#bababa"> 
@@ -64,7 +57,7 @@ function openHelp(id){
     </tr>
     <tr bgcolor="#bababa"> 
       <td width="5%">&nbsp;</td>
-      <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">#ALL_IP_ACCESSES# 
+      <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">#ALL_IP_ACCESSES#
 		&nbsp;</font></td>
       <td width="5%">&nbsp;</td>
     </tr>
@@ -76,10 +69,10 @@ function openHelp(id){
     <tr bgcolor="#bababa"> 
       <td width="5%">&nbsp;</td>
       <td width="90%" height="26"> 
-        <input type="submit" name="ADD_IP_ACCESS" value="L&auml;gg till">
-        <input type="submit" name="RESAVE_IP_ACCESS" value="Spara om" >
-        <input type="submit" name="IP_WARN_DELETE" value="Ta bort">
-        <input type="submit" name="CANCEL" value="Tillbaka" >&nbsp; <a href="GetDoc?meta_id=14" target="_blank" onClick="openHelp('14'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+        <input type="submit" name="ADD_IP_ACCESS" value="<? templates/sv/AdminIpAccess.htm/2001 ?>">
+        <input type="submit" name="RESAVE_IP_ACCESS" value="<? templates/sv/AdminIpAccess.htm/2002 ?>">
+        <input type="submit" name="IP_WARN_DELETE" value="<? templates/sv/AdminIpAccess.htm/2003 ?>">
+        <input type="submit" name="CANCEL" value="<? templates/sv/AdminIpAccess.htm/2004 ?>">&nbsp; <a href="@documentationurl@/GetDoc?meta_id=14" target="_blank"><img src="@imcmsimageurl@/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/AdminIpAccess.htm/2005 ?>"></a>
       </td>
       <td width="5%">&nbsp;</td>
     </tr>

@@ -1,26 +1,19 @@
 <html>
 <head>
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
+
 </head>
 <body>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Test av URL-dokument 
-  pågår. Detta kan ta ett litet tag, vänligen vänta...</font></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/UrlDocTestHead.html/1 ?></font></p>
 <form method="get" action="AdminManager" >
-  <input type="submit" name="Submit" value="Tillbaka">&nbsp; <a href="GetDoc?meta_id=18" target="_blank" onClick="openHelp('18'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+  <input type="submit" name="Submit" value="<? templates/sv/UrlDocTestHead.html/2001 ?>">&nbsp; <a href="@documentationurl@/GetDoc?meta_id=18" target="_blank"><img src="@imcmsimageurl@/admin/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="<? templates/sv/UrlDocTestHead.html/2002 ?>"></a>
 </form>
 <br><hr>
 <table border="1" cellspacing="0" cellpadding="1" width="800">
   <tr bgcolor="#000099"> 
-	<th width="80" nowrap><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2">meta_id</font></th>
-	<th width="445" nowrap><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2">URL</font></th>
-	<th width="90" nowrap><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2">Servern hittades.</font></th>
-	<th width="90" nowrap><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2">Servern gick att n&aring;.</font></th>
-	<th width="95" nowrap><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2">Dokumentet hittades.</font></th>
+	<th width="80" nowrap><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/UrlDocTestHead.html/2 ?></font></th>
+	<th width="445" nowrap><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/UrlDocTestHead.html/3 ?></font></th>
+	<th width="90" nowrap><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/UrlDocTestHead.html/4 ?></font></th>
+	<th width="90" nowrap><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/UrlDocTestHead.html/5 ?></font></th>
+	<th width="95" nowrap><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/UrlDocTestHead.html/6 ?></font></th>
   </tr>
 </table>

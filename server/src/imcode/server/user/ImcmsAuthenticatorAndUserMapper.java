@@ -1,44 +1,55 @@
 package imcode.server.user;
 
-import imcode.server.IMCServiceInterface;
-import imcode.server.db.DatabaseService;
-import org.apache.log4j.Logger;
-
 import com.imcode.imcms.api.RoleConstants;
+import imcode.server.IMCServiceInterface;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authenticator {
 
+    // todo: make sure that these stored procedures are accesed (called) only used within this class
+    // todo: and nowhere else directly to decouple
+    // todo: if not, make the constant public and use it in place?
+    // todo: Remove space in constansts
+    private static final String SPROC_GET_ALL_USERS = "getAllUsers";
     private static final String SPROC_GET_HIGHEST_USER_ID = "GetHighestUserId";
     private static final String SPROC_ADD_NEW_USER = "AddNewUser";
     private static final String SPROC_UPDATE_USER = "UpdateUser";
+    private static final String SPROC_GET_USER_BY_LOGIN = "GetUserByLogin";
 
     private static final String SPROC_ADD_USER_ROLE = "AddUserRole";
+    private static final String SPROC_ROLE_ADD_NEW = "RoleAddNew";
+    private static final String SPROC_ROLE_DELETE = "RoleDelete";
+    private static final String SPROC_GET_ALL_ROLES = "GetAllRoles";
+    private static final String SPROC_GET_USER_ROLES = "GetUserRoles";
     private static final String SPROC_DEL_USER_ROLES = "DelUserRoles";
+    private static final String SPROC_GET_USERS_WHO_BELONGS_TO_ROLE = "GetUsersWhoBelongsToRole";
 
+    private static final String SPROC_GET_USER_PHONE_NUMBERS = "GetUserPhoneNumbers ";
     private static final String SPROC_PHONE_NBR_ADD = "phoneNbrAdd";
     private static final String SPROC_DEL_PHONE_NR = "DelPhoneNr";
 
+    private static final int USER_EXTERN_ID = 2;
+
     private IMCServiceInterface service;
-    private DatabaseService databaseService;
     private Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserMapper.class );
 
     public ImcmsAuthenticatorAndUserMapper( IMCServiceInterface service ) {
         this.service = service;
-        databaseService = service.getDatabaseService();
     }
 
     public boolean authenticate( String loginName, String password ) {
         boolean userExistsAndPasswordIsCorrect = false;
         UserDomainObject user = getUser( loginName );
-        if( null != user ) {
+        if ( null != user ) {
             String login_password_from_db = user.getPassword();
             String login_password_from_form = password;
 
-            if( login_password_from_db.equals( login_password_from_form ) && user.isActive() ) {
+            if ( login_password_from_db.equals( login_password_from_form ) && user.isActive() ) {
                 userExistsAndPasswordIsCorrect = true;
-            } else if( !user.isActive() ) {
+            } else if ( !user.isActive() ) {
                 userExistsAndPasswordIsCorrect = false;
             } else {
                 userExistsAndPasswordIsCorrect = false;
@@ -48,168 +59,234 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         return userExistsAndPasswordIsCorrect;
     }
 
-    /**
-     @return An object representing the user with the given id.
-     **/
-    public UserDomainObject getUser( int userId ) {
-        DatabaseService.Table_users userData = databaseService.sproc_GetUserInfo( userId );
-        UserDomainObject result = initUser( userData );
-        return result;
-    }
-
     public UserDomainObject getUser( String loginName ) {
         loginName = loginName.trim();
-        UserDomainObject result = null;
-        DatabaseService.Table_users user_data = databaseService.sproc_GetUserByLogin( loginName );
-        if( null != user_data ) {
-            result = initUser( user_data );
-        } else {
-            result = null;
-        }
-        return result;
+
+        String[] user_data = service.sqlProcedure( SPROC_GET_USER_BY_LOGIN, new String[]{loginName} );
+
+        return getUserFromSqlResult( user_data );
     }
 
-    private UserDomainObject initUser( DatabaseService.Table_users user_data ) {
-        UserDomainObject result;
-        result = new UserDomainObject();
+    private UserDomainObject getUserFromSqlResult( String[] sqlResult ) {
+        UserDomainObject user;
 
-        result.setUserId( user_data.user_id );
-        result.setLoginName( user_data.login_name );
-        result.setPassword( user_data.login_password );
-        result.setFirstName( user_data.first_name );
-        result.setLastName( user_data.last_name );
-        result.setTitle( user_data.title );
-        result.setCompany( user_data.company );
-        result.setAddress( user_data.address );
-        result.setCity( user_data.city );
-        result.setZip( user_data.zip );
-        result.setCountry( user_data.country );
-        result.setCountyCouncil( user_data.county_council );
-        result.setEmailAddress( user_data.email );
-        result.setLangId( user_data.lang_id );
-        result.setUserType( user_data.user_type );
-        result.setActive( user_data.active );
-        result.setCreateDate( new Date( user_data.create_date.getTime() ) );
-        result.setImcmsExternal( user_data.external );
-
-        DatabaseService.Table_lang_prefixes langPrefix = databaseService.sproc_GetLangPrefixFromId( user_data.lang_id );
-        if( null == langPrefix ) {
-            result.setLangPrefix( service.getDefaultLanguage() );
+        if ( sqlResult.length == 0 ) {
+            user = null;
         } else {
-            result.setLangPrefix( langPrefix.lang_prefix );
-        }
+            user = new UserDomainObject();
 
-        DatabaseService.JoinedTables_phones_phonetypes[] phoneNumbers = databaseService.sproc_GetUserPhoneNumbers( user_data.user_id );
-        if( phoneNumbers != null ) {
-            for( int i = 0; i < phoneNumbers.length; i++ ) {
-                if( 2 == phoneNumbers[i].phonetype_id ) {
-                    result.setWorkPhone( phoneNumbers[i].number );
-                } else if( 3 == phoneNumbers[i].phonetype_id ) {
-                    result.setMobilePhone( phoneNumbers[i].number );
-                } else if( 1 == phoneNumbers[i].phonetype_id ) {
-                    result.setHomePhone( phoneNumbers[i].number );
+            initUserFromSqlData( user, sqlResult );
+
+        }
+        return user;
+    }
+
+    void initUserFromSqlData( UserDomainObject user, String[] sqlResult ) {
+        user.setId( Integer.parseInt( sqlResult[0] ) );
+        user.setLoginName( sqlResult[1] );
+        user.setPassword( sqlResult[2].trim() );
+        user.setFirstName( sqlResult[3] );
+        user.setLastName( sqlResult[4] );
+        user.setTitle( sqlResult[5] );
+        user.setCompany( sqlResult[6] );
+        user.setAddress( sqlResult[7] );
+        user.setCity( sqlResult[8] );
+        user.setZip( sqlResult[9] );
+        user.setCountry( sqlResult[10] );
+        user.setCountyCouncil( sqlResult[11] );
+        user.setEmailAddress( sqlResult[12] );
+        user.setLangId( Integer.parseInt( sqlResult[13] ) );
+        user.setLanguageIso639_2( (String)ObjectUtils.defaultIfNull( sqlResult[14], service.getDefaultLanguageAsIso639_2() ) );
+        user.setUserType( Integer.parseInt( sqlResult[15] ) );
+        user.setActive( 0 != Integer.parseInt( sqlResult[16] ) );
+        user.setCreateDate( sqlResult[17] );
+        user.setImcmsExternal( 0 != Integer.parseInt( sqlResult[18] ) );
+
+        setPhoneNumbersForUser( user );
+
+        user.setRoles( getRolesForUser( user ) );
+    }
+
+    private RoleDomainObject[] getRolesForUser( UserDomainObject user ) {
+        String sqlStr = "SELECT roles.role_id, role_name, roles.admin_role FROM roles, user_roles_crossref"
+                        + " WHERE user_roles_crossref.role_id = roles.role_id"
+                        + " AND user_roles_crossref.user_id = ?";
+        String[][] sqlResult = service.sqlQueryMulti( sqlStr, new String[]{"" + user.getId()} );
+        RoleDomainObject[] roles = new RoleDomainObject[sqlResult.length];
+        for ( int i = 0; i < sqlResult.length; i++ ) {
+            String[] sqlRow = sqlResult[i];
+            roles[i] = getRoleFromSqlResult( sqlRow );
+        }
+        return roles;
+    }
+
+    private void setPhoneNumbersForUser( UserDomainObject user ) {
+        String[][] phoneNbr = service.sqlProcedureMulti( SPROC_GET_USER_PHONE_NUMBERS,
+                                                         new String[]{"" + user.getId()} );
+        String workPhone = "";
+        String mobilePhone = "";
+        String homePhone = "";
+
+        if ( phoneNbr != null ) {
+            for ( int i = 0; i < phoneNbr.length; i++ ) {
+                if ( ( "2" ).equals( phoneNbr[i][3] ) ) {
+                    workPhone = phoneNbr[i][1];
+                } else if ( ( "3" ).equals( phoneNbr[i][3] ) ) {
+                    mobilePhone = phoneNbr[i][1];
+                } else if ( ( "1" ).equals( phoneNbr[i][3] ) ) {
+                    homePhone = phoneNbr[i][1];
                 }
             }
         }
-        return result;
+        user.setWorkPhone( workPhone );
+        user.setMobilePhone( mobilePhone );
+        user.setHomePhone( homePhone );
+    }
+
+    /**
+     * @return An object representing the user with the given id.
+     */
+    public UserDomainObject getUser( int userId ) {
+        return new UserDomainObject( userId );
+    }
+
+    String[] sqlSelectUserData( int userId ) {
+        String sqlStr = "SELECT user_id, login_name, login_password, first_name, last_name, "
+                        + "title, company, address, city, zip, country, county_council, "
+                        + "email, users.lang_id, lang_prefix, user_type, active, "
+                        + "create_date, external "
+                        + "FROM users, lang_prefixes "
+                        + "WHERE users.lang_id = lang_prefixes.lang_id "
+                        + "AND user_id = ?";
+
+        String[] user_data = service.sqlQuery( sqlStr, new String[]{"" + userId} );
+        return user_data;
     }
 
     public void updateUser( String loginName, UserDomainObject newUser ) {
         String updateUserPRCStr = SPROC_UPDATE_USER;
         UserDomainObject imcmsUser = getUser( loginName );
         UserDomainObject tempUser = (UserDomainObject)newUser.clone();
-        tempUser.setUserId( imcmsUser.getUserId() );
+        tempUser.setId( imcmsUser.getId() );
         tempUser.setLoginName( loginName );
 
         callSprocModifyUserProcedure( updateUserPRCStr, tempUser );
         removePhoneNumbers( tempUser );
-        addPhonenNmbers( tempUser );
+        addPhoneNumbers( tempUser );
     }
 
     public synchronized void addUser( UserDomainObject newUser ) {
         String updateUserPRCStr = SPROC_ADD_NEW_USER;
-        String newUserId = service.sqlProcedureStr( SPROC_GET_HIGHEST_USER_ID );
+        String newUserId = service.sqlProcedureStr( SPROC_GET_HIGHEST_USER_ID, new String[]{} );
         int newIntUserId = Integer.parseInt( newUserId );
-        newUser.setUserId( newIntUserId );
+        newUser.setId( newIntUserId );
 
         callSprocModifyUserProcedure( updateUserPRCStr, newUser );
-        addPhonenNmbers( newUser );
+        addPhoneNumbers( newUser );
     }
 
     private void removePhoneNumbers( UserDomainObject newUser ) {
-        staticSprocDelPhoneNr( service, newUser.getUserId() );
+        staticSprocDelPhoneNr( service, newUser.getId() );
     }
 
-    private void addPhonenNmbers( UserDomainObject newUser ) {
+    private void addPhoneNumbers( UserDomainObject newUser ) {
         final int PHONE_TYPE_HOME_PHONE = 1;
         final int PHONE_TYPE_WORK_PHONE = 2;
         final int PHONE_TYPE_WORK_MOBILE = 3;
-        staticSprocPhoneNbrAdd( service, newUser.getUserId(), newUser.getHomePhone(), PHONE_TYPE_HOME_PHONE );
-        staticSprocPhoneNbrAdd( service, newUser.getUserId(), newUser.getWorkPhone(), PHONE_TYPE_WORK_PHONE );
-        staticSprocPhoneNbrAdd( service, newUser.getUserId(), newUser.getMobilePhone(), PHONE_TYPE_WORK_MOBILE );
+        staticSprocPhoneNbrAdd( service, newUser.getId(), newUser.getHomePhone(), PHONE_TYPE_HOME_PHONE );
+        staticSprocPhoneNbrAdd( service, newUser.getId(), newUser.getWorkPhone(), PHONE_TYPE_WORK_PHONE );
+        staticSprocPhoneNbrAdd( service, newUser.getId(), newUser.getMobilePhone(), PHONE_TYPE_WORK_MOBILE );
     }
 
     public String[] getRoleNames( UserDomainObject user ) {
-        String[] roleNames = databaseService.sproc_GetUserRoles(user.getUserId());
+        String[] roleNames = service.sqlProcedure( SPROC_GET_USER_ROLES, new String[]{"" + user.getId()} );
         return roleNames;
     }
 
     public String[] getAllRoleNames() {
-        DatabaseService.Table_roles[] roles = databaseService.sproc_GetAllRoles_but_user();
-        String[] result = new String[ roles.length + 1 ];
-        for (int i = 0; i < roles.length; i++) {
-            DatabaseService.Table_roles role = roles[i];
-            result[i] = role.role_name;
+        String[] roleNamesMinusUsers = service.sqlProcedure( SPROC_GET_ALL_ROLES, new String[]{} );
+
+        Set roleNamesSet = new HashSet();
+        for ( int i = 0; i < roleNamesMinusUsers.length; i += 2 ) {
+            String roleName = roleNamesMinusUsers[i + 1];
+            roleNamesSet.add( roleName );
         }
-        result[roles.length] = RoleConstants.USERS;
-        return result;
+
+        roleNamesSet.add( RoleConstants.USERS );
+
+        String[] roleNames = (String[])roleNamesSet.toArray( new String[roleNamesSet.size()] );
+        Arrays.sort( roleNames );
+
+        return roleNames;
     }
 
     public void addRoleNames( String[] externalRoleNames ) {
-        for( int i = 0; i < externalRoleNames.length; i++ ) {
+        for ( int i = 0; i < externalRoleNames.length; i++ ) {
             String externalRoleName = externalRoleNames[i];
             this.addRole( externalRoleName );
         }
     }
 
     public void addRoleToUser( UserDomainObject user, String roleName ) {
-        String userIdStr = String.valueOf( user.getUserId() );
+        String userIdStr = String.valueOf( user.getId() );
         addRole( roleName );
         log.debug( "Trying to assign role " + roleName + " to user " + user.getLoginName() );
-        int rolesId = databaseService.sproc_GetRoleIdByRoleName( roleName );
-        service.sqlUpdateProcedure( SPROC_ADD_USER_ROLE, new String[]{userIdStr, ""+rolesId} );
+        RoleDomainObject role = getRoleByName( roleName );
+        service.sqlUpdateProcedure( SPROC_ADD_USER_ROLE, new String[]{userIdStr, "" + role.getId()} );
     }
 
+    // todo: make a quicker version that not loops over all of the user_ids and makes a new db searc
+    // todo: change the "getAllUsers" sproc to specify its arguments.
     public UserDomainObject[] getAllUsers() {
-        DatabaseService.PartOfTable_users[] users = databaseService.sproc_GetAllUsersInList();
-        UserDomainObject[] result = new UserDomainObject[users.length];
-        for (int i = 0; i < users.length; i++) {
-            DatabaseService.PartOfTable_users user = users[i];
-            result[i] = getUser( user.user_id );
+        int noOfColumnsInSearchResult = 20;
+        String[] allUsersSqlResult = service.sqlProcedure( SPROC_GET_ALL_USERS, new String[]{} );
+        int noOfUsers = allUsersSqlResult.length / noOfColumnsInSearchResult;
+        UserDomainObject[] result = new UserDomainObject[noOfUsers];
+        for ( int i = 0; i < noOfUsers; i++ ) {
+            String userId = allUsersSqlResult[i * noOfColumnsInSearchResult];
+            result[i] = getUser( Integer.parseInt( userId ) );
         }
         return result;
+    }
+
+    public UserDomainObject[] getUsers( boolean includeUserExtern, boolean includeInactiveUsers ) {
+        UserDomainObject[] users = getAllUsers();
+        List filterdUsers = new ArrayList();
+        if ( !includeUserExtern ) {
+            for ( int i = 0; i < users.length; i++ ) {
+                UserDomainObject user = users[i];
+                boolean includeAcordingToUserExtern = !includeUserExtern && USER_EXTERN_ID != user.getId();
+                boolean includeAcordingToInactiveUser = user.isActive() || includeInactiveUsers;
+                if ( includeAcordingToUserExtern && includeAcordingToInactiveUser ) {
+                    filterdUsers.add( user );
+                }
+            }
+        }
+        return (UserDomainObject[])filterdUsers.toArray( new UserDomainObject[filterdUsers.size()] );
     }
 
     public void setUserRoles( UserDomainObject user, String[] roleNames ) {
         this.removeAllRoles( user );
 
-        for( int i = 0; i < roleNames.length; i++ ) {
+        for ( int i = 0; i < roleNames.length; i++ ) {
             String roleName = roleNames[i];
             this.addRoleToUser( user, roleName );
         }
     }
 
     private void removeAllRoles( UserDomainObject user ) {
-        service.sqlUpdateProcedure( SPROC_DEL_USER_ROLES, new String[]{"" + user.getUserId(), "-1"} );
+        service.sqlUpdateProcedure( SPROC_DEL_USER_ROLES, new String[]{"" + user.getId(), "-1"} );
     }
 
     public UserDomainObject[] getAllUsersWithRole( String roleName ) {
-        int rolesId = databaseService.sproc_GetRoleIdByRoleName( roleName );
-        DatabaseService.PartOfTable_users[] usersWithRole = databaseService.sproc_GetUsersWhoBelongsToRole( rolesId );
-        UserDomainObject[] result = new UserDomainObject[usersWithRole.length];
-        for (int i = 0; i < usersWithRole.length; i++) {
-            DatabaseService.PartOfTable_users partOfTable_users = usersWithRole[i];
-            UserDomainObject user = getUser( partOfTable_users.user_id);
+        RoleDomainObject role = getRoleByName( roleName );
+        String[] usersWithRole = service.sqlProcedure( SPROC_GET_USERS_WHO_BELONGS_TO_ROLE,
+                                                       new String[]{"" + role.getId()} );
+        UserDomainObject[] result = new UserDomainObject[usersWithRole.length / 2];
+
+        for ( int i = 0; i < result.length; i++ ) {
+            String userIdStr = usersWithRole[i * 2];
+            UserDomainObject user = getUser( Integer.parseInt( userIdStr ) );
             result[i] = user;
         }
         return result;
@@ -217,7 +294,9 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     public static void staticSprocPhoneNbrAdd( IMCServiceInterface service,
                                                int newUserId, String phoneNumber, int phoneNumberType ) {
-        String[] sprocParameters = new String[]{String.valueOf( newUserId ), phoneNumber, String.valueOf( phoneNumberType )};
+        String[] sprocParameters = new String[]{
+            String.valueOf( newUserId ), phoneNumber, String.valueOf( phoneNumberType )
+        };
         service.sqlUpdateProcedure( SPROC_PHONE_NBR_ADD, sprocParameters );
     }
 
@@ -226,58 +305,67 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         service.sqlUpdateProcedure( SPROC_DEL_PHONE_NR, sprocParameters );
     }
 
-    public boolean hasSuperAdminRole( UserDomainObject user ) {
-        String[] userRoleNames = this.getRoleNames( user );
-        boolean userHasSuperAdminRole = Arrays.asList( userRoleNames ).contains( RoleConstants.SUPER_ADMIN );
-        return userHasSuperAdminRole;
-    }
-
     public synchronized void addRole( String roleName ) {
-        int roleId = callSprocRoleFindName( roleName );
-        boolean roleNotExists = (-1 == roleId);
-        if( roleNotExists ) {
-            databaseService.sproc_RoleAddNew( roleName );
+        RoleDomainObject role = getRoleByName( roleName );
+        boolean roleExists = null != role;
+        if ( !roleExists ) {
+            service.sqlUpdateProcedure( SPROC_ROLE_ADD_NEW, new String[]{roleName} );
         }
     }
 
     public void deleteRole( String roleName ) {
-        int roleId = callSprocRoleFindName( roleName );
-        boolean roleExists = -1 != roleId;
-        if( roleExists ) {
-            databaseService.sproc_RoleDelete( roleId );
+        RoleDomainObject role = getRoleByName( roleName );
+        final boolean roleExists = null != role;
+        if ( roleExists ) {
+            service.sqlUpdateProcedure( SPROC_ROLE_DELETE, new String[]{"" + role.getId()} );
         }
     }
 
-    /**
-     *
-     * @param roleName
-     * @return roleId
-     */
-    private int callSprocRoleFindName( String roleName ) {
-        int roleId = databaseService.sproc_RoleFindName( roleName );
-        return roleId;
+    public RoleDomainObject getRoleById( int roleId ) {
+        String sqlStr = "SELECT role_id, role_name, admin_role FROM roles WHERE role_id = ?";
+        String[] sqlResult = service.sqlQuery( sqlStr, new String[]{"" + roleId} );
+        return getRoleFromSqlResult( sqlResult );
+    }
+
+    public RoleDomainObject getRoleByName( String wantedRoleName ) {
+        String sqlStr = "SELECT role_id, role_name, admin_role FROM roles WHERE role_name = ?";
+        String[] sqlResult = service.sqlQuery( sqlStr, new String[]{wantedRoleName} );
+        return getRoleFromSqlResult( sqlResult );
+    }
+
+    private RoleDomainObject getRoleFromSqlResult( String[] sqlResult ) {
+        RoleDomainObject role = null;
+        if ( sqlResult.length > 0 ) {
+            int roleId = Integer.parseInt( sqlResult[0] );
+            String roleName = sqlResult[1];
+            int adminRoleId = Integer.parseInt( sqlResult[2] );
+            role = new RoleDomainObject( roleId, roleName, adminRoleId );
+        }
+        return role;
     }
 
     private void callSprocModifyUserProcedure( String modifyUserProcedureName, UserDomainObject tempUser ) {
-        String[] params = {String.valueOf( tempUser.getUserId() ),
-                           tempUser.getLoginName(),
-                           null == tempUser.getPassword() ? "" : tempUser.getPassword(),
-                           tempUser.getFirstName(),
-                           tempUser.getLastName(),
-                           tempUser.getTitle(),
-                           tempUser.getCompany(),
-                           tempUser.getAddress(),
-                           tempUser.getCity(),
-                           tempUser.getZip(),
-                           tempUser.getCountry(),
-                           tempUser.getCountyCouncil(),
-                           tempUser.getEmailAddress(),
-                           tempUser.isImcmsExternal() ? "1" : "0",
-                           "1001",
-                           "0",
-                           String.valueOf( tempUser.getLangId() ),
-                           String.valueOf( tempUser.getUserType() ),
-                           tempUser.isActive() ? "1" : "0"};
+        String[] params = {
+            String.valueOf( tempUser.getId() ),
+            tempUser.getLoginName(),
+            null == tempUser.getPassword() ? "" : tempUser.getPassword(),
+            tempUser.getFirstName(),
+            tempUser.getLastName(),
+            tempUser.getTitle(),
+            tempUser.getCompany(),
+            tempUser.getAddress(),
+            tempUser.getCity(),
+            tempUser.getZip(),
+            tempUser.getCountry(),
+            tempUser.getCountyCouncil(),
+            tempUser.getEmailAddress(),
+            tempUser.isImcmsExternal() ? "1" : "0",
+            "1001",
+            "0",
+            String.valueOf( tempUser.getLangId() ),
+            String.valueOf( tempUser.getUserType() ),
+            tempUser.isActive() ? "1" : "0"
+        };
         service.sqlUpdateProcedure( modifyUserProcedureName, params );
     }
 

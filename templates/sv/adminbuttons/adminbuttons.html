@@ -1,5 +1,12 @@
 <style type="text/css">
 <!--
+/* IMCMS SPECIFIC */
+
+/* imCMS label. Ändra utseende om så önskas. */
+
+.imcms_label, .imcms_label:link, .imcms_label:visited { font: 10px Verdana; color:#c00000; text-decoration:none; background-color:#ffffcc }
+.imcms_label:active, .imcms_label:hover { font: 10px Verdana; color:#000099; text-decoration:underline; background-color:#ffffcc }
+
 /* adminMode */
 
 #adminPanelDiv      { padding: 15 0 10 0; }
@@ -24,24 +31,25 @@
 	<td class="adminPanelTd1">
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
-		<td id="adminPanelTd1_1" width="25%">
-		<font face="Verdana, Arial, Helvetica, sans-serif" size="2" class="adminPanelLogo"><b>imCMS</b></font></td>
+		<td id="adminPanelTd1_1" width="25%" nowrap>
+		<font face="Verdana, Arial, Helvetica, sans-serif" size="2" class="adminPanelLogo"><? templates/sv/adminbuttons/adminbuttons.html/1 ?> &nbsp;</font></td>
 		<td id="adminPanelTd1_2" width="50%" align="center" nowrap>
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="2" class="adminPanelText">
-		<b>Id:</b> #getMetaId# &nbsp; <b>Typ:</b> #doc_type#</font></td>
-		<td id="adminPanelTd1_3" width="25%">&nbsp;</td>
+		<b>Id:</b> #getMetaId# &nbsp; <b><? templates/sv/adminbuttons/adminbuttons.html/1001 ?>:</b> #doc_type# &nbsp;</font></td>
+		<td id="adminPanelTd1_3" width="25%" align="right">#statusicon#</td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td class="adminPanelTd2" align="center">
-	<a href="BackDoc" id="admHrefBackdoc"><img src="@adminbuttonsurl@/sv/foregaende.gif" alt="Föregående" id="admBtnBackdoc" border="0"></a>#doc_buttons##1##4#<a href="LogOut" id="admHrefLoggaut"><img src="@adminbuttonsurl@/sv/loggaut.gif" alt="Logga ut" id="admBtnLoggaut" border="0"></a>#superadmin#<a href="GetDoc?meta_id=55" target="_blank" onClick="openHelpW('55'); return false;" id="admHrefHelp"><img src="@adminbuttonsurl@/sv/help.gif" alt="&Ouml;ppna hj&auml;lpsidan" id="admBtnHelp" border="0"></a></td>
+	<td class="adminPanelTd2" align="center" nowrap>
+	<a href="BackDoc" id="admHrefBackdoc"><img src="@adminbuttonsurl@/foregaende.gif" alt="<? templates/sv/adminbuttons/adminbuttons.html/2001 ?>" id="admBtnBackdoc" border="0"></a>#doc_buttons##1##4#<a href="LogOut" id="admHrefLoggaut"><img src="@adminbuttonsurl@/loggaut.gif" alt="<? templates/sv/adminbuttons/adminbuttons.html/2002 ?>" id="admBtnLoggaut" border="0"></a>#superadmin#<a href="javascript:void(0)" onClick="openHelpW(1);return(false)" target="_blank"  id="admHrefHelp"><img src="@adminbuttonsurl@/help.gif" alt="<? templates/sv/adminbuttons/adminbuttons.html/2003 ?>" id="admBtnHelp" border="0"></a></td>
 </tr>
 </table></div>
 <SCRIPT language=JavaScript>
 <!--
 function openHelpW(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+	var helpMetaId = parseInt(<? templates/helpDocumentationMetaIdStartIndex ?>) + id;
+	window.open("@documentationurl@/GetDoc?meta_id=" + helpMetaId,"help");
 }
 //-->
 </SCRIPT>

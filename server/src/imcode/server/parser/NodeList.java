@@ -4,9 +4,7 @@ import java.util.LinkedList ;
 import java.util.Properties ;
 import org.apache.oro.text.regex.* ;
 
-public class NodeList extends LinkedList {
-    final static String CVS_REV = "$Revision$" ;
-    final static String CVS_DATE = "$Date$" ;
+class NodeList extends LinkedList {
 
     private static Pattern ELEMENT_PATTERN ;
     private static Pattern ATTRIBUTES_PATTERN ;
@@ -21,7 +19,7 @@ public class NodeList extends LinkedList {
     }
 	
     /** Parse a String of data into nodes. **/
-    public NodeList(String data) {
+    NodeList(String data) {
 	PatternMatcher patternMatcher = new Perl5Matcher() ;
 	PatternMatcherInput input = new PatternMatcherInput(data) ;
 	int lastEndOffset = 0 ;

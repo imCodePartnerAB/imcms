@@ -7,9 +7,6 @@ import java.io.FilenameFilter;
 
 public class GetImages implements FilenameFilter, Comparator {
 
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-
     private static GetImages _this = new GetImages() ;
     
     /**
@@ -20,32 +17,6 @@ public class GetImages implements FilenameFilter, Comparator {
     }
 
     /**
-    	* Recurses :) down the file-hierarchy and puts all files (filtered) in ArrayList
-    	@param path the filepath i.e. "D:\\Apache\\htdocs\\images"
-    	@param fullPath file stored with full path
-    	@param sorted ArrayList sorted
-    **/
-
-    static public List getImageFiles(File path, boolean fullPath, boolean sorted) 
-	    {
-		List arrlist = new ArrayList();
-		File[] _imgArr = path.listFiles(_this);
-		
-
-		for(int i=0;i<_imgArr.length;i++) 
-		{
-			if(_imgArr[i].isDirectory())
-				arrlist.addAll(getImageFiles(_imgArr[i], true, true));
-			else
-				arrlist.add(_imgArr[i]);
-		}
-
-		// sorts arrlist using compare-method of Comparator
-		if(sorted) Collections.sort(arrlist,_this);
-		return arrlist ;
-	}
-	
-	/**
     	* puts all files in the suplied directory (filtered) in ArrayList
     	@param path the folder i.e. "D:\\Apache\\htdocs\\images"
     	@param sorted ArrayList sorted

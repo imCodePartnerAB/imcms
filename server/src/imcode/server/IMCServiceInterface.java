@@ -2,14 +2,16 @@ package imcode.server ;
 
 import java.io.* ;
 import java.util.* ;
+import java.text.Collator;
 
 import imcode.server.parser.ParserParameters ;
-import imcode.server.user.UserDomainObject;
+import imcode.server.user.*;
 import imcode.server.document.DocumentMapper;
-import imcode.server.db.DatabaseService;
-
-import imcode.readrunner.* ;
-
+import imcode.server.document.TemplateMapper;
+import imcode.server.document.TextDocumentDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.db.ConnectionPool;
+import imcode.util.net.SMTP;
 
 /**
  * Interface for the Imcode Net Server.
@@ -20,31 +22,16 @@ public interface IMCServiceInterface {
     UserDomainObject verifyUser(String login, String password)
 	;
 
-    /** Get a user by user-id **/
-    UserDomainObject getUserById(int userId)
-	;
-
-
-    /** Check if a user has a special admin role **/
-    public boolean checkUserAdminrole ( int userId, int adminRole )
-	;
-
-    /**
-       Save a text field
-    **/
-    void saveText(UserDomainObject user,int meta_id,int txt_no,IMCText text, String text_type)
-	;
-
     /**
        Retrieve a text-field
     **/
-    IMCText getText(int meta_id,int txt_no)
+    TextDocumentDomainObject.Text getText(int meta_id,int txt_no)
 	;
 
-    String parsePage(DocumentRequest docReq, int flags, ParserParameters paramsToParse) throws IOException ;
+    String parsePage( ParserParameters paramsToParse ) throws IOException ;
 
     // Save an image
-    void saveImage(int meta_id,UserDomainObject user,int img_no,imcode.server.Image image)
+    void saveImage(int meta_id,UserDomainObject user,int img_no,TextDocumentDomainObject.Image image)
 	;
 
     /**
@@ -53,162 +40,92 @@ public interface IMCServiceInterface {
     void deleteDocAll(int meta_id,UserDomainObject user)
 	;
 
-    void addExistingDoc(int meta_id,UserDomainObject user,int existing_meta_id,int doc_menu_no)
-	;
-
-    void saveManualSort(int meta_id,UserDomainObject user,java.util.Vector childs, java.util.Vector sort_no)
-	;
-
-    /**
-       Remove children from a menu
-    **/
-    void deleteChilds(int meta_id,int menu,UserDomainObject user,String childsThisMenu[])
+    void saveManualSort(int meta_id,imcode.server.user.UserDomainObject user,List childs, List sort_no, int menuNumber)
 	;
 
     // archive childs
-    void archiveChilds(int meta_id,UserDomainObject user,String childsThisMenu[])
+    void archiveChilds(int meta_id,UserDomainObject user,String[] childsThisMenu)
 	;
-
-    /** Copy documents and insert them in a new textdocument and menu **/
-    String[] copyDocs( int meta_id, int doc_menu_no,  UserDomainObject user, String[] childsThisMenu, String copyPrefix)  ;
 
     // List all archived docs
     //    String listArchive(int meta_id,imcode.server.user.User user)
     //;
 
     // check if url doc
-    Table isUrlDoc(int meta_id,UserDomainObject user)
-	;
-
-    // Save a new frameset
-    void saveNewFrameset(int meta_id,UserDomainObject user,imcode.server.Table doc)
-	;
-
-    // Save a frameset
-    void saveFrameset(int meta_id,UserDomainObject user,imcode.server.Table doc)
+    String isUrlDoc( int meta_id )
 	;
 
     // check if url doc
-    String isFramesetDoc(int meta_id,UserDomainObject user)
-	;
-
-    // check if external doc
-    ExternalDocType isExternalDoc(int meta_id,UserDomainObject user)
+    String isFramesetDoc( int meta_id )
 	;
 
     // activate child to child table
     void activateChild(int meta_id,UserDomainObject user)
 	;
 
-    // Send a sqlquery to the database and return a string array
-    String[] sqlQuery(String sqlQuery)
-	;
-
-    // Send a sql update query to the database
-    void sqlUpdateQuery(String sqlStr)  ;
-
-    // Send a sqlquery to the database and return a string
-    String sqlQueryStr(String sqlQuery)
-	;
-
-    // Send a procedure to the database and return a string array
-    public String[] sqlProcedure(String procedure)
-	;
-
     // Send a procedure to the database and return a string array
     public String[] sqlProcedure(String procedure, String[] params)
 	;
 
-    // Send a procedure to the database and return a string array
-    public String[] sqlProcedure(String procedure, String[] params, boolean trim)
-	;
-
-    // Send a procedure to the database and return a string
-    public String sqlProcedureStr(String procedure)
-	;
-
-    // Send a procedure to the database and return a string
-    public String sqlProcedureStr(String procedure, String[] params)
-	;
-
-    // Send a procedure to the database and return a string
-    public String sqlProcedureStr(String procedure, String[] params, boolean trim)
-	;
-
-    // Send a update procedure to the database
-    public int sqlUpdateProcedure(String procedure)
-	;
-
-    // Send a update procedure to the database
-    public int sqlUpdateProcedure(String procedure, String[] params)
-	;
-
     // Parse doc replace variables with data, uses two vectors
-    String  parseDoc(String htmlStr,java.util.Vector variables,java.util.Vector data)
+    String  replaceTagsInStringWithData(String htmlStr,java.util.Vector variables,java.util.Vector data)
 	;
 
     // get external template folder
-    File getExternalTemplateFolder(int meta_id)
+    File getExternalTemplateFolder(int meta_id, UserDomainObject user)
 	;
-
-    // increment session counter
-    int incCounter()  ;
-
-    // get session counter
-    int getCounter()  ;
 
     // set session counter
-    int setCounter(int value)  ;
+    void setSessionCounter(int value)  ;
 
     // set  session counter date
-    boolean setCounterDate(String date)  ;
+    void setSessionCounterDate(Date date)  ;
 
     // set  session counter date
-    String getCounterDate()  ;
-
-    // Send a sqlquery to the database and return a Hashtable
-    public Hashtable sqlQueryHash(String sqlQuery)
-	;
-
-    // Send a procedure to the database and return a Hashtable
-    public Hashtable sqlProcedureHash(String procedure)
-	;
+    Date getSessionCounterDate()  ;
 
     // parsedoc use template
-    public String  parseDoc(java.util.List variables,String admin_template_name,
-			    String lang_prefix)  ;
+    public String getAdminTemplate( String adminTemplateName, UserDomainObject user, java.util.List tagsWithReplacements )  ;
 
     // parseExternaldoc use template
-    public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)
+    public String getAdminTemplateFromDirectory( String adminTemplateName, UserDomainObject user, java.util.List variables,
+                                                 String directory )
 	;
 
     // parseExternaldoc use template
-    public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type, String templateSet)
+    public String getAdminTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, java.util.List variables,
+                                                               String directory, String subDirectory )
 	;
 
     // get templatehome
-    public byte[] getTemplateData(int template_id)
+    public String getTemplateData(int template_id)
 	throws IOException ;
 
     // get templatehome
-    public File getTemplateHome()
+    public File getTemplatePath()
 	;
 
     // get url-path to images
     public String getImageUrl()
 	;
 
-    // get file-path to images
-    public File getImagePath()
+    // Return url-path to imcmsimages.
+    public String getImcmsUrl();
+
+    // get file-path to imcmsimages
+    public File getImcmsPath()
 	;
 
     // get starturl
     public String getStartUrl()
 	;
 
-    // get language
-    public String getDefaultLanguage()
-	;
+    // get language prefix by id
+    public String getLanguagePrefixByLangId ( int lang_id ); 
+
+    // get language prefix for user
+    public String getUserLangPrefixOrDefaultLanguage( UserDomainObject user )
+    ;
 
     // get doctype
     public int getDocType(int meta_id)
@@ -216,10 +133,6 @@ public interface IMCServiceInterface {
 
     // checkDocAdminRights
     public boolean checkDocAdminRights(int meta_id, UserDomainObject user)
-	;
-
-    //get greatest permission_set
-    public int getUserHighestPermissionSet (int meta_id, int user_id)
 	;
 
     // save template to disk
@@ -230,102 +143,66 @@ public interface IMCServiceInterface {
     public Object[] getDemoTemplate(int template_id)
 	throws IOException ;
 
-    // check if user can view document
-    public boolean checkDocRights(int meta_id, UserDomainObject user)
-	;
-
     public boolean checkDocAdminRights(int meta_id, UserDomainObject user, int permissions)
 	;
 
     public boolean checkDocAdminRightsAny(int meta_id, UserDomainObject user, int permissions)
 	;
 
-    // delete template from db/disk
-    public void deleteTemplate(int template_id)
-	;
-
     // save demo template
-    public int saveDemoTemplate(int template_id,byte [] data, String suffix)
-	;
-
-    // delete templategroup
-    public void deleteTemplateGroup(int group_id)
-	;
-
-    // save templategroup
-    public void changeTemplateGroupName(int group_id,String new_name)
-	;
-
-    // Send a procedure to the database and return a multistring array
-    public String[][] sqlProcedureMulti(String procedure)
-	;
-
-    // Send a procedure to the database and return a multistring array
-    public String[][] sqlProcedureMulti(String procedure, String[] params)
-	;
-
-    // Send a sqlQuery to the database and return a multistring array
-    public String[][] sqlQueryMulti(String sqlQuery)
-	;
+    public void saveDemoTemplate(int template_id,byte [] data, String suffix) throws IOException
+    ;
 
     // get server date
     public Date getCurrentDate()
-	;
+    ;
 
     // get demotemplates
-    public String[] getDemoTemplateList()
-	;
+    public String[] getDemoTemplateIds()
+    ;
 
     // delete demotemplate
-    public int deleteDemoTemplate(int template_id)
-	;
+    public void deleteDemoTemplate(int template_id) throws IOException
+    ;
 
-    public String getMenuButtons(int meta_id, UserDomainObject user)  ;
-
-    public String getMenuButtons(String meta_id, UserDomainObject user)  ;
-
-    public String getLanguage(String lang_id)  ;
+    public String getAdminButtons( UserDomainObject user, DocumentDomainObject document )  ;
 
     public SystemData getSystemData()  ;
 
     public void setSystemData(SystemData sd)  ;
 
-    public String[] getDocumentTypesInList(String langPrefixStr)  ;
-
-    public boolean checkUserDocSharePermission(UserDomainObject user, int meta_id)  ;
+    public String[][] getDocumentTypesInList(String langPrefixStr)  ;
 
     public String getFortune(String path) throws IOException ;
 
     public String getSearchTemplate(String path) throws IOException ;
 
-    public File getInternalTemplateFolder(int meta_id) ;
-
-    public List getQuoteList(String quoteListName) throws IOException ;
+    public List getQuoteList(String quoteListName);
 
     public void setQuoteList(String quoteListName, List quoteList) throws IOException ;
 
-    public List getPollList(String pollListName) throws IOException ;
+    public List getPollList(String pollListName);
 
     public void setPollList(String pollListName, List pollList) throws IOException ;
 
-    public imcode.server.document.DocumentDomainObject getDocument(int meta_id) ;
-
     public boolean checkAdminRights(UserDomainObject user) ;
-    public void setReadrunnerUserData(UserDomainObject user, ReadrunnerUserData rrUserData) ;
-
-    public ReadrunnerUserData getReadrunnerUserData(UserDomainObject user) ;
-
-    /**
-       Retrieve the texts for a document
-       @param meta_id The id of the document.
-       @return A Map (Integer -> IMCText) with all the  texts in the document.
-    **/
-    public Map getTexts(int meta_id);
-
 
     public int getSessionCounter();
 
-    public String getSessionCounterDate();
+    public String getSessionCounterDateAsString();
+
+    /** Get all possible userflags **/
+    public Map getUserFlags() ;
+    /** Get all userflags for a single user **/
+    public Map getUserFlags(UserDomainObject user) ;
+    /** Get all userflags of a single type **/
+    public Map getUserFlags(int type) ;
+    /** Get all userflags for a single user of a single type **/
+    public Map getUserFlags(UserDomainObject user, int type) ;
+
+    public void setUserFlag(UserDomainObject user, String flagName);
+
+    public void unsetUserFlag(UserDomainObject user, String flagName);
 
     /** Get an interface to the poll handling system **/
     public imcode.util.poll.PollHandlingSystem getPollHandlingSystem();
@@ -335,7 +212,45 @@ public interface IMCServiceInterface {
 
     void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime );
 
+    void updateLogs( String logMessage );
+
+    ConnectionPool getConnectionPool();
+
     DocumentMapper getDocumentMapper();
 
-    DatabaseService getDatabaseService();
+    ImcmsAuthenticatorAndUserMapper getImcmsAuthenticatorAndUserAndRoleMapper();
+
+    String getDefaultLanguageAsIso639_2();
+
+    Map sqlProcedureHash( String procedure, String[] params );
+
+    int sqlUpdateProcedure( String procedure, String[] params );
+
+    String sqlProcedureStr( String procedure, String[] params );
+
+    int sqlUpdateQuery(String sqlStr, String[] params);
+
+    void saveTreeSortIndex( int meta_id, UserDomainObject user, List childs, List sort_no, int menuNumber);
+
+    String[][] sqlProcedureMulti(String procedure, String[] params);
+
+    String[] sqlQuery(String sqlStr, String[] params);
+
+    String sqlQueryStr(String sqlStr, String[] params);
+
+    Map sqlQueryHash(String sqlStr, String[] params);
+
+    String[][] sqlQueryMulti(String sqlstr, String[] params);
+
+    TemplateMapper getTemplateMapper();
+
+    SMTP getSMTP();
+
+    public Properties getLangProperties(UserDomainObject user);
+
+    File getFilePath();
+
+    File getIncludePath();
+
+    Collator getDefaultLanguageCollator();
 }

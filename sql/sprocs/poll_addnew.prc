@@ -15,7 +15,7 @@ Add a new poll
 */
 
 
-CREATE PROCEDURE dbo.Poll_AddNew
+CREATE PROCEDURE Poll_AddNew
 	@meta_id int
 	
 AS

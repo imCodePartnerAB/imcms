@@ -10,31 +10,35 @@
 deployroot =
 
 
+# The name of the webapp. Used for filenames and URIs.
+
+webappname = imcms
+
+
+# The deployed web application diretory
+
+webapproot = ${deployroot}/${webappname}
+
+
 # Database parameters for the main database.
 
-db-service-class = imcode.server.db.MySQLDatabaseService
-#db-service-class = imcode.server.db.MimerDatabaseService
-#db-service-class = imcode.server.db.MSSQLDatabaseService
+db-driver = com.microsoft.jdbc.sqlserver.SQLServerDriver
+db-url = jdbc:microsoft:sqlserver://
 db-host =
 db-port = 1433
 db-name =
 db-user =
 db-pass =
-db-maxconnections = 20
+db-maxconnections = 100
 
 
-# The parameters for the database used by the plugins.
-
-plugin-db-host =
-plugin-db-port = 1433
-plugin-db-name =
-plugin-db-user =
-plugin-db-pass =
-plugin-db-timeout = 30
-plugin-db-maxconnections = 20
+# SMB-authentication-parameters
 
 smb-domain-name =
 smb-domain-server =
+
+
+# LDAP-authentication-parameters
 
 ldap-url =
 ldap-user =
@@ -43,6 +47,7 @@ ldap-user-objectclass = user
 ldap-user-identifying-attribute = sAMAccountName
 ldap-attributes-mapped-to-roles = company, co
 
+
 # The smtp-server used for sending mails.
 
 smtp-server =
@@ -50,8 +55,8 @@ smtp-server =
 
 # The name and e-mail-address of the servermaster.
 
-servermaster-name  = undefined
-servermaster-email = undefined
+servermaster-name  =
+servermaster-email =
 
 
 # The name and e-mail-address of the webmaster.
@@ -61,9 +66,9 @@ webmaster-name  = ${servermaster-name}
 webmaster-email = ${servermaster-email}
 
 
-# The name of the webapp. Used for filenames and URIs.
+# The default language to use when build the webapp ( swe | eng )
 
-webappname = imcms
+defaultlanguage = eng
 
 
 # The root-URI of the webapp, relative to the server root-URI (/).
@@ -71,14 +76,19 @@ webappname = imcms
 rooturl = /${webappname}
 
 
+# The imCMS documents is usually on the imCMS public site, http://doc.imcms.net/
+# If you want to install a local server for handling (modifing) the documents
+# change this:
+
+documentation-host = doc.imcms.net
+
+
 # Whether the build should be optimized or not.
-# Warning: Turning this on may remove the version control constants from the class-files.
 
 optimize = off
 
 
 # Whether to leave debug info in or not.
-# Warning: Turning this off may remove the version control constants from the class-files.
 
 debug = on
 
@@ -88,19 +98,27 @@ debug = on
 deprecation = on
 
 
+# For JUnit-tests to work, you need to add junit.jar to the classpath of ant.
+# If this is impossible, uncomment the following property.
+# Note that this will prevent tests from running.
+
+#no-junit-task-available
+
+
 # Which log4j-config-file to use.
 # You might want to change this to log4j-debug.xml to turn on debug-logs.
 
 log4j-config = log4j-nodebug.xml
 
 
-# Which components to build.
-# Comment out any you don't want to build.
+# Tomcat settings for quick deployment during development
 
-#build-billboard
-#build-calender
-#build-chat
-#build-conference
-#build-fortune
-#build-postcard
-#build-shop
+tomcat-admin-username = admin
+tomcat-admin-password =
+tomcat-webapp-manager-url = http://localhost:8080/manager
+tomcat-deployroot-local-directory = 
+
+
+# If you want to include an addon under addons/ in the build, name the directory here.
+
+#addon =

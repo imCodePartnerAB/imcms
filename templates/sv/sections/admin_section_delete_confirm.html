@@ -1,14 +1,8 @@
 <html>
 <head>
-<title>Varning!</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-	<SCRIPT language=JavaScript>
-	<!--
-	function openHelp(id) {
-		window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-	}
-	//-->
-	</SCRIPT>
+<title><? templates/sv/sections/admin_section_delete_confirm.html/1 ?></title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 </head>
 
 <body bgcolor="#ffffff">
@@ -19,7 +13,7 @@
 	<tr bgcolor="#333366">
 	  <td width="5%">&nbsp;</td> 	  
 	  <td colspan="2"> 
-		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#ffffff"><b>Varning - ta bort avdelning!</font></B>&nbsp;</div>
+		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#ffffff"><? templates/sv/sections/admin_section_delete_confirm.html/2 ?></font></B>&nbsp;</div>
 	  </td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
@@ -28,23 +22,20 @@
       <td width="5%">&nbsp;</td> 
 	  <td colspan="2">
       <font face="Verdana, Arial, Helvetica, sans-serif" size="2">
-	  Avdelningen
-	  har [#docs#] dokument kopplade till sig.<br>Om ni 
-      vill ta bort avdelningskopplingar för dessa dokument, välj "ta bort kopplingar" 
-      från listan, annars välj en ny avdelning för dessa dokument.</font><hr></td>
+	  <? templates/sv/sections/admin_section_delete_confirm.html/3 ?></font><hr></td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
 
 	<tr bgcolor="#bababa">
 	  <td width="5%">&nbsp;</td> 	
-	  <td width="30%" align="right">Välj</td>
+	  <td width="30%" align="right"><? templates/sv/sections/admin_section_delete_confirm.html/4 ?></td>
 	  <td width="60%"> 
 		  <font face="Verdana, Arial, Helvetica, sans-serif" size="2">
 		  <select name="new_section_confirm">
-		  	<option value="-1" selected>ta bort kopplingar</option>
+		  	<option value="-1" selected><? templates/sv/sections/admin_section_delete_confirm.html/5 ?></option>
 			#section_list#&gt;
 		  </select></font> 
-		  <input type="submit" name="delete_section_confirm" value="OK">
+		  <input type="submit" name="delete_section_confirm" value="<? templates/sv/sections/admin_section_delete_confirm.html/2001 ?>">
 	  </td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
@@ -56,8 +47,8 @@
 	<tr bgcolor="#bababa">
 	  <td width="5%">&nbsp;</td> 
 	  <td colspan="2">		
-		<input type="submit" name="submit" value="Avbryt">
-		&nbsp; <a href="GetDoc?meta_id=94" target="_blank" onClick="openHelp('94'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		<input type="submit" name="submit" value="<? templates/sv/sections/admin_section_delete_confirm.html/2002 ?>">
+		&nbsp; <a href="@documentationurl@/GetDoc?meta_id=94" target="_blank"><img src="@imcmsimageurl@/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/sections/admin_section_delete_confirm.html/2003 ?>"></a>
 	  </td>	 
 	  <td width="5%">&nbsp;</td>
 	</tr>

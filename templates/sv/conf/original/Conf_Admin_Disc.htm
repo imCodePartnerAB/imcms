@@ -19,8 +19,7 @@ function confirmDelDiscForm(){
 <form method="post" action="#SERVLET_URL#ConfAdmin" name="DelDiscForm">
   <table width="100%" border="0" cellpadding="0" cellspacing="0">
     <tr bgcolor="#9999FF"> 
-      <td width="60%" nowrap bgcolor="#FFFFFF">&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">ADMINISTRERA 
-        DISKUSSION </font></td>
+      <td width="60%" nowrap bgcolor="#FFFFFF">&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Disc.htm/2 ?> </font></td>
       <td height="12" width="40%" nowrap align="center" bgcolor="#FFFFFF">&nbsp;</td>
     </tr>
   </table>
@@ -29,7 +28,7 @@ function confirmDelDiscForm(){
   <table width="100%" border="0" cellpadding="0" cellspacing="0">
     <tr> 
       <td width="48%"> 
-        &nbsp;<input name=DELETE_DISCUSSION type=submit value="TA BORT" style=font-size:10 onClick="if(confirmDelDiscForm()==false)return false; return true;">
+        &nbsp;<input name="DELETE_DISCUSSION" type="submit" value="<? templates/sv/conf/original/Conf_Admin_Disc.htm/2001 ?>" style="font-size:10" onClick="if(confirmDelDiscForm()==false)return false; return true;">
       </td>
       <td width="52%">&nbsp;</td>
     </tr>
@@ -38,7 +37,7 @@ function confirmDelDiscForm(){
 <br>
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
   <tr> 
-    <td width="50%">&nbsp;&nbsp;<a href="#SERVLET_URL#ConfHelp?helpmode=admin&amp;helparea=Discussion#Discussion" target="_ConfHelp"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HJ&Auml;LP</font></a> 
+    <td width="50%">&nbsp;&nbsp;<a href="#SERVLET_URL#ConfHelp?helpmode=admin&amp;helparea=Discussion#Discussion" target="_ConfHelp"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Disc.htm/4 ?></font></a> 
     </td>
     <td width="50%">#CONF_UNADMIN_LINK#</td>
   </tr>

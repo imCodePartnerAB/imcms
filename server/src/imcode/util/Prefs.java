@@ -9,8 +9,7 @@ import java.util.* ;
    Config location specified in systemproperty "com.imcode.netserver.config".
 */
 public class Prefs {
-    private final static String CVS_REV="$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
+
     private final static Hashtable hash = new Hashtable () ;
     private static File configPath = null ;
 
@@ -26,21 +25,6 @@ public class Prefs {
     */
     public static void flush() {
 	hash.clear() ;
-    }
-
-    /**
-       Get an integer property from a config file. Reloads the file once and tries again if the property is not found the first time.
-
-       @param key The preference to get.
-       @param file The file in the config directory to load from.
-       @return The value of the preference.
-    */
-    public static int getInt (String key, String file, int defaultValue) throws IOException {
-	try {
-	    return Integer.parseInt(get (key,new File(configPath,file))) ;
-	} catch (NumberFormatException nfe) {
-	    return defaultValue ;
-	}
     }
 
     /**
@@ -82,21 +66,11 @@ public class Prefs {
     /**
        Get Properties from a config file.
 
-       @param path The path to the directory to load from.
-       @param file The file in the directory to load from.
-       @return The properties in the file.
-    */
-    private static Properties getProperties (String path, String file) throws IOException {
-	return getProperties (new File(path,file)) ;
-    }
-    /**
-       Get Properties from a config file.
-
        @param file The file to load from.
        @return The properties in the file.
     */
 
-    static Properties getProperties (File file) throws IOException  {
+    private static Properties getProperties (File file) throws IOException  {
 	Properties prop ;
 	prop = (Properties)hash.get(file) ;
 	if (prop == null) {

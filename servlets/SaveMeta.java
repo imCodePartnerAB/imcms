@@ -8,8 +8,7 @@ import javax.servlet.http.*;
 
 import imcode.util.*;
 import imcode.server.*;
-import imcode.server.db.DatabaseService;
-import imcode.server.document.DatabaseAccessor;
+import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 
 import org.apache.log4j.Category;
@@ -61,9 +60,12 @@ public class SaveMeta extends HttpServlet {
 
         String classification = req.getParameter( "classification" );
 
-        DatabaseService.JoinedTables_permissions current_permissions = imcref.getDatabaseService().getUserPermissionSetForDocument( meta_id_int, user.getUserId() );
-        int user_set_id = current_permissions.set_id; // The users set_id
-        int user_perm_set = current_permissions.permission_id;	// The users permission_set for that id
+        // Hey, hey! Watch as i fetch the permission-set set (pun intended) for each role!
+        // Now watch as i fetch the permission_set for the user...
+        String[] current_permissions = sprocGetUserPermissionSet( imcref, user, meta_id );
+        int user_set_id = Integer.parseInt( current_permissions[0] );	// The users set_id
+        int user_perm_set = Integer.parseInt( current_permissions[1] );	// The users permission_set for that id
+        int currentdoc_perms = Integer.parseInt( current_permissions[2] );	// The docspecific permissions for this doc.
 
         // Check if the user has any business in here whatsoever.
 
@@ -92,12 +94,9 @@ public class SaveMeta extends HttpServlet {
                 continue;							     // skip to the next role.
             }
             int new_set_id = Integer.parseInt( new_set_id_str );
-             // todo: use the boolean value directly instead
-            int currentdoc_perms = imcref.getDatabaseService().isRestricted1MorePriviligedThanRestricted2ForDocument( meta_id_int )?1:0;
-
             if( (// May the user edit permissions at all?
                 user_set_id == 0				// If user has set_id == 0...
-                || (user_perm_set & 4) != 0)	// ...or the user may edit permissions for this document
+                || (user_perm_set & 4) != 0)	// ...or the user may edit permissions for this internalDocument
 
                 // May the user set this particular permission-set?
                 && user_set_id <= new_set_id
@@ -107,7 +106,7 @@ public class SaveMeta extends HttpServlet {
                 && (user_set_id != 1			// If user has set_id == 1 (that is , != 0 && != 2)
                 || (role_set_id != 2			// ...he may not change set_id for a role with set_id 2..
                 && new_set_id != 2)			// ...and he may not set set_id to 2 for any role...
-                || (currentdoc_perms & 1) != 0// ...unless set_id 1 is more privileged than set_id 2 for this document.
+                || (currentdoc_perms & 1) != 0// ...unless set_id 1 is more privileged than set_id 2 for this internalDocument.
                 ) ) {
 
                 // We used to save to the db immediately. Now we do it a little bit differently to make it possible to store stuff in the session instead of the db.
@@ -370,7 +369,7 @@ public class SaveMeta extends HttpServlet {
 
         // Save the classifications to the db
         if( classification != null ) {
-            DatabaseAccessor.sprocClassification_Fix( imcref, Integer.parseInt(meta_id), classification );
+            DocumentMapper.sprocClassification_Fix( imcref, Integer.parseInt(meta_id), classification );
         }
 
         //ok lets save the default templates
@@ -379,7 +378,7 @@ public class SaveMeta extends HttpServlet {
         //if the administrator wants to change the date we does it here
         if( created_datetime != null ) {
             //we did got a ok date so lets save it to db
-            DatabaseAccessor.sqlUpdateMetaDateCreated( imcref, meta_id, created_datetime );
+            DocumentMapper.sqlUpdateMetaDateCreated( imcref, meta_id, created_datetime );
         }
         if( null != modifiedDateTime ) {
             //we did got a ok date so lets save it to db
@@ -387,7 +386,7 @@ public class SaveMeta extends HttpServlet {
         }
 
         // Update the date_modified for all parents.
-        DatabaseAccessor.sprocUpdateParentsDateModified( imcref, Integer.parseInt(meta_id) );
+        DocumentMapper.sprocUpdateParentsDateModified( imcref, Integer.parseInt(meta_id) );
 
         ///**************** section index word stuff *****************
         //ok lets handle the the section stuff save to db and so on
@@ -396,7 +395,7 @@ public class SaveMeta extends HttpServlet {
         String current_section_id = req.getParameter( "current_section_id" );
         if( section_id != current_section_id ) {
             //ok lets update the db
-            DatabaseAccessor.sprocSectionAddCrossref( imcref, Integer.parseInt(meta_id), Integer.parseInt(section_id) );
+            DocumentMapper.sprocSectionAddCrossref( imcref, Integer.parseInt(meta_id), Integer.parseInt(section_id) );
         }
 
 
@@ -420,6 +419,11 @@ public class SaveMeta extends HttpServlet {
 
     public static void sprocUpdateDefaultTemplates( IMCServiceInterface imcref, String meta_id, String template1, String template2 ) {
         imcref.sqlUpdateProcedure( "UpdateDefaultTemplates" + " '" + meta_id + "','" + template1 + "','" + template2 + "'" );
+    }
+
+    public static String[] sprocGetUserPermissionSet( IMCServiceInterface imcref, UserDomainObject user, String meta_id ) {
+        String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet" + " " + meta_id + ", " + user.getUserId() );
+        return current_permissions;
     }
 
     public static String[][] sprocGetRolesDocPermissions( IMCServiceInterface imcref, String meta_id ) {

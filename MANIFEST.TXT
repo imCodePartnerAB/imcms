@@ -1,0 +1,13 @@
+.cvsignore
+install/**
+lib/*.jar
+lib/noinstall/*.jar
+server/**
+servlets/**/*.java
+server/**/*.java
+sql/**
+tools/**
+templates/**
+*.TXT
+build.properties.template
+build.xml
