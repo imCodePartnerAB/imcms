@@ -15,19 +15,22 @@
 #gui_mid()
 
 <form method="post" action="AdminIpAccess" name="AdminIPAccess">
-  <table cellpadding="2" width="400" align="center">
-	<tr>
-	  <td>#gui_heading( "<? global/warning ?>" )</td>
-	</tr>
-	<tr>
-	  <td><? templates/sv/AdminIpAccess_Delete2.htm/3 ?></td>
-	</tr>
-	<tr>
-	  <td>
-		  <input type="submit" class="imcmsFormBtnSmall" name="DEL_IP_ACCESS" value="<? templates/sv/AdminIpAccess_Delete2.htm/2001 ?>">
-	  </td>
-	</tr>
-  </table>
+<table border="0" cellspacing="0" cellpadding="2" width="400">
+<tr>
+	<td>#gui_heading( "<? global/warning ?>" )</td>
+</tr>
+<tr>
+	<td><? templates/sv/AdminIpAccess_Delete2.htm/3 ?></td>
+</tr>
+<tr>
+	<td>#gui_hr( "blue" )</td>
+</tr>
+<tr>
+	<td align="right">
+	<input type="submit" class="imcmsFormBtn" name="DEL_IP_ACCESS" value="<? templates/sv/AdminIpAccess_Delete2.htm/2001 ?>">
+	<input type="submit" class="imcmsFormBtn" name="IP_CANCEL_DELETE" value="<? global/cancel ?>"></td>
+</tr>
+</table>
 </form>
 
 #gui_bottom()
