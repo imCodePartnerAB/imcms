@@ -1,0 +1,177 @@
+<html>
+<head>
+<title>File administration</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="FileAdmin" enctype="multipart/form-data">
+  <table border="0" cellspacing="0" width="50%">
+	<tr bgcolor="#333366"> 
+	  <td colspan="6"> 
+		<center>
+		  <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><b>File administration</b></font> 
+		</center>
+	  </td>
+	</tr>
+	<tr bgcolor="#BABABA">
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2">&nbsp;</td>
+	  <td colspan="2">&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#BABABA"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2"> 
+		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b> 
+		  <input type="hidden" name="dir1" value="#dir1#">
+		  #dir1# </b></font> </div>
+	  </td>
+	  <td colspan="2"> 
+		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>#dir2# 
+		  <input type="hidden" name="dir2" value="#dir2#">
+		  </b></font> </div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#BABABA"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2"> 
+		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b> 
+		  </b> 
+		  <input type="submit" name="change1" value="Change directory">
+		  <b> </b> </font></div>
+	  </td>
+	  <td colspan="2"> 
+		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <b> </b> 
+		  <input type="submit" name="change2" value="Change directory">
+		  <b> </b> </font></div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#BABABA"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2"> 
+		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <select name="files1" size="17" multiple>
+			#files1#
+		  </select>
+		  </font> </div>
+	  </td>
+	  <td colspan="2"> 
+		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <select name="files2" size="17" multiple>
+			#files2#
+		  </select>
+		  </font> </div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#BABABA"> 
+	  <td width="5%">&nbsp;</td>
+	  <td> 
+		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <input type="submit" name="download1" value="Download">
+		  </font></div>
+	  </td>
+	  <td valign="middle"> 
+		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <input type="submit" name="copy1" value="Copy -&gt;">
+		  <input type="submit" name="move1" value="  Move -&gt;">
+		  </font></div>
+	  </td>
+	  <td valign="middle"> 
+		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <input type="submit" name="copy2" value="&lt;- Copy">
+		  <input type="submit" name="move2" value="&lt;- Move  ">
+		  </font> </div>
+	  </td>
+	  <td> 
+		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <input type="submit" name="download2" value="Download">
+		  </font></div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#BABABA"> 
+	  <td width="5%">&nbsp;</td>
+	  <td> 
+		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <input type="submit" name="upload1" value="Upload">
+		  </font></div>
+	  </td>
+	  <td valign="middle" colspan="2"> 
+		<center>
+		  <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> </font> 
+		  <font face="Verdana, Arial, Helvetica, sans-serif" size="2">New file:<br>
+		  <input type="file" name="file">
+		  </font> 
+		</center>
+	  </td>
+	  <td> 
+		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <input type="submit" name="upload2" value="Upload">
+		  </font></div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#BABABA"> 
+	  <td width="5%">&nbsp;</td>
+	  <td> 
+		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <input type="submit" name="rename1" value="Change name">
+		  <br>
+		  <input type="submit" name="mkdir1" value="Create directory">
+		  </font></div>
+	  </td>
+	  <td valign="middle" colspan="2"> 
+		<center>
+		  <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> </font> 
+		  <font face="Verdana, Arial, Helvetica, sans-serif" size="2">New name:<br>
+		  <input type="text" name="name">
+		  </font> 
+		</center>
+	  </td>
+	  <td> 
+		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  </font> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <input type="submit" name="rename2" value="Change name">
+		  <br>
+		  <input type="submit" name="mkdir2" value="Create directory">
+		  </font></div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#BABABA"> 
+	  <td width="5%">&nbsp;</td>
+	  <td> 
+		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <input type="submit" name="delete1" value="Delete">
+		  </font> </div>
+	  </td>
+	  <td colspan="2"> 
+		<center>
+		  <hr>
+		  <input type="submit" name="cancel" value="Back">
+		</center>
+	  </td>
+	  <td> 
+		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <input type="submit" name="delete2" value="Delete">
+		  </font> </div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#BABABA"> 
+	  <td width="5%">&nbsp;</td>
+	  <td>&nbsp;</td>
+	  <td colspan="2">&nbsp;</td>
+	  <td>&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+  </table>
+</form>
+</body>
+</html>

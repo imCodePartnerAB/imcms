@@ -1,0 +1,125 @@
+<HTML><HEAD><TITLE>Search</TITLE>
+<SCRIPT language=VBScript>
+<!-- A Little Code
+Sub Document_onKeyPress()
+if (window.event.keyCode = 13) Then
+call IEkeyDown(13)
+End If
+End Sub
+// Which ends here -->
+</SCRIPT>
+
+<SCRIPT language=JavaScript>
+<!-- Original:  Ronnie T. Moore -->
+<!-- Web Site:  The JavaScript Source -->
+
+<!-- This script and many more are available free online at -->
+<!-- The JavaScript Source!! http://javascript.internet.com -->
+
+<!-- Begin
+var nextfield = "question_field"; // name of first box on page
+netscape = "";
+ver = navigator.appVersion; len = ver.length;
+for(iln = 0; iln < len; iln++) if (ver.charAt(iln) == "(") break;
+netscape = (ver.charAt(iln+1).toUpperCase() != "C");
+
+function keyDown(DnEvents) { // handles keypress
+// determines whether Netscape or Internet Explorer
+	k = (netscape) ? DnEvents.which : window.event.keyCode;
+	//window.status = k;
+	if (k == 13){ // enter key pressed
+		if(!alreadySubmitted) {
+		 	document.forms[0].submit();
+			alreadySubmitted = true;
+///alert("Subit");
+		 	return true; // submit, we finished all fields
+			}
+		}	
+}
+
+function IEkeyDown(k) { // handles keypress
+		if(!alreadySubmitted) {
+		 	document.forms[0].submit();
+			alreadySubmitted = true;
+alert("Submit");
+		 	return true;
+		}
+}
+
+
+if (window.document.captureEvents!=null) 
+ window.document.captureEvents(Event.KEYPRESS);
+ window.document.onkeypress = keyDown;
+
+//  End -->
+</SCRIPT>
+</HEAD>
+<body bgcolor="#FFFFFF" link="#333399" vlink="#333399" alink="#999999" leftmargin="15" topmargin="0" marginwidth="15" marginheight="0">
+<FORM METHOD=POST ACTION="#SERVLET_URL#SearchDocs" name="form1">
+  <table border="0" width="500" cellpadding="2" cellspacing="0">
+    <tr> 
+    <td><img src="file://///images/sok.gif" width="500" height="27" align="top"></td>
+  </tr>
+  <tr> 
+    <td>&nbsp;</td>
+  </tr>
+</table>
+  <table border="1" width="450" cellpadding="2" cellspacing="0">
+    <tr bgcolor="#333366"> 
+      <td><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Enter key search words below 
+        :</font></b> </td>
+    </tr>
+    <tr bgcolor="#BABABA" valign="middle"> 
+      <td height="46"> 
+        <input type="text" name="question_field" size="65">
+        <input type="submit" name="search" value="Search"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">       Please separate words with space, i.e: Dog Cat 
+       </font>
+        <BR>
+      </td>
+    </tr>
+    <tr bgcolor="#BABABA" valign="middle"> 
+      <td> 
+        <input type="radio" name="search_prep" value="or">
+        <font face="Verdana, Arial, Helvetica, sans-serif" size="2">One of the words must be found on the page (OR)
+        <input type="hidden" name="start" value="#START#">
+        </font></td>
+    </tr>
+    <tr bgcolor="#BABABA" valign="middle"> 
+      <td> 
+        <input type="radio" name="search_prep" value="and" checked>
+        <font face="Verdana, Arial, Helvetica, sans-serif" size="2">All of the words must be found on the page 
+       (AND)</font></td>
+    </tr>
+    <tr bgcolor="#BABABA" valign="middle"> 
+      <td> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+        <input type="checkbox" name="search_type" value="atc_icd10">
+        Search by subject codes in use</font></td>
+    </tr>
+    <tr bgcolor="#BABABA" valign="middle"> 
+      <td> 
+        <input type="checkbox" name="string_match" value="match">
+        <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Exact string match (combine with one of the above criteria)</font></td>
+    </tr>
+    <tr bgcolor="#BABABA" valign="middle"> 
+      <td> <BR> 
+        <select name="search_area" size="1">
+          <option value="all" selected>All Pages</option>
+          <option value="not_archived">Pages in use</option>
+          <option value="archived">Pages in archives</option>
+        </select>
+        <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Enter search area
+        (All=in this domain)</font></td>
+    </tr>
+  </table>
+  <br>
+  Version 4 
+</FORM>
+  
+<SCRIPT language=JavaScript>
+<!--
+var alreadySubmitted = false;
+document.form1.elements[0].focus();
+//document.forms[0].elements[1].focus();
+//-->
+</SCRIPT>
+</BODY></HTML>

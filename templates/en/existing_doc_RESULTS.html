@@ -1,0 +1,158 @@
+<html>
+<head>
+<title>GetExistingDocTemplate</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<!--
+	Author:		Mårten Wallin
+	Created:	2001-04-04
+	Info:		Loop function uses following syntax:
+					 @loop (%name:["loopens namn"], %start:["startvärde"], %end:["slutvärde"])
+					Ex: @loop (%name:"loop1", %start:"1", %end:"#end_value#")
+					Loop must end with
+						@end_loop (%name:"loop1")
+					All parameters must be enclosed by double or single quotation marks.
+
+	Important:	Remember that meta_tags that are created are not allowed to have a name conflict-
+				with other meta_tags: for example if you were to create the following meta_
+				tags called #meta_id0#, #meta_id1# och #meta_id2# ...	
+				<a href="/servlet/GetDoc?meta_id=#link_to_meta%loop1%#">#meta_id%loop1%#</a>
+
+-->
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<!-- THE FORM -->
+<form name="resultForm" action="/servlet/GetExistingDoc" method="POST"> 
+  <table width="95%" border="1" cellspacing="1" cellpadding="1">
+    <tr> 
+      <td colspan="4" bgcolor="#333366"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF">List of 
+        pages </font></b></font></td>
+    </tr>
+    <tr bgcolor="#9999FF"> 
+      <td colspan="2"><font size="1" face="Verdana, Arial, Helvetica, sans-serif"></font></td>
+      <td width="10%"> 
+        <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+          #butt_hide_start1#<input type="submit" name="back" value="previous">#butt_hide_end1#
+          </font></div>
+      </td>
+      <td width="11%"> 
+        <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+          #butt_hide_start2#<input type="submit" name="next" value="next">#butt_hide_end2#
+          </font></div>
+      </td>
+    </tr>
+  </table>
+<input type="hidden" name="sqlstring" value="#sqlstring#">
+<input type="hidden" name="hitsPerPage" value="#hitsPerPage#">
+<input type="hidden" name="userID" value="#userID#">
+<input type="hidden" name="searchString" value="#searchString#">
+<input type="hidden" name="search_prep" value="#search_prep#">
+<input type="hidden" name="doc_types" value="#doc_types#">
+<input type="hidden" name="sortBy" value="#sortBy#">
+<input type="hidden" name="includeDocStr" value="#includeDocStr#">
+<input type="hidden" name="fromDoc" value="#fromDoc#">
+<input type="hidden" name="doc_count" value="#doc_count1#">
+</form>
+<!-- THE RESULTS, HEADER -->
+<form name="resultForm" action="/servlet/GetExistingDoc" method="POST"> 
+<table width="95%" border="1" cellspacing="1" cellpadding="1">
+  <tr bgcolor="#333366"> 
+      <td colspan="10"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>&nbsp;Page 
+        no. #doc_start# to #doc_end# ( of a total of #doc_count1# pages)</b></font></td>
+  </tr>
+  <tr bgcolor="#9999FF"> 
+    <td> 
+      <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">selected</font></b></div>
+    </td>
+    <td> 
+      <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#meta_id#</font></b></div>
+    </td>
+    <td> 
+      <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#meta_headline#</font></b></div>
+    </td>
+    <td> 
+      <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#meta_text#</font></b></div>
+    </td>
+    <td> 
+      <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#doc_type#</font></b></div>
+    </td>
+    <td> 
+      <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#date_created#</font></b></div>
+    </td>
+    <td> 
+      <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#date_modified#</font></b></div>
+    </td>
+    <td> 
+      <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#date_archived#</font></b></div>
+    </td>
+    <td> 
+      <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#date_activated#</font></b></div>
+    </td>
+    <td> 
+      <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#archive#</font></b></div>
+    </td>
+  </tr>
+<!-- LOOP PART OF TABLE -->
+  <? @loop (%name:"loop1", %start:"1", %end:"#end_value#") ?>
+  <tr> 
+    <td> <font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+      <input type="checkbox" name="chosen" value="#meta_id%loop1%#">
+      </font></td>
+    <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><a href="/servlet/GetDoc?meta_id=#meta_id%loop1%#" target="_blank">#meta_id%loop1%#</a></font></td>
+    <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#meta_headline%loop1%#</font></td>
+    <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#meta_text%loop1%#</font></td>
+    <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#doc_type%loop1%#</font></td>
+    <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#date_created%loop1%#</font></td>
+    <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#date_modified%loop1%#</font></td>
+    <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#date_archived%loop1%#</font></td>
+    <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#date_activated%loop1%#</font></td>
+    <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1">#archive%loop1%#</font></td>
+  </tr>
+<? @/loop (%name:"loop1") ?>
+<!-- FOOTER -->
+  <tr bgcolor="#9999FF"> 
+    <td colspan="8">&nbsp;</td>
+    <td colspan="2"> 
+      <div align="center">
+        <input type="submit" name="subba" value="Send selected">
+      </div>
+    </td>
+  </tr>
+  
+</table>
+</form>
+<!-- THE FORM AGAIN -->
+<form name="resultForm" action="/servlet/GetExistingDoc" method="POST"> 
+  <table width="95%" border="1" cellspacing="1" cellpadding="1">
+    <tr> 
+      <td colspan="4" bgcolor="#333366"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF">List  
+        of pages </font></b></font></td>
+    </tr>
+    <tr bgcolor="#9999FF"> 
+      <td colspan="2"><font size="1" face="Verdana, Arial, Helvetica, sans-serif"></font></td>
+      <td width="10%"> 
+        <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+          #butt_hide_start1#<input type="submit" name="back" value="previous">#butt_hide_end1#
+          </font></div>
+      </td>
+      <td width="11%"> 
+        <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+          #butt_hide_start2#<input type="submit" name="next" value="next">#butt_hide_end2#
+          </font></div>
+      </td>
+    </tr>
+  </table>
+<input type="hidden" name="sqlstring" value="#sqlstring#">
+<input type="hidden" name="hitsPerPage" value="#hitsPerPage#">
+<input type="hidden" name="userID" value="#userID#">
+<input type="hidden" name="searchString" value="#searchString#">
+<input type="hidden" name="search_prep" value="#search_prep#">
+<input type="hidden" name="doc_types" value="#doc_types#">
+<input type="hidden" name="sortBy" value="#sortBy#">
+<input type="hidden" name="includeDocStr" value="#includeDocStr#">
+<input type="hidden" name="fromDoc" value="#fromDoc#">
+<input type="hidden" name="doc_count" value="#doc_count1#">
+</form>
+
+</body>
+</html>

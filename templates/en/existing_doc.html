@@ -1,0 +1,254 @@
+<html>
+
+<HEAD>
+<TITLE>Admin</TITLE>
+</HEAD>
+<BODY  bgcolor="#FFFFFF">
+<FORM METHOD="post" ACTION="/servlet/GetExistingDoc">
+<CENTER>
+      <TABLE cellpadding="2" cellspacing="0" align="center" border="1" width="631" height="1">
+		<TR bgcolor="#333366"> 
+		  
+        <TD width="623" height="16"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><b>&nbsp;Link existing page 
+          </b></font></TD>
+		</TR>
+		<TR bgcolor="#333366"> 
+		  <TD width="623" height="16"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;Meta ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2726</font> 
+		  </TD>
+		</TR>
+		<TR valign="middle"> 
+		  <TD bgcolor="#BABABA" width="623" height="52"> 
+			<p>&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Page
+            with Meta ID</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="TEXT" name="existing_meta_id" value="" SIZE=10> &nbsp;&nbsp;&nbsp;
+            <INPUT TYPE=SUBMIT VALUE="Add link" NAME="ok"><INPUT TYPE=RESET VALUE="Reset"><INPUT TYPE=SUBMIT VALUE="cancel" NAME="cancel"> 
+			</p>
+			</TD>
+		</TR>
+		</TABLE>
+		<BR><input type="hidden" name="meta_id_value" value=#meta_id#>
+			<input type="hidden" name="doc_meny_no" value=#doc_meny_no#>
+		
+    <TABLE cellpadding="2" cellspacing="0" align="center" border="1" width="631" height="1">
+      <TR bgcolor="#333366" valign="middle"> 
+        <TD bgcolor="#333366" width="623" height="26" colspan="2"> 
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr> 
+              <td><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>&nbsp;Search for 
+                existing page </b></font> 
+              </td>
+            </tr>
+          </table>
+          <font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+          &nbsp;Key words: 
+          <input type="text" name="searchstring" size="65">
+          &nbsp;&nbsp;AND</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+          <input type="radio" value="and" name="search_prep">
+          </font><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;&nbsp;OR</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+          <input type="radio" value="or" name="search_prep" checked>
+          </font></TD>
+      </TR>
+      <TR> 
+        <TD bgcolor="#BABABA" width="623" height="52" colspan="2"> 
+          <table width="100%" border="1" cellspacing="1" cellpadding="1">
+            <tr> 
+              <td width="50%"> 
+                <table border="0" cellspacing="1" cellpadding="1" width="100%" height="100%">
+                  <tr> 
+                    <td colspan="2"> 
+                      <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><u>Include 
+                        following document types</u></b></font></div>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Text page: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="doc_type" value="2" checked>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Link: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="doc_type" value="5" checked>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Browser switch: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="doc_type" value="6" checked>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">HTML document: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="doc_type" value="7" checked>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">File upload: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="doc_type" value="8" checked>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Diagram 
+                        page: </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="doc_type" value="101" checked>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Conference 
+                        page: </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="doc_type" value="102" checked>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td width="50%"> 
+                <table border="0" cellspacing="1" cellpadding="1" width="100%" height="100%">
+                  <tr> 
+                    <td colspan="2"> 
+                      <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><u>Include 
+                        pages altered during following period</u></b></font></div>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Start 
+                        date: </font></div>
+                    </td>
+                    <td> 
+                      <input type="text" name="start_date" size="16" maxlength="16" value="#now#">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">End
+                        date: </font></div>
+                    </td>
+                    <td> 
+                      <input type="text" name="end_date" size="16" maxlength="16" value="#now#">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Created: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="include_doc" value="created" checked>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Modified: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="include_doc" value="changed" checked>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Activated: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="include_doc" value="activated">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Archived: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="include_doc" value="archived">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td colspan="2">&nbsp; </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </TD>
+      </TR>
+      <TR> 
+        <TD bgcolor="#BABABA" height="" colspan="2"> 
+          <table width="100%" border="0" cellspacing="1" cellpadding="1">
+            <tr> 
+              <td width="25%"> 
+                <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Sort 
+                  by: </font></div>
+              </td>
+              <td width="25%"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                <select name="sortBy">
+                  <option value="meta_id" selected>Meta ID</option>
+                  <option value="meta_headline">Header</option>
+                  <option value="doc_type">Page type</option>
+                  <option value="date_modified">Date modified</option>
+                  <option value="date_created">Date created</option>
+                  <option value="date_archived">Date archived</option>
+                  <option value="date_activated">Date activated</option>
+                </select>
+                </font></td>
+              <td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"></font></td>
+            </tr>
+            <tr> 
+              <td width="25%"> 
+                <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Hits 
+                  per page: </font></div>
+              </td>
+              <td width="25%"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                <select name="HitsPerPage">
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50" selected>50</option>
+                  <option value="100">100</option>
+                </select>
+                </font></td>
+              <td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"></font></td>
+            </tr>
+            <tr> 
+              <td colspan="3"> 
+                <div align="left"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b></b> 
+                  </font><font face="Verdana, Arial, Helvetica, sans-serif" size="1"></font><font face="Verdana, Arial, Helvetica, sans-serif" size="1"></font> 
+                </div>
+                <div align="right"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a href="/help/existing_doc_HELP.html" target="_blank"><font size="1">Help</font></a></b> 
+                  &nbsp; </font> 
+                  <input type="submit" name="search" value="Search">
+                  <font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                  </font></div>
+              </td>
+            </tr>
+          </table>
+        </TD>
+      </TR>
+    </TABLE>
+    </center>
+</FORM>
+</BODY>
+</HTML>

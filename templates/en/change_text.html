@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<TITLE>Change text</TITLE>
+<style type="text/css">
+<!--
+.hide {  visibility: hidden; }
+.show {  visibility: visible; }
+-->
+</style>
+</HEAD>
+<BODY  bgcolor="#FFFFFF"><H3>
+  <FORM METHOD=POST ACTION="#servlet_url#SaveText" name="">
+    <TABLE width="430" align="center" cellpadding="2" cellspacing="0" border="1">
+      <CENTER>
+        <TR bgcolor="#333366" > 
+          <TD align="left"><B><font face="Verdana, Arial, Helvetica, sans-serif" size="3" color="#FFFFFF">&nbsp;<font size="2">Change 
+            text</font>&nbsp;</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;&nbsp;&nbsp;</font></B><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Txt#txt_no#</font></TD>
+</TR>
+        <TR bgcolor="#333366"> 
+          <TD><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;Meta ID&nbsp;&nbsp;&nbsp;&nbsp;#meta_id#</font></TD>
+        </TR>
+        <TR > 
+          <TD bgcolor="#BABABA"> 
+            <textarea name=text cols=70 rows=15 wrap="VIRTUAL">
+#txt#</textarea>
+          </TD>
+        </TR>
+        <TR> 
+          <TD valign="middle" align="left" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Format:&nbsp;&nbsp;&nbsp;&nbsp;</font> 
+            <INPUT TYPE=RADIO NAME=type VALUE="0" #!html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Plain text</font>&nbsp;&nbsp; 
+            <INPUT TYPE=RADIO NAME=type VALUE="1" #html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HTML</font></TD>
+        </TR>
+        <INPUT TYPE=HIDDEN NAME=txt_no VALUE=#txt_no#>
+        <TR> 
+          <TD valign="middle" align="center" bgcolor="#BABABA"> 
+            <INPUT TYPE=SUBMIT VALUE="OK" NAME="ok">
+			<INPUT TYPE=RESET VALUE="Reset">
+            <INPUT TYPE=SUBMIT VALUE="Cancel" NAME="cancel">
+            <span id="three" style="position:absolute; visibility:hidden"> 
+            
+            </span>
+          </TD>
+        </TR>
+      </CENTER>
+      <INPUT TYPE=HIDDEN NAME=meta_id VALUE=#meta_id#>
+    </TABLE>
+</FORM>
+</H3>
+<!-- Focuses on textfield if browser supports javascript -->
+<script language="JavaScript">
+<!--
+document.forms[0].text.focus();
+document.all.three.style.visibility = "visible";
+//-->
+</script>
+</BODY></HTML>

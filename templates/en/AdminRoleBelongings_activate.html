@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html40/strict.dtd">
+<html>
+<head>
+<title>Administrate user status</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="#SERVLET_URL#AdminRoleBelongings" name="UserInfo">
+  <table width="40%" border="0" cellspacing="0">
+	<tr bgcolor="#333366"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"> 
+		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">De-/Activate 
+          user</font></b></div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"> <font face="Verdana, Arial, Helvetica, sans-serif">
+        <input type="hidden" name="CURENT_ROLE_ID" value="#CURENT_ROLE_ID#">
+        Current role: #CURENT_ROLE_NAME#</font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"> 
+        <table width="100%" border="0">
+          <tr> 
+            <td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif">User:</font></td>
+          </tr>
+          <tr> 
+            <td width="50%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+              <select name="USER_ID" size="10" multiple>
+          #USER_MENU#
+              </select>
+              </font></td>
+          </tr>
+        </table>
+      </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%">&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"> 
+        <input type="submit" name="BELONGING_ACTIVATE" value="Activate" >
+        <input type="submit" name="BELONGING_DEACTIVATE" value="Deactivate" >
+        <input type="submit" name="BELONGING_CANCEL" value="Cancel">
+      </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp; </td>
+	  <td width="90%">&nbsp; </td>
+	  <td width="5%">&nbsp; </td>
+	</tr>
+  </table>
+  </form>
+</body>
+</html>

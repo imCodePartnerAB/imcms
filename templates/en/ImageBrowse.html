@@ -1,0 +1,20 @@
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>
+</head>
+<body bgcolor='#FFFFFF'>
+<form name='form1' method='POST' action='/servlet/ChangeImage'>
+<select name='imglist' size='25'>
+#options#
+</select>
+  #img_preview# 
+  <p>
+<INPUT TYPE=HIDDEN NAME=meta_id VALUE=#meta_id#>
+<INPUT TYPE=HIDDEN NAME=img_no VALUE=#img_no#>
+<p>
+    <input type='submit' name='OK' value='Insert selected image'>
+    <input type='submit' name='preview' value='Preview selected image' target='_blank'>
+</form>
+</body>
+</html>

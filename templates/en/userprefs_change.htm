@@ -1,0 +1,249 @@
+<html>
+<head>
+<title>Edit user data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<SCRIPT language=JavaScript>
+<!--
+
+function evalPrepareAdd() {
+  // Lets check that those fields which are mandatory 
+	var valFieldsOk 
+	valFielsOk = true
+
+	if( document.UserInfo.login_name.value == "" ) valFieldsOk = false  	
+	//if( document.UserInfo.password1.value == "" ) valFieldsOk = false  	
+	//if( document.UserInfo.password2.value == "" ) valFieldsOk = false  	
+	if( document.UserInfo.first_name.value == "" ) valFieldsOk = false  	
+	if( document.UserInfo.last_name.value == "" ) valFieldsOk = false  	
+
+	if(valFieldsOk == "") {
+		var msg = "You did not fill in all of the obligatory fields! Please fill in the fields marked with an asteric."
+		alert(msg)
+		return false	
+	}
+
+
+//	var userType 
+//	userType = document.UserInfo.user_type.selectedIndex 
+	
+// Lets check if the user has make a choice
+//	if(userType == "-1") {
+//		var msg = "You have not selected user type! Please select a user type"
+//		alert(msg)
+//		return false	
+//	}
+
+//	var userRole 
+//	userRole = document.UserInfo.roles.selectedIndex 
+//	if(userRole == "-1") {
+//		var msg = "You have not selected a role for the user! Please select role(s) now"
+//		msg += "the user should have."
+//		alert(msg)
+//		return false	
+//	}
+
+	return true
+}
+
+//-->
+</SCRIPT>
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="#SERVLET_URL#UserChangePrefs" name="UserInfo">
+  <input type="hidden" name="CURR_USER_ID" value="#CURR_USER_ID#">
+  <input type="hidden" name="adminTaskold" value="#ADMIN_TASK#">
+  <input type="hidden" name="login_name" value="#LOGIN_NAME#">
+  <table width="40%" border="0" cellspacing="0">
+    <tr bgcolor="#333366"> 
+      <td width="5%">&nbsp;</td>
+      <td colspan="3"> 
+        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Edit user data </font></b></div>
+      </td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td colspan="3"><font size="2"> <font face="Verdana, Arial, Helvetica, sans-serif">Please fill in all text fields when creating a new user. User name and password must consist of 4-15 English characters</font></font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%">&nbsp;</td>
+      <td width="4%">&nbsp;</td>
+      <td width="66%"> <font size="2"><a href="#SERVLET_URL#StartDoc"><font face="Verdana, Arial, Helvetica, sans-serif">To 
+        the start page!</font></a> </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">User Name:</font></td>
+      <td width="4%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
+      <td width="66%"><font size="2">#LOGIN_NAME#</font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Password:</font></td>
+      <td width="4%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
+      <td width="66%"> <font size="2"> 
+        <input type="password" name="password1" size="25" value="#PWD1#">
+        </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Verify
+        password:</font></td>
+      <td width="4%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
+      <td width="66%"> <font size="2"> 
+        <input type="password" name="password2" size="25" value="#PWD2#">
+        </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Given name:</font></td>
+      <td width="4%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
+      <td width="66%"> <font size="2"> 
+        <input type="text" name="first_name" size="25" value="#FIRST_NAME#">
+        </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Family name:</font></td>
+      <td width="4%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
+      <td width="66%"> <font size="2"> 
+        <input type="text" name="last_name" size="25" value="#LAST_NAME#">
+        </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Title:</font></td>
+      <td width="4%">&nbsp;</td>
+      <td width="66%"><font size="2"> 
+        <input type="text" name="title" size="25" value="#TITLE#">
+        </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Workplace:</font></td>
+      <td width="4%">&nbsp;</td>
+      <td width="66%"><font size="2"> 
+        <input type="text" name="company" size="25" value="#COMPANY#">
+        </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Street address:</font></td>
+      <td width="4%"><font size="2">&nbsp;</font></td>
+      <td width="66%"> <font size="2"> 
+        <input type="text" name="address" size="25" value="#ADDRESS#">
+        </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Postal Code:</font></td>
+      <td width="4%"><font size="2">&nbsp;</font></td>
+      <td width="66%"> <font size="2"> 
+        <input type="text" name="zip" size="25" value="#ZIP#">
+        </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Town 
+        :</font></td>
+      <td width="4%"><font size="2">&nbsp;</font></td>
+      <td width="66%"> <font size="2"> 
+        <input type="text" name="city" size="25" value="#CITY#">
+        </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">County:</font></td>
+      <td width="4%"><font size="2">&nbsp;</font></td>
+      <td width="66%"> <font size="2"> 
+        <input type="text" name="country_council" size="25" value="#COUNTRY_COUNCIL#">
+        </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Country:</font></td>
+      <td width="4%"><font size="2">&nbsp;</font></td>
+      <td width="66%"> <font size="2"> 
+        <input type="text" name="country" size="25" value="#COUNTRY#">
+        </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">E-mail:</font></td>
+      <td width="4%"><font size="2">&nbsp;</font></td>
+      <td width="66%"> <font size="2"> 
+        <input type="text" name="email" size="25" value="#EMAIL#">
+        </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%">&nbsp;</td>
+      <td width="4%">&nbsp;</td>
+      <td width="66%"><font size="2"> </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"></font></td>
+      <td width="20%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Phone number:</font></td>
+      <td width="4%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"></font></td>
+      <td width="66%"><font size="2"> 
+        <select name="user_phones" multiple size="1">
+          #PHONES_MENU#
+        </select>
+        <input type="submit" name="edit_phones" value="Edit">
+        </font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="20%"><font size="2">&nbsp;</font> </td>
+      <td width="4%"><font size="2">&nbsp;</font></td>
+      <td width="66%"> <font size="2" face="Verdana, Arial, Helvetica, sans-serif">* 
+        NB: These text fields MUST be filled in.</font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td colspan="3"> 
+        <p align="center"><font size="2"><a href="#SERVLET_URL#StartDoc"><font face="Verdana, Arial, Helvetica, sans-serif">To 
+          the start page!</font></a> </font></p>
+      </td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa">
+      <td width="5%">&nbsp;</td>
+      <td colspan="3"> 
+        <input type="submit" name="SAVE_USER" value="Save" onClick="if(evalPrepareAdd()==false)return false; return true;">
+        <input type="reset" name="Reset" value="Reset">
+        <input type="submit" name="GO_BACK" value="Cancel">
+      </td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td colspan="3">&nbsp;</td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+  </table>
+  </form>
+<p>&nbsp; </p>
+</body>
+</html>

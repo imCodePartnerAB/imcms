@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>imCMS Administration Manager</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="#SERVLET_URL#AdminManager" name="AdminManager">
+  <table width="40%" border="0" cellspacing="0">
+	<tr bgcolor="#333366"> 
+      <td width="5%">&nbsp;</td>
+      <td colspan="2"> 
+        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Administration Menu</font></b></div>
+      </td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td colspan="2"> 
+		<div align="left"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Select an
+		  administrator function.</font></div>
+      </td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td colspan="2"> 
+		<select name="AdminTask">
+          <option value="No_Choice" selected>-- Select an administrator function 
+          --</option>
+          <option value="UserStart">Administrate users</option>
+          <option value="AdminRoles">Administrate roles</option>
+          <option value="IP-access">Administrate IP access</option>
+          <option value="AddTemplates">Administrate templates</option>
+          <option value="MetaAdmin">Show all pages</option>
+          <option value="DeleteDocs">Remove a page</option>
+          <option value="UrlDocTest">Check Internet links</option>
+          <option value="CounterStart">Administrate counter</option>
+          <option value="SystemMessage">Administrate system information</option>
+          <option value="FileAdmin">Administrate files</option>
+          <option value="ListDocs">Page changes</option>
+          <option value="AdminConference">Administrate conferences</option>
+        </select>
+        <input type="submit" name="submit" value="Go to Admin page">
+      </td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td colspan="2">&nbsp;</td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+  </table>
+  <p><a href="#SERVLET_URL#StartDoc">Back to start page</a></p>
+  </form>
+</body>
+</html>

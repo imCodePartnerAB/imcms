@@ -1,0 +1,82 @@
+<FORM METHOD=POST ACTION="#servlet_url#SaveInPage">
+  <table BORDER="1" cellspacing="0" cellpadding="2" width="570">
+    <tr bgcolor="#333366"> 
+      <td valign="top" colspan="2"><B><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;Administrate 
+        page </font></B></td>
+    </tr>
+    <tr bgcolor="#333366"> 
+      <td valign="top" colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;Meta ID:&nbsp;&nbsp;#getMetaId#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font> 
+		&nbsp;&nbsp;&nbsp;&nbsp;<font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF">Sort:</font>&nbsp;&nbsp;&nbsp; 
+		<font face="Verdana, Arial, Helvetica, sans-serif"><font size="1" color="#FFFFFF">
+		<input type=RADIO name=sort_order value="1" #sortOrder1#>
+		Alphabetically</font></font> &nbsp; <font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF">
+		<input type=RADIO name=sort_order value="2" #sortOrder2#>
+		Manually</font> &nbsp;<font color="#FFFFFF"> <br><center><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+		<input type=RADIO name=sort_order value="3" #sortOrder3#>
+		Chronologically</font></font> </center></td>
+    </tr>
+    <tr> 
+      <td valign="top" bgcolor="#BABABA" height="36" width="441"> 
+        <p>&nbsp;<font size="1"> <font face="Verdana, Arial, Helvetica, sans-serif">Current 
+          format directory: (#group#)<br>
+          <select name="group" size=1>#getTemplateGroups#                                    
+              
+          </select>
+          <input type="submit" name="change_group" value="Change directory">
+          </font></font></p>
+      </td>
+      <td valign="bottom" bgcolor="#BABABA" height="36" width="115"> 
+        <div align="center"><font size="2"><b><font
+size="2"><b><font
+size="2"><b><font size="2"><b><font
+size="2"><b><font
+size="2"><b><font size="2"><b><font size="2"><b><font size="2"><b><font size="2"><b> 
+          <input type="submit" name="metadata" value="Meta-data">
+          </b></font></b></font></b></font> </b></font></b></font></b></font></b></font></b></font></b></font></b></font></div>
+      </td>
+    </tr>
+    <tr> 
+      <td valign="top" bgcolor="#BABABA" height="36" width="441">&nbsp;<font size="1"> 
+        <font face="Verdana, Arial, Helvetica, sans-serif">Current template:</font></font> 
+        <font size="1"> <font face="Arial, Helvetica, sans-serif, Arial Black">(#simple_name#)</font></font> 
+        <br>
+        <select name="template" size=1>
+			#getTemplates#                                      
+        </select>
+        <font size="1"><font size="2"><b><font
+size="2"><b><font
+size="2"><b><font size="2"><b><font
+size="2"><b><font
+size="2"><b><font size="2"><b> 
+        <input type="submit" name="preview" value="Preview template">
+        </b></font></b></font></b></font></b></font></b></font></b></font></b></font><font face="Verdana, Arial, Helvetica, sans-serif"> 
+        </font></font> </td>
+      <td valign="bottom" bgcolor="#BABABA" height="36" width="115"> 
+        <div align="right"><font size="2"><b><font size="2"><b> 
+          <center>
+            <font size="2"><b><font size="2"><b><font
+size="2"><b><font
+size="2"><b><font size="2"><b><font
+size="2"><b><font
+size="2"><b><font size="2"><b> 
+            <input type="submit" name="update" value="Update">
+            </b></font></b></font></b></font></b></font></b></font></b></font> 
+            </b></font> </b></font> 
+          </center>
+          </b></font> </b> </font></div>
+      </td>
+    </tr>
+    <!--<TR><TD><B>Format template</B></TD><TD><B>Current template:</B> #template#
+&nbsp;
+<INPUT TYPE=SUBMIT VALUE="Change format" NAME="submit">
+</TD></TR>
+<TR><TD><B>Menu's text format<BR>(Only in link menu)</B></TD><TD><B>Current
+template:</B> #text_template# &nbsp;
+<INPUT TYPE=SUBMIT VALUE="Change text format" NAME="submit">
+</TD></TR>--> <!--<TR><TD><B>Help text</B></TD><TD>
+<SELECT NAME=list_help_text SIZE=1>#getHelpTexts#</SELECT></TD></TR>-->
+ 	#getDocType# 
+    #DocMenuNo# 
+    <input type=HIDDEN name=meta_id value="#getMetaId#">
+ </table>
+</FORM>

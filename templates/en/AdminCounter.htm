@@ -1,0 +1,128 @@
+<html>
+<head>
+<title>Counter Manager</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<table width="40%" border="0" cellspacing="0">
+  <tr bgcolor="#333366"> 
+	<td width="5%">&nbsp;</td>
+	<td> 
+	  <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Counter Manager</font><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF"> 
+		</font></b></div>
+	</td>
+	<td width="5%">&nbsp;</td>
+  </tr>
+  <tr bgcolor="#bababa"> 
+	<td width="5%">&nbsp;</td>
+	<td>&nbsp; </td>
+	<td width="5%">&nbsp;</td>
+  </tr>
+  <tr bgcolor="#bababa"> 
+	<td width="5%">&nbsp;</td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Administrate counter</b></font></td>
+	<td width="5%">&nbsp;</td>
+  </tr>
+  <tr bgcolor="#bababa"> 
+	<td width="5%"><font size="2">&nbsp;</font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Current visitor count below:</font></td>
+	<td width="5%"><font size="2">&nbsp;</font></td>
+  </tr>
+  <tr bgcolor="#bababa"> 
+	<td width="5%"><font size="2">&nbsp;</font></td>
+	<td> 
+	  <form method="post" action="#SERVLET_URL#AdminCounter">
+		<table width="100%" border="0">
+		  <tr> 
+			<td width="34%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Current visitor count:</font></td>
+			<td width="66%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#COUNTER_VALUE# 
+			  </font></td>
+		  </tr>
+		  <tr> 
+			<td width="34%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Edit 
+			  counter:</font></td>
+			<td width="66%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+			  <input type="text" name="counter_value" value="#COUNTER_VALUE#" maxlength="80" size="10">
+			  <input type="submit" name="setCounter" value="Set counter">
+			  </font></td>
+		  </tr>
+		</table>
+	  </form>
+	</td>
+	<td width="5%"><font size="2">&nbsp;</font></td>
+  </tr>
+  <!--tr bgcolor="#bababa"> 
+	<td width="5%"><font size="2">&nbsp;</font></td>
+	<td colspan="2"><font size="2">&nbsp;</font> </td>
+	<td width="5%"><font size="2">&nbsp;&nbsp;</font></td>
+  </tr-->
+  <tr bgcolor="#bababa"> 
+	<td width="5%"><font size="2">&nbsp;</font></td>
+	<td> 
+	  <hr>
+	</td>
+	<td width="5%"><font size="2">&nbsp;</font></td>
+  </tr>
+  <tr bgcolor="#bababa"> 
+	<td width="5%">&nbsp;</td>
+	<td>&nbsp;</td>
+	<td width="5%">&nbsp;</td>
+  </tr>
+  <tr bgcolor="#bababa"> 
+	<td width="5%">&nbsp;</td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Administrate 
+	  starting date</b></font></td>
+	<td width="5%">&nbsp;</td>
+  </tr>
+  <tr bgcolor="#bababa"> 
+	<td width="5%">&nbsp;</td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Server's starting date below:</font></td>
+	<td width="5%">&nbsp;</td>
+  </tr>
+  <tr bgcolor="#bababa"> 
+	<td width="5%">&nbsp;</td>
+	<td> 
+	  <form method="post" action="#SERVLET_URL#AdminCounter">
+		<table width="100%" border="0">
+		  <tr> 
+			<td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Current 
+			  starting date:</font></td>
+			<td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#DATE_VALUE# 
+			  </font></td>
+		  </tr>
+		  <tr> 
+			<td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Edit 
+			  starting date</font></td>
+			<td width="60%"> <font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+			  <input type="text" name="date_value" value="#DATE_VALUE#" maxlength="80" size="10">
+			  <input type="submit" name="setDate" value="Set date">
+			  </font></td>
+		  </tr>
+		</table>
+	  </form>
+	</td>
+	<td width="5%">&nbsp;</td>
+  </tr>
+  <tr bgcolor="#bababa"> 
+	<td width="5%">&nbsp;</td>
+	<td> 
+	  <div align="center"> 
+		<hr>
+		<form method="post" action="#SERVLET_URL#AdminCounter" name="Counter">
+		  <div align="left"> 
+			<input type="submit" name="CancelCounter" value="Back">
+		  </div>
+		</form>
+	  </div>
+	</td>
+	<td width="5%">&nbsp;</td>
+  </tr>
+  <tr bgcolor="#bababa">
+	<td width="5%">&nbsp;</td>
+	<td>&nbsp;</td>
+	<td width="5%">&nbsp;</td>
+  </tr>
+</table>
+</body>
+</html>

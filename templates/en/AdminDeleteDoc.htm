@@ -1,0 +1,107 @@
+<html>
+<head>
+<title>Remove a web page</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<SCRIPT language=JavaScript>
+<!--
+
+function clearForm() {
+	document.DeleteDoc.delete_meta_id.value = "" ;	
+}
+/*
+function setAdminTask() {
+	theChoice = document.DeleteDoc.UserChoice.value ;
+	
+	// Lets alert the user, he must make a choice
+	if(theChoice == "NO_CHOOSED") {
+		alert("Please try again and choose an alternative!");
+		return ;	
+	}
+	// Lets go administrate users
+	if(theChoice == "GO_BACK") {
+		document.DeleteDoc.adminTask.value = document.DeleteDoc.UserChoice.value ;
+		document.DeleteDoc.submit() ;
+		return ; 	  
+	}
+
+	// Lets reset the form
+	if(theChoice == "RESET_FORM") {
+		clearForm() ;	
+		return ; 	  
+	}
+
+	// Lets delete a meta id the form
+	if(theChoice == "DELETE_DOC") {
+	var msg = "Warning! The page will be deleted from the site and stored in the server! Continue?" ;
+		var Ok = window.confirm(msg);
+		if (! Ok) 
+		  return ;		 	  
+	}
+
+	document.DeleteDoc.adminTask.value = document.DeleteDoc.UserChoice.value ;
+	document.DeleteDoc.submit() ;
+}
+*/
+function confirmDeleteDoc() {
+	if(confirm("Warning! The page will be removed from the site! Continue?"))
+		return true
+	else 
+		return false
+}
+//-->
+</SCRIPT>
+</head>
+<body bgcolor="#FFFFFF">
+<form method="post" action="#SERVLET_URL#AdminDeleteDoc" name="DeleteDoc">
+  <table width="40%" border="0" height="164" cellspacing="0">
+	<tr bgcolor="#333366"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"> 
+		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Remove a web page 
+		  </font></b></div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%">&nbsp; </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%" height="23">&nbsp;</td>
+	  <td width="90%" height="23"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Please insert
+		meta ID number of the page you wish to remove:</font></td>
+	  <td width="5%" height="23">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		Meta ID number: 
+		<input type="text" name="delete_meta_id" maxlength="9" size="9">
+		</font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%" height="23">&nbsp; </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%" height="23">&nbsp;</td>
+	  <td width="90%" height="26"> 
+		<div align="left">
+		  <input type="submit" name="DELETE_DOC" value="Remove" onClick="if(confirmDeleteDoc()==false)return false; return true;">
+		  <input type="submit" name="GO_BACK" value="Back">
+		</div>
+	  </td>
+	  <td width="5%" height="23">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%" height="26">&nbsp;</td>
+	  <td width="90%">&nbsp;</td>
+	  <td width="5%" height="26">&nbsp;</td>
+	</tr>
+  </table>
+  </form>
+</body>
+</html>

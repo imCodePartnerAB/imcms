@@ -1,0 +1,56 @@
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+  function targetNewWindow() {
+    var exampelWindow = window.open("", "Exempelmall", "height=400, width=700, resizable");
+    document.myForm.target="Exempelmall";
+  }
+
+  function resetTarget() {
+    document.myForm.target="";
+  }
+//-->
+</SCRIPT>
+<FORM name="myForm" METHOD=POST ACTION="#servlet_url#SaveInPage">
+  <table BORDER="1" cellspacing="0" cellpadding="2">
+    <tr bgcolor="#333366">
+      <td valign="top" colspan="2"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;Administrate 
+        Page <!--input type=HIDDEN name=flags value="0"--> </font></b></td>
+    </tr>
+    <tr bgcolor="#333366"> 
+      <td valign="top" colspan="2">
+        <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">
+          Meta ID:&nbsp;&nbsp;#getMetaId#&nbsp;&nbsp;
+        </font>
+      </td>
+    </tr>
+    <tr> 
+      <td valign="top" bgcolor="#BABABA">
+        <div><font size="1"><font face="Verdana, Arial, Helvetica, sans-serif">
+          &nbsp;Current format directory: (#group#)<br>
+          <select name="group" size=1>
+            #getTemplateGroups#                                    
+          </select>
+          </font></font></div><br>
+          <input type="submit" name="change_group" value="Change directory" onClick="resetTarget()">
+      </td>
+      <td valign="top" bgcolor="#BABABA"> 
+        <div><font size="1"> <font face="Verdana, Arial, Helvetica, sans-serif">
+          &nbsp;Current format template: (#simple_name#)<br> 
+          <select name="template" size=1>
+			#getTemplates#
+		    <option></option>
+          </select>
+		</font></font></div><br> 
+        <input type="submit" name="preview" value="Preview template" onClick="targetNewWindow()">
+      </td>
+    </tr>
+    <tr> 
+      <td valign="top" bgcolor="#BABABA" colspan="2"> 
+          <input type="submit" name="update" value="Save" onClick="resetTarget()">
+      </td>
+    </tr>
+  </table>
+<input type=HIDDEN name=meta_id value="#getMetaId#">
+#getDocType# 
+#DocMenuNo#  
+</FORM>

@@ -1,0 +1,88 @@
+<html>
+<head>
+<title>Administrate IP access</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<SCRIPT language=JavaScript>
+<!--
+
+function closeThisWindow() {
+	window.close();
+} //END FUNCTION CloseThisWindow
+
+function confirmDeletetion(){
+	if(confirm("Warning! You are about to remove the IP accesses! Are you sure you wish to continue?"))
+		return true
+	else 
+		return false
+}
+
+function evalEditUser() {
+	var userId
+	userId = document.argumentForm.user_Id.selectedIndex
+	if(userId == "-1" ) {
+		alert("Please select a user first!")
+		return false
+	} else
+		return true
+}
+
+//-->
+</SCRIPT>
+</head>
+<body bgcolor="#FFFFFF">
+<form method="post" action="#SERVLET_URL#AdminIpAccess" name="argumentForm">
+  <table width="40%" border="0" cellspacing="0">
+	<tr bgcolor="#333366"> 
+      <td width="5%">&nbsp;</td>
+      <td width="90%"> 
+        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Administrate 
+		  IP access</font></b></div>
+      </td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="90%">&nbsp; </td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">This tool allows you to let a specific computer or group of computers access your site without logging in! To do this you must identify the computer's IP number or interval of IP numbers and enter it/them below to grant direct access. Anyone using the specified computer will have the level of authority that you assign that IP number.</font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="90%">&nbsp;</td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">#ALL_IP_ACCESSES# 
+		</font></td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="90%" height="23">&nbsp; </td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="90%" height="26"> 
+        <input type="submit" name="ADD_IP_ACCESS" value="Create IP access">
+        <input type="submit" name="RESAVE_IP_ACCESS" value="Save changes" >
+        <input type="submit" name="IP_WARN_DELETE" value="Delete IP access">
+        <input type="submit" name="CANCEL" value="Back" >
+      </td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="5%">&nbsp;</td>
+      <td width="90%">&nbsp;</td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+  </table>
+  </form>
+</body>
+</html>

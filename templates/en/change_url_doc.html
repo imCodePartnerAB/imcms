@@ -1,0 +1,58 @@
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method=POST action="#servlet_url#SaveUrlDoc">
+  <BR><BR><div align="center">
+    <table 0 cellspacing=0 width="450" cellpadding="2" align="center" border="1">
+	  <tr bgcolor="#333366" > 
+		<td width="84%" valign="middle" height="14"><B><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;Change 
+		  URL</font></B></td>
+	  </tr>
+	  <tr bgcolor="#333366" > 
+		<td width="84%" valign="middle" height="14"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;Meta ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#getMetaId#</font></td>
+	  </tr>
+	  <tr  bgcolor="#A1A1A1"> 
+		<td width="84%" valign="middle" height=28 bgcolor="#BABABA" align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;URL 
+		  </font>&nbsp;&nbsp;&nbsp; 
+		  <input type="TEXT" name="url_ref" value="#url_doc_ref#" SIZE=60 MAXLENGTH=255>
+		</td>
+	  </tr>
+	  <TR bgcolor="#A1A1DE">
+		<TD width="84%" bgcolor="#BABABA" valign="middle" align="center">&nbsp;<font size="2"> 
+		  <input type="radio" name="target" value="_self" #_self#>
+		  </font><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Same
+		  frame</font><font size="2"> 
+		  <input type="radio" name="target" value="_new" #_new#>
+		  <font face="Verdana, Arial, Helvetica, sans-serif">New window</font> 
+		  <font size="2"> 
+		  <input type="radio" name="target" value="_top" #_top#>
+		  </font><font face="Verdana, Arial, Helvetica, sans-serif">Full window
+		 </font><font face="Verdana, Arial, Helvetica, sans-serif"><br>
+		  &nbsp;</font><font size="2"> 
+		  <input type="radio" name="target" value="_other" #_other#>
+		  </font><font face="Verdana, Arial, Helvetica, sans-serif">Other frame:</font> 
+		  <input type=text name="frame_name" size=20 value="#frame_name#">
+		  </font></TD>
+	  </TR>
+	  <div align="center"> 
+		<TR bgcolor="#A1A1DE"> 
+		  <TD width="84%" bgcolor="#BABABA" valign="middle" align="center"> 
+			<INPUT TYPE=SUBMIT VALUE="Save" NAME="ok">
+		  </TD>
+		</TR>
+		<INPUT TYPE=HIDDEN NAME=meta_id VALUE="#getMetaId#">
+		<INPUT TYPE=HIDDEN NAME=parent_meta_id VALUE="#getParentMetaId#">
+	  </div>
+	</table>
+      
+      #adminMode#
+    </div>
+  
+  
+</form>
+</body>
+</html>

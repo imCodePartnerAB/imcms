@@ -1,0 +1,48 @@
+<HTML><HEAD><TITLE>Admin - Add a page</TITLE></HEAD>
+<BODY  bgcolor="#FFFFFF">
+<FORM METHOD=POST ACTION="#servlet_url#SaveBrowserDoc" name="">
+  <CENTER>
+    <table border = 1 cellspacing="0" cellpadding="2" width="430" align="center">
+	  <tr bgcolor="#333366" valign="middle"> 
+		<td colspan="3" align="left"> &nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Browser-sensitive switch</font></b></td>
+	  </tr>
+	  <tr bgcolor="#BABABA"> 
+		<td valign="middle" align="left"> 
+		  <div align="center">
+			<center>
+			  <p>
+				<select name="new_browsers" size="7" multiple>
+				#new_browsers#
+                
+		   		</select>
+			  </p>
+			  </center>
+		  </div>
+		</td>
+		<td valign="middle" align="left"> 
+		  <input type="submit" name="add_browsers" value="Add switch --&gt;">
+		</td>
+		<td valign="middle" align="left"> #browsers# </td>
+	  </tr>
+	  <tr bgcolor="#BABABA"> 
+		<td colspan="3" valign="middle" align="left"> &nbsp;<font face="Verdana, Arial, Helvetica, sans-serif"> 
+		  <font size="1">Three steps to automatic switching to pages designed for specific browsers:</font> <br>
+		  &nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="1">1. Select and click "Add switch" for all the 
+		  browsers, browser versions or computer environments for which you have already created specially tailored pages </font> <br>
+		  &nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="1">2. Enter the page meta-id number(s) for corresponding alternative page(s) you created for a specific environment.
+		  </font> <br>
+		  &nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="1">3. NB: The default "parent" page is listed automatically - which will be used for all other browsers than those specified here.</font> </td>
+	  </tr>
+	  #getDocType# 
+	  <tr bgcolor="#BABABA"> 
+		<td colspan="3" valign="middle" align="center"> 
+		  <input type=submit value="Save" name="ok">
+		</td>
+	  </tr>
+	  <input type=HIDDEN name=meta_id value="#getMetaId#">
+	  <INPUT TYPE=HIDDEN name=parent_meta_id value="#getParentMetaId#">
+	</table>
+	#adminMode#  
+</CENTER>
+</FORM>
+</BODY></HTML>
