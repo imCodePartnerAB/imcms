@@ -85,7 +85,7 @@ public class Chat
 			_chatMsgTypes.put(msgTypes.get(i),msgTypes.get(i+1));
 		}
 		
-		_name =  params.getProperty("chatName");
+		_name =  params.getProperty("chatName","");
 		_permission = Integer.parseInt(params.getProperty("permission","3"));
 		_updateTime = Integer.parseInt( params.getProperty("updateTime" , "30" ) );
 		_reload = Integer.parseInt( params.getProperty("reload" , "2" ) );
@@ -197,6 +197,7 @@ public class Chat
 	{
 		Properties params = new Properties();
 		
+		
 		params.setProperty("updateTime" , Integer.toString(_updateTime) );
 		params.setProperty("reload" , Integer.toString(_reload) );
 		params.setProperty("inOut" , Integer.toString(_inOut) );
@@ -204,6 +205,7 @@ public class Chat
 		params.setProperty("publik" , Integer.toString(_publik) );
 		params.setProperty("dateTime" ,Integer.toString(_dateTime) );
 		params.setProperty("font" ,Integer.toString( _font) );
+		params.setProperty("chatName", _name);
 		
 		return params;
 	}
