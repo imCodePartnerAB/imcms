@@ -11,28 +11,31 @@ import imcode.util.log.* ;
 
 public class Utility {
 
-//    static protected Hashtable mimetypes ;
+    static protected Hashtable mimetypes ;
     
-//    static Log log = Log.getLog("server") ;
+    static Log log = Log.getLog("server") ;
 
-//    static {
-    // Read an apache style mime-types file (mime	ext1 ext2 ext3)
+    static {
+	// Read an apache style mime-types file (mime	ext1 ext2 ext3)
 	// and invert it into a hashtable with the extensions as keys.
-//	mimetypes = new Hashtable() ;
-//	try {
-//	    Properties mt = Prefs.getProperties(new File(Prefs.get("mime.types","servlet.cfg"))) ;
-//	    Enumeration enum = mt.propertyNames() ;
-//	    while ( enum.hasMoreElements() ) {
-//		String mime = (String)enum.nextElement() ;
-//		StringTokenizer file_exts = new StringTokenizer(mt.getProperty(mime)," \t") ;
-//		while ( file_exts.hasMoreTokens() ) {
-//		    mimetypes.put(file_exts.nextToken(), mime.toLowerCase()) ;
-//		}
-//	    }
-//	} catch ( IOException ex ) {
-//	    log.log(Log.ERROR,"Unable to load mime-types-file",ex) ;
-//	}
-//    }
+	mimetypes = new Hashtable() ;
+	try {
+	    String mime_types_path = Prefs.get("mime.types","servlet.cfg") ;
+	    if (mime_types_path != null) {
+		Properties mt = Prefs.getProperties(new File(mime_types_path)) ;
+		Enumeration enum = mt.propertyNames() ;
+		while ( enum.hasMoreElements() ) {
+		    String mime = (String)enum.nextElement() ;
+		    StringTokenizer file_exts = new StringTokenizer(mt.getProperty(mime)," \t") ;
+		    while ( file_exts.hasMoreTokens() ) {
+			mimetypes.put(file_exts.nextToken(), mime.toLowerCase()) ;
+		    }
+		}
+	    }
+	} catch ( IOException ex ) {
+	    log.log(Log.ERROR,"Unable to load mime-types-file",ex) ;
+	}
+    }
 
     private Utility () {
 		
@@ -129,6 +132,6 @@ public class Utility {
        @param ext The extension, without a preceding dot.
     */
     public static String getMimeTypeFromExtension(String ext) {
-	return "" ; //(String)mimetypes.get(ext) ;
+	return (String)mimetypes.get(ext) ;
     }
 }
