@@ -95,6 +95,7 @@ public class SQLProcessor {
             while( rs.next() ) {
                 Object temp = resultProc.mapOneRowFromResultsetToObject( rs );
                 if( null != temp ) {
+                    // TODO: Remove this if. Is it ever run at all?
                     result.add( temp );
                 }
             }

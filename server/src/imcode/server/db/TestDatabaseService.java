@@ -46,6 +46,8 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private final static int DOC_TEST_THIRD_ID_FILE_DOC_TYPE = 9003;
     private final static int DOC_TEST_ID_DETACHED = 9999;
 
+    private static final String DOC_THIRD_DOC_FILENAME = "testfilename.txt";
+
     private int NEXT_FREE_PHONE_ID = 2;
     private static final int PHONE_TYPE_HOME = 1;
     private static final int PHONE_TYPE_OTHER = 0;
@@ -84,6 +86,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_CheckAdminRights( dbService );
             test_sproc_CheckUserDocSharePermission( dbService );
             test_sproc_checkUserAdminrole( dbService );
+            test_sproc_GetFileName( dbService );
         }
     }
 
@@ -172,6 +175,12 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertFalse( dbService.sproc_checkUserAdminrole( USER_USER_ID, 2 ) );
         assertTrue( dbService.sproc_checkUserAdminrole( USER_ADMIN_ID, 1 ) );
         assertFalse( dbService.sproc_checkUserAdminrole( USER_ID_NON_EXISTING, 2 ) );
+    }
+
+    private void test_sproc_GetFileName( DatabaseService databaseService ) {
+        assertNull( databaseService.sproc_GetFileName(DOC_ID_FIRST_PAGE) ) ;
+        assertNull( databaseService.sproc_GetFileName(DOC_ID_NON_EXISTING) ) ;
+        assertTrue( DOC_THIRD_DOC_FILENAME.equals(databaseService.sproc_GetFileName(DOC_TEST_THIRD_ID_FILE_DOC_TYPE))) ;
     }
 
     public void test_sproc_AddNewuser() {
@@ -316,6 +325,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             assertEquals( 1, databaseService.sproc_DelUserRoles( USER_TEST_ID, ROLE_TEST_ID ) );
         }
     }
+
     // Below is helper functions to more than one test.
 
     private static DatabaseService.Table_users static_createDummyUser() {

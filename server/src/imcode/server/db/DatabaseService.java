@@ -1095,4 +1095,15 @@ public class DatabaseService {
         Object[] paramValues = new Object[]{ new Integer( user_id ), new Integer( role_id ) };
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
+
+    String sproc_GetFileName( int metaId ) {
+        String sql = "SELECT filename FROM fileupload_docs WHERE meta_id = ?" ;
+        Object[] paramValues = new Object[]{ new Integer( metaId ) } ;
+        ArrayList queryResult = sqlProcessor.executeQuery(sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return rs.getString("filename") ;
+            }
+        } ) ;
+        return (String)(queryResult.size() > 0 ? queryResult.get(0) : null) ;
+    }
 }

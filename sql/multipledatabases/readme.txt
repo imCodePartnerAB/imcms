@@ -47,11 +47,6 @@ Detta har lett till följande:
 * I browsers tabellen är namnet 'value' bytt mot 'browser_value' (value är ett reserverat ord i Standard SQL)
 * I sys_data tabellen är namnet 'value' bytt mot 'sysdata_value' (value är ett reserverat ord i Standard SQL)
 * Bytte ut CAST( URRENT_TIME AS CHAR(80)) -> CAST( CURRENT_TIME AS CHAR) kodmässigt då MySQL inte stödde castning CHAR(siffror).
-För att slippa göra trim på strängar i koden ändrade jag de (få) ställena med char till varchar. Detta för att MySQL trimmar alla
-CHAR default, och det går inte att stänga av, så för att garanterat få samma beteende gjorde jag detta.
-* CREATE TABLE lang_prefixes, lang_prefix char(3),
-* CREATE TABLE roles, role_name char (25) NOT NULL
-* CREATE TABLE user_types, type_name char (30) och lang_prefix char (3) NOT NULL ,
 
 Förändringar gentemot filen types.sql
 * Satt in ; i slutet på varje commando.
