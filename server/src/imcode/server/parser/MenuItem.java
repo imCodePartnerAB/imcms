@@ -2,7 +2,10 @@ package imcode.server.parser;
 
 import imcode.server.document.DocumentDomainObject;
 
-/** Stores all info about a menuitem **/
+/** Stores all info about a menuitem
+ * @deprecated Use MenuItemDomainObject instead
+ * **/
+
 public class MenuItem extends DocumentDomainObject {
 
 // todo: Replace inheritance with delegation
@@ -27,7 +30,7 @@ public class MenuItem extends DocumentDomainObject {
 
     /**
      * Get the value of sortKey.
-     * 
+     *
      * @return value of sortKey.
      */
     public int getSortKey() {
@@ -36,7 +39,7 @@ public class MenuItem extends DocumentDomainObject {
 
     /**
      * Set the value of sortKey.
-     * 
+     *
      * @param v Value to assign to sortKey.
      */
     public void setSortKey(int v) {
@@ -46,7 +49,7 @@ public class MenuItem extends DocumentDomainObject {
 
     /**
      * Get the value of editable.
-     * 
+     *
      * @return value of editable.
      */
     public boolean isEditable() {
@@ -55,7 +58,7 @@ public class MenuItem extends DocumentDomainObject {
 
     /**
      * Set the value of editable.
-     * 
+     *
      * @param v Value to assign to editable.
      */
     public void setEditable(boolean v) {

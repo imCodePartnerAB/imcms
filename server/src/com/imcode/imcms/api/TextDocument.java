@@ -2,8 +2,9 @@ package com.imcode.imcms.api;
 
 import imcode.server.document.*;
 import imcode.server.user.UserAndRoleMapper;
+import imcode.server.*;
 
-import java.util.Map;
+import java.util.*;
 
 public class TextDocument extends Document {
 
@@ -77,7 +78,7 @@ public class TextDocument extends Document {
      * @param sortOrder One of {@link TextDocument.Menu.SORT_BY_HEADLINE},
      *                  {@link TextDocument.Menu.SORT_BY_MODIFIED_DATETIME_DESCENDING},
      *                  or {@link TextDocument.Menu.SORT_BY_MANUAL_ORDER_DESCENDING}.
-     * @throws NoPermissionException if the current user lacks permission to edit this document.
+     * @throws NoPermissionException if the current user lacks permission to edit this owner.
      */
     public void setMenuSortOrder( int sortOrder ) throws NoPermissionException {
         securityChecker.hasEditPermission( this );
@@ -98,14 +99,14 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Get the menu with the given index in the document.
-     * @param menuIndexInDocument the index of the menu in the document.
-     * @return the menu with the given index in the document.
-     * @throws NoPermissionException if you lack permission to read this document.
+     * Get the menu with the given index in the owner.
+     * @param menuIndexInDocument the index of the menu in the owner.
+     * @return the menu with the given index in the owner.
+     * @throws NoPermissionException if you lack permission to read this owner.
      */
     public Menu getMenu( int menuIndexInDocument ) throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission( this );
-        return new Menu( menuIndexInDocument, this );
+        return new Menu( this, menuIndexInDocument, securityChecker );
     }
 
     public void setLanguage( Language language ) {
@@ -176,36 +177,56 @@ public class TextDocument extends Document {
             return internalMenuItem.getManualNumber();
         }
 
-        public String getTreeKey() {
-            return internalMenuItem.getTreeKey();
+        public TreeKey getTreeKey() {
+            return new TreeKey( internalMenuItem.getTreeKey() );
+        }
+
+        public class TreeKey {
+            TreeKeyDomainObject internalTreeKey;
+
+            public TreeKey( TreeKeyDomainObject internalTreeKey ) {
+                this.internalTreeKey = internalTreeKey;
+            }
+
+            public int getTreeLevel() {
+                return internalTreeKey.getTreeLevel();
+            }
+
+            public int getTreeLevelSortNumber( int level ) {
+                return internalTreeKey.getTreeLevelSortNumber( level );
+            }
+
+            public String getValue() {
+                return internalTreeKey.getValue();
+            }
+
         }
     }
 
     public class Menu {
         /** Menu sorted by headline. **/
-        public final static int SORT_BY_HEADLINE = 1;
+        public final static int SORT_BY_HEADLINE = IMCConstants.MENU_SORT_BY_HEADLINE;
         /** Menu sorted by 'manual' order. **/
-        public final static int SORT_BY_MANUAL_ORDER = 2;
+        public final static int SORT_BY_MANUAL_ORDER = IMCConstants.MENU_SORT_BY_MANUAL_ORDER;
         /** Menu sorted by datetime. **/
-        public final static int SORT_BY_MODIFIED_DATETIME = 3;
+        public final static int SORT_BY_MODIFIED_DATETIME = IMCConstants.MENU_SORT_BY_DATETIME;
         /** Menu sorted by tree sort order */
-        public final static int SORT_BY_TREE_ORDER = 4;
+        public final static int SORT_BY_TREE_ORDER = IMCConstants.MENU_SORT_BY_MANUAL_TREE_ORDER;
 
-        private int menuIndex;
-        private TextDocument document;
+        private MenuDomainObject internalMenu;
+        private SecurityChecker securityChecker;
 
-        private Menu( int menuIndex, TextDocument document ) {
-            this.menuIndex = menuIndex;
-            this.document = document;
+        private Menu( TextDocument owner, int menuIndex, SecurityChecker securityChecker ) {
+            internalMenu = new MenuDomainObject( owner.internalDocument, menuIndex, owner.documentMapper );
+            this.securityChecker = securityChecker;
         }
 
        public MenuItem[] getMenuItems() throws NoPermissionException {
-           // use reverse sort order?
-           MenuItemDomainObject[] menuItemsDomainObjects = document.documentMapper.getDocIdsFromMenu( document.getId(), menuIndex );
+           MenuItemDomainObject[] menuItemsDomainObjects = internalMenu.getMenuItems();
            MenuItem[] menuItems = new MenuItem[menuItemsDomainObjects.length];
            for (int i = 0; i < menuItemsDomainObjects.length; i++) {
                MenuItemDomainObject menuItemDomainObject = menuItemsDomainObjects[i];
-               menuItems[i] = new MenuItem( menuItemDomainObject );
+               menuItems[i] = new MenuItem(menuItemDomainObject);
            }
            return menuItems;
        }
@@ -214,16 +235,18 @@ public class TextDocument extends Document {
          * Add a document to the menu.
          *
          * @param documentToAdd the document to add
-         * @throws NoPermissionException If you lack permission to edit the menudocument or permission to add the document.
-         * @throws DocumentAlreadyInMenuException If the document already is in the menu.
+         * @throws NoPermissionException If you lack permission to edit the menudocument or permission to add the owner.
+         * @throws DocumentAlreadyInMenuException If the owner already is in the menu.
          */
         public void addDocument( Document documentToAdd ) throws NoPermissionException, DocumentAlreadyInMenuException {
-            document.securityChecker.hasEditPermission( documentToAdd.getId() );
-            document.securityChecker.hasSharePermission( documentToAdd );
+            securityChecker.hasEditPermission( documentToAdd.getId() );
+            securityChecker.hasSharePermission( documentToAdd );
             try {
-                document.documentMapper.addDocumentToMenu( document.securityChecker.getCurrentLoggedInUser(), document.getId(), menuIndex, documentToAdd.getId() );
+                documentMapper.addDocumentToMenu( securityChecker.getCurrentLoggedInUser(), internalMenu.getOwnerDocument().getMetaId(), internalMenu.getMenuIndex(), documentToAdd.getId() );
             } catch (DocumentMapper.DocumentAlreadyInMenuException e) {
-                throw new DocumentAlreadyInMenuException( "Menu " + menuIndex + " of document " + document.getId() + " already contains document " + documentToAdd.getId() );
+                throw new DocumentAlreadyInMenuException(
+                        "Menu " + internalMenu.getMenuIndex() + " of owner " +
+                        internalMenu.getOwnerDocument().getMetaId() + " already contains owner " + documentToAdd.getId() );
             }
         }
 
@@ -234,10 +257,23 @@ public class TextDocument extends Document {
          * @throws NoPermissionException If you lack permission to edit the menudocument.
          */
         public void removeDocument( Document documentToRemove ) throws NoPermissionException {
-            document.securityChecker.hasEditPermission( documentToRemove.getId() );
+            securityChecker.hasEditPermission( documentToRemove.getId() );
+            documentMapper.removeDocumentFromMenu(
+                    securityChecker.getCurrentLoggedInUser(),
+                    internalMenu.getOwnerDocument().getMetaId(),
+                    internalMenu.getMenuIndex(),
+                    documentToRemove.getId() );
 
-            document.documentMapper.removeDocumentFromMenu( document.securityChecker.getCurrentLoggedInUser(), document.getId(), menuIndex, documentToRemove.getId() );
+        }
 
+        public Document[] getDocuments() {
+            MenuItemDomainObject[] menuItemDomainObjects = documentMapper.getDocIdsFromMenu( internalDocument.getMetaId(), internalMenu.getMenuIndex());
+            Document[] documents = new Document[ menuItemDomainObjects.length ];
+            for (int i = 0; i < menuItemDomainObjects.length; i++) {
+                MenuItemDomainObject menuItemDomainObject = menuItemDomainObjects[i];
+                documents[i] = new Document( menuItemDomainObject.getDocument(), securityChecker, documentService, documentMapper, documentPermissionSetMapper,  userAndRoleMapper );
+            }
+            return documents;
         }
     }
 }

@@ -1,5 +1,7 @@
 package imcode.server.document;
 
+import java.util.*;
+
 public class MenuItemDomainObject {
     public MenuItemDomainObject( DocumentDomainObject parent, DocumentDomainObject child, int menuSort, int manualSortOrder, String treeSortIndex ) {
         this.parent = parent;
@@ -27,8 +29,7 @@ public class MenuItemDomainObject {
         return manualSortOrder;
     }
 
-    public String getTreeKey() {
-        return treeSortIndex;
+    public TreeKeyDomainObject getTreeKey() {
+        return new TreeKeyDomainObject( treeSortIndex );
     }
-
 }

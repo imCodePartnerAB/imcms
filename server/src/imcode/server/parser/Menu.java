@@ -2,12 +2,14 @@ package imcode.server.parser ;
 
 public class Menu extends java.util.LinkedList {
 
+    // todo: Replace inheritance with delegation
+
     private int sortOrder ;
     private boolean menuMode ;
 
     public Menu (int menuId, int sortOrder, boolean menumode, String imageUrl) {
         this.sortOrder = sortOrder ;
-	this.menuMode = menumode ;
+    	this.menuMode = menumode ;
     }
 
     /**
