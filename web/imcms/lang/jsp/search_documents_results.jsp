@@ -67,11 +67,11 @@
 								%></a><%
 							} %></td>
 							<td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br><%
-							if (user.canEditDocumentInformationFor(document)) {
+							if (user.canEdit(document)) {
 								%><a href="AdminDoc?meta_id=<%= document.getId() %>" title="AdminDoc?meta_id=<%= document.getId() %>"><%
 							}
 							%><%= document.getId() %><%
-							if (user.canEditDocumentInformationFor(document)) {
+							if (user.canEdit(document)) {
 								%></a><%
 							} %></td>
                             <td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br><%= document.getDocumentType().getName().toLocalizedString(request)%></td>
