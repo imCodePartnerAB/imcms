@@ -9,6 +9,7 @@ import imcode.server.* ;
 public class MetaAdmin extends HttpServlet {
         private final static String CVS_REV = "$Revision$" ;
         private final static String CVS_DATE = "$Date$" ;
+		private final static int DEFAULT_META_START = 1001;
 
         public void init(ServletConfig config) throws ServletException {
                 super.init(config) ;
@@ -16,7 +17,7 @@ public class MetaAdmin extends HttpServlet {
 
         public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
                 String host                                 = req.getHeader("Host") ;
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+				IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
                 String start_url                = imcref.getStartUrl() ;
 
                 res.setContentType("text/html") ;
@@ -35,29 +36,56 @@ public class MetaAdmin extends HttpServlet {
 
                 ServletOutputStream out = res.getOutputStream() ;
                 int user_id = user.getUserId() ;
-                boolean list = false ;
-                int interval ;
+                
+				boolean list = false ; // show list if true.
+                if ( req.getParameter("showinterval") !=null || req.getParameter("showspan") !=null ){
+					list = true;
+				}
+				
+				int interval ;
                 try {
                         interval = Integer.parseInt(req.getParameter("interval")) ;
-                        list = true ;
+						
                 } catch ( NumberFormatException ex ) {
                         interval = 1000 ;
                 }
-                int start ;
+                int start;
                 int min = Integer.parseInt(imcref.sqlQueryStr( "select min(meta_id) from meta")) ;
                 int max = Integer.parseInt(imcref.sqlQueryStr( "select max(meta_id) from meta")) ;
                 try {
                         start = Integer.parseInt(req.getParameter("start")) ;
                         list = true ;
                 } catch ( NumberFormatException ex ) {
-                        start = min ;
+                        start = 1001 ;
                         //start = (Integer.parseInt(meta_id[0])-(Integer.parseInt(meta_id[0])%interval)) ;
                 }
-                int end = start+interval ;
-                if ( !list ) {
+				
+				int end = start+interval < max ? start+interval : max ; // end will not bee > max meta_id 
+				
+				if ( req.getParameter("showspan") != null ){
+					end = Integer.parseInt(req.getParameter("endmeta"));
+					start = Integer.parseInt(req.getParameter("startmeta"));
+				}
+				
+                /*if ( !list ) {
                         start = 0 ;
                         end = 0 ;
-                }
+                }*/
+				
+				Hashtable hash = new Hashtable();
+				String[] meta_id = {""};
+				
+				if ( list ){
+					hash = imcref.sqlProcedureHash( "getDocs "+user_id+","+start+","+end ) ;
+                	meta_id = (String[])hash.get("meta_id") ;
+					try {
+						end =  Integer.parseInt(meta_id[meta_id.length-1]);
+					}catch ( NullPointerException ex ) {
+						end = start;
+						list = false;
+					}
+
+				}
 
                 Vector vec = new Vector () ;
                 vec.add("#start#") ;
@@ -71,9 +99,13 @@ public class MetaAdmin extends HttpServlet {
                 for ( int i = 10 ; i < (max_min*10) ; i*=10 ) {
                         tmp += "<option value=\""+i+"\" "+ ( i == interval ? "selected" : "" )+">"+i+"</option>" ;
                 }
+				
+				if ( !list ) {
+                        start = DEFAULT_META_START ;
+                }
                 vec.add(tmp) ;
                 vec.add("#starts#") ;
-                tmp = "" ;
+				tmp = "" ;
                 for ( int i = min ; i <= max ; i+=interval ) {
                         tmp += "<option value=\""+i+"\" "+( i == start ? "selected" : "" )+">"+i+"</option>" ;
                 }
@@ -83,8 +115,7 @@ public class MetaAdmin extends HttpServlet {
                 if ( !list ) {
                         return ;
                 }
-                Hashtable hash = imcref.sqlProcedureHash( "getDocs "+user_id+","+start+","+end ) ;
-                String[] meta_id = (String[])hash.get("meta_id") ;
+                
                 String[] pc = (String[])hash.get("parentcount") ;
                 String[] hl = (String[])hash.get("meta_headline") ;
                 String[] types = (String[])hash.get("doc_type") ;
@@ -96,7 +127,7 @@ public class MetaAdmin extends HttpServlet {
                         if ( Integer.parseInt(meta_id[i]) < start ) {
                                 continue ;
                         }
-                        if ( Integer.parseInt(meta_id[i]) >= end ) {
+                        if ( Integer.parseInt(meta_id[i]) > end ) {
                                 break ;
                         }
                         out.println("<li>") ;

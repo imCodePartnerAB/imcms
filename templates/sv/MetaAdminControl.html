@@ -1,3 +1,4 @@
+<!-- saved from url=(0022)http://internet.e-mail -->
 <html>
 <head>
 <title>MetaAdmin</title>
@@ -10,72 +11,83 @@ function openHelp(id){
 </SCRIPT>
 </head>
 <body bgcolor="#FFFFFF">
-<form method="get" action="MetaAdmin">
-<table width="40%" border="0" cellspacing="0">
-  <tr bgcolor="#333366"> 
-	<td width="10%">&nbsp;</td>
-	<td width="80%" colspan="2"> 
-	  <div align="center"><font size="2"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF">SiteMap</font></b></font></div>
-	</td>
-	<td width="10%">&nbsp;</td>
-  </tr>
-  <tr bgcolor="#bababa"> 
-	<td width="10%">&nbsp;</td>
-	<td width="40%">
-	  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Start: 
-		</font></div>
-	</td>	<td width="40%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;#start#</font></td>
-	<td width="10%">&nbsp;</td>
-  </tr>
-  <tr bgcolor="#bababa"> 
-	<td width="10%">&nbsp;</td>
-	<td width="40%">
-	  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Slut: 
-		</font></div>
-	</td>
-	<td width="40%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;#end#</font></td>
-	<td width="10%">&nbsp;</td>
-  </tr>
-  <tr bgcolor="#bababa">
-	<td width="10%">&nbsp;</td>
-	<td width="40%">
-	  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Start: 
-		</font></div>
-	</td>
-	<td width="40%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp; 
-	  <select name="start">
-		#starts#
-	  </select>
-	  </font></td>
-	<td width="10%">&nbsp;</td>
-  </tr>
-  <tr bgcolor="#bababa">
-	<td width="10%">&nbsp;</td>
-	<td width="40%">
-	  <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Intervall: 
-		</font></div>
-	</td>
-	<td width="40%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp; 
-	  <select name="interval">
-		#intervals#
-	  </select>
-	  </font></td>
-	<td width="10%">&nbsp;</td>
-  </tr>
-  <tr bgcolor="#bababa">
-	<td width="10%">&nbsp;</td>
-	<td width="40%"><br></td>
-	<td width="40%">&nbsp; <input type="submit" name="show" value="Lista">&nbsp; <a href="GetDoc?meta_id=37" target="_blank" onClick="openHelp('37'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-		<!--form method="get" action="AdminManager">
-			<input type="submit" name="cancel" value="Tillbaka">
-		  </form--></td>
-	<td width="10%">&nbsp;</td>
-  </tr>
-  <tr bgcolor="#bababa">
-	<td width="10%">&nbsp;</td>
-	<td width="40%" colspan="2">&nbsp;</td>
-	<td width="10%">&nbsp;</td>
-  </tr>
-</table>
+
+<table border="0" cellspacing="0" cellpadding="0" width="650" bgcolor="#bababa">
+<tr bgcolor="#333366"> 
+	<td width="5%">&nbsp;</td>
+	<td align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF"><b>SiteMap</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="3">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="2">
+	<form method="get" action="MetaAdmin">
+	
+	<tr>
+		<td width="100"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Lista fr&aring;n:&nbsp;</font></td>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+		<select name="start">
+	#starts#
+		</select></font></td>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;&nbsp;Intervall:&nbsp;</font></td>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+		<select name="interval">
+	#intervals#
+		</select></font></td>
+		<td align="right">&nbsp;<input type="submit" name="showinterval" value="Lista"></td>
+	</tr><!--
+	<tr> 
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Start:&nbsp;</font></td>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">#start#</font></td>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;&nbsp;Slut:&nbsp;</font></td>
+		<td colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">#end#</font></td>
+	</tr> -->
+	</form>
+	</table></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td><hr></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="2">
+	<form method="get" action="MetaAdmin" >
+	
+	<tr>
+		<td width="100" nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Lista mellan: &nbsp;</font></td>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+		<input type="text" name="startmeta" value="#start#" size="6"></font></td>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;&#150;&nbsp;</font></td>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp; 
+		<input type="text" name="endmeta" value="#end#" size="6"></font></td>
+		<td align="right">&nbsp;<input type="submit" name="showspan" value="Lista"></td>
+	</tr>
+	</form>
+	</table></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td><hr></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<form action="AdminManager">
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td><input type="submit" name="Submit" value="Tillbaka"> &nbsp;<a href="GetDoc?meta_id=37" target="_blank" onClick="openHelp('37'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+	<td width="5%">&nbsp;</td>
+</tr>
 </form>
+<tr>
+	<td colspan="3">&nbsp;</td>
+</tr>
+</table>
 
