@@ -37,7 +37,7 @@ public class DocumentPermissionSetDomainObject {
         return permissionType;
     }
 
-    public String getName() {
+    public String getType() {
         return getName( permissionType );
     }
 
@@ -65,7 +65,7 @@ public class DocumentPermissionSetDomainObject {
 
     public String toString() {
         StringBuffer buff = new StringBuffer();
-        buff.append( getName() + " ("  );
+        buff.append( getType() + " ("  );
         buff.append( "editDocumentInformation=" + editDocumentInformation + ", " );
         buff.append( "editHeadline=" + editHeadline  + ", " );
         buff.append( "editIncludes=" + editIncludes  + ", " );
@@ -162,7 +162,7 @@ public class DocumentPermissionSetDomainObject {
         this.editMenuesNames = names;
     }
 
-    void setEditableTemplateNames( String[] names ) {
+    void setEditableTemplateGroupNames( String[] names ) {
         this.editTemplatesNames = names;
     }
 }

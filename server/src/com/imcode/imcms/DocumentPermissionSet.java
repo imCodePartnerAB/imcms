@@ -15,43 +15,43 @@ public class DocumentPermissionSet {
         this.internalDocPermSet = internalDocPermSet;
     }
 
-    public String getName() {
-        return internalDocPermSet.getName();
+    public String getType() {
+        return internalDocPermSet.getType();
     }
 
     public String toString() {
         return internalDocPermSet.toString();
     }
 
-        public boolean getEditHeadline() {
+    public boolean getEditHeadlinePermission() {
         return internalDocPermSet.getEditHeadline();
     }
 
-    public boolean getEditDocumentInformation() {
+    public boolean getEditDocumentInformationPermission() {
         return internalDocPermSet.getEditDocumentInformation();
     }
 
-    public boolean getEditPermissions() {
+    public boolean getEditRolePermissionsPermission() {
         return internalDocPermSet.getEditPermissions();
     }
 
-    public boolean getEditTexts() {
+    public boolean getEditTextsPermission() {
         return internalDocPermSet.getEditTexts();
     }
 
-    public boolean getEditIncludes() {
+    public boolean getEditIncludesPermission() {
         return internalDocPermSet.getEditIncludes();
     }
 
-    public boolean getEditPictures() {
+    public boolean getEditPicturesPermission() {
         return internalDocPermSet.getEditPictures();
     }
 
-    public String[] getEditableTamplateNames() {
+    public String[] getEditableTemplateGroupNames() {
         return internalDocPermSet.getEditableTamplateNames();
     }
 
-    public String[] getEditableMenuNames() {
+    public String[] getEditableMenuDocumentTypeNames() {
         return internalDocPermSet.getEditableMenuNames();
     }
 }

@@ -195,7 +195,7 @@ public class ImageFileMetaData {
 	return height;
     }
     /**
-     * getName
+     * getType
      * @param none
      * @return filename
      **/

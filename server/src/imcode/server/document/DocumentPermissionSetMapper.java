@@ -16,6 +16,7 @@ public class DocumentPermissionSetMapper {
     private static final String SPROC_GET_PERMISSION_SET = "GetPermissionSet";
     private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
     private static final String SPROC_GET_DOC_TYPES_WITH_PERMISSIONS = "GetDocTypesWithPermissions";
+    private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "getTemplateGroupsWithPermissions";
 
     static class RolePermissionTuple {
         String roleName;
@@ -81,6 +82,27 @@ public class DocumentPermissionSetMapper {
             result[k] = new DocumentIdEditablePermissionsTuple();
             result[k].hasRights = permission;
             result[k].documentTypeName = documentTypeName;
+        }
+        return result;
+    }
+
+    private static class GroupPermissionTuple {
+        String groupName;
+        boolean hasPermission;
+    }
+
+    private static GroupPermissionTuple[] sprocGetTemplateGroupsWithPermissions( IMCService service, int metaId, int permissionType ) {
+        String[] params = new String[]{ String.valueOf(metaId), String.valueOf( permissionType ) };
+        String[] sprocResult = service.sqlProcedure( SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS, params );
+        int numberOfColumns = 3;
+        GroupPermissionTuple[] result = new GroupPermissionTuple[sprocResult.length/numberOfColumns];
+        for( int i = 0, k=0; i < sprocResult.length; i=i+numberOfColumns, k++) {
+            //String groupId = sprocResult[i];
+            String groupName = sprocResult[i+1];
+            boolean hasPermission = -1 != Integer.parseInt(sprocResult[i+2]);
+            result[k] = new GroupPermissionTuple();
+            result[k].groupName = groupName;
+            result[k].hasPermission = hasPermission;
         }
         return result;
     }
@@ -179,8 +201,21 @@ public class DocumentPermissionSetMapper {
                     }
                     break;
                 case EDIT_TEMPLATE_PERMISSON_ID:
-                    // todo
-                    //docPermSetDO.setEditTemplates( permissionMapping[i].hasPermission );
+                    if( permissionMapping[i].hasPermission ) {
+                        GroupPermissionTuple[] names = sprocGetTemplateGroupsWithPermissions( service, document.getMetaId(), permissionType );
+                        ArrayList namesStr = new ArrayList();
+                        for( int k = 0; k < names.length; k++ ) {
+                            if( names[k].hasPermission ) {
+                                namesStr.add( names[k].groupName );
+                            }
+                        }
+                        result.setEditTemplates( true );
+                        String[] namesStrArr = (String[])namesStr.toArray( new String[ namesStr.size()] );
+                        result.setEditableTemplateGroupNames( namesStrArr );
+                    } else {
+                        result.setEditMenues( false );
+                        result.setEditableMenuNames( null );
+                    }
                     break;
                 case EDIT_INCLUDE_PERMISSON_ID:
                     result.setEditIncludes( permissionMapping[i].hasPermission );

@@ -1,14 +1,17 @@
-
+Hillar:
+- Språkstödet i permissions? API:et bara på engelska?
 
 Christoffer:
 - Säkerheten och *.jsp sidor. Ska vi lägga loginfilter på alla *.jsp sidor? Eller *.*, går det?
-- Namnen på paket och "Den inloggade användaren"
 
 Hasse
+- Namnen på rättigheterna, jämför med htmls sidan, är det samma som i databasen. På engelska och svenska?
 - Språkparameter i API:et där det behövs. Javas inbyggda?
 - Gå igenom så att det sker säkerhetskollar på samtliga metoder
+- Gå igenom API klasserna så att de är dokumenterade och logiska namn
+- Stavningskontrollera API:et
 - Rita på något sätt paket-beroende trädet
-- Fixa inloggningen på sampe sidorna
+- Fixa inloggningen på sample sidorna
 - "Stored procedures, A stored procedure is written using Transact-SQL (T-SQL). T-SQL is a subset of ANSI SQL-92 that has extensions to the Standard. T-SQL includes variables, conditional logic, loops and flow control."
 PostgreSQL är open source och stödjer stored procedures
 
