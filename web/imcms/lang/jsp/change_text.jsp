@@ -1,7 +1,7 @@
 <%@ page import="imcode.server.document.textdocument.TextDomainObject,
                  com.imcode.imcms.servlet.admin.ChangeText,
                  org.apache.commons.lang.StringEscapeUtils"%>
-                 
+
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttribute(ChangeText.TextEditPage.REQUEST_ATTRIBUTE__PAGE);
@@ -111,7 +111,7 @@ if(isIE55 && readCookie("imcms_use_editor") != "true") {
 #gui_mid()
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
-<tr>
+<tr>#set( $textIndex = "<%= textEditPage.getTextIndex() %>" )#set( $documentId = "<%= textEditPage.getDocumentId() %>" )
 	<td colspan="2">#gui_heading( "<? templates/sv/change_text.html/4/1 ?>" )<div class="imcmsAdmText"><i><%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></i></div></td>
 </tr>
 <tr>
