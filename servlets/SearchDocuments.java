@@ -105,7 +105,7 @@ public class SearchDocuments extends HttpServlet {
 	// Lets run the question
 
 	String sqlStr = buildSqlStr(imcode.server.HTMLConv.toHTML(question_field), search_type, search_prep, string_match, search_area) ;
-	System.out.println("BuildSqlStr: " + sqlStr) ;  
+	//System.out.println("BuildSqlStr: " + sqlStr) ;  
 	String[] answer= IMCServiceRMI.sqlQuery(imcserver, sqlStr) ;
 	
 	for(int i=0; i<answer.length ; i += 5)
@@ -311,8 +311,10 @@ public class SearchDocuments extends HttpServlet {
 		sqlStr += "AND meta.activate = 1\n" ;
 		sqlStr += "AND meta.disable_search = 0\n" ;
 	    }
-
-	    if (search_area.equals("not_archived")) {
+		
+		sqlStr += "and CAST(activated_date+' '+activated_time AS DATETIME) < getdate() \n";
+	    
+		if (search_area.equals("not_archived")) {
 		sqlStr += "AND meta.archive = 0\n" ;
 	    }
 
@@ -348,7 +350,7 @@ public class SearchDocuments extends HttpServlet {
 	    sqlStr += "\t (SELECT meta_id\n" ;
 	    sqlStr += "\t FROM childs meta\n" ;
 	    sqlStr += "\t WHERE childs.to_meta_id = meta.meta_id )\n" ;
-
+		sqlStr += "and CAST(activated_date+' '+activated_time AS DATETIME) < getdate() \n";
 
 	    if (search_area.equals("not_archived")) {
 		sqlStr += "AND meta.archive = 0\n" ;
@@ -389,6 +391,7 @@ public class SearchDocuments extends HttpServlet {
 		sqlStr += "AND meta.disable_search = 0\n" ;
 	    }
 
+		sqlStr += "and CAST(activated_date+' '+activated_time AS DATETIME) < getdate() \n";
 	    // Lets append with our new conditions
 	    sqlStr += "AND meta.doc_type != 6	--Browserdoc\n" ;
 	    // sqlStr += "AND meta.doc_type != 7	--Framesetdoc\n" ;
@@ -420,7 +423,6 @@ public class SearchDocuments extends HttpServlet {
 		sqlStr += "ORDER BY date_modified DESC" ;
 
 	    }
-
 	    /// END OF SEARCH AMONG ALL FIELDS
 	} else {
 	    // Lets search on ICD 10 CODES
@@ -450,6 +452,8 @@ public class SearchDocuments extends HttpServlet {
 		sqlStr += "AND meta.activate = 1\n" ;
 		sqlStr += "AND meta.disable_search = 0\n" ;
 	    }
+		
+		sqlStr += "and CAST(activated_date+' '+activated_time AS DATETIME) < getdate() \n";
 
 	    // Lets append with our new conditions
 	    sqlStr += "AND meta.doc_type != 6	--Browserdoc\n" ;
@@ -466,7 +470,8 @@ public class SearchDocuments extends HttpServlet {
 	    if (search_area.equals("archived")) {
 		sqlStr += "AND meta.archive = 1\n" ;
 	    }
-
+		sqlStr += "and CAST(activated_date+' '+activated_time AS DATETIME) < getdate() \n";
+		
 	    // Lets add the Group by statement
 	    sqlStr += "GROUP BY meta.meta_id, meta.meta_headline, meta.meta_text, meta.date_modified, meta.meta_image\n" ;
 
