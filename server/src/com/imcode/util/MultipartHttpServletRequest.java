@@ -8,9 +8,13 @@ import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.activation.DataSource;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Extends HttpServletRequest for RFC 1867 form based file upload support from Jakarta Commons-FileUpload
+ */
 public class MultipartHttpServletRequest extends HttpServletRequestWrapper {
     private static final String CHARSET_ISO_8859_1 = "ISO-8859-1";
 
@@ -42,15 +46,15 @@ public class MultipartHttpServletRequest extends HttpServletRequestWrapper {
         return null;
     }
 
-    public FileItem getParameterFileItem( String key ) {
-        FileItem[] parameterValues = getParameterFileItems( key );
+    public DataSourceFileItem getParameterFileItem( String key ) {
+        DataSourceFileItem[] parameterValues = getParameterFileItems( key );
         if ( null != parameterValues && parameterValues.length > 0 ) {
             return parameterValues[0];
         }
         return null;
     }
 
-    private FileItem[] getParameterFileItems( String key ) {
+    public DataSourceFileItem[] getParameterFileItems( String key ) {
         if ( null == fileItemMap ) {
             return null;
         }
@@ -58,7 +62,7 @@ public class MultipartHttpServletRequest extends HttpServletRequestWrapper {
         if ( null == parameterFileItems ) {
             return null;
         }
-        return (FileItem[])parameterFileItems.toArray( new FileItem[parameterFileItems.size()] );
+        return (DataSourceFileItem[])parameterFileItems.toArray( new DataSourceFileItem[parameterFileItems.size()] );
     }
 
     public Map getParameterMap() {
@@ -121,6 +125,10 @@ public class MultipartHttpServletRequest extends HttpServletRequestWrapper {
         }
     }
 
+    public interface DataSourceFileItem extends FileItem, DataSource {
+
+    }
+
     private class BaseNameFileItem extends FileItemWrapper {
 
         private BaseNameFileItem( FileItem fileItem ) {
@@ -137,7 +145,7 @@ public class MultipartHttpServletRequest extends HttpServletRequestWrapper {
         }
     }
 
-    private class FileItemWrapper implements FileItem {
+    private class FileItemWrapper implements DataSourceFileItem {
 
         FileItem fileItem;
 
