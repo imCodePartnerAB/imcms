@@ -30,14 +30,14 @@ public class EditBrowserDocumentPageFlow extends EditDocumentPageFlow {
     }
 
     protected void dispatchFromEditPage( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {
-        Map addedBrowsers = getAddedBrowsersFromRequest( request );
+        Map addedBrowsers = getAddedBrowsersFromRequest( request, Imcms.getServices().getDocumentMapper() );
         if ( null != request.getParameter( REQUEST_PARAMETER__ADD_BROWSERS_BUTTON ) ) {
             forwardToBrowserDocumentPageWithBrowsersMap( request, response, addedBrowsers );
         }
     }
 
     protected void dispatchOkFromEditPage( HttpServletRequest request, HttpServletResponse response ) throws IOException {
-        Map addedBrowsers = getAddedBrowsersFromRequest( request );
+        Map addedBrowsers = getAddedBrowsersFromRequest( request, Imcms.getServices().getDocumentMapper() );
         Utility.removeNullValuesFromMap( addedBrowsers );
         BrowserDocumentDomainObject browserDocument = (BrowserDocumentDomainObject)document;
         browserDocument.setBrowserDocuments( addedBrowsers );
@@ -55,8 +55,7 @@ public class EditBrowserDocumentPageFlow extends EditDocumentPageFlow {
         request.getRequestDispatcher( URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2() + URL_I15D_PAGE__BROWSERDOC ).forward( request, response );
     }
 
-    private Map getAddedBrowsersFromRequest( HttpServletRequest request ) {
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+    Map getAddedBrowsersFromRequest( HttpServletRequest request, DocumentMapper documentMapper ) {
 
         Map addedBrowsers = new HashMap();
 

@@ -1,7 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
+import imcode.server.db.Database;
 import imcode.server.db.DatabaseConnection;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
@@ -22,13 +22,14 @@ import java.util.regex.Pattern;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
 
-    protected ImcmsServices service = Imcms.getServices();
+    protected Database database ;
     protected UserDomainObject user;
 
     private static final int FILE_BUFFER_LENGTH = 2048;
     private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
 
-    public DocumentStoringVisitor(UserDomainObject user) {
+    public DocumentStoringVisitor( UserDomainObject user, Database database ) {
+        this.database = database ;
         this.user = user;
     }
 
@@ -157,7 +158,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     private void deleteTextDocumentIncludes(TextDocumentDomainObject textDocument) {
         String sqlDeleteDocumentIncludes = "DELETE FROM includes WHERE meta_id = ?";
-        service.sqlUpdateQuery(sqlDeleteDocumentIncludes, new String[]{"" + textDocument.getId()});
+        database.sqlUpdateQuery(sqlDeleteDocumentIncludes, new String[]{"" + textDocument.getId()});
     }
 
     private void insertTextDocumentImages(TextDocumentDomainObject textDocument) {
@@ -171,7 +172,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     private void deleteTextDocumentImages(TextDocumentDomainObject textDocument) {
         String sqlDeleteImages = "DELETE FROM images WHERE meta_id = ?";
-        service.sqlUpdateQuery(sqlDeleteImages, new String[]{"" + textDocument.getId()});
+        database.sqlUpdateQuery(sqlDeleteImages, new String[]{"" + textDocument.getId()});
     }
 
     private void insertTextDocumentTexts(TextDocumentDomainObject textDocument) {
@@ -184,14 +185,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     private void sqlInsertText(TextDocumentDomainObject textDocument, Integer textIndex, TextDomainObject text) {
-        service.sqlUpdateQuery("INSERT INTO texts (meta_id, name, text, type) VALUES(?,?,?,?)", new String[]{
+        database.sqlUpdateQuery("INSERT INTO texts (meta_id, name, text, type) VALUES(?,?,?,?)", new String[]{
             "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType()
         });
     }
 
     private void deleteTextDocumentTexts(TextDocumentDomainObject textDocument) {
         String sqlDeleteTexts = "DELETE FROM texts WHERE meta_id = ?";
-        service.sqlUpdateQuery(sqlDeleteTexts, new String[]{"" + textDocument.getId()});
+        database.sqlUpdateQuery(sqlDeleteTexts, new String[]{"" + textDocument.getId()});
     }
 
     private void insertTextDocumentMenuItems( DatabaseConnection connection, MenuDomainObject menu ) {
@@ -235,7 +236,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     private void sqlInsertTextDocumentInclude(TextDocumentDomainObject textDocument, Integer includeIndex,
                                               Integer includedDocumentId) {
-        service.sqlUpdateQuery("INSERT INTO includes (meta_id, include_id, included_meta_id) VALUES(?,?,?)", new String[]{
+        database.sqlUpdateQuery("INSERT INTO includes (meta_id, include_id, included_meta_id) VALUES(?,?,?)", new String[]{
             "" + textDocument.getId(), "" + includeIndex, "" + includedDocumentId
         });
     }
@@ -292,7 +293,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         Map fileDocumentFiles = fileDocument.getFiles();
 
         String sqlDelete = "DELETE FROM fileupload_docs WHERE meta_id = ?";
-        service.sqlUpdateQuery(sqlDelete, new String[]{"" + fileDocument.getId()});
+        database.sqlUpdateQuery(sqlDelete, new String[]{"" + fileDocument.getId()});
 
         for ( Iterator iterator = fileDocumentFiles.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
@@ -305,7 +306,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             }
             String sqlInsert = "INSERT INTO fileupload_docs (meta_id, variant_name, filename, mime, created_as_image, default_variant) VALUES(?,?,?,?,?,?)";
             boolean isDefaultFile = fileId.equals( fileDocument.getDefaultFileId());
-            service.sqlUpdateQuery( sqlInsert, new String[]{""+ fileDocument.getId(), fileId, filename, fileDocumentFile.getMimeType(), fileDocumentFile.isCreatedAsImage() ? "1" : "0", isDefaultFile ? "1" : "0"} );
+            database.sqlUpdateQuery( sqlInsert, new String[]{""+ fileDocument.getId(), fileId, filename, fileDocumentFile.getMimeType(), fileDocumentFile.isCreatedAsImage() ? "1" : "0", isDefaultFile ? "1" : "0"} );
             saveFileDocumentFile( fileDocument.getId(), fileDocumentFile, fileId );
         }
         DocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;
@@ -332,4 +333,28 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         return extensions;
     }
 
+    public void visitBrowserDocument( BrowserDocumentDomainObject browserDocument ) {
+        deleteBrowserDocument( browserDocument );
+        saveNewBrowserDocument( browserDocument );
+    }
+
+    private void deleteBrowserDocument( BrowserDocumentDomainObject browserDocument ) {
+        String sqlStr = "DELETE FROM browser_docs WHERE meta_id = ?";
+        database.sqlUpdateQuery( sqlStr, new String[]{"" + browserDocument.getId()} );
+    }
+
+    public void saveNewBrowserDocument( BrowserDocumentDomainObject document ) {
+        String[] browserDocumentColumns = {"meta_id", "to_meta_id", "browser_id"};
+
+        String sqlBrowserDocsInsertStr = makeSqlInsertString( "browser_docs", browserDocumentColumns );
+
+        Map browserDocumentMap = document.getBrowserDocumentIdMap();
+        for ( Iterator iterator = browserDocumentMap.keySet().iterator(); iterator.hasNext(); ) {
+            BrowserDocumentDomainObject.Browser browser = (BrowserDocumentDomainObject.Browser)iterator.next();
+            Integer metaIdForBrowser = (Integer)browserDocumentMap.get( browser );
+            database.sqlUpdateQuery( sqlBrowserDocsInsertStr, new String[]{
+                "" + document.getId(), "" + metaIdForBrowser, "" + browser.getId()
+            } );
+        }
+    }
 }

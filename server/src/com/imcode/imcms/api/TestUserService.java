@@ -80,7 +80,7 @@ public class TestUserService extends TestCase {
         Role newRole = userService.createNewRole( roleName ) ;
         userService.saveRole( newRole );
         database.verifyExpectedSqlCalls();
-        database.assertCalled( new MockDatabase.InsertTableSqlCallPredicate( "roles", roleName ) );
+        database.assertCalled( new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate( "roles", roleName ) );
     }
 
 }

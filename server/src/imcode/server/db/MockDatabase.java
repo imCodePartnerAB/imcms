@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class MockDatabase implements Database {
 
@@ -29,21 +30,29 @@ public class MockDatabase implements Database {
         return 0;
     }
 
-    public String sqlProcedureStr( String procedure, String[] params ) {
-        return (String)getResultForSqlCall( procedure, params );
-    }
-
     public int sqlUpdateQuery( String sqlStr, String[] params ) {
         getResultForSqlCall( sqlStr, params );
         return 0;
     }
 
+    public String sqlProcedureStr( String procedure, String[] params ) {
+        return (String)getResultForSqlCall( procedure, params );
+    }
+
     public String[][] sqlProcedureMulti( String procedure, String[] params ) {
-        return (String[][])getResultForSqlCall( procedure, params );
+        String[][] result = (String[][])getResultForSqlCall( procedure, params );
+        if (null == result) {
+            result = new String[0][0];
+        }
+        return result;
     }
 
     public String[] sqlQuery( String sqlStr, String[] params ) {
-        return (String[])getResultForSqlCall( sqlStr, params );
+        String[] result = (String[])getResultForSqlCall( sqlStr, params );
+        if (null == result) {
+            result = new String[0];
+        }
+        return result;
     }
 
     public String sqlQueryStr( String sqlStr, String[] params ) {
@@ -51,7 +60,11 @@ public class MockDatabase implements Database {
     }
 
     public String[][] sqlQueryMulti( String sqlstr, String[] params ) {
-        return (String[][])getResultForSqlCall( sqlstr, params );
+        String[][] result = (String[][])getResultForSqlCall( sqlstr, params );
+        if (null == result) {
+            result = new String[0][0];
+        }
+        return result;
     }
 
     public void executeTransaction( DatabaseCommand databaseCommand ) {
@@ -76,7 +89,6 @@ public class MockDatabase implements Database {
 
     public void verifyExpectedSqlCalls() {
         if ( !expectedSqlCalls.isEmpty() ) {
-
             Assert.fail( "Remaining expected sql calls: " + expectedSqlCalls.toString() );
         }
     }
@@ -148,7 +160,7 @@ public class MockDatabase implements Database {
     public void assertCalled( String message, SqlCallPredicate predicate ) {
         if ( !called( predicate ) ) {
             String messagePrefix = null == message ? "" : message + " ";
-            Assert.fail( messagePrefix + "Expected at least one sql call " + predicate.getFailureMessage() );
+            Assert.fail( messagePrefix + "Expected at least one sql call: " + predicate.getFailureMessage() );
         }
     }
 
@@ -163,13 +175,14 @@ public class MockDatabase implements Database {
     public void assertNotCalled( String message, SqlCallPredicate predicate ) {
         if ( called( predicate ) ) {
             String messagePrefix = null == message ? "" : message + " ";
-            Assert.fail( messagePrefix + "Got unexpected sql call " + predicate.getFailureMessage() );
+            Assert.fail( messagePrefix + "Got unexpected sql call: " + predicate.getFailureMessage() );
         }
     }
 
-    public void assertCallCount( int count, SqlCallPredicate predicate ) {
-        if ( count != CollectionUtils.countMatches( sqlCalls, predicate ) ) {
-            Assert.fail( "Expected " + count + " sql calls " + predicate.getFailureMessage() );
+    public void assertCallCount( int expectedCount, SqlCallPredicate predicate ) {
+        int actualCount = CollectionUtils.countMatches( sqlCalls, predicate );
+        if ( expectedCount != actualCount ) {
+            Assert.fail( "Expected " + expectedCount + ", but got "+actualCount+" sql calls: " + predicate.getFailureMessage() );
         }
     }
 
@@ -226,24 +239,41 @@ public class MockDatabase implements Database {
         }
     }
 
-    public static class InsertTableSqlCallPredicate extends SqlCallPredicate {
+    public static class InsertIntoTableSqlCallPredicate extends SqlCallPredicate {
 
         private String tableName;
+
+        public InsertIntoTableSqlCallPredicate( String tableName ) {
+            this.tableName = tableName;
+        }
+
+        boolean evaluateSqlCall( SqlCall sqlCall ) {
+            Pattern pattern = Pattern.compile( "^insert\\s+(?:into\\s+)?" + tableName, Pattern.CASE_INSENSITIVE );
+            Matcher matcher = pattern.matcher( sqlCall.getString() );
+            boolean result = matcher.find();
+            return result;
+        }
+
+        String getFailureMessage() {
+            return "insert into table \""+tableName+"\"" ;
+        }
+    }
+
+    public static class InsertIntoTableWithParameterSqlCallPredicate extends InsertIntoTableSqlCallPredicate {
+
         private String parameter;
 
-        public InsertTableSqlCallPredicate( String tableName, String parameter ) {
-            this.tableName = tableName;
+        public InsertIntoTableWithParameterSqlCallPredicate( String tableName, String parameter ) {
+            super(tableName);
             this.parameter = parameter;
         }
 
         boolean evaluateSqlCall( MockDatabase.SqlCall sqlCall ) {
-            boolean stringMatchesUpdateTableName = Pattern.compile( "^insert\\s+(?:into\\s+)?" + tableName ).matcher( sqlCall.getString().toLowerCase() ).find();
-            boolean parametersContainsParameter = ArrayUtils.contains( sqlCall.getParameters(), parameter );
-            return stringMatchesUpdateTableName && parametersContainsParameter;
+            return super.evaluateSqlCall( sqlCall ) && ArrayUtils.contains( sqlCall.getParameters(), parameter );
         }
 
         String getFailureMessage() {
-            return "insert into table " + tableName + " with one parameter = " + parameter;
+            return super.getFailureMessage() + " with one parameter = \"" + parameter + "\"";
         }
     }
 

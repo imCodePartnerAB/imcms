@@ -2,11 +2,12 @@ package imcode.server.document;
 
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.server.db.Database;
 
 public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
-    public DocumentCreatingVisitor( UserDomainObject user ) {
-        super(user);
+    public DocumentCreatingVisitor( UserDomainObject user, Database database ) {
+        super(user, database );
     }
 
     public void visitHtmlDocument( HtmlDocumentDomainObject document ) {
@@ -14,7 +15,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
         String sqlUrlDocsInsertStr = makeSqlInsertString( "frameset_docs", htmlDocumentColumns );
 
-        service.sqlUpdateQuery( sqlUrlDocsInsertStr, new String[]{
+        database.sqlUpdateQuery( sqlUrlDocsInsertStr, new String[]{
             "" + document.getId(), document.getHtml()
         } );
 
@@ -25,7 +26,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
         String sqlUrlDocsInsertStr = DocumentStoringVisitor.makeSqlInsertString( "url_docs", urlDocumentColumns );
 
-        service.sqlUpdateQuery( sqlUrlDocsInsertStr, new String[]{
+        database.sqlUpdateQuery( sqlUrlDocsInsertStr, new String[]{
             "" + document.getId(), "", "", document.getUrl(), "", ""
         } );
 
@@ -37,7 +38,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         TemplateDomainObject defaultTemplate = textDocument.getDefaultTemplate();
         TemplateDomainObject defaultTemplateForRestricted1 = ( (TextDocumentPermissionSetDomainObject)textDocument.getPermissionSetForRestrictedOneForNewDocuments() ).getDefaultTemplate();
         TemplateDomainObject defaultTemplateForRestricted2 = ( (TextDocumentPermissionSetDomainObject)textDocument.getPermissionSetForRestrictedTwoForNewDocuments() ).getDefaultTemplate();
-        service.sqlUpdateQuery( sqlTextDocsInsertStr,
+        database.sqlUpdateQuery( sqlTextDocsInsertStr,
                                 new String[]{
                                     "" + textDocument.getId(),
                                     "" + textDocumentTemplate.getId(),

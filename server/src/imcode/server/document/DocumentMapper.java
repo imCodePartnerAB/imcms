@@ -466,7 +466,7 @@ public class DocumentMapper {
 
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSets( document, user, null );
 
-        document.accept( new DocumentCreatingVisitor( user ) );
+        document.accept( new DocumentCreatingVisitor( user, database ) );
 
         invalidateDocument( document );
     }
@@ -548,7 +548,7 @@ public class DocumentMapper {
                 documentPermissionSetMapper.saveRestrictedDocumentPermissionSets( document, user, oldDocument );
             }
 
-            document.accept( new DocumentSavingVisitor( user, oldDocument ) );
+            document.accept( new DocumentSavingVisitor( user, oldDocument, database ) );
         } finally {
             invalidateDocument( document );
         }
@@ -922,7 +922,7 @@ public class DocumentMapper {
         return browser;
     }
 
-    private BrowserDocumentDomainObject.Browser createBrowserFromSqlRow( String[] sqlRow ) {
+    protected BrowserDocumentDomainObject.Browser createBrowserFromSqlRow( String[] sqlRow ) {
         int browserId = Integer.parseInt( sqlRow[0] );
         String browserName = sqlRow[1];
         int browserSpecificity = Integer.parseInt( sqlRow[2] );
