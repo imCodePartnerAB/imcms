@@ -87,7 +87,7 @@ if (null != formData.documentsIterator) { %>
 					DocumentDomainObject childDocument = (DocumentDomainObject)iterator.next(); %>
   <tr valign="top">
 		<td>&nbsp;<b>&#149;</b>&nbsp;</td>
-		<td><a href="#<%= childDocument.getId() %>"><%=
+		<td><a href="<%="ListDocuments?"+ListDocuments.PARAMETER__LIST_START + "=" + childDocument.getId() + "&" + ListDocuments.PARAMETER__LIST_END +"=" + childDocument.getId()%>"><%=
 					childDocument.getId() %> - <%=
 					StringEscapeUtils.escapeHtml(childDocument.getHeadline()) %></a></td>
 	</tr><%
