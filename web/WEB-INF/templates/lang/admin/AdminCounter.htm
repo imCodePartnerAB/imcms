@@ -13,64 +13,23 @@
 #gui_mid()
 
 <body>
+
 <table width="370">
- <tr>
-   <td width="360">#gui_heading( "<? templates/sv/AdminCounter.htm/1 ?>" )</td>
- </tr>
- <tr>
-   <td> <form method="post" action="AdminCounter">
-       <table>
-         <tr>
-           <td  colspan="2">
-             <? templates/sv/AdminCounter.htm/4 ?>
-           </td>
-         </tr>
-         <tr>
-           <td>
-             <? templates/sv/AdminCounter.htm/5 ?>
-           </td>
-           <td>#COUNTER_VALUE# </td>
-         </tr>
-         <tr>
-           <td>
-             <? templates/sv/AdminCounter.htm/7 ?>
-           </td>
-           <td> <input type="text" name="counter_value" value="#COUNTER_VALUE#" maxlength="80" size="10">
-             <input type="submit" name="setCounter" value="<? templates/sv/AdminCounter.htm/2001 ?>">
-           </td>
-         </tr>
-       </table>
-     </form></td>
- </tr>
- <tr>
-   <td>#ERRORMSG#</td>
- </tr>
- <tr>
-   <td>#gui_heading( "<? templates/sv/AdminCounter.htm/8 ?>" )</td>
- </tr>
- <tr>
-   <td> <form method="post" action="AdminCounter">
-       <table>
-         <tr>
-           <td colspan="2"><? templates/sv/AdminCounter.htm/9 ?></td>
-         </tr>
-         <tr>
-           <td>
-             <? templates/sv/AdminCounter.htm/10 ?>
-           </td>
-           <td>#CURRENT_DATE_VALUE# </td>
-         </tr>
-         <tr>
-           <td>
-             <? templates/sv/AdminCounter.htm/12 ?>
-           </td>
-           <td> <input type="text" name="date_value" value="#NEW_DATE_VALUE#" maxlength="80" size="10">
-             <input type="submit" name="setDate" value="<? templates/sv/AdminCounter.htm/2002 ?>">
-           </td>
-         </tr>
-       </table>
-     </form></td>
- </tr>
+    <form method="post" action="AdminCounter">
+    <tr>
+        <td><? templates/sv/AdminCounter.htm/7 ?></td>
+        <td><input type="text" name="counter_value" value="#COUNTER_VALUE#" maxlength="80" size="10"></td>
+        <td><input type="submit" class="imcmsFormBtnSmall" name="setSessionCounter" value="<? templates/sv/AdminCounter.htm/2001 ?>"></td>
+    </tr>
+    <tr>
+        <td><? templates/sv/AdminCounter.htm/12 ?></td>
+        <td><input type="text" name="date_value" value="#NEW_DATE_VALUE#" maxlength="80" size="10"></td>
+        <td><input type="submit" class="imcmsFormBtnSmall" name="setDate" value="<? templates/sv/AdminCounter.htm/2001 ?>"></td>
+    </tr>
+    <tr>
+        <td colspan="3">#ERRORMSG#</td>
+    </tr>
+    </form>
 </table>
 
 #gui_bottom()
