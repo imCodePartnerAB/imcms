@@ -28,7 +28,6 @@ public class QEngine extends HttpServlet
 		
 		//get todays date
 		Date theDate = new Date();
-		log("B:theDate: " + theDate);
 		
 		GregorianCalendar cal = new GregorianCalendar();
 		
@@ -37,7 +36,6 @@ public class QEngine extends HttpServlet
 		int day = cal.get(Calendar.DAY_OF_MONTH);
 		
 		int date = year*10000+(month+1)*100+day;
-		log("dateD: " + date );
 		
 		//get parameters
 		String type = req.getParameter("type");
@@ -138,7 +136,6 @@ public class QEngine extends HttpServlet
 	public void log( String str) 
 	{
 		super.log(str) ;
-		System.out.println("VeckansFraga: " + str ) ;
 	}
 
 
