@@ -6,7 +6,9 @@ import imcode.external.diverse.* ;
 import java.rmi.* ;
 import java.rmi.registry.* ;
 
-//peter håller på och jobbar i denna
+import imcode.external.chat.*;
+
+
 //meningen är att denna ska ladda framesetet och kolla 
 //all nödvändig data innan den gör detta
 
@@ -14,11 +16,19 @@ public class ChatViewer extends ChatBase {
 
 	String HTML_TEMPLATE ;         // the relative path from web root to where the servlets are
 
+
+	public void doPost(HttpServletRequest req, HttpServletResponse res)
+	throws ServletException, IOException
+	{
+		log("doPost");
+		doGet(req,res);
+	}
+
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-		log("first line in doGet");
-		
+		log("first line in doGet &lt;");
+	
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
 
@@ -47,7 +57,10 @@ public class ChatViewer extends ChatBase {
 		{
 			return;
 		}
-
+		
+		HttpSession ses = req.getSession(false);
+		
+		ses.putValue("ChatMember", super.getChat("1"));
 		// Lets get the url to the servlets directory
 		String servletHome = MetaInfo.getServletPath(req) ;
 
@@ -58,12 +71,13 @@ public class ChatViewer extends ChatBase {
 
 		// Lets build the Responsepage
 		VariableManager vm = new VariableManager() ;
-		vm.addProperty("CONF_FORUM", servletHome + "ConfForum?" + paramStr);
-		vm.addProperty("CONF_DISC_VIEW", servletHome + "ConfDiscView?" + paramStr ) ;
+		vm.addProperty("CHAT_MESSAGES", servletHome + "ChatBoard?" + paramStr);
+		vm.addProperty("CHAT_CONTROL", servletHome + "ChatControl?" + paramStr ) ;
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
-		//log("Nu är ConfViewer klar") ;
+		log("Nu är ChatViewer klar") ;
 		return ;
 	}
+
 
 	/**
 	Detects paths and filenames.
@@ -73,25 +87,10 @@ public class ChatViewer extends ChatBase {
 	{
 
 		super.init(config);
-		HTML_TEMPLATE = "Chat_frameset.htm" ;
-
-		/*
-		HTML_TEMPLATE = getInitParameter("html_template") ;
-
-		if( HTML_TEMPLATE == null) {
-		    Enumeration initParams = getInitParameterNames();
-		    System.err.println("ConfReply: The init parameters were: ");
-		    while (initParams.hasMoreElements()) {
-		System.err.println(initParams.nextElement());
-		    }
-		    System.err.println("DiagramViewer: Should have seen one parameter name");
-		    throw new UnavailableException (this,
-		"Not given a path to the asp diagram files");
-		}
-
-		 // this.log("HtmlTemplate:" + getInitParameter("html_template")) ;
-		  */
-
+		HTML_TEMPLATE = "Chat_Frameset.htm" ;
+		
+	
+		
 	}
 
 	/**
@@ -101,6 +100,7 @@ public class ChatViewer extends ChatBase {
 	public void log( String str)
 	{
 		super.log(str) ;
-		System.out.println("ConfViewer: " + str ) ;
+		System.out.println("ChatViewer: " + str );
 	}
+	
 } // End of class
