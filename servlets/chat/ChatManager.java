@@ -89,7 +89,11 @@ public class ChatManager extends ChatBase
 			// We got 3 logintypes: "Extern"=web users, "ip_access"= people from a certain ip nbr
 			// and "verify" = people who has logged into the system
 
-			if(! loginType.equalsIgnoreCase("VERIFY"))
+String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
+				log("Redirect till:" + loginPage) ;
+				res.sendRedirect(loginPage) ;
+				return ;
+		/*	if(! loginType.equalsIgnoreCase("VERIFY"))
 			{
 				// Lets store  the standard metavalues in his session object
 				HttpSession session = req.getSession(false) ;
@@ -112,13 +116,13 @@ public class ChatManager extends ChatBase
 			log("Ok, användaren har loggat in, förbered honom för chatten" ) ;
 			//  Lets update the users sessionobject with a ok login to the conference
 			//	Send him to the manager with the ability to get in
-		/*	if(!super.prepareUserForChat(req, res, params, userId) )
+			if(!super.prepareUserForChat(req, res, params, userId) )
 			{
 				log("Error in prepareUserFor Chat" ) ;
-			}*/
+			}
 
 
-			return ;
+			return ;*/
 		} // End of View
 
 		// ********* CHANGE ********
