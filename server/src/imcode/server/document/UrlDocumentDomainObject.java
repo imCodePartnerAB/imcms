@@ -7,7 +7,6 @@
 package imcode.server.document;
 
 import com.imcode.imcms.servlet.admin.DocumentComposer;
-import imcode.server.ApplicationServer;
 import imcode.server.user.UserDomainObject;
 
 import javax.servlet.ServletException;
@@ -17,7 +16,7 @@ import java.io.IOException;
 
 public class UrlDocumentDomainObject extends DocumentDomainObject {
 
-    private String urlDocumentUrl;
+    private String urlDocumentUrl = "";
 
     public String getUrlDocumentUrl() {
         return urlDocumentUrl;
