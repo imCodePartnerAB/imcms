@@ -495,6 +495,18 @@ public class DocumentMapper {
         return new SectionDomainObject( sectionId, sectionName );
     }
 
+    public SectionDomainObject getSectionByName( String name ) {
+        String[] sectionSqlRow = service.sqlQuery( "SELECT section_id, section_name FROM sections WHERE section_name = ?",
+                                                  new String[]{name} );
+        if ( 0 == sectionSqlRow.length ) {
+            return null;
+        }
+        int sectionId = Integer.parseInt( sectionSqlRow[0] ) ;
+        String sectionName = sectionSqlRow[1] ;
+        return new SectionDomainObject( sectionId, sectionName );
+    }
+
+
     /**
      * @return the sections for a document, empty array if there is none.
      */

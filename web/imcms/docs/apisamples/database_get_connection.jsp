@@ -2,7 +2,7 @@
                  java.sql.DatabaseMetaData" errorPage="error.jsp" %>
 
 <%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     Connection connection = imcmsSystem.getDatabaseService().getConnection() ;
     try {
         DatabaseMetaData metaData = connection.getMetaData() ;

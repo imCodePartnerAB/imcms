@@ -1,8 +1,7 @@
 <%@ page import="com.imcode.imcms.api.*"%>
 <%
 
-    ContentManagementSystem imcms = (ContentManagementSystem) request.getAttribute(
-            RequestConstants.SYSTEM);
+    ContentManagementSystem imcms = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcms.getDocumentService();
 %>
 <html>

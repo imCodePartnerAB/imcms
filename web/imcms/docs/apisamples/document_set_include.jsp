@@ -1,8 +1,8 @@
 <%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
-
-
+<html>
+<body>
 <%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService() ;
     int documentId = 1001 ;
     TextDocument document = documentService.getTextDocument(documentId) ;
@@ -14,3 +14,5 @@
     document.setInclude( includeIndexInDocument, documentToBeIncluded ) ;
 %>
 Done. Document <%= documentId %> now includes document <%= documentToBeIncluded.getId() %>.
+</body>
+</html>

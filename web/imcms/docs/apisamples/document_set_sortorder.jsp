@@ -2,7 +2,8 @@
                  java.util.SortedMap,
                  java.util.Map,
                  java.util.Iterator" errorPage="error.jsp" %>
-
+<html>
+<body>
 <%!
     int documentId = 1001 ;
     private String makeLink(int documentId,HttpServletRequest request) {
@@ -10,7 +11,7 @@
     }
 %>
 <%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService();
     TextDocument document = documentService.getTextDocument(documentId) ;
 
@@ -38,3 +39,5 @@
             </select>
             <input type="submit" value="Set sort order of document <%= documentId %>">
         </form>
+</body>
+</html>

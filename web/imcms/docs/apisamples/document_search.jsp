@@ -3,7 +3,7 @@ java.util.*,
                  java.text.SimpleDateFormat,
                  java.text.DateFormat,
                                                                org.apache.commons.lang.StringUtils" errorPage="error.jsp" %><%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService() ;
     SearchQuery query ;
 %><html>

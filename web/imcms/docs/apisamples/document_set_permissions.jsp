@@ -10,7 +10,7 @@ java.util.*" errorPage="error.jsp" %>
 <html>
 <body>
 <%
-    ContentManagementSystem imcms = (ContentManagementSystem) request.getAttribute(RequestConstants.SYSTEM) ;
+    ContentManagementSystem imcms = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcms.getDocumentService() ;
 
     TextDocument document = documentService.getTextDocument(documentId) ;

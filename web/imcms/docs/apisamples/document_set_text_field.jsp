@@ -1,8 +1,8 @@
 <%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
-
-
+<html>
+<body>
 <%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService() ;
     int documentId = 1001 ;
     TextDocument document = documentService.getTextDocument(documentId) ;
@@ -18,3 +18,5 @@
     documentService.saveChanges( document );
 %>
 Done. See <a href="<%= request.getContextPath() %>/servlet/GetDoc?meta_id=<%= documentId %>">document <%= documentId %></a>.
+</body>
+</html>

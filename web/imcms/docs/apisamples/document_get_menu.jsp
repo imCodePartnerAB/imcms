@@ -54,7 +54,7 @@
 
 The documents in menu number <%= menuIndex %> on <%= documentId %> is:<br>
 <%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService();
     TextDocument document = documentService.getTextDocument(documentId) ;
     TextDocument.Menu menu = document.getMenu(menuIndex) ;

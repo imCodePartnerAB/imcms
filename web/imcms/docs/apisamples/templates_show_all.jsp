@@ -1,8 +1,7 @@
 <%@ page import="com.imcode.imcms.api.*"%>
 <%
 
-    ContentManagementSystem imcms = (ContentManagementSystem) request.getAttribute(
-            RequestConstants.SYSTEM);
+    ContentManagementSystem imcms = ContentManagementSystem.fromRequest( request );
     TemplateService templateService = imcms.getTemplateService();
     TemplateGroup[] templateGroups = templateService.getAllTemplateGroups() ;
 %>

@@ -1,7 +1,7 @@
 <%@ page import="com.imcode.imcms.api.*,
                  java.util.*" errorPage="error.jsp" %>
 <%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService() ;
     int documentId = 1001 ;
     TextDocument document = documentService.getTextDocument(documentId) ;
@@ -15,8 +15,8 @@
     document.setStatus( Document.STATUS_PUBLICATION_APPROVED );
     document.setVisibleInMenusForUnauthorizedUsers( false );
 
-    int sectionId = 1;
-    Section section = documentService.getSection( sectionId );
+    //Section section = documentService.getSection( "sectionname" );
+    Section section = documentService.getSection( 1 );
     if (null != section) {
         document.addSection(section) ;
     } else {

@@ -41,7 +41,7 @@ public void setCookie ( String theName, String theValue, HttpServletResponse res
 
 %><%
 
-ContentManagementSystem imcmsSystem = (ContentManagementSystem) request.getAttribute(RequestConstants.SYSTEM) ;
+ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
 DocumentService documentService     = imcmsSystem.getDocumentService() ;
 
 String action  = (request.getParameter("action") != null) ? request.getParameter("action") : "" ;

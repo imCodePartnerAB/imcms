@@ -10,7 +10,7 @@
 
 Include number <%= includeIndex %> in document <%= documentId %> has the content:<br>
 <%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService();
     TextDocument document = documentService.getTextDocument(documentId) ;
     Document includedDocument = document.getInclude(includeIndex) ;

@@ -218,16 +218,19 @@ public class DocumentService {
     }
 
     public Section getSection( int sectionId ) {
-        // Allow everyone to get a Section. No security check.
-        SectionDomainObject[] sections = getDocumentMapper().getAllSections();
-        Section result = null;
-        for ( int i = 0; i < sections.length; i++ ) {
-            SectionDomainObject section = sections[i];
-            if ( sectionId == section.getId() ) {
-                result = new Section( section );
-            }
+        SectionDomainObject section = getDocumentMapper().getSectionById( sectionId );
+        if ( null == section ) {
+            return null;
         }
-        return result;
+        return new Section( section ) ;
+    }
+
+    public Section getSection(String name) {
+        SectionDomainObject section = getDocumentMapper().getSectionByName( name );
+        if ( null == section ) {
+            return null;
+        }
+        return new Section( section ) ;
     }
 
     public Document[] search( SearchQuery query ) throws SearchException {

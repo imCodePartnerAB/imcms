@@ -1,7 +1,7 @@
 <%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
 
 <%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService();
     TemplateService templateService = imcmsSystem.getTemplateService();
     int documentId = 1001 ;

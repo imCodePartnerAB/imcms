@@ -4,6 +4,8 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 
+import javax.servlet.ServletRequest;
+
 public abstract class ContentManagementSystem {
 
     public abstract UserService getUserService();
@@ -24,6 +26,10 @@ public abstract class ContentManagementSystem {
         UserDomainObject user = imcref.verifyUser( userName, password );
         ContentManagementSystem cms = new DefaultContentManagementSystem( imcref, user );
         return cms;
+    }
+
+    public static ContentManagementSystem fromRequest(ServletRequest request) {
+        return (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
     }
 
     abstract ImcmsServices getInternal() ;

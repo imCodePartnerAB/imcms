@@ -2,7 +2,7 @@
 java.util.*,
                  org.apache.commons.lang.StringUtils" errorPage="error.jsp" %>
 <%
-ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
+ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
 User currentLoggedinUser = imcmsSystem.getCurrentUser();
 DocumentService documentService = imcmsSystem.getDocumentService() ;
 %>

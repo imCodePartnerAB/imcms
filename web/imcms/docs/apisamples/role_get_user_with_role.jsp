@@ -2,7 +2,7 @@
 
 <H3>Getting all users with a specific role</H3>
 <%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     UserService userService = imcmsSystem.getUserService();
     User[] users = userService.getAllUserWithRole( RoleConstants.USERS );
 %>

@@ -2,10 +2,10 @@
 
 <h2>Listing attributes for user "admin" in the IMCMS system</h2>
 <%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     UserService userService = imcmsSystem.getUserService();
     User user = userService.getUser("admin"); %>
-    
+
     <p>
     User "<%= user.getLoginName()%>" has the following attributes:<br><%
     out.print( "getAddress(): " + user.getAddress() + "<br>");

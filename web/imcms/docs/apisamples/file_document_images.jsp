@@ -10,7 +10,7 @@ java.util.*,
     </head>
     <body>
 <%
-    ContentManagementSystem contentManagementSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM ) ;
+    ContentManagementSystem contentManagementSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = contentManagementSystem.getDocumentService() ;
     Document[] documents = documentService.search( new LuceneParsedQuery( "doc_type_id:"+FileDocument.TYPE_ID )) ;
     for ( int i = 0; i < documents.length; i++ ) {

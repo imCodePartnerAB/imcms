@@ -3,7 +3,7 @@
 <H3>Delete a role named "Test role"</H3>
 
 <%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     UserService userService = imcmsSystem.getUserService();
 %>
 Before:<br>

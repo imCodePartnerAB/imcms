@@ -18,7 +18,7 @@ In between "Full" and "Read" there can also be defined two that can be modified,
 and can be set differently for different pages (and sub pages).
 </p>
 <%  int documentId = 1001;
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService();
     Document document = documentService.getTextDocument(documentId);
 %>

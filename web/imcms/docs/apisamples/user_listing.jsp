@@ -2,7 +2,7 @@
 
 <h2>Listing current users in the IMCMS system</h2>
 <%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     UserService userService = imcmsSystem.getUserService();
     User[] users = userService.getAllUsers();
     for( int i = 0; i < users.length ; i++ ){%>

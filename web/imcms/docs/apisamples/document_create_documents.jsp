@@ -5,7 +5,7 @@
                  javax.activation.FileDataSource" errorPage="error.jsp" %>
 
 <%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
+    ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService() ;
 
     int parentId = 1001;
