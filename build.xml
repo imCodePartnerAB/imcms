@@ -151,9 +151,15 @@
 
   <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
   <target name="build"
-	  depends="init,server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help,fortune,sql"
+	  depends="init,server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help,fortune,sql,web.xml"
 	  description="Builds everything.">
 
+  </target>
+
+
+  <!-- Copies the deploy-descriptor to its correct location. -->
+  <target name="web.xml" depends="init">
+    <copy file="install/web.xml" todir="${WEB-INF}" overwrite="yes"/>
   </target>
 
 
