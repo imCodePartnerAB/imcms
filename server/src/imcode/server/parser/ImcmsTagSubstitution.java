@@ -294,7 +294,6 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
                 includedDocumentRequest.setDocument(serverObject.getDocument(included_meta_id));
                 includedDocumentRequest.setReferrer(document);
                 String documentStr = textDocParser.parsePage(includedDocumentRequest, -1, includeLevel - 1, paramsToParse);
-                ;
                 documentStr = org.apache.oro.text.regex.Util.substitute(patMat, HTML_PREBODY_PATTERN, NULL_SUBSTITUTION, documentStr);
                 documentStr = org.apache.oro.text.regex.Util.substitute(patMat, HTML_POSTBODY_PATTERN, NULL_SUBSTITUTION, documentStr);
                 return documentStr;
@@ -305,7 +304,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             return "<!-- imcms:include failed: " + ex + " -->";
         } catch (NumberFormatException ex) {
             // There was no such include in the db.
-            return "<!-- imcms:include failed: " + ex + " -->";
+            return "";
         }
     }
 
