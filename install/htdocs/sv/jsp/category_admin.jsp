@@ -103,7 +103,6 @@ imcmsGui("mid", null);
 
         <input type="hidden" name="<%= AdminCategories.PARAMETER_MODE__ADD_CATEGORY_TYPE %>" value="1">
         <tr>
-            <td>&nbsp;</td>
             <td width="80" height="24" class="imcmsAdmText" nowrap><? global/Name ?></td>
             <td>&nbsp;</td>
         </tr>
@@ -112,16 +111,15 @@ imcmsGui("mid", null);
             <td><script>
                 writeFormField("TEXT","name",30,50,null,null);
             </script></td>
-            <td>&nbsp;</td>
         </tr>
         <tr>
             <td>&nbsp;</td>
-            <td width="80" height="24" class="imcmsAdmText" nowrap>
+            <td height="24" class="imcmsAdmText" nowrap>
              <input type="radio" name="max_choices" value="1" checked>&nbsp;<? install/htdocs/sv/jsp/category_admin/singel_choice ?></td>
         </tr>
         <tr>
             <td>&nbsp;</td>
-             <td width="80" height="24" class="imcmsAdmText" nowrap>
+             <td height="24" class="imcmsAdmText" nowrap>
               <input type="radio" name="max_choices" value="0" >&nbsp;<? install/htdocs/sv/jsp/category_admin/multi_choice ?></td>
         </tr>
 
@@ -147,13 +145,13 @@ imcmsGui("mid", null);
 
             <tr>
                 <td>&nbsp;</td>
-                <td width="80" height="24" class="imcmsAdmText" nowrap>
+                <td height="24" class="imcmsAdmText" nowrap>
                  <input type="radio" name="max_choices" value="1" <%= formData.getCategoryTypeToEdit().getMaxChoices() == 1 ?  "checked" : "" %> >
                    &nbsp;<? install/htdocs/sv/jsp/category_admin/singel_choice ?></td>
             </tr>
             <tr>
                 <td>&nbsp;</td>
-                 <td width="80" height="24" class="imcmsAdmText" nowrap>
+                 <td height="24" class="imcmsAdmText" nowrap>
                   <input type="radio" name="max_choices" value="0" <%= formData.getCategoryTypeToEdit().getMaxChoices() == 0 ? "checked" : "" %> >
                     &nbsp;<? install/htdocs/sv/jsp/category_admin/multi_choice ?></td>
             </tr>
