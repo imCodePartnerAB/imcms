@@ -99,9 +99,9 @@ public class AdminRandomTextsFile extends Administrator {
 				
 				//FIX så linjen blir ok med #
 				String fullLine = ((String)lines.get(row)).trim();
-				 date1 = fullLine.substring(0,6);
-			 date2 = fullLine.substring(7,13);
-				 text = HTMLConv.toHTML(fullLine.substring(14));
+				date1 = fullLine.substring(0,6);
+			 	date2 = fullLine.substring(7,13);
+				text = fullLine.substring(14);//HTMLConv.toHTML(fullLine.substring(14));
 				
 				//out.println(date1 + "#" + date2 + "#" + text + "#" + "<br>");
 				fileW.write(date1 + "#" + date2 + "#" + text + "#" );

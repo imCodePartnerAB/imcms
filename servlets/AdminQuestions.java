@@ -16,6 +16,7 @@ public class AdminQuestions extends Administrator
        The GET method creates the html page when this side has been
        redirected from somewhere else.
     **/
+	
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 

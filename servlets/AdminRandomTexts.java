@@ -195,6 +195,9 @@ public class AdminRandomTexts extends Administrator {
 		BufferedReader readFile = new BufferedReader( new StringReader( openFile ) );
 		
 		String line = readFile.readLine();
+		
+		//out.println("Line: " + line);
+		
 		int row = 0;
 		while ( line!=null && !(line.length()<=12) )
 		{

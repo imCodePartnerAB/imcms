@@ -58,7 +58,7 @@ public class AdminQuestionsFile extends Administrator {
 			
 			File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
 			String readFile = (String)session.getAttribute("file");
-			File file = new File(fortune_path,readFile + ".txt");
+			File file = new File(fortune_path,readFile + "enkat.txt");
 			BufferedWriter fileW = new BufferedWriter( new FileWriter(file) );
 			//out.println("file: " + file + "<br>");
 			
