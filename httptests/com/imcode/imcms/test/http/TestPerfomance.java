@@ -76,10 +76,8 @@ public class TestPerfomance extends TestCase {
         final int noOfConcurrentThreads = 5;
         System.out.println( "" + noOfConcurrentThreads + " concurrent threads, testing a page with 3 includes" );
         int timeForOneRun = 0;
-        while(true) {
-            timeForOneRun += testConcurrentPageRetrievals( noOfConcurrentThreads );
-        }
-        //printAverage( timeForOneRun / noOfConcurrentThreads / noTestRuns );
+        timeForOneRun += testConcurrentPageRetrievals( noOfConcurrentThreads );
+        printAverage( timeForOneRun / noOfConcurrentThreads / noTestRuns );
     }
 
     private long testConcurrentPageRetrievals( final int noOfConcurrentThreads ) throws InterruptedException {
