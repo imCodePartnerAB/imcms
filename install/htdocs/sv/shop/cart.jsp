@@ -74,8 +74,8 @@ import="java.util.*, java.text.*, imcode.util.shop.*"
     <p>
       <? sv/shop/cart.jsp/11 ?>
     </p>
-    <input type="submit" name="submit" value="Modify shopping cart">
-    <input type="submit" name="send" value="Submit shopping cart">
+    <input type="submit" name="submit" value="<? sv/shop/cart.jsp/2001 ?>">
+    <input type="submit" name="send" value="<? sv/shop/cart.jsp/2002 ?>">
     </form>
   </body>
 </html>

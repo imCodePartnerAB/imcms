@@ -6,9 +6,9 @@
 <%
 if( saveAnswers ) {
 	%>
-	<input type="submit" name="Save" value="Skicka ditt svar">&nbsp;&nbsp;<input type="reset" name="Reset" value="Rensa">&nbsp;&nbsp;<input type="button" name="cancel" value="St&auml;ng" onclick="javascript:window.close()">
+	<input type="submit" name="Save" value="<? sv/poll/pollForm_part_show.jsp/2001 ?>">&nbsp;&nbsp;<input type="reset" name="Reset" value="<? sv/poll/pollForm_part_show.jsp/2002 ?>">&nbsp;&nbsp;<input type="button" name="cancel" value="<? sv/poll/pollForm_part_show.jsp/2003 ?>" onclick="javascript:window.close()">
 	<? sv/poll/pollForm_part_show.jsp/2 ?>
-	<input type="button" name="cancel" value="St&auml;ngt" onclick="javascript:window.close()">
+	<input type="button" name="cancel" value="<? sv/poll/pollForm_part_show.jsp/2004 ?>" onclick="javascript:window.close()">
 	<? sv/poll/pollForm_part_show.jsp/3 ?>
 
 <SCRIPT language=JavaScript>

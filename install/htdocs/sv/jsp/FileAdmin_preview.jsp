@@ -61,13 +61,13 @@ A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 	<tr><%
 		if (isIE || isNS) { %>
 		<td class="norm"><input type="text" name="searchString" size="15" value="" class="norm" style="width:100"></td>
-		<td><a id="btnSearch" href="javascript://find()" onClick="findIt(document.forms[0].searchString.value);"><img src="<%= IMG_PATH %>btn_find.gif" border="0" hspace="5" alt="Sök!"></a></td><%
+		<td><a id="btnSearch" href="javascript://find()" onClick="findIt(document.forms[0].searchString.value);"><img src="<%= IMG_PATH %>btn_find.gif" border="0" hspace="5" alt="<? sv/jsp/FileAdmin_preview.jsp/2001 ?>"></a></td><%
 		} %>
 		<td class="norm">&nbsp;&nbsp;</td><%
 		if (!isMac) { %>
-		<td><a href="javascript://print()" onClick="top.frames.main.focus(); top.frames.main.print();"><img src="<%= IMG_PATH %>btn_print.gif" border="0" hspace="5" alt="Skriv ut!"></a></td><%
+		<td><a href="javascript://print()" onClick="top.frames.main.focus(); top.frames.main.print();"><img src="<%= IMG_PATH %>btn_print.gif" border="0" hspace="5" alt="<? sv/jsp/FileAdmin_preview.jsp/2002 ?>"></a></td><%
 		} %>
-		<td><a href="javascript://close()" onClick="closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" hspace="5" alt="Stäng och återgå!"></a></td>
+		<td><a href="javascript://close()" onClick="closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" hspace="5" alt="<? sv/jsp/FileAdmin_preview.jsp/2003 ?>"></a></td>
 		<td class="norm">&nbsp;&nbsp;&nbsp;&nbsp;</td>
 	</tr>
 	</form>

@@ -216,8 +216,8 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 	<td>&nbsp;</td>
 	<td colspan="3">
 	<input type="hidden" name="<%=WebAppGlobalConstants.USER_LOGIN_NAME%>" value="<%=userLoginName%>">
-	<input type="submit" name="<%= ACTION_SAVE_USER %>" value="Spara">
-	<input type="submit" name="<%= ACTION_CANCEL %>" value="Avbryt"></td>
+	<input type="submit" name="<%= ACTION_SAVE_USER %>" value="<? sv/adminuser/changeexternaluser.jsp/2001 ?>">
+	<input type="submit" name="<%= ACTION_CANCEL %>" value="<? sv/adminuser/changeexternaluser.jsp/2002 ?>"></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>

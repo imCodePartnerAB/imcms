@@ -50,7 +50,7 @@ A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 			<form name="searchForm" onSubmit="findIt(document.forms[0].searchString.value); return false">
 			<tr>
 				<td><input type="text" name="searchString" size="8" value="<%= theSearchString %>" style="width:50"></td>
-				<td><a id="btnSearch" href="javascript://find()" onClick="findIt(document.forms[0].searchString.value);"><img src="<%= IMG_PATH %>btn_find.gif" border="0" hspace="5" alt="Sök!"></a></td>
+				<td><a id="btnSearch" href="javascript://find()" onClick="findIt(document.forms[0].searchString.value);"><img src="<%= IMG_PATH %>btn_find.gif" border="0" hspace="5" alt="<? sv/jsp/FileAdmin_edit.jsp/2001 ?>"></a></td>
 			</tr>
 			</form>
 			</table></td><%
@@ -90,13 +90,13 @@ A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 			<input type="hidden" name="templName" value="<%= templName %>"><%
 			} %>
 			<tr>
-				<td><input name="btnSave" id="btnSave" type="image" src="<%= IMG_PATH %>btn_save.gif" border="0" alt="Spara!"></td>
+				<td><input name="btnSave" id="btnSave" type="image" src="<%= IMG_PATH %>btn_save.gif" border="0" alt="<? sv/jsp/FileAdmin_edit.jsp/2002 ?>"></td>
 				<td class="norm">&nbsp;&nbsp;</td>
 				<td><%
 				if (isNS) {
-					%><a href="javascript: closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" alt="Stäng och återgå!"></a><%
+					%><a href="javascript: closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? sv/jsp/FileAdmin_edit.jsp/2003 ?>"></a><%
 				} else {
-					%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="Stäng och återgå!" onClick="closeIt(); return false"><%
+					%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? sv/jsp/FileAdmin_edit.jsp/2004 ?>" onClick="closeIt(); return false"><%
 				} %></td>
 				<td class="norm">&nbsp;&nbsp;</td>
 			</tr>
@@ -109,9 +109,9 @@ A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 		<tr>
 			<td><%
 			if (isNS) {
-				%><a href="javascript: closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" alt="Stäng och återgå!"></a><%
+				%><a href="javascript: closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? sv/jsp/FileAdmin_edit.jsp/2005 ?>"></a><%
 			} else {
-				%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="Stäng och återgå!" onClick="closeIt(); return false"><%
+				%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? sv/jsp/FileAdmin_edit.jsp/2006 ?>" onClick="closeIt(); return false"><%
 			} %></td>
 		</tr>
 		</table><%
