@@ -1063,7 +1063,7 @@ GO
 
 
 
-CREATE PROCEDURE CopyDocs @documents_string VARCHAR(200), @parent_id INT, @menu_id INT, @user INT AS
+CREATE PROCEDURE CopyDocs @documents_string VARCHAR(200), @parent_id INT, @menu_id INT, @user INT, @copyPrefix VARCHAR(20) AS
 
 CREATE TABLE #documents (
   meta_id VARCHAR(10)
@@ -1242,7 +1242,7 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 	) VALUES (
 		@description,
 		@doc_type,
-		@meta_headline + ' (2)',
+		@meta_headline + @copyPrefix,
 		@meta_text,
 		@meta_image,
 		@owner_id,
