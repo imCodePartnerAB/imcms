@@ -6,7 +6,7 @@ public interface IMCConstants {
     final static String CVS_DATE = "$Date$" ;
 
     /* Documenttypes */
-    
+
     /** Document-type for text-documents. **/
     public final static int DOCTYPE_TEXT       = 2 ;
 
@@ -36,12 +36,12 @@ public interface IMCConstants {
 
     /** Document-type for postcards. **/
     public final static int DOCTYPE_POSTCARD   = 105 ;
-	
-	/** Document-type for fortune **/
-	public final static int DOCTYPE_FORTUNES   = 106 ;
-	
-	/** Document-type for calender **/
-	public final static int DOCTYPE_CALENDER   = 107 ;
+
+    /** Document-type for fortune **/
+    public final static int DOCTYPE_FORTUNES   = 106 ;
+
+    /** Document-type for calender **/
+    public final static int DOCTYPE_CALENDER   = 107 ;
 
 
     /* Permissions for restricted permission-sets 1 and 2, applicable for all document-types. */
@@ -57,7 +57,7 @@ public interface IMCConstants {
 
     /** Permission to create child documents. **/
     public final static int PERM_CREATE_DOCUMENT         = (1 << 3) ; // 8
- 
+
 
     /* Permissions for restricted permission-sets 1 and 2, only applicable to text-documents. */
 
@@ -99,7 +99,7 @@ public interface IMCConstants {
 
     /** Permissions as given to restricted permission-set 1. **/
     public final static int DOC_PERM_SET_RESTRICTED_1    = 1 ;
-    
+
     /** Permissions as given to restricted permission-set 2. **/
     public final static int DOC_PERM_SET_RESTRICTED_2    = 2 ;
 
@@ -111,24 +111,24 @@ public interface IMCConstants {
 
 
     /* Document-wide-permissions. */
-    
+
     /** Permissions of restricted permission-set 1 includes permission to edit restricted permission-set 2. **/
     public final static int DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 = (1 << 0) ; // 1
-	
+
     /* Log instances. */
 
     /** The main-log, used for logging interesting stuff, like db-modifications. **/
-    public final static String MAIN_LOG 		= "mainlog";
+    public final static String MAIN_LOG		= "mainlog";
 
     /** The access-log, used for keeping track of page hits. **/
-    public final static String ACCESS_LOG 		= "accesslog";
+    public final static String ACCESS_LOG		= "accesslog";
 
     /** The error-log, used for logging errors, exceptions, and the like. */
-    public final static String ERROR_LOG 		= "errorlog";
-    
+    public final static String ERROR_LOG		= "errorlog";
+
 
     /* Menu-sort-orders. */
-    
+
     /** Menu sorted by headline. **/
     public final static int MENU_SORT_BY_HEADLINE        = 1 ;
 
@@ -137,8 +137,8 @@ public interface IMCConstants {
 
     /** Menu sorted by datetime. **/
     public final static int MENU_SORT_BY_DATETIME        = 3 ;
-	
-	/* Default-dateTime-format */
-	public final static String DATETIME_FORMAT_STD        = "yyyy-MM-dd HH:mm" ;
+
+    /* Default-dateTime-format */
+    public final static String DATETIME_FORMAT_STD        = "yyyy-MM-dd HH:mm" ;
 
 }

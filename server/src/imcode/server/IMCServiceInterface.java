@@ -51,7 +51,7 @@ public interface IMCServiceInterface {
     IMCText getText(int meta_id,int txt_no)
 	;
 
-    String parsePage(int meta_id, imcode.server.User user, int flags, ParserParameters paramsToParse) throws IOException ;
+    String parsePage(DocumentRequest docReq, int flags, ParserParameters paramsToParse) throws IOException ;
 
     // Save an image
     void saveImage(int meta_id,User user,int img_no,imcode.server.Image image)
@@ -118,10 +118,6 @@ public interface IMCServiceInterface {
     String isFramesetDoc(int meta_id,User user)
 	;
 
-    // track user
-    void updateTrackLog(int from_meta_id,int to_meta_id,imcode.server.User user)
-	;
-
     // search docs
     Vector searchDocs(int meta_id,User user,String question_str,
 		      String search_type,String string_match,String search_area)
@@ -166,6 +162,10 @@ public interface IMCServiceInterface {
 
     // Send a procedure to the database and return a string array
     public String[] sqlProcedure(String procedure)
+	;
+
+    // Send a procedure to the database and return a string array
+    public String[] sqlProcedure(String procedure, String[] params)
 	;
 
     // Send a procedure to the database and return a string
@@ -228,7 +228,7 @@ public interface IMCServiceInterface {
 	;
 
     // get templatehome
-    public byte[] getTemplate(int template_id)
+    public byte[] getTemplateData(int template_id)
 	throws IOException ;
 
     // get templatehome
@@ -357,6 +357,11 @@ public interface IMCServiceInterface {
 
     public void setPollList(String pollListName, List pollList) throws IOException ;
 
-    public imcode.server.parser.Document getDocument(int meta_id) throws IOException ;
+    public imcode.server.parser.Document getDocument(int meta_id) ;
 
+    public String getSection(int meta_id) ;
+
+    public String getFilename(int meta_id) ;
+
+    public Template getTemplate(int meta_id) ;
 }

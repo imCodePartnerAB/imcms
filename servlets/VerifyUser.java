@@ -4,6 +4,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.rmi.* ;
 
+import imcode.server.* ;
 import imcode.util.* ;
 /**
    Verify a user.
@@ -24,13 +25,13 @@ public class VerifyUser extends HttpServlet {
     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host 				= req.getHeader("Host") ;
-	String imcserver 			= Utility.getDomainPref("userserver",host) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 	String start_url        	= Utility.getDomainPref( "start_url",host ) ;
 	String servlet_url       	= Utility.getDomainPref( "servlet_url",host ) ;
 	String admin_url       		= Utility.getDomainPref( "admin_url",host ) ;
 	String access_denied_url   	= Utility.getDomainPref( "access_denied_url",host ) ;
 
-	imcode.server.User user ;                            	
+	imcode.server.User user ;
 	res.setContentType( "text/html" );
 	PrintWriter out = res.getWriter( );
 	String test = "" ; 
@@ -72,7 +73,7 @@ public class VerifyUser extends HttpServlet {
 	    }
 	    //return;
 
-	    StartDoc.incrementSessionCounter(imcserver,user,req) ;
+	    StartDoc.incrementSessionCounter(imcref,user,req) ;
 
 	    user.setLoginType("verify") ;
 
@@ -87,14 +88,14 @@ public class VerifyUser extends HttpServlet {
     */
     protected imcode.server.User allowUser( String user_name, String passwd, String host ) throws IOException { 
 	imcode.server.User user = new imcode.server.User( ) ;
-	String imcserver 			= Utility.getDomainPref("userserver",host) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 
 	// user information
 	// FIXME: Replace this SQL-abomination.
 	String fieldNames[] = {"user_id","login_name","login_password","first_name",
 			       "last_name","title", "company", "address","city","zip","country",
 			       "county_council","email","admin_mode","last_page","archive_mode","lang_id", "user_type", "active", "create_date" } ;
-	user = IMCServiceRMI.verifyUser(imcserver, new imcode.server.LoginUser( user_name,passwd ),fieldNames );
+	user = imcref.verifyUser( new imcode.server.LoginUser( user_name,passwd ),fieldNames );
 	return user ; //  user ;
     }
 }

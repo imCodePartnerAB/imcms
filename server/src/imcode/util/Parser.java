@@ -61,8 +61,9 @@ public class Parser {
 	    for ( int i = 0; i<data.length ; i+=2 ) {
 		length = data[i].length() ;
 		if (length > 0) {
-		    for (int start = 0; (start = sb.toString().indexOf(data[i],start))!=-1; start+=data[i+1].length()) {
-		sb.replace(start,start+length,data[i+1]) ;
+		    String replacement = (null == data[i+1]) ? "" : data[i+1] ;
+		    for (int start = 0; (start = sb.toString().indexOf(data[i],start))!=-1; start+=replacement.length()) {
+			sb.replace(start,start+length,replacement) ;
 		    }
 		}
 	    }

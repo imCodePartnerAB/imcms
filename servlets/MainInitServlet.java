@@ -1,9 +1,3 @@
-/*
- * MainInitServlet.java
- *
- * Created on den 11 september 2001, 08:47
- */
- 
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.File ;
@@ -12,25 +6,30 @@ import imcode.util.Prefs;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.xml.DOMConfigurator;
-/** 
- *
- * @author  Hasse Brattberg, hasse@erudio.se
- */
+
+/**
+   MainInitServlet.java
+
+   Created on den 11 september 2001, 08:47
+
+   @author  Hasse Brattberg, hasse@erudio.se
+   @author  Christoffer Hammarström, kreiger@imcode.com
+**/
 public class MainInitServlet extends HttpServlet {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
-	
+
     public void init(ServletConfig config) throws ServletException {
 	try {
-	    super.init(config);	
+	    super.init(config);
 
 	    File realPathToWebApp = new File(this.getServletContext().getRealPath("/")) ;
 	    imcode.server.WebAppGlobalConstants.init( realPathToWebApp );
-	
+
 	    File confPath = new File(realPathToWebApp, "WEB-INF/conf");
 	    Prefs.setConfigPath( confPath );
-	    
-	    DOMConfigurator.configure( new File(confPath,"log4j.xml").toURL() );
+
+	    DOMConfigurator.configureAndWatch( new File(confPath,"log4j.xml").toString() );
 	    Category log = Category.getRoot() ;
 	    log.info("Logging started" );
 	    logPlatformInfo( this.getServletContext(),log );
@@ -47,14 +46,13 @@ public class MainInitServlet extends HttpServlet {
 	final String osName = "os.name";
 	final String osArch = "os.arch";
 	final String osVersion = "os.version";
-		
+
 	log.info( "Servlet Engine: " + application.getServerInfo() );
 	log.info(  javaVersion + ": " + System.getProperty( javaVersion ) );
 	log.info(  javaVendor + ": " + System.getProperty( javaVendor ) );
 	log.info(  osName + ": " + System.getProperty( osName ) );
 	log.info(  osArch + ": " + System.getProperty( osArch ) );
 	log.info(  osVersion + ": " + System.getProperty( osVersion ) );
-	
+
     }
 }
-

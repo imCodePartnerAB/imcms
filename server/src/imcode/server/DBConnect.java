@@ -8,8 +8,8 @@ import java.util.*;
 import org.apache.log4j.Category;
 
 public class DBConnect {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
+    private final static String CVS_REV="$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
 
     imcode.server.InetPoolManager conPool ; // Inet poolmanager
 
@@ -19,13 +19,13 @@ public class DBConnect {
     protected ResultSetMetaData rsmd = null ;	    // The JDBC ResultSetMetaData
     protected CallableStatement cs = null ;	    // The JDBC CallableStatement
     protected String strSQLString = "" ;		    // SQL query-string
-    protected String strProcedure = "" ;		    // Procedure	
+    protected String strProcedure = "" ;		    // Procedure
     protected String[] meta_data ;       // Meta info
     protected String catalog = "" ;		    // Current database
     protected String default_catalog = "" ;	    // Default database
     protected boolean trimStr = true ;
     protected int columnCount ;                       // Column count
-	
+
     private static Category log = Category.getInstance("server") ;
 
     // constructor
@@ -39,33 +39,33 @@ public class DBConnect {
 	strSQLString = sqlString ;
     }
 
-    // get a connection 
+    // get a connection
     public void getConnection() {
 	try {
 	    con = conPool.getConnection();
 	} catch (Exception ex) {
 	    // We already logged in conPool.getConnection
-	    log.warn("Exception occured while getting connection.",ex );	   		
+	    log.error(ex);
 	}
     }
-    
+
     // create a statement object.
     public void createStatement() {
 	try {
-	    stmt = con.createStatement();						  // Create statement 
+	    stmt = con.createStatement();						  // Create statement
 	} catch (Exception ex) {
-	    log.warn("Failed to create SQL statement.", ex) ;
+	    log.error(ex) ;
 	}
     }
 
     /**
-     * <p>Execute a database query.	  
+     * <p>Execute a database query.
      */
     public Vector executeQuery() {
 
 	Vector results = new Vector() ;
 
-	// Execute SQL-string 
+	// Execute SQL-string
 	try {
 	    stmt.execute(strSQLString);
 	    rs   = stmt.getResultSet();
@@ -73,7 +73,7 @@ public class DBConnect {
 	    columnCount = rsmd.getColumnCount() ;
 	    meta_data = new String[columnCount] ;
 	    for (int i = 0 ; i<columnCount ; ) {
-		meta_data[i] = rsmd.getColumnLabel(++i) ;	
+		meta_data[i] = rsmd.getColumnLabel(++i) ;
 	    }
 
 	    while ( rs.next() ) {
@@ -82,8 +82,8 @@ public class DBConnect {
 		    if (s == null) {
 			s = "" ;
 		    } else if ( trimStr ) {
- 			s = s.trim() ;
-		    }		    
+			s = s.trim() ;
+		    }
 		    results.addElement(s) ;
 		}
 	    }
@@ -92,8 +92,7 @@ public class DBConnect {
 	    stmt.close() ;
 
 	} catch (Exception ex) {
-	    String eol = System.getProperty("line.separator") ;
-	    log.warn("Failed to execute query: {"+eol+strSQLString+eol+"}", ex) ;
+	    log.error(ex) ;
 	}
 
 	return results ;
@@ -108,7 +107,7 @@ public class DBConnect {
 	    con.setCatalog(catalog);
 	    result = executeQuery() ;
 	} catch (Exception ex) {
-	    log.warn( "Failed to set catalog to "+catalog+" and execute query.", ex) ;
+	    log.error(ex) ;
 	}
 	return result ;
     }
@@ -117,13 +116,12 @@ public class DBConnect {
      * <p>Update databasequery.
      */
     public void executeUpdateQuery() {
-	// Execute SQL-string 
+	// Execute SQL-string
 	try {
 	    stmt.executeUpdate(strSQLString);
 	    stmt.close() ;
 	} catch (Exception ex) {
-	    String eol = System.getProperty("line.separator") ;
-    	    log.warn("Failed to execute update: {"+eol+strSQLString+eol+"}", ex) ;
+	    log.error(ex) ;
 	}
     }
 
@@ -146,7 +144,7 @@ public class DBConnect {
 
 	    meta_data = new String[columnCount] ;
 	    for (int i = 0 ; i<columnCount ; ) {
-		meta_data[i] = rsmd.getColumnLabel(++i) ;	
+		meta_data[i] = rsmd.getColumnLabel(++i) ;
 	    }
 	    while ( rs.next() ) {
 		for ( int i = 1 ; i <= columnCount; i++ ) {
@@ -164,17 +162,16 @@ public class DBConnect {
 	    rs.close() ;
 	    cs.close() ;
 	} catch (Exception ex) {
-	    String eol = System.getProperty("line.separator") ;
-	    log.warn("Failed to execute procedure: {"+eol+strProcedure+eol+"}", ex) ;
+	    log.error(ex) ;
 	}
 	return results ;
     }
 
-	
-	
+
+
     /**
      * <p>Update database procedure.
-	 * @return updatecount or -1 if error
+     * @return updatecount or -1 if error
      */
     public int executeUpdateProcedure() {
 	int res = 0;
@@ -182,12 +179,11 @@ public class DBConnect {
 	    res = cs.executeUpdate() ;
 	    cs.close() ;
 	} catch (Exception ex) {
-	    String eol = System.getProperty("line.separator") ;
-    	    log.warn("Failed to execute updateprocedure: {"+eol+strProcedure+eol+"}", ex) ;
+	    log.error(ex) ;
 	}
 	return res;
     }
-	
+
 
     /**
      * <p>Get metadata.
@@ -213,10 +209,10 @@ public class DBConnect {
 	try {
 	    con.close() ;
 	} catch (Exception ex) {
-    	    log.warn("Failed to close connection.", ex) ;	    
+	    log.error(ex) ;
 	}
 	con = null ;
-    }	
+    }
 
     /**
      * <p>Get sqlquery.
@@ -249,8 +245,7 @@ public class DBConnect {
 	    cs = con.prepareCall(strProcedure) ;
 	    cs.setString(1,param) ;
 	} catch (Exception ex) {
-	    String eol = System.getProperty("line.separator") ;
-    	    log.warn("Failed to prepare procedure: {"+eol+procedure+" "+param+eol+"}", ex) ;
+	    log.error(ex) ;
 	}
     }
 
@@ -274,7 +269,6 @@ public class DBConnect {
 		cs.setString(i+1,params[i]) ;
 	    }
 	} catch (Exception ex) {
-	    String eol = System.getProperty("line.separator") ;
 	    String paramstr = "" ;
 	    for ( int i=0 ; i<params.length ; ) {
 		paramstr += params[i] ;
@@ -282,10 +276,10 @@ public class DBConnect {
 		    paramstr += ", " ;
 		}
 	    }
-    	    log.warn("Failed to prepare procedure: {"+eol+procedure+" "+paramstr+eol+"}", ex) ;
+	    log.error(ex) ;
 	}
     }
-	
+
     /**
      * Set procedure. This method employs an NFA to do a little bit of magic to fix faulty unescaped parameters.
      * It probably isn't fast, and it certainly isn't optimal. Needs to be fixed, which requires a rewriting of everything that uses this.
@@ -319,18 +313,18 @@ public class DBConnect {
 			params.add(param.toString()) ; // then we have a full parameter, so let's add it.
 			param.setLength(0) ;           // Begin anew...
 			result.append(",?") ;          // ... with the next parameter.
-			inparam = true ;               
+			inparam = true ;
 		    } else {                           // We're inside a string...
 			param.append(tok) ;            // ... so let's just add the "," to the string.
 		    }
 		    break;
-				
+
 		case '\'':                                                    // We struck a "'" !
 		    if (instring && lit.hasNext() ) {                         // If we are in a string, and we have more chars, then...
 			if ( (tok = (String)lit.next()).charAt(0) == '\'' ) { // ... if the next char also is a "'", then...
 			    param.append('\'') ;	                      // ...add it to the string, and continue.
 			} else {                                              // The next char is not a "'"!
-			    instring = false ;                                // Hopefully the string ends here... 
+			    instring = false ;                                // Hopefully the string ends here...
 			    lit.previous() ;                                  // ...so backup to the previous token again, and continue.
 			}
 		    } else {
@@ -340,7 +334,7 @@ public class DBConnect {
 			instring = !instring ;                                // If we weren't in a string, we are now, and vice versa.
 		    }
 		    break;
-				
+
 		case ' ':                                                     // Got (white)space
 		    if ( instring ) {                                         // Ignore unless in string.
 			param.append(' ') ;
@@ -372,7 +366,6 @@ public class DBConnect {
 		cs.setString(++i,parm) ;
 	    }
 	} catch (Exception ex) {
-	    String eol = System.getProperty("line.separator") ;
 	    String paramstr = "" ;
 	    Iterator it = params.iterator() ;
 	    int i = 0 ;
@@ -382,7 +375,7 @@ public class DBConnect {
 		    paramstr += ", " ;
 		}
 	    }
-    	    log.warn("Failed to prepare procedure: {"+eol+procedure+" "+paramstr+eol+"}", ex) ;
+	    log.error(ex) ;
 	}
     }
 
@@ -393,7 +386,7 @@ public class DBConnect {
      */
     public void clearResultSet() {
 	meta_data = null ;
-    }	
+    }
 
 
     /**
@@ -409,13 +402,13 @@ public class DBConnect {
      */
     public String sqlQueryStr(String sqlStr) {
 
-	    this.getConnection() ;
-	    this.setSQLString(sqlStr) ;
-	    this.createStatement() ;
-	    Vector result = (Vector)this.executeQuery() ;
-	    this.clearResultSet() ;
-	    this.closeConnection() ;
-	    return result.elementAt(0).toString() ;
+	this.getConnection() ;
+	this.setSQLString(sqlStr) ;
+	this.createStatement() ;
+	Vector result = (Vector)this.executeQuery() ;
+	this.clearResultSet() ;
+	this.closeConnection() ;
+	return result.elementAt(0).toString() ;
     }
 
 
@@ -425,12 +418,12 @@ public class DBConnect {
      * <p>Execute a sql query and close connection.
      */
     public Vector sqlQuery(String sqlStr) {
-	    this.getConnection() ;
-	    this.setSQLString(sqlStr) ;
-	    this.createStatement() ;
-	    Vector result = (Vector)this.executeQuery() ;
-	    this.clearResultSet() ;
-	    this.closeConnection() ;
-	    return result ;
+	this.getConnection() ;
+	this.setSQLString(sqlStr) ;
+	this.createStatement() ;
+	Vector result = (Vector)this.executeQuery() ;
+	this.clearResultSet() ;
+	this.closeConnection() ;
+	return result ;
     }
 } // END CLASS DBConnect

@@ -55,6 +55,11 @@ public class IMCServiceRMI {
 	return imc;
     }
 
+    public static IMCServiceInterface getIMCServiceInterfaceByHost(String host) throws IOException {
+	String imcserver			= Utility.getDomainPref("userserver",host) ;
+	return getInterface(imcserver) ;
+    }
+
     /**
      * GetInterface. Returns an interface to the host db. The JanusDB
      */
@@ -270,11 +275,6 @@ public class IMCServiceRMI {
 	return imc.sqlQueryStr(sqlQuery) ;
     }
 
-    public static void updateTrackLog( String server, int meta_id, int to_meta_id, User user ) throws IOException {
-	IMCServiceInterface imc = getInterface( server ) ;
-
-	imc.updateTrackLog(meta_id,to_meta_id,user) ;
-    }
     public static void saveNewUrlDoc( String server, int meta_id, User user, Table doc) throws IOException {
 	IMCServiceInterface imc = getInterface( server ) ;
 
@@ -422,12 +422,6 @@ public class IMCServiceRMI {
 	return imc.getDemoTemplate(template_id) ;
     }
 
-    public static byte[] getTemplate (String server, int template_id) throws IOException {
-	IMCServiceInterface imc = getInterface( server ) ;
-
-	return imc.getTemplate(template_id) ;
-    }
-
     public static void deleteTemplate (String server, int template_id) throws IOException {
 	IMCServiceInterface imc = getInterface( server ) ;
 
@@ -526,10 +520,12 @@ public class IMCServiceRMI {
 	return imc.getDemoTemplateList() ;
     }
 
+    /*
     public static String parsePage (String server,int meta_id,User user,int flags,ParserParameters paramsToParse) throws IOException {
 	IMCServiceInterface imc = getInterface( server ) ;
 	return imc.parsePage(meta_id,user,flags,paramsToParse) ;
     }
+    */
 
     public static String getMenuButtons (String server,int meta_id, User user) throws IOException {
 	IMCServiceInterface imc = getInterface( server ) ;

@@ -9,11 +9,11 @@ import java.util.* ;
 import org.apache.log4j.Category;
 
 public class Utility {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
+    private final static String CVS_REV="$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
 
     static protected Hashtable mimetypes ;
-    
+
     private static Category log = Category.getInstance( "server" ) ;
 
     static {
@@ -39,7 +39,7 @@ public class Utility {
     }
 
     private Utility () {
-		
+
     }
 
     /**
@@ -52,7 +52,7 @@ public class Utility {
 	}
 	return path ;
     }
-	
+
     /**
        Fetches a preference from the config file for a domain,
        as a File representing an absolute path, with the webapp dir prepended if the path is relative.
@@ -69,11 +69,13 @@ public class Utility {
        @param domain The domain, as it appears in the main domain-config-file.
     */
     public static String getDomainPref(String pref, String domain) throws IOException {
+	// Remove port-number from host.
 	int index = domain.indexOf(":") ;
 	if ( index != -1 ) {
 	    domain = domain.substring(0,index) ;
 	}
 	domain = domain.trim() ;
+
 	try {
 	    StringTokenizer st = new StringTokenizer(Prefs.get("domains","servlet.cfg"),", ") ;
 	    while ( st.hasMoreTokens() ) {
@@ -160,7 +162,7 @@ public class Utility {
 	}
 	return ipInt ;
     }
-	
+
     /**
        Get the mime-type of a file-extension.
        @param ext The extension, without a preceding dot.

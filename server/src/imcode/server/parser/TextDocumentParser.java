@@ -72,18 +72,22 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	this.serverObject = serverobject ;
     }
 
-    public String parsePage (int meta_id, User user, int flags, ParserParameters paramsToParse) throws IOException{
-		return parsePage(meta_id,user,flags,1,paramsToParse) ;
+    public String parsePage (DocumentRequest documentRequest, int flags, ParserParameters paramsToParse) throws IOException{
+	return parsePage(documentRequest,flags,1,paramsToParse) ;
     }
 
-    public String parsePage (int meta_id, User user, int flags, int includelevel,ParserParameters paramsToParse) throws IOException{
+    public String parsePage (DocumentRequest documentRequest, int flags, int includelevel,ParserParameters paramsToParse) throws IOException{
 	try {
-	    long totaltime = System.currentTimeMillis() ;
+	    long totaltime     = System.currentTimeMillis() ;
+
+	    Document myDoc     = documentRequest.getDocument();
+	    int meta_id        = myDoc.getMetaId() ;
 	    String meta_id_str = String.valueOf(meta_id) ;
-	    int user_id = user.getInt("user_id") ;
+
+	    User user          = documentRequest.getUser() ;
+	    int user_id        = user.getUserId() ;
 	    String user_id_str = String.valueOf(user_id) ;
 
-	    Document myDoc = serverObject.getDocument(meta_id);
 
 	    //handles the extra parameters
 	    String template_name = paramsToParse.getTemplate();
@@ -139,23 +143,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    Vector included_docs = (Vector)dbc.executeProcedure() ;
 	    dbc.clearResultSet() ;
 
-	    dbc.setProcedure("GetTextDocData",String.valueOf(meta_id)) ;
-	    Vector text_docs = (Vector)dbc.executeProcedure() ;
-	    dbc.clearResultSet() ;
+	    String template_id = ""+myDoc.getTemplate().getId() ;
+	    String simple_name = myDoc.getTemplate().getName() ;
+	    int sort_order     = myDoc.getMenuSortOrder() ;
+	    String group_id    = ""+myDoc.getTemplateGroupId() ;
 
-	    if ( text_docs == null ) {
-		dbc.closeConnection() ;
-		log.error("parsePage: GetTextDocData returned null") ;
-		return "parsePage: GetTextDocData returned null" ;
-	    }
-
-	    if ( text_docs.size() == 0 ) {
-		dbc.closeConnection() ;
-		log.error("parsePage: GetTextDocData returned nothing") ;
-		return "parsePage: GetTextDocData returned nothing" ;
-	    }
-
-	    String template_id = (String)text_docs.remove(0) ;
 	    if (template_name != null){
 		//lets validate that the template exists before we changes the original one
 		dbc.setProcedure("GetTemplateId "+template_name);
@@ -163,17 +155,15 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		if (vectT.size() > 0){
 		    try	{
 			int temp_template = Integer.parseInt( (String)vectT.get(0) );
-			if(temp_template > 0)
+			if (temp_template > 0) {
 			    template_id = temp_template+"";
+			    documentRequest.getDocument().setTemplate(new Template(temp_template,template_name)) ;
+			}
 		    } catch(NumberFormatException nfe){
 			//do nothing, we keep the original template
 		    }
 		}
 	    }
-
-	    String simple_name = (String)text_docs.remove(0) ;
-	    int sort_order = Integer.parseInt((String)text_docs.remove(0)) ;
-	    String group_id = (String)text_docs.remove(0) ;
 
 	    Vector doc_types_vec = null ;
 	    String sqlStr = null ;
@@ -224,21 +214,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    String[] emp = (String[])user.get("emphasize") ;
 
-	    // Get the images from the db
-	    // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
-	    //					0                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
-
-	    sqlStr = "select date_modified, meta_headline, meta_image from meta where meta_id = " + meta_id ;
-	    dbc.setSQLString(sqlStr);
-	    Vector meta = (Vector)dbc.executeQuery() ;
-	    dbc.clearResultSet() ;
-
-	    if ( meta == null ) {
-		dbc.closeConnection() ;
-		log.error("parsePage: Query for date_modified returned null") ;
-		return ("Query for date_modified returned null") ;
-	    }
-
 	    // Here we have the most timeconsuming part of parsing the page.
 	    // Selecting all the documents with permissions from the DB
 	    sqlStr = "getChilds (?,?)" ;
@@ -256,6 +231,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    int child_rows = childs.size() / child_cols ;
 	    dbc.clearResultSet() ;
 
+	    // Get the images from the db
+	    // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
+	    //					0                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
 	    dbc.setProcedure("GetImgs",String.valueOf(meta_id)) ;
 	    Vector images = (Vector)dbc.executeProcedure() ;
 	    dbc.clearResultSet() ;
@@ -279,7 +257,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    } else {
 		section_name = (String)section_data.get(1) ;
 	    }
-
 	    dbc.closeConnection() ;
 
 	    File admintemplate_path = new File(templatePath,  "/" +lang_prefix + "/admin/") ;
@@ -374,7 +351,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    Menu currentMenu = null ;
 	    int old_menu = -1 ;
 	    java.util.Date now = new java.util.Date() ;
-	    SimpleDateFormat DATETIMEFORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm") ;
+	    SimpleDateFormat DATETIMEFORMAT = new SimpleDateFormat(DATETIME_FORMAT_STD) ;
 
 	    Iterator childIt = childs.iterator() ;
 	    while ( childIt.hasNext() ) {
@@ -445,23 +422,23 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    Properties temptags = new Properties () ;
 
 	    // Put tags and corresponding data in Properties
-	    tags.setProperty("#userName#",				user.getString("first_name").trim()+" "+user.getString("last_name").trim()) ;
-	    tags.setProperty("#session_counter#",		String.valueOf(serverObject.getSessionCounter())) ;
+	    tags.setProperty("#userName#",		user.getString("first_name").trim()+" "+user.getString("last_name").trim()) ;
+	    tags.setProperty("#session_counter#",	String.valueOf(serverObject.getSessionCounter())) ;
 	    tags.setProperty("#session_counter_date#",	serverObject.getSessionCounterDate()) ;
-	    tags.setProperty("#lastDate#",				meta.get(0).toString()) ;
-	    tags.setProperty("#metaHeadline#",			meta.get(1).toString()) ;
+	    tags.setProperty("#lastDate#",		DATETIMEFORMAT.format(myDoc.getModifiedDatetime())) ;
+	    tags.setProperty("#metaHeadline#",		myDoc.getHeadline()) ;
 
-	    String meta_image = meta.get(2).toString() ;
+	    String meta_image = myDoc.getImage() ;
 	    if (!"".equals(meta_image)) {
 		meta_image = "<img src=\""+meta_image+"\" border=\"0\">" ;
 	    }
-	    tags.setProperty("#metaImage#",                         meta_image) ;
-	    tags.setProperty("#sys_message#",			serverObject.getSystemData().getSystemMessage()) ;
-	    tags.setProperty("#servlet_url#",			servletUrl) ;
-	    tags.setProperty("#webMaster#",				serverObject.getSystemData().getWebMaster()) ;
-	    tags.setProperty("#webMasterEmail#",		serverObject.getSystemData().getWebMasterAddress()) ;
-	    tags.setProperty("#serverMaster#",			serverObject.getSystemData().getServerMaster()) ;
-	    tags.setProperty("#serverMasterEmail#",		serverObject.getSystemData().getServerMasterAddress()) ;
+	    tags.setProperty("#metaImage#",             meta_image) ;
+	    tags.setProperty("#sys_message#",           serverObject.getSystemData().getSystemMessage()) ;
+	    tags.setProperty("#servlet_url#",           servletUrl) ;
+	    tags.setProperty("#webMaster#",             serverObject.getSystemData().getWebMaster()) ;
+	    tags.setProperty("#webMasterEmail#",        serverObject.getSystemData().getWebMasterAddress()) ;
+	    tags.setProperty("#serverMaster#",          serverObject.getSystemData().getServerMaster()) ;
+	    tags.setProperty("#serverMasterEmail#",     serverObject.getSystemData().getServerMasterAddress()) ;
 
 	    tags.setProperty("#addDoc*#","") ;
 	    tags.setProperty("#saveSortStart*#","") ;
@@ -617,11 +594,12 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    imcode.server.parser.MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution(menus,menumode,tags) ;
 	    imcode.server.parser.HashTagSubstitution hashtagsubstitution = new imcode.server.parser.HashTagSubstitution(tags,numberedtags) ;
-	    imcode.server.parser.ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution(this,user,meta_id,
+	    imcode.server.parser.ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution(this,documentRequest,
 															   templatePath,
 															   included_docs,includemode,includelevel,includePath,
 															   textMap,textmode,
-															   imageMap,imagemode,section_name,myDoc,paramsToParse) ;
+															   imageMap,imagemode,
+															   paramsToParse) ;
 
 	    LinkedList parse = new LinkedList() ;
 	    perl5util.split(parse,"/(<!--\\/?IMSCRIPT-->)/",template) ;

@@ -14,30 +14,16 @@ public class FileCache {
 
     private static Category log = Category.getInstance("server") ;
 
-    /**
-       Fetch a file from the cache, if it hasn't changed on disc.
-    */
-    /*
-    synchronized private String getCachedFileString(String filename) throws IOException {
-	return getCachedFileString(new File(filename)) ;
-    }
-    */
-
     protected StringBuffer loadFile(File file) throws IOException {
 	StringBuffer tempbuffer = new StringBuffer() ;
-	try {
-	    char[] charbuffer = new char[16384] ;
-	    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-	    // Load the file
-	    int chars_read = 0 ;
-	    while (-1 < (chars_read = br.read(charbuffer))) {
-		tempbuffer.append(charbuffer,0,chars_read) ;
-	    }
-	    br.close();
-	} catch (IOException ex) {
-	    log.warn("File not found: "+file) ;
-	    throw ex ;
+	char[] charbuffer = new char[16384] ;
+	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+	// Load the file
+	int chars_read = 0 ;
+	while (-1 < (chars_read = br.read(charbuffer))) {
+	    tempbuffer.append(charbuffer,0,chars_read) ;
 	}
+	br.close();
 	return tempbuffer ;
     }
 

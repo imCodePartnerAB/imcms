@@ -20,7 +20,7 @@ import imcode.server.parser.* ;
 import imcode.util.FileCache ;
 import imcode.util.fortune.* ;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.* ;
 
 /**
    Main services for the Imcode Net Server.
@@ -52,8 +52,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private FileCache fileCache = new FileCache() ;
 
     private final static DateFormat logdateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;
-    private final static Category mainLog = Category.getInstance( IMCConstants.MAIN_LOG ) ;
-    private final static Category log = Category.getInstance( "server" ) ;
+    private final static Logger mainLog = Logger.getLogger( IMCConstants.MAIN_LOG ) ;
+    private final static Logger log = Logger.getLogger( "server" ) ;
 
     static {
 	mainLog.info("Main log started." );
@@ -226,91 +226,86 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	return user ;
     }
 
-    public String parsePage (int meta_id, User user, int flags,ParserParameters paramsToParse) throws IOException {
-	return textDocParser.parsePage(meta_id,user,flags,1,paramsToParse) ;
+    public String parsePage (DocumentRequest documentRequest, int flags,ParserParameters paramsToParse) throws IOException {
+	return textDocParser.parsePage(documentRequest,flags,1,paramsToParse) ;
     }
 
     /**
        Returns the menubuttonrow
     */
     public String getMenuButtons(String meta_id, User user) {
-	try {
-	    // Get the users language prefix
-	    String lang_prefix = null ;
-	    String sqlStr = "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id") ;	// Find language
-	    DBConnect dbc = new DBConnect(m_conPool,sqlStr) ;
-	    dbc.getConnection() ;
-	    dbc.createStatement() ;
-	    Vector data = (Vector)dbc.executeQuery() ;
-	    if ( data.size() > 0 ) {
-		lang_prefix = data.elementAt(0).toString() ;
-	    }
-	    dbc.clearResultSet() ;
-
-	    // Find out what permissions the user has
-	    sqlStr = "GetUserPermissionSet (?,?)" ;
-	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getInt("user_id"))} ;
-	    dbc.setProcedure(sqlStr,sqlAry) ;
-	    Vector permissions = (Vector)dbc.executeProcedure() ;
-	    dbc.clearResultSet() ;
-	    dbc.closeConnection() ;
-
-	    if (permissions.size() == 0) {
-		return "" ;
-	    }
-
-	    StringBuffer tempbuffer = null ;
-	    StringBuffer templatebuffer = null ;
-	    StringBuffer superadmin = null ;
-	    int doc_type = getDocType(Integer.parseInt(meta_id)) ;
-	    try {
-
-		String tempbuffer_filename = lang_prefix + "/admin/adminbuttons/adminbuttons"+doc_type+".html" ;
-		String templatebuffer_filename = lang_prefix + "/admin/adminbuttons/adminbuttons.html" ;
-		String superadmin_filename = lang_prefix + "/admin/adminbuttons/superadminbutton.html" ;
-
-		tempbuffer = new StringBuffer(fileCache.getCachedFileString(new File(m_TemplateHome, tempbuffer_filename))) ;
-		templatebuffer = new StringBuffer(fileCache.getCachedFileString(new File(m_TemplateHome, templatebuffer_filename))) ;
-		superadmin = new StringBuffer(fileCache.getCachedFileString(new File(m_TemplateHome, superadmin_filename))) ;
-
-	    } catch(IOException e) {
-		log.error("An error occurred reading adminbuttonfile", e );
-		return null ;
-	    }
-
-	    int user_permission_set_id = Integer.parseInt((String)permissions.elementAt(0)) ;
-	    int user_permission_set = Integer.parseInt((String)permissions.elementAt(1)) ;
-
-	    // Replace #getMetaId# with meta_id
-	    String doctype = dbc.sqlQueryStr("select type from doc_types where doc_type = "+doc_type) ;
-
-	    imcode.util.AdminButtonParser doc_tags = new imcode.util.AdminButtonParser(new File(m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton"+doc_type+"_").toString(), ".html",user_permission_set_id,user_permission_set) ;
-
-	    doc_tags.put("getMetaId",meta_id) ;
-
-	    imcode.util.Parser.parseTags(tempbuffer,'#'," <>\n\r\t",(Map)doc_tags,true,1) ;
-
-	    imcode.util.AdminButtonParser tags = new imcode.util.AdminButtonParser( new File(m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton_").toString(), ".html",user_permission_set_id,user_permission_set) ;
-
-	    tags.put("getMetaId",meta_id) ;
-	    tags.put("doc_buttons",tempbuffer.toString()) ;
-	    tags.put("doc_type",doctype) ;
-
-	    Vector temp = (Vector)dbc.sqlQuery("select user_id from user_roles_crossref where role_id = 0 and user_id = "+user.getInt("user_id")) ;
-
-	    if ( temp.size() > 0 ) {
-		tags.put("superadmin",superadmin.toString()) ;
-	    } else {
-		tags.put("superadmin","") ;
-	    }
-
-	    imcode.util.Parser.parseTags(templatebuffer,'#'," <>\n\r\t",(Map)tags,true,1) ;
-
-	    return templatebuffer.toString() ;
-	} catch ( RuntimeException ex ) {
-	    log.error("Error occurred while parsing the adminbuttons.",ex) ;
-	    return null ;
+	// Get the users language prefix
+	String lang_prefix = null ;
+	String sqlStr = "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id") ;	// Find language
+	DBConnect dbc = new DBConnect(m_conPool,sqlStr) ;
+	dbc.getConnection() ;
+	dbc.createStatement() ;
+	Vector data = (Vector)dbc.executeQuery() ;
+	if ( data.size() > 0 ) {
+	    lang_prefix = data.elementAt(0).toString() ;
 	}
+	dbc.clearResultSet() ;
+
+	// Find out what permissions the user has
+	sqlStr = "GetUserPermissionSet (?,?)" ;
+	String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getInt("user_id"))} ;
+	dbc.setProcedure(sqlStr,sqlAry) ;
+	Vector permissions = (Vector)dbc.executeProcedure() ;
+	dbc.clearResultSet() ;
+	dbc.closeConnection() ;
+
+	if (permissions.size() == 0) {
+	    return "" ;
+	}
+
+	StringBuffer tempbuffer = null ;
+	StringBuffer templatebuffer = null ;
+	StringBuffer superadmin = null ;
+	int doc_type = getDocType(Integer.parseInt(meta_id)) ;
+	try {
+
+	    String tempbuffer_filename = lang_prefix + "/admin/adminbuttons/adminbuttons"+doc_type+".html" ;
+	    String templatebuffer_filename = lang_prefix + "/admin/adminbuttons/adminbuttons.html" ;
+	    String superadmin_filename = lang_prefix + "/admin/adminbuttons/superadminbutton.html" ;
+
+	    tempbuffer = new StringBuffer(fileCache.getCachedFileString(new File(m_TemplateHome, tempbuffer_filename))) ;
+	    templatebuffer = new StringBuffer(fileCache.getCachedFileString(new File(m_TemplateHome, templatebuffer_filename))) ;
+	    superadmin = new StringBuffer(fileCache.getCachedFileString(new File(m_TemplateHome, superadmin_filename))) ;
+
+	} catch(IOException e) {
+	    log.error(e.toString());
+	    return "" ;
+	}
+
+	int user_permission_set_id = Integer.parseInt((String)permissions.elementAt(0)) ;
+	int user_permission_set = Integer.parseInt((String)permissions.elementAt(1)) ;
+
+	// Replace #getMetaId# with meta_id
+	String doctype = dbc.sqlQueryStr("select type from doc_types where doc_type = "+doc_type) ;
+
+	imcode.util.AdminButtonParser doc_tags = new imcode.util.AdminButtonParser(new File(m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton"+doc_type+"_").toString(), ".html",user_permission_set_id,user_permission_set) ;
+
+	doc_tags.put("getMetaId",meta_id) ;
+
+	imcode.util.Parser.parseTags(tempbuffer,'#'," <>\n\r\t",(Map)doc_tags,true,1) ;
+
+	imcode.util.AdminButtonParser tags = new imcode.util.AdminButtonParser( new File(m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton_").toString(), ".html",user_permission_set_id,user_permission_set) ;
+
+	tags.put("getMetaId",meta_id) ;
+	tags.put("doc_buttons",tempbuffer.toString()) ;
+	tags.put("doc_type",doctype) ;
+
+	Vector temp = (Vector)dbc.sqlQuery("select user_id from user_roles_crossref where role_id = 0 and user_id = "+user.getInt("user_id")) ;
+
+	if ( temp.size() > 0 ) {
+	    tags.put("superadmin",superadmin.toString()) ;
+	} else {
+	    tags.put("superadmin","") ;
+	}
+
+	imcode.util.Parser.parseTags(templatebuffer,'#'," <>\n\r\t",(Map)tags,true,1) ;
+
+	return templatebuffer.toString() ;
     }
 
     /**
@@ -507,11 +502,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Add a existing doc.
      */
     public void addExistingDoc(int meta_id,User user,int existing_meta_id,int doc_menu_no) {
-	
+
 		String sqlStr = "AddExistingDocToMenu  " +  meta_id + ", " + existing_meta_id + ", " + doc_menu_no;
 		int addDoc = sqlUpdateProcedure(sqlStr) ;
-		   
-		if (1 == addDoc ) {	// if existing doc is added to the menu 
+
+		if (1 == addDoc ) {	// if existing doc is added to the menu
 			this.updateLogs("(AddExisting) Child links for [" + meta_id + "] updated by user: [" +
 				user.getString("first_name").trim() + " " +
 				user.getString("last_name").trim() + "]") ;
@@ -891,100 +886,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public void updateLogs(String event) {
 
-	//***********s
-
 	mainLog.info(logdateFormat.format(new java.util.Date())+event );
 
-	//************e
-	/*
-
-	String sqlStr = "" ;
-
-	java.util.Calendar cal = java.util.Calendar.getInstance() ;
-
-	String year  = Integer.toString(cal.get(Calendar.YEAR)) ;
-	int month = Integer.parseInt(Integer.toString(cal.get(Calendar.MONTH))) + 1;
-	int day   = Integer.parseInt(Integer.toString(cal.get(Calendar.DAY_OF_MONTH))) ;
-	int hour  = Integer.parseInt(Integer.toString(cal.get(Calendar.HOUR))) ;
-	int min   = Integer.parseInt(Integer.toString(cal.get(Calendar.MINUTE))) ;
-	int sec   = Integer.parseInt(Integer.toString(cal.get(Calendar.SECOND))) ;
-
-	String dateToDay  = year + "-" ;
-	dateToDay += month < 10 ? "0" + Integer.toString(month) : Integer.toString(month) ;
-	dateToDay += "-" ;
-	dateToDay += day < 10 ? "0" + Integer.toString(day) : Integer.toString(day)  + " " ;
-	dateToDay += " " ;
-	dateToDay += hour < 10 ? "0" + Integer.toString(hour) : Integer.toString(hour) ;
-	dateToDay += ":" ;
-	dateToDay += min < 10 ? "0" + Integer.toString(min) : Integer.toString(min) ;
-	dateToDay += ":" ;
-	dateToDay += sec < 10 ? "0" + Integer.toString(min) : Integer.toString(sec) ;
-	dateToDay += ".000" ;
-
-	DBConnect dbc = new DBConnect(m_conPool) ;
-	dbc.getConnection() ;
-
-	sqlStr  = "insert into main_log(log_datetime,event)\n" ;
-	sqlStr += "values('" +  dateToDay + "','" + event + "')\n" ;
-
-	dbc.setSQLString(sqlStr) ;
-	dbc.createStatement() ;
-	dbc.executeUpdateQuery() ;
-
-	//close connection
-	dbc.closeConnection() ;
-	dbc = null ;
-	*/
     }
-
-
-    /**
-     * Update track log.
-     */
-    public void updateTrackLog(int from_meta_id,int to_meta_id,imcode.server.User user) {
-	/*
-	String sqlStr = "" ;
-
-	int cookie_id = user.getInt("user_id") ;
-
-	java.util.Calendar cal = java.util.Calendar.getInstance() ;
-
-	String year  = Integer.toString(cal.get(Calendar.YEAR)) ;
-	int month = Integer.parseInt(Integer.toString(cal.get(Calendar.MONTH))) + 1;
-	int day   = Integer.parseInt(Integer.toString(cal.get(Calendar.DAY_OF_MONTH))) ;
-	int hour  = Integer.parseInt(Integer.toString(cal.get(Calendar.HOUR))) ;
-	int min   = Integer.parseInt(Integer.toString(cal.get(Calendar.MINUTE))) ;
-	int sec   = Integer.parseInt(Integer.toString(cal.get(Calendar.SECOND))) ;
-
-	String dateToDay  = year + "-" ;
-	dateToDay += month < 10 ? "0" + Integer.toString(month) : Integer.toString(month) ;
-	dateToDay += "-" ;
-	dateToDay += day < 10 ? "0" + Integer.toString(day) : Integer.toString(day)  + " " ;
-	dateToDay += " " ;
-	dateToDay += hour < 10 ? "0" + Integer.toString(hour) : Integer.toString(hour) ;
-	dateToDay += ":" ;
-	dateToDay += min < 10 ? "0" + Integer.toString(min) : Integer.toString(min) ;
-	dateToDay += ":" ;
-	dateToDay += sec < 10 ? "0" + Integer.toString(min) : Integer.toString(sec) ;
-	dateToDay += ".000" ;
-
-	DBConnect dbc = new DBConnect(m_conPool) ;
-	dbc.getConnection() ;
-
-	sqlStr  = "insert into track_log(user_id,log_datetime,from_meta_id,to_meta_id,cookie_id)\n" ;
-	sqlStr += "values(" + user.getInt("user_id") + ",'"
-	    +  dateToDay + "'," + from_meta_id +  "," + to_meta_id + "," + cookie_id +")\n" ;
-
-	dbc.setSQLString(sqlStr) ;
-	dbc.createStatement() ;
-	dbc.executeUpdateQuery() ;
-
-	//close connection
-	dbc.closeConnection() ;
-	dbc = null ;
-	*/
-    }
-
 
 
 
@@ -1270,7 +1174,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
        Send a sqlquery to the database and return a string array.
-       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+       @deprecated Use {@link #sqlProcedure(String, String[])} instead.
     **/
     public String[] sqlQuery(String sqlQuery) {
 
@@ -1300,7 +1204,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
        Send a sqlquery to the database and return a string array.
-       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+       @deprecated Use {@link #sqlProcedure(String, String[])} instead.
     **/
     public String[] sqlQuery(String sqlQuery,String catalog) {
 
@@ -1329,7 +1233,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
        Send a sqlquery to the database and return a string
-       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+       @deprecated Use {@link #sqlProcedure(String, String[])} instead.
     **/
     public String sqlQueryStr(String sqlQuery) {
 	Vector data = new Vector() ;
@@ -1351,7 +1255,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
        Send a sql update query to the database
-       @deprecated Use {@link sqlUpdateProcedure(String, String[])} instead.
+       @deprecated Use {@link #sqlUpdateProcedure(String, String[])} instead.
     **/
     public void sqlUpdateQuery(String sqlStr) {
 	DBConnect dbc = new DBConnect(m_conPool,sqlStr) ;
@@ -1365,17 +1269,15 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
        Send a procedure to the database and return a string array
-       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+       @deprecated Use {@link #sqlProcedure(String, String[])} instead.
     **/
     public String[] sqlProcedure(String procedure) {
-
-	Vector data = new Vector() ;
 
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
 	dbc.setProcedure(procedure) ;
 	// dbc.createStatement() ;
-	data = (Vector)dbc.executeProcedure() ;
+	Vector data = (Vector)dbc.executeProcedure() ;
 
 	dbc.clearResultSet() ;
 	dbc.closeConnection() ;
@@ -1414,10 +1316,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	dbc.setTrim(trim) ;
 	dbc.getConnection() ;
 	if ( params.length > 0 ) {
-	    procedure += " ?" ;
+	    StringBuffer procedureBuffer = new StringBuffer(procedure) ;
+	    procedureBuffer.append(" ?") ;
 	    for (int i = 1; i < params.length; ++i) {
-		procedure += ",?" ;
+		procedureBuffer.append(",?") ;
 	    }
+	    procedure = procedureBuffer.toString() ;
 	}
 
 	dbc.setProcedure(procedure, params) ;
@@ -1435,9 +1339,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	}
 	return null ;
     }
-	
-	
-	
+
+
+
     /**
        The preferred way of getting data to the db.
        @param procedure The name of the procedure
@@ -1464,7 +1368,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
        Send a procedure to the database and return a string.
-       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+       @deprecated Use {@link #sqlProcedure(String, String[])} instead.
     **/
     public String sqlProcedureStr(String procedure) {
 	Vector data = new Vector() ;
@@ -1493,7 +1397,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
        Send a procedure to the database and return a int.
-       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+       @deprecated Use {@link #sqlProcedure(String, String[])} instead.
     **/
     public int sqlProcedureInt(String procedure) {
 	Vector data = new Vector() ;
@@ -1518,7 +1422,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
        Send a update procedure to the database
-       @deprecated Use {@link sqlUpdateProcedure(String, String[])} instead.
+       @deprecated Use {@link #sqlUpdateProcedure(String, String[])} instead.
     **/
     public int sqlUpdateProcedure(String procedure) {
 	DBConnect dbc = new DBConnect(m_conPool) ;
@@ -1536,13 +1440,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        Parse doc replace variables with data
     */
     public String  parseDoc(String htmlStr,java.util.Vector variables) {
-	try {
-	    String[] foo = new String[variables.size()] ;
-	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
-	} catch ( RuntimeException ex ) {
-	    log.error("parseDoc(String,Vector): RuntimeException", ex );
-	    throw ex ;
-	}
+	String[] foo = new String[variables.size()] ;
+	return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
     }
 
 
@@ -1550,14 +1449,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        Parse doc replace variables with data, uses two vectors
     */
     public String  parseDoc(String htmlStr,java.util.Vector variables,java.util.Vector data) {
-	try {
-	    String[] foo = new String[variables.size()] ;
-	    String[] bar = new String[data.size()] ;
-	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo),(String[])data.toArray(bar)) ;
-	} catch ( RuntimeException ex ) {
-	    log.error("parseDoc(String,Vector,Vector): RuntimeException", ex );
-	    throw ex ;
-	}
+	String[] foo = new String[variables.size()] ;
+	String[] bar = new String[data.size()] ;
+	return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo),(String[])data.toArray(bar)) ;
     }
 
 
@@ -1572,11 +1466,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    }
 	    String[] foo = new String[variables.size()] ;
 	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
-	} catch ( RuntimeException e ) {
-	    log.error("parseDoc(Vector, String, String): RuntimeException", e );
-	    throw e ;
-	} catch ( IOException e ) {
-	    log.error("parseDoc(Vector, String, String): IOException", e );
+	} catch (IOException ex) {
+	    log.error(ex.toString()) ;
 	    return "" ;
 	}
     }
@@ -1779,7 +1670,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        Array[0]                 = number of field in the record
        Array[1]   - array[n]    = metadata
        Array[n+1] - array[size] = data
-       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+       @deprecated Use {@link #sqlProcedure(String, String[])} instead.
 
     **/
     public String[] sqlProcedureExt(String procedure) {
@@ -1878,7 +1769,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
        Send a procedure to the database and return a Hashtable
-       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+       @deprecated Use {@link #sqlProcedure(String, String[])} instead.
     **/
     public Hashtable sqlProcedureHash(String procedure) {
 
@@ -2385,7 +2276,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
        get template
     */
-    public byte[] getTemplate(int  template_id) throws IOException {
+    public byte[] getTemplateData(int  template_id) throws IOException {
 	String str = "" ;
 
 	BufferedReader fr ;
@@ -2941,66 +2832,45 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	}
 	return textMap ;
     }
-	
-	/**
-		Gets the data fore one document
-		@param meta_id The id fore the wanted document
-		@return a imcode.server.parser.Document representation of the document
-	**/	
-	public imcode.server.parser.Document getDocument(int meta_id){
-		imcode.server.parser.Document document = new imcode.server.parser.Document();		
-		String[] result = 	sqlProcedure("GetDocumentInfo "+meta_id);
-		int columns = 0;
-		
-		//lets start and do some controlls of the resulted data	
-		if (result == null) {
-			log.error("SQL: GetDocumentInfo "+meta_id+" returned nothing!");
-			return null;
-		}
-		if (result.length < 25) {
-			log.error("SQL: GetDocumentInfo "+meta_id+" returned less than 25 columns!");
-			return null;
-		}
-		
-		DateFormat dateform = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
-		//ok lets set all the document stuff
-		try {
-			document.setMetaId( Integer.parseInt(result[0]));
-			document.setDocumentType(Integer.parseInt(result[2]));
-		}catch(NumberFormatException nfe) {
-			log.error("SQL: GetDocumentInfo "+meta_id+" returned corrupt data!", nfe );
-			return null;
-		}		
-		document.setHeadline(result[3]);
-		document.setText(result[4]);
-		document.setImage(result[5]);
-		document.setTarget(result[21]);
-		
-		document.setArchived(result[12]=="0"?false:true);
-		try {
-			document.setCreatedDatetime(dateform.parse(result[16]));	
-		}catch(java.text.ParseException pe) {
-			document.setCreatedDatetime(null);	
-		}
-		try {
-			document.setModifiedDatetime(dateform.parse(result[17]));
-		}catch(java.text.ParseException pe) {
-			document.setModifiedDatetime(null);
-		}		
-		try {
-			document.setActivatedDatetime(dateform.parse(result[23]));
-		}catch(java.text.ParseException pe) {
-			document.setActivatedDatetime(null);
-		}
-		try {
-			document.setArchivedDatetime(dateform.parse(result[24]));
-		}catch(java.text.ParseException pe) {
-			document.setArchivedDatetime(null);
-		}
-		if (document.getDocumentType()==DOCTYPE_FILE) {
-			document.setFilename(sqlProcedureStr("GetFileName "+document.getMetaId()));
-		}
-		return document;
+
+    /**
+       Get the data for one document
+       @param meta_id The id fore the wanted document
+       @return a imcode.server.parser.Document representation of the document, or null if there was none.
+       @throws IndexOutOfBoundsException if there was no such document.
+    **/
+    public Document getDocument(int meta_id) throws IndexOutOfBoundsException {
+	try {
+	    return new imcode.server.parser.Document(this, meta_id) ;
+	} catch (SQLException ex) {
+	    log.error(ex) ;
+	    throw new IndexOutOfBoundsException() ;
 	}
+    }
+
+    /** @return the section for a document, or null if there was none **/
+    public String getSection(int meta_id) {
+	String[] section_data = sqlProcedure("SectionGetInheritId",new String[] {String.valueOf(meta_id)}) ;
+
+	if (section_data.length < 2) {
+	    return null ;
+	}
+	return section_data[1] ;
+    }
+
+    /** @return the filename for a fileupload-document, or null if the document isn't a fileupload-docuemnt. **/
+    public String getFilename(int meta_id) {
+	return sqlProcedureStr("GetFileName "+meta_id) ;
+    }
+
+    /** @return the template for a text-document, or null if the document isn't a text-document. **/
+    public Template getTemplate(int meta_id) {
+	String[] textdoc_data = sqlProcedure("GetTextDocData",new String[] {String.valueOf(meta_id)}) ;
+
+	if (textdoc_data.length < 2) {
+	    return null ;
+	}
+	return new Template(Integer.parseInt(textdoc_data[0]), textdoc_data[1]) ;
+    }
 
 }

@@ -1,10 +1,15 @@
 package imcode.server.parser ;
 
 import java.util.Date ;
+import java.text.DateFormat ;
+import java.text.SimpleDateFormat ;
+import java.sql.SQLException ;
+
+import imcode.server.* ;
 
 /** Stores all info about a text-document. **/
 
-public class Document {
+public class Document implements IMCConstants {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
 
@@ -19,8 +24,81 @@ public class Document {
     private String text ;
     private String image ;
     private String target ;
+    private String section ;
+
+    /* Filedocs only */
     private String filename ;
-   
+
+    /* Textdocs only */
+    private Template template ;
+    private int templateGroupId ;
+    private int menuSortOrder ;
+
+    protected Document() {
+
+    }
+
+    public Document(IMCServiceInterface serverObject, int meta_id) throws IndexOutOfBoundsException, SQLException {
+	String[] result =	serverObject.sqlProcedure("GetDocumentInfo "+meta_id);
+	int columns = 0;
+
+	//lets start and do some controlls of the resulted data
+	if (result == null || result.length < 25) {
+	    throw new IndexOutOfBoundsException("No such document: "+meta_id);
+	}
+
+	DateFormat dateform = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
+	//ok lets set all the document stuff
+	try {
+	    setMetaId( Integer.parseInt(result[0]));
+	    setDocumentType(Integer.parseInt(result[2]));
+	} catch(NumberFormatException nfe) {
+	    throw new SQLException("SQL: GetDocumentInfo "+meta_id+" returned corrupt data! "+nfe.toString());
+	}
+	setHeadline(result[3]);
+	setText(result[4]);
+	setImage(result[5]);
+	setTarget(result[21]);
+
+	setArchived(result[12]=="0"?false:true);
+
+	setSection(serverObject.getSection(meta_id)) ;
+
+	try {
+	    setCreatedDatetime(dateform.parse(result[16]));
+	}catch(java.text.ParseException pe) {
+	    setCreatedDatetime(null);
+	}
+	try {
+	    setModifiedDatetime(dateform.parse(result[17]));
+	}catch(java.text.ParseException pe) {
+	    setModifiedDatetime(null);
+	}
+	try {
+	    setActivatedDatetime(dateform.parse(result[23]));
+	}catch(java.text.ParseException pe) {
+	    setActivatedDatetime(null);
+	}
+	try {
+	    setArchivedDatetime(dateform.parse(result[24]));
+	}catch(java.text.ParseException pe) {
+	    setArchivedDatetime(null);
+	}
+	if (getDocumentType()==DOCTYPE_FILE) {
+	    setFilename(serverObject.getFilename(meta_id));
+	}
+	if (getDocumentType()==DOCTYPE_TEXT) {
+	    String[] textdoc_data = serverObject.sqlProcedure("GetTextDocData",new String[] {String.valueOf(meta_id)}) ;
+
+	    if (textdoc_data.length >= 4) {
+		setTemplate(new Template(Integer.parseInt(textdoc_data[0]), textdoc_data[1])) ;
+		setMenuSortOrder(Integer.parseInt(textdoc_data[2])) ;
+		setTemplateGroupId(Integer.parseInt(textdoc_data[3])) ;
+	    }
+	}
+    }
+
+
 
     /**
      * Get the value of metaId.
@@ -29,7 +107,7 @@ public class Document {
     public int getMetaId() {
 	return metaId;
     }
-    
+
     /**
      * Set the value of metaId.
      * @param v  Value to assign to metaId.
@@ -37,6 +115,7 @@ public class Document {
     public void setMetaId(int  v) {
 	this.metaId = v;
     }
+
     /**
      * Get the value of documentType.
      * @return value of documentType.
@@ -44,7 +123,7 @@ public class Document {
     public int getDocumentType() {
 	return documentType;
     }
-    
+
     /**
      * Set the value of documentType.
      * @param v  Value to assign to documentType.
@@ -77,7 +156,7 @@ public class Document {
 	return archived || (archivedDatetime != null && archivedDatetime.before(time)) ;
     }
 
-    
+
     /**
      * Set the value of archived.
      * @param v  Value to assign to archived.
@@ -85,7 +164,7 @@ public class Document {
     public void setArchived(boolean  v) {
 	this.archived = v;
     }
-    
+
     /**
      * Get the value of createdDatetime.
      * @return value of createdDatetime.
@@ -93,7 +172,7 @@ public class Document {
     public Date getCreatedDatetime() {
 	return createdDatetime;
     }
-    
+
     /**
      * Set the value of createdDatetime.
      * @param v  Value to assign to createdDatetime.
@@ -101,7 +180,7 @@ public class Document {
     public void setCreatedDatetime(Date  v) {
 	this.createdDatetime = v;
     }
-    
+
     /**
      * Get the value of modifiedDatetime.
      * @return value of modifiedDatetime.
@@ -109,7 +188,7 @@ public class Document {
     public Date getModifiedDatetime() {
 	return modifiedDatetime;
     }
-    
+
     /**
      * Set the value of modifiedDatetime.
      * @param v  Value to assign to modifiedDatetime.
@@ -117,7 +196,7 @@ public class Document {
     public void setModifiedDatetime(Date  v) {
 	this.modifiedDatetime = v;
     }
-    
+
     /**
      * Get the value of archivedDatetime.
      * @return value of archivedDatetime.
@@ -125,7 +204,7 @@ public class Document {
     public Date getArchivedDatetime() {
 	return archivedDatetime;
     }
-    
+
     /**
      * Set the value of archivedDatetime.
      * @param v  Value to assign to archivedDatetime.
@@ -133,7 +212,7 @@ public class Document {
     public void setArchivedDatetime(Date  v) {
 	this.archivedDatetime = v;
     }
-    
+
     /**
      * Get the value of activatedDatetime.
      * @return value of activatedDatetime.
@@ -141,7 +220,7 @@ public class Document {
     public Date getActivatedDatetime() {
 	return activatedDatetime;
     }
-    
+
     /**
      * Set the value of archivedDatetime.
      * @param v  Value to assign to archivedDatetime.
@@ -149,7 +228,7 @@ public class Document {
     public void setActivatedDatetime(Date  v) {
 	this.activatedDatetime = v;
     }
-    
+
     /**
      * Get the value of headline.
      * @return value of headline.
@@ -157,7 +236,7 @@ public class Document {
     public String getHeadline() {
 	return headline;
     }
-    
+
     /**
      * Set the value of headline.
      * @param v  Value to assign to headline.
@@ -165,7 +244,7 @@ public class Document {
     public void setHeadline(String  v) {
 	this.headline = v;
     }
-    
+
     /**
      * Get the value of text.
      * @return value of text.
@@ -173,7 +252,7 @@ public class Document {
     public String getText() {
 	return text;
     }
-    
+
     /**
      * Set the value of text.
      * @param v  Value to assign to text.
@@ -181,7 +260,7 @@ public class Document {
     public void setText(String  v) {
 	this.text = v;
     }
-    
+
     /**
      * Get the value of image.
      * @return value of image.
@@ -189,7 +268,7 @@ public class Document {
     public String getImage() {
 	return image;
     }
-    
+
     /**
      * Set the value of image.
      * @param v  Value to assign to image.
@@ -197,7 +276,7 @@ public class Document {
     public void setImage(String  v) {
 	this.image = v;
     }
-    
+
     /**
      * Get the value of target.
      * @return value of target.
@@ -205,7 +284,7 @@ public class Document {
     public String getTarget() {
 	return target;
     }
-    
+
     /**
      * Set the value of target.
      * @param v  Value to assign to target.
@@ -213,7 +292,7 @@ public class Document {
     public void setTarget(String  v) {
 	this.target = v;
     }
-    
+
     /**
      * Get the value of filename.
      * @return value of filename.
@@ -221,7 +300,7 @@ public class Document {
     public String getFilename() {
 	return filename;
     }
-    
+
     /**
      * Set the value of filename.
      * @param v  Value to assign to filename.
@@ -229,7 +308,69 @@ public class Document {
     public void setFilename(String  v) {
 	this.filename = v;
     }
-    
-   
+
+    /**
+     * Get the value of section.
+     * @return value of section.
+     */
+    public String getSection() {
+	return section;
+    }
+
+    /**
+     * Set the value of section.
+     * @param v  Value to assign to section.
+     */
+    public void setSection(String v) {
+	this.section = v;
+    }
+
+    /**
+     * Get the value of template.
+     * @return value of template.
+     */
+    public Template getTemplate() {
+	return template;
+    }
+
+    /**
+     * Set the value of template.
+     * @param v  Value to assign to template.
+     */
+    public void setTemplate(Template v) {
+	this.template = v;
+    }
+
+    /**
+     * Get the value of menuSortOrder.
+     * @return value of menuSortOrder.
+     */
+    public int getMenuSortOrder() {
+	return menuSortOrder;
+    }
+
+    /**
+     * Set the value of menuSortOrder.
+     * @param v  Value to assign to menuSortOrder.
+     */
+    public void setMenuSortOrder(int  v) {
+	this.menuSortOrder = v;
+    }
+
+    /**
+     * Get the value of templateGroupId.
+     * @return value of templateGroupId.
+     */
+    public int getTemplateGroupId() {
+	return templateGroupId;
+    }
+
+    /**
+     * Set the value of templateGroupId.
+     * @param v  Value to assign to templateGroupId.
+     */
+    public void setTemplateGroupId(int  v) {
+	this.templateGroupId = v;
+    }
 
 }

@@ -63,8 +63,8 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
     private final Substitution HTML_ESCAPE_UNHIDE_SUBSTITUTION = new Perl5Substitution("$1") ;
 
     private TextDocumentParser textDocParser ;
-    private User user ;
-    private int meta_id ;
+
+    private DocumentRequest documentRequest ;
 
     private File templatePath ;
 
@@ -112,24 +112,15 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     private ReadrunnerQuoteSubstitution readrunnerQuoteSubstitution = new ReadrunnerQuoteSubstitution() ;
 
-
-    /**
-       @param user           The user
-       @param meta_id        The document-id
-       @param included_list  A list of (include-id, included-meta-id, ...)
-       @param includemode    Whether to include the admin-template instead of the included document.
-       @param includelevel   The number of levels of recursion we've gone through.
-    **/
-    public ImcmsTagSubstitution (TextDocumentParser textdocparser, User user, int meta_id,
+    public ImcmsTagSubstitution (TextDocumentParser textdocparser, DocumentRequest documentRequest,
 				 File templatepath,
 				 List included_list, boolean includemode, int includelevel, File includepath,
 				 Map textmap, boolean textmode,
 				 Map imagemap, boolean imagemode,
-				 String section_name,
-				 Document theDoc, ParserParameters parserParameters) {
+				 ParserParameters parserParameters) {
 	this.textDocParser = textdocparser ;
-	this.user = user ;
-	this.meta_id = meta_id ;
+	this.documentRequest = documentRequest ;
+	this.document = documentRequest.getDocument() ;
 
 	this.templatePath = templatepath ;
 
@@ -146,12 +137,10 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	this.imageMap = imagemap ;
 	this.imageMode = imagemode ;
 
-	this.sectionName = section_name ;
-
-	this.document = theDoc;
 	this.parserParameters = parserParameters ;
 
-	File label_template_file = new File(templatePath, user.getLangPrefix()+"/admin/textdoc/label.frag") ;
+	String langPrefix = documentRequest.getUser().getLangPrefix() ;
+	File label_template_file = new File(templatePath, langPrefix+"/admin/textdoc/label.frag") ;
 	try {
 	    this.labelTemplate = fileCache.getCachedFileString(label_template_file) ;
 	} catch (IOException ex) {
@@ -164,7 +153,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     **/
     public String tagMetaId () {
-	return ""+meta_id ;
+	return ""+document.getMetaId() ;
     }
 
     /**
@@ -172,7 +161,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     **/
     public String tagSection () {
-	return ""+sectionName ;
+	return ""+document.getSection() ;
     }
 
     /**
@@ -210,10 +199,11 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		if (includeLevel>0) {
 		    int included_meta_id = Integer.parseInt(attributevalue) ;
 		    // Recursively parse the wanted page.
-		    String document = textDocParser.parsePage(included_meta_id,user,-1,includeLevel-1,paramsToParse) ;
-		    document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
-		    document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
-		    return document ;
+		    DocumentRequest includedDocumentRequest = new DocumentRequest(documentRequest.getServerObject(), documentRequest.getRemoteAddr(), documentRequest.getUser(), included_meta_id, document) ;
+		    String documentStr = textDocParser.parsePage(includedDocumentRequest,-1,includeLevel-1,paramsToParse) ;
+		    documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
+		    documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
+		    return documentStr ;
 		}
 	    }
 	    catch (NumberFormatException ex) {
@@ -252,19 +242,21 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	try {
 	    if (includeMode) {
 		String included_meta_id_str = (String)included_docs.get(String.valueOf(no)) ;
-		return imcode.util.Parser.parseDoc(fileCache.getCachedFileString(new File(templatePath, user.getLangPrefix()+"/admin/change_include.html")),
+		String langPrefix = documentRequest.getUser().getLangPrefix() ;
+		return imcode.util.Parser.parseDoc(fileCache.getCachedFileString(new File(templatePath, langPrefix+"/admin/change_include.html")),
 						   new String[] {
-						       "#meta_id#",         String.valueOf(meta_id),
+						       "#meta_id#",         String.valueOf(document.getMetaId()),
 						       "#include_id#",      String.valueOf(no),
 						       "#include_meta_id#", included_meta_id_str == null ? "" : included_meta_id_str
 						   }
 						   ) ;
 	    } else if (includeLevel>0) {
 		int included_meta_id = Integer.parseInt((String)included_docs.get(String.valueOf(no))) ;
-		String document = textDocParser.parsePage(included_meta_id,user,-1,includeLevel-1,paramsToParse) ;         ;
-		document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
-		document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
-		return document ;
+		DocumentRequest includedDocumentRequest = new DocumentRequest(documentRequest.getServerObject(), documentRequest.getRemoteAddr(), documentRequest.getUser(), included_meta_id,document) ;
+		String documentStr = textDocParser.parsePage(includedDocumentRequest,-1,includeLevel-1,paramsToParse) ;         ;
+		documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
+		documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
+		return documentStr ;
 	    }
 	} catch (IOException ex) {
 	    return "<!-- imcms:include failed: "+ex+" -->" ;
@@ -322,13 +314,14 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		label = imcode.util.Parser.parseDoc(labelTemplate, new String[] { "#label#", label }) ;
 	    }
 	    String[] replace_tags = new String[] {
-		"#meta_id#",         String.valueOf(meta_id),
+		"#meta_id#",         String.valueOf(document.getMetaId()),
 		"#text_id#",         noStr,
 		"#text#",            finalresult,
 		"#label_url#",       label_urlparam,
 		"#label#",           label
 	    } ;
-	    File admin_template_file = new File(templatePath, user.getLangPrefix()+"/admin/textdoc/admin_text.frag") ;
+	    String langPrefix = documentRequest.getUser().getLangPrefix() ;
+	    File admin_template_file = new File(templatePath, langPrefix+"/admin/textdoc/admin_text.frag") ;
 	    try {
 		finalresult = imcode.util.Parser.parseDoc(fileCache.getCachedFileString(admin_template_file),replace_tags) ;
 	    } catch (IOException ex) {
@@ -384,17 +377,18 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	String finalresult = result ;
 	if (imageMode) {
 	    String[] replace_tags = new String[] {
-		"#meta_id#",         String.valueOf(meta_id),
+		"#meta_id#",         String.valueOf(document.getMetaId()),
 		"#image_id#",        noStr,
 		"#image#",           finalresult,
 		"#label_url#",       label_urlparam,
 		"#label#",           label
 	    } ;
 	    File admin_template_file = null ;
+	    String langPrefix = documentRequest.getUser().getLangPrefix() ;
 	    if ("".equals(result)) { // no data in the db-field.
-		admin_template_file = new File(templatePath, user.getLangPrefix()+"/admin/textdoc/admin_no_image.frag") ;
+		admin_template_file = new File(templatePath, langPrefix+"/admin/textdoc/admin_no_image.frag") ;
 	    } else {               // data in the db-field.
-		admin_template_file = new File(templatePath, user.getLangPrefix()+"/admin/textdoc/admin_image.frag") ;
+		admin_template_file = new File(templatePath, langPrefix+"/admin/textdoc/admin_image.frag") ;
 	    }
 
 	    try {

@@ -24,8 +24,8 @@ public class StartDoc extends HttpServlet {
        doGet()
     */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-	String host				= req.getHeader("Host") ;
-	String imcserver			= Utility.getDomainPref("userserver",host) ;
+	String host = req.getHeader("host") ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 	String start_url	= Utility.getDomainPref( "start_url",host ) ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
@@ -78,7 +78,7 @@ public class StartDoc extends HttpServlet {
 		return ;
 	    }
 
-	    StartDoc.incrementSessionCounter(imcserver,user,req) ;
+	    StartDoc.incrementSessionCounter(imcref,user,req) ;
 	}
 
 	// The real purpose of StartDoc:
@@ -86,7 +86,7 @@ public class StartDoc extends HttpServlet {
 	// but this redirect is merely cruft
 
 	// Find the start-page
-	meta_id = IMCServiceRMI.getDefaultHomePage(imcserver) ;
+	meta_id = imcref.getDefaultHomePage() ;
 
 	// ... and redirect to it.
 	// FIXME: Replace with a forward()...
@@ -103,20 +103,20 @@ public class StartDoc extends HttpServlet {
        Check if user exist in database
     */
     static protected imcode.server.User allowUser( String user_name, String passwd, String host ) throws IOException {
-	String imcserver			= Utility.getDomainPref("userserver",host) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 
 	// user information
 	String fieldNames[] = {"user_id","login_name","login_password","first_name",
 			       "last_name","title","user","address","city","zip","country",
 			       "county_council","email","admin_mode","last_page","archive_mode" ,"lang_id" ,"user_type","active", "create_date"} ;
-	return IMCServiceRMI.verifyUser( imcserver, new imcode.server.LoginUser( user_name,passwd ),fieldNames ) ;
+	return imcref.verifyUser( new imcode.server.LoginUser( user_name,passwd ),fieldNames ) ;
     }
 
     /**
        Ip login  - check if user exist in ip-table
     */
     static protected imcode.server.User ipAssignUser( String remote_ip , String host) throws IOException {
-	String imcserver			= Utility.getDomainPref("userserver",host) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 	imcode.server.User user = new imcode.server.User( ) ;
 
 	long ip = Utility.ipStringToLong(remote_ip) ;
@@ -130,7 +130,7 @@ public class StartDoc extends HttpServlet {
 	sqlStr += "and ip_accesses.ip_end >= " + ip + "\n" ;
 	sqlStr += "order by ip_access_id desc" ;
 
-	String user_data[] = IMCServiceRMI.sqlQuery( imcserver,sqlStr );
+	String user_data[] = imcref.sqlQuery( sqlStr );
 
 	if( user_data.length > 0 )  {
 	    user = allowUser( user_data[0],user_data[1],host ) ;
@@ -144,13 +144,13 @@ public class StartDoc extends HttpServlet {
 	return user ;
     }
 
-    static void incrementSessionCounter(String imcserver, User user, HttpServletRequest req) throws IOException {
+    static void incrementSessionCounter(IMCServiceInterface imcref, User user, HttpServletRequest req) throws IOException {
 	if (!( user.getString("login_name").equalsIgnoreCase("user")
 	       && req.getParameter("no_count")!=null) 
 	    ) {
 	    // Only increase the login counter if the user
 	    // is 'user' and has a 'no_count' request parameter.
-	    IMCServiceRMI.incCounter(imcserver) ;
+	    imcref.incCounter() ;
 	}
     }
 }

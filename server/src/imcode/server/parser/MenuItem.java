@@ -11,10 +11,10 @@ import org.apache.log4j.Category;
 public class MenuItem extends Document implements imcode.server.IMCConstants {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
-	
+
     private final static Category log = Category.getInstance( "server" );
-	
-	private boolean editable ;
+
+    private boolean editable ;
     private int sortKey ;
     private Menu parentMenu;
     private static Pattern HASHTAG_PATTERN  = null ;
@@ -31,9 +31,10 @@ public class MenuItem extends Document implements imcode.server.IMCConstants {
     }
 
     public MenuItem (Menu parent) {
+	
 	this.parentMenu = parent ;
     }
-        
+
     /**
      * Get the value of parentMenu.
      * @return value of parentMenu.
@@ -41,7 +42,7 @@ public class MenuItem extends Document implements imcode.server.IMCConstants {
     public Menu getParentMenu() {
 	return parentMenu;
     }
-   
+
     /**
      * Get the value of sortKey.
      * @return value of sortKey.
@@ -49,7 +50,7 @@ public class MenuItem extends Document implements imcode.server.IMCConstants {
     public int getSortKey() {
 	return sortKey;
     }
-    
+
     /**
      * Set the value of sortKey.
      * @param v  Value to assign to sortKey.
@@ -57,7 +58,7 @@ public class MenuItem extends Document implements imcode.server.IMCConstants {
     public void setSortKey(int  v) {
 	this.sortKey = v;
     }
-    
+
     /**
        Parse this menuitem into a template with the correct tags.
     **/
@@ -114,20 +115,20 @@ public class MenuItem extends Document implements imcode.server.IMCConstants {
 	tags.setProperty("#menuitemlink#", a_href ) ;
 	tags.setProperty("#/menuitemlink#",
 			 getParentMenu().isMenuMode() && isEditable()
-			 ? "</a>&nbsp;<a href=\"AdminDoc?meta_id="+getMetaId()+"\"><img src=\""+getParentMenu().getImageUrl()+"txt.gif\" border=\"0\"></a>" 
+			 ? "</a>&nbsp;<a href=\"AdminDoc?meta_id="+getMetaId()+"\"><img src=\""+getParentMenu().getImageUrl()+"txt.gif\" border=\"0\"></a>"
 			 : "</a>") ;
 
 	return new MapSubstitution(tags,true) ;
     }
-	
-	 /**
+
+    /**
      * Get the value of editable.
      * @return value of editable.
      */
     public boolean isEditable() {
 	return editable;
     }
-    
+
     /**
      * Set the value of editable.
      * @param v  Value to assign to editable.
