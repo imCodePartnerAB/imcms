@@ -9,28 +9,8 @@ import imcode.util.* ;
 
 public class SaveNewFileUpload extends HttpServlet {
 
-	static protected Hashtable mimetypes ;
-
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-				
-		// Read an apache style mime-types file (mime	ext1 ext2 ext3)
-		// and invert it into a hashtable with the extensions as keys.
-		mimetypes = new Hashtable() ;
-		try {
-			Properties mt = Prefs.getProperties(new File(Prefs.get("mime.types","servlet.cfg"))) ;
-			Enumeration enum = mt.propertyNames() ;
-			while ( enum.hasMoreElements() ) {
-				String mime = (String)enum.nextElement() ;
-				StringTokenizer file_exts = new StringTokenizer(mt.getProperty(mime)," \t") ;
-				while ( file_exts.hasMoreTokens() ) {
-					mimetypes.put(file_exts.nextToken(), mime.toLowerCase()) ;
-				}
-			}
-		} catch ( IOException ex ) {
-			log("Unable to load mime-types-file: "+ex.getMessage()) ;
-		}
-
 	}
 	
 	public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
@@ -81,7 +61,7 @@ public class SaveNewFileUpload extends HttpServlet {
 			    int dot = filename.lastIndexOf(".") ;
 			    if ( dot != -1 ) {
 				String ext = filename.substring(dot+1).toLowerCase() ;
-				String mimetemp = (String)mimetypes.get(ext) ;
+				String mimetemp = Utility.getMimeTypeFromExtension(ext) ;
 				if ( mimetemp != null ) {
 				    mime = mimetemp ;
 				}
