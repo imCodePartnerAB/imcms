@@ -152,7 +152,7 @@ public class BillBoardError extends BillBoard
 			// Lets get the path to the template library
 			String folder = "" ;
 			folder = super.getExternalTemplateRootFolder(req) ;
-			log("ExternalFolder was: " + folder) ;
+			//log("ExternalFolder was: " + folder) ;
 
 			// Lets get the error code
 
@@ -223,8 +223,8 @@ public class BillBoardError extends BillBoard
 
 		HtmlGenerator htmlObj = new HtmlGenerator( templateLib, htmlFile ) ;
 		String html = htmlObj.createHtmlString(vm,req) ;
-		log(html);
-		log( htmlFile );
+		//log(html);
+		//log( htmlFile );
 
 		htmlObj.sendToBrowser( req, res, html ) ;
 	}

@@ -181,20 +181,20 @@ public class BillBoardReply extends BillBoard {//ConfReply
 		
 		//ok here we se if we have a prevue to handle
 		Hashtable billPrevData = (Hashtable) session.getAttribute("billPrevData");
-		log("PREVIEWMODE: "+req.getParameter("PREVIEWMODE"));
+		//log("PREVIEWMODE: "+req.getParameter("PREVIEWMODE"));
 		if (billPrevData != null && req.getParameter("PREVIEWMODE")!=null)
 		{ //ok PREVIEW-mode
-			log("ok PREVIEW-mode");
+			//log("ok PREVIEW-mode");
 			String addHeader = (String)billPrevData.get(header );
 			String addText = (String)billPrevData.get(text );
 			String datum = rmi.execSqlProcedureStr(confPoolServer, "B_GetTime" ) ;
-			log(addHeader+"\n"+addText+"\n"+datum);
+			//log(addHeader+"\n"+addText+"\n"+datum);
 			String addType = req.getParameter("ADDTYPE");
 			String addType2 = req.getParameter("ADDTYPE");
-			log("aaaaaaaaa: "+addType);
+			//log("aaaaaaaaa: "+addType);
 			//lets simulate the original sql answer
 			String[] tempArr = {"7","bill_id","headline","text","repNr","","","","",addHeader,addText,"",datum,addType,addType2};
-			log("aSnippetFile: "+aSnippetFile);
+			//log("aSnippetFile: "+aSnippetFile);
 			Vector tags = buildTagsV();
 			tags.add("#ADD_TYPE#");
 			tags.add("#ADD_TYPE2#");

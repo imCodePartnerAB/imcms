@@ -33,10 +33,10 @@ import java.net.*;
  * @author Rickard Larsson, Jerker Drottenmyr, REBUILD TO BillBoardAdd BY Peter Östergren
 */
 
-public class BillBoardAdd extends BillBoard
+public class BillBoardAdd extends BillBoard	{
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
-{//ConfAdd
+
 
 	String HTML_TEMPLATE ;
 	String SERVLET_NAME ;  // The name on this servlet
@@ -48,8 +48,7 @@ public class BillBoardAdd extends BillBoard
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-		log("START BillBoardAdd doPost");
-
+	
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
 
@@ -78,8 +77,7 @@ public class BillBoardAdd extends BillBoard
 		// Lets detect which addtype we have
 		String addType = "" ;
 		addType = req.getParameter("ADDTYPE") ;
-		log("addType="+addType);
-
+		
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
@@ -108,7 +106,7 @@ public class BillBoardAdd extends BillBoard
 			// ********* PREVIEW BILL ***********
 			if ( req.getParameter("PREVIEW") != null || req.getParameter("PREVIEW.x") != null )
 			{
-				log("Nu är vi i PREVIEW metoden") ;
+			
 				//lets collect everything we might need later on, and store it in the session.
 		
 				String aSectionId = params.getProperty("SECTION_ID") ;
@@ -163,7 +161,7 @@ public class BillBoardAdd extends BillBoard
 				//fore later use
 				if (session != null)
 				{ 
-					log("ok lets collect the data and store it in the session");
+				
 					Hashtable billPrevData = new Hashtable();
 				 	billPrevData.put(sectionId, aSectionId);	
 					billPrevData.put(header,addHeader);	
@@ -180,7 +178,7 @@ public class BillBoardAdd extends BillBoard
 				String addTypeStr = "&ADDTYPE="+req.getParameter("ADDTYPE");
 				// Lets redirect to the servlet which holds in us.
 				res.sendRedirect(MetaInfo.getServletPath(req)  + "BillBoardDiscView?PREVIEWMODE=OK"+addTypeStr) ;
-				log("PREVIEW is done in BillBoardAdd");
+				//log("PREVIEW is done in BillBoardAdd");
 				return ;
 				
 			}//end PREVIEW
@@ -188,7 +186,7 @@ public class BillBoardAdd extends BillBoard
 			// ********* ADD DISCUSSION ********
 			if(addType.equalsIgnoreCase("DISCUSSION") && ( req.getParameter("ADD") != null || req.getParameter("ADD.x") != null ) )
 			{
-				log("Nu är vi i AddDiscussion") ;
+				//log("Nu är vi i AddDiscussion") ;
 				// Lets add a new discussion to the database
 				
 				//	String userId = userParams.getProperty("USER_ID") ;
@@ -291,7 +289,7 @@ public class BillBoardAdd extends BillBoard
 			if(addType.equalsIgnoreCase("REPLY") && ( req.getParameter("ADD") != null || req.getParameter("ADD.x") != null ) )
 			{
 				// if(req.getParameter("ADD") != null && addType.equalsIgnoreCase("REPLY")) {
-				log("Nu är vi i AddReply") ;
+				//log("Nu är vi i AddReply") ;
 
 				RmiConf rmi = new RmiConf(user) ;
 				
@@ -479,7 +477,7 @@ public class BillBoardAdd extends BillBoard
 				
 			}else
 			{ //ok we have them, so lets put use them
-				log("prewiew dfsdf");
+				
 				session.removeAttribute("billPrevData");
 				vm.addProperty(header,(String)billPrevData.get(header));
 				vm.addProperty(text, (String)billPrevData.get(text));

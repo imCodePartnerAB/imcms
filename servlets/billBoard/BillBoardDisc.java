@@ -112,11 +112,11 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			// Lets get the forum_id and set our session object before updating
 			Properties reqParams = this.getRequestParameters(req) ;
 			String aSectionId = reqParams.getProperty("SECTION_ID") ;//
-			log("aSectionId:"+aSectionId);
+			//log("aSectionId:"+aSectionId);
 			String discIndex = params.getProperty("DISC_INDEX") ;
-			log("discIndex: "+discIndex);		
+			//log("discIndex: "+discIndex);		
 			String changeForum = req.getParameter("CHANGE_SECTION");//CHANGE_FORUM
-			log("changeSection: "+changeForum);
+			//log("changeSection: "+changeForum);
 
 			//	RmiConf rmi = new RmiConf(user) ;
 			HttpSession session = req.getSession(false) ;
@@ -749,7 +749,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 				String[] arr = session.getValueNames() ;
 				for( int i = 0 ; i < arr.length ; i++ )
 				{
-					log(arr[i] + " : " + session.getValue(arr[i]).toString()) ;
+					//log(arr[i] + " : " + session.getValue(arr[i]).toString()) ;
 					// log("Value: " + arr[i]) ;
 				}
 

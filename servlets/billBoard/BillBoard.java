@@ -605,9 +605,8 @@ public class BillBoard extends HttpServlet { //Conference
 
 	public void log(String msg)
 	{
-		//super.log(msg) ;
-		System.out.println(msg) ;
-
+		super.log(msg) ;
+		
 	}
 
 	/**
