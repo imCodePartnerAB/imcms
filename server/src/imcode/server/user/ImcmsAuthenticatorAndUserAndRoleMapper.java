@@ -447,6 +447,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         if ( !includeInactiveUsers ) {
             sql += " AND active = 1";
         }
+	      sql += " ORDER BY last_name, first_name";
         String[][] sqlRows = database.sqlQueryMulti( sql, new String[]{namePrefix, namePrefix, namePrefix} );
         return getUsersFromSqlRows( sqlRows );
     }
