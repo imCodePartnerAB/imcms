@@ -4,8 +4,10 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 
@@ -26,16 +28,33 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
     private final Object newIndexBuildingLock = new Object();
     private boolean buildingNewIndex;
 
+    private static final String INDEX_SEGMENTS_FILE_NAME = "segments";
+
     static {
         // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow queries?
         BooleanQuery.setMaxClauseCount( Integer.MAX_VALUE );
     }
 
     public AutorebuildingDirectoryIndex( File indexDirectory, int indexingSchedulePeriodInMinutes ) {
-        this.indexingSchedulePeriodInMilliseconds = indexingSchedulePeriodInMinutes * 60000 ;
+        this.indexingSchedulePeriodInMilliseconds = indexingSchedulePeriodInMinutes * DateUtils.MILLIS_IN_MINUTE ;
         this.index = new DirectoryIndex( indexDirectory );
         Timer scheduledIndexBuildingTimer = new Timer( true );
-        scheduledIndexBuildingTimer.scheduleAtFixedRate( new ScheduledIndexingTimerTask(), 0, indexingSchedulePeriodInMilliseconds );
+        long scheduledIndexDelay = 0 ;
+        if ( IndexReader.indexExists( indexDirectory ) ) {
+            try {
+                long indexModifiedTime = IndexReader.lastModified(indexDirectory);
+                Date nextExecutionTime = new Date( indexModifiedTime + indexingSchedulePeriodInMilliseconds );
+                log.info( "First indexing scheduled at " + formatDatetime( nextExecutionTime ) );
+                scheduledIndexDelay = nextExecutionTime.getTime() - System.currentTimeMillis();
+            } catch ( IOException e ) {
+                log.warn("Failed to get last modified time of index.", e) ;
+            }
+        }
+        scheduledIndexBuildingTimer.scheduleAtFixedRate( new ScheduledIndexingTimerTask(), scheduledIndexDelay, indexingSchedulePeriodInMilliseconds );
+    }
+
+    private String formatDatetime( Date nextExecutionTime ) {
+        return new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING ).format( nextExecutionTime );
     }
 
     public synchronized void indexDocument( DocumentDomainObject document ) {
@@ -107,6 +126,7 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
 
     private void buildNewIndex( File parentFile, String name ) throws IOException {
         if ( buildingNewIndex ) {
+            log.debug("Ignoring request to build new index. Already in progress.") ;
             return;
         }
         synchronized ( newIndexBuildingLock ) {
@@ -156,8 +176,7 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
 
         public void run() {
             Date nextExecutionTime = new Date( this.scheduledExecutionTime() + indexingSchedulePeriodInMilliseconds );
-            String nextExecutionTimeString = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING ).format( nextExecutionTime );
-            log.info( "Starting scheduled indexing. Next indexing at " + nextExecutionTimeString );
+            log.info( "Starting scheduled indexing. Next indexing at " + formatDatetime( nextExecutionTime ) );
             buildNewIndexInBackground();
         }
     }

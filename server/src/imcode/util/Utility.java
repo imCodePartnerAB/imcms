@@ -6,6 +6,7 @@ import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.SetUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -158,5 +159,36 @@ public class Utility {
             sizeSuffix = "kB";
         }
         return df.format(displaySize)+separator+sizeSuffix ;
+    }
+
+    public static String getHumanReadableTimeLength(long milliseconds) {
+        long ms = milliseconds ;
+        TimeLengthSuffixPair[] pairs = new TimeLengthSuffixPair[] {
+            new TimeLengthSuffixPair( DateUtils.MILLIS_IN_HOUR, "h" ),
+            new TimeLengthSuffixPair( DateUtils.MILLIS_IN_MINUTE, "m" ),
+            new TimeLengthSuffixPair( DateUtils.MILLIS_IN_SECOND, "s" ),
+            new TimeLengthSuffixPair( 1, "ms" ),
+        };
+        List resultList = new ArrayList() ;
+        for ( int i = 0; i < pairs.length; i++ ) {
+            TimeLengthSuffixPair pair = pairs[i];
+            long timeLength = pair.timeLength;
+            if ( ms >= timeLength ) {
+                long unitTime = ms / timeLength;
+                ms %= timeLength;
+                resultList.add( unitTime + pair.suffix );
+            }
+        }
+        return StringUtils.join( resultList.iterator(), ", " ) ;
+    }
+
+    private static class TimeLengthSuffixPair {
+        long timeLength;
+        String suffix;
+
+        public TimeLengthSuffixPair( long timeLength, String suffix ) {
+            this.timeLength = timeLength;
+            this.suffix = suffix;
+        }
     }
 }

@@ -5,6 +5,8 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IntervalSchedule;
+import imcode.util.Utility;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
@@ -17,7 +19,10 @@ import org.apache.lucene.search.Query;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 class DirectoryIndex implements DocumentIndex {
@@ -25,7 +30,7 @@ class DirectoryIndex implements DocumentIndex {
     private File directory;
     private IndexDocumentFactory indexDocumentFactory = new IndexDocumentFactory();
 
-    private final static int INDEXING_LOG_PERIOD__MILLISECONDS = 10 * 1000;
+    private final static int INDEXING_LOG_PERIOD__MILLISECONDS = DateUtils.MILLIS_IN_MINUTE ;
     private boolean inconsistent;
 
     private final static Logger log = Logger.getLogger( DirectoryIndex.class.getName() );
@@ -141,7 +146,7 @@ class DirectoryIndex implements DocumentIndex {
             }
 
             if ( indexingLogSchedule.isTime() ) {
-                logIndexingProgress( i, documentIds.length );
+                logIndexingProgress( i, documentIds.length, indexingLogSchedule.getStopWatch() );
             }
             Thread.yield(); // To make sure other threads with the same priority get a chance to run something once in a while.
         }
@@ -154,14 +159,21 @@ class DirectoryIndex implements DocumentIndex {
         log.info( "Building index of all " + documentCount + " documents" );
     }
 
-    private void logIndexingProgress( int i, int numberOfDocuments ) {
-        int indexPercentageCompleted = (int)( i * ( 100F / numberOfDocuments ) );
-        log.info( "Completed " + indexPercentageCompleted + "% of the index." );
+    private void logIndexingProgress( int documentsCompleted, int numberOfDocuments, StopWatch stopWatch ) {
+        int indexPercentageCompleted = (int)( documentsCompleted * ( 100F / numberOfDocuments ) );
+        long elapsedTime = stopWatch.getTime() ;
+        long estimatedTime = numberOfDocuments * elapsedTime / documentsCompleted;
+        long estimatedTimeLeft = estimatedTime - elapsedTime ;
+        Date eta = new Date(System.currentTimeMillis() + estimatedTimeLeft) ;
+        DateFormat dateFormat = new SimpleDateFormat( "HH:mm:ss");
+        log.info( "Indexed " + documentsCompleted + " documents (" + indexPercentageCompleted + "%). ETA "+dateFormat.format( eta ) );
     }
 
     private void logIndexingCompleted( int numberOfDocuments, StopWatch indexingStopWatch ) {
-        log.info( "Completed index of " + numberOfDocuments + " documents in " + indexingStopWatch.getTime()
-                  + "ms" );
+        long time = indexingStopWatch.getTime();
+        String humanReadableTime = Utility.getHumanReadableTimeLength( time ) ;
+        long timePerDocument = time/numberOfDocuments ;
+        log.info( "Completed index of " + numberOfDocuments + " documents in " + humanReadableTime+". "+timePerDocument+"ms per document." );
     }
 
     private void optimizeIndex( IndexWriter indexWriter ) throws IOException {
