@@ -52,7 +52,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // Save an image
-   public void saveImage( int meta_id, UserDomainObject user, int img_no, Image image ) {
+   public void saveImage( int meta_id, UserDomainObject user, int img_no, ImageDomainObject image ) {
    }
 
    public void deleteDocAll( int meta_id, UserDomainObject user ) {

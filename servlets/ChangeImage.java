@@ -7,6 +7,7 @@ import javax.servlet.http.*;
 
 import imcode.util.*;
 import imcode.server.*;
+import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 
 /**
@@ -97,7 +98,7 @@ public class ChangeImage extends HttpServlet {
         HttpSession session = req.getSession( true );
         session.setAttribute( "imageFolderOptionList", folderOptions.toString() );
 
-        String[] sql = imcref.sqlQuery( "select image_name,imgurl,width,height,border,v_space,h_space,target,target_name,align,alt_text,low_scr,linkurl from images\n" + "where meta_id = ? and name = ?", new String[]{"" + meta_id, "" + img_no} );
+        String[] sql = DocumentMapper.getDocumentImageData(imcref, meta_id, img_no);
 
         Vector vec = new Vector();
 

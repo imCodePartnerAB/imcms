@@ -410,53 +410,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Save an imageref.
      */
-    public void saveImage( int meta_id, UserDomainObject user, int img_no, imcode.server.Image image ) {
-        String[] imageData = sqlQuery( "select * from images where meta_id = ? and name = ?",
-                                       new String[]{"" + meta_id, "" + img_no} );
-        String sqlStr;
-        if ( imageData.length > 0 ) {
-            sqlStr = "update images\n"
-                     + "set imgurl  = ?, \n"
-                     + "width       = ?, \n"
-                     + "height      = ?, \n"
-                     + "border      = ?, \n"
-                     + "v_space     = ?, \n"
-                     + "h_space     = ?, \n"
-                     + "image_name  = ?, \n"
-                     + "target      = ?, \n"
-                     + "target_name = ?, \n"
-                     + "align       = ?, \n"
-                     + "alt_text    = ?, \n"
-                     + "low_scr     = ?, \n"
-                     + "linkurl     = ?  \n"
-                     + "where meta_id = ? \n"
-                     + "and name = ? \n";
-
-        } else {
-            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, target_name, align, alt_text, low_scr, linkurl, meta_id, name)"
-                     + " values(?,?,?, ?,?,?, ?,?,?, ?,?,?, ?,?,?)";
-        }
-        sqlUpdateQuery( sqlStr, new String[]{
-            image.getImageRef(),
-            "" + image.getImageWidth(),
-            "" + image.getImageHeight(),
-            "" + image.getImageBorder(),
-            "" + image.getVerticalSpace(),
-            "" + image.getHorizontalSpace(),
-            image.getImageName(),
-            image.getTarget(),
-            image.getTargetName(),
-            image.getImageAlign(),
-            image.getAltText(),
-            image.getLowScr(),
-            image.getImageRefLink(),
-            "" + meta_id,
-            "" + img_no
-        } );
-
-        this.updateLogs( "ImageRef " + img_no + " =" + image.getImageRef() +
-                         " in  " + "[" + meta_id + "] modified by user: [" +
-                         user.getFullName() + "]" );
+    public void saveImage( int meta_id, UserDomainObject user, int img_no, imcode.server.ImageDomainObject image ) {
+        documentMapper.saveDocumentImage(meta_id, img_no, image, user );
     }
 
     /**

@@ -34,7 +34,7 @@ public interface IMCServiceInterface {
     String parsePage(DocumentRequest docReq, int flags, ParserParameters paramsToParse) throws IOException ;
 
     // Save an image
-    void saveImage(int meta_id,UserDomainObject user,int img_no,imcode.server.Image image)
+    void saveImage(int meta_id,UserDomainObject user,int img_no,imcode.server.ImageDomainObject image)
 	;
 
     /**

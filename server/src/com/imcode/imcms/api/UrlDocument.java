@@ -4,6 +4,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetMapper;
 import imcode.server.user.UserAndRoleMapper;
+import imcode.server.IMCServiceInterface;
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,8 +14,8 @@ import imcode.server.user.UserAndRoleMapper;
  * To change this template use File | Settings | File Templates.
  */
 public class UrlDocument extends Document {
-    public UrlDocument(DocumentDomainObject document, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper) {
-        super(document, securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper);
+    public UrlDocument(DocumentDomainObject document, IMCServiceInterface service, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper) {
+        super(document, service, securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper);
     }
 
     public void setUrl(String url ) throws NoPermissionException {

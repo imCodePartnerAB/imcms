@@ -3,6 +3,7 @@ package com.imcode.imcms.api;
 import imcode.server.document.*;
 import imcode.server.user.UserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.server.IMCServiceInterface;
 
 import java.io.IOException;
 
@@ -12,20 +13,21 @@ public class DocumentService {
     private DocumentMapper documentMapper;
     private DocumentPermissionSetMapper documentPermissionSetMapper;
     private UserAndRoleMapper userAndRoleMapper;
+    private IMCServiceInterface service;
 
     Document createDocumentOfSubtype(DocumentDomainObject doc) {
         Document result;
         switch( doc.getDocumentType() ) {
             case DocumentDomainObject.DOCTYPE_TEXT:
-                result = new TextDocument( doc, securityChecker, this, documentMapper,
+                result = new TextDocument( doc, service, securityChecker, this, documentMapper,
                                                 documentPermissionSetMapper, userAndRoleMapper );
                 break;
             case DocumentDomainObject.DOCTYPE_URL:
-                result = new UrlDocument( doc, securityChecker, this, documentMapper,
+                result = new UrlDocument( doc, service, securityChecker, this, documentMapper,
                                                 documentPermissionSetMapper, userAndRoleMapper );
                 break;
             default:
-                result = new Document( doc, securityChecker, this, documentMapper,
+                result = new Document( doc, service, securityChecker, this, documentMapper,
                                                 documentPermissionSetMapper, userAndRoleMapper );
                 break;
         }
@@ -33,9 +35,10 @@ public class DocumentService {
     }
 
   
-    public DocumentService( SecurityChecker securityChecker, DocumentMapper documentMapper,
-                            DocumentPermissionSetMapper documentPermissionSetMapper,
-                            UserAndRoleMapper userAndRoleMapper ) {
+    public DocumentService(IMCServiceInterface service, SecurityChecker securityChecker, DocumentMapper documentMapper,
+                           DocumentPermissionSetMapper documentPermissionSetMapper,
+                           UserAndRoleMapper userAndRoleMapper) {
+        this.service = service;
         this.securityChecker = securityChecker;
         this.documentMapper = documentMapper;
         this.documentPermissionSetMapper = documentPermissionSetMapper;
@@ -84,7 +87,7 @@ public class DocumentService {
         securityChecker.hasEditPermission( parentId );
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
         DocumentDomainObject newDoc = documentMapper.createNewUrlDocument( user, parentId, parentMenuNumber, DocumentDomainObject.DOCTYPE_URL, "", "" );
-        UrlDocument result = new UrlDocument( newDoc, securityChecker, this, documentMapper,
+        UrlDocument result = new UrlDocument( newDoc, service, securityChecker, this, documentMapper,
                                                 documentPermissionSetMapper, userAndRoleMapper );
         return result;
     }
@@ -93,7 +96,7 @@ public class DocumentService {
         securityChecker.hasEditPermission( parentId );
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
         DocumentDomainObject newDoc = documentMapper.createNewTextDocument( user, parentId, DocumentDomainObject.DOCTYPE_TEXT, parentMenuNumber );
-        TextDocument result = new TextDocument( newDoc, securityChecker, this, documentMapper,
+        TextDocument result = new TextDocument( newDoc, service, securityChecker, this, documentMapper,
                                                 documentPermissionSetMapper, userAndRoleMapper );
         return result;
     }

@@ -74,6 +74,9 @@ Get the first text field from the document, <%= makeLink("document_get_text_from
 Change the first and the second field, <%= makeLink("document_set_text_field.jsp") %><br>
 Clear the first and the second field, </a><%= makeLink("document_clear_text_field.jsp") %><br>
 <br>
+Get image no 2 from the document, <%= makeLink("document_get_image.jsp") %><br>
+Set image no 2 in the document, use one image from the image folder, <%= makeLink("document_set_image.jsp") %><br>
+<br>
 Get the first menu from the document, <%= makeLink("document_get_menu.jsp") %><br>
 Add a document to a menu, <%= makeLink("document_add_to_menu.jsp") %><br>
 Remove a document from a menu, <%= makeLink("document_remove_from_menu.jsp") %><br>
@@ -96,6 +99,8 @@ To see what specified "Restricted One" permissions a page has, see <%= makeLink(
 
 <h3>Database connection</h3>
 Get access to the database, <%= makeLink("database_get_connection.jsp") %><br>
+
+
 
 </body>
 </html>

@@ -1,6 +1,7 @@
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.ImageDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.util.ImageFileMetaData;
@@ -24,30 +25,9 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
     }
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String image_url = imcref.getImageUrl();
-        File image_path = Utility.getDomainPrefPath( "image_path" );
 
-        String htmlStr;
-        int img_no;
-        imcode.server.Image image = new imcode.server.Image();
-
-        res.setContentType( "text/html" );
-        Writer out = res.getWriter();
-
-        // get meta_id
-        String m_id = req.getParameter( "meta_id" );
-        int meta_id = Integer.parseInt( m_id );
-
-        // get img_no
-        String i_no = req.getParameter( "img_no" );
-        img_no = Integer.parseInt( i_no );
-
-        // get img label
-        String label = req.getParameter( "label" );
-        if ( label == null ) {
-            label = "";
-        }
+        String okParameter = req.getParameter( "ok" );
+        String showImageParam = req.getParameter( "show_img" );
 
         // get old image_height
         String oldH = req.getParameter( "oldH" );
@@ -75,6 +55,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         String origWidth = req.getParameter( "origW" ); // width
         String origHeight = req.getParameter( "origH" ); // height
 
+        ImageDomainObject image = new ImageDomainObject();
         try {
             image.setImageHeight( Integer.parseInt( image_height ) );
         } catch ( NumberFormatException ex ) {
@@ -96,7 +77,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
             image.setImageWidth( 0 );
         }
 
-        if ( keepAspectRatio && ( req.getParameter( "ok" ) != null || req.getParameter( "show_img" ) != null ) ) {
+        if ( keepAspectRatio && ( okParameter != null || showImageParam != null ) ) {
             int oHeight = 0;
             try {
                 oHeight = Integer.parseInt( origHeight ); // image height
@@ -227,6 +208,15 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 
         // Check if user has write rights
         UserDomainObject user = Utility.getLoggedOnUser( req );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        String image_url = imcref.getImageUrl();
+
+        res.setContentType( "text/html" );
+        Writer out = res.getWriter();
+
+        String m_id = req.getParameter( "meta_id" );
+        int meta_id = Integer.parseInt( m_id );
+
         if ( !imcref.checkDocAdminRights( meta_id, user, 131072 ) ) {	// Checking to see if user may edit this
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
             if ( output != null ) {
@@ -241,6 +231,9 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         String dirList = (String)session.getAttribute( "imageFolderOptionList" );
         if ( dirList == null ) dirList = "";
 
+        String i_no = req.getParameter( "img_no" );
+        int img_no = Integer.parseInt( i_no );
+
         if ( req.getParameter( "cancel" ) != null ) {
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
             if ( output != null ) {
@@ -251,6 +244,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         } else if ( req.getParameter( "show_img" ) != null ) {
             //****************************************************************
 
+            File image_path = Utility.getDomainPrefPath( "image_path" );
             ImageFileMetaData imagefile = new ImageFileMetaData( new File( image_path, image_ref ) );
 
             int width = imagefile.getWidth();
@@ -336,11 +330,18 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
             vec.add( "#img_no#" );
             vec.add( i_no );
             vec.add( "#label#" );
+
+            // get img label
+            String label = req.getParameter( "label" );
+            if ( label == null ) {
+                label = "";
+            }
+
             vec.add( label );
 
             vec.add( "#folders#" );
             vec.add( dirList );
-            htmlStr = imcref.parseDoc( vec, "change_img.html", user);
+            String htmlStr = imcref.parseDoc( vec, "change_img.html", user);
             out.write( htmlStr );
             return;
         } else if ( req.getParameter( "delete" ) != null ) {
@@ -381,7 +382,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
             vec.add( "#folders#" );
             vec.add( dirList );
 
-            htmlStr = imcref.parseDoc( vec, "change_img.html", user);
+            String htmlStr = imcref.parseDoc( vec, "change_img.html", user);
             out.write( htmlStr );
             return;
         } else {

@@ -25,7 +25,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
         currentUser = new User( accessor, imcmsAAUM, securityChecker );
 
         userService = new UserService( securityChecker, imcmsAAUM );
-        documentService = new DocumentService( securityChecker, documentMapper, documentPermissionSetMapper, imcmsAAUM );
+        documentService = new DocumentService( service, securityChecker, documentMapper, documentPermissionSetMapper, imcmsAAUM );
         templateService = new TemplateService( service, securityChecker );
         databaseService = new DatabaseService( service ) ;
     }

@@ -8,8 +8,8 @@ import java.util.*;
 
 public class TextDocument extends Document {
 
-    TextDocument(DocumentDomainObject document, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper) {
-        super(document, securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper);
+    TextDocument(DocumentDomainObject document, IMCServiceInterface service, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper) {
+        super(document, service, securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper);
     }
 
     public TextField getTextField(int textFieldIndexInDocument) throws NoPermissionException {
@@ -34,6 +34,40 @@ public class TextDocument extends Document {
                 internalDocument, textFieldIndexInDocument,
                 super.securityChecker.getCurrentLoggedInUser(),
                 String.valueOf(textType));
+    }
+
+    public void setImage(int imageIndexInDocument, String image_src, String image_name,
+                         int width, int heigth, int border, int v_space, int h_space, String align,
+                         String link_target, String link_targetname, String link_href,
+                         String alt_text, String low_src) throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
+        ImageDomainObject internalImage = new ImageDomainObject();
+
+        internalImage.setImageRef(image_src); // image srcurl,  relative imageurl
+        internalImage.setImageName(image_name);  // html imagetag name
+        internalImage.setImageWidth(width);
+        internalImage.setImageHeight(heigth);
+        internalImage.setImageBorder(border);
+        internalImage.setVerticalSpace(v_space);
+        internalImage.setHorizonalSpace(h_space);
+        internalImage.setTarget(link_target); // link target
+        internalImage.setTargetName(link_targetname); // target to use if target = _other
+        internalImage.setImageAlign(align);
+        internalImage.setAltText(alt_text);
+        internalImage.setLowScr(low_src);
+        internalImage.setImageRefLink(link_href);  // link href
+        documentMapper.saveDocumentImage(this.getId(), imageIndexInDocument, internalImage, super.securityChecker.getCurrentLoggedInUser());
+
+    }
+
+    public Image getImage( int imageIndexInDocument ) throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission( this );
+        ImageDomainObject imageDomainObject = documentMapper.getDocumentImage( internalDocument.getMetaId(), imageIndexInDocument );
+        if( null != imageDomainObject ) {
+            return new Image(imageDomainObject, service);
+        } else {
+            return null;
+        }
     }
 
     public Template getTemplate() {

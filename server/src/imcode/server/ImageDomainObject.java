@@ -1,6 +1,6 @@
 package imcode.server ;
 
-public class Image implements java.io.Serializable {
+public class ImageDomainObject implements java.io.Serializable {
 
     private String image_ref ;
 	private String image_name ;
@@ -18,7 +18,7 @@ public class Image implements java.io.Serializable {
 
 
 
-	public Image() {
+	public ImageDomainObject() {
 
 	}
 

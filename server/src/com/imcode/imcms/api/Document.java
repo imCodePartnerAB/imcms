@@ -2,6 +2,7 @@ package com.imcode.imcms.api;
 
 import imcode.server.document.*;
 import imcode.server.IMCConstants;
+import imcode.server.IMCServiceInterface;
 import imcode.server.user.*;
 
 import java.util.*;
@@ -15,11 +16,13 @@ public class Document {
     DocumentMapper documentMapper;
     DocumentPermissionSetMapper documentPermissionSetMapper;
     UserAndRoleMapper userAndRoleMapper;
+    IMCServiceInterface service;
 
     private final static Logger log = Logger.getLogger( "com.imcode.imcms.api.Document" );
 
-    public Document( DocumentDomainObject document, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper ) {
+    public Document(DocumentDomainObject document, IMCServiceInterface service, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper) {
         this.securityChecker = securityChecker;
+        this.service = service;
         this.documentService = documentService;
         this.internalDocument = document;
         this.documentMapper = documentMapper;
