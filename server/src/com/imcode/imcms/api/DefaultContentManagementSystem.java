@@ -20,7 +20,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
         currentUser = accessor;
     }
 
-    static DefaultContentManagementSystem create( ImcmsServices service, UserDomainObject accessor ) {
+    public static DefaultContentManagementSystem create( ImcmsServices service, UserDomainObject accessor ) {
         DefaultContentManagementSystem contentManagementSystem = DefaultContentManagementSystem.create( service, accessor );
         contentManagementSystem.init();
         return contentManagementSystem ;

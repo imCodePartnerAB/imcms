@@ -76,7 +76,7 @@ public class ImcmsSetupFilter implements Filter {
         NDC.push( "initRequestWithApi" );
         ContentManagementSystem imcmsSystem;
         ImcmsServices service = Imcms.getServices();
-        imcmsSystem = new DefaultContentManagementSystem( service, currentUser );
+        imcmsSystem = DefaultContentManagementSystem.create( service, currentUser );
         request.setAttribute( RequestConstants.SYSTEM, imcmsSystem );
         NDC.pop();
     }
