@@ -19,11 +19,14 @@
     <!-- The webroot. Everything put here can be seen by any visitor. -->
     <property name="webroot"        value="${build}"/>
 
-    <property name="imcmsimages"           value="${webroot}/imcmsimages"/>
     <property name="images"                value="${webroot}/images"/>
     <property name="login"                 value="${webroot}/login"/>
     <property name="css"                   value="${webroot}/css"/>
     <property name="user"                  value="${webroot}/user"/>
+    <property name="imcms"                 value="${webroot}/imcms"/>
+    <property name="imcmscss"              value="${imcms}/css"/>
+    <property name="imcmsimages"           value="${imcms}/images"/>
+    <property name="imcmsscripts"          value="${imcms}/scripts"/>
     <property name="javascript"            value="${webroot}/javascript"/>
     <property name="jsp"                   value="${webroot}/jsp"/>
     <property name="adminbuttons"          value="${imcmsimages}/admin"/>
@@ -62,7 +65,7 @@
     <property name="javascripturl"            value="${rooturl}/javascript"/>
     <property name="jspurl"                   value="${rooturl}/jsp"/>
     <property name="postcardsurl"             value="${rooturl}/postcards"/>
-    <property name="imcmsimageurl"            value="${rooturl}/imcmsimages"/>
+    <property name="imcmsimageurl"            value="${rooturl}/imcms/images"/>
     <property name="adminbuttonsurl"          value="${imcmsimageurl}/admin"/>
     <property name="shopurl"                  value="${rooturl}/shop"/>
     <property name="readrunnerurl"	          value="${rooturl}/readrunner"/>
@@ -456,7 +459,7 @@
 	</copy>
 
     <copy todir="${imcmsimages}">
-	    <fileset dir="install/htdocs/imcmsimages"/>
+	    <fileset dir="install/htdocs/imcms/images"/>
     </copy>
 
     <copy todir="${css}">
