@@ -1,0 +1,2 @@
+java -classpath ../lib/jakarta-oro-2.0.2-dev-2.jar;../lib/Opta2000.jar;../lib/;../lib/;../lib/jakarta-oro-2.0.jar; -Djava.rmi.server.codebase=file:/../lib -Djava.security.policy=file:/../conf/policy -Dcom.imcode.netserver.config=../conf imcode.server.ImcServer
+ 
