@@ -37,7 +37,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public final static DocumentTypeDomainObject DOCTYPE_CONFERENCE = new DocumentTypeDomainObject( DOCTYPE_ID_CONFERENCE, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
                                                                                                                                + "conference" ) );
     public final static DocumentTypeDomainObject DOCTYPE_CHAT = new DocumentTypeDomainObject( DOCTYPE_ID_CHAT, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
-                                                                                                                         + "/chat" ) );
+                                                                                                                         + "chat" ) );
     public final static DocumentTypeDomainObject DOCTYPE_BILLBOARD = new DocumentTypeDomainObject( DOCTYPE_ID_BILLBOARD,
                                                                                                    new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
                                                                                                                          + "billboard" ) );
