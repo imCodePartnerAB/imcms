@@ -422,7 +422,26 @@ public class DatabaseService {
     }
 
     int sproc_getHighestUserId() {
-        String sql = "SELECT MAX(user_id) FROM users";
+        String columnName = "user_id";
+        String TableName = "users";
+        return 1 + getMaxIntValue( TableName, columnName );
+    }
+
+    /*
+    This function adds a new phone numbers to the db. Used by AdminUserProps
+    */
+    int sproc_phoneNbrAdd( int userId, String number, int phoneType ) {
+        String tableName = "phones";
+        String primaryKeyColumnName = "phone_id";
+        int newPhoneId = 1 + getMaxIntValue( tableName, primaryKeyColumnName );
+
+        String sql = "INSERT INTO PHONES ( phone_id , number , user_id, phonetype_id ) VALUES ( ? , ?, ?, ? )";
+        Object[] paramValues = new Object[]{ new Integer(newPhoneId), number, new Integer(userId), new Integer(phoneType) };
+        return sqlProcessor.executeUpdate( sql, paramValues );
+    }
+
+    private int getMaxIntValue( String tableName, String columnName ) {
+        String sql = "SELECT MAX(" + columnName + ") FROM " + tableName;
         Object[] paramValues = null;
         SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
@@ -432,6 +451,10 @@ public class DatabaseService {
         };
         ArrayList result = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
         Integer id =  (Integer)(result.get(0));
-        return id.intValue() + 1;
+        if( id == null ) {
+            return 0;
+        } else {
+            return id.intValue();
+        }
     }
 }

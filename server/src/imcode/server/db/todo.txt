@@ -1,1 +1,4 @@
-* varför behövs det trim() ibland?, kolla i jämförelsen med users.
+* max key, kolla igenom och undersök hur det fungerar med både deadlock och samtidiga användare.
+Även där max ingår i samma statement så är det ingen garanti för att det inte blir krockar, hur hanteras det?
+Läs mer kring resonemang kring max key och varför det blir deadlock. http://www.sybase.com/detail?id=860
+

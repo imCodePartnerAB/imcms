@@ -60,6 +60,16 @@ public class TestDatabaseService_ModifyingTests extends Log4JConfiguredTestCase 
         assertTrue( mySqlUsersAfter.length == mySqlUsersBefore.length + 1);
     }
 
+    public void test_sproc_phoneNbrAdd() {
+        test_sproc_AddNewuser();
+        int mimerRowAffected = mimer.sproc_phoneNbrAdd( 3, "1234567", 0 );
+        int sqlServerRowAffected = sqlServer.sproc_phoneNbrAdd( 3, "1234567", 0 );
+        int mySqlRowAffected = mySql.sproc_phoneNbrAdd( 3, "1234567", 0 );
+        assertEquals( 1, mimerRowAffected );
+        assertEquals( mimerRowAffected, sqlServerRowAffected );
+        assertEquals( mimerRowAffected, mySqlRowAffected );
+    }
+
     private void initMimer() {
         mimer = new DatabaseService( DatabaseService.MIMER, TestDatabaseService.DB_HOST, TestDatabaseService.MIMER_PORT, TestDatabaseService.MIMMER_DATABASE_NAME, TestDatabaseService.MIMMER_DATABASE_USER, TestDatabaseService.MIMMER_DATABASE_PASSWORD );
         mimer.initializeDatabase();
