@@ -49,7 +49,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private ExternalDocType m_ExDoc[];
     private String m_SessionCounterDate = "";
     private int m_SessionCounter = 0;
-
     private FileCache fileCache = new FileCache();
 
     private final static Logger mainLog = Logger.getLogger( IMCConstants.MAIN_LOG );
@@ -1474,6 +1473,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     public void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime ) {
+        documentMapper.touchDocument( documentMapper.getDocument( metaId ));
         documentMapper.sqlUpdateModifiedDatesOnDocumentAndItsParent( metaId, dateTime );
     }
 

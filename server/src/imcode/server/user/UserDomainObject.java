@@ -2,13 +2,12 @@ package imcode.server.user;
 
 import imcode.server.document.TemplateGroupDomainObject;
 
-import java.util.Hashtable;
 import java.util.HashSet;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.Hashtable;
 
 public class UserDomainObject extends Hashtable {
-
 
     UserDomainObject() {
    }

@@ -17,6 +17,7 @@ public class DocumentRequest implements Cloneable {
     private UserDomainObject user;
     private DocumentDomainObject document;
     private DocumentDomainObject referrer;
+    private String[] emphasize ;
 
     private Revisits revisits;
 
@@ -67,6 +68,14 @@ public class DocumentRequest implements Cloneable {
 
     public HttpServletRequest getHttpServletRequest() {
         return httpServletRequest;
+    }
+
+    public String[] getEmphasize() {
+        return null != emphasize ? (String[])emphasize.clone() : null ;
+    }
+
+    public void setEmphasize( String[] emphasize ) {
+        this.emphasize = null != emphasize ? (String[])emphasize.clone() : null ;
     }
 
 }

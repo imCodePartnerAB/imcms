@@ -1,18 +1,19 @@
 
-import java.io.*;
-import java.util.*;
-import java.text.*;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
-import imcode.server.*;
-
-import imcode.server.IMCServiceInterface;
-import imcode.server.document.*;
 import imcode.external.diverse.Html;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentIndex;
+import imcode.server.document.DocumentMapper;
+import imcode.util.DateHelper;
+import imcode.util.Parser;
 import org.apache.log4j.Logger;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.RangeQuery;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.document.DateField;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -39,7 +41,7 @@ public class GetExistingDoc extends HttpServlet {
     /**
      * doPost()
      */
-    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void service( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
@@ -101,31 +103,65 @@ public class GetExistingDoc extends HttpServlet {
             // SEARCH
             // Lets do a search among existing documents.
             // Lets collect the parameters and build a sql searchstring
-
-            String fromDoc;
-            String userId;
-            String searchString;
-            String searchPrep;
-            String doctype;
-            String sortBy;
-
-            searchString = imcode.server.HTMLConv.toHTML( req.getParameter( "searchstring" ) );
-            searchPrep = req.getParameter( "search_prep" );
+            final DocumentIndex documentIndex = imcref.getDocumentMapper().getDocumentIndex();
+            BooleanQuery query = new BooleanQuery();
+            String searchString = req.getParameter( "searchstring" );
+            String searchPrep = req.getParameter( "search_prep" );
+            try {
+                if ( "or".equalsIgnoreCase( searchPrep ) ) {
+                    addStringToQuery( documentIndex, searchString, query );
+                } else {
+                    String[] searchStrings = searchString.split( "\\s+" );
+                    for ( int i = 0; i < searchStrings.length; i++ ) {
+                        String string = searchStrings[i];
+                        addStringToQuery( documentIndex, string, query );
+                    }
+                }
+            } catch ( org.apache.lucene.queryParser.ParseException pe ) {
+                log.warn( "Bad query: " + searchString, pe );
+            }
 
             // Lets build a comma separetad string with the doctypes
             String docTypes[] = req.getParameterValues( "doc_type" );
-            doctype = createDocTypeString( docTypes );
-
-            String start_date = req.getParameter( "start_date" );
-            String end_date = req.getParameter( "end_date" );
-            if ( end_date.trim().indexOf( ":" ) < 0 ) {
-                end_date = end_date + " 23:59";
+            BooleanQuery docTypesQuery = new BooleanQuery() ;
+            for ( int i = 0; null != docTypes && i < docTypes.length; i++ ) {
+                String docType = docTypes[i];
+                docTypesQuery.add( new TermQuery( new Term( "doc_type_id", docType ) ), false, false );
             }
-            String include_docs[] = req.getParameterValues( "include_doc" );
+            query.add( docTypesQuery, true, false );
 
-            sortBy = req.getParameter( "sortBy" );
-            userId = "" + user.getUserId();
-            fromDoc = "1";
+            DateFormat dateFormat = new SimpleDateFormat( DateHelper.DATE_FORMAT_STRING );
+            Date startDate = null ;
+            Date endDate = null ;
+            try {
+                String startDateString = req.getParameter( "start_date" );
+                startDate = dateFormat.parse( startDateString );
+            } catch ( ParseException ignored ) { }
+            try {
+                String endDateString = req.getParameter( "end_date" );
+                endDate = dateFormat.parse( endDateString );
+            } catch ( ParseException ignored ) { }
+
+            if (null != startDate || null != endDate) {
+                String[] wantedDateFields = req.getParameterValues( "include_doc" ) ;
+                for ( int i = 0; null != wantedDateFields && i < wantedDateFields.length; i++ ) {
+                    String wantedDateField = wantedDateFields[i];
+                    String wantedIndexDateField = null ;
+                    if ("created".equalsIgnoreCase( wantedDateField )) {
+                        wantedIndexDateField = "created_datetime" ;
+                    } else if ("changed".equalsIgnoreCase( wantedDateField )) {
+                        wantedIndexDateField = "modified_datetime" ;
+                    } else {
+                        continue ;
+                    }
+                    Term startDateTerm = null != startDate ? new Term( wantedIndexDateField, DateField.dateToString( startDate )) : null ;
+                    Term endDateTerm = null != endDate ? new Term( wantedIndexDateField, DateField.dateToString( addOneDayToDate( endDate ))) : null ;
+                    RangeQuery dateRangeQuery = new RangeQuery( startDateTerm, endDateTerm, true);
+                    query.add(dateRangeQuery,true,false) ;
+                }
+            }
+
+            String sortBy = req.getParameter( "sortBy" );
 
             // Lets get the language prefix
             String langPrefix = user.getLangPrefix();
@@ -142,73 +178,33 @@ public class GetExistingDoc extends HttpServlet {
             if ( sortOrderHash.containsKey( sortBy ) == false ) {
                 sortBy = "meta_id";
             }
-            //Vector sortOrderV = new Vector( Arrays.asList( sortOrder ) );
+
             Vector sortOrderV = new Vector();
-            for(int i=0; i<sortOrder.length; i++){
-                sortOrderV.add(sortOrder[i][0]);
-                sortOrderV.add(sortOrder[i][1]);
+            for ( int i = 0; i < sortOrder.length; i++ ) {
+                sortOrderV.add( sortOrder[i][0] );
+                sortOrderV.add( sortOrder[i][1] );
             }
 
-            //------------------------------------------------------------------
-            // parse searchString, replaces SPACE with RETURN and EMPTY with RETURN
-            while ( searchString.indexOf( " " ) != -1 ) {
-                int spaceIndex = searchString.indexOf( " " );
-                searchString = searchString.substring( 0, spaceIndex ) + "\r" + searchString.substring( spaceIndex + 1, searchString.length() );
-            }
-            if ( searchString.equals( "" ) )
-                searchString = "\r";
-
-            String created_date_start = "";
-            String created_date_end = "";
-            String changed_date_start = "";
-            String changed_date_end = "";
-            String activated_date_start = "";
-            String activated_date_end = "";
-            String archived_date_start = "";
-            String archived_date_end = "";
-
-            if ( include_docs == null )
-                include_docs = new String[0];
-
-            for ( int i = 0; i < include_docs.length; i++ ) {
-                if ( include_docs[i].equals( "created" ) ) {
-                    created_date_start = start_date;
-                    created_date_end = end_date;
-                }
-                if ( include_docs[i].equals( "changed" ) ) {
-                    changed_date_start = start_date;
-                    changed_date_end = end_date;
-                }
-                if ( include_docs[i].equals( "activated" ) ) {
-                    activated_date_start = start_date;
-                    activated_date_end = end_date;
-                }
-                if ( include_docs[i].equals( "archived" ) ) {
-                    archived_date_start = start_date;
-                    archived_date_end = end_date;
-                }
-            }
-
-            // FIXME: Maximum number of hits is 1000.
-            String[][] sqlResults = imcref.sqlProcedureMulti( "SearchDocs", new String[]{userId, searchString, searchPrep, doctype, fromDoc, "1000", sortBy, created_date_start, created_date_end, changed_date_start, changed_date_end, activated_date_start, activated_date_end, archived_date_start, archived_date_end, "1", "0"} );
+            log.debug("Query: "+query) ;
+            DocumentDomainObject[] searchResultDocuments = documentIndex.search( query, user );
             Vector outVector = new Vector();
 
             // Lets get the resultpage fragment used for an result
-            String oneRecHtmlSrc = imcref.parseDoc( null, "existing_doc_hit.html", user);
+            String oneRecHtmlSrc = imcref.parseDoc( null, "existing_doc_hit.html", user );
 
             // Lets get all document types and put them in a hashTable
             String[][] allDocTypesArray = imcref.getDocumentTypesInList( langPrefix );
             Hashtable allDocTypesHash = convert2Hashtable( allDocTypesArray );
 
             // Lets parse the searchresults
-            searchResults = parseSearchResults( imcref, oneRecHtmlSrc, sqlResults, allDocTypesHash );
+            searchResults = parseSearchResults( oneRecHtmlSrc, searchResultDocuments );
 
             // Lets get the surrounding resultpage fragment used for all the result
             // and parse all the results into this summarize html template for all the results
             Vector tmpV = new Vector();
             tmpV.add( "#searchResults#" );
             tmpV.add( searchResults.toString() );
-            searchResults.replace( 0, searchResults.length(), imcref.parseDoc( tmpV, "existing_doc_res.html", user) );
+            searchResults.replace( 0, searchResults.length(), imcref.parseDoc( tmpV, "existing_doc_res.html", user ) );
 
             // Lets parse out hidden fields
             outVector.add( "#meta_id#" );
@@ -218,37 +214,24 @@ public class GetExistingDoc extends HttpServlet {
 
             // Lets get the searchstring and add it to the page
             outVector.add( "#searchstring#" );
-            String searchStr = ( req.getParameter( "searchstring" ) == null ) ? "" : ( req.getParameter( "searchstring" ) );
+            String searchStr = ( req.getParameter( "searchstring" ) == null )
+                               ? "" : ( req.getParameter( "searchstring" ) );
             outVector.add( searchStr );
 
             // Lets get the date used in the html page, otherwise, use todays date
-            String startDateStr = ( req.getParameter( "start_date" ) == null ) ? "" : ( req.getParameter( "start_date" ) );
+            String startDateStr = ( req.getParameter( "start_date" ) == null )
+                                  ? "" : ( req.getParameter( "start_date" ) );
             String endDateStr = ( req.getParameter( "end_date" ) == null ) ? "" : ( req.getParameter( "end_date" ) );
-            Date startDate = null;
-            Date endDate;
-            SimpleDateFormat formatter = new SimpleDateFormat( "yyyy-MM-dd" );
-
-            try {
-                startDate = formatter.parse( startDateStr );
-            } catch ( ParseException e ) {
-                // we failed to parse the startdatestring, however, we have already take care of that circumstance
-            }
-            try {
-                endDate = formatter.parse( endDateStr );
-            } catch ( ParseException e ) {
-                // we failed to parse the startdatestring, however, we have already take care of that circumstance
-                endDate = new Date();
-            }
 
             outVector.add( "#start_date#" );
             if ( startDate == null ) {
                 outVector.add( "" );
             } else {
-                outVector.add( formatter.format( startDate ) );
+                outVector.add( dateFormat.format( startDate ) );
             }
 
             outVector.add( "#end_date#" );
-            outVector.add( formatter.format( endDate ) );
+            outVector.add( dateFormat.format( endDate ) );
 
             if ( docTypes != null ) {
                 // Lets take care of the document types. Get those who were selected
@@ -262,10 +245,11 @@ public class GetExistingDoc extends HttpServlet {
                 // Lets get all possible values of for the documenttypes from database
                 for ( int i = 0; i < allDocTypesArray.length; i++ ) {
                     outVector.add( "#checked_" + allDocTypesArray[i][0] + "#" );
-                    if ( selectedDocTypes.containsKey( allDocTypesArray[i][0] ) )
+                    if ( selectedDocTypes.containsKey( allDocTypesArray[i][0] ) ) {
                         outVector.add( "checked" );
-                    else
+                    } else {
                         outVector.add( "" );
+                    }
                 }
 
             }
@@ -273,8 +257,9 @@ public class GetExistingDoc extends HttpServlet {
             // Lets take care of the created, changed boxes.
             // first, getallchecked values and put them in a hashtable
             String[] includeDocs = req.getParameterValues( "include_doc" );
-            if ( includeDocs == null )
+            if ( includeDocs == null ) {
                 includeDocs = new String[0];
+            }
 
             Hashtable selectedIncludeDocs = new Hashtable( includeDocs.length );
             for ( int i = 0; i < includeDocs.length; i++ ) {
@@ -286,18 +271,20 @@ public class GetExistingDoc extends HttpServlet {
             String[] allPossibleIncludeDocsValues = {"created", "changed"};
             for ( int i = 0; i < allPossibleIncludeDocsValues.length; i++ ) {
                 outVector.add( "#include_check_" + allPossibleIncludeDocsValues[i] + "#" );
-                if ( selectedIncludeDocs.containsKey( allPossibleIncludeDocsValues[i] ) )
+                if ( selectedIncludeDocs.containsKey( allPossibleIncludeDocsValues[i] ) ) {
                     outVector.add( "checked" );
-                else
+                } else {
                     outVector.add( "" );
+                }
             }
 
 
             // Lets take care of the search_prep condition, eg and / or
             // first, getallchecked values and put them in a hashtable
             String[] searchPrepArr = req.getParameterValues( "search_prep" );
-            if ( searchPrepArr == null )
+            if ( searchPrepArr == null ) {
                 searchPrepArr = new String[0];
+            }
 
             Hashtable selectedsearchPrep = new Hashtable( searchPrepArr.length );
             for ( int i = 0; i < searchPrepArr.length; i++ ) {
@@ -308,10 +295,11 @@ public class GetExistingDoc extends HttpServlet {
             String[] allPossibleSearchPreps = {"and", "or"};
             for ( int i = 0; i < allPossibleSearchPreps.length; i++ ) {
                 outVector.add( "#search_prep_check_" + allPossibleSearchPreps[i] + "#" );
-                if ( selectedsearchPrep.containsKey( allPossibleSearchPreps[i] ) )
+                if ( selectedsearchPrep.containsKey( allPossibleSearchPreps[i] ) ) {
                     outVector.add( "checked" );
-                else
+                } else {
                     outVector.add( "" );
+                }
             }
 
             String sortOrderStr = Html.createHtmlOptionList( sortBy, sortOrderV );
@@ -323,7 +311,7 @@ public class GetExistingDoc extends HttpServlet {
 
             // Send page to browser
             // htmlOut = imcref.parseDoc( htmlOut, outVector);
-            String htmlOut = imcref.parseDoc( outVector, "existing_doc.html", user);
+            String htmlOut = imcref.parseDoc( outVector, "existing_doc.html", user );
             out.write( htmlOut );
             return;
         } else {
@@ -332,8 +320,9 @@ public class GetExistingDoc extends HttpServlet {
 
             // get the seleced existing docs
             values = req.getParameterValues( "existing_meta_id" );
-            if ( values == null )
+            if ( values == null ) {
                 values = new String[0];
+            }
 
             // Lets loop through all the selected existsing meta ids and add them to the current menu
             try {
@@ -342,7 +331,11 @@ public class GetExistingDoc extends HttpServlet {
 
                     // Fetch all doctypes from the db and put them in an option-list
                     // First, get the doc_types the current user may use.
-                    String[] user_dt = imcref.sqlProcedure( "GetDocTypesForUser", new String[]{"" + meta_id, "" + user.getUserId(), user.getLangPrefix()} );
+                    String[] user_dt = imcref.sqlProcedure( "GetDocTypesForUser",
+                                                            new String[]{
+                                                                "" + meta_id, "" + user.getUserId(),
+                                                                user.getLangPrefix()
+                                                            } );
                     HashSet user_doc_types = new HashSet();
 
                     // I'll fill a HashSet with all the doc-types the current user may use,
@@ -351,14 +344,14 @@ public class GetExistingDoc extends HttpServlet {
                         user_doc_types.add( user_dt[i] );
                     }
 
-                    int doc_type = DocumentMapper.sqlGetDocTypeFromMeta(imcref, existing_meta_id);
+                    int doc_type = DocumentMapper.sqlGetDocTypeFromMeta( imcref, existing_meta_id );
 
                     // Add the document in menu if user is admin for the document OR the document is shared.
                     boolean sharePermission = imcref.checkUserDocSharePermission( user, existing_meta_id );
-                    if ( user_doc_types.contains( ""+doc_type ) && sharePermission ) {
+                    if ( user_doc_types.contains( "" + doc_type ) && sharePermission ) {
                         try {
                             imcref.addExistingDoc( meta_id, user, existing_meta_id, doc_menu_no );
-                        } catch (DocumentMapper.DocumentAlreadyInMenuException e) {
+                        } catch ( DocumentMapper.DocumentAlreadyInMenuException e ) {
                             //ok, already in menu
                         }
                     }
@@ -377,6 +370,19 @@ public class GetExistingDoc extends HttpServlet {
                 out.write( tempstring );
             }
         }
+    }
+
+    private Date addOneDayToDate( Date date ) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime( date );
+        calendar.add( Calendar.DATE, 1 );
+        return calendar.getTime() ;
+    }
+
+    private void addStringToQuery( final DocumentIndex documentIndex, String string, BooleanQuery query )
+            throws org.apache.lucene.queryParser.ParseException {
+        Query textQuery = documentIndex.parseLucene( string );
+        query.add( textQuery, true, false );
     }
 
     /**
@@ -419,52 +425,39 @@ public class GetExistingDoc extends HttpServlet {
 
     /**
      * Local helpmehtod
-     * Takes an array as argument and creates a commasepared string with the values int the array
-     * The string will be used when we create the sql searchquestion
-     */
-
-    private static String createDocTypeString( String[] docTypes ) {
-        StringBuffer doctype = new StringBuffer();
-        if ( docTypes != null && docTypes.length > 0 ) {
-            doctype.append( docTypes[0] );
-
-            for ( int k = 1; k < docTypes.length; k++ ) {
-                doctype.append( "," ).append( docTypes[k] );
-            }
-        }
-        return doctype.toString();
-    }
-
-    /**
-     * Local helpmehtod
      * Parses all the searchhits and returns an StringBuffer
      */
 
-    private static StringBuffer parseSearchResults( IMCServiceInterface imcref, String oneRecHtmlSrc, String[][] sqlResults, Hashtable allDocTypesHash ) {
+    private static StringBuffer parseSearchResults( String oneRecHtmlSrc,
+                                                    DocumentDomainObject[] searchResultDocuments ) {
         StringBuffer searchResults = new StringBuffer( 1024 );
         int docTypeIndex = 1;  // Index of where the doctype id is placed in one record array
 
         // Lets parse the searchresults
         Vector oneRecVariables = GetExistingDoc.getSearchHitVector();
-        for ( int i = 0; i < sqlResults.length; i++ ) {
-            String[] oneRec = sqlResults[i];
-            Vector tmpVecData = new Vector( oneRecVariables.size() );
+        for ( int i = 0; i < searchResultDocuments.length; i++ ) {
+            DocumentDomainObject document = searchResultDocuments[i];
 
-            // Lets parse one record
-            for ( int k = 0; k < oneRec.length; k++ ) {
-                if ( docTypeIndex == k ) {
-                    String docTypeName = (String)allDocTypesHash.get( "" + oneRec[docTypeIndex] );
-                    oneRec[k] = docTypeName;
-                }
+            DateFormat dateFormat = new SimpleDateFormat( DateHelper.DATETIME_SECONDS_FORMAT_STRING );
+            String[] data = {
+                "#meta_id#", String.valueOf( document.getMetaId() ),
+                "#doc_type#", String.valueOf( document.getDocumentType() ),
+                "#meta_headline#", document.getHeadline(),
+                "#meta_text#", document.getText(),
+                "#date_created#", formatDate( dateFormat, document.getCreatedDatetime() ),
+                "#date_modified#", formatDate( dateFormat, document.getModifiedDatetime() ),
+                "#date_activated#", formatDate( dateFormat, document.getActivatedDatetime() ),
+                "#date_archived#", formatDate( dateFormat, document.getArchivedDatetime() ),
+                "#archive#", document.isArchived() ? "1" : "0",
+            };
 
-                if ( oneRec[k].equalsIgnoreCase( "" ) )
-                    tmpVecData.add( "&nbsp;" );
-                else
-                    tmpVecData.add( oneRec[k] );
-            }
-            searchResults.append( imcref.parseDoc( oneRecHtmlSrc, oneRecVariables, tmpVecData ) );
+            searchResults.append( Parser.parseDoc( oneRecHtmlSrc, data ) );
         }
         return searchResults;
+    }
+
+    private static String formatDate( DateFormat dateFormat, Date datetime ) {
+        return null != datetime ? dateFormat.format( datetime ) : "&nbsp;";
     }
 
 } // End class

@@ -100,11 +100,6 @@ public class GetDoc extends HttpServlet {
             return null;
         }
 
-        String[] emp_ary = req.getParameterValues( "emp" );
-        if ( emp_ary != null ) {
-            user.put( "emphasize", emp_ary );
-        }
-
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( meta_id );
         int doc_type;
@@ -123,6 +118,8 @@ public class GetDoc extends HttpServlet {
         }
         try {
             documentRequest = new DocumentRequest( imcref, user, document, referringDocument, req );
+
+            documentRequest.setEmphasize( req.getParameterValues( "emp" ) );
 
             // Get all cookies from request
             Cookie[] cookies = req.getCookies();

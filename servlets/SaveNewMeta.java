@@ -22,6 +22,9 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.text.Format;
+import java.text.DateFormat;
 import java.util.*;
 
 /**
@@ -111,15 +114,16 @@ public class SaveNewMeta extends HttpServlet {
         String activated_time = req.getParameter( "activated_time" );
         String activated_datetime;
 
+        final DateFormat dateFormat = new SimpleDateFormat( DateHelper.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING );
         if( activated_date != null && activated_time != null ) {
             activated_datetime = activated_date + ' ' + ("".equals(activated_time) ? "00:00" : activated_time);
             try {
-                DateHelper.DATE_TIME_FORMAT_IN_DATABASE.parse( activated_datetime );
+                dateFormat.parse( activated_datetime );
             } catch( ParseException ex ) {
-                activated_datetime = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( nowDateTime );
+                activated_datetime = dateFormat.format( nowDateTime );
             }
         } else {
-            activated_datetime = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( nowDateTime );
+            activated_datetime = dateFormat.format( nowDateTime );
         } // end of else
 
         String archived_date = req.getParameter( "archived_date" );
@@ -128,7 +132,7 @@ public class SaveNewMeta extends HttpServlet {
         if( archived_date != null && archived_time != null ) {
             archived_datetime = archived_date + ' ' + ("".equals(archived_time) ? "00:00" : archived_time);
             try {
-                DateHelper.DATE_TIME_FORMAT_IN_DATABASE.parse( archived_datetime );
+                dateFormat.parse( archived_datetime );
             } catch( ParseException ex ) {
                 archived_datetime = null;
             }
@@ -164,8 +168,8 @@ public class SaveNewMeta extends HttpServlet {
         }
 
         // Lets fix the date information (date_created, modified etc)
-        metaprops.setProperty( "date_modified", DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( nowDateTime ) );
-        metaprops.setProperty( "date_created", DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( nowDateTime ) );
+        metaprops.setProperty( "date_modified", dateFormat.format( nowDateTime ) );
+        metaprops.setProperty( "date_created", dateFormat.format( nowDateTime ) );
         metaprops.setProperty( "owner_id", String.valueOf( user.getUserId() ) );
 
         if( pressedOkButton( req ) ) {

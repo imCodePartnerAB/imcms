@@ -6,20 +6,15 @@ import java.text.SimpleDateFormat;
 
 public class DateHelper {
     /** start using theses instead in all places suitable */
-    private static final String DATE_FORMAT_STRING = "yyyy-MM-dd";
-    private static final String TIME_FORMAT_STRING = "HH:mm";
-    public static final String DATE_TIME_SECONDS_FORMAT_STRING = "yyyy-MM-dd HH:mm:ss";
-
-    public final static String DATETIME_FORMAT_STRING = DATE_FORMAT_STRING + " " + TIME_FORMAT_STRING ;
-
-    // FIXME: SimpleDateFormat isn't threadsafe!
-    public static final SimpleDateFormat DATE_TIME_FORMAT_IN_DATABASE = new SimpleDateFormat( DATETIME_FORMAT_STRING );
+    public final static String DATE_FORMAT_STRING = "yyyy-MM-dd" ;
+    public final static String DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING = DATE_FORMAT_STRING + " HH:mm" ;
+    public final static String DATETIME_SECONDS_FORMAT_STRING = DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING+":ss";
 
     public static Date createDateObjectFromString( String dateStr ) {
         Date result = null;
         if( dateStr != null ) {
             try {
-                result = DATE_TIME_FORMAT_IN_DATABASE.parse( dateStr );
+                result = new SimpleDateFormat( DATETIME_SECONDS_FORMAT_STRING ).parse( dateStr );
             } catch( ParseException ex ) {
                 result = null;
             }

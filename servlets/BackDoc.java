@@ -51,7 +51,7 @@ public class BackDoc extends HttpServlet {
 
     public static int getLastTextDocumentFromHistory( Stack history, boolean useNextToLastTextDocument, IMCServiceInterface imcref ) {
         int meta_id = 0;
-        if ( !history.empty() ) {
+        if ( null != history && !history.empty() ) {
 
             if ( useNextToLastTextDocument ) {
                 // pop the first value from the history stack and true it away

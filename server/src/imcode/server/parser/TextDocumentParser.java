@@ -135,7 +135,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             String lang_prefix = user.getLangPrefix();	// Find language
 
-            String[] emp = (String[])user.get( "emphasize" );
+            String[] emp = documentRequest.getEmphasize() ;
 
             String[] metaIdUserIdPair = {meta_id_str, user_id_str};
 
@@ -244,7 +244,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             HashMap menus = new HashMap();	// Map to contain all the menus on the page.
             Menu currentMenu = null;
             int old_menu = -1;
-            SimpleDateFormat DATETIMEFORMAT = DateHelper.DATE_TIME_FORMAT_IN_DATABASE;
+            SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateHelper.DATETIME_SECONDS_FORMAT_STRING );
 
             Iterator childIt = Arrays.asList( childs ).iterator();
 
@@ -282,11 +282,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 menuItem.setArchivedFlag( !"0".equals( childIt.next() ) );          // Child is considered archived?
                 menuItem.setTarget( (String)childIt.next() );                         // The target for this document.
                 try {
-                    menuItem.setCreatedDatetime( DATETIMEFORMAT.parse( (String)childIt.next() ) ); // The datetime the child was created.
+                    menuItem.setCreatedDatetime( datetimeFormatWithSeconds.parse( (String)childIt.next() ) ); // The datetime the child was created.
                 } catch ( java.text.ParseException ignored ) {
                 }
                 try {
-                    menuItem.setModifiedDatetime( DATETIMEFORMAT.parse( (String)childIt.next() ) ); // The datetime the child was modified.
+                    menuItem.setModifiedDatetime( datetimeFormatWithSeconds.parse( (String)childIt.next() ) ); // The datetime the child was modified.
                 } catch ( java.text.ParseException ignored ) {
                 }
                 menuItem.setHeadline( (String)childIt.next() );                       // The headline of the child.
@@ -294,12 +294,12 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 menuItem.setImage( (String)childIt.next() );                          // An optional imageurl for this document.
                 childIt.next();                                                     // Ignored. The target frame for this document. Replaced by 'target'.
                 try {
-                    menuItem.setActivatedDatetime( DATETIMEFORMAT.parse( (String)childIt.next() ) ); // The datetime the child will be/was activated
+                    menuItem.setActivatedDatetime( datetimeFormatWithSeconds.parse( (String)childIt.next() ) ); // The datetime the child will be/was activated
                 } catch ( NullPointerException ignored ) {
                 } catch ( ParseException ignored ) {
                 }
                 try {
-                    menuItem.setArchivedDatetime( DATETIMEFORMAT.parse( (String)childIt.next() ) ); // The datetime the child will be/was archived
+                    menuItem.setArchivedDatetime( datetimeFormatWithSeconds.parse( (String)childIt.next() ) ); // The datetime the child will be/was archived
                 } catch ( NullPointerException ignored ) {
                 } catch ( ParseException ignored ) {
                 }
@@ -331,7 +331,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             tags.setProperty( "#userName#", user.getFullName() );
             tags.setProperty( "#session_counter#", String.valueOf( service.getSessionCounter() ) );
             tags.setProperty( "#session_counter_date#", service.getSessionCounterDate() );
-            tags.setProperty( "#lastDate#", DATETIMEFORMAT.format( document.getModifiedDatetime() ) );
+            tags.setProperty( "#lastDate#", datetimeFormatWithSeconds.format( document.getModifiedDatetime() ) );
             tags.setProperty( "#metaHeadline#", document.getHeadline() );
             tags.setProperty( "#metaText#", document.getText() );
 

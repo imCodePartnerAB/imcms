@@ -54,7 +54,7 @@ public class DocumentIndex {
         for ( int i = 0; i < hits.length(); ++i ) {
             int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
             DocumentDomainObject document = getDocument( getDocumentStopWatch, documentMapper, metaId );
-            if ( userHasPermissionToFindDocument( searchingUser, document, documentMapper ) ) {
+            if ( documentMapper.hasPermissionToSearchDocument( searchingUser, document ) ) {
                 result.add( document );
             }
         }
@@ -63,18 +63,6 @@ public class DocumentIndex {
         indexSearcher.close();
         indexReader.close();
         return (DocumentDomainObject[])result.toArray( new DocumentDomainObject[result.size()] );
-    }
-
-    private boolean userHasPermissionToFindDocument( UserDomainObject searchingUser, DocumentDomainObject document,
-                                         final DocumentMapper documentMapper ) {
-        final boolean searchingUserHasPermissionToFindDocument;
-        if ( document.isActivated() ) {
-            searchingUserHasPermissionToFindDocument =
-            documentMapper.hasAtLeastDocumentReadPermission( searchingUser, document );
-        } else {
-            searchingUserHasPermissionToFindDocument = documentMapper.hasEditPermission( searchingUser, document );
-        }
-        return searchingUserHasPermissionToFindDocument;
     }
 
     public Query parseLucene( String queryString ) throws ParseException {

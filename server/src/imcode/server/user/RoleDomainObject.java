@@ -2,12 +2,14 @@ package imcode.server.user;
 
 import com.imcode.imcms.api.RoleConstants;
 
+import java.io.Serializable;
+
 /**
  * @author kreiger
  */
-public class RoleDomainObject {
+public class RoleDomainObject implements Serializable {
 
-    public final static RoleDomainObject SUPERADMIN = new RoleDomainObject(0, RoleConstants.SUPER_ADMIN) ;
+    public final static RoleDomainObject SUPERADMIN = new RoleDomainObject( 0, RoleConstants.SUPER_ADMIN );
 
     private int id;
     private String name;
