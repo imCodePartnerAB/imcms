@@ -599,10 +599,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    imcode.server.parser.MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution(menus,menumode,tags) ;
 	    imcode.server.parser.HashTagSubstitution hashtagsubstitution = new imcode.server.parser.HashTagSubstitution(tags,numberedtags) ;
 	    imcode.server.parser.ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution(this,user,meta_id,
-															   templatePath,servletUrl,
+															   templatePath,
 															   included_docs,includemode,includelevel,includePath,
 															   textMap,textmode,
-															   imageMap,imagemode,imageUrl,myDoc,paramsToParse) ;
+															   imageMap,imagemode,myDoc,paramsToParse) ;
 
 	    LinkedList parse = new LinkedList() ;
 	    perl5util.split(parse,"/(<!--\\/?IMSCRIPT-->)/",template) ;

@@ -67,7 +67,6 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
     private int meta_id ;
 
     private File templatePath ;
-    private String servletUrl ;
 
     private boolean includeMode ;
     private int includeLevel ;
@@ -80,8 +79,9 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     private Map imageMap ;
     private boolean imageMode ;
-    private String imageUrl ;
     private int implicitImageNumber = 1 ;
+
+    private String labelTemplate ;
 
     private Document document;
 
@@ -120,16 +120,16 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
        @param includelevel   The number of levels of recursion we've gone through.
     **/
     public ImcmsTagSubstitution (TextDocumentParser textdocparser, User user, int meta_id,
-				 File templatepath, String servleturl,
+				 File templatepath,
 				 List included_list, boolean includemode, int includelevel, File includepath,
 				 Map textmap, boolean textmode,
-				 Map imagemap, boolean imagemode, String imageurl,Document theDoc, ParserParameters parserParameters) {
+				 Map imagemap, boolean imagemode,
+				 Document theDoc, ParserParameters parserParameters) {
 	this.textDocParser = textdocparser ;
 	this.user = user ;
 	this.meta_id = meta_id ;
 
 	this.templatePath = templatepath ;
-	this.servletUrl = servleturl ;
 
 	this.includeMode = includemode ;
 	this.includeLevel = includelevel ;
@@ -143,9 +143,15 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
 	this.imageMap = imagemap ;
 	this.imageMode = imagemode ;
-	this.imageUrl  = imageurl ;
 	this.document = theDoc;
 	this.parserParameters = parserParameters ;
+
+	File label_template_file = new File(templatePath, user.getLangPrefix()+"/admin/textdoc/label.frag") ;
+	try {
+	    this.labelTemplate = fileCache.getCachedFileString(label_template_file) ;
+	} catch (IOException ex) {
+	    log.error("Failed to load template '"+label_template_file+"'") ;
+	}
     }
 
     /**
@@ -236,7 +242,6 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		return imcode.util.Parser.parseDoc(fileCache.getCachedFileString(new File(templatePath, user.getLangPrefix()+"/admin/change_include.html")),
 						   new String[] {
 						       "#meta_id#",         String.valueOf(meta_id),
-						       "#servlet_url#",     servletUrl,
 						       "#include_id#",      String.valueOf(no),
 						       "#include_meta_id#", included_meta_id_str == null ? "" : included_meta_id_str
 						   }
@@ -297,16 +302,25 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
 	String finalresult = result ;
 	if (textMode) {
-	    // FIXME: Remove this html-crap.
-	    String redbar = "<img src=\""+imageUrl+"red.gif\" border=\"0\">" ;
-
 	    String label = attributes.getProperty("label","") ;
-	    String labelparam = "" ;
+	    String label_urlparam = "" ;
 	    if (!"".equals(label)) {
-		labelparam = "&label="+java.net.URLEncoder.encode(label) ;
-		label = redbar+label ;
+		label_urlparam = java.net.URLEncoder.encode(label) ;
+		label = imcode.util.Parser.parseDoc(labelTemplate, new String[] { "#label#", label }) ;
 	    }
-	    finalresult = label+redbar+"&nbsp;"+finalresult+"<a href=\"ChangeText?meta_id="+meta_id+"&txt="+noStr+labelparam+"\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
+	    String[] replace_tags = new String[] {
+		"#meta_id#",         String.valueOf(meta_id),
+		"#text_id#",         noStr,
+		"#text#",            finalresult,
+		"#label_url#",       label_urlparam,
+		"#label#",           label
+	    } ;
+	    File admin_template_file = new File(templatePath, user.getLangPrefix()+"/admin/textdoc/admin_text.frag") ;
+	    try {
+		finalresult = imcode.util.Parser.parseDoc(fileCache.getCachedFileString(admin_template_file),replace_tags) ;
+	    } catch (IOException ex) {
+		log.error("Failed to load template '"+admin_template_file+"'") ;
+	    }
 	}
 
 	if (!"".equals(result)) { // Else, we're not in textmode, and do we have something other than the empty string?
@@ -348,26 +362,33 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    result = "" ;
 	}
 	String label = attributes.getProperty("label","") ;
-	String labelparam = "" ;
+	String label_urlparam = "" ;
 	if (!"".equals(label)) {
-	    // FIXME: Remove this html-crap.
-	    String redbar = "<img src=\""+imageUrl+"red.gif\" border=\"0\">" ;
-	    labelparam = "&label="+java.net.URLEncoder.encode(label) ;
-	    label = redbar+label ;
+	    label_urlparam = java.net.URLEncoder.encode(label) ;
+	    label = imcode.util.Parser.parseDoc(labelTemplate, new String[] { "#label#", label }) ;
 	}
 
 	String finalresult = result ;
-	if (imageMode && "".equals(result)) { // If imageMode, and no data in the db-field.
-	    // FIXME: Remove this html-crap.
-	    finalresult = label +
-		"<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+labelparam+"\">" +
-		"<img src=\""+imageUrl+"bild.gif\" border=\"0\">" +
-		"<img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
-	} else if (imageMode) {               // If imageMode, with data in the db-field.
-	    // FIXME: Remove this html-crap.
-	    finalresult = label + finalresult +
-		"<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+labelparam+"\">" +
-		"<img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
+	if (imageMode) {
+	    String[] replace_tags = new String[] {
+		"#meta_id#",         String.valueOf(meta_id),
+		"#image_id#",        noStr,
+		"#image#",           finalresult,
+		"#label_url#",       label_urlparam,
+		"#label#",           label
+	    } ;
+	    File admin_template_file = null ;
+	    if ("".equals(result)) { // no data in the db-field.
+		admin_template_file = new File(templatePath, user.getLangPrefix()+"/admin/textdoc/admin_no_image.frag") ;
+	    } else {               // data in the db-field.
+		admin_template_file = new File(templatePath, user.getLangPrefix()+"/admin/textdoc/admin_image.frag") ;
+	    }
+
+	    try {
+		finalresult = imcode.util.Parser.parseDoc(fileCache.getCachedFileString(admin_template_file),replace_tags) ;
+	    } catch (IOException ex) {
+		log.error("Failed to load template '"+admin_template_file+"'") ;
+	    }
 	}
 
 	if(!"".equals(result)) { // Else, if we have something other than the empty string...
