@@ -15,7 +15,7 @@
 <%
     LinkCheck.LinkCheckPage linkCheckPage = (LinkCheck.LinkCheckPage) request.getAttribute(LinkCheck.LinkCheckPage.REQUEST_ATTRIBUTE__PAGE) ;
     boolean doCheckLinks = linkCheckPage.isDoCheckLinks();
-
+    String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
 %>
 
 <vel:velocity>
@@ -32,7 +32,6 @@
             Iterator linksIterator = (Iterator)linkCheckPage.getLinksIterator() ;
             while ( linksIterator.hasNext() ) {
         %>
-                <vel:velocity>
                     <table border="0" cellspacing="2" cellpadding="2" width="100%">
                         <tr align="left">
                             <td><b><? web/imcms/lang/jsp/heading_type ?></b></td>
@@ -44,7 +43,6 @@
                             <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_reachable ?></b></td>
                             <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_ok ?></b></td>
                         </tr>
-                </vel:velocity>
                 <%
                 for (int i = 0; linksIterator.hasNext() && i < 10; ++i) {
                     out.flush();
@@ -80,9 +78,9 @@
                             </td>
                             <td>
                                 <% if (link instanceof LinkCheck.TextLink) { %>
-                                    <a href="$contextPath/servlet/ChangeText?meta_id=<%= document.getId() %>&txt=<%=textDocumentElementLink.getIndex()%>">
+                                    <a href="<%= request.getContextPath() %>/servlet/ChangeText?meta_id=<%= document.getId() %>&txt=<%=textDocumentElementLink.getIndex()%>">
                                 <% } else { %>
-                                    <a href="$contextPath/servlet/ChangeImage?meta_id=<%= document.getId() %>&img=<%=textDocumentElementLink.getIndex()%>">
+                                    <a href="<%= request.getContextPath() %>/servlet/ChangeImage?meta_id=<%= document.getId() %>&img=<%=textDocumentElementLink.getIndex()%>">
                                 <% } %>
                                     <%= document.getId() %> - <%= textDocumentElementLink.getIndex() %> - <%= document.getHeadline() %>
                                 </a>
@@ -91,22 +89,18 @@
                         <% } %>
                     <td><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
                     <td><a href="<%= link.getUrl() %>"><%= link.getUrl() %></a></td>
-										<vel:velocity>
                     <td align="center"><img
-										src="$contextPath/imcms/$language/images/admin/btn_checked_<%= (link.isHostFound()) ? "1" : "0" %>.gif"></td>
+										src="<%= request.getContextPath() %>/imcms/<%= language %>/images/admin/btn_checked_<%= (link.isHostFound()) ? "1" : "0" %>.gif"></td>
                     <td align="center"><img
-										src="$contextPath/imcms/$language/images/admin/btn_checked_<%= (link.isHostReachable()) ? "1" : "0" %>.gif"></td>
+										src="<%= request.getContextPath() %>/imcms/<%= language %>/images/admin/btn_checked_<%= (link.isHostReachable()) ? "1" : "0" %>.gif"></td>
                     <td align="center"><img
-										src="$contextPath/imcms/$language/images/admin/btn_checked_<%= (link.isOk() ) ? "1" : "0" %>.gif"></td>
-										</vel:velocity>
-                    <% out.flush(); %>
+										src="<%= request.getContextPath() %>/imcms/<%= language %>/images/admin/btn_checked_<%= (link.isOk() ) ? "1" : "0" %>.gif"></td>
                 </tr>
-                <% } %>
+                    <% out.flush();
+                } %>
             </table>
         <% } %>
     <% } %>
 <vel:velocity>
-
-
 #gui_end_of_page()
 </vel:velocity>

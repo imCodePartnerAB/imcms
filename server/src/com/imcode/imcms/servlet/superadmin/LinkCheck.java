@@ -9,10 +9,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpConnection;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -63,11 +60,36 @@ public class LinkCheck extends HttpServlet {
         request.setAttribute( REQUEST_ATTRIBUTE__LINKS_ITERATOR, links.iterator() );
 
         LinkCheckPage linkCheckPage = new LinkCheckPage();
-        linkCheckPage.setLinksIterator(links.iterator());
-        linkCheckPage.setDoCheckLinks( null != request.getParameter(LinkCheckPage.REQUEST_PARAMETER__START_BUTTON) );
-        linkCheckPage.setBrokenOnly( null != request.getParameter(REQUEST_PARAMETER__BROKEN_ONLY) );
-        linkCheckPage.forward(request, response, user);
+        linkCheckPage.setLinksIterator( links.iterator() );
+        boolean doCheckLinks = null != request.getParameter( LinkCheckPage.REQUEST_PARAMETER__START_BUTTON );
+        linkCheckPage.setDoCheckLinks( doCheckLinks );
+        linkCheckPage.setBrokenOnly( null != request.getParameter( REQUEST_PARAMETER__BROKEN_ONLY ) );
+        if ( doCheckLinks ) {
+            Iterator iterator = links.iterator();
+            for ( int i = 0; i < 10; ++i ) {
+                new LinkCheckThread( iterator ).start();
+            }
+        }
+        linkCheckPage.forward( request, response, user );
 
+    }
+
+    public static class LinkCheckThread extends Thread {
+
+        private Iterator iterator;
+
+        public LinkCheckThread( Iterator iterator ) {
+            this.iterator = iterator;
+        }
+
+        public void run() {
+            while ( iterator.hasNext() ) {
+                try {
+                    Link link = (Link)iterator.next();
+                    link.check();
+                } catch ( NoSuchElementException ignored ) {}
+            }
+        }
     }
 
     public static class LinkCheckPage implements Serializable {
@@ -87,11 +109,12 @@ public class LinkCheck extends HttpServlet {
         public void putInRequest( HttpServletRequest request ) {
             request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
         }
+
         public boolean isDoCheckLinks() {
             return doCheckLinks;
         }
 
-        public void setDoCheckLinks(boolean doCheckLinks) {
+        public void setDoCheckLinks( boolean doCheckLinks ) {
             this.doCheckLinks = doCheckLinks;
         }
 
@@ -99,11 +122,11 @@ public class LinkCheck extends HttpServlet {
             return brokenOnly;
         }
 
-        public void setBrokenOnly(boolean brokenOnly) {
+        public void setBrokenOnly( boolean brokenOnly ) {
             this.brokenOnly = brokenOnly;
         }
 
-        public void setLinksIterator(Iterator linksIterator) {
+        public void setLinksIterator( Iterator linksIterator ) {
             this.linksIterator = linksIterator;
         }
 
@@ -112,11 +135,10 @@ public class LinkCheck extends HttpServlet {
         }
     }
 
-
     private void addUrlDocumentLinks( List links, DocumentIndex reindexingIndex, UserDomainObject user,
-                                      HttpServletRequest request ) throws IOException {
+                                      HttpServletRequest request ) {
         DocumentDomainObject[] urlDocuments = reindexingIndex.search( new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""
-                                                                                                                               + DocumentDomainObject.DOCTYPE_URL.getId() ) ), user );
+                                                                                                                                 + DocumentDomainObject.DOCTYPE_URL.getId() ) ), user );
         Arrays.sort( urlDocuments, DocumentComparator.ID );
 
         for ( int i = 0; i < urlDocuments.length; i++ ) {
@@ -127,7 +149,7 @@ public class LinkCheck extends HttpServlet {
     }
 
     private void addTextAndImageLinks( List links, DocumentIndex reindexingIndex, UserDomainObject user,
-                                       HttpServletRequest request ) throws IOException {
+                                       HttpServletRequest request ) {
         BooleanQuery query = new BooleanQuery();
         query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__TEXT, "http" ) ), false, false );
         query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__TEXT, "href" ) ), false, false );
@@ -209,7 +231,7 @@ public class LinkCheck extends HttpServlet {
             return ok;
         }
 
-        private void check() {
+        private synchronized void check() {
             if ( checked ) {
                 return;
             }
@@ -238,7 +260,7 @@ public class LinkCheck extends HttpServlet {
             HttpClient httpClient = new HttpClient();
             httpClient.setConnectionTimeout( CONNECTION_TIMEOUT_MILLISECONDS );
             httpClient.setTimeout( READ_TIMEOUT_MILLISECONDS );
-            GetMethod getMethod = null;
+            GetMethod getMethod;
             try {
                 getMethod = new GetMethod( url );
             } catch ( IllegalArgumentException e ) {
@@ -250,7 +272,7 @@ public class LinkCheck extends HttpServlet {
                 hostFound = true;
                 hostReachable = true;
                 getMethod.releaseConnection();
-                if (HttpStatus.SC_OK == status) {
+                if ( HttpStatus.SC_OK == status ) {
                     ok = true;
                 }
             } catch ( IllegalArgumentException e ) {
@@ -267,7 +289,7 @@ public class LinkCheck extends HttpServlet {
             }
         }
 
-        public abstract DocumentDomainObject getDocument() ;
+        public abstract DocumentDomainObject getDocument();
     }
 
     public final static class UrlDocumentLink extends Link {
@@ -301,7 +323,8 @@ public class LinkCheck extends HttpServlet {
         protected int index;
         protected String url;
 
-        public TextDocumentElementLink(  TextDocumentDomainObject textDocument, int index, String url, HttpServletRequest request ) {
+        public TextDocumentElementLink( TextDocumentDomainObject textDocument, int index, String url,
+                                        HttpServletRequest request ) {
             super( request );
             this.textDocument = textDocument;
             this.index = index;
