@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.superadmin;
 
 import java.io.*;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -102,7 +103,7 @@ public class AdminSystemInfo extends Administrator {
             String serverMasterEmail = (req.getParameter("SERVER_MASTER_EMAIL") == null) ? "" : (req.getParameter("SERVER_MASTER_EMAIL"));
 
             // Lets validate the parameters
-            if (serverMaster.equalsIgnoreCase("") || serverMasterEmail.equalsIgnoreCase("")) {
+            if (serverMaster.equalsIgnoreCase("") || !isValidEmail( serverMasterEmail )) {
                 String header = "Error in AdminSystemInfo, servermaster info.";
                 Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters") + "<br>";
@@ -129,7 +130,7 @@ public class AdminSystemInfo extends Administrator {
             String webMasterEmail = (req.getParameter("WEB_MASTER_EMAIL") == null) ? "" : (req.getParameter("WEB_MASTER_EMAIL"));
 
             // Lets validate the parameters
-            if (webMaster.equalsIgnoreCase("") || webMasterEmail.equalsIgnoreCase("")) {
+            if (webMaster.equalsIgnoreCase("") || !isValidEmail( webMasterEmail )) {
                 String header = "Error in AdminSystemInfo, webmaster info.";
                 Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters") + "<br>";
@@ -154,5 +155,8 @@ public class AdminSystemInfo extends Administrator {
 
     } // end HTTP POST
 
+    private boolean isValidEmail( String email ) {
+        return Pattern.compile( "\\w+@\\w+" ).matcher( email ).find();
+    }
 
 }
