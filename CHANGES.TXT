@@ -71,14 +71,16 @@ Version 1.11.0:
           allows editing of menus. (Bug 2609)
         - DocumentPermissionSet.setEditMenusPermission(boolean) - sets whether this permission-set
           allows editing of menus. (Bug 2609)
-    * Removed fields:
+    * Removed methods:
+        - Image.getSrc() - use Image.getSrc(String contextPath) or Image.getSrcRelativeToContextPath() (Bug 2491)
+        - Image.getSrcUrl() - use Image.getSrc(String contextPath) or Image.getSrcRelativeToContextPath() (Bug 2491)
+        This was necessary to completely remove imCMS dependence on a specific context path.
+    * Removed deprecated fields:
         - Document.Comparator.ACTIVATED_DATETIME - use Document.Comparator.PUBLICATION_START_DATETIME
-    * Removed methods
+    * Removed deprecated methods
         - Document.setModifiedDateTime(Date) - use Document.setModifiedDatetime(Date)
         - Document.getModifiedDateTime() - use Document.getModifiedDatetime()
         - Document.getCreatedDateTime() - use Document.getCreatedDatetime()
-        - Image.getSrc() - use Image.getSrc(String contextPath) or Image.getSrcRelativeToContextPath() (Bug 2491)
-        - Image.getSrcUrl() - use Image.getSrc(String contextPath) or Image.getSrcRelativeToContextPath() (Bug 2491)
         - TextDocument.getMenuSortOrder() - use Menu.getSortOrder() (Bug 2560)
         - TextDocument.setMenuSortOrder(int) - use Menu.setSortOrder(int) (Bug 2560)
         - DocumentPermissionSet.getEditHeadlinePermission() -
