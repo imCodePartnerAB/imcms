@@ -1,6 +1,7 @@
 -- diff.sql
 -- 
 
+print' OBS!!!  Glöm inte att du MÅSTE köra hela sprocs.sql efter detta script vid uppgradering  OBS!!'
 
 -- drop old procedure
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[CheckDocSharePermissionForUser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
