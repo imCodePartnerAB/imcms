@@ -26,6 +26,10 @@ public class MenuDomainObject {
 
     public final static int DEFAULT_SORT_KEY = 500;
 
+    public MenuDomainObject() {
+        this(0, MENU_SORT_ORDER__DEFAULT) ;
+    }
+
     public MenuDomainObject( int id, int sortOrder ) {
         this.id = id;
         this.sortOrder = sortOrder;

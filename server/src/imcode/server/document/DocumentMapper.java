@@ -1,22 +1,24 @@
 package imcode.server.document;
 
 import com.imcode.imcms.servlet.admin.DocumentComposer;
-import imcode.server.*;
+import imcode.server.IMCConstants;
+import imcode.server.IMCServiceInterface;
+import imcode.server.LanguageMapper;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
+import imcode.util.IdNamePair;
 import imcode.util.InputStreamSource;
 import imcode.util.Utility;
-import imcode.util.IdNamePair;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1531,7 +1533,7 @@ public class DocumentMapper {
     private void sqlInsertMenu( TextDocumentDomainObject textDocument, int menuIndex,
                                 MenuDomainObject menu ) {
         if (null == menu) {
-            menu = new MenuDomainObject( 0, MenuDomainObject.MENU_SORT_ORDER__DEFAULT ) ;
+            menu = new MenuDomainObject() ;
         }
         String sqlInsertMenu = "INSERT INTO menus (meta_id, menu_index, sort_order) VALUES(?,?,?) SELECT @@IDENTITY" ;
         String menuIdString = service.sqlQueryStr( sqlInsertMenu, new String[] {""+textDocument.getId(), ""+menuIndex, ""+menu.getSortOrder() } ) ;

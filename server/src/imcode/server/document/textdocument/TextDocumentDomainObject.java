@@ -165,7 +165,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     public MenuDomainObject getMenu( int menuIndex ) {
         MenuDomainObject menu = (MenuDomainObject)getLazilyLoadedTextDocumentAttributes().menus.get( new Integer( menuIndex ) );
         if (null == menu) {
-            menu = new MenuDomainObject( 0, MenuDomainObject.MENU_SORT_ORDER__DEFAULT ) ;
+            menu = new MenuDomainObject() ;
             setMenu( menuIndex, menu );
         }
         return menu;
