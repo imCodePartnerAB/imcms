@@ -141,8 +141,8 @@ public class PostcardServlet extends HttpServlet {
 				qText = tmp;
 				break;
 			}
-		*/	System.out.println(qText);
-			System.out.println(tmp);
+		*/	//System.out.println(qText);
+			//System.out.println(tmp);
 			if (qText.equals(tmp))
 			{
 				qTextToSend = tmp;
