@@ -67,7 +67,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * Contructs an DefaultImcmsServices object.
      */
     public DefaultImcmsServices( ConnectionPool conPool, Properties props ) {
-        database = new Database(conPool) ;
+        database = new Database( conPool );
         initConfig( props );
         initSysData();
         initSessionCounter();
@@ -101,11 +101,13 @@ final public class DefaultImcmsServices implements ImcmsServices {
             String uncapitalizedPropertyName = propertyDescriptor.getName();
             String capitalizedPropertyName = StringUtils.capitalize( uncapitalizedPropertyName );
             String propertyValue = props.getProperty( capitalizedPropertyName );
-            try {
-                BeanUtils.setProperty( config, uncapitalizedPropertyName, propertyValue );
-            } catch ( Exception e ) {
-                log.error( "Failed to set property " + capitalizedPropertyName, e.getCause() );
-                continue;
+            if ( null != propertyValue ) {
+                try {
+                    BeanUtils.setProperty( config, uncapitalizedPropertyName, propertyValue );
+                } catch ( Exception e ) {
+                    log.error( "Failed to set property " + capitalizedPropertyName, e.getCause() );
+                    continue;
+                }
             }
             try {
                 String setPropertyValue = BeanUtils.getProperty( config, uncapitalizedPropertyName );
@@ -185,7 +187,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         imcmsAuthenticatorAndUserMapperAndRole = new ImcmsAuthenticatorAndUserAndRoleMapper( this );
         externalizedImcmsAuthAndMapper =
         new ExternalizedImcmsAuthenticatorAndUserRegistry( imcmsAuthenticatorAndUserMapperAndRole, externalAuthenticator,
-                                                         externalUserAndRoleRegistry, getDefaultLanguageAsIso639_2() );
+                                                           externalUserAndRoleRegistry, getDefaultLanguageAsIso639_2() );
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
     }
 
@@ -226,7 +228,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private UserAndRoleRegistry initExternalUserAndRoleMapper( String externalUserAndRoleMapperName,
-                                                             Properties userAndRoleMapperPropertiesSubset ) {
+                                                               Properties userAndRoleMapperPropertiesSubset ) {
         UserAndRoleRegistry externalUserAndRoleRegistry = null;
         if ( null == externalUserAndRoleMapperName ) {
             externalUserAndRoleRegistry = null;
@@ -481,7 +483,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public Database getDatabase() {
-        return database ;
+        return database;
     }
 
     /**

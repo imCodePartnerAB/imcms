@@ -16,7 +16,7 @@ public class Config {
     private String defaultLanguage;
     private String sessionCookieDomain;
     private String fileAdminRootPaths;
-    private int indexingSchedulePeriodInMinutes ;
+    private int indexingSchedulePeriodInMinutes = 1440 ;
     private String documentPathPrefix;
 
     public void setTemplatePath( File templatePath ) {
