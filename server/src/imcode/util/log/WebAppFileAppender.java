@@ -13,11 +13,15 @@ public class WebAppFileAppender  extends FileAppender
 
 	public WebAppFileAppender() 
 	{
-		super();
+	    super();
+	    super.setBufferedIO( true ) ;
 	}
-	
+
 	public void setFile(String fileName, boolean append ) throws IOException 
 	{
-		super.setFile( (new File(absoluteWebAppPath, fileName)).toString(), append );
+	    File logFile = new File(absoluteWebAppPath, fileName) ;
+	    super.setFile( logFile.toString() ) ;
+	    super.setAppend( append ) ;
+	    super.activateOptions() ;
 	}
 }
