@@ -47,9 +47,8 @@ public class QuotPicEngine extends HttpServlet {
 		int counter = 0;
 		for(int i=0; i<lines.size();i++) {
 			Object obj = lines.get(i);
-			Class clas = obj.getClass();
 			DateRange dates;
-			if (clas.isInstance("Poll")) {
+			if (obj instanceof Poll) {
 				dates = ((Poll)obj).getDateRange();
 			}else {
 				dates = ((Quote)obj).getDateRange();
