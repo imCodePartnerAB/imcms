@@ -13,7 +13,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 
-	private final static String ADMIN_TEMPLATE = "AdminQuestionsFile.htm" ;
+	private final static String ADMIN_TEMPLATE  = "admin_questions_file.html" ;
 	private final static String OPTION_LINE 	= "option_line.frag" ;
 	private final static String DATE_ERROR 		= "date_err_msg.frag" ;
 	private final static String TEXT_ERROR 		= "text_err_msg.frag" ;
