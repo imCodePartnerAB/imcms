@@ -39,10 +39,10 @@ var isAdmin = (getParam2('admin')) ? 1 : 0;
 var servletPath = "@servleturl@/";
 
     /* ------------------------------------------------------------------- *
-     *         the host. may not be empty. include "/imcms/" if in use.    *
+     *         the host. may not be empty.                                 *
      * ------------------------------------------------------------------- */
 
-var strRightPath = "http://" + location.host + "@rooturl@/";
+var strRightPath = "http://" + location.host + /";
 
 /* *******************************************************************************************
  *         PATHS TO REPLACE ON LOAD AND SAVE:   *
@@ -50,7 +50,7 @@ var strRightPath = "http://" + location.host + "@rooturl@/";
 
 	/* leave one empty ("") if there are no "dev-domains" */
 arrWrongPaths = new Array();
-arrWrongPaths[0] = "http://" + location.host + "@rooturl@/";
+arrWrongPaths[0] = "http://" + location.host + "/";
 /* arrWrongPaths[1] = "http://tommy.imcode.com:8080/"; */
 
 	/* servlets that will be "HREF-fixed" in the editor - (ie:  href="BackDoc"  ->  href="/servlet/BackDoc") */

@@ -25,11 +25,13 @@
     <property name="css"                   value="${webroot}/css"/>
     <property name="user"                  value="${webroot}/user"/>
     <property name="javascript"            value="${webroot}/javascript"/>
+    <property name="jsp"                   value="${webroot}/jsp"/>
     <property name="adminbuttons"          value="${imcmsimages}/admin"/>
     <property name="readrunner"	   	   value="${webroot}/readrunner"/>
     <property name="shop"	           value="${webroot}/shop"/>
     <property name="poll"	           value="${webroot}/poll"/>
     <property name="apisamples"	           value="${webroot}/apisamples"/>
+
 
     <!-- 'WEB-INF' - Everything put here is private to the webapp -->
     <property name="WEB-INF"        value="${webroot}/WEB-INF"/>
@@ -58,15 +60,15 @@
     <property name="imageurl"                 value="${rooturl}/images"/>
     <property name="cssurl"                   value="${rooturl}/css"/>
     <property name="javascripturl"            value="${rooturl}/javascript"/>
+    <property name="jspurl"                   value="${rooturl}/jsp"/>
     <property name="postcardsurl"             value="${rooturl}/postcards"/>
     <property name="imcmsimageurl"            value="${rooturl}/imcmsimages"/>
     <property name="adminbuttonsurl"          value="${imcmsimageurl}/admin"/>
     <property name="shopurl"                  value="${rooturl}/shop"/>
-    
-    <property name="readrunnerurl"	  value="${rooturl}/readrunner"/>
-    <property name="readrunnerimagesurl"  value="${readrunnerurl}/images"/>
-    <property name="readrunnercssurl"     value="${readrunnerurl}/css"/>
-    <property name="readrunnerjsurl"      value="${readrunnerurl}/javascript"/>
+    <property name="readrunnerurl"	          value="${rooturl}/readrunner"/>
+    <property name="readrunnerimagesurl"      value="${readrunnerurl}/images"/>
+    <property name="readrunnercssurl"         value="${readrunnerurl}/css"/>
+    <property name="readrunnerjsurl"          value="${readrunnerurl}/javascript"/>
 
 
     <!-- Locations for the final packages -->
@@ -106,7 +108,8 @@
 	<filter token="adminbuttonsurl"     value="${adminbuttonsurl}"/>
 	<filter token="imcmsimageurl"       value="${imcmsimageurl}"/>
 	<filter token="javascripturl"       value="${javascripturl}"/>
-	
+    <filter token="jspurl"              value="${jspurl}"/>
+
 
 	<filter token="readrunnerurl"       value="${readrunnerurl}"/>
 	<filter token="readrunnerimagesurl" value="${readrunnerimagesurl}"/>
@@ -229,7 +232,7 @@
 		     libraries,
 		     web,conf,dir,sql,
 		     conference,chat,billboard,postcard,
-		     help,fortune,readrunner,calender,shop,html-editor"
+		     help,fortune,readrunner,calender,shop,html-editor,jsp-files"
 	    description="Builds everything.">
 
 	<copy todir="${WEB-INF}" file="install/web.xml"/>
@@ -404,6 +407,7 @@
 	<mkdir dir="${css}"/>
 	<mkdir dir="${user}"/>
 	<mkdir dir="${javascript}"/>
+    <mkdir dir="${jsp}"/>
 	<mkdir dir="${imcmsimages}"/>
 
 	<copy file="templates/login/index.html" todir="${login}" filtering="true"/>
@@ -412,9 +416,13 @@
 	    <fileset dir="install/htdocs/images" />
 	</copy>
 
-	<copy todir="${imcmsimages}">
+    <copy todir="${imcmsimages}">
 	    <fileset dir="install/htdocs/imcmsimages"/>
-	</copy>
+    </copy>
+
+    <copy todir="${css}">
+        <fileset dir="install/htdocs/css"/>
+    </copy>
 
 	<copy todir="${webroot}" filtering="true">
 	    <fileset dir="templates">
@@ -436,6 +444,7 @@
 	    </fileset>
 	</copy>
 
+    <!-- Copy images for poll -->
 	<copy todir="${poll}/images" >
 		<fileset dir="install/htdocs/sv/poll/images">
 		<patternset>
@@ -445,10 +454,10 @@
 		</fileset>
 	</copy>
 
-
-	<!-- Copy swedish navigation buttons for imagebrowse -->
+	<!-- Copy swedish navigation buttons for imagebrowse and fileadmin -->
 	<copy todir="${imcmsimages}/se/admin">
 	    <fileset dir="install/htdocs/sv/imagebrowse"/>
+        <fileset dir="install/htdocs/sv/fileadmin"/>
 	</copy>
 
 	<!-- Copy swedish adminbuttons -->
@@ -462,8 +471,32 @@
 
     </target>
 
+    <!-- Copies and filters jsp-files. -->
+    <target name="jsp-files"
+        depends="init"
+        description="Copies and filters jsp-files.">
 
-    <!-- Copies and filters all non-plugin templates. -->
+        <antcall target="jsp-files-lang">
+            <param name="srclanguage" value="sv"/>
+            <param name="language" value="sv"/>
+        </antcall>
+    </target>
+
+     <!-- Copies and filters jsp-files for one language. -->
+    <target name="jsp-files-lang"
+        depends="global-filters"
+        description="Copies the jsp-files for one language.">
+
+        <copy todir="${jsp}" filtering="true">
+            <fileset dir="install/htdocs/${srclanguage}/jsp">
+            <patternset>
+                <include name="*.jsp"/>
+            </patternset>
+            </fileset>
+        </copy>
+     </target>
+
+      <!-- Copies and filters all non-plugin templates. -->
     <target name="templates" depends="init,dir,texttemplates,admintemplates" description="Copies and filters the templates.">
 
     </target>
@@ -853,11 +886,26 @@
     <!-- Copies the files for the online-help. -->
     <target name="help" depends="init">
 
-	<!-- Copy the swedish images for the online-help -->
-	<copy todir="${imcmsimages}/se/helpimages">
-	    <fileset dir="install/htdocs/sv/helpimages" includes="*"/>
-	</copy>
+        <antcall target="help-images-lang">
+            <param name="srclanguage" value="sv"/>
+            <param name="language"    value="se"/>
+        </antcall>
 
+       <!-- <antcall target="help-images-lang">
+            <param name="srclanguage" value="en"/>
+            <param name="language"    value="en"/>
+        </antcall>   -->
+    </target>
+
+
+    <!-- The images for the online-help for one language. -->
+    <target name="help-images-lang"
+	    depends="language-properties"
+	    description="Copies the help-images for one language.">
+
+        <copy todir="${imcmsimages}/${language}/helpimages">
+            <fileset dir="install/htdocs/${srclanguage}/helpimages" includes="*"/>
+        </copy>
     </target>
 
 
@@ -934,48 +982,41 @@
     <!-- The shop-files for one language. -->
     <target name="shop-lang" depends="global-filters,language-properties" description="Copies the help-images for one language.">
 
-	<copy todir="${shop}" filtering="true">
-	    <fileset dir="install/htdocs/${srclanguage}/shop" includes="*"/>
-	</copy>
-
+        <copy todir="${shop}" filtering="true">
+            <fileset dir="install/htdocs/${srclanguage}/shop" includes="*"/>
+        </copy>
     </target>
 
-
-    	
-
     <!-- include html-editor. -->
-
-
     <!-- Copies the html-editor files. -->
     <target name="html-editor"
 	    depends="init"
 	    description="Copies the html-editor files."
-	    if="build-htmleditor">	
+	    if="build-htmleditor">
 
-	<antcall target="html-editor-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language" value="se"/>
-          <param name="htmleditorurl" value="${webroot}/htmleditor"/>
-	</antcall>
-
-	
-
+        <antcall target="html-editor-lang">
+            <param name="srclanguage" value="sv"/>
+            <param name="language" value="se"/>
+              <param name="htmleditorurl" value="${webroot}/htmleditor"/>
+        </antcall>
     </target>
+
     <target name="html-editor-lang"
-	depends="init, global-filters,language-properties"    	   	
-	description="Copies files for html-editor.">
+        depends="init, global-filters,language-properties"
+        description="Copies files for html-editor.">
 
-	<mkdir dir="${htmleditorurl}"/>
-	
-	<copy todir="${htmleditorurl}" filtering="true">
-		<fileset dir="install/htdocs/${srclanguage}/htmleditor/editor" excludes="images/*.jpg,images/*.gif"/> 
-	</copy>
-	<copy todir="${htmleditorurl}/images">
-		<fileset dir="install/htdocs/${srclanguage}/htmleditor/editor/images" includes="*.jpg,*.gif"/> 
-	</copy>
-	<copy todir="${admintemplates}" filtering="true"
-		file="install/htdocs/${srclanguage}/htmleditor/change_text.html"
-		overwrite="yes"/>
-    </target>	
+        <mkdir dir="${htmleditorurl}"/>
 
-</project>
+        <copy todir="${htmleditorurl}" filtering="true">
+            <fileset dir="install/htdocs/${srclanguage}/htmleditor/editor" excludes="images/*.jpg,images/*.gif"/>
+        </copy>
+        <copy todir="${htmleditorurl}/images">
+            <fileset dir="install/htdocs/${srclanguage}/htmleditor/editor/images" includes="*.jpg,*.gif"/>
+        </copy>
+        <copy todir="${admintemplates}" filtering="true"
+            file="install/htdocs/${srclanguage}/htmleditor/change_text.html"
+            overwrite="yes"/>
+    </target>
+
+
+  </project>
