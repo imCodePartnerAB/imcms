@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.imcode.imcms.api.TextDocument;
+import com.imcode.imcms.api.CategoryType;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -788,6 +789,22 @@ public class DocumentMapper {
             final String categoryNameFromDb = sqlResult[1];
             final String categoryDescription = sqlResult[2];
 
+            return new CategoryDomainObject( categoryId, categoryNameFromDb, categoryDescription, categoryType );
+        } else {
+            return null;
+        }
+    }
+
+    public CategoryDomainObject getCategory( int categoryId ) {
+        String sqlQuery = "SELECT categories.name, categories.description, category_types.name \n" +
+                "FROM categories\n" + "JOIN category_types\n" + "ON categories.category_type_id = category_types.category_type_id\n" +
+                "WHERE category.category_id = ?";
+        String[] sqlResult = service.sqlQuery( sqlQuery, new String[]{"" + categoryId} );
+        if ( 0 != sqlResult.length ) {
+            final String categoryNameFromDb = sqlResult[0];
+            final String categoryDescription = sqlResult[1];
+            final String categoryTypeName = sqlResult[2];
+            CategoryTypeDomainObject categoryType = getCategoryType(categoryTypeName);
             return new CategoryDomainObject( categoryId, categoryNameFromDb, categoryDescription, categoryType );
         } else {
             return null;

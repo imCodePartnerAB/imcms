@@ -48,14 +48,23 @@ public class DocumentService {
     }
 
     public Category getCategory(CategoryType categoryType, String categoryName) {
-        // Allow everyone to get a Category. No security check.
-        final CategoryDomainObject category = documentMapper.getCategory(categoryType.getInternal(), categoryName);
-        if (null != category) {
-            return new Category(category);
-        } else {
-            return null ;
+            // Allow everyone to get a Category. No security check.
+            final CategoryDomainObject category = documentMapper.getCategory(categoryType.getInternal(), categoryName);
+            if (null != category) {
+                return new Category(category);
+            } else {
+                return null ;
+            }
         }
-    }
+    public Category getCategory(int categoryId) {
+            // Allow everyone to get a Category. No security check.
+            final CategoryDomainObject category = documentMapper.getCategory(categoryId);
+            if (null != category) {
+                return new Category(category);
+            } else {
+                return null ;
+            }
+        }
 
     public CategoryType getCategoryType(String categoryTypeName) {
         final CategoryTypeDomainObject categoryType = documentMapper.getCategoryType(categoryTypeName);
