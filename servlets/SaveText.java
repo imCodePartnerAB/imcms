@@ -2,6 +2,7 @@
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.TextDocumentTextDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -63,7 +64,8 @@ public class SaveText extends HttpServlet {
         user.put( "flags", new Integer( imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_TEXTS ) );
 
         if ( req.getParameter( "ok" ) != null ) {
-            imcref.saveText( user, meta_id, txt_no, text, text_type );
+            DocumentMapper documentMapper = imcref.getDocumentMapper();
+            documentMapper.saveText( text, documentMapper.getDocument(meta_id), txt_no, user, text_type );
         }
 
         String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );

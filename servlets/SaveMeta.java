@@ -304,10 +304,6 @@ public class SaveMeta extends HttpServlet {
         String temp_default_template_2 = req.getParameter( "default_template_set_2" ) == null ? "-1" : req.getParameter( "default_template_set_2" );
         String[] temp_default_templates = {temp_default_template_1, temp_default_template_2};
 
-        // Set modified-date to now...
-        Date dt = imcref.getCurrentDate();
-        metaprops.setProperty("date_modified", dateformat.format(dt) + " " + timeformat.format(dt));
-
         // It's like this... people make changes on the page, and then they forget to press "save"
         // before they press one of the "define-permission" buttons, and then their settings are lost.
         // I will fix this by storing the settings in a temporary variable in the user object.
@@ -445,8 +441,9 @@ public class SaveMeta extends HttpServlet {
             setSectionInDbFromRequest( req, imcref, metaId );
         }
 
+        DocumentMapper documentMapper = imcref.getDocumentMapper() ;
         try {
-            imcref.getDocumentMapper().getDocumentAndSetCategoriesFromFormAndSaveDocument( req, metaId );
+            documentMapper.getDocumentAndSetCategoriesFromFormAndSaveDocument( req, metaId );
         } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
             throw new ServletException( e );
         }

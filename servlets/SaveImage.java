@@ -1,6 +1,7 @@
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentMapper;
 import imcode.util.ImageFileMetaData;
 import imcode.util.Utility;
 
@@ -408,7 +409,8 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         } else {
             imcref.saveImage( meta_id, user, img_no, image );
 
-            imcref.touchDocument( meta_id );
+            DocumentMapper documentMapper = imcref.getDocumentMapper() ;
+            documentMapper.touchDocument( documentMapper.getDocument( meta_id ) );
 
             String tempstring = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
             if ( tempstring != null ) {

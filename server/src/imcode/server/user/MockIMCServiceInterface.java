@@ -42,9 +42,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return false;
    }
 
-   public void saveText( UserDomainObject user, int meta_id, int txt_no, TextDocumentTextDomainObject text, String text_type ) {
-   }
-
    public TextDocumentTextDomainObject getText( int meta_id, int txt_no ) {
       return null;
    }
@@ -477,12 +474,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
 
    public File getInternalTemplateFolder( int meta_id ) {
       return null;
-   }
-
-   public void touchDocument( int meta_id, Date date ) {
-   }
-
-   public void touchDocument( int meta_id ) {
    }
 
     public List getQuoteList( String quoteListName ) {

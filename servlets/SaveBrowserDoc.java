@@ -1,6 +1,7 @@
 
 import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
+import imcode.server.document.DocumentMapper;
 import imcode.util.Parser;
 import imcode.util.Utility;
 
@@ -76,7 +77,8 @@ public class SaveBrowserDoc extends HttpServlet {
                 }
             }
 
-            imcref.touchDocument( meta_id );
+            DocumentMapper documentMapper = imcref.getDocumentMapper() ;
+            documentMapper.touchDocument( documentMapper.getDocument( meta_id ) );
 
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
             if ( output != null ) {

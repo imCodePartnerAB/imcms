@@ -76,9 +76,9 @@ public class SaveInPage extends HttpServlet {
                 return;
             }
             // save textdoc
-            DocumentMapper.saveTextDoc( imcref, meta_id, user, template, Integer.parseInt(groupId) );
-
-            imcref.touchDocument( meta_id );
+            DocumentMapper documentMapper = imcref.getDocumentMapper() ;
+            documentMapper.saveTextDoc( meta_id, user, template, Integer.parseInt(groupId) );
+            documentMapper.touchDocument( documentMapper.getDocument( meta_id ) );
 
             // return page
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );

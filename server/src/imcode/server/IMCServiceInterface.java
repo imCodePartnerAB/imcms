@@ -30,12 +30,6 @@ public interface IMCServiceInterface {
 	;
 
     /**
-       Save a text field
-    **/
-    void saveText(UserDomainObject user,int meta_id,int txt_no,TextDocumentTextDomainObject text, String text_type)
-	;
-
-    /**
        Retrieve a text-field
     **/
     TextDocumentTextDomainObject getText(int meta_id,int txt_no)
@@ -226,8 +220,6 @@ public interface IMCServiceInterface {
     public String getFortune(String path) throws IOException ;
 
     public String getSearchTemplate(String path) throws IOException ;
-
-    public void touchDocument(int meta_id) ;
 
     public List getQuoteList(String quoteListName);
 

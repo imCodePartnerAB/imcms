@@ -1,6 +1,7 @@
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentMapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -36,8 +37,9 @@ public class SaveUrlDoc extends HttpServlet {
 
         // get urlref
         values = req.getParameterValues( "url_ref" );
-        if ( values != null )
+        if ( values != null ) {
             url_ref = values[0];
+        }
 
         String target = req.getParameter( "target" );
         if ( "_other".equals( target ) ) {
@@ -63,7 +65,9 @@ public class SaveUrlDoc extends HttpServlet {
         }
         // Check if user has write rights
         if ( !imcref.checkDocAdminRights( meta_id, user, 65536 ) ) {
-            log( "User " + user.getUserId() + " was denied access to meta_id " + meta_id + " and was sent to " + start_url );
+            log(
+                    "User " + user.getUserId() + " was denied access to meta_id " + meta_id + " and was sent to "
+                    + start_url );
             String scheme = req.getScheme();
             String serverName = req.getServerName();
             int p = req.getServerPort();
@@ -73,10 +77,12 @@ public class SaveUrlDoc extends HttpServlet {
         }
 
         // FIXME: Move to SProc
-        imcref.sqlUpdateQuery( "update url_docs set url_ref = ? where meta_id = ?", new String[]{url_ref, "" + meta_id} );
+        imcref.sqlUpdateQuery( "update url_docs set url_ref = ? where meta_id = ?",
+                               new String[]{url_ref, "" + meta_id} );
         imcref.sqlUpdateQuery( "update meta set target = ? where meta_id = ?", new String[]{target, "" + meta_id} );
 
-        imcref.touchDocument( meta_id );
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        documentMapper.touchDocument( documentMapper.getDocument( meta_id ) );
 
         String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
         if ( output != null ) {

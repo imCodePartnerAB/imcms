@@ -1,15 +1,35 @@
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.util.*;
 import imcode.external.diverse.Html;
-import imcode.server.*;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
+import imcode.server.WebAppGlobalConstants;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.SectionDomainObject;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Parser;
+import imcode.util.Utility;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.lucene.analysis.SimpleAnalyzer;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.*;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
- Search documents
+ * Search documents
  */
 public class SearchDocuments extends HttpServlet {
 
@@ -26,26 +46,16 @@ public class SearchDocuments extends HttpServlet {
     private final static String NAV_AHREF = "search_nav_ahref.html";
 
     /**
-     doPost()
+     * doPost()
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        HttpSession session = req.getSession( true );
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)session.getAttribute( "logon.isDone" );
-
-        //we must have a user obj, even if its a user extern object, so lets get one, or get rid of the req
-        if ( user == null ) {
-            String ip = req.getRemoteAddr();
-            user = StartDoc.ipAssignUser( ip );
-            if ( user == null ) {
-                res.sendRedirect( "StartDoc" );
-                return;
-            }
+        UserDomainObject user = Utility.getLoggedOnUserOrRedirect( req, res );
+        if ( null == user ) {
+            return;
         }
-
-        StringBuffer sqlBuff = new StringBuffer( "SearchDocsIndex " );
+        HttpSession session = req.getSession();
 
         //this is the params we can get from the browser
         String searchString = req.getParameter( "question_field" ) == null ? "" : req.getParameter( "question_field" );
@@ -54,8 +64,13 @@ public class SearchDocuments extends HttpServlet {
         String sortBy = req.getParameter( "sortBy" ) == null ? "meta_headline" : req.getParameter( "sortBy" );
         String startNr = req.getParameter( "starts" ) == null ? "0" : req.getParameter( "starts" );
         String hitsAtTime = req.getParameter( "no_of_hits" ) == null ? "15" : req.getParameter( "no_of_hits" );
-        String section_id = req.getParameter( "section" ) == null ? "-1" : req.getParameter( "section" );
         String prev_search = req.getParameter( "prev_search" ) == null ? "" : req.getParameter( "prev_search" );
+
+        String sectionParameter = req.getParameter( "section" );
+        SectionDomainObject section = sectionParameter == null
+                                      ? null
+                                      : imcref.getDocumentMapper().getSectionById(
+                                              Integer.parseInt( sectionParameter ) );
 
         // Lets save searchstring typed by user
         String originalSearchString = searchString;
@@ -64,7 +79,6 @@ public class SearchDocuments extends HttpServlet {
         if ( req.getParameter( "hitsNo" ) != null ) {
             originalSearchString = prev_search;
         }
-
 
         String format = "yyyy-MM-dd HH:mm";
         Date date = new Date();
@@ -85,30 +99,7 @@ public class SearchDocuments extends HttpServlet {
         // lets set up the search string
         searchString = buildSearchString( searchString );
 
-        //lets set up the sql-params stringBuffer
-        sqlBuff.append( user.getUserId() );			//@user_id INT,
-        sqlBuff.append( ",'" + searchString + "'" );		//@keyword_string VARCHAR(128)
-        sqlBuff.append( ",'" + doctypes + "'" );			//@doc_types_string VARCHAR(30)
-        sqlBuff.append( "," + fromDoc );				//@fromdoc INT
-        sqlBuff.append( "," + toDoc );				//@todoc INT
-        sqlBuff.append( ",'" + sortBy + "'" );			//@sortorder VARCHAR(256)
-        sqlBuff.append( ",'" + created_start + "'" );		//@created_startdate DATETIME
-        sqlBuff.append( ",'" + create_stop + "'" );		//@created_enddate DATETIME,
-        sqlBuff.append( ",'" + changed_start + "'" );		//@modified_startdate DATETIME,
-        sqlBuff.append( ",'" + changed_stop + "'" );		//@modified_enddate DATETIME,
-        sqlBuff.append( ",'" + activated_start + "'" );	//@activated_startdate DATETIME,
-        sqlBuff.append( ",'" + activated_stop + "'" );	//@activated_enddate DATETIME,
-        sqlBuff.append( ",'" + archived_start + "'" );	//@archived_startdate DATETIME,
-        sqlBuff.append( ",'" + archived_stop + "'" );		//@archived_enddate DATETIME,
-        sqlBuff.append( ",'0'" );						//@only_addable TINYINT
-        sqlBuff.append( "," + section_id );				//@section_id INT
-        sqlBuff.append( "," + activate );				//@activated doc(1) not activated(0)
-
-        //System.out.println("searchString: "+searchString)	;
-        //System.out.println("doctypes: "+doctypes)	;
-        //System.out.println("sql: "+sqlBuff.toString())	;
-
-        String[][] sqlResults;
+        DocumentDomainObject[] searchResults = null;
         int hits = 0;
         //the counter to tell vere in the hitarr to start
         int startNrInt = 0;
@@ -130,39 +121,44 @@ public class SearchDocuments extends HttpServlet {
         if ( req.getParameter( "next_button" ) != null ) {
             noOfHit = Integer.parseInt( req.getParameter( "hitsNo" ) );
             startNrInt = Integer.parseInt( req.getParameter( "startNr" ) );
-            sqlResults = (String[][])session.getAttribute( "search_hit_list" );
-            if ( sqlResults == null ) res.sendRedirect( "StartDoc" );
+            searchResults = (DocumentDomainObject[])session.getAttribute( "search_hit_list" );
+            if ( searchResults == null ) {
+                res.sendRedirect( "StartDoc" );
+            }
         } else if ( req.getParameter( "prev_button" ) != null ) {
             noOfHit = Integer.parseInt( req.getParameter( "hitsNo" ) );
             startNrInt = Integer.parseInt( req.getParameter( "startNr" ) ) - ( noOfHit + noOfHit );
-            sqlResults = (String[][])session.getAttribute( "search_hit_list" );
-            if ( sqlResults == null ) res.sendRedirect( "StartDoc" );
+            searchResults = (DocumentDomainObject[])session.getAttribute( "search_hit_list" );
+            if ( searchResults == null ) {
+                res.sendRedirect( "StartDoc" );
+            }
         } else {
-            String[] sqlParameters = new String[]{
-                "" + user.getUserId(),
-                searchString,
-                doctypes,
-                fromDoc,
-                toDoc,
-                sortBy,
-                created_start,
-                create_stop,
-                changed_start,
-                changed_stop,
-                activated_start,
-                activated_stop,
-                archived_start,
-                archived_stop,
-                "0",
-                section_id,
-                activate
-            };
-            sqlResults = imcref.sqlProcedureMulti("SearchDocsIndex", sqlParameters);
-            session.setAttribute( "search_hit_list", sqlResults );
+
+            try {
+                searchResults = searchDocuments( user.getUserId(),
+                                                 searchString,
+                                                 new int[]{2, 5, 6, 7, 8},
+                                                 Integer.parseInt( fromDoc ),
+                                                 Integer.parseInt( toDoc ),
+                                                 sortBy,
+                                                 new Date(),
+                                                 new Date(),
+                                                 new Date(),
+                                                 new Date(),
+                                                 new Date(),
+                                                 new Date(),
+                                                 new Date(),
+                                                 new Date(),
+                                                 section, false,
+                                                 true );
+                session.setAttribute( "search_hit_list", searchResults );
+            } catch ( ParseException e ) {
+                e.printStackTrace();  // TODO
+            }
         }
 
-        if ( sqlResults != null ) {
-            hits = sqlResults.length;
+        if ( searchResults != null ) {
+            hits = searchResults.length;
         }
 
 
@@ -178,12 +174,16 @@ public class SearchDocuments extends HttpServlet {
         }
 
         for ( int i = 10; i < 101; i += 10 ) {
-            noofhits_option_list += "<option value=\"" + i + "\" " + ( i == Integer.parseInt( selected_hitsToShow ) ? "selected" : "" ) + ">" + i + "</option>";
+            noofhits_option_list += "<option value=\"" + i + "\" "
+                                    + ( i == Integer.parseInt( selected_hitsToShow ) ? "selected" : "" )
+                                    + ">"
+                                    + i
+                                    + "</option>";
         }
 
 
         //the sections list
-        String[] all_sections = imcref.sqlProcedure("SectionGetAll", new String[0]);
+        String[] all_sections = imcref.sqlProcedure( "SectionGetAll", new String[0] );
         String section_option_list = "";
         String selected_sectionToShow = req.getParameter( "section" );
         String strSectionArry = "\'";
@@ -259,7 +259,9 @@ public class SearchDocuments extends HttpServlet {
             //ok this is a tricky part to set up the html for the next button and so on
             //lets start with the prev button
             if ( prevButtonOn ) {
-                String[] prevArrOn = {"#nexOrPrev#", "0", "#startNr#", ( startNrInt - noOfHit ) + "", "#value#", prevTextTemplate};
+                String[] prevArrOn = {
+                    "#nexOrPrev#", "0", "#startNr#", ( startNrInt - noOfHit ) + "", "#value#", prevTextTemplate
+                };
                 buttonsSetupHtml.append( Parser.parseDoc( ahrefTemplate, prevArrOn ) + "\n" );
             } else {
                 String[] prevArrOff = {"#value#", prevTextTemplate};
@@ -272,13 +274,17 @@ public class SearchDocuments extends HttpServlet {
                     String[] pageActive = {"#value#", ( y + 1 ) + ""};
                     buttonsSetupHtml.append( Parser.parseDoc( activeTemplate, pageActive ) + "\n" );
                 } else {
-                    String[] pageInactive = {"#nexOrPrev#", "1", "#startNr#", ( y * noOfHit ) + "", "#value#", ( y + 1 ) + ""};
+                    String[] pageInactive = {
+                        "#nexOrPrev#", "1", "#startNr#", ( y * noOfHit ) + "", "#value#", ( y + 1 ) + ""
+                    };
                     buttonsSetupHtml.append( Parser.parseDoc( ahrefTemplate, pageInactive ) + "\n" );
                 }
             }
             //lets do the nextButton
             if ( nextButtonOn ) {
-                String[] nextArrOn = {"#nexOrPrev#", "1", "#startNr#", ( startNrInt + noOfHit ) + "", "#value#", nextTextTemplate};
+                String[] nextArrOn = {
+                    "#nexOrPrev#", "1", "#startNr#", ( startNrInt + noOfHit ) + "", "#value#", nextTextTemplate
+                };
                 buttonsSetupHtml.append( Parser.parseDoc( ahrefTemplate, nextArrOn ) + "\n" );
             } else {
                 String[] nextArrOff = {"#value#", nextTextTemplate};
@@ -286,8 +292,7 @@ public class SearchDocuments extends HttpServlet {
             }
         }//end (hits > 0)
 
-
-        StringBuffer buff = SearchDocuments.parseSearchResults( oneRecHtmlSrc, sqlResults, startNrInt, noOfHit );
+        StringBuffer buff = SearchDocuments.parseSearchResults( oneRecHtmlSrc, searchResults, startNrInt, noOfHit );
         //if there isnt any hitts lets add the no hit message
         if ( buff.length() == 0 ) {
             buff.append( noHitHtmlStr );
@@ -314,7 +319,6 @@ public class SearchDocuments extends HttpServlet {
         tags.add( "#sectionArry#" );
         tags.add( strSectionArry );
 
-
         returnStr = Parser.parseDoc( resultHtmlSrc, (String[])tags.toArray( new String[tags.size()] ) );
 
 
@@ -328,8 +332,39 @@ public class SearchDocuments extends HttpServlet {
         return;
     } // End of doPost
 
+    private DocumentDomainObject[] searchDocuments( int userId, String searchString, int[] doctypes, int fromDoc, int toDoc,
+                                                    String sortBy, Date created_start, Date create_stop, Date changed_start,
+                                                    Date changed_stop, Date activated_start, Date activated_stop,
+                                                    Date archived_start, Date archived_stop, SectionDomainObject section, boolean only_addable,
+                                                    boolean activate ) throws IOException, ParseException {
+        File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
+        File indexDirectory = new File( webAppPath, "WEB-INF/index" );
+        IndexReader indexReader = IndexReader.open( indexDirectory );
+        IndexSearcher indexSearcher = new IndexSearcher( indexReader );
+        Query query = MultiFieldQueryParser.parse( searchString, new String[]{"headline", "meta_text", "text"},
+                                                   new SimpleAnalyzer() );
+
+        if ( null != section ) {
+            Query sectionQuery = new TermQuery( new Term( "section", section.getName() ) );
+            BooleanQuery booleanQuery = new BooleanQuery();
+            booleanQuery.add( query, true, false );
+            booleanQuery.add( sectionQuery, true, false );
+            query = booleanQuery;
+        }
+        Hits hits = indexSearcher.search( query );
+        DocumentDomainObject[] result = new DocumentDomainObject[hits.length()];
+        for ( int i = 0; i < hits.length(); ++i ) {
+            int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
+            DocumentDomainObject document = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocument(
+                    metaId );
+            result[i] = document;
+        }
+
+        return result;
+    }
+
     /**
-     doGet()
+     * doGet()
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -379,11 +414,15 @@ public class SearchDocuments extends HttpServlet {
         }
 
         for ( int i = 10; i < 101; i += 10 ) {
-            noofhits_option_list += "<option value=\"" + i + "\" " + ( i == Integer.parseInt( selected ) ? "selected" : "" ) + ">" + i + "</option>";
+            noofhits_option_list += "<option value=\"" + i + "\" "
+                                    + ( i == Integer.parseInt( selected ) ? "selected" : "" )
+                                    + ">"
+                                    + i
+                                    + "</option>";
         }
 
         //the sections list
-        String[] all_sections = imcref.sqlProcedure("SectionGetAll", new String[0]);
+        String[] all_sections = imcref.sqlProcedure( "SectionGetAll", new String[0] );
         String section_option_list = "";
         selected = req.getParameter( "section" );
         if ( all_sections != null ) {
@@ -415,94 +454,85 @@ public class SearchDocuments extends HttpServlet {
         return;
     } // End of doGet
 
-    private String buildSearchString(String searchString) {
-        StringTokenizer token = new StringTokenizer(searchString, " \"+-", true);
+    private String buildSearchString( String searchString ) {
+        StringTokenizer token = new StringTokenizer( searchString, " \"+-", true );
         StringBuffer buff = new StringBuffer();
-        while (token.hasMoreTokens()) {
+        while ( token.hasMoreTokens() ) {
             String str = token.nextToken();
-            if (" ".equals(str)) {
+            if ( " ".equals( str ) ) {
                 continue;
             }
-            if (str.equals("\"")) {
-                buff.append("\"");
+            if ( str.equals( "\"" ) ) {
+                buff.append( "\"" );
                 boolean found = false;
-                while (token.hasMoreTokens() && !found) {
+                while ( token.hasMoreTokens() && !found ) {
                     str = token.nextToken();
-                    if (str.equals("\"")) {
-                        buff.append("\"");
+                    if ( str.equals( "\"" ) ) {
+                        buff.append( "\"" );
                         found = true;
                     } else {
-                        buff.append(str);
+                        buff.append( str );
                     }
-                    if (found) buff.append(",");
+                    if ( found ) {
+                        buff.append( "," );
+                    }
                 }
-            } else if (str.equals("+")) {
-                buff.append("\"and\",");
-            } else if (str.equals("-")) {
-                buff.append("\"not\",");
+            } else if ( str.equals( "+" ) ) {
+                buff.append( "\"and\"," );
+            } else if ( str.equals( "-" ) ) {
+                buff.append( "\"not\"," );
             } else {
-                buff.append("\"" + str + "\",");
+                buff.append( "\"" + str + "\"," );
             }
         }
-        if (buff.length() > 0) {
-            String lastChar = buff.substring(buff.length() - 1);
-            if ((",").equals(lastChar)) {
-                buff.deleteCharAt(buff.length() - 1);
+        if ( buff.length() > 0 ) {
+            String lastChar = buff.substring( buff.length() - 1 );
+            if ( ( "," ).equals( lastChar ) ) {
+                buff.deleteCharAt( buff.length() - 1 );
             }
         }
         return buff.toString();
     }
 
-    private static StringBuffer parseSearchResults(String oneRecHtmlSrc,
-                                                    String[][] sqlResults, int startValue, int numberToParse ) {
+    private static StringBuffer parseSearchResults( String oneRecHtmlSrc,
+                                                    DocumentDomainObject[] sqlResults, int startValue,
+                                                    int numberToParse ) {
         StringBuffer searchResults = new StringBuffer( "" );
         int stop = startValue + numberToParse;
         if ( stop >= sqlResults.length ) {
             stop = sqlResults.length;
         }
         // Lets parse the searchresults
-        String[] oneRecVariables = SearchDocuments.getSearchHitTaggaArr();
         for ( int i = startValue; i < stop; i++ ) {
-            String[] oneRec = sqlResults[i];
-            String[] tmpVecData = new String[oneRecVariables.length];
+            DocumentDomainObject document = sqlResults[i];
+            String[] oneHitTags = SearchDocuments.getSearchHitTags( i, document );
 
-            // Lets parse one record
-            for ( int k = 0; k < oneRec.length; k++ ) {
-                if ( oneRec[k] == null ) {
-                    tmpVecData[k] = "&nbsp;";
-                } else if ( oneRec[k].equalsIgnoreCase( "" ) ) {
-                    tmpVecData[k] = "&nbsp;";
-                } else {
-                    tmpVecData[k] = oneRec[k];
-                }
-            }
-            tmpVecData[tmpVecData.length - 1] = "" + ( i + 1 );
-            searchResults.append( Parser.parseDoc( oneRecHtmlSrc, oneRecVariables, tmpVecData ) );
+            searchResults.append( Parser.parseDoc( oneRecHtmlSrc, oneHitTags ) );
         }
         return searchResults;
     }
 
-
     /**
-     Returns all possible variables that might be used when parse the oneRecLine to the
-     search page
+     * Returns all possible variables that might be used when parse the oneRecLine to the
+     * search page
      */
-    private static String[] getSearchHitTaggaArr() {
-        String[] strArr = {"#meta_id#",
-                           "#doc_type#",
-                           "#meta_headline#",
-                           "#meta_text#",
-                           "#date_created#",
-                           "#date_modified#",
-                           "#date_activated#",
-                           "#date_archived#",
-                           "#archive#",
-                           "#shared#",
-                           "#show_meta#",
-                           "#disable_search#",
-                           "#meta_image#",
-                           "#hit_nbr#"};
-        return strArr;
+    private static String[] getSearchHitTags( int searchHitIndex, DocumentDomainObject document ) {
+        return new String[]{
+            "#meta_id#", "" + document.getMetaId(),
+            "#doc_type#", "" + document.getDocumentType(),
+            "#meta_headline#", document.getHeadline(),
+            "#meta_text#", document.getText(),
+            "#date_created#", "" + ObjectUtils.defaultIfNull( document.getCreatedDatetime(), "&nbsp;" ),
+            "#date_modified#", "" + ObjectUtils.defaultIfNull( document.getModifiedDatetime(), "&nbsp;" ),
+            "#date_activated#", "" + ObjectUtils.defaultIfNull( document.getActivatedDatetime(), "&nbsp;" ),
+            "#date_archived#", "" + ObjectUtils.defaultIfNull( document.getArchivedDatetime(), "&nbsp;" ),
+            "#archive#", document.isArchived() ? "1" : "0",
+            "#shared#", "0",
+            "#show_meta#", "0",
+            "#disable_search#", "1",
+            "#meta_image#", document.getImage(),
+            "#hit_nbr#", "" + ( 1 + searchHitIndex )
+        };
     }
 
 } // End class

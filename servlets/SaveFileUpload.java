@@ -1,6 +1,7 @@
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentMapper;
 import imcode.util.MultipartFormdataParser;
 import imcode.util.Utility;
 
@@ -17,7 +18,7 @@ import java.io.Writer;
 public class SaveFileUpload extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
         File file_path = imcode.util.Utility.getDomainPrefPath( "file_path" );
@@ -46,13 +47,13 @@ public class SaveFileUpload extends HttpServlet {
         String contentType = req.getContentType();
         MultipartFormdataParser mp = new MultipartFormdataParser( new String( buffer, "8859_1" ), contentType );
 
-        String meta_id = mp.getParameter( "meta_id" );
-        int meta_id_int = Integer.parseInt( meta_id );
+        String metaIdStr = mp.getParameter( "meta_id" );
+        int metaIdInt = Integer.parseInt( metaIdStr );
 
         res.setContentType( "text/html" );
         // Check if user has write rights
-        if ( !imcref.checkDocAdminRights( meta_id_int, user, 65536 ) ) {	// Checking to see if user may edit this
-            String output = AdminDoc.adminDoc( meta_id_int, meta_id_int, user, req, res );
+        if ( !imcref.checkDocAdminRights( metaIdInt, user, 65536 ) ) {	// Checking to see if user may edit this
+            String output = AdminDoc.adminDoc( metaIdInt, metaIdInt, user, req, res );
             if ( output != null ) {
                 out.write( output );
             }
@@ -90,7 +91,7 @@ public class SaveFileUpload extends HttpServlet {
 
                     // Auto-detect mime-type from filename.
                     if ( !"".equals( filename ) ) {
-                        mime = getServletContext().getMimeType(filename.toLowerCase());
+                        mime = getServletContext().getMimeType( filename.toLowerCase() );
                     }
 
                 } else if ( mime.indexOf( '/' ) == -1 ) {
@@ -100,9 +101,9 @@ public class SaveFileUpload extends HttpServlet {
                     // Assume it is a file-extension,
                     // and autodetect from that.
                     if ( mime.charAt( 0 ) == '.' ) {
-                        mime = getServletContext().getMimeType("_" + mime.toLowerCase());
+                        mime = getServletContext().getMimeType( "_" + mime.toLowerCase() );
                     } else {
-                        mime = getServletContext().getMimeType("_." + mime.toLowerCase());
+                        mime = getServletContext().getMimeType( "_." + mime.toLowerCase() );
                     }
                 }
 
@@ -117,13 +118,15 @@ public class SaveFileUpload extends HttpServlet {
             if ( file.length() > 0 ) {
                 fn = new File( filename );
                 filename = fn.getName();
-                fn = new File( file_path, meta_id + "_se" );
+                fn = new File( file_path, metaIdStr + "_se" );
             }
 
             if ( file.length() > 0 ) {
-                imcref.sqlUpdateQuery("update fileupload_docs set filename = ?, mime = ? where meta_id = ?", new String[] {filename,mime,meta_id});
+                imcref.sqlUpdateQuery( "update fileupload_docs set filename = ?, mime = ? where meta_id = ?",
+                                       new String[]{filename, mime, metaIdStr} );
             } else {
-                imcref.sqlUpdateQuery("update fileupload_docs set mime = ? where meta_id = ?", new String[]{mime, meta_id});
+                imcref.sqlUpdateQuery( "update fileupload_docs set mime = ? where meta_id = ?",
+                                       new String[]{mime, metaIdStr} );
             }
 
             // Write the file to disk.
@@ -134,9 +137,10 @@ public class SaveFileUpload extends HttpServlet {
             }
         }
 
-        imcref.touchDocument(meta_id_int);
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        documentMapper.touchDocument( documentMapper.getDocument( metaIdInt ) );
 
-        String output = AdminDoc.adminDoc( Integer.parseInt( meta_id ), Integer.parseInt( meta_id ), user, req, res );
+        String output = AdminDoc.adminDoc( metaIdInt, metaIdInt, user, req, res );
         if ( output != null ) {
             out.write( output );
         }

@@ -2,6 +2,7 @@
 import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentMapper;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -53,7 +54,8 @@ public class SaveSort extends HttpServlet {
 
         String temp_str = "";
         String childsThisMenu[];
-        imcref.touchDocument( meta_id );
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        documentMapper.touchDocument( documentMapper.getDocument( meta_id ) );
 
         String[] foo = imcref.sqlQuery( "select to_meta_id from childs where meta_id = ?", new String[]{"" + meta_id} );
 
@@ -72,11 +74,13 @@ public class SaveSort extends HttpServlet {
         String sortParam = req.getParameter( "sort" );
         if ( sortParam != null ) {
             int sort_order = Integer.parseInt( req.getParameter( "sort_order" ) );
-            String[] queryResult = imcref.sqlQuery( "select sort_order from text_docs where meta_id = ?", new String[]{"" + meta_id} );
+            String[] queryResult = imcref.sqlQuery( "select sort_order from text_docs where meta_id = ?",
+                                                    new String[]{"" + meta_id} );
             String currentSortOrderStr = queryResult[0];
             int currentSortOrder = Integer.parseInt( currentSortOrderStr );
             if ( currentSortOrder != sort_order ) {
-                imcref.sqlUpdateQuery( "update text_docs set sort_order = ? where meta_id = ?", new String[]{"" + sort_order, "" + meta_id} );
+                imcref.sqlUpdateQuery( "update text_docs set sort_order = ? where meta_id = ?",
+                                       new String[]{"" + sort_order, "" + meta_id} );
             } else {
                 if ( childs.size() > 0 ) {
                     if ( IMCConstants.MENU_SORT_BY_MANUAL_ORDER == sort_order ) {
@@ -96,14 +100,15 @@ public class SaveSort extends HttpServlet {
             }
         } else if ( req.getParameter( "copy" ) != null ) {
             if ( childsThisMenu != null ) {
-                String copyPrefix = imcref.parseDoc( null, COPY_PREFIX_TEMPLATE, user);
+                String copyPrefix = imcref.parseDoc( null, COPY_PREFIX_TEMPLATE, user );
 
                 String[] file_meta_ids = imcref.copyDocs( meta_id, doc_menu_no, user, childsThisMenu, copyPrefix );
                 if ( file_meta_ids.length > 0 ) {
                     // Build an option-list
                     StringBuffer fileMetaIds = new StringBuffer();
                     for ( int i = 0; i < file_meta_ids.length; ++i ) {
-                        imcode.server.document.DocumentDomainObject doc = imcref.getDocument( Integer.parseInt( file_meta_ids[i] ) );
+                        imcode.server.document.DocumentDomainObject doc = imcref.getDocument(
+                                Integer.parseInt( file_meta_ids[i] ) );
                         fileMetaIds.append( "<option>[" + file_meta_ids[i] + "] " + doc.getHeadline() + "</option>" );
                     }
                     Vector vec = new Vector();
@@ -111,7 +116,7 @@ public class SaveSort extends HttpServlet {
                     vec.add( "" + meta_id );
                     vec.add( "#filedocs#" );
                     vec.add( fileMetaIds.toString() );
-                    String fileWarning = imcref.parseDoc( vec, FILE_WARNING_TEMPLATE, user);
+                    String fileWarning = imcref.parseDoc( vec, FILE_WARNING_TEMPLATE, user );
                     out.write( fileWarning );
                     return;
                 }

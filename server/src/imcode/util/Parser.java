@@ -31,36 +31,36 @@ public class Parser {
 	/**
 		Parses a string.
 		@param doc The string.
-		@param data An array of tags and data for each tag. Every even index is a tag, and every odd index is data for the tag before.
+		@param tagsAndData An array of tags and data for each tag. Every even index is a tag, and every odd index is data for the tag before.
 
 		@return The parsed String.
 	*/
-	public static String parseDoc(String doc, String data[]) {
+	public static String parseDoc(String doc, String tagsAndData[]) {
 		if ( doc == null ) {
 			return doc ;
 		}
 		StringBuffer sb = new StringBuffer(doc) ;
-		parseDoc(sb,data) ;
+		parseDoc(sb,tagsAndData) ;
 		return sb.toString() ;
 	}
 
 	/**
 		Parses a StringBuffer.
 		@param sb   The StringBuffer.
-		@param data An array of tags and data for each tag. Every even index is a tag, and every odd index is data for the tag before.
+		@param tagsAndData An array of tags and data for each tag. Every even index is a tag, and every odd index is data for the tag before.
 
 		@return The StringBuffer sb.
 	*/
-	public static StringBuffer parseDoc(StringBuffer sb, String data[]) {
+	public static StringBuffer parseDoc(StringBuffer sb, String tagsAndData[]) {
 	    if ( sb == null ) {
 		return null ;
 	    }
 	    int length ;
-	    for ( int i = 0; i<data.length ; i+=2 ) {
-		length = data[i].length() ;
+	    for ( int i = 0; i<tagsAndData.length ; i+=2 ) {
+		length = tagsAndData[i].length() ;
 		if (length > 0) {
-		    String replacement = (null == data[i+1]) ? "" : data[i+1] ;
-		    for (int start = 0; (start = sb.toString().indexOf(data[i],start))!=-1; start+=replacement.length()) {
+		    String replacement = (null == tagsAndData[i+1]) ? "" : tagsAndData[i+1] ;
+		    for (int start = 0; (start = sb.toString().indexOf(tagsAndData[i],start))!=-1; start+=replacement.length()) {
 			sb.replace(start,start+length,replacement) ;
 		    }
 		}

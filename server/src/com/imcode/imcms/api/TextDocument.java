@@ -32,8 +32,7 @@ public class TextDocument extends Document {
         TextDocumentTextDomainObject imcmsText = new TextDocumentTextDomainObject( newText, textType );
         this.documentMapper.saveText(
                 imcmsText,
-                internalDocument.getMetaId(),
-                textFieldIndexInDocument,
+                internalDocument, textFieldIndexInDocument,
                 super.securityChecker.getCurrentLoggedInUser(),
                 String.valueOf( textType ) );
     }

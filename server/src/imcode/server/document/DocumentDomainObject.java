@@ -187,15 +187,17 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Check whether this document is active.
-     * A document is active if it isn't archivedFlag, and if activatedDatetime is in the past.
-     *
-     * @return value of archivedFlag.
-     */
+     * A document is active if it isn't archived, and if activatedDatetime is in the past.
+     **/
     public boolean isActive() {
         Date now = new Date();
         return (activatedDatetime == null || activatedDatetime.before( now )) && !isArchived();
     }
 
+    /**
+     * Check whether this document is archived.
+     * A document is archived if its archived-flag is set or if archived-datetime is in the past.
+     **/
     public boolean isArchived() {
         return isArchivedFlag() || isArchivedAtTime( new Date() ) ;
     }

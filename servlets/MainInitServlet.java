@@ -4,6 +4,7 @@ import javax.servlet.http.*;
 import java.io.File;
 
 import imcode.util.Prefs;
+import imcode.server.document.DocumentIndexer;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
@@ -30,6 +31,9 @@ public class MainInitServlet extends HttpServlet {
          Prefs.setConfigPath( confPath );
 
           configureLogging( confPath );
+
+          DocumentIndexer documentIndexer = new DocumentIndexer( new File ( realPathToWebApp, "WEB-INF/index" ));
+          documentIndexer.indexAllDocuments();
 
       } catch( Exception e ) {
          System.err.println( e.getMessage() );

@@ -1,6 +1,7 @@
 
 import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
+import imcode.server.document.DocumentMapper;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -50,7 +51,8 @@ public class SaveFrameset extends HttpServlet {
 
         if (req.getParameter("ok") != null) {	//User pressed ok on form in change_frameset_doc.html
             imcref.saveFrameset(meta_id, user, frame_set);
-            imcref.touchDocument(meta_id);
+            DocumentMapper documentMapper = imcref.getDocumentMapper() ;
+            documentMapper.touchDocument( documentMapper.getDocument( meta_id ) );
 
             String output = AdminDoc.adminDoc(meta_id, meta_id, user, req, res);
             if (output != null) {

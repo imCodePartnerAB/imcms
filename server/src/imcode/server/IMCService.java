@@ -217,13 +217,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         UserDomainObject user = externalizedImcmsAuthAndMapper.getUser( login );
         if ( userAuthenticates ) {
             result = user;
-            mainLog.info( "->User '" + ( login ) + "' successfully logged in." );
+            mainLog.info( "->User '" + login + "' successfully logged in." );
         } else if ( null == user ) {
-            mainLog.info( "->User '" + ( login ) + "' failed to log in: User not found." );
+            mainLog.info( "->User '" + login + "' failed to log in: User not found." );
         } else if ( !user.isActive() ) {
-            mainLog.info( "->User '" + ( login ) + "' failed to log in: User deactivated." );
+            mainLog.info( "->User '" + login + "' failed to log in: User deactivated." );
         } else {
-            mainLog.info( "->User '" + ( login ) + "' failed to log in: Wrong password." );
+            mainLog.info( "->User '" + login + "' failed to log in: Wrong password." );
         }
 
         return result;
@@ -361,46 +361,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public String getMenuButtons( int meta_id, UserDomainObject user ) {
         return getMenuButtons( String.valueOf( meta_id ), user );
-    }
-
-    /**
-     Store the given TextDocumentTextDomainObject in the DB.
-     @param user		The user
-     @param meta_id		The id of the page
-     @param txt_no		The id of the text in the page.
-     @param text		The text.
-     @param text_type		The text_type
-
-     Supported text_types is:
-
-     pollquestion-n		      where n represent the questíon number in this internalDocument
-
-     pollanswer-n-m		          where n represent the questíon number in this internalDocument
-     and m represent the answer number in question number n
-
-     pollpointanswer-n-m			  where n represent the questíon number in this internalDocument
-     and m represent the answer number in question number n
-
-     pollparameter-popup_frequency    default(0) when > 0 show this poll as a popup on every new session that is a multiple
-     of the frequens.
-
-     pollparameter-cookie			  default(0) user is allowed to fill in the poll more then once.
-     (1) = set cookie, if cookie exist on client don't allow more answers from that computer.
-
-     pollparameter-hideresults		  default(0) if 1 then we don't send result to browser only a confimation text.
-
-     pollparameter-confirmation_text  message to send back to browser as confirmation of poll participation.
-     pollparameter-email_recipients   email adress to reciver of result from free-text answers.
-
-     pollparameter-result_template    template to use when return the result
-
-     pollparameter-name			  name for this poll
-     pollparameter-description		  description for this poll
-
-     **/
-
-    public void saveText( UserDomainObject user, int meta_id, int txt_no, TextDocumentTextDomainObject text, String text_type ) {
-        documentMapper.saveText( text, meta_id, txt_no, user, text_type );
     }
 
     /**
@@ -1480,27 +1440,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         }
         writer.flush();
         writer.close();
-    }
-
-    /**
-     * Set the modified datetime of a document to the given date
-     *
-     * @param meta_id The id of the document
-     * @param date    The datetime to set
-     */
-    private void touchDocument(int meta_id, java.util.Date date) {
-        SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String sqlStr = "update meta set date_modified = ? where meta_id = ?";
-        sqlUpdateQuery(sqlStr, new String[]{dateformat.format(date), "" + meta_id});
-    }
-
-    /**
-     * Set the modified datetime of a document to now
-     *
-     * @param meta_id The id of the document
-     */
-    public void touchDocument(int meta_id) {
-        touchDocument(meta_id, getCurrentDate());
     }
 
     /**
