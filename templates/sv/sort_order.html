@@ -1,26 +1,11 @@
 <form method="post" action="SaveSort">
     <input type=hidden name="meta_id" value="#getMetaId#">
     <input type=hidden name="doc_menu_no" value="#doc_menu_no#">
-<table border = 0>
+<table border=0>
   <tr> 
-    <td>
-      <font size="2" face="Verdana, Arial, Helvetica, sans-serif">Sortering:</font>&nbsp;&nbsp;&nbsp;</td>
-    <td>
-      <font face="Verdana, Arial, Helvetica, sans-serif" size="1">
-	 <input type=RADIO name=sort_order value="1" #sortOrder1#>
-	 Bokst.ordn.
-      </font>
-      &nbsp;
-      <font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
-        <input type=RADIO name=sort_order value="2" #sortOrder2#>
-	Manuell
-      </font>
-      &nbsp;
-      <font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
-	<input type=RADIO name=sort_order value="3" #sortOrder3#>
-	Datum
-      </font>
-    </td>
+    <td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">Sort:</font>&nbsp;</td>
+    <td><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+	 <nobr><input type=RADIO name=sort_order value="1" #sortOrder1#>abc</nobr> <nobr><input type=RADIO name=sort_order value="2" #sortOrder2#>123</nobr> <nobr><input type=RADIO name=sort_order value="3" #sortOrder3#>Date</nobr></font></td>
   </tr>
 </table>
 <!-- </form> intentionally left out. Added by code later. -->
