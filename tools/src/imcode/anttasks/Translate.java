@@ -136,7 +136,7 @@ public class Translate extends Task {
             destFile.delete();
             String[] missingPropertyKeys = e.getPropertyKeys();
             String missingPropertyKeysString = StringUtils.join(missingPropertyKeys, ", ") ;
-            String message = sourceFile+":0: "+(missingPropertyKeys.length > 1 ? "Keys " : "Key ")+missingPropertyKeysString+" not found in " + bundleFile;
+            String message = "\n"+sourceFile+":0: "+(missingPropertyKeys.length > 1 ? "Keys " : "Key ")+missingPropertyKeysString+" not found in " + bundleFile;
             throw new BuildException( message );
         }
     }

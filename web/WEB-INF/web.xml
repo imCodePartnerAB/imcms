@@ -354,6 +354,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.FileAdmin</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.FileAdmin</servlet-class>
     </servlet>
@@ -384,8 +389,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.MetaAdmin</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.MetaAdmin</servlet-class>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.ListDocuments</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.ListDocuments</servlet-class>
     </servlet>
 
     <servlet>
@@ -904,6 +909,11 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-name>
+        <url-pattern>/servlet/DocumentReferences</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.FileAdmin</servlet-name>
         <url-pattern>/servlet/FileAdmin</url-pattern>
     </servlet-mapping>
@@ -934,8 +944,8 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.MetaAdmin</servlet-name>
-        <url-pattern>/servlet/MetaAdmin</url-pattern>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.ListDocuments</servlet-name>
+        <url-pattern>/servlet/ListDocuments</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

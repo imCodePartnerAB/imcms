@@ -179,6 +179,20 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return Collections.unmodifiableMap( getLazilyLoadedTextDocumentAttributes().menus );
     }
 
+    public Set getChildDocuments() {
+        Set childDocuments = new HashSet() ;
+        Map menus = getMenus() ;
+        for ( Iterator iterator = menus.values().iterator(); iterator.hasNext(); ) {
+            MenuDomainObject menu = (MenuDomainObject)iterator.next();
+            MenuItemDomainObject[] menuItems = menu.getMenuItems() ;
+            for ( int i = 0; i < menuItems.length; i++ ) {
+                MenuItemDomainObject menuItem = menuItems[i];
+                childDocuments.add( menuItem.getDocument() ) ;
+            }
+        }
+        return childDocuments ;
+    }
+
     public ImageDomainObject getImage( int imageIndex ) {
         return (ImageDomainObject)getLazilyLoadedTextDocumentAttributes().images.get( new Integer( imageIndex )) ;
     }

@@ -15,6 +15,8 @@ import imcode.util.InputStreamSource;
 import imcode.util.Utility;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.math.IntRange;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
@@ -1696,16 +1698,18 @@ public class DocumentMapper {
         return idNamePairs;
     }
 
-    public IdNamePair[] getAllDocumentTypeIdsAndNamesInUsersLanguage( UserDomainObject user ) {
+    public Map getAllDocumentTypeIdsAndNamesInUsersLanguage( UserDomainObject user ) {
         String[][] rows = service.sqlQueryMulti( "SELECT doc_type, type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type", new String[]{
             user.getLanguageIso639_2()
         } );
-        IdNamePair[] idNamePairs = new IdNamePair[rows.length];
+        Map allDocumentTypeIdsAndNamesInUsersLanguage = new HashMap() ;
         for ( int i = 0; i < rows.length; i++ ) {
             String[] row = rows[i];
-            idNamePairs[i] = new IdNamePair( Integer.parseInt( row[0] ), row[1] );
+            Integer documentTypeId =  Integer.valueOf( row[0] ) ;
+            String documentTypeNameInUsersLanguage = row[1] ;
+            allDocumentTypeIdsAndNamesInUsersLanguage.put(documentTypeId, documentTypeNameInUsersLanguage) ;
         }
-        return idNamePairs;
+        return allDocumentTypeIdsAndNamesInUsersLanguage ;
     }
 
     public int[] getAllDocumentTypeIds() {
@@ -1717,8 +1721,8 @@ public class DocumentMapper {
         return documentTypeIds;
     }
 
-    public TextDocumentMenuIndexPair[] getDocumentsMenuPairsContainingDocument( DocumentDomainObject document ) {
-        String sqlSelectMenus = "SELECT meta_id, menu_index FROM menus, childs WHERE menus.menu_id = childs.menu_id AND childs.to_meta_id = ?";
+    public TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingDocument( DocumentDomainObject document ) {
+        String sqlSelectMenus = "SELECT meta_id, menu_index FROM menus, childs WHERE menus.menu_id = childs.menu_id AND childs.to_meta_id = ? ORDER BY meta_id, menu_index";
         String[][] sqlRows = service.sqlQueryMulti( sqlSelectMenus, new String[]{"" + document.getId()} );
         TextDocumentMenuIndexPair[] documentMenuPairs = new TextDocumentMenuIndexPair[sqlRows.length];
         for ( int i = 0; i < sqlRows.length; i++ ) {
@@ -1729,6 +1733,20 @@ public class DocumentMapper {
             documentMenuPairs[i] = new TextDocumentMenuIndexPair( containingDocument, menuIndex );
         }
         return documentMenuPairs;
+    }
+
+    public Iterator getDocumentsIterator( final IntRange idRange ) {
+        return new DocumentsIterator( getDocumentIds( idRange ) ) ;
+    }
+
+    private int[] getDocumentIds( IntRange idRange ) {
+        String sqlSelectIds = "SELECT meta_id FROM meta WHERE meta_id >= ? AND meta_id <= ? ORDER BY meta_id" ;
+        String[] documentIdStrings = service.sqlQuery( sqlSelectIds, new String[] { ""+idRange.getMinimumInteger(), ""+idRange.getMaximumInteger() }) ;
+        int[] documentIds = new int[documentIdStrings.length] ;
+        for ( int i = 0; i < documentIdStrings.length; i++ ) {
+            documentIds[i] = Integer.parseInt(documentIdStrings[i]);
+        }
+        return documentIds ;
     }
 
     public static class TextDocumentMenuIndexPair {
@@ -1747,6 +1765,31 @@ public class DocumentMapper {
 
         public int getMenuIndex() {
             return menuIndex;
+        }
+    }
+
+    private class DocumentsIterator implements Iterator {
+
+        int[] documentIds ;
+        int index = 0 ;
+
+        DocumentsIterator( int[] documentIds ) {
+            this.documentIds = documentIds ;
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException() ;
+        }
+
+        public boolean hasNext() {
+            return index < documentIds.length ;
+        }
+
+        public Object next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException() ;
+            }
+            return getDocument( documentIds[index++] ) ;
         }
     }
 

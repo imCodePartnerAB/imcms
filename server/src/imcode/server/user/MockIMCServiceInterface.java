@@ -2,26 +2,25 @@ package imcode.server.user;
 
 import com.mockobjects.ExpectationList;
 import com.mockobjects.MockObject;
-import imcode.server.*;
+import imcode.server.IMCServiceInterface;
+import imcode.server.SystemData;
 import imcode.server.db.ConnectionPool;
-import imcode.server.document.*;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.TemplateMapper;
 import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.ParserParameters;
+import imcode.util.net.SMTP;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.shop.ShoppingOrderSystem;
-import imcode.util.net.SMTP;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.text.Collator;
-
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.VelocityContext;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 class MockIMCServiceInterface extends MockObject implements IMCServiceInterface {
 
@@ -151,6 +150,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    public File getExternalTemplateFolder(int meta_id, UserDomainObject user) {
       return null;
    }
+
+    public void incrementSessionCounter() {
+        // TODO
+    }
 
     // set session counter
    public void setSessionCounter( int value ) {

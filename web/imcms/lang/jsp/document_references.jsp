@@ -1,6 +1,4 @@
-<%@ page import="com.imcode.imcms.api.UrlDocument,
-                 imcode.server.document.UrlDocumentDomainObject,
-                 imcode.server.ApplicationServer,
+<%@ page import="imcode.server.ApplicationServer,
                  imcode.server.document.DocumentMapper,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  org.apache.commons.lang.StringEscapeUtils,
@@ -8,30 +6,32 @@
                  imcode.server.IMCConstants,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
-                 com.imcode.imcms.servlet.superadmin.LinkCheck"%>
+                 com.imcode.imcms.servlet.superadmin.LinkCheck,
+                 com.imcode.imcms.servlet.superadmin.DocumentReferences"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     if (!user.isSuperAdmin()) {
         return ;
     }
-    DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairs = (DocumentMapper.TextDocumentMenuIndexPair[])request.getAttribute( LinkCheck.REQUEST_ATTRIBUTE__DOCUMENT_MENU_PAIRS ) ;
+    DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairs = (DocumentMapper.TextDocumentMenuIndexPair[])request.getAttribute( DocumentReferences.REQUEST_ATTRIBUTE__DOCUMENT_MENU_PAIRS ) ;
 %><vel:velocity><html>
     <head>
-        <title><? web/imcms/lang/jsp/linkcheck/linkcheckrefs.jsp/heading ?></title>
+        <title><? web/imcms/lang/jsp/document_references.jsp/heading ?></title>
         <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
     </head>
     <body>
         #gui_outer_start()
-        #gui_head( '<? web/imcms/lang/jsp/linkcheck/linkcheckrefs.jsp/heading ?>' )
-        <form method="GET" action="<%= request.getContextPath() %>/servlet/LinkCheck">
-            <input type="submit" class="imcmsFormBtn" value="<? global/back ?>">&nbsp;
+        #gui_head( '<? web/imcms/lang/jsp/document_references.jsp/heading ?>' )
+        <form method="GET" action="DocumentReferences">
+            <input type="hidden" name="<%= DocumentReferences.REQUEST_PARAMETER__RETURNURL %>" value="<%= request.getParameter(DocumentReferences.REQUEST_PARAMETER__RETURNURL) %>">
+            <input type="submit" class="imcmsFormBtn" name="<%= DocumentReferences.REQUEST_PARAMETER__BUTTON_RETURN %>" value="<? global/back ?>">
         </form>
         #gui_mid()
-        #gui_heading( '<? web/imcms/lang/jsp/linkcheck/linkcheckrefs.jsp/explanation ?>' )
+        #gui_heading( '<? web/imcms/lang/jsp/document_references.jsp/explanation ?>' )
         <table border="0">
             <tr>
-                <th><? web/imcms/lang/jsp/linkcheck/heading_status ?></th>
-                <th><? web/imcms/lang/jsp/linkcheck/heading_adminlink ?></th>
+                <th><? web/imcms/lang/jsp/heading_status ?></th>
+                <th><? web/imcms/lang/jsp/heading_adminlink ?></th>
             </tr>
         <%
             for ( int i = 0; i < documentMenuPairs.length; i++ ) {
@@ -45,7 +45,7 @@
                     <a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= textDocument.getId() %>&<%= AdminDoc.PARAMETER__DISPATCH_FLAGS %>=<%= IMCConstants.DISPATCH_FLAG__EDIT_MENU %>&editmenu=<%= menuIndex %>">
                         <%= textDocument.getId() %>: "<%= StringEscapeUtils.escapeHtml(textDocument.getHeadline()) %>"
                         -
-                        <? web/imcms/lang/jsp/linkcheck/linkcheckrefs.jsp/heading_menu ?> <%= menuIndex %>
+                        <? web/imcms/lang/jsp/document_references.jsp/heading_menu ?> <%= menuIndex %>
                     </a>
                 </td>
             </tr>

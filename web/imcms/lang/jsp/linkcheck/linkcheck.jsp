@@ -8,7 +8,8 @@
                  imcode.util.Utility,
                  imcode.server.document.UrlDocumentDomainObject,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
-                 imcode.server.document.DocumentDomainObject"%>
+                 imcode.server.document.DocumentDomainObject,
+                 com.imcode.imcms.servlet.superadmin.DocumentReferences"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
 <html>
@@ -26,10 +27,10 @@
         #gui_mid()
         <table border="0" cellspacing="2" cellpadding="2">
             <tr>
-                <th align="left"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_type ?></th>
-                <th align="left"><? web/imcms/lang/jsp/linkcheck/heading_adminlink ?></th>
-                <th align="left"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_references ?></th>
-                <th align="left"><? web/imcms/lang/jsp/linkcheck/heading_status ?></th>
+                <th align="left"><? web/imcms/lang/jsp/heading_type ?></th>
+                <th align="left"><? web/imcms/lang/jsp/heading_adminlink ?></th>
+                <th align="left"><? web/imcms/lang/jsp/heading_references ?></th>
+                <th align="left"><? web/imcms/lang/jsp/heading_status ?></th>
                 <th align="left"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_url ?></th>
                 <th align="left" style="width: 5em;"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_found ?></th>
                 <th align="left" style="width: 5em;"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_reachable ?></th>
@@ -53,8 +54,8 @@
                                     </a>
                                 </td>
                                 <td nowrap>
-                                    <% if (documentMenuPairsContainingUrlDocument.length > 0) { %><a href="<%= request.getContextPath() %>/servlet/LinkCheck?<%= LinkCheck.REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID %>=<%= document.getId() %>"><% } %>
-                                        <%= documentMenuPairsContainingUrlDocument.length %> <? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/parent_count_unit ?>
+                                    <% if (documentMenuPairsContainingUrlDocument.length > 0) { %><a href="<%= request.getContextPath() %>/servlet/DocumentReferences?<%= DocumentReferences.REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID %>=<%= document.getId() %>&<%= DocumentReferences.REQUEST_PARAMETER__RETURNURL %>=LinkCheck"><% } %>
+                                        <%= documentMenuPairsContainingUrlDocument.length %> <? web/imcms/lang/jsp/parent_count_unit ?>
                                     <% if (documentMenuPairsContainingUrlDocument.length > 0) { %></a><% } %>
                                 </td>
                             <% } else {

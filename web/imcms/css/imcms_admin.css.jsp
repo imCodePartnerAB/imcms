@@ -18,23 +18,19 @@ Perl5Util re = new Perl5Util() ;
 /* Check browser */
 
 String uAgent = request.getHeader("USER-AGENT") ;
-boolean isIE  = re.match("/(MSIE 4|MSIE 5|MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) ;
-boolean isNS  = (re.match("/Mozilla/i", uAgent) && !re.match("/Gecko/i", uAgent) && !re.match("/MSIE/i", uAgent)) ? true : false ;
-boolean isMoz = re.match("/Gecko/i", uAgent) ;
 boolean isMac = re.match("/Mac/i", uAgent) ;
+boolean isIE  = re.match("/(MSIE 4|MSIE 5|MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) ;
+boolean isGecko = re.match("/Gecko/i", uAgent) ;
+boolean isNS  = re.match("/Mozilla/i", uAgent) && !isGecko && !isIE ;
 
-String BORDER_COLOR_NORMAL   = "" ;
-String BORDER_COLOR_DISABLED = "" ;
+String BORDER_COLOR_NORMAL   = "#668DB6 #000000 #000000 #668DB6" ;
+String BORDER_COLOR_DISABLED = "#DAE4EF #999999 #999999 #DAE4EF" ;
 
-if (isMoz) {
+if (isGecko) {
 	BORDER_COLOR_NORMAL   = "#466D96 #333333 #333333 #466D96" ;
-	BORDER_COLOR_DISABLED = "#DAE4EF #999999 #999999 #DAE4EF" ;
-} else {
-	BORDER_COLOR_NORMAL   = "#668DB6 #000000 #000000 #668DB6" ;
-	BORDER_COLOR_DISABLED = "#DAE4EF #999999 #999999 #DAE4EF" ;
 }
 
-if (true == false) {
+if (false) {
 	%><style><% // Dummy - To get the right colors in the editor
 }
 /* *******************************************************************************************
@@ -181,6 +177,6 @@ if (!isNS) { %>
 TH   { font-size: 90%; }<%
 }
 
-if (true == false) {
+if (false) {
 	%></style><% // Dummy - To get the right colors in the editor
 } %>

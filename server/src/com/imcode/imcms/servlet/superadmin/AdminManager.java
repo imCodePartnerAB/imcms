@@ -89,11 +89,11 @@ public class AdminManager extends Administrator {
             url += "AdminRoles";
         } else if (whichButton.equalsIgnoreCase("LinkCheck")) {
             url += "LinkCheck";
-        } else if (whichButton.equalsIgnoreCase("MetaAdmin")) {
-            url += "MetaAdmin";
+        } else if (whichButton.equalsIgnoreCase("ListDocuments")) {
+            url += "ListDocuments";
         } else if (whichButton.equalsIgnoreCase("FileAdmin")) {
             url += "FileAdmin";
-        } else if (whichButton.equalsIgnoreCase("ListDocs")) {
+        } else if (whichButton.equalsIgnoreCase("AdminListDocs")) {
             url += "AdminListDocs";
         } else if (whichButton.equalsIgnoreCase("AdminConference")) {
             url += "AdminConference";

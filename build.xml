@@ -332,7 +332,7 @@
 
     <!-- Creates the directories and copies the files that are to be public. -->
     <target name="web"
-        depends="init"
+        depends="init,tools,check-language-property-files-in-sync"
         description="Translates and copies the webfiles.">
 
         <dependset>
@@ -385,7 +385,7 @@
     </target>
 
 
-    <target name="web-lang" depends="init,tools,check-language-property-files-in-sync">
+    <target name="web-lang" depends="init">
 
         <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpathref="tools-and-libraries"/>
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"

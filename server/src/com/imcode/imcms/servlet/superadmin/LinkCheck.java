@@ -43,8 +43,6 @@ public class LinkCheck extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( LinkCheck.class.getName() );
     public static final String REQUEST_ATTRIBUTE__LINKS_ITERATOR = "linksIterator";
-    public static final String REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID = "refs_id";
-    public static final String REQUEST_ATTRIBUTE__DOCUMENT_MENU_PAIRS = "documentMenuPairs";
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
@@ -52,11 +50,6 @@ public class LinkCheck extends HttpServlet {
         if ( !user.isSuperAdmin() ) {
             Utility.redirectToStartDocument( request, response );
             return;
-        }
-
-        if ( null != request.getParameter( REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID ) ) {
-            forwardToUrlDocumentReferencesPage( request, response, user );
-            return ;
         }
 
         List links = new ArrayList();
@@ -70,16 +63,6 @@ public class LinkCheck extends HttpServlet {
         request.setAttribute( REQUEST_ATTRIBUTE__LINKS_ITERATOR, links.iterator() );
 
         request.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2() + "/jsp/linkcheck/linkcheck.jsp" ).forward( request, response );
-    }
-
-    private void forwardToUrlDocumentReferencesPage( HttpServletRequest request, HttpServletResponse response,
-                                                     UserDomainObject user ) throws IOException, ServletException {
-        int documentId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID ) );
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
-        UrlDocumentDomainObject urlDocument = (UrlDocumentDomainObject)documentMapper.getDocument( documentId );
-        DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairs = documentMapper.getDocumentsMenuPairsContainingDocument( urlDocument );
-        request.setAttribute( REQUEST_ATTRIBUTE__DOCUMENT_MENU_PAIRS, documentMenuPairs );
-        request.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2() + "/jsp/linkcheck/linkcheckrefs.jsp" ).forward( request, response );
     }
 
     private void addUrlDocumentLinks( List links, DocumentIndex documentIndex, UserDomainObject user,
@@ -245,7 +228,7 @@ public class LinkCheck extends HttpServlet {
         public UrlDocumentLink( UrlDocumentDomainObject urlDocument, HttpServletRequest request ) {
             super( request );
             this.urlDocument = urlDocument;
-            documentMenuPairsContainingUrlDocument = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentsMenuPairsContainingDocument( urlDocument );
+            documentMenuPairsContainingUrlDocument = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentMenuPairsContainingDocument( urlDocument );
         }
 
         public String getUrl() {

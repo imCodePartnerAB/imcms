@@ -478,13 +478,15 @@ public class MetaDataParser {
             final UserDomainObject user ) {
         int[] selectableDocumentTypeIds = currentUsersDocumentPermissionSet.getAllowedDocumentTypeIds() ;
         int[] selectedDocumentTypeIds = textDocumentPermissionSet.getAllowedDocumentTypeIds() ;
-        IdNamePair[] documentTypes = documentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user) ;
+        Map documentTypes = documentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user) ;
         SortedMap documentTypesMap = new TreeMap() ;
-        for ( int i = 0; i < documentTypes.length; i++ ) {
-            IdNamePair documentType = documentTypes[i];
-            int documentTypeId = documentType.getId() ;
-            if (ArrayUtils.contains(selectableDocumentTypeIds, documentTypeId)) {
-                Boolean selected = new Boolean(ArrayUtils.contains( selectedDocumentTypeIds, documentTypeId ));
+        for ( Iterator iterator = documentTypes.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry entry = (Map.Entry)iterator.next() ;
+            Integer documentTypeId = (Integer)entry.getKey() ;
+            String documentTypeNameInUsersLanguage = (String)documentTypes.get(documentTypeId) ;
+            IdNamePair documentType = new IdNamePair(documentTypeId.intValue(), documentTypeNameInUsersLanguage) ;
+            if (ArrayUtils.contains(selectableDocumentTypeIds, documentTypeId.intValue())) {
+                Boolean selected = new Boolean(ArrayUtils.contains( selectedDocumentTypeIds, documentTypeId.intValue() ));
                 documentTypesMap.put(documentType, selected) ;
             }
         }
