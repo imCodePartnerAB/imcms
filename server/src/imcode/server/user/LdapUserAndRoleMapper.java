@@ -16,265 +16,301 @@ import java.util.*;
 
 public class LdapUserAndRoleMapper implements UserAndRoleMapper {
 
-   public final static String AUTHENTICATION_TYPE_SIMPLE = "simple";
+    public final static String AUTHENTICATION_TYPE_SIMPLE = "simple";
 
-   /** The following constanst are mapped to the Imcms internal user tables.
-    /* Where the loginname is mapped to the attribute attribute
-    /* and the password is ignored */
+    /** The following constanst are mapped to the Imcms internal user tables.
+     /* Where the loginname is mapped to the attribute attribute
+     /* and the password is ignored */
 
-   /** From person oid=2.5.6.7 */
-   private static final String PERSON_SURNAME = "sn";
-   private static final String PERSON_TELEPHONE_NUMBER = "telephoneNumber";
+    /** From person oid=2.5.6.7 */
+    private static final String PERSON_SURNAME = "sn";
+    private static final String PERSON_TELEPHONE_NUMBER = "telephoneNumber";
 
-   /** From organizationalPerson oid=2.5.6.7 */
-   private static final String ORGANIZATIONALPERSON_TITLE = "title";
-   private static final String ORGANIZATIONALPERSON_STATE_OR_PROVINCE_NAME = "st";
-   private static final String ORGANIZATIONALPERSON_POSTAL_CODE = "postalCode";
-   private static final String ORGANIZATIONALPERSON_STREET_ADRESS = "streetAddress";
-   //   static final String ORGANIZATIONALPERSON_ORGANIZATIONAL_UNIT_NAME = "ou";
+    /** From organizationalPerson oid=2.5.6.7 */
+    private static final String ORGANIZATIONALPERSON_TITLE = "title";
+    private static final String ORGANIZATIONALPERSON_STATE_OR_PROVINCE_NAME = "st";
+    private static final String ORGANIZATIONALPERSON_POSTAL_CODE = "postalCode";
+    private static final String ORGANIZATIONALPERSON_STREET_ADRESS = "streetAddress";
+    //   static final String ORGANIZATIONALPERSON_ORGANIZATIONAL_UNIT_NAME = "ou";
 
-   /** From inetOrgPerson oid=2.16.840.1.113730.3.2.2 */
-   private static final String INETORGPERSON_GIVEN_NAME = "givenName";
-   private static final String INETORGPERSON_MAIL = "mail";
-   private static final String INETORGPERSON_HOME_PHONE = "homePhone";
-   private static final String INETORGPERSON_MOBILE = "mobile";
-   private static final String INETORGPERSON_LOCALITY_NAME = "l";
-   //   static final String INETORGPERSON_PREFERED_LANGUAGE = "preferredLanguage";
-   //   static final String INETORGPERSON_USER_IDENTITY = "uid";
+    /** From inetOrgPerson oid=2.16.840.1.113730.3.2.2 */
+    private static final String INETORGPERSON_GIVEN_NAME = "givenName";
+    private static final String INETORGPERSON_MAIL = "mail";
+    private static final String INETORGPERSON_HOME_PHONE = "homePhone";
+    private static final String INETORGPERSON_MOBILE = "mobile";
+    private static final String INETORGPERSON_LOCALITY_NAME = "l";
+    //   static final String INETORGPERSON_PREFERED_LANGUAGE = "preferredLanguage";
+    //   static final String INETORGPERSON_USER_IDENTITY = "uid";
 
-   /** Non standard */
-   private static final String NONSTANDARD_USERID = "sAMAccountName";
-   static final String NONSTANDARD_COMPANY = "company";
-   private static final String NONSTANDARD_COUNTRY = "co";
+    /** Non standard */
+    private static final String NONSTANDARD_USERID = "sAMAccountName";
+    static final String NONSTANDARD_COMPANY = "company";
+    private static final String NONSTANDARD_COUNTRY = "co";
 
-   static final String DEFAULT_LDAP_ROLE = "LDAP";
+    static final String DEFAULT_LDAP_ROLE = "LDAP";
 
-   private DirContext ctx = null;
-   private String userIdentifier = null;
-   private HashMap userFieldLdapMappings = null;
-   private String[] ldapAttributesAutoMappedToRoles;
-   private static final int USER__TYPE_AUTHENTICATED = 1;
+    private DirContext ctx = null;
+    private String userIdentifier = null;
+    private HashMap userFieldLdapMappings = null;
+    private String[] ldapAttributesAutoMappedToRoles;
+    private static final int USER__TYPE_AUTHENTICATED = 1;
 
-   public LdapUserAndRoleMapper (Properties ldapConfig) throws LdapInitException {
-      String ldapUrl = ldapConfig.getProperty("LdapUrl") ;
-      String ldapAuthenticationType = LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE ;
-      String ldapUserName = ldapConfig.getProperty("LdapUserName") ;
-      String ldapPassword = ldapConfig.getProperty("LdapPassword") ;
-      String ldapStringOfAttributesMappedToRoles = ldapConfig.getProperty("LdapAttributesMappedToRoles") ;
-      String[] ldapAttributesMappedToRoles = splitStringOnCommasAndSpaces(ldapStringOfAttributesMappedToRoles) ;
+    private String ldapURL;
+    private String ldapAuthenticationType;
+    private String ldapUserName;
+    private String ldapPassword;
 
-      init( ldapUrl, ldapAuthenticationType, ldapUserName, ldapPassword, ldapAttributesMappedToRoles );
-   }
+    public LdapUserAndRoleMapper( Properties ldapConfig ) throws LdapInitException {
+        String ldapUrl = ldapConfig.getProperty( "LdapUrl" );
+        String ldapAuthenticationType = LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE;
+        String ldapUserName = ldapConfig.getProperty( "LdapUserName" );
+        String ldapPassword = ldapConfig.getProperty( "LdapPassword" );
+        String ldapStringOfAttributesMappedToRoles = ldapConfig.getProperty( "LdapAttributesMappedToRoles" );
+        String[] ldapAttributesMappedToRoles = splitStringOnCommasAndSpaces( ldapStringOfAttributesMappedToRoles );
 
-   /**
-    * @param ldapURL The full path to where the ldap-service is located _and_ the node where to start the searches, e.g.  "ldap://computername:389/CN=Users,DC=companyName,DC=com"
-    * @param ldapAuthenticationType Curently only AUTHENTICATION_TYPE_SIMPLE is suported
-    * @param ldapUserName A name that is used to log in (bind) to the ldap server
-    * @param ldapPassword A password that i used to log in (bind) to the ldap server
-    */
+        init( ldapUrl, ldapAuthenticationType, ldapUserName, ldapPassword, ldapAttributesMappedToRoles );
+    }
 
-   public LdapUserAndRoleMapper( String ldapURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword, String[] ldapAttributesAutoMappedToRoles ) throws LdapInitException {
-      init( ldapURL, ldapAuthenticationType, ldapUserName, ldapPassword, ldapAttributesAutoMappedToRoles );
-   }
+    /**
+     * @param ldapURL The full path to where the ldap-service is located _and_ the node where to start the searches, e.g.  "ldap://computername:389/CN=Users,DC=companyName,DC=com"
+     * @param ldapAuthenticationType Curently only AUTHENTICATION_TYPE_SIMPLE is suported
+     * @param ldapUserName A name that is used to log in (bind) to the ldap server
+     * @param ldapPassword A password that i used to log in (bind) to the ldap server
+     */
 
-   private void init( String ldapURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword, String[] ldapAttributesAutoMappedToRoles ) throws LdapInitException {
-      this.ldapAttributesAutoMappedToRoles = ldapAttributesAutoMappedToRoles;
-      this.userIdentifier = NONSTANDARD_USERID;
-      this.userFieldLdapMappings = createLdapMappings();
+    public LdapUserAndRoleMapper( String ldapURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword, String[] ldapAttributesAutoMappedToRoles ) throws LdapInitException {
+        init( ldapURL, ldapAuthenticationType, ldapUserName, ldapPassword, ldapAttributesAutoMappedToRoles );
+    }
 
-      try {
-         ctx = staticSetupInitialDirContext( ldapURL, ldapAuthenticationType, ldapUserName, ldapPassword );
-      } catch( AuthenticationException ex ) {
-         throw new LdapInitException( "Authentication failed, using login: '" + ldapUserName + "', password: '" + ldapPassword + "'", ex );
-      } catch( NameNotFoundException ex ) {
-         throw new LdapInitException( "Root not found: " + ldapURL, ex );
-      } catch( NamingException ex ) {
-         throw new LdapInitException( "Failed to create LDAP context " + ldapURL, ex );
-      }
-   }
+    private void init( String ldapURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword, String[] ldapAttributesAutoMappedToRoles ) throws LdapInitException {
+        this.ldapAttributesAutoMappedToRoles = ldapAttributesAutoMappedToRoles;
+        this.userIdentifier = NONSTANDARD_USERID;
+        this.userFieldLdapMappings = createLdapMappings();
 
-   public class LdapInitException extends Exception {
-      LdapInitException( String message, Throwable cause ) {
-         super( message, cause );
-      }
-   }
+        this.ldapURL = ldapURL;
+        this.ldapAuthenticationType = ldapAuthenticationType;
+        this.ldapUserName = ldapUserName;
+        this.ldapPassword = ldapPassword;
 
-   public User getUser( String loginName ) {
-      User result = null;
+        setupInitialDirContext();
+    }
 
-      Map attributeMap = searchForUserAttributes( loginName, null );
+    private void setupInitialDirContext() throws LdapInitException {
+        try {
+            ctx = staticSetupInitialDirContext( ldapURL, ldapAuthenticationType, ldapUserName, ldapPassword );
+        } catch ( AuthenticationException ex ) {
+            throw new LdapInitException( "Authentication failed, using login: '" + ldapUserName + "', password: '" + ldapPassword + "'", ex );
+        } catch ( NameNotFoundException ex ) {
+            throw new LdapInitException( "Root not found: " + ldapURL, ex );
+        } catch ( NamingException ex ) {
+            throw new LdapInitException( "Failed to create LDAP context " + ldapURL, ex );
+        }
+    }
 
-      if( null != attributeMap ) {
-         result = createUserFromLdapAttributes( attributeMap );
+    public class LdapInitException extends Exception {
 
-         result.setLoginName( loginName );
-         result.setActive( true );
-         result.setUserType( USER__TYPE_AUTHENTICATED );
-      }
+        LdapInitException( String message, Throwable cause ) {
+            super( message, cause );
+        }
+    }
 
-      return result;
-   }
+    public User getUser( String loginName ) {
+        User result = null;
 
-   private Map createMapFromSearchResult( SearchResult searchResult ) {
-      NamingEnumeration attribEnum = searchResult.getAttributes().getAll();
+        Map attributeMap = searchForUserAttributes( loginName, null );
 
-      HashMap ldapAttributeValues = new HashMap();
-      while( attribEnum.hasMoreElements() ) {
-         Attribute attribute = (Attribute)attribEnum.nextElement();
-         String attributeName1 = attribute.getID();
-         String attributeValue = null;
-         try {
-            attributeValue = attribute.get().toString();
-         } catch( NamingException e ) {
-            getLogger().error( e );
-         }
-         ldapAttributeValues.put( attributeName1, attributeValue );
-      }
-      return ldapAttributeValues;
-   }
+        if ( null != attributeMap ) {
+            result = createUserFromLdapAttributes( attributeMap );
 
-   private User createUserFromLdapAttributes( Map ldapAttributeValues ) {
-      User newlyFoundLdapUser = new User();
+            result.setLoginName( loginName );
+            result.setActive( true );
+            result.setUserType( USER__TYPE_AUTHENTICATED );
+        }
 
-      String value = getValueForUserField( "lastName", ldapAttributeValues );
-      newlyFoundLdapUser.setLastName( value );
+        return result;
+    }
 
-      value = getValueForUserField( "address", ldapAttributeValues );
-      newlyFoundLdapUser.setAddress( value );
+    private Map createMapFromSearchResult( SearchResult searchResult ) {
+        NamingEnumeration attribEnum = searchResult.getAttributes().getAll();
 
-      value = getValueForUserField( "city", ldapAttributeValues );
-      newlyFoundLdapUser.setCity( value );
+        HashMap ldapAttributeValues = new HashMap();
+        while ( attribEnum.hasMoreElements() ) {
+            Attribute attribute = (Attribute)attribEnum.nextElement();
+            String attributeName1 = attribute.getID();
+            String attributeValue = null;
+            try {
+                attributeValue = attribute.get().toString();
+            } catch ( NamingException e ) {
+                getLogger().error( e );
+            }
+            ldapAttributeValues.put( attributeName1, attributeValue );
+        }
+        return ldapAttributeValues;
+    }
 
-      value = getValueForUserField( "county_council", ldapAttributeValues );
-      newlyFoundLdapUser.setCountyCouncil( value );
+    private User createUserFromLdapAttributes( Map ldapAttributeValues ) {
+        User newlyFoundLdapUser = new User();
 
-      value = getValueForUserField( "emailAddress", ldapAttributeValues );
-      newlyFoundLdapUser.setEmailAddress( value );
+        String value = getValueForUserField( "lastName", ldapAttributeValues );
+        newlyFoundLdapUser.setLastName( value );
 
-      value = getValueForUserField( "firstName", ldapAttributeValues );
-      newlyFoundLdapUser.setFirstName( value );
+        value = getValueForUserField( "address", ldapAttributeValues );
+        newlyFoundLdapUser.setAddress( value );
 
-      value = getValueForUserField( "homePhone", ldapAttributeValues );
-      newlyFoundLdapUser.setHomePhone( value );
+        value = getValueForUserField( "city", ldapAttributeValues );
+        newlyFoundLdapUser.setCity( value );
 
-      value = getValueForUserField( "title", ldapAttributeValues );
-      newlyFoundLdapUser.setTitle( value );
+        value = getValueForUserField( "county_council", ldapAttributeValues );
+        newlyFoundLdapUser.setCountyCouncil( value );
 
-      value = getValueForUserField( "mobilePhone", ldapAttributeValues );
-      newlyFoundLdapUser.setMobilePhone( value );
+        value = getValueForUserField( "emailAddress", ldapAttributeValues );
+        newlyFoundLdapUser.setEmailAddress( value );
 
-      value = getValueForUserField( "workPhone", ldapAttributeValues );
-      newlyFoundLdapUser.setWorkPhone( value );
+        value = getValueForUserField( "firstName", ldapAttributeValues );
+        newlyFoundLdapUser.setFirstName( value );
 
-      value = getValueForUserField( "zip", ldapAttributeValues );
-      newlyFoundLdapUser.setZip( value );
+        value = getValueForUserField( "homePhone", ldapAttributeValues );
+        newlyFoundLdapUser.setHomePhone( value );
 
-      value = getValueForUserField( "city", ldapAttributeValues );
-      newlyFoundLdapUser.setCity( value );
+        value = getValueForUserField( "title", ldapAttributeValues );
+        newlyFoundLdapUser.setTitle( value );
 
-      value = getValueForUserField( "company", ldapAttributeValues );
-      newlyFoundLdapUser.setCompany( value );
+        value = getValueForUserField( "mobilePhone", ldapAttributeValues );
+        newlyFoundLdapUser.setMobilePhone( value );
 
-      value = getValueForUserField( "country", ldapAttributeValues );
-      newlyFoundLdapUser.setCountry( value );
+        value = getValueForUserField( "workPhone", ldapAttributeValues );
+        newlyFoundLdapUser.setWorkPhone( value );
 
-      return newlyFoundLdapUser;
-   }
+        value = getValueForUserField( "zip", ldapAttributeValues );
+        newlyFoundLdapUser.setZip( value );
 
-   private HashMap createLdapMappings() {
-      HashMap result = new HashMap();
-      result.put( "loginName", NONSTANDARD_USERID );
-      result.put( "firstName", INETORGPERSON_GIVEN_NAME );
-      result.put( "lastName", PERSON_SURNAME );
-      result.put( "title", ORGANIZATIONALPERSON_TITLE );
-      result.put( "company", NONSTANDARD_COMPANY );
-      result.put( "address", ORGANIZATIONALPERSON_STREET_ADRESS );
-      result.put( "city", INETORGPERSON_LOCALITY_NAME );
-      result.put( "zip", ORGANIZATIONALPERSON_POSTAL_CODE );
-      result.put( "country", NONSTANDARD_COUNTRY );
-      result.put( "county_council", ORGANIZATIONALPERSON_STATE_OR_PROVINCE_NAME );
-      result.put( "emailAddress", INETORGPERSON_MAIL );
-      result.put( "workPhone", PERSON_TELEPHONE_NUMBER );
-      result.put( "mobilePhone", INETORGPERSON_MOBILE );
-      result.put( "homePhone", INETORGPERSON_HOME_PHONE );
-      // todo:
-      // result.put("lang_id",);
+        value = getValueForUserField( "city", ldapAttributeValues );
+        newlyFoundLdapUser.setCity( value );
 
-      return result;
-   }
+        value = getValueForUserField( "company", ldapAttributeValues );
+        newlyFoundLdapUser.setCompany( value );
 
-   private String getValueForUserField( String userFieldName, Map ldapAttributeValues ) {
-      String ldapAttribute = (String)userFieldLdapMappings.get( userFieldName );
-      String value = (String)ldapAttributeValues.get( ldapAttribute );
-      if( null == value ) {
-         value = "";
-      }
-      return value;
-   }
+        value = getValueForUserField( "country", ldapAttributeValues );
+        newlyFoundLdapUser.setCountry( value );
 
-   private static DirContext staticSetupInitialDirContext( String ldapURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword ) throws NamingException {
-      String ContextFactory = "com.sun.jndi.ldap.LdapCtxFactory";
-      Hashtable env = new Hashtable();
-      env.put( Context.INITIAL_CONTEXT_FACTORY, ContextFactory );
-      env.put( Context.PROVIDER_URL, ldapURL );
-      env.put( Context.SECURITY_AUTHENTICATION, ldapAuthenticationType );
-      env.put( Context.SECURITY_PRINCIPAL, ldapUserName );
-      env.put( Context.SECURITY_CREDENTIALS, ldapPassword );
-      DirContext ctx = new InitialDirContext( env );
-      return ctx;
-   }
+        return newlyFoundLdapUser;
+    }
 
-   private Logger getLogger() {
-      return Logger.getLogger( this.getClass() );
-   }
+    private HashMap createLdapMappings() {
+        HashMap result = new HashMap();
+        result.put( "loginName", NONSTANDARD_USERID );
+        result.put( "firstName", INETORGPERSON_GIVEN_NAME );
+        result.put( "lastName", PERSON_SURNAME );
+        result.put( "title", ORGANIZATIONALPERSON_TITLE );
+        result.put( "company", NONSTANDARD_COMPANY );
+        result.put( "address", ORGANIZATIONALPERSON_STREET_ADRESS );
+        result.put( "city", INETORGPERSON_LOCALITY_NAME );
+        result.put( "zip", ORGANIZATIONALPERSON_POSTAL_CODE );
+        result.put( "country", NONSTANDARD_COUNTRY );
+        result.put( "county_council", ORGANIZATIONALPERSON_STATE_OR_PROVINCE_NAME );
+        result.put( "emailAddress", INETORGPERSON_MAIL );
+        result.put( "workPhone", PERSON_TELEPHONE_NUMBER );
+        result.put( "mobilePhone", INETORGPERSON_MOBILE );
+        result.put( "homePhone", INETORGPERSON_HOME_PHONE );
+        // todo:
+        // result.put("lang_id",);
 
-   public String[] getRoleNames( User user ) {
-      String loginName = user.getLoginName();
+        return result;
+    }
 
-      Map attributeMappedRoles = searchForUserAttributes( loginName, ldapAttributesAutoMappedToRoles );
-      HashSet roles = new HashSet( attributeMappedRoles.values() );
+    private String getValueForUserField( String userFieldName, Map ldapAttributeValues ) {
+        String ldapAttribute = (String)userFieldLdapMappings.get( userFieldName );
+        String value = (String)ldapAttributeValues.get( ldapAttribute );
+        if ( null == value ) {
+            value = "";
+        }
+        return value;
+    }
 
-      String[] rolesArray = new String[roles.size() + 1];
-      roles.toArray( rolesArray );
+    private static DirContext staticSetupInitialDirContext( String ldapURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword ) throws NamingException {
+        String ContextFactory = "com.sun.jndi.ldap.LdapCtxFactory";
+        Hashtable env = new Hashtable();
+        env.put( Context.INITIAL_CONTEXT_FACTORY, ContextFactory );
+        env.put( Context.PROVIDER_URL, ldapURL );
+        env.put( Context.SECURITY_AUTHENTICATION, ldapAuthenticationType );
+        env.put( Context.SECURITY_PRINCIPAL, ldapUserName );
+        env.put( Context.SECURITY_CREDENTIALS, ldapPassword );
+        DirContext ctx = new InitialDirContext( env );
+        return ctx;
+    }
 
-      rolesArray[rolesArray.length - 1] = DEFAULT_LDAP_ROLE;
+    private Logger getLogger() {
+        return Logger.getLogger( this.getClass() );
+    }
 
-      return rolesArray;
-   }
+    public String[] getRoleNames( User user ) {
+        String loginName = user.getLoginName();
 
-   private Map searchForUserAttributes( String loginName, String[] attributesToReturn ) {
-      Map attributeMap = null;
+        Map attributeMappedRoles = searchForUserAttributes( loginName, ldapAttributesAutoMappedToRoles );
+        HashSet roles = new HashSet( attributeMappedRoles.values() );
 
-      NamingEnumeration enum;
+        String[] rolesArray = new String[roles.size() + 1];
+        roles.toArray( rolesArray );
 
-      Attributes loginNameAttribute = new BasicAttributes( userIdentifier, loginName );
-      boolean foundUser = false;
-      try {
-         enum = ctx.search( "", loginNameAttribute, attributesToReturn );
-         foundUser = enum != null && enum.hasMore();
-         if( foundUser ) {
+        rolesArray[rolesArray.length - 1] = DEFAULT_LDAP_ROLE;
+
+        return rolesArray;
+    }
+
+    private Map searchForUserAttributes( String loginName, String[] attributesToReturn ) {
+        Map attributeMap = null;
+
+        Attributes loginNameAttribute = new BasicAttributes( userIdentifier, loginName );
+        try {
+            try {
+                attributeMap = trySearchForUserAttributes( loginNameAttribute, attributesToReturn, loginName );
+            } catch ( CommunicationException e ) {
+                getLogger().warn( "Problem communicating with LDAP server, reconnecting.", e );
+                attributeMap = reconnectAndRetrySearchForUserAttributes( loginNameAttribute, attributesToReturn, loginName );
+            }
+        } catch ( NamingException e ) {
+            getLogger().warn( "Could not find user " + loginName, e );
+        }
+        return attributeMap;
+    }
+
+    private Map reconnectAndRetrySearchForUserAttributes( Attributes loginNameAttribute, String[] attributesToReturn, String loginName ) throws NamingException {
+        Map attributeMap = null;
+        try {
+            setupInitialDirContext();
+        } catch ( LdapInitException e ) {
+            getLogger().fatal( "Could not reconnect to LDAP server.", e );
+        }
+        attributeMap = trySearchForUserAttributes( loginNameAttribute, attributesToReturn, loginName );
+        return attributeMap;
+    }
+
+    private Map trySearchForUserAttributes( Attributes loginNameAttribute, String[] attributesToReturn, String loginName ) throws NamingException {
+        Map attributeMap = null;
+        NamingEnumeration enum;
+        boolean foundUser;
+        enum = ctx.search( "", loginNameAttribute, attributesToReturn );
+        foundUser = enum != null && enum.hasMore();
+        if ( foundUser ) {
             SearchResult searchResult = (SearchResult)enum.nextElement();
             attributeMap = createMapFromSearchResult( searchResult );
-         } else {
+        } else {
             getLogger().debug( "Could not find user " + loginName );
-         }
-      } catch( NamingException e ) {
-         getLogger().warn( "Could not find user" + loginName, e );
-      }
-      return attributeMap;
-   }
+        }
+        return attributeMap;
+    }
 
-   public String[] getAllRoleNames() {
-      return new String[] {DEFAULT_LDAP_ROLE };
-   }
+    public String[] getAllRoleNames() {
+        return new String[]{DEFAULT_LDAP_ROLE};
+    }
 
-   private static String[] splitStringOnCommasAndSpaces( String stringToSplit ) {
-      StringTokenizer attributesTokenizer = new StringTokenizer( stringToSplit, ", " );
-      String[] tokens = new String[attributesTokenizer.countTokens()];
-      for( int i = 0; i < tokens.length; ++i ) {
-         tokens[i] = attributesTokenizer.nextToken();
-      }
-      return tokens;
-   }
+    private static String[] splitStringOnCommasAndSpaces( String stringToSplit ) {
+        StringTokenizer attributesTokenizer = new StringTokenizer( stringToSplit, ", " );
+        String[] tokens = new String[attributesTokenizer.countTokens()];
+        for ( int i = 0; i < tokens.length; ++i ) {
+            tokens[i] = attributesTokenizer.nextToken();
+        }
+        return tokens;
+    }
 
 }
