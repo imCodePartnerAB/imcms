@@ -11,6 +11,7 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import org.apache.commons.lang.time.StopWatch;
+import org.apache.commons.collections.MultiMap;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.lucene.document.DateField;
@@ -49,25 +50,31 @@ public class DocumentIndex {
         searchStopWatch.start();
         Hits hits = indexSearcher.search( query );
         log.debug( "Search for " + query.toString() + " took " + searchStopWatch.getTime() + "ms." );
-        List result = new ArrayList( hits.length() );
+        List result = getDocumentListForHits( hits, searchingUser );
+        log.debug( "Search and result lookup took " + searchStopWatch.getTime() + "ms." );
+        indexSearcher.close();
+        return (DocumentDomainObject[])result.toArray( new DocumentDomainObject[result.size()] );
+    }
+
+    private List getDocumentListForHits( Hits hits, UserDomainObject searchingUser ) throws IOException {
+        List documentList = new ArrayList( hits.length() );
         StopWatch getDocumentStopWatch = new StopWatch();
         final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface()
                 .getDocumentMapper();
         for ( int i = 0; i < hits.length(); ++i ) {
             int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
-            DocumentDomainObject document = getDocument( getDocumentStopWatch, documentMapper, metaId );
+            getDocumentStopWatch.resume();
+            DocumentDomainObject document = documentMapper.getDocument( metaId );
             if ( documentMapper.userHasPermissionToSearchDocument( searchingUser, document ) ) {
-                result.add( document );
+                documentList.add( document );
             }
+            getDocumentStopWatch.suspend();
         }
-        log.debug( "Search and result lookup took " + searchStopWatch.getTime() + "ms." );
-        logGetDocumentsStopWatch( getDocumentStopWatch, result.size() );
-        indexSearcher.close();
-        indexReader.close();
-        return (DocumentDomainObject[])result.toArray( new DocumentDomainObject[result.size()] );
+        logGetDocumentsStopWatch( getDocumentStopWatch, documentList.size() );
+        return documentList;
     }
 
-   public synchronized void indexAllDocuments() {
+    public synchronized void indexAllDocuments() {
         NDC.push( "indexAllDocuments" );
         try {
             openIndexWriter( true );
@@ -83,7 +90,9 @@ public class DocumentIndex {
             StopWatch getDocumentStopWatch = new StopWatch();
             for ( int i = 0; i < numberOfDocuments; i++ ) {
                 int documentId = Integer.parseInt( documentIds[i] );
-                DocumentDomainObject document = getDocument( getDocumentStopWatch, documentMapper, documentId );
+                getDocumentStopWatch.resume();
+                DocumentDomainObject document = documentMapper.getDocument( documentId );
+                getDocumentStopWatch.suspend();
                 addDocumentToIndex( document, indexWriter );
                 if ( indexingStopWatch.getTime() >= nextIndexLogTime ) {
                     logIndexingProgress( i, numberOfDocuments );
@@ -146,14 +155,6 @@ public class DocumentIndex {
             log.debug( "Spent " + time + "ms (" + millisecondsPerDocument + "ms/document) fetching " + documentCount
                        + " documents from the database." );
         }
-    }
-
-    private DocumentDomainObject getDocument( StopWatch getDocumentStopWatch, DocumentMapper documentMapper,
-                                              int documentId ) {
-        getDocumentStopWatch.resume();
-        DocumentDomainObject document = documentMapper.getDocument( documentId );
-        getDocumentStopWatch.suspend();
-        return document;
     }
 
     private void optimizeIndex( IndexWriter indexWriter ) throws IOException {
@@ -273,7 +274,7 @@ public class DocumentIndex {
         calendar.setTime( fieldValue );
         calendar.set( Calendar.MILLISECOND, 0 );
         calendar.set( Calendar.SECOND, 0 );
-        Date roundedDate = calendar.getTime();
-        return roundedDate;
+        Date truncatedDate = calendar.getTime();
+        return truncatedDate;
     }
 }

@@ -19,7 +19,7 @@ import junit.framework.TestCase;
  */
 public class TestConnectionPoolForNonPoolingDriver extends TestCase {
 
-    private static Logger log = Logger.getLogger( "TestConnectionPoolForNonPoolingDriver" );
+    private final static Logger log = Logger.getLogger( imcode.server.db.TestConnectionPoolForNonPoolingDriver.class.getName() );
 
     private String driverClassName ;
     private String userName ;
@@ -28,6 +28,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
 
     private static final String DATABASE_PROPERTIES_SYSTEM_PROPERTY = "test.db.properties";
     private static final String DEFAULT_DATABASE_PROPERTIES_FILE = "build.properties";
+    private static final int HALF_A_SECOND_MILLIS = 500;
 
     static {
         Layout layout = new SimpleLayout() ;
@@ -59,18 +60,13 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
         ConnectionPoolForNonPoolingDriver cm = new ConnectionPoolForNonPoolingDriver( driverClassName, dbUrl, userName, passWord, poolSize );
         final Connection con1 = cm.getConnection();
         assertNotNull(con1) ;
+        String con1String = con1.toString();
 
-        final int sleepTimeInMs = 500;
-        final long sleepUntil = System.currentTimeMillis() + sleepTimeInMs ;
+        final int sleepTimeInMs = HALF_A_SECOND_MILLIS;
+        final long wakeUpTime = System.currentTimeMillis() + sleepTimeInMs ;
         new Thread( ) {
             public void run() {
-                for (long sleepLeft = sleepUntil - System.currentTimeMillis() ; sleepLeft > 0 ; sleepLeft = sleepUntil - System.currentTimeMillis()) {
-                    try {
-                        Thread.sleep( sleepLeft );
-                    } catch ( InterruptedException e ) {
-                        log.warn(e) ;
-                    }
-                }
+                sleepUntil( wakeUpTime );
                 try {
                     con1.close();
                 } catch ( SQLException e ) {
@@ -81,7 +77,20 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
         // This should hang until con1 is closed.
         Connection con2 = cm.getConnection();
         assertNotNull(con2) ;
-        assertSame(con1, con2);
+        // assertSame won't work since the Connection is wrapped by a new object in getConnection(),
+        // which also nulls the connection upon close().
+        assertEquals( con1String, con2.toString() );
+        con2.close();
+    }
+
+    private void sleepUntil( final long wakeUpTime ) {
+        for (long sleepLeft = wakeUpTime - System.currentTimeMillis() ; sleepLeft > 0 ; sleepLeft = wakeUpTime - System.currentTimeMillis()) {
+            try {
+                Thread.sleep( sleepLeft );
+            } catch ( InterruptedException e ) {
+                log.warn(e) ;
+            }
+        }
     }
 
     public void testTwoDifferentConnections() throws Exception {
