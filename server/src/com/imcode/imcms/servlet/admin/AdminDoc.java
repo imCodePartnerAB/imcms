@@ -100,6 +100,10 @@ public class AdminDoc extends HttpServlet {
         }
 
         DocumentDomainObject document = imcref.getDocumentMapper().getDocument( meta_id );
+        if ( null == document ) {
+            return GetDoc.getDocumentDoesNotExistPage( res, user );
+        }
+
         int doc_type = document.getDocumentTypeId();
 
         Integer userflags = (Integer)user.remove( PARAMETER__DISPATCH_FLAGS );		// Get the flags from the user-object

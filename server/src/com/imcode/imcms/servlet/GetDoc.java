@@ -59,12 +59,6 @@ public class GetDoc extends HttpServlet {
             throws IOException, ServletException {
         ImcmsServices imcref = Imcms.getServices();
 
-        Vector vec = new Vector();
-        SystemData sysData = imcref.getSystemData();
-        String eMailServerMaster = sysData.getServerMasterAddress();
-        vec.add( "#EMAIL_SERVER_MASTER#" );
-        vec.add( eMailServerMaster );
-
         HttpSession session = req.getSession( true );
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
@@ -82,8 +76,7 @@ public class GetDoc extends HttpServlet {
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( meta_id );
         if ( null == document ) {
-            res.setStatus( HttpServletResponse.SC_NOT_FOUND );
-            return imcref.getAdminTemplate( NO_PAGE_URL, user, vec );
+            return getDocumentDoesNotExistPage( res, user );
         }
 
         DocumentRequest documentRequest;
@@ -193,7 +186,7 @@ public class GetDoc extends HttpServlet {
             try {
                 fr = new BufferedInputStream( file.getInputStreamSource().getInputStream() );
             } catch ( IOException ex ) {
-                return imcref.getAdminTemplate( NO_PAGE_URL, user, vec );
+                return getDocumentDoesNotExistPage( res, user ) ;
             }
             int len = fr.available();
             ServletOutputStream out = res.getOutputStream();
@@ -250,6 +243,17 @@ public class GetDoc extends HttpServlet {
             String result = imcref.parsePage( paramsToParser );
             return result;
         }
+    }
+
+    public static String getDocumentDoesNotExistPage( HttpServletResponse res, UserDomainObject user ) {
+        ImcmsServices imcref = Imcms.getServices();
+        List vec = new ArrayList();
+        SystemData sysData = imcref.getSystemData();
+        String eMailServerMaster = sysData.getServerMasterAddress();
+        vec.add( "#EMAIL_SERVER_MASTER#" );
+        vec.add( eMailServerMaster );
+        res.setStatus( HttpServletResponse.SC_NOT_FOUND );
+        return imcref.getAdminTemplate( NO_PAGE_URL, user, vec );
     }
 
     public static void redirectToExternalDocumentTypeWithAction( DocumentDomainObject document,
