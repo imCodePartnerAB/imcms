@@ -182,7 +182,7 @@ public class GetExistingDoc extends HttpServlet {
             } else if ( "date_archived".equalsIgnoreCase( sortBy ) ) {
                 return Utility.compareDatesWithNullFirst( d1.getArchivedDatetime(), d2.getArchivedDatetime() );
             } else if ( "date_activated".equalsIgnoreCase( sortBy ) ) {
-                return Utility.compareDatesWithNullFirst( d1.getActivatedDatetime(), d2.getActivatedDatetime() );
+                return Utility.compareDatesWithNullFirst( d1.getPublicationStartDatetime(), d2.getPublicationStartDatetime() );
             } else {
                 return d1.getId() - d2.getId();
             }
@@ -461,7 +461,7 @@ public class GetExistingDoc extends HttpServlet {
                 "#meta_text#", document.getMenuText(),
                 "#date_created#", formatDate( dateFormat, document.getCreatedDatetime() ),
                 "#date_modified#", formatDate( dateFormat, document.getModifiedDatetime() ),
-                "#date_activated#", formatDate( dateFormat, document.getActivatedDatetime() ),
+                "#date_activated#", formatDate( dateFormat, document.getPublicationStartDatetime() ),
                 "#date_archived#", formatDate( dateFormat, document.getArchivedDatetime() ),
                 "#archive#", document.isArchived() ? "1" : "0",
             };

@@ -414,7 +414,7 @@ public class SearchDocuments extends HttpServlet {
             "#meta_text#", document.getMenuText(),
             "#date_created#", "" + ObjectUtils.defaultIfNull( document.getCreatedDatetime(), "&nbsp;" ),
             "#date_modified#", "" + ObjectUtils.defaultIfNull( document.getModifiedDatetime(), "&nbsp;" ),
-            "#date_activated#", "" + ObjectUtils.defaultIfNull( document.getActivatedDatetime(), "&nbsp;" ),
+            "#date_activated#", "" + ObjectUtils.defaultIfNull( document.getPublicationStartDatetime(), "&nbsp;" ),
             "#date_archived#", "" + ObjectUtils.defaultIfNull( document.getArchivedDatetime(), "&nbsp;" ),
             "#archive#", document.isArchived() ? "1" : "0",
             "#shared#", "0",

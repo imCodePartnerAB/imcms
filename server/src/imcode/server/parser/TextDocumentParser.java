@@ -253,30 +253,34 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 menuItemDocument.setMetaId( childMetaId );
                 menuItem.setSortKey( Integer.parseInt( childRow[2] ) );      // What order the document is sorted in in the menu, using sort-order 2 (manual sort)
                 menuItem.setTreeSortKey( childRow[3] );
-                menuItemDocument.setArchivedFlag( !"0".equals( childRow[5] ) );
-                menuItemDocument.setTarget( childRow[6] );
+                menuItemDocument.setTarget( childRow[5] );
                 try {
-                    menuItemDocument.setCreatedDatetime( datetimeFormatWithSeconds.parse( childRow[7] ) );
+                    menuItemDocument.setCreatedDatetime( datetimeFormatWithSeconds.parse( childRow[6] ) );
                 } catch ( java.text.ParseException ignored ) {
                 }
                 try {
-                    menuItemDocument.setModifiedDatetime( datetimeFormatWithSeconds.parse( childRow[8] ) );
+                    menuItemDocument.setModifiedDatetime( datetimeFormatWithSeconds.parse( childRow[7] ) );
                 } catch ( java.text.ParseException ignored ) {
                 }
-                menuItemDocument.setHeadline( childRow[9] );
-                menuItemDocument.setMenuText( childRow[10] );
-                menuItemDocument.setImage( childRow[11] );
+                menuItemDocument.setHeadline( childRow[8] );
+                menuItemDocument.setMenuText( childRow[9] );
+                menuItemDocument.setImage( childRow[10] );
                 try {
-                    menuItemDocument.setActivatedDatetime( datetimeFormatWithSeconds.parse( childRow[13] ) );
+                    menuItemDocument.setPublicationStartDatetime( datetimeFormatWithSeconds.parse( childRow[11] ) );
                 } catch ( NullPointerException ignored ) {
                 } catch ( ParseException ignored ) {
                 }
                 try {
-                    menuItemDocument.setArchivedDatetime( datetimeFormatWithSeconds.parse( childRow[14] ) );
+                    menuItemDocument.setArchivedDatetime( datetimeFormatWithSeconds.parse( childRow[12] ) );
                 } catch ( NullPointerException ignored ) {
                 } catch ( ParseException ignored ) {
                 }
-                menuItem.setEditable( "0".equals( childRow[15] ) );           // if the user may admin it.
+                try {
+                    menuItemDocument.setPublicationEndDatetime( datetimeFormatWithSeconds.parse( childRow[13] ) );
+                } catch ( NullPointerException ignored ) {
+                } catch ( ParseException ignored ) {
+                }
+                menuItem.setEditable( "0".equals( childRow[14] ) );           // if the user may admin it.
 
                 if ( ( !menuItemDocument.isActivated() || menuItemDocument.isArchived() ) && !menumode ) { // if not menumode, and document is inactive or archived, don't include it.
                     continue;

@@ -10,7 +10,7 @@
     document.setMenuText( "Test menu text");
     document.setMenuImageURL("Test menu image url");
 
-    document.setActivatedDatetime( new Date() );
+    document.setPublicationStartDatetime( new Date() );
     document.setArchivedDatetime( new Date() );
     document.setArchivedFlag( true );
 

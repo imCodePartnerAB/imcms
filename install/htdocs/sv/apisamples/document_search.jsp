@@ -78,7 +78,7 @@ java.util.*" errorPage="error.jsp" %>
 
                     for ( int i = 0; i < documents.length; i++ ) {
                         Document document = documents[i]; %>
-                        <li><%= document.getId() %> - <%= document.getHeadline() %> - <%= document.getActivatedDatetime() %></li><%
+                        <li><%= document.getId() %> - <%= document.getHeadline() %> - <%= document.getPublicationStartDatetime() %></li><%
                     }
                 }
             }

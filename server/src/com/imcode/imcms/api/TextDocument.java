@@ -158,11 +158,6 @@ public class TextDocument extends Document {
         return new Menu(this, menuIndexInDocument, securityChecker);
     }
 
-    public void setLanguage(Language language) throws NoPermissionException {
-        securityChecker.hasEditPermission(this);
-        internalDocument.setLanguageIso639_2(language.getIsoCode639_2());
-    }
-
     public static class TextField {
         TextDocumentTextDomainObject imcmsText;
         private TextDocument document;

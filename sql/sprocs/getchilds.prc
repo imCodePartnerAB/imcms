@@ -20,11 +20,10 @@ AS
   Nice little query that lists the children of a document that a particular user may see, and includes a field that tells you wether he may do something to it or not.
  */
 select  to_meta_id, c.menu_sort,manual_sort_order, tree_sort_index, doc_type,
-  archive,target, convert (varchar,date_created,120), convert (varchar,date_modified,120),
-  meta_headline,meta_text,meta_image,frame_name,
-  activated_datetime,archived_datetime,
-  min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1)),
-  fd.filename
+  target, convert (varchar,date_created,120), convert (varchar,date_modified,120),
+  meta_headline,meta_text,meta_image,
+  publication_start_datetime,archived_datetime,publication_end_datetime,
+  min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1))
 from   childs c
 join   meta m
      on    m.meta_id = c.to_meta_id     -- meta.meta_id corresponds to childs.to_meta_id
@@ -45,13 +44,10 @@ join user_roles_crossref urc           -- This table tells us which users have w
         m.show_meta != 0    -- and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)
       )
      )
-left join fileupload_docs fd
-     on  fd.meta_id = c.to_meta_id
 group by to_meta_id, c.menu_sort,manual_sort_order, tree_sort_index, doc_type,
-  archive,target, convert (varchar,date_created,120), convert (varchar,date_modified,120),
-  meta_headline,meta_text,meta_image,frame_name,
-  activated_datetime,archived_datetime,
-  fd.filename
+  target, convert (varchar,date_created,120), convert (varchar,date_modified,120),
+  meta_headline,meta_text,meta_image,
+  publication_start_datetime,archived_datetime,publication_end_datetime
 order by  menu_sort
 
 GO

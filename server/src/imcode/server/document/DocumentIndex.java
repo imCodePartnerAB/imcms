@@ -184,8 +184,8 @@ public class DocumentIndex {
         if ( null != document.getModifiedDatetime() ) {
             indexDocument.add( unStoredKeyword( "modified_datetime", document.getModifiedDatetime() ) );
         }
-        if ( null != document.getActivatedDatetime() ) {
-            indexDocument.add( unStoredKeyword( "activated_datetime", document.getActivatedDatetime() ) );
+        if ( null != document.getPublicationStartDatetime() ) {
+            indexDocument.add( unStoredKeyword( "activated_datetime", document.getPublicationStartDatetime() ) );
         }
         if ( null != document.getArchivedDatetime() ) {
             indexDocument.add( unStoredKeyword( "archived_datetime", document.getArchivedDatetime() ) );

@@ -15,7 +15,7 @@ for document with id <%=documentId%>
 Headline: "<%=document.getHeadline()%>"
 Menu text: "<%=document.getMenuText()%>"
 Menu image url: "<%=document.getMenuImageURL()%>"
-Activated date/time: <%=document.getActivatedDatetime()%>
+Published date/time: <%=document.getPublicationStartDatetime()%>
 Archived date/Time: <%=document.getArchivedDatetime()%>
 Archived flag: <%=document.getArchivedFlag()%>
 Sections:

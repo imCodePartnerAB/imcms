@@ -516,7 +516,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             } else if ( "archived".startsWith( type ) ) {
                 date = document.getArchivedDatetime();
             } else if ( "activated".startsWith( type ) ) {
-                date = document.getActivatedDatetime();
+                date = document.getPublicationStartDatetime();
             } else {
                 return "<!-- <?imcms:datetime ... type=\"" + type + "\" is empty, wrong or does not exist! -->";
             }

@@ -40,18 +40,11 @@ public class AdminDoc extends HttpServlet {
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( metaId );
         if ( IMCConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
-            DocumentComposer.addObjectToSessionAndSetSessionAttributeNameInRequest( AdminDoc.class.getName()
-                                                                                    + ".document", document, req, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
-
-            req.getRequestDispatcher( "DocumentComposer?"+DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION+"="+DocumentComposer.ACTION__EDIT_DOCUMENT_INFORMATION ).forward( req, res );
+            forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_DOCUMENT_INFORMATION );
         } else if ( document instanceof BrowserDocumentDomainObject && IMCConstants.DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT == flags ) {
-            DocumentComposer.addObjectToSessionAndSetSessionAttributeNameInRequest( AdminDoc.class.getName()
-                                                                                    + ".document", document, req, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
-            req.getRequestDispatcher( "DocumentComposer?"+DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION+"="+DocumentComposer.ACTION__EDIT_BROWSER_DOCUMENT ).forward( req, res );
+            forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_BROWSER_DOCUMENT );
         } else if ( document instanceof HtmlDocumentDomainObject && IMCConstants.DISPATCH_FLAG__EDIT_HTML_DOCUMENT == flags ) {
-            DocumentComposer.addObjectToSessionAndSetSessionAttributeNameInRequest( AdminDoc.class.getName()
-                                                                                    + ".document", document, req, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
-            req.getRequestDispatcher( "DocumentComposer?"+DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION+"="+DocumentComposer.ACTION__EDIT_HTML_DOCUMENT ).forward( req, res );
+            forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_HTML_DOCUMENT );
         } else {
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -80,6 +73,13 @@ public class AdminDoc extends HttpServlet {
             }
 
         }
+    }
+
+    private void forwardDocumentToDocumentComposerWithAction( HttpServletRequest req, HttpServletResponse res,
+                                                              DocumentDomainObject document, String action ) throws ServletException, IOException {
+        DocumentComposer.addObjectToSessionAndSetSessionAttributeNameInRequest( AdminDoc.class.getName()
+                                                                                + ".document", document, req, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
+        req.getRequestDispatcher( "DocumentComposer?"+DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION+"="+action ).forward( req, res );
     }
 
     public static String adminDoc( int meta_id, int parent_meta_id, UserDomainObject user, HttpServletRequest req,

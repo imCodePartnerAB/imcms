@@ -599,12 +599,11 @@ public class DocumentMapper {
 
     private int sqlInsertIntoMeta( DocumentDomainObject document ) {
         String[] metaColumnNames = {
-            "description", "doc_type", "meta_headline", "meta_text", "meta_image",
-            "owner_id", "permissions", "shared", "expand", "show_meta", "help_text_id",
-            "archive", "status_id", "lang_prefix", "classification", "date_created",
-            "date_modified", "sort_position", "menu_position", "disable_search", "target",
-            "frame_name", "activate", "activated_datetime", "archived_datetime",
-            "publisher_id"
+            "doc_type", "meta_headline", "meta_text", "meta_image",
+            "owner_id", "permissions", "shared", "show_meta",
+            "lang_prefix", "date_created", "date_modified", "disable_search",
+            "target", "activate", "archived_datetime",  "publisher_id",
+            "status", "publication_start_datetime", "publication_end_datetime"
         };
 
         String sqlPlaceHolders = "?" + StringUtils.repeat( ",?", metaColumnNames.length - 1 );
@@ -612,7 +611,6 @@ public class DocumentMapper {
                         + sqlPlaceHolders
                         + ") SELECT @@IDENTITY";
         List sqlColumnValues = new ArrayList();
-        sqlColumnValues.add( "" );
         sqlColumnValues.add( document.getDocumentTypeId() + "" );
         sqlColumnValues.add( document.getHeadline() );
         sqlColumnValues.add( document.getMenuText() );
@@ -620,24 +618,18 @@ public class DocumentMapper {
         sqlColumnValues.add( document.getCreator().getUserId() + "" );
         sqlColumnValues.add( makeSqlStringFromBoolean( document.isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo() ) );
         sqlColumnValues.add( makeSqlStringFromBoolean( document.isLinkableByOtherUsers() ) );
-        sqlColumnValues.add( "1" );
         sqlColumnValues.add( makeSqlStringFromBoolean( document.isVisibleInMenuForUnauthorizedUsers() ) );
-        sqlColumnValues.add( "1" );
-        sqlColumnValues.add( makeSqlStringFromBoolean( document.isArchivedFlag() ) );
-        sqlColumnValues.add( "1" );
         sqlColumnValues.add( document.getLanguageIso639_2() );
-        sqlColumnValues.add( "" );
         sqlColumnValues.add( makeSqlStringFromDate( document.getCreatedDatetime() ) );
         sqlColumnValues.add( makeSqlStringFromDate( document.getModifiedDatetime() ) );
-        sqlColumnValues.add( "1" );
-        sqlColumnValues.add( "1" );
         sqlColumnValues.add( makeSqlStringFromBoolean( document.isSearchDisabled() ) );
         sqlColumnValues.add( document.getTarget() );
-        sqlColumnValues.add( "" );
         sqlColumnValues.add( "1" );
-        sqlColumnValues.add( makeSqlStringFromDate( document.getActivatedDatetime() ) );
         sqlColumnValues.add( makeSqlStringFromDate( document.getArchivedDatetime() ) );
         sqlColumnValues.add( null != document.getPublisher() ? document.getPublisher().getUserId() + "" : null );
+        sqlColumnValues.add( ""+document.getStatus() );
+        sqlColumnValues.add( makeSqlStringFromDate( document.getPublicationStartDatetime() ) );
+        sqlColumnValues.add( makeSqlStringFromDate( document.getPublicationEndDatetime() ) );
 
         String metaIdStr = service.sqlQueryStr( sqlStr, (String[])sqlColumnValues.toArray( new String[sqlColumnValues.size()] ) );
         final int metaId = Integer.parseInt( metaIdStr );
@@ -786,7 +778,8 @@ public class DocumentMapper {
         ArrayList sqlUpdateColumns = new ArrayList();
         ArrayList sqlUpdateValues = new ArrayList();
 
-        makeDateSqlUpdateClause( "activated_datetime", document.getActivatedDatetime(), sqlUpdateColumns, sqlUpdateValues );
+        makeDateSqlUpdateClause( "publication_start_datetime", document.getPublicationStartDatetime(), sqlUpdateColumns, sqlUpdateValues );
+        makeDateSqlUpdateClause( "publication_end_datetime", document.getPublicationEndDatetime(), sqlUpdateColumns, sqlUpdateValues );
         makeDateSqlUpdateClause( "archived_datetime", document.getArchivedDatetime(), sqlUpdateColumns, sqlUpdateValues );
         makeDateSqlUpdateClause( "date_created", document.getCreatedDatetime(), sqlUpdateColumns, sqlUpdateValues );
         String headlineThatFitsInDB = headline.substring( 0,
@@ -798,16 +791,14 @@ public class DocumentMapper {
         String textThatFitsInDB = text.substring( 0, Math.min( text.length(), META_TEXT_MAX_LENGTH - 1 ) );
         makeStringSqlUpdateClause( "meta_text", textThatFitsInDB, sqlUpdateColumns, sqlUpdateValues );
         makeStringSqlUpdateClause( "lang_prefix", document.getLanguageIso639_2(), sqlUpdateColumns, sqlUpdateValues );
-        makeBooleanSqlUpdateClause( "archive", document.isArchivedFlag(), sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSqlUpdateClause( "disable_search", document.isSearchDisabled(), sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSqlUpdateClause( "shared", document.isLinkableByOtherUsers(), sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSqlUpdateClause( "show_meta", document.isVisibleInMenuForUnauthorizedUsers(), sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSqlUpdateClause( "permissions", document.isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo(), sqlUpdateColumns, sqlUpdateValues );
         makeIntSqlUpdateClause( "publisher_id", ( publisher == null ? null : new Integer( publisher.getUserId() ) ), sqlUpdateColumns,
                                 sqlUpdateValues );
+        makeIntSqlUpdateClause( "status", new Integer(document.getStatus()),sqlUpdateColumns,sqlUpdateValues );
 
-        // todo: Remove from the meta table all collumns that are not used.
-        // Candidates: All not used above.
         sqlStr.append( StringUtils.join( sqlUpdateColumns.iterator(), "," ) );
         sqlStr.append( " where meta_id = ?" );
         sqlUpdateValues.add( "" + document.getId() );
@@ -1197,31 +1188,32 @@ public class DocumentMapper {
         if ( 0 == result.length ) {
             return null;
         }
-        final int documentTypeId = Integer.parseInt( result[2] );
+        final int documentTypeId = Integer.parseInt( result[1] );
         DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId( documentTypeId );
 
         document.setMetaId( Integer.parseInt( result[0] ) );
-        document.setHeadline( result[3] );
-        document.setMenuText( result[4] );
-        document.setImage( result[5] );
-        document.setCreator( imcmsAAUM.getUser( Integer.parseInt( result[6] ) ) );
-        document.setPermissionSetOneIsMorePrivilegedThanPermissionSetTwo( getBooleanFromSqlResultString( result[7] ) );
-        document.setLinkableByOtherUsers( getBooleanFromSqlResultString( result[8] ) );
-        document.setVisibleInMenuForUnauthorizedUsers( getBooleanFromSqlResultString( result[10] ) );
-        document.setArchivedFlag( getBooleanFromSqlResultString( result[12] ) );
-        document.setLanguageIso639_2( LanguageMapper.getAsIso639_2OrDefaultLanguage( result[14], service ) );
+        document.setHeadline( result[2] );
+        document.setMenuText( result[3] );
+        document.setImage( result[4] );
+        document.setCreator( imcmsAAUM.getUser( Integer.parseInt( result[5] ) ) );
+        document.setPermissionSetOneIsMorePrivilegedThanPermissionSetTwo( getBooleanFromSqlResultString( result[6] ) );
+        document.setLinkableByOtherUsers( getBooleanFromSqlResultString( result[7] ) );
+        document.setVisibleInMenuForUnauthorizedUsers( getBooleanFromSqlResultString( result[8] ) );
+        document.setLanguageIso639_2( LanguageMapper.getAsIso639_2OrDefaultLanguage( result[9], service ) );
         DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
-        document.setCreatedDatetime( parseDateFormat( dateFormat, result[16] ) );
-        document.setModifiedDatetime( parseDateFormat( dateFormat, result[17] ) );
-        document.setSearchDisabled( getBooleanFromSqlResultString( result[20] ) );
-        document.setTarget( result[21] );
-        document.setActivatedDatetime( parseDateFormat( dateFormat, result[23] ) );
-        document.setArchivedDatetime( parseDateFormat( dateFormat, result[24] ) );
-        String publisherIdStr = result[25];
+        document.setCreatedDatetime( parseDateFormat( dateFormat, result[10] ) );
+        document.setModifiedDatetime( parseDateFormat( dateFormat, result[11] ) );
+        document.setSearchDisabled( getBooleanFromSqlResultString( result[12] ) );
+        document.setTarget( result[13] );
+        document.setArchivedDatetime( parseDateFormat( dateFormat, result[14] ) );
+        String publisherIdStr = result[15];
         if ( null != publisherIdStr ) {
             UserDomainObject publisher = imcmsAAUM.getUser( Integer.parseInt( publisherIdStr ) );
             document.setPublisher( publisher );
         }
+        document.setStatus(Integer.parseInt(result[16])) ;
+        document.setPublicationStartDatetime( parseDateFormat( dateFormat, result[17] ) );
+        document.setPublicationEndDatetime( parseDateFormat( dateFormat, result[18] ) );
 
         return document;
     }

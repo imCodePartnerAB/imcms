@@ -22,6 +22,9 @@ public class Document {
     IMCServiceInterface service;
 
     private final static Logger log = Logger.getLogger( "com.imcode.imcms.api.Document" );
+    public static final int STATUS_NEW = DocumentDomainObject.STATUS_NEW ;
+    public static final int STATUS_PUBLICATION_DISAPPROVED = DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED ;
+    public static final int STATUS_PUBLICATION_APPROVED = DocumentDomainObject.STATUS_PUBLICATION_APPROVED ;
 
     public Document( DocumentDomainObject document, IMCServiceInterface service, SecurityChecker securityChecker, DocumentService documentService,
                      DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper,
@@ -251,14 +254,24 @@ public class Document {
         return internalDocument.getTarget();
     }
 
+    /** @deprecated Use {@link #getPublicationStartDatetime()} */
     public Date getActivatedDatetime() throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission( this );
-        return internalDocument.getActivatedDatetime();
+        return getPublicationStartDatetime();
     }
 
+    public Date getPublicationStartDatetime() throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission( this );
+        return internalDocument.getPublicationStartDatetime();
+    }
+
+    /** @deprecated Use {@link #setPublicationStartDatetime(java.util.Date)} **/
     public void setActivatedDatetime( Date datetime ) throws NoPermissionException {
+        setPublicationStartDatetime( datetime );
+    }
+
+    public void setPublicationStartDatetime( Date datetime ) throws NoPermissionException {
         securityChecker.hasEditPermission( this );
-        internalDocument.setActivatedDatetime( datetime );
+        internalDocument.setPublicationStartDatetime( datetime );
     }
 
     public Date getArchivedDatetime() throws NoPermissionException {
@@ -352,6 +365,21 @@ public class Document {
         internalDocument.addSection( section.internalSection );
     }
 
+    public void setStatus( int status ) throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
+        internalDocument.setStatus(status);
+    }
+
+    public void setLanguage(Language language) throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
+        internalDocument.setLanguageIso639_2(language.getIsoCode639_2());
+    }
+
+    public void setPublicationEndDatetime( Date datetime ) throws NoPermissionException {
+        securityChecker.hasEditPermission( this );
+        internalDocument.setPublicationEndDatetime( datetime ) ;
+    }
+
     public abstract static class Comparator extends ChainableReversibleNullComparator {
 
         public int compare( Object o1, Object o2 ) {
@@ -394,7 +422,7 @@ public class Document {
 
         public final static Comparator ACTIVATED_DATETIME = new Comparator() {
             protected int compareDocuments( Document document1, Document document2 ) throws NoPermissionException {
-                return document1.getActivatedDatetime().compareTo( document2.getActivatedDatetime() );
+                return document1.getPublicationStartDatetime().compareTo( document2.getPublicationStartDatetime() );
             }
         };
 

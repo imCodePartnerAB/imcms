@@ -9,6 +9,13 @@
     TextDocument textDocument = documentService.createNewTextDocument( parentId, parentMenuNumber ) ;
     textDocument.setHeadline( "Test headline" );
     textDocument.setPlainTextField( 1, "Test text field" );
+    textDocument.setStatus(Document.STATUS_NEW);
+    textDocument.setStatus(Document.STATUS_PUBLICATION_DISAPPROVED);
+    textDocument.setStatus(Document.STATUS_PUBLICATION_APPROVED);
+    textDocument.setPublicationStartDatetime( friday );
+    textDocument.setArchivedDatetime( saturday );
+    textDocument.setPublicationEndDatetime( sunday );
+
     documentService.saveChanges(textDocument);
 %>
 Created a text document with id "<a href="../servlet/GetDoc?meta_id=<%= textDocument.getId() %>"><%= textDocument.getId() %></a>"

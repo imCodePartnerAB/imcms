@@ -13,7 +13,6 @@ CREATE PROCEDURE GetDocumentInfo
  @meta_id int
 AS
  SELECT meta_id,
-	 description,
 	doc_type,
 	meta_headline,
 	meta_text,
@@ -21,23 +20,17 @@ AS
 	owner_id,
 	permissions,
 	shared,
-	expand,
 	show_meta,
-	help_text_id,
-	archive,
-	status_id,
 	lang_prefix,
-	classification,
 	date_created,
 	date_modified,
-	sort_position,
-	menu_position,
 	disable_search,
 	target,
-	frame_name,
-	activated_datetime,
 	archived_datetime,
-	publisher_id
+	publisher_id,
+	status,
+	publication_start_datetime,
+	publication_end_datetime
  FROM meta
  WHERE meta_id=@meta_id
 GO

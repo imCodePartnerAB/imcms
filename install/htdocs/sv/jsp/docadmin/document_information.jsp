@@ -145,12 +145,12 @@ imcmsGui("mid", null);
 		<tr>
 			<td>
                 <input type="text" name="activated_date" size="11" maxlength="10" style="width: 7em;"
-                    value="<%= StringEscapeUtils.escapeHtml( formatDate(document.getActivatedDatetime()) ) %>">
+                    value="<%= StringEscapeUtils.escapeHtml( formatDate(document.getPublicationStartDatetime()) ) %>">
             </td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1007 ?></td>
 			<td>
                 <input type="text" name="activated_time" size="5" maxlength="5" style="width: 4em;"
-                    value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getActivatedDatetime()) ) %>">
+                    value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getPublicationStartDatetime()) ) %>">
             </td>
 			<td class="imcmsAdmDim">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/date_format ?></td>
 		</tr>

@@ -66,7 +66,7 @@ public class DocumentComposer extends HttpServlet {
     public static final String ACTION__EDIT_DOCUMENT_INFORMATION = "editDocumentInformation";
     public static final String ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION = "processEditedDocumentInformation";
     public static final String ACTION__EDIT_BROWSER_DOCUMENT = "editBrowserDocument";
-    public static final String ACTION__EDITED_BROWSER_DOCUMENT = "editedBrowserDocument";
+    public static final String ACTION__PROCESS_EDITED_BROWSER_DOCUMENT = "processEditedBrowserDocument";
     public static final String ACTION__EDIT_HTML_DOCUMENT = "editHtmlDocument";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -137,7 +137,7 @@ public class DocumentComposer extends HttpServlet {
             processNewDocumentInformation( newBrowserDocument, newDocumentParentInformation, user, request, response );
         } else if (ACTION__EDIT_BROWSER_DOCUMENT.equalsIgnoreCase( action )) {
             forwardToBrowserDocumentComposer( request, response );
-        } else if (ACTION__EDITED_BROWSER_DOCUMENT.equalsIgnoreCase( action )) {
+        } else if (ACTION__PROCESS_EDITED_BROWSER_DOCUMENT.equalsIgnoreCase( action )) {
             BrowserDocumentDomainObject browserDocument = (BrowserDocumentDomainObject)document;
             try {
                 documentMapper.saveDocument( browserDocument );
@@ -145,6 +145,8 @@ public class DocumentComposer extends HttpServlet {
                 throw new ServletException(e);
             }
             response.sendRedirect("AdminDoc?meta_id=" + document.getId()) ;
+        } else if (ACTION__EDIT_HTML_DOCUMENT.equalsIgnoreCase(action)) {
+            forwardToHtmlDocumentPage( request, response, user );
         } else if (ACTION__EDIT_DOCUMENT_INFORMATION.equalsIgnoreCase(action)) {
             forwardToDocinfoPage(request, response, user);
         } else if (ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION.equalsIgnoreCase(action)) {
@@ -360,7 +362,7 @@ public class DocumentComposer extends HttpServlet {
         Date archivedDatetime = parseDatetimeParameters(request, "archived_date", "archived_time", dateFormat,
                 timeFormat);
 
-        document.setActivatedDatetime(activatedDatetime);
+        document.setPublicationStartDatetime(activatedDatetime);
         document.setArchivedDatetime(archivedDatetime);
 
         document.removeAllSections();

@@ -360,3 +360,27 @@ COMMIT
 DELETE FROM browsers WHERE browser_id = 0
 
 -- 2004-03-01 Kreiger
+
+UPDATE meta SET archived_datetime = GETDATE() WHERE archive = 1 AND (archived_datetime IS NULL OR GETDATE() < archived_datetime )
+
+ALTER TABLE meta ADD
+        status INT NOT NULL DEFAULT 0,
+        publication_start_datetime DATETIME NULL,
+        publication_end_datetime DATETIME NULL
+
+UPDATE meta SET status = 2
+UPDATE meta SET publication_start_datetime = activated_datetime
+
+ALTER TABLE meta DROP
+        COLUMN description,
+        COLUMN expand,
+        COLUMN help_text_id,
+        COLUMN archive,
+        COLUMN classification,
+        COLUMN sort_position,
+        COLUMN menu_position,
+        COLUMN frame_name,
+        COLUMN status_id,
+        COLUMN activated_datetime
+
+-- 2004-03-03 Kreiger

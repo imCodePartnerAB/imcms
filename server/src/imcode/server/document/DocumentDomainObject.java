@@ -32,6 +32,9 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
     public static final int DOCTYPE_FORTUNES = 106;
 
     protected DocumentProperties documentInformation = new DocumentProperties();
+    public static final int STATUS_NEW = 0;
+    public static final int STATUS_PUBLICATION_DISAPPROVED = 1;
+    public static final int STATUS_PUBLICATION_APPROVED = 2;
 
     protected DocumentDomainObject() {
 
@@ -63,8 +66,8 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
         return getDocumentInformation().equals( o );
     }
 
-    public Date getActivatedDatetime() {
-        return getDocumentInformation().getActivatedDatetime();
+    public Date getPublicationStartDatetime() {
+        return getDocumentInformation().getPublicationStartDatetime();
     }
 
     public Date getArchivedDatetime() {
@@ -127,6 +130,10 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
         return getDocumentInformation().getSections();
     }
 
+    public int getStatus() {
+        return getDocumentInformation().getStatus() ;
+    }
+
     public String getTarget() {
         return getDocumentInformation().getTarget();
     }
@@ -153,10 +160,6 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
 
     public boolean isArchivedAtTime( Date time ) {
         return getDocumentInformation().isArchivedAtTime( time );
-    }
-
-    public boolean isArchivedFlag() {
-        return getDocumentInformation().isArchivedFlag();
     }
 
     public boolean isLinkableByOtherUsers() {
@@ -187,16 +190,12 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
         getDocumentInformation().removeCategory( category );
     }
 
-    public void setActivatedDatetime( Date v ) {
-        getDocumentInformation().setActivatedDatetime( v );
+    public void setPublicationStartDatetime( Date v ) {
+        getDocumentInformation().setPublicationStartDatetime( v );
     }
 
     public void setArchivedDatetime( Date v ) {
         getDocumentInformation().setArchivedDatetime( v );
-    }
-
-    public void setArchivedFlag( boolean v ) {
-        getDocumentInformation().setArchivedFlag( v );
     }
 
     public void setCreatedDatetime( Date v ) {
@@ -260,6 +259,10 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
         getDocumentInformation().setSections( sections );
     }
 
+    public void setStatus( int status ) {
+        getDocumentInformation().setStatus( status );
+    }
+
     public void setTarget( String v ) {
         getDocumentInformation().setTarget( v );
     }
@@ -312,11 +315,17 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
 
     public abstract void initDocumentFromDb( DocumentMapper documentMapper ) ;
 
+    public void setPublicationEndDatetime( Date datetime ) {
+        getDocumentInformation().setPublicationEndDatetime( datetime ) ;
+    }
+
+    public Date getPublicationEndDatetime() {
+        return getDocumentInformation().getPublicationEndDatetime() ;
+    }
+
     public static class DocumentProperties implements Cloneable, Serializable {
 
-        private Date activatedDatetime;
         private Date archivedDatetime;
-        private boolean archivedFlag;
         private Set categories = new HashSet();
         private Date createdDatetime;
         private UserDomainObject creator;
@@ -329,19 +338,22 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
         private int metaId;
         private Date modifiedDatetime;
         private boolean permissionSetOneIsMorePrivilegedThanPermissionSetTwo;
+        private Date publicationStartDatetime;
+        private Date publicationEndDatetime;
         private UserDomainObject publisher;
         private Map rolesMappedToPermissionSetIds = new HashMap();
         private boolean searchDisabled;
         private Set sections = new HashSet();
+        private int status;
         private String target;
         private boolean visibleInMenuForUnauthorizedUsers;
 
-        public Date getActivatedDatetime() {
-            return activatedDatetime;
+        public Date getPublicationStartDatetime() {
+            return publicationStartDatetime;
         }
 
-        public void setActivatedDatetime( Date v ) {
-            this.activatedDatetime = v;
+        public void setPublicationStartDatetime( Date v ) {
+            this.publicationStartDatetime = v;
         }
 
         public Date getArchivedDatetime() {
@@ -456,20 +468,8 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
             this.menuText = v;
         }
 
-        /**
-         * Check whether this document is archived.
-         * A document is archived if its archived-flag is set or if archived-datetime is in the past.
-         */
         public boolean isArchived() {
-            return isArchivedFlag() || isArchivedAtTime( new Date() );
-        }
-
-        public boolean isArchivedFlag() {
-            return archivedFlag;
-        }
-
-        public void setArchivedFlag( boolean v ) {
-            this.archivedFlag = v;
+            return isArchivedAtTime( new Date() );
         }
 
         public boolean isSearchDisabled() {
@@ -511,7 +511,7 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
         }
 
         private boolean isActivatedAtTime( Date time ) {
-            return ( activatedDatetime == null || activatedDatetime.before( time ) );
+            return ( publicationStartDatetime == null || publicationStartDatetime.before( time ) );
         }
 
         public boolean isActivatedAndNotArchived() {
@@ -589,6 +589,22 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
             }
 
             return true;
+        }
+
+        public void setStatus( int status ) {
+            this.status = status;
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public void setPublicationEndDatetime( Date publicationEndDatetime ) {
+            this.publicationEndDatetime = publicationEndDatetime;
+        }
+
+        public Date getPublicationEndDatetime() {
+            return publicationEndDatetime;
         }
 
     }

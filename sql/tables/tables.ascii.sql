@@ -566,7 +566,6 @@ GO
 
 CREATE TABLE [dbo].[meta] (
 	[meta_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[description] [varchar] (80) NOT NULL ,
 	[doc_type] [int] NOT NULL ,
 	[meta_headline] [nvarchar] (255) NOT NULL ,
 	[meta_text] [nvarchar] (1000) NOT NULL ,
@@ -574,24 +573,18 @@ CREATE TABLE [dbo].[meta] (
 	[owner_id] [int] NOT NULL ,
 	[permissions] [int] NOT NULL ,
 	[shared] [int] NOT NULL ,
-	[expand] [int] NOT NULL ,
 	[show_meta] [int] NOT NULL ,
-	[help_text_id] [int] NOT NULL ,
-	[archive] [int] NOT NULL ,
-	[status_id] [int] NOT NULL ,
 	[lang_prefix] [varchar] (3) NOT NULL ,
-	[classification] [varchar] (200) NOT NULL ,
 	[date_created] [datetime] NOT NULL ,
 	[date_modified] [datetime] NOT NULL ,
-	[sort_position] [int] NOT NULL ,
-	[menu_position] [int] NOT NULL ,
 	[disable_search] [int] NOT NULL ,
 	[target] [nvarchar] (10) NOT NULL ,
-	[frame_name] [varchar] (20) NOT NULL ,
 	[activate] [int] NOT NULL ,
-	[activated_datetime] [datetime] NULL ,
 	[archived_datetime] [datetime] NULL ,
-	[publisher_id] [int] NULL
+	[publisher_id] [int] NULL ,
+	[status] [int] NOT NULL ,
+	[publication_start_datetime] [datetime] NULL ,
+	[publication_end_datetime] [datetime] NULL
 ) ON [PRIMARY]
 GO
 

@@ -51,7 +51,7 @@ imcmsGui("mid", null);
 <% } else {%>
         <input type="hidden"
             name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
-            value="<%= DocumentComposer.ACTION__EDITED_BROWSER_DOCUMENT %>">
+            value="<%= DocumentComposer.ACTION__PROCESS_EDITED_BROWSER_DOCUMENT %>">
 <% } %>
         <input type="hidden"
             name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
