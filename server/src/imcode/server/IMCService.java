@@ -310,7 +310,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	
 
     public String parsePage (DocumentRequest documentRequest, int flags,ParserParameters paramsToParse) throws IOException {
-		return textDocParser.parsePage(documentRequest,flags,1,paramsToParse) ;
+		return textDocParser.parsePage(documentRequest,flags,paramsToParse) ;
     }
 
     /**

@@ -151,7 +151,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		implicitIncludeNumber = no + 1 ;
 	    }
 	    catch (NumberFormatException ex) {
-		return "" ;
+		return "<!-- imcms:include no failed: "+ex+" -->" ;
 	    }
 	} else if (null != (attributevalue = attributes.getProperty("file"))) { // If we have the attribute file="filename"...
 	    // Fetch a file from the disk
