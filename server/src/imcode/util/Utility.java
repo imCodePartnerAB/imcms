@@ -102,4 +102,15 @@ public class Utility {
 		return user;
 	}
 
+    public static boolean toBoolean( String property ) {
+        if (null == property) {
+            return false ;
+        }
+        property = property.toLowerCase() ;
+        if ("1".equals(property) || "y".equals(property) || "yes".equals(property) || "true".equals( property )) {
+            return true ;
+        }
+        return false ;
+    }
+
 }

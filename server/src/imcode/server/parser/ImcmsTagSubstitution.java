@@ -26,6 +26,7 @@ import java.net.URLEncoder;
 import java.util.*;
 import imcode.server.*;
 import imcode.util.Parser;
+import imcode.util.Utility;
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
 
@@ -606,23 +607,29 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     private String tagCategories(Properties attributes) {
         String categoryTypeName = attributes.getProperty("type") ;
-        Iterator categoriesIterator ;
+        CategoryDomainObject[] categories ;
+        final boolean shouldOutputDescription = Utility.toBoolean(attributes.getProperty("outputdescription")) ;
         if (null == categoryTypeName) {
-            categoriesIterator = Arrays.asList(document.getCategories()).iterator();
+            categories = document.getCategories();
         } else {
-            Transformer categoryNameToStringTransformer = new Transformer() {
-                public Object transform(Object object) {
-                    CategoryDomainObject category = (CategoryDomainObject) object;
-                    return category.getName();
-                }
-            };
             CategoryTypeDomainObject categoryType = serverObject.getDocumentMapper().getCategoryType(categoryTypeName) ;
             final CategoryDomainObject[] categoriesOfType = document.getCategoriesOfType(categoryType);
-            categoriesIterator = new TransformIterator(Arrays.asList(categoriesOfType).iterator(), categoryNameToStringTransformer);
+            categories = categoriesOfType ;
         }
-
+        String[] categoryStrings = new String[categories.length] ;
+        for ( int i = 0; i < categories.length; i++ ) {
+            CategoryDomainObject category = categories[i];
+            String categoryString = category.getName() ;
+            if (null == categoryTypeName) {
+                categoryString = category.getType()+": "+categoryString ;
+            }
+            if (shouldOutputDescription) {
+                categoryString += " - " + category.getDescription() ;
+            }
+            categoryStrings[i] = categoryString ;
+        }
         String separator = attributes.getProperty("separator", ",");
-        return StringUtils.join(categoriesIterator, separator);
+        return StringUtils.join(categoryStrings, separator);
     }
 
     private String tagLanguage(Properties attributes) {
