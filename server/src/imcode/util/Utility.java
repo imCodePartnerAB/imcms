@@ -180,4 +180,15 @@ public class Utility {
 	res.setHeader("Cache-Control","no-cache; must-revalidate;") ;
 	res.setHeader("Pragma","no-cache;") ;
     }
+
+    public static String joinArray(String[] array, String separator) {
+        StringBuffer result = new StringBuffer();
+        for (int i = 0; i < array.length; i++) {
+            if (0 != i) {
+                result.append(separator) ;
+            }
+            result.append(array[i]);
+        }
+        return result.toString();
+    }
 }

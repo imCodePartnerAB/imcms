@@ -49,8 +49,8 @@ public class BillBoardForum extends BillBoard {//ConfForum
 		if (super.checkSession(req,res) == false)	return ;
 
 		// Lets get the standard parameters and validate them
-		Properties params = super.getSessionParameters(req) ;
-		if (super.checkParameters(req, res, params) == false) {
+		Properties params = MetaInfo.createPropertiesFromMetaInfoParameters(super.getBillBoardSessionParameters(req)) ;
+        if (true == false) {
 			
 			String header = "BillBoardForum servlet. " ;
 			String msg = params.toString() ;

@@ -8,14 +8,11 @@
  *
 */
 
-import imcode.server.* ;
 import java.io.*;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.external.diverse.* ;
-import java.rmi.* ;
-import java.rmi.registry.* ;
 
 /**
  * 
@@ -34,8 +31,6 @@ import java.rmi.registry.* ;
 */
 
 public class ConfDiscView extends Conference {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
 	String HTML_TEMPLATE ;         // the relative path from web root to where the servlets are
 
@@ -49,18 +44,9 @@ public class ConfDiscView extends Conference {
 		// Properties params = super.getParameters(req) ;
 
 		// Lets get the standard SESSION parameters and validate them
-		Properties params = super.getSessionParameters(req) ;
+		Properties params = MetaInfo.createPropertiesFromMetaInfoParameters(super.getConferenceSessionParameters(req)) ;
 
-		if (super.checkParameters(req, res, params) == false) {
-			/*
-			String header = "ConfViewer servlet. " ;
-			String msg = params.toString() ;
-			ConfError err = new ConfError(req,res,header,1) ;
-			*/
-			return;
-		} 
-
-		// Lets get an user object  
+		// Lets get an user object
 		imcode.server.User user = super.getUserObj(req,res) ;
 		if(user == null) return ;
 		

@@ -129,7 +129,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 
 	// Lets get the parameters and validate them
 	Properties params = this.getParameters(req) ;
-	if (checkParameters(req, res, params) == false) return ;
+        if (true == false) return ;
 
 	// Lets get an user object
 	imcode.server.User user = super.getUserObj(req,res) ;
@@ -414,7 +414,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 	throws ServletException, IOException {
 
 	// Lets get the standard metainformation
-	Properties reqParams  = super.getSessionParameters(req) ;
+	Properties reqParams  = MetaInfo.createPropertiesFromMetaInfoParameters(super.getBillBoardSessionParameters(req)) ;
 
 	/* Lets get our own variables. We will first look for the discussion_id
 	   in the request object, other wise, we will get the one from our session object

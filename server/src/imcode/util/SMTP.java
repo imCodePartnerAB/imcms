@@ -197,7 +197,7 @@ public class SMTP {
        @exception ProtocolException Is thrown whenever an errormessage is received from the server, i.e. an SMTP-protocol error.
        @exception IOException Thrown when an I/O-error occurs, or the connection times out.
     */
-    public void giveMail (String msg) throws ProtocolException, IOException {
+    public void giveMail (String[] headers, String msg) throws ProtocolException, IOException {
 	if (sock == null) {
 	    throw new IOException("Connection closed.");
 	}
@@ -207,6 +207,11 @@ public class SMTP {
 	    throw new ProtocolException("DATA response is: "+resp);
 	}
 	StringBuffer sb = new StringBuffer();
+	for (int i = 0; i < headers.length; ++i) {
+	    String header = headers[i] ;
+	    sb.append(header).append("\r\n") ;
+	}
+	sb.append("\r\n") ;
 	StringTokenizer st = new StringTokenizer(msg,"\r\n");
 	while (st.hasMoreTokens()) {
 	    String temp = st.nextToken();
@@ -289,13 +294,16 @@ public class SMTP {
 	    toAddressesString.append(to[i]) ;
 	    giveRecipient(to[i]) ;
 	}
-	StringBuffer toString = new StringBuffer() ;
-	String temp = "From: "+from+"\r\nTo: "+toAddressesString.toString()+"\r\n";
-	if (subject!=null) {
-	    temp+="Subject: "+subject+"\r\n";
-	}
-	temp+=msg;
-	giveMail(temp);
+	String fromHeader = "From: "+from ;
+	String toHeader = "To: "+toAddressesString.toString() ;
+	String subjectHeader = "Subject: " + (subject == null ? "" : subject) ;
+
+	String[] headers = new String[] {
+	    fromHeader,
+	    toHeader,
+	    subjectHeader,
+	} ;
+	giveMail(headers,msg);
     }
 
 }

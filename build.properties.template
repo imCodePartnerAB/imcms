@@ -59,6 +59,11 @@ webappname = imcms
 
 rooturl = /${webappname}
 
+# The imCMS documents is usually on the imCMS public site, http://doc.imcms.net/
+# If you want to install a local server for handling (modifing) the documents
+# change this:
+
+documentation-host = doc.imcms.net
 
 # Whether the build should be optimized or not.
 # Warning: Turning this on may remove the version control constants from the class-files.
@@ -101,3 +106,5 @@ build-fortune
 build-postcard
 build-readrunner
 #build-shop
+build-htmleditor
+

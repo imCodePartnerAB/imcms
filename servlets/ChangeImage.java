@@ -10,9 +10,7 @@ import imcode.server.*;
    Edit imageref  - upload image to server.
 */
 public class ChangeImage extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-
+    
     /**
        init()
     */

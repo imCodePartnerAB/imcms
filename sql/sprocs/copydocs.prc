@@ -1,6 +1,6 @@
-SET QUOTED_IDENTIFIER OFF 
+SET QUOTED_IDENTIFIER OFF
 GO
-SET ANSI_NULLS ON 
+SET ANSI_NULLS ON
 GO
 
 /****** Object:  Stored Procedure imcms.CopyDocs    Script Date: 2002-09-24 12:03:12 ******/
@@ -16,7 +16,7 @@ GO
 
 CREATE    PROCEDURE CopyDocs @documents_string VARCHAR(200), @parent_id INT, @menu_id INT, @user INT, @copyPrefix VARCHAR(20) AS
 /**
-   @documents_string =  commasepatated string with meta_id´s	
+   @documents_string =  commasepatated string with meta_id´s
    @parent_id = parent document
    @menu_id = menu-number in parent document
    @user = user id
@@ -66,7 +66,7 @@ LEFT JOIN	doc_permission_sets_ex dpse
 							rr.set_id = 1
 						OR	rr.set_id = 2
 					)
-WHERE 		urc.role_id = 0	
+WHERE 		urc.role_id = 0
 	OR	rr.set_id = 0
 	OR	dpse.permission_id = 8
 GROUP BY	t.meta_id
@@ -210,7 +210,7 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 	)
 	DECLARE @copy_id INT
 	SET @copy_id = @@IDENTITY
-	INSERT INTO text_docs 
+	INSERT INTO text_docs
 	SELECT	@copy_id,
 		template_id,
 		group_id,
@@ -329,13 +329,14 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 	SELECT	@copy_id,
 			to_meta_id,
 			menu_sort,
-			manual_sort_order
+			manual_sort_order,
+			tree_sort_index
 	FROM		childs
 	WHERE	meta_id = @meta_id
 	DECLARE @child_max INT
 	-- FIXME: manual_sort_order should be an identity column
 	SELECT @child_max = MAX(manual_sort_order)+10 FROM childs WHERE meta_id = @parent_id AND menu_sort = @menu_id
-	INSERT INTO childs VALUES(@parent_id, @copy_id, @menu_id, @child_max)
+	INSERT INTO childs (meta_id, to_meta_id, menu_sort, manual_sort_order, tree_sort_index) VALUES(@parent_id, @copy_id, @menu_id, @child_max, '')
 	FETCH NEXT FROM documents_cursor
 	INTO	@meta_id,
  		@description,
@@ -379,8 +380,8 @@ update meta
 
 GO
 
-SET QUOTED_IDENTIFIER OFF 
+SET QUOTED_IDENTIFIER OFF
 GO
-SET ANSI_NULLS ON 
+SET ANSI_NULLS ON
 GO
 

@@ -97,10 +97,9 @@ public class Administrator extends HttpServlet {
 
 	    // Save the request URL as the true target and redirect to the login page.
 	    session.setAttribute("login.target", HttpUtils.getRequestURL(req).toString());
-	    String serverName = MetaInfo.getServerName(req) ;
 	    String startUrl = imcref.getStartUrl() ;
 
-	    res.sendRedirect(serverName + startUrl) ;
+	    res.sendRedirect(startUrl) ;
 	    return false;
 	}
 	return true ;
@@ -158,7 +157,6 @@ public class Administrator extends HttpServlet {
 
 
 	// Lets add the server host
-	String servletHome = MetaInfo.getServletHost(req) ;
 	vm.addProperty("SERVLET_URL", "")  ;
 	vm.addProperty("SERVLET_URL2", "")  ;
 

@@ -2,10 +2,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_AddChatP
 drop procedure [dbo].[C_AddChatParams]
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_AddChatRoomConnection]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[C_AddChatRoomConnection]
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_AddMessageType]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[C_AddMessageType]
 GO
@@ -18,20 +14,8 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_AddNewCh
 drop procedure [dbo].[C_AddNewChatMsg]
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_AddNewChatRoom]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[C_AddNewChatRoom]
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_AddNewMsgType]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[C_AddNewMsgType]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_AddNewRoom]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[C_AddNewRoom]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_AddNewRoomMsg]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[C_AddNewRoomMsg]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_AddTemplateLib]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -46,24 +30,12 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_DeleteAu
 drop procedure [dbo].[C_DeleteAuthorizations]
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_DeleteChatRoom]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[C_DeleteChatRoom]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_DeleteChatRooms]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[C_DeleteChatRooms]
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_DeleteConnections]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[C_DeleteConnections]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_DeleteMessage]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[C_DeleteMessage]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_DeleteRoom]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[C_DeleteRoom]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_Delete_MsgTypes]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -76,10 +48,6 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_FindTemplateLib]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[C_FindTemplateLib]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_GetAllRooms]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[C_GetAllRooms]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_GetAllTemplateLibs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -122,10 +90,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_GetChatP
 drop procedure [dbo].[C_GetChatParametersMini]
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_GetMaxRoomId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[C_GetMaxRoomId]
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_GetMessageId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[C_GetMessageId]
 GO
@@ -136,22 +100,6 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_GetMsgTypes]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[C_GetMsgTypes]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_GetRoomId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[C_GetRoomId]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_GetRoomIds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[C_GetRoomIds]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_GetRoomName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[C_GetRoomName]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_GetRooms]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[C_GetRooms]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_GetTemplateIdFromName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -172,10 +120,6 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_GetTheMsgTypesBase]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[C_GetTheMsgTypesBase]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_GetTheRoomId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[C_GetTheRoomId]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_MetaIdExists]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -207,8 +151,6 @@ GO
 SET ANSI_NULLS OFF 
 GO
 
-
-
 CREATE PROCEDURE C_AddChatParams 
  @meta_id int,
  @updateTime int,
@@ -223,30 +165,8 @@ CREATE PROCEDURE C_AddChatParams
 AS
 delete from C_chatParameters
 where chatId = @meta_id
-
 INSERT INTO C_chatParameters( chatId ,updateTime,reload ,inOut ,privat,publik,dateTime,font )
 VALUES (@meta_id , @updateTime , @reload , @inOut, @privat, @publik, @dateTime , @font)
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
-
-CREATE PROCEDURE C_AddChatRoomConnection
- 
- @meta_id int,
- @room_id int
- AS
-INSERT INTO C_chat_room(meta_id, room_id)
-VALUES (@meta_id, @room_id)
-
 
 GO
 SET QUOTED_IDENTIFIER OFF 
@@ -269,7 +189,6 @@ declare @retVal int
 select @retVal = msg_id
 from C_msg_type
 where msg_string like @namn
-
 if(@retVal is null) begin
 	INSERT INTO C_msg_type(msg_string)
 	VALUES (@namn)
@@ -277,10 +196,10 @@ if(@retVal is null) begin
 	DECLARE @returnVal int
 	SELECT @returnVal =  max(msg_id)
 	FROM C_msg_type
-
 	INSERT INTO C_chat_msg_type(msg_id, meta_id)
 	VALUES (@returnVal, @meta_id)
 end
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -291,8 +210,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_AddNewChat
 /*
@@ -305,7 +222,6 @@ AS
 INSERT INTO C_chat (meta_id,name,permType)
 VALUES (@meta_id, @name, @permType)
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -316,8 +232,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_AddNewChatMsg 
  
@@ -328,7 +242,6 @@ AS
 INSERT INTO C_chat_msg_type (msg_id,meta_id)
 VALUES (@msg_id,@meta_id)
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -339,30 +252,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
-
-CREATE PROCEDURE C_AddNewChatRoom 
- 
- @meta_id int,
- @room_id int,
- @room_name varChar(255)
- 
-AS
-INSERT INTO C_room (room_id,room_name,meta_id)
-VALUES (@room_id,@room_name,@meta_id)
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
 
 CREATE PROCEDURE C_AddNewMsgType 
  @msg_id int,
@@ -371,7 +260,6 @@ AS
 INSERT INTO C_msg_type (msg_id,msg_string)
 VALUES (@msg_id,@msg_type)
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -382,51 +270,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
-
-CREATE PROCEDURE C_AddNewRoom 
- @room_name varchar(255)
-AS
-INSERT INTO C_room (room_name)
-VALUES (@room_name)
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
-
-CREATE PROCEDURE C_AddNewRoomMsg 
- 
- @msg_id int,
- @room_id int
- 
-AS
-INSERT INTO C_chat_msg_type (msg_id,meta_id)
-VALUES (@msg_id,@room_id)
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
 
 CREATE PROCEDURE C_AddTemplateLib
 /*
@@ -437,7 +280,6 @@ AS
 INSERT INTO C_templates (template_lib)
 VALUES  ( @newTemplateLib)
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -448,8 +290,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_ChatAutoTypes 
  
@@ -460,7 +300,6 @@ AS
 INSERT INTO C_chat_authorization (authorization_id,meta_id)
 VALUES (@autho_id,@room_id)
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -471,8 +310,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_DeleteAuthorizations
  @chatId int
@@ -482,7 +319,6 @@ AS
  FROM C_chat_authorization
  WHERE meta_id = @chatId
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -493,53 +329,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
-
-CREATE PROCEDURE C_DeleteChatRoom
- @meta_id int,
- @room_id int
-AS
- DELETE
- FROM C_chat_room
- WHERE room_id = @room_id
-and meta_id=@meta_id
- DELETE 
- FROM C_room
- WHERE room_id= @room_id
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
-CREATE PROCEDURE C_DeleteChatRooms
- @chatId int
-AS
- 
- DELETE
- FROM C_room
- WHERE meta_id = @chatId
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
 
 CREATE PROCEDURE C_DeleteConnections
  @chatId int
@@ -552,7 +341,6 @@ AS
  FROM C_chat_msg_type
  WHERE meta_id= @chatId
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -563,8 +351,6 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_DeleteMessage
  @meta_id int,
@@ -578,7 +364,6 @@ and meta_id=@meta_id
  --FROM C_msg_type
 -- WHERE msg_id= @msg_id
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -589,30 +374,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
-
-CREATE PROCEDURE C_DeleteRoom
- @room_id int
-AS
- 
- DELETE
- FROM C_chat_room
- WHERE room_id = @room_id
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
 
 CREATE PROCEDURE C_Delete_MsgTypes
  @meta_id int
@@ -620,6 +381,7 @@ AS
  DELETE
  FROM C_chat_msg_type
  WHERE meta_id=@meta_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -630,8 +392,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_FindMetaId
 /*
@@ -649,7 +409,6 @@ WHERE meta_id = @newMetaId
 SELECT @returnVal = ISNULL(@returnVal, 1) 
 SELECT @returnVal AS 'FoundMetaId'
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -660,8 +419,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_FindTemplateLib
 /*
@@ -678,7 +435,6 @@ WHERE template_lib = @newLibName
 SELECT @returnVal =  ISNULL(@returnVal, -1) 
 SELECT @returnVal AS 'TemplateLib'
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -689,26 +445,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
-
-CREATE PROCEDURE C_GetAllRooms
-AS
-select room_name  from C_room
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
 
 CREATE PROCEDURE C_GetAllTemplateLibs  AS
 /*
@@ -719,7 +455,6 @@ to create the list where the admin can choose among current templatelibs
 SELECT DISTINCT t.template_lib , t.template_lib
 FROM C_templates t
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -730,14 +465,11 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_GetAllTypes
  AS
 select msg_string from C_msg_type
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -748,14 +480,11 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_GetAuthorizationTypes
  AS
 select authorization_id, authorization_type from C_authorization_types
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -766,8 +495,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_GetBaseMsgTypes 
 AS
@@ -775,7 +502,6 @@ select msg_string
 from C_msg_type
 where msg_Id >=100 and msg_Id < 104
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -786,8 +512,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_GetChat
 @chat_id int
@@ -795,7 +519,6 @@ AS
 select * from C_chat
 where meta_id=@chat_id
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -806,8 +529,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_GetChatAutoTypes 
  @meta_id int
@@ -816,7 +537,6 @@ select authorization_id
 from C_chat_authorization
 where meta_id = @meta_id
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -827,8 +547,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_GetChatName
 @chat_id int
@@ -836,7 +554,6 @@ AS
 select name from C_chat
 where meta_id=@chat_id
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -847,8 +564,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_GetChatNameAndPerm
 @meta_id int
@@ -856,7 +571,6 @@ AS
 select name, permType from C_chat
 where meta_id=@meta_id
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -867,8 +581,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_GetChatParameters
  @meta_id int
@@ -876,6 +588,7 @@ CREATE PROCEDURE C_GetChatParameters
 select updateTime,reload,inOut,privat,publik,dateTime,font 
 from C_chatParameters
 where chatId = @meta_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -886,34 +599,12 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_GetChatParametersMini
  @meta_id int
  AS
 select updateTime,reload,inOut,privat,publik,dateTime,font from C_chatParameters
 where chatId = @meta_id
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
-
-CREATE PROCEDURE C_GetMaxRoomId
-AS
-select max(room_id)+1 
-from C_room
-
 
 GO
 SET QUOTED_IDENTIFIER OFF 
@@ -926,14 +617,11 @@ GO
 SET ANSI_NULLS OFF 
 GO
 
-
-
 CREATE PROCEDURE C_GetMessageId
 @string varchar(25)
 AS
 select msg_id  from C_msg_type
 where msg_string =@string
-
 
 GO
 SET QUOTED_IDENTIFIER OFF 
@@ -952,6 +640,7 @@ AS
 select msg_Id
 from C_msg_type
 where  msg_string=@msgType
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -962,8 +651,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_GetMsgTypes 
  @meta_id int
@@ -972,25 +659,6 @@ select t.msg_id, msg_string
 from C_msg_type t, C_Chat_msg_type ct
 where meta_id = @meta_id
 and ct.msg_id = t.msg_id
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
-
-CREATE PROCEDURE C_GetRoomId 
-@roomName varchar(255)
-AS
-select room_id  from C_room
-where room_name =@roomName
-
 
 GO
 SET QUOTED_IDENTIFIER OFF 
@@ -1002,66 +670,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
-
-CREATE PROCEDURE C_GetRoomIds
-@chat_id int
-AS
-select room_id  from C_chat_room
-where meta_id =@chat_id
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
-
-CREATE PROCEDURE C_GetRoomName
-@room_id int
-AS
-select room_name from C_room
-where room_id=@room_id
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
-
-CREATE PROCEDURE C_GetRooms
-@meta_id int
-AS
-select room_id, room_name  from C_room
-where meta_id =@meta_id
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
 
 CREATE PROCEDURE C_GetTemplateIdFromName
 /*
@@ -1078,7 +686,6 @@ WHERE t.template_lib = @aTemplateLibName
 SELECT @returnVal = ISNULL(  @returnVal , -1 )
 SELECT @returnVal AS 'TemplateId'
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1089,8 +696,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_GetTemplateLib
 /*
@@ -1107,6 +712,7 @@ AND ct.chat_id = c.meta_id
 AND c.meta_id = @meta_id
 SELECT @returnVal =  ISNULL(@returnVal, 'original') 
 SELECT @returnVal AS 'TemplateLib'
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1117,8 +723,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_GetTheMsgId
  @meta_id int,
@@ -1129,7 +733,6 @@ AS
 and r.msg_id=cr.msg_id
 and cr.meta_id=@meta_id
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1140,8 +743,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_GetTheMsgTypes
  @meta_id int
@@ -1151,7 +752,6 @@ from C_msg_type m, C_chat_msg_type cm
 where  meta_id=@meta_id
 AND cm.msg_id=m.msg_id
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1162,8 +762,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_GetTheMsgTypesBase 
 AS
@@ -1171,7 +769,6 @@ select *
 from C_msg_type
 where msg_Id >=100 and msg_Id < 104
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1182,31 +779,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
-
-CREATE PROCEDURE C_GetTheRoomId
- @meta_id int,
- @name varChar(255)
-AS
- select distinct r.room_id from C_room r, C_chat_room cr
- where r.room_name like(@name)
-and r.room_id=cr.room_id
-and cr.meta_id=@meta_id
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
 
 CREATE PROCEDURE C_MetaIdExists
 /*
@@ -1224,7 +796,6 @@ WHERE meta_id = @newMetaId
 SELECT @returnVal = ISNULL(@returnVal, 1) 
 SELECT @returnVal AS 'FoundMetaId'
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1235,8 +806,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_SetNewTemplateLib
 /*
@@ -1250,10 +819,8 @@ DECLARE @returnVal int
 SELECT @returnVal =  C_templates.template_id
 from C_templates
 where template_lib = @newLibName
-
 INSERT INTO C_chat_templates(chat_id, template_id)
 values(@meta_id,@returnVal)
-
 
 GO
 SET QUOTED_IDENTIFIER OFF 
@@ -1265,8 +832,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_UpdateChatParams
  @chatId int,
@@ -1289,7 +854,6 @@ font = @font,
 dateTime = @dateTime
 WHERE chatId = @chatId
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1300,8 +864,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_deleteChatTemplateset
 	@meta_id int 
@@ -1310,7 +872,6 @@ Delete
 FROM C_chat_templates
 WHERE chat_id = @meta_id
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1321,8 +882,6 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
-
-
 
 CREATE PROCEDURE C_getCheckboxText
  @lang_id int
@@ -1330,7 +889,6 @@ CREATE PROCEDURE C_getCheckboxText
 select boxName, text_string  from C_chat_checkbox_text
 where lang_id=@lang_id
 
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1342,14 +900,11 @@ GO
 SET ANSI_NULLS OFF 
 GO
 
-
-
 CREATE PROCEDURE C_getParamsToCheckbox
  @chatId int
  AS
 select reload,inOut,privat,publik,dateTime,font,updateTime,chatId from C_chatParameters
 where chatId = @chatId
-
 
 GO
 SET QUOTED_IDENTIFIER OFF 

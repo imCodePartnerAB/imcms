@@ -1,13 +1,7 @@
 <HTML>
 <HEAD>
 <TITLE>Admin - L&auml;gga till nytt dokument</TITLE>
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
+
 </HEAD>
 
 <body bgcolor="#FFFFFF">
@@ -62,7 +56,7 @@ function openHelp(id){
 	  		<div align="left"> 
 		  <input TYPE="SUBMIT" value="OK" name="ok">
 		  <input TYPE="RESET" value="Återställ" name="reset">
-		  <input TYPE="SUBMIT" value="Avbryt" name="cancel">&nbsp; <a href="GetDoc?meta_id=90" target="_blank" onClick="openHelp('90'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		  <input TYPE="SUBMIT" value="Avbryt" name="cancel">&nbsp; <a href="@documentationurl@GetDoc?meta_id=90" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		  <font size="2"></font></div>
 	  </td>
 	</tr>
@@ -98,12 +92,9 @@ function openHelp(id){
 	<tr> 
 	  <td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Avdelning</font></td>
 	  <td valign="middle" bgcolor="#BABABA"> 		
-	  	<input type="Hidden" name="current_section_id" value="#current_section_id#">
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Nuvarande: #current_section_name# <br>
-		Byt till:&nbsp; 
-		<SELECT NAME="change_section" size="1">
-			<option value="-1">Ingen avdelning</option>			  
-			#section_option_list#		
+		<SELECT NAME="change_section" multiple size="4">
+			#section_option_list#
 		</SELECT>		
 		</font><br>		
 	  </td>
@@ -170,7 +161,7 @@ function openHelp(id){
 		<div align="left"> 
 		  <input TYPE="SUBMIT" value="OK" name="ok">
 		  <input TYPE="RESET" value="&Aring;terst&auml;ll" name="reset">
-		  <input TYPE="SUBMIT" value="Avbryt" name="cancel">&nbsp; <a href="GetDoc?meta_id=90" target="_blank" onClick="openHelp('90'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		  <input TYPE="SUBMIT" value="Avbryt" name="cancel">&nbsp; <a href="@documentationurl@GetDoc?meta_id=90" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		</div>
 	  </td>
 	</tr>

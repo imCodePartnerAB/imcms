@@ -3,14 +3,6 @@
 <title>Admin - L&auml;gga till nytt dokument</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<script language="javascript">
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</script>
-
 </head>
 <body bgcolor="#FFFFFF">
 
@@ -19,7 +11,6 @@ function openHelp(id){
 <input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
 <input type="HIDDEN" name="meta_id" value="#meta_id#">
 <input type="HIDDEN" name="description" size="30" value="" oldvalue="#description#">
-<input type="HIDDEN" name="current_section_id" value="#current_section_id#">
 <table width="750" border="0" cellspacing="0" bgcolor="#bababa" align="center">
 <tr bgcolor="#333366">
 	<td width="5%">&nbsp;</td>
@@ -62,7 +53,7 @@ function openHelp(id){
 			<td>&nbsp;</td>
 			<td><input TYPE="BUTTON" value="Avbryt" name="abort" onClick="document.forms.abortForm.submit(); return false"></td>
 			<td>&nbsp;</td>
-			<td><a href="GetDoc?meta_id=39" target="_blank" onClick="openHelp('39'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+			<td><a href="@documentationurl@GetDoc?meta_id=39" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
 		</tr>
 		</table></td>
 	</tr>
@@ -117,10 +108,8 @@ function openHelp(id){
 		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Avdelning</font></td>
 		<td> 		
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Nuvarande: #current_section_name# <br>
-		Byt till:&nbsp; 
-		<select name="change_section" size="1">
-			<option value="-1">Ingen avdelning</option>			  
-			#section_option_list#		
+		<select name="change_section" multiple size="4">
+			#section_option_list#
 		</select></font></td>
 	</tr>
 	<tr>
@@ -183,7 +172,7 @@ function openHelp(id){
 			<td></form><form name="abortForm" action="GetDoc"><input type="hidden" name="meta_id" value="#meta_id#">&nbsp;</td>
 			<td><input TYPE="button" value="Avbryt" onClick="document.forms.abortForm.submit(); return false"></td>
 			<td></form>&nbsp;</td>
-			<td><a href="GetDoc?meta_id=39" target="_blank" onClick="openHelp('39'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+			<td><a href="@documentationurl@GetDoc?meta_id=39" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
 		</tr>
 		</table></td>
 	</tr>

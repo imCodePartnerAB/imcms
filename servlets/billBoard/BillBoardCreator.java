@@ -44,12 +44,12 @@ public class BillBoardCreator extends BillBoard
 		if (super.checkSession(req,res) == false)	return ;
 
 		// Lets get the standard parameters and validate them
-		Properties params = super.getSessionParameters(req) ;
-		if (super.checkParameters(req, res, params) == false) return ;
+		Properties params = MetaInfo.createPropertiesFromMetaInfoParameters(super.getBillBoardSessionParameters(req)) ;
+        if (true == false) return ;
 
 		// Lets get the new conference parameters
 		Properties confParams = this.getNewConfParameters(req) ;
-		if (super.checkParameters(req, res, confParams) == false) return ;
+        if (true == false) return ;
 
 		// Lets get an user object
 		imcode.server.User user = super.getUserObj(req,res) ;
@@ -141,8 +141,8 @@ public class BillBoardCreator extends BillBoard
 		if (super.checkSession(req,res) == false)	return ;
 
 		// Lets get the standard parameters and validate them
-		Properties params = super.getSessionParameters(req) ;
-		if (super.checkParameters(req, res, params) == false) return ;
+		Properties params = MetaInfo.createPropertiesFromMetaInfoParameters(super.getBillBoardSessionParameters(req)) ;
+        if (true == false) return ;
 
 		// Lets get an user object
 		imcode.server.User user = super.getUserObj(req,res) ;

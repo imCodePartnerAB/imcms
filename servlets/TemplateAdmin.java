@@ -194,6 +194,23 @@ public class TemplateAdmin extends HttpServlet {
 			} else {
 				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
 			}
+        } else if ( req.getParameter("edit_template") != null ) {
+			String temp[] ;
+			temp = imcref.sqlQuery( "select template_id, simple_name from templates where lang_prefix = '"+lang+"' order by simple_name") ;
+			Vector vec = new Vector() ;
+			vec.add("#language#") ;
+			vec.add(lang) ;
+			if ( temp.length > 0 ) {
+				String temps = "" ;
+				for (int i = 0; i < temp.length; i+=2) {
+					temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;
+				}
+				vec.add("#templates#") ;
+				vec.add(temps);
+				htmlStr = imcref.parseDoc( vec, "template_edit.html",lang_prefix) ;
+			} else {
+				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
+			}
 		} else if ( req.getParameter("add_group") != null ) {
 			htmlStr = imcref.parseDoc( null, "templategroup_add.html",lang_prefix) ;
 		} else if ( req.getParameter("delete_group") != null ) {

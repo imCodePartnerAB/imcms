@@ -1,0 +1,45 @@
+/* *******************************************************************************************
+ *         FOR THE CHAT                                                                      *
+ ******************************************************************************************* */
+
+	/* Base Fonts */
+
+.chatFont              { font-family: Verdana,Geneva,sans-serif; }
+.chatFontNormal        { font-family: Verdana,Geneva,sans-serif; color:#000000; }
+.chatFontSystemMessage { font-family: Verdana,Geneva,sans-serif; color:#006600; font-style: italic; }
+.chatFontWhisperTo     { font-family: Verdana,Geneva,sans-serif; color:#9999cc; }
+.chatFontWhisperFrom   { font-family: Verdana,Geneva,sans-serif; color:#99cc99; }
+
+	/* Special */
+
+.chatControlBody { background-color:#f0f0ff; }
+.chatControlBodyTopline { background-color:#000099; }
+.chatControlBodyMidline { background-color:#000099; }
+
+.chatSelectBox, .chatInputField, .chatTextarea, .chatControlFont, .chatControlFont SELECT {
+	font: 11px Verdana,Geneva,sans-serif; color:#000000;
+}
+
+.chatButton, .chatButtonAbort, .chatButtonSettings {
+	font: bold 11px Verdana,Geneva,sans-serif; color:#ffffff;
+	background-color: #666699;
+	border: 2px outset #ffffff;
+	margin: 1px;
+	cursor: hand;
+}
+
+.chatButtonAbort, .chatButtonSettings { width: 68; }
+
+.chatButtonSend {
+	width: 140; height: 44; font: bold 12px Verdana,Geneva,sans-serif; color:#ffffff;
+	background-color: #339933; border: 2px outset #ffffff; margin: 1px; cursor: hand; }
+
+.chatButtonAdmin {
+	width: 69; font: bold 11px Verdana,Geneva,sans-serif; color:#ffffff;
+	background-color: #d6d3ce; border: 2px outset #ffffff; margin: 1px; cursor: hand; }
+
+.chatButtonKickout {
+	width: 69; font: bold 11px Verdana,Geneva,sans-serif; color:#ffffff;
+	background-color: #d6d3ce; border: 2px outset #ffffff; margin: 1px; cursor: hand; }
+
+B { font-weight: bold; }

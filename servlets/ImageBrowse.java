@@ -1,5 +1,5 @@
 import java.io.*;
-import java.io.FilenameFilter;
+
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -12,8 +12,6 @@ import imcode.server.* ;
    Browse images in image-directory.
 **/
 public class ImageBrowse extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     public final static String IMG_NEXT_LIST_TEMPLATE = "Admin_Img_List_Next.html";
     public final static String IMG_PREVIOUS_LIST_TEMPLATE = "Admin_Img_List_Previous.html";
@@ -32,7 +30,6 @@ public class ImageBrowse extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
     {
 
-	String host				= req.getHeader("Host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	String start_url	= imcref.getStartUrl() ;
 
@@ -78,6 +75,12 @@ public class ImageBrowse extends HttpServlet {
 	String img_dir_preset = req.getParameter("dirlist");//the dir to chow
 	String img_tag = "" ;
 
+    // get img label
+    String label = req.getParameter("label") ;
+	if (label == null) {
+	    label = "" ;
+	}
+
 	if (img_dir_preset == null)
 	    {//if img_dir_preset null then its first time, or a prew. of choosen image
 		img_dir_preset = req.getParameter("dirlist_preset") == null ? "":req.getParameter("dirlist_preset");
@@ -103,7 +106,7 @@ public class ImageBrowse extends HttpServlet {
 
 	//*lets get some path we need later on
 	String canon_path = file_path.getCanonicalPath();//ex: C:\Tomcat3\webapps\imcms\images
-	String root_dir_parent = file_path.getParent();//ex: c:\Tomcat3\webapps\imcms
+	String root_dir_parent = file_path.getParentFile().getCanonicalPath(); //ex: c:\Tomcat3\webapps\imcms
 	String root_dir_name = canon_path.substring(root_dir_parent.length());
 	if (root_dir_name.startsWith(File.separator))
 	    {
@@ -337,6 +340,9 @@ public class ImageBrowse extends HttpServlet {
 
 	vec.add("#img_no#");
 	vec.add(img_no);
+
+    vec.add("#label#");
+    vec.add(label);
 
 	vec.add("#dirlist_preset#");
 	vec.add(img_dir_preset);

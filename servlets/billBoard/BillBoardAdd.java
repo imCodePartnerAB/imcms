@@ -55,7 +55,7 @@ public class BillBoardAdd extends BillBoard	{
 
 	// Lets get all parameters for this servlet
 	Properties params = this.getParameters(req) ;
-	if (super.checkParameters(req, res, params) == false)
+        if (true == false)
 	    {
 		String header = SERVLET_NAME + " servlet. " ;
 		String msg = params.toString() ;
@@ -392,7 +392,7 @@ public class BillBoardAdd extends BillBoard	{
 
 	// Lets get all parameters for this servlet
 	Properties params = this.getParameters(req) ;
-	if (super.checkParameters(req, res, params) == false)
+        if (true == false)
 	    {
 		String header = SERVLET_NAME + " servlet. " ;
 		String msg = params.toString() ;
@@ -490,10 +490,10 @@ public class BillBoardAdd extends BillBoard	{
     {
 
 	// Lets get the standard SESSION metainformation
-	Properties params = super.getSessionParameters(req) ;
+	Properties params = MetaInfo.createPropertiesFromMetaInfoParameters(super.getBillBoardSessionParameters(req)) ;
 
 	// Lets get the EXTENDED SESSION PARAMETERS
-	super.getExtSessionParameters(req, params) ;
+	super.addExtSessionParametersToProperties(req, params) ;
 
 	// Lets get our REQUESTPARAMETERS
 	String addType = (req.getParameter("ADDTYPE")==null) ? " " : (req.getParameter("ADDTYPE")) ;

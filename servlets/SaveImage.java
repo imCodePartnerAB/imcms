@@ -11,9 +11,7 @@ import imcode.util.* ;
    Save image data.
 */
 public class SaveImage extends HttpServlet implements imcode.server.IMCConstants {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-
+    
     /**
        init()
     */
@@ -51,6 +49,12 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 	// get img_no
 	String i_no = req.getParameter( "img_no" ) ;
 	img_no = Integer.parseInt( i_no ) ;
+
+    // get img label
+    String label = req.getParameter("label") ;
+	if (label == null) {
+	    label = "" ;
+	}
 
 	// get image_height
 	String image_height = req.getParameter( "image_height" ) ;
@@ -351,6 +355,8 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 	    vec.add(m_id) ;
 	    vec.add("#img_no#") ;
 	    vec.add(i_no) ;
+        vec.add("#label#");
+        vec.add(label);
 
 	    vec.add("#folders#");
 	    vec.add(dirList);

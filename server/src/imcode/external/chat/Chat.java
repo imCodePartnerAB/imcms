@@ -1,7 +1,7 @@
 package imcode.external.chat;
 
 import java.util.*;
-import imcode.external.diverse.*;
+import imcode.server.User;
 /**
 *A Chat can contain zero or many ChatGroups.
 *A Chat can contain zero or many ChatMembers.
@@ -9,19 +9,15 @@ import imcode.external.diverse.*;
 *From the Chat you can create ChatGroups and ChatMembers
 */
 public class Chat{
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	
+
 	private int _chatId;	
 	private String _name = "";
 	private Hashtable _chatMembers;
 	private Vector _chatMsgTypes;
-	private Hashtable _chatGroups;
+	private ChatGroup chatGroup=new ChatGroup();
 	private static Counter _memberCounter;
-	private static Counter _roomCounter;
 	private static Counter _msgTypeCounter;
 
-	private int _permission; 
 	private	int _updateTime = 30;
 	private	int _reload = 3;
 	private int _inOut = 3;
@@ -29,10 +25,10 @@ public class Chat{
 	private	int _publik = 3;
 	private	int _dateTime = 3;
 	private	int _font = 3;
-	
+    private int _fontSize = 2;
+
 	private Vector _authorization;
 	private Vector _authorizationSelected;
-	private Vector _params;
 
 	static{
 		_memberCounter = new Counter();	
@@ -48,10 +44,8 @@ public class Chat{
 		 _chatMsgTypes = msgTypes;
 				
 		_chatMembers = new Hashtable();
-		_chatGroups = new Hashtable();
-		_authorizationSelected = new Vector();
+    	_authorizationSelected = new Vector();
 		
-		_roomCounter = new Counter();
 		_msgTypeCounter = new Counter();
 		_msgTypeCounter.setStartValue(200);
 	}
@@ -80,55 +74,62 @@ public class Chat{
 			return false;
 		}
 	}
-	public int getupdateTime() {
+	public int getRefreshTime() {
 		return _updateTime;
 	}
-	public void setupdateTime(int time) {
+	public void setRefreshTime(int time) {
 		_updateTime = time;
 	}
 	
-	public int getreload() {
+	public int isAutoRefreshEnabled() {
 		return _reload;
 	}		
-	public void setreload(int reload) {
+	public void setAutoRefreshEnabled(int reload) {
 		_reload = reload;
 	}
 	
-	public int getinOut() {
+	public int isShowEnterAndLeaveMessagesEnabled() {
 		return _inOut;
 	}
-	public void setinOut(int inOut) {
+	public void setShowEnterAndLeaveMessagesEnabled(int inOut) {
 		_inOut = inOut;
 	}
 	
-	public int getprivate() {
+	public int isShowPrivateMessagesEnabled() {
 		return _privat;
 	}
-	public void setprivate(int privat) {
+	public void setShowPrivateMessagesEnabled(int privat) {
 		_privat = privat;
 	}
 	
-	public int getpublic() {
+	public int isShowPublicMessagesEnabled() {
 		return _publik;
 	}
-	public void setpublic(int publik) {
+	public void setShowPublicMessagesEnabled(int publik) {
 		_publik = publik;
 	}
 	
-	public int getdateTime() {
+	public int isShowDateTimesEnabled() {
 		return _dateTime;
 	}
-	public void setdateTime(int dateTime) {
+	public void setShowDateTimesEnabled(int dateTime) {
 		_dateTime = dateTime;
 	}
 	
 	public int getfont() {
 		return _font;
 	}
-	public void setfont(int font) {
+	public void setFontSize(int font) {
 		_font = font;
 	}
-	
+
+    public int getfontSize() {
+		return _fontSize;
+	}
+	public void setfontSize(int fontSize) {
+		_font = fontSize;
+	}
+
 	public void setAuthorizations(Vector authorization){
 		_authorization = authorization;
 	}
@@ -137,9 +138,6 @@ public class Chat{
 		return (Vector)_authorization.clone();
 	}
 	
-	public int getPermission(){
-		return _permission;
-	}
 
 	public String getChatName(){
 		return _name == null?"":_name;
@@ -154,24 +152,23 @@ public class Chat{
 	}
 	
 	
-	public ChatMember createChatMember() {
+	public ChatMember createChatMember(User user, int referrerMetaId) {
 		_memberCounter.increment();
 		int memberNumber = _memberCounter.getValue();
-		ChatMember newMember = new ChatMember(memberNumber, this);
+		ChatMember newMember = new ChatMember(memberNumber, this, user, referrerMetaId);
 		_chatMembers.put(String.valueOf(memberNumber), newMember);
 		return newMember;
 	}
 	 
 	public boolean hasMemberName(String name) {
-		boolean found = false;
 		Enumeration enum = _chatMembers.elements();
-		while (enum.hasMoreElements() && !found) {
+		while (enum.hasMoreElements()) {
 			ChatMember temp = (ChatMember) enum.nextElement();
-			if( name.equals(temp.getName()) ){
-				found = true;
-			}			
+			if( name.equalsIgnoreCase(temp.getName()) ){
+				return true ;
+			}
 		}
-		return found;
+		return false;
 	}
 	
 	public void removeChatMember(int memberNumber) {
@@ -184,44 +181,10 @@ public class Chat{
 		String memberNumberString = String.valueOf(memberNumber);
 		return (ChatMember)_chatMembers.get(memberNumberString);
 	}
-	
-	public void createNewChatGroup(int idNr, String groupName){	
-		ChatGroup newGroup = new ChatGroup(idNr,groupName);
-		_chatGroups.put( String.valueOf(idNr),newGroup );
-		_roomCounter.setStartValue(idNr);
-	}
 
-	public void createNewChatGroup(String groupName){
-		_roomCounter.increment();
-		ChatGroup newGroup = new ChatGroup(_roomCounter.getValue(),groupName);
-		_chatGroups.put( String.valueOf(_roomCounter.getValue()),newGroup );
-	}
 
-	public void removeChatGroup(int groupNumber){
-		String groupNumberString = String.valueOf(groupNumber);
-		_chatGroups.remove(groupNumberString);
-	}
-	
-	
-	public Enumeration getAllChatGroups(){
-		return _chatGroups.elements();
-	}
-	
-	public Vector getAllChatGroupsIdAndNameV(){
-		Vector vect = new Vector();
-		Enumeration enum = getAllChatGroups();
-		while (enum.hasMoreElements()) {
-			ChatGroup group = (ChatGroup)enum.nextElement();			
-			vect.add(group.getGroupId()+"");
-			vect.add(group.getGroupName());
-		}
-		return vect;
-	}
-
-	
-	public ChatGroup getChatGroup(int groupNumber){
-		String groupNumberString = String.valueOf(groupNumber);
-		return (ChatGroup) _chatGroups.get(groupNumberString);
+    public ChatGroup getChatGroup(){
+		return (ChatGroup) chatGroup;
 	}
 
 	
@@ -229,13 +192,13 @@ public class Chat{
 		return "ChatId: " + _chatId + " ChatName: " + _name;
 	}
 
-		
+
 	public Vector getMsgTypes(){
   		return _chatMsgTypes;
  	}
 	
 	
-	public void setMsgTypes(Vector v){
+	public void  setMsgTypes(Vector v){
 		_chatMsgTypes = v;
 	}
 

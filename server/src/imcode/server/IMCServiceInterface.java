@@ -53,7 +53,7 @@ public interface IMCServiceInterface {
     void addExistingDoc(int meta_id,imcode.server.User user,int existing_meta_id,int doc_menu_no)
 	;
 
-    void saveManualSort(int meta_id,imcode.server.User user,java.util.Vector childs, java.util.Vector sort_no)
+    void saveManualSort(int meta_id,imcode.server.User user,List childs, List sort_no, int menuNumber)
 	;
 
     /**
@@ -130,7 +130,7 @@ public interface IMCServiceInterface {
 	;
 
     // Send a sql update query to the database
-    void sqlUpdateQuery(String sqlStr)  ;
+    int sqlUpdateQuery(String sqlStr)  ;
 
     // Send a sqlquery to the database and return a string
     String sqlQueryStr(String sqlQuery)
@@ -196,11 +196,11 @@ public interface IMCServiceInterface {
 			    String lang_prefix)  ;
 
     // parseExternaldoc use template
-    public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)
+    public String parseExternalDoc(java.util.List variables, String external_template_name, String lang_prefix, String doc_type)
 	;
 
     // parseExternaldoc use template
-    public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type, String templateSet)
+    public String parseExternalDoc(java.util.List variables, String external_template_name, String lang_prefix, String doc_type, String templateSet)
 	;
 
     // get templatehome
@@ -215,8 +215,15 @@ public interface IMCServiceInterface {
     public String getImageUrl()
 	;
 
+    // Return url-path to imcmsimages.
+    public String getImcmsImageUrl();
+
     // get file-path to images
     public File getImagePath()
+	;
+
+    // get file-path to imcmsimages
+    public File getImcmsImagePath()
 	;
 
     // get starturl
@@ -343,7 +350,7 @@ public interface IMCServiceInterface {
 
     public imcode.server.parser.Document getDocument(int meta_id) ;
 
-    public String getSection(int meta_id) ;
+    public String[] getSections(int meta_id) ;
 
     public String getFilename(int meta_id) ;
 
@@ -378,5 +385,15 @@ public interface IMCServiceInterface {
     public void setUserFlag(User user, String flagName);
 
     public void unsetUserFlag(User user, String flagName);
+
+    Hashtable sqlProcedureHash( String procedure, String[] params );
+
+    int sqlUpdateProcedure( String procedure, String[] params );
+
+    String sqlProcedureStr( String procedure, String[] params );
+
+    int sqlUpdateQuery(String sqlStr, String[] params);
+
+    void saveTreeSortIndex( int meta_id, User user, List childs, List sort_no, int menuNumber);
 
 }

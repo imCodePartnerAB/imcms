@@ -4,14 +4,9 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.external.diverse.* ;
-import java.rmi.* ;
-import java.rmi.registry.* ;
 import imcode.util.* ;
 
 public class ConfForum extends Conference {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-
     private final static String ADMIN_LINK_TEMPLATE = "Conf_Forum_Admin_Link.htm";
 
     String HTML_TEMPLATE ;
@@ -23,13 +18,6 @@ public class ConfForum extends Conference {
 
 	// Lets validate the session, e.g has the user logged in to Janus?
 	if (super.checkSession(req,res) == false)	return ;
-
-	// Lets get the standard parameters and validate them
-	Properties params = super.getSessionParameters(req) ;
-	if (super.checkParameters(req, res, params) == false) {
-	    return;
-	}
-
 
 	String htmlFile = HTML_TEMPLATE ;
 	if(req.getParameter("advancedView") != null) htmlFile = HTML_TEMPLATE_EXT ;
@@ -44,11 +32,8 @@ public class ConfForum extends Conference {
 
 	HttpSession session = req.getSession(false) ;
 	String aMetaId = (String) session.getAttribute("Conference.meta_id") ;
-	String aForumId = (String) session.getAttribute("Conference.forum_id") ;
-	String discIndex = params.getProperty("DISC_INDEX") ;
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 	// Lets get the information from DB

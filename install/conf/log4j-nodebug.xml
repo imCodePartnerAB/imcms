@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd" [<!ENTITY data SYSTEM "abc">]>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
 
 <!-- Start log4j configuration -->
@@ -11,85 +11,59 @@
     renderedClass="imcode.server.DocumentRequest"/>
 
   <!-- The accesslog (logs usermovements) -->
-  <appender name="ACCESS" class="imcode.util.log.WebAppFileAppender">
-    <param name="File" value="WEB-INF/logs/access.log"/>
+  <appender name="ACCESS" class="imcode.util.log.DailyRollingFileAppender">
+    <param name="DatePattern" value="'.'yyyy-MM-dd"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern"
 	     value="%d{ISO8601} %m%n"/>
     </layout>
   </appender>
 
-  <!--
-    Set up an asynchronous appender.
-    This slows everything down at little or no load,
-    but makes logging "free" under non-CPU-intensive high load.
-    If you are performance testing,
-    and find the the CPU is maxed out,
-    you should consider commenting this out,
-    and changing the category below.
-  -->
-  <appender name="ASYNCACCESS" class="org.apache.log4j.AsyncAppender">
+  <appender name="WEBAPPACCESS" class="imcode.util.log.WebAppFileAppender">
+    <param name="File" value="WEB-INF/logs/access.log"/>
     <appender-ref ref="ACCESS"/>
   </appender>
 
   <!-- The mainlog (captures edits and changes) -->
-  <appender name="MAIN" class="imcode.util.log.WebAppFileAppender">
-    <param name="File" value="WEB-INF/logs/main.log"/>
+  <appender name="MAIN" class="org.apache.log4j.FileAppender">
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601} %-5p %m%n"/>
     </layout>
   </appender>
 
-  <!--
-    Set up an asynchronous appender.
-    This slows everything down at little or no load,
-    but makes logging "free" under non-CPU-intensive high load.
-    If you are performance testing,
-    and find the the CPU is maxed out,
-    you should consider commenting this out,
-    and changing the category below.
-  -->
-  <appender name="ASYNCMAIN" class="org.apache.log4j.AsyncAppender">
+  <appender name="WEBAPPMAIN" class="imcode.util.log.WebAppFileAppender">
+    <param name="File" value="WEB-INF/logs/main.log"/>
     <appender-ref ref="MAIN"/>
   </appender>
 
   <!-- The errorlog (captures everything that doesn't go to one of the above. -->
-  <appender name="ERROR" class="imcode.util.log.WebAppFileAppender">
-    <param name="File" value="WEB-INF/logs/error.log"/>
+  <appender name="ERROR" class="org.apache.log4j.FileAppender">
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
     </layout>
   </appender>
 
-  <!--
-    Set up an asynchronous appender.
-    This slows everything down at little or no load,
-    but makes logging "free" under non-CPU-intensive high load.
-    If you are performance testing,
-    and find the the CPU is maxed out,
-    you should consider commenting this out,
-    and changing the category below.
-  -->
-  <appender name="ASYNCERROR" class="org.apache.log4j.AsyncAppender">
+  <appender name="WEBAPPERROR" class="imcode.util.log.WebAppFileAppender">
+    <param name="File" value="WEB-INF/logs/error.log"/>
     <appender-ref ref="ERROR"/>
   </appender>
 
   <!-- Set up accesslog with priority 'info' -->
   <category name="accesslog" additivity="false">
     <priority value="info"/>
-    <appender-ref ref="ASYNCACCESS"/>
+    <appender-ref ref="WEBAPPACCESS"/>
   </category>
 
   <!-- Set up mainlog with priority 'info' -->
   <category name="mainlog" additivity="false">
     <priority value="info"/>
-    <appender-ref ref="ASYNCMAIN"/>
+    <appender-ref ref="WEBAPPMAIN"/>
   </category>
 
   <!-- Set up the errorlog with priority 'info' -->
   <root>
     <priority value="info"/>
-    <appender-ref ref="ASYNCERROR"/>
+    <appender-ref ref="WEBAPPERROR"/>
   </root>
 
 </log4j:configuration>

@@ -11,9 +11,6 @@ import org.apache.log4j.* ;
 
 public class AdminUser extends Administrator
 {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-
     private final static String HTML_TEMPLATE = "AdminChangeUser.htm" ;
     
     private static Category log = Logger.getInstance( AdminUser.class.getName() ) ;
@@ -31,10 +28,10 @@ public class AdminUser extends Administrator
 
 	
 	// Lets validate the session
-	if (super.checkSession(req,res) == false)	return ;
+	if (checkSession(req,res) == false)	return ;
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.User user = getUserObj(req,res) ;
 	if(user == null)
 	    {
 		String header = "Error in AdminCounter." ;
@@ -73,8 +70,6 @@ public class AdminUser extends Administrator
 	}
 	
 	
-	String searchString = (req.getParameter("search")==null) ? "_z_" : req.getParameter("search") ;
-
 	String lang_prefix = user.getLangPrefix();
 
 	// Lets get all USERTYPES from DB
@@ -82,13 +77,26 @@ public class AdminUser extends Administrator
 	Vector userTypesV  = new Vector(java.util.Arrays.asList(userTypes)) ;
 	String user_type = ht.createHtmlCode("ID_OPTION", category, userTypesV ) ;
 	vm.addProperty("USER_TYPES", user_type  ) ;
-	
-	
-	String show = ( "null".equals(req.getParameter("showall"))) ? "1" : "0" ;
 
-	// Lets get all USERS from DB with firstname or lastname or login name like the searchString
-	String param = category + ", " + searchString + ", " + user.getUserId() + ", " + show ;
-	String[] usersArr = imcref.sqlProcedure("GetCategoryUsers " + param) ;
+
+    // Lets get all USERS from DB with firstname or lastname or login name like the searchString
+
+        // parameter to db
+        // @showAll = 1 : all users don't care about serchstring
+        // @showAll = 0 : only users like serchstring
+        // @active = 1 : only active users (where active=1)
+        // @active = 0 : all users  (where active= 0 or 1)
+
+    String searchString = req.getParameter("search");
+    int showAll = 0;
+    if  (searchString == null ){
+        searchString = "";
+        showAll = 1;
+    }
+    String active = ( "null".equals(req.getParameter("active"))) ? "1" : "0" ;
+    String param = category + ", '" + searchString + "', " + user.getUserId() + ", " + showAll + "," + active ;
+
+    String[] usersArr = imcref.sqlProcedure("GetCategoryUsers " + param) ;
 	Vector usersV  = new Vector(java.util.Arrays.asList(usersArr)) ;
 	String usersOption = ht.createHtmlCode("ID_OPTION", "", usersV ) ;
 	vm.addProperty("USERS_MENU", usersOption  ) ;
@@ -109,7 +117,7 @@ public class AdminUser extends Administrator
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	// Lets validate the session
-	if (super.checkSession(req,res) == false)	return ;
+	if (checkSession(req,res) == false)	return ;
 	
 	// Get the session
 	HttpSession session = req.getSession(false);
@@ -125,7 +133,7 @@ public class AdminUser extends Administrator
 	}
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.User user = getUserObj(req,res) ;
 	if(user == null)  {
 		String header = "Error in AdminCounter." ;
 		String msg = "Couldnt create an user object."+ "<BR>" ;
@@ -153,7 +161,7 @@ public class AdminUser extends Administrator
 
 
 	if ( req.getParameter("searchstring") != null ){
-		res.sendRedirect("AdminUser?search=" + req.getParameter("searchstring") + "&category=" +  req.getParameter("user_categories") + "&showall=" + req.getParameter("showall"));
+		res.sendRedirect("AdminUser?search=" + req.getParameter("searchstring").trim() + "&category=" +  req.getParameter("user_categories") + "&active=" + req.getParameter("active"));
 		return;
 	}
 

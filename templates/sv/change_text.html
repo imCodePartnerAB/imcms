@@ -1,13 +1,7 @@
 <HTML>
 <HEAD>
 <TITLE>Redigera text</TITLE>
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
+
 </HEAD>
 <BODY bgcolor="#FFFFFF">
   <FORM METHOD="POST" ACTION="SaveText">
@@ -40,8 +34,8 @@ function openHelp(id){
 	    <table border="0" width="100%">
 	      <tr>
 		<td align="left">
-		  <INPUT type="RADIO" NAME="type"  VALUE="0" #!html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Vanlig text</font>&nbsp;&nbsp;
-		  <INPUT type="RADIO" NAME="type"  VALUE="1" #html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HTML</font>
+		  <INPUT type="RADIO" NAME="format_type"  VALUE="0" #!html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Vanlig text</font>&nbsp;&nbsp;
+		  <INPUT type="RADIO" NAME="format_type"  VALUE="1" #html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HTML</font>
 		</td>
 		<td align="right">
 		  <INPUT TYPE="RESET" VALUE="&Aring;terst&auml;ll">
@@ -60,7 +54,7 @@ function openHelp(id){
 			<INPUT TYPE="SUBMIT" VALUE="  OK  " NAME="ok">
 		    </td>
 		    <td>
-			<INPUT TYPE="SUBMIT" VALUE="Avbryt" NAME="cancel">&nbsp;<a href="GetDoc?meta_id=36" target="_blank" onClick="openHelp('36'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+			<INPUT TYPE="SUBMIT" VALUE="Avbryt" NAME="cancel">&nbsp;<a href="@documentationurl@GetDoc?meta_id=36" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		    </td>
 		</tr>
 	    </table>
