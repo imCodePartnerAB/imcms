@@ -20,21 +20,25 @@ public class TestUserService extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
+
         contentManagementSystem = new MockContentManagementSystem();
+
+        UserDomainObject internalUser = new UserDomainObject();
+        internalUser.addRole( RoleDomainObject.SUPERADMIN );
+        contentManagementSystem.setCurrentUser( new User( internalUser ) );
+
         mockImcmsServices = new MockImcmsServices();
         ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( mockImcmsServices );
         mockImcmsServices.setImcmsAuthenticatorAndUserAndRoleMapper( imcmsAuthenticatorAndUserAndRoleMapper );
         contentManagementSystem.setInternal(mockImcmsServices) ;
+
         userService = new UserService(contentManagementSystem);
     }
 
     public void testNewUserCanHaveRoles() throws SaveException, NoPermissionException {
-        UserDomainObject internalUser = new UserDomainObject();
-        internalUser.addRole( RoleDomainObject.SUPERADMIN );
 
         mockImcmsServices.addExpectedSqlCall(new MockImcmsServices.SqlCall(ImcmsAuthenticatorAndUserAndRoleMapper.SPROC_GET_HIGHEST_USER_ID, null, "3")) ;
 
-        contentManagementSystem.setCurrentUser(new User( internalUser )) ;
         User user = userService.createNewUser( "test", "test" );
         user.addRole( new Role( RoleDomainObject.SUPERADMIN ) );
         userService.saveUser( user );
@@ -70,6 +74,15 @@ public class TestUserService extends TestCase {
         assertFalse( "Old first name set.", containsSqlCall( new UpdateTableSqlCallPredicate( "users", firstName ) ) );
         assertTrue( "New first name not set.", containsSqlCall( new UpdateTableSqlCallPredicate( "users", newFirstName ) ) );
         assertFalse( "User can not change own roles.", containsSqlCall( new SqlCallStringPredicate( "role" ) ) );
+    }
+
+    public void testCreateNewRole() throws SaveException, NoPermissionException {
+        mockImcmsServices.addExpectedSqlCall( new MockImcmsServices.SqlCall( ImcmsAuthenticatorAndUserAndRoleMapper.SQL_INSERT_INTO_ROLES, null, "3" ) );
+        String roleName = "test role";
+        Role newRole = userService.createNewRole( roleName ) ;
+        userService.saveRole( newRole );
+        mockImcmsServices.verifyExpectedSqlCalls();
+        assertTrue( containsSqlCall( new InsertTableSqlCallPredicate( "roles", roleName ) ) );
     }
 
     private boolean containsSqlCall( Predicate predicate ) {
@@ -144,6 +157,23 @@ public class TestUserService extends TestCase {
 
         boolean evaluateSqlCall( MockImcmsServices.SqlCall sqlCall ) {
             boolean stringMatchesUpdateTableName = Pattern.compile( "^update\\s+" + Pattern.quote( tableName ) ).matcher( sqlCall.getString().toLowerCase() ).find();
+            boolean parametersContainsParameter = ArrayUtils.contains( sqlCall.getParameters(), parameter );
+            return stringMatchesUpdateTableName && parametersContainsParameter;
+        }
+    }
+
+    private static class InsertTableSqlCallPredicate extends SqlCallPredicate {
+
+        private String tableName;
+        private String parameter;
+
+        InsertTableSqlCallPredicate( String tableName, String parameter ) {
+            this.tableName = tableName;
+            this.parameter = parameter;
+        }
+
+        boolean evaluateSqlCall( MockImcmsServices.SqlCall sqlCall ) {
+            boolean stringMatchesUpdateTableName = Pattern.compile( "^insert\\s+(?:into\\s+)?" + Pattern.quote( tableName ) ).matcher( sqlCall.getString().toLowerCase() ).find();
             boolean parametersContainsParameter = ArrayUtils.contains( sqlCall.getParameters(), parameter );
             return stringMatchesUpdateTableName && parametersContainsParameter;
         }

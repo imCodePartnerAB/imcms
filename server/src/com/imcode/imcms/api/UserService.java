@@ -127,7 +127,7 @@ public class UserService {
     }
 
     public Role createNewRole( String roleName ) {
-        return new Role( new RoleDomainObject( 0, roleName, 0 ) );
+        return new Role( new RoleDomainObject( roleName ) );
     }
 
     /**

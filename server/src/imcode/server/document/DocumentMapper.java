@@ -403,18 +403,16 @@ public class DocumentMapper {
 
     public void initRolesMappedToDocumentPermissionSetIds( DocumentDomainObject document ) {
 
-        String[][] sprocResult = service.sqlQueryMulti( "SELECT  r.role_id, r.role_name, r.admin_role, rr.set_id\n"
-                                                        + "FROM  roles AS r, roles_rights AS rr\n"
-                                                        + "WHERE rr.role_id = r.role_id AND rr.meta_id = ?",
+        String[][] sprocResult = service.sqlQueryMulti( "SELECT "+ImcmsAuthenticatorAndUserAndRoleMapper.SQL_ROLES_COLUMNS+", rr.set_id\n"
+                                                        + "FROM  roles, roles_rights AS rr\n"
+                                                        + "WHERE rr.role_id = roles.role_id AND rr.meta_id = ?",
                                                         new String[]{"" + document.getId()} );
 
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = service.getImcmsAuthenticatorAndUserAndRoleMapper();
         for ( int i = 0; i < sprocResult.length; ++i ) {
-            int roleId = Integer.parseInt( sprocResult[i][0] );
-            String roleName = sprocResult[i][1];
-            int adminRoleId = Integer.parseInt( sprocResult[i][2] );
-            RoleDomainObject role = new RoleDomainObject( roleId, roleName, adminRoleId );
+            RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapper.getRoleFromSqlResult(sprocResult[i]) ;
 
-            int rolePermissionSetId = Integer.parseInt( sprocResult[i][3] );
+            int rolePermissionSetId = Integer.parseInt( sprocResult[i][4] );
             document.setPermissionSetIdForRole( role, rolePermissionSetId );
         }
 

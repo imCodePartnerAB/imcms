@@ -15,7 +15,7 @@ public class RoleDomainObject implements Serializable, Comparable {
     public final static RolePermissionDomainObject PASSWORD_MAIL_PERMISSION = new RolePermissionDomainObject( 1 ) ;
     public final static RolePermissionDomainObject CONFERENCE_REGISTRATION_PERMISSION = new RolePermissionDomainObject( 2 ) ;
 
-    final static RoleDomainObject.RolePermissionDomainObject[] ALL_ROLE_PERMISSIONS = new RoleDomainObject.RolePermissionDomainObject[]{
+    private final static RoleDomainObject.RolePermissionDomainObject[] ALL_ROLE_PERMISSIONS = new RoleDomainObject.RolePermissionDomainObject[]{
         PASSWORD_MAIL_PERMISSION,
         CONFERENCE_REGISTRATION_PERMISSION,
     };
@@ -28,6 +28,10 @@ public class RoleDomainObject implements Serializable, Comparable {
     public static final int SUPERADMIN_ID = SUPERADMIN.getId() ;
     public static final int USERADMIN_ID = USERADMIN.getId() ;
     public static final int USERS_ID = USERS.getId() ;
+
+    public RoleDomainObject( String name ) {
+        this(0,name,0) ;
+    }
 
     public RoleDomainObject( int roleId, String roleName, int adminRoleId ) {
         this.id = roleId;
@@ -102,6 +106,19 @@ public class RoleDomainObject implements Serializable, Comparable {
 
     public RolePermissionDomainObject[] getPermissions() {
         return (RolePermissionDomainObject[])permissions.toArray( new RolePermissionDomainObject[permissions.size()] );
+    }
+
+    public void addUnionOfPermissionIdsToRole( int unionOfRolePermissionIds ) {
+        for ( int i = 0; i < RoleDomainObject.ALL_ROLE_PERMISSIONS.length; i++ ) {
+            RoleDomainObject.RolePermissionDomainObject permission = RoleDomainObject.ALL_ROLE_PERMISSIONS[i];
+            if ( bitIsSet( unionOfRolePermissionIds, permission.getId() ) ) {
+                addPermission( permission );
+            }
+        }
+    }
+
+    private boolean bitIsSet( int unionOfRolePermissionIds, int bitValue ) {
+        return 0 != ( unionOfRolePermissionIds & bitValue );
     }
 
     public static class RolePermissionDomainObject {

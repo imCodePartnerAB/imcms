@@ -268,15 +268,18 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public String sqlProcedureStr( String procedure, String[] params ) {
+        return (String)getSqlCall( procedure, params ).getResult() ;
+    }
+
+    private SqlCall getSqlCall( String procedure, String[] params ) {
         SqlCall sqlCall = (SqlCall)expectedSqlCalls.remove( procedure ) ;
-        String result = null ;
-        if ( null != sqlCall ) {
-            result = (String)sqlCall.getResult() ;
-        } else {
+        if ( null == sqlCall ) {
             sqlCall = new SqlCall( procedure, params ) ;
+        } else {
+            sqlCall.setParameters(params) ;
         }
         sqlCalls.add( sqlCall );
-        return result ;
+        return sqlCall;
     }
 
     public int sqlUpdateQuery( String sqlStr, String[] params ) {
@@ -285,23 +288,19 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public String[][] sqlProcedureMulti( String procedure, String[] params ) {
-        sqlCalls.add( new SqlCall( procedure, params ) );
-        return new String[0][];
+        return (String[][])getSqlCall( procedure, params ).getResult();
     }
 
     public String[] sqlQuery( String sqlStr, String[] params ) {
-        sqlCalls.add( new SqlCall( sqlStr, params ) );
-        return new String[0];
+        return (String[])getSqlCall( sqlStr, params ).getResult();
     }
 
     public String sqlQueryStr( String sqlStr, String[] params ) {
-        sqlCalls.add( new SqlCall( sqlStr, params ) );
-        return null;
+        return (String)getSqlCall( sqlStr, params ).getResult() ;
     }
 
     public String[][] sqlQueryMulti( String sqlstr, String[] params ) {
-        sqlCalls.add( new SqlCall( sqlstr, params ) );
-        return new String[0][];
+        return (String[][])getSqlCall( sqlstr, params ).getResult();
     }
 
     public TemplateMapper getTemplateMapper() {
@@ -388,6 +387,10 @@ public class MockImcmsServices implements ImcmsServices {
 
         public String toString() {
             return getString() ;
+        }
+
+        public void setParameters( String[] parameters ) {
+            this.parameters = parameters;
         }
     }
 }

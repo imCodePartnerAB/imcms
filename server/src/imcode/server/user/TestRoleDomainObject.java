@@ -8,7 +8,7 @@ public class TestRoleDomainObject extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        role = new RoleDomainObject( 0, "dummy test role", 0 );
+        role = new RoleDomainObject( "dummy test role" );
     }
 
     public void testPermissions() {
@@ -21,6 +21,9 @@ public class TestRoleDomainObject extends TestCase {
 
         role.removePermission( passwordMailPermission ) ;
         assertFalse(role.hasPermission( passwordMailPermission )) ;
+
+        role.addUnionOfPermissionIdsToRole( passwordMailPermission.getId() );
+        assertTrue( role.hasPermission( passwordMailPermission ) );
     }
 
 }

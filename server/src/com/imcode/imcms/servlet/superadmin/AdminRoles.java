@@ -4,6 +4,7 @@ import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.RoleDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -24,7 +25,6 @@ import java.util.Vector;
  * - RoleGetPermissionsFromRole
  * - RoleGetPermissionsByLanguage
  * - RoleUpdatePermissions
- * - RolePermissionsAddNew
  * - GetLangPrefixFromId
  */
 public class AdminRoles extends Administrator {
@@ -260,10 +260,12 @@ public class AdminRoles extends Administrator {
 
             // lets colect permissions state
             String[] checkedPermissions = req.getParameterValues( "PERMISSION_CHECKBOX" );
-            int permissionValue = colectPermissionsState( checkedPermissions );
+            int permissionValue = collectPermissionsState( checkedPermissions );
 
             // Lets add the new role into db
-            imcref.sqlUpdateProcedure( "RolePermissionsAddNew", new String[]{params.getProperty( "ROLE_NAME" ), "" + permissionValue} );
+            RoleDomainObject role = new RoleDomainObject( params.getProperty( "ROLE_NAME" ) );
+            role.addUnionOfPermissionIdsToRole(permissionValue);
+            imcref.getImcmsAuthenticatorAndUserAndRoleMapper().saveRole( role );
             this.doGet( req, res );
 
             return;
@@ -412,7 +414,7 @@ public class AdminRoles extends Administrator {
                 return;
             }
 
-            int permissionValue = colectPermissionsState( checkedPermissions );
+            int permissionValue = collectPermissionsState( checkedPermissions );
 
             // lets update
             imcref.sqlUpdateProcedure( "RoleUpdatePermissions", new String[]{params.getProperty( "ROLE_ID" ), "" + permissionValue} );
@@ -527,8 +529,7 @@ public class AdminRoles extends Administrator {
         return createHtml( req, vmTable, HTML_EDIT_ROLE_TABLE );
     }
 
-    /* colects permmissions state*/
-    private int colectPermissionsState( String[] checkedPermissions ) {
+    private int collectPermissionsState( String[] checkedPermissions ) {
         int permissionValue = 0;
 
         if ( checkedPermissions != null ) {
