@@ -834,6 +834,10 @@
             <fileset dir="templates/sv/postcard"/>
         </imtranslate>
 
+        <copy todir="${imcmsimages}/${defaultlanguage}/105">
+            <fileset dir="install/htdocs/${defaultlanguage}/postcard/images" includes="*.gif"/>
+        </copy>
+
     </target>
 
 
@@ -854,6 +858,10 @@
                      todir="${fortune-templates}" filtering="true">
             <fileset dir="templates/sv/fortunes"/>
         </imtranslate>
+
+        <copy todir="${imcmsimages}/${defaultlanguage}/106">
+            <fileset dir="install/htdocs/${defaultlanguage}/fortunes/images" includes="*.gif"/>
+        </copy>
 
     </target>
 
