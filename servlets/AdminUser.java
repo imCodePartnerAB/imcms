@@ -82,7 +82,7 @@ public class AdminUser extends Administrator
 		Vector usersV  = /* super. */ convert2Vector(usersArr) ;
 		String usersOption = ht.createHtmlCode("ID_OPTION", "", usersV ) ;
 		vm.addProperty("USERS_MENU", usersOption  ) ;
-		
+				
 		//create the page
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
 

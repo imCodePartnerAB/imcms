@@ -83,8 +83,8 @@ public class MetaDataParser {
 	String lang_prefix = ""+user.getLangPrefix() ;
 
 	// Lets get all info for the meta id
-	String sqlStr = "select * from meta where meta_id = "+meta_id ;
-	Hashtable hash = IMCServiceRMI.sqlQueryHash(imcserver,sqlStr) ;
+	String sqlStr = "GetDocumentInfo "+meta_id ;
+	Hashtable hash = IMCServiceRMI.sqlProcedureHash(imcserver,sqlStr) ;
 
 	// Get the info from the user object.
 	// "temp_perm_settings" is an array containing a stringified meta-id, a hashtable of meta-info (column=value), 
@@ -578,11 +578,7 @@ public class MetaDataParser {
 	int user_set_id = Integer.parseInt(current_permissions[0]) ;
 	int user_perm_set = Integer.parseInt(current_permissions[1]) ;
 	int currentdoc_perms = Integer.parseInt(current_permissions[2]) ;
-//***********
-for(int i=0;i<current_permissions.length;i++) {
-	System.out.println("loop1: "+current_permissions[i]);
-}
-//**********
+
 	// Create an anonymous adminbuttonparser that retrieves the file from the server instead of from the disk.
 	AdminButtonParser vec = new AdminButtonParser("permissions/define_permission_"+doc_type+"_",".html",user_set_id,user_perm_set) {
 		protected StringBuffer getContent (String name) throws IOException {
@@ -599,12 +595,6 @@ for(int i=0;i<current_permissions.length;i++) {
 	// Remind me when i get a minute off some day.
 	// Update! Check out imcode.server.IMCConstants
 	String[] permissionset = IMCServiceRMI.sqlProcedure(imcserver,"Get"+newstr+"PermissionSet "+meta_id+","+set_id+","+lang_prefix) ;
-System.out.println("Get"+newstr+"PermissionSet "+meta_id+","+set_id+","+lang_prefix) ;
-//***********
-for(int z=0;z<permissionset.length;z++) {
-	System.out.println("loop2: "+permissionset[z]);
-}
-//**********
 
 	final int ps_cols = 3 ;
 	for ( int i=0 ; i<permissionset.length ; i += ps_cols ) {
