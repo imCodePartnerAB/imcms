@@ -151,12 +151,19 @@ public class QuestionEngine extends HttpServlet
 				date2 = dateF.parse(tokens.nextToken());
 			}
 			catch(ParseException e){}
-		
+			
 			theQuestion = tokens.nextToken();
-		
+			
 			line = readFile.readLine();
 		
 		}
+	
+	
+		if(  !( ( date1.before(date) || ( (dateF.format(date1)).equals(dateF.format(date)) ) ) && ( date2.after(date)  || ( (dateF.format(date2)).equals(dateF.format(date)) ) ) ) )
+		{
+			theQuestion = "Ingen text kan visas";
+		}
+		
 		//update svarfilen
 		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
 		File file = new File(fortune_path,inFile + "enkatcurrent.txt");
