@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.textdocument.*;
 import imcode.util.FileInputStreamSource;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -42,10 +43,11 @@ class DocumentInitializingVisitor extends DocumentVisitor {
             file.setMimeType( sqlRow[2] );
             file.setCreatedAsImage( 0 != Integer.parseInt( sqlRow[3] ) );
             File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocument( document.getId(), fileId );
-            if (!fileForFileDocument.exists()) {
-                File oldlyNamedFileForFileDocument = new File(fileForFileDocument.getParentFile(), fileForFileDocument.getName()+"_se") ;
-                if (oldlyNamedFileForFileDocument.exists()) {
-                    fileForFileDocument = oldlyNamedFileForFileDocument ;
+            if ( !fileForFileDocument.exists() ) {
+                File oldlyNamedFileForFileDocument = new File( fileForFileDocument.getParentFile(), fileForFileDocument.getName()
+                                                                                                    + "_se" );
+                if ( oldlyNamedFileForFileDocument.exists() ) {
+                    fileForFileDocument = oldlyNamedFileForFileDocument;
                 }
             }
             file.setInputStreamSource( new FileInputStreamSource( fileForFileDocument ) );
@@ -81,7 +83,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
             TemplateMapper templateMapper = service.getTemplateMapper();
             TemplateDomainObject template = templateMapper.getTemplateById( template_id );
 
-            TemplateDomainObject defaultTemplate = null ;
+            TemplateDomainObject defaultTemplate = null;
             try {
                 int defaultTemplateId = Integer.parseInt( sqlResult[4] );
                 defaultTemplate = templateMapper.getTemplateById( defaultTemplateId );
@@ -172,18 +174,20 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         String imageSource = sqlResult[2];
 
         image.setName( sqlResult[1] );
-        if ( ImageDomainObject.ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {
-            try {
-                int fileDocumentId = Integer.parseInt( imageSource );
-                DocumentMapper documentMapper = service.getDocumentMapper();
-                image.setSource( new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( documentMapper.getDocument( fileDocumentId ) ) ) );
-            } catch ( NumberFormatException nfe ) {
-                log.warn( "Non-numeric document-id \"" + imageSource + "\" for image in database." );
-            } catch ( ClassCastException cce ) {
-                log.warn( "Non-file-document-id \"" + imageSource + "\" for image in database." );
+        if ( StringUtils.isNotBlank( imageSource ) ) {
+            if ( ImageDomainObject.ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {
+                try {
+                    int fileDocumentId = Integer.parseInt( imageSource );
+                    DocumentMapper documentMapper = service.getDocumentMapper();
+                    image.setSource( new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( documentMapper.getDocument( fileDocumentId ) ) ) );
+                } catch ( NumberFormatException nfe ) {
+                    log.warn( "Non-numeric document-id \"" + imageSource + "\" for image in database." );
+                } catch ( ClassCastException cce ) {
+                    log.warn( "Non-file-document-id \"" + imageSource + "\" for image in database." );
+                }
+            } else if ( ImageDomainObject.ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH == imageType ) {
+                image.setSource( new ImageDomainObject.ImagesPathRelativePathImageSource( imageSource ) );
             }
-        } else if ( ImageDomainObject.ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH == imageType ) {
-            image.setSource( new ImageDomainObject.ImagesPathRelativePathImageSource( imageSource ) );
         }
 
         image.setWidth( Integer.parseInt( sqlResult[3] ) );
