@@ -30,16 +30,11 @@ public class ChangeText extends HttpServlet {
 		String servlet_url       	= Utility.getDomainPref( "servlet_url",host ) ;
 
 		imcode.server.User user ; 
-		String htmlStr = "" ;     
-		int meta_id ;
-		int txt_no ;
-		int text_type = 0 ;
 
 		res.setContentType("text/html");
 		ServletOutputStream out = res.getOutputStream();
-		meta_id = Integer.parseInt(req.getParameter("meta_id")) ;
-		txt_no = Integer.parseInt(req.getParameter("txt")) ;
-		text_type = Integer.parseInt(req.getParameter("type")) ;
+		int meta_id = Integer.parseInt(req.getParameter("meta_id")) ;
+		int txt_no = Integer.parseInt(req.getParameter("txt")) ;
 
 		// Get the session
 		HttpSession session = req.getSession(true);
@@ -68,15 +63,19 @@ public class ChangeText extends HttpServlet {
 			return ;
 		}
 
-//		htmlStr = IMCServiceRMI.interpretAdminTemplate(imcserver,meta_id,user,"change_text.html",txt_no,text_type,0,0) ;          	
+		String sqlStr = "select type from texts where meta_id = "+meta_id+" and name = "+txt_no ;
+		String type_str = IMCServiceRMI.sqlQueryStr(imcserver,sqlStr) ;
+		int text_type = 0 ;
+		try {
+		    text_type = Integer.parseInt(type_str) ;
+		} catch (NumberFormatException ignored) {
+		    // No row in db. Ignored, text_type = 0.
+		}
 
-		String sqlStr = "select text from texts where meta_id = "+meta_id+" and name = "+txt_no ;
+		sqlStr = "select text from texts where meta_id = "+meta_id+" and name = "+txt_no ;
 		String temp = IMCServiceRMI.sqlQueryStr(imcserver,sqlStr) ;
 		if ( temp == null ) {
-			temp = "" ;
-		}
-		if ( "".equals(temp) ) {
-			text_type = 2 ;
+		    temp = "" ;
 		}
 		
 		Vector vec = new Vector() ;
@@ -85,9 +84,9 @@ public class ChangeText extends HttpServlet {
 			vec.add("checked") ;
 		} else {
 			String [] tags = {"\r",	"",
-							  "\n", "",
-							  "<BR>",	"\r\n"
-							 } ;
+					  "\n", "",
+					  "<BR>","\r\n"
+					 } ;
 			temp = Parser.parseDoc(temp,tags) ;
 			vec.add("#!html#") ;
 			vec.add("checked") ;
