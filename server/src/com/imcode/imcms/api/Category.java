@@ -5,7 +5,7 @@ import imcode.server.document.CategoryDomainObject;
 /**
  * @author kreiger
  */
-public class Category {
+public class Category implements Comparable {
 
     private CategoryDomainObject internalCategory ;
 
@@ -51,6 +51,8 @@ public class Category {
     public String getImage(){
         return internalCategory.getImageUrl();
     }
-    
 
+    public int compareTo( Object o ) {
+        return internalCategory.compareTo( ((Category)o).internalCategory ) ;
+    }
 }

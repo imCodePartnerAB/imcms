@@ -1,7 +1,8 @@
 <%@ page contentType="text/html; charset=windows-1252" import="com.imcode.imcms.api.*,
 java.util.*,
                  java.text.SimpleDateFormat,
-                 java.text.DateFormat" errorPage="error.jsp" %><%
+                 java.text.DateFormat,
+                                                               org.apache.commons.lang.StringUtils" errorPage="error.jsp" %><%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
     DocumentService documentService = imcmsSystem.getDocumentService() ;
     SearchQuery query ;
@@ -122,5 +123,23 @@ java.util.*,
             } %>
         </ul>
 
+        <%
+            String categoryTypeName = "API-sample Category Type";
+            CategoryType categoryType = documentService.getCategoryType( categoryTypeName );
+        %>
+        <h2>Search for published documents, sorted by category name of type "<%= categoryTypeName %>".</h2>
+        <ul>
+        <%
+            query = new LuceneParsedQuery("+status:"+Document.STATUS_PUBLICATION_APPROVED) ;
+            documents = documentService.search(query) ;
+            Document.Comparator.CategoryNameDocumentComparator categoryNameComparator = new Document.Comparator.CategoryNameDocumentComparator( categoryType);
+            Arrays.sort(documents, categoryNameComparator) ;
+
+            if (0 == documents.length) { %>No hits.<% }
+            for ( int i = 0; i < documents.length; i++ ) {
+                Document document = documents[i]; %>
+                <li><%= document.getId() %> - <%= document.getHeadline() %> - <%= StringUtils.join(document.getCategoriesOfType(categoryType), ",") %></li><%
+            } %>
+        </ul>
     </body>
 </html>
