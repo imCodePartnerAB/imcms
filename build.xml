@@ -706,9 +706,11 @@
         </copy>
 
          <!-- imcms/language/scripts -->
-        <copy todir="${imcmsscripts}" filtering="true">
-            <fileset dir="install/htdocs/imcms/scripts"/>
-        </copy>
+        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
+            starttoken="&lt;? " endtoken=" ?&gt;"
+            todir="${imcmsscripts}" filtering="true">
+            <fileset dir="install/htdocs/imcms/scripts" includes="*"/>
+        </imtranslate>
 
          <!-- templates in webroot  -->
         <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
