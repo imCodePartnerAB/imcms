@@ -58,9 +58,9 @@
                             </td>
                             <td>
                                 <% if (link instanceof LinkCheck.TextLink) { %>
-                                    <a href="ChangeText?meta_id=<%= document.getId() %>&txt=<%=textDocumentElementLink.getIndex()%>">
+                                    <a href="$contextPath/servlet/ChangeText?meta_id=<%= document.getId() %>&txt=<%=textDocumentElementLink.getIndex()%>">
                                 <% } else { %>
-                                    <a href="ChangeImage?meta_id=<%= document.getId() %>&img=<%=textDocumentElementLink.getIndex()%>">
+                                    <a href="$contextPath/servlet/ChangeImage?meta_id=<%= document.getId() %>&img=<%=textDocumentElementLink.getIndex()%>">
                                 <% } %>
                                     <%= document.getId() %> - <%= textDocumentElementLink.getIndex() %> - <%= document.getHeadline() %>
                                 </a>

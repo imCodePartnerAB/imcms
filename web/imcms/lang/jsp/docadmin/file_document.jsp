@@ -157,7 +157,7 @@ if (!files.isEmpty()) { %>
 			<td><input type="text" size="10" maxlength="50" name="<%=
 		EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__NEW_FILE_ID_PREFIX + escapedFileId %>" value="<%= escapedFileId %>"></td><%
 		if (!creatingNewDocument) { %>
-			<td><a href="GetDoc?meta_id=<%= document.getId() %>&<%= GetDoc.REQUEST_PARAMETER__FILE_ID %>=<%= escapedFileId %>" target="_blank"><%=
+			<td><a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId() %>&<%= GetDoc.REQUEST_PARAMETER__FILE_ID %>=<%= escapedFileId %>" target="_blank"><%=
 			StringEscapeUtils.escapeHtml(file.getFilename()) %></a></td><%
 		} else { %>
 			<td><%= StringEscapeUtils.escapeHtml(file.getFilename()) %></td><%

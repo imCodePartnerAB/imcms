@@ -10,7 +10,7 @@
 function evalAddTemplate(){
 	if(document.AddTemplateForm.file.value==""){
 		alert("Du måste ange ett filnamn!")
-		return false	
+		return false
 	}
 	else
 		return true
@@ -38,10 +38,10 @@ function closeThisWindow(){
 	<th colspan="2" align="left"><? templates/sv/chat/original/chat_admin_template2.html/2 ?></th>
 	<td width="10">&nbsp;</td>
 </tr>
-<tr> 
+<tr>
 	<td colspan="4">&nbsp;</td>
 </tr>
-<tr> 
+<tr>
 	<td>&nbsp;</td>
 	<td colspan="2"><? templates/sv/chat/original/chat_admin_template2.html/3 ?></td>
 	<td>&nbsp;</td>
@@ -59,20 +59,20 @@ function closeThisWindow(){
 	<td>&nbsp;</td>
 </tr>
 </form>
-<tr> 
+<tr>
 	<td>&nbsp;</td>
 	<td colspan="2"><hr></td>
 	<td>&nbsp;</td>
 </tr>
 <form method="get" action="ChatCreator" name="CancelUpload">
-<tr> 
+<tr>
 	<td>&nbsp;</td>
 	<td><input type="submit" name="cancel" value="<? templates/sv/chat/original/chat_admin_template2.html/2002 ?>"></td>
-	<td><A href="ChatCreator" target=_self>#SECTION_UNADMIN_LINK#</a></td>
+	<td><A href="$contextPath/servlet/ChatCreator" target=_self>#SECTION_UNADMIN_LINK#</a></td>
 	<td>&nbsp;</td>
 </tr>
 </form>
-<tr> 
+<tr>
 	<td colspan="4">&nbsp;</td>
 </tr>
 </table>

@@ -1,18 +1,18 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils,
                  imcode.server.document.DocumentMapper,
                  imcode.util.Utility,
-                 imcode.server.Imcms"%>
+                 imcode.server.Imcms"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <% String IMG_SRC = documentMapper.getStatusIconTemplate(document, Utility.getLoggedOnUser( request ) ); %>
 
-
+<vel:velocity>
 <% if ( expand ) { %>
 <!-- Expanded item -->
 <tr valign="top" <%= i%2 == 1 ? "bgcolor=\"#ffffff\"" : "" %> >
     <td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br>
-        <a href="GetDoc?meta_id=<%= document.getId() %>"><%= document.getId() %></a></td>
-    <td align="center"><a href="AdminDoc?meta_id=<%= document.getId() %>&amp;flags=1"><%= IMG_SRC %></a></td>
+        <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId() %>"><%= document.getId() %></a></td>
+    <td align="center"><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&amp;flags=1"><%= IMG_SRC %></a></td>
     <td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br>
-        <a href="GetDoc?meta_id=<%= document.getId()%>"><%= StringEscapeUtils.escapeHtml(document.getHeadline()) %></a><br>
+        <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId()%>"><%= StringEscapeUtils.escapeHtml(document.getHeadline()) %></a><br>
         <%= StringEscapeUtils.escapeHtml(document.getMenuText() ) %></td>
     <td align="right"><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3">
         <table border="0" cellspacing="0" cellpadding="0">
@@ -48,10 +48,10 @@
     <!-- Not Expanded item -->
     <tr valign="top" <%= i%2 == 1 ? "bgcolor=\"#ffffff\"" : "" %> >
         <td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br>
-            <a href="GetDoc?meta_id=<%= document.getId() %>"><%= document.getId() %></a></td>
-        <td align="center"><a href="AdminDoc?meta_id=<%= document.getId() %>&amp;flags=1"><%= IMG_SRC %></a></td>
+            <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId() %>"><%= document.getId() %></a></td>
+        <td align="center"><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&amp;flags=1"><%= IMG_SRC %></a></td>
         <td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br>
-            <a href="GetDoc?meta_id=<%= document.getId()%>"><%= StringEscapeUtils.escapeHtml(document.getHeadline()) %></a></td>
+            <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId()%>"><%= StringEscapeUtils.escapeHtml(document.getHeadline()) %></a></td>
         <td align="right"><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3">
         <table border="0" cellspacing="0" cellpadding="0">
         <tr>
@@ -76,6 +76,6 @@
 
         </table></td>
    </tr>
-
+</vel:velocity>
 
 

@@ -174,7 +174,7 @@
                             <td>
                                     <%
                                         if (documentMapper.userHasMoreThanReadPermissionOnDocument(user, document)) {
-                                            %><a href="SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%= documentMapper.getStatusIconTemplate(document, user ) %></a><%
+                                            %><a href="$contextPath/servlet/SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%= documentMapper.getStatusIconTemplate(document, user ) %></a><%
                                         } else {
                                             %>&nbsp;<%
                                         }
@@ -185,7 +185,7 @@
                             </td>
                             <td nowrap>
                                 <font size="1" face="Verdana, Arial, Helvetica, sans-serif">
-                                    <a href="GetDoc?meta_id=<%= document.getId() %>"><b><%= document.getHeadline() %></b></a>
+                                    <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId() %>"><b><%= document.getHeadline() %></b></a>
                                 </font>
                             </td>
                             <%
@@ -196,7 +196,7 @@
                             %>
                             <td align="right">&nbsp;
                                 <% if (documentFinder.isDocumentsSelectable()) { %>
-                                    <a href="SearchDocuments?<%= SearchDocumentsPage.REQUEST_PARAMETER__SELECTED_DOCUMENT_ID+"="+document.getId()+"&"+searchDocumentsPage.getParameterString(request)%>"><? imcms/lang/jsp/search_documents.jsp/select_document ?></a>
+                                    <a href="$contextPath/servlet/SearchDocuments?<%= SearchDocumentsPage.REQUEST_PARAMETER__SELECTED_DOCUMENT_ID+"="+document.getId()+"&"+searchDocumentsPage.getParameterString(request)%>"><? imcms/lang/jsp/search_documents.jsp/select_document ?></a>
                                 <% } %>
                             </td>
                         </tr>
@@ -214,16 +214,16 @@
                 <%
                     if (firstDocumentIndex > 0) {
                         int firstDocumentIndexOnPreviousPage = Math.max(0, firstDocumentIndex - documentsPerPage) ; %>
-                        <a href="SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX, ""+firstDocumentIndexOnPreviousPage) %>">
+                        <a href="$contextPath/servlet/SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX, ""+firstDocumentIndexOnPreviousPage) %>">
                             <? templates/sv/search/search_nav_prev.html/1001 ?></a>&nbsp;<%
                     }
                     for (int i = 0; (i * documentsPerPage) < documentsFound.length && documentsFound.length > documentsPerPage; i++) { %>
-                        <a href="SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX, ""+(i*documentsPerPage)) %>"><%= i + 1 %></a>
+                        <a href="$contextPath/servlet/SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX, ""+(i*documentsPerPage)) %>"><%= i + 1 %></a>
                         &nbsp;<%
                     }
                     int firstDocumentIndexOnNextPage = ( firstDocumentIndex + documentsPerPage );
                     if (documentsFound.length > firstDocumentIndexOnNextPage) { %>
-                        <a href="SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX, ""+firstDocumentIndexOnNextPage) %>">
+                        <a href="$contextPath/servlet/SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX, ""+firstDocumentIndexOnNextPage) %>">
                             <? templates/sv/search/search_nav_next.html/1001 ?>
                         </a><%
                     } %>
