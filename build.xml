@@ -414,6 +414,9 @@
 	<exclude name="policy"/>
       </fileset>
     </copy>
+
+    <copy file="${conf}/${log4j-config}" tofile="${conf}/log4j.xml"/>
+
   </target>
 
 
