@@ -50,7 +50,7 @@ public interface IMCServiceInterface {
 	;
 
     // archive childs
-    void archiveChilds(int meta_id,UserDomainObject user,String childsThisMenu[])
+    void archiveChilds(int meta_id,UserDomainObject user,String[] childsThisMenu)
 	;
 
     /** Copy documents and insert them in a new textdocument and menu **/
@@ -62,14 +62,6 @@ public interface IMCServiceInterface {
 
     // check if url doc
     String isUrlDoc(int meta_id,UserDomainObject user)
-	;
-
-    // Save a new frameset
-    void saveNewFrameset(int meta_id,UserDomainObject user,String html)
-	;
-
-    // Save a frameset
-    void saveFrameset(int meta_id,UserDomainObject user,String html)
 	;
 
     // check if url doc
@@ -143,10 +135,6 @@ public interface IMCServiceInterface {
 
     // get starturl
     public String getStartUrl()
-	;
-
-    // get language
-    public String getDefaultLanguageAsIso639_1()
 	;
 
     // get language prefix by id
@@ -284,8 +272,6 @@ public interface IMCServiceInterface {
     Hashtable sqlQueryHash(String sqlStr, String[] params);
 
     String[][] sqlQueryMulti(String sqlstr, String[] params);
-
-    public String getFilename(int meta_id) ;
 
     TemplateMapper getTemplateMapper();
 

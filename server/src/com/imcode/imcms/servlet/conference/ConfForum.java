@@ -36,7 +36,7 @@ public class ConfForum extends Conference {
         IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface();
 
         // Lets get the information from DB
-        String sqlAnswer[] = confref.sqlProcedure( "A_GetAllForum", new String[]{aMetaId} );
+        String[] sqlAnswer = confref.sqlProcedure( "A_GetAllForum", new String[]{aMetaId} );
         Vector forumV = super.convert2Vector( sqlAnswer );
 
         // Lets fill the select box

@@ -61,7 +61,7 @@ public class FileManager{
             
             // create a file writer for the target file and set append to true	boolean append = true;
             FileOutputStream outStream = new FileOutputStream(targetFile, false) ;
-            byte inArr[] = new byte[inStream.available()] ;
+            byte[] inArr = new byte[inStream.available()] ;
             
             inStream.read(inArr) ;
             outStream.write(inArr) ;

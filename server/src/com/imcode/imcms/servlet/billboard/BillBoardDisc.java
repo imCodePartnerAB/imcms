@@ -347,7 +347,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
         // Lets get all Discussions
 
-        String sqlAnswer[][] = billref.sqlProcedureMulti( "B_GetAllBillsToShow", new String[]{aMetaId, aSectionId} );
+        String[][] sqlAnswer = billref.sqlProcedureMulti( "B_GetAllBillsToShow", new String[]{aMetaId, aSectionId} );
 
         //lets generate the buttons that should appear
         File templateLib = this.getExternalTemplateFolder( req );

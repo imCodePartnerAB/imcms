@@ -100,7 +100,7 @@ public class GetExistingDoc extends HttpServlet {
                 log.debug( "Bad query: " + searchString, pe );
             }
 
-            String docTypes[] = req.getParameterValues( "doc_type" );
+            String[] docTypes = req.getParameterValues( "doc_type" );
             addDocTypesToQuery( docTypes, query );
 
             DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );

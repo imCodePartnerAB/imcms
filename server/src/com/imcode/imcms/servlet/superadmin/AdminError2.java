@@ -11,7 +11,6 @@ import com.imcode.imcms.servlet.superadmin.Administrator;
 
 public class AdminError2 extends Administrator {
 
-    String myErrorHeader ;
     String myErrorMessage ;
 
     /**

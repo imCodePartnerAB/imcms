@@ -138,7 +138,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         externalDocumentTypes = new ExternalDocType[doc_types.countTokens()];
         for ( int doc_count = 0; doc_types.hasMoreTokens(); ++doc_count ) {
             StringTokenizer tempStr = new StringTokenizer( doc_types.nextToken(), ":", false );
-            String items[] = new String[tempStr.countTokens()];
+            String[] items = new String[tempStr.countTokens()];
             for ( int i = 0; tempStr.hasMoreTokens(); ++i ) {
                 items[i] = tempStr.nextToken();
             }
@@ -537,7 +537,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Archive childs for a menu.
      */
-    public void archiveChilds( int meta_id, UserDomainObject user, String childsThisMenu[] ) {
+    public void archiveChilds( int meta_id, UserDomainObject user, String[] childsThisMenu ) {
 
         Date now = getCurrentDate() ;
         for ( int i = 0; i < childsThisMenu.length; i++ ) {
@@ -566,32 +566,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         }
 
         return url_ref;
-    }
-
-    /**
-     * Save a new frameset.
-     */
-    public void saveNewFrameset( int meta_id, UserDomainObject user, String html ) {
-        String sqlStr = "insert into frameset_docs (meta_id,frame_set) values(?,?)";
-
-        sqlUpdateQuery( sqlStr, new String[]{"" + meta_id, html} );
-
-        activateChild( meta_id, user );
-
-        updateLogs( "FramesetDoc [" + meta_id + "] created by user: [" +
-                    user.getFullName() + "]" );
-    }
-
-    /**
-     * Save a frameset
-     */
-    public void saveFrameset( int meta_id, UserDomainObject user, String html ) {
-        String sqlStr = "update frameset_docs set frame_set = ? where meta_id = ?";
-
-        sqlUpdateQuery( sqlStr, new String[]{html, "" + meta_id} );
-
-        this.updateLogs( "FramesetDoc [" + meta_id + "] updated by user: [" +
-                         user.getFullName() + "]" );
     }
 
     /**
@@ -850,18 +824,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return startUrl;
     }
 
-    /**
-     * Return  language.
-     */
-    public String getDefaultLanguageAsIso639_1() {
-        try {
-            return LanguageMapper.convert639_2to639_1( defaultLanguageAsIso639_2 );
-        } catch ( LanguageMapper.LanguageNotSupportedException e ) {
-            log.fatal( "No ISO 639-1 representation for the default language. (" + defaultLanguageAsIso639_2 + ")" );
-            return null;
-        }
-    }
-
     public String getDefaultLanguageAsIso639_2() {
         return defaultLanguageAsIso639_2;
     }
@@ -879,15 +841,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         } else {
             return lang_prefix;
         }
-    }
-
-    /**
-     * Increment session counter.
-     */
-    public int incCounter() {
-        sessionCounter += 1;
-        sqlUpdateProcedure( "IncSessionCounter", new String[0] );
-        return sessionCounter;
     }
 
     /**
@@ -1282,8 +1235,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         /** Fetch everything from the DB */
         String startDocument = sqlProcedureStr( "StartDocGet", new String[0] );
-        String serverMaster[] = sqlProcedure( "ServerMasterGet", new String[0] );
-        String webMaster[] = sqlProcedure( "WebMasterGet", new String[0] );
+        String[] serverMaster = sqlProcedure( "ServerMasterGet", new String[0] );
+        String[] webMaster = sqlProcedure( "WebMasterGet", new String[0] );
         String systemMessage = sqlProcedureStr( "SystemMessageGet", new String[0] );
 
         /** Create a new SystemData object */
@@ -1454,13 +1407,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * @return the filename for a fileupload-document, or null if the document isn't a fileupload-docuemnt. *
-     */
-    public String getFilename( int meta_id ) {
-        return sqlProcedureStr( "GetFileName", new String[]{"" + meta_id} );
-    }
-
-    /**
      * Get all possible userflags
      */
     public Map getUserFlags() {
@@ -1502,7 +1448,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Used by the other getUserFlags*-methods to put the database-data in a Set *
      */
-    private Map getUserFlags( String dbData[] ) {
+    private Map getUserFlags( String[] dbData ) {
         Map theFlags = new HashMap();
 
         for ( int i = 0; i < dbData.length; i += 4 ) {

@@ -44,7 +44,4 @@ public class IMCPool implements IMCPoolInterface {
         return SqlHelpers.sqlQueryMulti(m_conPool, sqlQuery, params ) ;
     }
 
-    public String[] sqlQuery( String sqlQuery, String[] params ) {
-        return SqlHelpers.sqlQuery(m_conPool, sqlQuery, params) ;
-    }
 } // END CLASS IMCPool

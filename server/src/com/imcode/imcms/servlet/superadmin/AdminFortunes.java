@@ -42,7 +42,7 @@ public class AdminFortunes extends Administrator {
         //get fortunefiles
 
         File fortune_path = Utility.getDomainPrefPath("FortunePath");
-        File files[] = fortune_path.listFiles();
+        File[] files = fortune_path.listFiles();
 
         String options = "<option value=\"No_Choice\" selected>-- V&auml;lj Fil --</option>";
 

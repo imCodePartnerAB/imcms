@@ -269,7 +269,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
         if ( req.getParameter( "DELETE_DISCUSSION" ) != null ) {
 
             // Lets get all the discussion id:s
-            String discIds[] = this.getDelDiscParameters( req );
+            String[] discIds = this.getDelDiscParameters( req );
 
             // Lets delete all the bills and all the replies to that bill.
             if ( discIds != null ) {
@@ -293,7 +293,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             // Lets get the section_id and set our session object before updating
             String aSectionId = params.getProperty( "SECTION_ID" );
 
-            String discIds[] = this.getDelDiscParameters( req );
+            String[] discIds = this.getDelDiscParameters( req );
             if ( discIds == null ) {
                 discIds = new String[0];
             }
@@ -353,7 +353,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
             // Lets get all discussions for that setion and delete those before deleting the section
             // B_GetAllBillsInSection @aSectionId int
-            String discs[] = billref.sqlProcedure( "B_GetAllBillsInSection", new String[]{aSectionId} );
+            String[] discs = billref.sqlProcedure( "B_GetAllBillsInSection", new String[]{aSectionId} );
             if ( discs != null ) {
                 for ( int i = 0; i < discs.length; i++ ) {
                     billref.sqlUpdateProcedure( "B_DeleteBill", new String[]{discs[i]} );
@@ -533,7 +533,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
                 String currTemplateSet = billref.sqlProcedureStr( "B_GetTemplateLib", new String[]{params.getProperty( "META_ID" )} );
 
                 // Lets get all current template sets
-                String sqlAnswer[] = billref.sqlProcedure( "B_GetAllTemplateLibs", new String[]{} );
+                String[] sqlAnswer = billref.sqlProcedure( "B_GetAllTemplateLibs", new String[]{} );
                 Vector templateV = super.convert2Vector( sqlAnswer );
 
                 // Lets fill the select box	with forums
@@ -554,14 +554,14 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
         if ( adminWhat.equalsIgnoreCase( "SECTION" ) ) {//FORUM
 
             // Lets get the information from DB
-            String sqlAnswer[] = billref.sqlProcedure( "B_GetAllSection", new String[]{params.getProperty( "META_ID" )} );
+            String[] sqlAnswer = billref.sqlProcedure( "B_GetAllSection", new String[]{params.getProperty( "META_ID" )} );
             Vector sectionV = super.convert2Vector( sqlAnswer );
 
             // Lets fill the select box with forums
             String forumList = Html.createOptionList( "", sectionV );
 
             //lets get all the daysnumber values
-            String sqlAllDays[] = billref.sqlProcedure( "B_GetAllNbrOfDaysToShow", new String[]{params.getProperty( "META_ID" )} );
+            String[] sqlAllDays = billref.sqlProcedure( "B_GetAllNbrOfDaysToShow", new String[]{params.getProperty( "META_ID" )} );
 
             //lets get the startstring of the mail subject
             String subject_name = billref.sqlProcedureStr( "B_GetStartSubjectString", new String[]{params.getProperty( "META_ID" )} );
@@ -574,7 +574,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             String daysToShowList = Html.createOptionList( "", sqlAllDaysV );
 
             // Lets get all the showDiscs values
-            String sqlAllDiscs[] = billref.sqlProcedure( "B_GetAllNbrOfDiscsToShow", new String[]{params.getProperty( "META_ID" )} );
+            String[] sqlAllDiscs = billref.sqlProcedure( "B_GetAllNbrOfDiscsToShow", new String[]{params.getProperty( "META_ID" )} );
 
             Vector sqlAllDiscsV = new Vector();
             if ( sqlAllDiscs != null ) {
@@ -608,10 +608,10 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
             // Lets get all New Discussions
 
-            String sqlAnswerNew[][] = billref.sqlProcedureMulti( "B_GetAllBillsToShow", new String[]{aMetaId, aSectionId} );
+            String[][] sqlAnswerNew = billref.sqlProcedureMulti( "B_GetAllBillsToShow", new String[]{aMetaId, aSectionId} );
 
             //lets get all the sections and the code for the selectlist
-            String sqlSections[] = billref.sqlProcedure( "B_GetAllSection", new String[]{aMetaId} );
+            String[] sqlSections = billref.sqlProcedure( "B_GetAllSection", new String[]{aMetaId} );
             Vector sectionV = super.convert2Vector( sqlSections );
             String sectionListStr = Html.createOptionList( aSectionId, sectionV );
 
@@ -648,10 +648,10 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
             // Lets get all New Discussions
 
-            String sqlAnswerNew[][] = billref.sqlProcedureMulti( "B_GetAllOldBills", new String[]{aMetaId, aSectionId} );
+            String[][] sqlAnswerNew = billref.sqlProcedureMulti( "B_GetAllOldBills", new String[]{aMetaId, aSectionId} );
 
             //lets get all the sections and the code for the selectlist
-            String sqlSections[] = billref.sqlProcedure( "B_GetAllSection", new String[]{aMetaId} );
+            String[] sqlSections = billref.sqlProcedure( "B_GetAllSection", new String[]{aMetaId} );
             Vector sectionV = super.convert2Vector( sqlSections );
             String sectionListStr = Html.createOptionList( aSectionId, sectionV );
 
@@ -686,7 +686,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             // Lets get the replylist from DB
             String discId = params.getProperty( "DISC_ID" );
 
-            String sqlAnswer[][] = billref.sqlProcedureMulti( "B_GetAdminBill", new String[]{discId} );//GetAllRepliesInDiscAdmin
+            String[][] sqlAnswer = billref.sqlProcedureMulti( "B_GetAdminBill", new String[]{discId} );//GetAllRepliesInDiscAdmin
 
             // SYNTAX: date  first_name  last_name  headline   text reply_level
             // Lets build our variable list
@@ -706,7 +706,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             File aSnippetFile = new File( templateLib, adminReplyList );
 
             //lets get all the sections and the code for the selectlist
-            String sqlSections[] = billref.sqlProcedure( "B_GetAllSection", new String[]{params.getProperty( "META_ID" )} );
+            String[] sqlSections = billref.sqlProcedure( "B_GetAllSection", new String[]{params.getProperty( "META_ID" )} );
             Vector sectionV = super.convert2Vector( sqlSections );
             String sectionListStr = Html.createOptionList( params.getProperty( "SECTION_ID" ), sectionV );
 

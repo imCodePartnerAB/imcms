@@ -65,7 +65,7 @@ public class MultipartFormdataParser {
      @return An array of strings, or null if the named parameter does not exist.
      */
     public String getParameter( String name ) {
-        String ret[] = getParameterValues( name );
+        String[] ret = getParameterValues( name );
         if ( ret == null ) {
             return null;
         }

@@ -224,7 +224,7 @@ public class GetDoc extends HttpServlet {
             res.setHeader( "Content-Disposition", content_disposition );
             try {
                 int bytes_read;
-                byte buffer[] = new byte[32768];
+                byte[] buffer = new byte[32768];
                 while ( -1 != ( bytes_read = fr.read( buffer ) ) ) {
                     out.write( buffer, 0, bytes_read );
                 }

@@ -179,7 +179,7 @@ class DBConnect {
     /**
      * <p>Set procedure.
      */
-    private void setProcedure(String procedure, String params[]) {
+    private void setProcedure(String procedure, String[] params) {
         if (procedure == null) {
             throw new NullPointerException("DBConnect.setProcedure() procedure == null");
         }

@@ -234,14 +234,6 @@ public class TemplateMapper {
                 service.sqlQuery( "select group_name from templategroups where group_id = ?", new String[]{group_id} ) );
     }
 
-    public static void sqlUpdateUnassignTemplateFromGroup( IMCService service, int[] group_id, int template_id ) {
-        // delete current refs
-        for ( int i = 0; i < group_id.length; i++ ) {
-            String sqlStr = "delete from templates_cref where template_id = ? and group_id = ?";
-            service.sqlUpdateQuery( sqlStr, new String[]{"" + template_id, "" + group_id[i]} );
-        }
-    }
-
     private TemplateDomainObject createTemplateFromSqlResultRow( String[] sqlResultRow ) {
         if ( 0 == sqlResultRow.length ) {
             return null;

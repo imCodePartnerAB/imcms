@@ -23,8 +23,6 @@ import java.util.Vector;
  */
 public class AddDoc extends HttpServlet {
 
-    static final String SESSION__DATA__IDENTIFIER = "AddDoc.session.data";
-
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = new DocumentComposer.NewDocumentParentInformation( request );
 

@@ -32,7 +32,7 @@ public class ConfAndBillbTemplateUpload extends HttpServlet {
         int length = req.getContentLength();
 
         ServletInputStream in = req.getInputStream();
-        byte buffer[] = new byte[length];
+        byte[] buffer = new byte[length];
         int bytes_read = 0;
         while ( bytes_read < length ) {
             bytes_read += in.read( buffer, bytes_read, length - bytes_read );

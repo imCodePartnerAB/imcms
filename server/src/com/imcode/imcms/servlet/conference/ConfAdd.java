@@ -194,7 +194,7 @@ public class ConfAdd extends Conference {
             String discHeader = "";
             if (params.getProperty("ADD_TYPE").equalsIgnoreCase("REPLY")) {
                 String aDiscId = params.getProperty("DISC_ID");
-                String arr[] = confref.sqlProcedure("A_GetDiscussionHeader", new String[]{aDiscId});
+                String[] arr = confref.sqlProcedure("A_GetDiscussionHeader", new String[]{aDiscId});
                 if (arr != null) {
                     if (arr.length > 0) {
                         discHeader = arr[0];

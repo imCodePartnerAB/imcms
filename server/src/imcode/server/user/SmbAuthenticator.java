@@ -21,11 +21,7 @@ public class SmbAuthenticator implements Authenticator {
       init( domainServer, domainName );
    }
 
-   public SmbAuthenticator( String domainServer, String domainName ) {
-      init( domainServer, domainName );
-   }
-
-   private void init( String domainServer, String domainName ) {
+    private void init( String domainServer, String domainName ) {
       this.domainName = domainName;
       try {
          this.domainServerAddress = UniAddress.getByName( domainServer );

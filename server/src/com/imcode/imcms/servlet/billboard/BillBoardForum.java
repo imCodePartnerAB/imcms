@@ -60,7 +60,7 @@ public class BillBoardForum extends BillBoard {//ConfForum
         IMCPoolInterface billref = ApplicationServer.getIMCPoolInterface();
 
 		// Lets get the information from DB
-        String sqlAnswer[] = billref.sqlProcedure("B_GetAllSection", new String[]{aMetaId});
+        String[] sqlAnswer = billref.sqlProcedure("B_GetAllSection", new String[]{aMetaId});
 		Vector sectionV = super.convert2Vector(sqlAnswer) ;
 
 		// Lets fill the select box

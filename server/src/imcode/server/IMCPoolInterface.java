@@ -14,6 +14,4 @@ public interface IMCPoolInterface {
 
     String[][] sqlQueryMulti( String sqlQuery, String[] params );
 
-    String[] sqlQuery( String sqlQuery, String[] params );
-
 }

@@ -164,10 +164,4 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
         return imcmsAuthenticatorAndUserMapper.getRoleByName(roleName) ;
     }
 
-    public class UserConflictException extends RuntimeException {
-        UserConflictException( String message, Throwable cause ) {
-            super( message, cause );
-        }
-
-    }
 }

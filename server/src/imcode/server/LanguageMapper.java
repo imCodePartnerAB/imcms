@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
  */
 public class LanguageMapper {
 
-    public final static String ISO639_1 = "ISO 639-1";
     /** See <a href="http://www.loc.gov/standards/iso639-2/langhome.html">http://www.loc.gov/standards/iso639-2/langhome.html</a> **/
     public final static String ISO639_2 = "ISO 639-2";
 

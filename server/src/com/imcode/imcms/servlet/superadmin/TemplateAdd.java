@@ -79,7 +79,7 @@ public class TemplateAdd extends HttpServlet {
         PrintWriter out = res.getWriter();
 
         ServletInputStream in = req.getInputStream();
-        byte buffer[] = new byte[length];
+        byte[] buffer = new byte[length];
         int bytes_read = 0;
         while ( bytes_read < length ) {
             bytes_read += in.read( buffer, bytes_read, length - bytes_read );
@@ -114,9 +114,9 @@ public class TemplateAdd extends HttpServlet {
                 // ************************* DELETE DEMO
             } else if ( mp.getParameter( "delete_demo" ) != null ) {
                 imcref.deleteDemoTemplate( Integer.parseInt( template ) );
-                String list[];
+                String[] list;
                 list = imcref.getDemoTemplateIds();
-                String temp[];
+                String[] temp;
                 temp = imcref.sqlQuery(
                         "select template_id, simple_name from templates where lang_prefix = ? order by simple_name",
                         new String[]{lang} );

@@ -319,13 +319,13 @@ public class AdminRoles extends Administrator {
             }
 
             // Lets get the top 50 metaid:s which will be affected if we delete the role
-            String affectedMetaIds[] = imcref.sqlProcedure( "RoleDeleteViewAffectedMetaIds", new String[]{params.getProperty( "ROLE_ID" )} );
+            String[] affectedMetaIds = imcref.sqlProcedure( "RoleDeleteViewAffectedMetaIds", new String[]{params.getProperty( "ROLE_ID" )} );
 
             // Lets get nbr of affected  metaid:s
             String roleCount = imcref.sqlProcedureStr( "RoleCount", new String[]{params.getProperty( "ROLE_ID" )} );
 
             // Lets get the top 50 users:s which will be affected if we delete the role
-            String affectedUsers[] = imcref.sqlProcedure( "RoleDeleteViewAffectedUsers", new String[]{params.getProperty( "ROLE_ID" )} );
+            String[] affectedUsers = imcref.sqlProcedure( "RoleDeleteViewAffectedUsers", new String[]{params.getProperty( "ROLE_ID" )} );
 
             // Lets get nbr of affected users
             int userCount = affectedUsers.length / 2;

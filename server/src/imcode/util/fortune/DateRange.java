@@ -9,9 +9,6 @@ This class represents a range of Dates.
 **/
 public class DateRange {
 
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-
     private Date startDate ;
     private Date endDate ;
 

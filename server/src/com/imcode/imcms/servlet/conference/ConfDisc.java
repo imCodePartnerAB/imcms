@@ -165,7 +165,7 @@ public class ConfDisc extends Conference {
         if ( req.getParameter( "SEARCH" ) != null ) {
             params = this.getSearchParameters( req, params );
             String searchMsg = "";
-            String sqlAnswer[][] = null;
+            String[][] sqlAnswer = null;
             boolean searchParamsOk = true;
             String currForum;
 
@@ -336,7 +336,7 @@ public class ConfDisc extends Conference {
         File aHrefHtmlFile = new File( super.getExternalTemplateFolder( req ), A_HREF_HTML );
 
         // Lets get all Discussions
-        String sqlAnswer[][] = confref.sqlProcedureMulti( "A_GetAllDiscussions", new String[]{aMetaId, aForumId, aLoginDate} );
+        String[][] sqlAnswer = confref.sqlProcedureMulti( "A_GetAllDiscussions", new String[]{aMetaId, aForumId, aLoginDate} );
 
         //lets generate the buttons that should appear
         File templateLib = this.getExternalTemplateFolder( req );

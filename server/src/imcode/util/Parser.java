@@ -10,7 +10,7 @@ public class Parser {
 		@param tags The tags to replace.
 		@param data The data for each tag.
 	*/
-	public static String parseDoc(String doc, String tags[], String data[]) {
+	public static String parseDoc(String doc, String[] tags, String[] data) {
 		if ( doc == null ) {
 			return doc ;
 		}
@@ -35,7 +35,7 @@ public class Parser {
 
 		@return The parsed String.
 	*/
-	public static String parseDoc(String doc, String tagsAndData[]) {
+	public static String parseDoc(String doc, String[] tagsAndData) {
 		if ( doc == null ) {
 			return doc ;
 		}
@@ -51,7 +51,7 @@ public class Parser {
 
 		@return The StringBuffer sb.
 	*/
-	public static StringBuffer parseDoc(StringBuffer sb, String tagsAndData[]) {
+	public static StringBuffer parseDoc(StringBuffer sb, String[] tagsAndData) {
 	    if ( sb == null ) {
 		return null ;
 	    }

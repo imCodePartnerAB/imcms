@@ -269,8 +269,8 @@ public class AdminDoc extends HttpServlet {
                 String mimeType = sqlResult[1];
                 sqlStr = "select mime,mime_name from mime_types where lang_prefix = ? and mime != 'other'";
                 hash = imcref.sqlQueryHash( sqlStr, new String[]{lang_prefix} );
-                String mime[] = (String[])hash.get( "mime" );
-                String mime_name[] = (String[])hash.get( "mime_name" );
+                String[] mime = (String[])hash.get( "mime" );
+                String[] mime_name = (String[])hash.get( "mime_name" );
                 String optStr = "";
                 String other = mimeType;
                 String tmp;

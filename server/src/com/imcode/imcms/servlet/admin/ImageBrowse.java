@@ -412,16 +412,8 @@ public class ImageBrowse extends HttpServlet {
             this.previousButton = previousButton;
         }
 
-        public String getStartNumber() {
-            return startNumber;
-        }
-
         public void setStartNumber( String startNumber ) {
             this.startNumber = startNumber;
-        }
-
-        public String getStopNumber() {
-            return stopNumber;
         }
 
         public String getMaxNumber() {

@@ -280,7 +280,7 @@ public class ConfLogin extends Conference {
             String userName = userParams.getProperty( "login_name" );
 
             // Lets check that the new username doesnt exists already in db
-            String userNameExists[] = imcref.sqlProcedure( "FindUserName", new String[]{userName} );
+            String[] userNameExists = imcref.sqlProcedure( "FindUserName", new String[]{userName} );
 
             if ( userNameExists != null ) {
                 if ( userNameExists.length > 0 ) {
@@ -317,7 +317,7 @@ public class ConfLogin extends Conference {
 
             // Ok, lets get the roles the user will get when he is selfregistering  and
             // add those roles to the user
-            String sqlAnswer[] = confref.sqlProcedure( "A_SelfRegRoles_GetAll2", new String[]{"" + params.getMetaId()} );
+            String[] sqlAnswer = confref.sqlProcedure( "A_SelfRegRoles_GetAll2", new String[]{"" + params.getMetaId()} );
 
             // First, get the langprefix
             String langPrefix = user.getLanguageIso639_2();
@@ -339,7 +339,7 @@ public class ConfLogin extends Conference {
             // Ok, Lets add the users roles into db, first get the role his in the system with
             String userId = "" + user.getUserId();
 
-            String usersRoles[] = imcref.sqlProcedure( "GetUserRolesIDs", new String[]{userId} );
+            String[] usersRoles = imcref.sqlProcedure( "GetUserRolesIDs", new String[]{userId} );
 
             if ( usersRoles != null ) {
                 for ( int i = 0; i < usersRoles.length; i += 2 ) {
@@ -382,7 +382,7 @@ public class ConfLogin extends Conference {
             if ( userId == null ) return;
 
             // Lets get all Userinformation from Janus db
-            String userInfo[] = imcref.sqlProcedure( "GetUserInfo", new String[]{userId} );
+            String[] userInfo = imcref.sqlProcedure( "GetUserInfo", new String[]{userId} );
 
             // Lets get the selected users userlevel
             String level = confref.sqlProcedureStr( "A_ConfUsersGetUserLevel", new String[]{"" + params.getMetaId(), userId} );

@@ -783,7 +783,7 @@ public class AdminUserProps extends Administrator {
             String newUserId = addNewUser( imcref, params );
 
             // Lets add the new users roles
-            String roleId[] = imcref.sqlProcedure( "GetRoleIdByRoleName", new String[]{"Useradmin"} );
+            String[] roleId = imcref.sqlProcedure( "GetRoleIdByRoleName", new String[]{"Useradmin"} );
             boolean isSelected = false;
             for ( int i = 0; i < rolesV.size(); i++ ) {
                 String aRole = rolesV.elementAt( i ).toString();
@@ -910,7 +910,7 @@ public class AdminUserProps extends Administrator {
 
             // check that the changed login name don´t already exists
             if ( !newLogin.equalsIgnoreCase( currentLogin ) ) {
-                String userNameExists[] = imcref.sqlProcedure( "FindUserName", new String[]{newLogin} );
+                String[] userNameExists = imcref.sqlProcedure( "FindUserName", new String[]{newLogin} );
                 if ( userNameExists != null ) {
                     if ( userNameExists.length > 0 ) {
                         String header = "Error in AdminUserProps.";
@@ -1086,7 +1086,7 @@ public class AdminUserProps extends Administrator {
                         imcref.sqlUpdateProcedure( "DelUserRoles", new String[]{userToChangeId, rolesArr[i]} );
                     }
                 }
-                String roleId[] = imcref.sqlProcedure( "GetRoleIdByRoleName", new String[]{"Useradmin"} );
+                String[] roleId = imcref.sqlProcedure( "GetRoleIdByRoleName", new String[]{"Useradmin"} );
                 boolean isSelected = false;
                 for ( int i = 0; i < rolesV.size(); i++ ) {
                     String aRole = rolesV.elementAt( i ).toString();
@@ -1655,7 +1655,7 @@ public class AdminUserProps extends Administrator {
     private static boolean checkExistingUserName( IMCServiceInterface imcref, Properties prop ) {
         boolean result = true;
         String userName = prop.getProperty( "login_name" );
-        String userNameExists[] = imcref.sqlProcedure( "FindUserName", new String[]{userName} );
+        String[] userNameExists = imcref.sqlProcedure( "FindUserName", new String[]{userName} );
         if ( userNameExists != null ) {
             if ( userNameExists.length > 0 ) {
                 result = false;

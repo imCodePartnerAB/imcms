@@ -22,7 +22,6 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
     public final static int DOCTYPE_BROWSER = 6;
     public final static int DOCTYPE_HTML = 7;
     public final static int DOCTYPE_FILE = 8;
-    public final static int DOCTYPE_LOWEST_EXTERNAL = 100;
     public final static int DOCTYPE_DIAGRAM = 101;
     public final static int DOCTYPE_CONFERENCE = 102;
     public final static int DOCTYPE_CHAT = 103;
@@ -287,15 +286,6 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
     }
 
     public abstract void initDocument( DocumentMapper documentMapper );
-
-    public boolean isActivatedAtTime( Date time ) {
-        DocumentProperties documentProperties = getDocumentProperties();
-        return ( documentProperties.publicationStartDatetime != null
-                 && documentProperties.publicationStartDatetime.before( time ) )
-               &&
-               ( documentProperties.publicationEndDatetime == null
-                 || documentProperties.publicationEndDatetime.after( time ) );
-    }
 
     public boolean isArchivedAtTime( Date time ) {
         DocumentProperties documentProperties = getDocumentProperties();

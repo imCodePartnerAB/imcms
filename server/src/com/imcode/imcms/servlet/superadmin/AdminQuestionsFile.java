@@ -160,7 +160,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
             }
         } else if ( req.getParameter( "remove" ) != null ) {
             // retrieve list of rows to remove
-            String rows[] = req.getParameterValues( "AdminFile" );
+            String[] rows = req.getParameterValues( "AdminFile" );
 
             try {
                 // put the lines-list in a Map, keyed by list-index.

@@ -116,7 +116,7 @@ public class SqlHelpers {
 
         int rows = data.size() / columns;
 
-        String result[][] = new String[rows][columns];
+        String[][] result = new String[rows][columns];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 result[i][j] =
@@ -132,7 +132,7 @@ public class SqlHelpers {
 
     private static String[] createStringArrayFromSqlResults(List data) {
         if (data != null) {
-            String result[] = new String[data.size()];
+            String[] result = new String[data.size()];
             for (int i = 0; i < data.size(); i++) {
                 result[i] =
                         null != data.get(i)
@@ -151,7 +151,7 @@ public class SqlHelpers {
         if (data.size() > 0) {
 
             for (int i = 0; i < meta.length; i++) {
-                String temp_str[] = new String[data.size() / meta.length];
+                String[] temp_str = new String[data.size() / meta.length];
                 int counter = 0;
 
 

@@ -128,7 +128,7 @@ public class ConfReply extends Conference {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface();
 
-        String sqlAnswer[][] = confref.sqlProcedureMulti( "A_GetAllRepliesInDisc", new String[]{discId, userId} );
+        String[][] sqlAnswer = confref.sqlProcedureMulti( "A_GetAllRepliesInDisc", new String[]{discId, userId} );
 
         // Lets get the discussion header
         String discHeader = confref.sqlProcedureStr( "A_GetDiscussionHeader", new String[]{discId} );

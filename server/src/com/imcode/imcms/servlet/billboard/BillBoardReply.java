@@ -165,7 +165,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 		return;
 	    }
 
-        String sqlAnswer[][] = billref.sqlProcedureMulti("B_GetCurrentBill", new String[]{discId});
+        String[][] sqlAnswer = billref.sqlProcedureMulti("B_GetCurrentBill", new String[]{discId});
 
 	// Lets get the discussion header
         String discHeader = billref.sqlProcedureStr("B_GetBillHeader", new String[]{discId} );//GetDiscussionHeader

@@ -4,24 +4,21 @@ import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentMapper;
-import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 import imcode.server.user.UserDomainObject;
+import imcode.util.DateConstants;
 import imcode.util.MetaDataParser;
 import imcode.util.Utility;
-import imcode.util.DateConstants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import javax.servlet.ServletException;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.text.DateFormat;
 import java.util.*;
 
 /**
@@ -36,8 +33,8 @@ public class SaveMeta extends HttpServlet {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        if( null != req.getParameter("ImageBrowse") ) {
-            RequestDispatcher rd =  req.getRequestDispatcher("ImageBrowse");
+        if ( null != req.getParameter( "ImageBrowse" ) ) {
+            RequestDispatcher rd = req.getRequestDispatcher( "ImageBrowse" );
             rd.forward( req, res );
             return;
         }
@@ -52,7 +49,9 @@ public class SaveMeta extends HttpServlet {
         String metaIdStr = req.getParameter( "meta_id" );
         int metaId = Integer.parseInt( metaIdStr );
 
-        if ( !imcref.checkDocAdminRightsAny( metaId, user, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO | IMCConstants.PERM_EDIT_PERMISSIONS ) ) {	// Checking to see if user may edit this
+        if ( !imcref.checkDocAdminRightsAny( metaId, user, IMCConstants.PERM_EDIT_HEADLINE
+                                                           | IMCConstants.PERM_EDIT_DOCINFO
+                                                           | IMCConstants.PERM_EDIT_PERMISSIONS ) ) {	// Checking to see if user may edit this
             String output = AdminDoc.adminDoc( metaId, metaId, user, req, res );
             if ( output != null ) {
                 out.write( output );
@@ -61,8 +60,6 @@ public class SaveMeta extends HttpServlet {
         }
 
         Properties metaprops = new Properties();
-
-        String classification = req.getParameter( "classification" );
 
         // Hey, hey! Watch as i fetch the permission-set set (pun intended) for each role!
         // Now watch as i fetch the permission_set for the user...
@@ -102,24 +99,34 @@ public class SaveMeta extends HttpServlet {
             boolean permissionSettingSucceded = false;
 
             final boolean userHasFullPermissionsForThisDocument = IMCConstants.DOC_PERM_SET_FULL == userSetId;
-            final boolean userHasEditPermissionsBitSetForThisDocument = 0 != ( userPermSet & IMCConstants.PERM_EDIT_PERMISSIONS );
+            final boolean userHasEditPermissionsBitSetForThisDocument = 0
+                                                                        != ( userPermSet
+                                                                             & IMCConstants.PERM_EDIT_PERMISSIONS );
 
-            final boolean userMayEditPermissionsForThisDocument = userHasFullPermissionsForThisDocument || userHasEditPermissionsBitSetForThisDocument;
+            final boolean userMayEditPermissionsForThisDocument = userHasFullPermissionsForThisDocument
+                                                                  || userHasEditPermissionsBitSetForThisDocument;
 
             if ( userMayEditPermissionsForThisDocument ) {
                 final boolean userMaySetThisParticularPermissionSet = userSetId <= newSetIdForRole;
 
                 if ( userMaySetThisParticularPermissionSet ) {
                     // May the user edit the permissions for this particular role?
-                    final boolean restrictedOneMaySetPermissionsForRestrictedTwo = 0 != ( currentDocPerms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 );
+                    final boolean restrictedOneMaySetPermissionsForRestrictedTwo = 0
+                                                                                   != ( currentDocPerms
+                                                                                        & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 );
                     final boolean userHasRestrictedOne = IMCConstants.DOC_PERM_SET_RESTRICTED_1 == userSetId;
-                    final boolean currentSetIdForRoleIsRestrictedTwo = IMCConstants.DOC_PERM_SET_RESTRICTED_2 == currentSetIdForRole;
-                    final boolean newSetIdForRoleIsRestrictedTwo = IMCConstants.DOC_PERM_SET_RESTRICTED_2 == newSetIdForRole;
+                    final boolean currentSetIdForRoleIsRestrictedTwo = IMCConstants.DOC_PERM_SET_RESTRICTED_2
+                                                                       == currentSetIdForRole;
+                    final boolean newSetIdForRoleIsRestrictedTwo = IMCConstants.DOC_PERM_SET_RESTRICTED_2
+                                                                   == newSetIdForRole;
                     final boolean userHasAtLeastAsPrivilegedCurrentSetIdAsRole = userSetId <= currentSetIdForRole;
                     if ( userHasAtLeastAsPrivilegedCurrentSetIdAsRole ) {
-                        final boolean currentOrNewSetIdForRoleIsRestrictedTwo = currentSetIdForRoleIsRestrictedTwo || newSetIdForRoleIsRestrictedTwo;
-                        final boolean restrictedOneIsTryingToSetPermissionsForRestrictedTwo = userHasRestrictedOne && currentOrNewSetIdForRoleIsRestrictedTwo;
-                        if ( restrictedOneMaySetPermissionsForRestrictedTwo || !restrictedOneIsTryingToSetPermissionsForRestrictedTwo ) {
+                        final boolean currentOrNewSetIdForRoleIsRestrictedTwo = currentSetIdForRoleIsRestrictedTwo
+                                                                                || newSetIdForRoleIsRestrictedTwo;
+                        final boolean restrictedOneIsTryingToSetPermissionsForRestrictedTwo = userHasRestrictedOne
+                                                                                              && currentOrNewSetIdForRoleIsRestrictedTwo;
+                        if ( restrictedOneMaySetPermissionsForRestrictedTwo
+                             || !restrictedOneIsTryingToSetPermissionsForRestrictedTwo ) {
 
                             // We used to save to the db immediately. Now we do it a little bit differently to make it possible to store stuff in the session instead of the db.
                             temp_permission_settings.setProperty( String.valueOf( role_id ), String.valueOf( newSetIdForRole ) );
@@ -130,7 +137,16 @@ public class SaveMeta extends HttpServlet {
             }
 
             if ( !permissionSettingSucceded ) {
-                mainLog.info( "User " + user.getUserId() + " with set_id " + userSetId + " and permission_set " + userPermSet + " was denied permission to change set_id for role " + role_id + " from " + currentSetIdForRole + " to " + newSetIdForRole + " on meta_id " + metaIdStr );
+                mainLog.info( "User " + user.getUserId() + " with set_id " + userSetId + " and permission_set "
+                              + userPermSet
+                              + " was denied permission to change set_id for role "
+                              + role_id
+                              + " from "
+                              + currentSetIdForRole
+                              + " to "
+                              + newSetIdForRole
+                              + " on meta_id "
+                              + metaIdStr );
             }
         }
 
@@ -144,7 +160,8 @@ public class SaveMeta extends HttpServlet {
         */
         // NOTE! This table matches the one below. Don't go changing one without changing the other.
         // FIXME: They should be merged into one table.
-        String[] metatable = {/*  Nullable			Nullvalue */
+        String[] metatable = {
+            /*  Nullable			Nullvalue */
             "shared", "0",
             "disable_search", "0",
             "show_meta", "0",
@@ -182,13 +199,17 @@ public class SaveMeta extends HttpServlet {
 
         // NOTE! This table matches the one above. Don't go changing one without changing the other.
         // FIXME: They should be merged into one table.
-        int[] metatable_restrictions = {//	set_id,	permission_bitmask
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO | IMCConstants.PERM_EDIT_PERMISSIONS, //"shared",
+        int[] metatable_restrictions = {
+            //	set_id,	permission_bitmask
+            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO
+                                                    | IMCConstants.PERM_EDIT_PERMISSIONS, //"shared",
             IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"disable_search",
             IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"archive",
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO | IMCConstants.PERM_EDIT_PERMISSIONS, //"show_meta",
+            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO
+                                                    | IMCConstants.PERM_EDIT_PERMISSIONS, //"show_meta",
             IMCConstants.DOC_PERM_SET_FULL, IMCConstants.PERM_EDIT_PERMISSIONS, //"permissions",
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO | IMCConstants.PERM_EDIT_PERMISSIONS, //"meta_headline",
+            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO
+                                                    | IMCConstants.PERM_EDIT_PERMISSIONS, //"meta_headline",
             IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO, //"meta_text",
             IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO, //"meta_image",
             IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"activated_datetime",
@@ -217,8 +238,8 @@ public class SaveMeta extends HttpServlet {
 
         Date activated_datetime = DocumentComposer.parseDatetimeParameters( req, "activated_date", "activated_time", dateFormat, timeFormat );
         Date archived_datetime = DocumentComposer.parseDatetimeParameters( req, "archived_date", "archived_time", dateFormat, timeFormat );
-        Date createdDatetime = DocumentComposer.parseDatetimeParameters( req, "date_created", "created_time", dateFormat,timeFormat) ;
-        Date modifiedDatetime = DocumentComposer.parseDatetimeParameters( req, "date_modified", "modified_time", dateFormat,timeFormat) ;
+        Date createdDatetime = DocumentComposer.parseDatetimeParameters( req, "date_created", "created_time", dateFormat, timeFormat );
+        Date modifiedDatetime = DocumentComposer.parseDatetimeParameters( req, "date_modified", "modified_time", dateFormat, timeFormat );
 
         // If target is set to '_other', it means the real target is in 'frame_name'.
         // In this case, set target to the value of frame_name.
@@ -235,8 +256,8 @@ public class SaveMeta extends HttpServlet {
         for ( int i = 0; i < metatable.length; i += metatable_cols ) {
             String tmp = (String)inputMap.get( metatable[i] );
             if ( userSetId > metatable_restrictions[i]						// Check on set_id if user is allowed to set this particular property.
-                    || ( userSetId > 0										// If user not has full access (0)...
-                    && ( ( userPermSet & metatable_restrictions[i + 1] ) == 0 )// check permission-bitvector for the users set_id.
+                 || ( userSetId > 0										// If user not has full access (0)...
+                      && ( ( userPermSet & metatable_restrictions[i + 1] ) == 0 )// check permission-bitvector for the users set_id.
                     ) ) {
                 continue;
             }
@@ -255,8 +276,10 @@ public class SaveMeta extends HttpServlet {
             }
         }
         //ok here we fetch the settings fore the default_template 1 & 2
-        String temp_default_template_1 = req.getParameter( "default_template_set_1" ) == null ? "-1" : req.getParameter( "default_template_set_1" );
-        String temp_default_template_2 = req.getParameter( "default_template_set_2" ) == null ? "-1" : req.getParameter( "default_template_set_2" );
+        String temp_default_template_1 = req.getParameter( "default_template_set_1" ) == null
+                                         ? "-1" : req.getParameter( "default_template_set_1" );
+        String temp_default_template_2 = req.getParameter( "default_template_set_2" ) == null
+                                         ? "-1" : req.getParameter( "default_template_set_2" );
         String[] temp_default_templates = {temp_default_template_1, temp_default_template_2};
 
         // It's like this... people make changes on the page, and then they forget to press "save"
@@ -293,7 +316,7 @@ public class SaveMeta extends HttpServlet {
             }
             putTemporaryPermissionSettingsInUser( user, metaIdStr, metaprops, temp_permission_settings, temp_default_templates );
 
-            out.write( MetaDataParser.parseMetaPermission( metaIdStr, metaIdStr, user, "docinfo/change_meta_rights.html", null) );
+            out.write( MetaDataParser.parseMetaPermission( metaIdStr, metaIdStr, user, "docinfo/change_meta_rights.html", null ) );
             return;
         }
 
@@ -307,16 +330,16 @@ public class SaveMeta extends HttpServlet {
         String template1 = "-1";
         String template2 = "-1";
         boolean saveDefaultTemplateToDb = false;
-        if (tempStr != null) {
+        if ( tempStr != null ) {
             saveDefaultTemplateToDb = true;
-            template1 = req.getParameter("default_template_set_1").equals("")
-                        ? "-1" : req.getParameter("default_template_set_1");
+            template1 = req.getParameter( "default_template_set_1" ).equals( "" )
+                        ? "-1" : req.getParameter( "default_template_set_1" );
         }
-        tempStr = req.getParameter("default_template_set_2");
-        if (tempStr != null) {
+        tempStr = req.getParameter( "default_template_set_2" );
+        if ( tempStr != null ) {
             saveDefaultTemplateToDb = true;
-            template2 = req.getParameter("default_template_set_2").equals("")
-                        ? "-1" : req.getParameter("default_template_set_2");
+            template2 = req.getParameter( "default_template_set_2" ).equals( "" )
+                        ? "-1" : req.getParameter( "default_template_set_2" );
         }
 
         ArrayList sqlUpdateColumns = new ArrayList();
@@ -339,7 +362,7 @@ public class SaveMeta extends HttpServlet {
                 updatePart += "NULL";
             } else {
                 updatePart += "?";
-                sqlUpdateValues.add( datetimeFormat.format(activated_datetime) );
+                sqlUpdateValues.add( datetimeFormat.format( activated_datetime ) );
             }
             sqlUpdateColumns.add( updatePart );
         }
@@ -350,7 +373,7 @@ public class SaveMeta extends HttpServlet {
                 updatePart += "NULL";
             } else {
                 updatePart += "?";
-                sqlUpdateValues.add( datetimeFormat.format(archived_datetime) );
+                sqlUpdateValues.add( datetimeFormat.format( archived_datetime ) );
             }
             sqlUpdateColumns.add( updatePart );
         }
@@ -360,7 +383,8 @@ public class SaveMeta extends HttpServlet {
             String[] updateParameters = new String[sqlUpdateValues.size() + 1];
             sqlUpdateValues.toArray( updateParameters );
             updateParameters[updateParameters.length - 1] = metaIdStr;
-            imcref.sqlUpdateQuery( "update meta set " + StringUtils.join( sqlUpdateColumns.iterator(), ',' ) + " where meta_id = ?", updateParameters );
+            imcref.sqlUpdateQuery( "update meta set " + StringUtils.join( sqlUpdateColumns.iterator(), ',' )
+                                   + " where meta_id = ?", updateParameters );
         }
 
         for ( int i = 0; i < sqlResultWithColumnsRoleIdRoleNameAndPermissionId.length; ++i ) {
@@ -371,20 +395,15 @@ public class SaveMeta extends HttpServlet {
             }
         }
 
-        // Save the classifications to the db
-        if ( classification != null ) {
-            imcref.getDocumentMapper().updateDocumentKeywords( Integer.parseInt( metaIdStr ), classification );
-        }
-
         //ok lets save the default templates
-        if(saveDefaultTemplateToDb){
+        if ( saveDefaultTemplateToDb ) {
             sprocUpdateDefaultTemplates( imcref, metaIdStr, template1, template2 );
         }
 
         //if the administrator wants to change the date we does it here
         if ( createdDatetime != null ) {
             //we did got a ok date so lets save it to db
-            DocumentMapper.sqlUpdateMetaDateCreated( imcref, metaIdStr, datetimeFormat.format(createdDatetime) );
+            DocumentMapper.sqlUpdateMetaDateCreated( imcref, metaIdStr, datetimeFormat.format( createdDatetime ) );
         }
         if ( null != modifiedDatetime ) {
             //we did got a ok date so lets save it to db
@@ -394,7 +413,8 @@ public class SaveMeta extends HttpServlet {
         // Update the date_modified for all parents.
         DocumentMapper.sprocUpdateParentsDateModified( imcref, Integer.parseInt( metaIdStr ) );
 
-        if ( imcref.checkAdminRights( user ) || imcref.checkDocAdminRights( metaId, user, IMCConstants.PERM_EDIT_DOCINFO ) ) {
+        if ( imcref.checkAdminRights( user )
+             || imcref.checkDocAdminRights( metaId, user, IMCConstants.PERM_EDIT_DOCINFO ) ) {
             setSectionInDbFromRequest( req, imcref, metaId );
         }
 
@@ -421,16 +441,25 @@ public class SaveMeta extends HttpServlet {
         }
     }
 
-    private static Object putTemporaryPermissionSettingsInUser( UserDomainObject user, String meta_id, Properties metaprops, Properties temp_permission_settings, String[] temp_default_templates ) {
-        return user.put( "temp_perm_settings", new Object[]{String.valueOf( meta_id ), metaprops, temp_permission_settings, temp_default_templates} );
+    private static Object putTemporaryPermissionSettingsInUser( UserDomainObject user, String meta_id,
+                                                                Properties metaprops,
+                                                                Properties temp_permission_settings,
+                                                                String[] temp_default_templates ) {
+        return user.put( "temp_perm_settings", new Object[]{
+            String.valueOf( meta_id ), metaprops, temp_permission_settings, temp_default_templates
+        } );
     }
 
-    public static void sprocUpdateDefaultTemplates( IMCServiceInterface imcref, String meta_id, String template1, String template2 ) {
+    public static void sprocUpdateDefaultTemplates( IMCServiceInterface imcref, String meta_id, String template1,
+                                                    String template2 ) {
         imcref.sqlUpdateProcedure( "UpdateDefaultTemplates", new String[]{meta_id, template1, template2} );
     }
 
-    public static String[] sprocGetUserPermissionSet( IMCServiceInterface imcref, UserDomainObject user, String meta_id ) {
-        String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet", new String[]{meta_id, "" + user.getUserId()} );
+    public static String[] sprocGetUserPermissionSet( IMCServiceInterface imcref, UserDomainObject user,
+                                                      String meta_id ) {
+        String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet", new String[]{
+            meta_id, "" + user.getUserId()
+        } );
         return current_permissions;
     }
 

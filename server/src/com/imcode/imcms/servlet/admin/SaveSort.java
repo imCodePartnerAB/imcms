@@ -44,7 +44,7 @@ public class SaveSort extends HttpServlet {
         }
 
         String temp_str;
-        String childsThisMenu[];
+        String[] childsThisMenu;
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         documentMapper.touchDocument( documentMapper.getDocument( meta_id ) );
 

@@ -182,7 +182,7 @@ public class ConfAdmin extends Conference {
             String discId = params.getProperty("DISC_ID");
 
             // Lets get all the replies id:s
-            String repliesIds[] = this.getDelReplyParameters(req);
+            String[] repliesIds = this.getDelReplyParameters(req);
 
             // Lets delete all marked replies. Observe that the first one wont be deleted!
             // if the user wants to delete the first one then he has to delete the discussion
@@ -198,7 +198,7 @@ public class ConfAdmin extends Conference {
         // ********* RESAVE REPLY ********
         if (req.getParameter("RESAVE_REPLY") != null) {
             // Lets get all the replies id:s
-            String repliesIds[] = this.getDelReplyParameters(req);
+            String[] repliesIds = this.getDelReplyParameters(req);
 
             // Lets get the seleted textboxes headers and texts values.
             if (repliesIds != null) {
@@ -231,7 +231,7 @@ public class ConfAdmin extends Conference {
         if (req.getParameter("DELETE_DISCUSSION") != null) {
 
             // Lets get all the discussion id:s
-            String discIds[] = this.getDelDiscParameters(req);
+            String[] discIds = this.getDelDiscParameters(req);
 
             // Lets delete all the discussion and all the replies in that discussion.
             if (discIds != null) {
@@ -253,7 +253,7 @@ public class ConfAdmin extends Conference {
 
             // Lets get all discussions for that forum and delete those before deleting the forum
             // GetAllDiscsInForum @aForumId int
-            String discs[] = confref.sqlProcedure("A_GetAllDiscsInForum", new String[]{aForumId});
+            String[] discs = confref.sqlProcedure("A_GetAllDiscsInForum", new String[]{aForumId});
             if (discs != null) {
                 for (int i = 0; i < discs.length; i++) {
                     confref.sqlUpdateProcedure("A_DeleteDiscussion", new String[]{discs[i]});
@@ -364,14 +364,14 @@ public class ConfAdmin extends Conference {
 
 
             // Lets get the current self register roles from DB
-            String sqlAnswer[] = confref.sqlProcedure("A_SelfRegRoles_GetAll", new String[]{params.getProperty("META_ID")});
+            String[] sqlAnswer = confref.sqlProcedure("A_SelfRegRoles_GetAll", new String[]{params.getProperty("META_ID")});
             Vector selfRegV = super.convert2Vector(sqlAnswer);
             String selfRegList = Html.createOptionList("", selfRegV);
 
             // Lets ALL avaible self_register roles from DB
             String langPrefix = user.getLanguageIso639_2();
 
-            String sqlAnswer2[] = imcref.sqlProcedure("RoleGetConferenceAllowed", new String[]{langPrefix});
+            String[] sqlAnswer2 = imcref.sqlProcedure("RoleGetConferenceAllowed", new String[]{langPrefix});
             Vector allSelfRegV = super.convert2Vector(sqlAnswer2);
             String allSelfRegList = Html.createOptionList("", allSelfRegV);
 
@@ -418,7 +418,7 @@ public class ConfAdmin extends Conference {
                 String currTemplateSet = confref.sqlProcedureStr("A_GetTemplateLib", new String[]{params.getProperty("META_ID")});
 
                 // Lets get all current template sets
-                String sqlAnswer[] = confref.sqlProcedure("A_GetAllTemplateLibs", new String[]{});
+                String[] sqlAnswer = confref.sqlProcedure("A_GetAllTemplateLibs", new String[]{});
                 Vector templateV = super.convert2Vector(sqlAnswer);
 
                 // Lets fill the select box	with forums
@@ -440,14 +440,14 @@ public class ConfAdmin extends Conference {
         if (adminWhat.equalsIgnoreCase("FORUM")) {
 
             // Lets get the information from DB
-            String sqlAnswer[] = confref.sqlProcedure("A_GetAllForum", new String[]{params.getProperty("META_ID")});
+            String[] sqlAnswer = confref.sqlProcedure("A_GetAllForum", new String[]{params.getProperty("META_ID")});
             Vector forumV = super.convert2Vector(sqlAnswer);
 
             // Lets fill the select box with forums
             String forumList = Html.createOptionList("", forumV);
 
             // Lets get all the showDiscs values
-            String sqlAllDiscs[] = confref.sqlProcedure("A_GetAllNbrOfDiscsToShow", new String[]{params.getProperty("META_ID")});
+            String[] sqlAllDiscs = confref.sqlProcedure("A_GetAllNbrOfDiscsToShow", new String[]{params.getProperty("META_ID")});
 
             Vector sqlAllDiscsV = new Vector();
             if (sqlAllDiscs != null) {
@@ -476,10 +476,10 @@ public class ConfAdmin extends Conference {
             File aHrefHtmlFile = new File(super.getExternalTemplateFolder(req), adminDiscList);
 
             // Lets get all New Discussions
-            String sqlAnswerNew[][] = confref.sqlProcedureMulti("A_GetAllNewDiscussions", new String[]{aMetaId, aForumId, aLoginDate});
+            String[][] sqlAnswerNew = confref.sqlProcedureMulti("A_GetAllNewDiscussions", new String[]{aMetaId, aForumId, aLoginDate});
 
             // Lets get all Old Discussions
-            String sqlAnswerOld[][] = confref.sqlProcedureMulti("A_GetAllOldDiscussions", new String[]{aMetaId, aForumId, aLoginDate});
+            String[][] sqlAnswerOld = confref.sqlProcedureMulti("A_GetAllOldDiscussions", new String[]{aMetaId, aForumId, aLoginDate});
 
             // Lets build our tags vector.
             Vector tagsV = this.buildAdminTags();
@@ -515,7 +515,7 @@ public class ConfAdmin extends Conference {
             // Lets get the replylist from DB
             String discId = params.getProperty("DISC_ID");
 
-            String sqlAnswer[][] = confref.sqlProcedureMulti("A_GetAllRepliesInDiscAdmin", new String[]{discId, userId});
+            String[][] sqlAnswer = confref.sqlProcedureMulti("A_GetAllRepliesInDiscAdmin", new String[]{discId, userId});
 
             // Lets get the users sortorder from DB
             String metaId = params.getProperty("META_ID");

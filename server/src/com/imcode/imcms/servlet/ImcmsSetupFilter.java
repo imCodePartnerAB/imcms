@@ -19,7 +19,6 @@ import java.io.IOException;
 
 public class ImcmsSetupFilter implements Filter {
 
-    private Logger log = Logger.getLogger( ImcmsSetupFilter.class );
     private static final String LOGGED_IN_USER = "logon.isDone";
 
     public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException {

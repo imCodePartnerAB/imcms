@@ -187,24 +187,6 @@ public class ImageFileMetaData {
         return height;
     }
 
-    /**
-     * getType
-     * 
-     * @return filename
-     */
-    public String getName() {
-        return file.getName();
-    }
-
-    /**
-     * getType
-     * 
-     * @return imagetype (returns GIF87a or GIF89a for GIF-files, nothing yet for JPG-files)
-     */
-    public String getType() {
-        return type;
-    }
-
     /*
       TODO:
       String getImageInfo() -> artist and copyright-info		JPG/GIF

@@ -33,7 +33,6 @@ public class BrowserDocumentComposer extends HttpServlet {
 
     public final static String PARAMETER__BROWSERS = "browsers";
     public final static String PARAMETER_PREFIX__DESTINATION = "destination_";
-    public static final String PARAMETER__DEFAULT_DESTINATION = "default_destination";
 
     public static final String REQUEST_ATTRIBUTE__ADDED_BROWSERS = "addedBrowsers";
 

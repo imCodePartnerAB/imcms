@@ -218,7 +218,7 @@ public class AdminFortuneFile extends Administrator {
 			Map lines = (Map)session.getAttribute("lines");
 
 			//hämta de rader som ska tas bort
-			String rows[] = req.getParameterValues("AdminFile") ;
+			String[] rows = req.getParameterValues("AdminFile") ;
 
 			//ta bort de som ska raderas
 			for(int i=0;i<rows.length;i++)

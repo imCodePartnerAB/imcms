@@ -44,10 +44,6 @@ public class ConnectionPoolForNonPoolingDriver extends ConnectionPool {
         connection.close();
     }
 
-    private static String getUsedConnectionsString( ObjectPool connectionPool ) {
-        return connectionPool.getNumActive() + "/" + ( connectionPool.getNumIdle() + connectionPool.getNumActive() );
-    }
-
     public Connection getConnection() throws SQLException {
         Connection result = null;
         try {

@@ -84,13 +84,6 @@ public class DocumentMapper {
         }
     }
 
-    public static boolean checkUsersRights( IMCServiceInterface imcref, UserDomainObject user, String parent_meta_id,
-                                            String lang_prefix, String doc_type ) {
-        HashSet user_doc_types = sprocGetDocTypesForUser( imcref, user, parent_meta_id, lang_prefix );
-        boolean userHasRights = user_doc_types.contains( doc_type );
-        return userHasRights;
-    }
-
     public static void copyTemplateData( IMCServiceInterface imcref, UserDomainObject user, String parent_meta_id,
                                          String meta_id ) {
         //ok now lets see what to do with the templates
@@ -182,7 +175,7 @@ public class DocumentMapper {
      * Delete childs from a menu.
      */
     public static void deleteChilds( IMCServiceInterface service, int meta_id, int menu, UserDomainObject user,
-                                     String childsThisMenu[] ) {
+                                     String[] childsThisMenu ) {
         StringBuffer childStr = new StringBuffer( "[" );
         // create a db connection an get meta data
 
@@ -449,14 +442,6 @@ public class DocumentMapper {
         } else {
             return null;
         }
-    }
-
-    public void getDocumentAndSetCategoriesFromFormAndSaveDocument( HttpServletRequest req, int meta_id_int )
-            throws MaxCategoryDomainObjectsOfTypeExceededException {
-        DocumentMapper documentMapper = service.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument( meta_id_int );
-        setDocumentCategoriesFromForm( req, document, documentMapper );
-        documentMapper.saveDocument( document );
     }
 
     public static HashMap getDocumentTypeIdsAndNames( IMCServiceInterface service, int metaId, int userId,
@@ -927,14 +912,6 @@ public class DocumentMapper {
         imcref.sqlUpdateProcedure( "DeleteInclude", new String[]{"" + including_meta_id, "" + include_id} );
     }
 
-    public static String[] sprocGetDocTypeForUser( IMCServiceInterface service, UserDomainObject user, int meta_id,
-                                                   String lang_prefix ) {
-        return service.sqlProcedure( SPROC_GET_DOC_TYPES_FOR_USER,
-                                     new String[]{
-                                         String.valueOf( meta_id ), String.valueOf( user.getUserId() ), lang_prefix
-                                     } );
-    }
-
     public static String[] sprocGetIncludes( IMCServiceInterface imcref, int meta_id ) {
         String[] included_docs = imcref.sqlProcedure( SPROC_GET_INCLUDES, new String[]{String.valueOf( meta_id )} );
         return included_docs;
@@ -943,7 +920,7 @@ public class DocumentMapper {
     public void updateDocumentKeywords( int meta_id, String separatedKeywords ) {
         Perl5Util perl5util = new Perl5Util();
         List keywords = new ArrayList();
-        perl5util.split( keywords, "/\\W+/", separatedKeywords );
+        perl5util.split( keywords, "/\\p{L}+/", separatedKeywords );
         updateDocumentKeywords( meta_id, (String[])keywords.toArray( new String[keywords.size()] ) );
     }
 
@@ -1180,21 +1157,6 @@ public class DocumentMapper {
         }
     }
 
-    private void setDocumentCategoriesFromForm( HttpServletRequest req, DocumentDomainObject document,
-                                                DocumentMapper documentMapper ) {
-        document.removeAllCategories();
-        String[] categoryIdStrings = req.getParameterValues( "categories" );
-        for ( int i = 0; null != categoryIdStrings && i < categoryIdStrings.length; i++ ) {
-            try {
-                int categoryId = Integer.parseInt( categoryIdStrings[i] );
-                CategoryDomainObject categoryDomainObject = documentMapper.getCategoryById( categoryId );
-                document.addCategory( categoryDomainObject );
-            } catch ( NumberFormatException nfe ) {
-                // Illegal category-id, or none selected.
-            }
-        }
-    }
-
     private void updateDocumentSections( int metaId,
                                          SectionDomainObject[] sections ) {
         removeAllSectionsFromDocument( service, metaId );
@@ -1202,17 +1164,6 @@ public class DocumentMapper {
             SectionDomainObject section = sections[i];
             addSectionToDocument( service, metaId, section.getId() );
         }
-    }
-
-    private static HashSet sprocGetDocTypesForUser( IMCServiceInterface imcref, UserDomainObject user,
-                                                    String parent_meta_id, String lang_prefix ) {
-        String[] user_dt = imcref.sqlProcedure( SPROC_GET_DOC_TYPES_FOR_USER,
-                                                new String[]{parent_meta_id, "" + user.getUserId(), lang_prefix} );
-        HashSet user_doc_types = new HashSet();
-        for ( int i = 0; i < user_dt.length; i += 2 ) {
-            user_doc_types.add( user_dt[i] );
-        }
-        return user_doc_types;
     }
 
     private DocumentDomainObject getDocumentFromDb( int metaId ) {
@@ -1322,7 +1273,7 @@ public class DocumentMapper {
     }
 
     private static String[] sqlSelectTemplateInfoFromTextDocs( IMCServiceInterface imcref, String parent_meta_id ) {
-        String temp[] = imcref.sqlQuery( "select template_id, sort_order,group_id,default_template_1,default_template_2 from text_docs where meta_id = ?",
+        String[] temp = imcref.sqlQuery( "select template_id, sort_order,group_id,default_template_1,default_template_2 from text_docs where meta_id = ?",
                                          new String[]{parent_meta_id} );
         return temp;
     }

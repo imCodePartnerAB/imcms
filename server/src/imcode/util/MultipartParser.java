@@ -24,7 +24,7 @@ class MultipartParser {
      * @param data        The multipartdata.
      * @param contenttype The MIME-header "Content-Type" for the data. Must contain a 'boundary=" "' parameter.
      */
-    MultipartParser( byte data[], String contenttype ) {
+    MultipartParser( byte[] data, String contenttype ) {
         try {
             parse( new String( data, "8859_1" ), contenttype );
         } catch ( java.io.UnsupportedEncodingException ex ) {

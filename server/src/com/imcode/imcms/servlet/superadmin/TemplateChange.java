@@ -105,7 +105,7 @@ public class TemplateChange extends HttpServlet {
                                         UserDomainObject user, IMCServiceInterface imcref ) {
         String htmlStr;
         int grp_id = Integer.parseInt( req.getParameter( "group_id" ) );
-        String templatesToAssign[] = req.getParameterValues( "unassigned" );
+        String[] templatesToAssign = req.getParameterValues( "unassigned" );
         TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById( grp_id );
         for ( int i = 0; templatesToAssign != null && i < templatesToAssign.length; i++ ) {
             int templateId = Integer.parseInt( templatesToAssign[i] );
@@ -240,7 +240,7 @@ public class TemplateChange extends HttpServlet {
                                              UserDomainObject user, IMCServiceInterface imcref ) {
         String htmlStr;
         int grp_id = Integer.parseInt( req.getParameter( "group_id" ) );
-        String templatesToUnassign[] = req.getParameterValues( "assigned" );
+        String[] templatesToUnassign = req.getParameterValues( "assigned" );
         TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById( grp_id );
         for ( int i = 0; templatesToUnassign != null && i < templatesToUnassign.length; i++ ) {
             int templateId = Integer.parseInt( templatesToUnassign[i] );

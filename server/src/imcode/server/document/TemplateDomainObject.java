@@ -1,6 +1,8 @@
 package imcode.server.document;
 
-public class TemplateDomainObject implements Comparable {
+import java.io.Serializable;
+
+public class TemplateDomainObject implements Comparable, Serializable {
     private int id;
     private String name;
     private String fileName;

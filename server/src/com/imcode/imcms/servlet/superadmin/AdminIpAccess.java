@@ -169,7 +169,7 @@ public class AdminIpAccess extends Administrator {
                 Enumeration enumNames = req.getParameterNames();
                 while ( enumNames.hasMoreElements() ) {
                     String paramName = (String)( enumNames.nextElement() );
-                    String arr[] = req.getParameterValues( paramName );
+                    String[] arr = req.getParameterValues( paramName );
                     session.setAttribute( "IP." + paramName, arr );
                 }
             } else {
