@@ -36,6 +36,8 @@ public class VerifyUser extends HttpServlet {
 
         String name = req.getParameter( "name" );
         String passwd = req.getParameter( "passwd" );
+        String accessDeniedUrl = req.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( req ).getLanguageIso639_2()+"/login/access_denied.jsp" ;
+        String nexturl;
 
         // Check the name and password for validity
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -47,7 +49,7 @@ public class VerifyUser extends HttpServlet {
         // if we don't have got any user from IMCService lets check out next url for redirect
         if ( user == null ) {
 
-            String nexturl = req.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( req ).getLanguageIso639_2()+"/login/access_denied.jsp" ;
+            nexturl = accessDeniedUrl;
 
             // lets set session next_meta if we have got any from request, we will use it later when
             // login is successfull
@@ -79,11 +81,16 @@ public class VerifyUser extends HttpServlet {
             user.setLoginType( "verify" );
 
             // Lets now find out nexturl to redirect the user
-            String nexturl = "StartDoc";  // default value
+            nexturl = "StartDoc";  // default value
 
             // if user have pushed button "Ändra" from login page
             if ( req.getParameter( "Ändra" ) != null ) {
 
+                // don't allow "user" "user" ( User Extern ) to be changed
+                if(user.getLoginName().equals("user")){
+                    res.sendRedirect( accessDeniedUrl );
+                    return;
+                }
                 //if next_url was passed
                 if ( req.getParameter( "next_url" ) != null ) {
                     nexturl = req.getParameter( "next_url" );
