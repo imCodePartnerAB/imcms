@@ -299,7 +299,7 @@ imcmsGui("mid", null);
 			CategoryTypeDomainObject categoryType = categoryTypes[i] ;
 			if( !categoryType.hasImages() ) {%>
 		<div style="float: left; margin: auto 1em 1ex auto;">
-		<a href="@imcmsjspurl@/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br>
+		<a href="@imcmsjspurl@/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="3"><br>
 		<select name="<%= DocumentComposer.PARAMETER__CATEGORIES %>"<% if (1 != categoryType.getMaxChoices()) { %>size="4" multiple<% } %>>
 		<%= Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType, document) %>
 		</select></div><%
