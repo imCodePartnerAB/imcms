@@ -1,6 +1,7 @@
-<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
-<vel:velocity>
-<html>
+<%@ page import="com.imcode.imcms.servlet.VerifyUser,
+                 org.apache.commons.lang.StringEscapeUtils"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
+    String target = request.getParameter(VerifyUser.REQUEST_PARAMETER__TARGET) ;
+%><vel:velocity><html>
 <head>
 <title><? templates/login/no_permission.html/1 ?></title>
 
@@ -42,6 +43,9 @@
 	<td colspan="2" align="center">
 	<table border="0" cellspacing="0" cellpadding="1">
 	<form action="<%= request.getContextPath() %>/servlet/VerifyUser" method="post">
+    <% if (null != target) { %>
+        <input type="hidden" name="<%= VerifyUser.REQUEST_PARAMETER__TARGET %>" value="<%= StringEscapeUtils.escapeHtml( target )%>">
+    <% } %>
 	<tr>
 		<td><span class="imcmsAdmText"><? templates/login/no_permission.html/5 ?></span></td>
 		<td>&nbsp;</td>

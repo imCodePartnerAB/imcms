@@ -15,4 +15,7 @@ public class StartDoc extends HttpServlet {
         req.getRequestDispatcher( "/servlet/GetDoc?meta_id="+meta_id ).forward( req, res );
     }
 
+    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+        doGet( request, response );
+    }
 }

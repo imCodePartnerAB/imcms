@@ -20,7 +20,6 @@ public class GetDoc extends HttpServlet {
     private final static Logger log = Logger.getLogger( GetDoc.class.getName() );
     private final static String NO_ACTIVE_DOCUMENT_URL = "no_active_document.html";
     private final static String NO_PAGE_URL = "no_page.html";
-    private final static String NO_PERMISSION_URL = "no_permission.jsp";
 
     private static final String HTTP_HEADER_REFERRER = "Referer";// Note, intended misspelling of "Referrer", according to the HTTP spec.
     public static final String REQUEST_PARAMETER__FILE_ID = "file_id";
@@ -126,11 +125,7 @@ public class GetDoc extends HttpServlet {
         // checking permissions. Number three, since the user obviously has logged in, give him the page in his own language!
 
         if ( !user.canAccess( document ) ) {
-            session.setAttribute( "login.target",
-                                  req.getRequestURL().append( "?" ).append( req.getQueryString() ).toString() );
-            String redirect = "/imcms/" + user.getLanguageIso639_2() + "/login/" + NO_PERMISSION_URL;
-            res.setStatus( HttpServletResponse.SC_FORBIDDEN );
-            req.getRequestDispatcher( redirect ).forward( req,res );
+            Utility.forwardToLogin( req, res );
             return null;
         }
 

@@ -17,13 +17,14 @@ import java.io.IOException;
  */
 public class VerifyUser extends HttpServlet {
 
+    public static final String REQUEST_PARAMETER__TARGET = "next_url";
+
     /**
      * doGet()
      */
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         doPost( req, res );
-        return;
     }
     /** end of doGet() */
 
@@ -72,11 +73,8 @@ public class VerifyUser extends HttpServlet {
 
         } else { // we have a valid user
 
-            // Valid login.  Make a note in the session object.
-            session.setAttribute( "logon.isDone", user );  // just a marker object
-
-            String value = req.getHeader( "User-Agent" );
-            session.setAttribute( "browser_id", value );
+            // Valid login.  Make a note in the session.
+            session.setAttribute( "logon.isDone", user );
 
             user.setLoginType( "verify" );
 
@@ -120,8 +118,8 @@ public class VerifyUser extends HttpServlet {
                     session.removeAttribute( "next_url" );
                 }
                 // or if we have got next_url from request object
-                else if ( req.getParameter( "next_url" ) != null ) {
-                    nexturl = req.getParameter( "next_url" );
+                else if ( req.getParameter( REQUEST_PARAMETER__TARGET ) != null ) {
+                    nexturl = req.getParameter( REQUEST_PARAMETER__TARGET );
                 }
                 //or if we have got next_meta from request object
                 else if ( req.getParameter( "next_meta" ) != null ) {
@@ -132,8 +130,6 @@ public class VerifyUser extends HttpServlet {
                 else if ( session.getAttribute( "login.target" ) != null ) {
                     nexturl = (String)session.getAttribute( "login.target" );
                     session.removeAttribute( "login.target" );
-
-
                     // Couldn't redirect to the target.  Redirect to the site's home page.
                 } else {
                     nexturl = "StartDoc";
@@ -142,9 +138,9 @@ public class VerifyUser extends HttpServlet {
                 res.sendRedirect( nexturl );
                 return;
 
-            } // end else
-        } // end else
+            }
+        }
 
-    } // end doPost()
-} // end class
+    }
+}
 

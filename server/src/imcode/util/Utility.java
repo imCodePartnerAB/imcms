@@ -1,5 +1,6 @@
 package imcode.util;
 
+import com.imcode.imcms.servlet.VerifyUser;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
@@ -21,6 +22,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class Utility {
+
+    private final static String NO_PERMISSION_URL = "no_permission.jsp";
 
     private Utility() {
 
@@ -172,4 +175,15 @@ public class Utility {
         return dateFormat.format( datetime );
     }
 
+    public static void forwardToLogin( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+        UserDomainObject user = getLoggedOnUser( request );
+        StringBuffer loginTarget = request.getRequestURL() ;
+        String queryString = request.getQueryString();
+        if (null != queryString) {
+            loginTarget.append( "?" ).append( queryString ).toString();
+        }
+        String noPermissionPage = "/imcms/" + user.getLanguageIso639_2() + "/login/" + NO_PERMISSION_URL+"?"+VerifyUser.REQUEST_PARAMETER__TARGET+"="+URLEncoder.encode( loginTarget.toString() );
+        response.setStatus( HttpServletResponse.SC_FORBIDDEN );
+        request.getRequestDispatcher( noPermissionPage ).forward( request,response );
+    }
 }

@@ -62,26 +62,26 @@ public class AdminManager extends Administrator {
             throws ServletException, IOException {
 
         ImcmsServices service = Imcms.getServices();
-        UserDomainObject loggedOnUser = Utility.getLoggedOnUser( request );
+        UserDomainObject user = Utility.getLoggedOnUser( request );
 
         String whichButton = request.getParameter( "AdminTask" );
         if ( null != whichButton ) {
 
-            if ( !loggedOnUser.isSuperAdmin() && !loggedOnUser.isUserAdmin() ) {
-                String header = "Error in AdminManager.";
-                Properties langproperties = service.getLanguageProperties( loggedOnUser );
-                String msg = langproperties.getProperty( "error/servlet/global/no_administrator" ) + "<br>";
-                log.debug( header + "- user is not an administrator" );
-
-                new AdminError( request, response, header, msg );
-                return;
+            String url = getAdminTaskUrl( whichButton );
+            if ( !user.isSuperAdmin() && !user.isUserAdmin() ) {
+                Utility.forwardToLogin( request, response );
+                return ;
             }
 
-            String url = getAdminTaskUrl( whichButton );
             if ( StringUtils.isNotBlank( url ) ) {
                 response.sendRedirect( url );
                 return;
             }
+        }
+
+        if (!user.canAccessAdminPages()) {
+            Utility.forwardToLogin( request, response );
+            return ;
         }
 
         final DocumentMapper documentMapper = service.getDocumentMapper();
@@ -90,7 +90,7 @@ public class AdminManager extends Administrator {
             DocumentDomainObject parentDocument = documentMapper.getDocument( parentId );
             String createDocumentAction = request.getParameter( REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION );
             if ( REQUEST_PARAMETER__ACTION__COPY.equals( createDocumentAction ) ) {
-                SaveSort.copyDocument( parentDocument, loggedOnUser );
+                SaveSort.copyDocument( parentDocument, user );
                 createAndShowAdminManagerPage( request, response );
             } else {
                 int documentTypeId = Integer.parseInt( createDocumentAction );
