@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE AddStatisticsCount AS
+/**
+	DOCME: Document me!
+**/
+
 EXEC AddStatistics 'Count'
 
 

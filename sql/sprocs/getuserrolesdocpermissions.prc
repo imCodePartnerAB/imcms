@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE GetUserRolesDocPermissions @meta_id INT, @user_id INT AS
+/**
+	DOCME: Document me!
+**/
+
 SELECT
   r.role_id,
   r.role_name,

@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE [GetAllUsers] AS
+/**
+	DOCME: Document me!
+**/
+
   select *
  from USERS
  

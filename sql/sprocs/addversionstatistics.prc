@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE AddVersionStatistics @name VARCHAR(30), @version VARCHAR(30) AS
+/**
+	DOCME: Document me!
+**/
+
 DECLARE @string VARCHAR(62)
 SET @string = @name+': '+@version
 EXEC AddStatistics @string

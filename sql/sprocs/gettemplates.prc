@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE getTemplates AS
+/**
+	DOCME: Document me!
+**/
+
 select template_id, simple_name from templates
 
 

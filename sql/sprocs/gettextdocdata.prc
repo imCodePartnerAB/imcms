@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE GetTextDocData @meta_id INT AS
+/**
+	DOCME: Document me!
+**/
+
 SELECT t.template_id, simple_name, sort_order, t.group_id
 FROM   text_docs t  
 JOIN   templates c 

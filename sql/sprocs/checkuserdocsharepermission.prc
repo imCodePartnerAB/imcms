@@ -9,6 +9,9 @@ GO
 
 
 CREATE PROCEDURE CheckUserDocSharePermission @user_id INT, @meta_id INT AS
+/**
+    DOCME: Document me!
+**/
 SELECT m.meta_id
 FROM meta m
 JOIN user_roles_crossref urc

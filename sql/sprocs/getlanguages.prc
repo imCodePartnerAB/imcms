@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE getLanguages AS
+/**
+	DOCME: Document me!
+**/
+
 select lang_prefix,language from languages order by language
 
 

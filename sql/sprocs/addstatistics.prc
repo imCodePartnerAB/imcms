@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE AddStatistics @name VARCHAR(120) AS
+/**
+	DOCME: Document me!
+**/
+
 UPDATE stats
 SET  num = num + 1
 WHERE name = @name

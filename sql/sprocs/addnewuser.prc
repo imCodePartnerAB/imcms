@@ -58,6 +58,10 @@ usertype. 0=special, 1=default, 2=conferenceuser
  @user_type int,
  @active int
 AS
+/**
+	DOCME: Document me!
+**/
+
 INSERT INTO users (user_id,login_name,login_password,first_name,last_name,address,city,zip,country,county_council,email,admin_mode,last_page,archive_mode,lang_id, user_type, active, create_date)
 VALUES (@user_id, @login_name, @login_password, @first_name, @last_name, @address, @city, @zip, @country,
    @county_council, @email, @admin_mode, @last_page, @archive_mode, @lang_id ,@user_type, @active, getDate())

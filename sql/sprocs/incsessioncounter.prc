@@ -10,6 +10,10 @@ GO
 
 CREATE PROCEDURE IncSessionCounter 
 AS
+/**
+	DOCME: Document me!
+**/
+
       
     DECLARE @current_value int
   select @current_value = (select value from sys_data where type_id = 1)

@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE GetAllRoles AS
+/**
+	DOCME: Document me!
+**/
+
 SELECT role_id, role_name
 FROM roles
  

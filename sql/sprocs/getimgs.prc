@@ -10,6 +10,10 @@ GO
 
 CREATE PROCEDURE GetImgs
 @meta_id int AS
+/**
+	DOCME: Document me!
+**/
+
 select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = @meta_id
 
 

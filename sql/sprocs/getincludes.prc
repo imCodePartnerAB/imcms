@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE GetIncludes @meta_id INT AS
+/**
+	DOCME: Document me!
+**/
+
 SELECT include_id, included_meta_id  FROM includes WHERE meta_id = @meta_id
 ORDER BY include_id
 

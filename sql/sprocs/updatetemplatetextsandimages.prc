@@ -10,6 +10,10 @@ GO
 
 CREATE PROCEDURE UpdateTemplateTextsAndImages
 @t_id int AS
+/**
+	DOCME: Document me!
+**/
+
 declare @new_no_txt int
 declare @new_no_img int
 select @new_no_txt = no_of_txt, @new_no_img = no_of_img from templates where template_id = @t_id

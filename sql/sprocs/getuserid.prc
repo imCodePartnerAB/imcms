@@ -11,6 +11,10 @@ GO
 CREATE PROCEDURE GetUserId 
  @aUserId int
 AS
+/**
+	DOCME: Document me!
+**/
+
  SELECT user_id 
  FROM users
  WHERE user_id  = @aUserId

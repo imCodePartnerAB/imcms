@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE ListConferences AS
+/**
+	DOCME: Document me!
+**/
+
 select meta_id, meta_headline 
 from meta 
 where doc_type = 102

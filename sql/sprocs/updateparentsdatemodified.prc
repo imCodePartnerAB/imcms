@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE [UpdateParentsDateModified] @meta_id INT AS
+/**
+	DOCME: Document me!
+**/
+
 UPDATE meta
 SET date_modified = GETDATE() 
 FROM meta JOIN childs c

@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE WebMasterGet AS
+/**
+	DOCME: Document me!
+**/
+
 DECLARE @wmname VARCHAR(80)
 DECLARE @wmaddress VARCHAR(80)
 SELECT @wmname = value FROM sys_data WHERE type_id = 6

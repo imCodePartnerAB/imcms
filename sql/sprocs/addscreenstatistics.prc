@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE AddScreenStatistics @width INT, @height INT, @bits INT AS
+/**
+	DOCME: Document me!
+**/
+
 DECLARE @screen VARCHAR(20) 
 SET @screen = 'Screen: '+LTRIM(STR(@width))+'x'+LTRIM(STR(@height))+'x'+LTRIM(STR(@bits))
 EXEC AddStatistics @screen

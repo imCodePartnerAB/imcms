@@ -13,6 +13,10 @@ CREATE PROCEDURE [UpdateDefaultTemplates]
  @template1 int,
  @template2 int
  AS
+/**
+	DOCME: Document me!
+**/
+
 UPDATE text_docs
 SET default_template_1= @template1,
 default_template_2=@template2 

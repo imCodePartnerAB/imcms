@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE AddBrowserStatistics @os VARCHAR(30), @browser varchar(30), @version varchar(30) AS
+/**
+	DOCME: Document me!
+**/
+
 DECLARE @newline CHAR(2)
 SET @newline = CHAR(13)+CHAR(10)
 DECLARE @browserstring VARCHAR(120)

@@ -11,6 +11,10 @@ GO
 CREATE PROCEDURE DelUserRoles
  @aUserId int
 AS
+/**
+	DOCME: Document me!
+**/
+
  DELETE 
  FROM user_roles_crossref
  WHERE user_id = @aUserId

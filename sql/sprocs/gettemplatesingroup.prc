@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE getTemplatesInGroup @grp_id INT AS
+/**
+	DOCME: Document me!
+**/
+
 SELECT t.template_id,simple_name
 FROM  templates t JOIN
   templates_cref c

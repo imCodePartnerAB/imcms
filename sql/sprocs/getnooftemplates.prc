@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE GetNoOfTemplates AS
+/**
+	DOCME: Document me!
+**/
+
 select count(*) from templates
 
 

@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE ServerMasterGet AS
+/**
+	DOCME: Document me!
+**/
+
 DECLARE @smname VARCHAR(80)
 DECLARE @smaddress VARCHAR(80)
 SELECT @smname = value FROM sys_data WHERE type_id = 4

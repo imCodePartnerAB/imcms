@@ -9,6 +9,10 @@ GO
 
 
 CREATE PROCEDURE CopyDocs @documents_string VARCHAR(200), @parent_id INT, @menu_id INT, @user INT, @copyPrefix VARCHAR(20) AS
+/**
+	DOCME: Document me!
+**/
+
 CREATE TABLE #documents (
   meta_id VARCHAR(10)
 )

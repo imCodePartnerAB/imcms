@@ -11,6 +11,10 @@ GO
 CREATE PROCEDURE GetCurrentSessionCounterDate
  
 AS
+/**
+	DOCME: Document me!
+**/
+
  SELECT value 
  FROM sys_data
  WHERE type_id  = 2

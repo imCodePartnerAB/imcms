@@ -31,6 +31,10 @@ CREATE PROCEDURE AddUserRole
  @aUser_id int,
  @aRole_id int
 AS
+/**
+	DOCME: Document me!
+**/
+
  INSERT INTO  user_roles_crossref(user_id, role_id)
  VALUES( @aUser_id , @aRole_id)
 */ 
