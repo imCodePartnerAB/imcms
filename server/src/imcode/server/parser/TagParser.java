@@ -110,7 +110,7 @@ class TagParser {
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             if ( !( imageSource instanceof ImageDomainObject.FileDocumentImageSource )
                  || imageMode
-                 || documentMapper.userHasAtLeastDocumentReadPermission( documentRequest.getUser(), ( (ImageDomainObject.FileDocumentImageSource)imageSource ).getFileDocument() ) ) {
+                 || documentRequest.getUser().canAccess( ( (ImageDomainObject.FileDocumentImageSource)imageSource ).getFileDocument() ) ) {
                 imageMap.put( imageIndex, ImcmsImageUtils.getImageHtmlTag( image, documentRequest.getHttpServletRequest() ) );
             }
         }

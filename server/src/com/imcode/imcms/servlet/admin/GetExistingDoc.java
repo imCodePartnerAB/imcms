@@ -208,7 +208,7 @@ public class GetExistingDoc extends HttpServlet {
     private Set getUsersAllowedDocumentTypeIdsOnDocument( UserDomainObject user,
                                                           TextDocumentDomainObject parentDocument ) {
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-        int[] allowedDocumentTypeIdsArray = ( (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( parentDocument, user ) ).getAllowedDocumentTypeIds();
+        int[] allowedDocumentTypeIdsArray = ( (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( parentDocument ) ).getAllowedDocumentTypeIds();
         Set allowedDocumentTypeIds = new HashSet( Arrays.asList( ArrayUtils.toObject( allowedDocumentTypeIdsArray ) ) );
         return allowedDocumentTypeIds;
     }
@@ -217,7 +217,7 @@ public class GetExistingDoc extends HttpServlet {
                                     int menuIndex, UserDomainObject user ) {
         Set allowedDocumentTypeIds = getUsersAllowedDocumentTypeIdsOnDocument( user, parentDocument ) ;
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-        boolean sharePermission = documentMapper.userHasPermissionToAddDocumentToAnyMenu( user, document );
+        boolean sharePermission = user.canAddDocumentToAnyMenu( document );
         boolean canAddToMenu = allowedDocumentTypeIds.contains( new Integer( document.getDocumentTypeId() ) )
                                && sharePermission;
         if ( canAddToMenu ) {

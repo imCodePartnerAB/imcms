@@ -1,9 +1,7 @@
 package imcode.server.user;
 
-import imcode.server.Imcms;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.TemplateGroupDomainObject;
-import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.*;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.util.*;
 
@@ -452,11 +450,11 @@ public class UserDomainObject extends Hashtable {
     }
 
     public boolean canEdit( DocumentDomainObject document ) {
-        return Imcms.getServices().getDocumentMapper().userHasMoreThanReadPermissionOnDocument( this, document );
+        return hasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, document );
     }
 
     public boolean canAccess( DocumentDomainObject document ) {
-        return Imcms.getServices().getDocumentMapper().userHasAtLeastDocumentReadPermission( this, document );
+        return hasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__READ, document );
     }
 
     public boolean canList( DocumentDomainObject document ) {
@@ -466,7 +464,7 @@ public class UserDomainObject extends Hashtable {
     }
 
     public boolean isSuperAdminOrHasFullPermissionOn( DocumentDomainObject document ) {
-        return Imcms.getServices().getDocumentMapper().userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( this, DocumentPermissionSetDomainObject.TYPE_ID__FULL, document );
+        return isSuperAdminOrHasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__FULL, document ) ;
     }
 
     public boolean canDefineRestrictedOneFor( DocumentDomainObject document ) {
@@ -486,11 +484,11 @@ public class UserDomainObject extends Hashtable {
     }
 
     private boolean hasAtLeastRestrictedOnePermissionOn( DocumentDomainObject document ) {
-        return Imcms.getServices().getDocumentMapper().userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( this, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, document );
+        return hasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, document );
     }
 
     private boolean hasAtLeastRestrictedTwoPermissionOn( DocumentDomainObject document ) {
-        return Imcms.getServices().getDocumentMapper().userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( this, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, document );
+        return hasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, document );
     }
 
     public String toString() {
@@ -506,12 +504,12 @@ public class UserDomainObject extends Hashtable {
         return currentContextPath;
     }
 
-    public boolean isSuperAdminOrHasAtLeastPermissionSetIdOn( DocumentDomainObject document, int permissionSetId ) {
-        return Imcms.getServices().getDocumentMapper().userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( this, permissionSetId, document ) ;
+    public boolean isSuperAdminOrHasAtLeastPermissionSetIdOn( int permissionSetId, DocumentDomainObject document ) {
+        return isSuperAdmin() || hasAtLeastPermissionSetIdOn( permissionSetId, document ) ;
     }
 
     public boolean canEditPermissionsFor( DocumentDomainObject document ) {
-        return Imcms.getServices().getDocumentMapper().getDocumentPermissionSetForUser( document, this ).getEditPermissions() ;
+        return getPermissionSetFor( document ).getEditPermissions() ;
     }
 
     public boolean canSetPermissionSetIdForRoleOnDocument( int permissionSetId, RoleDomainObject role,
@@ -520,8 +518,8 @@ public class UserDomainObject extends Hashtable {
             return false ;
         }
         int currentPermissionSetId = document.getPermissionSetIdForRole( role );
-        boolean userIsSuperAdminOrHasAtLeastTheCurrentPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn( document, currentPermissionSetId );
-        boolean userIsSuperAdminOrHasAtLeastTheWantedPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn( document, permissionSetId );
+        boolean userIsSuperAdminOrHasAtLeastTheCurrentPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn( currentPermissionSetId, document );
+        boolean userIsSuperAdminOrHasAtLeastTheWantedPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn( permissionSetId, document );
         boolean changingRestrictedTwo = DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
                                         == permissionSetId
                                         || DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
@@ -534,4 +532,74 @@ public class UserDomainObject extends Hashtable {
         return canDo;
 
     }
+
+    public boolean canCreateDocumentOfTypeIdFromParent( int documentTypeId, DocumentDomainObject parent ) {
+        TextDocumentPermissionSetDomainObject documentPermissionSet = (TextDocumentPermissionSetDomainObject)getPermissionSetFor( parent );
+        return ArrayUtils.contains( documentPermissionSet.getAllowedDocumentTypeIds(), documentTypeId );
+    }
+
+    public DocumentPermissionSetDomainObject getPermissionSetFor( DocumentDomainObject document ) {
+        int permissionSetId = getPermissionSetIdFor( document );
+        switch ( permissionSetId ) {
+            case DocumentPermissionSetDomainObject.TYPE_ID__FULL:
+                return DocumentPermissionSetDomainObject.FULL;
+            case DocumentPermissionSetDomainObject.TYPE_ID__READ:
+                return DocumentPermissionSetDomainObject.READ;
+            case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1:
+                return document.getPermissionSetForRestrictedOne();
+            case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2:
+                return document.getPermissionSetForRestrictedTwo();
+            default:
+                return null;
+        }
+    }
+
+    public int getPermissionSetIdFor( DocumentDomainObject document ) {
+        if ( null == document ) {
+            return DocumentPermissionSetDomainObject.TYPE_ID__NONE;
+        }
+        if ( isSuperAdmin() ) {
+            return DocumentPermissionSetDomainObject.TYPE_ID__FULL;
+        }
+        Map rolesMappedToPermissionSetIds = document.getRolesMappedToPermissionSetIds();
+        RoleDomainObject[] usersRoles = getRoles();
+        int mostPrivilegedPermissionSetIdFoundYet = DocumentPermissionSetDomainObject.TYPE_ID__NONE;
+        for ( int i = 0; i < usersRoles.length; i++ ) {
+            RoleDomainObject usersRole = usersRoles[i];
+            Integer permissionSetId = (Integer)rolesMappedToPermissionSetIds.get( usersRole );
+            if ( null != permissionSetId && permissionSetId.intValue() < mostPrivilegedPermissionSetIdFoundYet ) {
+                mostPrivilegedPermissionSetIdFoundYet = permissionSetId.intValue();
+                if ( DocumentPermissionSetDomainObject.TYPE_ID__FULL == mostPrivilegedPermissionSetIdFoundYet ) {
+                    break;
+                }
+            }
+        }
+        return mostPrivilegedPermissionSetIdFoundYet;
+    }
+
+    public boolean hasAtLeastPermissionSetIdOn( int leastPrivilegedPermissionSetIdWanted, DocumentDomainObject document ) {
+        return getPermissionSetIdFor( document )
+               <= leastPrivilegedPermissionSetIdWanted;
+    }
+
+    public boolean canAddDocumentToAnyMenu( DocumentDomainObject document ) {
+        return canAccess( document ) || document.isLinkableByOtherUsers();
+    }
+
+    public boolean canSearchFor( DocumentDomainObject document ) {
+        boolean searchingUserHasPermissionToFindDocument = false;
+        if ( document.isSearchDisabled() ) {
+            if ( isSuperAdmin() ) {
+                searchingUserHasPermissionToFindDocument = true;
+            }
+        } else {
+            if ( document.isPublished() ) {
+                searchingUserHasPermissionToFindDocument = canAccess( document );
+            } else {
+                searchingUserHasPermissionToFindDocument = canEdit( document );
+            }
+        }
+        return searchingUserHasPermissionToFindDocument;
+    }
+
 }

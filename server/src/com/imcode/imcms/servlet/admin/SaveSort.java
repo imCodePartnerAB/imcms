@@ -39,7 +39,7 @@ public class SaveSort extends HttpServlet {
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
 
-        TextDocumentPermissionSetDomainObject documentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( document, user );
+        TextDocumentPermissionSetDomainObject documentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
         if ( !documentPermissionSet.getEditMenus() ) {
             String output = AdminDoc.adminDoc( documentId, user, req, res );
             if ( output != null ) {

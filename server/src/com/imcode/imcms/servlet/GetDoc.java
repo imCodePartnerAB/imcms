@@ -125,7 +125,7 @@ public class GetDoc extends HttpServlet {
         // among the templates for the default-language. Number two, we should use just one function for
         // checking permissions. Number three, since the user obviously has logged in, give him the page in his own language!
 
-        if ( !documentMapper.userHasAtLeastDocumentReadPermission( user, document ) ) {
+        if ( !user.canAccess( document ) ) {
             session.setAttribute( "login.target",
                                   req.getRequestURL().append( "?" ).append( req.getQueryString() ).toString() );
             String redirect = "/imcms/" + user.getLanguageIso639_2() + "/login/" + NO_PERMISSION_URL;
@@ -134,7 +134,7 @@ public class GetDoc extends HttpServlet {
             return null;
         }
 
-        if ( !document.isPublished() && !documentMapper.userHasMoreThanReadPermissionOnDocument( user, document ) ) {
+        if ( !document.isPublished() && !user.canEdit( document ) ) {
             res.setStatus( HttpServletResponse.SC_FORBIDDEN );
             return imcref.getAdminTemplate( NO_ACTIVE_DOCUMENT_URL, user, null );
         }

@@ -440,7 +440,7 @@ public class Conference extends HttpServlet {
         //is user authorized?
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument(metaId);
-        boolean authorized = documentMapper.userHasAtLeastDocumentReadPermission( user, document);
+        boolean authorized = user.canAccess( document );
 
         //lets send unauthorized users out
         if ( !authorized ) {
@@ -462,7 +462,7 @@ public class Conference extends HttpServlet {
 
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument(metaId);
-        return ( documentMapper.userHasAtLeastDocumentReadPermission( user, document) &&
+        return ( user.canAccess( document ) &&
                 imcref.checkDocAdminRights( metaId, user ) );
     }
 

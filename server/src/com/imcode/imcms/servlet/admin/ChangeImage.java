@@ -245,7 +245,7 @@ public class ChangeImage extends HttpServlet {
 
     private boolean userHasImagePermissionsOnDocument( UserDomainObject user, TextDocumentDomainObject document ) {
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-        TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( document, user );
+        TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
         boolean imagePermission = textDocumentPermissionSet.getEditImages();
         return imagePermission;
     }

@@ -324,7 +324,7 @@ public class ConfDisc extends Conference {
             int intMetaId = Integer.parseInt( metaId );
             DocumentMapper documentMapper = imcref.getDocumentMapper();
             DocumentDomainObject document = documentMapper.getDocument( intMetaId );
-            if ( documentMapper.userHasAtLeastDocumentReadPermission( user, document )
+            if ( user.canAccess( document )
                  && imcref.checkDocAdminRights( intMetaId, user ) ) {
 
                 VariableManager vmButtons = new VariableManager();
@@ -428,7 +428,7 @@ public class ConfDisc extends Conference {
         //lets show newdiscbutton if user has more than readrights
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( metaId );
-        if ( documentMapper.userHasAtLeastDocumentReadPermission( user, document )
+        if ( user.canAccess( document )
              && imcref.checkDocAdminRights( metaId, user ) ) {
             newDiscButton = getTemplate( NEW_DISC_TEMPLATE, user, vmButtons.getTagsAndData() );
         }

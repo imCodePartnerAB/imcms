@@ -282,12 +282,12 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * Returns the menubuttonrow
      */
     public String getAdminButtons( UserDomainObject user, DocumentDomainObject document ) {
-        int user_permission_set_id = documentMapper.getDocumentPermissionSetIdForUser( document, user );
+        int user_permission_set_id = user.getPermissionSetIdFor( document );
         if ( user_permission_set_id >= DocumentPermissionSetDomainObject.TYPE_ID__READ && !user.isUserAdmin() ) {
             return "";
         }
 
-        DocumentPermissionSetDomainObject documentPermissionSet = documentMapper.getDocumentPermissionSetForUser( document, user );
+        DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetFor( document );
         String documentTypeName = sqlQueryStr( "select type from doc_types where doc_type = ?", new String[]{
             "" + document.getDocumentTypeId()
         } );
@@ -631,7 +631,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * checkDocAdminRights
      */
     public boolean checkDocAdminRights( int meta_id, UserDomainObject user ) {
-        return documentMapper.userHasMoreThanReadPermissionOnDocument( user, documentMapper.getDocument( meta_id ) );
+        return user.canEdit( documentMapper.getDocument( meta_id ) );
     }
 
     /**

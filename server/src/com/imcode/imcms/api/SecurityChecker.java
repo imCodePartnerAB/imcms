@@ -1,7 +1,9 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
 
 class SecurityChecker {
 
@@ -32,13 +34,13 @@ class SecurityChecker {
     }
 
     void hasAtLeastDocumentReadPermission( Document document ) throws NoPermissionException {
-        if (!getDocumentMapper().userHasAtLeastDocumentReadPermission( getCurrentUser().getInternal(), document.getInternal() )) {
+        if (!getCurrentUser().getInternal().canAccess( document.getInternal() )) {
             throw new NoPermissionException("The logged in user does not have permission to access document "+document.getId()) ;
         }
     }
 
     void userHasPermissionToAddDocumentToAnyMenu( Document document ) throws NoPermissionException {
-        if (!getDocumentMapper().userHasPermissionToAddDocumentToAnyMenu(getCurrentUser().getInternal(), document.getInternal())) {
+        if (!getCurrentUser().getInternal().canAddDocumentToAnyMenu( document.getInternal() )) {
             throw new NoPermissionException("The logged in user does not have permission to add this document to any menu "+document.getId()) ;
         }
     }

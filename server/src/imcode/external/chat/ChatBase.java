@@ -387,7 +387,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         //is user authorized?
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument(metaId);
-        boolean authorized = documentMapper.userHasAtLeastDocumentReadPermission( user, document);
+        boolean authorized = user.canAccess( document );
 
         //lets send unauthorized users out
         if ( !authorized ) {

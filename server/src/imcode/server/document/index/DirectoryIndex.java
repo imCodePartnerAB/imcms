@@ -75,7 +75,7 @@ class DirectoryIndex implements DocumentIndex {
                 inconsistent = true;
                 continue;
             }
-            if ( documentMapper.userHasPermissionToSearchDocument( searchingUser, document ) ) {
+            if ( searchingUser.canSearchFor( document ) ) {
                 documentList.add( document );
             }
         }

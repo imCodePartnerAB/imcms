@@ -63,7 +63,7 @@ public class TextDocumentParser {
         UserDomainObject user = documentRequest.getUser();
         DocumentMapper documentMapper = service.getDocumentMapper();
 
-        TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( document, user );
+        TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
 
         boolean textmode = false;
         boolean imagemode = false;
@@ -200,7 +200,7 @@ public class TextDocumentParser {
                 selectedTemplateGroup = templateMapper.getTemplateGroupById( document.getTemplateGroupId() );
             }
 
-            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)service.getDocumentMapper().getDocumentPermissionSetForUser( document, user );
+            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
 
             TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups();
             String templateGroupsHtmlOptionList = templateMapper.createHtmlOptionListOfTemplateGroups( allowedTemplateGroups, selectedTemplateGroup );

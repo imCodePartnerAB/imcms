@@ -89,7 +89,7 @@ public class Html {
     public static String getLinkedStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         String statusIconTemplate = documentMapper.getStatusIconTemplate( document, user );
-        if ( documentMapper.userHasMoreThanReadPermissionOnDocument( user, document ) ) {
+        if ( user.canEdit( document ) ) {
             statusIconTemplate = "<a href=\"AdminDoc?meta_id=" + document.getId() + "&"
                                  + AdminDoc.PARAMETER__DISPATCH_FLAGS
                                  + "=1\" target=\"_blank\">" +
@@ -120,7 +120,7 @@ public class Html {
     public static String radio( String name, String value, boolean selected ) {
         return
             "<input type=\"radio\" name=\""+StringEscapeUtils.escapeHtml( name )+"\" value=\""
-                + StringEscapeUtils.escapeHtml( value )+"\""+ (selected ? " checked" : "")+">" ; 
+                + StringEscapeUtils.escapeHtml( value )+"\""+ (selected ? " checked" : "")+">" ;
 
     }
 }

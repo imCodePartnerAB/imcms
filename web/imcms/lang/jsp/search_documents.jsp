@@ -173,8 +173,8 @@
                         <tr valign="top" <% if (0 != (i - firstDocumentIndex) % 2) { %> bgcolor="#FFFFFF"<% } %>>
                             <td>
                                     <%
-                                        if (documentMapper.userHasMoreThanReadPermissionOnDocument(user, document)) {
-                                            %><a href="$contextPath/servlet/SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%= documentMapper.getStatusIconTemplate(document, user ) %></a><%
+
+                        docuuser.canEdit( document )                                            %><a href="$contextPath/servlet/SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%= documentMapper.getStatusIconTemplate(document, user ) %></a><%
                                         } else {
                                             %>&nbsp;<%
                                         }

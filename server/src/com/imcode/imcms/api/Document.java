@@ -93,7 +93,7 @@ public class Document {
     }
 
     public DocumentPermissionSet getDocumentPermissionSetForUser() {
-        return new DocumentPermissionSet( contentManagementSystem.getInternal().getDocumentMapper().getDocumentPermissionSetForUser( internalDocument, contentManagementSystem.getCurrentUser().getInternal() ) );
+        return new DocumentPermissionSet( contentManagementSystem.getCurrentUser().getInternal().getPermissionSetFor( internalDocument ) );
     }
 
     public boolean equals( Object o ) {

@@ -21,6 +21,7 @@
     ImageDomainObject image = imageEditPage.getImage() ;
     int imageIndex = imageEditPage.getImageIndex() ;
     ImageSize realImageSize = image.getRealImageSize();
+    UserDomainObject user = Utility.getLoggedOnUser( request );
 %>
 <vel:velocity>
 <html>
@@ -150,9 +151,11 @@ function checkLinkOnBlur() {
             <td colspan="2" align="center">
                 <table>
                     <tr>
+                        <% if (user.canCreateDocumentOfTypeIdFromParent( DocumentDomainObject.DOCTYPE_FILE, document )) { %>
                         <td>
                             <input type="submit" name="<%= ChangeImage.REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON %>" class="imcmsFormBtnSmall" value="<? web/imcms/lang/jsp/change_img.jsp/add_restricted_image ?>" >
                         </td>
+                        <% } %>
                         <td>
                             <input type="submit" name="<%= ChangeImage.REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON %>" class="imcmsFormBtnSmall" value="<? web/imcms/lang/jsp/change_img.jsp/image_search ?>" >
                         </td>

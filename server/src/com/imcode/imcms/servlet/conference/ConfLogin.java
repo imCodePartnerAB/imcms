@@ -215,7 +215,7 @@ public class ConfLogin extends Conference {
                 addAllConferenceSelfRegRolesToUser(user, params.getMetaId()+"", imcref);
                 //renew the user object
                 user = userMapperAndRole.getUser(Integer.parseInt(user.getId()+""));
-                okToLogIn = documentMapper.userHasMoreThanReadPermissionOnDocument( user, document);
+                okToLogIn = user.canEdit( document );
                 if (okToLogIn) {
                     // user has permission to log in to this conferens so lets add him to it.
                     addUserToOneConference(user, document.getId()+"", imcref);

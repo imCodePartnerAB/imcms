@@ -2,8 +2,8 @@ package imcode.server.parser;
 
 import imcode.server.DocumentRequest;
 import imcode.server.ImcmsConstants;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.user.UserDomainObject;
+import imcode.server.document.*;
 
 public class ParserParameters implements Cloneable {
 
@@ -73,7 +73,7 @@ public class ParserParameters implements Cloneable {
     }
 
     public boolean isMenuMode() {
-        TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( documentRequest.getDocument(), documentRequest.getUser() );
+        TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)documentRequest.getUser().getPermissionSetFor( documentRequest.getDocument() );
         return ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 && permissionSet.getEditMenus();
     }
 }

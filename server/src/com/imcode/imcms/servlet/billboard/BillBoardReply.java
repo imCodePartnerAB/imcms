@@ -201,7 +201,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
         //lets show comment button if user has more than readrights
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( intMetaId );
-        if ( documentMapper.userHasAtLeastDocumentReadPermission( user, document) &&
+        if ( user.canAccess( document ) &&
              imcref.checkDocAdminRights( intMetaId, user ) ) {
 
             VariableManager vmButtons = new VariableManager();

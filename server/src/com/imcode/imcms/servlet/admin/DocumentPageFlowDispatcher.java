@@ -34,7 +34,7 @@ public class DocumentPageFlowDispatcher extends HttpServlet {
         DocumentPageFlow pageFlow = DocumentPageFlow.fromRequest( request );
         if ( null != pageFlow ) {
             DocumentDomainObject document = pageFlow.getDocument();
-            if ( null != document && documentMapper.userHasMoreThanReadPermissionOnDocument( user, document ) ) {
+            if ( null != document && user.canEdit( document ) ) {
                 pageFlow.dispatch( request, response );
 
                 if ( !response.isCommitted() ) {

@@ -15,7 +15,6 @@ import imcode.util.FileUtility;
 import imcode.util.IdNamePair;
 import org.apache.commons.collections.map.AbstractMapDecorator;
 import org.apache.commons.collections.map.LRUMap;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
@@ -73,61 +72,10 @@ public class DocumentMapper {
         this.documentIndex = new AutorebuildingDirectoryIndex( indexDirectory, service.getConfig().getIndexingSchedulePeriodInMinutes() );
     }
 
-    private boolean userCanCreateDocumentOfTypeIdFromParent( UserDomainObject user, int documentTypeId,
-                                                             DocumentDomainObject parent ) {
-        TextDocumentPermissionSetDomainObject documentPermissionSet = (TextDocumentPermissionSetDomainObject)getDocumentPermissionSetForUser( parent, user );
-        return ArrayUtils.contains( documentPermissionSet.getAllowedDocumentTypeIds(), documentTypeId );
-    }
-
-    private boolean userIsSuperAdminOrFullAdminOnDocument( UserDomainObject user, DocumentDomainObject parent ) {
-        return user.isSuperAdmin()
-               || userHasAtLeastPermissionSetIdOnDocument( user, DocumentPermissionSetDomainObject.TYPE_ID__FULL, parent );
-    }
-
-    public DocumentPermissionSetDomainObject getDocumentPermissionSetForUser( DocumentDomainObject document,
-                                                                              UserDomainObject user ) {
-        int permissionSetId = getDocumentPermissionSetIdForUser( document, user );
-        switch ( permissionSetId ) {
-            case DocumentPermissionSetDomainObject.TYPE_ID__FULL:
-                return DocumentPermissionSetDomainObject.FULL;
-            case DocumentPermissionSetDomainObject.TYPE_ID__READ:
-                return DocumentPermissionSetDomainObject.READ;
-            case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1:
-                return document.getPermissionSetForRestrictedOne();
-            case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2:
-                return document.getPermissionSetForRestrictedTwo();
-            default:
-                return null;
-        }
-    }
-
-    public int getDocumentPermissionSetIdForUser( DocumentDomainObject document, UserDomainObject user ) {
-        if ( null == document ) {
-            return DocumentPermissionSetDomainObject.TYPE_ID__NONE;
-        }
-        if ( user.isSuperAdmin() ) {
-            return DocumentPermissionSetDomainObject.TYPE_ID__FULL;
-        }
-        Map rolesMappedToPermissionSetIds = document.getRolesMappedToPermissionSetIds();
-        RoleDomainObject[] usersRoles = user.getRoles();
-        int mostPrivilegedPermissionSetIdFoundYet = DocumentPermissionSetDomainObject.TYPE_ID__NONE;
-        for ( int i = 0; i < usersRoles.length; i++ ) {
-            RoleDomainObject usersRole = usersRoles[i];
-            Integer permissionSetId = (Integer)rolesMappedToPermissionSetIds.get( usersRole );
-            if ( null != permissionSetId && permissionSetId.intValue() < mostPrivilegedPermissionSetIdFoundYet ) {
-                mostPrivilegedPermissionSetIdFoundYet = permissionSetId.intValue();
-                if ( DocumentPermissionSetDomainObject.TYPE_ID__FULL == mostPrivilegedPermissionSetIdFoundYet ) {
-                    break;
-                }
-            }
-        }
-        return mostPrivilegedPermissionSetIdFoundYet;
-    }
-
     public DocumentDomainObject createDocumentOfTypeFromParent( int documentTypeId, final DocumentDomainObject parent,
                                                                 UserDomainObject user ) {
-        if ( !userCanCreateDocumentOfTypeIdFromParent( user, documentTypeId, parent ) ) {
-            return null;
+        if ( !user.canCreateDocumentOfTypeIdFromParent( documentTypeId, parent ) ) {
+            throw new SecurityException( "User can't create documents from document "+parent.getId() ) ;
         }
         DocumentDomainObject newDocument;
         try {
@@ -138,7 +86,7 @@ public class DocumentMapper {
                 newTextDocument.removeAllImages();
                 newTextDocument.removeAllIncludes();
                 newTextDocument.removeAllMenus();
-                int permissionSetId = getDocumentPermissionSetIdForUser( parent, user );
+                int permissionSetId = user.getPermissionSetIdFor( parent );
                 TemplateDomainObject template = null;
                 if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == permissionSetId ) {
                     template = ((TextDocumentPermissionSetDomainObject)newTextDocument.getPermissionSetForRestrictedOneForNewDocuments()).getDefaultTemplate();
@@ -472,36 +420,6 @@ public class DocumentMapper {
 
     }
 
-    public boolean userHasPermissionToSearchDocument( UserDomainObject searchingUser, DocumentDomainObject document ) {
-        boolean searchingUserHasPermissionToFindDocument = false;
-        if ( document.isSearchDisabled() ) {
-            if ( searchingUser.isSuperAdmin() ) {
-                searchingUserHasPermissionToFindDocument = true;
-            }
-        } else {
-            if ( document.isPublished() ) {
-                searchingUserHasPermissionToFindDocument = userHasAtLeastDocumentReadPermission( searchingUser, document );
-            } else {
-                searchingUserHasPermissionToFindDocument = userHasMoreThanReadPermissionOnDocument( searchingUser, document );
-            }
-        }
-        return searchingUserHasPermissionToFindDocument;
-    }
-
-    public boolean userHasAtLeastDocumentReadPermission( UserDomainObject user, DocumentDomainObject document ) {
-        return userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( user, DocumentPermissionSetDomainObject.TYPE_ID__READ, document );
-    }
-
-    public boolean userHasMoreThanReadPermissionOnDocument( UserDomainObject user, DocumentDomainObject document ) {
-        return userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( user, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, document );
-    }
-
-    public boolean userHasPermissionToAddDocumentToAnyMenu( UserDomainObject user, DocumentDomainObject document ) {
-        return user.isSuperAdmin()
-               || userHasMoreThanReadPermissionOnDocument( user, document )
-               || document.isLinkableByOtherUsers();
-    }
-
     public void removeInclusion( int includingMetaId, int includeIndex ) {
         sprocDeleteInclude( service, includingMetaId, includeIndex );
     }
@@ -509,13 +427,13 @@ public class DocumentMapper {
     public void saveNewDocument( DocumentDomainObject document, UserDomainObject user )
             throws MaxCategoryDomainObjectsOfTypeExceededException {
 
-        if ( !userHasMoreThanReadPermissionOnDocument( user, document ) ) {
+        if ( !user.canEdit( document ) ) {
             return; // TODO: More specific check needed. Throw exception ?
         }
 
         int newMetaId = sqlInsertIntoMeta( document );
 
-        if ( !userIsSuperAdminOrFullAdminOnDocument( user, document ) ) {
+        if ( !user.isSuperAdminOrHasFullPermissionOn( document ) ) {
             document.setPermissionSetForRestrictedOne( document.getPermissionSetForRestrictedOneForNewDocuments() );
             document.setPermissionSetForRestrictedTwo( document.getPermissionSetForRestrictedTwoForNewDocuments() );
         }
@@ -941,20 +859,6 @@ public class DocumentMapper {
         "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = ?";
         String[] keywords = service.sqlQuery( sqlStr, new String[]{"" + meta_id} );
         return keywords;
-    }
-
-    public boolean userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( UserDomainObject user,
-                                                                           int leastPrivilegedPermissionSetIdWanted,
-                                                                           DocumentDomainObject document ) {
-        return user.isSuperAdmin()
-               || userHasAtLeastPermissionSetIdOnDocument( user, leastPrivilegedPermissionSetIdWanted, document );
-    }
-
-    private boolean userHasAtLeastPermissionSetIdOnDocument( UserDomainObject user,
-                                                             int leastPrivilegedPermissionSetIdWanted,
-                                                             DocumentDomainObject document ) {
-        return getDocumentPermissionSetIdForUser( document, user )
-               <= leastPrivilegedPermissionSetIdWanted;
     }
 
     public DocumentIndex getDocumentIndex() {

@@ -215,7 +215,7 @@ class MenuParser {
                 DocumentDomainObject document = ( (MenuItemDomainObject)o ).getDocument();
                 UserDomainObject user = parserParameters.getDocumentRequest().getUser();
                 if ( document.isVisibleInMenusForUnauthorizedUsers()
-                     || documentMapper.userHasAtLeastDocumentReadPermission( user, document ) ) {
+                     || user.canAccess( document ) ) {
                     if ( editingMenu( menuIndex ) || document.isPublishedAndNotArchived() ) {
                         return true;
                     }
@@ -421,7 +421,7 @@ class MenuParser {
 
         tags.setProperty( "#menuitemlink#", a_href );
         tags.setProperty( "#/menuitemlink#",
-                          editingThisMenu && documentMapper.userHasMoreThanReadPermissionOnDocument( user, document )
+                          editingThisMenu && user.canEdit( document )
                           ? "</a>"
                             + documentRequest.getServerObject().getAdminTemplate( "textdoc/admin_menuitem.frag", user, Arrays.asList( new String[]{
                                 "#meta_id#", ""

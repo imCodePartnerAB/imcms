@@ -1,8 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
 import imcode.server.Imcms;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -33,7 +32,7 @@ public class ChangeText extends HttpServlet {
         int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
 
-        TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( textDocument, user );
+        TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( textDocument );
 
         if ( !textDocumentPermissionSet.getEditTexts() ) {	// Checking to see if user may edit this
             String output = AdminDoc.adminDoc( documentId, user, req, res );
