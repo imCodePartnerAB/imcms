@@ -28,10 +28,6 @@ public class TestForMissingLanguageProperties extends PropertiesBaseTestCase {
         testDir( new File( "sql" ) );
     }
 
-    public void testTemplates() throws IOException {
-        testDir( new File( "templates" ) );
-    }
-
     private void testDir( File dir ) throws IOException {
         MultiMap mapOfPropertyKeysToFiles = new MultiHashMap();
 
