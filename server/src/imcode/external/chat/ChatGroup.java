@@ -21,7 +21,6 @@ public class ChatGroup
 
 	private int _groupId;
 	private String _name;
-//	private MsgBuffer _msgPool;
 	private List _msgBuffer;	
 	private List _groupMembers;
 	private Counter _msgNrCounter;
@@ -39,11 +38,9 @@ public class ChatGroup
 		_groupId = groupNumber;
 		_name = groupName;
 		_groupMembers = Collections.synchronizedList(new LinkedList());
-//		_msgPool = new MsgBuffer();
 		_msgNrCounter = new Counter();
 		_membersCounter = new Counter();
-		_msgBuffer = Collections.synchronizedList(new LinkedList());
-	
+		_msgBuffer = Collections.synchronizedList(new LinkedList());	
 	}
 	
 	/**
@@ -70,7 +67,7 @@ public class ChatGroup
 	*return The name of this ChatGroup or an empty string if the name hasn't
 	*been set
 	*/
-	public String getChatGroupName()
+	public String getGroupName()
 	{
 	
 		return (_name == null) ? "" : _name;
@@ -126,8 +123,6 @@ public class ChatGroup
 	{
 		_msgNrCounter.increment();
 		msg.setIdNumber(_msgNrCounter.getValue());
-//		_msgPool.addNewMsg(msg);
-
 		if (_msgBuffer.size() > _maxSize)
 		{
 			_msgBuffer.remove(0);
@@ -147,8 +142,7 @@ public class ChatGroup
 		//get the number for the last read msg
 		int start = _msgBuffer.indexOf(lastMsg);
 		
-		start = start - nrOfOldOnes;
-		
+		start = start - nrOfOldOnes;		
 		if (start < 0) start = 0;
 		return _msgBuffer.listIterator(start);
 	}
