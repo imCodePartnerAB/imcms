@@ -779,7 +779,7 @@ public class ChatBase extends HttpServlet {
 		// Ok, if lastlogindate is null, then it has to be the a user who has logged in
 		// to the system and comes here to the conference for the first time
 		// Lets add the user to conference db.
-		if(lastLoginDate == null)
+if(lastLoginDate == null)
 		{
 			log("Ok, det är första gången användaren är här.") ;
 

@@ -246,7 +246,7 @@ public class ChatCreator extends ChatBase
 				msgTypeV.add( newMsgTypeV.get(i) );
 
 				//add msgType to connection db
-				rmi.execSqlUpdateProcedure(chatPoolServer,"AddNewRoomMsg " + " '"+ msgTypeId + "' , '" + metaId + "' ") ;
+//FIXIT	rmi.execSqlUpdateProcedure(chatPoolServer,"AddNewRoomMsg " + " '"+ msgTypeId + "' , '" + metaId + "' ") ;
 				
 			//	log("newMsgV: " + newMsgTypeV.get(i));// +" RoomId: " + roomsV.get(i));
 				

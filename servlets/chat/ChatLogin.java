@@ -74,7 +74,7 @@ public class ChatLogin extends ChatBase {
 			return;
 		}
 
-		String loginType = (req.getParameter("login_type")==null) ? "" : (req.getParameter("login_type")) ;
+	//	String loginType = (req.getParameter("login_type")==null) ? "" : (req.getParameter("login_type")) ;
 		//log("Logintype är nu: " + loginType) ;
 
 		// Lets get serverinformation
@@ -131,8 +131,23 @@ public class ChatLogin extends ChatBase {
 	//	Properties sessParam=super.getSessionParameters(req);
 	//	log("sessParam: " + sessParam);
 		
+		//check which room we wants to logg in to
+		String roomId = params.getProperty("META_ID");
+		Vector roomsV = new Vector() ;
+		
 		//lägg in rumslistan
-		Vector roomsV = ( (Vector)session.getValue("roomList")==null ) ? new Vector() : (Vector)session.getValue("roomList");
+		if ( session.getValue("roomList")==null )
+		{
+			//Get the rooms for the intended chat
+			log("the session is empty");
+		}
+		else
+		{
+			//we just created a chat and it already exists a roomList in the session
+		  roomsV= (Vector)session.getValue("roomList");
+		}
+		 
+		
 		for(int i=0;i<roomsV.size();i++)
 		{
 			log("Rooms: " + roomsV.get(i));
@@ -186,8 +201,8 @@ public class ChatLogin extends ChatBase {
 		log("inne i login post");
 		
 		// Lets get the loginType
-		String loginType = (req.getParameter("login_type")==null) ? "" : (req.getParameter("login_type")) ;
-		String tmp = req.getParameter("SAVE_USER") ;
+	//	String loginType = (req.getParameter("login_type")==null) ? "" : (req.getParameter("login_type")) ;
+	//	String tmp = req.getParameter("SAVE_USER") ;
 		//log("post logintype: " + loginType ) ;
 		//log("tmp: " + tmp) ;
 
@@ -196,9 +211,20 @@ public class ChatLogin extends ChatBase {
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String confPoolServer = Utility.getDomainPref("conference_server",host) ;
 
-		// ************* VERIFY LOGIN TO CONFERENCE **************
+		//get the chat and room and add to session
+		//create chat and groupobjekt????????????????
+		
+		//redirect to chatViewer
+		String url = MetaInfo.getServletPath(req) ;
+		url += "ChatViewer" ;
+		res.sendRedirect(url) ;
+		
+		return ;
+		
+		
+	/*	// ************* VERIFY LOGIN TO CONFERENCE **************
 		// Ok, the user wants to login
-		if(loginType.equalsIgnoreCase("login") /* && req.getParameter("submit") != null */) {
+		if(loginType.equalsIgnoreCase("login") // && req.getParameter("submit") != null ) {
 			//	log("Ok, nu försöker vi verifiera logga in!") ;
 			Properties lparams = this.getLoginParams(req ,res) ;
 
@@ -500,7 +526,7 @@ public class ChatLogin extends ChatBase {
 			url += "ConfLogin?login_type=admin_user" ;
 			res.sendRedirect(url) ;
 			return ;
-		}
+		}*/
 	} // end HTTP POST
 
 	/**

@@ -110,12 +110,12 @@ public class ChatManager extends ChatBase
 			}
 
 			log("Ok, användaren har loggat in, förbered honom för chatten" ) ;
-			//  Lets update the users sessionobject with a with a ok login to the conference
+			//  Lets update the users sessionobject with a ok login to the conference
 			//	Send him to the manager with the ability to get in
-			if(!super.prepareUserForChat(req, res, params, userId) )
+		/*	if(!super.prepareUserForChat(req, res, params, userId) )
 			{
 				log("Error in prepareUserFor Chat" ) ;
-			}
+			}*/
 
 
 			return ;
