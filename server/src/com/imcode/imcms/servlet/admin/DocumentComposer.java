@@ -507,7 +507,7 @@ public class DocumentComposer extends HttpServlet {
         document.setLinkableByOtherUsers( linkableByOtherUsers );
 
         String keywordsString = request.getParameter( PARAMETER__KEYWORDS );
-        String[] keywords = keywordsString.split( "\\W+" );
+        String[] keywords = keywordsString.split( "[^\\p{L}\\d]+" );
         document.setKeywords( keywords );
 
         boolean searchDisabled = "1".equals( request.getParameter( PARAMETER__SEARCH_DISABLED ) );
