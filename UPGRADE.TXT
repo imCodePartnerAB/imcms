@@ -1,5 +1,9 @@
 Upgrading imCMS:
 
+* If you have a version of imCMS older than 1.7.5,
+  you must delete any documents of the types "diagram" (101) or "calendar" (107),
+  They are no longer supported. The diff scripts will fail if this is not done.
+
 * Stop tomcat.
 
 * Backup the imCMS database.
