@@ -26,21 +26,25 @@ boolean showModeText   = true ;
 boolean hasNone = false ;
 boolean hasText = false ;
 
-String[] formats = request.getParameterValues("formats") ;
+String[] format = request.getParameterValues("format") ;
 int      rows   = -1 ;
 
-if (formats != null) {
-	for (int i = 0; i < formats.length; i++) {
-		if (formats[i].toLowerCase().matches("none|html")) hasNone = true ;
-		if (formats[i].toLowerCase().matches("text"))      hasText = true ;
+if (format != null) {
+	for (int i = 0; i < format.length; i++) {
+		if (format[i].toLowerCase().matches("none|html")) hasNone = true ;
+		if (format[i].toLowerCase().matches("text"))      hasText = true ;
 	}
-	if (hasNone && !hasText) {
-		showModeEditor = false ;
-		showModeText   = false ;
-	} else {
-		showModeEditor = false ;
+	if (!(format.length == 1 && format[0].equals(""))) {
+		if (hasNone && !hasText) {
+			showModeEditor = false ;
+			showModeText   = false ;
+		} else {
+			showModeEditor = false ;
+		}
 	}
 }
+
+//out.print("showModeEditor:"+showModeEditor+"<br>showModeText:"+showModeText+"<br>") ;
 
 if (request.getParameter("rows") != null) {
 	try {

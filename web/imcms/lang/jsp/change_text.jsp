@@ -27,9 +27,9 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 <%@ include file="../../htmlarea/_editor_scripts.jsp" %>
 
 </head>
-<body bgcolor="#FFFFFF" style="margin-bottom:0px;"<%=
-(isHtmlAreaSupported && showModeEditor) ? " onLoad=\"checkEditor(" + (imcmsModeText ? "true":"false") + ");\"" : "" %><%=
-(isHtmlAreaSupported && rows == -1) ? " onResize=\"setEditorSize()\"" : "" %>>
+<body bgcolor="#FFFFFF" style="margin-bottom:0px;" onLoad="checkMode();<%=
+(isHtmlAreaSupported && showModeEditor) ? " checkEditor(" + ((imcmsModeText && !textEditPage.getTextString().equals("")) ? "true":"false") + ");" : "" %>"<%=
+(isHtmlAreaSupported) ? " onResize=\"setEditorSize()\"" : "" %>>
 
 <div id="theLabel" style="display:none"><i><%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></i></div>
 
@@ -97,22 +97,21 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 		<tr><%
 		if (showModeText) { %>
 			<td class="imcmsAdmText">&nbsp;<? templates/sv/change_text.html/1001 ?>&nbsp;</td>
-			<td><input type="RADIO" name="format_type" id="format_type0" value="0" <%
-			%>onClick="checkMode()" onChange="checkMode()"<%
+			<td><input type="RADIO" name="format_type" id="format_type0" value="0"<%
 			%><%= (imcmsModeText) ? "" : " checked" %>></td>
 			<td class="imcmsAdmText">
 			<label for="format_type0" accesskey="T" title="Text (<%= isMac ? "Ctrl" : "Alt" %> + T)">
 			&nbsp;<u>T</u>ext&nbsp;</label>&nbsp;</td><%
 		} %>
-			<td><input type="RADIO" name="format_type" id="format_type1" value="1" <%
-			%>onClick="checkMode();<%= (isHtmlAreaSupported && showModeEditor) ? " showHideHtmlArea(false);" : "" %>" onChange="checkMode()"<%
-			%><%= (imcmsModeHtml && (!showEditorCookie || !showModeEditor || !showModeText)) ? " checked" : "" %>></td>
+			<td><input type="RADIO" name="format_type" id="format_type1" value="1"<%
+			%><%= (isHtmlAreaSupported && showModeEditor) ? " onClick=\"showHideHtmlArea(false);\"" : "" %><%
+			%><%= ((imcmsModeHtml || (imcmsModeText && !showModeText)) && (!showEditorCookie || !showModeEditor || !showModeText)) ? " checked" : "" %>></td>
 			<td class="imcmsAdmText">
 			<label for="format_type1" accesskey="H" title="HTML (<%= isMac ? "Ctrl" : "Alt" %> + H)">
 			&nbsp;<u>H</u>TML&nbsp;</label>&nbsp;</td><%
 		if (isHtmlAreaSupported && showModeEditor) { %>
 			<td><input type="RADIO" name="format_type" id="format_type2" value="1" <%
-			%>onClick="checkMode(); showHideHtmlArea(true);" onChange="checkMode()"<%
+			%>onClick="showHideHtmlArea(true);"<%
 			%><%= (imcmsModeHtml && showEditorCookie) ? " checked" : "" %>></td>
 			<td class="imcmsAdmText">
 			<label for="format_type2" accesskey="<%= isMac ? "D" : "E" %>" title="Editor (<%= isMac ? "Ctrl" : "Alt" %> + <%= isMac ? "D" : "E" %>)">
@@ -139,26 +138,34 @@ var winH = (document.all) ? document.body.offsetHeight - 4 : (document.getElemen
 
 function setEditorSize() {
 	if (document.getElementById) {
-		winW = (document.all) ? document.body.offsetWidth - 20 : document.body.clientWidth ;
-		winH = (document.all) ? document.body.offsetHeight - 4 : document.body.clientHeight ;
+		winW  = (document.all) ? document.body.offsetWidth - 20 : document.body.clientWidth ;
 		editW = winW - 130 ;
-		editH = winH - 250 ;
 		editW = (editW < 650) ? 650 : editW ;
-		editH = (editH < 250) ? 250 : editH ;
 		document.getElementById("txtCont").style.width    = editW ;
-		document.getElementById("txtCont").style.height   = editH ;
-		document.getElementById("txtCont").style.overflow = "auto";
 		if (document.getElementById("theIframe")) {
 			document.getElementById("theIframe").style.width    = editW ;
+		}<%
+		if (rows == -1) { %>
+		winH  = (document.all) ? document.body.offsetHeight - 4 : document.body.clientHeight ;
+		editH = winH - 250 ;
+		editH = (editH < 250) ? 250 : editH ;
+		document.getElementById("txtCont").style.height   = editH ;
+		if (document.getElementById("theIframe")) {
 			document.getElementById("theIframe").style.height   = editH - 41 ;
-		}
+		}<%
+		} %>
+		document.getElementById("txtCont").style.overflow = "auto";
 	}
-}<%
-if (rows == -1) { %>
-setEditorSize() ;<%
-} %>
+}
+setEditorSize() ;
 
 function checkMode() {
+	var f = document.forms[0] ;
+	if (f.format_type.length == 1) {
+		f.format_type[0].checked = true ;
+	} else if (f.format_type.length == 2 && !f.format_type[0].checked && !f.format_type[1].checked) {
+		f.format_type[0].checked = true ;
+	}
 }
 //-->
 </script>
