@@ -779,11 +779,8 @@ public abstract class DatabaseService {
         return (Integer)queryResult.get( 0 );
     }
 
-    /*
-    Detects if a user is administrator or not
-    */
-
     /**
+     * Detects if a user is administrator or not
      *
      * @return role_ids
      */
@@ -2682,5 +2679,79 @@ public abstract class DatabaseService {
             }
         } );
         return (MoreThanOneTable_sort_by_display_name[])queryResult.toArray(new MoreThanOneTable_sort_by_display_name[queryResult.size()]);
+    }
+
+    // getUserPermissionSetForDocument() and isRestricted1MorePriviligedThanRestricted2ForDocument
+    // replaces the sproc GetUserPermissionSet
+    boolean isRestricted1MorePriviligedThanRestricted2ForDocument( int meta_id ) {
+        String sql = "SELECT permissions FROM meta WHERE meta_id = ? ";
+        Object[] paramValues = new Object[] { new Integer( meta_id ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Integer(rs.getInt("permissions"));
+            }
+        } );
+        int permissionBitvector = ((Integer)queryResult.get(0)).intValue() ;
+        return 1 == (1 & permissionBitvector) ;
+    }
+
+    public static class MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref {
+        int set_id;
+        int permission_id;
+
+        public MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref(){}
+        public MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref( ResultSet rs ) throws SQLException {
+            set_id = rs.getInt("set_id");
+            permission_id = rs.getInt("permission_id");
+        }
+    }
+
+    /*
+     Finds out what is the most privileged permission_set a user has for a document.
+     Column 1: The users most privileged set_id
+     Column 2: The users permission-set for this set_id
+
+     set_id's:
+     0 - most privileged (full rights)
+     1 & 2 - misc. They may be equal, and 1 may have permission to modify 2.
+     3 - only read rights
+     4 - least privileged (no rights)
+    */
+
+    // getUserPermissionSetForDocument() and isRestricted1MorePriviligedThanRestricted2ForDocument
+    // replaces the sproc GetUserPermissionSet
+    MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref
+        getUserPermissionSetForDocument( Integer metaId, Integer userId ) {
+
+        // Check if user is superadmin
+        if( sproc_CheckAdminRights( userId.intValue() ) ) {
+            MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref result = new MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref();
+            result.set_id = 0;
+            result.permission_id = 0;
+            return result;
+        }
+
+        String sql = "SELECT rr.set_id,dps.permission_id " +
+            "FROM user_roles_crossref urc " +
+            "JOIN roles_rights rr " +
+                "ON urc.role_id = rr.role_id " +
+                "AND urc.user_id = ? " +
+                "AND rr.meta_id = ? " +
+            "LEFT JOIN doc_permission_sets dps " +
+                "ON dps.meta_id = ? " +
+                "AND dps.set_id = rr.set_id " +
+            "ORDER BY rr.set_id";
+        Object[] paramValues = new Object[]{ userId , metaId, metaId };
+
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref(rs);
+            }
+        } );
+        if( queryResult.isEmpty() ) {
+            return null;
+        } else {
+            return (MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref)queryResult.get(0);
+        }
     }
 }

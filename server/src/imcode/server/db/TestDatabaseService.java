@@ -29,7 +29,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     private int DOC_NO_OF_DOCS = 8; // 1001 + folowing
     private static final int DOC_FIRST_PAGE_ID = 1001;
-    private static final int DOC_ID_NON_EXISTING = 66666;
+    private static final int DOC_NON_EXISTING_ID = 66666;
     private final static int DOC_TEST_FIRST_ID = 9001;
     private final static int DOC_TEST_SECOND_ID = 9002;
     private final static int DOC_TEST_FILE_UPLOAD_DOC_TYPE = 9003;
@@ -127,8 +127,21 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_GetUserTypes( databaseService );
             test_sproc_IPAccessesGetAll( databaseService );
             test_sproc_SortOrder_GetExistingDocs( databaseService );
+            test_getUserPermissionSetForDocument( databaseService );
+            test_isRestricted1MorePriviligedThanRestricted2ForDocument( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_isRestricted1MorePriviligedThanRestricted2ForDocument( DatabaseService databaseService ) {
+        assertTrue( databaseService.isRestricted1MorePriviligedThanRestricted2ForDocument(DOC_TEST_FIRST_ID ));
+        assertFalse( databaseService.isRestricted1MorePriviligedThanRestricted2ForDocument(DOC_TEST_SECOND_ID ));
+    }
+
+    private void test_getUserPermissionSetForDocument( DatabaseService databaseService ) {
+        assertNotNull( databaseService.getUserPermissionSetForDocument( new Integer(DOC_TEST_FIRST_ID), new Integer(USER_TEST_ID) ) );
+        assertNull( databaseService.getUserPermissionSetForDocument( new Integer(DOC_TEST_FIRST_ID), new Integer(USER_ID_NON_EXISTING) ) );
+        assertNull( databaseService.getUserPermissionSetForDocument( new Integer(DOC_NON_EXISTING_ID), new Integer(USER_TEST_ID) ) );
     }
 
     private void test_sproc_SortOrder_GetExistingDocs( DatabaseService databaseService ) {
@@ -340,7 +353,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     private void test_sproc_FindMetaId( DatabaseService dbService ) {
         assertTrue( dbService.sproc_FindMetaId( DOC_FIRST_PAGE_ID ) );
-        assertFalse( dbService.sproc_FindMetaId( DOC_ID_NON_EXISTING ) );
+        assertFalse( dbService.sproc_FindMetaId( DOC_NON_EXISTING_ID ) );
     }
 
     private void test_sproc_getDocs( DatabaseService dbService ) {
@@ -373,7 +386,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     private void test_sproc_GetFileName( DatabaseService databaseService ) {
         assertNull( databaseService.sproc_GetFileName( DOC_FIRST_PAGE_ID ) );
-        assertNull( databaseService.sproc_GetFileName( DOC_ID_NON_EXISTING ) );
+        assertNull( databaseService.sproc_GetFileName( DOC_NON_EXISTING_ID ) );
         assertTrue( DOC_THIRD_DOC_FILENAME.equals( databaseService.sproc_GetFileName( DOC_TEST_FILE_UPLOAD_DOC_TYPE ) ) );
     }
 
@@ -549,7 +562,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     public void test_sproc_deleteInclude() {
         for( int i = 0; i < databaseServices.length; i++ ) {
             DatabaseService databaseService = databaseServices[i];
-            assertEquals( 0, databaseService.sproc_deleteInclude( DOC_ID_NON_EXISTING, 1 ) );
+            assertEquals( 0, databaseService.sproc_deleteInclude( DOC_NON_EXISTING_ID, 1 ) );
         }
     }
 
