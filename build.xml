@@ -19,14 +19,7 @@
   <!-- The webroot. Everything put here can be seen by any visitor. -->
   <property name="webroot"        value="${build}"/>
 
-  <property name="imcmsimages"    value="${webroot}/imcmsimages"/>
-  <property name="images"         value="${webroot}/images"/>
-  <property name="login"          value="${webroot}/login"/>
-  <property name="css"            value="${webroot}/css"/>
-  <property name="user"           value="${webroot}/user"/>
-  <property name="javascript"     value="${webroot}/javascript"/>
-  <property name="adminbuttons"   value="${imcmsimages}/admin"/>
-
+  
   <property name="imcmsimages"          value="${webroot}/imcmsimages"/>
   <property name="images"               value="${webroot}/images"/>
   <property name="login"                value="${webroot}/login"/>
@@ -149,7 +142,7 @@
     <!-- The language to install for, and where to install from and to. -->
     <property name="languagetemplates"    value="${templates}/${language}"/>
     <property name="admintemplates"       value="${languagetemplates}/admin"/>
-    <property name="searchtemplates"      value="${languagetemplates}/search"/>
+    <property name="searchtemplates"      value="${admintemplates}/search/original"/>
 
     <property name="readrunnertemplates"  value="${admintemplates}/readrunner"/>
 
@@ -566,6 +559,7 @@
 	  description="Copies and filters the admintemplates for one language">
 
     <mkdir dir="${admintemplates}"/>
+	<mkdir dir="${searchtemplates}"/>
 
     <copy todir="${admintemplates}/adminbuttons" filtering="true">
       <fileset dir="templates/${srclanguage}/adminbuttons"/>
@@ -589,7 +583,7 @@
       <fileset dir="templates/${srclanguage}/textdoc"/>
     </copy>
 
-    <copy todir="${searchtemplates}" filtering="true">
+	<copy todir="${searchtemplates}" filtering="true">
       <fileset dir="templates/${srclanguage}/search"/>
     </copy>
 

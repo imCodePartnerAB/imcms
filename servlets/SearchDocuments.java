@@ -18,68 +18,67 @@ public class SearchDocuments extends HttpServlet {
 	/** The sproc that gets all sections **/
 	private final static String SPROC_SECTION_GET_ALL_SECTIONS = "SectionGetAll" ;
 
-	//the templates we uses as default they are stored relative to the admin folder
-	private final static String HIT_LINE_TEMPLATE		= "search/search_list.html";
-	private final static String HIT_PAGE_TEMPLATE		= "search/search_res1.html";
-	private final static String NEXT_BUTTON			= "search/search_next.html";
-	private final static String PREV_BUTTON			= "search/search_prev.html";
-	private final static String SEARCH_PAGE_TEMPLATE	= "search/search_documents.html";
-	private final static String SEARCH_PAGE_TEMPLATE_ADV= "search/search_documents_adv.html";
+	//the templates we uses as default they are stored in template/admin/original folder
+	private final static String SEARCH_PAGE_TEMPLATE	= "search_documents.html";	
+	private final static String HIT_PAGE_TEMPLATE		= "search_result.html";
+	private final static String NO_HIT_PAGE_TEMPLATE	= "search_result_no_hit.html";		
+	private final static String HIT_LINE_TEMPLATE		= "search_result_list.html";
+	
+	private final static String NAV_NEXT_BUTTON			= "search_nav_next.html";
+	private final static String NAV_PREV_BUTTON			= "search_nav_prev.html";
+	private final static String NAV_ACTIVE				= "search_nav_active.html";
+	private final static String NAV_INACTIVE			= "search_nav_inactive.html";
+	private final static String NAV_AHREF				= "search_nav_ahref.html";		
 
-	//the templates the user can fool a round with they are stored in templates/search/
-	//it means that they are the same for all languages
-	//handles the hitpages links if more than one
-	private final static String USER_NEXT			=	"search_next.html";
-	private final static String USER_PREV			=	"search_prev.html";
-	private final static String USER_ACTIVE			=	"search_active.html";
-	private final static String USER_INACTIVE		=	"search_inactive.html";
-	private final static String USER_AHREF			=	"search_ahref.html";
-
-	private final static String USER_SEARCH_PAGE	=	"search_page.html";
-	private final static String WW	=	"";
-	private final static String WWW	=	"";
-	private final static String WWWW	=	"";
-
-
-	/*
-
-	*/
+	
+	
     /**
        doPost()
     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
 		String host			= req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
-	HttpSession session	= req.getSession(true);
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		HttpSession session	= req.getSession(true);
 		imcode.server.User user	= (imcode.server.User) session.getAttribute("logon.isDone");
 
 		//we must have a user obj, even if its a user extern object, so lets get one, or get rid of the req
-	if (user == null) {
-	    String ip = req.getRemoteAddr( ) ;
-			user = StartDoc.ipAssignUser( ip, host ) ;
-			if (user == null) {
-				res.sendRedirect("StartDoc") ;
-			return ;
-			}
-	}
+		if (user == null) {
+		    String ip = req.getRemoteAddr( ) ;
+				user = StartDoc.ipAssignUser( ip, host ) ;
+				if (user == null) {
+					res.sendRedirect("StartDoc") ;
+				return ;
+				}
+		}
 
 		StringBuffer sqlBuff = new StringBuffer("SearchDocsIndex ");
 
-		//this is the params we can get fram the browser
+		//this is the params we can get from the browser
 		String searchString	= req.getParameter("question_field") == null? "":req.getParameter("question_field") ;
-	String fromDoc			= req.getParameter("fromDoc") == null? "1":req.getParameter("fromDoc");
+		String fromDoc			= req.getParameter("fromDoc") == null? "1":req.getParameter("fromDoc");
 		String maxHits			= req.getParameter("maxHits") == null? "1000":req.getParameter("maxHits");
-	String searchPrep		= req.getParameter("search_prep") == null? "and":req.getParameter("search_prep");
-	String sortBy			= req.getParameter("sortBy") == null? "meta_headline":req.getParameter("sortBy");
+		String searchPrep		= req.getParameter("search_prep") == null? "and":req.getParameter("search_prep");
+		String sortBy			= req.getParameter("sortBy") == null? "meta_headline":req.getParameter("sortBy");
 		String startNr			= req.getParameter("starts") == null? "0":req.getParameter("starts");
 		String hitsAtTime		= req.getParameter("no_of_hits") == null? "15" : req.getParameter("no_of_hits");
 		String section_id		= req.getParameter("section") == null? "-1" : req.getParameter("section");
+		String prev_search		= req.getParameter("prev_search") == null? "" : req.getParameter("prev_search");
 		//not in use for the moment but needed to setup advanced search in the future
 		//String start_date		= req.getParameter("start_date") == null? "":req.getParameter("start_date");
 		//String stop_date		= req.getParameter("stop_date") == null? "":req.getParameter("stop_date");
 		//String[] doctypesArr	= req.getParameter("doctypes");
-
+		
+		// Lets save searchstring typed by user
+		String originalSearchString = searchString ; 
+		
+		// If user hit navigation button lets save prev settings
+		if (req.getParameter("hitsNo") != null ){
+			originalSearchString = prev_search;
+		}
+			
+		
+		
 		String format =  "yyyy-MM-dd HH:mm" ;
 		Date date = new Date();
 		java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(format);
@@ -88,11 +87,11 @@ public class SearchDocuments extends HttpServlet {
 		String doctypes		= "2,5,6,7,8";
 		String created_start	= "";
 		String create_stop		= "";//formatter.format(date);
-	String changed_start	= "";
+		String changed_start	= "";
 		String changed_stop	= "";//formatter.format(date);
-	String activated_start	= "";
+		String activated_start	= "";
 		String activated_stop	= formatter.format(date);
-	String archived_start	= "";
+		String archived_start	= "";
 		String archived_stop	= formatter.format(date);
 
 		// lets set up the search string
@@ -157,155 +156,153 @@ public class SearchDocuments extends HttpServlet {
 		if (sqlResults != null) {
 			hits = sqlResults.length;
 		}
+		
+		
+		
+		//the no_of_hits list
+		String noofhits_option_list = "";
+		String selected_hitsToShow = req.getParameter("no_of_hits");
+		if ( selected_hitsToShow == null){
+			selected_hitsToShow = "10";
+		}
+		if (req.getParameter("hitsNo") != null ){
+			selected_hitsToShow = req.getParameter("prev_hitsToShow");
+		}
+		
+		for ( int i = 10 ; i < 101 ; i+=10 ) {
+        	noofhits_option_list += "<option value=\""+i+"\" "+ ( i == Integer.parseInt(selected_hitsToShow) ? "selected" : "" )+">"+i+"</option>" ;
+        }
+				
 
 		//the sections list
 		String[] all_sections = imcref.sqlProcedure( SPROC_SECTION_GET_ALL_SECTIONS) ;
-		String option_list = "";
+		String section_option_list = "";
+		String selected_sectionToShow = req.getParameter("section");
+		String strSectionArry = "\'"; 
+		
+		for (int i = 0; i < all_sections.length; i+=2) {
+ 			strSectionArry += all_sections[i+1];
+ 			if (i < all_sections.length - 2){
+				strSectionArry += "\',\'";
+			}
+		}
+		strSectionArry += "\'";
+		
+		if (req.getParameter("hitsNo") != null ){
+			selected_sectionToShow = req.getParameter("prev_sectionToShow");
+		}
 		if (all_sections != null) {
 			Vector onlyTemp = new Vector();
 			for(int i=0; i<all_sections.length;i++) {
 				onlyTemp.add(all_sections[i]);
 			}
-			option_list	= Html.createHtmlCode("ID_OPTION", "", onlyTemp ) ;
+			section_option_list	= Html.createHtmlCode("ID_OPTION", selected_sectionToShow, onlyTemp ) ;
 		}
 
+	
 		//parses the result page to send back
-		String oneRecHtmlSrc,resultHtmlSrc,noHitHtmlStr,returnStr;
-		String action = req.getParameter("action");
-		if (action == null) {//must fix the startNo variable
-			String langPrefix = user.getLangPrefix() ;
-
-			//the default search uses the templates in template/"langprefix"/admin/
-			oneRecHtmlSrc = imcref.parseDoc(null,HIT_LINE_TEMPLATE,langPrefix);
-			resultHtmlSrc = imcref.parseDoc(null,HIT_PAGE_TEMPLATE,langPrefix);
-
-			//lets see what template to use
-			String template_to_use = req.getParameter("mode") == null ? SEARCH_PAGE_TEMPLATE : SEARCH_PAGE_TEMPLATE_ADV;
-			String mode_type = "";
-			if (	template_to_use.equals(SEARCH_PAGE_TEMPLATE_ADV)	) {
-				mode_type = "mode";
-			}
-			//check if next or prev button must be created
-			String nextButton = "&nbsp;";
-			String prevButton = "&nbsp;";
-			if (hits > 0) {
-				Vector tagsV = new Vector();
-				tagsV.add("#startNr#");	tagsV.add((startNrInt+noOfHit)+"" );
-				tagsV.add("#hitsNo#");		tagsV.add(noOfHit+"");
-				tagsV.add("#mode_type#");	tagsV.add(mode_type);
-
-				if (startNrInt + noOfHit  < hits) {
-					//ok we need the next button search_next.html
-					nextButton = imcref.parseDoc(tagsV,NEXT_BUTTON,langPrefix);
-				}
-				if (startNrInt - noOfHit >= 0) {
-					//ok we need the prev button
-					prevButton = imcref.parseDoc(tagsV,PREV_BUTTON,langPrefix);
-				}
-			}
-
-			//parsa i ordning träflistan
-			StringBuffer buff = SearchDocuments.parseSearchResults(imcref,oneRecHtmlSrc,sqlResults,startNrInt,noOfHit);
-			String[] tagsArr = {"#hit_list#",buff.toString()};
-			returnStr = Parser.parseDoc(resultHtmlSrc,tagsArr );
-
-			Vector tags = new Vector();
-			tags.add("#search_hit_list#");	tags.add(returnStr);
-			tags.add("#prev_page#")	;		tags.add(prevButton);
-			tags.add("#nex_page#")	;		tags.add(nextButton);
-			tags.add("#section_list#");		tags.add(option_list);
-
-			returnStr = imcref.parseDoc(tags,template_to_use,langPrefix);
-
-		}else if (action.equalsIgnoreCase("user_search")) {
-			//lets set up the <-prev- 1 2 .. -next-> stuff
-			boolean nextButtonOn = false;
-			boolean prevButtonOn = false;
-			int hitPages = 0;
-			StringBuffer buttonsSetupHtml = new StringBuffer("");
-
-			if (hits > 0) {
-				if (startNrInt+noOfHit  < hits) {
-					//ok we need to light the nextButton
-					nextButtonOn = true;
-				}
-				if (startNrInt - noOfHit >= 0) {
-					//ok we need the prev button
-					prevButtonOn = true;
-				}
-				//now we need to count the number of hit-pages
-				hitPages = hits / noOfHit;
-				if ((hits % noOfHit) != 0){
-					hitPages++;
-				}
-
-
-				//lets get the templates to do this those templates must exists
-				String nextTextTemplate	= imcref.getSearchTemplate(USER_NEXT);
-				String prevTextTemplate	= imcref.getSearchTemplate(USER_PREV);
-				String activeTemplate		= imcref.getSearchTemplate(USER_ACTIVE);
-				String inActiveTemplate		= imcref.getSearchTemplate(USER_INACTIVE);
-				String ahrefTemplate		= imcref.getSearchTemplate(USER_AHREF);
-				//Fix kolla att ingen mall är null om så returnera alla hitts i en lång lista
-
-				//ok this is a tricky part to set up the html for the next button and so on
-				//lets start with the prev button
-				if (prevButtonOn) {
-					String[] prevArrOn =  {"#nexOrPrev#","0","#startNr#",(startNrInt-noOfHit)+"","#value#",prevTextTemplate};
-					buttonsSetupHtml.append(Parser.parseDoc(ahrefTemplate,prevArrOn )+"\n");
-				}else {
-					String[] prevArrOff =  {"#value#",prevTextTemplate};
-					buttonsSetupHtml.append(Parser.parseDoc(inActiveTemplate,prevArrOff )+"\n");
-				}
-				//ok now we must do some looping to add all the hit page numbers
-				for(int y=0; y < hitPages; y++) {
-					//lets see if its the choosen one
-					if ((y * noOfHit) == startNrInt  ){
-						String[] pageActive =  {"#value#",(y+1)+""};
-						buttonsSetupHtml.append(Parser.parseDoc(activeTemplate,pageActive )+"\n");
-					}else {
-						String[] pageInactive =  {"#nexOrPrev#","1","#startNr#",(y*noOfHit)+"","#value#",(y+1)+""};
-						buttonsSetupHtml.append(Parser.parseDoc(ahrefTemplate,pageInactive )+"\n");
-					}
-				}
-				//lets do the nextButton
-				if (nextButtonOn) {
-					String[] nextArrOn =  {"#nexOrPrev#","1","#startNr#",(startNrInt+noOfHit)+"","#value#",nextTextTemplate};
-					buttonsSetupHtml.append(Parser.parseDoc(ahrefTemplate,nextArrOn )+"\n");
-				}else {
-					String[] nextArrOff =  {"#value#",nextTextTemplate};
-					buttonsSetupHtml.append(Parser.parseDoc(inActiveTemplate,nextArrOff )+"\n");
-				}
-			}//end (hits > 0)
-
-
-
-			//user defined search this will use the templates stored in the templates/search/ folder
-			//this one is used by ex maBra and they has there templates
-			oneRecHtmlSrc	= imcref.getSearchTemplate(req.getParameter("template_list"));
-			resultHtmlSrc	= imcref.getSearchTemplate(req.getParameter("template"));
-			noHitHtmlStr	= imcref.getSearchTemplate(req.getParameter("template_no_hit"));
-			StringBuffer buff = SearchDocuments.parseSearchResults(imcref,oneRecHtmlSrc,sqlResults,startNrInt,noOfHit);
-			//if there isnt any hitts lets add the no hit message
-			if (buff.length()==0) {
-				buff.append(noHitHtmlStr);
-			}
-			Vector tags = new Vector();
-			tags.add("#search_list#");		tags.add(buff.toString());
-			tags.add("#nrhits#");			tags.add(""+hits);
-			tags.add("#searchstring#");		tags.add(searchString);
-			tags.add("#page_buttons#");		tags.add(buttonsSetupHtml.toString());
-			tags.add("#hitsNo#");			tags.add(noOfHit+"");
-			tags.add("#section_list#");		tags.add(option_list);
-
-			returnStr = Parser.parseDoc(resultHtmlSrc,(String[])tags.toArray(new String[tags.size()]) );
-		}else {
-			//here is the place fore the search code fore the get existing doc
-			//but untill its implemented lets send the user to the start page
-			res.sendRedirect("StartDoc");
-			return;
-
+		
+		//ok lets see what folder to get the search-templates from. 
+		// @show = parameter with the folder name. If we get no parameter lets use folder original.
+		String oneRecHtmlSrc, resultHtmlSrc, noHitHtmlStr, returnStr;
+		String show = req.getParameter("show");
+		
+		String templateStr = null;
+		String langPrefix = user.getLangPrefix() ;
+		String templatePath = langPrefix + "/admin/search/";		
+		
+		if (show == null){
+			show = "original"; // default folder for search-templates
 		}
+		
+		String nextTextTemplate		= imcref.getSearchTemplate(templatePath + show + "/" + NAV_NEXT_BUTTON);
+		String prevTextTemplate		= imcref.getSearchTemplate(templatePath + show + "/" + NAV_PREV_BUTTON);
+		String activeTemplate		= imcref.getSearchTemplate(templatePath + show + "/" + NAV_ACTIVE);
+		String inActiveTemplate		= imcref.getSearchTemplate(templatePath + show + "/" + NAV_INACTIVE);
+		String ahrefTemplate		= imcref.getSearchTemplate(templatePath + show + "/" + NAV_AHREF);
+		oneRecHtmlSrc 				= imcref.getSearchTemplate(templatePath + show + "/" + HIT_LINE_TEMPLATE);
+		resultHtmlSrc 				= imcref.getSearchTemplate(templatePath + show + "/" + HIT_PAGE_TEMPLATE);
+		noHitHtmlStr  				= imcref.getSearchTemplate(templatePath + show + "/" + NO_HIT_PAGE_TEMPLATE);
+		//Fix kolla att ingen mall är null om så returnera alla hitts i en lång lista
+		
+				
+		
+		//lets set up the <-prev- 1 2 .. -next-> stuff
+		boolean nextButtonOn = false;
+		boolean prevButtonOn = false;
+		int hitPages = 0;
+		StringBuffer buttonsSetupHtml = new StringBuffer("");
+
+		if (hits > 0) {
+			if (startNrInt+noOfHit  < hits) {
+				//ok we need to light the nextButton
+				nextButtonOn = true;
+			}
+			if (startNrInt - noOfHit >= 0) {
+				//ok we need the prev button
+				prevButtonOn = true;
+			}
+			//now we need to count the number of hit-pages
+			hitPages = hits / noOfHit;
+			if ((hits % noOfHit) != 0){
+				hitPages++;
+			}
+	
+
+			//ok this is a tricky part to set up the html for the next button and so on
+			//lets start with the prev button
+			if (prevButtonOn) {
+				String[] prevArrOn =  {"#nexOrPrev#","0","#startNr#",(startNrInt-noOfHit)+"","#value#",prevTextTemplate};
+				buttonsSetupHtml.append(Parser.parseDoc(ahrefTemplate,prevArrOn )+"\n");
+			}else {
+				String[] prevArrOff =  {"#value#",prevTextTemplate};
+				buttonsSetupHtml.append(Parser.parseDoc(inActiveTemplate,prevArrOff )+"\n");
+			}
+			//ok now we must do some looping to add all the hit page numbers
+			for(int y=0; y < hitPages; y++) {
+				//lets see if its the choosen one
+				if ((y * noOfHit) == startNrInt  ){
+					String[] pageActive =  {"#value#",(y+1)+""};
+					buttonsSetupHtml.append(Parser.parseDoc(activeTemplate,pageActive )+"\n");
+				}else {
+					String[] pageInactive =  {"#nexOrPrev#","1","#startNr#",(y*noOfHit)+"","#value#",(y+1)+""};
+					buttonsSetupHtml.append(Parser.parseDoc(ahrefTemplate,pageInactive )+"\n");
+				}
+			}
+			//lets do the nextButton
+			if (nextButtonOn) {
+				String[] nextArrOn =  {"#nexOrPrev#","1","#startNr#",(startNrInt+noOfHit)+"","#value#",nextTextTemplate};
+				buttonsSetupHtml.append(Parser.parseDoc(ahrefTemplate,nextArrOn )+"\n");
+			}else {
+				String[] nextArrOff =  {"#value#",nextTextTemplate};
+				buttonsSetupHtml.append(Parser.parseDoc(inActiveTemplate,nextArrOff )+"\n");
+			}
+		}//end (hits > 0)
+
+
+		
+		StringBuffer buff = SearchDocuments.parseSearchResults(imcref,oneRecHtmlSrc,sqlResults,startNrInt,noOfHit);
+		//if there isnt any hitts lets add the no hit message
+		if (buff.length()==0) {
+			buff.append(noHitHtmlStr);
+		}
+		Vector tags = new Vector();
+		tags.add("#search_list#");		tags.add(buff.toString());
+		tags.add("#nrhits#");			tags.add(""+hits);
+		tags.add("#searchstring#");		tags.add(originalSearchString);
+		tags.add("#page_buttons#");		tags.add(buttonsSetupHtml.toString());
+		tags.add("#hitsNo#");			tags.add(noOfHit+"");
+		tags.add("#section_list#");		tags.add(section_option_list);
+		tags.add("#noofhits_list#");	tags.add(noofhits_option_list);
+		tags.add("#hitsToShow#");		tags.add(selected_hitsToShow);
+		tags.add("#sectionToShow#");	tags.add(selected_sectionToShow);
+		tags.add("#sectionArry#");	    tags.add(strSectionArry);
+		
+		
+				
+
+		returnStr = Parser.parseDoc(resultHtmlSrc,(String[])tags.toArray(new String[tags.size()]) );
+		
 
 
 		//now lets send it to browser
@@ -351,43 +348,51 @@ public class SearchDocuments extends HttpServlet {
 
 		String langPrefix = user.getLangPrefix() ;
 
-		//ok lets see what page to send if we dont get any lets send the simple one
+		//ok lets see what folder to get the search-templates from. 
+		// @show = parameter with the folder name. If we get no parameter lets use folder original.
 		String templateStr = null;
-		String mode = req.getParameter("mode");
-		if (mode != null) {
-			if (mode.equals("adv"))	 {
-				//ok lets get the adv page
-				templateStr = imcref.parseDoc(null,SEARCH_PAGE_TEMPLATE_ADV,langPrefix);
-			}else if(mode.equals("user")) {
-				if (req.getParameter("template") != null) {
-					templateStr = imcref.getSearchTemplate(req.getParameter("template"));
-				}else {
-					templateStr = imcref.getSearchTemplate(USER_SEARCH_PAGE);
-				}
-			}
+		String templatePath = langPrefix + "/admin/search/";
+		String show = req.getParameter("show");
+		if (show == null) {
+			show = "original"; // default folder for search-templates
 		}
-
-		if (templateStr == null) {
-			//default mode
-			templateStr = imcref.parseDoc(null,SEARCH_PAGE_TEMPLATE,langPrefix);
+		templateStr = imcref.getSearchTemplate(templatePath + show + "/" + SEARCH_PAGE_TEMPLATE);
+		
+		
+		//the no_of_hits list
+		String noofhits_option_list = "";
+		String selected = req.getParameter("no_of_hits");
+		if ( selected == null){
+			selected = "10";
 		}
+		
+		for ( int i = 10 ; i < 101 ; i+=10 ) {
+        	noofhits_option_list += "<option value=\""+i+"\" "+ ( i == Integer.parseInt(selected) ? "selected" : "" )+">"+i+"</option>" ;
+        }
+		
 
-
+		//the sections list
 		String[] all_sections = imcref.sqlProcedure( SPROC_SECTION_GET_ALL_SECTIONS) ;
-		String option_list = "";
+		String section_option_list = "";
+		selected = req.getParameter("section");
 		if (all_sections != null) {
 			Vector onlyTemp = new Vector();
 			for(int i=0; i<all_sections.length;i++) {
+			
 				onlyTemp.add(all_sections[i]);
 			}
-			option_list	= Html.createHtmlCode("ID_OPTION", "", onlyTemp ) ;
+			section_option_list	= Html.createHtmlCode("ID_OPTION", selected, onlyTemp ) ;
 		}
 
+
+	//	String originalSearchString = req.getParameter("question_field") == null? "":req.getParameter("question_field") ;
 
 		// Lets get the html file we use as template
 		Vector tags = new Vector();
 		tags.add("#search_hit_list#");	tags.add("");
-		tags.add("#section_list#");		tags.add(option_list);
+		tags.add("#section_list#");		tags.add(section_option_list);
+		tags.add("#noofhits_list#");	tags.add(noofhits_option_list);
+	//	tags.add("#searchstring#");		tags.add(originalSearchString);
 
 
 		out.print( Parser.parseDoc(templateStr,(String[])tags.toArray(new String[tags.size()]) ) ) ;

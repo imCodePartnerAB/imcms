@@ -1,0 +1,172 @@
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+
+<title>S&ouml;kning</title>
+
+<STYLE TYPE="text/css">
+<!-- 
+A.imcmsSearch:link { font: bold 10px/15px Verdana,Geneva,Arial,Helvetica,sans-serif; color:#0000cc; text-decoration:none }
+A.imcmsSearch:visited { font: bold 10px/15px Verdana,Geneva,Arial,Helvetica,sans-serif; color:#0000cc; text-decoration:none }
+A.imcmsSearch:active { font: bold 10px/15px Verdana,Geneva,Arial,Helvetica,sans-serif; color:#FFFFFF; background-color:#0000cc; text-decoration:none }
+A.imcmsSearch:hover { font: bold 10px/15px Verdana,Geneva,Arial,Helvetica,sans-serif; background-color:#0000cc; color:#FFFFFF; text-decoration:none }
+.imcmsSearchActive { font: bold 10px/15px Verdana,Geneva,Arial,Helvetica,sans-serif; background-color:#0000cc; color:#FFFFFF; text-decoration:none }
+.imcmsSearchInactive { font: bold 10px/15px Verdana,Geneva,Arial,Helvetica,sans-serif; color:#999999; text-decoration:none }
+A:link { color:#0000ee }
+A:hover, A:active { color:#0000ff }
+A:visited { color:#990099 }
+-->
+</STYLE>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function setValues(blnPrev,sNr){
+	var f = document.forms.navForm;
+	if(blnPrev){
+		f.prev_button.value = '1';
+		f.next_button.value = 'null';
+	} else {
+		f.prev_button.value = 'null';
+		f.next_button.value = '1';
+	}
+	f.startNr.value = sNr;
+	f.submit();
+}
+
+function openSearchHelp(id) {
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
+}
+//-->
+</SCRIPT>
+
+</head>
+
+<!-- tag @sectionArry@ contains a formated string with all sections ex. #sectionArry# -->
+
+<body bgcolor="#ffffff">
+
+
+<form method="post" action="SearchDocuments">
+<input type="hidden" name="template" value="search_result.html">
+<input type="hidden" name="template_list" value="search_result_list.html">
+<input type="hidden" name="template_no_hit" value="search_result_no_hit.html">
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><b>Sök</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Söktext:<br></font>
+	<input type="Text" name="question_field" value="#searchstring#" size="65" style="width: 100%"></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td>
+		<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Tr&auml;ffar/sida:&nbsp;</font></td>
+			<td>
+			<select name="no_of_hits" size="1">
+				#noofhits_list#				
+			</select></td>
+			<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;Sektion:&nbsp;</font></td>
+			<td>
+			<select name="section">
+				<option value="-1">- Alla -</option>
+				#section_list#				
+			</select></td>
+		</tr>
+		</table></td>
+		<td align="right"><a href="GetDoc?meta_id=101" target="_blank" onClick="openHelp('101'); return false;"><img src="/imcms/images/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a> &nbsp;<input type="submit" name="search" value="S&ouml;k"></td>
+	</tr>
+	</table></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
+</form>
+
+
+
+<table border="0" cellpadding="0" cellspacing="0" width="550" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><b>Tr&auml;ffar</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tr&auml;ffar:</b>&nbsp;&nbsp;</font></td>
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#nrhits#</font></td>
+	</tr>
+	</table>
+</td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<table border="0" cellpadding="1" cellspacing="0">
+	#search_list#
+	</table></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">#page_buttons#</td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+
+</table>
+<form name="navForm" action="SearchDocuments" method="post">
+<input type="hidden" name="prev_button" value="">
+<input type="hidden" name="next_button" value="">
+<input type="hidden" name="startNr" value="">
+<input type="hidden" name="hitsNo" value="#hitsNo#">
+<input type="hidden" name="prev_search" value="#searchstring#">
+<input type="hidden" name="prev_hitsToShow" value="#hitsToShow#">
+<input type="hidden" name="prev_sectionToShow" value="#sectionToShow#">
+
+
+<input type="hidden" name="template" value="search_result.html">
+<input type="hidden" name="template_list" value="search_result_list.html">
+<input type="hidden" name="template_no_hit" value="search_result_no_hit.html">
+</form>
+
+
+
+
+</body>
+</html>

@@ -2788,10 +2788,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-       Return a file relative to the search_template-path.
+       Return a file relative to the webapps. ex ../templates/se/admin/search/original
     **/
     public String getSearchTemplate(String path) throws IOException {
-	return fileCache.getCachedFileString(new File(m_TemplateHome+"/search",path)) ;
+	return fileCache.getCachedFileString(new File(m_TemplateHome ,path)) ;
     }
 
     /**

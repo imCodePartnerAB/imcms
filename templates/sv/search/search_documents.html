@@ -1,51 +1,71 @@
-<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>S&ouml;k</TITLE>
-<SCRIPT language=JavaScript>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<script language=javascript>
 <!--
-function openHelp(id) {
+function openHelp(id){
 	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
-</SCRIPT>
-</HEAD>
-<BODY bgcolor="#ffffff" link="#333399" vlink="#333399" alink="#999999">
-<FORM method="post" action="SearchDocuments">
-	<table cellpadding="2" cellspacing="0" align="center" border="1" width="600">
-		<TR bgcolor="#333366">
-			<TD colspan="2"><B><FONT face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#ffffff">			
-			Skriv in din fr&aring;ga nedan:			
-</FONT></B>
-			</TD>
-		</TR>
-		<TR bgcolor="#bababa">
-			<TD height="35" colspan="2">
-				<INPUT type="Text" name="question_field" size="65">
-				<INPUT type="submit" name="search" value="S&ouml;k">
-				&nbsp; <a href="GetDoc?meta_id=101" target="_blank" onClick="openHelp('101'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-			</TD>
-		</TR>
-		
-		<TR bgcolor="#bababa">
-			<TD height="51">
-				<SELECT name="no_of_hits" size="1">
-					<OPTION value="10">10</OPTION>
-					<OPTION value="20">20</OPTION>
-					<OPTION value="30">30</OPTION>
-					<OPTION value="40">40</OPTION>
-					<OPTION value="50" selected>50</OPTION>
-					<OPTION value="60">60</OPTION>
-					<OPTION value="70">70</OPTION>
-					<OPTION value="80">80</OPTION>
-					<OPTION value="90">90</OPTION>
-					<OPTION value="100">100</OPTION>				
-				</SELECT><FONT face="Verdana, Arial, Helvetica, sans-serif" size="2">
-				Antal tr&auml;ffar per sida.</FONT>
-			</TD>
-		</TR>
-	</TABLE><BR>
-</FORM>
-	#search_hit_list#
-</BODY>
-</HTML>
+</script>
+
+</head>
+<body bgcolor="#FFFFFF">
+
+<form method="post" action="SearchDocuments">
+<input type="hidden" name="mode" value="adv">
+<input type="hidden" name="action" value="user_search">
+<input type="hidden" name="template" value="search_result.html">
+<input type="hidden" name="template_list" value="search_result_list.html">
+<input type="hidden" name="template_no_hit" value="search_result_no_hit.html">
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><b>Sök</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Söktext:<br></font>
+	<input type="Text" name="question_field" size="65" style="width: 100%"></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td>
+		<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Tr&auml;ffar/sida:&nbsp;</font></td>
+			<td>
+			<select name="no_of_hits" size="1">
+				#noofhits_list#
+			</select></td>
+			<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;Sektion:&nbsp;</font></td>
+			<td>
+			<select name="section">
+				<option value="-1">- Alla -</option>
+				#section_list#				
+			</select></td>
+		</tr>
+		</table></td>
+		<td align="right"><a href="GetDoc?meta_id=101" target="_blank" onClick="openHelp('101'); return false;"><img src="/imcms/images/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a> &nbsp;<input type="submit" name="search" value="S&ouml;k"></td>
+	</tr>
+	</table></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
+</form>
+
+</body>
+</html>
