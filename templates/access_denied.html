@@ -8,7 +8,7 @@
 <p align="center">&nbsp;</p>
 <h2 align="center">Du har inte beh&ouml;righet</h2>
 <h2 align="center">till det h&auml;r dokumentet!</h2>
-<form action="VerifyUser" method=POST>
+<form action="@servleturl@/VerifyUser" method=POST>
 <center>
     <table border=1 cellpadding="0" cellspacing="0" width="200">
 	  <tr bgcolor="#333366"> 
@@ -38,7 +38,7 @@
 		</td>
 	  </tr>
 	</table><br><br>
-	<a href="/servlet/PasswordMailReminder">Glömt ditt lösenord? Klicka här.</a>
+	<a href="@servleturl@/PasswordMailReminder">Glömt ditt lösenord? Klicka här.</a>
   </center>
 </form>
 <SCRIPT language="JavaScript1.2">
