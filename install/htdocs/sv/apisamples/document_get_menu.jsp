@@ -10,7 +10,9 @@
         int index = startIndex;
         if( "".equals( menuItems[index].getTreeKey().toString()) ){
             result.append("Warning, tree key (at index " + index + ") has no value, stepping to next.<br>");
-            result.append(getTreeOutput( treeLevel, startIndex+1, menuItems));
+            if ( index+1 < menuItems.length  ){
+                result.append(getTreeOutput( treeLevel, index+1, menuItems));
+            }
         } else {
             result.append( "<ul>\n" ); // Beginning of each branch
             while( existMoreKeysInBranch( treeLevel, index, menuItems ) ){
