@@ -322,10 +322,6 @@ if exists (select * from sysobjects where id = object_id(N'[dbo].[ListDocsGetInt
 drop procedure [dbo].[ListDocsGetInternalDocTypesValue]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[magnustest]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[magnustest]
-GO
-
 if exists (select * from sysobjects where id = object_id(N'[dbo].[PermissionsGetPermission]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[PermissionsGetPermission]
 GO
@@ -1408,13 +1404,19 @@ GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
 GO
 
-CREATE PROCEDURE GetLanguageList AS
+CREATE PROCEDURE GetLanguageList
+
+	@user_lang_prefix	VARCHAR(3)
+
+AS
+
 /*
  Returns all 
 */
 SELECT lp.lang_id , lang.language
 FROM lang_prefixes lp, languages lang
 WHERE lp.lang_prefix = lang.lang_prefix
+AND lang.user_prefix = @user_lang_prefix
 
 GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
@@ -2403,21 +2405,6 @@ CREATE PROCEDURE ListDocsGetInternalDocTypesValue AS
 select doc_type
 from doc_types
 where doc_type <= 100
-
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE magnustest 
-@text varchar(80)
-AS 
-update texts
-set text = @text
-where meta_id = 4260
-and name = 1
 
 GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
