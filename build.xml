@@ -8,6 +8,8 @@
   <property name="images"         value="${webroot}/images"/>
   <property name="login"          value="${webroot}/login"/>
   <property name="css"            value="${webroot}/css"/>
+  <property name="user"           value="${webroot}/user"/>
+
 
 
   <property name="adminbuttons"   value="${webroot}/admin"/>
@@ -233,6 +235,7 @@
     <mkdir dir="${images}"/>
     <mkdir dir="${login}"/>
     <mkdir dir="${css}"/>
+    <mkdir dir="${user}"/>	
     <copy file="templates/login/index.html" todir="${login}">
        <filterset>
         <filter token="servleturl" value="${servleturl}"/>
