@@ -6,6 +6,7 @@ import imcode.readrunner.ReadrunnerUserData;
 import imcode.server.*;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.shop.ShoppingOrderSystem;
@@ -522,5 +523,9 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
     public void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime ) {
+    }
+
+    public DocumentMapper getDocumentMapper() {
+        return null;
     }
 }

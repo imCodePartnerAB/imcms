@@ -42,7 +42,7 @@ public class TemplateMapper {
         if( templates.size() > 0 ){
             for( int k=0; iterator.hasNext(); k++ ) {
                 String templateIdStr = (String)iterator.next();
-                String templateNameStr = (String)iterator.next();
+                iterator.next(); // String templateNameStr = (String)iterator.next();
                 result[k] = getTemplate( service, Integer.parseInt(templateIdStr) );
             }
         }

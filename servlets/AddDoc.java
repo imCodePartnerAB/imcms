@@ -51,7 +51,8 @@ public class AddDoc extends HttpServlet {
         }
         String lang_prefix = user.getLangPrefix();
 
-        boolean userHasRights = DocumentMapper.checkUsersRights( imcref, user, meta_id, lang_prefix, doc_type );
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        boolean userHasRights = documentMapper.checkUsersRights( user, meta_id, lang_prefix, doc_type );
 
         if( !"0".equals( item_selected ) && !userHasRights ) {
             String output = AdminDoc.adminDoc( meta_id_int, meta_id_int, user, req, res );
@@ -221,7 +222,7 @@ public class AddDoc extends HttpServlet {
         */
         // Here i'll select all classification-strings and
         // concatenate them into one semicolon-separated string.
-        String classification = DocumentMapper.getClassificationsAsOneString( imcref, Integer.parseInt(meta_id) );
+        String classification = documentMapper.getClassificationsAsOneString( Integer.parseInt(meta_id) );
 
         vec.add( "#classification#" );
         vec.add( classification );

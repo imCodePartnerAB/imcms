@@ -179,7 +179,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 }
 
                 templates = DatabaseAccessor.sprocGetTemplatesInGroup( dbc, selected_group );
-                groupnamevec = DatabaseAccessor.sqlSelectGrouuName( dbc, group_id );
+                groupnamevec = DatabaseAccessor.sqlSelectGroupName( dbc, group_id );
             }
 
             String[] emp = (String[])user.get( "emphasize" );

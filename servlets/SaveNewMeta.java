@@ -141,7 +141,8 @@ public class SaveNewMeta extends HttpServlet {
         }
         String lang_prefix = user.getLangPrefix();
 
-        boolean userHasRights = DocumentMapper.checkUsersRights( imcref, user, parent_meta_id, lang_prefix, doc_type );
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        boolean userHasRights = documentMapper.checkUsersRights( user, parent_meta_id, lang_prefix, doc_type );
 
         // So... if the user may not create this particular doc-type... he's outta here!
         if( !userHasRights ) {
@@ -314,7 +315,7 @@ public class SaveNewMeta extends HttpServlet {
 
                 // TEXT DOCUMENT
             } else if( doc_type.equals( "2" ) ) {
-                DocumentMapper.copyTemplateData( imcref, user, parent_meta_id, meta_id );
+                documentMapper.copyTemplateData( user, parent_meta_id, meta_id );
 
                 // Lets check if we should copy the metaheader and meta text into text1 and text2.
                 // There are 2 types of texts. 1= html text. 0= plain text. By

@@ -1,3 +1,21 @@
+// Förändringar mot orginalet:
+// * Default värden satta till NULL är borttagna
+// * tinyint är bytt mot smallint i alla tabeller
+// * Andra default värden är inte satta (ännu, går det, finns det en standard?)
+// * Microsofts Indexeringen är droppad
+// * Microsofts datetime & smalldatetime behöver bytas ut, mot vad? Date + Time? (Timestamp är något annat i SQL Server)
+// Verkar inte finnas något, ska man istället lagra som strängar?
+
+// Vid validering mot SLQ 92 (http://developer.mimer.com/validator/parser92/index.tml) gavs följande
+// * value, external, language är reserverade ord och bör bytas ut ur columnnamnen nedan? Om MySQL och/eller Mimer så kräver
+// Om dessa byts ut så är koden "*** Intermediate SQL-92 ***" compliant
+
+// Vid validering mot SLQ 99 (http://developer.mimer.com/validator/parser92/index.tml) gavs följande
+// * value, external, language är reserverade ord och bör bytas ut ur columnnamnen nedan? Om MySQL och/eller Mimer så kräver
+// * NAME, TYPE och NUMBER är vendor reserverade ord.
+// * The following feature outside Core SQL-99 is used: F391, "Long identifiers"
+
+
 Kort beskrivning av alla tabeller.
 ----------------------------------
 

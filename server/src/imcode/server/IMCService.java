@@ -2606,8 +2606,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     public void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime ) {
         DatabaseAccessor.sqlUpdateModifiedDatesOnDocumentAndItsParent( this, metaId, dateTime );
-        // Update the date_modified for all parents.
         DatabaseAccessor.sprocUpdateParentsDateModified( this, metaId );
     }
 
+    public DocumentMapper getDocumentMapper() {
+        return documentMapper;
+    }
 }

@@ -91,7 +91,7 @@ public class DocumentMapper {
                 document.setFilename( DatabaseAccessor.sprocGetFilename( service, metaId ) );
             }
             if( document.getDocumentType() == DocumentDomainObject.DOCTYPE_TEXT ) {
-                initTextDoc( service, document );
+                static_initTextDoc( service, document );
             }
         } catch( SQLException ex ) {
             log.error( ex );
@@ -177,12 +177,12 @@ public class DocumentMapper {
         }
     }
 
-    public static void copyTemplateData( IMCServiceInterface imcref, UserDomainObject user, String parent_meta_id, String meta_id ) {
+    public void copyTemplateData( UserDomainObject user, String parent_meta_id, String meta_id ) {
         //ok now lets see what to do with the templates
-        String[] temp = DatabaseAccessor.sqlSelectTemplateInfoFromTextDocs( imcref, parent_meta_id );
+        String[] temp = DatabaseAccessor.sqlSelectTemplateInfoFromTextDocs( service, parent_meta_id );
 
         //lets get the users greatest permission_set for this dokument
-        final int perm_set = imcref.getUserHighestPermissionSet( Integer.parseInt( meta_id ), user.getUserId() );
+        final int perm_set = service.getUserHighestPermissionSet( Integer.parseInt( meta_id ), user.getUserId() );
         //ok now we have to setup the template too use
 
         if( perm_set == IMCConstants.DOC_PERM_SET_RESTRICTED_1 ) {
@@ -207,7 +207,7 @@ public class DocumentMapper {
             }
         }
         //ok were set, lets update db
-        DatabaseAccessor.sqlInsertIntoTemplateInfoIntoTextDocs( imcref, meta_id, temp );
+        DatabaseAccessor.sqlInsertIntoTemplateInfoIntoTextDocs( service, meta_id, temp );
     }
 
     /**
@@ -230,8 +230,8 @@ public class DocumentMapper {
 
         // inherit all the different data that's not in meta from parent.
         DatabaseAccessor.sprocUpdateInheritPermissions( service, newMetaId, parentId, docType );
-        inheritClassifications( parentId, newMetaId );
-        inheritSection( parentId, newMetaId );
+        static_inheritClassifications( parentId, newMetaId );
+        static_inheritSection( parentId, newMetaId );
 
         // update parents, why? what is this? /Hasse
         DatabaseAccessor.sqlSelectAddSortorderToParentsChildList( service, String.valueOf( parentId ), String.valueOf( newMetaId ), String.valueOf( parentMenuNumber ) );
@@ -239,7 +239,7 @@ public class DocumentMapper {
         DatabaseAccessor.sqlUpdateModifiedDate( service, parentId, nowDateTime );
 
         // Text document
-        DocumentMapper.copyTemplateData( service, user, String.valueOf( parentId ), String.valueOf( newMetaId ) );
+        copyTemplateData( user, String.valueOf( parentId ), String.valueOf( newMetaId ) );
         DatabaseAccessor.sqlUpdateActivateTheTextField( service, newMetaId );
 
         return getDocument( newMetaId );
@@ -270,7 +270,7 @@ public class DocumentMapper {
         boolean archived = document.archived;
 
         DatabaseAccessor.sqlUpdateMeta( service, document.getMetaId(), activatedDatetime, archivedDatetime, createdDatetime, headline, image, modifiedDatetime, target, text, archived );
-        updateSection( service, document, section );
+        static_updateSection( service, document, section );
 
         // Restricted One and Two
         // todo: Save the restriction for a page.
@@ -286,30 +286,14 @@ public class DocumentMapper {
         */
     }
 
-    // todo make Section into an DomainObject
-    private static void updateSection( IMCService service, DocumentDomainObject document, String section ) {
-        int sectionId = DatabaseAccessor.sqlGetSectionId( service, section );
-        DatabaseAccessor.sprocSectionAddCrossref( service, document.getMetaId(), sectionId );
-    }
-
-    private void inheritSection( int from_parentId, int to_metaId ) {
-        String[] sectionId = DatabaseAccessor.sprocSectionGetInheritId( service, from_parentId );
-        DatabaseAccessor.sprocSectionAddCrossref( service, to_metaId, Integer.parseInt( sectionId[0] ) );
-    }
-
-    private void inheritClassifications( int from_parentId, int to_newMetaId ) {
-        String classifications = getClassificationsAsOneString( service, from_parentId );
-        DatabaseAccessor.sprocSaveClassification( service, to_newMetaId, classifications );
-    }
-
-    public static boolean checkUsersRights( IMCServiceInterface imcref, UserDomainObject user, String parent_meta_id, String lang_prefix, String doc_type ) {
-        HashSet user_doc_types = DatabaseAccessor.sprocGetDocTypesForUser( imcref, user, parent_meta_id, lang_prefix );
+    public boolean checkUsersRights( UserDomainObject user, String parent_meta_id, String lang_prefix, String doc_type ) {
+        HashSet user_doc_types = DatabaseAccessor.sprocGetDocTypesForUser( service, user, parent_meta_id, lang_prefix );
         boolean userHasRights = user_doc_types.contains( doc_type );
         return userHasRights;
     }
 
-    public static String getClassificationsAsOneString( IMCServiceInterface imcref, int meta_id ) {
-        String[] classifications = DatabaseAccessor.sqlSelectGetClassificationStrings( imcref, meta_id );
+    public String getClassificationsAsOneString( int meta_id ) {
+        String[] classifications = DatabaseAccessor.sqlSelectGetClassificationStrings( service, meta_id );
         String classification = "";
         if( classifications.length > 0 ) {
             classification += classifications[0];
@@ -320,9 +304,24 @@ public class DocumentMapper {
         return classification;
     }
 
-    private static void initTextDoc( IMCService service, DocumentDomainObject inout_document ) {
+    private static void static_updateSection( IMCService service, DocumentDomainObject document, String section ) {
+        int sectionId = DatabaseAccessor.sqlGetSectionId( service, section );
+        DatabaseAccessor.sprocSectionAddCrossref( service, document.getMetaId(), sectionId );
+    }
+
+    private void static_inheritSection( int from_parentId, int to_metaId ) {
+        String[] sectionId = DatabaseAccessor.sprocSectionGetInheritId( service, from_parentId );
+        DatabaseAccessor.sprocSectionAddCrossref( service, to_metaId, Integer.parseInt( sectionId[0] ) );
+    }
+
+    private void static_inheritClassifications( int from_parentId, int to_newMetaId ) {
+        String classifications = getClassificationsAsOneString( from_parentId );
+        DatabaseAccessor.sprocSaveClassification( service, to_newMetaId, classifications );
+    }
+
+    private static void static_initTextDoc( IMCService service, DocumentDomainObject inout_document ) {
         // all from the table text_doc
-        String[] textdoc_data1 = service.sqlProcedure( "GetTextDocData", new String[]{String.valueOf( inout_document.getMetaId() )} );
+        String[] textdoc_data1 = DatabaseAccessor.sprocTextDocData( service, inout_document );
         String[] textdoc_data = textdoc_data1;
         if( textdoc_data.length >= 4 ) {
             int template_id = Integer.parseInt( textdoc_data[0] );
@@ -335,6 +334,5 @@ public class DocumentMapper {
             inout_document.setTemplateGroupId( group_id );
         }
     }
-
 }
 

@@ -17,7 +17,6 @@ import java.text.SimpleDateFormat;
  */
 
 public class DatabaseAccessor {
-
     /**
      * Stored procedure names used in this class
      */
@@ -34,6 +33,7 @@ public class DatabaseAccessor {
     private static final String SPROC_GET_PERMISSION_SET = "GetPermissionSet";
     private static final String SPROC_GET_DOC_TYPES_WITH_PERMISSIONS = "GetDocTypesWithPermissions";
     private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "getTemplateGroupsWithPermissions";
+    private static final String SPROC_TEXT_DOC_DATA = "GetTextDocData";
 
     // todo make sure all the following is only used in one and only sprocMethod and nowhere else
     // these are found to be used elseware in
@@ -43,7 +43,6 @@ public class DatabaseAccessor {
     private static final String SPROC_GET_TEXT = "GetText";
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
     private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
-
     // These are not checked yet:
     // All checked for now!
     // Add new sprocs here.
@@ -122,9 +121,9 @@ public class DatabaseAccessor {
 
     static int sqlCreateNewRowInMetaCopyParentData( IMCService service, int parentId ) {
         // todo: All this chould propably be done in a singel sql query but i dont have time to think how that should be done right now. Hasse
+        // Or at least calld in a batch update (JDBC 2.0)?
         final String columnsToBeCopied = "description,doc_type,meta_headline,meta_text,meta_image,owner_id,permissions,shared,expand,show_meta,help_text_id,archive,status_id,lang_prefix,classification,date_created,date_modified,sort_position,menu_position,disable_search,target,frame_name,activate,activated_datetime,archived_datetime";
         String sqlStatmentGetAllParentData = "select " + columnsToBeCopied + " from meta where meta_id = " + parentId;
-
         String[] parentDataRow = service.sqlQuery( sqlStatmentGetAllParentData );
         String values = "'" + parentDataRow[0] + "'," + parentDataRow[1] + "," + "'" + parentDataRow[2] + "'," + "'" + parentDataRow[3] + "'," + "'" + parentDataRow[4] + "'," + parentDataRow[5] + "," + parentDataRow[6] + "," + parentDataRow[7] + "," + parentDataRow[8] + "," + parentDataRow[9] + "," + parentDataRow[10] + "," + parentDataRow[11] + "," + parentDataRow[12] + "," + "'" + parentDataRow[13] + "'," + "'" + parentDataRow[14] + "'," + "'" + parentDataRow[15] + "'," + "'" + parentDataRow[16] + "'," + parentDataRow[17] + "," + parentDataRow[18] + "," + parentDataRow[19] + "," + "'" + parentDataRow[20] + "'," + "'" + parentDataRow[21] + "'," + parentDataRow[22];
 
@@ -319,6 +318,12 @@ public class DatabaseAccessor {
         service.sqlUpdateQuery( "update meta set date_modified = '" + dateformat.format( date ) + "' where meta_id = " + meta_id );
     }
 
+
+    static String[] sprocTextDocData( IMCService service, DocumentDomainObject inout_document ) {
+        String[] textdoc_data1 = service.sqlProcedure( SPROC_TEXT_DOC_DATA, new String[]{String.valueOf( inout_document.getMetaId() )} );
+        return textdoc_data1;
+    }
+
     // todo make sure all following sproc and sql mehtods has "package" visability and that the callers use the "API" instead.
     public static String[] sprocSectionGetInheritId( IMCServiceInterface service, int meta_id ) {
         String[] section_data = service.sqlProcedure( SPROC_SECTION_GET_INHERIT_ID, new String[]{String.valueOf( meta_id )} );
@@ -412,8 +417,6 @@ public class DatabaseAccessor {
         String modifiedDateTimeStr = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( dateTime );
         String sqlStr = "update meta set date_modified ='" + modifiedDateTimeStr + "' where meta_id = " + meta_id;
         service.sqlUpdateQuery( sqlStr );
-        // Update the date_modified for all parents.
-        sprocUpdateParentsDateModified( service, meta_id );
     }
 
     public static void sqlSaveTextDoc( IMCServiceInterface service, int meta_id, Table doc ) {
@@ -442,7 +445,7 @@ public class DatabaseAccessor {
         return templates;
     }
 
-    public static Vector sqlSelectGrouuName( DBConnect dbc, String group_id ) {
+    public static Vector sqlSelectGroupName( DBConnect dbc, String group_id ) {
         String sqlStr = "select group_name from templategroups where group_id = " + group_id;
         dbc.setSQLString( sqlStr );
         Vector groupnamevec = dbc.executeQuery();

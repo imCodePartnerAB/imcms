@@ -5,6 +5,7 @@ import java.util.* ;
 
 import imcode.server.parser.ParserParameters ;
 import imcode.server.user.UserDomainObject;
+import imcode.server.document.DocumentMapper;
 
 import imcode.readrunner.* ;
 
@@ -384,4 +385,6 @@ public interface IMCServiceInterface {
     public imcode.util.shop.ShoppingOrderSystem getShoppingOrderSystem() ;
 
     void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime );
+
+    DocumentMapper getDocumentMapper();
 }
