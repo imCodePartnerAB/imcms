@@ -291,12 +291,12 @@ final public class IMCService implements IMCServiceInterface {
      * Returns the menubuttonrow
      */
     public String getAdminButtons( UserDomainObject user, DocumentDomainObject document ) {
-        int user_permission_set_id = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, document );
+        int user_permission_set_id = documentMapper.getDocumentPermissionSetIdForUser( document, user );
         if ( user_permission_set_id >= DocumentPermissionSetDomainObject.TYPE_ID__READ && !user.isUserAdmin() ) {
             return "";
         }
 
-        DocumentPermissionSetDomainObject documentPermissionSet = documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, document );
+        DocumentPermissionSetDomainObject documentPermissionSet = documentMapper.getDocumentPermissionSetForUser( document, user );
         String documentTypeName = sqlQueryStr( "select type from doc_types where doc_type = ?", new String[]{
             "" + document.getDocumentTypeId()
         } );

@@ -210,7 +210,7 @@ public class GetExistingDoc extends HttpServlet {
     private Set getUsersAllowedDocumentTypeIdsOnDocument( UserDomainObject user,
                                                           TextDocumentDomainObject parentDocument ) {
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
-        int[] allowedDocumentTypeIdsArray = ( (TextDocumentPermissionSetDomainObject)documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, parentDocument ) ).getAllowedDocumentTypeIds();
+        int[] allowedDocumentTypeIdsArray = ( (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( parentDocument, user ) ).getAllowedDocumentTypeIds();
         Set allowedDocumentTypeIds = new HashSet( Arrays.asList( ArrayUtils.toObject( allowedDocumentTypeIdsArray ) ) );
         return allowedDocumentTypeIds;
     }

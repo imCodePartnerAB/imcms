@@ -64,7 +64,7 @@ public class DocumentMapper {
 
     private boolean userCanCreateDocumentOfTypeIdFromParent( UserDomainObject user, int documentTypeId,
                                                              DocumentDomainObject parent ) {
-        TextDocumentPermissionSetDomainObject documentPermissionSet = (TextDocumentPermissionSetDomainObject)getUsersMostPrivilegedPermissionSetOnDocument( user, parent );
+        TextDocumentPermissionSetDomainObject documentPermissionSet = (TextDocumentPermissionSetDomainObject)getDocumentPermissionSetForUser( parent, user );
         return ArrayUtils.contains( documentPermissionSet.getAllowedDocumentTypeIds(), documentTypeId );
     }
 
@@ -73,9 +73,9 @@ public class DocumentMapper {
                || userHasAtLeastPermissionSetIdOnDocument( user, DocumentPermissionSetDomainObject.TYPE_ID__FULL, parent );
     }
 
-    public DocumentPermissionSetDomainObject getUsersMostPrivilegedPermissionSetOnDocument( UserDomainObject user,
-                                                                                            DocumentDomainObject document ) {
-        int permissionSetId = getUsersMostPrivilegedPermissionSetIdOnDocument( user, document );
+    public DocumentPermissionSetDomainObject getDocumentPermissionSetForUser( DocumentDomainObject document,
+                                                                              UserDomainObject user ) {
+        int permissionSetId = getDocumentPermissionSetIdForUser( document, user );
         switch ( permissionSetId ) {
             case DocumentPermissionSetDomainObject.TYPE_ID__FULL:
                 return DocumentPermissionSetDomainObject.FULL;
@@ -90,7 +90,7 @@ public class DocumentMapper {
         }
     }
 
-    public int getUsersMostPrivilegedPermissionSetIdOnDocument( UserDomainObject user, DocumentDomainObject document ) {
+    public int getDocumentPermissionSetIdForUser( DocumentDomainObject document, UserDomainObject user ) {
         if ( user.isSuperAdmin() ) {
             return DocumentPermissionSetDomainObject.TYPE_ID__FULL;
         }
@@ -124,7 +124,7 @@ public class DocumentMapper {
                 newTextDocument.removeAllImages();
                 newTextDocument.removeAllIncludes();
                 newTextDocument.removeAllMenus();
-                int permissionSetId = getUsersMostPrivilegedPermissionSetIdOnDocument( user, parent );
+                int permissionSetId = getDocumentPermissionSetIdForUser( parent, user );
                 TemplateMapper templateMapper = service.getTemplateMapper();
                 TemplateDomainObject template = null;
                 if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == permissionSetId ) {
@@ -986,7 +986,7 @@ public class DocumentMapper {
     private boolean userHasAtLeastPermissionSetIdOnDocument( UserDomainObject user,
                                                              int leastPrivilegedPermissionSetIdWanted,
                                                              DocumentDomainObject document ) {
-        return getUsersMostPrivilegedPermissionSetIdOnDocument( user, document )
+        return getDocumentPermissionSetIdForUser( document, user )
                <= leastPrivilegedPermissionSetIdWanted;
     }
 

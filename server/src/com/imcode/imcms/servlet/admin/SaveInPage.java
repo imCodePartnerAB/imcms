@@ -39,7 +39,7 @@ public class SaveInPage extends HttpServlet {
 
         TemplateGroupDomainObject requestedTemplateGroup = getRequestedTemplateGroup( req, templateMapper );
 
-        TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, textDocument );
+        TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( textDocument, user );
         TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups();
 
         boolean requestedTemplateGroupIsAllowed = null == requestedTemplateGroup;

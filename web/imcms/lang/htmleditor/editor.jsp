@@ -7,15 +7,13 @@
           com.imcode.imcms.api.TextDocument,
           java.io.File,
           java.io.FilenameFilter,
-          java.util.*,
-          imcode.util.net.SMTP"
+          java.util.*"
   contentType="text/html; charset=windows-1252"
 
 %><%
 
 ContentManagementSystem imcmsSystem = (ContentManagementSystem) request.getAttribute(RequestConstants.SYSTEM) ;
 DocumentService documentService     = imcmsSystem.getDocumentService() ;
-//IMCServiceInterface imcref          = ApplicationServer.getIMCServiceInterface() ;
 
 String action  = (request.getParameter("action") != null) ? request.getParameter("action") : "" ;
 String meta_id = (request.getParameter("meta_id") != null) ? request.getParameter("meta_id") : "" ;
@@ -55,18 +53,6 @@ if (action.equals("ExecSave")) {
 }
 %><html>
 <head>
-<SCRIPT LANGUAGE="JavaScript">
-<!--
-/* ***************************************
- *                                       *
- *   By: Tommy Ullberg, imCode           *
- *   Copyright © imCode AB               *
- *   Code-copying will be reported       *
- *   http://www.imcode.com/              *
- *                                       *
- ************************************** */
-//-->
-</SCRIPT>
 <title>&nbsp; <? install/htdocs/sv/htmleditor/editor/editor.jsp/1001 ?> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</title>
 
 <META HTTP-EQUIV="pragma" CONTENT="no-cache">
@@ -141,8 +127,7 @@ if (showHelpSubjectBtn) {
 </table>
 
 
-<div id="javascriptDisabled" style="display:; text-align:center; font-size:16pt"><!-- 
-Tyv&auml;rr fungerar inte editorn d&aring; JavaScript &auml;r avst&auml;ngd i er browser. --></div>
+<div id="javascriptDisabled" style="display:; text-align:center; font-size:16pt"></div>
 
 
 <!-- ***** TOP NAVIGATION ***** -->

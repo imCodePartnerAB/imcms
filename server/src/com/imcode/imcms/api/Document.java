@@ -91,6 +91,10 @@ public class Document {
         return result;
     }
 
+    public DocumentPermissionSet getDocumentPermissionSetForUser() {
+        return new DocumentPermissionSet( documentMapper.getDocumentPermissionSetForUser( internalDocument, securityChecker.getCurrentLoggedInUser() )) ;
+    }
+
     public boolean equals( Object o ) {
         if ( this == o ) {
             return true;

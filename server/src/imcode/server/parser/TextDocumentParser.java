@@ -69,7 +69,7 @@ public class TextDocumentParser {
             UserDomainObject user = documentRequest.getUser();
             DocumentMapper documentMapper = service.getDocumentMapper();
 
-            TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, document );
+            TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( document, user );
 
             boolean textmode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 && permissionSet.getEditTexts();
             boolean imagemode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0 && permissionSet.getEditImages();
@@ -211,7 +211,7 @@ public class TextDocumentParser {
                 selectedTemplateGroup = templateMapper.getTemplateGroupById( document.getTemplateGroupId() );
             }
 
-            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)service.getDocumentMapper().getUsersMostPrivilegedPermissionSetOnDocument( user, document );
+            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)service.getDocumentMapper().getDocumentPermissionSetForUser( document, user );
 
             TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups();
             String templateGroupsHtmlOptionList = templateMapper.createHtmlOptionListOfTemplateGroups( allowedTemplateGroups, selectedTemplateGroup );
