@@ -2,260 +2,261 @@ package imcode.external.chat;
 
 import java.util.*;
 import imcode.external.diverse.*;
-
 /**
 *A Chat can contain zero or many ChatGroups.
 *A Chat can contain zero or many ChatMembers.
 *
 *From the Chat you can create ChatGroups and ChatMembers
 */
-public class Chat
-{
+public class Chat{
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
-	private int _chatId;
-	private String _name;
+	
+	private int _chatId;	
+	private String _name = "";
 	private Hashtable _chatMembers;
-	private Hashtable _chatMsgTypes;
+	private Vector _chatMsgTypes;
 	private Hashtable _chatGroups;
 	private static Counter _memberCounter;
-//	private Counter _roomCounter;
+	private static Counter _roomCounter;
+	private static Counter _msgTypeCounter;
+
 	private int _permission; 
 	private	int _updateTime = 30;
-	private	int _reload = 2;
-	private int _inOut = 2;
-	private	int _privat = 2;
-	private	int _publik = 2;
-	private	int _dateTime = 2;
-	private	int _font = 2;
-	private String[] _authorization;
+	private	int _reload = 3;
+	private int _inOut = 3;
+	private	int _privat = 3;
+	private	int _publik = 3;
+	private	int _dateTime = 3;
+	private	int _font = 3;
 	
-	static
-	{
+	private Vector _authorization;
+	private Vector _authorizationSelected;
+	private Vector _params;
+
+	static{
 		_memberCounter = new Counter();	
 	}
-
-	//ok the constructor for the Chat
-	public Chat(int metaId, Vector msgTypes, Properties params, String[] authorization) //peter says ok
-	{
-		//the counters
-			
+	
+	public Chat() {
+	}
+	
+	public Chat(int metaId,Vector authorization,Vector msgTypes) {
+		_chatId = metaId;
 		
-		//storing plazes
+		_authorization = authorization;
+		 _chatMsgTypes = msgTypes;
+				
 		_chatMembers = new Hashtable();
 		_chatGroups = new Hashtable();
-		_chatMsgTypes = new Hashtable();
-		_authorization = authorization;
-		//name and stuff
-		 _chatId=metaId;
-		 
-		for(int i=0;i<msgTypes.size();i+=2)
-		{
-			_chatMsgTypes.put(msgTypes.get(i),msgTypes.get(i+1));
+		_authorizationSelected = new Vector();
+		
+		_roomCounter = new Counter();
+		_msgTypeCounter = new Counter();
+		_msgTypeCounter.setStartValue(200);
+	}
+	
+	public void setSelectedAuto(String[] arr) {
+		_authorizationSelected.clear();
+		if (arr != null) {
+			for(int i=0;i<arr.length;i++) {
+				_authorizationSelected.add(arr[i]);
+			}
 		}
-		
-		_name =  params.getProperty("chatName","");
-		_permission = Integer.parseInt(params.getProperty("permission","3"));
-		_updateTime = Integer.parseInt( params.getProperty("updateTime" , "30" ) );
-		_reload = Integer.parseInt( params.getProperty("reload" , "2" ) );
-	    _inOut = Integer.parseInt( params.getProperty("inOut" , "2" ) );
-		_privat = Integer.parseInt( params.getProperty("privat" , "2" ) );
-		_publik = Integer.parseInt( params.getProperty("publik" , "2" ) );
-		_dateTime = Integer.parseInt( params.getProperty("dateTime" , "2" ) );
-		_font = Integer.parseInt( params.getProperty("font" , "2" ) );
-			
 	}
-	public synchronized void setParams(Properties params)
-	{
-		_name =  params.getProperty("chatName","");
-		_permission = Integer.parseInt(params.getProperty("permission","3"));
-		_updateTime = Integer.parseInt( params.getProperty("updateTime" , "30" ) );
-		_reload = Integer.parseInt( params.getProperty("reload" , "2" ) );
-	    _inOut = Integer.parseInt( params.getProperty("inOut" , "2" ) );
-		_privat = Integer.parseInt( params.getProperty("privat" , "2" ) );
-		_publik = Integer.parseInt( params.getProperty("publik" , "2" ) );
-		_dateTime = Integer.parseInt( params.getProperty("dateTime" , "2" ) );
-		_font = Integer.parseInt( params.getProperty("font" , "2" ) );
-		
+	public Vector getSelectedAuto() {
+		return (Vector)	_authorizationSelected.clone();
 	}
 	
-	public synchronized void setAuthorizations(String[] authorization)
-	{
+	public boolean settingsPage() {
+		if (_reload 	== 3 ||
+			_inOut	== 3 ||
+			_privat	== 3 ||
+			_publik	== 3 ||
+			_dateTime==3 ||
+			_font	== 3) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	public int getupdateTime() {
+		return _updateTime;
+	}
+	public void setupdateTime(int time) {
+		_updateTime = time;
+	}
+	
+	public int getreload() {
+		return _reload;
+	}		
+	public void setreload(int reload) {
+		_reload = reload;
+	}
+	
+	public int getinOut() {
+		return _inOut;
+	}
+	public void setinOut(int inOut) {
+		_inOut = inOut;
+	}
+	
+	public int getprivate() {
+		return _privat;
+	}
+	public void setprivate(int privat) {
+		_privat = privat;
+	}
+	
+	public int getpublic() {
+		return _publik;
+	}
+	public void setpublic(int publik) {
+		_publik = publik;
+	}
+	
+	public int getdateTime() {
+		return _dateTime;
+	}
+	public void setdateTime(int dateTime) {
+		_dateTime = dateTime;
+	}
+	
+	public int getfont() {
+		return _font;
+	}
+	public void setfont(int font) {
+		_font = font;
+	}
+	
+	public void setAuthorizations(Vector authorization){
 		_authorization = authorization;
 	}
 	
-	public String[] getAuthorizations()
-	{
-		return _authorization;
+	public Vector getAuthorizations(){
+		return (Vector)_authorization.clone();
 	}
 	
-	public int getPermission() //peter says ok
-	{
+	public int getPermission(){
 		return _permission;
 	}
 
-	public String getChatName() //peter says ok
-	{
-		return _name;
+	public String getChatName(){
+		return _name == null?"":_name;
 	}
-	
-	public  int getChatId() //peter says ok
-	{
+
+	public  int getChatId() {
 		return _chatId;
 	}
-	/**
-	*Creates and "register" a new ChatMember in this chat
-	*the is initially not a member of any ChatGroup;
-	*@return The Created ChatMember
-	*/
-	public ChatMember createChatMember() //peter says ok
-	{
+	
+	public  String getChatIdStr() {
+		return new Integer(_chatId).toString();
+	}
+	
+	
+	public ChatMember createChatMember() {
 		_memberCounter.increment();
 		int memberNumber = _memberCounter.getValue();
-		ChatMember newMember = new ChatMember(memberNumber, getChatParameters(), this);
+		ChatMember newMember = new ChatMember(memberNumber, this);
 		_chatMembers.put(String.valueOf(memberNumber), newMember);
 		return newMember;
 	}
+	 
+	public boolean hasMemberName(String name) {
+		boolean found = false;
+		Enumeration enum = _chatMembers.elements();
+		while (enum.hasMoreElements() && !found) {
+			ChatMember temp = (ChatMember) enum.nextElement();
+			if( name.equals(temp.getName()) ){
+				found = true;
+			}			
+		}
+		return found;
+	}
 	
-	/**
-	*Removes a ChatMember from this chat
-	*@param memberNumber The membernumber of the ChatMember you want to remove
-	*If no ChatMember exists with the supplied memberNumber, no action is taken.
-	*/
-	public void removeChatMember(int memberNumber) //peter says ok
-	{
+	public void removeChatMember(int memberNumber) {
 		String memberNumberString = String.valueOf(memberNumber);
 		_chatMembers.remove(memberNumberString);
 	}
+
 	
-	/**
-	*Gets the ChatMember with the supplied memberNumber
-	*@param memberNumber
-	*@return The ChatMember with the supplied memberNumber or 
-	*null if no registerd ChatMember matches the given memberNumber
-	*/
-	public ChatMember getChatMember(int memberNumber) //peter says ok
-	{
-		String memberNumberString = String.valueOf(memberNumber);		
+	public ChatMember getChatMember(int memberNumber) {
+		String memberNumberString = String.valueOf(memberNumber);
 		return (ChatMember)_chatMembers.get(memberNumberString);
 	}
-
-	/**
-	*Creates and "register" a new ChatGroup in this chat
-	*the ChatGroup is initially not a member of any chatRoom;
-	*@return The Created ChatGroup
-	*/
-	public void createNewChatGroup(int groupNr, String groupName)
-	{
-		ChatGroup newGroup = new ChatGroup(groupNr,groupName);
-		_chatGroups.put( String.valueOf(groupNr),newGroup );
+	
+	public void createNewChatGroup(int idNr, String groupName){	
+		ChatGroup newGroup = new ChatGroup(idNr,groupName);
+		_chatGroups.put( String.valueOf(idNr),newGroup );
+		_roomCounter.setStartValue(idNr);
 	}
 
-	/**
-	*Removes a ChatGroup from this chat
-	*@param groupNumber The groupNumber of the ChatGroup you want to remove
-	*If no ChatGroup exists with the supplied groupNumber, no action is taken.
-	*/
-	public void removeChatGroup(int groupNumber)
-	{
+	public void createNewChatGroup(String groupName){
+		_roomCounter.increment();
+		ChatGroup newGroup = new ChatGroup(_roomCounter.getValue(),groupName);
+		_chatGroups.put( String.valueOf(_roomCounter.getValue()),newGroup );
+	}
+
+	public void removeChatGroup(int groupNumber){
 		String groupNumberString = String.valueOf(groupNumber);
 		_chatGroups.remove(groupNumberString);
 	}
 	
-	/**Gets all groups
-	*@return An Enumeration of all avalible groups
-	*/
-	public Enumeration getAllChatGroups()
-	{
+	
+	public Enumeration getAllChatGroups(){
 		return _chatGroups.elements();
 	}
 	
-	
-	/**
-	*Gets the 
-	*@param groupNumber
-	*@return The ChatGroup with the supplied groupNumber or 
-	*null if no registerd ChatGroup matches the given groupNumber
-	*/
-	public ChatGroup getChatGroup(int groupNumber)
-	{
-		String groupNumberString = String.valueOf(groupNumber);
-		return (ChatGroup) _chatGroups.get(groupNumberString);	
+	public Vector getAllChatGroupsIdAndNameV(){
+		Vector vect = new Vector();
+		Enumeration enum = getAllChatGroups();
+		while (enum.hasMoreElements()) {
+			ChatGroup group = (ChatGroup)enum.nextElement();			
+			vect.add(group.getGroupId()+"");
+			vect.add(group.getGroupName());
+		}
+		return vect;
 	}
+
 	
-	//toString
-	public String toString()
-	{
+	public ChatGroup getChatGroup(int groupNumber){
+		String groupNumberString = String.valueOf(groupNumber);
+		return (ChatGroup) _chatGroups.get(groupNumberString);
+	}
+
+	
+	public String toString(){
 		return "ChatId: " + _chatId + " ChatName: " + _name;
 	}
-	
-	public Properties getChatParameters()
-	{
-		Properties params = new Properties();		
-		
-		params.setProperty("updateTime" , Integer.toString(_updateTime) );
-		params.setProperty("reload" , Integer.toString(_reload) );
-		params.setProperty("inOut" , Integer.toString(_inOut) );
-		params.setProperty("privat" , Integer.toString(_privat) );
-		params.setProperty("publik" , Integer.toString(_publik) );
-		params.setProperty("dateTime" ,Integer.toString(_dateTime) );
-		params.setProperty("font" ,Integer.toString( _font) );
-		params.setProperty("chatName", _name);
-		
-		return params;
-	}
-	
-	public Vector getMsgTypes()
- 	{
-  		Vector temp = new Vector();
-  		Enumeration enum = _chatMsgTypes.keys();
-  		while (enum.hasMoreElements())
-  		{
-   			
-			String key = (String) enum.nextElement();
 
-   			temp.addElement(key);
-   			temp.addElement( _chatMsgTypes.get(key) );
-  		}
-  		return temp;
+		
+	public Vector getMsgTypes(){
+  		return _chatMsgTypes;
  	}
-	public void setMsgTypes(Vector v)
-	{
-		//get rid of the ones not in use
-		Enumeration enum = _chatMsgTypes.keys();
-		while (enum.hasMoreElements())
-		{
-			String key = (String)enum.nextElement();
-			boolean found=false;
-			for(int i=0;i<v.size();i+=2)
-			{
-				if(key.equals((String)v.get(i)))
-				{
-					found = true;
-				}
-			}
-			if (!found)
-			{
-				_chatMsgTypes.remove(key);
-			}
-		}
-		//add the new ones
-		for(int i=0;i<v.size();i+=2)
-		{
-			_chatMsgTypes.put(v.get(i),v.get(i+1));
-		}
-		
+	
+	
+	public void setMsgTypes(Vector v){
+		_chatMsgTypes = v;
 	}
-	public void removeMsgType(int msgTypeId)
-	{
-		_chatMsgTypes.remove(Integer.toString(msgTypeId));
+
+	public void removeMsgType(int msgTypeId){
+		int nr = _chatMsgTypes.indexOf(Integer.toString(msgTypeId));
+		_chatMsgTypes.remove(nr);
+		_chatMsgTypes.remove(nr);
+	}
+
+	public void addMsgType(int msgTypeId, String newType){		
+		_chatMsgTypes.add(Integer.toString(msgTypeId));
+		_chatMsgTypes.add(newType);
 	}
 	
-	public void addMsgType(int msgTypeId, String newType)
-	{
-		_chatMsgTypes.put(Integer.toString(msgTypeId),newType);
-		//	_chatMsgTypes.put(msgTypes.get(i),msgTypes.get(i+1));
+	public void addMsgType(String newType){
+		_msgTypeCounter.increment();
+		_chatMsgTypes.add(Integer.toString(_msgTypeCounter.getValue()));
+		_chatMsgTypes.add(newType);
 	}
-
-
-}
+	
+	public void addRoom(String room) {
+		
+	}
+}//end class
