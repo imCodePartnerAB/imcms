@@ -1158,7 +1158,7 @@ public class DocumentMapper {
 
             SoftReference[] documentSoftReferenceArray = (SoftReference[])map.get( key );
             DocumentDomainObject document = null;
-            if ( null != documentSoftReferenceArray ) {
+            if ( null != documentSoftReferenceArray && null != documentSoftReferenceArray[0] ) {
                 document = (DocumentDomainObject)documentSoftReferenceArray[0].get();
             }
             if ( null == document ) {
