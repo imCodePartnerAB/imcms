@@ -138,18 +138,22 @@ public class SaveDocument extends HttpServlet {
         String timeStr = req.getParameter( timeParameterName );
 
         Date date = null;
-        try {
-            date = dateformat.parse( dateStr );
-        } catch ( Exception e ) {
-            return null ;
+        if(dateStr != null){
+            try {
+                date = dateformat.parse( dateStr );
+            } catch ( ParseException pe ) {
+                return null ;
+            }
         }
 
         Date time = null;
         try {
             timeformat.setTimeZone( TimeZone.getTimeZone( "GMT" ));
             time = timeformat.parse( timeStr );
-        } catch ( Exception e ) {
+        } catch ( ParseException pe ) {
             return date ;
+        }catch (NullPointerException npe) {
+            return date;
         }
 
         Calendar calendar = Calendar.getInstance() ;
