@@ -15,466 +15,216 @@ import imcode.util.* ;
 
 public class QuestionResult extends HttpServlet 
 {
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException 
-    {
-	
-			
-	//get answer
-	String answer = req.getParameter("answer");
-		
-		
-	//get question
-	String question = req.getParameter("question");
-		
-		
-	
-		
-	
-	//gå igenom strängen tecken för tecken och byt ut allt utom '_', siffror och bokstäver till '_'.
-	for(int i = 0;i<question.length(); i++)
-	    {
-		char c = question.charAt(i);
-		if (!Character.isJavaIdentifierPart(c))
-		    {
-			question=question.replace(c,'_');
-		    }
-	    }
-		
-		
-	//hämta aktuellt värde
-		
-	int yes = 0;
-	int no = 0;
-		
-	//get current library
-	//	char searched = '\\';
-	//	int index = inFile.lastIndexOf((int)searched);
-
-	//  String fileLib = inFile.substring(0,index+1);
-				
-	//	String fileLib = this.getServletPath(req);
-		
-		
-	File file = new File(question.trim() + ".txt");
-	if (file.exists())
-	    {
-		BufferedReader fileR = new BufferedReader(new FileReader(file));
-			
-		fileR.skip(3);
-		String y = fileR.readLine();
-		yes = Integer.parseInt(y.trim());
-			
-		fileR.skip(4);
-		String n = fileR.readLine();
-		no = Integer.parseInt(n.trim());
-		
-		fileR.close();
-	    }
-		
-		
-		
-	//spara svaret till fil
-	BufferedWriter fileW = new BufferedWriter( new FileWriter(file) );
-		
-	if (Integer.parseInt(answer)==1) {yes++;} else {no++;}
-		
-	fileW.write("ja: " + yes,0,(Integer.toString(yes)).length()+4);
-	fileW.newLine();
-	fileW.write("nej: " + no,0,Integer.toString(no).length()+5);
-	fileW.newLine();
-	fileW.flush();
-	fileW.close();
-		
-	int total = yes+no;
-		
-	//get the %
-	double yesDiv = (yes==0) ? 0 : ((double)yes/(double)total);
-	double noDiv = (no==0) ? 0 : ((double)no/(double)total);
-		
-	NumberFormat pf = NumberFormat.getPercentInstance();
-	pf.setMaximumFractionDigits(2);
-		
-	String yesProcent = pf.format(yesDiv);
-	String noProcent = pf.format(noDiv);
-		
-	//rita svarssidan
-	PrintWriter out = res.getWriter();
-		
-	out.println("<html>");
-	out.println("<head>");
-	out.println("<title>testMaBraSvar</title>");
-	out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">");
-	out.println("</head>");
-	out.println("<body bgcolor=\"#FFFFFF\" text=\"#000000\">");
-
-	out.println("<table width=\"200\" border=\"0\" height=\"20\" bordercolor=\"#CCCCCC\">");
-	out.println("<tr> ");
-	out.println("<td bgcolor=\"#FF0000\" height=\"20\" width=\"" + yesProcent + "\"> </td>");
-	out.println("<td bgcolor=\"#0000FF\" height=\"20\" width=\"" + noProcent + "\"> </td>");
-	out.println("</tr>");
-	out.println("</table>");
-
-	out.println("<P> Andel jasvar: " + yesProcent + " Andel nejsvar: " + noProcent + "</P>");
-	
-	out.println("</body>");
-	out.println("</html>");
-		
-	/*	
-	  VariableManager vm = new VariableManager() ;
-	  Html htm = new  Html();
-	  vm.addProperty("yesProcent", yesProcent) ;
-	  vm.addProperty("noProcent", noProcent);
-	  //	vm.addProperty("yes", Integer.toString(yes )) ;
-	  //	vm.addProperty("no",Integer.toString(no));
-		
-	  //	vm.addProperty("SERVLET_URL",this.getServletPath(req));
-	  sendHtml(req,res,vm,"resultatVeckansFraga.htm"); */
-		
-		
-	return ;
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	/*	String inFile = "";
-
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
 	{
+	
+		//get answer
+		String answer = req.getParameter("answer");
 		
-	String host = req.getHeader("Host") ;
-	String imcServer = Utility.getDomainPref("userserver",host) ;
-		
-	//get todays date
-	Date theDate = new Date();
-	log("B:theDate: " + theDate);
-		
-	GregorianCalendar cal = new GregorianCalendar();
-		
-	int year = cal.get(Calendar.YEAR) - 2000;
-	int month = cal.get(Calendar.MONTH);
-	int day = cal.get(Calendar.DAY_OF_MONTH);
-		
-	int date = year*10000+(month+1)*100+day;
-	log("dateD: " + date );
-		
-	//get parameters
-	String type = req.getParameter("type");
-	inFile = req.getParameter("file");
-		
-	//gets the filecontent 
-	String resFile = IMCServiceRMI.getInclude(imcServer,inFile);
-		
-	//collect the correct questions/citat/pictures
-	String[] txt = new String[20];
-	int nr = 0;	
-		
-	PrintWriter out = res.getWriter();
-	//	out.print(resFile);
-		
-	//the dates
-	int bIndex = 0;
-	int eIndex = 0;
-		
-	while ( resFile.indexOf((int)';',bIndex) != -1)
-	{
-	eIndex = resFile.indexOf((int)';',bIndex);
-		
-	int date1 = Integer.parseInt(resFile.substring(bIndex,eIndex));
-	bIndex = eIndex + 1;
-				
-	eIndex = resFile.indexOf((int)';',bIndex);
-	int date2 = Integer.parseInt(resFile.substring(bIndex,eIndex));
-						
-	bIndex = eIndex + 1;
-		
-	eIndex = resFile.indexOf((int)';',bIndex);
-					
-	if ( date1 <= date && date2 >= date)
-	{
-	txt[nr] = resFile.substring(bIndex,eIndex);
-	//	out.println(" txt[nr] :" + txt[nr] +" nr :" + nr);
-	nr++;
-	}
-			
-		
-	bIndex = eIndex + 3;
-		
-	}	
+		//get question
+		String question = req.getParameter("question");
 
-	/*	BufferedReader file = new BufferedReader(new FileReader(inFile));
-		
-	
-				
-	char[] date1 = new char[5];
-	char[] date2 = new char[5];
-		
-	file.read();
-		
-		
-	while ( file.read(date1,0,5) != -1 )	
-	{
-	file.read();
-	file.read();
-			
-	file.read(date2,0,5);
-			
-	int date1i = Integer.parseInt( new String(date1));
-	int date2i = Integer.parseInt( new String(date2));
-				
-	log("date1i: " + date1i);
-	log("date2i: " + date2i );
-				
-	if ( date >= date1i && date <= date2i )
-	{
-	file.read(); 
-	txt[nr] = file.readLine();
-	nr++;
-	}
-	else
-	{
-	file.readLine();
-	}
-			
-	file.read();
-	}
-		
-		
-	*/
-	
-		
-	//get one randomised item
-	/*	int selected = 0;
-		if (nr>1)
+		//gå igenom strängen tecken för tecken och byt ut allt utom '_', siffror och bokstäver till '_'.
+		for(int i = 0;i<question.length(); i++)
 		{
-		Random random = new Random();
-		selected = random.nextInt(nr);
+			char c = question.charAt(i);
+			if (!Character.isJavaIdentifierPart(c))
+			{
+				question=question.replace(c,'_');
+			}
 		}
 		
+		//hämta aktuellt värde
+		int yes = 0;
+		int no = 0;
 		
-		//return the selected item
+	/*	File file;
+		int filenr = 0;
 		
-		/*	out.println("<html>");
+		do 
+		{
+			file = new File(Integer.toString(filenr) + ".txt");
+			filenr++;
+		}
+		while(file.exists());*/
+		
+		File file = new File(question.trim() + ".txt");
+		if (file.exists())
+		{
+			BufferedReader fileR = new BufferedReader(new FileReader(file));
+			
+			fileR.skip(3);
+			String y = fileR.readLine();
+			yes = Integer.parseInt(y.trim());
+			
+			fileR.skip(4);
+			String n = fileR.readLine();
+			no = Integer.parseInt(n.trim());
+		
+			fileR.close();
+		}
+		
+		//spara svaret till fil
+		BufferedWriter fileW = new BufferedWriter( new FileWriter(file) );
+		
+		if (Integer.parseInt(answer)==1) {yes++;} else {no++;}
+		
+		fileW.write("ja: " + yes,0,(Integer.toString(yes)).length()+4);
+		fileW.newLine();
+		fileW.write("nej: " + no,0,Integer.toString(no).length()+5);
+		fileW.newLine();
+		fileW.flush();
+		fileW.close();
+		
+		int total = yes+no;
+		
+		//get the %
+		double yesDiv = (yes==0) ? 0 : ((double)yes/(double)total);
+		double noDiv = (no==0) ? 0 : ((double)no/(double)total);
+		
+		NumberFormat pf = NumberFormat.getPercentInstance();
+		pf.setMaximumFractionDigits(0);
+		
+		String yesProcent = pf.format(yesDiv);
+		String noProcent = pf.format(noDiv);
+		
+		//rita svarssidan
+		res.setContentType("text/html");
+		PrintWriter out = res.getWriter();
+		
+		out.println("<html>");
 		out.println("<head>");
-		out.println("<title>testMaBra</title>");
+		out.println("<title>testMaBraSvar</title>");
 		out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">");
+		out.println("<link rel=\"stylesheet\" href=\"../css/mabra.css\" type=\"text/css\">");
 		out.println("</head>");
 		out.println("<body bgcolor=\"#FFFFFF\" text=\"#000000\">");
-		out.println("<P>M:test av " + type + " File: " + inFile + "</P>");
+
+	/*	out.println("<table width=\"200\" border=\"0\" height=\"20\" bordercolor=\"#CCCCCC\">");
+  		out.println("<tr> ");
+		out.println("<td bgcolor=\"#FF0000\" height=\"20\" width=\"" + yesProcent + "\"> </td>");
+		out.println("<td bgcolor=\"#0000FF\" height=\"20\" width=\"" + noProcent + "\"> </td>");
+		out.println("</tr>");
+		out.println("</table>");
+
+		out.println("<P> Andel jasvar: " + yesProcent + " Andel nejsvar: " + noProcent + "</P>");
+		
 	*/	
-	/*		if( type.equals("pic"))
-			{
-			out.println("<img src=" + txt[selected] + ">");
-			//FIX storlek på bilden?+ " width=\"300\" height=\"400\">");
-			}
-			else if(type.equals("quot"))
-			{
-			out.println( txt[selected] );
-			out.println("<input type=\"hidden\" name=\"quot\" value=\"" + txt[selected] + "\">");
-			
-			
-			}
-			else
-			{
-			out.println( txt[selected] );
-			}
 		
-			if (type.equals("ques"))
-			{
-			String path = this.getServletPath(req);
-			out.println(path);
-			out.println("<form name=\"answer\" method=\"post\" action=\"" + path + "QEngine\">");
-			out.println("<input type=\"hidden\" name=\"question\" value=\"" + txt[selected] + "\">");
-			out.println("<table width=\"50%\" height=\"100\">");
-			out.println("<tr>");
-			out.println("<td height=\"30\" width=\"25%\"><input type=\"radio\" name=\"answer\" value=\"yes\" ></td>");
-			out.println("<td height=\"30\" width=\"23%\" valign=\"middle\">ja</td>");
-			out.println("<td height=\"30\" width=\"23%\"><input type=\"radio\" name=\"answer\" value=\"no\" ></td>");
-			out.println("<td height=\"30\" width=\"29%\" valign=\"middle\">nej </td>");
-			out.println("</tr>");
-			out.println("</table>");
-			out.println("<div align=\"center\"><input type=\"submit\" name=\"ok\" value=\"ok\"></div>");
-			out.println("</form>");
-			}
+		out.println("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"200\">");
+out.println(" <tr align=\"left\" valign=\"top\" bgcolor=\"#999966\"> ");
+	out.println("<td colspan=\"3\"><img src=\"../resource/rub_veckan.gif\" width=\"200\" height=\"77\" alt=\"Veckans fr&aring;ga\"></td>");
+  out.println("</tr>");
+  out.println("<tr align=\"left\" valign=\"top\" bgcolor=\"#999966\"> ");
+   out.println(" <td><img src=\"../resource/transpix.gif\" width=\"6\" height=\"6\"></td>");
+   out.println(" <td><span class=\"vitbrodtext\">" +  question  +"</span><br>");
+    out.println("  <img src=\"../resource/transpix.gif\" width=\"5\" height=\"10\"> ");
+   out.println("   <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
+    out.println("    <tr align=\"left\" valign=\"top\"> ");
+    out.println("      <td class=\"vitrubbe\">JA&nbsp; "+ yesProcent +"</td>");
+    out.println("    </tr>");
+    out.println("    <tr align=\"left\" valign=\"top\">"); 
+     out.println("     <td><img src=\"../resource/transpix.gif\" width=\"1\" height=\"5\"></td>");
+     out.println("   </tr>");
+     out.println("   <tr align=\"left\" valign=\"top\"> ");
+     out.println("     <td class=\"vitrubbe\">NEJ "+ noProcent  +"</td>");
+     out.println("   </tr>");
+     out.println("   <tr align=\"left\" valign=\"top\"> ");
+     out.println("     <td><img src=\"../resource/transpix.gif\" width=\"1\" height=\"5\"></td>");
+     out.println("   </tr>");
+     out.println("   <tr align=\"left\" valign=\"top\"> ");
+     out.println("     <td class=\"vitbrodtext\">Antal svarande: " + Integer.toString(total)  +"</td>");
+      out.println("  </tr>");
+      out.println("</table><br>");
+     out.println(" <img src=\"../resource/transpix.gif\" width=\"5\" height=\"10\"><br>");
+     out.println(" <a href=\"#\" onclick=\"parent.close();\"><img src=\"../resource/kn_stang.gif\" width=\"49\" height=\"15\" border=\"0\" alt=\"St&auml;ng\"></a> ");
+   out.println(" </td>");
+    out.println("<td><img src=\"../resource/transpix.gif\" width=\"6\" height=\"6\"></td>");
+ out.println(" </tr>");
+ out.println(" <tr align=\"left\" valign=\"top\" bgcolor=\"#999966\"> ");
+   out.println(" <td><img src=\"../resource/transpix.gif\" width=\"6\" height=\"6\"></td>");
+   out.println(" <td><img src=\"../resource/transpix.gif\" width=\"123\" height=\"6\"></td>");
+  out.println("  <td><img src=\"../resource/transpix.gif\" width=\"6\" height=\"6\"></td>");
+  out.println("</tr>");
+out.println("</table>");
 		
-			/*	out.println("</body>");
-			out.println("</html>");
-	*/	
-
+		
 	
-	
-	//	return ;
-
-    } // End doGet
-
-	
-
-    public void doPost(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException 
-    {
-	log("PostM");
-			
-	//get answer
-	String answer = req.getParameter("answer");
-	log("Answer: " + answer);
-		
-	//get question
-	String question = req.getParameter("question");
-	log("question: " + question );
-		
-	//gå igenom strängen tecken för tecken och byt ut allt utom '_', siffror och bokstäver till '_'.
-	for(int i = 0;i<question.length(); i++)
-	    {
-		char c = question.charAt(i);
-		if (!Character.isJavaIdentifierPart(c))
-		    {
-			question=question.replace(c,'_');
-		    }
-	    }
-		
-		
-	//hämta aktuellt värde
-		
-	int yes = 0;
-	int no = 0;
-		
-	//get current library
-	//	char searched = '\\';
-	//	int index = inFile.lastIndexOf((int)searched);
-
-	//  String fileLib = inFile.substring(0,index+1);
-				
-	String fileLib = this.getServletPath(req);
-		
-		
-	File file = new File(fileLib + question.trim() + ".txt");
-	if (file.exists())
-	    {
-		BufferedReader fileR = new BufferedReader(new FileReader(file));
-			
-		fileR.skip(3);
-		String y = fileR.readLine();
-		yes = Integer.parseInt(y.trim());
-			
-		fileR.skip(4);
-		String n = fileR.readLine();
-		no = Integer.parseInt(n.trim());
-		
-		fileR.close();
-	    }
-		
-		
-		
-	//spara svaret till fil
-	BufferedWriter fileW = new BufferedWriter( new FileWriter(file) );
-		
-	if (answer.equals("yes")) {yes++;} else {no++;}
-		
-	fileW.write("ja: " + yes,0,(Integer.toString(yes)).length()+4);
-	fileW.newLine();
-	fileW.write("nej: " + no,0,Integer.toString(no).length()+5);
-	fileW.newLine();
-	fileW.flush();
-	fileW.close();
-		
-	int total = yes+no;
-		
-	//get the %
-	double yesDiv = (yes==0) ? 0 : ((double)yes/(double)total);
-	double noDiv = (no==0) ? 0 : ((double)no/(double)total);
-		
-	NumberFormat pf = NumberFormat.getPercentInstance();
-	pf.setMaximumFractionDigits(2);
-		
-	String yesProcent = pf.format(yesDiv);
-	String noProcent = pf.format(noDiv);
-		
-	//rita svarssidan
-	PrintWriter out = res.getWriter();
-		
-	out.println("ja " + yesProcent );
-	out.println("nej " + noProcent);
-		
-		
-	out.println("<html>");
-	out.println("<head>");
-	out.println("<title>testMaBraSvar</title>");
-	out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">");
-	out.println("</head>");
-	out.println("<body bgcolor=\"#FFFFFF\" text=\"#000000\">");
-
-	out.println("<table width=\"400\" border=\"0\" height=\"20\" bordercolor=\"#CCCCCC\">");
-	out.println("<tr> ");
-	out.println("<td bgcolor=\"#FF0000\" height=\"20\" width=\"" + yesProcent + "\"> </td>");
-	out.println("<td bgcolor=\"#0000FF\" height=\"20\" width=\"" + noProcent + "\"> </td>");
-	out.println("</tr>");
-	out.println("</table>");
-
-	out.println("<P> Andel jasvar: " + yesProcent + " Andel nejsvar: " + noProcent + "</P>");
-	
-	out.println("</body>");
-	out.println("</html>");
+		out.println("</body>");
+		out.println("</html>");
 		
 	/*	
-	  VariableManager vm = new VariableManager() ;
-	  Html htm = new  Html();
-	  vm.addProperty("yesProcent", yesProcent) ;
-	  vm.addProperty("noProcent", noProcent);
-	  //	vm.addProperty("yes", Integer.toString(yes )) ;
-	  //	vm.addProperty("no",Integer.toString(no));
+		VariableManager vm = new VariableManager() ;
+		Html htm = new  Html();
+		vm.addProperty("yesProcent", yesProcent) ;
+		vm.addProperty("noProcent", noProcent);
+	//	vm.addProperty("yes", Integer.toString(yes )) ;
+	//	vm.addProperty("no",Integer.toString(no));
 		
-	  //	vm.addProperty("SERVLET_URL",this.getServletPath(req));
-	  sendHtml(req,res,vm,"resultatVeckansFraga.htm"); */
+	//	vm.addProperty("SERVLET_URL",this.getServletPath(req));
+		sendHtml(req,res,vm,"resultatVeckansFraga.htm"); */
 		
 		
-	return ;
-    }	
+		return ;
 
-    /**
-       Log function, will work for both servletexec and Apache
-    **/
 
-    public void log( String str) 
-    {
-	super.log(str) ;
-	System.out.println("VeckansFraga: " + str ) ;
-    }
+	} // End doGet
 
-    public void sendHtml (HttpServletRequest req, HttpServletResponse res,
-			  VariableManager vm, String htmlFile) throws ServletException, IOException
-    {
-
-	//FIXME: template dynamiskt?
-	File templateLib = new File("C:\\Inetpub\\wwwroot\\maBra\\") ;
-	    
-	log("templateLib: " + templateLib);
-	log("htmlFile: " + htmlFile);
-	    
-	HtmlGenerator htmlObj = new HtmlGenerator(templateLib, htmlFile) ;
-	String html = htmlObj.createHtmlString(vm,req) ;
-	    
-	htmlObj.sendToBrowser(req,res,html) ;
 	
-    }
-    
 
-    public static String getServletPath(HttpServletRequest req)
+	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
-    {
+	{
+		doGet(req,res);
+		return ;
+	}	
+
+	/**
+	Log function, will work for both servletexec and Apache
+	**/
+
+	public void log( String str) 
+	{
+		super.log(str) ;
+		System.out.println("VeckansFraga: " + str ) ;
+	}
+
+	public void sendHtml (HttpServletRequest req, HttpServletResponse res,
+		VariableManager vm, String htmlFile) throws ServletException, IOException
+	{
+
+//FIX template dynamiskt?
+		String templateLib = "C:\\Inetpub\\wwwroot\\maBra\\";
+		
+		log("templateLib: " + templateLib);
+		log("htmlFile: " + htmlFile);
+		
+		HtmlGenerator htmlObj = new HtmlGenerator(templateLib, htmlFile) ;
+		String html = htmlObj.createHtmlString(vm,req) ;
+		
+		htmlObj.sendToBrowser(req,res,html) ;
+	
+	}
+
+
+	public static String getServletPath(HttpServletRequest req)
+    throws ServletException, IOException 
+	{
         String protocol = req.getScheme();
         String serverName = req.getServerName();
         int p = req.getServerPort();
         String port = (p == 80) ? "" : ":" + p;
         String servletPath = req.getServletPath() ;
-	
-	
+
+
         int lastSlash = servletPath.lastIndexOf("/") ;
         if( lastSlash != -1 ) 
-	    {
-		servletPath =  servletPath.substring(0,lastSlash +1) ;
-		String url = protocol + "://" + serverName + port + servletPath ;
-		return url ;
-	    }
+		{
+            servletPath =  servletPath.substring(0,lastSlash +1) ;
+            String url = protocol + "://" + serverName + port + servletPath ;
+            return url ;
+        }
         return "" ;
     }
 

@@ -28,7 +28,7 @@ public class QEngine extends HttpServlet
 		
 		//get todays date
 		Date theDate = new Date();
-		
+			
 		GregorianCalendar cal = new GregorianCalendar();
 		
 		int year = cal.get(Calendar.YEAR) - 2000;
@@ -36,20 +36,22 @@ public class QEngine extends HttpServlet
 		int day = cal.get(Calendar.DAY_OF_MONTH);
 		
 		int date = year*10000+(month+1)*100+day;
-		
+			
 		//get parameters
 		String type = req.getParameter("type");
 		inFile = req.getParameter("file");
 		
 		//gets the filecontent 
-		String resFile = IMCServiceRMI.getInclude(imcServer,inFile);
+		String resFile = IMCServiceRMI.getFortune(imcServer,inFile);
 		
 		//collect the correct questions/citat/pictures
-		HashMap row_texts = new HashMap();
+		HashMap row_texts = new HashMap(50);
 		
 		int row = 0;	
 		
+		res.setContentType("text/html");
 		PrintWriter out = res.getWriter();
+		
 		
 		//the dates
 		int bIndex = 0;
@@ -78,20 +80,35 @@ public class QEngine extends HttpServlet
 			row++;
 		}	
 
+		int max_row = row;
+		
+
 		Collection texts = row_texts.values();
 		int nr = texts.size();
-
-		//get one randomised item
-		Set rows = row_texts.keySet();
-
-		do
-		{
-			Random random = new Random();
-			row = random.nextInt(row+1);
-		}
-		while(!rows.contains(new Integer(row)));
 		
-		String theText = (String)row_texts.get(new Integer(row));
+		//get the text and row to return
+		String theText;
+		int the_row; 
+		if (!(nr>0))
+		{
+			theText = "Ingen text kan visas" ;
+			the_row = -1;
+		}
+		else
+		{
+		
+			//get one randomised item
+			Set rows = row_texts.keySet();
+		
+			do
+			{
+				Random random = new Random();
+				the_row = random.nextInt(max_row);
+			}
+			while(!rows.contains(new Integer(the_row)));
+	
+			theText = (String)row_texts.get(new Integer(the_row));
+		}
 
 		if( type.equals("pic"))
 		{
@@ -102,14 +119,14 @@ public class QEngine extends HttpServlet
 			out.println( theText );
 			
 			//raden i filen
-			out.println("<input type=\"hidden\" name=\"quotrow\" value=\"" + row + "\">");
+			out.println("<input type=\"hidden\" name=\"quotrow\" value=\"" + the_row + "\">");
 			out.println("<input type=\"hidden\" name=\"quot\" value=\"" + theText + "\">");
 		}
 		else if(type.equals("ques"))
 		{
 			out.println( theText );
 			
-			out.println("<input type=\"hidden\" name=\"quesrow\" value=\"" + row + "\">");
+			out.println("<input type=\"hidden\" name=\"quesrow\" value=\"" + the_row + "\">");
 			out.println("<input type=\"hidden\" name=\"question\" value=\"" + theText + "\">");
 		}
 		else 
