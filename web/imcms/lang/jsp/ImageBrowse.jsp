@@ -108,7 +108,7 @@
 
 <script language="JavaScript">
 <!--
-if (isMoz) {
+if (hasGetElementById) {
 	if (document.getElementById("previewDiv")) {
 		if (!/\./.test(document.getElementById("previewDiv").innerHTML.toString())) {
 			document.getElementById("previewDiv").style.display = "none" ;

@@ -20,9 +20,9 @@ I    { font-style:italic; }
 
 <script language="JavaScript">
 <!--
-var isNS = (document.layers) ? true : false ;
+var hasDocumentLayers = (document.layers) ? true : false ;
 document.writeln("<STY"+"LE TYPE=\"text/css\">");
-if (isNS) {
+if (hasDocumentLayers) {
 	document.writeln(".head { font: bold 18px Tahoma,Arial,Verdana,sans-serif; color:#ffffff; }");
 	document.writeln("TD    { font: 12px Tahoma,Arial,sans-serif; color:#000000; }");
 } else {
@@ -33,7 +33,7 @@ document.writeln(".formBtn {");
 document.writeln("	background-color: #20568D;");
 document.writeln("	color: #ffffff;");
 document.writeln("	font: 11px Tahoma, Arial, sans-serif;");
-if (!isNS) {
+if (!hasDocumentLayers) {
 	document.writeln("	border: 2px outset #668DB6;");
 	document.writeln("	border-color: #668DB6 #000000 #000000 #668DB6;");
 	document.writeln("	cursor:hand;");

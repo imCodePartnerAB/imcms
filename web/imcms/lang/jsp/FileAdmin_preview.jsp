@@ -54,9 +54,9 @@ boolean isImage    = re.match("/\\.(" + acceptedExt + ")+$/i", file) ;
 /* Check browser */
 
 String uAgent = request.getHeader("USER-AGENT") ;
-boolean isIE  = re.match("/(MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) ;
-boolean isNS  = (re.match("/Mozilla/i", uAgent) && !re.match("/Gecko/i", uAgent)) ? true : false ;
-boolean isMoz = re.match("/Gecko/i", uAgent) ;
+boolean hasDocumentAll  = re.match("/(MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) ;
+boolean hasDocumentLayers  = (re.match("/Mozilla/i", uAgent) && !re.match("/Gecko/i", uAgent)) ? true : false ;
+boolean hasGetElementById = re.match("/Gecko/i", uAgent) ;
 boolean isMac = re.match("/Mac/i", uAgent) ;
 
 /* if Stat-Report - Read file and show it */
@@ -83,7 +83,7 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
 	boolean hasInlineButtons = false ;
 	
 	theButtons = "<table border=0 bgcolor=\"#d6d3ce\" align=\"right\">\n<tr>" ;
-	if (isMoz && !isIE && !isMac) {
+	if (hasGetElementById && !hasDocumentAll && !isMac) {
 		hasInlineButtons = true ;
 		theButtons += "\n	<td><a href=\"javascript: find(); return false\"><img align=\"absmiddle\" src=\"" + IMG_PATH + "btn_find.gif\" border=\"0\" alt=\"Sök!\"></a></td>" ;
 	}
@@ -199,16 +199,16 @@ function closeIt() {
 	if (top.parent.opener) top.parent.opener.focus();
 }
 
-var isMoz = (document.getElementById);
-var isIE  = (document.all);
-var isNS  = (document.layers);
+var hasGetElementById = (document.getElementById);
+var hasDocumentAll  = (document.all);
+var hasDocumentLayers  = (document.layers);
 
 var win = parent.main;
 var n   = 0;
 
 function findIt(str) {
 	var txt, i, found;
-	if (isNS && str != "") {
+	if (hasDocumentLayers && str != "") {
 		if (!win.find(str)) {
 			while(win.find(str, false, true)) {
 				n++;
@@ -217,7 +217,7 @@ function findIt(str) {
 			n++;
 			if (n == 0) alert("Not found.");
 		}
-	} else if ((isIE || isMoz) && str != "") {
+	} else if ((hasDocumentAll || hasGetElementById) && str != "") {
 		txt = win.document.body.createTextRange();
 		for (i = 0; i <= n && (found = txt.findText(str)) != false; i++) {
 			txt.moveStart("character", 1);
@@ -238,7 +238,7 @@ function findIt(str) {
 			}
 		}
 	}
-	if (isIE && isMoz) document.getElementById("btnSearch").setActive();
+	if (hasDocumentAll && hasGetElementById) document.getElementById("btnSearch").setActive();
 }
 //-->
 </script>
@@ -262,7 +262,7 @@ function findIt(str) {
 	<table border="0" cellspacing="0" cellpadding="0">
 	<form onSubmit="findIt(document.forms[0].searchString.value); return false">
 	<tr><%
-		if (isIE || isNS) { %>
+		if (hasDocumentAll || hasDocumentLayers) { %>
 		<td class="norm"><input type="text" name="searchString" size="15" value="" class="norm" style="width:100"></td>
 		<td><a id="btnSearch" href="javascript://find()" onClick="findIt(document.forms[0].searchString.value);"><img src="<%= IMG_PATH %>btn_find.gif" border="0" hspace="5" alt="<? install/htdocs/sv/jsp/FileAdmin_preview.jsp/2001 ?>"></a></td><%
 		} %>
@@ -282,7 +282,7 @@ function findIt(str) {
 	<input type="hidden" name="file" value="<%= file %>">
 	<tr>
 		<td class="norm">| &nbsp; <%
-		if (isIE) { %><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/16 ?></span>&nbsp;</td>
+		if (hasDocumentAll) { %><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/16 ?></span>&nbsp;</td>
 		<td class="norm">
 		<select name="zoom" onChange="this.form.submit();">
 			<option value="0.25"<% if (defZoom.equals("0.25")) { %> selected<% } %>>25%

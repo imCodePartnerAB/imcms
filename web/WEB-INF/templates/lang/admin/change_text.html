@@ -115,7 +115,7 @@ function openLinkEditor() {
 
 <script language="javascript">
 <!--
-if (isMoz) {
+if (hasGetElementById) {
 	document.getElementById("txtCont").style.width    = 656;
 	document.getElementById("txtCont").style.overflow = "auto";
 }
@@ -124,19 +124,19 @@ function checkMode() {
 	var f = document.forms[0] ;
 	var elFormatRadio = (f.format_type) ? f.format_type : f.type ;
 	if (elFormatRadio) {
-		var oBtn1 = (isMoz) ? document.getElementById("replaceBreakBtn") : f.replaceBreakBtn ;
-		var oBtn2   = (isMoz) ? document.getElementById("createLinkBtn"): f.createLinkBtn ;
+		var oBtn1 = (hasGetElementById) ? document.getElementById("replaceBreakBtn") : f.replaceBreakBtn ;
+		var oBtn2   = (hasGetElementById) ? document.getElementById("createLinkBtn"): f.createLinkBtn ;
 		if (elFormatRadio[1].checked) { // HTML
 			oBtn1.disabled = 0 ;
 			oBtn2.disabled = 0 ;
-			if (isMoz) {
+			if (hasGetElementById) {
 				oBtn1.className = "imcmsFormBtnSmall" ;
 				oBtn2.className = "imcmsFormBtnSmall" ;
 			}
 		} else { // Text
 			oBtn1.disabled = 1 ;
 			oBtn2.disabled = 1 ;
-			if (isMoz) {
+			if (hasGetElementById) {
 				oBtn1.className = "imcmsFormBtnSmallDisabled" ;
 				oBtn2.className = "imcmsFormBtnSmallDisabled" ;
 			}
@@ -161,8 +161,8 @@ function doReplaceBreaks() {
 	var f = document.forms[0];
 	var theText = f.text.value;
 	var tempText = theText.toUpperCase();
-	var reFr = (isMoz && !isIE) ? /\n/g : /\r/g;
-	var reTo = (isMoz && !isIE) ? "<BR>\n" : "<BR>\r";
+	var reFr = (hasGetElementById && !hasDocumentAll) ? /\n/g : /\r/g;
+	var reTo = (hasGetElementById && !hasDocumentAll) ? "<BR>\n" : "<BR>\r";
 	if (tempText.indexOf("<BR>") < 0) {
 		theText = theText.replace(reFr,reTo);
 		f.text.value = theText;

@@ -18,9 +18,9 @@ function checkForName() {
 	sFileName = theFile.replace(re2, '');
 	if (re0.test(sFileName)) {
 		sFileName = sFileName.replace(re1, "$1");
-		if (isMac && isIE) {
+		if (isMac && hasDocumentAll) {
 			arrFileName = sFileName.split("\/");
-		} else if (isMac && isMoz) {
+		} else if (isMac && hasGetElementById) {
 			arrFileName = sFileName.split(":");
 		} else if (!isMac) {
 			arrFileName = sFileName.split("\\");
@@ -42,13 +42,13 @@ function setSize() {
 	if(isGecko) {
 		document.getElementById("sfile").style.width = 300;
 		document.getElementById("sname").style.width = 200;
-	} else if (isMoz) {
+	} else if (hasGetElementById) {
 		document.getElementById("sfile").style.width = 400;
 		document.getElementById("sname").style.width = 200;
 	}
 }
 
-if (isMoz) {
+if (hasGetElementById) {
 	window.onload = setSize;
 }
 
@@ -114,7 +114,7 @@ if (isMoz) {
 		<td nowrap>
 		<script language="JavaScript">
 		<!--
-		if (isMoz || isNS) {
+		if (hasGetElementById || hasDocumentLayers) {
 			document.write("<input type=\"button\" class=\"imcmsFormBtnSmall\" onClick=\"checkForName()\" value=\"&laquo;&nbsp;<? templates/sv/template_upload.html/2020 ?>\">");
 		}
 		//-->

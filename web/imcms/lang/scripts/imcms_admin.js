@@ -1,4 +1,34 @@
 /* *******************************************************************************************
+ *         Browser sniffer                                                                   *
+ ******************************************************************************************* */
+
+var platf     = navigator.platform;
+var ua        = navigator.userAgent;
+
+var hasDocumentLayers      = (document.layers) ? 1 : 0;
+var hasDocumentAll      = (document.all) ? 1 : 0;
+var hasGetElementById     = (document.getElementById) ? 1 : 0;
+
+var isGecko   = inStr(ua,'Gecko');
+var isOpera   = inStr(ua,'Opera');
+var isWindows = inStr(platf,'Win32');
+var isMac     = inStr(platf,'Mac');
+
+var isIE55    = (isWindows && hasDocumentAll && hasGetElementById && (inStr(ua,'MSIE 5.5') || inStr(ua,'MSIE 6.0') || inStr(ua,'MSIE 6.5') || inStr(ua,'MSIE 7.0')) && !isOpera) ? 1 : 0;
+
+function inStr(str,val,cas) {
+	var ret;
+	if (cas) { /* Case sensitive */
+		ret = (str.indexOf(val) != -1) ? true : false;
+	} else { /* Not Case sensitive */
+		str = str.toUpperCase();
+		val = val.toUpperCase();
+		ret = (str.indexOf(val) != -1) ? true : false;
+	}
+	return ret;
+}
+
+/* *******************************************************************************************
  *         Functions                                                                         *
  ******************************************************************************************* */
 

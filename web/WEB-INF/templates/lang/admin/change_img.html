@@ -28,14 +28,14 @@ function doClear(){
 	f.imageref_link.value       = "";
 	f.target[0].selectedIndex   = 0;
 	f.target[1].value           = "";
-	if (isMoz) {
+	if (hasGetElementById) {
 		if (document.getElementById("imgTable")) document.getElementById("imgTable").style.display = "none";
 	}
 }
 
 function setDef() {
 	var f = document.forms.imgProp;
-	if (!isNS && f.imageref.value == "") f.image_align.selectedIndex = 0;
+	if (!hasDocumentLayers && f.imageref.value == "") f.image_align.selectedIndex = 0;
 	changeLinkType(1) ;
 }
 

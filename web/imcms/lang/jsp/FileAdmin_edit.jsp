@@ -66,9 +66,9 @@ if (hdPath == null) {
 /* Check browser */
 
 String uAgent = request.getHeader("USER-AGENT") ;
-boolean isIE  = re.match("/(MSIE 4|MSIE 5|MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) ;
-boolean isNS  = (re.match("/Mozilla/i", uAgent) && !re.match("/Gecko/i", uAgent) && !re.match("/MSIE/i", uAgent)) ? true : false ;
-boolean isMoz = re.match("/Gecko/i", uAgent) ;
+boolean hasDocumentAll  = re.match("/(MSIE 4|MSIE 5|MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) ;
+boolean hasDocumentLayers  = (re.match("/Mozilla/i", uAgent) && !re.match("/Gecko/i", uAgent) && !re.match("/MSIE/i", uAgent)) ? true : false ;
+boolean hasGetElementById = re.match("/Gecko/i", uAgent) ;
 boolean isMac = re.match("/Mac/i", uAgent) ;
 
 /* Special Character replacers */
@@ -215,7 +215,7 @@ B { font-weight:bold; }
 </tr>
 <tr>
 	<td colspan="2" align="center"><img src="<%= IMG_PATH %>line_hr2.gif" width="<%
-	if (isMoz || isIE) {
+	if (hasGetElementById || hasDocumentAll) {
 		%>100%<%
 	} else {
 		%>380<%
@@ -223,7 +223,7 @@ B { font-weight:bold; }
 </tr>
 <tr>
 	<td class="norm"><%
-	if (!isNS && !isMac) { %>
+	if (!hasDocumentLayers && !isMac) { %>
 	<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/6 ?> <i><%
 		if (isReadonly) {
 			%><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/7 ?> <%
@@ -235,13 +235,13 @@ B { font-weight:bold; }
 		} else {
 			%><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/10 ?><%
 		} %></i> <? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/11 ?><%
-		if (isIE) {
+		if (hasDocumentAll) {
 		%> <? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/12 ?><%
 		} %><br><br><%
 	}
 	if (!isReadonly) { %>
 	<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/13 ?><%
-		if (isIE && !isMac) { %>
+		if (hasDocumentAll && !isMac) { %>
 	<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/14 ?><%
 		}
 	} %></td>
@@ -279,16 +279,16 @@ function closeIt() {
 	if (parent.opener) parent.opener.focus();
 }
 
-var isMoz = (document.getElementById);
-var isIE  = (document.all);
-var isNS  = (document.layers);
+var hasGetElementById = (document.getElementById);
+var hasDocumentAll  = (document.all);
+var hasDocumentLayers  = (document.layers);
 
 var win = window;
 var n   = 0;
 
 function findIt(str) {
 	var txt, i, found;
-	if (isMoz && str != "") {
+	if (hasGetElementById && str != "") {
 		txt = win.document.getElementById("txtField").createTextRange();
 		for (i = 0; i <= n && (found = txt.findText(str)) != false; i++) {
 			txt.moveStart("character", 1);
@@ -311,7 +311,7 @@ function findIt(str) {
 		document.forms.editForm.searchString.value  = str;
 		document.forms.resetForm.searchString.value = str;
 	}
-	if (isIE && isMoz) document.getElementById("btnSearch").setActive(); // focus btn - for [Enter] support
+	if (hasDocumentAll && hasGetElementById) document.getElementById("btnSearch").setActive(); // focus btn - for [Enter] support
 }
 
 function doSave() {
@@ -338,7 +338,7 @@ function doReset() {
 /* onLoad-function */
 
 function checkSaved(ch) {
-	if (isMoz) {<%
+	if (hasGetElementById) {<%
 		if (!isReadonly) { %>
 		var isSaved = <%= isSaved %>;
 		var el = document.getElementById("btnSave");
@@ -347,7 +347,7 @@ function checkSaved(ch) {
 			el.style.filter = "progid:DXImageTransform.Microsoft.BasicImage( Rotation=0,Mirror=0,Invert=1,XRay=0,Grayscale=1,Opacity=0.60)";
 			el.disabled = 1;
 		} else {
-			el.style.cursor = (isIE) ? "hand" : "pointer";
+			el.style.cursor = (hasDocumentAll) ? "hand" : "pointer";
 			el.style.filter = "";
 			el.disabled = 0;
 		}<%
@@ -357,11 +357,11 @@ function checkSaved(ch) {
 }
 
 function resizeEditField() {
-	if (isMoz) {
+	if (hasGetElementById) {
 		var elEdit = document.getElementById("txtField");
 		var availW = 0;
 		var availH = 0;
-		if (isIE) {
+		if (hasDocumentAll) {
 			availW = parseInt(document.body.offsetWidth);
 			availH = parseInt(document.body.offsetHeight);
 		} else {
@@ -376,7 +376,7 @@ function resizeEditField() {
 var errMess = <% if (!sError.equals("")) { %>1<% } else { %>2<% } %>;
 
 function toggleFontSize() {
-	if (isMoz) {
+	if (hasGetElementById) {
 		var el = document.getElementById("txtField");
 		if (window.event) {
 			if (window.event.shiftKey) {
@@ -470,7 +470,7 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			%>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr><%
-			if (isIE && !isMac) { %>
+			if (hasDocumentAll && !isMac) { %>
 			<td>
 			<table border="0" cellspacing="0" cellpadding="0">
 			<form name="searchForm" onSubmit="findIt(document.forms[0].searchString.value); return false">
@@ -519,7 +519,7 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 				<td><input name="btnSave" id="btnSave" type="image" src="<%= IMG_PATH %>btn_save.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2002 ?>"></td>
 				<td class="norm">&nbsp;&nbsp;</td>
 				<td><%
-				if (isNS) {
+				if (hasDocumentLayers) {
 					%><a href="javascript: closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2003 ?>"></a><%
 				} else {
 					%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2004 ?>" onClick="closeIt(); return false"><%
@@ -540,7 +540,7 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 		<form name="editForm" action="<%= thisPage %>" method="post" onSubmit="if (doSave()) return true; return false">
 		<tr>
 			<td><%
-			if (isNS) {
+			if (hasDocumentLayers) {
 				%><a href="javascript: closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2005 ?>"></a><%
 			} else {
 				%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2006 ?>" onClick="closeIt(); return false"><%
@@ -558,15 +558,15 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 	</tr>
 	<tr>
 		<td colspan="2" align="center"><img src="<%= IMG_PATH %>line_hr2.gif" width="<%
-			if (isMoz || isIE) {
+			if (hasGetElementById || hasDocumentAll) {
 				%>100%<%
 			} else {
 				%>795<%
 			} %>" height="6"></td>
 	</tr>
 	<tr>
-		<td colspan="2" height="18" class="small"><span style="font: <% if (isNS) { %>10<% } else { %>9<% } %>px Verdana"><%
-			if (isTempl && !(isMac && (isNS || isIE))) { %>
+		<td colspan="2" height="18" class="small"><span style="font: <% if (hasDocumentLayers) { %>10<% } else { %>9<% } %>px Verdana"><%
+			if (isTempl && !(isMac && (hasDocumentLayers || hasDocumentAll))) { %>
 		&nbsp;&nbsp;<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/1 ?>&nbsp;
 		<a href="javascript: imScriptCount('text');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/2 ?></a> |
 		<a href="javascript: imScriptCount('image');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/3 ?></a> |
@@ -582,16 +582,16 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 				%><div style="color:#cc0000"><%= sError %></div><%
 			} %></span></td>
 	</tr><%
-			String taRows = (isTempl && !(isMac && (isNS || isIE))) ? "39" : "40" ;
-			if (isIE || (isMac && isMoz)) { %>
+			String taRows = (isTempl && !(isMac && (hasDocumentLayers || hasDocumentAll))) ? "39" : "40" ;
+			if (hasDocumentAll || (isMac && hasGetElementById)) { %>
 	<tr>
 		<td colspan="2" align="center">
-		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" class="edit" style="width:790; height:<% if (isTempl || (isMac && isIE)) { %>505<% } else { %>515<% } %>; overflow:auto" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
-			} else if (isMoz) { %>
+		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" class="edit" style="width:790; height:<% if (isTempl || (isMac && hasDocumentAll)) { %>505<% } else { %>515<% } %>; overflow:auto" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+			} else if (hasGetElementById) { %>
 	<tr>
 		<td colspan="2" align="center" valign="top">
 		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" wrap="soft" class="edit" style="width:98%; height:<% if (isTempl) { %>500<% } else { %>510<% } %>" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
-			} else if (isMac && isNS) { %>
+			} else if (isMac && hasDocumentLayers) { %>
 	<tr>
 		<td colspan="2" align="center" class="norm">
 		<textarea name="txtField" id="txtField" cols="125" rows="<%= taRows %>" wrap="soft" class="edit" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
@@ -607,13 +607,13 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 </tr>
 </table>
 <%
-if (isTempl && !(isMac && (isNS || isIE))) { %>
+if (isTempl && !(isMac && (hasDocumentLayers || hasDocumentAll))) { %>
 <script language="JavaScript">
 <!--
 function imScriptCount(imType) {
 	var hits,arr1,arr2;
 	var retStr = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/8 ?>\nииииииииииииииииииииииииииииииииииииииииии\n";
-	if (isNS) retStr += "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/9 ?>\nииииииииииииииииииииииииииииииииииииииииии\n";
+	if (hasDocumentLayers) retStr += "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/9 ?>\nииииииииииииииииииииииииииииииииииииииииии\n";
 	var head_1_a = ":: ";
 	var head_1_b = " ::";
 	var head_2_a = "        - ";
