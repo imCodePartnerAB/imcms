@@ -74,8 +74,11 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
                 buildNewIndex();
             }
         };
-        indexBuildingThread.setPriority( Thread.currentThread().getPriority() - 1 );
-        log.debug("Setting the priority on the background indexing thread to " + indexBuildingThread.getPriority() );
+        int callersPriority = Thread.currentThread().getPriority();
+        int newPriority = Math.max( callersPriority - 1, Thread.MIN_PRIORITY );
+        indexBuildingThread.setPriority( newPriority );
+
+        log.debug("Setting the callersPriority on the background indexing thread to " + indexBuildingThread.getPriority() );
         indexBuildingThread.setDaemon(true);
         indexBuildingThread.start();
     }
@@ -228,6 +231,7 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
                 if (indexingLogSchedule.isTime()) {
                     logIndexingProgress(i, documentIds.length);
                 }
+                Thread.yield(); // To make sure other threads with the same priority onece in a while gets a chance to run something.
             }
 
             logIndexingCompleted(documentIds.length, indexingLogSchedule.getStopWatch());
