@@ -7,8 +7,6 @@ import imcode.util.* ;
 import imcode.server.* ;
 
 public class AdminIpAccess  extends Administrator {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     String HTML_IP_SNIPPET ;
     String HTML_TEMPLATE ;

@@ -34,10 +34,8 @@ import java.rmi.registry.* ;
 */
 
 public class ConfDiscView extends Conference {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
-	String HTML_TEMPLATE ;         // the relative path from web root to where the servlets are
+    String HTML_TEMPLATE ;         // the relative path from web root to where the servlets are
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException {

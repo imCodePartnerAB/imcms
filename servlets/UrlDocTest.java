@@ -11,10 +11,8 @@ import imcode.server.* ;
 import org.apache.log4j.Category;
 
 public class UrlDocTest extends HttpServlet {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	
-	private static Category log = Category.getInstance(UrlDocTest.class.getName());
+
+    private static Category log = Category.getInstance(UrlDocTest.class.getName());
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config) ;

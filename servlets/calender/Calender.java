@@ -16,8 +16,6 @@ import imcode.server.*;
 */
 public class Calender extends HttpServlet
 {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
 
     /**

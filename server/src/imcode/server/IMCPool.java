@@ -33,7 +33,7 @@ public class IMCPool implements IMCPoolInterface {
     */
    public String[] sqlQuery( String sqlQuery ) {
 
-      Vector data = new Vector();
+      List data = new Vector();
 
       DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
       data = dbc.executeQuery();
@@ -41,7 +41,7 @@ public class IMCPool implements IMCPoolInterface {
       if( data != null ) {
          String result[] = new String[data.size()];
          for( int i = 0; i < data.size(); i++ )
-            result[i] = data.elementAt( i ).toString();
+            result[i] = data.get( i ).toString();
 
          return result;
       } else {
@@ -285,13 +285,10 @@ public class IMCPool implements IMCPoolInterface {
     */
    public Hashtable sqlQueryHash( String sqlQuery ) {
 
-      Vector data = new Vector();
-      String[] meta = new String[0];
-
       DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-      data = (Vector)dbc.executeQuery().clone();
+      List data = dbc.executeQuery() ;
 
-      meta = dbc.getMetaData();
+      String[] meta = dbc.getMetaData();
       int columns = dbc.getColumnCount();
 
       Hashtable result = new Hashtable( columns, 0.5f );
@@ -306,7 +303,7 @@ public class IMCPool implements IMCPoolInterface {
             int counter = 0;
 
             for( int j = i; j < data.size(); j += columns )
-               temp_str[counter++] = data.elementAt( j ).toString();
+               temp_str[counter++] = data.get( j ).toString();
             ;
 
             result.put( meta[i], temp_str );
@@ -377,7 +374,7 @@ public class IMCPool implements IMCPoolInterface {
       sqlStr += "and users.user_id = " + user.getUserId();
       DBConnect dbc = new DBConnect( m_conPool );
       dbc.setSQLString( sqlStr );
-      Vector super_admin_vec = (Vector)dbc.executeQuery().clone();
+      List super_admin_vec = dbc.executeQuery() ;
 
       if( super_admin_vec.size() > 0 ) {
          dbc = null;
@@ -393,7 +390,7 @@ public class IMCPool implements IMCPoolInterface {
       sqlStr += " and user_roles_crossref.user_id =" + user.getUserId();
 
       dbc.setSQLString( sqlStr );
-      Vector hasAdminRights = (Vector)dbc.executeQuery().clone();
+      List hasAdminRights = dbc.executeQuery() ;
       dbc = null;
 
       if( hasAdminRights.size() > 0 ) {

@@ -9,14 +9,11 @@ import java.rmi.registry.* ;
 import imcode.util.* ;
 
 public class ConfForum extends Conference {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String ADMIN_LINK_TEMPLATE = "Conf_Forum_Admin_Link.htm";
 
     String HTML_TEMPLATE ;
     String HTML_TEMPLATE_EXT ;
-    String A_HREF_HTML ;   // The code snippet where the aHref list with all discussions
     // will be placed.
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -81,7 +78,6 @@ public class ConfForum extends Conference {
 	super.init(config);
 	HTML_TEMPLATE = "Conf_Forum.htm" ;
 	HTML_TEMPLATE_EXT = "Conf_Forum_ext.htm" ;
-	A_HREF_HTML = "ConfForumSnippet.htm" ;
     } // End init
 
 } // End of class

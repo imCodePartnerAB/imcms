@@ -8,11 +8,8 @@ import imcode.server.* ;
 import imcode.util.* ;
 
 public class UserChangePrefs extends Administrator {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     String LOGIN = "userprefs_login.htm" ;
-    String LOGIN_FAILED = "userprefs_login_failed.htm"   ;
     String CHANGE_PREFS = "userprefs_change.htm" ;
     String DONE = "userprefs_done.htm" ;
 
@@ -216,41 +213,6 @@ public class UserChangePrefs extends Administrator {
     } // end HTTP POST
 
     /**
-       Adds the userInformation to the htmlPage. if an empty vector is sent as argument
-       then an empty one will be created
-    **/
-    public VariableManager addUserInfo(VariableManager vm, Vector v) {
-	// Here is the order in the vector
-	// [3, Rickard, tynne, Rickard, Larsson, Drakarve, Havdhem, 620 11, Sweden, Gotland,
-	// rickard@imcode.com, 0, 1001, 0, 1]
-
-	if(v.size() == 0) {
-	    for(int i = 0; i < 20; i++)
-		v.add(i, "") ;
-	}
-
-	vm.addProperty("LOGIN_NAME", v.get(1).toString()) ;
-	vm.addProperty("PWD1", v.get(2).toString()) ;
-	vm.addProperty("PWD2", v.get(2).toString()) ;
-	//	vm.addProperty("PWD1", "") ;
-	//	vm.addProperty("PWD2", "") ;
-	vm.addProperty("FIRST_NAME", v.get(3).toString()) ;
-	vm.addProperty("LAST_NAME", v.get(4).toString()) ;
-	vm.addProperty("TITLE", v.get(5).toString()) ;
-	vm.addProperty("COMPANY", v.get(6).toString()) ;
-
-	vm.addProperty("ADDRESS", v.get(7).toString()) ;
-	vm.addProperty("CITY", v.get(8).toString()) ;
-	vm.addProperty("ZIP", v.get(9).toString()) ;
-	vm.addProperty("COUNTRY", v.get(10).toString()) ;
-	vm.addProperty("COUNTRY_COUNCIL", v.get(11).toString()) ;
-	vm.addProperty("EMAIL", v.get(12).toString()) ;
-	vm.addProperty("ACTIVE", "13") ;
-
-	return vm ;
-    }
-
-    /**
        Collects the parameters from the request object
     **/
 
@@ -293,42 +255,11 @@ public class UserChangePrefs extends Administrator {
     }
 
 
-
-
-
-    /**
-       Lets get the Userparameters
-    */
-
-    public Vector getUserParameters(HttpServletRequest req) throws ServletException, IOException {
-	// Lets get the users from the multichoicebox
-	String[] roles = (req.getParameterValues("AllUsers")==null) ? new String[0] : (req.getParameterValues("AllUsers"));
-	return new Vector(java.util.Arrays.asList(roles)) ;
-    }
-
-
     public void log( String str) {
 	super.log(str) ;
 	System.out.println("UserChangePrefs: " + str ) ;
     }
 
-
-    /**
-       The getLoginParams method gets the login params from the requstobject
-    **/
-
-    private Properties getLoginParams(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException {
-	Properties login = new Properties() ;
-	// Lets get the parameters we know we are supposed to get from the request object
-	String login_name = (req.getParameter("login_name")==null) ? "" : (req.getParameter("login_name")) ;
-	String password1 = (req.getParameter("password")==null) ? "" : (req.getParameter("password")) ;
-
-	login.setProperty("LOGIN_NAME", login_name.trim()) ;
-	login.setProperty("PASSWORD", password1.trim()) ;
-
-	return login ;
-    }
 
     /*
       Service. Sends all requests to doPost method
@@ -337,21 +268,6 @@ public class UserChangePrefs extends Administrator {
 	throws ServletException, IOException {
 	this.doPost(req,res) ;
     }
-
-    public Properties validateParameters(Properties aPropObj, HttpServletRequest req,
-					 HttpServletResponse res) throws ServletException, IOException {
-
-	//	Properties params = this.getParameters(req) ;
-	if(checkParameters(aPropObj) == false) {
-	    String header = "Checkparameters error" ;
-	    String msg = "Samtliga fält var inte korrekt ifyllda." + "<BR>";
-	    this.log("Error in checkingparameters") ;
-	    AdminError err = new AdminError(req,res,header, msg) ;
-	    return null;
-	}
-	return aPropObj ;
-
-    } // end checkParameters
 
 
     /**

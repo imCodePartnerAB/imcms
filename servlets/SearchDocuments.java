@@ -15,9 +15,6 @@ import imcode.server.*;
  */
 public class SearchDocuments extends HttpServlet {
 
-    private final static String CVS_REV = "$Revision$";
-    private final static String CVS_DATE = "$Date$";
-
     /** The sproc that gets all sections **/
     private final static String SPROC_SECTION_GET_ALL_SECTIONS = "SectionGetAll";
 

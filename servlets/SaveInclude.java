@@ -19,8 +19,6 @@ import java.text.SimpleDateFormat;
 import org.apache.log4j.Category;
 
 public class SaveInclude extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static Category mainLog = Category.getInstance(IMCConstants.MAIN_LOG);
     private final static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;

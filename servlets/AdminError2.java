@@ -8,8 +8,7 @@ import imcode.server.* ;
 import imcode.util.* ;
 
 public class AdminError2 extends Administrator {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
+
     String myErrorHeader ;
     String myErrorMessage ;
 
@@ -82,25 +81,6 @@ public class AdminError2 extends Administrator {
 
     }
 
-
-
-    /**
-       Returns the error header och message for this object
-    */
-
-    public String getErrorString() {
-	return myErrorHeader + " " + myErrorMessage ;
-    }
-
-
-
-    /**
-       Returns the errormessageheader for this object
-    */
-
-    public String getErrorHeader() {
-	return myErrorHeader ;
-    }
 
     /**
        Returns the errormessage for this object

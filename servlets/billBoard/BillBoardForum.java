@@ -29,15 +29,12 @@ import imcode.util.* ;
 */
 
 public class BillBoardForum extends BillBoard {//ConfForum
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
-	private final static String ADMIN_LINK_TEMPLATE = "BillBoard_Section_Admin_Link.htm";//Conf_Forum_Admin_Link.htm
+    private final static String ADMIN_LINK_TEMPLATE = "BillBoard_Section_Admin_Link.htm";//Conf_Forum_Admin_Link.htm
 
 	String HTML_TEMPLATE ;
 	String HTML_TEMPLATE_EXT ;
-	String A_HREF_HTML ;   // The code snippet where the aHref list with all discussions
-	// will be placed.
+    // will be placed.
 
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
@@ -124,8 +121,7 @@ public class BillBoardForum extends BillBoard {//ConfForum
 		super.init(config);
 		HTML_TEMPLATE = "BillBoard_Section.htm" ;//Conf_Forum.htm
 		HTML_TEMPLATE_EXT = "BillBoard_Section_ext.htm" ;//Conf_Forum_ext.htm
-		A_HREF_HTML = "BillBoardSectionSnippet.htm" ;//ConfForumSnippet.htm
-	} // End init
+    } // End init
 
 	/**
 	Log function, will work for both servletexec and Apache

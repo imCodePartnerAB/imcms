@@ -52,13 +52,10 @@ import imcode.server.* ;
  */
 
 public class AdminRoleBelongings extends Administrator {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private static final String HTML_ADMIN_ROLE_BELONGING = "AdminRoleBelongings.html";
     private static final String HTML_ADMIN_ROLE_BELONGING_EDIT = "AdminRoleBelongings_edit.html";
     private static final String HTML_ADMIN_ROLE_BELONGING_ACTIVATE = "AdminRoleBelongings_activate.html";
-    private static final String HTML_ADMIN_ROLE_BELONGING_ERROR = "Error.html";
 
     /**
      * The GET method creates the html page when this side has been

@@ -35,8 +35,6 @@ import java.net.*;
  */
 
 public class BillBoardAdd extends BillBoard	{
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
 
     String HTML_TEMPLATE ;

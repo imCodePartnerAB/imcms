@@ -9,10 +9,9 @@ import java.util.*;
 
 
 public class ChatBindingListener implements HttpSessionBindingListener
-{ 
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	private static Hashtable _sessions;
+{
+
+    private static Hashtable _sessions;
 	static
 	{
 		_sessions = new Hashtable();

@@ -37,8 +37,6 @@ import imcode.server.IMCServiceInterface ;
  */
 
 public class ErrorMessageGenerator {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     /** File name for errorCodes */
     private static final String ERROR_CODE_FILE = "ErrMsg.ini";
@@ -91,27 +89,6 @@ public class ErrorMessageGenerator {
 
 	this( imcref, emailServerMaster, languagePrefix, errorHeader, "", htmlErrorTemplate );
 	this.errorMessage = getErrorMessage( errorCode );
-    }
-
-    /**
-     * Creats an error message with pased heade and message contented with fetched errormessage from ErrMsg.ini.
-     *
-     * @param imcref
-     * @param emailServerMaster
-     * @param languagePrefix
-     * @param server - rmi server name
-     * @param errorHeader
-     * @param errorMessage
-     * @param errorCode - errorCode to look upp in ErrMsg.ini
-     * @param htmlErrorTemplate documnet to pars
-     */
-    public ErrorMessageGenerator( IMCServiceInterface imcref, String emailServerMaster,
-				  String languagePrefix, String errorHeader,
-				  String errorMessage, String htmlErrorTemplate,
-				  int errorCode) {
-
-	this( imcref, emailServerMaster, languagePrefix, errorHeader, errorMessage, htmlErrorTemplate );
-	this.errorMessage = errorMessage + getErrorMessage( errorCode );
     }
 
     /**

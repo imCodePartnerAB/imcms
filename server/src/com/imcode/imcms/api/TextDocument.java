@@ -201,7 +201,7 @@ public class TextDocument extends Document {
             document.securityChecker.hasEditPermission(documentToAdd.getId());
             document.securityChecker.hasSharePermission(documentToAdd) ;
 
-            document.documentMapper.addDocumentToMenu( document.securityChecker.getCurrentLoggedInUser(), documentToAdd.getId(),menuIndex,documentToAdd.getId()) ;
+            document.documentMapper.addDocumentToMenu( document.securityChecker.getCurrentLoggedInUser(), document.getId(),menuIndex,documentToAdd.getId()) ;
         }
 
         /**

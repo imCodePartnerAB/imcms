@@ -505,9 +505,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         // update child table
         for ( int i = 0; i < childs.size(); i++ ) {
             sqlStr = "update childs\n";
-            sqlStr += "set manual_sort_order = " + sort_no.elementAt( i ).toString() + "\n";
+            sqlStr += "set manual_sort_order = " + sort_no.get( i ).toString() + "\n";
             sqlStr += "where meta_id = " + meta_id + " and \n";
-            sqlStr += "to_meta_id=" + childs.elementAt( i ).toString();
+            sqlStr += "to_meta_id=" + childs.get( i ).toString();
             dbc.setSQLString( sqlStr );
             dbc.executeUpdateQuery();
         }
@@ -649,9 +649,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         sqlStr = "select doc_type from meta where meta_id = " + meta_id;
         dbc.setSQLString( sqlStr );
-        Vector vec_doc_type = dbc.executeQuery();
+        List vec_doc_type = dbc.executeQuery();
 
-        if ( Integer.parseInt( vec_doc_type.elementAt( 0 ).toString() ) == 5 ) {
+        if ( Integer.parseInt( vec_doc_type.get( 0 ).toString() ) == 5 ) {
             sqlStr = "select * from url_docs where meta_id = " + meta_id;
             dbc.setSQLString( sqlStr );
             url_doc = new Table( dbc.executeQuery() );
@@ -729,23 +729,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Check if frameset doc.                                                                        *
      */
     public String isFramesetDoc( int meta_id, UserDomainObject user ) {
-        String sqlStr = "";
-        Vector frame_set;
-        String html_str = "";
 
         DBConnect dbc = new DBConnect( m_conPool );
 
-        sqlStr = "select doc_type from meta where meta_id = " + meta_id;
-        dbc.setSQLString( sqlStr );
-        Vector vec_doc_type = dbc.executeQuery();
+        dbc.setSQLString( "select doc_type from meta where meta_id = " + meta_id );
+        List vec_doc_type = dbc.executeQuery();
 
-        if ( Integer.parseInt( vec_doc_type.elementAt( 0 ).toString() ) == 7 ) {
-            sqlStr = "select frame_set from frameset_docs where meta_id = " + meta_id;
-            dbc.setSQLString( sqlStr );
-            frame_set = dbc.executeQuery();
-            html_str = frame_set.elementAt( 0 ).toString();
-        } else {
-            html_str = null;
+        String html_str = null ;
+        if ( Integer.parseInt( vec_doc_type.get( 0 ).toString() ) == 7 ) {
+            dbc.setSQLString( "select frame_set from frameset_docs where meta_id = " + meta_id );
+            List frame_set = dbc.executeQuery();
+            html_str = frame_set.get( 0 ).toString();
         }
 
         return html_str;
@@ -763,9 +757,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         sqlStr = "select doc_type from meta where meta_id = " + meta_id;
         dbc.setSQLString( sqlStr );
-        Vector vec_doc_type = dbc.executeQuery();
+        List vec_doc_type = dbc.executeQuery();
 
-        int doc_type = Integer.parseInt( vec_doc_type.elementAt( 0 ).toString() );
+        int doc_type = Integer.parseInt( vec_doc_type.get( 0 ).toString() );
         if ( doc_type > 100 ) {
             for ( int i = 0; i < m_ExDoc.length && m_ExDoc[i] != null; i++ )
                 if ( m_ExDoc[i].getDocType() == doc_type ) {
@@ -1038,7 +1032,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
             // data
             for ( int j = 0; j < data.size(); j++ )
-                result[j + i + 1] = null != data.elementAt( j ) ? data.elementAt( j ).toString() : null;
+                result[j + i + 1] = null != data.get( j ) ? data.get( j ).toString() : null;
 
             dbc = null;
             data = null;
@@ -1060,7 +1054,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
 
-        Vector data = dbc.executeQuery();
+        List data = dbc.executeQuery();
         String[] meta = dbc.getMetaData();
 
         int columns = dbc.getColumnCount();
@@ -1074,7 +1068,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                 int counter = 0;
 
                 for ( int j = i; j < data.size(); j += columns )
-                    temp_str[counter++] = null != data.elementAt( j ) ? data.elementAt( j ).toString() : null;
+                    temp_str[counter++] = null != data.get( j ) ? data.get( j ).toString() : null;
 
                 result.put( meta[i], temp_str );
             }
@@ -1108,7 +1102,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                 int counter = 0;
 
                 for ( int j = i; j < data.size(); j += columns ) {
-                    temp_str[counter++] = null != data.elementAt( j ) ? data.elementAt( j ).toString() : null;
+                    temp_str[counter++] = null != data.get( j ) ? data.get( j ).toString() : null;
                 }
                 result.put( meta[i], temp_str );
             }
@@ -1150,7 +1144,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         if ( data != null && columns > 0 ) {
             String result[][] = new String[data.size() / columns][columns];
             for ( int i = 0; i < data.size(); i++ ) {
-                result[i / columns][i % columns] = null != data.elementAt( i ) ? data.elementAt( i ).toString() : null;
+                result[i / columns][i % columns] = null != data.get( i ) ? data.get( i ).toString() : null;
             }
             return result;
         }
@@ -1179,7 +1173,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         String result[][] = new String[rows][columns];
         for ( int i = 0; i < rows; i++ ) {
             for ( int j = 0; j < columns; j++ ) {
-                result[i][j] = null != data.elementAt( i * columns + j ) ? data.elementAt( i * columns + j ).toString() : null;
+                result[i][j] = null != data.get( i * columns + j ) ? data.get( i * columns + j ).toString() : null;
             }
 
         }
@@ -1193,11 +1187,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public String[][] sqlQueryMulti( String sqlQuery ) {
 
-        Vector data = new Vector();
-
         DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
 
-        data = dbc.executeQuery();
+        List data = dbc.executeQuery();
         int columns = dbc.getColumnCount();
 
         if ( columns == 0 )
@@ -1208,7 +1200,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         String result[][] = new String[rows][columns];
         for ( int i = 0; i < rows; i++ ) {
             for ( int j = 0; j < columns; j++ ) {
-                result[i][j] = null != data.elementAt( i * columns + j ) ? data.elementAt( i * columns + j ).toString() : null;
+                result[i][j] = null != data.get( i * columns + j ) ? data.get( i * columns + j ).toString() : null;
             }
 
         }
@@ -1294,19 +1286,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      or something else instead.
      */
     public File getExternalTemplateFolder( int meta_id ) {
-        Vector data = new Vector();
-
         DBConnect dbc = new DBConnect( m_conPool );
         String sqlStr = "select doc_type,lang_prefix from meta where meta_id = " + meta_id;
         dbc.setSQLString( sqlStr );
-        data = dbc.executeQuery();
+        List data = dbc.executeQuery();
 
         dbc = null;
 
-        if ( Integer.parseInt( data.elementAt( 0 ).toString() ) > 100 ) {
-            return new File( m_TemplateHome, ( data.elementAt( 1 ).toString() + "/" + data.elementAt( 0 ).toString() + "/" ) );
+        if ( Integer.parseInt( data.get( 0 ).toString() ) > 100 ) {
+            return new File( m_TemplateHome, ( data.get( 1 ).toString() + "/" + data.get( 0 ).toString() + "/" ) );
         } else {
-            return new File( m_TemplateHome, ( data.elementAt( 1 ).toString() + "/" ) );
+            return new File( m_TemplateHome, ( data.get( 1 ).toString() + "/" ) );
         }
     }
 
@@ -1398,7 +1388,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         if ( data != null ) {
             if ( data.size() > 0 )
-                return Integer.parseInt( data.elementAt( 0 ).toString() );
+                return Integer.parseInt( data.get( 0 ).toString() );
             else
                 return 0;
         }
@@ -1448,7 +1438,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             dbc.setProcedure( sqlStr, sqlAry );
             Vector perms = dbc.executeProcedure();
 
-            if ( perms.size() > 0 && Integer.parseInt( (String)perms.elementAt( 0 ) ) < 4 ) {
+            if ( perms.size() > 0 && Integer.parseInt( (String)perms.get( 0 ) ) < 4 ) {
                 return true;
             } else {
                 return false;
@@ -1474,8 +1464,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             dbc.setProcedure( sqlStr, sqlAry );
             Vector perms = dbc.executeProcedure();
 
-            int set_id = Integer.parseInt( (String)perms.elementAt( 0 ) );
-            int set = Integer.parseInt( (String)perms.elementAt( 1 ) );
+            int set_id = Integer.parseInt( (String)perms.get( 0 ) );
+            int set = Integer.parseInt( (String)perms.get( 1 ) );
 
             if ( perms.size() > 0 && set_id == 0		// User has full permission for this internalDocument
                     || ( set_id < 3 && ( ( set & permission ) > 0 ) )	// User has at least one of the permissions given.
@@ -1508,8 +1498,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                 return false;
             }
 
-            int set_id = Integer.parseInt( (String)perms.elementAt( 0 ) );
-            int set = Integer.parseInt( (String)perms.elementAt( 1 ) );
+            int set_id = Integer.parseInt( (String)perms.get( 0 ) );
+            int set = Integer.parseInt( (String)perms.get( 1 ) );
 
             if ( set_id == 0		// User has full permission for this internalDocument
                     || ( set_id < 3 && ( ( set & permission ) == permission ) )	// User has all the permissions given.
@@ -1543,7 +1533,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                 return IMCConstants.DOC_PERM_SET_NONE;//nothing was returned so give no rights at all.
             }
 
-            int set_id = Integer.parseInt( (String)perms.elementAt( 0 ) );
+            int set_id = Integer.parseInt( (String)perms.get( 0 ) );
 
             switch ( set_id ) {
                 case IMCConstants.DOC_PERM_SET_FULL:         // User has full permission for this internalDocument
@@ -1595,13 +1585,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         sqlStr = "select template_id from templates\n";
         sqlStr += "where simple_name = '" + name + "'";
         dbc.setSQLString( sqlStr );
-        Vector template_id = dbc.executeQuery();
+        List template_id = dbc.executeQuery();
         if ( template_id.size() == 0 ) {
 
             // get new template_id
             sqlStr = "select max(template_id) + 1 from templates\n";
             dbc.setSQLString( sqlStr );
-            new_template_id = dbc.executeQuery().elementAt( 0 ).toString();
+            new_template_id = dbc.executeQuery().get( 0 ).toString();
 
             sqlStr = "insert into templates\n";
             sqlStr += "values (" + new_template_id + ",'" + file_name + "','" + name + "','" + lang_prefix + "'," + no_of_txt + "," + no_of_img + "," + no_of_url + ")";
@@ -1612,7 +1602,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                 dbc = null;
                 return -1;
             }
-            new_template_id = template_id.elementAt( 0 ).toString();
+            new_template_id = template_id.get( 0 ).toString();
 
             sqlStr = "update templates\n" + "set template_name = '" + file_name + "'," + "no_of_txt =" + no_of_txt + "," + "no_of_img =" + no_of_img + "," + "no_of_url =" + no_of_url + "where template_id = " + new_template_id;
             dbc.setSQLString( sqlStr );
@@ -1792,13 +1782,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         sqlStr += "where users.lang_id = lang_prefixes.lang_id\n";
         sqlStr += "and user_id =" + user.getUserId();
         dbc.setSQLString( sqlStr );
-        String lang_prefix = dbc.executeQuery().elementAt( 0 ).toString();
+        String lang_prefix = dbc.executeQuery().get( 0 ).toString();
 
 
         // get new group_id
         sqlStr = "select max(group_id) + 1 from templategroups\n";
         dbc.setSQLString( sqlStr );
-        String new_group_id = dbc.executeQuery().elementAt( 0 ).toString();
+        String new_group_id = dbc.executeQuery().get( 0 ).toString();
 
 
 
@@ -1992,7 +1982,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                 String temp_str[] = new String[data.size() / columns];
                 int counter = 0;
                 for ( int j = i; j < data.size(); j += columns )
-                    temp_str[counter++] = data.elementAt( j ).toString();
+                    temp_str[counter++] = data.get( j ).toString();
                 result.put( meta[i], temp_str );
             }
             return result;
@@ -2124,16 +2114,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      DOCME: Use what?
      */
     public File getInternalTemplateFolder( int meta_id ) {
-        Vector data = new Vector();
-
         if ( meta_id != -1 ) {
             DBConnect dbc = new DBConnect( m_conPool );
             String sqlStr = "select doc_type,lang_prefix from meta where meta_id = " + meta_id;
             dbc.setSQLString( sqlStr );
-            data = dbc.executeQuery();
+            List data = dbc.executeQuery();
 
             dbc = null;
-            return new File( m_TemplateHome, data.elementAt( 1 ).toString() + "/" );
+            return new File( m_TemplateHome, data.get( 1 ).toString() + "/" );
 
         } else {
             return m_TemplateHome;

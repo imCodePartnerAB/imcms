@@ -23,9 +23,6 @@ import org.apache.log4j.Category;
 
 public class GetExistingDoc extends HttpServlet {
 
-    private final static String CVS_REV = "$Revision$";
-    private final static String CVS_DATE = "$Date$";
-
     private static Category log = Category.getInstance( GetExistingDoc.class.getName() );
 
     /**

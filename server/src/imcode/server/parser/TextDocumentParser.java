@@ -12,6 +12,7 @@ import imcode.server.util.DateHelper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.TemplateDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.db.DBConnect;
@@ -130,8 +131,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             String[] included_docs = DocumentMapper.sprocGetIncludes( serverObject, meta_id );
 
-            String template_id = "" + myDoc.getTemplate().getId();
-            String simple_name = myDoc.getTemplate().getSimple_name();
+            TemplateDomainObject template = myDoc.getTemplate();
+            String template_id = "" + template.getId();
+            String simple_name = template.getSimple_name();
             int sort_order = myDoc.getMenuSortOrder();
             String group_id = "" + myDoc.getTemplateGroupId();
 
@@ -163,7 +165,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             Vector templategroups = null;
             Vector templates = null;
-            Vector groupnamevec = null;
+            List groupnamevec = null;
 
             int selected_group = user.getTemplateGroup();
             if( templatemode ) {
@@ -420,7 +422,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
                 String group_name;
                 if( !groupnamevec.isEmpty() ) {
-                    group_name = (String)groupnamevec.elementAt( 0 );
+                    group_name = (String)groupnamevec.get( 0 );
                 } else {
                     group_name = "";
                 }
@@ -548,8 +550,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             StringBuffer templatebuffer = new StringBuffer( fileCache.getCachedFileString( new File( templatePath, "text/" + template_id + ".html" ) ) );
 
             // Check file for tags
-            String template = templatebuffer.toString();
-            StringBuffer result = new StringBuffer( template.length() + 16384 ); // This value is the amount i expect the internalDocument to increase in size.
+            String templateContents = templatebuffer.toString();
+            StringBuffer result = new StringBuffer( templateContents.length() + 16384 ); // This value is the amount i expect the internalDocument to increase in size.
 
             ReadrunnerFilter readrunnerFilter = new ReadrunnerFilter();
             MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( documentRequest, menus, menumode, tags );
@@ -557,7 +559,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, documentRequest, templatePath, Arrays.asList(included_docs), includemode, includelevel, includePath, textMap, textmode, imageMap, imagemode, paramsToParse, readrunnerFilter );
 
             LinkedList parse = new LinkedList();
-            perl5util.split( parse, "/(<!--\\/?IMSCRIPT-->)/", template );
+            perl5util.split( parse, "/(<!--\\/?IMSCRIPT-->)/", templateContents );
             Iterator pit = parse.iterator();
             boolean parsing = false;
 

@@ -16,13 +16,10 @@ import imcode.server.* ;
 
 public class ChatCreator extends ChatBase
 {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String HTML_TEMPLATE = "admin_chat.html" ;
     private final static String HTML_TEMPLATES_BUTTON = "chat_template_admin.html";
 
-    private final static String ADMIN_TEMPLATE = "adminChat.htm";
     private final static String ADMIN_TEMPLATES_TEMPLATE= "chat_admin_template1.html";
     private final static String ADMIN_TEMPLATES_TEMPLATE_2 ="chat_admin_template2.html";
 

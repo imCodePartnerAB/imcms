@@ -12,8 +12,7 @@ import imcode.server.* ;
    Save internalDocument sorting (date,name,manual)
 */
 public class SaveSort extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
+
     private final static String COPY_PREFIX_TEMPLATE = "copy_prefix.html";
 
     private final static String FILE_WARNING_TEMPLATE = "copy_file_warning.html" ;

@@ -43,8 +43,6 @@ import imcode.external.diverse.MetaInfo;
  *
  */
 public class AdminConference extends Administrator {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
     private static final String TEMPLATE_CONF = "AdminConference.html";
     private static final String TEMPLATE_LIST_TOOL = "AdminConference_list_tool.html";
@@ -52,7 +50,6 @@ public class AdminConference extends Administrator {
     private static final String TEMPLATE_CONF_ELEMENT = "AdminConference_list_conf_element.html";
     private static final String TEMPLATE_FORUM_ELEMENT = "AdminConference_list_forum_element.html";
     private static final String TEMPLATE_DEBATE_ELEMENT = "AdminConference_list_debate_element.html";
-    private static final String TEMPLATE_ERROR = "Error.html";
     private static final String ERROR_HEADER = "AdminConference";
 
     //required date format

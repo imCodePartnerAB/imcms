@@ -9,10 +9,8 @@ import imcode.server.* ;
   Save a new framesetdocument.
   */
 public class SaveNewFrameset extends HttpServlet {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
-	/**
+    /**
 	init()
 	*/
 	public void init(ServletConfig config) throws ServletException {

@@ -12,8 +12,6 @@ import imcode.server.* ;
 */
 public class CalenderCreator extends Calender
 {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     /**
        Creates a new Calender and activates it in the imCMS system.

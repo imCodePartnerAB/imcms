@@ -359,16 +359,7 @@ public class PutInShoppingCart extends HttpServlet {
 	    return this.item;
 	}
 
-	/**
-	   set-method for item
-
-	   @param item Value for item
-	**/
-	public void setItem(ShoppingItem item) {
-	    this.item = item;
-	}
-
-	/**
+        /**
 	   get-method for quantity
 
 	   @return the value of quantity

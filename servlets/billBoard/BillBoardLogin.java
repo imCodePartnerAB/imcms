@@ -18,16 +18,11 @@ import imcode.util.* ;
  */
 
 public class BillBoardLogin extends BillBoard {//ConfLogin
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
-	private final static String USER_UNADMIN_LINK_TEMPLATE = "BillBoard_User_Unadmin_Link.htm";//Conf_User_Unadmin_Link.htm
     //private static Vector test;
-	
 
-	//String CREATE_HTML = "BillBoard_Add_User.htm" ;   // The create new user page Conf_Add_User.htm
-	String LOGIN_ERROR_HTML = "BillBoard_Login_Error.htm" ;  // The error Conf_Login_Error.htm
-	// page used for specialized messages to user
+
+    // page used for specialized messages to user
 	//String ADMIN1_HTML = "BillBoard_admin_user.htm" ;//Conf_admin_user.htm
 	//String ADMIN2_HTML = "BillBoard_admin_user_resp.htm" ;//Conf_admin_user_resp.htm
 	//String ADD_USER_OK_HTML = "BillBoard_Login_add_ok.htm" ;//Conf_Login_add_ok.htm
@@ -150,41 +145,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 	} // end HTTP POST
 
 
-	/**
-	The getLoginParams method gets the login params from the requstobject
-	**/
-
-	private Properties getLoginParams(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException {
-		Properties login = new Properties() ;
-		// Lets get the parameters we know we are supposed to get from the request object
-		String login_name = (req.getParameter("login_name")==null) ? "" : (req.getParameter("login_name")) ;
-		String password1 = (req.getParameter("password")==null) ? "" : (req.getParameter("password")) ;
-		login.setProperty("LOGIN_NAME", login_name.trim()) ;
-		login.setProperty("PASSWORD", password1.trim()) ;
-		return login ;
-	}
-
-	/**
-	The verifyLogin method verifies the login params from the requestobject
-	**/
-
-	private boolean verifyLoginParams(HttpServletRequest req, HttpServletResponse res,
-		Properties loginP) throws ServletException, IOException {
-
-		// Ok, lets check the parameters
-		if( MetaInfo.checkParameters(loginP) == false) {
-			String header = "BillBoardLogin servlet. " ;
-			BillBoardError err = new BillBoardError(req,res,header,50) ;
-			log(header + err.getErrorMsg()) ;
-			return false ;
-		}
-		return true ;
-
-	} // verifyLoginParams
-
-
-	/**
+    /**
 	Log function, will work for both servletexec and Apache
 	**/
 
@@ -212,25 +173,5 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 	ADD_USER_OK_HTML = "Conf_Login_add_ok.htm" ;
 	}
 	*/
-	/**
-	Returns a String, containing the userID in the request object.If something failes,
-	a error page will be generated and null will be returned.
-	*/
-
-	private String getCurrentUserId(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException {
-
-		// Lets get the userId from the request Object.
-		String userId = req.getParameter("user_id") ;
-		if (userId == null ) {
-			String header = "BillBoardLogin servlet." ;
-			BillBoardError err = new BillBoardError(req,res,header,59, LOGIN_ERROR_HTML ) ;
-			this.log(err.getErrorString()) ;
-			return null;
-		}
-		else
-			return userId ;
-
-	} // End getCurrentUserId
 
 } // End class

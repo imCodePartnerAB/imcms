@@ -7,10 +7,8 @@ import imcode.util.* ;
 import imcode.server.* ;
 
 public class LogOut extends HttpServlet {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
-	/**
+    /**
 	 init()
 	*/
 	public void init ( ServletConfig config ) throws ServletException {

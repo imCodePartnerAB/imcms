@@ -38,8 +38,6 @@ import imcode.util.Parser;
 
 
 public class Conference extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String ADMIN_BUTTON_TEMPLATE = "Conf_Admin_Button.htm";
     private final static String UNADMIN_BUTTON_TEMPLATE = "Conf_Unadmin_Button.htm";
@@ -64,28 +62,6 @@ public class Conference extends HttpServlet {
 	    return null ;
 	}
 	return metaId ;
-    }
-
-    /**
-       Returns the ForumId from a request object, if not found, we will
-       get the one from our session object. If still not found then null is returned.
-    */
-
-    public String getForumId (HttpServletRequest req)
-	throws ServletException, IOException {
-
-	String forumId = req.getParameter("forum_id") ;
-	if( forumId == null ) {
-	    HttpSession session = req.getSession(false) ;
-	    if (session != null) {
-		forumId =	(String) session.getAttribute("Conference.forum_id") ;
-	    }
-	}
-	if( forumId == null) {
-	    log("No forum_id could be found! Error in Conference.class") ;
-	    return null ;
-	}
-	return forumId ;
     }
 
 
@@ -212,22 +188,6 @@ public class Conference extends HttpServlet {
 	return MetaInfo.getParameters(req) ;
     }
 
-    /**
-       check the meta Parameters
-    */
-
-    public boolean checkParameters(HttpServletRequest req,HttpServletResponse res)
-	throws ServletException, IOException {
-	Properties params = MetaInfo.getParameters(req) ;
-	if( MetaInfo.checkParameters(params) == false) {
-	    String header = "Conference servlet." ;
-	    String msg = params.toString() ;
-	    ConfError err = new ConfError(req, res, header, msg, 1) ;
-	    return false;
-	}
-	return true ;
-    }
-
     public boolean checkParameters(HttpServletRequest req,HttpServletResponse res,
 				   Properties params) throws ServletException, IOException {
 
@@ -256,50 +216,6 @@ public class Conference extends HttpServlet {
 	}
 
     } // End GetAdminRights
-
-    /**
-       CheckAdminRights, returns true if the user is an superadmin. Only an superadmin
-       is allowed to create new users
-       False if the user isn't an administrator.
-       1 = administrator
-       0 = superadministrator
-    */
-
-    protected boolean checkAdminRights(IMCServiceInterface imcref, imcode.server.user.UserDomainObject user) {
-
-	// Lets verify that the user who tries to add a new user is an SUPER_ADMIN
-	int currUser_id = user.getUserId() ;
-	String checkAdminSql = "CheckAdminRights " + currUser_id ;
-	String[] roles = imcref.sqlProcedure(checkAdminSql) ;
-
-	for(int i = 0 ; i< roles.length; i++ ) {
-	    String aRole = roles[i] ;
-	    if(aRole.equalsIgnoreCase("0") )
-		return true ;
-	}
-	return false ;
-
-    } // checkAdminRights
-
-    /**
-       CheckAdminRights, returns true if the user is an admin.
-       False if the user isn't an administrator
-    */
-
-    protected boolean checkAdminRights(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException {
-
-	// Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-
-	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
-	if(user == null) {
-	    this.log("CheckadminRights: an error occured, getUserObj") ;
-	    return false ;
-	}
-	else
-	    return imcref.checkAdminRights(user) ;
-    }
 
     // *********************** GETEXTERNAL TEMPLATE FUNCTIONS *********************
 
@@ -341,21 +257,6 @@ public class Conference extends HttpServlet {
 	return new File(extFolder, this.getTemplateLibName(confref, metaId)) ;
     }
 
-    /**
-       Gives the folder where All the html templates for a language are located.
-       This method will call its helper method getTemplateLibName to get the
-       name of the folder which contains the templates for a certain meta id
-    */
-
-    public File getExternalTemplateFolder (IMCServiceInterface imcref, String metaId ) throws ServletException, IOException {
-
-	if( metaId == null) {
-	    log("No meta_id could be found! Error in Conference.class") ;
-	    throw new IOException( "No meta_id could be found!" ) ;
-	}
-	return imcref.getExternalTemplateFolder(Integer.parseInt(metaId)) ;
-    }
-
 
     /**
        Returns the foldername where the templates are situated for a certain metaid.
@@ -371,36 +272,6 @@ public class Conference extends HttpServlet {
 	return libName  ;
     } // End of getTemplateLibName
 
-
-
-
-    /**
-       Collects the parameters from the request object. This function will get all the possible
-       parameters this servlet will be able to get. If a parameter wont be found, the session
-       parameter will be used instead, or if no such parameter exist in the session object,
-       a key with no value = "" will be used instead.
-       Since this method is used. it means
-       that this servlet will take more arguments than the standard ones.
-    **/
-
-    public Properties getRequestParameters( HttpServletRequest req)
-	throws ServletException, IOException {
-
-	Properties reqParams = new Properties() ;
-
-	// Lets get our own variables. We will first look for the discussion_id
-	//	 in the request object, if not found, we will get the one from our session object
-	String confForumId = req.getParameter("forum_id") ;
-	// log("Nytt ForumId är: " + confForumId) ;
-	if( confForumId == null ) {
-	    HttpSession session = req.getSession(false) ;
-	    if (session != null) {
-		confForumId =	(String) session.getAttribute("Conference.forum_id") ;
-	    }
-	}
-	reqParams.setProperty("FORUM_ID", confForumId) ;
-	return reqParams ;
-    }
 
 
 
@@ -475,51 +346,6 @@ public class Conference extends HttpServlet {
 
     }
 
-    /**
-       Date function. Returns the current date and time in the swedish style
-    */
-
-
-    public static String getDateToday() {
-	java.util.Calendar cal = java.util.Calendar.getInstance() ;
-
-	String year  = Integer.toString(cal.get(Calendar.YEAR)) ;
-	int month = Integer.parseInt(Integer.toString(cal.get(Calendar.MONTH))) + 1;
-	int day   = Integer.parseInt(Integer.toString(cal.get(Calendar.DAY_OF_MONTH))) ;
-	int hour  = Integer.parseInt(Integer.toString(cal.get(Calendar.HOUR_OF_DAY))) ;
-	int min   = Integer.parseInt(Integer.toString(cal.get(Calendar.MINUTE))) ;
-
-	String dateToDay  = year ;
-	dateToDay += "-" ;
-	dateToDay += month < 10 ? "0" + Integer.toString(month) : Integer.toString(month) ;
-	dateToDay += "-" ;
-	dateToDay += day < 10 ? "0" + Integer.toString(day) : Integer.toString(day) ;
-
-	return dateToDay ;
-    }
-
-    /**
-       Date function. Returns the current time in the swedish style
-    */
-
-    public static String getTimeNow() {
-	java.util.Calendar cal = java.util.Calendar.getInstance() ;
-
-	int hour  = Integer.parseInt(Integer.toString(cal.get(Calendar.HOUR_OF_DAY))) ;
-	int min   = Integer.parseInt(Integer.toString(cal.get(Calendar.MINUTE))) ;
-	int sec   = Integer.parseInt(Integer.toString(cal.get(Calendar.SECOND))) ;
-
-	String timeNow  = "" ;
-	timeNow += hour < 10 ? "0" + Integer.toString(hour) : Integer.toString(hour) ;
-	timeNow += ":" ;
-	timeNow += min < 10 ? "0" + Integer.toString(min) : Integer.toString(min) ;
-	timeNow += ":" ;
-	timeNow += sec < 10 ? "0" + Integer.toString(sec) : Integer.toString(sec) ;
-	// timeNow += ".000" ;
-
-	return timeNow ;
-    }
-
 
     /**
        Converts array to vector
@@ -530,16 +356,6 @@ public class Conference extends HttpServlet {
 	for(int i = 0; i<arr.length; i++)
 	    rolesV.add(arr[i]) ;
 	return rolesV ;
-    }
-
-    /**
-       Creates Sql characters. Encapsulates a string with ' ' signs. And surrounding
-       Space.
-       Example. this.sqlChar("myString")  --> " 'myString' "
-    */
-
-    public static String sqlChar(String s) {
-	return " '" + s + "' " ;
     }
 
     /**
@@ -560,16 +376,6 @@ public class Conference extends HttpServlet {
 
     public static String sqlP(String s) {
 	return " '" + s + "' " ;
-    }
-
-
-    /**
-       Adds a delimiter to the end of the string.
-       Example. this.sqlDelim("myString")  --> "myString, "
-    */
-
-    public static String sqlDelim(String s) {
-	return s + ", " ;
     }
 
 
@@ -695,17 +501,6 @@ public class Conference extends HttpServlet {
 	String extFolder = RmiConf.getExternalImageFolder(imcref, metaId) ;
 	return extFolder += this.getTemplateLibName(confref, metaId) ;
     }
-
-
-    /**
-       Returns the foldername where the templates are situated for a certain metaid.
-    **/
-    protected String getImageLibName(IMCServiceInterface imcref, String meta_id ) throws ServletException, IOException {
-	String sqlQ = "GetTemplateLib " + meta_id ;
-	String libName = "" + imcref.sqlProcedureStr(sqlQ) + "/";
-	return libName ;
-
-    } // End of getImageLibName
 
 
     // ***************** RETURNS THE HTML CODE TO THE ADMINIMAGE **************
@@ -836,26 +631,6 @@ public class Conference extends HttpServlet {
     } // verifyForSql
 
     /**
-       Checks for illegal sql parameters.
-    **/
-    public String props2String(Properties p) {
-
-	Enumeration enumValues = p.elements() ;
-	Enumeration enumKeys = p.keys() ;
-	String aLine = "";
-	while((enumValues.hasMoreElements() && enumKeys.hasMoreElements())) {
-	    String oKeys = (String) (enumKeys.nextElement()) ;
-	    String oValue = (String) (enumValues.nextElement()) ;
-	    if(oValue == null) {
-		oValue = "NULL" ;
-
-	    }
-	    aLine += oKeys.toString() + "=" + oValue.toString() + '\n' ;
-	}
-	return aLine ;
-    }
-
-    /**
      * checks if user is authorized
      * @param req
      * @param res is used if error (send user to conference_starturl )
@@ -938,16 +713,6 @@ public class Conference extends HttpServlet {
 	return ( imcref.checkDocAdminRights( metaId, user ) &&
 		 imcref.checkDocAdminRights( metaId, user, 65536 ) );
 
-    }
-
-    /**
-       Parses one record.
-    */
-    public String parseOneRecord (String[] tags, String[] data, File htmlCodeFile) {
-
-	Vector tagsV = convert2Vector(tags) ;
-	Vector dataV = convert2Vector(data) ;
-	return this.parseOneRecord(tagsV, dataV, htmlCodeFile) ;
     }
 
 

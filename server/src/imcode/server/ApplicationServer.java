@@ -3,15 +3,14 @@ package imcode.server;
 import imcode.server.db.ConnectionPool;
 import imcode.server.db.ConnectionPoolForNonPoolingDriver;
 import imcode.util.Prefs;
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Properties;
 
 public class ApplicationServer {
 
-    private final static Category log = Category.getInstance( "ApplicationServer" );
-
+    private final static Logger log = Logger.getLogger( "imcode.server.ApplicationServer" );
     private static IMCServiceInterface imcServiceInterface;
 
 

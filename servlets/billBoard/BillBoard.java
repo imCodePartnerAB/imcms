@@ -46,8 +46,6 @@ import imcode.util.Parser;
 
 
 public class BillBoard extends HttpServlet { //Conference
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
     private final static String ADMIN_BUTTON_TEMPLATE = "BillBoard_Admin_Button.htm";
     private final static String UNADMIN_BUTTON_TEMPLATE = "BillBoard_Unadmin_Button.htm";
 
@@ -202,24 +200,6 @@ public class BillBoard extends HttpServlet { //Conference
 
 
 
-    /**
-       check the meta Parameters
-    */
-
-    public boolean checkParameters(HttpServletRequest req,HttpServletResponse res)
-	throws ServletException, IOException
-    {
-	Properties params = MetaInfo.getParameters(req) ;
-	if( MetaInfo.checkParameters(params) == false)
-	    {
-		String header = "BillBoard servlet." ;
-		String msg = params.toString() ;
-		BillBoardError err = new BillBoardError(req, res, header, msg, 1) ;
-		return false;
-	    }
-	return true ;
-    }
-
     public boolean checkParameters(HttpServletRequest req,HttpServletResponse res,
 				   Properties params) throws ServletException, IOException
     {
@@ -251,58 +231,6 @@ public class BillBoard extends HttpServlet { //Conference
 	}
 
     } // End GetAdminRights
-
-    /**
-       CheckAdminRights, returns true if the user is an superadmin. Only an superadmin
-       is allowed to create new users
-       False if the user isn't an administrator.
-       1 = administrator
-       0 = superadministrator
-    */
-
-    protected boolean checkAdminRights(IMCServiceInterface imcref, imcode.server.user.UserDomainObject user)
-    {
-
-	// Lets verify that the user who tries to add a new user is an SUPER_ADMIN
-	int currUser_id = user.getUserId() ;
-	String checkAdminSql = "CheckAdminRights " + currUser_id ;
-	String[] roles = imcref.sqlProcedure(checkAdminSql) ;
-	boolean returnValue = false;
-
-	for(int i = 0 ; i< roles.length; i++ )
-	    {
-		String aRole = roles[i] ;
-		if(aRole.equalsIgnoreCase("0") )
-		    returnValue = true ;
-	    }
-
-	return returnValue ;
-
-    } // checkAdminRights
-
-    /**
-       CheckAdminRights, returns true if the user is an admin.
-       False if the user isn't an administrator
-    */
-
-    protected boolean checkAdminRights(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException
-    {
-
-	// Lets get serverinformation
-
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-
-	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
-	if(user == null)
-	    {
-		this.log("CheckadminRights: an error occured, getUserObj") ;
-		return false ;
-	    }
-	else {
-	    return checkAdminRights(imcref, user) ;
-	}
-    }
 
 
     // *********************** GETEXTERNAL TEMPLATE FUNCTIONS *********************
@@ -386,37 +314,6 @@ public class BillBoard extends HttpServlet { //Conference
 
 
 
-    /**
-       Collects the parameters from the request object. This function will get all the possible
-       parameters this servlet will be able to get. If a parameter wont be found, the session
-       parameter will be used instead, or if no such parameter exist in the session object,
-       a key with no value = "" will be used instead.
-       Since this method is used. it means
-       that this servlet will take more arguments than the standard ones.
-    **/
-
-    public Properties getRequestParameters( HttpServletRequest req)
-	throws ServletException, IOException
-    {
-
-	Properties reqParams = new Properties() ;
-
-	// Lets get our own variables. We will first look for the discussion_id
-	//	 in the request object, if not found, we will get the one from our session object
-	String billBoardSectionId = req.getParameter("section_id") ;//"forum_id"
-
-	if( billBoardSectionId == null ) {
-	    HttpSession session = req.getSession(false) ;
-	    if (session != null) {
-		billBoardSectionId =	(String) session.getAttribute("BillBoard.section_id") ;//"Conference.forum_id"
-	    }
-	}
-	reqParams.setProperty("SECTION_ID", billBoardSectionId) ;
-	return reqParams ;
-    }
-
-
-
     //************************ END GETEXTERNAL TEMPLATE FUNCTIONS ***************
 
     /**
@@ -482,53 +379,6 @@ public class BillBoard extends HttpServlet { //Conference
     {
 	super.log(msg) ;
 
-    }
-
-    /**
-       Date function. Returns the current date and time in the swedish style
-    */
-
-
-    public static String getDateToday()
-    {
-	java.util.Calendar cal = java.util.Calendar.getInstance() ;
-
-	String year  = Integer.toString(cal.get(Calendar.YEAR)) ;
-	int month = Integer.parseInt(Integer.toString(cal.get(Calendar.MONTH))) + 1;
-	int day   = Integer.parseInt(Integer.toString(cal.get(Calendar.DAY_OF_MONTH))) ;
-	int hour  = Integer.parseInt(Integer.toString(cal.get(Calendar.HOUR_OF_DAY))) ;
-	int min   = Integer.parseInt(Integer.toString(cal.get(Calendar.MINUTE))) ;
-
-	String dateToDay  = year ;
-	dateToDay += "-" ;
-	dateToDay += month < 10 ? "0" + Integer.toString(month) : Integer.toString(month) ;
-	dateToDay += "-" ;
-	dateToDay += day < 10 ? "0" + Integer.toString(day) : Integer.toString(day) ;
-
-	return dateToDay ;
-    }
-
-    /**
-       Date function. Returns the current time in the swedish style
-    */
-
-    public static String getTimeNow()
-    {
-	java.util.Calendar cal = java.util.Calendar.getInstance() ;
-
-	int hour  = Integer.parseInt(Integer.toString(cal.get(Calendar.HOUR_OF_DAY))) ;
-	int min   = Integer.parseInt(Integer.toString(cal.get(Calendar.MINUTE))) ;
-	int sec   = Integer.parseInt(Integer.toString(cal.get(Calendar.SECOND))) ;
-
-	String timeNow  = "" ;
-	timeNow += hour < 10 ? "0" + Integer.toString(hour) : Integer.toString(hour) ;
-	timeNow += ":" ;
-	timeNow += min < 10 ? "0" + Integer.toString(min) : Integer.toString(min) ;
-	timeNow += ":" ;
-	timeNow += sec < 10 ? "0" + Integer.toString(sec) : Integer.toString(sec) ;
-	// timeNow += ".000" ;
-
-	return timeNow ;
     }
 
 
@@ -650,18 +500,6 @@ public class BillBoard extends HttpServlet { //Conference
 
 	return extFolder;
     }
-
-
-    /**
-       Returns the foldername where the templates are situated for a certain metaid.
-    **/
-    protected String getImageLibName(IMCPoolInterface billref, String meta_id ) throws ServletException, IOException
-    {
-	String sqlQ = "B_GetTemplateLib " + meta_id ;
-	String libName = "" + billref.sqlProcedureStr(sqlQ) + "/";
-	return libName ;
-
-    } // End of getImageLibName
 
 
     // ***************** RETURNS THE HTML CODE TO THE ADMINIMAGE **************
@@ -801,29 +639,6 @@ public class BillBoard extends HttpServlet { //Conference
     } // verifyForSql
 
     /**
-       Checks for illegal sql parameters.
-    **/
-    public String props2String(Properties p)
-    {
-
-	Enumeration enumValues = p.elements() ;
-	Enumeration enumKeys = p.keys() ;
-	String aLine = "";
-	while((enumValues.hasMoreElements() && enumKeys.hasMoreElements()))
-	    {
-		String oKeys = (String) (enumKeys.nextElement()) ;
-		String oValue = (String) (enumValues.nextElement()) ;
-		if(oValue == null)
-		    {
-			oValue = "NULL" ;
-
-		    }
-		aLine += oKeys.toString() + "=" + oValue.toString() + '\n' ;
-	    }
-	return aLine ;
-    }
-
-    /**
      * checks if user is authorized
      * @param req
      * @param res is used if error (send user to conference_starturl )
@@ -913,17 +728,6 @@ public class BillBoard extends HttpServlet { //Conference
 	return ( imcref.checkDocAdminRights( metaId, user ) &&
 		 imcref.checkDocAdminRights( metaId, user, 65536 ) );
 
-    }
-
-    /**
-       Parses one record.
-    */
-    public String parseOneRecord (String[] tags, String[] data, File htmlCodeFile)
-    {
-
-	Vector tagsV = convert2Vector(tags) ;
-	Vector dataV = convert2Vector(data) ;
-	return this.parseOneRecord(tagsV, dataV, htmlCodeFile) ;
     }
 
 

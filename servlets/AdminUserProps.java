@@ -1359,19 +1359,6 @@ public class AdminUserProps extends Administrator {
     } // End getRolesParameters
 
     /**
-     Returns a Vector, containing the choosed phone numbers from the html page.
-     */
-
-    public Vector getPhonesParameters( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-
-        // Lets get the phones
-        String[] phones = (req.getParameterValues( "user_phones" ) == null) ? new String[0] : (req.getParameterValues( "user_phones" ));
-        Vector phonesV = new Vector( java.util.Arrays.asList( phones ) );
-        return phonesV;
-
-    } // End getPhonesParameters
-
-    /**
      Redirect to next Url
      */
 
@@ -1536,28 +1523,6 @@ public class AdminUserProps extends Administrator {
             phonesV.addElement( temp );
         }
         return phonesV;
-    }
-
-    boolean checkAdminRights( UserDomainObject user, IMCServiceInterface imcref ) {
-
-        // check if user is a Superadmin, adminRole = 1
-        boolean isSuperadmin = imcref.checkUserAdminrole( user.getUserId(), 1 );
-
-        // check if user is a Useradmin, adminRole = 2
-        boolean isUseradmin = imcref.checkUserAdminrole( user.getUserId(), 2 );
-
-        if( isSuperadmin || isUseradmin ) {
-            return true;
-        }
-
-        /*	else if ( user.getUserId() == userToChange.getUserId() ){
-               return true;
-
-           }
-        */
-        else {
-            return false;
-        }
     }
 
     public void log( String str ) {

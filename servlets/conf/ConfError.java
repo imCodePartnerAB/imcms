@@ -8,10 +8,8 @@ import imcode.external.diverse.* ;
 import imcode.util.Utility;
 
 public class ConfError extends Conference {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
-	private static final String ERROR_FILE = "Conf_Error.htm";
+    private static final String ERROR_FILE = "Conf_Error.htm";
 	String myErrorHeader ;
 	String myErrorMessage ;
 
@@ -95,16 +93,7 @@ public String getErrorString() {
 }
 
 
-
-/**
-	Returns the errormessageheader for this object
-*/
-
-public String getErrorHeader() {
-	return myErrorHeader ;
-}
-
-/**
+    /**
 	Returns the errormessage for this object
 */
 

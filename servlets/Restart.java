@@ -6,10 +6,8 @@ import imcode.server.* ;
 import imcode.server.user.UserDomainObject;
 
 public class Restart extends HttpServlet {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
-	public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		String start_url        	= imcref.getStartUrl() ;

@@ -26,9 +26,7 @@ import imcode.util.* ;
 
 public class BillBoardCreator extends BillBoard
 {//BillBoardCreator
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	String HTML_TEMPLATE = "BillBoard_Creator.htm" ;
+    String HTML_TEMPLATE = "BillBoard_Creator.htm" ;
 
 	/**
 	The POST method creates the html page when this side has been

@@ -6,6 +6,7 @@ import java.io.File;
 import imcode.util.Prefs;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 /**
@@ -28,17 +29,21 @@ public class MainInitServlet extends HttpServlet {
          File confPath = new File( realPathToWebApp, "WEB-INF/conf" );
          Prefs.setConfigPath( confPath );
 
-         DOMConfigurator.configureAndWatch( new File( confPath, "log4j.xml" ).toString() );
-         Category log = Category.getRoot();
-         log.info( "Logging started" );
-         logPlatformInfo( this.getServletContext(), log );
+          configureLogging( confPath );
 
       } catch( Exception e ) {
          System.err.println( e.getMessage() );
       }
    }
 
-   private void logPlatformInfo( ServletContext application, Category log ) {
+    private void configureLogging( File confPath ) {
+        DOMConfigurator.configureAndWatch( new File( confPath, "log4j.xml" ).toString() );
+        Logger log = Logger.getLogger( "MainInitServlet" );
+        log.info( "Logging started" );
+        logPlatformInfo( this.getServletContext(), log );
+    }
+
+    private void logPlatformInfo( ServletContext application, Logger log ) {
       final String javaVersion = "java.version";
       final String javaVendor = "java.vendor";
       final String javaClassPath = "java.class.path";

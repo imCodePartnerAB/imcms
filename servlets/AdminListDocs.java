@@ -55,14 +55,11 @@ import imcode.util.Parser;
  *
  */
 public class AdminListDocs extends Administrator {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private static final String TEMPLATE_LISTDOC = "AdminListDocs.html";
     private static final String TEMPLATE_LISTDOC_LIST_MODIFIED = "AdminListDocs_doclList_modified.html";
     private static final String TEMPLATE_LISTDOC_LIST_CREATED = "AdminListDocs_doclList_created.html";
     private static final String TEMPLATE_LISTDOC_LIST_ELEMENT = "AdminListDocs_doclList_element.html";
-    private static final String TEMPLATE_ERROR = "Error.html";
     private static final String ERROR_HEADER = "AdminListDocs";
 
     //required date format

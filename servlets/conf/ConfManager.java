@@ -7,9 +7,6 @@ import imcode.external.diverse.*;
 import imcode.util.* ;
 
 public class ConfManager extends Conference {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-    String HTML_TEMPLATE ;
 
     /**
        The GET method creates the html page when this side has been

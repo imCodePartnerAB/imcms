@@ -15,8 +15,6 @@ import imcode.server.* ;
 */
 public class CalenderOverview
 {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     /**
        Head function discerning between different requests and returning the correct html.

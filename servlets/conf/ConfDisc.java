@@ -47,10 +47,8 @@ import imcode.util.IMCServiceRMI;
 
 
 public class ConfDisc extends Conference {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
-	private final static String NEW_DISC_FLAG_TEMPLATE = "Conf_Disc_List_New.htm";
+    private final static String NEW_DISC_FLAG_TEMPLATE = "Conf_Disc_List_New.htm";
 	private final static String PREVIOUS_DISC_LIST_TEMPLATE = "Conf_Disc_List_Previous.htm";
 	private final static String NEXT_DISC_LIST_TEMPLATE = "Conf_Disc_List_Next.htm";
 	private final static String NEW_DISC_TEMPLATE = "Conf_Disc_New_Button.htm";
@@ -659,25 +657,8 @@ public class ConfDisc extends Conference {
 		return 0 ;
 	}
 
-	/**
-	Sets the current discussion index.
-	*/
-	public boolean setDiscIndex( HttpServletRequest req, int newIndex) {
-		try {
-			HttpSession session = req.getSession(false) ;
-			if(session != null) {
-				session.setAttribute("Conference.disc_index", "" + newIndex ) ;
-				return true ;
-			}
-		} catch(Exception e ) {
-			log("SetDiscIndex failed!") ;
-			return false ;
-		}
-		return false ;
-	}
 
-
-	/**
+    /**
 	Returns the startPos for a record in an extended array. observe
 	that the extended information wont be included in this information
 	**/
@@ -752,20 +733,7 @@ public class ConfDisc extends Conference {
 	}
 
 
-
-
-	/**
-	Parses one record.
-	*/
-	public String parseOneRecord (String[] tags, String[] data, File htmlCodeFile) {
-
-		Vector tagsV = super.convert2Vector(tags) ;
-		Vector dataV = super.convert2Vector(data) ;
-		return this.parseOneRecord(tagsV, dataV, htmlCodeFile) ;
-	}
-
-
-	/**
+    /**
 	Parses one record.
 	*/
 	public String parseOneRecord (Vector tagsV, Vector dataV, File htmlCodeFile) {
@@ -778,22 +746,7 @@ public class ConfDisc extends Conference {
 	} // End of parseOneRecord
 
 
-	/**
-	Returns the users NewDiscussionFlag htmlcode. If something has happened in a discussion
-	or a new discussion has took place, a bitmap will be shown in front of the discussion,
-	otherwise nothing will occur.
-	*/
-
-	protected String setNewDiscFlag (String ImagePath)
-	throws ServletException, IOException {
-
-		// Lets get the information regarding the replylevel
-		String imageStart = "<img src=\"" ;
-		String imageEnd = "\"> " ;
-		return imageStart + ImagePath + imageEnd ;
-	}
-
-	/**
+    /**
 	Collects the standard parameters from the SESSION object.
 	**/
 
@@ -829,7 +782,7 @@ public class ConfDisc extends Conference {
 	a key with no value = "" will be used instead.
 	**/
 
-	public Properties getRequestParameters( HttpServletRequest req)
+    private Properties getRequestParameters( HttpServletRequest req)
 	throws ServletException, IOException {
 
 		Properties reqParams = new Properties() ;
@@ -902,33 +855,7 @@ public class ConfDisc extends Conference {
 	} // End of buildstags
 
 
-	/**
-	show the tag and the according data
-	**/
-	protected void showIt(Vector tags, Vector data) {
-
-		log("***********") ;
-		if(tags.size() != data.size()) {
-			log("Antalet stämmer inte ") ;
-			log("Tags: " + tags.size()) ;
-			log("Data: " + data.size()) ;
-			// return ;
-		}
-
-		for (int i = 0 ; i < tags.size() ; i++) {
-			String aTag = ( String) tags.elementAt(i) ;
-			String aData = ( String) data.elementAt(i) ;
-			log("" + i + ": " + aTag +" --> " + aData) ;
-
-		}
-
-
-	} // End of showit
-
-
-
-
-	/**
+    /**
 	Detects paths and filenames.
 	*/
 

@@ -55,10 +55,7 @@ import imcode.util.IMCServiceRMI;
 
 
 public class BillBoardDisc extends BillBoard {//ConfDisc
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
-    private final static String NEW_DISC_FLAG_TEMPLATE = "BillBoard_Disc_List_New.htm";//"Conf_Disc_List_New.htm";
     private final static String PREVIOUS_DISC_LIST_TEMPLATE = "BillBoard_Disc_List_Previous.htm";//"Conf_Disc_List_Previous.htm";
     private final static String NEXT_DISC_LIST_TEMPLATE = "BillBoard_Disc_List_Next.htm";//"Conf_Disc_List_Next.htm";
     private final static String NEW_DISC_TEMPLATE = "BillBoard_Disc_New_Button.htm";//"Conf_Disc_New_Button.htm";
@@ -544,128 +541,6 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
     } // End of
 
     /**
-       Returns true if we have seen the discussion before, otherwise false.
-       Updates the sessionobject as well
-    **/
-
-    public boolean discViewStatus( HttpServletRequest req, Vector dataV) throws ServletException, IOException
-    {
-
-	// Get the session and the list
-	HttpSession session = req.getSession(true);
-	Properties viewedDiscs = (Properties) session.getAttribute("BillBoard.viewedDiscList") ;//Conference.viewedDiscList
-
-	// Lets get info from the db. the format on the vector is:
-	// newFlag, discussion_id, create_date, headline, count_replies, first_name, last_name , updated_date
-	String sqlNewDiscFlag = dataV.get(0).toString() ;
-	String sqlDiscId = dataV.get(1).toString() ;
-	String sqlDiscDate = dataV.get(7).toString() ;
-
-	if(sqlNewDiscFlag.equals("1") )
-	    {
-		// log("NY diskussion") ;
-		// Lets check if we have seen the discussion in this session, if we have
-		// not seen it, return true
-		if( viewedDiscs.get(sqlDiscId) == null )
-		    {
-			return true ;
-		    }
-		else
-		    { // we have seen it in this session, lets check the date when we
-			// saw it against when it was updated
-			// Lets get the date when we viewed the discussion
-			boolean newerDisc = compareDates(viewedDiscs.getProperty(sqlDiscId), sqlDiscDate) ;
-			if(newerDisc)
-			    {
-				// log("Gamlare diskussion") ;
-				return true ;
-			    }
-			//log("SAG: " + sqlDiscId + ": " + sqlDiscDate) ;
-			return false ;
-		    }
-	    }
-	return false ;
-    }
-
-    /**
-       Compare dates. Takes an string of the expected form and compares if its newer or later
-       than the other. returns true if the firstdate is before the second date. If its
-       equals or later it returns false. Observe the precision which is down to
-       minutes, not seconds. It means that comparing two dates with the same minute wil
-       l return false!
-    */
-
-    protected boolean compareDates(String date1, String date2)
-    {
-	// Lets fix the date
-	// java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat() ;
-	java.text.SimpleDateFormat formatter= new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
-	GregorianCalendar firstDate = new GregorianCalendar() ;
-	GregorianCalendar secDate = new GregorianCalendar() ;
-
-	try
-	    {
-		// Create a calendar, by parse to a date and then create calendar
-		firstDate.setTime(formatter.parse(date1)) ;
-		secDate.setTime(formatter.parse(date2)) ;
-
-		// Get the seconds from the datestring,
-		firstDate.set(Calendar.SECOND, this.getDateItem(date1,":", 3)) ;
-		secDate.set(Calendar.SECOND, this.getDateItem(date2, ":", 3)) ;
-		//secDate = formatter.parse(date2) ;
-
-		//log("firstDate: " + firstDate.toString() ) ;
-		//log("secDate: " + firstDate.toString() ) ;
-	    } catch(java.text.ParseException e)
-		{
-		    log(e.getMessage()) ;
-		    log("Invalid date1: " + date1) ;
-		    log("Invalid date2: " + date2) ;
-		    return true ;
-		}
-	//
-	if ( firstDate.before(secDate))
-	    {
-		//log( date1 + " innan " + date2) ;
-		return true ;
-	    }
-
-	return false ;
-	// return firstDate.before(secDate) ;
-    }
-
-    /**
-       Returns wanted item from string, returns empty if itemnumber not found
-    */
-
-    public int getDateItem(String str, String delim, int itemNbr)
-    {
-	String tmpVal = "";
-	itemNbr = itemNbr - 1 ;
-	StringTokenizer st = new StringTokenizer(str, delim) ;
-	int counter = 0 ;
-	int retVal = 0 ;
-
-	while (st.hasMoreTokens())
-	    {
-		String tmp = st.nextToken() ;
-		if( counter == itemNbr)
-		    tmpVal = tmp ;
-		counter = counter + 1 ;
-	    }
-
-	try
-	    {
-		retVal = Integer.parseInt(tmpVal) ;
-	    } catch(NumberFormatException e)
-		{
-		    log("Error in getDateItem!") ;
-		    retVal = 0 ;
-		}
-	return retVal ;
-    }
-
-    /**
        Increases the current discussion index. If somethings happens, zero will be set.
     **/
     public boolean increaseDiscIndex( HttpServletRequest req, int incFactor )
@@ -730,27 +605,6 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		    return 0 ;
 		}
 	return 0 ;
-    }
-
-    /**
-       Sets the current discussion index.
-    */
-    public boolean setDiscIndex( HttpServletRequest req, int newIndex)
-    {
-	try
-	    {
-		HttpSession session = req.getSession(false) ;
-		if(session != null)
-		    {
-			session.setAttribute("BillBoard.disc_index", "" + newIndex ) ;
-			return true ;
-		    }
-	    } catch(Exception e )
-		{
-		    log("SetDiscIndex failed!") ;
-		    return false ;
-		}
-	return false ;
     }
 
 
@@ -837,25 +691,6 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
     }
 
 
-
-
-
-    /**
-       Returns the users NewDiscussionFlag htmlcode. If something has happened in a discussion
-       or a new discussion has took place, a bitmap will be shown in front of the discussion,
-       otherwise nothing will occur.
-    */
-
-    protected String setNewDiscFlag (String ImagePath)
-	throws ServletException, IOException
-    {
-
-	// Lets get the information regarding the replylevel
-	String imageStart = "<img src=\"" ;
-	String imageEnd = "\"> " ;
-	return imageStart + ImagePath + imageEnd ;
-    }
-
     /**
        Collects the standard parameters from the SESSION object.
     **/
@@ -888,7 +723,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
        a key with no value = "" will be used instead.
     **/
 
-    public Properties getRequestParameters( HttpServletRequest req)
+    private Properties getRequestParameters( HttpServletRequest req)
 	throws ServletException, IOException
     {
 
@@ -959,35 +794,6 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 	tagsV.add("#REPLY_URL#") ;
 	return tagsV ;
     } // End of buildstags
-
-
-    /**
-       show the tag and the according data
-    **/
-    protected void showIt(Vector tags, Vector data)
-    {
-
-	//log("***********") ;
-	if(tags.size() != data.size())
-	    {
-		log("Antalet stämmer inte ") ;
-		log("Tags: " + tags.size()) ;
-		log("Data: " + data.size()) ;
-		// return ;
-	    }
-
-	for (int i = 0 ; i < tags.size() ; i++)
-	    {
-		String aTag = ( String) tags.elementAt(i) ;
-		String aData = ( String) data.elementAt(i) ;
-		log("" + i + ": " + aTag +" --> " + aData) ;
-
-	    }
-
-
-    } // End of showit
-
-
 
 
     /**
@@ -1094,30 +900,4 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 	return true ;
     }
 
-    /**
-       Help method to build the search for user sql string. Builds the sql string
-       which is used when the user wants to search for a certain	User.
-    */
-
-    protected String buildSearchWordsSql( String str)
-    {
-	StringManager strMan = new StringManager(str, " ") ;
-	String tmpStr = "" ;
-	String tmpItem = "" ;
-	String sqlStr = "(\n SELECT usr.user_id \n FROM conf_users usr \n WHERE " ;
-
-	StringTokenizer st = new StringTokenizer(str);
-	int counter = st.countTokens() ;
-	//log("Counter: " + counter) ;
-	for(int i = 0 ; i < counter ; i++ )
-	    {
-		tmpItem = st.nextToken() ;
-		tmpStr += "usr.first_name LIKE '" + tmpItem + "%' OR usr.last_name LIKE '" + tmpItem + "%' \n ";
-		if( (i+1) < counter )
-		    tmpStr += " OR " ;
-	    }
-	sqlStr += tmpStr + ")" ;
-	//	log("SqlStr: " + sqlStr) ;
-	return sqlStr ;
-    }
 } // End of class

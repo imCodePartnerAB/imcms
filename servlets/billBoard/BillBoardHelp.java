@@ -9,8 +9,6 @@ import java.rmi.registry.* ;
 import imcode.util.* ;
 
 public class BillBoardHelp extends BillBoard {//ConfHelp
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String USER_TEMPLATE = "BillBoard_help_user.htm";//Conf_help_user.htm
     private final static String ADMIN_TEMPLATE = "BillBoard_help_admin.htm";//Conf_help_admin.htm

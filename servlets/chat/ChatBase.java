@@ -41,12 +41,6 @@ import imcode.server.* ;
 
 public class ChatBase extends HttpServlet {
 
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-    private final static String ADMIN_BUTTON_TEMPLATE = "Chat_Admin_Button.htm";
-    private final static String UNADMIN_BUTTON_TEMPLATE = "Chat_Unadmin_Button.htm";
-
-    public final static int CHAT_ALLA_INT = 0;
     public final static int CHAT_ENTER_LEAVE_INT = -32;
     public final static String LEAVE_MSG = "lämnar rummet";
     public final static String ENTER_MSG = "stiger in";
@@ -59,16 +53,6 @@ public class ChatBase extends HttpServlet {
 	throws ServletException
     {
 	super.init(config);
-    }
-
-    /**
-       Collects the parameters from the request object
-    **/
-
-    protected Properties getNewChatParameters( HttpServletRequest req) throws ServletException, IOException	{
-	Properties chatP = new Properties();
-
-	return chatP ;
     }
 
     //peter keep
@@ -302,20 +286,6 @@ public class ChatBase extends HttpServlet {
     // *************** LETS HANDLE THE STANDARD META PARAMETERS *********************
 
 
-    /**
-       check the meta Parameters
-    */
-
-    public boolean checkParameters(HttpServletRequest req,HttpServletResponse res) throws ServletException, IOException {
-	Properties params = MetaInfo.getParameters(req) ;
-	if( MetaInfo.checkParameters(params) == false)
-	    {
-		log("checkParameters had a null value") ;
-		return false;
-	    }
-	return true ;
-    }
-
     public boolean checkParameters(HttpServletRequest req,HttpServletResponse res,
 				   Properties params) throws ServletException, IOException
     {
@@ -334,60 +304,6 @@ public class ChatBase extends HttpServlet {
 
     // *************************** ADMIN RIGHTS FUNCTIONS **************************
 
-    protected boolean getAdminRights(IMCServiceInterface imcref, String metaId, imcode.server.user.UserDomainObject user)
-    {
-	try {
-	    return userHasAdminRights( imcref, Integer.parseInt( metaId ), user );
-	} catch ( IOException e ) {
-	    return false ;
-	}
-    } // End GetAdminRights
-
-
-    /**
-       CheckAdminRights, returns true if the user is an superadmin. Only an superadmin
-       is allowed to create new users
-       False if the user isn't an administrator.
-       1 = administrator
-       0 = superadministrator
-    */
-    protected boolean checkAdminRights(IMCServiceInterface imcref, imcode.server.user.UserDomainObject user)
-    {
-	// Lets verify that the user who tries to add a new user is an SUPER_ADMIN
-	int currUser_id = user.getUserId() ;
-	String checkAdminSql = "CheckAdminRights " + currUser_id ;
-	String[] roles = imcref.sqlProcedure(checkAdminSql) ;
-	boolean returnValue = false;
-	for(int i = 0 ; i< roles.length; i++ )
-	    {
-		String aRole = roles[i] ;
-		if(aRole.equalsIgnoreCase("0") )
-		    returnValue = true ;
-	    }
-	return returnValue ;
-
-    } // checkAdminRights
-
-    /**
-       CheckAdminRights, returns true if the user is an admin.
-       False if the user isn't an administrator
-    */
-    protected boolean checkAdminRights(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException
-    {
-
-	// Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-
-	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
-	if(user == null)
-	    {
-		this.log("CheckadminRights: an error occured, getUserObj") ;
-		return false ;
-	    }
-	else
-	    return imcref.checkAdminRights(user) ;
-    }
 
     // *********************** GETEXTERNAL TEMPLATE FUNCTIONS *********************
 
@@ -439,35 +355,6 @@ public class ChatBase extends HttpServlet {
 	}
 	return libName ;
     } // End of getTemplateLibName
-
-
-    /**
-       Collects the parameters from the request object. This function will get all the possible
-       parameters this servlet will be able to get. If a parameter wont be found, the session
-       parameter will be used instead, or if no such parameter exist in the session object,
-       a key with no value = "" will be used instead.
-       Since this method is used. it means
-       that this servlet will take more arguments than the standard ones.
-    **/
-
-    public Properties getRequestParameters( HttpServletRequest req)
-	throws ServletException, IOException
-    {
-
-	Properties reqParams = new Properties() ;
-
-	// Lets get our own variables. We will first look for the discussion_id
-	//	 in the request object, if not found, we will get the one from our session object
-	String confForumId = req.getParameter("forum_id") ;
-	if( confForumId == null ) {
-	    HttpSession session = req.getSession(false) ;
-	    if (session != null) {
-		confForumId =	(String) session.getAttribute("Chat.forum_id") ;
-	    }
-	}
-	reqParams.setProperty("FORUM_ID", confForumId) ;
-	return reqParams ;
-    }
 
 
 
@@ -719,20 +606,6 @@ public class ChatBase extends HttpServlet {
 	    }
 
 	return authorized;
-    }
-
-    /**
-     * check if user has right to edit
-     * @param imcref imCMS IMCServiceInterface instance
-     * @param metaId metaId for conference
-     * @param user
-     */
-    protected boolean userHasRightToEdit( IMCServiceInterface imcref, int metaId,
-					  imcode.server.user.UserDomainObject user ) throws java.io.IOException
-    {
-
-	return ( imcref.checkDocRights( metaId, user ) &&
-		 imcref.checkDocAdminRights( metaId, user ) );
     }
 
     /**

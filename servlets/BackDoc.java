@@ -8,8 +8,6 @@ import imcode.server.* ;
 import imcode.server.user.UserDomainObject;
 
 public class BackDoc extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     /**
        init()

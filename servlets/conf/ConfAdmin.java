@@ -9,8 +9,6 @@ import java.rmi.registry.* ;
 import imcode.util.*;
 
 public class ConfAdmin extends Conference {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String FORUM_UNADMIN_LINK_TEMPLATE = "Conf_Forum_Unadmin_Link.htm";
     private final static String FORUM_TEMPLATE1_UNADMIN_LINK_TEMPLATE = "Conf_Forum_Template1_Unadmin_Link.htm";
@@ -806,25 +804,6 @@ public class ConfAdmin extends Conference {
     } // End of
 
     // ****************** END OF PARSE REPLIES FUNCTIONS ****************
-
-    /**
-       Returns the users NewDiscussionFlag htmlcode. If something has happened in a discussion
-       or a new discussion has took place, a bitmap will be shown in front of the discussion,
-       otherwise nothing will occur.
-    */
-
-    protected String setNewDiscFlag (Vector dataV, String ImagePath)
-	throws ServletException, IOException {
-
-	// Lets get the information regarding the replylevel
-	int index = 0 ;
-	String htmlCode = "" ;
-	String imageStart = "<img src=\"" ;
-	String imageEnd = "\">" ;
-
-	htmlCode = imageStart + ImagePath + imageEnd;
-	return htmlCode ;
-    }
 
 
     // ****************** GET PARAMETER FUNCTIONS ************************

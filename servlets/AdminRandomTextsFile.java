@@ -11,11 +11,8 @@ import imcode.util.fortune.*;
 
 
 public class AdminRandomTextsFile extends Administrator implements imcode.server.IMCConstants{
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String HTML_TEMPLATE	= "admin_random_texts_file.html" ;
-    private final static String OPTION_LINE	= "option_line.frag" ;
     private final static String DATE_ERROR		= "date_err_msg.frag" ;
     private final static String TEXT_ERROR		= "text_err_msg.frag" ;
     private final static SimpleDateFormat dateForm = new SimpleDateFormat("yyMMdd");

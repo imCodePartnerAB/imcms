@@ -7,6 +7,7 @@ import imcode.server.user.UserDomainObject;
 
 import java.util.Vector;
 import java.util.Iterator;
+import java.util.List;
 
 public class TemplateMapper {
 
@@ -93,10 +94,10 @@ public class TemplateMapper {
         return result;
     }
 
-    public static Vector sqlSelectGroupName( DBConnect dbc, String group_id ) {
+    public static List sqlSelectGroupName( DBConnect dbc, String group_id ) {
         String sqlStr = "select group_name from templategroups where group_id = " + group_id;
         dbc.setSQLString( sqlStr );
-        Vector groupnamevec = dbc.executeQuery();
+        List groupnamevec = dbc.executeQuery();
         return groupnamevec;
     }
 
@@ -118,10 +119,10 @@ public class TemplateMapper {
         String sqlStr = "select template_id,template_name,simple_name from templates where template_id = " + template_id;
         DBConnect dbc = new DBConnect( service.getConnectionPool() );
         dbc.setSQLString( sqlStr );
-        Vector queryResult = dbc.executeQuery();
-        int templateId = Integer.parseInt( (String)queryResult.elementAt( 0 ) );
-        String templateName = (String)queryResult.elementAt( 1 );
-        String simpleName = (String)queryResult.elementAt( 2 );
+        List queryResult = dbc.executeQuery();
+        int templateId = Integer.parseInt( (String)queryResult.get( 0 ) );
+        String templateName = (String)queryResult.get( 1 );
+        String simpleName = (String)queryResult.get( 2 );
         TemplateDomainObject result = new TemplateDomainObject( templateId, templateName, simpleName );
         return result;
     }

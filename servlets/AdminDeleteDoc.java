@@ -8,8 +8,7 @@ import imcode.util.* ;
 import imcode.server.* ;
 
 public class AdminDeleteDoc extends Administrator {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
+
     private final static String HTML_TEMPLATE = "AdminDeleteDoc.htm" ;
 
     /**
@@ -181,14 +180,5 @@ public class AdminDeleteDoc extends Administrator {
 	System.out.println("AdminDeleteDoc: " + str ) ;
     }
 
-
-    /**
-       Returns to the adminUsers meny
-    */
-
-    public void goAdminUsers(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException {
-	res.sendRedirect("AdminManager") ;
-    }
 
 } // End of class

@@ -8,8 +8,6 @@ import imcode.server. * ;
 import imcode.external.diverse.* ;
 
 public class AdminSection extends Administrator {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     public final static String ADMIN_TEMPLATE			= "sections/admin_section.html";
     public final static String ADD_TEMPLATE			= "sections/admin_section_add.html";

@@ -39,15 +39,12 @@ import imcode.util.* ;
  */
 public class ChatAdmin extends Administrator{
 
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
     private static final String TEMPLATE_CONF = "AdminChat.html";
     private static final String TEMPLATE_LIST_TOOL = "AdminChat_list_tool.html";
     private static final String TEMPLATE_LIST = "AdminChat_list.html";
     private static final String TEMPLATE_CONF_ELEMENT = "AdminChat_list_Chat_element.html";
     private static final String TEMPLATE_FORUM_ELEMENT = "AdminChat_list_forum_element.html";
     private static final String TEMPLATE_DEBATE_ELEMENT = "AdminChat_list_debate_element.html";
-    private static final String TEMPLATE_ERROR = "Error.html";
     private static final String ERROR_HEADER = "AdminChat";
 
     //required date format

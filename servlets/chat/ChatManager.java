@@ -9,8 +9,6 @@ import imcode.server.* ;
 //första gången vi kommer hit har vi doGet parametern  action=new
 
 public class ChatManager extends ChatBase{
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{

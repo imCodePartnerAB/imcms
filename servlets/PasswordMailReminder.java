@@ -67,8 +67,6 @@ import imcode.server.* ;
  */
 
 public class PasswordMailReminder extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     /* filnames for templates */
     private final static String USER_DONT_EXIST = "password_no_user.txt";
@@ -79,7 +77,6 @@ public class PasswordMailReminder extends HttpServlet {
 
     /* filnames for errors */
     private final static String ERROR_STRING = "password_error_input.txt";
-    private static final String HTML_EMAIL_ERROR = "Error.html";
 
     /* returning internalDocument */
     private final static String RETURNING_DOCUMENT_NO_USER_NAME = "password_no_user.html";

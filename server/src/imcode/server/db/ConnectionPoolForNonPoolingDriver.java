@@ -31,7 +31,7 @@ public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
     private Class nonPooledDriverClass;
     private int maxActiveConnections;
 
-    private static Logger log = Logger.getLogger( "ConnectionPoolForNonPoolingDriver" );
+    private final static Logger log = Logger.getLogger( "imcode.server.db.ConnectionPoolForNonPoolingDriver" );
 
     public ConnectionPoolForNonPoolingDriver( String driverClassName, String dbUrl, String userName, String password, int maxActiveConnections ) throws Exception {
         this.userName = userName;

@@ -15,8 +15,6 @@ import imcode.server.* ;
 
 public class ChatBoard extends ChatBase
 {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
 
     private final static String HTML_TEMPLATE	= "chat_messages.html" ; ;

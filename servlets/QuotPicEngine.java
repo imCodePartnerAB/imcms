@@ -17,10 +17,6 @@ import imcode.server.* ;
  */
 
 public class QuotPicEngine extends HttpServlet {
-    private final static String CVS_REV = "$Revision$"  ;
-    private final static String CVS_DATE = "$Date$";
-
-    private final static SimpleDateFormat dateF = new SimpleDateFormat("yyMMdd");
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException {
 

@@ -14,9 +14,7 @@ import imcode.external.chat.*;
 
 public class ChatViewer extends ChatBase {
 
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	private final static String HTML_TEMPLATE = "Chat_Frameset.htm" ;
+    private final static String HTML_TEMPLATE = "Chat_Frameset.htm" ;
 
 
 	public void doPost(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException{

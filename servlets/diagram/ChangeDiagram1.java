@@ -274,7 +274,7 @@ public class ChangeDiagram1 extends HttpServlet {
 		}
 		myValAcc = null ;
 	// Lets get the settings
-		SettingsAccessor mySetAcc = new SettingsAccessor(path + prefsFile) ;
+		SettingsAccessor mySetAcc = new SettingsAccessor(new File(path,prefsFile)) ;
 		mySetAcc.loadSettings() ;
 
 		//this.log("Diagramdata är:" + diagramDataStr ) ;

@@ -388,4 +388,6 @@ public interface IMCServiceInterface {
 
     ConnectionPool getConnectionPool();
 
+    String sqlQueryStr( String sqlStr, String[] params );
+
 }

@@ -12,8 +12,6 @@ import imcode.util.* ;
    Save image data.
 */
 public class SaveImage extends HttpServlet implements imcode.server.IMCConstants {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     /**
        init()

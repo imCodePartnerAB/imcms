@@ -7,9 +7,8 @@ import imcode.util.* ;
 import imcode.server.* ;
 
 public class MetaAdmin extends HttpServlet {
-        private final static String CVS_REV = "$Revision$" ;
-        private final static String CVS_DATE = "$Date$" ;
-		private final static int DEFAULT_META_START = 1001;
+
+    private final static int DEFAULT_META_START = 1001;
 
         public void init(ServletConfig config) throws ServletException {
                 super.init(config) ;

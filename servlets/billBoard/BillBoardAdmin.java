@@ -67,8 +67,6 @@ import imcode.util.*;
  */
 
 public class BillBoardAdmin extends BillBoard {//ConfAdmin
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String FORUM_UNADMIN_LINK_TEMPLATE = "BillBoard_Section_Unadmin_Link.htm";//"Conf_Forum_Unadmin_Link.htm";
     private final static String FORUM_TEMPLATE1_UNADMIN_LINK_TEMPLATE = "BillBoard_Section_Template1_Unadmin_Link.htm";//"Conf_Forum_Template1_Unadmin_Link.htm";
@@ -958,16 +956,6 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
     // ****************** END OF PARSE REPLIES FUNCTIONS ****************
 
-    /**
-       Parses one record.
-    */
-    public String parseOneRecord (String[] tags, String[] data, File htmlCodeFile) {
-
-	Vector tagsV = super.convert2Vector(tags) ;
-	Vector dataV = super.convert2Vector(data) ;
-	return this.parseOneRecord(tagsV, dataV, htmlCodeFile) ;
-    }
-
 
     /**
        Parses one record.
@@ -980,26 +968,6 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	String oneRecordsHtmlCode = parser.getHtmlDoc() ;
 	return oneRecordsHtmlCode ;
     } // End of parseOneRecord
-
-
-    /**
-       Returns the users NewDiscussionFlag htmlcode. If something has happened in a discussion
-       or a new discussion has took place, a bitmap will be shown in front of the discussion,
-       otherwise nothing will occur.
-    */
-
-    protected String setNewDiscFlag (Vector dataV, String ImagePath)
-	throws ServletException, IOException {
-
-	// Lets get the information regarding the replylevel
-	int index = 0 ;
-	String htmlCode = "" ;
-	String imageStart = "<img src=\"" ;
-	String imageEnd = "\">" ;
-
-	htmlCode = imageStart + ImagePath + imageEnd;
-	return htmlCode ;
-    }
 
 
     // ****************** GET PARAMETER FUNCTIONS ************************
@@ -1098,18 +1066,6 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	// Lets get the standard discussion_id to delete
 	String[] discId = (req.getParameterValues("DISC_DEL_BOX")) ;//DISC_DEL_BOX
 	return discId ;
-    }
-
-    /**
-       Collects the parameters used to delete a reply
-    **/
-
-    public String[] getDelReplyParameters( HttpServletRequest req )
-	throws ServletException, IOException {
-
-	// Lets get the standard discussion_id to delete
-	String[] replyId = (req.getParameterValues("REPLY_DEL_BOX")) ;//REPLY_DEL_BOX
-	return replyId ;
     }
 
     /**

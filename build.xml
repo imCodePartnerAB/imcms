@@ -75,6 +75,9 @@
     <property name="warfile"                  value="${webappname}.war"/>
     <property name="wardist"                  value="${dist}/${warfile}"/>
 
+    <property name="jardist"                  value="${dist}/${webappname}.jar"/>
+    <property name="jarapidist"               value="${dist}/${webappname}-api.jar"/>
+
     <property name="srcdistfile"              value="${webappname}-src"/>
     <property name="srczipdist"               value="${dist}/${srcdistfile}.zip"/>
     <property name="srctgzdist"               value="${dist}/${srcdistfile}.tar.gz"/>
@@ -214,14 +217,23 @@
 
 
     <!-- Build the war-file -->
-    <target name="dist" depends="init,build,check-webappname" description="Packages a complete distribution.">
+    <target name="dist" depends="init,build,check-webappname,wardist,jardist" description="Packages a complete distribution.">
 
-	<war warfile="${wardist}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
-
-	<echo>Done packaging distribution '${wardist}'.</echo>
+	<echo>Done packaging distribution.</echo>
 
 	<echo>Using ${ant.version} with JVM ${ant.java.version}.</echo>
 
+    </target>
+
+    <target name="wardist" depends="init,build,check-webappname" description="Creates a war-file.">
+
+        <war warfile="${wardist}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
+
+    </target>
+
+    <target name="jardist" depends="init,build,check-webappname" description="Creates jar-files.">
+        <jar destfile="${jardist}"    basedir="${classes}"/>
+        <jar destfile="${jarapidist}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>
     </target>
 
     <target name="srcdist" depends="srczipdist,srctgzdist" description="Packages all source distributions."/>

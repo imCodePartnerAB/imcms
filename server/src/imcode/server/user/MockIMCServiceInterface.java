@@ -84,6 +84,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         return null;  //To change body of implemented methods use Options | File Templates.
     }
 
+    public String sqlQueryStr( String sqlStr, String[] params ) {
+        return null;  //To change body of implemented methods use Options | File Templates.
+    }
+
     // archive childs
    public void archiveChilds( int meta_id, UserDomainObject user, String childsThisMenu[] ) {
    }

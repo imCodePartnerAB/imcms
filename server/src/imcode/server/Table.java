@@ -9,9 +9,9 @@ public class Table implements java.io.Serializable {
 	public Table() {
 	}
 
-	public Table(Vector fieldData) {
+	public Table(List fieldData) {
 		for(int i = 0 ; i < fieldData.size() ; i++) {
-			this.fieldData.addElement(fieldData.elementAt(i)) ;
+			this.fieldData.addElement(fieldData.get(i)) ;
 		}
 	}		
 

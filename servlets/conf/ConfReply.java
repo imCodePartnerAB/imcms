@@ -37,8 +37,6 @@ import imcode.util.*;
 
 
 public class ConfReply extends Conference {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String NEW_COMMENT_TEMPLATE =  "Conf_Reply_New_Comment.htm";
     private final static String ADMIN_LINK_TEMPLATE = "Conf_Reply_Admin_Link.htm";
@@ -345,17 +343,6 @@ public class ConfReply extends Conference {
 
 	return strBuff ;
     } // End of replace
-
-
-    /**
-       Parses one record.
-    */
-    public String parseOneRecord (String[] tags, String[] data, File htmlCodeFile) {
-
-	Vector tagsV = super.convert2Vector(tags) ;
-	Vector dataV = super.convert2Vector(data) ;
-	return this.parseOneRecord(tagsV, dataV, htmlCodeFile) ;
-    }
 
 
     /**

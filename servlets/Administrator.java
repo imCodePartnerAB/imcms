@@ -35,9 +35,6 @@ import org.apache.log4j.*;
  */
 public class Administrator extends HttpServlet {
 
-    private final static String CVS_REV = "$Revision$";
-    private final static String CVS_DATE = "$Date$";
-
     private static final String TEMPLATE_ERROR = "Error.html";
 
     private static Category log = Logger.getInstance( Administrator.class.getName() );
@@ -186,50 +183,6 @@ public class Administrator extends HttpServlet {
 
     public void log( String msg ) {
         log.debug( "Administrator: " + msg );
-    }
-
-    /**
-     Date function. Returns the current date and time in the swedish style
-     @deprecated Use SimpleDateFormat.format(Date) instead.
-     */
-    public static String getDateToday() {
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-
-        String year = Integer.toString( cal.get( Calendar.YEAR ) );
-        int month = Integer.parseInt( Integer.toString( cal.get( Calendar.MONTH ) ) ) + 1;
-        int day = Integer.parseInt( Integer.toString( cal.get( Calendar.DAY_OF_MONTH ) ) );
-        int hour = Integer.parseInt( Integer.toString( cal.get( Calendar.HOUR_OF_DAY ) ) );
-        int min = Integer.parseInt( Integer.toString( cal.get( Calendar.MINUTE ) ) );
-
-        String dateToDay = year;
-        dateToDay += "-";
-        dateToDay += month < 10 ? "0" + Integer.toString( month ) : Integer.toString( month );
-        dateToDay += "-";
-        dateToDay += day < 10 ? "0" + Integer.toString( day ) : Integer.toString( day );
-
-        return dateToDay;
-    }
-
-    /**
-     Date function. Returns the current time in the swedish style
-     @deprecated Use SimpleDateFormat.format(Date) instead.
-     */
-    public static String getTimeNow() {
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-
-        int hour = Integer.parseInt( Integer.toString( cal.get( Calendar.HOUR_OF_DAY ) ) );
-        int min = Integer.parseInt( Integer.toString( cal.get( Calendar.MINUTE ) ) );
-        int sec = Integer.parseInt( Integer.toString( cal.get( Calendar.SECOND ) ) );
-
-        String timeNow = "";
-        timeNow += hour < 10 ? "0" + Integer.toString( hour ) : Integer.toString( hour );
-        timeNow += ":";
-        timeNow += min < 10 ? "0" + Integer.toString( min ) : Integer.toString( min );
-        timeNow += ":";
-        timeNow += sec < 10 ? "0" + Integer.toString( sec ) : Integer.toString( sec );
-        // timeNow += ".000" ;
-
-        return timeNow;
     }
 
 

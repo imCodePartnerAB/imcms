@@ -23,11 +23,8 @@ import imcode.util.* ;
  */
 
 public class ConfLogin extends Conference {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String USER_UNADMIN_LINK_TEMPLATE = "Conf_User_Unadmin_Link.htm";
-    private final static String LOGIN_PAGE = "conf_login.htm" ;
 
     String LOGIN_HTML = "Conf_Login.htm" ;	   // The login page
     String CREATE_HTML = "Conf_Add_user.htm" ;   // The create new user page

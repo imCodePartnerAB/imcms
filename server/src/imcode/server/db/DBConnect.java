@@ -1,9 +1,9 @@
 package imcode.server.db;
 
+import org.apache.log4j.Logger;
+
 import java.sql.*;
 import java.util.*;
-
-import org.apache.log4j.Category;
 
 public class DBConnect {
     private final static String CVS_REV = "$Revision$";
@@ -22,7 +22,7 @@ public class DBConnect {
     protected boolean trimStr = true;
     protected int columnCount;                       // Column count
 
-    private static Category log = Category.getInstance( "DBConnect" );
+    private final static Logger log = Logger.getLogger( "imcode.server.db.DBConnect" );
 
     // constructor
     public DBConnect( ConnectionPool conPool ) {
@@ -52,14 +52,23 @@ public class DBConnect {
         setSQLString( sqlString, null );
     }
 
-    public void setSQLString( String sqlString, String[] params ) {
+    public void setSQLString( String sqlString, String[] params )  {
         getConnection();
         try {
             preparedStatement = con.prepareStatement(sqlString) ;
             setParameters(preparedStatement, params);
         } catch ( SQLException e ) {
             log.error( "setSQLString("+Arrays.asList(emptyArrayIfNull( params ))+")", e );
+            throw new DatabaseException( "Failed to set sql string and parameters.", e );
         }
+    }
+
+    class DatabaseException extends RuntimeException {
+
+        DatabaseException( String message, Throwable cause ) {
+            super( message, cause );
+        }
+
     }
 
     /**
@@ -205,9 +214,9 @@ public class DBConnect {
     /**
      * <p>Execute a database query.
      */
-    public Vector executeQuery() {
+    public List executeQuery() {
 
-        Vector results = new Vector();
+        List results = new ArrayList();
 
         // Execute SQL-string
         try {
@@ -222,12 +231,10 @@ public class DBConnect {
             while( resultSet.next() ) {
                 for( int i = 1; i <= columnCount; i++ ) {
                     String s = resultSet.getString( i );
-                    if( s == null ) {
-                        s = "";
-                    } else if( trimStr ) {
+                    if ( s != null && trimStr ) {
                         s = s.trim();
                     }
-                    results.addElement( s );
+                    results.add( s );
                 }
             }
             resultSet.close() ;
@@ -359,7 +366,16 @@ public class DBConnect {
         int i = 0;
         for( Iterator it = params.iterator() ; it.hasNext() ; ) {
             String param = (String)it.next();
-            stmt.setString( ++i, param );
+            try {
+                if ( null != param ) {
+                    stmt.setString( ++i, param );
+                } else {
+                    throw new NullPointerException("Driver does not support null parameters.");
+                }
+            } catch(SQLException se) {
+                log.error("Failed to set parameter "+i+" of statement "+stmt.toString()+" to "+param,se) ;
+                throw se ;
+            }
         }
     }
 

@@ -22,8 +22,7 @@ import imcode.external.chat.*;
 
 public class ChatControl extends ChatBase
 {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
+
     private final static String HTML_TEMPLATE = "theChat.htm";
     private final static String SETTINGS_TEMPLATE = "chat_settings.html" ;
     private final static String ADMIN_GET_RID_OF_A_SESSION = "Chat_Admin_End_A_Session.htm";

@@ -33,8 +33,6 @@ app					0-infinity
 */
 public class CalenderManager extends Calender
 {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     /**
        Sends all requests on to the doPost method.

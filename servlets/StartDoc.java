@@ -13,8 +13,6 @@ import imcode.server.user.UserDomainObject;
    Start servlet in the system.
 */
 public class StartDoc extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     /**
        doGet()
@@ -94,16 +92,6 @@ public class StartDoc extends HttpServlet {
 	Utility.redirect(req,res,"GetDoc?meta_id="+meta_id) ;
 
 	return ;
-    }
-
-    /**
-       Check if user exist in database
-    */
-    static protected imcode.server.user.UserDomainObject allowUser( String user_name, String passwd, String host ) throws IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-
-	// user information
-	return imcref.verifyUser( user_name,passwd ) ;
     }
 
     /**

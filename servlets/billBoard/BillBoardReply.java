@@ -50,22 +50,17 @@ import imcode.util.*;
 
 
 public class BillBoardReply extends BillBoard {//ConfReply
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String NEW_COMMENT_TEMPLATE =  "BillBoard_Reply_New_Comment.htm";//Conf_Reply_New_Comment.htm
     private final static String ADMIN_LINK_TEMPLATE = "BillBoard_Reply_Admin_Link.htm";//Conf_Reply_Admin_Link.htm
     private final static String HTML_TEMPLATE_MAIL_SENT = "BillBoard_Reply_Mail_Sent.htm";
-    private final static String HTML_PREVUE_TEMPLATE = "Billboard_forhandsgranska.html";
     private final static String HTML_TEMPLATE = "BillBoard_Reply.htm";
     private final static String RECS_HTML = "BillBoard_reply_list.htm";
     private final static String RECS_PREV_HTML = "BillBoard_Reply_List_prev.htm";
     private final static String HTML_TEMPLATE_START = "BillBoard_Reply_Welcome.htm";
 
-    private final static String sectionId = "sectionId";
     private final static String header = "header";
     private final static String text = "text";
-    private final static String email = "email";
 
     /**
        DoPost
@@ -273,48 +268,6 @@ public class BillBoardReply extends BillBoard {//ConfReply
 	return tagsV;
     }
 
-    /**
-       Takes the discussion id from the request object and moves ít to
-       the sessions list over viewed discussions.
-    **/
-
-    public void updateDiscFlagList( HttpServletRequest req, String discId, String now)	throws ServletException, IOException {
-
-	// Lets get the newDiscsList
-
-	// Get the session and add the clicked discussion to the list. Put list back
-	HttpSession session = req.getSession(true);
-	Properties viewedDiscs = (Properties) session.getAttribute("BillBoard.viewedDiscList") ;
-	// Lets check if we got a list, if not, then create one
-	if( viewedDiscs == null) {
-	    log("ViewedDiscs == null") ;
-	    viewedDiscs = new Properties() ;
-	}
-
-	// Lets create a date from the sqlstring
-
-	//log("SQLTIME: " + java.sql.Date.valueOf(now).toString());
-	java.text.SimpleDateFormat formatter= new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
-	String dateString = formatter.format(new Date());
-
-	// log("discId: " + discId) ;
-	//log("dateString: " + dateString) ;
-	if(discId == null || dateString == null) {
-	    log("Error i updateDiscFlagList") ;
-	    log("discId: " + discId) ;
-	    log("dateString: " + dateString) ;
-	    discId = "" + discId ;
-	    dateString = "" + dateString ;
-	}
-	viewedDiscs.setProperty(discId, dateString) ; // id
-	session.setAttribute("BillBoard.viewedDiscList", viewedDiscs) ;
-	// Ok, Lets print what we just updated
-	viewedDiscs = (Properties) session.getAttribute("BillBoard.viewedDiscList") ;
-	//log("*** ConfReply ***" + "\n") ;
-	//log(props2String(viewedDiscs)) ;
-    }
-
-
 
     /**
        Parses the Extended array with the htmlcode, which will be parsed
@@ -362,47 +315,6 @@ public class BillBoardReply extends BillBoard {//ConfReply
 	}
 	return htmlStr.toString() ;
     } // End of
-
-
-    /**
-       Loops throug a vector and looks out for a character and replaces this
-       character to a string .
-    **/
-    public static StringBuffer replace (StringBuffer strBuff, char lookFor, String replacement) {
-	for( int i = 0 ; i < strBuff.length(); i++ ) {
-	    char aChar = strBuff.charAt(i) ;
-	    if('\n' == aChar) {
-		strBuff = strBuff.replace(i,i,replacement) ;
-		i+=replacement.length() ;
-	    }
-	}
-
-	return strBuff ;
-    } // End of replace
-
-    /**
-       Returns the users Replylevel htmlcode. If the user is marked with something
-       a bitmap will occur, otherwise nothing will occur.
-    */
-    protected static Vector getReplyLevelCode (HttpServletRequest req, Vector dataV, String ImagePath)
-	throws ServletException, IOException {
-
-	// Lets get the information regarding the replylevel
-	int index = 5 ;
-	String replyLevel = (String) dataV.elementAt(index) ;
-	String htmlCode = "" ;
-	String imageStart = "<img src=\"" ;
-	String imageEnd = "\">" ;
-
-	if (replyLevel.equals("1"))
-	    htmlCode = imageStart + ImagePath + imageEnd;
-	else
-	    htmlCode = "" ;
-	//	log("HtmlCode: " + htmlCode) ;
-	// Lets add the htmlcode in to the vector at place index
-	dataV.insertElementAt(htmlCode, index) ;
-	return dataV ;
-    }
 
 
     /**
