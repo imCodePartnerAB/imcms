@@ -85,8 +85,9 @@ public class ChatBoard extends ChatBase {
 		
 		//ok lets set up the font font size
 		//det här med ändringarna ska flyttas till doPost
-		int fontSize;
-		if (req.getParameter("FONT_SIZE") != null)
+		int fontSize=3;
+		paramString.append("FONT_SIZE=\""+ fontSize +"\"");
+		/*if (req.getParameter("FONT_SIZE") != null)
 		{
 			String sizeStr = req.getParameter("FONT_SIZE");
 			try
@@ -110,7 +111,8 @@ public class ChatBoard extends ChatBase {
 			}
 			paramString.append("FONT_SIZE=\""+ fontSize +"\"");
 				
-		}else
+		}
+		else
 		{
 			String sizeStr = req.getParameter("FONT_SIZE");
 			try
@@ -123,7 +125,7 @@ public class ChatBoard extends ChatBase {
 				log("NumberFormatException in fontsize");
 			}
 			paramString.append("FONT_SIZE=\""+ fontSize +"\"");
-		}//end setting up the font size
+		}//end setting up the font size*/
 	
 		
 		//this buffer is used to store all the msgs to send to the page

@@ -87,7 +87,20 @@ public class ChatManager extends ChatBase
 
 			// We got 3 usertypes: 0= specialusers, 1=normal, 2=confernce
 			// We got 3 logintypes: "Extern"=web users, "ip_access"= people from a certain ip nbr
+			
 			// and "verify" = people who has logged into the system
+			
+			// Lets store  the standard metavalues in his session object
+				HttpSession session = req.getSession(false) ;
+				if (session != null)
+				{
+					// log("Ok nu sätter vi metavärdena");
+					session.putValue("Chat.meta_id", params.getProperty("META_ID")) ;
+					session.putValue("Chat.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
+					session.putValue("Chat.cookie_id", params.getProperty("COOKIE_ID")) ;
+					session.putValue("Chat.viewedDiscList", new Properties()) ;
+					log("OK, nu sätter vi viewedDiscList") ;
+				}
 
 String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
 				log("Redirect till:" + loginPage) ;
