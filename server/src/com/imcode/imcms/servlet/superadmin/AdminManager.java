@@ -217,6 +217,7 @@ public class AdminManager extends Administrator {
                 public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
                     AdminManagerSearchPage page = new AdminManagerSearchPage( this );
                     DocumentFinder documentFinder = new DocumentFinder( page );
+                    documentFinder.setDocumentComparator( getComparator( null ));
                     page.updateFromRequest( request );
                     documentFinder.addExtraSearchResultColumn( new DatesSummarySearchResultColumn() );
                     documentFinder.forward( request, response );
@@ -236,6 +237,9 @@ public class AdminManager extends Administrator {
         modifiedDocumentsSubreport.setName( "modified" );
         modifiedDocumentsSubreport.setDocuments( documents_modified );
         modifiedDocumentsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/5" ) );
+        Date oneWeekAgo = getDateOneWeekAgo();
+        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__MODIFIED, oneWeekAgo, null );
+        modifiedDocumentsSubreport.setSearchQueryString( dateSearchQueryString );
         return modifiedDocumentsSubreport;
     }
 

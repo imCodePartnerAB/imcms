@@ -140,8 +140,9 @@ public class SearchDocumentsPage extends OkCancelPage {
             }
         }
 
-        sortOrder = request.getParameter( REQUEST_PARAMETER__SORT_ORDER );
-        if ( null != sortOrder ) {
+        String sortOrderParameter = request.getParameter( REQUEST_PARAMETER__SORT_ORDER );
+        if ( null != sortOrderParameter ) {
+            sortOrder = sortOrderParameter ;
             Comparator documentComparator = AdminManager.getComparator( sortOrder );
             documentFinder.setDocumentComparator( documentComparator );
         }
