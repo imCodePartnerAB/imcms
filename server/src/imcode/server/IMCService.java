@@ -619,8 +619,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        @param user The user
        @param childsThisMenu The id's to copy.
     **/
-    public void copyDocs( int meta_id, int doc_menu_no,  User user, String[] childsThisMenu) {
-
+    public void copyDocs( int meta_id, int doc_menu_no,  User user, String[] childsThisMenu, String copyPrefix) {
+	
 	if (childsThisMenu != null && childsThisMenu.length > 0) {
 	    StringBuffer childs = new StringBuffer("CopyDocs '"+childsThisMenu[0]) ;
 
@@ -628,7 +628,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		childs.append(",").append(childsThisMenu[i]) ;
 	    }
 
-	    childs.append("',"+meta_id+","+doc_menu_no+","+user.getUserId()) ;
+	    childs.append("',"+meta_id+","+doc_menu_no+","+user.getUserId()+","+copyPrefix) ;
 	    sqlUpdateProcedure(childs.toString()) ;
 
 	}

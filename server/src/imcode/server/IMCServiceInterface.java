@@ -85,7 +85,7 @@ public interface IMCServiceInterface {
 	     ;
     
     /** Copy documents and insert them in a new textdocument and menu **/
-    void copyDocs( int meta_id, int doc_menu_no,  User user, String[] childsThisMenu)  ;
+    void copyDocs( int meta_id, int doc_menu_no,  User user, String[] childsThisMenu, String copyPrefix)  ;
 
 	// save textdoc
 	public void saveTextDoc(int meta_id,imcode.server.User user,imcode.server.Table doc)
