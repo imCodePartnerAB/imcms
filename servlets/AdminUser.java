@@ -68,13 +68,13 @@ public class AdminUser extends Administrator
 
 		// Lets get all USERTYPES from DB
 		String[] userTypes = rmi.execSqlQuery(server, "GetUserTypes") ;
-		Vector userTypesV  = super.convert2Vector(userTypes) ;
+		Vector userTypesV  = /* super. */ convert2Vector(userTypes) ;
 		String user_type = ht.createHtmlCode("ID_OPTION", category, userTypesV ) ;
 		vm.addProperty("USER_TYPES", user_type  ) ;
 
 		// Lets get all USERS from DB
 		String[] usersArr = rmi.execSqlQuery(server, "GetCategoryUsers " + category) ;
-		Vector usersV  = super.convert2Vector(usersArr) ;
+		Vector usersV  = /* super. */ convert2Vector(usersArr) ;
 		String usersOption = ht.createHtmlCode("ID_OPTION", "", usersV ) ;
 		vm.addProperty("USERS_MENU", usersOption  ) ;
 		
@@ -134,7 +134,7 @@ public class AdminUser extends Administrator
 			// Lets get all ROLES from DB
 			RmiLayer rmi = new RmiLayer(user) ;
 			String[] rolesArr = rmi.execSqlQuery(server, "GetAllRoles") ;
-			Vector allRolesV  = super.convert2Vector(rolesArr) ;
+			Vector allRolesV  = /* super. */ convert2Vector(rolesArr) ;
 			String opt = htm.createHtmlCode("ID_OPTION", "", allRolesV ) ;
 			vm.addProperty("ROLES_MENU", opt  ) ;
 
@@ -162,7 +162,7 @@ public class AdminUser extends Administrator
 		
 			// Lets get all USERTYPES from DB
 			String[] usersArr = rmi.execSqlQuery(server, "GetUserTypes") ;
-			Vector usersV  = super.convert2Vector(usersArr) ;
+			Vector usersV  = /* super. */ convert2Vector(usersArr) ;
 			String user_type = htm.createHtmlCode("ID_OPTION", "1", usersV ) ;
 			vm.addProperty("USER_TYPES", user_type  ) ;
 
@@ -173,7 +173,7 @@ public class AdminUser extends Administrator
 			String[] langList = rmi.execSqlProcedure(server, "GetLanguageList 'se'") ; 
 			Vector selectedLangV = new Vector() ;
 			selectedLangV.add("1") ;  
-			vm.addProperty("LANG_TYPES", htm.createHtmlCode("ID_OPTION",selectedLangV, super.convert2Vector(langList))) ;
+			vm.addProperty("LANG_TYPES", htm.createHtmlCode("ID_OPTION",selectedLangV, /* super. */ convert2Vector(langList))) ;
 
 			//store all data into the session
 			session.putValue("RESET_allRolesV", allRolesV);			
@@ -206,7 +206,7 @@ public class AdminUser extends Administrator
 			// Lets get all Userinformation and add it to html page
 			String[] userInfo = imc.execSqlProcedure(server, "GetUserInfo " + userId) ;
 			
-			Vector userV = this.convert2Vector(userInfo) ;			
+			Vector userV = /* this. */ convert2Vector(userInfo) ;			
 			
 			VariableManager vm = new VariableManager() ;
 			Html htm = new Html() ;
@@ -219,11 +219,11 @@ public class AdminUser extends Administrator
 			// Lets get the information for users roles
 			// Lets collect the current rolesIds for the user
 			String[] theUserRoles = imc.execSqlProcedure(server, "GetUserRolesIds " + userId) ;
-			Vector theUserRolesV = this.convert2Vector(theUserRoles) ;			
+			Vector theUserRolesV = /* this. */ convert2Vector(theUserRoles) ;			
 
 			// Lets get all roles from the database
 			String[] allRoles = imc.execSqlProcedure(server, "GetAllRoles") ;
-			Vector allRolesV = this.convert2Vector(allRoles) ;			
+			Vector allRolesV = /* this. */ convert2Vector(allRoles) ;			
 			String rolesMenuStr = htm.createHtmlCode("ID_OPTION",theUserRolesV, allRolesV) ;
 			
 			// Lets get this users usertype
@@ -231,7 +231,7 @@ public class AdminUser extends Administrator
 			
 			// Lets get all USERTYPES from DB
 			String[] usersArr = imc.execSqlQuery(server, "GetUserTypes") ;
-			Vector usersV  = super.convert2Vector(usersArr) ;
+			Vector usersV  = /* super. */ convert2Vector(usersArr) ;
 			String user_type = htm.createHtmlCode("ID_OPTION", theUsersType, usersV ) ;
 			vm.addProperty("USER_TYPES", user_type  ) ;
 
@@ -258,7 +258,7 @@ public class AdminUser extends Administrator
 			String[] langList = imc.execSqlProcedure(server, "GetLanguageList 'se'") ; // FIXME: Get the correct language for the user
 			Vector selectedLangV = new Vector() ;
 			selectedLangV.add(userV.get(16).toString()) ;
-			vm.addProperty("LANG_TYPES", htm.createHtmlCode("ID_OPTION",selectedLangV, super.convert2Vector(langList))) ;
+			vm.addProperty("LANG_TYPES", htm.createHtmlCode("ID_OPTION",selectedLangV, /* super. */ convert2Vector(langList))) ;
 
 			//the phone nr fields
 			vm.addProperty( "PHONE_ID", "");
@@ -333,7 +333,7 @@ public class AdminUser extends Administrator
 			//	userInfo[19] = "1999-01-01 12:00:00.0"; // ??????
 
 
-			Vector userV = this.convert2Vector(userInfo) ;	
+			Vector userV = /* this. */ convert2Vector(userInfo) ;	
 
 			VariableManager vm = new VariableManager() ;
 			Html htm = new Html() ;
@@ -367,7 +367,7 @@ public class AdminUser extends Administrator
 			// Lets get all USERTYPES from DB
 			String[] usersArr = (String[]) session.getValue("RESET_usersArr");
 
-			Vector usersV  = super.convert2Vector(usersArr) ;
+			Vector usersV  = /* super. */ convert2Vector(usersArr) ;
 			String user_type = htm.createHtmlCode("ID_OPTION", theUsersType, usersV ) ;
 			vm.addProperty("USER_TYPES", user_type  ) ;
 
@@ -420,7 +420,7 @@ public class AdminUser extends Administrator
 			String[] langList = (String[])session.getValue("RESET_langList");
 			Vector selectedLangV = (Vector)session.getValue("RESET_selectedLangV");
 			selectedLangV.add(userV.get(16).toString()) ;
-			vm.addProperty("LANG_TYPES", htm.createHtmlCode("ID_OPTION",selectedLangV, super.convert2Vector(langList))) ;
+			vm.addProperty("LANG_TYPES", htm.createHtmlCode("ID_OPTION",selectedLangV, /* super. */ convert2Vector(langList))) ;
 
 			// Lets create the HTML page
 			String adminTask = req.getParameter("adminTask");
@@ -596,7 +596,7 @@ public class AdminUser extends Administrator
 	{
 		// Lets get the users from the multichoicebox
 		String[] roles = (req.getParameterValues("AllUsers")==null) ? new String[0] : (req.getParameterValues("AllUsers"));
-		return super.convert2Vector(roles) ;
+		return /* super. */ convert2Vector(roles) ;
 	}
 
 
