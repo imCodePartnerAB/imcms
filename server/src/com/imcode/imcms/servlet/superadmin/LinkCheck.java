@@ -12,6 +12,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
@@ -41,11 +42,11 @@ public class LinkCheck extends HttpServlet {
     private final static Logger log = Logger.getLogger( LinkCheck.class.getName() );
     public static final String REQUEST_ATTRIBUTE__LINKS_ITERATOR = "linksIterator";
 
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
-        UserDomainObject user = Utility.getLoggedOnUser( req );
+        UserDomainObject user = Utility.getLoggedOnUser( request );
         if ( !user.isSuperAdmin() ) {
-            Utility.redirectToStartDocument( req, res );
+            Utility.redirectToStartDocument( request, response );
             return;
         }
         List links = new ArrayList();
@@ -54,11 +55,11 @@ public class LinkCheck extends HttpServlet {
         DocumentIndex documentIndex = documentMapper.getDocumentIndex();
 
         addUrlDocumentLinks( links, documentIndex, user );
-        addTextAndImageLinks( links, documentIndex, user );
+        addTextAndImageLinks( links, documentIndex, user, request );
 
-        req.setAttribute( REQUEST_ATTRIBUTE__LINKS_ITERATOR, links.iterator() );
+        request.setAttribute( REQUEST_ATTRIBUTE__LINKS_ITERATOR, links.iterator() );
 
-        req.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2() + "/jsp/linkcheck.jsp" ).forward( req, res );
+        request.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2() + "/jsp/linkcheck/linkcheck.jsp" ).forward( request, response );
     }
 
     private void addUrlDocumentLinks( List links, DocumentIndex documentIndex, UserDomainObject user ) throws IOException {
@@ -73,7 +74,8 @@ public class LinkCheck extends HttpServlet {
         }
     }
 
-    private void addTextAndImageLinks( List links, DocumentIndex documentIndex, UserDomainObject user ) throws IOException {
+    private void addTextAndImageLinks( List links, DocumentIndex documentIndex, UserDomainObject user,
+                                       HttpServletRequest request ) throws IOException {
         Query textUrlQuery = new PrefixQuery( new Term( DocumentIndex.FIELD__TEXT, "http" ) );
         Query imageLinkUrlQuery = new PrefixQuery( new Term( DocumentIndex.FIELD__IMAGE_LINK_URL, "http" ) );
         BooleanQuery query = new BooleanQuery();
@@ -85,7 +87,7 @@ public class LinkCheck extends HttpServlet {
         for ( int i = 0; i < textDocuments.length; i++ ) {
             TextDocumentDomainObject textDocument = (TextDocumentDomainObject)textDocuments[i];
             addTextLinks( links, textDocument );
-            addImageLinks( links, textDocument );
+            addImageLinks( links, textDocument, request );
         }
     }
 
@@ -106,7 +108,7 @@ public class LinkCheck extends HttpServlet {
         }
     }
 
-    private void addImageLinks( List links, TextDocumentDomainObject textDocument ) {
+    private void addImageLinks( List links, TextDocumentDomainObject textDocument, HttpServletRequest request ) {
         Map images = textDocument.getImages();
         for ( Iterator iterator = images.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
@@ -114,7 +116,7 @@ public class LinkCheck extends HttpServlet {
             ImageDomainObject image = (ImageDomainObject)entry.getValue();
             String imageLinkUrl = image.getLinkUrl();
             if ( null != imageLinkUrl && imageLinkUrl.length() > 0 ) {
-                Link link = new ImageLink( textDocument, imageIndex.intValue(), imageLinkUrl );
+                Link link = new ImageLink( textDocument, imageIndex.intValue(), imageLinkUrl, request );
                 links.add( link );
             }
         }
@@ -201,10 +203,11 @@ public class LinkCheck extends HttpServlet {
     public final static class UrlDocumentLink extends Link {
 
         private UrlDocumentDomainObject urlDocument;
+        private DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument;
 
         public UrlDocumentLink( UrlDocumentDomainObject urlDocument ) {
             this.urlDocument = urlDocument;
-
+            documentMenuPairsContainingUrlDocument = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentsMenuPairsContainingDocument(urlDocument) ;
         }
 
         public String getUrl() {
@@ -213,6 +216,10 @@ public class LinkCheck extends HttpServlet {
 
         public UrlDocumentDomainObject getUrlDocument() {
             return urlDocument;
+        }
+
+        public DocumentMapper.TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingUrlDocument() {
+            return documentMenuPairsContainingUrlDocument ;
         }
 
     }
@@ -248,9 +255,15 @@ public class LinkCheck extends HttpServlet {
         private int imageIndex;
         private String url;
 
-        public ImageLink( TextDocumentDomainObject textDocument, int imageIndex, String url ) {
+        public ImageLink( TextDocumentDomainObject textDocument, int imageIndex, String url, HttpServletRequest request ) {
             this.textDocument = textDocument;
             this.imageIndex = imageIndex;
+            if (!url.toLowerCase().startsWith("http://")) {
+                String requestUrl = request.getRequestURL().toString();
+                int requestUrlStartOfHost = requestUrl.indexOf("://")+3;
+                int requestUrlStartOfPath = requestUrl.indexOf( '/', requestUrlStartOfHost ) ;
+                url = StringUtils.left( requestUrl, requestUrlStartOfPath ) + request.getContextPath()+"/servlet/" + url ;
+            }
             this.url = url;
         }
 

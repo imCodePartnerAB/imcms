@@ -6,8 +6,6 @@
  */
 package imcode.server.document.textdocument;
 
-import imcode.server.document.DocumentDomainObject;
-
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Comparator;

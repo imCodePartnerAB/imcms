@@ -1708,5 +1708,38 @@ public class DocumentMapper {
         return documentTypeIds ;
     }
 
+    public TextDocumentMenuIndexPair[] getDocumentsMenuPairsContainingDocument( DocumentDomainObject document ) {
+        String sqlSelectMenus = "SELECT meta_id, menu_index FROM menus, childs WHERE menus.menu_id = childs.menu_id AND childs.to_meta_id = ?" ;
+        String[][] sqlRows = service.sqlQueryMulti( sqlSelectMenus, new String[] {""+document.getId()} ) ;
+        TextDocumentMenuIndexPair[] documentMenuPairs = new TextDocumentMenuIndexPair[sqlRows.length] ;
+        for ( int i = 0; i < sqlRows.length; i++ ) {
+            String[] sqlRow = sqlRows[i];
+            int containingDocumentId = Integer.parseInt(sqlRow[0]) ;
+            int menuIndex = Integer.parseInt(sqlRow[1]) ;
+            TextDocumentDomainObject containingDocument = (TextDocumentDomainObject)getDocument( containingDocumentId );
+            documentMenuPairs[i] = new TextDocumentMenuIndexPair(containingDocument, menuIndex) ;
+        }
+        return documentMenuPairs ;
+    }
+
+    public static class TextDocumentMenuIndexPair {
+
+        private TextDocumentDomainObject document;
+        private int menuIndex;
+
+        public TextDocumentMenuIndexPair( TextDocumentDomainObject document, int menuIndex ) {
+            this.document = document;
+            this.menuIndex = menuIndex;
+        }
+
+        public TextDocumentDomainObject getDocument() {
+            return document;
+        }
+
+        public int getMenuIndex() {
+            return menuIndex;
+        }
+    }
+
 }
 
