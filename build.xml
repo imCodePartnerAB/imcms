@@ -237,7 +237,7 @@
 
     <!-- Build the war-file -->
     <target name="dist"
-        depends="init,build,doc,check-webappname,wardist,jardist"
+        depends="init,build,check-webappname,wardist,jardist"
         description="Packages a complete distribution.">
 
         <echo>Done packaging distribution '${wardist}'.</echo>
@@ -292,7 +292,7 @@
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
 	    depends="init,
-		     classes,
+		     classes,javadoc,
 		     libraries,
 		     web,conf,dir,sql,
              copy-web-xml, copy-version-file,
@@ -412,7 +412,7 @@
 
 
     <!-- Generate documentation -->
-    <target name="doc" description="Generates javadoc.">
+    <target name="javadoc" description="Generates javadoc.">
         <javadoc packagenames="imcode.imcms.api.*" sourcepath="server/src/" destdir="${apisamples}/docs" windowtitle="Imcms API">
             <packageset dir="server/src/" defaultexcludes="yes">
                 <include name="com/imcode/imcms/api/**"/>
