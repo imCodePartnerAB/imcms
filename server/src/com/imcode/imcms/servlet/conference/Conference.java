@@ -306,7 +306,7 @@ public class Conference extends HttpServlet {
             lang_prefix = user.getLanguageIso639_2();
         }
 
-        String extFolder = "/imcms/" + lang_prefix + "/images/"
+        String extFolder = req.getContextPath()+"/imcms/" + lang_prefix + "/images/"
                         + imcref.getDocType(metaId) + '/';
 
         return extFolder += this.getTemplateLibName( metaId );
