@@ -566,7 +566,7 @@ public class DocumentMapper {
         makeStringSQL( "meta_text", text, sqlUpdateColumns, sqlUpdateValues );
         makeStringSQL( "lang_prefix", language, sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSQL( "archive", isArchived, sqlUpdateColumns, sqlUpdateValues );
-        makeIntSQL( "publisher_id", publisher.getUserId(), sqlUpdateColumns, sqlUpdateValues) ;
+        makeIntSQL( "publisher_id", (publisher == null ? null : new Integer(publisher.getUserId())), sqlUpdateColumns, sqlUpdateValues) ;
 
         // todo: Remove from the meta table all collumns that are not used.
         // Candidates: All not used above.
@@ -576,9 +576,13 @@ public class DocumentMapper {
         service.sqlUpdateQuery( sqlStr.toString(), (String[])sqlUpdateValues.toArray(new String[sqlUpdateValues.size()]) );
     }
 
-    private static void makeIntSQL( String columnName, int integer, ArrayList sqlUpdateColumns, ArrayList sqlUpdateValues ) {
-        sqlUpdateColumns.add( columnName+" = ?" ) ;
-        sqlUpdateValues.add( ""+integer ) ;
+    private static void makeIntSQL( String columnName, Integer integer, ArrayList sqlUpdateColumns, ArrayList sqlUpdateValues ) {
+        if (null != integer) {
+            sqlUpdateColumns.add( columnName+" = ?") ;
+            sqlUpdateValues.add(""+integer) ;
+        } else {
+            sqlUpdateColumns.add( columnName+" = NULL") ;
+        }
     }
 
     private static void makeBooleanSQL( String columnName, boolean bool, List sqlUpdateColumns, List sqlUpdateValues ) {
@@ -596,8 +600,12 @@ public class DocumentMapper {
     }
 
     protected static void makeStringSQL( String columnName, String value, List sqlUpdateColumns, List sqlUpdateValues ) {
-        sqlUpdateColumns.add( columnName+" = "+( value != null ? "?" : "NULL" ) ) ;
-        sqlUpdateValues.add(value) ;
+        if (null != value) {
+            sqlUpdateColumns.add( columnName+" = ?") ;
+            sqlUpdateValues.add(value) ;
+        } else {
+            sqlUpdateColumns.add( columnName+" = NULL") ;
+        }
     }
 
     private void inheritSection( int from_parentId, int to_metaId ) {

@@ -209,14 +209,7 @@ public class MetaDataParser {
                 classification += ", " + classifications[i];
             }
         }
-        /*
-        try {
-                document.setCreatedDatetime(dateform.parse(result[16]));
-            }catch(java.text.ParseException pe) {
-                document.setCreatedDatetime(null);
-            }
 
-            */
         SimpleDateFormat dateFormat_date = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat dateFormat_time = new SimpleDateFormat("HH:mm");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");

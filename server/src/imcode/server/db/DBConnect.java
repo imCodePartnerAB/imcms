@@ -32,9 +32,9 @@ class DBConnect {
     /**
      * <p>Execute a database query.
      */
-    Vector executeQuery() {
+    List executeQuery() {
 
-        Vector results = new Vector();
+        List results = new ArrayList();
 
         // Execute SQL-string
         try {
@@ -50,12 +50,10 @@ class DBConnect {
             while (rs.next()) {
                 for (int i = 1; i <= columnCount; i++) {
                     String s = rs.getString(i);
-                    if (s == null) {
-                        s = "";
-                    } else if (trimStr) {
+                    if (null != s && trimStr) {
                         s = s.trim();
                     }
-                    results.addElement(s);
+                    results.add(s);
                 }
             }
 
@@ -91,9 +89,9 @@ class DBConnect {
     /**
      * <p>Execute a database procedure.
      */
-    private Vector executeProcedure() {
+    private List executeProcedure() {
 
-        Vector results = new Vector();
+        List results = new ArrayList();
         try {
             if (cs == null) {
                 throw new NullPointerException("DBConnect.executeProcedure() cs == null");
@@ -113,10 +111,9 @@ class DBConnect {
                 for (int i = 1; i <= columnCount; i++) {
                     String s = rs.getString(i);
                     if (null != s && trimStr) {
-                        results.addElement(s.trim());
-                    } else {
-                        results.addElement(s);
+                        s = s.trim();
                     }
+                    results.add(s);
                 }
             }
 
@@ -218,7 +215,7 @@ class DBConnect {
         return executeUpdateProcedure();
     }
 
-    Vector executeProcedure(String procedure, String[] params) {
+    List executeProcedure(String procedure, String[] params) {
         procedure = addQuestionMarksToProcedureCall(procedure, params);
         setProcedure(procedure, params);
         return executeProcedure();
@@ -229,9 +226,9 @@ class DBConnect {
         StringBuffer procedureBuffer = new StringBuffer(procedure);
         procedureBuffer.append("(") ;
         if (params.length > 0) {
-            procedureBuffer.append(" ?");
+            procedureBuffer.append("?");
             for (int i = 1; i < params.length; ++i) {
-                procedureBuffer.append(",?");
+                procedureBuffer.append(", ?");
             }
         }
         procedureBuffer.append(")") ;

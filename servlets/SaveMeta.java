@@ -369,6 +369,9 @@ public class SaveMeta extends HttpServlet {
 
         ArrayList sqlUpdateColumns = new ArrayList();
         ArrayList sqlUpdateValues = new ArrayList();
+
+        addNullForPublisherIdToSqlStringIfInvalid( metaprops, sqlUpdateColumns) ;
+
         Enumeration propkeys = metaprops.propertyNames();
         while ( propkeys.hasMoreElements() ) {
             String columnName = (String)propkeys.nextElement();
@@ -457,15 +460,14 @@ public class SaveMeta extends HttpServlet {
         return;
     }
 
-    static String addNullForPublisherIdToSqlStringIfInvalid( Properties metaprops,
-                                                             String sqlStr ) {
+    private static void addNullForPublisherIdToSqlStringIfInvalid( Properties metaprops,
+                                                             List sqlUpdateColumns ) {
         try {
             Integer.parseInt( metaprops.getProperty( "publisher_id" ) );
         } catch ( NumberFormatException nfe ) {
             metaprops.remove( "publisher_id" );
-            sqlStr += "publisher_id = NULL,";
+            sqlUpdateColumns.add("publisher_id = NULL");
         }
-        return sqlStr;
     }
 
     private static Object putTemporaryPermissionSettingsInUser( UserDomainObject user, String meta_id,

@@ -1,7 +1,7 @@
 package imcode.server.db;
 
-import java.util.Vector;
 import java.util.Hashtable;
+import java.util.List;
 
 public class SqlHelpers {
 
@@ -10,7 +10,7 @@ public class SqlHelpers {
 
         DBConnect dbc = new DBConnect( conPool );
         dbc.setTrim(trim) ;
-        Vector data = dbc.executeProcedure(procedure,params) ;
+        List data = dbc.executeProcedure(procedure,params) ;
 
         return createStringArrayFromSqlResults( data );
     }
@@ -19,7 +19,7 @@ public class SqlHelpers {
         procedure = trimAndCheckNoWhitespace(procedure) ;
 
         DBConnect dbc = new DBConnect( conPool );
-        Vector data = dbc.executeProcedure(procedure,params);
+        List data = dbc.executeProcedure(procedure,params);
         String[] meta = dbc.getMetaData();
 
         return createHashtableOfStringArrayFromSqlResults( data, meta );
@@ -30,7 +30,7 @@ public class SqlHelpers {
         procedure = trimAndCheckNoWhitespace(procedure) ;
 
         DBConnect dbc = new DBConnect( conPool );
-        Vector data = dbc.executeProcedure( procedure, params );
+        List data = dbc.executeProcedure( procedure, params );
 
         int columns = dbc.getColumnCount();
 
@@ -40,7 +40,7 @@ public class SqlHelpers {
 
     public static String sqlProcedureStr( ConnectionPool conPool, String procedure, String[] params ) {
         DBConnect dbc = new DBConnect( conPool );
-        Vector data = dbc.executeProcedure(procedure, params) ;
+        List data = dbc.executeProcedure(procedure, params) ;
 
         return createStringFromSqlResults( data );
     }
@@ -61,14 +61,14 @@ public class SqlHelpers {
     public static String[] sqlQuery(ConnectionPool conPool, String sqlQuery, String[] parameters) {
         DBConnect dbc = new DBConnect( conPool );
         dbc.setSQLString(sqlQuery, parameters);
-        Vector data = (Vector)dbc.executeQuery();
+        List data = (List)dbc.executeQuery();
         return createStringArrayFromSqlResults(data) ;
     }
 
     public static String sqlQueryStr(ConnectionPool conPool, String sqlStr, String[] params) {
         DBConnect dbc = new DBConnect(conPool);
         dbc.setSQLString(sqlStr, params);
-        Vector data = (Vector) dbc.executeQuery();
+        List data = (List) dbc.executeQuery();
         return createStringFromSqlResults(data);
     }
 
@@ -76,18 +76,16 @@ public class SqlHelpers {
         DBConnect dbc = new DBConnect(conPool);
         dbc.setSQLString(sqlQuery, params);
 
-        Vector data = (Vector) dbc.executeQuery();
+        List data = (List) dbc.executeQuery();
         String[] meta = (String[]) dbc.getMetaData();
         return createHashtableOfStringArrayFromSqlResults(data, meta) ;
     }
 
     public static String[][] sqlQueryMulti(ConnectionPool conPool, String sqlQuery, String[] params) {
-        Vector data = new Vector();
-
         DBConnect dbc = new DBConnect(conPool);
         dbc.setSQLString(sqlQuery, params);
 
-        data = (Vector) dbc.executeQuery();
+        List data = (List) dbc.executeQuery();
         int columns = dbc.getColumnCount();
 
         return create2DStringArrayFromSqlResults(data,columns) ;
@@ -101,18 +99,18 @@ public class SqlHelpers {
         return procedure;
     }
 
-    private static String createStringFromSqlResults(Vector data) {
+    private static String createStringFromSqlResults(List data) {
         if (data != null && !data.isEmpty()) {
             return
-                    null != data.elementAt(0)
-                    ? data.elementAt(0).toString()
+                    null != data.get(0)
+                    ? data.get(0).toString()
                     : null;
         } else {
             return null;
         }
     }
 
-    private static String[][] create2DStringArrayFromSqlResults(Vector data, int columns) {
+    private static String[][] create2DStringArrayFromSqlResults(List data, int columns) {
         if (columns == 0)
             return new String[0][0];
 
@@ -122,8 +120,8 @@ public class SqlHelpers {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 result[i][j] =
-                        null != data.elementAt(i * columns + j)
-                        ? data.elementAt(i * columns + j).toString()
+                        null != data.get(i * columns + j)
+                        ? data.get(i * columns + j).toString()
                         : null;
             }
 
@@ -132,13 +130,13 @@ public class SqlHelpers {
         return result;
     }
 
-    private static String[] createStringArrayFromSqlResults(Vector data) {
+    private static String[] createStringArrayFromSqlResults(List data) {
         if (data != null) {
             String result[] = new String[data.size()];
             for (int i = 0; i < data.size(); i++) {
                 result[i] =
-                        null != data.elementAt(i)
-                        ? data.elementAt(i).toString()
+                        null != data.get(i)
+                        ? data.get(i).toString()
                         : null;
             }
             return result;
@@ -147,7 +145,7 @@ public class SqlHelpers {
         }
     }
 
-    private static Hashtable createHashtableOfStringArrayFromSqlResults(Vector data, String[] meta) {
+    private static Hashtable createHashtableOfStringArrayFromSqlResults(List data, String[] meta) {
         Hashtable result = new Hashtable(meta.length, 0.5f);
 
         if (data.size() > 0) {
@@ -159,8 +157,8 @@ public class SqlHelpers {
 
                 for (int j = i; j < data.size(); j += meta.length) {
                     temp_str[counter++] =
-                            null != data.elementAt(j)
-                            ? data.elementAt(j).toString()
+                            null != data.get(j)
+                            ? data.get(j).toString()
                             : null;
                 }
                 result.put(meta[i], temp_str);
