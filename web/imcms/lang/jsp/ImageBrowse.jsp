@@ -6,7 +6,8 @@
                  imcode.server.ApplicationServer,
                  com.imcode.imcms.servlet.admin.ChangeImage,
                  imcode.util.Html,
-                 org.apache.commons.collections.Transformer"%>
+                 org.apache.commons.collections.Transformer,
+                 imcode.util.LocalizedMessage"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
 <html>
@@ -22,9 +23,8 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'text')">
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
-
 <%
-    ImageBrowse.Page imageBrowsePage = (ImageBrowse.Page)request.getAttribute(ImageBrowse.REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE);
+    ImageBrowse.ImageBrowserPage imageBrowsePage = ImageBrowse.ImageBrowserPage.fromRequest(request) ;
 %>
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="ImageBrowse" method="POST" enctype="multipart/form-data">
@@ -88,6 +88,14 @@
 <tr>
     <td colspan="3">#gui_heading( "<? templates/sv/change_img.html/4/1 ?>" )</td>
 </tr>
+<%
+    LocalizedMessage errorMessage = imageBrowsePage.getErrorMessage() ;
+    if (null != errorMessage) {
+        %><tr>
+            <td colspan="3"><span style="color: red"><%= errorMessage.toLocalizedString(request) %></span></td>
+        </tr><%
+    }
+%>
 <tr>
     <td colspan="3">
         <table border="0" cellspacing="0" cellpadding="0" width="100%">

@@ -222,7 +222,7 @@ public interface IMCServiceInterface {
 
     SMTP getSMTP();
 
-    public Properties getLanguageProperties(UserDomainObject user);
+    Properties getLanguageProperties(UserDomainObject user);
 
     File getFilePath();
 

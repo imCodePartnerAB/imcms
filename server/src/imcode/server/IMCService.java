@@ -21,6 +21,7 @@ import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
@@ -59,8 +60,7 @@ final public class IMCService implements IMCServiceInterface {
     private ExternalizedImcmsAuthenticatorAndUserMapper externalizedImcmsAuthAndMapper = null;
     private DocumentMapper documentMapper;
     private TemplateMapper templateMapper;
-    private Properties langproperties_swe;
-    private Properties langproperties_eng;
+    private Map languagePropertiesMap = new HashMap();
 
     private Map velocityEngines = new TreeMap();
 
@@ -114,13 +114,13 @@ final public class IMCService implements IMCServiceInterface {
             }
             try {
                 String setPropertyValue = BeanUtils.getProperty( config, uncapitalizedPropertyName );
-                if (null != setPropertyValue) {
+                if ( null != setPropertyValue ) {
                     log.info( capitalizedPropertyName + " = " + setPropertyValue );
                 } else {
-                    log.warn( capitalizedPropertyName + " not set." ) ;
+                    log.warn( capitalizedPropertyName + " not set." );
                 }
             } catch ( Exception e ) {
-                log.error(e, e) ;
+                log.error( e, e );
             }
         }
         return config;
@@ -151,25 +151,6 @@ final public class IMCService implements IMCServiceInterface {
 
     private int getSessionCounterFromDb() {
         return Integer.parseInt( this.sqlProcedureStr( "GetCurrentSessionCounter", new String[0] ) );
-    }
-
-    private void initLangProperties( String LanguageIso639_2 ) {
-
-        if ( "swe".equals( LanguageIso639_2 ) ) {
-            try {
-                langproperties_swe = Prefs.getProperties( "swe.properties" );
-            } catch ( IOException e ) {
-                log.fatal( "Failed to initialize swe.properties", e );
-            }
-        }
-        if ( "eng".equals( LanguageIso639_2 ) ) {
-            try {
-                langproperties_eng = Prefs.getProperties( "eng.properties" );
-            } catch ( IOException e ) {
-                log.fatal( "Failed to initialize eng.properties", e );
-            }
-        }
-
     }
 
     private void initDocumentMapper() {
@@ -550,7 +531,6 @@ final public class IMCService implements IMCServiceInterface {
 
     private synchronized VelocityEngine createVelocityEngine( String languageIso639_2 ) throws Exception {
         VelocityEngine velocity = new VelocityEngine();
-        log.debug( "createVelocityEngine" );
         velocity.setProperty( VelocityEngine.FILE_RESOURCE_LOADER_PATH, config.getTemplatePath().getCanonicalPath() );
         velocity.setProperty( VelocityEngine.VM_LIBRARY, languageIso639_2 + "/gui.vm" );
         velocity.setProperty( VelocityEngine.VM_LIBRARY_AUTORELOAD, "true" );
@@ -1165,17 +1145,19 @@ final public class IMCService implements IMCServiceInterface {
     }
 
     public Properties getLanguageProperties( UserDomainObject user ) {
-
-        if ( langproperties_eng == null ) {
-            initLangProperties( "eng" );
+        String languageIso639_2 = user.getLanguageIso639_2();
+        Properties languageProperties = (Properties)languagePropertiesMap.get( languageIso639_2 ) ;
+        if (null == languageProperties) {
+            String propertiesFilename = languageIso639_2 + ".properties";
+            try {
+                languageProperties = Prefs.getProperties( propertiesFilename );
+                languagePropertiesMap.put( languageIso639_2, languageProperties) ;
+            } catch ( IOException e ) {
+                log.fatal( "Failed to read language properties from " + propertiesFilename, e );
+                throw new UnhandledException( e ) ;
+            }
         }
-        if ( langproperties_swe == null ) {
-            initLangProperties( "swe" );
-        }
-        if ( "swe".equals( user.getLanguageIso639_2() ) ) {
-            return langproperties_swe;
-        }
-        return langproperties_eng;
+        return languageProperties ;
     }
 
     public File getFilePath() {

@@ -1,30 +1,17 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.document.index.AutorebuildingDocumentIndex;
 import imcode.server.ApplicationServer;
 import imcode.util.Prefs;
-import imcode.util.Utility;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.SystemUtils;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import java.io.File;
-import java.io.IOException;
 
-/**
- * MainInitServlet.java
- * <p/>
- * Created on den 11 september 2001, 08:47
- *
- * @author Hasse Brattberg
- * @author Christoffer Hammarström, kreiger@imcode.com
- */
 public class MainInitServlet extends HttpServlet {
 
     public void init( ServletConfig config ) throws ServletException {
@@ -41,7 +28,7 @@ public class MainInitServlet extends HttpServlet {
 
             kickstartImcms();
         } catch ( Exception e ) {
-            System.err.println( e.getMessage() );
+            log( e.getMessage(), e );
         }
         NDC.pop() ;
     }

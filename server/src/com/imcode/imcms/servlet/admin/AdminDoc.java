@@ -87,7 +87,7 @@ public class AdminDoc extends HttpServlet {
             httpPageFlow = new EditUrlDocumentPageFlow( (UrlDocumentDomainObject)document, returnCommand, saveDocumentCommand );
         } else if ( document instanceof FileDocumentDomainObject
                     && IMCConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags ) {
-            httpPageFlow = new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), returnCommand, saveDocumentCommand );
+            httpPageFlow = new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), returnCommand, saveDocumentCommand, null );
 
         }
         return httpPageFlow;

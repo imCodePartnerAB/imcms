@@ -6,7 +6,9 @@
                                          org.apache.commons.lang.ObjectUtils,
                                          imcode.server.document.HtmlDocumentDomainObject,
                                          imcode.util.*,
-                                         com.imcode.imcms.flow.*"%>
+                                         com.imcode.imcms.flow.*,
+                                         org.apache.commons.lang.ArrayUtils,
+                                         org.apache.commons.lang.StringUtils"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
 <html>
@@ -33,9 +35,12 @@
 #gui_mid()
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <%
+    EditFileDocumentPageFlow.FileDocumentEditPage editPage = EditFileDocumentPageFlow.FileDocumentEditPage.fromRequest(request) ;
+
     DocumentPageFlow httpFlow = (DocumentPageFlow)DocumentComposer.getDocumentPageFlowFromRequest(request) ;
     FileDocumentDomainObject document = (FileDocumentDomainObject)httpFlow.getDocument() ;
     boolean creatingNewDocument = httpFlow instanceof CreateDocumentPageFlow ;
+    EditFileDocumentPageFlow.MimeTypeRestriction mimeTypeRestriction = editPage.getMimeTypeRestriction() ;
 %>
 <input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
     value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
@@ -49,7 +54,13 @@
 <tr>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="396">
-
+    <%  LocalizedMessage localizedErrorMessage = editPage.getErrorMessage() ;
+        if (null != localizedErrorMessage) {
+            %><tr>
+                <td colspan="2"><span style="color: red"><%= StringEscapeUtils.escapeHtml(localizedErrorMessage.toLocalizedString(request)) %></span></td>
+            </tr><%
+        }
+    %>
     <tr>
 		<td width="20%" height="22"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/5 ?></td>
 		<td width="80%">
@@ -63,7 +74,7 @@
 		<td height="22"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/7 ?></td>
 		<td>
 		<select name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__MIME_TYPE %>">
-			<option value=""<% if ("".equals(ObjectUtils.defaultIfNull( document.getMimeType(), "")) ) { %> selected<% } %>>
+			<option value=""<% if (StringUtils.isBlank( document.getMimeType() ) ) { %> selected<% } %>>
                 <? install/htdocs/sv/jsp/docadmin/file_document.jsp/autodetect_or_fill_in_below ?>
             </option>
 			<%
@@ -72,8 +83,16 @@
                 boolean documentMimeTypeFoundInDropDown = false ;
                 for ( int i = 0; i < mimeTypes.length; i++ ) {
                     String mimeType = mimeTypes[i][0];
+                    if (!mimeTypeRestriction.allows(mimeType)) {
+                        continue;
+                    }
                     String mimeTypeDescriptionInUsersLanguage = mimeTypes[i][1] ;
-                    %><option value="<%= mimeType %>"<% if (mimeType.equals( document.getMimeType() )) { %> selected<% documentMimeTypeFoundInDropDown = true ; } %>>
+                    boolean selected = false ;
+                    if (mimeType.equals( document.getMimeType() )) {
+                        selected = true ;
+                        documentMimeTypeFoundInDropDown = true ;
+                    }
+                    %><option value="<%= mimeType %>"<% if (selected) { %> selected<% } %>>
                         <%= StringEscapeUtils.escapeHtml( mimeTypeDescriptionInUsersLanguage ) %>
                     </option><%
                 }

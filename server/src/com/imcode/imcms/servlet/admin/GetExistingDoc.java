@@ -7,6 +7,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -401,7 +402,7 @@ public class GetExistingDoc extends HttpServlet {
 
     private void addStringToQuery( final DocumentIndex index, String string, BooleanQuery query )
             throws org.apache.lucene.queryParser.ParseException {
-        Query textQuery = index.parseLucene( string );
+        Query textQuery = new DefaultQueryParser().parse( string );
         query.add( textQuery, true, false );
     }
 

@@ -83,7 +83,7 @@ public class SearchDocumentsPage {
         firstDocumentIndex = Math.max( 0, NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX ) ) );
         queryString = StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__QUERY_STRING ) );
         searchButtonPressed = null != request.getParameter( REQUEST_PARAMETER__SEARCH_BUTTON );
-        query = createQuery();
+        query = createQuery(documentFinder);
     }
 
     public String getParameterString( HttpServletRequest request ) {
@@ -122,16 +122,15 @@ public class SearchDocumentsPage {
         return parameters;
     }
 
-    private Query createQuery() {
-        DocumentIndex index = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentIndex();
+    private Query createQuery( DocumentFinder documentFinder ) {
 
         BooleanQuery query = new BooleanQuery();
         if ( StringUtils.isNotBlank( queryString ) ) {
             try {
-                Query textQuery = index.parseLucene( queryString );
+                Query textQuery = documentFinder.parse( queryString );
                 query.add( textQuery, true, false );
             } catch ( ParseException e ) {
-                log.warn( e.getMessage() + " in search-string " + queryString );
+                log.debug( e.getMessage() + " in search-string " + queryString, e );
             }
         }
 

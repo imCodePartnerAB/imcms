@@ -3,7 +3,7 @@ package imcode.server.document;
 import imcode.server.IMCServiceInterface;
 import imcode.server.LanguageMapper;
 import imcode.server.WebAppGlobalConstants;
-import imcode.server.document.index.AutorebuildingDocumentIndex;
+import imcode.server.document.index.AutorebuildingDirectoryIndex;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
@@ -63,7 +63,7 @@ public class DocumentMapper {
         File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
         File indexDirectory = new File( webAppPath, "WEB-INF/index" );
 
-        this.documentIndex = new AutorebuildingDocumentIndex( indexDirectory );
+        this.documentIndex = new AutorebuildingDirectoryIndex( indexDirectory );
     }
 
     private boolean userCanCreateDocumentOfTypeIdFromParent( UserDomainObject user, int documentTypeId,

@@ -51,7 +51,7 @@ public class AddDoc extends HttpServlet {
             } else if (document instanceof HtmlDocumentDomainObject) {
                 httpPageFlow = new CreateDocumentWithEditPageFlow( new EditHtmlDocumentPageFlow( (HtmlDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ));
             } else if (document instanceof FileDocumentDomainObject) {
-                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ));
+                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand, null ));
             } else if (document instanceof BrowserDocumentDomainObject) {
                 httpPageFlow = new CreateDocumentWithEditPageFlow( new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ));
             } else if (document instanceof FormerExternalDocumentDomainObject) {

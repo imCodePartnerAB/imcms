@@ -25,7 +25,6 @@ import java.util.List;
 public class ImageBrowse extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( ImageBrowse.class.getName() );
-    public static final String REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE = "imagebrowsepage";
 
     private static final String JSP__IMAGE_BROWSE = "ImageBrowse.jsp";
     public static final String REQUEST_PARAMETER__OK_BUTTON = "ImageBrowse.button.ok";
@@ -37,6 +36,8 @@ public class ImageBrowse extends HttpServlet {
     public static final String REQUEST_PARAMETER__LABEL = "label";
     public static final String REQUEST_PARAMETER__UPLOAD_BUTTON = "upload";
     public static final String REQUEST_PARAMETER__FILE = "file";
+
+    private static final LocalizedMessage ERROR_MESSAGE___FILE_EXISTS = new LocalizedMessage( "error/servlet/images/image_file_exists" );
 
     public void doPost( HttpServletRequest req, HttpServletResponse response ) throws IOException, ServletException {
         MultipartHttpServletRequest request = new MultipartHttpServletRequest( req );
@@ -75,13 +76,16 @@ public class ImageBrowse extends HttpServlet {
             }
         }
 
+        ImageBrowserPage page = new ImageBrowserPage( selectedDirectory, selectedImage );
         if ( null != request.getParameter( REQUEST_PARAMETER__UPLOAD_BUTTON ) ) {
-            selectedImage = upload( request, selectedDirectory );
+            selectedImage = upload( request, selectedDirectory, page );
         }
-        browse( selectedDirectory, selectedImage, request, response );
+
+        page.setLabel( StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__LABEL ) ) );
+        page.forward(request,response) ;
     }
 
-    private static File upload( HttpServletRequest request, File selectedDirectory ) {
+    private static File upload( HttpServletRequest request, File selectedDirectory, ImageBrowserPage page ) {
         File imagesRoot = ApplicationServer.getIMCServiceInterface().getConfig().getImagePath();
         FileItem fileItem = ( (MultipartHttpServletRequest)request ).getParameterFileItem( REQUEST_PARAMETER__FILE );
         File imageFile = null ;
@@ -89,7 +93,11 @@ public class ImageBrowse extends HttpServlet {
             File destinationFile = new File( selectedDirectory, fileItem.getName() );
             boolean underImagesRoot = FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, destinationFile.getParentFile() );
             boolean hasImageExtension = new ImageExtensionFilenameFilter().accept( destinationFile, destinationFile.getName() );
-            if ( underImagesRoot && hasImageExtension && !destinationFile.exists() ) {
+            if (!hasImageExtension) {
+                page.setErrorMessage(ChangeImage.ERROR_MESSAGE___ONLY_ALLOWED_TO_UPLOAD_IMAGES) ;
+            } else if ( destinationFile.exists() ) {
+                page.setErrorMessage(ERROR_MESSAGE___FILE_EXISTS) ;
+            } else if ( underImagesRoot ) {
                 try {
                     fileItem.write( destinationFile );
                     imageFile = destinationFile ;
@@ -105,27 +113,17 @@ public class ImageBrowse extends HttpServlet {
         return imageFile;
     }
 
-    public static void browse( File currentDirectory, File currentImage, HttpServletRequest request,
-                               HttpServletResponse response ) throws ServletException, IOException {
-        String label = StringUtils.defaultString( request.getParameter( "label" ) );
-        UserDomainObject user = Utility.getLoggedOnUser( request );
+    public static class ImageBrowserPage {
 
-        Page page = new Page( currentDirectory, currentImage );
-        page.setLabel( label );
-
-        request.setAttribute( REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE, page );
-        String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP__IMAGE_BROWSE;
-        request.getRequestDispatcher( forwardPath ).forward( request, response );
-    }
-
-    public static class Page {
+        private static final String REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE = "imagebrowsepage";
 
         private String label;
         private String directoriesOptionList;
         private String imagesOptionList;
         private String imageUrl;
+        private LocalizedMessage errorMessage;
 
-        public Page( File currentDirectory, File currentImage ) {
+        public ImageBrowserPage( File currentDirectory, File currentImage ) {
             final File imagesRoot = ApplicationServer.getIMCServiceInterface().getConfig().getImagePath();
             if ( null != currentImage ) {
                 imageUrl = FileUtility.relativeFileToString( FileUtility.relativizeFile( imagesRoot, currentImage ) );
@@ -176,5 +174,23 @@ public class ImageBrowse extends HttpServlet {
             return imageUrl;
         }
 
+        public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+            request.setAttribute( REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE, this );
+            UserDomainObject user = Utility.getLoggedOnUser( request );
+            String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP__IMAGE_BROWSE;
+            request.getRequestDispatcher( forwardPath ).forward( request, response );
+        }
+
+        public static ImageBrowserPage fromRequest( HttpServletRequest request ) {
+            return (ImageBrowserPage)request.getAttribute( REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE ) ;
+        }
+
+        public void setErrorMessage( LocalizedMessage errorMessage ) {
+            this.errorMessage = errorMessage;
+        }
+
+        public LocalizedMessage getErrorMessage() {
+            return errorMessage;
+        }
     }
 }

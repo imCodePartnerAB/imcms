@@ -57,7 +57,7 @@ public class ImageParser {
         return parseImageStream( new FileInputStream( imageFile ), imageFile.getName() );
     }
 
-    public ImageData parseImageStream( InputStream imageStream, String fileName ) throws IOException {
+    public ImageData parseImageStream( InputStream imageStream, String fileName ) throws IOException, IllegalArgumentException {
         if ( fileName.toLowerCase().endsWith( ".gif" ) ) {
             return parseGifStream( imageStream );
         } else if ( fileName.toLowerCase().endsWith( ".jpg" ) || fileName.toLowerCase().endsWith( ".jpeg" ) ) { // FIXME: Move into a separate (protected?) method. Preferably one that takes just a File

@@ -2,6 +2,7 @@ package com.imcode.imcms.api;
 
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.*;
+import imcode.server.document.index.IndexException;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserAndRoleMapper;
@@ -284,7 +285,7 @@ public class DocumentService {
                 documents[i] = wrapDocumentDomainObject( documentDomainObject );
             }
             return documents;
-        } catch ( IOException e ) {
+        } catch ( IndexException e ) {
             throw new SearchException( e );
         }
     }

@@ -58,7 +58,6 @@ public class ApplicationServer {
         log.debug( "JdbcDriver = " + jdbcDriver );
         log.debug( "JdbcUrl = " + jdbcUrl );
         log.debug( "User = " + user );
-        log.debug( "Password = " + password );
         log.debug( "MaxConnectionCount = " + maxConnectionCount );
 
         connectionPool = ConnectionPool.createConnectionPool( jdbcDriver, jdbcUrl, user, password, maxConnectionCount);

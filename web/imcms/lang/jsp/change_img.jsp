@@ -147,13 +147,13 @@ function checkLinkOnBlur() {
             <td>
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
             <tr>
-                <td colspan="2"><input type="text" name="imageref" size="50" maxlength="255" style="width: 350" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getUrl())) %>"></td>
+                <td colspan="2"><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_URL %>" size="50" maxlength="255" style="width: 350" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getUrl())) %>"></td>
             </tr>
             </table></td>
         </tr>
         <tr>
             <td nowrap><? templates/sv/change_img.html/14 ?></td>
-            <td><input type="text" name="image_name" size="50" maxlength="255" style="width: 350" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getName())) %>"></td>
+            <td><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_NAME %>" size="50" maxlength="255" style="width: 350" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getName())) %>"></td>
         </tr>
         <tr>
             <td nowrap><? templates/sv/change_img.html/16 ?></td>
@@ -167,11 +167,11 @@ function checkLinkOnBlur() {
                         <td><? templates/sv/change_img.html/19 ?></td>
                     </tr>
                     <tr>
-                        <td><input type="text" name="image_width" size="4" maxlength="4" value="<% if (image.getWidth() > 0) { %><%= image.getWidth() %><% } %>"></td>
+                        <td><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_WIDTH %>" size="4" maxlength="4" value="<% if (image.getWidth() > 0) { %><%= image.getWidth() %><% } %>"></td>
                         <td>&nbsp;X&nbsp;</td>
-                        <td><input type="text" name="image_height" size="4" maxlength="4" value="<% if (image.getHeight() > 0) { %><%= image.getHeight() %><% } %>"></td>
+                        <td><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_HEIGHT %>" size="4" maxlength="4" value="<% if (image.getHeight() > 0) { %><%= image.getHeight() %><% } %>"></td>
                         <td>&nbsp;</td>
-                        <td><input type="text" name="image_border" size="4" maxlength="4" value="<%= image.getBorder() %>"></td>
+                        <td><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_BORDER %>" size="4" maxlength="4" value="<%= image.getBorder() %>"></td>
                     </tr>
                     <tr>
                         <td height="20">&nbsp;<%= imageFileData.getWidth() %></td>
@@ -188,11 +188,11 @@ function checkLinkOnBlur() {
             <td>
             <table border="0" cellspacing="0" cellpadding="0">
             <tr>
-                <td><input type="text" name="v_space" size="4" maxlength="4" value="<%= image.getVerticalSpace() %>"></td>
+                <td><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__VERTICAL_SPACE %>" size="4" maxlength="4" value="<%= image.getVerticalSpace() %>"></td>
                 <td>&nbsp;</td>
                 <td><? templates/sv/change_img.html/27 ?></td>
                 <td>&nbsp; &nbsp;</td>
-                <td><input type="text" name="h_space" size="4" maxlength="4" value="<%= image.getHorizontalSpace() %>"></td>
+                <td><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__HORIZONTAL_SPACE %>" size="4" maxlength="4" value="<%= image.getHorizontalSpace() %>"></td>
                 <td>&nbsp;</td>
                 <td><? templates/sv/change_img.html/29 ?></td>
             </tr>
@@ -201,7 +201,7 @@ function checkLinkOnBlur() {
         <tr>
             <td nowrap><? templates/sv/change_img.html/30 ?></td>
             <td>
-            <select name="image_align" size="1">
+            <select name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_ALIGN %>" size="1">
                 <% String align = image.getAlign() ; %>
                 <option value="none" <% if (StringUtils.isBlank(align)) { %> selected <% } %>><? templates/sv/change_img.html/31 ?></option>
                 <option value="baseline" <% if ("baseline".equalsIgnoreCase(align)) { %> selected <% } %>><? templates/sv/change_img.html/32 ?></option>
@@ -217,7 +217,7 @@ function checkLinkOnBlur() {
         </tr>
         <tr>
             <td nowrap><? templates/sv/change_img.html/41 ?></td>
-            <td><input type="text" name="alt_text" size="92" maxlength="255" style="width: 100%" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getAlternateText())) %>"></td>
+            <td><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_ALT %>" size="92" maxlength="255" style="width: 100%" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getAlternateText())) %>"></td>
         </tr>
         <tr>
             <td colspan="2">&nbsp;<br>#gui_heading( "<? templates/sv/change_img.html/43/1 ?>" )</td>
@@ -235,7 +235,7 @@ function checkLinkOnBlur() {
                 <td><label for="linkType1"><? templates/sv/change_img.html/4001 ?></label></td>
             </tr>
             </table></td>
-            <td><input type="text" name="imageref_link" size="92" maxlength="255" style="width: 100%" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLinkUrl())) %>" onFocus="checkLinkOnFocus()" onBlur="checkLinkOnBlur()"></td>
+            <td><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__LINK_URL %>" size="92" maxlength="255" style="width: 100%" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLinkUrl())) %>" onFocus="checkLinkOnFocus()" onBlur="checkLinkOnBlur()"></td>
         </tr>
         <tr>
             <td nowrap><? templates/sv/change_img.html/46 ?></td>
@@ -243,7 +243,7 @@ function checkLinkOnBlur() {
             <table border="0" cellspacing="0" cellpadding="0">
             <tr>
                 <td>
-                <select name="target" size="1">
+                <select name="<%= ChangeImage.REQUEST_PARAMETER__LINK_TARGET %>" size="1">
                     <% String target = StringUtils.defaultString( image.getTarget() ) ;
                        boolean targetTop = "_top".equalsIgnoreCase(target);
                        boolean targetBlank = "_blank".equalsIgnoreCase(target);
@@ -258,7 +258,7 @@ function checkLinkOnBlur() {
                     <option <% if (targetOther) { %> selected<% } %>><? templates/sv/change_img.html/51 ?></option>
                 </select></td>
                 <td>&nbsp;&nbsp;</td>
-                <td><input type="text" name="target" size="10" maxlength="20" value="<%= StringEscapeUtils.escapeHtml(targetOther ? target : "") %>"></td>
+                <td><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__LINK_TARGET %>" size="10" maxlength="20" value="<%= StringEscapeUtils.escapeHtml(targetOther ? target : "") %>"></td>
             </tr>
             </table></td>
         </tr>
@@ -276,7 +276,7 @@ function checkLinkOnBlur() {
             <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="156" height="1"></td>
             <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
         </tr>
-        <input type="hidden" name="low_scr" value="<%= image.getLowResolutionUrl() %>">
+        <input type="hidden" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_LOWSRC %>" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLowResolutionUrl())) %>">
     </table>
 </form>
 #gui_bottom()

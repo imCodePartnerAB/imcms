@@ -130,4 +130,10 @@ public class ImageDomainObject implements Serializable {
     public void setType( int type ) {
         this.type = type;
     }
+
+    public void setUrlAndClearSize( String url ) {
+        setUrl( url );
+        setWidth( 0 );
+        setHeight( 0 );
+    }
 }

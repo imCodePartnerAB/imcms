@@ -15,7 +15,6 @@ import java.sql.SQLException;
 public class ConnectionPoolForNonPoolingDriver extends ConnectionPool {
 
     private BasicDataSource dataSource;
-    private static int noOfPoolsCreated = 0;
 
     private final static Logger log = Logger.getLogger( ConnectionPoolForNonPoolingDriver.class );
 
@@ -34,21 +33,19 @@ public class ConnectionPoolForNonPoolingDriver extends ConnectionPool {
         basicDataSource.setPoolPreparedStatements( true );
 
         dataSource = basicDataSource;
-        noOfPoolsCreated++;
-        log.debug("Pool no " + noOfPoolsCreated + " created");
 
+        logDatabaseVersion();
+    }
+
+    private void logDatabaseVersion() throws SQLException {
         Connection connection = getConnection();
-        logDatabaseData( connection );
+        DatabaseMetaData metaData = connection.getMetaData();
+        log.info( "Database product version = " + metaData.getDatabaseProductVersion() );
         connection.close();
     }
 
     public synchronized Connection getConnection() throws SQLException {
         return dataSource.getConnection();
-    }
-
-    private static void logDatabaseData( Connection connection ) throws SQLException {
-        DatabaseMetaData metaData = connection.getMetaData();
-        log.info( "Database product version = " + metaData.getDatabaseProductVersion() );
     }
 
 }

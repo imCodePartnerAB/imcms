@@ -1,6 +1,5 @@
 package imcode.server.db;
 
-import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
@@ -15,8 +14,6 @@ public abstract class ConnectionPool {
     public static ConnectionPool createConnectionPool( String jdbcDriver, String jdbcUrl,
                                                        String user, String password,
                                                        int maxConnectionCount ) {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
         ConnectionPool connectionPool;
         try {
             connectionPool = new ConnectionPoolForNonPoolingDriver( jdbcDriver, jdbcUrl, user, password, maxConnectionCount );
@@ -24,8 +21,6 @@ public abstract class ConnectionPool {
             log.fatal( "Failed to create connection pool. Url: " + jdbcUrl + " Driver: " + jdbcDriver, ex );
             throw new RuntimeException( ex );
         }
-        stopWatch.stop();
-        log.debug( "createConnectionPool() : " + stopWatch.getTime() + "ms" );
         return connectionPool;
     }
 }

@@ -10,18 +10,21 @@ import imcode.server.document.DocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.QueryParser;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImageData;
 import imcode.util.ImageParser;
 import imcode.util.Utility;
+import imcode.util.LocalizedMessage;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.WildcardQuery;
 import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
@@ -34,29 +37,32 @@ import java.io.InputStream;
 
 public class ChangeImage extends HttpServlet {
 
-    final static String REQUEST_PARAMETER__IMAGE_URL = "imageref";
+    public final static String REQUEST_PARAMETER__IMAGE_URL = "imageref";
     public final static String REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON = "goToImageSearch";
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON = "goToImageBrowser";
     public static final String REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON = "goToAddRestrictedImage";
     public static final String REQUEST_PARAMETER__OK_BUTTON = "ok";
     public static final String REQUEST_PARAMETER__PREVIEW_BUTTON = "show_img";
-    private static final String REQUEST_PARAMETER__IMAGE_HEIGHT = "image_height";
-    private static final String REQUEST_PARAMETER__IMAGE_WIDTH = "image_width";
-    private static final String REQUEST_PARAMETER__IMAGE_BORDER = "image_border";
-    private static final String REQUEST_PARAMETER__VERTICAL_SPACE = "v_space";
-    private static final String REQUEST_PARAMETER__HORIZONTAL_SPACE = "h_space";
-    private static final String REQUEST_PARAMETER__IMAGE_NAME = "image_name";
+    public static final String REQUEST_PARAMETER__IMAGE_HEIGHT = "image_height";
+    public static final String REQUEST_PARAMETER__IMAGE_WIDTH = "image_width";
+    public static final String REQUEST_PARAMETER__IMAGE_BORDER = "image_border";
+    public static final String REQUEST_PARAMETER__VERTICAL_SPACE = "v_space";
+    public static final String REQUEST_PARAMETER__HORIZONTAL_SPACE = "h_space";
+    public static final String REQUEST_PARAMETER__IMAGE_NAME = "image_name";
     public static final String REQUEST_PARAMETER__IMAGE_INDEX = "img";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
     public static final String REQUEST_PARAMETER__DELETE_BUTTON = "delete";
-    private static final String REQUEST_PARAMETER__IMAGE_ALIGN = "image_align";
-    private static final String REQUEST_PARAMETER__IMAGE_ALT = "alt_text";
-    private static final String REQUEST_PARAMETER__IMAGE_LOWSRC = "low_scr";
+    public static final String REQUEST_PARAMETER__IMAGE_ALIGN = "image_align";
+    public static final String REQUEST_PARAMETER__IMAGE_ALT = "alt_text";
+    public static final String REQUEST_PARAMETER__IMAGE_LOWSRC = "low_scr";
     public static final String REQUEST_PARAMETER__DIRECTORY = "directory";
     public static final String REQUEST_PARAMETER__DOCUMENT_ID = "documentId";
     public static final String REQUEST_PARAMETER__LABEL = "label";
+    public static final String REQUEST_PARAMETER__LINK_URL = "imageref_link";
+    public static final String REQUEST_PARAMETER__LINK_TARGET = EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET;
 
-    private final static Logger log = Logger.getLogger( ChangeImage.class.getName() );
+    private final static String[] IMAGE_MIME_TYPES = new String[]{"image/jpeg", "image/png", "image/gif"};
+    static final LocalizedMessage ERROR_MESSAGE___ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images") ;
 
     public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
@@ -98,14 +104,16 @@ public class ChangeImage extends HttpServlet {
     private void goToImageAdder( final DocumentMapper documentMapper, final TextDocumentDomainObject document,
                                  UserDomainObject user, final ImageDomainObject image, final int imageIndex,
                                  HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)documentMapper.createDocumentOfTypeFromParent( DocumentDomainObject.DOCTYPE_FILE, document, user) ;
+        FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)documentMapper.createDocumentOfTypeFromParent( DocumentDomainObject.DOCTYPE_FILE, document, user );
         DocumentPageFlow.SaveDocumentCommand saveNewImageFileDocument = new CreateDocumentPageFlow.SaveDocumentCommand() {
             public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
-                FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document ;
-                fileDocument.setHeadline( fileDocument.getFilename() );
-                fileDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
-                documentMapper.saveNewDocument( document, user );
-                image.setUrl( "../servlet/GetDoc?meta_id="+document.getId() );
+                FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
+                if ( ArrayUtils.contains( IMAGE_MIME_TYPES, fileDocument.getMimeType() ) ) {
+                    fileDocument.setHeadline( fileDocument.getFilename() );
+                    fileDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
+                    documentMapper.saveNewDocument( document, user );
+                    image.setUrlAndClearSize( "../servlet/GetDoc?meta_id=" + document.getId() );
+                }
             }
         };
         DispatchCommand returnToImageEditPageCommand = new DispatchCommand() {
@@ -113,7 +121,8 @@ public class ChangeImage extends HttpServlet {
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
         };
-        DocumentPageFlow pageFlow = new EditFileDocumentPageFlow( fileDocument, getServletContext(), returnToImageEditPageCommand, saveNewImageFileDocument ) ;
+        EditFileDocumentPageFlow.MimeTypeRestriction mimeTypeRestriction = new EditFileDocumentPageFlow.MimeTypeRestriction( IMAGE_MIME_TYPES, ERROR_MESSAGE___ONLY_ALLOWED_TO_UPLOAD_IMAGES );
+        DocumentPageFlow pageFlow = new EditFileDocumentPageFlow( fileDocument, getServletContext(), returnToImageEditPageCommand, saveNewImageFileDocument, mimeTypeRestriction );
         pageFlow.dispatch( request, response );
     }
 
@@ -128,7 +137,7 @@ public class ChangeImage extends HttpServlet {
         } );
         imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
             public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                image.setUrl( imageUrl );
+                image.setUrlAndClearSize( imageUrl );
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
         } );
@@ -139,6 +148,7 @@ public class ChangeImage extends HttpServlet {
                                   final ImageDomainObject image, final HttpServletRequest request,
                                   final HttpServletResponse response ) throws IOException, ServletException {
         DocumentFinder documentFinder = new DocumentFinder();
+        documentFinder.setQueryParser( new HeadlineWildcardQueryParser() );
         documentFinder.setCancelCommand( new DispatchCommand() {
             public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
                 goToImageEditPage( document, imageIndex, image, request, response );
@@ -149,9 +159,7 @@ public class ChangeImage extends HttpServlet {
                                         HttpServletResponse response ) throws IOException, ServletException {
                 FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)documentFound;
                 if ( null != imageFileDocument ) {
-                    image.setUrl( "../servlet/GetDoc?meta_id=" + imageFileDocument.getId() );
-                    image.setWidth( 0 );
-                    image.setHeight( 0 );
+                    image.setUrlAndClearSize( "../servlet/GetDoc?meta_id=" + imageFileDocument.getId() );
                 }
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
@@ -163,9 +171,10 @@ public class ChangeImage extends HttpServlet {
 
     private Query createImageFileDocumentQuery() {
         BooleanQuery imageMimeTypeQuery = new BooleanQuery();
-        imageMimeTypeQuery.add( new TermQuery( new Term( DocumentIndex.FIELD__MIME_TYPE, "image/jpeg" ) ), false, false );
-        imageMimeTypeQuery.add( new TermQuery( new Term( DocumentIndex.FIELD__MIME_TYPE, "image/png" ) ), false, false );
-        imageMimeTypeQuery.add( new TermQuery( new Term( DocumentIndex.FIELD__MIME_TYPE, "image/gif" ) ), false, false );
+        for ( int i = 0; i < IMAGE_MIME_TYPES.length; i++ ) {
+            String imageMimeType = IMAGE_MIME_TYPES[i];
+            imageMimeTypeQuery.add( new TermQuery( new Term( DocumentIndex.FIELD__MIME_TYPE, imageMimeType ) ), false, false );
+        }
 
         TermQuery fileDocumentQuery = new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""
                                                                                                  + DocumentDomainObject.DOCTYPE_FILE ) );
@@ -204,7 +213,7 @@ public class ChangeImage extends HttpServlet {
         image.setAlternateText( req.getParameter( REQUEST_PARAMETER__IMAGE_ALT ) );
         image.setLowResolutionUrl( req.getParameter( REQUEST_PARAMETER__IMAGE_LOWSRC ) );
         image.setTarget( EditDocumentInformationPageFlow.getTargetFromRequest( req ) );
-        image.setLinkUrl( req.getParameter( "imageref_link" ) );
+        image.setLinkUrl( req.getParameter( REQUEST_PARAMETER__LINK_URL ) );
         return image;
     }
 
@@ -224,13 +233,6 @@ public class ChangeImage extends HttpServlet {
         if ( !userHasImagePermissionsOnDocument( user, document ) ) {
             Utility.redirectToStartDocument( request, response );
             return;
-        }
-
-        String browsedImageUrl = getChosenImageFromImageBrowse( request );
-        if ( null != browsedImageUrl ) {
-            image.setUrl( browsedImageUrl );
-            image.setWidth( 0 );
-            image.setHeight( 0 );
         }
 
         goToImageEditPage( document, getImageNumberParam( request ), image, request, response );
@@ -279,14 +281,12 @@ public class ChangeImage extends HttpServlet {
         try {
             InputStream imageFileDocumentInputStream = imageFileDocument.getInputStreamSource().getInputStream();
             imageData = new ImageParser().parseImageStream( imageFileDocumentInputStream, imageFileDocument.getFilename() );
+        } catch ( IllegalArgumentException iae ) {
+            imageData = new ImageData( 0, 0 );
         } catch ( IOException ioe ) {
             imageData = new ImageData( 0, 0 );
         }
         return imageData;
-    }
-
-    private String getChosenImageFromImageBrowse( HttpServletRequest req ) {
-        return req.getParameter( "imglist" );
     }
 
     private int getImageNumberParam( HttpServletRequest req ) {
@@ -338,6 +338,19 @@ public class ChangeImage extends HttpServlet {
             return label;
         }
 
+    }
+
+    private static class HeadlineWildcardQueryParser implements QueryParser {
+
+        public Query parse( String queryString ) {
+            String[] queryStrings = StringUtils.split( queryString );
+            BooleanQuery booleanQuery = new BooleanQuery();
+            for ( int i = 0; i < queryStrings.length; i++ ) {
+                String queryTerm = queryStrings[i];
+                booleanQuery.add( new WildcardQuery( new Term( DocumentIndex.FIELD__META_HEADLINE, "*" + queryTerm + "*" ) ), true, false );
+            }
+            return booleanQuery;
+        }
     }
 
 }

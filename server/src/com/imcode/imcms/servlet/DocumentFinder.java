@@ -3,9 +3,12 @@ package com.imcode.imcms.servlet;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.QueryParser;
 import imcode.util.HttpSessionUtils;
 import imcode.util.Utility;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 
@@ -19,6 +22,7 @@ public class DocumentFinder extends WebComponent {
     public static final String REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER = "finder";
     private SelectDocumentCommand selectDocumentCommand;
     private Query restrictingQuery;
+    private QueryParser queryParser = new DefaultQueryParser();
 
     public static DocumentFinder getInstance( HttpServletRequest request ) {
         DocumentFinder documentFinder = (DocumentFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, DocumentFinder.REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER );
@@ -57,7 +61,7 @@ public class DocumentFinder extends WebComponent {
     }
 
     public boolean isDocumentsSelectable() {
-        return null != selectDocumentCommand ;
+        return null != selectDocumentCommand;
     }
 
     public void setSelectDocumentCommand( SelectDocumentCommand selectDocumentCommand ) {
@@ -72,10 +76,18 @@ public class DocumentFinder extends WebComponent {
         return restrictingQuery;
     }
 
+    public void setQueryParser( QueryParser queryParser ) {
+        this.queryParser = queryParser;
+    }
+
+    public Query parse( String queryString ) throws ParseException {
+        return queryParser.parse( queryString );
+    }
+
     public interface SelectDocumentCommand {
 
-        public void selectDocument( DocumentDomainObject document, HttpServletRequest request,
-                                    HttpServletResponse response ) throws IOException, ServletException;
+        void selectDocument( DocumentDomainObject document, HttpServletRequest request,
+                             HttpServletResponse response ) throws IOException, ServletException;
     }
 
 }
