@@ -444,11 +444,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SavePermissions</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SavePermissions</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveSort</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.SaveSort</servlet-class>
     </servlet>
@@ -936,11 +931,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveInPage</servlet-name>
         <url-pattern>/servlet/SaveInPage</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SavePermissions</servlet-name>
-        <url-pattern>/servlet/SavePermissions</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

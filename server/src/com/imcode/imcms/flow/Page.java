@@ -7,8 +7,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serializable;
 
-public abstract class Page {
+public abstract class Page implements Serializable {
 
     public static final String IN_REQUEST = "page";
 

@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serializable;
 
 public abstract class DocumentPageFlow extends PageFlow {
 
@@ -35,7 +36,7 @@ public abstract class DocumentPageFlow extends PageFlow {
         return (DocumentPageFlow)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
     }
 
-    public static interface SaveDocumentCommand {
+    public static interface SaveDocumentCommand extends Serializable {
         void saveDocument( DocumentDomainObject document, UserDomainObject user ) ;
     }
 }

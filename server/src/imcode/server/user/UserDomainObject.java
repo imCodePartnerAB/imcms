@@ -470,17 +470,27 @@ public class UserDomainObject extends Hashtable {
     }
 
     public boolean canDefineRestrictedOneFor( DocumentDomainObject document ) {
-        return isSuperAdminOrHasFullPermissionOn( document );
+        return isSuperAdminOrHasFullPermissionOn( document )
+               || hasAtLeastRestrictedOnePermissionOn( document ) && canEditPermissionsFor( document ) ;
     }
 
     public boolean canDefineRestrictedTwoFor( DocumentDomainObject document ) {
-        return isSuperAdminOrHasFullPermissionOn( document )
-               || hasAtLeastRestrictedOnePermissionOn( document )
-                  && document.isRestrictedOneMorePrivilegedThanRestrictedTwo();
+        boolean hasFullPermission = isSuperAdminOrHasFullPermissionOn( document );
+        boolean canEditPermissionsForDocument = canEditPermissionsFor( document );
+        boolean hasAtLeastRestrictedOne = hasAtLeastRestrictedOnePermissionOn( document );
+        boolean hasAtLeastRestrictedOnePermissionAndIsMorePrivilegedThanRestrictedTwo = hasAtLeastRestrictedOne
+                                                                                        && document.isRestrictedOneMorePrivilegedThanRestrictedTwo();
+        boolean hasAtLeastRestrictedTwo = hasAtLeastRestrictedTwoPermissionOn( document );
+        return hasFullPermission
+               || canEditPermissionsForDocument && (hasAtLeastRestrictedOnePermissionAndIsMorePrivilegedThanRestrictedTwo || hasAtLeastRestrictedTwo && !hasAtLeastRestrictedOne);
     }
 
     private boolean hasAtLeastRestrictedOnePermissionOn( DocumentDomainObject document ) {
         return Imcms.getServices().getDocumentMapper().userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( this, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, document );
+    }
+
+    private boolean hasAtLeastRestrictedTwoPermissionOn( DocumentDomainObject document ) {
+        return Imcms.getServices().getDocumentMapper().userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( this, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, document );
     }
 
     public String toString() {
@@ -496,4 +506,32 @@ public class UserDomainObject extends Hashtable {
         return currentContextPath;
     }
 
+    public boolean isSuperAdminOrHasAtLeastPermissionSetIdOn( DocumentDomainObject document, int permissionSetId ) {
+        return Imcms.getServices().getDocumentMapper().userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( this, permissionSetId, document ) ;
+    }
+
+    public boolean canEditPermissionsFor( DocumentDomainObject document ) {
+        return Imcms.getServices().getDocumentMapper().getDocumentPermissionSetForUser( document, this ).getEditPermissions() ;
+    }
+
+    public boolean canSetPermissionSetIdForRoleOnDocument( int permissionSetId, RoleDomainObject role,
+                                                           DocumentDomainObject document ) {
+        if (!canEditPermissionsFor( document )) {
+            return false ;
+        }
+        int currentPermissionSetId = document.getPermissionSetIdForRole( role );
+        boolean userIsSuperAdminOrHasAtLeastTheCurrentPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn( document, currentPermissionSetId );
+        boolean userIsSuperAdminOrHasAtLeastTheWantedPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn( document, permissionSetId );
+        boolean changingRestrictedTwo = DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
+                                        == permissionSetId
+                                        || DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
+                                           == currentPermissionSetId;
+        boolean canDefineRestrictedTwoForDocument = canDefineRestrictedTwoFor( document );
+
+        boolean canDo = userIsSuperAdminOrHasAtLeastTheWantedPermissionSet
+                        && userIsSuperAdminOrHasAtLeastTheCurrentPermissionSet
+                        && ( !changingRestrictedTwo || canDefineRestrictedTwoForDocument );
+        return canDo;
+
+    }
 }

@@ -5,8 +5,9 @@ import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
 
 import java.util.*;
+import java.io.Serializable;
 
-public class MenuDomainObject implements Cloneable {
+public class MenuDomainObject implements Cloneable, Serializable {
 
     private int id;
     private int sortOrder;

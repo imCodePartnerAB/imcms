@@ -3,7 +3,9 @@ package imcode.server.document.textdocument;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentReference;
 
-public class MenuItemDomainObject implements Cloneable {
+import java.io.Serializable;
+
+public class MenuItemDomainObject implements Cloneable, Serializable {
 
     private DocumentReference documentReference;
     private Integer sortKey;

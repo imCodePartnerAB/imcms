@@ -4,6 +4,11 @@
 
 <project name="imCMS" default="dist">
 
+    <!-- Read in 'build.properties' and set the properties therein. -->
+    <!-- Those properties are used as bases for later properties in this file. -->
+    <property name="build.properties" value="build.properties"/>
+    <property file="${build.properties}"/>
+
     <!-- The current version of imCMS. -->
     <property name="cvsname"    value="$$Name$"/>
 
@@ -11,12 +16,6 @@
     <property name="version"            value=""/>
     <property name="versionnumber"      value=""/>
     <property name="versionfilesuffix"  value=""/>
-
-
-    <!-- Read in 'build.properties' and set the properties therein. -->
-    <!-- Those properties are used as bases for later properties in this file. -->
-    <property name="build.properties" value="build.properties"/>
-    <property file="${build.properties}"/>
 
     <!-- Paths. Later ones are built on earlier ones. -->
 

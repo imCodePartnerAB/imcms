@@ -25,11 +25,11 @@ import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.lang.ref.SoftReference;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.lang.ref.SoftReference;
 
 public class DocumentMapper {
 
@@ -572,13 +572,13 @@ public class DocumentMapper {
 
     public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws MaxCategoryDomainObjectsOfTypeExceededException {
 
-        if ( !userHasMoreThanReadPermissionOnDocument( user, document ) ) {
-            return; // TODO: More specific check needed. Throw exception ?
+        DocumentDomainObject oldDocument = getDocument( document.getId() );
+
+        if ( !user.canEdit( oldDocument ) ) {
+            return;
         }
 
         checkMaxDocumentCategoriesOfType( document );
-
-        DocumentDomainObject oldDocument = getDocument( document.getId() ) ;
 
         try {
             boolean modifiedDatetimeChanged = !document.getLastModifiedDatetime().equals( document.getModifiedDatetime() );
@@ -592,11 +592,13 @@ public class DocumentMapper {
 
             updateDocumentCategories( document );
 
-            updateDocumentRolePermissions( document );
-
             updateDocumentKeywords( document.getId(), document.getKeywords() );
 
-            documentPermissionSetMapper.saveRestrictedDocumentPermissionSets( document, user, oldDocument );
+            if ( user.canEditPermissionsFor( oldDocument ) ) {
+                updateDocumentRolePermissions( document, user, oldDocument );
+
+                documentPermissionSetMapper.saveRestrictedDocumentPermissionSets( document, user, oldDocument );
+            }
 
             document.accept( new DocumentSavingVisitor( user, oldDocument ) );
         } finally {
@@ -609,14 +611,17 @@ public class DocumentMapper {
         documentCache.remove( new Integer( document.getId() ) );
     }
 
-    private void updateDocumentRolePermissions( DocumentDomainObject document ) {
+    private void updateDocumentRolePermissions( DocumentDomainObject document, UserDomainObject user,
+                                                DocumentDomainObject oldDocument ) {
         for ( Iterator it = document.getRolesMappedToPermissionSetIds().entrySet().iterator(); it.hasNext(); ) {
             Map.Entry rolePermissionTuple = (Map.Entry)it.next();
             RoleDomainObject role = (RoleDomainObject)rolePermissionTuple.getKey();
             int permissionSetId = ( (Integer)rolePermissionTuple.getValue() ).intValue();
-            sprocSetRoleDocPermissionSetId( service, document.getId(), role.getId(), permissionSetId );
+
+            if ( user.canSetPermissionSetIdForRoleOnDocument( permissionSetId, role, oldDocument ) ) {
+                setPermissionSetIdForRoleIdOnDocumentId( permissionSetId, role.getId(), document.getId() );
+            }
         }
-        // TODO Restricted One and Two (Bug 1443)
     }
 
     private void checkMaxDocumentCategoriesOfType( DocumentDomainObject document )
@@ -765,9 +770,8 @@ public class DocumentMapper {
                                    new String[]{"" + including_meta_id, "" + include_id, "" + included_meta_id} );
     }
 
-    public static void sprocSetRoleDocPermissionSetId( ImcmsServices imcref, int metaId, int roleId,
-                                                       int newSetId ) {
-        imcref.sqlUpdateProcedure( "SetRoleDocPermissionSetId", new String[]{"" + roleId, "" + metaId, "" + newSetId} );
+    public void setPermissionSetIdForRoleIdOnDocumentId( int newSetId, int roleId, int metaId ) {
+        service.sqlUpdateProcedure( "SetRoleDocPermissionSetId", new String[]{"" + roleId, "" + metaId, "" + newSetId} );
     }
 
     public static void sprocUpdateParentsDateModified( ImcmsServices imcref, int meta_id ) {

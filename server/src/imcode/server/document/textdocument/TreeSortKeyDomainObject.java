@@ -5,8 +5,9 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+import java.io.Serializable;
 
-public class TreeSortKeyDomainObject implements Comparable {
+public class TreeSortKeyDomainObject implements Comparable, Serializable {
 
     private int[] keys;
 

@@ -1,8 +1,12 @@
 package imcode.server.document;
 
-public class DocumentReference  {
+import imcode.server.Imcms;
 
-    private DocumentMapper documentMapper;
+import java.io.Serializable;
+
+public class DocumentReference implements Serializable {
+
+    private transient DocumentMapper documentMapper;
     private int documentId;
 
     public DocumentReference( int documentId, DocumentMapper documentMapper ) {
@@ -14,6 +18,9 @@ public class DocumentReference  {
     }
 
     public DocumentDomainObject getDocument() {
+        if (null == documentMapper) {
+            documentMapper = Imcms.getServices().getDocumentMapper() ;
+        }
         return documentMapper.getDocument( documentId ) ;
     }
 

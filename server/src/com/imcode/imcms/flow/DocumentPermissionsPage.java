@@ -46,14 +46,15 @@ public class DocumentPermissionsPage extends OkCancelPage {
     protected void dispatchOther( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         DocumentPermissionSetDomainObject documentPermissionSet = null;
         boolean forNew = false;
-        if ( Utility.parameterIsSet( request, "define_set_1" ) ) {
+        UserDomainObject user = Utility.getLoggedOnUser( request ) ;
+        if ( Utility.parameterIsSet( request, "define_set_1" ) && user.canDefineRestrictedOneFor( document ) ) {
             documentPermissionSet = document.getPermissionSetForRestrictedOne();
-        } else if ( Utility.parameterIsSet( request, "define_set_2" ) ) {
+        } else if ( Utility.parameterIsSet( request, "define_set_2" ) && user.canDefineRestrictedTwoFor( document ) ) {
             documentPermissionSet = document.getPermissionSetForRestrictedTwo();
-        } else if ( Utility.parameterIsSet( request, "define_new_set_1" ) ) {
+        } else if ( Utility.parameterIsSet( request, "define_new_set_1" ) && user.canDefineRestrictedOneFor( document ) ) {
             documentPermissionSet = document.getPermissionSetForRestrictedOneForNewDocuments();
             forNew = true;
-        } else if ( Utility.parameterIsSet( request, "define_new_set_2" ) ) {
+        } else if ( Utility.parameterIsSet( request, "define_new_set_2" ) && user.canDefineRestrictedTwoFor( document ) ) {
             documentPermissionSet = document.getPermissionSetForRestrictedTwoForNewDocuments();
             forNew = true;
         }

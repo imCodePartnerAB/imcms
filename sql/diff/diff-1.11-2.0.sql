@@ -159,3 +159,13 @@ DROP PROCEDURE UpdateDefaultTemplates
 GO
 
 -- 2004-12-07 Kreiger
+
+DROP PROCEDURE GetUserPermissionSetEx
+DROP PROCEDURE SetDocPermissionSetEx
+DROP PROCEDURE SetNewDocPermissionSetEx
+DROP PROCEDURE DeleteDocPermissionSetEx
+DROP PROCEDURE DeleteNewDocPermissionSetEx
+DROP PROCEDURE GetRolesDocPermissions
+GO
+
+-- 2004-12-09 Kreiger

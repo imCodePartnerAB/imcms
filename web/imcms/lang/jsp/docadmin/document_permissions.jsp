@@ -11,7 +11,20 @@
                  imcode.server.document.TemplateDomainObject,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  com.imcode.imcms.flow.Page"%>
-<%@page contentType="text/html"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%
+<%@page contentType="text/html"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%!
+    String formatRolePermissionRadioButton( int radioButtonPermissionSetId, UserDomainObject user, int permissionSetId,
+                                            RoleDomainObject role,
+                                            DocumentDomainObject document ) {
+        boolean checked = permissionSetId == radioButtonPermissionSetId;
+        String name = "role_" + role.getId();
+        String value = "" + radioButtonPermissionSetId;
+        if (user.canSetPermissionSetIdForRoleOnDocument( radioButtonPermissionSetId, role, document )) {
+            return Html.radio(name, value, checked ) ;
+        } else {
+            return checked ? Html.hidden( name, value )+"X" : "O" ;
+        }
+    }
+%><%
 
     DocumentPermissionsPage documentPermissionsPage = (DocumentPermissionsPage)Page.fromRequest(request) ;
     DocumentDomainObject document = documentPermissionsPage.getDocument() ;
@@ -40,7 +53,7 @@
 
     <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
         <tr>
-            <td colspan="2">#gui_heading( "<? templates/sv/docinfo/change_meta_rights.html/5/1 ?>" )</td>
+            <td colspan="2">#gui_heading( "<? templates/sv/docinfo/change_meta_rights.html/5/1 ?> <%= document.getId() %>" )</td>
         </tr>
         <tr>
             <td class="imcmsAdmText"><? templates/sv/docinfo/change_meta_rights.html/1001 ?></td>
@@ -65,15 +78,18 @@
                             continue ;
                         }
                         allRoles.remove( role ) ;
+                        if (role.equals( RoleDomainObject.SUPERADMIN )) {
+                            continue ;
+                        }
                         %>
                         <tr align="center">
                             <td height="22" class="imcmsAdmText" align="left"><% if (user.hasRole( role )) { %>*<% } else { %>&nbsp;<% } %></td>
                             <td class="imcmsAdmText" align="left"><%= role.getName() %></td>
-                            <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__NONE, permissionSetId == DocumentPermissionSetDomainObject.TYPE_ID__NONE ) %></td>
-                            <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__READ, permissionSetId == DocumentPermissionSetDomainObject.TYPE_ID__READ ) %></td>
-                            <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, permissionSetId == DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 ) %></td>
-                            <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, permissionSetId == DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 ) %></td>
-                            <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__FULL, permissionSetId == DocumentPermissionSetDomainObject.TYPE_ID__FULL ) %></td>
+                            <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__NONE, user, permissionSetId, role, document ) %></td>
+                            <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__READ, user, permissionSetId, role, document ) %></td>
+                            <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, user, permissionSetId, role, document ) %></td>
+                            <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, user, permissionSetId, role, document ) %></td>
+                            <td><%= formatRolePermissionRadioButton( DocumentPermissionSetDomainObject.TYPE_ID__FULL, user, permissionSetId, role, document ) %></td>
                         </tr>
                         <%
                     } %>
