@@ -468,6 +468,8 @@ CREATE TABLE polls (
 	hide_result SMALLINT NOT NULL ,
 	confirmation_text INT,
 	email_recipients INT,
+	email_from int NULL,
+	email_subject int NULL,
 	result_template INT,
 	PRIMARY KEY (id)
 );

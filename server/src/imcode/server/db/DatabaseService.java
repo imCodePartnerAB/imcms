@@ -2804,33 +2804,38 @@ public abstract class DatabaseService {
 
     public class Table_polls {
         int id;
-        int name;
+        public Integer name;
         int description;
         public int meta_id;
         public int popup_freq;
-        int set_cookie;
-        int hide_result;
+        public int set_cookie;
+        public int hide_result;
         int confirmation_text;
-        int email_recipients;
-        int result_template;
+        public Integer email_recipients;
+        public int email_from;
+        public int email_subject;
+        public int result_template;
 
         public Table_polls( ResultSet rs ) throws SQLException {
             id = rs.getInt("id");
-            name = rs.getInt("name");
+            name = (Integer)rs.getObject("name");
             description = rs.getInt("description");
             meta_id = rs.getInt("meta_id");
             popup_freq = rs.getInt("popup_freq");
             set_cookie = rs.getInt("set_cookie");
             hide_result = rs.getInt("hide_result");
             confirmation_text = rs.getInt("confirmation_text");
-            email_recipients = rs.getInt("email_recipients");
+            email_recipients = (Integer)rs.getObject("email_recipients");
+            email_from = rs.getInt("email_from");
+            email_subject = rs.getInt("email_subject");
             result_template = rs.getInt("result_template");
         }
     }
 
     public Table_polls[] sproc_Poll_GetAll() {
-        String sql = "SELECT id, name, description, meta_id, popup_freq, set_cookie, hide_result, confirmation_text, " +
-            "email_recipients, result_template FROM polls";
+        String sql = "SELECT id, name, description, meta_id, popup_freq, " +
+                "set_cookie, hide_result, confirmation_text, " +
+                "email_recipients, email_from, email_subject, result_template FROM polls";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
                 return new Table_polls( rs );
@@ -2924,7 +2929,7 @@ public abstract class DatabaseService {
     * Get all data for a poll by meta_id
     */
     public Table_polls sproc_Poll_GetOne( int meta_id ) {
-        String sql = "SELECT id, name, description, meta_id, popup_freq, set_cookie, hide_result, confirmation_text, email_recipients, result_template FROM polls WHERE meta_id = ? ";
+        String sql = "SELECT id, name, description, meta_id, popup_freq, set_cookie, hide_result, confirmation_text, email_recipients, email_from, email_subject, result_template FROM polls WHERE meta_id = ? ";
         Object[] paramValues = new Object[]{ new Integer( meta_id ) };
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
