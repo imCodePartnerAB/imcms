@@ -146,6 +146,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[classifica
 drop table [dbo].[classification]
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[countDoc]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[countDoc]
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[display_name]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[display_name]
 GO
@@ -302,7 +306,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[users]') a
 drop table [dbo].[users]
 GO
 
-if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
 exec sp_fulltext_database N'enable' 
 
 GO
@@ -320,8 +323,8 @@ GO
 
 CREATE TABLE [dbo].[Results] (
 	[user_type] [int] NOT NULL ,
-	[type_name] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-	[lang_prefix] [char] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[type_name] [char] (30) NULL ,
+	[lang_prefix] [char] (3) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -334,8 +337,8 @@ GO
 
 CREATE TABLE [dbo].[browsers] (
 	[browser_id] [int] NOT NULL ,
-	[name] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[user_agent] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[name] [varchar] (50) NOT NULL ,
+	[user_agent] [varchar] (50) NOT NULL ,
 	[value] [tinyint] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -350,14 +353,30 @@ GO
 
 CREATE TABLE [dbo].[classification] (
 	[class_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[code] [varchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[code] [varchar] (30) NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[countDoc] (
+	[CountDate] [datetime] NOT NULL ,
+	[Text_doc] [int] NULL ,
+	[File_doc] [int] NULL ,
+	[Conf_doc] [int] NULL ,
+	[Html_doc] [int] NULL ,
+	[Chat_doc] [int] NULL ,
+	[Billb_doc] [int] NULL ,
+	[Url_doc] [int] NULL ,
+	[Brows_doc] [int] NULL ,
+	[Chart_doc] [int] NULL ,
+	[SumA_doc] [int] NULL ,
+	[SumB_doc] [int] NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[display_name] (
 	[sort_by_id] [int] NOT NULL ,
 	[lang_id] [int] NOT NULL ,
-	[display_name] [varchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[display_name] [varchar] (30) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -379,28 +398,28 @@ GO
 CREATE TABLE [dbo].[doc_permissions] (
 	[permission_id] [int] NOT NULL ,
 	[doc_type] [int] NOT NULL ,
-	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[description] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[lang_prefix] [varchar] (3) NOT NULL ,
+	[description] [varchar] (50) NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[doc_types] (
 	[doc_type] [int] NOT NULL ,
-	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[type] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+	[lang_prefix] [varchar] (3) NOT NULL ,
+	[type] [varchar] (50) NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[fileupload_docs] (
 	[meta_id] [int] NOT NULL ,
-	[filename] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[mime] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[filename] [varchar] (50) NOT NULL ,
+	[mime] [varchar] (50) NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[frameset_docs] (
 	[meta_id] [int] NOT NULL ,
-	[frame_set] [text] COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+	[frame_set] [text] NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -412,14 +431,14 @@ CREATE TABLE [dbo].[images] (
 	[v_space] [int] NOT NULL ,
 	[h_space] [int] NOT NULL ,
 	[name] [int] NOT NULL ,
-	[image_name] [varchar] (40) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[target] [varchar] (15) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[target_name] [varchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[align] [varchar] (15) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[alt_text] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[low_scr] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[imgurl] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[linkurl] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[image_name] [varchar] (40) NOT NULL ,
+	[target] [varchar] (15) NOT NULL ,
+	[target_name] [varchar] (80) NOT NULL ,
+	[align] [varchar] (15) NOT NULL ,
+	[alt_text] [varchar] (255) NOT NULL ,
+	[low_scr] [varchar] (255) NOT NULL ,
+	[imgurl] [varchar] (255) NOT NULL ,
+	[linkurl] [varchar] (255) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -440,30 +459,30 @@ GO
 
 CREATE TABLE [dbo].[lang_prefixes] (
 	[lang_id] [int] NOT NULL ,
-	[lang_prefix] [char] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+	[lang_prefix] [char] (3) NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[languages] (
-	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[user_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[language] [varchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+	[lang_prefix] [varchar] (3) NOT NULL ,
+	[user_prefix] [varchar] (3) NOT NULL ,
+	[language] [varchar] (30) NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[main_log] (
 	[log_datetime] [datetime] NULL ,
-	[event] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+	[event] [varchar] (255) NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[meta] (
 	[meta_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[description] [varchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[description] [varchar] (80) NOT NULL ,
 	[doc_type] [int] NOT NULL ,
-	[meta_headline] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[meta_text] [varchar] (1000) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[meta_image] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[meta_headline] [varchar] (255) NOT NULL ,
+	[meta_text] [varchar] (1000) NOT NULL ,
+	[meta_image] [varchar] (255) NOT NULL ,
 	[owner_id] [int] NOT NULL ,
 	[permissions] [int] NOT NULL ,
 	[shared] [int] NOT NULL ,
@@ -472,15 +491,15 @@ CREATE TABLE [dbo].[meta] (
 	[help_text_id] [int] NOT NULL ,
 	[archive] [int] NOT NULL ,
 	[status_id] [int] NOT NULL ,
-	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[classification] [varchar] (200) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[lang_prefix] [varchar] (3) NOT NULL ,
+	[classification] [varchar] (200) NOT NULL ,
 	[date_created] [datetime] NOT NULL ,
 	[date_modified] [datetime] NOT NULL ,
 	[sort_position] [int] NOT NULL ,
 	[menu_position] [int] NOT NULL ,
 	[disable_search] [int] NOT NULL ,
-	[target] [varchar] (10) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[frame_name] [varchar] (20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[target] [varchar] (10) NOT NULL ,
+	[frame_name] [varchar] (20) NOT NULL ,
 	[activate] [int] NOT NULL ,
 	[activated_datetime] [datetime] NULL ,
 	[archived_datetime] [datetime] NULL 
@@ -495,9 +514,9 @@ GO
 
 CREATE TABLE [dbo].[mime_types] (
 	[mime_id] [int] IDENTITY (0, 1) NOT NULL ,
-	[mime_name] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[mime] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[mime_name] [varchar] (50) NOT NULL ,
+	[mime] [varchar] (50) NOT NULL ,
+	[lang_prefix] [varchar] (3) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -518,37 +537,37 @@ GO
 
 CREATE TABLE [dbo].[permission_sets] (
 	[set_id] [int] NOT NULL ,
-	[description] [varchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[description] [varchar] (30) NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[permissions] (
 	[permission_id] [tinyint] NOT NULL ,
-	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[description] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[lang_prefix] [varchar] (3) NOT NULL ,
+	[description] [varchar] (50) NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[phones] (
 	[phone_id] [int] NOT NULL ,
-	[country_code] [varchar] (4) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[area_code] [char] (8) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[number] [char] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[country_code] [varchar] (4) NOT NULL ,
+	[area_code] [char] (8) NOT NULL ,
+	[number] [char] (25) NOT NULL ,
 	[user_id] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[roles] (
 	[role_id] [int] NOT NULL ,
-	[role_name] [char] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[role_name] [char] (25) NOT NULL ,
 	[permissions] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[roles_permissions] (
 	[permission_id] [int] NOT NULL ,
-	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[description] [varchar] (40) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[lang_prefix] [varchar] (3) NOT NULL ,
+	[description] [varchar] (40) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -561,12 +580,12 @@ GO
 
 CREATE TABLE [dbo].[sort_by] (
 	[sort_by_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[sort_by_type] [varchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[sort_by_type] [varchar] (30) NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[stats] (
-	[name] [varchar] (120) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[name] [varchar] (120) NOT NULL ,
 	[num] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -574,27 +593,27 @@ GO
 CREATE TABLE [dbo].[sys_data] (
 	[sys_id] [tinyint] IDENTITY (1, 1) NOT NULL ,
 	[type_id] [tinyint] NOT NULL ,
-	[value] [varchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+	[value] [varchar] (80) NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[sys_types] (
 	[type_id] [tinyint] IDENTITY (1, 1) NOT NULL ,
-	[name] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+	[name] [varchar] (50) NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[templategroups] (
 	[group_id] [int] NOT NULL ,
-	[group_name] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[group_name] [varchar] (50) NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[templates] (
 	[template_id] [int] NOT NULL ,
-	[template_name] [varchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[simple_name] [varchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[template_name] [varchar] (80) NOT NULL ,
+	[simple_name] [varchar] (80) NOT NULL ,
+	[lang_prefix] [varchar] (3) NOT NULL ,
 	[no_of_txt] [int] NULL ,
 	[no_of_img] [int] NULL ,
 	[no_of_url] [int] NULL 
@@ -620,7 +639,7 @@ GO
 CREATE TABLE [dbo].[texts] (
 	[meta_id] [int] NOT NULL ,
 	[name] [int] NOT NULL ,
-	[text] [text] COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[text] [text] NOT NULL ,
 	[type] [int] NULL ,
 	[counter] [int] IDENTITY (1, 1) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
@@ -637,11 +656,11 @@ GO
 
 CREATE TABLE [dbo].[url_docs] (
 	[meta_id] [int] NOT NULL ,
-	[frame_name] [varchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[target] [varchar] (15) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[url_ref] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[url_txt] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[frame_name] [varchar] (80) NOT NULL ,
+	[target] [varchar] (15) NOT NULL ,
+	[url_ref] [varchar] (255) NOT NULL ,
+	[url_txt] [varchar] (255) NOT NULL ,
+	[lang_prefix] [varchar] (3) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -660,25 +679,25 @@ GO
 
 CREATE TABLE [dbo].[user_types] (
 	[user_type] [int] NOT NULL ,
-	[type_name] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-	[lang_prefix] [char] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[type_name] [char] (30) NULL ,
+	[lang_prefix] [char] (3) NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[users] (
 	[user_id] [int] NOT NULL ,
-	[login_name] [char] (15) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[login_password] [char] (15) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[first_name] [char] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[last_name] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[title] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[company] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[address] [char] (40) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[city] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[zip] [char] (15) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[country] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[county_council] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
-	[email] [char] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[login_name] [char] (15) NOT NULL ,
+	[login_password] [char] (15) NOT NULL ,
+	[first_name] [char] (25) NOT NULL ,
+	[last_name] [char] (30) NOT NULL ,
+	[title] [char] (30) NOT NULL ,
+	[company] [char] (30) NOT NULL ,
+	[address] [char] (40) NOT NULL ,
+	[city] [char] (30) NOT NULL ,
+	[zip] [char] (15) NOT NULL ,
+	[country] [char] (30) NOT NULL ,
+	[county_council] [char] (30) NOT NULL ,
+	[email] [char] (50) NOT NULL ,
 	[admin_mode] [int] NOT NULL ,
 	[last_page] [int] NOT NULL ,
 	[archive_mode] [int] NOT NULL ,
@@ -726,7 +745,6 @@ ALTER TABLE [dbo].[texts] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
 exec sp_fulltext_database N'enable' 
 
 GO
@@ -800,7 +818,6 @@ ALTER TABLE [dbo].[classification] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
 exec sp_fulltext_database N'enable' 
 
 GO
@@ -899,7 +916,6 @@ ALTER TABLE [dbo].[meta] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
 exec sp_fulltext_database N'enable' 
 
 GO
