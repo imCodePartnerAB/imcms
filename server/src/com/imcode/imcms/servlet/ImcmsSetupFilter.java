@@ -8,47 +8,62 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.log4j.NDC;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.NDC;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Cookie;
 import java.io.IOException;
 
 public class ImcmsSetupFilter implements Filter {
 
+    public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
+
     public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
 
-        HttpServletRequest httpServletRequest = ((HttpServletRequest) request);
-        HttpSession session = httpServletRequest.getSession( false );
+        HttpServletRequest httpServletRequest = ( (HttpServletRequest)request );
+        HttpSession session = httpServletRequest.getSession();
 
-        if ( null == session ) {
-            session = httpServletRequest.getSession( true );
+        if ( session.isNew() ) {
             IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
             service.incrementSessionCounter();
+            setDomainSessionCookie( response, session );
         }
 
         UserDomainObject user = (UserDomainObject)session.getAttribute( WebAppGlobalConstants.LOGGED_IN_USER );
-        if (user == null) {
+        if ( user == null ) {
             String ip = request.getRemoteAddr();
             user = getUserUserOrIpLoggedInUser( ip );
             session.setAttribute( WebAppGlobalConstants.LOGGED_IN_USER, user );
         }
 
         // FIXME: Ugly hack to get the contextpath into IMCService.getVelocityContext()
-        user.setCurrentContextPath( ((HttpServletRequest) request).getContextPath() );
+        user.setCurrentContextPath( ( (HttpServletRequest)request ).getContextPath() );
 
         initRequestWithApi( user, request );
 
         NDC.setMaxDepth( 0 );
-        String contextPath = ((HttpServletRequest) request).getContextPath();
-        if (!"".equals( contextPath )) {
+        String contextPath = ( (HttpServletRequest)request ).getContextPath();
+        if ( !"".equals( contextPath ) ) {
             NDC.push( contextPath );
         }
-        NDC.push( StringUtils.substringAfterLast( ((HttpServletRequest) request).getRequestURI(), "/" ) );
+        NDC.push( StringUtils.substringAfterLast( ( (HttpServletRequest)request ).getRequestURI(), "/" ) );
         chain.doFilter( request, response );
         NDC.setMaxDepth( 0 );
+    }
+
+    private void setDomainSessionCookie( ServletResponse response, HttpSession session ) throws IOException {
+
+        String domain = ApplicationServer.getIMCServiceInterface().getConfig().getSessionCookieDomain();
+        if (StringUtils.isNotBlank(domain)) {
+            Cookie cookie = new Cookie( JSESSIONID_COOKIE_NAME, session.getId());
+            cookie.setDomain( domain );
+            cookie.setPath( "/" );
+            ((HttpServletResponse)response).addCookie( cookie );
+        }
     }
 
     private void initRequestWithApi( UserDomainObject currentUser, ServletRequest request ) {
@@ -86,7 +101,7 @@ public class ImcmsSetupFilter implements Filter {
 
         String user_data[] = imcref.sqlQuery( sqlStr, new String[]{"" + ip, "" + ip} );
 
-        if (user_data.length > 0) {
+        if ( user_data.length > 0 ) {
             user = imcref.verifyUser( user_data[0], user_data[1] );
             user.setLoginType( "ip_access" );
         } else {

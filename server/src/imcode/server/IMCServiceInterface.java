@@ -70,10 +70,6 @@ public interface IMCServiceInterface {
     public String[] sqlProcedure(String procedure, String[] params)
 	;
 
-    // Parse doc replace variables with data, uses two vectors
-    String  replaceTagsInStringWithData(String htmlStr,java.util.Vector variables,java.util.Vector data)
-	;
-
     // get external template folder
     File getExternalTemplateFolder(int meta_id, UserDomainObject user)
 	;
@@ -251,4 +247,6 @@ public interface IMCServiceInterface {
     VelocityEngine getVelocityEngine(UserDomainObject user);
 
     VelocityContext getVelocityContext( UserDomainObject user );
+
+    Config getConfig();
 }

@@ -4,6 +4,7 @@ import com.mockobjects.ExpectationList;
 import com.mockobjects.MockObject;
 import imcode.server.IMCServiceInterface;
 import imcode.server.SystemData;
+import imcode.server.Config;
 import imcode.server.db.ConnectionPool;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
@@ -144,11 +145,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
     public int sqlUpdateProcedure( String procedure, String[] params ) {
         sqlUpdateProcedureCalls.addActual( procedure );
         return 0;
-    }
-
-    // Parse doc replace variables with data, uses two vectors
-    public String replaceTagsInStringWithData( String htmlStr, Vector variables, Vector data ) {
-        return null;
     }
 
     // get external template folder
@@ -347,6 +343,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
     }
 
     public VelocityContext getVelocityContext( UserDomainObject user ) {
+        return null;  // TODO
+    }
+
+    public Config getConfig() {
         return null;  // TODO
     }
 

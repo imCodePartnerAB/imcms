@@ -27,8 +27,6 @@ import java.io.IOException;
  */
 public class MainInitServlet extends HttpServlet {
 
-    private static final String PREF__CREATE_INDEX_ON_STARTUP = "create_index_on_startup";
-
     public void init( ServletConfig config ) throws ServletException {
         NDC.push("init") ;
         try {

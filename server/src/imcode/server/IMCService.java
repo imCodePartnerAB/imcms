@@ -3,8 +3,8 @@ package imcode.server;
 import imcode.server.db.ConnectionPool;
 import imcode.server.db.SqlHelpers;
 import imcode.server.document.*;
-import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
@@ -15,15 +15,21 @@ import imcode.util.poll.PollHandlingSystem;
 import imcode.util.poll.PollHandlingSystemImpl;
 import imcode.util.shop.ShoppingOrderSystem;
 import imcode.util.shop.ShoppingOrderSystemImpl;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.Converter;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
+import java.beans.PropertyDescriptor;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.text.Collator;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -32,25 +38,11 @@ import java.util.*;
 
 final public class IMCService implements IMCServiceInterface {
 
-    public ConnectionPool getConnectionPool() {
-        return m_conPool;
-    }
-
-    private final ConnectionPool m_conPool;
+    private final ConnectionPool connectionPool;
     private TextDocumentParser textDocParser;
+    private Config config;
 
-    private File templatePath;           // template home
-
-    private File includePath;
-    private File fortunePath;
-    private File imcmsPath;             //  folder  /imcms
-    private File filePath;
-    private String imageUrl;            //  folder  /images
-    private String defaultLanguageAsIso639_2;
     private static final int DEFAULT_STARTDOCUMENT = 1001;
-
-    private String smtpServer;
-    private int smtpPort;
 
     private SystemData sysData;
 
@@ -70,7 +62,7 @@ final public class IMCService implements IMCServiceInterface {
     private Properties langproperties_swe;
     private Properties langproperties_eng;
 
-    private Map velocityEngines = new TreeMap() ;
+    private Map velocityEngines = new TreeMap();
 
     static {
         mainLog.info( "Main log started." );
@@ -80,41 +72,58 @@ final public class IMCService implements IMCServiceInterface {
      * Contructs an IMCService object.
      */
     public IMCService( ConnectionPool conPool, Properties props ) {
-        m_conPool = conPool;
-        initMemberFields( props );
+        connectionPool = conPool;
+        initConfig( props );
+        initSysData();
+        initSessionCounter();
         initAuthenticatorsAndUserAndRoleMappers( props );
         initDocumentMapper();
         initTemplateMapper();
+        initTextDocParser();
     }
 
-    private void initMemberFields( Properties props ) {
-        sysData = getSystemDataFromDb();
-
-        templatePath = getFilePropertyAndLogIt( props, "TemplatePath" );
-        includePath = getFilePropertyAndLogIt( props, "IncludePath" );
-        fortunePath = getFilePropertyAndLogIt( props, "FortunePath" );
-        filePath = getFilePropertyAndLogIt( props, "FilePath" );
-        imcmsPath = getFilePropertyAndLogIt( props, "ImcmsPath" );
-
-        imageUrl = getPropertyAndLogIt( props, "ImageUrl" );
-        smtpServer = getPropertyAndLogIt( props, "SmtpServer" );
-        smtpPort = getIntPropertyAndLogIt( props, "SmtpPort", 25 );
-
-        defaultLanguageAsIso639_2 = props.getProperty( "DefaultLanguage" ).trim(); //FIXME: Get from DB
-        try {
-            if ( defaultLanguageAsIso639_2.length() < 3 ) {
-                defaultLanguageAsIso639_2 = LanguageMapper.convert639_1to639_2( defaultLanguageAsIso639_2 );
-            }
-        } catch ( LanguageMapper.LanguageNotSupportedException e1 ) {
-            log.fatal( "Configured default language " + defaultLanguageAsIso639_2 + " is not supported either." );
-            defaultLanguageAsIso639_2 = null;
-        }
-        log.info( "DefaultLanguage: " + defaultLanguageAsIso639_2 );
-
-        initSessionCounter();
-
+    private void initTextDocParser() {
         textDocParser = new TextDocumentParser( this );
+    }
 
+    private void initSysData() {
+        sysData = getSystemDataFromDb();
+    }
+
+    private void initConfig( Properties props ) {
+        this.config = createConfigFromProperties( props );
+    }
+
+    private static Config createConfigFromProperties( Properties props ) {
+        Config config = new Config();
+        ConvertUtils.register( new WebappRelativeFileConverter(), File.class );
+        PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors( config );
+        for ( int i = 0; i < propertyDescriptors.length; i++ ) {
+            PropertyDescriptor propertyDescriptor = propertyDescriptors[i];
+            if ( null == propertyDescriptor.getWriteMethod() ) {
+                continue;
+            }
+            String uncapitalizedPropertyName = propertyDescriptor.getName();
+            String capitalizedPropertyName = StringUtils.capitalize( uncapitalizedPropertyName );
+            String propertyValue = props.getProperty( capitalizedPropertyName );
+            try {
+                BeanUtils.setProperty( config, uncapitalizedPropertyName, propertyValue );
+            } catch ( Exception e ) {
+                log.error( "Failed to set property " + capitalizedPropertyName, e.getCause() );
+                continue;
+            }
+            try {
+                String setPropertyValue = BeanUtils.getProperty( config, uncapitalizedPropertyName );
+                if (null != setPropertyValue) {
+                    log.info( capitalizedPropertyName + " = " + setPropertyValue );
+                } else {
+                    log.warn( capitalizedPropertyName + " not set." ) ;
+                }
+            } catch ( Exception e ) {
+                log.error(e, e) ;
+            }
+        }
+        return config;
     }
 
     private void initSessionCounter() {
@@ -161,32 +170,6 @@ final public class IMCService implements IMCServiceInterface {
             }
         }
 
-    }
-
-    private int getIntPropertyAndLogIt( Properties props, final String property, int defaultValue ) {
-        final String propertyValueString = props.getProperty( property ).trim();
-        int result = defaultValue;
-        try {
-            result = Integer.parseInt( propertyValueString );
-        } catch ( NumberFormatException nfe ) {
-            log.warn( "Illegal value for " + property + ": " + propertyValueString + ". Using default: "
-                      + defaultValue );
-        }
-        log.info( property + ": " + result );
-        return result;
-    }
-
-    private String getPropertyAndLogIt( Properties props, final String property ) {
-        String propertyValue = props.getProperty( property ).trim();
-        log.info( property + ": " + propertyValue );
-        return propertyValue;
-    }
-
-    private File getFilePropertyAndLogIt( Properties props, final String pathProperty ) {
-        String templatePathString = props.getProperty( pathProperty ).trim();
-        File absolutePath = Utility.getAbsolutePathFromString( templatePathString );
-        log.info( pathProperty + ": " + absolutePath );
-        return absolutePath;
     }
 
     private void initDocumentMapper() {
@@ -240,9 +223,6 @@ final public class IMCService implements IMCServiceInterface {
         return dateFormat.format( sessionCounterDate );
     }
 
-    /**
-     * Verify a Internet/Intranet user. User data retrived from SQL Database.
-     */
     public UserDomainObject verifyUser( String login, String password ) {
         NDC.push( "verifyUser" );
         UserDomainObject result = null;
@@ -335,17 +315,19 @@ final public class IMCService implements IMCServiceInterface {
             return "";
         }
 
-        DocumentPermissionSetDomainObject documentPermissionSet = documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, document ) ;
-        String documentTypeName = sqlQueryStr( "select type from doc_types where doc_type = ?", new String[]{"" + document.getDocumentTypeId()} );
-        List parseVariables = Arrays.asList( new Object[] {
+        DocumentPermissionSetDomainObject documentPermissionSet = documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, document );
+        String documentTypeName = sqlQueryStr( "select type from doc_types where doc_type = ?", new String[]{
+            "" + document.getDocumentTypeId()
+        } );
+        List parseVariables = Arrays.asList( new Object[]{
             "user", user,
             "document", document,
             "documentPermissionSet", documentPermissionSet,
             "statusicon", documentMapper.getStatusIconTemplate( document, user ),
             "documentTypeName", documentTypeName
-        } ) ;
+        } );
 
-        return getAdminTemplate( "adminbuttons/adminbuttons.html", user, parseVariables ) ;
+        return getAdminTemplate( "adminbuttons/adminbuttons.html", user, parseVariables );
     }
 
     /**
@@ -373,7 +355,7 @@ final public class IMCService implements IMCServiceInterface {
     public void deleteDocAll( int meta_id, UserDomainObject user ) {
 
         String filename = meta_id + "_se";
-        File file = new File( filePath, filename );
+        File file = new File( config.getFilePath(), filename );
 
         //If meta_id is a file document we have to delete the file from file system
         if ( file.exists() ) {
@@ -485,18 +467,18 @@ final public class IMCService implements IMCServiceInterface {
     }
 
     public String[] sqlQuery( String sqlQuery, String[] parameters ) {
-        return SqlHelpers.sqlQuery( m_conPool, sqlQuery, parameters );
+        return SqlHelpers.sqlQuery( connectionPool, sqlQuery, parameters );
     }
 
     public String sqlQueryStr( String sqlStr, String[] params ) {
-        return SqlHelpers.sqlQueryStr( m_conPool, sqlStr, params );
+        return SqlHelpers.sqlQueryStr( connectionPool, sqlStr, params );
     }
 
     /**
      * Send a sql update query to the database
      */
     public int sqlUpdateQuery( String sqlStr, String[] params ) {
-        return SqlHelpers.sqlUpdateQuery( m_conPool, sqlStr, params );
+        return SqlHelpers.sqlUpdateQuery( connectionPool, sqlStr, params );
     }
 
     /**
@@ -507,7 +489,7 @@ final public class IMCService implements IMCServiceInterface {
      * @param params    The parameters of the procedure
      */
     public String[] sqlProcedure( String procedure, String[] params ) {
-        return SqlHelpers.sqlProcedure( m_conPool, procedure, params );
+        return SqlHelpers.sqlProcedure( connectionPool, procedure, params );
     }
 
     /**
@@ -518,11 +500,11 @@ final public class IMCService implements IMCServiceInterface {
      * @return updateCount or -1 if error
      */
     public int sqlUpdateProcedure( String procedure, String[] params ) {
-        return SqlHelpers.sqlUpdateProcedure( m_conPool, procedure, params );
+        return SqlHelpers.sqlUpdateProcedure( connectionPool, procedure, params );
     }
 
     public String sqlProcedureStr( String procedure, String[] params ) {
-        return SqlHelpers.sqlProcedureStr( m_conPool, procedure, params );
+        return SqlHelpers.sqlProcedureStr( connectionPool, procedure, params );
     }
 
     public DocumentMapper getDocumentMapper() {
@@ -535,7 +517,7 @@ final public class IMCService implements IMCServiceInterface {
 
     public SMTP getSMTP() {
         try {
-            return new SMTP( smtpServer, smtpPort, 30000 );
+            return new SMTP( config.getSmtpServer(), config.getSmtpPort(), 30000 );
         } catch ( IOException e ) {
             return null;
         }
@@ -543,15 +525,6 @@ final public class IMCService implements IMCServiceInterface {
 
     public ImcmsAuthenticatorAndUserMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
         return imcmsAuthenticatorAndUserMapper;
-    }
-
-    /**
-     * Parse doc replace variables with data, uses two vectors
-     */
-    public String replaceTagsInStringWithData( String htmlStr, java.util.Vector variables, java.util.Vector data ) {
-        String[] foo = new String[variables.size()];
-        String[] bar = new String[data.size()];
-        return imcode.util.Parser.parseDoc( htmlStr, (String[])variables.toArray( foo ), (String[])data.toArray( bar ) );
     }
 
     /**
@@ -567,10 +540,10 @@ final public class IMCService implements IMCServiceInterface {
      */
     public String getTemplateFromDirectory( String adminTemplateName, UserDomainObject user, List variables,
                                             String directory ) {
-        if (null == user) {
-            throw new NullArgumentException( "user" ) ;
+        if ( null == user ) {
+            throw new NullArgumentException( "user" );
         }
-        String langPrefix = user.getLanguageIso639_2() ;
+        String langPrefix = user.getLanguageIso639_2();
         return getTemplate( langPrefix + "/" + directory + "/"
                             + adminTemplateName, user, variables );
     }
@@ -581,8 +554,8 @@ final public class IMCService implements IMCServiceInterface {
     public String getTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, List variables,
                                                           String directory, String subDirectory ) {
 
-        if (null == user) {
-            throw new NullArgumentException( "user" ) ;
+        if ( null == user ) {
+            throw new NullArgumentException( "user" );
         }
         String langPrefix = this.getUserLangPrefixOrDefaultLanguage( user );
 
@@ -596,18 +569,18 @@ final public class IMCService implements IMCServiceInterface {
             VelocityEngine velocity = getVelocityEngine( user );
             VelocityContext context = getVelocityContext( user );
             if ( null != variables ) {
-                List parseDocVariables = new ArrayList( variables.size() ) ;
+                List parseDocVariables = new ArrayList( variables.size() );
                 for ( Iterator iterator = variables.iterator(); iterator.hasNext(); ) {
                     String key = (String)iterator.next();
                     Object value = iterator.next();
                     context.put( key, value );
                     boolean isNotVelocityVariable = value instanceof String;
-                    if (isNotVelocityVariable) {
-                        parseDocVariables.add(key) ;
-                        parseDocVariables.add(value) ;
+                    if ( isNotVelocityVariable ) {
+                        parseDocVariables.add( key );
+                        parseDocVariables.add( value );
                     }
                 }
-                variables = parseDocVariables ;
+                variables = parseDocVariables;
             }
             StringWriter stringWriter = new StringWriter();
             velocity.mergeTemplate( path, WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252, context, stringWriter );
@@ -617,14 +590,14 @@ final public class IMCService implements IMCServiceInterface {
             }
             return result;
         } catch ( Exception e ) {
-            throw new RuntimeException( "getTemplate(\"" + path + "\") : "+e.getMessage(), e );
+            throw new RuntimeException( "getTemplate(\"" + path + "\") : " + e.getMessage(), e );
         }
     }
 
     private synchronized VelocityEngine createVelocityEngine( String languageIso639_2 ) throws Exception {
         VelocityEngine velocity = new VelocityEngine();
         log.debug( "createVelocityEngine" );
-        velocity.setProperty( VelocityEngine.FILE_RESOURCE_LOADER_PATH, templatePath.getCanonicalPath() );
+        velocity.setProperty( VelocityEngine.FILE_RESOURCE_LOADER_PATH, config.getTemplatePath().getCanonicalPath() );
         velocity.setProperty( VelocityEngine.VM_LIBRARY, languageIso639_2 + "/gui.vm" );
         velocity.setProperty( VelocityEngine.VM_LIBRARY_AUTORELOAD, "true" );
         velocity.setProperty( VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem" );
@@ -636,10 +609,10 @@ final public class IMCService implements IMCServiceInterface {
     public VelocityEngine getVelocityEngine( UserDomainObject user ) {
         try {
             String languageIso639_2 = user.getLanguageIso639_2();
-            VelocityEngine velocityEngine = (VelocityEngine)velocityEngines.get(languageIso639_2) ;
+            VelocityEngine velocityEngine = (VelocityEngine)velocityEngines.get( languageIso639_2 );
             if ( velocityEngine == null ) {
                 velocityEngine = createVelocityEngine( languageIso639_2 );
-                velocityEngines.put(languageIso639_2, velocityEngine) ;
+                velocityEngines.put( languageIso639_2, velocityEngine );
             }
             return velocityEngine;
         } catch ( Exception e ) {
@@ -655,6 +628,10 @@ final public class IMCService implements IMCServiceInterface {
         return context;
     }
 
+    public Config getConfig() {
+        return config;
+    }
+
     /**
      * @deprecated Ugly use {@link IMCServiceInterface#getTemplateFromDirectory(String,imcode.server.user.UserDomainObject,java.util.List,String)}
      *             or something else instead.
@@ -662,22 +639,21 @@ final public class IMCService implements IMCServiceInterface {
     public File getExternalTemplateFolder( int meta_id, UserDomainObject user ) {
         int docType = getDocType( meta_id );
         String langPrefix = getUserLangPrefixOrDefaultLanguage( user );
-        return new File( templatePath, langPrefix + "/" + docType + "/" );
+        return new File( config.getTemplatePath(), langPrefix + "/" + docType + "/" );
     }
 
     /**
      * Return  templatehome.
      */
     public File getTemplatePath() {
-        return templatePath;
+        return config.getTemplatePath();
     }
 
     /**
      * Return url-path to images.
-
      */
     public String getImageUrl() {
-        return imageUrl;
+        return config.getImageUrl();
     }
 
     /**
@@ -693,11 +669,11 @@ final public class IMCService implements IMCServiceInterface {
      */
     // Return file-path to imcmsimages
     public File getImcmsPath() {
-        return imcmsPath;
+        return config.getImcmsPath();
     }
 
     public String getDefaultLanguageAsIso639_2() {
-        return defaultLanguageAsIso639_2;
+        return config.getDefaultLanguage();
     }
 
     public String getLanguagePrefixByLangId( int lang_id ) {
@@ -748,22 +724,22 @@ final public class IMCService implements IMCServiceInterface {
     }
 
     public Map sqlQueryHash( String sqlQuery, String[] params ) {
-        return SqlHelpers.sqlQueryHash( m_conPool, sqlQuery, params );
+        return SqlHelpers.sqlQueryHash( connectionPool, sqlQuery, params );
     }
 
     public Map sqlProcedureHash( String procedure, String[] params ) {
-        return SqlHelpers.sqlProcedureHash( m_conPool, procedure, params );
+        return SqlHelpers.sqlProcedureHash( connectionPool, procedure, params );
     }
 
     /**
      * Send a procedure to the database and return a multi string array
      */
     public String[][] sqlProcedureMulti( String procedure, String[] params ) {
-        return SqlHelpers.sqlProcedureMulti( m_conPool, procedure, params );
+        return SqlHelpers.sqlProcedureMulti( connectionPool, procedure, params );
     }
 
     public String[][] sqlQueryMulti( String sqlQuery, String[] params ) {
-        return SqlHelpers.sqlQueryMulti( m_conPool, sqlQuery, params );
+        return SqlHelpers.sqlQueryMulti( connectionPool, sqlQuery, params );
     }
 
     /**
@@ -868,7 +844,7 @@ final public class IMCService implements IMCServiceInterface {
             sqlUpdateQuery( sqlStr, new String[]{file_name, templateId} );
         }
 
-        File f = new File( templatePath, "text/" + templateId + ".html" );
+        File f = new File( config.getTemplatePath(), "text/" + templateId + ".html" );
 
         try {
             FileOutputStream fw = new FileOutputStream( f );
@@ -898,7 +874,7 @@ final public class IMCService implements IMCServiceInterface {
                 {"jpg", "jpeg", "gif", "png", "html", "htm"};
 
         for ( int i = 0; i < suffixList.length; i++ ) { // Looking for a template with one of six suffixes
-            File fileObj = new File( templatePath, "/text/demo/" + template_id + "." + suffixList[i] );
+            File fileObj = new File( config.getTemplatePath(), "/text/demo/" + template_id + "." + suffixList[i] );
             long date = 0;
             long fileDate = fileObj.lastModified();
             if ( fileObj.exists() && fileDate > date ) {
@@ -933,7 +909,7 @@ final public class IMCService implements IMCServiceInterface {
      * get template
      */
     public String getTemplateData( int template_id ) throws IOException {
-        return fileCache.getCachedFileString( new File( templatePath, "/text/" + template_id + ".html" ) );
+        return fileCache.getCachedFileString( new File( config.getTemplatePath(), "/text/" + template_id + ".html" ) );
     }
 
     /**
@@ -943,7 +919,8 @@ final public class IMCService implements IMCServiceInterface {
 
         deleteDemoTemplate( template_id );
 
-        FileOutputStream fw = new FileOutputStream( templatePath + "/text/demo/" + template_id + "." + suffix );
+        FileOutputStream fw = new FileOutputStream( config.getTemplatePath() + "/text/demo/" + template_id + "."
+                                                    + suffix );
         fw.write( data );
         fw.flush();
         fw.close();
@@ -964,7 +941,7 @@ final public class IMCService implements IMCServiceInterface {
 
     // get demotemplates
     public String[] getDemoTemplateIds() {
-        File demoDir = new File( templatePath + "/text/demo/" );
+        File demoDir = new File( config.getTemplatePath() + "/text/demo/" );
 
         File[] file_list = demoDir.listFiles( DEMOTEMPLATEFILTER );
 
@@ -988,7 +965,7 @@ final public class IMCService implements IMCServiceInterface {
     // delete demotemplate
     public void deleteDemoTemplate( int template_id ) throws IOException {
 
-        File demoTemplateDirectory = new File( new File( templatePath, "text" ), "demo" );
+        File demoTemplateDirectory = new File( new File( config.getTemplatePath(), "text" ), "demo" );
         File[] demoTemplates = demoTemplateDirectory.listFiles();
         for ( int i = 0; i < demoTemplates.length; i++ ) {
             File demoTemplate = demoTemplates[i];
@@ -1089,7 +1066,7 @@ final public class IMCService implements IMCServiceInterface {
      * Return a file relative to the fortune-path.
      */
     public String getFortune( String path ) throws IOException {
-        return fileCache.getCachedFileString( new File( fortunePath, path ) );
+        return fileCache.getCachedFileString( new File( config.getFortunePath(), path ) );
     }
 
     /**
@@ -1101,7 +1078,7 @@ final public class IMCService implements IMCServiceInterface {
     public List getQuoteList( String quoteListName ) {
         List theList = new LinkedList();
         try {
-            File file = new File( fortunePath, quoteListName );
+            File file = new File( config.getFortunePath(), quoteListName );
             StringReader reader = new StringReader( fileCache.getUncachedFileString( file ) );
             QuoteReader quoteReader = new QuoteReader( reader );
             for ( Quote quote; null != ( quote = quoteReader.readQuote() ); ) {
@@ -1121,7 +1098,7 @@ final public class IMCService implements IMCServiceInterface {
      * @param quoteList     The quote-List
      */
     public void setQuoteList( String quoteListName, List quoteList ) throws IOException {
-        FileWriter writer = new FileWriter( new File( fortunePath, quoteListName ) );
+        FileWriter writer = new FileWriter( new File( config.getFortunePath(), quoteListName ) );
         QuoteWriter quoteWriter = new QuoteWriter( writer );
         Iterator quotesIterator = quoteList.iterator();
         while ( quotesIterator.hasNext() ) {
@@ -1137,7 +1114,7 @@ final public class IMCService implements IMCServiceInterface {
     public List getPollList( String pollListName ) {
         List theList = new LinkedList();
         try {
-            File file = new File( fortunePath, pollListName );
+            File file = new File( config.getFortunePath(), pollListName );
             StringReader reader = new StringReader( fileCache.getUncachedFileString( file ) );
             PollReader pollReader = new PollReader( reader );
             for ( Poll poll; null != ( poll = pollReader.readPoll() ); ) {
@@ -1157,7 +1134,7 @@ final public class IMCService implements IMCServiceInterface {
      * @param pollList     The poll-List
      */
     public void setPollList( String pollListName, List pollList ) throws IOException {
-        FileWriter writer = new FileWriter( new File( fortunePath, pollListName ) );
+        FileWriter writer = new FileWriter( new File( config.getFortunePath(), pollListName ) );
         PollWriter pollWriter = new PollWriter( writer );
         Iterator pollIterator = pollList.iterator();
         while ( pollIterator.hasNext() ) {
@@ -1255,19 +1232,29 @@ final public class IMCService implements IMCServiceInterface {
     }
 
     public File getFilePath() {
-        return filePath;
+        return config.getFilePath();
     }
 
     public File getIncludePath() {
-        return includePath;
+        return config.getIncludePath();
     }
 
     public Collator getDefaultLanguageCollator() {
         try {
-            return Collator.getInstance( new Locale( LanguageMapper.convert639_2to639_1( defaultLanguageAsIso639_2 ) ) );
+            return Collator.getInstance( new Locale( LanguageMapper.convert639_2to639_1( config.getDefaultLanguage() ) ) );
         } catch ( LanguageMapper.LanguageNotSupportedException e ) {
             throw new RuntimeException( e );
         }
     }
 
+    public ConnectionPool getConnectionPool() {
+        return connectionPool;
+    }
+
+    private static class WebappRelativeFileConverter implements Converter {
+
+        public Object convert( Class type, Object value ) {
+            return Utility.getAbsolutePathFromString( (String)value );
+        }
+    }
 }

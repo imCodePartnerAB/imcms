@@ -33,7 +33,7 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
 
     private DirectoryIndex index;
     private Set documentsToAppendToNewIndex = Collections.synchronizedSet(new HashSet());
-    private Object newIndexBuildingLock = new Integer(0);
+    private final Object newIndexBuildingLock = new Object();
 
     static {
         // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow queries?
@@ -77,14 +77,13 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
         int callersPriority = Thread.currentThread().getPriority();
         int newPriority = Math.max( callersPriority - 1, Thread.MIN_PRIORITY );
         indexBuildingThread.setPriority( newPriority );
-        log.info("Setting the callersPriority on the background indexing thread to " + indexBuildingThread.getPriority() );
+        log.debug("Setting background indexing thread priority to " + indexBuildingThread.getPriority() );
 
         indexBuildingThread.setDaemon(true);
         indexBuildingThread.start();
     }
 
     private void buildNewIndex() {
-        log.debug("buildNewIndex - called");
         NDC.push("buildNewIndex");
         try {
             File indexDirectoryFile = this.index.getDirectory();
@@ -109,7 +108,6 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
     }
 
     private synchronized void replaceIndexWithNewIndex(DirectoryIndex newIndex) throws IOException {
-        log.debug("replaceIndexWithNewIndex - called");
         File indexDirectory = index.getDirectory();
         File oldIndex = new File(indexDirectory.getParentFile(), indexDirectory.getName()
                 + ".old");
@@ -131,7 +129,6 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
     private class ScheduledIndexingTimerTask extends TimerTask {
 
         public void run() {
-            log.debug("ScheduledIndexingTimerTask.run() - called");
             Date nextExecutionTime = new Date(this.scheduledExecutionTime() + INDEXING_SCHEDULE_PERIOD__MILLISECONDS);
             String nextExecutionTimeString = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING).format(nextExecutionTime);
             log.info("Starting scheduled indexing. Next indexing at " + nextExecutionTimeString);
@@ -231,7 +228,7 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
                 if (indexingLogSchedule.isTime()) {
                     logIndexingProgress(i, documentIds.length);
                 }
-                Thread.yield(); // To make sure other threads with the same priority onece in a while gets a chance to run something.
+                Thread.yield(); // To make sure other threads with the same priority get a chance to run something once in a while.
             }
 
             logIndexingCompleted(documentIds.length, indexingLogSchedule.getStopWatch());
