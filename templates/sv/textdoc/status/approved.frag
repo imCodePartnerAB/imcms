@@ -1,1 +1,1 @@
-<img src="@imcmsimageurl@/admin/status/approved.gif" border="0" alt="<? templates/sv/textdoc/status/approved.frag/description ?>" title="<? templates/sv/textdoc/status/approved.frag/description ?>">
+<img src="@imcmsimageurl@/admin/status/approved.gif" border="0" alt="<? templates/sv/textdoc/status/approved.frag/description ?>" title="<? templates/sv/textdoc/status/approved.frag/description ?>" hspace="2">
