@@ -72,13 +72,13 @@ public class ChatViewer extends ChatBase {
 //#########################
 		//************
 		//ok då ser vi vad vi fått för sessions parametrat
-		log("Dessa sessions parametrar finns");
+		log("############################");
 		String[] sespar = session.getValueNames();
 		for(int i=0; i<sespar.length ;i++)
 		{
 			log(sespar[i] +" = "+session.getValue(sespar[i]));
 		}
-		log("slut på parametrar");
+		log("#############################");
 //*************		
 		//ok lets get the chat from the session
 		Chat chat = (Chat) session.getValue("theChat");
@@ -86,10 +86,8 @@ public class ChatViewer extends ChatBase {
 		{
 			log("the chat was null so we will return");
 		}
-		log("kolla denna "+chat);
-		Chat chat2 = super.getChat(((String)session.getValue("Chat.meta_Id")));
 		log("chatten= "+chat);
-		log("chat2= "+chat2);
+
 		//lets crete the ChatMember object and add it to the session if there isnt anyone
 		ChatMember myMember = (ChatMember) session.getValue("theChatMember");
 		if (myMember == null)
