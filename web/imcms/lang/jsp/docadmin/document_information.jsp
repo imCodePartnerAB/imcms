@@ -40,7 +40,7 @@ String formatDatetimeWithParentheses(Date datetime) {
     if (null == datetime) {
         return "" ;
     }
-    DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING+"'&nbsp;'"+DateConstants.TIME_FORMAT_NO_SECONDS_STRING ) ;
+    DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING+"'&nbsp;'"+DateConstants.TIME_NO_SECONDS_FORMAT_STRING ) ;
     return "("+dateFormat.format(datetime)+")" ;
 }
 
@@ -56,7 +56,7 @@ String formatTime(Date time) {
     if (null == time) {
         return "" ;
     }
-    DateFormat dateFormat = new SimpleDateFormat( DateConstants.TIME_FORMAT_NO_SECONDS_STRING ) ;
+    DateFormat dateFormat = new SimpleDateFormat( DateConstants.TIME_NO_SECONDS_FORMAT_STRING ) ;
     return dateFormat.format(time) ;
 }
 %><vel:velocity><html>

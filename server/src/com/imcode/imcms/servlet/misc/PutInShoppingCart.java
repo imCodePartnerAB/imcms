@@ -297,7 +297,7 @@ public class PutInShoppingCart extends HttpServlet {
             mailItems.append( mailItem );
         }
 
-        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING );
+        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_NO_SECONDS_FORMAT_STRING );
 
         HashMap mailStringMap = new HashMap();
         mailStringMap.put( "#items#", mailItems.toString() );

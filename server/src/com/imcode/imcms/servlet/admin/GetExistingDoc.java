@@ -5,9 +5,11 @@ import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentIndex;
+import imcode.server.document.index.AutorebuildingDocumentIndex;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.index.AutorebuildingDocumentIndex;
+import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -87,18 +89,18 @@ public class GetExistingDoc extends HttpServlet {
             // SEARCH
             // Lets do a search among existing documents.
             // Lets collect the parameters and build a sql searchstring
-            final DocumentIndex documentIndex = imcref.getDocumentMapper().getDocumentIndex();
+            final DocumentIndex reindexingIndex = imcref.getDocumentMapper().getDocumentIndex();
             BooleanQuery query = new BooleanQuery();
             String searchString = req.getParameter( "searchstring" );
             String searchPrep = req.getParameter( "search_prep" );
             try {
                 if ( "or".equalsIgnoreCase( searchPrep ) ) {
-                    addStringToQuery( documentIndex, searchString, query );
+                    addStringToQuery( reindexingIndex, searchString, query );
                 } else {
                     String[] searchStrings = searchString.split( "\\s+" );
                     for ( int i = 0; i < searchStrings.length; i++ ) {
                         String string = searchStrings[i];
-                        addStringToQuery( documentIndex, string, query );
+                        addStringToQuery( reindexingIndex, string, query );
                     }
                 }
             } catch ( org.apache.lucene.queryParser.ParseException pe ) {
@@ -149,7 +151,7 @@ public class GetExistingDoc extends HttpServlet {
             }
 
             log.debug( "Query: " + query );
-            DocumentDomainObject[] searchResultDocuments = documentIndex.search( query, user );
+            DocumentDomainObject[] searchResultDocuments = reindexingIndex.search( query, user );
 
             Comparator searchResultsComparator = new DocumentDomainObjectComparator( sortBy );
             Arrays.sort( searchResultDocuments, searchResultsComparator );
@@ -400,9 +402,9 @@ public class GetExistingDoc extends HttpServlet {
         return calendar.getTime();
     }
 
-    private void addStringToQuery( final DocumentIndex documentIndex, String string, BooleanQuery query )
+    private void addStringToQuery( final DocumentIndex reindexingIndex, String string, BooleanQuery query )
             throws org.apache.lucene.queryParser.ParseException {
-        Query textQuery = documentIndex.parseLucene( string );
+        Query textQuery = reindexingIndex.parseLucene( string );
         query.add( textQuery, true, false );
     }
 
@@ -434,7 +436,7 @@ public class GetExistingDoc extends HttpServlet {
         for ( int i = 0; i < searchResultDocuments.length; i++ ) {
             DocumentDomainObject document = searchResultDocuments[i];
 
-            DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
+            DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING );
             String[] data = {
                 "#meta_id#", String.valueOf( document.getId() ),
                 "#doc_type#", (String)docTypesHash.get( "" + document.getDocumentTypeId() ),

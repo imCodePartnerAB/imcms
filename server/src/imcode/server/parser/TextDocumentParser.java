@@ -95,7 +95,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             Perl5Matcher patMat = new Perl5Matcher();
 
-            SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
+            SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING );
 
             String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
             result.append( imcmsMessage );

@@ -2,10 +2,8 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentIndex;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.UrlDocumentDomainObject;
+import imcode.server.document.*;
+import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -55,19 +53,19 @@ public class LinkCheck extends HttpServlet {
         List links = new ArrayList();
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        DocumentIndex documentIndex = documentMapper.getDocumentIndex();
+        DocumentIndex reindexingIndex = documentMapper.getDocumentIndex();
 
-        addUrlDocumentLinks( links, documentIndex, user, request );
-        addTextAndImageLinks( links, documentIndex, user, request );
+        addUrlDocumentLinks( links, reindexingIndex, user, request );
+        addTextAndImageLinks( links, reindexingIndex, user, request );
 
         request.setAttribute( REQUEST_ATTRIBUTE__LINKS_ITERATOR, links.iterator() );
 
         request.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2() + "/jsp/linkcheck/linkcheck.jsp" ).forward( request, response );
     }
 
-    private void addUrlDocumentLinks( List links, DocumentIndex documentIndex, UserDomainObject user,
+    private void addUrlDocumentLinks( List links, DocumentIndex reindexingIndex, UserDomainObject user,
                                       HttpServletRequest request ) throws IOException {
-        DocumentDomainObject[] urlDocuments = documentIndex.search( new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""
+        DocumentDomainObject[] urlDocuments = reindexingIndex.search( new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""
                                                                                                                                + DocumentDomainObject.DOCTYPE_URL ) ), user );
         Arrays.sort( urlDocuments, DocumentDomainObject.DocumentComparator.ID );
 
@@ -78,14 +76,14 @@ public class LinkCheck extends HttpServlet {
         }
     }
 
-    private void addTextAndImageLinks( List links, DocumentIndex documentIndex, UserDomainObject user,
+    private void addTextAndImageLinks( List links, DocumentIndex reindexingIndex, UserDomainObject user,
                                        HttpServletRequest request ) throws IOException {
         BooleanQuery query = new BooleanQuery();
         query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__TEXT, "http" ) ), false, false );
         query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__TEXT, "href" ) ), false, false );
         query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__IMAGE_LINK_URL, "http" ) ), false, false );
 
-        DocumentDomainObject[] textDocuments = documentIndex.search( query, user );
+        DocumentDomainObject[] textDocuments = reindexingIndex.search( query, user );
 
         for ( int i = 0; i < textDocuments.length; i++ ) {
             TextDocumentDomainObject textDocument = (TextDocumentDomainObject)textDocuments[i];

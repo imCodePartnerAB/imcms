@@ -240,7 +240,7 @@ public class SaveMeta extends HttpServlet {
         // activated_date and activated_time need to be merged, and likewise with archived_date and archived_time
 
         SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
-        SimpleDateFormat timeFormat = new SimpleDateFormat( DateConstants.TIME_FORMAT_NO_SECONDS_STRING );
+        SimpleDateFormat timeFormat = new SimpleDateFormat( DateConstants.TIME_NO_SECONDS_FORMAT_STRING );
 
         Date activated_datetime = DocumentComposer.parseDatetimeParameters( req, "activated_date", "activated_time", dateFormat, timeFormat );
         Date archived_datetime = DocumentComposer.parseDatetimeParameters( req, "archived_date", "archived_time", dateFormat, timeFormat );
@@ -358,7 +358,7 @@ public class SaveMeta extends HttpServlet {
             sqlUpdateColumns.add( columnName + " = ?" );
             sqlUpdateValues.add( columnValue );
         }
-        SimpleDateFormat datetimeFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING );
+        SimpleDateFormat datetimeFormat = new SimpleDateFormat( DateConstants.DATETIME_NO_SECONDS_FORMAT_STRING );
 
         if ( null != req.getParameter( "activated_date" ) ) {
             String updatePart = "activated_datetime = ";

@@ -517,7 +517,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
      */
     private String tagDatetime( Properties attributes ) {
         String format = attributes.getProperty( "format" ) == null
-                        ? DateConstants.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING : attributes.getProperty( "format" );
+                        ? DateConstants.DATETIME_NO_SECONDS_FORMAT_STRING : attributes.getProperty( "format" );
         String type = attributes.getProperty( "type" );
         String lang = attributes.getProperty( "lang" );
 

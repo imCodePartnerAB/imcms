@@ -1,10 +1,9 @@
 package imcode.server.document;
 
 import com.imcode.imcms.servlet.admin.DocumentComposer;
-import imcode.server.IMCConstants;
-import imcode.server.IMCServiceInterface;
-import imcode.server.LanguageMapper;
-import imcode.server.WebAppGlobalConstants;
+import imcode.server.*;
+import imcode.server.document.index.AutorebuildingDocumentIndex;
+import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.RoleDomainObject;
@@ -15,10 +14,10 @@ import imcode.util.InputStreamSource;
 import imcode.util.Utility;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.apache.lucene.search.Hits;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -65,7 +64,7 @@ public class DocumentMapper {
         File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
         File indexDirectory = new File( webAppPath, "WEB-INF/index" );
 
-        this.documentIndex = new DocumentIndex( indexDirectory );
+        this.documentIndex = new AutorebuildingDocumentIndex( indexDirectory );
     }
 
     private boolean userCanCreateDocumentOfTypeIdFromParent( UserDomainObject user, int documentTypeId,
@@ -1084,7 +1083,7 @@ public class DocumentMapper {
     }
 
     public void sqlUpdateModifiedDatesOnDocumentAndItsParent( int meta_id, Date dateTime ) {
-        String modifiedDateTimeStr = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING ).format( dateTime );
+        String modifiedDateTimeStr = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING ).format( dateTime );
         service.sqlUpdateQuery( "update meta set date_modified = ? where meta_id = ?",
                                 new String[]{modifiedDateTimeStr, "" + meta_id} );
         // Update the date_modified for all parents.
@@ -1148,7 +1147,7 @@ public class DocumentMapper {
         if ( null == date ) {
             return null;
         }
-        return new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING ).format( date );
+        return new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING ).format( date );
     }
 
     private static void makeIntSqlUpdateClause( String columnName, Integer integer, ArrayList sqlUpdateColumns,
@@ -1227,7 +1226,7 @@ public class DocumentMapper {
         document.setLinkableByOtherUsers( getBooleanFromSqlResultString( result[7] ) );
         document.setVisibleInMenusForUnauthorizedUsers( getBooleanFromSqlResultString( result[8] ) );
         document.setLanguageIso639_2( LanguageMapper.getAsIso639_2OrDefaultLanguage( result[9], service ) );
-        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
+        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING );
         document.setCreatedDatetime( parseDateFormat( dateFormat, result[10] ) );
         document.setModifiedDatetime( parseDateFormat( dateFormat, result[11] ) );
         document.setSearchDisabled( getBooleanFromSqlResultString( result[12] ) );
@@ -1309,7 +1308,7 @@ public class DocumentMapper {
         return documentIndex;
     }
 
-    String[][] getParentDocumentAndMenuIdsForDocument( DocumentDomainObject document ) {
+    public String[][] getParentDocumentAndMenuIdsForDocument( DocumentDomainObject document ) {
         String sqlStr = "SELECT meta_id,menu_index FROM childs, menus WHERE menus.menu_id = childs.menu_id AND to_meta_id = ?";
         return service.sqlQueryMulti( sqlStr, new String[]{"" + document.getId()} );
     }
@@ -1746,11 +1745,11 @@ public class DocumentMapper {
 
     public int[] getAllDocumentIds() {
         String[] documentIdStrings = service.sqlQuery( "SELECT meta_id FROM meta ORDER BY meta_id", new String[0] );
-        int[] documentIds = new int[documentIdStrings.length] ;
+        int[] documentIds = new int[documentIdStrings.length];
         for ( int i = 0; i < documentIdStrings.length; i++ ) {
-            documentIds[i] = Integer.parseInt(documentIdStrings[i]);
+            documentIds[i] = Integer.parseInt( documentIdStrings[i] );
         }
-        return documentIds ;
+        return documentIds;
     }
 
     public static class TextDocumentMenuIndexPair {
@@ -1795,6 +1794,20 @@ public class DocumentMapper {
             }
             return getDocument( documentIds[index++] );
         }
+    }
+
+    public List getDocumentListForHits( Hits hits, UserDomainObject searchingUser ) throws IOException {
+        List documentList = new ArrayList( hits.length() );
+        final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface()
+                .getDocumentMapper();
+        for ( int i = 0; i < hits.length(); ++i ) {
+            int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
+            DocumentDomainObject document = documentMapper.getDocument( metaId );
+            if ( documentMapper.userHasPermissionToSearchDocument( searchingUser, document ) ) {
+                documentList.add( document );
+            }
+        }
+        return documentList;
     }
 
 }

@@ -448,7 +448,7 @@ public class DocumentComposer extends HttpServlet {
         document.setStatus( status );
 
         SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
-        SimpleDateFormat timeFormat = new SimpleDateFormat( DateConstants.TIME_FORMAT_NO_SECONDS_STRING );
+        SimpleDateFormat timeFormat = new SimpleDateFormat( DateConstants.TIME_NO_SECONDS_FORMAT_STRING );
 
         Date publicationStartDatetime = parseDatetimeParameters( request, PARAMETER__PUBLICATION_START_DATE, PARAMETER__PUBLICATION_START_TIME, dateFormat,
                                                                  timeFormat );

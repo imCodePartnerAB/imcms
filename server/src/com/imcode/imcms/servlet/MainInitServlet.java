@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.document.DocumentIndex;
+import imcode.server.document.index.AutorebuildingDocumentIndex;
 import imcode.server.ApplicationServer;
 import imcode.util.Prefs;
 import imcode.util.Utility;

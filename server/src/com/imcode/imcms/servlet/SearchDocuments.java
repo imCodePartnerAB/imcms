@@ -4,7 +4,7 @@ import imcode.external.diverse.Html;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentIndex;
+import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.SectionDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
@@ -283,11 +283,11 @@ public class SearchDocuments extends HttpServlet {
     private DocumentDomainObject[] searchDocuments( String searchString,
                                                     SectionDomainObject section, UserDomainObject user )
             throws IOException {
-        DocumentIndex documentIndex = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentIndex();
+        DocumentIndex reindexingIndex = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentIndex();
         BooleanQuery query = new BooleanQuery();
         if ( null != searchString && !"".equals( searchString.trim() ) ) {
             try {
-                Query textQuery = documentIndex.parseLucene( searchString );
+                Query textQuery = reindexingIndex.parseLucene( searchString );
                 query.add( textQuery, true, false );
             } catch ( ParseException e ) {
                 log.warn( e.getMessage() + " in search-string " + searchString );
@@ -299,7 +299,7 @@ public class SearchDocuments extends HttpServlet {
             query.add( sectionQuery, true, false );
         }
 
-        return documentIndex.search( query, user );
+        return reindexingIndex.search( query, user );
     }
 
     /**
