@@ -47,7 +47,10 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private final static int DOC_TEST_SECOND_ID = 9002;
     private final static int DOC_TEST_THIRD_ID_FILE_DOC_TYPE = 9003;
     private final static int DOC_TEST_ID_DETACHED = 9999;
+
     private static final int DOC_TYPE_TEXT_ID = 2;
+    private static final int DOC_TYPE_FILE_ID = 8;
+    private static final int DOC_TYPES_NUMBER_OF = 9;
 
     private static final String DOC_THIRD_DOC_FILENAME = "testfilename.txt";
 
@@ -56,7 +59,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private static final int PHONE_TYPE_OTHER = 0;
 
     private static final int LANG_ID_SWEDEN = 1;
-    private static final int DOC_TYPE_FILE_ID = 8;
+    private static final String DOC_TYPE_LANG__PREFIX_SWEDEN = "se";
 
     protected void setUp() throws IOException {
         databaseServices = new DatabaseService[]{
@@ -90,6 +93,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_checkUserAdminrole( dbService );
             test_sproc_GetFileName( dbService );
             test_sproc_GetDocType( dbService );
+            test_sproc_GetDocTypes( dbService );
         }
     }
 
@@ -186,9 +190,13 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertTrue( DOC_THIRD_DOC_FILENAME.equals(databaseService.sproc_GetFileName(DOC_TEST_THIRD_ID_FILE_DOC_TYPE))) ;
     }
 
-    private void test_sproc_GetDocType( DatabaseService databaseService) {
+    private void test_sproc_GetDocType( DatabaseService databaseService ) {
         assertEquals( DOC_TYPE_TEXT_ID, databaseService.sproc_GetDocType( DOC_FIRST_TEST_ID ));
         assertEquals( DOC_TYPE_FILE_ID , databaseService.sproc_GetDocType( DOC_TEST_THIRD_ID_FILE_DOC_TYPE ));
+    }
+
+    private void test_sproc_GetDocTypes(  DatabaseService databaseService ) {
+        assertEquals( DOC_TYPES_NUMBER_OF, databaseService.sproc_GetDocTypes( DOC_TYPE_LANG__PREFIX_SWEDEN ).length);
     }
 
     public void test_sproc_AddNewuser() {

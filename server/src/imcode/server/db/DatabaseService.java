@@ -1127,4 +1127,28 @@ public class DatabaseService {
         } );
         return ((Integer)queryResult.get(0)).intValue();
     }
+
+
+    class Table_doc_types {
+        Table_doc_types( int doc_type, String type ) {
+            this.doc_type = doc_type;
+            this.type = type;
+        }
+
+        int doc_type;
+        String type;
+    }
+
+    Table_doc_types[] sproc_GetDocTypes( String lang_prefix ) {
+        String sql = "SELECT doc_type,type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type";
+        Object[] paramValues = new Object[]{ lang_prefix };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                int doc_type = rs.getInt("doc_type");
+                String type = rs.getString( "type" );
+                return new Table_doc_types( doc_type, type );
+            }
+        } );
+        return (Table_doc_types[])queryResult.toArray( new Table_doc_types[queryResult.size()] );
+    }
 }
