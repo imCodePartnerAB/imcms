@@ -3833,3 +3833,50 @@ GO
  -- Add a new primary key
 ALTER TABLE mime_types ADD CONSTRAINT PK_mime_types PRIMARY KEY NONCLUSTERED ( mime_id, lang_prefix )
 GO
+
+
+--2002-03-26
+--Update mime_types 
+--
+DELETE FROM mime_types WHERE mime_id < 17
+
+SET IDENTITY_INSERT mime_types ON
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(0,'Annan... (Skriv in korrekt mime-typ nedan.)','other','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(1,'Vanlig text (text/plain)','text/plain','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(2,'HTML-dokument (text/html)','text/html','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(3,'Binärfil (application/octet-stream)','application/octet-stream','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(4,'Shockwave Flash (application/x-shockwave-flash)','application/x-shockwave-flash','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(5,'Shockwave Director (application/x-director)','application/x-director','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(6,'PNG-bild (image/png)','image/png','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(7,'GIF-bild (image/gif)','image/gif','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(8,'JPEG-bild (image/gif)','image/jpeg','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(9,'Adobe Acrobat-dokument (application/pdf)','application/pdf','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(10,'Wav-ljud (audio/x-wav)','audio/x-wav','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(11,'Zip-fil (application/zip)','application/zip','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(12,'AVI-film (video/x-msvideo)','video/x-msvideo','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(13,'Quicktime-film (video/quicktime)','video/quicktime','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(14,'MPEG-film (video/mpeg)','video/mpeg','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(15,'MS Word-dokument (application/msword)','application/msword','se')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(16,'MS Excel-dokument (application/vnd.ms-excel)','application/vnd.ms-excel','se')
+SET IDENTITY_INSERT mime_types OFF
+
+SET IDENTITY_INSERT mime_types ON
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(0,'Other... (Type correct mime-type below.)','other','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(1,'Plain text (text/plain)','text/plain','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(2,'HTML-document (text/html)','text/html','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(3,'Binary file (application/octet-stream)','application/octet-stream','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(4,'Shockwave Flash (application/x-shockwave-flash)','application/x-shockwave-flash','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(5,'Shockwave Director (application/x-director)','application/x-director','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(6,'PNG-image (image/png)','image/png','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(7,'GIF-image (image/gif)','image/gif','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(8,'JPEG-image (image/jpeg)','image/jpeg','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(9,'Adobe Acrobat-document (application/pdf)','application/pdf','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(10,'Wav-sound (audio/x-wav)','audio/x-wav','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(11,'Zip-file (application/zip)','application/zip','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(12,'AVI-movie (video/x-msvideo)','video/x-msvideo','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(13,'Quicktime-movie (video/quicktime)','video/quicktime','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(14,'MPEG-movie (video/mpeg)','video/mpeg','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(15,'MS Word-document (application/msword)','application/msword','en')
+INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(16,'MS Excel-document (application/vnd.ms-excel)','application/vnd.ms-excel','en')
+SET IDENTITY_INSERT mime_types OFF
+
