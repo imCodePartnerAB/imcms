@@ -13,10 +13,15 @@
 <H1>Imcms public API samples</H1>
 
 <h2> Documentation </h2>
+<p>
 The documentation consists of this page and the jsp-pages that this page links to.
 For documentation on the different classes that is used in the jsp-pages, <br>
 see the <a href="docs/">java doc</a> for details.
-
+</p>
+<p>
+There is also a demo-template for the tags,
+which lists all tags you can use in a text-document, and what they do, <%= makeLink("alltags_template.html") %>.
+</p>
 <h3>Warning!</h3>
 The following links works differently depending on the user's permissions on the corresponding admin-pages. That is, what
 user you are logged in as, and what administrative permissions that user has.<br>
