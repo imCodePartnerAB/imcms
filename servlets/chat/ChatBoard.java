@@ -17,21 +17,17 @@ import imcode.external.chat.*;
 
 public class ChatBoard extends ChatBase {
 
-	//private final static String NEW_DISC_FLAG_TEMPLATE = "Conf_Disc_List_New.htm";
-	//private final static String PREVIOUS_DISC_LIST_TEMPLATE = "Conf_Disc_List_Previous.htm";
-	//private final static String NEXT_DISC_LIST_TEMPLATE = "Conf_Disc_List_Next.htm";
-	//private final static String NEW_DISC_TEMPLATE = "Conf_Disc_New_Button.htm";
-	//private final static String ADMIN_LINK_TEMPLATE = "Conf_Disc_Admin_Link.htm";
-
+	
 	String HTML_TEMPLATE ;
-	//String A_HREF_HTML ;   // The code snippet where the aHref list with all discussions
-	//	int DISCSHOWCOUNTER = 20 ;
-	// will be placed.
-
+	
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 									throws ServletException, IOException 
 	{
+		//här ska det ännu fixas lite det är nog hit vi komer om användaren vill byta font storlek
+		//har dock skrivit lite om det i do get men det bör nog flyttas hit
 		log("someone is trying to acces by doPost!!! It's not allowed yet!");
+		
+		
 		return;
 		
 	} // DoPost
@@ -44,9 +40,11 @@ public class ChatBoard extends ChatBase {
 	
 
 		// Lets validate the session, e.g has the user logged in to Janus?
+		//måste kolla så att metoden funkar i ChatBase
 		if (super.checkSession(req,res) == false)	return ;
 
 		// Lets get the standard SESSION parameters and validate them
+		//måste oxå kollas så att de funkar
 		Properties params = this.getSessionParameters(req) ;
 		if (super.checkParameters(req, res, params) == false) {
 			/*
@@ -58,6 +56,7 @@ public class ChatBoard extends ChatBase {
 		}
 
 		// Lets get the user object
+		//måste kolla så att metoden funkar i ChatBase
 		imcode.server.User user = super.getUserObj(req,res) ;
 		if(user == null) return ;
 
@@ -70,21 +69,22 @@ public class ChatBoard extends ChatBase {
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String confPoolServer = Utility.getDomainPref("chat_server",host) ;
 
-		//RmiConf rmi = new RmiConf(user) ;
-
 		// Lets get the url to the servlets directory
+		//måste kolla så att det är till rätt server
 		String servletHome = MetaInfo.getServletPath(req) ;
 
 		// Lets get parameters
 		String aMetaId = params.getProperty("META_ID") ;
 		int metaId = Integer.parseInt( aMetaId );
-		String aChatId = params.getProperty("CHAT_ID") ; //vet ej om denna behövs
+		String aChatId = params.getProperty("CHAT_ID") ;//=id strängen för chatten
 		
 			
 		//used to store all params to resend
+		//är inte så snygg men får duga så länge
 		StringBuffer paramString = new StringBuffer("?");
 		
 		//ok lets set up the font font size
+		//det här med ändringarna ska flyttas till doPost
 		int fontSize;
 		if (req.getParameter("FONT_SIZE") != null)
 		{
@@ -126,10 +126,10 @@ public class ChatBoard extends ChatBase {
 		}//end setting up the font size
 	
 		
-		//this buffer is used to store all the msgs to send
+		//this buffer is used to store all the msgs to send to the page
 		StringBuffer sendMsgString = new StringBuffer();		
 		
-		//ok let's get all the messages and send them to the page			
+		//ok let's get all the messages and add them into the buffer			
 		if (req.getParameter("ROOM_ID") != null )	
 		{ 
 		
@@ -138,18 +138,52 @@ public class ChatBoard extends ChatBase {
 			{
 				return;
 			}
+			
+					
+			//lets get the Chat from ChatBase
+			imcode.external.chat.Chat myChat = super.getChat(aChatId);
+			if(myChat == null) return;
+			
 			//ok let's get the ChatMember from the session
-			ChatMember myMember = (ChatMember)session.getValue("CHAT_MEMBER");
+			ChatMember myMember = (ChatMember)session.getValue("ChatMember");
 			if(myMember == null) return;
+			//lets get the current group
+			ChatGroup myGroup = myMember.getMyGroup();
+			if( myGroup == null) return;
+			
+			
+			//lets get the ignore-list
+			 //doesnt have one yet
+			 
 			
 			//let's get all the messages		
 			ListIterator msgIter =  myMember.getMessages();		
 			
+			//lets fix the html-string to send
 			sendMsgString.append("<font size=\""+ fontSize+">");
 			while(msgIter.hasNext())
 			{
 				ChatMsg tempMsg = (ChatMsg) msgIter.next();
-				sendMsgString.append(tempMsg.toString());
+				//must check if it is a public msg
+				if (tempMsg.getReciever() == 1 ) 
+				{
+					sendMsgString.append(tempMsg.getDateTime() +" : " +
+										myMember.getName() +"  "+
+										myGroup.getMsgTypeName(tempMsg.getMsgType()) +"  "+
+										myChat.getChatMember(tempMsg.getReciever()).getName() +" : "+
+										tempMsg.getMessage()	);
+				}
+				//or if its a private one to this user
+				else if (tempMsg.getReciever() == myMember.getUserId())
+				{
+					//obs här ska det nog in någon färgtagg på texten
+					sendMsgString.append(tempMsg.getDateTime() +" : " +
+										myMember.getName() +"  "+
+										myGroup.getMsgTypeName(tempMsg.getMsgType()) +"  "+
+										myChat.getChatMember(tempMsg.getReciever()).getName() +" : "+
+										tempMsg.getMessage()	);
+				}
+				
 				sendMsgString.append("<br>");
 			}
 			sendMsgString.append("</font>");
@@ -330,7 +364,6 @@ public class ChatBoard extends ChatBase {
 	{
 		super.init(config);
 		HTML_TEMPLATE = "Chat_Messages.htm" ;
-		//A_HREF_HTML = "Conf_Disc_List.htm" ;
 	}
 
 	/**
