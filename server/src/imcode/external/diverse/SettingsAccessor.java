@@ -1,7 +1,7 @@
 package imcode.external.diverse;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 
 import java.io.BufferedReader;
@@ -39,7 +39,7 @@ public class SettingsAccessor {
     public synchronized void loadSettings() throws IOException {
 
         // Lets open the settingsfile
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         BufferedReader inputFromFile = new BufferedReader( new StringReader( imcref.getTemplateFromDirectory( fileName, user, null, directory ) ) );
 
         // Lets get the settings from file into settingsTable, its a property

@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -24,7 +24,7 @@ public class SavePermissions extends HttpServlet {
         Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkDocAdminRights( meta_id, user, 4 ) ) {	// Checking to see if user may edit this

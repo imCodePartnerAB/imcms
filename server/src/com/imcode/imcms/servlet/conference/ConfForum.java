@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.conference;
 
 import imcode.server.user.UserDomainObject;
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 
 import java.io.*;
 import java.util.*;
@@ -33,7 +33,7 @@ public class ConfForum extends Conference {
         String aMetaId = (String)session.getAttribute( "Conference.meta_id" );
 
         // Lets get the information from DB
-        String[] sqlAnswer = ApplicationServer.getIMCServiceInterface().sqlProcedure( "A_GetAllForum", new String[]{aMetaId} );
+        String[] sqlAnswer = Imcms.getServices().sqlProcedure( "A_GetAllForum", new String[]{aMetaId} );
         Vector forumV = super.convert2Vector( sqlAnswer );
 
         // Lets fill the select box

@@ -1,6 +1,6 @@
 package imcode.server.document.index;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
@@ -62,7 +62,7 @@ class DirectoryIndex implements DocumentIndex {
 
     private List getDocumentListForHits( Hits hits, UserDomainObject searchingUser ) throws IOException {
         List documentList = new ArrayList( hits.length() );
-        final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         for ( int i = 0; i < hits.length(); ++i ) {
             int metaId = Integer.parseInt( hits.doc( i ).get( DocumentIndex.FIELD__META_ID ) );
             DocumentDomainObject document = documentMapper.getDocument( metaId );
@@ -127,7 +127,7 @@ class DirectoryIndex implements DocumentIndex {
     }
 
     private void indexAllDocumentsToIndexWriter( IndexWriter indexWriter ) throws IOException {
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         int[] documentIds = documentMapper.getAllDocumentIds();
 
         logIndexingStarting( documentIds.length );

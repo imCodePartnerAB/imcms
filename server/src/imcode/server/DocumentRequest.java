@@ -13,7 +13,7 @@ public class DocumentRequest implements Cloneable {
 
     private HttpServletRequest httpServletRequest;
 
-    private IMCServiceInterface serverObject;
+    private ImcmsServices serverObject;
     private UserDomainObject user;
     private DocumentDomainObject document;
     private DocumentDomainObject referrer;
@@ -21,7 +21,7 @@ public class DocumentRequest implements Cloneable {
 
     private Revisits revisits;
 
-    public DocumentRequest( IMCServiceInterface serverObject, UserDomainObject user, DocumentDomainObject document,
+    public DocumentRequest( ImcmsServices serverObject, UserDomainObject user, DocumentDomainObject document,
                             DocumentDomainObject referrer, HttpServletRequest httpServletRequest ) {
         this.serverObject = serverObject;
         this.user = user;
@@ -34,7 +34,7 @@ public class DocumentRequest implements Cloneable {
         return super.clone() ;
     }
 
-    public IMCServiceInterface getServerObject() {
+    public ImcmsServices getServerObject() {
         return this.serverObject;
     }
 

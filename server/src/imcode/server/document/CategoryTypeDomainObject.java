@@ -1,6 +1,6 @@
 package imcode.server.document;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 
 import java.io.Serializable;
 
@@ -69,7 +69,7 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
     }
 
     public boolean hasImages() {
-        CategoryDomainObject[] categories = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getAllCategoriesOfType(this);
+        CategoryDomainObject[] categories = Imcms.getServices().getDocumentMapper().getAllCategoriesOfType(this);
         boolean hasImages = false;
         for (int i = 0; i < categories.length; i++) {
             CategoryDomainObject category = categories[i];
@@ -82,7 +82,7 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
     }
 
     public boolean hasCategoryWithName( String categoryName ) {
-        CategoryDomainObject[] categories = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getAllCategoriesOfType(this);
+        CategoryDomainObject[] categories = Imcms.getServices().getDocumentMapper().getAllCategoriesOfType(this);
         for (int i = 0; i < categories.length; i++) {
             if (categories[i].getName().equalsIgnoreCase(categoryName)) {
                 return true;

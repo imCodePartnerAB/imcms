@@ -1,12 +1,12 @@
 package imcode.server.document;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.util.FileInputStreamSource;
 
 class DocumentInitializingVisitor extends DocumentVisitor {
 
-    IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+    ImcmsServices service = Imcms.getServices();
 
     public void visitBrowserDocument( BrowserDocumentDomainObject document ) {
         String sqlStr = "SELECT to_meta_id, browser_id FROM browser_docs WHERE meta_id = ?";

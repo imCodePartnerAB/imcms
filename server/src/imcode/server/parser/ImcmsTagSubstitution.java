@@ -1,19 +1,14 @@
 package imcode.server.parser;
 
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
-import com.imcode.imcms.servlet.admin.ChangeImage;
 import imcode.server.*;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.CategoryTypeDomainObject;
-import imcode.server.document.SectionDomainObject;
-import imcode.server.document.DocumentMapper;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.FileCache;
-import imcode.util.Html;
 import imcode.util.ImcmsImageUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -31,7 +26,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.*;
 
-class ImcmsTagSubstitution implements Substitution, IMCConstants {
+class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
 
     private static Pattern HTML_PREBODY_PATTERN = null;
     private static Pattern HTML_POSTBODY_PATTERN = null;
@@ -75,7 +70,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
     private boolean imageMode;
     private int implicitImageNumber = 1;
 
-    private IMCServiceInterface service;
+    private ImcmsServices service;
     private ParserParameters parserParameters;
     private DocumentRequest documentRequest;
     private TextDocumentDomainObject document;
@@ -97,20 +92,25 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         this.textMap = document.getTexts();
 
         this.imageMode = imagemode;
-        this.imageMap = getImageMap( document, documentRequest.getUser(), imageMode );
+        this.imageMap = getImageMap( document, imageMode, documentRequest );
 
     }
 
-    private Map getImageMap( TextDocumentDomainObject document, UserDomainObject user, boolean imageMode ) {
+    private Map getImageMap( TextDocumentDomainObject document, boolean imageMode,
+                             DocumentRequest documentRequest ) {
         Map images = document.getImages();
         Map imageMap = new HashMap();
         for ( Iterator iterator = images.keySet().iterator(); iterator.hasNext(); ) {
             Integer imageIndex = (Integer)iterator.next();
             ImageDomainObject image = (ImageDomainObject)images.get( imageIndex );
-            Integer documentId = ImcmsImageUtils.getDocumentIdFromImageUrl( image.getUrl() ) ;
-            DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
-            if (null == documentId || imageMode || documentMapper.userHasAtLeastDocumentReadPermission( user, documentMapper.getDocument( documentId.intValue() ))) {
-                imageMap.put( imageIndex, ImcmsImageUtils.getImageHtmlTag( image ) );
+            ImageDomainObject.ImageSource imageSource = image.getSource();
+            if ( imageSource instanceof ImageDomainObject.FileDocumentImageSource ) {
+                FileDocumentDomainObject fileDocument = ( (ImageDomainObject.FileDocumentImageSource)imageSource ).getFileDocument();
+                DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+                if ( imageMode
+                     || documentMapper.userHasAtLeastDocumentReadPermission( documentRequest.getUser(), fileDocument ) ) {
+                    imageMap.put( imageIndex, ImcmsImageUtils.getImageHtmlTag( image, documentRequest.getHttpServletRequest() ) );
+                }
             }
         }
         return imageMap;
@@ -189,7 +189,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
                 String urlStr = attributevalue;
                 String commaSeparatedNamesOfParametersToSend = attributes.getProperty( "sendparameters" );
 
-                urlStr += ( -1 == urlStr.indexOf( '?' ) ? "?" : "&" );
+                urlStr += -1 == urlStr.indexOf( '?' ) ? "?" : "&";
                 Set parameterNamesToSend = createSetFromCommaSeparatedString( commaSeparatedNamesOfParametersToSend );
                 urlStr += createQueryStringFromRequest( documentRequest.getHttpServletRequest(), parameterNamesToSend );
 
@@ -210,7 +210,8 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
                 urlConnection.setRequestProperty( "User-Agent",
                                                   documentRequest.getHttpServletRequest().getHeader( "User-agent" ) );
                 if ( null != attributes.getProperty( "sendsessionid" ) ) {
-                    urlConnection.addRequestProperty( "Cookie", ImcmsSetupFilter.JSESSIONID_COOKIE_NAME+"=" + sessionId );
+                    urlConnection.addRequestProperty( "Cookie", ImcmsSetupFilter.JSESSIONID_COOKIE_NAME + "="
+                                                                + sessionId );
                 }
                 if ( null != attributes.getProperty( "sendcookies" ) ) {
                     Cookie[] requestCookies = documentRequest.getHttpServletRequest().getCookies();
@@ -252,13 +253,13 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             no = implicitIncludeNumber++; // Implicitly use the next number.
         }
         try {
-            String label = attributes.getProperty("label");
-            label = label ==  null?"":label;
+            String label = attributes.getProperty( "label" );
+            label = label == null ? "" : label;
             Integer includedDocumentId = document.getIncludedDocumentId( no );
             if ( includeMode ) {
                 return service.getAdminTemplate( "change_include.html", documentRequest.getUser(),
                                                  Arrays.asList( new String[]{
-                                                     "#label#", label ,
+                                                     "#label#", label,
                                                      "#meta_id#", String.valueOf( document.getId() ),
                                                      "#include_id#", String.valueOf( no ),
                                                      "#include_meta_id#", includedDocumentId == null
@@ -362,9 +363,9 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
      */
     private String tagText( Properties attributes ) {
         String mode = attributes.getProperty( "mode" );
-        if ( ( mode != null && !"".equals( mode ) )
-             && ( ( textMode && "read".startsWith( mode ) ) // With mode="read", we don't want anything in textMode.
-                  || ( !textMode && "write".startsWith( mode ) )// With mode="write", we don't want anything unless we're in textMode.
+        if ( mode != null && !"".equals( mode )
+             && ( textMode && "read".startsWith( mode ) // With mode="read", we don't want anything in textMode.
+                  || !textMode && "write".startsWith( mode )// With mode="write", we don't want anything unless we're in textMode.
                 ) ) {
             return "";
         }
@@ -596,9 +597,9 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             if ( null == categoryTypeName ) {
                 categoryString = category.getType() + ": " + categoryString;
             }
-            if ( "only".equalsIgnoreCase(shouldOutputDescription) ) {
+            if ( "only".equalsIgnoreCase( shouldOutputDescription ) ) {
                 categoryString = category.getDescription();
-            } else if( "true".equalsIgnoreCase(shouldOutputDescription) ) {
+            } else if ( "true".equalsIgnoreCase( shouldOutputDescription ) ) {
                 categoryString += " - " + category.getDescription();
             }
             categoryStrings[i] = categoryString;
@@ -676,7 +677,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
     }
 
     private String tagContextPath() {
-        return documentRequest.getHttpServletRequest().getContextPath() ;
+        return documentRequest.getHttpServletRequest().getContextPath();
     }
 
 }

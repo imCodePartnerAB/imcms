@@ -6,8 +6,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.external.diverse.*;
-import imcode.server.IMCServiceInterface;
-import imcode.server.ApplicationServer;
+import imcode.server.ImcmsServices;
+import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import com.imcode.imcms.servlet.billboard.BillBoard;
@@ -21,7 +21,7 @@ import com.imcode.imcms.servlet.billboard.BillBoard;
  * #BILLBOARD_DISC_VIEW#
  * stored procedures in use:
  * -
- * 
+ *
  * @author Rickard Larsson, Jerker Drottenmyr REBUILD TO BillBoardViewer BY Peter Östergren
  * @version 1.2 20 Aug 2001
  */

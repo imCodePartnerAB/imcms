@@ -1,7 +1,7 @@
 package imcode.external.chat;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
@@ -81,7 +81,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
     protected Chat createChat( int metaId ) {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+        ImcmsServices imcref = Imcms.getServices() ;
         //lets get the standard stuff
         Vector msgTypes = convert2Vector( imcref.sqlProcedureMulti( "C_GetTheMsgTypesBase", new String[0] ) );
         Vector autTypes = convert2Vector( imcref.sqlProcedureMulti( "C_GetAuthorizationTypes", new String[0] ) );
@@ -251,7 +251,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
      */
     //peter uses this
     protected static String getTemplateSetDirectoryName( int meta_id ) {
-        String libName = ApplicationServer.getIMCServiceInterface().sqlProcedureStr( "C_GetTemplateLib", new String[]{"" + meta_id} );
+        String libName = Imcms.getServices().sqlProcedureStr( "C_GetTemplateLib", new String[]{"" + meta_id} );
         if ( libName == null ) {
             libName = "original";
         }
@@ -270,7 +270,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
     protected void sendHtml( HttpServletRequest req, HttpServletResponse res,
                              Vector vect, String template, Chat chat ) throws IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
@@ -322,7 +322,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
      */
 
     protected String getExternalImageFolder( HttpServletRequest req ) {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
@@ -382,7 +382,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
                                         UserDomainObject user, HttpServletRequest req )
             throws IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         //is user authorized?
         DocumentMapper documentMapper = imcref.getDocumentMapper();
@@ -400,11 +400,11 @@ public class ChatBase extends HttpServlet implements ChatConstants {
     /**
      * check if user is admin and has rights to edit
      *
-     * @param imcref imCMS IMCServiceInterface instance
+     * @param imcref imCMS ImcmsServices instance
      * @param metaId metaId for conference
      * @param user
      */
-    protected boolean userHasAdminRights( IMCServiceInterface imcref, int metaId,
+    protected boolean userHasAdminRights( ImcmsServices imcref, int metaId,
                                           UserDomainObject user ) {
         return ( imcref.checkDocAdminRights( metaId, user ) &&
                 imcref.checkDocAdminRights( metaId, user, 65536 ) );
@@ -560,7 +560,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
     }
 
     void createLeaveMessageAndAddToGroup( ChatMember myMember, ChatSystemMessage systemMessage,
-                                          IMCServiceInterface imcref ) throws ServletException, IOException {
+                                          ImcmsServices imcref ) throws ServletException, IOException {
         Chat theChat = myMember.getParent();
         UserDomainObject user = myMember.getUser();
         ChatGroup myGroup = myMember.getGroup();
@@ -571,7 +571,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         chatlog( metaId, systemMessage.getLogMsg( imcref, user, libName ) );
     }
 
-    protected void createEnterMessageAndAddToGroup( Chat theChat, IMCServiceInterface imcref,
+    protected void createEnterMessageAndAddToGroup( Chat theChat, ImcmsServices imcref,
                                                     UserDomainObject user, ChatMember myMember, ChatGroup myGroup,
                                                     String metaId ) throws ServletException, IOException {
 
@@ -584,7 +584,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
     }
 
     protected void createKickOutMessageAndAddToGroup( ChatMember kickedOutPerson,
-                                                      Chat myChat, IMCServiceInterface imcref, UserDomainObject user,
+                                                      Chat myChat, ImcmsServices imcref, UserDomainObject user,
                                                       ChatGroup myGroup, String metaId ) throws ServletException, IOException {
 
         ChatSystemMessage systemMessage = new ChatSystemMessage( kickedOutPerson, ChatSystemMessage.KICKOUT_MSG );
@@ -594,7 +594,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         chatlog( metaId, systemMessage.getLogMsg( imcref, user, libName ) );
     }
 
-    protected void logOutMember( ChatMember myMember, ChatSystemMessage systemMessage, IMCServiceInterface imcref ) throws IOException, ServletException {
+    protected void logOutMember( ChatMember myMember, ChatSystemMessage systemMessage, ImcmsServices imcref ) throws IOException, ServletException {
 
         HttpSession session = ChatSessionsSingleton.removeSession( myMember );
 
@@ -608,7 +608,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
     }
 
     protected String getTemplate( String htmlFile, UserDomainObject user, List tagsAndData ) {
-        return ApplicationServer.getIMCServiceInterface().getTemplateFromSubDirectoryOfDirectory( htmlFile, user, tagsAndData, "103", "original") ;
+        return Imcms.getServices().getTemplateFromSubDirectoryOfDirectory( htmlFile, user, tagsAndData, "103", "original") ;
     }
 
 } // End class

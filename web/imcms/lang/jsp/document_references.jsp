@@ -1,9 +1,9 @@
-<%@ page import="imcode.server.ApplicationServer,
+<%@ page import="imcode.server.Imcms,
                  imcode.server.document.DocumentMapper,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  org.apache.commons.lang.StringEscapeUtils,
                  com.imcode.imcms.servlet.admin.AdminDoc,
-                 imcode.server.IMCConstants,
+                 imcode.server.ImcmsConstants,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
                  com.imcode.imcms.servlet.superadmin.LinkCheck,
@@ -43,7 +43,7 @@
             <tr>
                 <td><%= Html.getLinkedStatusIconTemplate( textDocument, user ) %></td>
                 <td>
-                    <a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= textDocument.getId() %>&<%= AdminDoc.PARAMETER__DISPATCH_FLAGS %>=<%= IMCConstants.DISPATCH_FLAG__EDIT_MENU %>&editmenu=<%= menuIndex %>">
+                    <a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= textDocument.getId() %>&<%= AdminDoc.PARAMETER__DISPATCH_FLAGS %>=<%= ImcmsConstants.DISPATCH_FLAG__EDIT_MENU %>&editmenu=<%= menuIndex %>">
                         <%= textDocument.getId() %>: "<%= StringEscapeUtils.escapeHtml(textDocument.getHeadline()) %>"
                         -
                         <? web/imcms/lang/jsp/document_references.jsp/heading_menu ?> <%= menuIndex %>

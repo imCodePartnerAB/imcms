@@ -1,8 +1,8 @@
 <%@ page
     contentType="text/html;
     charset=cp1252"
-    
-    import="imcode.server.ApplicationServer,
+
+    import="imcode.server.Imcms,
             org.apache.commons.lang.StringEscapeUtils,
             java.text.SimpleDateFormat,
             java.text.DateFormat,
@@ -11,7 +11,7 @@
             org.apache.commons.collections.iterators.TransformIterator,
             org.apache.commons.collections.Transformer,
             imcode.server.LanguageMapper,
-            imcode.server.IMCServiceInterface,
+            imcode.server.ImcmsServices,
             imcode.server.user.UserDomainObject,
             imcode.server.document.*,
             com.imcode.imcms.servlet.admin.DocumentComposer,
@@ -32,7 +32,7 @@
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
-    final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+    final ImcmsServices service = Imcms.getServices();
     final DocumentMapper documentMapper = service.getDocumentMapper();
 
     DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
@@ -78,7 +78,7 @@ String formatUser(UserDomainObject user) {
 
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="Expires" content="-1">
-<meta http-equiv="Cache-Control" content="must-revalidate"> 
+<meta http-equiv="Cache-Control" content="must-revalidate">
 <meta http-equiv="Cache-Control" content="no-cache">
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
@@ -136,7 +136,7 @@ function checkFocus() {
 	<td class="imcmsAdmText">
 	<? install/htdocs/sv/jsp/docadmin/document_information.jsp/new_document_procedure_description ?> &nbsp;</td>
 </tr>
-<tr>  
+<tr>
 	<td>#gui_heading( '<? install/htdocs/sv/jsp/docadmin/document_information.jsp/create_document_heading ?>' )</td>
 </tr><%
 } else { %>
@@ -167,7 +167,7 @@ function checkFocus() {
 		<td class="imcmsAdmForm">
 		<textarea name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;">
 <%= StringEscapeUtils.escapeHtml(document.getMenuText()) %></textarea><%
-		
+
 		if (creatingNewDocument && document instanceof TextDocumentDomainObject) { %>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
@@ -376,7 +376,7 @@ function checkFocus() {
 		<div style="float: left; margin: auto 1em 1ex auto;">
 			<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>"
 			target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><%
-		
+
 			boolean radioButton = categoryType.getMaxChoices() == 1;
 			String typeStr = radioButton?"radio":"checkbox";
 			CategoryDomainObject[] documentSelectedCategories = document.getCategoriesOfType(categoryType);

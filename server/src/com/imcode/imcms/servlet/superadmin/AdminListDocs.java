@@ -2,8 +2,8 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.util.Html;
 import imcode.external.diverse.VariableManager;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Parser;
@@ -56,7 +56,7 @@ public class AdminListDocs extends Administrator {
             throws ServletException, IOException {
 
         // Lets verify that the user who tries to add a new user is an admin
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( request );
         if ( !user.isSuperAdmin() ) {
             return;
@@ -83,7 +83,7 @@ public class AdminListDocs extends Administrator {
     protected void doPost( HttpServletRequest request, HttpServletResponse response )
             throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         String eMailServerMaster = imcref.getSystemData().getServerMasterAddress();
         // lets get ready for errors
@@ -242,7 +242,7 @@ public class AdminListDocs extends Administrator {
         }
     }
 
-    private String getSelectedDocTypeNames( IMCServiceInterface imcref, int[] selectedDocTypeIds,
+    private String getSelectedDocTypeNames( ImcmsServices imcref, int[] selectedDocTypeIds,
                                             UserDomainObject user ) {
         List selectedDocTypeNames = new ArrayList();
         Map allDocTypes = imcref.getDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage( user );

@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.document.TemplateMapper;
@@ -39,7 +39,7 @@ public class TemplateAdmin extends HttpServlet {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !user.isSuperAdmin() ) {
             Utility.redirectToStartDocument( req, res );
@@ -57,7 +57,7 @@ public class TemplateAdmin extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !user.isSuperAdmin() ) {
             Utility.redirectToStartDocument( req, res );
@@ -100,7 +100,7 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     private String createListTemplatesDialog( TemplateMapper templateMapper, UserDomainObject user, String lang,
-                                              IMCServiceInterface imcref ) {
+                                              ImcmsServices imcref ) {
         String htmlStr;
         htmlStr = templateMapper.createHtmlOptionListOfTemplatesWithDocumentCount( user );
         List vec = new ArrayList();
@@ -113,11 +113,11 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     private String createAssignTemplateGroupDialog( String lang, TemplateMapper templateMapper,
-                                                    UserDomainObject user, IMCServiceInterface imcref ) {
+                                                    UserDomainObject user, ImcmsServices imcref ) {
         return createAssignTemplatesToGroupDialog( templateMapper, null, lang, user, imcref );
     }
 
-    static String createDeleteTemplateGroupDialog( TemplateMapper templateMapper, IMCServiceInterface imcref,
+    static String createDeleteTemplateGroupDialog( TemplateMapper templateMapper, ImcmsServices imcref,
                                                    UserDomainObject user ) {
         String htmlStr;
         String temps = templateMapper.createHtmlOptionListOfTemplateGroups( null );
@@ -128,13 +128,13 @@ public class TemplateAdmin extends HttpServlet {
         return htmlStr;
     }
 
-    static String createAddGroupDialog( IMCServiceInterface imcref, UserDomainObject user ) {
+    static String createAddGroupDialog( ImcmsServices imcref, UserDomainObject user ) {
         String htmlStr;
         htmlStr = imcref.getAdminTemplate( ADMIN_TEMPLATE_ADD, user, null );
         return htmlStr;
     }
 
-    private String createEditTemplateDialog( String lang, IMCServiceInterface imcref, TemplateMapper templateMapper,
+    private String createEditTemplateDialog( String lang, ImcmsServices imcref, TemplateMapper templateMapper,
                                              UserDomainObject user ) {
         String htmlStr;
         List vec = new ArrayList();
@@ -148,7 +148,7 @@ public class TemplateAdmin extends HttpServlet {
         return htmlStr;
     }
 
-    private String createDownloadTemplateDialog( String lang, IMCServiceInterface imcref,
+    private String createDownloadTemplateDialog( String lang, ImcmsServices imcref,
                                                  TemplateMapper templateMapper, UserDomainObject user ) {
         String htmlStr;
         List vec = new ArrayList();
@@ -162,7 +162,7 @@ public class TemplateAdmin extends HttpServlet {
         return htmlStr;
     }
 
-    private String createRenameTemplateDialog( String lang, IMCServiceInterface imcref, TemplateMapper templateMapper,
+    private String createRenameTemplateDialog( String lang, ImcmsServices imcref, TemplateMapper templateMapper,
                                                UserDomainObject user ) {
         String htmlStr;
         List vec = new ArrayList();
@@ -177,7 +177,7 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     static String createDeleteTemplateDialog( TemplateMapper templateMapper, UserDomainObject user, String lang,
-                                              IMCServiceInterface imcref ) {
+                                              ImcmsServices imcref ) {
         String htmlStr;
         List vec = new ArrayList();
         htmlStr = templateMapper.createHtmlOptionListOfTemplatesWithDocumentCount( user );
@@ -190,7 +190,7 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     private String createUploadDemoTemplateDialog( String lang, TemplateMapper templateMapper,
-                                                   IMCServiceInterface imcref, UserDomainObject user ) {
+                                                   ImcmsServices imcref, UserDomainObject user ) {
         String htmlStr;
         List vec = new ArrayList();
         vec.add( "#language#" );
@@ -203,7 +203,7 @@ public class TemplateAdmin extends HttpServlet {
         return htmlStr;
     }
 
-    private String createUploadTemplateDialog( TemplateMapper templateMapper, String lang, IMCServiceInterface imcref,
+    private String createUploadTemplateDialog( TemplateMapper templateMapper, String lang, ImcmsServices imcref,
                                                UserDomainObject user ) {
         String htmlStr;
         List vec = new ArrayList();
@@ -216,7 +216,7 @@ public class TemplateAdmin extends HttpServlet {
         return htmlStr;
     }
 
-    static String createRenameTemplateGroupDialog( TemplateMapper templateMapper, IMCServiceInterface imcref,
+    static String createRenameTemplateGroupDialog( TemplateMapper templateMapper, ImcmsServices imcref,
                                                    UserDomainObject user ) {
         String htmlStr;
         String htmlOptionListOfTemplateGroups = templateMapper.createHtmlOptionListOfTemplateGroups( null );
@@ -228,7 +228,7 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     static String createAssignTemplatesToGroupDialog( TemplateMapper templateMapper, TemplateGroupDomainObject currentTemplateGroup, String language,
-                                                      UserDomainObject user, IMCServiceInterface imcref ) {
+                                                      UserDomainObject user, ImcmsServices imcref ) {
         List vec = new ArrayList();
 
         String htmlOptionListOfTemplateGroups = templateMapper.createHtmlOptionListOfTemplateGroups(
@@ -266,7 +266,7 @@ public class TemplateAdmin extends HttpServlet {
         return imcref.getAdminTemplate( TEMPLATE_ASSIGN, user, vec );
     }
 
-    static String createHtmlOptionListOfDocumentsUsingTemplate( IMCServiceInterface imcref, TemplateDomainObject template,
+    static String createHtmlOptionListOfDocumentsUsingTemplate( ImcmsServices imcref, TemplateDomainObject template,
                                                                  UserDomainObject user ) {
         DocumentDomainObject[] documents = imcref.getTemplateMapper().getDocumentsUsingTemplate( template );
         StringBuffer htmlOptionList = new StringBuffer();
@@ -289,7 +289,7 @@ public class TemplateAdmin extends HttpServlet {
         return htmlOptionList.toString();
     }
 
-    static String createDeleteTemplateInUseWarningDialog( String lang, IMCServiceInterface imcref,
+    static String createDeleteTemplateInUseWarningDialog( String lang, ImcmsServices imcref,
                                                       TemplateDomainObject template, UserDomainObject user,
                                                       TemplateMapper templateMapper ) {
         String htmlStr;
@@ -308,7 +308,7 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     static String createDeleteNonEmptyTemplateGroupWarningDialog( TemplateDomainObject[] templatesInGroup,
-                                                                   int templateGroupId, IMCServiceInterface imcref,
+                                                                   int templateGroupId, ImcmsServices imcref,
                                                                    UserDomainObject user ) {
         String htmlStr;
         String commaSeparatedTemplateNames = StringUtils.join( new ArrayIterator( templatesInGroup ) {

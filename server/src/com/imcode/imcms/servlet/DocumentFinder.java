@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
@@ -42,7 +42,7 @@ public class DocumentFinder extends WebComponent {
 
     void forwardWithPage( SearchDocumentsPage page, HttpServletRequest request,
                           HttpServletResponse response ) throws IOException, ServletException {
-        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices service = Imcms.getServices();
         DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
         BooleanQuery booleanQuery = new BooleanQuery();
         if ( null != page.getQuery() ) {

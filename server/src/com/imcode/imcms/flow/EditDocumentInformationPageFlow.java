@@ -2,8 +2,8 @@ package com.imcode.imcms.flow;
 
 import com.imcode.imcms.servlet.admin.ImageBrowser;
 import com.imcode.imcms.servlet.admin.UserFinder;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
@@ -164,7 +164,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     private static void setDocumentAttributesFromRequestParameters( DocumentDomainObject document,
                                                                     HttpServletRequest request ) {
 
-        final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+        final ImcmsServices service = Imcms.getServices();
         final DocumentMapper documentMapper = service.getDocumentMapper();
 
         String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE );

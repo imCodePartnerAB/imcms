@@ -2,8 +2,8 @@ package com.imcode.imcms.servlet.conference;
 
 import imcode.external.diverse.MetaInfo;
 import imcode.server.user.UserDomainObject;
-import imcode.server.IMCServiceInterface;
-import imcode.server.ApplicationServer;
+import imcode.server.ImcmsServices;
+import imcode.server.Imcms;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -26,7 +26,7 @@ public class ConfManager extends Conference {
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         MetaInfo.Parameters params = MetaInfo.getParameters( req );
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         int testMetaId = params.getMetaId();

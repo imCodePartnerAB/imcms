@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.misc;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.HTMLConv;
-import imcode.server.IMCServiceInterface;
+import imcode.server.ImcmsServices;
 import imcode.util.fortune.DateRange;
 import imcode.util.fortune.Poll;
 import imcode.util.fortune.Quote;
@@ -29,7 +29,7 @@ public class QuotPicEngine extends HttpServlet {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();

@@ -2,7 +2,7 @@ package imcode.server.user;
 
 import com.mockobjects.ExpectationList;
 import com.mockobjects.MockObject;
-import imcode.server.IMCServiceInterface;
+import imcode.server.ImcmsServices;
 import imcode.server.SystemData;
 import imcode.server.Config;
 import imcode.server.db.ConnectionPool;
@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.text.Collator;
 import java.util.*;
 
-class MockIMCServiceInterface extends MockObject implements IMCServiceInterface {
+class MockImcmsServices extends MockObject implements ImcmsServices {
 
     private final ExpectationList sqlProcedureCalls = new ExpectationList( "sqlProcedureCalls" );
     private final ExpectationList sqlQueryCalls = new ExpectationList( "sqlQueryCalls" ) ;

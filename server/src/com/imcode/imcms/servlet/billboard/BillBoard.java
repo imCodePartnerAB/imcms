@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.billboard;
 
 import imcode.external.diverse.*;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
@@ -92,7 +92,7 @@ public class BillBoard extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         int metaId = this.getMetaId( req );
         return imcref.getExternalTemplateFolder( metaId, user );
@@ -108,7 +108,7 @@ public class BillBoard extends HttpServlet {
     {
         int metaId = this.getMetaId( req );
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         return new File( imcref.getExternalTemplateFolder( metaId, user ), this.getTemplateLibName( imcref, metaId ) );
     }
@@ -116,7 +116,7 @@ public class BillBoard extends HttpServlet {
     /**
      * Returns the foldername where the templates are situated for a certain metaid.
      */
-    private String getTemplateLibName( IMCServiceInterface imcref, int meta_id ) {
+    private String getTemplateLibName( ImcmsServices imcref, int meta_id ) {
         String libName = imcref.sqlProcedureStr( "B_GetTemplateLib", new String[]{"" + meta_id} );
         if ( libName == null ) {
             libName = "original";
@@ -208,7 +208,7 @@ public class BillBoard extends HttpServlet {
 
             // Ok, we need to catch a forum_id. Lets get the first one for this meta_id.
             // if not a forumid exists, the sp will return -1
-            String aSectionId = ApplicationServer.getIMCServiceInterface().sqlProcedureStr( "B_GetFirstSection", new String[]{"" + params.getMetaId()} );
+            String aSectionId = Imcms.getServices().sqlProcedureStr( "B_GetFirstSection", new String[]{"" + params.getMetaId()} );
             session.setAttribute( "BillBoard.section_id", aSectionId );//Conference.forum_id
 
             // Lets get the lastdiscussionid for that forum
@@ -235,7 +235,7 @@ public class BillBoard extends HttpServlet {
         int metaId = this.getMetaId( req );
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         String extFolder = req.getContextPath()+"/imcms/" + user.getLanguageIso639_2() + "/images/"
@@ -259,7 +259,7 @@ public class BillBoard extends HttpServlet {
     private String getAdminButtonLink( HttpServletRequest req, imcode.server.user.UserDomainObject user,
                                        VariableManager adminButtonVM ) {
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         String adminLink = "&nbsp;";
         int metaId = getMetaId( req );
@@ -294,7 +294,7 @@ public class BillBoard extends HttpServlet {
      */
     private String getUnAdminButtonLink( HttpServletRequest req, imcode.server.user.UserDomainObject user,
                                          VariableManager unAdminButtonVM ) {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         String unAdminLink = "&nbsp;";
         int metaId = getMetaId( req );
@@ -395,7 +395,7 @@ public class BillBoard extends HttpServlet {
                               UserDomainObject user, HttpServletRequest req )
             throws IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         //is user authorized?
         DocumentMapper documentMapper = imcref.getDocumentMapper();
@@ -413,11 +413,11 @@ public class BillBoard extends HttpServlet {
     /**
      * check if user has right to edit
      *
-     * @param imcref imCMS IMCServiceInterface instance
+     * @param imcref imCMS ImcmsServices instance
      * @param metaId metaId for conference
      * @param user
      */
-    boolean userHasRightToEdit( IMCServiceInterface imcref, int metaId,
+    boolean userHasRightToEdit( ImcmsServices imcref, int metaId,
                                 imcode.server.user.UserDomainObject user ) {
 
         DocumentMapper documentMapper = imcref.getDocumentMapper();
@@ -429,11 +429,11 @@ public class BillBoard extends HttpServlet {
     /**
      * check if user is admin and has rights to edit
      *
-     * @param imcref imCMS IMCServiceInterface instance
+     * @param imcref imCMS ImcmsServices instance
      * @param metaId metaId for conference
      * @param user
      */
-    boolean userHasAdminRights( IMCServiceInterface imcref, int metaId,
+    boolean userHasAdminRights( ImcmsServices imcref, int metaId,
                                 imcode.server.user.UserDomainObject user ) {
         return imcref.checkDocAdminRights( metaId, user ) && imcref.checkDocAdminRights( metaId, user, 65536 );
     }
@@ -453,7 +453,7 @@ public class BillBoard extends HttpServlet {
     }
 
     String getTemplate(String template, UserDomainObject user, List tagsAndData ) {
-        return ApplicationServer.getIMCServiceInterface().getTemplateFromSubDirectoryOfDirectory( template, user, tagsAndData, "104", "original" ) ;
+        return Imcms.getServices().getTemplateFromSubDirectoryOfDirectory( template, user, tagsAndData, "104", "original" ) ;
     }
 
 } // End class

@@ -3,7 +3,7 @@
                  org.apache.commons.lang.StringEscapeUtils,
                  com.imcode.imcms.servlet.admin.ImageBrowser,
                  imcode.util.HttpSessionUtils,
-                 imcode.server.ApplicationServer,
+                 imcode.server.Imcms,
                  com.imcode.imcms.servlet.admin.ChangeImage,
                  imcode.util.Html,
                  org.apache.commons.collections.Transformer,
@@ -118,7 +118,7 @@
 #gui_bottom()
 #gui_outer_end()
 <% if (null != imageBrowsePage.getImageUrl()) { %>
-<div align="center" id="previewDiv"><img src="<%= ApplicationServer.getIMCServiceInterface().getConfig().getImageUrl() %><%=imageBrowsePage.getImageUrl()%>"></div>
+<div align="center" id="previewDiv"><img src="<%= Imcms.getServices().getConfig().getImageUrl() %><%=imageBrowsePage.getImageUrl()%>"></div>
 <% } %>
 
 <script language="JavaScript">

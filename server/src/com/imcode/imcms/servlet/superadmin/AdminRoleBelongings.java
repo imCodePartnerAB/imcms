@@ -12,8 +12,8 @@ package com.imcode.imcms.servlet.superadmin;
  */
 
 import imcode.external.diverse.VariableManager;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -67,7 +67,7 @@ public class AdminRoleBelongings extends Administrator {
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Lets verify that the user who tries to add a new user is an admin
         UserDomainObject user = Utility.getLoggedOnUser( req );
@@ -93,7 +93,7 @@ public class AdminRoleBelongings extends Administrator {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         String eMailServerMaster = imcref.getSystemData().getServerMasterAddress();
 
@@ -337,17 +337,17 @@ public class AdminRoleBelongings extends Administrator {
         return option.toString();
     }
 
-    private void addUserToRole( String userId, String roleId, IMCServiceInterface imcref ) {
+    private void addUserToRole( String userId, String roleId, ImcmsServices imcref ) {
         // lets be certain that the update process works ( avoid error then row alredy exist )
         removeUserFromRole( userId, roleId, imcref );
         imcref.sqlUpdateProcedure( "AddUserRole", new String[]{userId, roleId} );
     }
 
-    private void removeUserFromRole( String userId, String roleId, IMCServiceInterface imcref ) {
+    private void removeUserFromRole( String userId, String roleId, ImcmsServices imcref ) {
         imcref.sqlUpdateProcedure( "RemoveUserFromRole", new String[]{userId, roleId} );
     }
 
-    private String getUserOptionListTag( String roleId, IMCServiceInterface imcref ) {
+    private String getUserOptionListTag( String roleId, ImcmsServices imcref ) {
         String[][] userQueryResult;
         String userOptionList;
 
@@ -366,7 +366,7 @@ public class AdminRoleBelongings extends Administrator {
     /**
      * returns name for roll or empty if all
      */
-    private String getRoleName( String roleId, IMCServiceInterface imcref ) {
+    private String getRoleName( String roleId, ImcmsServices imcref ) {
 
         String roleName = "";
 
@@ -377,7 +377,7 @@ public class AdminRoleBelongings extends Administrator {
         return roleName;
     }
 
-    private void setUsersActive( String userId, String state, IMCServiceInterface imcref ) {
+    private void setUsersActive( String userId, String state, ImcmsServices imcref ) {
 
         String sqlD = "ChangeUserActiveStatus";
         imcref.sqlUpdateQuery( sqlD, new String[]{userId, state} );

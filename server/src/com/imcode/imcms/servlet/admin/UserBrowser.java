@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.HttpSessionUtils;
@@ -55,7 +55,7 @@ public class UserBrowser extends HttpServlet {
     }
 
     private Page createPageFromRequest( HttpServletRequest request ) {
-        ImcmsAuthenticatorAndUserMapper userMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper();
+        ImcmsAuthenticatorAndUserMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         boolean includeInactiveUsers = null != request.getParameter( REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS );
         String searchString = request.getParameter( REQUEST_PARAMETER__SEARCH_STRING );
         UserDomainObject[] users = userMapper.findUsersByNamePrefix( searchString, includeInactiveUsers );
@@ -67,7 +67,7 @@ public class UserBrowser extends HttpServlet {
     }
 
     private UserDomainObject getSelectedUserFromRequest( HttpServletRequest request ) {
-        ImcmsAuthenticatorAndUserMapper userMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper();
+        ImcmsAuthenticatorAndUserMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         String userIdStr = request.getParameter( REQUEST_PARAMETER__USER_ID );
         if ( null == userIdStr ) {
             return null;

@@ -22,7 +22,7 @@ import imcode.util.Utility;
  * stored procedures in use:
  * B_AddNewBillBoard
  * B_AddNewSection
- * 
+ *
  * @author Rickard Larsson
  * @author Jerker Drottenmyr
  * @author REBUILD TO BillBoardCreator BY Peter Östergren
@@ -66,7 +66,7 @@ public class BillBoardCreator extends BillBoard {//BillBoardCreator
 
         // Lets get serverinformation
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // ********* NEW ********
         if ( action.equalsIgnoreCase( "ADD_BILLBOARD" ) ) {

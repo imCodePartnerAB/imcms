@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -40,13 +40,13 @@ public class VerifyUser extends HttpServlet {
         String nexturl;
 
         // Check the name and password for validity
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = imcref.verifyUser( name, passwd );
 
         // Get session
         HttpSession session = req.getSession( true );
 
-        // if we don't have got any user from IMCService lets check out next url for redirect
+        // if we don't have got any user from DefaultImcmsServices lets check out next url for redirect
         if ( user == null ) {
 
             nexturl = accessDeniedUrl;

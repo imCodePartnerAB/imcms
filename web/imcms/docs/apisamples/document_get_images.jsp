@@ -15,17 +15,18 @@ Image <%= imageIndex %> in document <%= documentId %> has content:<br>
     DocumentService documentService = imcmsSystem.getDocumentService();
     TextDocument document = documentService.getTextDocument(documentId) ;
     Image image = document.getImage(imageIndex) ;
-%>
-<% if( image.isEmpty() ) { %>
+    String contextPath = request.getContextPath();
+
+    if( image.isEmpty() ) { %>
     <%= "No image found at index " + imageIndex + " in document with id " + documentId %>
 <%} else { %>
-    imageSrc = <%=image.getSrc()%><br>
+    imageSrc = <%=image.getSrc(contextPath)%><br>
     imageHeigth = <%=image.getHeight()%><br>
     imageWidth = <%=image.getWidth()%><br>
     imageAltText = <%=image.getAltText()%><br>
     imageLinkTarget = <%=image.getLinkTarget()%><br>
     imageLinkHref = <%=image.getLinkHref()%><br>
-    imageSrcUrl = <%=image.getSrcUrl()%><br>
+    imageSize = <%= image.getSize() %><br>
 <%}%>
 
 <br><br>
@@ -36,14 +37,14 @@ All images used in the document:
         Map.Entry entry = (Map.Entry) imagesEntries.next();
         Integer index = (Integer) entry.getKey();
         Image tempImage = (Image) entry.getValue();
-        %><p>Image <%=index%>:<br> <%=tempImage.getSrc()%>
-            imageSrc = <%=tempImage.getSrc()%><br>
+        %><p>Image <%=index%>:<br>
+            imageSrc = <%=tempImage.getSrc(contextPath)%><br>
             imageHeigth = <%=tempImage.getHeight()%><br>
             imageWidth = <%=tempImage.getWidth()%><br>
             imageAltText = <%=tempImage.getAltText()%><br>
             imageLinkTarget = <%=tempImage.getLinkTarget()%><br>
             imageLinkHref = <%=tempImage.getLinkHref()%><br>
-            imageSrcUrl = <%=tempImage.getSrcUrl()%><br>
+            imageSize = <%= tempImage.getSize() %><br>
         </p><%
     }
 %>

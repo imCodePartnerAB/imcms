@@ -1,10 +1,7 @@
 <%@ page import="com.imcode.imcms.api.*,
                  java.util.Date,
                  com.imcode.imcms.api.util.InputStreamSource,
-                 java.io.*,
-                 java.nio.charset.Charset,
-                 org.apache.commons.lang.CharSet,
-                 java.nio.charset.CharsetEncoder" errorPage="error.jsp" %>
+                 java.io.*" errorPage="error.jsp" %>
 
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);

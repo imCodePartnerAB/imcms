@@ -28,7 +28,7 @@ public class AdminFortunes extends Administrator {
         PrintWriter out = res.getWriter();
 
         // Lets get the server this request was aimed for
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Lets verify that the user who tries to admin a fortune is an admin
         UserDomainObject user = Utility.getLoggedOnUser(req);
@@ -85,7 +85,7 @@ public class AdminFortunes extends Administrator {
         PrintWriter out = res.getWriter();
 
         // Lets get the server this request was aimed for
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         HttpSession session = req.getSession();
 

@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -24,7 +24,7 @@ public class AdminError extends Administrator {
         String fileName = "AdminError.htm";
 
         // Lets get the path to the admin templates folder
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
         String html = imcref.getAdminTemplate( fileName, user, tagsAndData );

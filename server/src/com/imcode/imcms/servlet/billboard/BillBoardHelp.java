@@ -2,8 +2,8 @@ package com.imcode.imcms.servlet.billboard;
 
 import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.VariableManager;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -36,7 +36,7 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
 
             // Lets get serverinformation
 
-            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+            ImcmsServices imcref = Imcms.getServices();
 
             // Lets get a VariableManager
             VariableManager vm = new VariableManager();

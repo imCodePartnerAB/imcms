@@ -2,9 +2,9 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.util.Html;
 import imcode.external.diverse.VariableManager;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCConstants;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -49,7 +49,7 @@ public class AdminUserProps extends Administrator {
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         // check if user is a Useradmin, adminRole = 2
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
         HttpSession session = req.getSession( false );
@@ -98,7 +98,7 @@ public class AdminUserProps extends Administrator {
 
     }
 
-    private void showChangeUserPage( String userToChangeId, IMCServiceInterface imcref, Properties tmp_userInfo,
+    private void showChangeUserPage( String userToChangeId, ImcmsServices imcref, Properties tmp_userInfo,
                                      Vector tmp_phones, UserDomainObject user, HttpServletResponse res,
                                      HttpSession session, Vector phoneTypesV, boolean superadmin, boolean useradmin,
                                      HttpServletRequest req ) throws IOException {
@@ -292,7 +292,7 @@ public class AdminUserProps extends Administrator {
         out.write( outputString );
     }
 
-    private String getLanguagesHtmlOptionList( UserDomainObject user, IMCServiceInterface imcref,
+    private String getLanguagesHtmlOptionList( UserDomainObject user, ImcmsServices imcref,
                                                UserDomainObject userToChange ) {
         // Lets get the the users language id
         String userLanguage = user.getLanguageIso639_2();
@@ -304,7 +304,7 @@ public class AdminUserProps extends Administrator {
     }
 
     private void showErrorPageUserHasNoRightsToChangeUserValues( HttpServletRequest req, HttpServletResponse res,
-                                                                 IMCServiceInterface imcref, UserDomainObject user ) throws IOException {
+                                                                 ImcmsServices imcref, UserDomainObject user ) throws IOException {
         String header = "Error in AdminUserProps. ";
         Properties langproperties = imcref.getLanguageProperties( user );
         String msg = langproperties.getProperty( "error/servlet/AdminUser/user_have_no_permission" ) + "<br>";
@@ -313,7 +313,7 @@ public class AdminUserProps extends Administrator {
     }
 
     private void showAddUserPage( Properties tmp_userInfo, HttpServletResponse res, Vector phoneTypesV,
-                                  Vector tmp_phones, UserDomainObject user, IMCServiceInterface imcref,
+                                  Vector tmp_phones, UserDomainObject user, ImcmsServices imcref,
                                   HttpServletRequest req, HttpSession session ) throws IOException {
         String login_name = "";
         String password1 = "";
@@ -421,7 +421,7 @@ public class AdminUserProps extends Administrator {
     }
 
     private void showErrorPageUserNotAnAdministrator( HttpServletRequest req, HttpServletResponse res,
-                                                      IMCServiceInterface imcref, UserDomainObject user ) throws IOException {
+                                                      ImcmsServices imcref, UserDomainObject user ) throws IOException {
         String header = "Error in AdminUserProps. ";
         Properties langproperties = imcref.getLanguageProperties( user );
         String msg = langproperties.getProperty( "error/servlet/global/no_administrator" ) + "<br>";
@@ -431,7 +431,7 @@ public class AdminUserProps extends Administrator {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         HttpSession session = req.getSession( false );
         if ( session == null ) {
@@ -566,7 +566,7 @@ public class AdminUserProps extends Administrator {
 
     private void changeExistingUser( HttpSession session, UserDomainObject userFromDatabase,
                                      boolean admin, UserDomainObject user, int userToChangeId,
-                                     IMCServiceInterface imcref, HttpServletRequest req, HttpServletResponse res,
+                                     ImcmsServices imcref, HttpServletRequest req, HttpServletResponse res,
                                      UserDomainObject userFromRequest, String password2 ) throws IOException {
         log.debug( "SAVE EXISTING USER TO DB" );
 
@@ -612,7 +612,7 @@ public class AdminUserProps extends Administrator {
 
         // check that the changed login name don´t already exists
         if ( !newLogin.equalsIgnoreCase( currentLogin ) ) {
-            ImcmsAuthenticatorAndUserMapper userMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper();
+            ImcmsAuthenticatorAndUserMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
             if ( null != userMapper.getUser( newLogin ) ) {
                 String header = "Error in AdminUserProps.";
                 log.debug( header + "- username already exists" );
@@ -785,7 +785,7 @@ public class AdminUserProps extends Administrator {
     }
 
     private void addUser( HttpSession session, HttpServletRequest req, UserDomainObject userFromRequest,
-                          String password2, HttpServletResponse res, IMCServiceInterface imcref, UserDomainObject user ) throws IOException {
+                          String password2, HttpServletResponse res, ImcmsServices imcref, UserDomainObject user ) throws IOException {
         log.debug( "Lets add a new user to db" );
 
         //get session
@@ -905,7 +905,7 @@ public class AdminUserProps extends Administrator {
     }
 
     private void phoneHandling( String adminTask, UserDomainObject user, String userToChangeId,
-                                IMCServiceInterface imcref, HttpServletRequest req, HttpServletResponse res,
+                                ImcmsServices imcref, HttpServletRequest req, HttpServletResponse res,
                                 HttpSession session, VariableManager vm, Vector phoneTypesV,
                                 UserDomainObject userFromRequest, String password2,
                                 UserDomainObject userToChange ) throws IOException {
@@ -1101,7 +1101,7 @@ public class AdminUserProps extends Administrator {
         return;
     }
 
-    private void addUserAdminRoles( IMCServiceInterface imcref, int userIdToAddUserAdminRolesTo,
+    private void addUserAdminRoles( ImcmsServices imcref, int userIdToAddUserAdminRolesTo,
                                     int[] useradminRoleIds ) {
         ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
         for ( int i = 0; i < useradminRoleIds.length; i++ ) {
@@ -1149,7 +1149,7 @@ public class AdminUserProps extends Administrator {
      * failes, a error page will be generated and null will be returned.
      */
     private int[] getRoleIdsFromRequest( String name, HttpServletRequest req, HttpServletResponse res,
-                                         IMCServiceInterface imcref, UserDomainObject user ) throws IOException {
+                                         ImcmsServices imcref, UserDomainObject user ) throws IOException {
         // Lets get the roles
         String[] roleIdStrings = ( req.getParameterValues( name ) == null )
                                  ? new String[0] : ( req.getParameterValues( name ) );
@@ -1228,7 +1228,7 @@ public class AdminUserProps extends Administrator {
         if ( !assertRequiredFieldsFilledIn( req ) ) {
 
             String header = "Error in AdminUserProps ";
-            Properties langproperties = ApplicationServer.getIMCServiceInterface().getLanguageProperties( user );
+            Properties langproperties = Imcms.getServices().getLanguageProperties( user );
             String msg = langproperties.getProperty( "error/servlet/AdminUserProps/vaidate_form_parameters" ) + "<br>";
             log.debug( header + "Error in checkingparameters" );
             new AdminError( req, res, header, msg );
@@ -1282,7 +1282,7 @@ public class AdminUserProps extends Administrator {
      * ( phone_id, (typename) number,   ex. { 10, (Hem) 46 498 123456 } )
      * input vector  ex. 10, 46 498 123456, 3, 1
      */
-    private Vector getPhonesVector( Vector phonesArrV, String lang_id, IMCServiceInterface imcref ) {
+    private Vector getPhonesVector( Vector phonesArrV, String lang_id, ImcmsServices imcref ) {
 
         Vector phonesV = new Vector();
         Enumeration enum = phonesArrV.elements();
@@ -1299,7 +1299,7 @@ public class AdminUserProps extends Administrator {
 
     // Create html for admin_part in AdminUserResp
     private String createAdminPartHtml( UserDomainObject user, UserDomainObject userToChange,
-                                        IMCServiceInterface imcref, HttpServletRequest req, HttpSession session ) {
+                                        ImcmsServices imcref, HttpServletRequest req, HttpSession session ) {
 
         String html_admin_part;
         Vector vec_admin_part = new Vector();
@@ -1495,7 +1495,7 @@ public class AdminUserProps extends Administrator {
      * a error page will be generated and null will be returned.
      */
 
-    private String getCurrentUserId( HttpServletRequest req, HttpServletResponse res, IMCServiceInterface imcref,
+    private String getCurrentUserId( HttpServletRequest req, HttpServletResponse res, ImcmsServices imcref,
                                      UserDomainObject user ) throws IOException {
 
         String userId = req.getParameter( "CURR_USER_ID" );
@@ -1547,7 +1547,7 @@ public class AdminUserProps extends Administrator {
             return false;
         }
 
-        if ( password1.length() < IMCConstants.PASSWORD_MINIMUM_LENGTH ) {
+        if ( password1.length() < ImcmsConstants.PASSWORD_MINIMUM_LENGTH ) {
             header = req.getServletPath();
             new AdminError2( req, res, header, 53 );
             return false;

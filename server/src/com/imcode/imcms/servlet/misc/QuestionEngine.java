@@ -23,13 +23,13 @@ public class QuestionEngine extends HttpServlet
 {
     private final static String questionTemplate = "QuestionEngine.htm";
 
-    private static Category log = Category.getInstance(imcode.server.IMCConstants.ERROR_LOG) ;
+    private static Category log = Category.getInstance(imcode.server.ImcmsConstants.ERROR_LOG) ;
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
     {
 
 
-    IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+    ImcmsServices imcref = Imcms.getServices() ;
 
 
     UserDomainObject user = Utility.getLoggedOnUser( req );
@@ -99,7 +99,7 @@ public class QuestionEngine extends HttpServlet
     }
 
 
-    private List getNewQuestion(IMCServiceInterface imcref,String inFile) throws IOException
+    private List getNewQuestion(ImcmsServices imcref,String inFile) throws IOException
     {
 
 	List questionList = imcref.getQuoteList(inFile+".poll.txt") ;

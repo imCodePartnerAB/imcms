@@ -1,6 +1,6 @@
 package imcode.server.document;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -22,11 +22,11 @@ public class DocumentPermissionSetDomainObject implements Serializable {
 
     public static final DocumentPermissionSetDomainObject FULL = new TextDocumentPermissionSetDomainObject( TYPE_ID__FULL ) {
         public TemplateGroupDomainObject[] getAllowedTemplateGroups() {
-            return ApplicationServer.getIMCServiceInterface().getTemplateMapper().getAllTemplateGroups() ;
+            return Imcms.getServices().getTemplateMapper().getAllTemplateGroups() ;
         }
 
         public int[] getAllowedDocumentTypeIds() {
-            return ApplicationServer.getIMCServiceInterface().getDocumentMapper().getAllDocumentTypeIds() ;
+            return Imcms.getServices().getDocumentMapper().getAllDocumentTypeIds() ;
         }
 
         boolean hasPermission( String permissionName ) {

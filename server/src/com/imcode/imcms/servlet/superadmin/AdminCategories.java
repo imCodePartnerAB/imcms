@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.servlet.admin.ImageBrowser;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
@@ -54,7 +54,7 @@ public class AdminCategories extends HttpServlet {
 
     protected void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         // Lets verify that the user who tries to add a new user is an admin
-        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices service = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !user.isSuperAdmin() ) {
             String header = "Error in AdminCategories. ";
@@ -301,7 +301,7 @@ public class AdminCategories extends HttpServlet {
     }
 
     public static String createHtmlOptionListOfCategoryTypes( CategoryTypeDomainObject selectedType ) {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         CategoryTypeDomainObject[] categoryTypes = imcref.getDocumentMapper().getAllCategoryTypes();
         String temps = "";
         for ( int i = 0; i < categoryTypes.length; i++ ) {
@@ -318,7 +318,7 @@ public class AdminCategories extends HttpServlet {
 
     public static String createHtmlOptionListOfCategoriesForOneType( CategoryTypeDomainObject categoryType,
                                                                      CategoryDomainObject selectedCategory ) {
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
         CategoryDomainObject[] categories = documentMapper.getAllCategoriesOfType( categoryType );
         String temps = "";

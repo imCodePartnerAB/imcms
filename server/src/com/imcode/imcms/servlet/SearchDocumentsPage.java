@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.SectionDomainObject;
@@ -73,7 +73,7 @@ public class SearchDocumentsPage {
             cancelButtonPressed = null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON );
         }
 
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
         try {
             documentSelectedForEditing = documentMapper.getDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID ) ) );

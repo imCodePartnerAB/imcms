@@ -37,7 +37,7 @@ public class ConfAdmin extends Conference {
         Properties params = this.getStandardParameters(req);
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Lets check that the user is an administrator
         if (super.userHasAdminRights(imcref, Integer.parseInt(params.getProperty("META_ID")), user) == false) {
@@ -335,7 +335,7 @@ public class ConfAdmin extends Conference {
         }
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Lets check that the user is an administrator
         if (super.userHasAdminRights(imcref, Integer.parseInt(params.getProperty("META_ID")), user) == false) {

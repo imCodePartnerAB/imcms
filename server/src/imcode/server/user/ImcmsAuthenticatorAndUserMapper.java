@@ -1,7 +1,7 @@
 package imcode.server.user;
 
 import com.imcode.imcms.api.RoleConstants;
-import imcode.server.IMCServiceInterface;
+import imcode.server.ImcmsServices;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
 
@@ -30,7 +30,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     private static final int USER_EXTERN_ID = 2;
 
-    private IMCServiceInterface service;
+    private ImcmsServices service;
     private Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserMapper.class );
     private static final String SQL_SELECT_USERS = "SELECT user_id, login_name, login_password, first_name, last_name, "
                                                    + "title, company, address, city, zip, country, county_council, "
@@ -42,7 +42,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     private static final String SQL_SELECT_ALL_ROLES = "SELECT role_id, role_name, admin_role FROM roles";
     private static final String SQL_SELECT_ROLE_BY_NAME = SQL_SELECT_ALL_ROLES + " WHERE role_name = ?";
 
-    public ImcmsAuthenticatorAndUserMapper( IMCServiceInterface service ) {
+    public ImcmsAuthenticatorAndUserMapper( ImcmsServices service ) {
         this.service = service;
     }
 
@@ -268,7 +268,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         return result;
     }
 
-    public static void staticSprocPhoneNbrAdd( IMCServiceInterface service,
+    public static void staticSprocPhoneNbrAdd( ImcmsServices service,
                                                int newUserId, String phoneNumber, int phoneNumberType ) {
         String[] sprocParameters = new String[]{
             String.valueOf( newUserId ), phoneNumber, String.valueOf( phoneNumberType )
@@ -276,7 +276,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         service.sqlUpdateProcedure( SPROC_PHONE_NBR_ADD, sprocParameters );
     }
 
-    private static void staticSprocDelPhoneNr( IMCServiceInterface service, int userId ) {
+    private static void staticSprocDelPhoneNr( ImcmsServices service, int userId ) {
         String[] sprocParameters = new String[]{String.valueOf( userId )};
         service.sqlUpdateProcedure( SPROC_DEL_PHONE_NR, sprocParameters );
     }

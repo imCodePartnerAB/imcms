@@ -31,7 +31,7 @@ public class AdminRandomTexts extends Administrator {
 
 
         // Lets get the server this request was aimed for
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Lets verify that the user who tries to admin a fortune is an admin
         UserDomainObject user = Utility.getLoggedOnUser( req );
@@ -79,7 +79,7 @@ public class AdminRandomTexts extends Administrator {
         Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
 
         HttpSession session = req.getSession();

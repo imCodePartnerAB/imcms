@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import imcode.external.diverse.VariableManager;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -33,7 +33,7 @@ public class AdminManager extends Administrator {
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Lets verify that the user who tries to add a new user is an admin
         UserDomainObject user = Utility.getLoggedOnUser( req );

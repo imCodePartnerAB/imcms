@@ -1,6 +1,6 @@
 package com.imcode.imcms.flow;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -203,7 +203,7 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
     }
 
     private String getMimeTypeFromRequestAndFilename( MultipartHttpServletRequest request, String filename ) {
-        final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         Set predefinedMimeTypes = new HashSet( Arrays.asList( documentMapper.getAllMimeTypes() ) );
         String[] mimeTypeParameters = request.getParameterValues( REQUEST_PARAMETER__FILE_DOC__MIME_TYPE );
         String mimeType = null;

@@ -1,6 +1,6 @@
 package com.imcode.imcms.flow;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -27,7 +27,7 @@ public class EditHtmlDocumentPageFlow extends EditDocumentPageFlow {
         HtmlDocumentDomainObject htmlDocument = (HtmlDocumentDomainObject)document;
         htmlDocument.setHtml( request.getParameter( REQUEST_PARAMETER__HTML_DOC__HTML ) );
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        ApplicationServer.getIMCServiceInterface().getDocumentMapper().saveDocument( htmlDocument, user );
+        Imcms.getServices().getDocumentMapper().saveDocument( htmlDocument, user );
     }
 
     protected void dispatchToFirstPage( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {

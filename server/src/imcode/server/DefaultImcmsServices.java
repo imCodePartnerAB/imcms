@@ -3,7 +3,6 @@ package imcode.server;
 import imcode.server.db.ConnectionPool;
 import imcode.server.db.SqlHelpers;
 import imcode.server.document.*;
-import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
@@ -36,7 +35,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-final public class IMCService implements IMCServiceInterface {
+final public class DefaultImcmsServices implements ImcmsServices {
 
     private final ConnectionPool connectionPool;
     private TextDocumentParser textDocParser;
@@ -52,7 +51,7 @@ final public class IMCService implements IMCServiceInterface {
 
     private final static Logger mainLog = Logger.getLogger( "mainlog" );
 
-    private final static Logger log = Logger.getLogger( IMCService.class.getName() );
+    private final static Logger log = Logger.getLogger( DefaultImcmsServices.class.getName() );
     private static final String EXTERNAL_AUTHENTICATOR_SMB = "SMB";
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "LDAP";
     private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "LDAP";
@@ -69,9 +68,9 @@ final public class IMCService implements IMCServiceInterface {
     }
 
     /**
-     * Contructs an IMCService object.
+     * Contructs an DefaultImcmsServices object.
      */
-    public IMCService( ConnectionPool conPool, Properties props ) {
+    public DefaultImcmsServices( ConnectionPool conPool, Properties props ) {
         connectionPool = conPool;
         initConfig( props );
         initSysData();
@@ -560,7 +559,7 @@ final public class IMCService implements IMCServiceInterface {
     }
 
     /**
-     * @deprecated Ugly use {@link IMCServiceInterface#getTemplateFromDirectory(String,imcode.server.user.UserDomainObject,java.util.List,String)}
+     * @deprecated Ugly use {@link ImcmsServices#getTemplateFromDirectory(String,imcode.server.user.UserDomainObject,java.util.List,String)}
      *             or something else instead.
      */
     public File getExternalTemplateFolder( int meta_id, UserDomainObject user ) {

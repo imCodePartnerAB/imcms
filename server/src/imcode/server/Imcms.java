@@ -8,25 +8,25 @@ import org.apache.commons.lang.UnhandledException;
 import java.io.IOException;
 import java.util.Properties;
 
-public class ApplicationServer {
+public class Imcms {
 
     private static final String SERVER_PROPERTIES_FILENAME = "server.properties";
-    private final static Logger log = Logger.getLogger( imcode.server.ApplicationServer.class.getName() );
-    private final static IMCServiceInterface imcServiceInterface = createIMCServiceInterface();
+    private final static Logger log = Logger.getLogger( imcode.server.Imcms.class.getName() );
+    private final static ImcmsServices services = createServices();
 
     private static ConnectionPool apiConnectionPool ;
 
-    private ApplicationServer() {
+    private Imcms() {
     }
 
-    public synchronized static IMCServiceInterface getIMCServiceInterface() {
-        return imcServiceInterface;
+    public synchronized static ImcmsServices getServices() {
+        return services;
     }
 
-    private static IMCServiceInterface createIMCServiceInterface() {
+    private static ImcmsServices createServices() {
         Properties serverprops = getServerProperties();
         ConnectionPool connectionPool = createConnectionPool( serverprops );
-        IMCService imcref = new IMCService( connectionPool, serverprops );
+        DefaultImcmsServices imcref = new DefaultImcmsServices( connectionPool, serverprops );
         return imcref ;
     }
 

@@ -28,7 +28,7 @@ public class AdminIpAccess extends Administrator {
     public void doGet( HttpServletRequest req, HttpServletResponse res )
             throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // ********** GENERATE THE IP-ACCESS PAGE *********
         // Lets get all IP-accesses from DB
@@ -67,7 +67,7 @@ public class AdminIpAccess extends Administrator {
             throws ServletException, IOException {
 
         // Lets check if the user is an admin, otherwise throw him out.
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (user.isSuperAdmin() == false) {
             String header = "Error in AdminCounter.";
@@ -248,7 +248,7 @@ public class AdminIpAccess extends Administrator {
      * failes, a error page will be generated and null will be returned.
      */
 
-    private Properties validateParameters( Properties aPropObj, HttpServletRequest req, HttpServletResponse res, IMCServiceInterface imcref, UserDomainObject user ) throws IOException {
+    private Properties validateParameters( Properties aPropObj, HttpServletRequest req, HttpServletResponse res, ImcmsServices imcref, UserDomainObject user ) throws IOException {
 
         if (assertNoEmptyStringsInPropertyValues( aPropObj ) == false) {
             String header = "Error in AdminIpAccess, assertNoEmptyStringsInPropertyValues.";

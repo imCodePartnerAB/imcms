@@ -1,7 +1,7 @@
 
 package imcode.external.chat;
 
-import imcode.server.IMCServiceInterface;
+import imcode.server.ImcmsServices;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class ChatGroup{
 	*Adds a ChatNormalMessage into all members of this ChatGroup
 	*@param msg The ChatNormalMessage you want to add
      */
-	public synchronized void addNewMsg( ChatBase chatBase, ChatMessage msg, IMCServiceInterface imcref ) throws IOException, ServletException{
+	public synchronized void addNewMsg( ChatBase chatBase, ChatMessage msg, ImcmsServices imcref ) throws IOException, ServletException{
         _msgNrCounter.increment();
 		msg.setIdNumber(_msgNrCounter.getValue());
 		Iterator iter = _groupMembers.iterator();

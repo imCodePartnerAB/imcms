@@ -31,7 +31,7 @@ public class ConfHelp extends Conference {
 
             // Lets get serverinformation
 
-            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+            ImcmsServices imcref = Imcms.getServices();
 
             // Lets get a VariableManager
             VariableManager vm = new VariableManager();

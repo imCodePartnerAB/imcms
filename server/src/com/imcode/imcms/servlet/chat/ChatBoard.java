@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.chat;
 
 import imcode.external.chat.*;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -35,7 +35,7 @@ public class ChatBoard extends ChatBase {
 	}
 
 	// Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+        ImcmsServices imcref = Imcms.getServices() ;
 
         ChatMember myMember = getChatMember( req );
 

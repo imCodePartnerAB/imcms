@@ -4,8 +4,8 @@ import com.imcode.imcms.servlet.admin.UserFinder;
 import com.imcode.imcms.servlet.WebComponent;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.DispatchCommand;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -28,7 +28,7 @@ public class AdminUser extends Administrator {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         final UserDomainObject user = Utility.getLoggedOnUser( req );
 
         // Lets verify that the user is an admin, otherwise throw him out.
@@ -84,7 +84,7 @@ public class AdminUser extends Administrator {
 
         if ( !user.isSuperAdmin() && !user.isUserAdmin() && !userToChange.equals( user ) ) {
             String header = "Error in AdminUser, change user.";
-            Properties langproperties = ApplicationServer.getIMCServiceInterface().getLanguageProperties( user );
+            Properties langproperties = Imcms.getServices().getLanguageProperties( user );
             String msg = langproperties.getProperty( "error/servlet/AdminUser/user_have_no_permission" ) + "<br>";
             log.debug( header + "- user have no permission to edit user values" );
             new AdminError( req, res, header, msg );

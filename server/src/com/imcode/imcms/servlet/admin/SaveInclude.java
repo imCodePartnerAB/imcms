@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
@@ -22,7 +22,7 @@ public class SaveInclude extends HttpServlet {
     private final static DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSS " );
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, java.io.IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         Utility.setDefaultHtmlContentType( res );
 
@@ -34,7 +34,7 @@ public class SaveInclude extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
         // Check if user has permission to edit includes for this document
-        if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) ) {	// Checking to see if user may edit this
+        if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) ) {	// Checking to see if user may edit this
             sendPermissionDenied( imcref, out, meta_id, user );
             return;
         }
@@ -95,7 +95,7 @@ public class SaveInclude extends HttpServlet {
         return;
     }
 
-    private void sendPermissionDenied( IMCServiceInterface imcref, Writer out, int meta_id, UserDomainObject user ) throws IOException {
+    private void sendPermissionDenied( ImcmsServices imcref, Writer out, int meta_id, UserDomainObject user ) throws IOException {
         Vector vec = new Vector( 2 );
         vec.add( "#meta_id#" );
         vec.add( String.valueOf( meta_id ) );
@@ -103,7 +103,7 @@ public class SaveInclude extends HttpServlet {
         out.write( htmlStr );
     }
 
-    private void sendBadId( IMCServiceInterface imcref, Writer out, int meta_id, UserDomainObject user ) throws IOException {
+    private void sendBadId( ImcmsServices imcref, Writer out, int meta_id, UserDomainObject user ) throws IOException {
         Vector vec = new Vector( 2 );
         vec.add( "#meta_id#" );
         vec.add( String.valueOf( meta_id ) );

@@ -5,8 +5,8 @@ package com.imcode.imcms.servlet;
  * @(#)SendMailServlet.java
  */
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.SystemData;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -59,7 +59,7 @@ public class SendMailServlet extends HttpServlet {
 
         /* server info */
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
 
         SystemData sysData = imcref.getSystemData();

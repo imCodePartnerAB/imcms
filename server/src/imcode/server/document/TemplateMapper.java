@@ -1,6 +1,6 @@
 package imcode.server.document;
 
-import imcode.server.IMCServiceInterface;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.ArrayUtils;
 
@@ -13,9 +13,9 @@ public class TemplateMapper {
     private static final String SPROC_GET_TEMPLATE_GROUPS_FOR_USER = "GetTemplategroupsForUser";
     private static final String SPROC_GET_TEMPLATE_GROUPS = "GetTemplateGroups";
 
-    private IMCServiceInterface service;
+    private ImcmsServices service;
 
-    public TemplateMapper( IMCServiceInterface service ) {
+    public TemplateMapper( ImcmsServices service ) {
         this.service = service;
     }
 
@@ -221,14 +221,14 @@ public class TemplateMapper {
     }
 
     public void replaceAllUsagesOfTemplate( TemplateDomainObject template, TemplateDomainObject newTemplate,
-                                            IMCServiceInterface imcref ) {
+                                            ImcmsServices imcref ) {
         if ( null != template && null != newTemplate ) {
             String sqlStr = "update text_docs set template_id = ? where template_id = ?";
             imcref.sqlUpdateQuery( sqlStr, new String[]{"" + newTemplate.getId(), "" + template.getId()} );
         }
     }
 
-    private static String[][] sprocGetTemplateGroupsForUser( IMCServiceInterface service, UserDomainObject user,
+    private static String[][] sprocGetTemplateGroupsForUser( ImcmsServices service, UserDomainObject user,
                                                             int meta_id ) {
         return service.sqlProcedureMulti( SPROC_GET_TEMPLATE_GROUPS_FOR_USER,
                                           new String[]{String.valueOf( meta_id ), String.valueOf( user.getId() )} );

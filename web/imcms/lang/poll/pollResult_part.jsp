@@ -13,8 +13,8 @@ String diagram_width = request.getParameter("diagramWidth") != null ? request.ge
 String lable_width = request.getParameter("lableWidth") != null ? request.getParameter("lableWidth") : "25";
 String meta_id = request.getHeader("X-Meta-Id");
 
-// Get a reference to IMCServiceInterface //
-    IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+// Get a reference to ImcmsServices //
+    ImcmsServices imcref = Imcms.getServices() ;
 
 //Get a PollHandlingSystem
 PollHandlingSystem poll = imcref.getPollHandlingSystem();
@@ -57,7 +57,7 @@ if ( meta_id != null ){
 
 
 <%!
-private StringBuffer getQuestionResult(IMCServiceInterface imcref, PollHandlingSystem poll, int meta_id, int question_id, int question_no, String question_text, int diagram_width, String image_height, String image_url, String lable_width ){
+private StringBuffer getQuestionResult(ImcmsServices imcref, PollHandlingSystem poll, int meta_id, int question_id, int question_no, String question_text, int diagram_width, String image_height, String image_url, String lable_width ){
 
 
 	String[][] allAnswers = poll.getAllPollAnswers(""+ question_id);
@@ -100,7 +100,7 @@ private StringBuffer getQuestionResult(IMCServiceInterface imcref, PollHandlingS
 
 
 //Get one text from db
-private String getText( IMCServiceInterface imcref, int meta_id, int text_no ){
+private String getText( ImcmsServices imcref, int meta_id, int text_no ){
     TextDomainObject imctext = imcref.getText(meta_id, text_no) ;
     if (null == imctext) {
 	return "" ;

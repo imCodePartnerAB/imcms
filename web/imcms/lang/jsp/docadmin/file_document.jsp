@@ -1,7 +1,7 @@
 <%@ page contentType="text/html" import="com.imcode.imcms.servlet.admin.DocumentComposer,
                                          imcode.server.document.DocumentMapper,
                                          org.apache.commons.lang.StringEscapeUtils,
-                                         imcode.server.ApplicationServer,
+                                         imcode.server.Imcms,
                                          imcode.server.document.FileDocumentDomainObject,
                                          org.apache.commons.lang.ObjectUtils,
                                          imcode.server.document.HtmlDocumentDomainObject,
@@ -86,7 +86,7 @@
                 <? install/htdocs/sv/jsp/docadmin/file_document.jsp/autodetect_or_fill_in_below ?>
             </option>
 			<%
-                final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+                final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
                 String[][] mimeTypes = documentMapper.getAllMimeTypesWithDescriptions(Utility.getLoggedOnUser( request ));
                 boolean documentMimeTypeFoundInDropDown = false ;
                 for ( int i = 0; i < mimeTypes.length; i++ ) {

@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.admin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCConstants;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetDomainObject;
@@ -35,7 +35,7 @@ public class SaveMeta extends HttpServlet {
             return;
         }
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
@@ -45,9 +45,9 @@ public class SaveMeta extends HttpServlet {
         String metaIdStr = req.getParameter( "meta_id" );
         int metaId = Integer.parseInt( metaIdStr );
 
-        if ( !imcref.checkDocAdminRightsAny( metaId, user, IMCConstants.PERM_EDIT_HEADLINE
-                                                           | IMCConstants.PERM_EDIT_DOCINFO
-                                                           | IMCConstants.PERM_EDIT_PERMISSIONS ) ) {	// Checking to see if user may edit this
+        if ( !imcref.checkDocAdminRightsAny( metaId, user, ImcmsConstants.PERM_EDIT_HEADLINE
+                                                           | ImcmsConstants.PERM_EDIT_DOCINFO
+                                                           | ImcmsConstants.PERM_EDIT_PERMISSIONS ) ) {	// Checking to see if user may edit this
             String output = AdminDoc.adminDoc( metaId, metaId, user, req, res );
             if ( output != null ) {
                 out.write( output );
@@ -99,7 +99,7 @@ public class SaveMeta extends HttpServlet {
             final boolean userHasFullPermissionsForThisDocument = DocumentPermissionSetDomainObject.TYPE_ID__FULL == userSetId;
             final boolean userHasEditPermissionsBitSetForThisDocument = 0
                                                                         != ( userPermSet
-                                                                             & IMCConstants.PERM_EDIT_PERMISSIONS );
+                                                                             & ImcmsConstants.PERM_EDIT_PERMISSIONS );
 
             final boolean userMayEditPermissionsForThisDocument = userHasFullPermissionsForThisDocument
                                                                   || userHasEditPermissionsBitSetForThisDocument;
@@ -111,7 +111,7 @@ public class SaveMeta extends HttpServlet {
                     // May the user edit the permissions for this particular role?
                     final boolean restrictedOneMaySetPermissionsForRestrictedTwo = 0
                                                                                    != ( currentDocPerms
-                                                                                        & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 );
+                                                                                        & ImcmsConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 );
                     final boolean userHasRestrictedOne = DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == userSetId;
                     final boolean currentSetIdForRoleIsRestrictedTwo = DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
                                                                        == currentSetIdForRole;
@@ -198,22 +198,22 @@ public class SaveMeta extends HttpServlet {
         // FIXME: They should be merged into one table.
         int[] metatable_restrictions = {
             //	set_id,	permission_bitmask
-            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO
-                                                    | IMCConstants.PERM_EDIT_PERMISSIONS, //"shared",
-            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"disable_search",
-            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"archive",
-            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO
-                                                    | IMCConstants.PERM_EDIT_PERMISSIONS, //"show_meta",
-            DocumentPermissionSetDomainObject.TYPE_ID__FULL, IMCConstants.PERM_EDIT_PERMISSIONS, //"permissions",
-            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO
-                                                    | IMCConstants.PERM_EDIT_PERMISSIONS, //"meta_headline",
-            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO, //"meta_text",
-            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"activated_datetime",
-            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"archived_datetime",
-            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"frame_name",
-            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"target"
-            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"lang_prefix",
-            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"publisher_id",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, ImcmsConstants.PERM_EDIT_DOCINFO
+                                                    | ImcmsConstants.PERM_EDIT_PERMISSIONS, //"shared",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, ImcmsConstants.PERM_EDIT_DOCINFO, //"disable_search",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, ImcmsConstants.PERM_EDIT_DOCINFO, //"archive",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, ImcmsConstants.PERM_EDIT_DOCINFO
+                                                    | ImcmsConstants.PERM_EDIT_PERMISSIONS, //"show_meta",
+            DocumentPermissionSetDomainObject.TYPE_ID__FULL, ImcmsConstants.PERM_EDIT_PERMISSIONS, //"permissions",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, ImcmsConstants.PERM_EDIT_HEADLINE | ImcmsConstants.PERM_EDIT_DOCINFO
+                                                    | ImcmsConstants.PERM_EDIT_PERMISSIONS, //"meta_headline",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, ImcmsConstants.PERM_EDIT_HEADLINE | ImcmsConstants.PERM_EDIT_DOCINFO, //"meta_text",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, ImcmsConstants.PERM_EDIT_DOCINFO, //"activated_datetime",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, ImcmsConstants.PERM_EDIT_DOCINFO, //"archived_datetime",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, ImcmsConstants.PERM_EDIT_DOCINFO, //"frame_name",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, ImcmsConstants.PERM_EDIT_DOCINFO, //"target"
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, ImcmsConstants.PERM_EDIT_DOCINFO, //"lang_prefix",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, ImcmsConstants.PERM_EDIT_DOCINFO, //"publisher_id",
         };
 
         Map inputMap = new HashMap();
@@ -378,12 +378,12 @@ public class SaveMeta extends HttpServlet {
         } );
     }
 
-    private static void sprocUpdateDefaultTemplates( IMCServiceInterface imcref, String meta_id, String template1,
+    private static void sprocUpdateDefaultTemplates( ImcmsServices imcref, String meta_id, String template1,
                                                     String template2 ) {
         imcref.sqlUpdateProcedure( "UpdateDefaultTemplates", new String[]{meta_id, template1, template2} );
     }
 
-    private static String[][] sprocGetRolesDocPermissions( IMCServiceInterface imcref, String meta_id ) {
+    private static String[][] sprocGetRolesDocPermissions( ImcmsServices imcref, String meta_id ) {
         String[][] role_permissions = imcref.sqlProcedureMulti( "GetRolesDocPermissions", new String[]{meta_id} );
         return role_permissions;
     }

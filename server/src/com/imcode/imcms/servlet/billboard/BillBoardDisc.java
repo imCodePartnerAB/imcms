@@ -12,8 +12,8 @@ package com.imcode.imcms.servlet.billboard;
 
 import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.VariableManager;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.util.Utility;
@@ -54,7 +54,7 @@ import java.util.Vector;
  * B_SearchText
  * B_GetAllBillsToShow
  * B_GetFirstSection
- * 
+ *
  * @author Rickard Larsson
  * @author Jerker Drottenmyr
  * @author REBUILD TO BILLBOARD BY Peter Östergren
@@ -87,7 +87,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
         // Lets add the standard SESSION parameters
         Properties params = this.getPropertiesOfBillBoardSessionParameters( req );
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // ********* UPDATE DISCUSSIONS ********
         if ( req.getParameter( "UPDATE" ) != null ) {
@@ -335,7 +335,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
         // Lets get serverinformation
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Lets get parameters
         String aMetaId = params.getProperty( "META_ID" );
@@ -434,7 +434,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
      */
     private String preParse( String[][] DBArr, Vector tagsV, File htmlCodeFile ) throws IOException {
         String htmlStr = "";
- 
+
         // Lets do for all records...
         for ( int i = 0; i < DBArr.length; i++ ) {
             Vector dataV = new Vector( 9 );

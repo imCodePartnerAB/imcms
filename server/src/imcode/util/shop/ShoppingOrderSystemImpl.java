@@ -10,11 +10,11 @@ import org.apache.log4j.* ;
 
 public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
 
-    private IMCServiceInterface imcref ;
+    private ImcmsServices imcref ;
 
     private static Logger log = Logger.getLogger( ShoppingOrderSystemImpl.class.getName() ) ;
 
-    public ShoppingOrderSystemImpl(IMCServiceInterface imcref) {
+    public ShoppingOrderSystemImpl(ImcmsServices imcref) {
 	this.imcref = imcref ;
     }
 

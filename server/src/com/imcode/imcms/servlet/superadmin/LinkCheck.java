@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -52,7 +52,7 @@ public class LinkCheck extends HttpServlet {
         }
 
         List links = new ArrayList();
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentIndex reindexingIndex = documentMapper.getDocumentIndex();
 
@@ -229,7 +229,7 @@ public class LinkCheck extends HttpServlet {
         public UrlDocumentLink( UrlDocumentDomainObject urlDocument, HttpServletRequest request ) {
             super( request );
             this.urlDocument = urlDocument;
-            documentMenuPairsContainingUrlDocument = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentMenuPairsContainingDocument( urlDocument );
+            documentMenuPairsContainingUrlDocument = Imcms.getServices().getDocumentMapper().getDocumentMenuPairsContainingDocument( urlDocument );
         }
 
         public String getUrl() {

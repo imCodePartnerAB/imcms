@@ -1,54 +1,22 @@
 package imcode.util;
 
-import com.imcode.imcms.servlet.GetDoc;
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.oro.text.perl.Perl5Util;
 
-import java.io.IOException;
-import java.io.InputStream;
+import javax.servlet.http.HttpServletRequest;
 
 public class ImcmsImageUtils {
 
-    public static Integer getDocumentIdFromImageUrl( String imageUrl ) {
-        Integer documentId = null;
-        Perl5Util perl5util = new Perl5Util();
-        if ( perl5util.match( "/GetDoc\\?meta_id=(\\d+)/", imageUrl ) ) {
-            documentId = Integer.valueOf( perl5util.group( 1 ) );
-        }
-        return documentId;
+    private ImcmsImageUtils() {
     }
 
-    public static String getFileIdFromImageUrl( String imageUrl ) {
-        String fileId = "" ;
-        Perl5Util perl5util = new Perl5Util();
-        if ( perl5util.match( "/GetDoc\\?.*\\b"+GetDoc.REQUEST_PARAMETER__FILE_ID+"=([^&]+)/", imageUrl )) {
-            fileId = perl5util.group( 1 ) ;
-        }
-        return fileId;
-    }
-
-    public static ImageSize getImageSizeFromFileDocument( FileDocumentDomainObject imageFileDocument,
-                                                          String fileId ) {
-        ImageSize imageSize;
-        try {
-            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = imageFileDocument.getFileOrDefault( fileId );
-            InputStream imageFileDocumentInputStream = fileDocumentFile.getInputStreamSource().getInputStream();
-            imageSize = new ImageParser().parseImageStream( imageFileDocumentInputStream, fileDocumentFile.getFilename() );
-        } catch ( IllegalArgumentException iae ) {
-            imageSize = new ImageSize( 0, 0 );
-        } catch ( IOException ioe ) {
-            imageSize = new ImageSize( 0, 0 );
-        }
-        return imageSize;
-    }
-
-    public static String getImageHtmlTag( ImageDomainObject image ) {
+    public static String getImageHtmlTag( ImageDomainObject image, HttpServletRequest request ) {
         StringBuffer imageTagBuffer = new StringBuffer( 96 );
-        if ( !"".equals( image.getUrl() ) ) {
+        if ( !"".equals( image.getUrlPathRelativeToContextPath() ) ) {
 
             if ( StringUtils.isNotBlank( image.getLinkUrl() ) ) {
                 imageTagBuffer.append( "<a href=\"" ).append( StringEscapeUtils.escapeHtml( image.getLinkUrl() ) ).append( "\"" );
@@ -58,7 +26,7 @@ public class ImcmsImageUtils {
                 imageTagBuffer.append( '>' );
             }
 
-            String imageUrl = ApplicationServer.getIMCServiceInterface().getConfig().getImageUrl() + image.getUrl();
+            String imageUrl = request.getContextPath()+image.getUrlPathRelativeToContextPath();
 
             imageTagBuffer.append( "<img src=\"" + StringEscapeUtils.escapeHtml( imageUrl ) + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 
@@ -101,4 +69,17 @@ public class ImcmsImageUtils {
         return imageTagBuffer.toString();
     }
 
+    public static ImageDomainObject.ImageSource createImageSourceFromString( String imageUrl ) {
+        ImageDomainObject.ImageSource imageSource = null;
+
+        try {
+            DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument( Integer.parseInt( imageUrl ) );
+            if ( document instanceof FileDocumentDomainObject ) {
+                imageSource = new ImageDomainObject.FileDocumentImageSource( (FileDocumentDomainObject)document );
+            }
+        } catch ( NumberFormatException nfe ) {
+            imageSource = new ImageDomainObject.ImagesPathRelativePathImageSource( imageUrl );
+        }
+        return imageSource;
+    }
 }

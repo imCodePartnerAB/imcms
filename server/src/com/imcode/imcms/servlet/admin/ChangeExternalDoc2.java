@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.servlet.GetDoc;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -26,7 +26,7 @@ public class ChangeExternalDoc2 extends HttpServlet {
 	doPost()
 	*/
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+        ImcmsServices imcref = Imcms.getServices() ;
 
 		int meta_id ;
 

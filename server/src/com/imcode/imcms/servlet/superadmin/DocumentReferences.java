@@ -4,7 +4,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.util.Utility;
 
 import javax.servlet.http.HttpServlet;
@@ -43,7 +43,7 @@ public class DocumentReferences extends HttpServlet {
     private void forwardToDocumentReferencesPage( HttpServletRequest request, HttpServletResponse response,
                                                      UserDomainObject user ) throws IOException, ServletException {
         int documentId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID ) );
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( documentId );
         DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairs = documentMapper.getDocumentMenuPairsContainingDocument( document );
         request.setAttribute( REQUEST_ATTRIBUTE__DOCUMENT_MENU_PAIRS, documentMenuPairs );

@@ -1,6 +1,6 @@
 package imcode.server.document.index;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -45,7 +45,7 @@ class IndexDocumentAdapter {
 
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__STATUS, "" + document.getStatus() ) );
 
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
         try {
             document.accept( new IndexDocumentAdaptingVisitor( indexDocument ) );

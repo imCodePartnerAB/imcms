@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
@@ -43,7 +43,7 @@ public class PasswordMailReminder extends HttpServlet {
 
         /* server info */
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
@@ -65,7 +65,7 @@ public class PasswordMailReminder extends HttpServlet {
 
         /* server info */
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         /* mailserver info */
         imcode.server.SystemData sysData = imcref.getSystemData();

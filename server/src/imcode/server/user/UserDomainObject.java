@@ -1,7 +1,7 @@
 package imcode.server.user;
 
 import imcode.server.document.TemplateGroupDomainObject;
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -69,7 +69,7 @@ public class UserDomainObject extends Hashtable {
     private LazilyLoadedUserAttributes getLazilyLoadedUserAttributes() {
         if (null == lazilyLoadedUserAttributes) {
             lazilyLoadedUserAttributes = new LazilyLoadedUserAttributes() ;
-            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper() ;
+            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper() ;
             imcmsAuthenticatorAndUserMapper.initUserFromSqlData(this, imcmsAuthenticatorAndUserMapper.sqlSelectUserById(id));
         }
         return lazilyLoadedUserAttributes;
@@ -78,7 +78,7 @@ public class UserDomainObject extends Hashtable {
     private LazilyLoadedUserPhoneNumbers getLazilyLoadedUserPhoneNumbers() {
         if (null == lazilyLoadedUserPhoneNumbers) {
             lazilyLoadedUserPhoneNumbers = new LazilyLoadedUserPhoneNumbers() ;
-            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper() ;
+            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper() ;
             imcmsAuthenticatorAndUserMapper.initUserPhoneNumbers(this) ;
         }
         return lazilyLoadedUserPhoneNumbers ;
@@ -87,7 +87,7 @@ public class UserDomainObject extends Hashtable {
     private LazilyLoadedUserRoles getLazilyLoadedUserRoles() {
         if (null == lazilyLoadedUserRoles) {
             lazilyLoadedUserRoles = new LazilyLoadedUserRoles() ;
-            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper() ;
+            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper() ;
             imcmsAuthenticatorAndUserMapper.initUserRoles(this) ;
         }
         return lazilyLoadedUserRoles ;

@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -19,7 +19,7 @@ public class BackDoc extends HttpServlet {
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Find the start-page
 
@@ -44,7 +44,7 @@ public class BackDoc extends HttpServlet {
     }
 
     public static int getLastTextDocumentFromHistory( Stack history, boolean useNextToLastTextDocument,
-                                                      IMCServiceInterface imcref ) {
+                                                      ImcmsServices imcref ) {
         int meta_id = 0;
         if ( null != history && !history.empty() ) {
 
@@ -72,7 +72,7 @@ public class BackDoc extends HttpServlet {
         return meta_id;
     }
 
-    private static boolean isTextDocument( IMCServiceInterface imcref, int tmp_meta_id ) {
+    private static boolean isTextDocument( ImcmsServices imcref, int tmp_meta_id ) {
         int doc_type;
         doc_type = imcref.getDocType( tmp_meta_id );	// Get the doc_type
 

@@ -1,6 +1,6 @@
 package imcode.server.user;
 
-import imcode.server.IMCConstants;
+import imcode.server.ImcmsConstants;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
@@ -41,7 +41,7 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
         // this is a fix. Because external users gets the password empty string "" we need to check that the
         // password exeedes 0 lenght.
         boolean userAuthenticatesInImcms = false;
-        if ( password.length() >= IMCConstants.PASSWORD_MINIMUM_LENGTH ) {
+        if ( password.length() >= ImcmsConstants.PASSWORD_MINIMUM_LENGTH ) {
             userAuthenticatesInImcms = imcmsAuthenticatorAndUserMapper.authenticate( loginName, password );
         }
         boolean userAuthenticatesInExternal = false;

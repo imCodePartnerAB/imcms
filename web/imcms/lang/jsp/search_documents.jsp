@@ -1,5 +1,5 @@
 <%@ page import="com.imcode.imcms.servlet.SearchDocuments,
-                 imcode.server.ApplicationServer,
+                 imcode.server.Imcms,
                  imcode.server.document.SectionDomainObject,
                  org.apache.commons.lang.StringEscapeUtils,
                  imcode.util.Html,
@@ -96,7 +96,7 @@
                             <select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__SECTION_ID %>">
                                 <option value=""><? templates/sv/search/search_documents.html/3 ?></option>
                                 <%
-                                    DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+                                    DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
                                     SectionDomainObject[] sections = documentMapper.getAllSections() ;
                                     Arrays.sort(sections) ;
                                     SectionDomainObject selectedSection = searchDocumentsPage.getSection() ; %>

@@ -14,7 +14,7 @@ import imcode.server.*;
 public class TemplateAdd extends HttpServlet {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !user.isSuperAdmin() ) {
@@ -65,7 +65,7 @@ public class TemplateAdd extends HttpServlet {
     }
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !user.isSuperAdmin() ) {
             Utility.redirectToStartDocument( req, res );
@@ -144,7 +144,7 @@ public class TemplateAdd extends HttpServlet {
                 out.print( htmlStr );
                 return;
                 // ************************** VIEW DEMO
-                // Updated IMCService + interface, IMCServiceRMI : Now returns Object[] filesuffix, byteStream
+                // Updated DefaultImcmsServices + interface, IMCServiceRMI : Now returns Object[] filesuffix, byteStream
             } else if ( mp.getParameter( "view_demo" ) != null ) {
                 Object[] suffixAndStream = imcref.getDemoTemplate( Integer.parseInt( template ) );
                 String htmlStr;

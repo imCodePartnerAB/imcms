@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.chat;
 
 import imcode.external.diverse.VariableManager;
-import imcode.server.IMCServiceInterface;
-import imcode.server.ApplicationServer;
+import imcode.server.ImcmsServices;
+import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 import imcode.util.Utility;
@@ -61,7 +61,7 @@ public class ChatAdmin extends Administrator {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         String eMailServerMaster = imcref.getSystemData().getServerMasterAddress();
 
@@ -115,7 +115,7 @@ public class ChatAdmin extends Administrator {
      *
      */
     private void listChats(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         String eMailServerMaster = imcref.getSystemData().getServerMasterAddress();
         boolean noErrors = true;

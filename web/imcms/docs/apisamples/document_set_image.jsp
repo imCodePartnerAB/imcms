@@ -1,23 +1,13 @@
 <%@ page import="com.imcode.imcms.api.*,
                  imcode.server.user.UserDomainObject" errorPage="error.jsp" %>
-<%!
+<%
     int documentId = 1001 ;
     int imageIndex = 2 ;
-    String image_src = "imCMSpower.gif";
-    String image_name = "";
-    int width = 0;
-    int heigth = 0;
-    int border = 0;
-    int v_space = 0;
-    int h_space = 0;
-    String link_target = "_top";
-    String link_targetname = "";
-    String link_href = "";
-    String align = "top";
-    String alt_text = "This is altText";
-    String low_src = "";
 
-
+    Image image = new Image();
+    //image.setSrc( "1002" );
+    image.setSrc( "imCMSpower.gif" );
+    image.setAltText( "Powered by imCMS!" );
 %>
 
 <html>
@@ -27,20 +17,16 @@ Image <%= imageIndex %> in document <%= documentId %> has content:<br>
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
     DocumentService documentService = imcmsSystem.getDocumentService();
     TextDocument document = documentService.getTextDocument(documentId) ;
-    document.setImage(imageIndex, image_src, image_name, width, heigth, 
-                        border, v_space, h_space, align,
-                        link_target, link_targetname, link_href,
-                         alt_text, low_src );
+    document.setImage( imageIndex, image );
 
-    Image image = document.getImage(imageIndex) ;
+    // Don't forget to save changes!
+    documentService.saveChanges( document );
 %>
-imageRef = <%=image.getSrc()%><br>
+imageSrc = <%=image.getSrc(request.getContextPath())%><br>
 imageHeigth = <%=image.getHeight()%><br>
 imageWidth = <%=image.getWidth()%><br>
 imageAltText = <%=image.getAltText()%><br>
-imageSrcUrl = <%=image.getSrcUrl()%><br>
-<%
-%>
+imageSize = <%=image.getSize()%><br>
 </body>
 </html>
 

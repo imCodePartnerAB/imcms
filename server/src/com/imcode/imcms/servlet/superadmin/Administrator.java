@@ -11,8 +11,8 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.external.diverse.SettingsAccessor;
 import imcode.external.diverse.VariableManager;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -73,7 +73,7 @@ public class Administrator extends HttpServlet {
      from the user and and returns the base path to the internal folder, hangs on the
      language prefix and an "/admin/" string afterwards...
      */
-    File getAdminTemplateFolder( IMCServiceInterface imcref, imcode.server.user.UserDomainObject user ) {
+    File getAdminTemplateFolder( ImcmsServices imcref, imcode.server.user.UserDomainObject user ) {
 
         // Since our templates are located into the admin folder, we'll have to hang on admin
         File templateLib = imcref.getTemplatePath();
@@ -92,7 +92,7 @@ public class Administrator extends HttpServlet {
                        VariableManager vm, String htmlFile ) throws IOException {
 
         // Lets get the path to the admin templates folder
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
         // Lets add the server host
@@ -124,7 +124,7 @@ public class Administrator extends HttpServlet {
      * @param user
      * @param errorCode         is the code to loock upp in ErrMsg.ini file
      */
-    protected void sendErrorMessage(IMCServiceInterface imcref, String eMailServerMaster,
+    protected void sendErrorMessage(ImcmsServices imcref, String eMailServerMaster,
                           UserDomainObject user, String errorHeader,
                           int errorCode, HttpServletResponse response) throws IOException {
 

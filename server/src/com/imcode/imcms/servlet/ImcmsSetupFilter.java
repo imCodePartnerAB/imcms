@@ -3,8 +3,8 @@ package com.imcode.imcms.servlet;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DefaultContentManagementSystem;
 import com.imcode.imcms.api.RequestConstants;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -28,7 +28,7 @@ public class ImcmsSetupFilter implements Filter {
         HttpSession session = httpServletRequest.getSession();
 
         if ( session.isNew() ) {
-            IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+            ImcmsServices service = Imcms.getServices();
             service.incrementSessionCounter();
             setDomainSessionCookie( response, session );
         }
@@ -40,7 +40,7 @@ public class ImcmsSetupFilter implements Filter {
             session.setAttribute( WebAppGlobalConstants.LOGGED_IN_USER, user );
         }
 
-        // FIXME: Ugly hack to get the contextpath into IMCService.getVelocityContext()
+        // FIXME: Ugly hack to get the contextpath into DefaultImcmsServices.getVelocityContext()
         user.setCurrentContextPath( ( (HttpServletRequest)request ).getContextPath() );
 
         initRequestWithApi( user, request );
@@ -57,7 +57,7 @@ public class ImcmsSetupFilter implements Filter {
 
     private void setDomainSessionCookie( ServletResponse response, HttpSession session ) throws IOException {
 
-        String domain = ApplicationServer.getIMCServiceInterface().getConfig().getSessionCookieDomain();
+        String domain = Imcms.getServices().getConfig().getSessionCookieDomain();
         if (StringUtils.isNotBlank(domain)) {
             Cookie cookie = new Cookie( JSESSIONID_COOKIE_NAME, session.getId());
             cookie.setDomain( domain );
@@ -69,7 +69,7 @@ public class ImcmsSetupFilter implements Filter {
     private void initRequestWithApi( UserDomainObject currentUser, ServletRequest request ) {
         NDC.push( "initRequestWithApi" );
         ContentManagementSystem imcmsSystem;
-        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices service = Imcms.getServices();
         imcmsSystem = new DefaultContentManagementSystem( service, currentUser );
         request.setAttribute( RequestConstants.SYSTEM, imcmsSystem );
         NDC.pop();
@@ -85,7 +85,7 @@ public class ImcmsSetupFilter implements Filter {
      * Ip login  - check if user exist in ip-table
      */
     private static UserDomainObject getUserUserOrIpLoggedInUser( String remote_ip ) {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user;
 
         long ip = Utility.ipStringToLong( remote_ip );

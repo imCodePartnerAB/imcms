@@ -1,25 +1,26 @@
 package imcode.server ;
 
-import java.io.* ;
-import java.util.* ;
-import java.text.Collator;
-
-import imcode.server.parser.ParserParameters ;
-import imcode.server.user.*;
+import imcode.server.db.ConnectionPool;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.db.ConnectionPool;
+import imcode.server.parser.ParserParameters;
+import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.user.UserDomainObject;
 import imcode.util.net.SMTP;
-import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 
-/**
- * Interface for the Imcode Net Server.
- */
-public interface IMCServiceInterface {
+import java.io.File;
+import java.io.IOException;
+import java.text.Collator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+public interface ImcmsServices {
 
     /** Verify a Internet/Intranet user. Data from any SQL Database. **/
     UserDomainObject verifyUser(String login, String password)
@@ -53,7 +54,7 @@ public interface IMCServiceInterface {
 	;
 
     // Send a procedure to the database and return a string array
-    public String[] sqlProcedure(String procedure, String[] params)
+    String[] sqlProcedure(String procedure, String[] params)
 	;
 
     // get external template folder
@@ -72,115 +73,115 @@ public interface IMCServiceInterface {
     Date getSessionCounterDate()  ;
 
     // parsedoc use template
-    public String getAdminTemplate( String adminTemplateName, UserDomainObject user, java.util.List tagsWithReplacements )  ;
+    String getAdminTemplate( String adminTemplateName, UserDomainObject user, java.util.List tagsWithReplacements )  ;
 
     // parseExternaldoc use template
-    public String getTemplateFromDirectory( String adminTemplateName, UserDomainObject user, java.util.List variables,
+    String getTemplateFromDirectory( String adminTemplateName, UserDomainObject user, java.util.List variables,
                                                  String directory )
 	;
 
     // parseExternaldoc use template
-    public String getTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, java.util.List variables,
+    String getTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, java.util.List variables,
                                                                String directory, String subDirectory )
 	;
 
     // get templatehome
-    public String getTemplateData(int template_id)
+    String getTemplateData(int template_id)
 	throws IOException ;
 
     // get templatehome
-    public File getTemplatePath()
+    File getTemplatePath()
 	;
 
     // get file-path to imcmsimages
-    public File getImcmsPath()
+    File getImcmsPath()
 	;
 
     // get language prefix by id
-    public String getLanguagePrefixByLangId ( int lang_id ); 
+    String getLanguagePrefixByLangId ( int lang_id );
 
     // get language prefix for user
-    public String getUserLangPrefixOrDefaultLanguage( UserDomainObject user )
+    String getUserLangPrefixOrDefaultLanguage( UserDomainObject user )
     ;
 
     // get doctype
-    public int getDocType(int meta_id)
+    int getDocType(int meta_id)
 	;
 
     // checkDocAdminRights
-    public boolean checkDocAdminRights(int meta_id, UserDomainObject user)
+    boolean checkDocAdminRights(int meta_id, UserDomainObject user)
 	;
 
     // save template to disk
-    public  int saveTemplate(String name,String file_name,byte[] data,boolean overwrite,String lang_prefix)
+     int saveTemplate(String name,String file_name,byte[] data,boolean overwrite,String lang_prefix)
 	;
 
     // get demo template data
-    public Object[] getDemoTemplate(int template_id)
+    Object[] getDemoTemplate(int template_id)
 	throws IOException ;
 
-    public boolean checkDocAdminRights(int meta_id, UserDomainObject user, int permissions)
+    boolean checkDocAdminRights(int meta_id, UserDomainObject user, int permissions)
 	;
 
-    public boolean checkDocAdminRightsAny(int meta_id, UserDomainObject user, int permissions)
+    boolean checkDocAdminRightsAny(int meta_id, UserDomainObject user, int permissions)
 	;
 
     // save demo template
-    public void saveDemoTemplate(int template_id,byte [] data, String suffix) throws IOException
+    void saveDemoTemplate(int template_id,byte [] data, String suffix) throws IOException
     ;
 
     // get server date
-    public Date getCurrentDate()
+    Date getCurrentDate()
     ;
 
     // get demotemplates
-    public String[] getDemoTemplateIds()
+    String[] getDemoTemplateIds()
     ;
 
     // delete demotemplate
-    public void deleteDemoTemplate(int template_id) throws IOException
+    void deleteDemoTemplate(int template_id) throws IOException
     ;
 
-    public String getAdminButtons( UserDomainObject user, DocumentDomainObject document )  ;
+    String getAdminButtons( UserDomainObject user, DocumentDomainObject document )  ;
 
-    public SystemData getSystemData()  ;
+    SystemData getSystemData()  ;
 
-    public void setSystemData(SystemData sd)  ;
+    void setSystemData(SystemData sd)  ;
 
-    public String[][] getAllDocumentTypes(String langPrefixStr)  ;
+    String[][] getAllDocumentTypes(String langPrefixStr)  ;
 
-    public String getFortune(String path) throws IOException ;
+    String getFortune(String path) throws IOException ;
 
-    public List getQuoteList(String quoteListName);
+    List getQuoteList(String quoteListName);
 
-    public void setQuoteList(String quoteListName, List quoteList) throws IOException ;
+    void setQuoteList(String quoteListName, List quoteList) throws IOException ;
 
-    public List getPollList(String pollListName);
+    List getPollList(String pollListName);
 
-    public void setPollList(String pollListName, List pollList) throws IOException ;
+    void setPollList(String pollListName, List pollList) throws IOException ;
 
-    public int getSessionCounter();
+    int getSessionCounter();
 
-    public String getSessionCounterDateAsString();
+    String getSessionCounterDateAsString();
 
     /** Get all possible userflags **/
-    public Map getUserFlags() ;
+    Map getUserFlags() ;
     /** Get all userflags for a single user **/
-    public Map getUserFlags(UserDomainObject user) ;
+    Map getUserFlags(UserDomainObject user) ;
     /** Get all userflags of a single type **/
-    public Map getUserFlags(int type) ;
+    Map getUserFlags(int type) ;
     /** Get all userflags for a single user of a single type **/
-    public Map getUserFlags(UserDomainObject user, int type) ;
+    Map getUserFlags(UserDomainObject user, int type) ;
 
-    public void setUserFlag(UserDomainObject user, String flagName);
+    void setUserFlag(UserDomainObject user, String flagName);
 
-    public void unsetUserFlag(UserDomainObject user, String flagName);
+    void unsetUserFlag(UserDomainObject user, String flagName);
 
     /** Get an interface to the poll handling system **/
-    public imcode.util.poll.PollHandlingSystem getPollHandlingSystem();
+    imcode.util.poll.PollHandlingSystem getPollHandlingSystem();
 
     /** Get an interface to the shopping order system **/
-    public imcode.util.shop.ShoppingOrderSystem getShoppingOrderSystem() ;
+    imcode.util.shop.ShoppingOrderSystem getShoppingOrderSystem() ;
 
     void updateMainLog( String logMessage );
 

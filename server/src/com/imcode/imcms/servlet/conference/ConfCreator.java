@@ -43,7 +43,7 @@ public class ConfCreator extends Conference {
         }
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // ********* NEW ********
         if ( action.equalsIgnoreCase( "ADD_CONF" ) ) {
@@ -76,7 +76,7 @@ public class ConfCreator extends Conference {
             // Lets get the administrators user_id
             String user_id = "" + user.getId();
 
-            // Lets add this user into the conference if hes not exists there before 
+            // Lets add this user into the conference if hes not exists there before
             addUserToOneConference(user, metaId+"", imcref);
 
             // Ok, Were done adding the conference, Lets go back to the Manager

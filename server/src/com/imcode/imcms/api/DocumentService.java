@@ -8,23 +8,14 @@ public class DocumentService {
 
     private ContentManagementSystem contentManagementSystem;
 
-    public DocumentService( DefaultContentManagementSystem contentManagementSystem ) {
+    public DocumentService( ContentManagementSystem contentManagementSystem ) {
         this.contentManagementSystem = contentManagementSystem;
     }
 
     Document wrapDocumentDomainObject( DocumentDomainObject document ) {
-        Document result;
-
-        if ( document instanceof TextDocumentDomainObject ) {
-            result = new TextDocument( (TextDocumentDomainObject)document, contentManagementSystem );
-        } else if ( document instanceof UrlDocumentDomainObject ) {
-            result = new UrlDocument( (UrlDocumentDomainObject)document, contentManagementSystem );
-        } else if ( document instanceof FileDocumentDomainObject ) {
-            result = new FileDocument( (FileDocumentDomainObject)document, contentManagementSystem );
-        } else {
-            result = new Document( document, contentManagementSystem );
-        }
-        return result;
+        ApiWrappingDocumentVisitor apiWrappingDocumentVisitor = new ApiWrappingDocumentVisitor(contentManagementSystem) ;
+        document.accept(apiWrappingDocumentVisitor) ;
+        return apiWrappingDocumentVisitor.getDocument() ;
     }
 
     /**
@@ -260,5 +251,34 @@ public class DocumentService {
     public SearchQuery parseLuceneSearchQuery( String query ) throws BadQueryException {
         return new LuceneParsedQuery( query );
     }
+
+    private static class ApiWrappingDocumentVisitor extends DocumentVisitor {
+
+        private ContentManagementSystem contentManagementSystem ;
+        private Document document;
+
+        private ApiWrappingDocumentVisitor( ContentManagementSystem contentManagementSystem ) {
+            this.contentManagementSystem = contentManagementSystem;
+        }
+
+        public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
+            document = new FileDocument( fileDocument, contentManagementSystem );
+        }
+        public void visitTextDocument( TextDocumentDomainObject textDocument ) {
+            document = new TextDocument( textDocument, contentManagementSystem );
+        }
+
+        public void visitUrlDocument( UrlDocumentDomainObject urlDocument ) {
+            document = new UrlDocument( urlDocument, contentManagementSystem );
+        }
+
+        protected void visitOtherDocument( DocumentDomainObject otherDocument ) {
+            this.document = new Document( otherDocument, contentManagementSystem );
+        }
+
+        public Document getDocument() {
+            return document;
+        }
+   }
 
 }

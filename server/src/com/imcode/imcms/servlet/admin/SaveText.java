@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -28,10 +28,10 @@ public final class SaveText extends HttpServlet {
         Writer out = res.getWriter();
 
         // Check if user has permission to be here
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) ) {	// Checking to see if user may edit this
+        if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) ) {	// Checking to see if user may edit this
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
             if ( output != null ) {
                 out.write( output );
@@ -54,7 +54,7 @@ public final class SaveText extends HttpServlet {
 
         TextDomainObject text = new TextDomainObject( text_string, text_format );
 
-        user.put( "flags", new Integer( imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) );
+        user.put( "flags", new Integer( imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) );
 
         if ( req.getParameter( "ok" ) != null ) {
             DocumentMapper documentMapper = imcref.getDocumentMapper();
@@ -70,7 +70,7 @@ public final class SaveText extends HttpServlet {
     }
 
     private void saveText( DocumentMapper documentMapper, TextDomainObject text, TextDocumentDomainObject document,
-                           int txt_no, String text_type, IMCServiceInterface imcref, int meta_id,
+                           int txt_no, String text_type, ImcmsServices imcref, int meta_id,
                            UserDomainObject user ) {
         document.setText( txt_no, text );
 

@@ -2,8 +2,8 @@ package com.imcode.imcms.servlet.billboard;
 
 import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.VariableManager;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
@@ -111,7 +111,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 
         // Lets get serverinformation
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Lets get path to the imagefolder. http://dev.imcode.com/images/102/ConfDiscNew.gif
 

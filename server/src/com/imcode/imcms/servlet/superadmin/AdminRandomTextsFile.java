@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -41,7 +41,7 @@ public class AdminRandomTextsFile extends Administrator {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         // Lets get the server this request was aimed for
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         HttpSession session = req.getSession();
 

@@ -1,6 +1,6 @@
 <%@ page
-  import="imcode.server.ApplicationServer,
-          imcode.server.IMCServiceInterface,
+  import="imcode.server.Imcms,
+          imcode.server.ImcmsServices,
           com.imcode.imcms.api.DocumentService,
           com.imcode.imcms.api.RequestConstants,
           com.imcode.imcms.api.ContentManagementSystem,

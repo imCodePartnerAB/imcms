@@ -1,7 +1,7 @@
 package com.imcode.imcms.api;
 
-import imcode.server.IMCServiceInterface;
-import imcode.server.ApplicationServer;
+import imcode.server.ImcmsServices;
+import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 
 public class DefaultContentManagementSystem extends ContentManagementSystem {
@@ -12,7 +12,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
     private DatabaseService databaseService;
     private User currentUser;
 
-    public DefaultContentManagementSystem( IMCServiceInterface service, UserDomainObject accessor ) {
+    public DefaultContentManagementSystem( ImcmsServices service, UserDomainObject accessor ) {
         this.service = service ;
         init( accessor );
     }
@@ -23,7 +23,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
         userService = new UserService( this );
         documentService = new DocumentService( this ) ;
         templateService = new TemplateService( this );
-        databaseService = new DatabaseService( ApplicationServer.getApiConnectionPool() );
+        databaseService = new DatabaseService( Imcms.getApiConnectionPool() );
     }
 
     public UserService getUserService(){

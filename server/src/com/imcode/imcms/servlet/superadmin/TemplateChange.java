@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.TemplateGroupDomainObject;
@@ -25,7 +25,7 @@ public class TemplateChange extends HttpServlet {
 
     public void service( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !user.isSuperAdmin() ) {
             Utility.redirectToStartDocument( req, res );
@@ -83,7 +83,7 @@ public class TemplateChange extends HttpServlet {
         }
     }
 
-    private String addTemplateGroup( HttpServletRequest req, IMCServiceInterface imcref, UserDomainObject user ) {
+    private String addTemplateGroup( HttpServletRequest req, ImcmsServices imcref, UserDomainObject user ) {
         String htmlStr;
         String name = req.getParameter( "name" );
         if ( name == null || name.equals( "" ) ) {
@@ -101,7 +101,7 @@ public class TemplateChange extends HttpServlet {
     }
 
     private String addTemplatesToGroup( HttpServletRequest req, TemplateMapper templateMapper, String lang,
-                                        UserDomainObject user, IMCServiceInterface imcref ) {
+                                        UserDomainObject user, ImcmsServices imcref ) {
         String htmlStr;
         int grp_id = Integer.parseInt( req.getParameter( "group_id" ) );
         String[] templatesToAssign = req.getParameterValues( "unassigned" );
@@ -116,13 +116,13 @@ public class TemplateChange extends HttpServlet {
         return htmlStr;
     }
 
-    private String createAddNameEmptyErrorDialog( IMCServiceInterface imcref, UserDomainObject user ) {
+    private String createAddNameEmptyErrorDialog( ImcmsServices imcref, UserDomainObject user ) {
         String htmlStr;
         htmlStr = imcref.getAdminTemplate( "templategroup_add_name_blank.html", user, null );
         return htmlStr;
     }
 
-    private String createDocumentsUsingTemplateDialog( IMCServiceInterface imcref, UserDomainObject user,
+    private String createDocumentsUsingTemplateDialog( ImcmsServices imcref, UserDomainObject user,
                                                        TemplateDomainObject template, String lang ) {
         List vec2 = new ArrayList();
         vec2.add( "#template_list#" );
@@ -137,7 +137,7 @@ public class TemplateChange extends HttpServlet {
         return htmlStr;
     }
 
-    private String createRenameNameEmptyErrorDialog( String lang, IMCServiceInterface imcref, UserDomainObject user ) {
+    private String createRenameNameEmptyErrorDialog( String lang, ImcmsServices imcref, UserDomainObject user ) {
         String htmlStr;
         List vec = new ArrayList();
         vec.add( "#language#" );
@@ -146,7 +146,7 @@ public class TemplateChange extends HttpServlet {
         return htmlStr;
     }
 
-    private String createRenameTemplateDialog( String lang, TemplateMapper templateMapper, IMCServiceInterface imcref,
+    private String createRenameTemplateDialog( String lang, TemplateMapper templateMapper, ImcmsServices imcref,
                                                UserDomainObject user ) {
         String htmlStr;
         List vec = new ArrayList();
@@ -158,13 +158,13 @@ public class TemplateChange extends HttpServlet {
         return htmlStr;
     }
 
-    private String createTemplateGroupExistsErrorDialog( IMCServiceInterface imcref, UserDomainObject user ) {
+    private String createTemplateGroupExistsErrorDialog( ImcmsServices imcref, UserDomainObject user ) {
         String htmlStr;
         htmlStr = imcref.getAdminTemplate( "templategroup_add_exists.html", user, null );
         return htmlStr;
     }
 
-    private void deleteTemplate( HttpServletRequest req, IMCServiceInterface imcref ) {
+    private void deleteTemplate( HttpServletRequest req, ImcmsServices imcref ) {
         TemplateMapper templateMapper = imcref.getTemplateMapper() ;
         int new_temp_id = Integer.parseInt(req.getParameter( "new_template" ));
         TemplateDomainObject newTemplate = templateMapper.getTemplateById( new_temp_id ) ;
@@ -175,7 +175,7 @@ public class TemplateChange extends HttpServlet {
         templateMapper.deleteTemplate( template );
     }
 
-    private String deleteTemplateAfterCheckingUsage( HttpServletRequest req, IMCServiceInterface imcref, String lang,
+    private String deleteTemplateAfterCheckingUsage( HttpServletRequest req, ImcmsServices imcref, String lang,
                                                      UserDomainObject user ) {
         String htmlStr;
         TemplateMapper templateMapper = imcref.getTemplateMapper() ;
@@ -191,12 +191,12 @@ public class TemplateChange extends HttpServlet {
         return htmlStr;
     }
 
-    private void deleteTemplateGroup( HttpServletRequest req, IMCServiceInterface imcref ) {
+    private void deleteTemplateGroup( HttpServletRequest req, ImcmsServices imcref ) {
         int grp_id = Integer.parseInt( req.getParameter( "templategroup" ) );
         imcref.getTemplateMapper().deleteTemplateGroup( grp_id );
     }
 
-    private String deleteTemplateGroupAfterCheckingUsage( HttpServletRequest req, IMCServiceInterface imcref,
+    private String deleteTemplateGroupAfterCheckingUsage( HttpServletRequest req, ImcmsServices imcref,
                                                           UserDomainObject user ) {
         String htmlStr;
         int templateGroupId = Integer.parseInt( req.getParameter( "templategroup" ) );
@@ -213,7 +213,7 @@ public class TemplateChange extends HttpServlet {
         return htmlStr;
     }
 
-    private void downloadTemplate( HttpServletRequest req, IMCServiceInterface imcref, HttpServletResponse res,
+    private void downloadTemplate( HttpServletRequest req, ImcmsServices imcref, HttpServletResponse res,
                                    ServletOutputStream out ) throws IOException {
         int template_id = Integer.parseInt( req.getParameter( "template" ) );
         String filename = imcref.getTemplateMapper().getTemplateById( template_id ).getFileName();
@@ -228,7 +228,7 @@ public class TemplateChange extends HttpServlet {
         out.flush();
     }
 
-    private String listDocumentsUsingTemplate( HttpServletRequest req, IMCServiceInterface imcref, String lang,
+    private String listDocumentsUsingTemplate( HttpServletRequest req, ImcmsServices imcref, String lang,
                                                UserDomainObject user ) {
         int templateId = Integer.parseInt( req.getParameter( "template" ) );
         TemplateDomainObject template = imcref.getTemplateMapper().getTemplateById( templateId );
@@ -236,7 +236,7 @@ public class TemplateChange extends HttpServlet {
     }
 
     private String removeTemplatesFromGroup( HttpServletRequest req, TemplateMapper templateMapper, String lang,
-                                             UserDomainObject user, IMCServiceInterface imcref ) {
+                                             UserDomainObject user, ImcmsServices imcref ) {
         String htmlStr;
         int grp_id = Integer.parseInt( req.getParameter( "group_id" ) );
         String[] templatesToUnassign = req.getParameterValues( "assigned" );
@@ -252,7 +252,7 @@ public class TemplateChange extends HttpServlet {
     }
 
     private String renameTemplate( HttpServletRequest req, TemplateMapper templateMapper, String lang,
-                                   IMCServiceInterface imcref, UserDomainObject user ) {
+                                   ImcmsServices imcref, UserDomainObject user ) {
         String htmlStr;
         int template_id = Integer.parseInt( req.getParameter( "template" ) );
         TemplateDomainObject template = templateMapper.getTemplateById( template_id );
@@ -266,7 +266,7 @@ public class TemplateChange extends HttpServlet {
         return htmlStr;
     }
 
-    private String renameTemplateGroup( HttpServletRequest req, IMCServiceInterface imcref, UserDomainObject user,
+    private String renameTemplateGroup( HttpServletRequest req, ImcmsServices imcref, UserDomainObject user,
                                         String lang ) {
         String htmlStr;
         int grp_id = Integer.parseInt( req.getParameter( "templategroup" ) );
@@ -282,7 +282,7 @@ public class TemplateChange extends HttpServlet {
         return htmlStr;
     }
 
-    private String showDocument( HttpServletRequest req, HttpServletResponse res, IMCServiceInterface imcref,
+    private String showDocument( HttpServletRequest req, HttpServletResponse res, ImcmsServices imcref,
                                  String lang, String htmlStr, UserDomainObject user ) throws IOException {
         String meta_id = req.getParameter( "templates_doc" );
         if ( meta_id != null ) {

@@ -2,8 +2,8 @@ package com.imcode.imcms.servlet.chat;
 
 import imcode.external.chat.ChatBase;
 import imcode.external.chat.ChatError;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +38,7 @@ public class ChatHelp extends ChatBase {
 		} else if ( params.getProperty("HELP_MODE").equalsIgnoreCase("ADMIN") ) {
 			//lets see if user has adminrights
 			int metaId = getMetaId( req );
-            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+            ImcmsServices imcref = Imcms.getServices() ;
 			if ( userHasAdminRights( imcref, metaId, user ) ) {
 				file = ADMIN_TEMPLATE ;
 				if( params.getProperty("HELP_AREA").equalsIgnoreCase("TEMPLATESPEC") ) {

@@ -2,9 +2,9 @@ package com.imcode.imcms.servlet.billboard;
 
 import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.VariableManager;
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.HTMLConv;
-import imcode.server.IMCServiceInterface;
+import imcode.server.ImcmsServices;
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
 
@@ -33,7 +33,7 @@ import java.util.Properties;
  * B_GetSubjectStr
  * B_AddReply
  * B_GetSectionName
- * 
+ *
  * @author Rickard Larsson
  * @author Jerker Drottenmyr
  * @author REBUILD TO BillBoardAdd BY Peter Östergren
@@ -70,7 +70,7 @@ public class BillBoardAdd extends BillBoard {
         String addType = "";
         addType = req.getParameter( "ADDTYPE" );
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         int metaId = Integer.parseInt( params.getProperty( "META_ID" ) );
         if ( userHasRightToEdit( imcref, metaId, user ) ) {
@@ -339,7 +339,7 @@ public class BillBoardAdd extends BillBoard {
 
         // Lets get serverinformation
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         int metaId = Integer.parseInt( params.getProperty( "META_ID" ) );
         if ( userHasRightToEdit( imcref, metaId, user ) ) {
@@ -357,7 +357,7 @@ public class BillBoardAdd extends BillBoard {
             // Lets add the current forum name
             String currSection = imcref.sqlProcedureStr( "B_GetSectionName", new String[]{params.getProperty( "SECTION_ID" )} );
             vm.addProperty( "CURRENT_SECTION_NAME", currSection );
-		
+
             // Lets get the addtype and add it to the page
             String htmlTemplate = HTML_TEMPLATE ;
             if ( params.getProperty( "ADD_TYPE" ).equalsIgnoreCase( "REPLY" ) ) {
@@ -446,7 +446,7 @@ public class BillBoardAdd extends BillBoard {
             String replyHeader )
             throws IOException {
 
-        SMTP smtp = ApplicationServer.getIMCServiceInterface().getSMTP();
+        SMTP smtp = Imcms.getServices().getSMTP();
 
         smtp.sendMailWait( fromEmail, toEmail, header, replyHeader + "\n" + text );
     }

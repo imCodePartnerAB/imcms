@@ -12,7 +12,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
     private Map files = createFilesMap();
 
-    private String defaultFileId ;
+    private String defaultFileId;
     public static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
     public static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
 
@@ -40,7 +40,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
     public Map getFiles() {
         Map map = createFilesMap();
-        map.putAll( files ) ;
+        map.putAll( files );
         return map;
     }
 
@@ -59,10 +59,10 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     }
 
     private void selectDefaultFileName( String fileId ) {
-        if (files.isEmpty()) {
-            defaultFileId = null ;
+        if ( files.isEmpty() ) {
+            defaultFileId = null;
         } else if ( defaultFileId.equals( fileId ) ) {
-            defaultFileId = (String)Utility.firstElementOfSetByOrderOf( files.keySet(), String.CASE_INSENSITIVE_ORDER ) ;
+            defaultFileId = (String)Utility.firstElementOfSetByOrderOf( files.keySet(), String.CASE_INSENSITIVE_ORDER );
         }
     }
 
@@ -79,6 +79,9 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     }
 
     public FileDocumentFile getFileOrDefault( String fileId ) {
+        if ( null == fileId ) {
+            return getDefaultFile();
+        }
         FileDocumentFile fileDocumentFile = getFile( fileId );
         if ( null == fileDocumentFile ) {
             fileDocumentFile = getDefaultFile();
@@ -98,25 +101,25 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         if ( null == newFileId ) {
             throw new NullArgumentException( "newFileId" );
         }
-        if (!files.containsKey( oldFileId )) {
+        if ( !files.containsKey( oldFileId ) ) {
             throw new IllegalStateException( "There is no file with the id " + oldFileId );
         }
-        if (oldFileId.equals( newFileId )) {
-            return ;
+        if ( oldFileId.equals( newFileId ) ) {
+            return;
         }
-        if (files.containsKey( newFileId )) {
-            throw new IllegalStateException( "There already is a file with the id "+newFileId ) ;
+        if ( files.containsKey( newFileId ) ) {
+            throw new IllegalStateException( "There already is a file with the id " + newFileId );
         }
-        files.put(newFileId, files.remove( oldFileId )) ;
-        if (defaultFileId.equals( oldFileId )) {
-            defaultFileId = newFileId ;
+        files.put( newFileId, files.remove( oldFileId ) );
+        if ( defaultFileId.equals( oldFileId ) ) {
+            defaultFileId = newFileId;
         }
     }
 
     public static class FileDocumentFile {
 
         private String filename;
-        private String mimeType = MIME_TYPE__UNKNOWN_DEFAULT;
+        private String mimeType;
         private InputStreamSource inputStreamSource;
         private boolean createdAsImage;
 

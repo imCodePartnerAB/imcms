@@ -1,8 +1,8 @@
 package imcode.util;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCConstants;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -36,7 +36,7 @@ public class MetaDataParser {
                                               String htmlFile ) {
         int metaId = Integer.parseInt( metaIdStr );
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         final String NORMAL = "NORMAL";
         final String CHECKBOX = "CHECKBOX";
@@ -156,7 +156,7 @@ public class MetaDataParser {
      */
     private static void getRolesFromDb( int meta_id, UserDomainObject user, List vec ) {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Lets get the roles_rights_table_header template file
         StringBuffer roles_rights = new StringBuffer( imcref.getAdminTemplate( PERMISSIONS_TABLE_HEAD_TEMPLATE, user, null ) );
@@ -222,11 +222,11 @@ public class MetaDataParser {
                      && ( user_set_id <= j
                           && ( user_set_id != DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1
                                || j != DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
-                               || ( currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 )
+                               || ( currentdoc_perms & ImcmsConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 )
                                   != 0 ) )			// User has more privileged set_id than this set_id
                      && ( user_set_id != DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1
                           || role_set_id != DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
-                          || ( currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 ) != 0 ) )	// User has set_id 1, and may modify set_id 2?
+                          || ( currentdoc_perms & ImcmsConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 ) != 0 ) )	// User has set_id 1, and may modify set_id 2?
                 {
                     vec2.add( "<input type=\"radio\" name=\"role_"
                               + role_id
@@ -259,7 +259,7 @@ public class MetaDataParser {
 
             if ( user_set_id == DocumentPermissionSetDomainObject.TYPE_ID__FULL ) {
                 List perm_vec = new ArrayList();
-                if ( ( currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 ) != 0 ) {
+                if ( ( currentdoc_perms & ImcmsConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 ) != 0 ) {
                     perm_vec.add( "#permissions#" );
                     perm_vec.add( "checked" );
                 }
@@ -292,7 +292,7 @@ public class MetaDataParser {
                 vec.add( "#define_sets#" );
                 vec.add( imcref.getAdminTemplate( ALL_DEFINE_RESTRICTED_BUTTONS_TEMPLATE, user, ftr ) );
 
-            } else if ( ( currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 ) != 0 ) {
+            } else if ( ( currentdoc_perms & ImcmsConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 ) != 0 ) {
 
                 ftr.add( "#sets_precedence#" );
                 ftr.add( "" );
@@ -328,7 +328,7 @@ public class MetaDataParser {
 
     } // End of getRolesFromDb
 
-    private static String getDefaultTemplateOptionList( IMCServiceInterface imcref,
+    private static String getDefaultTemplateOptionList( ImcmsServices imcref,
                                                         String[] def_templates, int meta_id,
                                                         UserDomainObject user,
                                                         boolean canEditRestricted1DefaultTemplate ) {
@@ -428,7 +428,7 @@ public class MetaDataParser {
 
     public static String parsePermissionSet( int meta_id, final UserDomainObject user, int set_id,
                                              boolean forNew ) {
-        final IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        final ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( meta_id );
 

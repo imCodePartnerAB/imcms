@@ -1,7 +1,7 @@
 package imcode.util;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.SetUtils;
@@ -111,7 +111,7 @@ public class Utility {
     }
 
     public static Collection collectImageDirectories() {
-        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices service = Imcms.getServices();
         final File imagePath = service.getConfig().getImagePath();
         return FileUtility.collectRelativeSubdirectoriesStartingWith( imagePath );
     }

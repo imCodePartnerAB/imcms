@@ -1,8 +1,8 @@
 package imcode.server.document;
 
 import com.imcode.imcms.flow.DocumentPageFlow;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.index.AutorebuildingDirectoryIndex;
@@ -12,12 +12,13 @@ import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
-import imcode.util.IdNamePair;
 import imcode.util.FileUtility;
+import imcode.util.IdNamePair;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
+import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
 
@@ -29,6 +30,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class DocumentMapper {
+
+    private final static Logger log = Logger.getLogger( DocumentMapper.class.getName() );
 
     private static final int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
 
@@ -46,7 +49,7 @@ public class DocumentMapper {
 
     private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
 
-    private IMCServiceInterface service;
+    private ImcmsServices service;
     private DocumentPermissionSetMapper documentPermissionSetMapper;
     private DocumentIndex documentIndex;
 
@@ -57,7 +60,7 @@ public class DocumentMapper {
     private static final String TEMPLATE__STATUS_ARCHIVED = "status/archived.frag";
     private static final String TEMPLATE__STATUS_APPROVED = "status/approved.frag";
 
-    public DocumentMapper( IMCServiceInterface service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
+    public DocumentMapper( ImcmsServices service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
         this.service = service;
         documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
         this.imcmsAAUM = imcmsAAUM;
@@ -761,7 +764,7 @@ public class DocumentMapper {
         sprocSetInclude( service, includingMetaId, includeIndex, includedMetaId );
     }
 
-    public static void sprocDeleteInclude( IMCServiceInterface imcref, int including_meta_id, int include_id ) {
+    public static void sprocDeleteInclude( ImcmsServices imcref, int including_meta_id, int include_id ) {
         imcref.sqlUpdateProcedure( "DeleteInclude", new String[]{"" + including_meta_id, "" + include_id} );
     }
 
@@ -805,18 +808,18 @@ public class DocumentMapper {
         service.sqlUpdateQuery( sqlDeleteKeywordsFromDocument, new String[]{"" + meta_id} );
     }
 
-    public static void sprocSetInclude( IMCServiceInterface imcref, int including_meta_id, int include_id,
+    public static void sprocSetInclude( ImcmsServices imcref, int including_meta_id, int include_id,
                                         int included_meta_id ) {
         imcref.sqlUpdateProcedure( "SetInclude",
                                    new String[]{"" + including_meta_id, "" + include_id, "" + included_meta_id} );
     }
 
-    public static void sprocSetRoleDocPermissionSetId( IMCServiceInterface imcref, int metaId, int roleId,
+    public static void sprocSetRoleDocPermissionSetId( ImcmsServices imcref, int metaId, int roleId,
                                                        int newSetId ) {
         imcref.sqlUpdateProcedure( "SetRoleDocPermissionSetId", new String[]{"" + roleId, "" + metaId, "" + newSetId} );
     }
 
-    public static void sprocUpdateParentsDateModified( IMCServiceInterface imcref, int meta_id ) {
+    public static void sprocUpdateParentsDateModified( ImcmsServices imcref, int meta_id ) {
         imcref.sqlUpdateProcedure( SPROC_UPDATE_PARENTS_DATE_MODIFIED, new String[]{"" + meta_id} );
     }
 
@@ -849,7 +852,7 @@ public class DocumentMapper {
 
     }
 
-    private static void addSectionToDocument( IMCServiceInterface imcref, int metaId, int sectionId ) {
+    private static void addSectionToDocument( ImcmsServices imcref, int metaId, int sectionId ) {
         imcref.sqlUpdateQuery( "INSERT INTO meta_section VALUES(?,?)", new String[]{"" + metaId, "" + sectionId} );
     }
 
@@ -891,7 +894,7 @@ public class DocumentMapper {
         }
     }
 
-    private static void removeAllSectionsFromDocument( IMCServiceInterface imcref, int metaId ) {
+    private static void removeAllSectionsFromDocument( ImcmsServices imcref, int metaId ) {
         imcref.sqlUpdateQuery( "DELETE FROM meta_section WHERE meta_id = ?", new String[]{"" + metaId} );
     }
 
@@ -1025,8 +1028,23 @@ public class DocumentMapper {
     private ImageDomainObject createImageFromSqlResultRow( String[] sqlResult ) {
         ImageDomainObject image = new ImageDomainObject();
 
+        int imageType = Integer.parseInt( sqlResult[13] );
+        String imageSource = sqlResult[2];
+
         image.setName( sqlResult[1] );
-        image.setUrl( sqlResult[2] );
+        if (ImageDomainObject.ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType) {
+            try {
+                int fileDocumentId = Integer.parseInt(imageSource) ;
+                image.setSource( new ImageDomainObject.FileDocumentImageSource((FileDocumentDomainObject)getDocument( fileDocumentId )));
+            } catch( NumberFormatException nfe ) {
+                log.warn("Non-numeric document-id \""+imageSource+"\" for image in database.") ;
+            } catch( ClassCastException cce ) {
+                log.warn("Non-file-document-id \""+imageSource+"\" for image in database.") ;
+            }
+        } else if (ImageDomainObject.ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH == imageType) {
+            image.setSource( new ImageDomainObject.ImagesPathRelativePathImageSource( imageSource ) );
+        }
+
         image.setWidth( Integer.parseInt( sqlResult[3] ) );
         image.setHeight( Integer.parseInt( sqlResult[4] ) );
         image.setBorder( Integer.parseInt( sqlResult[5] ) );
@@ -1037,7 +1055,6 @@ public class DocumentMapper {
         image.setAlternateText( sqlResult[10] );
         image.setLowResolutionUrl( sqlResult[11] );
         image.setLinkUrl( sqlResult[12] );
-        image.setType( Integer.parseInt( sqlResult[13] ) );
         return image;
     }
 
@@ -1189,7 +1206,7 @@ public class DocumentMapper {
     }
 
     static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
-        File filePath = ApplicationServer.getIMCServiceInterface().getConfig().getFilePath();
+        File filePath = Imcms.getServices().getConfig().getFilePath();
         File[] filesToDelete = filePath.listFiles(fileFilter);
         for (int i = 0; i < filesToDelete.length; i++) {
             filesToDelete[i].delete();
@@ -1255,7 +1272,7 @@ public class DocumentMapper {
     public static class SaveEditedDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
 
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
-            ApplicationServer.getIMCServiceInterface().getDocumentMapper().saveDocument( document, user );
+            Imcms.getServices().getDocumentMapper().saveDocument( document, user );
         }
     }
 

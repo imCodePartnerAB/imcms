@@ -1,15 +1,15 @@
 package imcode.server.document;
 
 import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.log4j.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.*;
-import java.text.DateFormat;
 
 /**
  * Stores info about a document. *
@@ -420,7 +420,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     private synchronized Attributes.LazilyLoadedDocumentAttributes getLazilyLoadedDocumentAttributes() {
         if ( null == attributes.lazilyLoadedDocumentAttributes ) {
             attributes.lazilyLoadedDocumentAttributes = new Attributes.LazilyLoadedDocumentAttributes();
-            DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             documentMapper.initLazilyLoadedDocumentAttributes( this );
         }
         return attributes.lazilyLoadedDocumentAttributes;
@@ -429,7 +429,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     private synchronized Attributes.LazilyLoadedDocumentCategories getLazilyLoadedDocumentCategories() {
         if ( null == attributes.lazilyLoadedDocumentCategories ) {
             attributes.lazilyLoadedDocumentCategories = new Attributes.LazilyLoadedDocumentCategories();
-            DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             documentMapper.initLazilyLoadedDocumentCategories( this );
         }
         return attributes.lazilyLoadedDocumentCategories;
@@ -438,13 +438,17 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     private synchronized Attributes.LazilyLoadedRolesMappedToDocumentPermissionSetIds getLazilyLoadedRolesMappedToDocumentPermissionSetIds() {
         if ( null == attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds ) {
             attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds = new Attributes.LazilyLoadedRolesMappedToDocumentPermissionSetIds();
-            DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             documentMapper.initLazilyLoadedRolesMappedToDocumentPermissionSetIds( this );
         }
         return attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds;
     }
 
     public abstract void accept( DocumentVisitor documentVisitor ) ;
+
+    public String getUrl( HttpServletRequest request ) {
+        return request.getContextPath()+"/servlet/GetDoc?meta_id="+getId() ;
+    }
 
     public static class Attributes implements Cloneable, Serializable {
 

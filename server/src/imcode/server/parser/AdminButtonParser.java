@@ -1,6 +1,6 @@
 package imcode.server.parser;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 
 import java.util.*;
@@ -65,7 +65,7 @@ public class AdminButtonParser extends AbstractMap {
     private String getAdminTemplate( String key ) {
         String realKey = prefix+key+suffix;
         log.debug("getAdminTemplate(\""+realKey+"\")") ;
-        return ApplicationServer.getIMCServiceInterface().getAdminTemplate( realKey, user, Arrays.asList( new Object[] { "user", user } ) ) ;
+        return Imcms.getServices().getAdminTemplate( realKey, user, Arrays.asList( new Object[] { "user", user } ) ) ;
     }
 
     public void setPrefix( String prefix ) {

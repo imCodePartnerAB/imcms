@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Prefs;
 import imcode.util.Utility;

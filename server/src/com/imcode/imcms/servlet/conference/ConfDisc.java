@@ -13,8 +13,8 @@ package com.imcode.imcms.servlet.conference;
 import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.ParsedTextFile;
 import imcode.external.diverse.VariableManager;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
@@ -76,9 +76,9 @@ public class ConfDisc extends Conference {
         Properties params = this.getPropertiesOfConferenceSessionParameters( req );
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
-        
+
         if(req.getParameter("Quit") !=null){
             res.sendRedirect( "BackDoc" );
             return;
@@ -359,7 +359,7 @@ public class ConfDisc extends Conference {
         }
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Lets get parameters
         String aMetaId = params.getProperty( "META_ID" );

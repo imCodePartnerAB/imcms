@@ -1,8 +1,8 @@
 package imcode.server.document;
 
 import com.imcode.imcms.api.util.InputStreamSource;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FileInputStreamSource;
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
 
-    protected IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+    protected ImcmsServices service = Imcms.getServices();
     protected UserDomainObject user;
 
     private static final int FILE_BUFFER_LENGTH = 2048;
@@ -69,7 +69,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     public static File getFileForFileDocument( int fileDocumentId, String fileId ) {
-        File filePath = ApplicationServer.getIMCServiceInterface().getConfig().getFilePath();
+        File filePath = Imcms.getServices().getConfig().getFilePath();
         String filename = "" + fileDocumentId ;
         if (StringUtils.isNotBlank( fileId )) {
             filename += "."+FileUtility.escapeFilename(fileId) ;
@@ -263,8 +263,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     private static int sqlImageUpdateQuery(String sqlStr, ImageDomainObject image, int meta_id, int img_no) {
-        return ApplicationServer.getIMCServiceInterface().sqlUpdateQuery(sqlStr, new String[]{
-            image.getUrl(),
+        ImageDomainObject.ImageSource imageSource = image.getSource();
+        return Imcms.getServices().sqlUpdateQuery(sqlStr, new String[]{
+            imageSource.toStorageString(),
             "" + image.getWidth(),
             "" + image.getHeight(),
             "" + image.getBorder(),
@@ -276,7 +277,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             image.getAlternateText(),
             image.getLowResolutionUrl(),
             image.getLinkUrl(),
-            "" + image.getType(),
+            "" + imageSource.getTypeId(),
             "" + meta_id,
             "" + img_no,
         });

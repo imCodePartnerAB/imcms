@@ -1,8 +1,8 @@
 package imcode.server.parser;
 
 import imcode.server.DocumentRequest;
-import imcode.server.IMCConstants;
-import imcode.server.IMCServiceInterface;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -47,9 +47,9 @@ public class TextDocumentParser {
         }
     }
 
-    private IMCServiceInterface service;
+    private ImcmsServices service;
 
-    public TextDocumentParser( IMCServiceInterface serverobject ) {
+    public TextDocumentParser( ImcmsServices serverobject ) {
         this.service = serverobject;
     }
 
@@ -77,13 +77,13 @@ public class TextDocumentParser {
             boolean includemode = false ;
 
             if ( flags > 0 ) {
-                textmode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 && permissionSet.getEditTexts();
-                imagemode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0
+                textmode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 && permissionSet.getEditTexts();
+                imagemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0
                             && permissionSet.getEditImages();
-                menumode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 && permissionSet.getEditMenus();
-                templatemode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0
+                menumode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 && permissionSet.getEditMenus();
+                templatemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0
                                && permissionSet.getEditTemplates();
-                includemode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0
+                includemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0
                               && permissionSet.getEditIncludes();
             }
 
@@ -258,7 +258,7 @@ public class TextDocumentParser {
                 Pattern empPattern = empCompiler.compile( "(" + Perl5Compiler.quotemeta( emp[i] ) + ")", Perl5Compiler.CASE_INSENSITIVE_MASK );
                 str = org.apache.oro.text.regex.Util.substitute( patMat, empPattern, emphasize_substitution, str, org.apache.oro.text.regex.Util.SUBSTITUTE_ALL );
             } catch ( MalformedPatternException ex ) {
-                log.warn( "Dynamic Pattern-compilation failed in IMCService.emphasizeString(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '"
+                log.warn( "Dynamic Pattern-compilation failed in DefaultImcmsServices.emphasizeString(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '"
                           + emp[i]
                           + "'", ex );
             }

@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.server.IMCServiceInterface;
-import imcode.server.ApplicationServer;
+import imcode.server.ImcmsServices;
+import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -27,7 +27,7 @@ public class AdminSection extends Administrator {
     private final static String DELETE_CONFIRM_TEMPLATE = "sections/admin_section_delete_confirm.html";
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         Utility.setDefaultHtmlContentType( res );
 
@@ -50,7 +50,7 @@ public class AdminSection extends Administrator {
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         //lets see if its a super admin we got outherwise get rid of him fast
         UserDomainObject user = Utility.getLoggedOnUser(req);
@@ -216,7 +216,7 @@ public class AdminSection extends Administrator {
 
     //method that creates an option list of all the sections in db
     private String createOptionList(String[][] arr, UserDomainObject user, String not_id) {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         StringBuffer buff = new StringBuffer("");
         if (arr != null) {

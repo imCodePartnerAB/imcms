@@ -22,7 +22,7 @@ public class QEngine extends HttpServlet
 	{
 
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+        ImcmsServices imcref = Imcms.getServices() ;
 
 		//get parameters
 		String type = req.getParameter("type");

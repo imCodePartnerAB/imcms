@@ -1,6 +1,6 @@
 package imcode.external.chat;
 
-import imcode.server.IMCServiceInterface;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 
 import java.util.Vector;
@@ -75,7 +75,7 @@ public class ChatNormalMessage extends ChatMessage {
         return _sender;
     }
 
-    public String getLine( boolean showPrivateMessages, ChatMember myMember, IMCServiceInterface imcref,
+    public String getLine( boolean showPrivateMessages, ChatMember myMember, ImcmsServices imcref,
                            UserDomainObject user, String libName ) {
         Vector vLine = new Vector();
         vLine.add( "#size#" );
@@ -112,7 +112,7 @@ public class ChatNormalMessage extends ChatMessage {
         }
     }
 
-    private static String parseChatTemplate( IMCServiceInterface imcref, Vector vLine, String templateName, UserDomainObject user, String libName ) {
+    private static String parseChatTemplate( ImcmsServices imcref, Vector vLine, String templateName, UserDomainObject user, String libName ) {
         return imcref.getTemplateFromSubDirectoryOfDirectory( templateName, user, vLine, "103", libName ).trim();
     }
 }//end class

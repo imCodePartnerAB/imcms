@@ -5,8 +5,8 @@ import com.imcode.imcms.servlet.superadmin.AdminUserProps;
 import imcode.util.Html;
 import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.VariableManager;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
@@ -88,7 +88,7 @@ public class ConfLogin extends Conference {
         //log("Logintype är nu: " + loginType) ;
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // ******** ADD USER PAGE *********
         // Lets generate the adduser page
@@ -176,8 +176,8 @@ public class ConfLogin extends Conference {
         String loginType = ( req.getParameter( "login_type" ) == null ) ? "" : ( req.getParameter( "login_type" ) );
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        ImcmsAuthenticatorAndUserMapper userMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper();
+        ImcmsServices imcref = Imcms.getServices();
+        ImcmsAuthenticatorAndUserMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
 
         // ************* VERIFY LOGIN TO CONFERENCE **************
         // Ok, the user wants to login

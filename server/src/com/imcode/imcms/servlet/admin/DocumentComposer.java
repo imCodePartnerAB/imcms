@@ -2,8 +2,8 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.flow.HttpPageFlow;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
@@ -36,7 +36,7 @@ public class DocumentComposer extends HttpServlet {
         r.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
         MultipartHttpServletRequest request = new MultipartHttpServletRequest( r );
 
-        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices service = Imcms.getServices();
         DocumentMapper documentMapper = service.getDocumentMapper();
         UserDomainObject user = Utility.getLoggedOnUser( request );
 

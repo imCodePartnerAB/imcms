@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.billboard;
 
 import imcode.external.diverse.*;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.util.Html;
 import imcode.util.Utility;
 
@@ -99,7 +99,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
         // Lets get the standard SESSION parameters
         Properties params = this.getStandardParameters( req );
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Lets check that the user is an administrator
         if ( userHasAdminRights( imcref, Integer.parseInt( params.getProperty( "META_ID" ) ), user ) == false ) {
@@ -474,7 +474,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
         // Lets get serverinformation
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Lets check that the user is an administrator
         if ( super.userHasAdminRights( imcref, Integer.parseInt( params.getProperty( "META_ID" ) ), user ) == false ) {

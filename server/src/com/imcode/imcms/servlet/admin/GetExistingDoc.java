@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.admin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCConstants;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
@@ -43,7 +43,7 @@ public class GetExistingDoc extends HttpServlet {
     private static final String ADMIN_TEMPLATE_EXISTING_DOC = "existing_doc.html";
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
@@ -57,7 +57,7 @@ public class GetExistingDoc extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( req.getParameter( "cancel" ) != null || req.getParameter( "cancel.x" ) != null ) {
             res.sendRedirect( "AdminDoc?meta_id=" + parentDocument.getId() + "&flags="
-                              + IMCConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + menuIndex );
+                              + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + menuIndex );
             return;
         } else if ( req.getParameter( "search" ) != null || req.getParameter( "search.x" ) != null ) {
             // SEARCH
@@ -177,9 +177,9 @@ public class GetExistingDoc extends HttpServlet {
     }
 
     private void addDocumentsFromRequestToMenu( UserDomainObject user, HttpServletRequest req,
-                                                IMCServiceInterface imcref, TextDocumentDomainObject parentDocument,
+                                                ImcmsServices imcref, TextDocumentDomainObject parentDocument,
                                                 int menuIndex, HttpServletResponse res ) throws IOException {
-        user.put( "flags", new Integer( IMCConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) );
+        user.put( "flags", new Integer( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) );
 
         // get the seleced existing docs
         String[] values = req.getParameterValues( "existing_meta_id" );
@@ -202,14 +202,14 @@ public class GetExistingDoc extends HttpServlet {
 
     private void redirectBackToMenu( HttpServletResponse res, TextDocumentDomainObject parentDocument, int menuIndex ) throws IOException {
         res.sendRedirect( "AdminDoc?meta_id=" + parentDocument.getId() + "&flags="
-                          + IMCConstants.DISPATCH_FLAG__EDIT_MENU
+                          + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU
                           + "&editmenu="
                           + menuIndex );
     }
 
     private Set getUsersAllowedDocumentTypeIdsOnDocument( UserDomainObject user,
                                                           TextDocumentDomainObject parentDocument ) {
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         int[] allowedDocumentTypeIdsArray = ( (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( parentDocument, user ) ).getAllowedDocumentTypeIds();
         Set allowedDocumentTypeIds = new HashSet( Arrays.asList( ArrayUtils.toObject( allowedDocumentTypeIdsArray ) ) );
         return allowedDocumentTypeIds;
@@ -218,7 +218,7 @@ public class GetExistingDoc extends HttpServlet {
     private void addDocumentToMenu( DocumentDomainObject document, TextDocumentDomainObject parentDocument,
                                     int menuIndex, UserDomainObject user ) {
         Set allowedDocumentTypeIds = getUsersAllowedDocumentTypeIdsOnDocument( user, parentDocument ) ;
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         boolean sharePermission = documentMapper.userHasPermissionToAddDocumentToAnyMenu( user, document );
         boolean canAddToMenu = allowedDocumentTypeIds.contains( new Integer( document.getDocumentTypeId() ) )
                                && sharePermission;
@@ -228,7 +228,7 @@ public class GetExistingDoc extends HttpServlet {
         }
     }
 
-    private void createSearchResultsPage( IMCServiceInterface imcref, imcode.server.user.UserDomainObject user,
+    private void createSearchResultsPage( ImcmsServices imcref, imcode.server.user.UserDomainObject user,
                                           String langPrefix, DocumentDomainObject[] searchResultDocuments, TextDocumentDomainObject parentDocument,
                                           int doc_menu_no, HttpServletRequest req, Date startDate,
                                           DateFormat dateFormat, Date endDate, String[] docTypes, String sortBy,

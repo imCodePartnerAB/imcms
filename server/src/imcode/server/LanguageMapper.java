@@ -67,7 +67,7 @@ public class LanguageMapper {
     }
 
     private static List getListOfLanguageKeysAndNamesInUsersLanguage( UserDomainObject user ) {
-        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface() ;
+        ImcmsServices service = Imcms.getServices() ;
         String[][] languages = service.sqlQueryMulti( "select lang_prefix, user_prefix, language from languages where user_prefix = ?", new String[]{user.getLanguageIso639_2()} );
         List languagesInOptionList = new ArrayList();
         for ( int i = 0 ; i < languages.length ; i++ ) {
@@ -83,7 +83,7 @@ public class LanguageMapper {
         return languagesInOptionList;
     }
 
-    public static String getAsIso639_2OrDefaultLanguage( String langStr, IMCServiceInterface service ) {
+    public static String getAsIso639_2OrDefaultLanguage( String langStr, ImcmsServices service ) {
         try {
             langStr = getAsIso639_2(langStr);
         } catch ( LanguageNotSupportedException e ) {

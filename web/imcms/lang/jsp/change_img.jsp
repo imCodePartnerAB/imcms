@@ -1,7 +1,7 @@
 <%@ page import="imcode.server.document.textdocument.ImageDomainObject,
                  com.imcode.imcms.servlet.admin.ChangeImage,
                  org.apache.commons.lang.StringUtils,
-                 imcode.server.ApplicationServer,
+                 imcode.server.Imcms,
                  org.apache.commons.lang.StringEscapeUtils,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  imcode.util.ImageSize,
@@ -12,7 +12,8 @@
                  imcode.server.document.DocumentMapper,
                  imcode.server.user.UserDomainObject,
                  imcode.server.document.DocumentDomainObject,
-                 imcode.util.ImcmsImageUtils"%>
+                 imcode.util.ImcmsImageUtils,
+                 imcode.server.document.FileDocumentDomainObject"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     ChangeImage.ImageEditPage imageEditPage = (ChangeImage.ImageEditPage)request.getAttribute( ChangeImage.ImageEditPage.REQUEST_ATTRIBUTE__PAGE ) ;
@@ -122,23 +123,22 @@ function checkLinkOnBlur() {
                 <div id="theLabel" class="imcmsAdmText"><i><%= StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) %></i></div>
             </td>
         </tr>
-        <% if (StringUtils.isNotBlank(image.getUrl())) { %>
+        <% if (!image.isEmpty()) { %>
         <tr>
             <td colspan="2" align="center">
-                <%= ImcmsImageUtils.getImageHtmlTag( image ) %>
+                <%= ImcmsImageUtils.getImageHtmlTag( image, request ) %>
             </td>
         </tr>
         <%
-            Integer imageFileDocumentId = ImcmsImageUtils.getDocumentIdFromImageUrl(image.getUrl());
-            if ( null != imageFileDocumentId ) { %>
+            ImageDomainObject.ImageSource imageSource = image.getSource();
+            if ( imageSource instanceof ImageDomainObject.FileDocumentImageSource) { %>
             <tr>
                 <td colspan="2" align="center">
                     <%
-                        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
-                        UserDomainObject user = Utility.getLoggedOnUser(request);
-                        DocumentDomainObject imageFileDocument = documentMapper.getDocument(imageFileDocumentId.intValue());
+                        ImageDomainObject.FileDocumentImageSource fileDocumentImageSource = (ImageDomainObject.FileDocumentImageSource)imageSource ;
+                        FileDocumentDomainObject imageFileDocument = fileDocumentImageSource.getFileDocument() ;
                     %>
-                        <%= ApplicationServer.getIMCServiceInterface().getAdminButtons(user, imageFileDocument) %>
+                        <%= Imcms.getServices().getAdminButtons(Utility.getLoggedOnUser(request), imageFileDocument) %>
                 </td>
             </tr>
         <% } %>
@@ -171,7 +171,7 @@ function checkLinkOnBlur() {
             <td>
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
             <tr>
-                <td colspan="2"><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_URL %>" size="50" maxlength="255" style="width: 350" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getUrl())) %>"></td>
+                <td colspan="2"><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_URL %>" size="50" maxlength="255" style="width: 350" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getSource().toStorageString())) %>"></td>
             </tr>
             </table></td>
         </tr>

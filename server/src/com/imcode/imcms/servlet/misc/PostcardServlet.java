@@ -5,9 +5,9 @@ package com.imcode.imcms.servlet.misc;
  * @(#)PostCardServlet.java
  */
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.HTMLConv;
-import imcode.server.IMCServiceInterface;
+import imcode.server.ImcmsServices;
 import imcode.server.SystemData;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -110,7 +110,7 @@ public class PostcardServlet extends HttpServlet {
             log.debug( dateFormat.format( new Date() ) + "qLine wasn't a number", nfe );
         }
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         SystemData sysData = imcref.getSystemData();
         List quoteList = imcref.getQuoteList( QUOTE_FILE );
 
@@ -247,7 +247,7 @@ public class PostcardServlet extends HttpServlet {
     }
 
     private File getExternalTemplateFolder(UserDomainObject user) {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
 
         // Since our templates are located into the 105 folder, we'll have to hang on 105
@@ -263,7 +263,7 @@ public class PostcardServlet extends HttpServlet {
      */
     private void sendPostcardMail( HttpServletRequest req, HttpServletResponse res ) throws IOException {
         /* mailserver info */
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         HttpSession session = req.getSession( false );
         if ( session == null )
             res.sendRedirect( req.getContextPath() + "/servlet/StartDoc" );

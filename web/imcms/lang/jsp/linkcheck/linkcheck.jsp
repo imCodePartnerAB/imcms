@@ -1,9 +1,9 @@
 <%@ page import="com.imcode.imcms.servlet.superadmin.LinkCheck,
                  java.util.Iterator,
                  com.imcode.imcms.servlet.admin.AdminDoc,
-                 imcode.server.IMCConstants,
+                 imcode.server.ImcmsConstants,
                  imcode.server.document.DocumentMapper,
-                 imcode.server.ApplicationServer,
+                 imcode.server.Imcms,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
                  imcode.server.document.UrlDocumentDomainObject,
@@ -38,7 +38,7 @@
                             DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument = urlDocumentLink.getDocumentMenuPairsContainingUrlDocument();
                         %>  <td><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/url_document ?></td>
                             <td>
-                                <a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= document.getId() %>&<%= AdminDoc.PARAMETER__DISPATCH_FLAGS%>=<%= IMCConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT %>">
+                                <a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= document.getId() %>&<%= AdminDoc.PARAMETER__DISPATCH_FLAGS%>=<%= ImcmsConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT %>">
                                     <%= document.getId() %> - <%= document.getHeadline() %>
                                 </a>
                             </td>

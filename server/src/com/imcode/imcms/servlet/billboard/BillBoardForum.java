@@ -25,7 +25,7 @@ import com.imcode.imcms.servlet.billboard.BillBoard;
  * <p/>
  * stored procedures in use:
  * B_GetAllSection
- * 
+ *
  * @author Rickard Larsson REBUILD TO BillBoardForum BY Peter Östergren
  * @version 1.2 20 Aug 2001
  */
@@ -56,7 +56,7 @@ public class BillBoardForum extends BillBoard {//ConfForum
 		String aMetaId = (String) session.getAttribute("BillBoard.meta_id") ;
 
 		// Lets get the information from DB
-        String[] sqlAnswer = ApplicationServer.getIMCServiceInterface().sqlProcedure("B_GetAllSection", new String[]{aMetaId});
+        String[] sqlAnswer = Imcms.getServices().sqlProcedure("B_GetAllSection", new String[]{aMetaId});
 		Vector sectionV = super.convert2Vector(sqlAnswer) ;
 
 		// Lets fill the select box

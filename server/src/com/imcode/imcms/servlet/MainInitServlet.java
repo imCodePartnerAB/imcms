@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.util.Prefs;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -34,7 +34,7 @@ public class MainInitServlet extends HttpServlet {
     }
 
     private void kickstartImcms() {
-        ApplicationServer.getIMCServiceInterface() ;
+        Imcms.getServices() ;
     }
 
     private void configureLogging( File confPath ) {

@@ -28,7 +28,7 @@ public class AdminDeleteDoc extends Administrator {
             throws ServletException, IOException {
 
         // Lets verify that this user is an admin
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
         if (!user.isSuperAdmin()) {
             String header = "Error in AdminCounter.";
@@ -49,7 +49,7 @@ public class AdminDeleteDoc extends Administrator {
 
 
         // Lets check if the user is an admin, otherwise throw him out.
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (user.isSuperAdmin() == false) {
             String header = "Error in AdminCounter.";
@@ -94,7 +94,7 @@ public class AdminDeleteDoc extends Administrator {
             DocumentDomainObject document = documentMapper.getDocument( metaId ) ;
             documentMapper.deleteDocument( document, user);
             imcref.updateMainLog( "Document  " + "[" + document.getId() +
-                    "] ALL deleted by user: [" + user.getFullName() + "]" );            
+                    "] ALL deleted by user: [" + user.getFullName() + "]" );
 
             this.doGet(req, res);
             //this.goAdminUsers(req, res) ;

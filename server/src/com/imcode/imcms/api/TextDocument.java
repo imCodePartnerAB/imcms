@@ -55,7 +55,7 @@ public class TextDocument extends Document {
             public boolean evaluate(Object o) {
                 Map.Entry entry = (Map.Entry) o;
                 ImageDomainObject tempImage = (ImageDomainObject) entry.getValue();
-                return StringUtils.isNotBlank(tempImage.getUrl());
+                return !tempImage.isEmpty();
             }
         };
 
@@ -152,14 +152,17 @@ public class TextDocument extends Document {
 
     }
 
+    /**
+     * @deprecated Use {@link #setImage(int, Image)} instead.
+     */
     public void setImage(int imageIndexInDocument, String image_src, String image_name, int width, int heigth,
                          int border, int v_space,
                          int h_space, String align, String link_target, String link_href, String alt_text,
                          String low_src) throws NoPermissionException {
         getSecurityChecker().hasEditPermission(this);
-        imcode.server.document.textdocument.ImageDomainObject internalImage = new ImageDomainObject();
+        ImageDomainObject internalImage = new ImageDomainObject();
 
-        internalImage.setUrl(image_src); // image srcurl,  relative imageurl
+        internalImage.setSource( new ImageDomainObject.ImagesPathRelativePathImageSource( image_src ) );
         internalImage.setName(image_name);  // html imagetag name
         internalImage.setWidth(width);
         internalImage.setHeight(heigth);
@@ -282,6 +285,11 @@ public class TextDocument extends Document {
             menus.put( menuIndex, new Menu( this, menuIndex.intValue())) ;
         }
         return menus ;
+    }
+
+    public void setImage( int imageIndex, Image image ) {
+        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)getInternal() ;
+        textDocument.setImage( imageIndex, image.getInternal());
     }
 
     public static class TextField {

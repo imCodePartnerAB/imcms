@@ -1,7 +1,7 @@
 package imcode.server.document;
 
-import imcode.server.IMCConstants;
-import imcode.server.IMCServiceInterface;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 
 import java.util.ArrayList;
@@ -30,9 +30,9 @@ public class DocumentPermissionSetMapper {
         }
     }
 
-    private IMCServiceInterface service;
+    private ImcmsServices service;
 
-    public DocumentPermissionSetMapper( IMCServiceInterface service ) {
+    public DocumentPermissionSetMapper( ImcmsServices service ) {
         this.service = service;
     }
 
@@ -179,7 +179,7 @@ public class DocumentPermissionSetMapper {
             return;
         }
         String sqlInsertCreatableDocumentTypeId = "INSERT INTO " + table + " VALUES(?,?,"
-                                                  + IMCConstants.PERM_CREATE_DOCUMENT
+                                                  + ImcmsConstants.PERM_CREATE_DOCUMENT
                                                   + ",?)";
         for ( int i = 0; i < allowedDocumentTypeIds.length; i++ ) {
             int creatableDocumentTypeId = allowedDocumentTypeIds[i];
@@ -198,14 +198,14 @@ public class DocumentPermissionSetMapper {
         return table;
     }
 
-    private final static int EDIT_DOCINFO_PERMISSION_ID = IMCConstants.PERM_EDIT_DOCINFO;
-    private final static int EDIT_PERMISSIONS_PERMISSION_ID = IMCConstants.PERM_EDIT_PERMISSIONS;
-    private final static int EDIT_DOCUMENT_PERMISSION_ID = IMCConstants.PERM_EDIT_DOCUMENT;
+    private final static int EDIT_DOCINFO_PERMISSION_ID = ImcmsConstants.PERM_EDIT_DOCINFO;
+    private final static int EDIT_PERMISSIONS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_PERMISSIONS;
+    private final static int EDIT_DOCUMENT_PERMISSION_ID = ImcmsConstants.PERM_EDIT_DOCUMENT;
 
-    private final static int EDIT_TEXT_DOCUMENT_IMAGES_PERMISSION_ID = IMCConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES;
-    private final static int EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID = IMCConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS;
-    private final static int EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID = IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE;
-    private final static int EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID = IMCConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES;
+    private final static int EDIT_TEXT_DOCUMENT_IMAGES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES;
+    private final static int EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS;
+    private final static int EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE;
+    private final static int EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES;
 
     void setDocumentPermissionSetFromBits( DocumentPermissionSetDomainObject documentPermissionSet, int permissionBits ) {
         documentPermissionSet.setEditDocumentInformation( 0 != ( permissionBits & EDIT_DOCINFO_PERMISSION_ID ) );
@@ -239,7 +239,7 @@ public class DocumentPermissionSetMapper {
         String table = getExtendedPermissionsTable( forNewDocuments );
         String sqlStr = "SELECT permission_data FROM " + table
                         + " WHERE meta_id = ? AND set_id = ? AND permission_id = "
-                        + IMCConstants.PERM_CREATE_DOCUMENT;
+                        + ImcmsConstants.PERM_CREATE_DOCUMENT;
         String[] documentTypeIdStrings = service.sqlQuery( sqlStr, new String[]{
             "" + metaId, "" + documentPermissionSet.getTypeId()
         } );

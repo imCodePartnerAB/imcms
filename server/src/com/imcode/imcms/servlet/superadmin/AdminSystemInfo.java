@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import imcode.external.diverse.VariableManager;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -26,7 +26,7 @@ public class AdminSystemInfo extends Administrator {
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         imcode.server.SystemData sysData = imcref.getSystemData();
 
@@ -55,7 +55,7 @@ public class AdminSystemInfo extends Administrator {
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Lets check if the user is an admin, otherwise throw him out.
         UserDomainObject user = Utility.getLoggedOnUser( req );

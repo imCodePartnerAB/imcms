@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.admin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCConstants;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.textdocument.MenuDomainObject;
@@ -36,10 +36,10 @@ public class SaveSort extends HttpServlet {
         Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !imcref.checkDocAdminRights( documentId, user, IMCConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) ) {	// Checking to see if user may edit this
+        if ( !imcref.checkDocAdminRights( documentId, user, ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) ) {	// Checking to see if user may edit this
             String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
             if ( output != null ) {
                 out.write( output );
@@ -68,7 +68,7 @@ public class SaveSort extends HttpServlet {
 
         selectedChildrenIds = req.getParameterValues( "archiveDelBox" );
 
-        user.put( "flags", new Integer( IMCConstants.DISPATCH_FLAG__EDIT_MENU ) );
+        user.put( "flags", new Integer( ImcmsConstants.DISPATCH_FLAG__EDIT_MENU ) );
 
         int menuIndex = Integer.parseInt( req.getParameter( "doc_menu_no" ) );
         String sortParam = req.getParameter( "sort" );
@@ -124,22 +124,22 @@ public class SaveSort extends HttpServlet {
             }
         }
 
-        res.sendRedirect( "AdminDoc?meta_id=" + documentId + "&flags=" + IMCConstants.DISPATCH_FLAG__EDIT_MENU
+        res.sendRedirect( "AdminDoc?meta_id=" + documentId + "&flags=" + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU
                           + "&editmenu="
                           + menuIndex );
     }
 
-    private void logSortOrderUpdateToMainLog( IMCServiceInterface imcref, int documentId, UserDomainObject user ) {
+    private void logSortOrderUpdateToMainLog( ImcmsServices imcref, int documentId, UserDomainObject user ) {
         imcref.updateMainLog( "Child sort order for [" + documentId + "] updated by user: [" +
                     user.getFullName() + "]" );
     }
 
-    private void logArchivationToMainLog( IMCServiceInterface imcref, String[] selectedChildrenIds, int documentId, UserDomainObject user ) {
+    private void logArchivationToMainLog( ImcmsServices imcref, String[] selectedChildrenIds, int documentId, UserDomainObject user ) {
         imcref.updateMainLog( "Childs [" + StringUtils.join( selectedChildrenIds, ", " ) + "] from " +
                          "[" + documentId + "] archived by user: [" + user.getFullName() + "]" );
     }
 
-    private void logDeletionToMainLog( String[] selectedChildrenIds, IMCServiceInterface imcref, TextDocumentDomainObject document, int menuIndex, UserDomainObject user ) {
+    private void logDeletionToMainLog( String[] selectedChildrenIds, ImcmsServices imcref, TextDocumentDomainObject document, int menuIndex, UserDomainObject user ) {
         for ( int i = 0; i < selectedChildrenIds.length; i++ ) {
             int childId = Integer.parseInt( selectedChildrenIds[i] );
             imcref.updateMainLog( "Link from [" + document.getId() + "] in menu [" + menuIndex + "] to ["

@@ -3,7 +3,7 @@
                  imcode.server.document.DocumentDomainObject,
                  com.imcode.imcms.servlet.superadmin.DocumentReferences,
                  org.apache.commons.lang.StringEscapeUtils,
-                 imcode.server.ApplicationServer,
+                 imcode.server.Imcms,
                  imcode.server.document.DocumentMapper,
                  imcode.util.Utility,
                  imcode.server.user.UserDomainObject,
@@ -50,11 +50,11 @@ if (null != formData.documentsIterator) { %>
 	<td><b><? web/imcms/lang/jsp/heading_status ?></b></td>
 	<td>&nbsp; <b><? imcms/lang/jsp/document_list.jsp/heading_child_documents ?></b></td>
 </tr><%
-	
-	DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+
+	DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 	UserDomainObject user = Utility.getLoggedOnUser(request);
 	Map documentTypes = documentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user) ;
-	
+
 	while ( formData.documentsIterator.hasNext() ) {
 		DocumentDomainObject document = (DocumentDomainObject)formData.documentsIterator.next();
 		DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingDocument = documentMapper.getDocumentMenuPairsContainingDocument( document ); %>

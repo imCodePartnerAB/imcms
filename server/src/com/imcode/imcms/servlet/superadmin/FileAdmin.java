@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.MultipartFormdataParser;
@@ -69,7 +69,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !user.isSuperAdmin() ) {
@@ -180,7 +180,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private File[] getRoots() throws IOException {
-        String rootpaths = ApplicationServer.getIMCServiceInterface().getConfig().getFileAdminRootPaths();
+        String rootpaths = Imcms.getServices().getConfig().getFileAdminRootPaths();
         List rootList = new ArrayList();
         if ( rootpaths != null ) {
             StringTokenizer st = new StringTokenizer( rootpaths, ":;" );
@@ -198,7 +198,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private boolean move( String[] files, File sourceDir, File destDir, File dir1, File dir2, HttpServletResponse res,
-                          UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+                          UserDomainObject user, ImcmsServices imcref ) throws IOException {
         boolean handledOutput = false;
         if ( files != null && !sourceDir.equals( destDir ) ) {
             File[] sourceFileTree = makeFileTreeList( makeAbsoluteFileList( sourceDir, files ), false );
@@ -242,7 +242,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private boolean copy( String[] files, File sourceDir, File destDir, File dir1, File dir2, HttpServletResponse res,
-                          UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+                          UserDomainObject user, ImcmsServices imcref ) throws IOException {
         boolean handledOutput = false;
         if ( files != null && !sourceDir.equals( destDir ) ) {
             File[] sourceFileTree = makeFileTreeList( makeAbsoluteFileList( sourceDir, files ), true );
@@ -282,7 +282,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private boolean rename( String[] files, String name, File dir, File dir1, File dir2, HttpServletResponse res,
-                            UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+                            UserDomainObject user, ImcmsServices imcref ) throws IOException {
         boolean handledOutput = false;
         if ( files != null && files.length == 1 ) {	//Has the user chosen just one file?
             if ( name != null && name.length() > 0 ) {
@@ -323,7 +323,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private boolean delete( File dir, String[] files, File dir1, File dir2, HttpServletResponse res,
-                            UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+                            UserDomainObject user, ImcmsServices imcref ) throws IOException {
         boolean handledOutput = false;
         File[] farray = makeFileTreeList( makeAbsoluteFileList( dir, files ), false );
         File[] filelist = makeRelativeFileList( dir, farray );
@@ -335,7 +335,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private boolean makeDirectory( String name, File dir, File dir1, File dir2, HttpServletResponse res,
-                                   UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+                                   UserDomainObject user, ImcmsServices imcref ) throws IOException {
         boolean handledOutput = false;
         if ( name != null && name.length() > 0 ) {
             File newname = new File( dir, name );
@@ -350,7 +350,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private boolean upload( MultipartFormdataParser mp, File destDir, File dir1, File dir2, HttpServletResponse res,
-                            UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+                            UserDomainObject user, ImcmsServices imcref ) throws IOException {
         boolean handledOutput = false;
         String fileContents = mp.getParameter( "file" );
         if ( fileContents == null || fileContents.length() < 1 ) {
@@ -414,7 +414,7 @@ public class FileAdmin extends HttpServlet {
 
     private void outputMoveOverwriteWarning( String option_list, File sourceDir, File destDir,
                                              String file_list, File dir1, File dir2, HttpServletResponse res,
-                                             UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+                                             UserDomainObject user, ImcmsServices imcref ) throws IOException {
         List vec = new ArrayList();
         vec.add( "#filelist#" );
         vec.add( option_list );
@@ -435,7 +435,7 @@ public class FileAdmin extends HttpServlet {
 
     private void ouputCopyOverwriteWarning( String option_list, File sourceDir, File destDir,
                                             String file_list, File dir1, File dir2, HttpServletResponse res,
-                                            UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+                                            UserDomainObject user, ImcmsServices imcref ) throws IOException {
         List vec = new ArrayList();
         vec.add( "#filelist#" );
         vec.add( option_list );
@@ -456,7 +456,7 @@ public class FileAdmin extends HttpServlet {
 
     private void outputFileExistedAndTheOriginalWasRenamedNotice( File dir1, File dir2, String newFilename,
                                                                   HttpServletResponse res, UserDomainObject user,
-                                                                  IMCServiceInterface imcref ) throws IOException {
+                                                                  ImcmsServices imcref ) throws IOException {
         List vec = new ArrayList();
         vec.add( "#dir1#" );
         vec.add( dir1.getCanonicalPath() );
@@ -470,7 +470,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private void outputBlankFileError( File dir1, File dir2, HttpServletResponse res, UserDomainObject user,
-                                       IMCServiceInterface imcref ) throws IOException {
+                                       ImcmsServices imcref ) throws IOException {
         List vec = new ArrayList();
         vec.add( "#dir1#" );
         vec.add( dir1.getCanonicalPath() );
@@ -482,7 +482,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private void outputDeleteWarning( File[] filelist, File dir1, File dir2, File sourceDir, HttpServletResponse res,
-                                      UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+                                      UserDomainObject user, ImcmsServices imcref ) throws IOException {
         StringBuffer files = new StringBuffer();
         StringBuffer optionlist = new StringBuffer();
         for ( int i = 0; i < filelist.length; i++ ) {
@@ -511,7 +511,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private void outputBlankFilenameError( File dir1, File dir2, HttpServletResponse res, UserDomainObject user,
-                                           IMCServiceInterface imcref ) throws IOException {
+                                           ImcmsServices imcref ) throws IOException {
         List vec = new ArrayList();
         vec.add( "#dir1#" );
         vec.add( dir1.getCanonicalPath() );
@@ -687,7 +687,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private String parseFileAdmin( UserDomainObject user, File fd1, File fd2 ) throws IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         File[] rootlist = getRoots();
         List vec = new ArrayList();

@@ -39,7 +39,7 @@ public class AdminQuestionsFile extends Administrator {
 
         // Lets get the server this request was aimed for
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         HttpSession session = req.getSession();
 
@@ -267,7 +267,7 @@ public class AdminQuestionsFile extends Administrator {
         return true;
     }
 
-    private List getNewQuestion( IMCServiceInterface imcref, String whichFile ) {
+    private List getNewQuestion( ImcmsServices imcref, String whichFile ) {
 
         List questionList = imcref.getQuoteList( whichFile + ".poll.txt" );
 

@@ -1,12 +1,12 @@
 package com.imcode.imcms.api;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 
 public abstract class ContentManagementSystem {
 
-    protected IMCServiceInterface service;
+    protected ImcmsServices service;
     protected SecurityChecker securityChecker;
 
     public abstract UserService getUserService();
@@ -20,14 +20,14 @@ public abstract class ContentManagementSystem {
     public abstract TemplateService getTemplateService();
 
     public static ContentManagementSystem getContentManagementSystem( String userName, String password ) {
-        IMCServiceInterface imcref;
-        imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref;
+        imcref = Imcms.getServices();
         UserDomainObject user = imcref.verifyUser( userName, password );
         ContentManagementSystem cms = new DefaultContentManagementSystem( imcref, user );
         return cms;
     }
 
-    IMCServiceInterface getInternal() {
+    ImcmsServices getInternal() {
         return service ;
     }
 

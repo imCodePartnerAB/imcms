@@ -3,8 +3,8 @@ package com.imcode.imcms.servlet.billboard;
 import imcode.external.diverse.SettingsAccessor;
 import imcode.external.diverse.VariableManager;
 import imcode.server.user.UserDomainObject;
-import imcode.server.IMCServiceInterface;
-import imcode.server.ApplicationServer;
+import imcode.server.ImcmsServices;
+import imcode.server.Imcms;
 import imcode.util.Utility;
 
 import javax.servlet.http.HttpServletRequest;
@@ -107,7 +107,7 @@ public class BillBoardError extends BillBoard {
         vm.addProperty( "IMAGE_URL", imagePath );
         vm.addProperty( "SERVLET_URL", "" );
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+        ImcmsServices imcref = Imcms.getServices() ;
         String html = imcref.getTemplateFromSubDirectoryOfDirectory( htmlFile, user, vm.getTagsAndData(), "104", "original"  );
 
         // Lets send settings to a browser

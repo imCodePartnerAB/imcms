@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -26,7 +26,7 @@ public class SaveInPage extends HttpServlet {
      * doPost()
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         DocumentMapper documentMapper = imcref.getDocumentMapper();
 
@@ -55,7 +55,7 @@ public class SaveInPage extends HttpServlet {
         }
 
         // Check if user has write rights
-        if ( !imcref.checkDocAdminRights( documentId, user, imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE )
+        if ( !imcref.checkDocAdminRights( documentId, user, imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE )
              || !requestedTemplateIsAllowed
              || !requestedTemplateGroupIsAllowed ) {	// Checking to see if user may edit this
             Utility.setDefaultHtmlContentType( res );
@@ -135,7 +135,7 @@ public class SaveInPage extends HttpServlet {
             Utility.setDefaultHtmlContentType( res );
             Writer out = res.getWriter();
 
-            user.put( "flags", new Integer( imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) );
+            user.put( "flags", new Integer( imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) );
 
             if ( null != requestedTemplateGroup ) {
                 user.setTemplateGroup( requestedTemplateGroup );

@@ -13,9 +13,9 @@ package com.imcode.imcms.servlet.conference;
 import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.ParsedTextFile;
 import imcode.external.diverse.VariableManager;
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.HTMLConv;
-import imcode.server.IMCServiceInterface;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
@@ -87,7 +87,7 @@ public class ConfReply extends Conference {
             String ascSortOrder = ( req.getParameter( "SORT_ORDER" ) == null ) ? "0" : ( req.getParameter( "SORT_ORDER" ) );
 
             // Ok, Lets set the users sortorder preference
-            ApplicationServer.getIMCServiceInterface().sqlUpdateProcedure( "A_ConfUsersSetReplyOrder", new String[]{metaId, userId, ascSortOrder} );
+            Imcms.getServices().sqlUpdateProcedure( "A_ConfUsersSetReplyOrder", new String[]{metaId, userId, ascSortOrder} );
             this.doGet( req, res );
             return;
         }
@@ -119,7 +119,7 @@ public class ConfReply extends Conference {
         }
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         String[][] sqlAnswer = imcref.sqlProcedureMulti( "A_GetAllRepliesInDisc", new String[]{discId, userId} );
 

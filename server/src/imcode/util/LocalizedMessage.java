@@ -1,7 +1,7 @@
 package imcode.util;
 
 import imcode.server.user.UserDomainObject;
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.util.Utility;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +16,6 @@ public class LocalizedMessage {
 
     public String toLocalizedString(HttpServletRequest request) {
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        return ApplicationServer.getIMCServiceInterface().getLanguageProperties( user ).getProperty( languageKey ) ;
+        return Imcms.getServices().getLanguageProperties( user ).getProperty( languageKey ) ;
     }
 }

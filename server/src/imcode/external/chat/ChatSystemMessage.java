@@ -1,6 +1,6 @@
 package imcode.external.chat;
 
-import imcode.server.IMCServiceInterface;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject ;
 
 import java.util.Vector;
@@ -27,7 +27,7 @@ public class ChatSystemMessage extends ChatMessage {
         return member;
     }
 
-    public String getLine( boolean showPrivateMessages, ChatMember lineViewer, IMCServiceInterface imcref,
+    public String getLine( boolean showPrivateMessages, ChatMember lineViewer, ImcmsServices imcref,
                            UserDomainObject user, String libName ) {
         if (!lineViewer.isShowEnterAndLeaveMessagesEnabled() && (message == ENTER_MSG || message == LEAVE_MSG)) {
             return "" ;
@@ -52,7 +52,7 @@ public class ChatSystemMessage extends ChatMessage {
         return imcref.getTemplateFromSubDirectoryOfDirectory( "system_msg.html", user, vLine, "103", libName ).trim() + "<br>\n";
     }
 
-    private String getMessageString( IMCServiceInterface imcref, UserDomainObject user, String libName ) {
+    private String getMessageString( ImcmsServices imcref, UserDomainObject user, String libName ) {
         String templateName = null;
         switch ( message ) {
             case ENTER_MSG:
@@ -71,7 +71,7 @@ public class ChatSystemMessage extends ChatMessage {
         return imcref.getTemplateFromSubDirectoryOfDirectory( templateName, user, null, "103", libName ).trim();
     }
 
-    public String getLogMsg( IMCServiceInterface imcref, UserDomainObject user, String libName ) {
+    public String getLogMsg( ImcmsServices imcref, UserDomainObject user, String libName ) {
         return "\t<" + member.getName()+">\t("+member.getIpNr()+")\t[--- " + getMessageString(imcref,user,libName)+ "]";
     }
 
@@ -95,5 +95,5 @@ public class ChatSystemMessage extends ChatMessage {
         }
         return member.getName()+" "+event ;
     }
-    
+
 }

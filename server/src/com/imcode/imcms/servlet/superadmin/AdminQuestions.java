@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 
-public class AdminQuestions extends Administrator implements imcode.server.IMCConstants {
+public class AdminQuestions extends Administrator implements imcode.server.ImcmsConstants {
 
     private final static Logger log = Logger.getLogger( AdminQuestions.class.getName() );
 
@@ -42,7 +42,7 @@ public class AdminQuestions extends Administrator implements imcode.server.IMCCo
         Writer out = res.getWriter();
 
         // Lets verify that the user who tries to admin a fortune is an admin
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (user.isSuperAdmin() == false) {
             String header = "Error in AdminQuestions.";
@@ -93,7 +93,7 @@ public class AdminQuestions extends Administrator implements imcode.server.IMCCo
         PrintWriter out = res.getWriter();
 
         // Lets get the server this request was aimed for
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         HttpSession session = req.getSession();
 

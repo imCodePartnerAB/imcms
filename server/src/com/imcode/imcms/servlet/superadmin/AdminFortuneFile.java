@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.HTMLConv;
-import imcode.server.IMCServiceInterface;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -38,7 +38,7 @@ public class AdminFortuneFile extends Administrator {
 
         // Lets get the server this request was aimed for
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Get the session
         HttpSession session = req.getSession();

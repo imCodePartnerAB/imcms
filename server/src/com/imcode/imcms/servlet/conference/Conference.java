@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.conference;
 
 import imcode.external.diverse.*;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -102,7 +102,7 @@ public class Conference extends HttpServlet {
      */
 
     File getExternalTemplateRootFolder( HttpServletRequest req ) {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         int metaId = this.getMetaId( req );
         UserDomainObject user = Utility.getLoggedOnUser( req );
@@ -119,7 +119,7 @@ public class Conference extends HttpServlet {
     File getExternalTemplateFolder( HttpServletRequest req ) {
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         int metaId = this.getMetaId( req );
@@ -132,7 +132,7 @@ public class Conference extends HttpServlet {
      * Returns the foldername where the templates are situated for a certain metaid.
      */
     private String getTemplateLibName( int meta_id ) {
-        String libName = ApplicationServer.getIMCServiceInterface().sqlProcedureStr( "A_GetTemplateLib", new String[]{"" + meta_id} );
+        String libName = Imcms.getServices().sqlProcedureStr( "A_GetTemplateLib", new String[]{"" + meta_id} );
         if ( libName == null ) {
             libName = "original";
         }
@@ -188,7 +188,7 @@ public class Conference extends HttpServlet {
     }
 
     protected String getTemplate( String htmlFile, UserDomainObject user, List tagsAndData ) {
-        return ApplicationServer.getIMCServiceInterface().getTemplateFromSubDirectoryOfDirectory( htmlFile, user, tagsAndData, "102", "original") ;
+        return Imcms.getServices().getTemplateFromSubDirectoryOfDirectory( htmlFile, user, tagsAndData, "102", "original") ;
     }
 
     /**
@@ -209,7 +209,7 @@ public class Conference extends HttpServlet {
     boolean prepareUserForConf( HttpServletRequest req, HttpServletResponse res,
                                 MetaInfo.Parameters params, UserDomainObject user ) throws IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+        ImcmsServices imcref = Imcms.getServices() ;
         // Lets get userparameters
         String metaId = "" + params.getMetaId();
 
@@ -267,7 +267,7 @@ public class Conference extends HttpServlet {
         int metaId = this.getMetaId( req );
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         String lang_prefix = imcref.getDefaultLanguageAsIso639_2();
@@ -299,7 +299,7 @@ public class Conference extends HttpServlet {
             throws IOException {
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         String adminLink = "&nbsp;";
 
@@ -333,7 +333,7 @@ public class Conference extends HttpServlet {
     private String getUnAdminButtonLink( HttpServletRequest req, imcode.server.user.UserDomainObject user, VariableManager unAdminButtonVM ) {
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         String unAdminLink = "&nbsp;";
         int intMetaId = getMetaId( req );
@@ -435,7 +435,7 @@ public class Conference extends HttpServlet {
             throws IOException {
 
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         //is user authorized?
         DocumentMapper documentMapper = imcref.getDocumentMapper();
@@ -453,11 +453,11 @@ public class Conference extends HttpServlet {
     /**
      * check if user has right to edit
      *
-     * @param imcref imCMS IMCServiceInterface instance
+     * @param imcref imCMS ImcmsServices instance
      * @param metaId metaId for conference
      * @param user
      */
-    boolean userHasRightToEdit( IMCServiceInterface imcref, int metaId,
+    boolean userHasRightToEdit( ImcmsServices imcref, int metaId,
                                 imcode.server.user.UserDomainObject user ) {
 
         DocumentMapper documentMapper = imcref.getDocumentMapper();
@@ -469,11 +469,11 @@ public class Conference extends HttpServlet {
     /**
      * check if user is admin and has rights to edit
      *
-     * @param imcref imCMS IMCServiceInterface instance
+     * @param imcref imCMS ImcmsServices instance
      * @param metaId metaId for conference
      * @param user
      */
-    boolean userHasAdminRights( IMCServiceInterface imcref, int metaId,
+    boolean userHasAdminRights( ImcmsServices imcref, int metaId,
                                 imcode.server.user.UserDomainObject user ) {
         return ( imcref.checkDocAdminRights( metaId, user ) &&
                 imcref.checkDocAdminRights( metaId, user, 65536 ) );
@@ -496,7 +496,7 @@ public class Conference extends HttpServlet {
 
     /** verify that the user is a member of a conference
     */
-    boolean userIsMemberOfConference(int metaId, int userId, IMCServiceInterface imcref){
+    boolean userIsMemberOfConference(int metaId, int userId, ImcmsServices imcref){
         String foundId = imcref.sqlProcedureStr( "A_MemberInConf", new String[]{
         ""+metaId, ""+userId });
         if((""+userId).equals(foundId)){
@@ -506,7 +506,7 @@ public class Conference extends HttpServlet {
         }
     }
 
-    void addAllConferenceSelfRegRolesToUser (UserDomainObject user, String metaId, IMCServiceInterface imcref ){
+    void addAllConferenceSelfRegRolesToUser (UserDomainObject user, String metaId, ImcmsServices imcref ){
 
         // Ok, lets get the roles the user will get when he is selfregistering  and
         // add those roles to the user
@@ -528,11 +528,11 @@ public class Conference extends HttpServlet {
         }
     }
 
-    void addUserToOneConference(UserDomainObject user, String metaId, IMCServiceInterface imcref){
+    void addUserToOneConference(UserDomainObject user, String metaId, ImcmsServices imcref){
         imcref.sqlUpdateProcedure( "A_ConfUsersAdd", new String[]{user.getId()+"", metaId, user.getFirstName(), user.getLastName()} );
     }
 
-    String[] getAllSelfregRolesId(String metaId, IMCServiceInterface imcref) {
+    String[] getAllSelfregRolesId(String metaId, ImcmsServices imcref) {
         String[] selfRegRolesId = imcref.sqlProcedure( "A_SelfRegRoles_GetAll2", new String[]{"" + metaId} );
         return selfRegRolesId;
     }

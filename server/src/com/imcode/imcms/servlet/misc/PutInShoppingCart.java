@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.misc;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.parser.MapSubstitution;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
@@ -166,7 +166,7 @@ public class PutInShoppingCart extends HttpServlet {
         String forwardTo;
 
         if ( null != req.getParameter( "send" ) || null != req.getParameter( "send.x" ) ) {
-            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+            ImcmsServices imcref = Imcms.getServices();
 
             UserDomainObject user = Utility.getLoggedOnUser( req );
 
@@ -224,7 +224,7 @@ public class PutInShoppingCart extends HttpServlet {
 
     private void sendMail( HttpServletRequest req, UserDomainObject user ) throws IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         String mailFromAddress = Prefs.get( "mail-from-address", SHOP_CONFIG );
         String mailToAddress = Prefs.get( "mail-to-address", SHOP_CONFIG );

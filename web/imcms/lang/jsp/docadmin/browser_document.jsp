@@ -1,5 +1,5 @@
 <%@ page contentType="text/html" import="com.imcode.imcms.servlet.admin.DocumentComposer,
-                                         imcode.server.ApplicationServer,
+                                         imcode.server.Imcms,
                                          imcode.server.document.DocumentMapper,
                                          imcode.server.document.DocumentDomainObject,
                                          imcode.server.document.BrowserDocumentDomainObject,
@@ -51,7 +51,7 @@
         <%
             Map addedBrowsers = (Map)request.getAttribute( EditBrowserDocumentPageFlow.REQUEST_ATTRIBUTE__ADDED_BROWSERS );
 
-            BrowserDocumentDomainObject.Browser[] allBrowsers = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getAllBrowsers() ;
+            BrowserDocumentDomainObject.Browser[] allBrowsers = Imcms.getServices().getDocumentMapper().getAllBrowsers() ;
             Arrays.sort(allBrowsers) ;
 
             for ( int i = 0; i < allBrowsers.length; i++ ) {

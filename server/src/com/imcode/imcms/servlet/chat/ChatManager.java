@@ -5,8 +5,8 @@ import imcode.external.chat.ChatError;
 import imcode.external.chat.ChatMember;
 import imcode.external.chat.ChatSystemMessage;
 import imcode.external.diverse.MetaInfo;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -65,7 +65,7 @@ public class ChatManager extends ChatBase {
                 ChatMember theChatMember = (ChatMember)session.getAttribute( "theChatMember" );
                 if ( theChatMember != null ) {
                     ChatSystemMessage systemMessage = new ChatSystemMessage( theChatMember, ChatSystemMessage.USER_TIMEDOUT_MSG );
-                    IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+                    ImcmsServices imcref = Imcms.getServices();
                     logOutMember( theChatMember, systemMessage, imcref );
                 }
                 // log("Ok nu sätter vi metavärdena");

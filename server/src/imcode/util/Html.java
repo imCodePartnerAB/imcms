@@ -2,7 +2,7 @@ package imcode.util;
 
 import com.imcode.imcms.servlet.admin.AdminDoc;
 import com.imcode.imcms.servlet.admin.ChangeImage;
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
@@ -113,7 +113,7 @@ public class Html {
     }
 
     public static String getLinkedStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         String statusIconTemplate = documentMapper.getStatusIconTemplate( document, user );
         if ( documentMapper.userHasMoreThanReadPermissionOnDocument( user, document ) ) {
             statusIconTemplate = "<a href=\"AdminDoc?meta_id=" + document.getId() + "&"

@@ -1,6 +1,6 @@
 package com.imcode.imcms.flow;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
@@ -56,7 +56,7 @@ public class EditBrowserDocumentPageFlow extends EditDocumentPageFlow {
     }
 
     private Map getAddedBrowsersFromRequest( HttpServletRequest request ) {
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
         Map addedBrowsers = new HashMap();
 

@@ -1,7 +1,7 @@
 package imcode.server.parser;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.textdocument.MenuDomainObject;
@@ -42,7 +42,7 @@ class MenuParserSubstitution implements Substitution {
 
     private String getMenuModePrefix( int menuIndex, String labelAttribute ) {
         Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
-        IMCServiceInterface serverObject = parserParameters.getDocumentRequest().getServerObject();
+        ImcmsServices serverObject = parserParameters.getDocumentRequest().getServerObject();
         UserDomainObject user = parserParameters.getDocumentRequest().getUser();
         MenuDomainObject menu = getMenuByIndex( menuIndex );
         List parseTags = Arrays.asList( new String[]{
@@ -208,7 +208,7 @@ class MenuParserSubstitution implements Substitution {
                                                                              Properties menuAttributes,
                                                                              PatternMatcher patMat,
                                                                              final int menuIndex ) {
-        final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         Iterator menuItemsIterator = new FilterIterator( Arrays.asList( menu.getMenuItems() ).iterator(), new Predicate() {
             public boolean evaluate( Object o ) {
                 DocumentDomainObject document = ( (MenuItemDomainObject)o ).getDocument();

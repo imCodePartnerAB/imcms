@@ -1,6 +1,6 @@
 package imcode.external.chat;
 
-import imcode.server.IMCServiceInterface;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 
 import java.text.DateFormat;
@@ -33,7 +33,7 @@ public abstract class ChatMessage {
         return dateFormat.format(dateTime) ;
     }
 
-    public abstract String getLine( boolean showPrivateMessages, ChatMember myMember, IMCServiceInterface imcref,
+    public abstract String getLine( boolean showPrivateMessages, ChatMember myMember, ImcmsServices imcref,
                                     UserDomainObject user, String libName ) ;
 
 }

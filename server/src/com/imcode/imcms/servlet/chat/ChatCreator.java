@@ -95,7 +95,7 @@ public class ChatCreator extends ChatBase {
                 myChat.setFontSize(Integer.parseInt(req.getParameter("font")));
             }
 
-            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+            ImcmsServices imcref = Imcms.getServices();
 
             //lets save to db
             if (req.getParameter("okChat") != null) {
@@ -209,7 +209,7 @@ public class ChatCreator extends ChatBase {
 
     } // End POST
 
-    private void createChat( int metaId, Chat myChat, IMCServiceInterface imcref,
+    private void createChat( int metaId, Chat myChat, ImcmsServices imcref,
                              UserDomainObject user, HttpServletResponse res ) throws IOException {
         log("okChat");
 
@@ -352,7 +352,7 @@ public class ChatCreator extends ChatBase {
     } // End doGet
 
     private String getTemplateButtonHtml(int metaId, UserDomainObject user) {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         return imcref.getTemplateFromSubDirectoryOfDirectory( HTML_TEMPLATES_BUTTON, user, null, "103", getTemplateSetDirectoryName( metaId));
     }
 

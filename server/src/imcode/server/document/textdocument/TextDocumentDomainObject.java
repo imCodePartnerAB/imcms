@@ -1,6 +1,6 @@
 package imcode.server.document.textdocument;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentVisitor;
@@ -161,7 +161,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private synchronized LazilyLoadedTextDocumentAttributes getLazilyLoadedTextDocumentAttributes() {
         if ( null == lazilyLoadedTextDocumentAttributes ) {
             lazilyLoadedTextDocumentAttributes = new LazilyLoadedTextDocumentAttributes();
-            DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             documentMapper.initLazilyLoadedTextDocumentAttributes( this );
         }
         return lazilyLoadedTextDocumentAttributes;

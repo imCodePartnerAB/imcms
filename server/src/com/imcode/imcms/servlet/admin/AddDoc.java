@@ -1,9 +1,9 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.*;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCConstants;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -32,7 +32,7 @@ public class AddDoc extends HttpServlet {
         int parentId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__PARENT_DOCUMENT_ID ) );
         int documentTypeId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__DOCUMENT_TYPE_ID ) );
 
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
         DocumentDomainObject parentDocument = documentMapper.getDocument( parentId ) ;
         UserDomainObject user = Utility.getLoggedOnUser( request );
@@ -85,7 +85,7 @@ public class AddDoc extends HttpServlet {
         vec.add( "#searchResults#" );
         vec.add( "" );
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser( request );
         // Lets fix the sortby list, first get the displaytexts from the database
@@ -137,7 +137,7 @@ public class AddDoc extends HttpServlet {
 
         public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
             response.sendRedirect( "AdminDoc?meta_id=" + parentDocument.getId() + "&flags="
-                                   + IMCConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + parentMenuIndex );
+                                   + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + parentMenuIndex );
         }
     }
 
@@ -152,7 +152,7 @@ public class AddDoc extends HttpServlet {
         }
 
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
-            final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+            final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             documentMapper.saveNewDocument( document, user );
             documentMapper.addToMenu( parentDocument, parentMenuIndex, document, user );
         }

@@ -2,9 +2,9 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.*;
 import com.imcode.imcms.servlet.DocumentFinder;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCConstants;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
@@ -15,11 +15,7 @@ import imcode.server.document.index.QueryParser;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.ImageSize;
-import imcode.util.ImcmsImageUtils;
-import imcode.util.LocalizedMessage;
-import imcode.util.Utility;
-import org.apache.commons.lang.ArrayUtils;
+import imcode.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
@@ -34,9 +30,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Iterator;
 
 public class ChangeImage extends HttpServlet {
 
@@ -74,7 +70,7 @@ public class ChangeImage extends HttpServlet {
 
         ImageDomainObject image = getImageFromRequest( request );
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         final TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__DOCUMENT_ID ) ) );
         final int imageIndex = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__IMAGE_INDEX ) );
@@ -100,7 +96,7 @@ public class ChangeImage extends HttpServlet {
         } else {
             document.setImage( imageIndex, image );
             documentMapper.saveDocument( document, user );
-            imcref.updateMainLog( "ImageRef " + imageIndex + " =" + image.getUrl() +
+            imcref.updateMainLog( "ImageRef " + imageIndex + " =" + image.getUrlPathRelativeToContextPath() +
                                   " in  " + "[" + document.getId() + "] modified by user: [" +
                                   user.getFullName() + "]" );
             goBack( document, response );
@@ -111,20 +107,21 @@ public class ChangeImage extends HttpServlet {
                                  UserDomainObject user, final ImageDomainObject image, final int imageIndex,
                                  HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)documentMapper.createDocumentOfTypeFromParent( DocumentDomainObject.DOCTYPE_FILE, document, user );
+        final EditFileDocumentPageFlow.ArrayMimeTypeRestriction mimeTypeRestriction = new EditFileDocumentPageFlow.ArrayMimeTypeRestriction( IMAGE_MIME_TYPES, ERROR_MESSAGE___ONLY_ALLOWED_TO_UPLOAD_IMAGES );
         DocumentPageFlow.SaveDocumentCommand saveNewImageFileDocument = new CreateDocumentPageFlow.SaveDocumentCommand() {
             public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
                 FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
                 Map files = fileDocument.getFiles();
                 for ( Iterator iterator = files.values().iterator(); iterator.hasNext(); ) {
                     FileDocumentDomainObject.FileDocumentFile file = (FileDocumentDomainObject.FileDocumentFile)iterator.next();
-
-                    if ( ArrayUtils.contains( IMAGE_MIME_TYPES, file.getMimeType() ) ) {
-                        fileDocument.setHeadline( file.getFilename() );
-                        fileDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
-                        documentMapper.saveNewDocument( document, user );
-                        image.setUrlAndClearSize( "../servlet/GetDoc?meta_id=" + document.getId() );
-                        break;
-                    }
+                    file.setCreatedAsImage( true );
+                }
+                FileDocumentDomainObject.FileDocumentFile file = (FileDocumentDomainObject.FileDocumentFile)files.values().iterator().next() ;
+                if ( null != file ) {
+                    fileDocument.setHeadline( file.getFilename() );
+                    fileDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
+                    documentMapper.saveNewDocument( document, user );
+                    image.setSourceAndClearSize( new ImageDomainObject.FileDocumentImageSource( fileDocument ) );
                 }
             }
         };
@@ -133,7 +130,6 @@ public class ChangeImage extends HttpServlet {
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
         };
-        EditFileDocumentPageFlow.ArrayMimeTypeRestriction mimeTypeRestriction = new EditFileDocumentPageFlow.ArrayMimeTypeRestriction( IMAGE_MIME_TYPES, ERROR_MESSAGE___ONLY_ALLOWED_TO_UPLOAD_IMAGES );
         DocumentPageFlow pageFlow = new EditFileDocumentPageFlow( fileDocument, getServletContext(), returnToImageEditPageCommand, saveNewImageFileDocument, mimeTypeRestriction );
         pageFlow.dispatch( request, response );
     }
@@ -149,7 +145,7 @@ public class ChangeImage extends HttpServlet {
         } );
         imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
             public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                image.setUrlAndClearSize( imageUrl );
+                image.setSourceAndClearSize( new ImageDomainObject.ImagesPathRelativePathImageSource( imageUrl ) );
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
         } );
@@ -171,7 +167,7 @@ public class ChangeImage extends HttpServlet {
                                         HttpServletResponse response ) throws IOException, ServletException {
                 FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)documentFound;
                 if ( null != imageFileDocument ) {
-                    image.setUrlAndClearSize( "../servlet/GetDoc?meta_id=" + imageFileDocument.getId() );
+                    image.setSourceAndClearSize( new ImageDomainObject.FileDocumentImageSource( imageFileDocument ) );
                 }
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
@@ -219,7 +215,10 @@ public class ChangeImage extends HttpServlet {
             image.setHorizontalSpace( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__HORIZONTAL_SPACE ) ) );
         } catch ( NumberFormatException ignored ) {
         }
-        image.setUrl( req.getParameter( REQUEST_PARAMETER__IMAGE_URL ) );
+        String imageUrl = req.getParameter( REQUEST_PARAMETER__IMAGE_URL );
+        ImageDomainObject.ImageSource imageSource = ImcmsImageUtils.createImageSourceFromString( imageUrl );
+
+        image.setSource( imageSource );
         image.setName( req.getParameter( REQUEST_PARAMETER__IMAGE_NAME ).trim() );
         image.setAlign( req.getParameter( REQUEST_PARAMETER__IMAGE_ALIGN ) );
         image.setAlternateText( req.getParameter( REQUEST_PARAMETER__IMAGE_ALT ) );
@@ -231,11 +230,11 @@ public class ChangeImage extends HttpServlet {
 
     private void goBack( TextDocumentDomainObject document, HttpServletResponse response ) throws IOException {
         response.sendRedirect( "AdminDoc?meta_id=" + document.getId() + "&flags="
-                               + IMCConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES );
+                               + ImcmsConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES );
     }
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( Integer.parseInt( request.getParameter( "meta_id" ) ) );
         ImageDomainObject image = document.getImage( getImageNumberParam( request ) );
@@ -252,7 +251,7 @@ public class ChangeImage extends HttpServlet {
     }
 
     private boolean userHasImagePermissionsOnDocument( UserDomainObject user, TextDocumentDomainObject document ) {
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( document, user );
         boolean imagePermission = textDocumentPermissionSet.getEditImages();
         return imagePermission;
@@ -343,12 +342,18 @@ public class ChangeImage extends HttpServlet {
 
         public String render( DocumentDomainObject document, HttpServletRequest request ) {
             UserDomainObject user = Utility.getLoggedOnUser( request );
-            ImageSize imageSize = ImcmsImageUtils.getImageSizeFromFileDocument( (FileDocumentDomainObject)document, "" );
+            FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)document;
+            ImageSize imageSize ;
+            try {
+                imageSize = new ImageParser().parseImageStream( imageFileDocument.getDefaultFile().getInputStreamSource().getInputStream() );
+            } catch ( IOException ioe ) {
+                imageSize = new ImageSize( 0, 0 );
+            }
             List values = Arrays.asList( new Object[]{
                 "imageUrl", "GetDoc?meta_id=" + document.getId(),
                 "imageSize", imageSize,
             } );
-            return ApplicationServer.getIMCServiceInterface().getAdminTemplate( "images/thumbnail.frag", user, values );
+            return Imcms.getServices().getAdminTemplate( "images/thumbnail.frag", user, values );
         }
 
         public LocalizedMessage getName() {

@@ -16,7 +16,7 @@ import java.util.*;
 
 public class GetDoc extends HttpServlet {
 
-    private final static Logger trackLog = Logger.getLogger( IMCConstants.ACCESS_LOG );
+    private final static Logger trackLog = Logger.getLogger( ImcmsConstants.ACCESS_LOG );
     private final static Logger log = Logger.getLogger( GetDoc.class.getName() );
     private final static String NO_ACTIVE_DOCUMENT_URL = "no_active_document.html";
     private final static String NO_PAGE_URL = "no_page.html";
@@ -34,7 +34,7 @@ public class GetDoc extends HttpServlet {
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         int meta_id;
         Utility.setDefaultHtmlContentType( res );
@@ -55,7 +55,7 @@ public class GetDoc extends HttpServlet {
 
     public static String getDoc(int meta_id, HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         Vector vec = new Vector();
         SystemData sysData = imcref.getSystemData();

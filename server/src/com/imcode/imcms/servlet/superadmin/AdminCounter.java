@@ -35,7 +35,7 @@ public class AdminCounter extends Administrator {
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         // Lets validate the session
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (!user.isSuperAdmin()) {

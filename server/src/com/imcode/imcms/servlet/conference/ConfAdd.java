@@ -31,7 +31,7 @@ public class ConfAdd extends Conference {
         String addType;
         addType = req.getParameter("ADDTYPE");
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         int metaId = Integer.parseInt(params.getProperty("META_ID"));
         if (userHasRightToEdit(imcref, metaId, user)) {
@@ -141,7 +141,7 @@ public class ConfAdd extends Conference {
             return;
         }
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         int metaId = Integer.parseInt(params.getProperty("META_ID"));
         if (userHasRightToEdit(imcref, metaId, user)) {

@@ -32,7 +32,7 @@ public class AdminDoc extends HttpServlet {
         int metaId = Integer.parseInt( req.getParameter( PARAMETER__META_ID ) );
         int flags = Integer.parseInt( (String)ObjectUtils.defaultIfNull( req.getParameter( PARAMETER__DISPATCH_FLAGS ), "0" ) );
 
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( metaId );
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !documentMapper.userHasMoreThanReadPermissionOnDocument( user, document ) ) {
@@ -44,7 +44,7 @@ public class AdminDoc extends HttpServlet {
         if ( null != httpPageFlow ) {
             httpPageFlow.dispatch( req, res );
         } else {
-            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+            ImcmsServices imcref = Imcms.getServices();
 
             // Find the start-page
             int start_doc = imcref.getSystemData().getStartDocument();
@@ -75,19 +75,19 @@ public class AdminDoc extends HttpServlet {
         DocumentMapper.SaveEditedDocumentCommand saveDocumentCommand = new DocumentMapper.SaveEditedDocumentCommand();
 
         HttpPageFlow httpPageFlow = null;
-        if ( IMCConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
+        if ( ImcmsConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
             httpPageFlow = new EditDocumentInformationPageFlow( document, returnCommand, saveDocumentCommand );
         } else if ( document instanceof BrowserDocumentDomainObject
-                    && IMCConstants.DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT == flags ) {
+                    && ImcmsConstants.DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT == flags ) {
             httpPageFlow = new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, returnCommand, saveDocumentCommand );
         } else if ( document instanceof HtmlDocumentDomainObject
-                    && IMCConstants.DISPATCH_FLAG__EDIT_HTML_DOCUMENT == flags ) {
+                    && ImcmsConstants.DISPATCH_FLAG__EDIT_HTML_DOCUMENT == flags ) {
             httpPageFlow = new EditHtmlDocumentPageFlow( (HtmlDocumentDomainObject)document, returnCommand, saveDocumentCommand );
         } else if ( document instanceof UrlDocumentDomainObject
-                    && IMCConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT == flags ) {
+                    && ImcmsConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT == flags ) {
             httpPageFlow = new EditUrlDocumentPageFlow( (UrlDocumentDomainObject)document, returnCommand, saveDocumentCommand );
         } else if ( document instanceof FileDocumentDomainObject
-                    && IMCConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags ) {
+                    && ImcmsConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags ) {
             httpPageFlow = new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), returnCommand, saveDocumentCommand, null );
 
         }
@@ -96,7 +96,7 @@ public class AdminDoc extends HttpServlet {
 
     public static String adminDoc( int meta_id, int parent_meta_id, UserDomainObject user, HttpServletRequest req,
                                    HttpServletResponse res ) throws IOException, ServletException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         String htmlStr;
         String lang_prefix = user.getLanguageIso639_2();

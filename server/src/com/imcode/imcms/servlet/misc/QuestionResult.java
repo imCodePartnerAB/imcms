@@ -22,13 +22,13 @@ import org.apache.log4j.Category;
 public class QuestionResult extends HttpServlet {
     private final static String RESULTTEMPLATE = "QuestionResult.htm";
 
-    private static Category log = Category.getInstance(imcode.server.IMCConstants.ERROR_LOG);
+    private static Category log = Category.getInstance(imcode.server.ImcmsConstants.ERROR_LOG);
 
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
 
         //get answer

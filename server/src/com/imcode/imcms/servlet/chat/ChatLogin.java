@@ -20,7 +20,7 @@ public class ChatLogin extends ChatBase {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         // Lets validate the session, e.g has the user logged in to Janus?
         HttpSession session = req.getSession( true );
 
@@ -145,7 +145,7 @@ public class ChatLogin extends ChatBase {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         HttpSession session = req.getSession( true );
 
@@ -273,7 +273,7 @@ public class ChatLogin extends ChatBase {
     /**
      * Test if user exist in the database
      */
-    private imcode.server.user.UserDomainObject allowUser( String user_name, String passwd, IMCServiceInterface imcref ) {
+    private imcode.server.user.UserDomainObject allowUser( String user_name, String passwd, ImcmsServices imcref ) {
         return imcref.verifyUser( user_name, passwd );
     }
 

@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -30,7 +30,7 @@ public class ListDocuments extends HttpServlet {
             return ;
         }
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         IntRange allDocumentsRange = new IntRange( getMinDocumentId( imcref ), getMaxDocumentId( imcref ) );
 
@@ -53,11 +53,11 @@ public class ListDocuments extends HttpServlet {
 
     }
 
-    private int getMaxDocumentId( IMCServiceInterface imcref ) {
+    private int getMaxDocumentId( ImcmsServices imcref ) {
         return Integer.parseInt( imcref.sqlQueryStr( "select max(meta_id) from meta", new String[0] ) );
     }
 
-    private int getMinDocumentId( IMCServiceInterface imcref ) {
+    private int getMinDocumentId( ImcmsServices imcref ) {
         return Integer.parseInt( imcref.sqlQueryStr( "select min(meta_id) from meta", new String[0] ) );
     }
 

@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,8 +11,8 @@ import java.io.IOException;
 public class StartDoc extends HttpServlet {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        int meta_id = ApplicationServer.getIMCServiceInterface().getSystemData().getStartDocument();
+        int meta_id = Imcms.getServices().getSystemData().getStartDocument();
         res.sendRedirect( "GetDoc?meta_id=" + meta_id );
     }
-    
+
 }

@@ -110,7 +110,7 @@ public class ChatControl extends ChatBase {
         String adminButtonKickOut = "";
         String chatAdminLink = "";
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         if (userHasAdminRights(imcref, meta_Id, user)) {
             chatAdminLink = createAdminButton(req, ADMIN_BUTTON, metaId, chatName, user);
@@ -136,7 +136,7 @@ public class ChatControl extends ChatBase {
         tags.add("#SETTINGS#");
         String result;
         if (myChat.settingsPage()) {
-            IMCServiceInterface imcref1 = ApplicationServer.getIMCServiceInterface();
+            ImcmsServices imcref1 = Imcms.getServices();
 
             int metaId1 = myChat.getChatId();
             result = imcref1.getTemplateFromSubDirectoryOfDirectory( SETTINGS_BUTTON, user, null, "103", getTemplateSetDirectoryName( metaId1));
@@ -170,7 +170,7 @@ public class ChatControl extends ChatBase {
             return;
         }
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         // Lets get parameters
         String metaId = params.getProperty("META_ID");
@@ -211,7 +211,7 @@ public class ChatControl extends ChatBase {
         }
     } // DoPost
 
-    private void logOut( HttpSession session, HttpServletResponse res, IMCServiceInterface imcref ) throws ServletException, IOException {
+    private void logOut( HttpSession session, HttpServletResponse res, ImcmsServices imcref ) throws ServletException, IOException {
 
         ChatMember myMember = (ChatMember) session.getAttribute("theChatMember");
         ChatSystemMessage systemMessage = new ChatSystemMessage(myMember, ChatSystemMessage.LEAVE_MSG);
@@ -221,7 +221,7 @@ public class ChatControl extends ChatBase {
         return;
     }
 
-    static String getParsedChatLeavePage( ChatMember myMember, IMCServiceInterface imcref,
+    static String getParsedChatLeavePage( ChatMember myMember, ImcmsServices imcref,
                                           String leaveTemplate ) {
         int chatMetaId = myMember.getParent().getChatId();
         String templateSetName = getTemplateSetDirectoryName( chatMetaId);
@@ -235,7 +235,7 @@ public class ChatControl extends ChatBase {
     }
 
     private void kickOut( HttpServletRequest req, Chat myChat, ChatGroup myGroup,
-                          IMCServiceInterface imcref, UserDomainObject user, String metaId,
+                          ImcmsServices imcref, UserDomainObject user, String metaId,
                           HttpServletResponse res ) throws ServletException, IOException {
 
         //lets get the membernumber
@@ -249,7 +249,7 @@ public class ChatControl extends ChatBase {
         return;
     }
 
-    private void kickOutMemberFromGroup( Chat myChat, int memberToKickOutId, ChatGroup myGroup, IMCServiceInterface imcref,
+    private void kickOutMemberFromGroup( Chat myChat, int memberToKickOutId, ChatGroup myGroup, ImcmsServices imcref,
                                          UserDomainObject user, String metaId ) throws ServletException, IOException {
         ChatMember personToKickOut = myChat.getChatMember(memberToKickOutId);
         if (personToKickOut != null) {
@@ -260,7 +260,7 @@ public class ChatControl extends ChatBase {
     }
 
     private void sendMessage(ChatMember myMember, HttpServletRequest req, Chat myChat, ChatGroup myGroup, HttpServletResponse res, String metaId) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         //lets get the message and all the needed params add it into the msgpool
         String newMessage = (req.getParameter("msg") == null ? "" : req.getParameter("msg").trim());
@@ -336,7 +336,7 @@ public class ChatControl extends ChatBase {
 
         int metaId1 = getMetaId( req );
         // Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         String[] arr;
         if (true)//(checkboxText == null)
         {

@@ -2,8 +2,8 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.util.Html;
 import imcode.external.diverse.VariableManager;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.Html;
@@ -51,7 +51,7 @@ public class AdminRoles extends Administrator {
             throws ServletException, IOException {
 
         // Lets verify that the user who tries to add a new user is an admin
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( user.isSuperAdmin() == false ) {
             String header = "Error in AdminRoles.";
@@ -95,7 +95,7 @@ public class AdminRoles extends Administrator {
             throws ServletException, IOException {
 
         // Lets check if the user is an admin, otherwise throw him out.
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( user.isSuperAdmin() == false ) {
             String header = "Error in AdminRoles.";

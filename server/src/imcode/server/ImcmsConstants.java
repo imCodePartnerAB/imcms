@@ -1,6 +1,6 @@
 package imcode.server ;
 
-public interface IMCConstants {
+public interface ImcmsConstants {
 
     /* Permissions for restricted permission-sets 1 and 2, applicable for all document-types. */
 

@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
-import imcode.server.ApplicationServer;
+import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 import org.apache.commons.collections.Transformer;
@@ -56,7 +56,7 @@ public class ImageBrowse extends HttpServlet {
 
     public static void browse( String imageUrl, HttpServletRequest request,
                                HttpServletResponse response ) throws ServletException, IOException {
-        File imagesRoot = ApplicationServer.getIMCServiceInterface().getConfig().getImagePath();
+        File imagesRoot = Imcms.getServices().getConfig().getImagePath();
         boolean changeDirectoryButtonWasPressed = null
                                                   != request.getParameter( REQUEST_PARAMETER__CHANGE_DIRECTORY_BUTTON );
         File selectedImage = null;
@@ -86,7 +86,7 @@ public class ImageBrowse extends HttpServlet {
     }
 
     private static void upload( HttpServletRequest request, File selectedDirectory, ImageBrowserPage page ) {
-        File imagesRoot = ApplicationServer.getIMCServiceInterface().getConfig().getImagePath();
+        File imagesRoot = Imcms.getServices().getConfig().getImagePath();
         FileItem fileItem = ( (MultipartHttpServletRequest)request ).getParameterFileItem( REQUEST_PARAMETER__FILE );
         if ( null != fileItem ) {
             File destinationFile = new File( selectedDirectory, fileItem.getName() );
@@ -137,7 +137,7 @@ public class ImageBrowse extends HttpServlet {
         }
 
         public String getDirectoriesOptionList() {
-            final File imagesRoot = ApplicationServer.getIMCServiceInterface().getConfig().getImagePath();
+            final File imagesRoot = Imcms.getServices().getConfig().getImagePath();
             Collection imageDirectories = Utility.collectImageDirectories();
 
             File currentDirectoryRelativeToImageRootParent = FileUtility.relativizeFile( imagesRoot.getParentFile(), currentDirectory );
@@ -151,7 +151,7 @@ public class ImageBrowse extends HttpServlet {
         }
 
         public String getImagesOptionList() {
-            final File imagesRoot = ApplicationServer.getIMCServiceInterface().getConfig().getImagePath();
+            final File imagesRoot = Imcms.getServices().getConfig().getImagePath();
             if ( null != currentImage ) {
                 imageUrl = FileUtility.relativeFileToString( FileUtility.relativizeFile( imagesRoot, currentImage ) );
             }

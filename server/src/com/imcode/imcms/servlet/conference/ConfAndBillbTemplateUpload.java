@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet.conference;
 
 import imcode.external.diverse.RmiConf;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.MultipartFormdataParser;
 import imcode.util.Utility;
@@ -21,7 +21,7 @@ import java.io.IOException;
 public class ConfAndBillbTemplateUpload extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsServices imcref = Imcms.getServices();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
