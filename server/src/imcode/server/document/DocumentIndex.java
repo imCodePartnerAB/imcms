@@ -10,6 +10,7 @@ import imcode.util.DateConstants;
 import imcode.util.IntervalSchedule;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -59,16 +60,19 @@ public class DocumentIndex {
     private static final String FIELD__SECTION = "section";
     private static final String FIELD__STATUS = "status";
 
-    private final static int INDEXING_LOG_TIME_INTERVAL__MILLISECONDS = 10 * 1000;
+    private static final int INDEXING_SCHEDULE_PERIOD__MILLISECONDS = DateUtils.MILLIS_IN_DAY;
+    private final static int INDEXING_LOG_PERIOD__MILLISECONDS = 10 * 1000;
     private final static Logger log = Logger.getLogger( imcode.server.document.DocumentIndex.class.getName() );
 
     private File indexDirectory;
-    private Thread indexThread;
+    private Thread indexingThread;
+    private Timer indexingTimer;
 
     public DocumentIndex( File dir ) {
         this.indexDirectory = createIndexDirectoryInDirectory( dir );
         BooleanQuery.setMaxClauseCount( Integer.MAX_VALUE ); // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow queries?
-        indexAllDocumentsInTheBackground();
+        indexingTimer = new Timer(true) ;
+        indexingTimer.scheduleAtFixedRate(new IndexingTimerTask(), 0, INDEXING_SCHEDULE_PERIOD__MILLISECONDS);
     }
 
     public synchronized void indexDocument( DocumentDomainObject document ) {
@@ -161,17 +165,17 @@ public class DocumentIndex {
     }
 
     private synchronized void indexAllDocumentsInTheBackground() {
-        if ( null != indexThread && indexThread.isAlive() ) {
+        if ( null != indexingThread && indexingThread.isAlive() ) {
             return;
         }
-        indexThread = new Thread( "Background indexing thread" ) {
+        indexingThread = new Thread( "Background indexing thread" ) {
             public void run() {
                 indexAllDocuments();
-                indexThread = null;
+                indexingThread = null;
             }
         };
-        indexThread.setDaemon( true );
-        indexThread.start();
+        indexingThread.setDaemon( true );
+        indexingThread.start();
     }
 
     private void indexAllDocuments() {
@@ -214,7 +218,7 @@ public class DocumentIndex {
         int[] documentIds = documentMapper.getAllDocumentIds();
 
         logIndexingStarting( documentIds.length );
-        IntervalSchedule indexingLogSchedule = new IntervalSchedule( INDEXING_LOG_TIME_INTERVAL__MILLISECONDS );
+        IntervalSchedule indexingLogSchedule = new IntervalSchedule( INDEXING_LOG_PERIOD__MILLISECONDS );
 
         for ( int i = 0; i < documentIds.length; i++ ) {
             addDocumentToIndex( documentMapper.getDocument( documentIds[i] ), indexWriter );
@@ -398,6 +402,16 @@ public class DocumentIndex {
             protected boolean isTokenChar( char c ) {
                 return Character.isLetterOrDigit( c ) || '_' == c;
             }
+        }
+    }
+
+    private class IndexingTimerTask extends TimerTask {
+
+        public void run() {
+            Date nextExecutionTime = new Date(this.scheduledExecutionTime()+INDEXING_SCHEDULE_PERIOD__MILLISECONDS) ;
+            String nextExecutionTimeString = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING).format( nextExecutionTime ) ;
+            log.info( "Starting scheduled indexing. Next indexing at "+nextExecutionTimeString);
+            indexAllDocumentsInTheBackground();
         }
     }
 }
