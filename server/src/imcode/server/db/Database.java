@@ -5,23 +5,25 @@ import java.io.*;
 import java.util.Vector;
 import java.util.Iterator;
 
-public class DatabaseAcessor {
-
-    private final static String FILE_PATH = "E:/backuppas/projekt/imcode2003/imCMS/1.3/sql/";
+public class Database {
     private static final char END_OF_COMMAND = ';';
+    private final static String FILE_PATH = "E:/backuppas/projekt/imcode2003/imCMS/1.3/sql/";
+    private static final String DROP_TABLES = "tables/drop.new.sql";
+    private static final String CREATE_TABLES = "tables/create.new.sql";
+    private static final String ADD_TYPE_DATA = "data/types.new.sql";
+    private static final String INSERT_NEW_DATA = "data/newdb.new.sql";
 
     public static void main( String[] args ) throws Exception {
-        DatabaseAcessor accessor = new DatabaseAcessor();
+        Database accessor = new Database();
+        accessor.initializeDatabase( SQL_SERVER );
+        accessor.initializeDatabase( MIMER );
+    }
 
-        accessor.executeCommandsFromFile( SQL_SERVER, "tables/drop.sql" );
-        accessor.executeCommandsFromFile( SQL_SERVER, "tables/create.sql" );
-        accessor.executeCommandsFromFile( SQL_SERVER, "data/types.new.sql" );
-        accessor.executeCommandsFromFile( SQL_SERVER, "data/newdb.new.sql" );
-
-        accessor.executeCommandsFromFile( MIMER, "tables/drop.sql" );
-        accessor.executeCommandsFromFile( MIMER, "tables/create.sql" );
-        accessor.executeCommandsFromFile( MIMER, "data/types.new.sql" );
-        accessor.executeCommandsFromFile( MIMER, "data/newdb.new.sql" );
+    void initializeDatabase( int serverType ) throws Exception {
+        executeCommandsFromFile( serverType, DROP_TABLES );
+        executeCommandsFromFile( serverType, CREATE_TABLES );
+        executeCommandsFromFile( serverType, ADD_TYPE_DATA );
+        executeCommandsFromFile( serverType, INSERT_NEW_DATA );
     }
 
     private final static int MIMER = 0;
