@@ -64,9 +64,9 @@ public class Html {
     public static String createHtmlOptionList( String selected, List data ) {
         StringBuffer htmlStr = new StringBuffer() ;
 
-        for ( int i = 0 ; i < data.size() ; i += 2 ) {
+        for ( int i = 0 ; i < data.size()-1 ; i += 2 ) {
             String value = (String) data.get( i );
-            String visible = (String) data.get( i + 1 );
+            String visible = (String) data.get( i+1 );
 
             htmlStr.append( "<option value=\"" ).append( value ).append( "\"" );
 
