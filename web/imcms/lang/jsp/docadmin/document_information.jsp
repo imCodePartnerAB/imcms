@@ -497,7 +497,7 @@ function checkFocus() {
 		</table></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/changed ?></td>
+		<td class="imcmsAdmText"><? global/changed ?></td>
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>

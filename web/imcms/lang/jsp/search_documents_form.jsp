@@ -100,11 +100,11 @@
             <tr>
                 <td>
                 <select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__DATE_TYPE %>">
-                    <option value="<%= SearchDocumentsPage.DATE_TYPE__PUBLICATION_START %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__PUBLICATION_START ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option1 ?>
-                    <option value="<%= SearchDocumentsPage.DATE_TYPE__PUBLICATION_END %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__PUBLICATION_END ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option2 ?>
-                    <option value="<%= SearchDocumentsPage.DATE_TYPE__CREATED %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__CREATED ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option3 ?>
-                    <option value="<%= SearchDocumentsPage.DATE_TYPE__ARCHIVED %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__ARCHIVED ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option4 ?>
-                    <option value="<%= SearchDocumentsPage.DATE_TYPE__MODIFIED %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__MODIFIED ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/datetype_option5 ?>
+                    <option value="<%= SearchDocumentsPage.DATE_TYPE__PUBLICATION_START %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__PUBLICATION_START ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/publication_start ?></option>
+                    <option value="<%= SearchDocumentsPage.DATE_TYPE__PUBLICATION_END %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__PUBLICATION_END ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/publication_end ?></option>
+                    <option value="<%= SearchDocumentsPage.DATE_TYPE__CREATED %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__CREATED ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/created ?></option>
+                    <option value="<%= SearchDocumentsPage.DATE_TYPE__ARCHIVED %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__ARCHIVED ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/archived ?></option>
+                    <option value="<%= SearchDocumentsPage.DATE_TYPE__MODIFIED %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__MODIFIED ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/modified ?></option>
                 </select></td>
 
             </tr>

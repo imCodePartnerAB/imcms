@@ -33,16 +33,15 @@ public class AddDoc extends HttpServlet {
         int parentId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__PARENT_DOCUMENT_ID ) );
         int documentTypeId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__DOCUMENT_TYPE_ID ) );
 
-        ImcmsServices services = Imcms.getServices();
-        DocumentMapper documentMapper = services.getDocumentMapper();
-
-        DocumentDomainObject parentDocument = documentMapper.getDocument( parentId );
-        UserDomainObject user = Utility.getLoggedOnUser( request );
-        DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( documentTypeId, parentDocument, user );
-
         if ( 0 == documentTypeId ) {
-            createExistingDocPage( parentId, parentMenuIndex, request, response );
+            addExistingDocPage( parentId, parentMenuIndex, request, response );
         } else {
+            ImcmsServices services = Imcms.getServices();
+            DocumentMapper documentMapper = services.getDocumentMapper();
+
+            UserDomainObject user = Utility.getLoggedOnUser( request );
+            DocumentDomainObject parentDocument = documentMapper.getDocument( parentId );
+            DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( documentTypeId, parentDocument, user );
             PageFlow pageFlow = getPageFlow( parentDocument, parentMenuIndex, document, request, services );
             pageFlow.dispatch( request, response );
         }
@@ -77,7 +76,7 @@ public class AddDoc extends HttpServlet {
         return pageFlow;
     }
 
-    private void createExistingDocPage( int meta_id, int doc_menu_no,
+    private void addExistingDocPage( int meta_id, int doc_menu_no,
                                         HttpServletRequest request, HttpServletResponse response ) throws IOException {
         response.setContentType( "text/html" );
 

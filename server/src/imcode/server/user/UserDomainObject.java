@@ -535,7 +535,8 @@ public class UserDomainObject extends Hashtable {
 
     public boolean canCreateDocumentOfTypeIdFromParent( int documentTypeId, DocumentDomainObject parent ) {
         TextDocumentPermissionSetDomainObject documentPermissionSet = (TextDocumentPermissionSetDomainObject)getPermissionSetFor( parent );
-        return ArrayUtils.contains( documentPermissionSet.getAllowedDocumentTypeIds(), documentTypeId );
+        int[] allowedDocumentTypeIds = documentPermissionSet.getAllowedDocumentTypeIds();
+        return ArrayUtils.contains( allowedDocumentTypeIds, documentTypeId );
     }
 
     public DocumentPermissionSetDomainObject getPermissionSetFor( DocumentDomainObject document ) {

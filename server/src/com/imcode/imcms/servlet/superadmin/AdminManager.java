@@ -13,6 +13,7 @@ import imcode.util.DateConstants;
 import imcode.util.Utility;
 import imcode.util.LocalizedMessage;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
@@ -322,11 +323,12 @@ public class AdminManager extends Administrator {
             documentFinder.addExtraSearchResultColumn( new DocumentFinder.SearchResultColumn() {
                 public String render( DocumentDomainObject document, HttpServletRequest request ) {
                     DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_NO_SECONDS_FORMAT_STRING ) ;
-                    return dateFormat.format( document.getModifiedDatetime() ) ;
+                    String formattedDatetime = dateFormat.format( document.getModifiedDatetime() );
+                    return StringEscapeUtils.escapeHtml( formattedDatetime ).replaceAll( " ", "&nbsp;" ) ;
                 }
 
                 public LocalizedMessage getName() {
-                    return new LocalizedMessage( "global/Date" );
+                    return new LocalizedMessage( "global/changed" );
                 }
             } );
         }
