@@ -166,7 +166,6 @@ public class SaveMeta extends HttpServlet {
             "permissions", "0",
             "meta_headline", null,
             "meta_text", null,
-            "meta_image", null,
             "publication_start_datetime", null,
             "archived_datetime", null,
             "target", null,
@@ -209,7 +208,6 @@ public class SaveMeta extends HttpServlet {
             DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO
                                                     | IMCConstants.PERM_EDIT_PERMISSIONS, //"meta_headline",
             DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO, //"meta_text",
-            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO, //"meta_image",
             DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"activated_datetime",
             DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"archived_datetime",
             DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"frame_name",
@@ -303,7 +301,7 @@ public class SaveMeta extends HttpServlet {
             }
             putTemporaryPermissionSettingsInUser( user, metaIdStr, metaprops, temp_permission_settings, temp_default_templates );
 
-            out.write( MetaDataParser.parseMetaPermission( metaIdStr, metaIdStr, user, "docinfo/change_meta_rights.html", null ) );
+            out.write( MetaDataParser.parseMetaPermission( metaIdStr, metaIdStr, user, "docinfo/change_meta_rights.html" ) );
             return;
         }
 

@@ -87,7 +87,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
                 dispatchToFirstPage( request, response );
             }
         } );
-        imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageCommand() {
+        imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
             public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
                 document.setMenuImage( "../images/" + imageUrl );
                 request.setAttribute( DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );

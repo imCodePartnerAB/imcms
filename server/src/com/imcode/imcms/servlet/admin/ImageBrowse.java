@@ -55,7 +55,7 @@ public class ImageBrowse extends HttpServlet {
 
     public static void browse( String imageUrl, HttpServletRequest request,
                                        HttpServletResponse response ) throws ServletException, IOException {
-        final File imagesRoot = ApplicationServer.getIMCServiceInterface().getConfig().getImagePath();
+        File imagesRoot = ApplicationServer.getIMCServiceInterface().getConfig().getImagePath();
         boolean changeDirectoryButtonWasPressed = null
                                                   != request.getParameter( REQUEST_PARAMETER__CHANGE_DIRECTORY_BUTTON );
         File selectedImage = null;
@@ -76,23 +76,29 @@ public class ImageBrowse extends HttpServlet {
         }
 
         if ( null != request.getParameter( REQUEST_PARAMETER__UPLOAD_BUTTON ) ) {
-            FileItem fileItem = ( (MultipartHttpServletRequest)request ).getParameterFileItem( REQUEST_PARAMETER__FILE );
-            if ( null != fileItem ) {
-                File destinationFile = new File( selectedDirectory, fileItem.getName() );
-                if ( !FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, destinationFile.getParentFile() ) ) {
-                    log.info( "User " + Utility.getLoggedOnUser( request ) + " was denied uploading to file "
-                              + destinationFile );
-                } else if ( !destinationFile.exists() ) {
-                    try {
-                        fileItem.write( destinationFile );
-                        selectedImage = destinationFile ;
-                    } catch ( Exception e ) {
-                        throw new UnhandledException( "Failed to write file "+destinationFile+". Possible permissions problem?", e );
-                    }
+            selectedImage = upload( request, selectedDirectory );
+        }
+        browse( selectedDirectory, selectedImage, request, response );
+    }
+
+    private static File upload( HttpServletRequest request, File selectedDirectory ) {
+        File imagesRoot = ApplicationServer.getIMCServiceInterface().getConfig().getImagePath();
+        FileItem fileItem = ( (MultipartHttpServletRequest)request ).getParameterFileItem( REQUEST_PARAMETER__FILE );
+        if ( null != fileItem ) {
+            File destinationFile = new File( selectedDirectory, fileItem.getName() );
+            if ( !FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, destinationFile.getParentFile() ) ) {
+                log.info( "User " + Utility.getLoggedOnUser( request ) + " was denied uploading to file "
+                          + destinationFile );
+            } else if ( !destinationFile.exists() ) {
+                try {
+                    fileItem.write( destinationFile );
+                    return destinationFile ;
+                } catch ( Exception e ) {
+                    throw new UnhandledException( "Failed to write file "+destinationFile+". Possible permissions problem?", e );
                 }
             }
         }
-        browse( selectedDirectory, selectedImage, request, response );
+        return null;
     }
 
     public static void browse( File currentDirectory, File currentImage, HttpServletRequest request,
@@ -106,18 +112,6 @@ public class ImageBrowse extends HttpServlet {
         request.setAttribute( REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE, page );
         String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP__IMAGE_BROWSE;
         request.getRequestDispatcher( forwardPath ).forward( request, response );
-    }
-
-    public static String getImageUri( HttpServletRequest req ) {
-        boolean pressedCancelButton = ( null != req.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) );
-        String imageUrl = null;
-        if ( !pressedCancelButton ) {
-            imageUrl = req.getParameter( REQUEST_PARAMETER__IMAGE_URL );
-            if ( null != imageUrl ) {
-                imageUrl = "../images/" + imageUrl;
-            }
-        }
-        return imageUrl;
     }
 
     public static class Page {

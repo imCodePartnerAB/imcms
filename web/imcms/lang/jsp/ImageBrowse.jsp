@@ -96,11 +96,14 @@
                     <input type="file" name="<%= ImageBrowse.REQUEST_PARAMETER__FILE %>" id="theFile" size="54">
                 </td>
                 <td align="right">
-                    <input type="submit" class="imcmsFormBtnSmall" name="<%= ImageBrowse.REQUEST_PARAMETER__UPLOAD_BUTTON %>" value="<? templates/sv/change_img.html/2005 ?>">
+                    <input type="submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__UPLOAD_BUTTON %>" value="<? templates/sv/change_img.html/2005 ?>">
                 </td>
             </tr>
         </table>
     </td>
+</tr>
+<tr>
+	<td colspan="3">#gui_hr( "blue" )</td>
 </tr>
 </table>
 </form>

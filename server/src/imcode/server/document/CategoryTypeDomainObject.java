@@ -81,8 +81,8 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
         return hasImages;
     }
 
-    public boolean hasCategoryWithName( CategoryTypeDomainObject categoryType, String categoryName ) {
-        CategoryDomainObject[] categories = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getAllCategoriesOfType(categoryType);
+    public boolean hasCategoryWithName( String categoryName ) {
+        CategoryDomainObject[] categories = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getAllCategoriesOfType(this);
         for (int i = 0; i < categories.length; i++) {
             if (categories[i].getName().toLowerCase().equals(categoryName.trim().toLowerCase())) {
                 return true;

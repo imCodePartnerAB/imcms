@@ -27,39 +27,10 @@
 
 <script language="JavaScript">
 <!--
-var re     = /[a-z0-9\(\)\[\]_-]/i ;     // ImageName check
-var reInfo = "a-z A-Z 0-9 ( ) [ ] _ -" ; // For alertBox - If error
-
 function setDef() {
-	var f = document.forms.imgProp;
+	var f   = document.forms[0] ;
 	if (!hasDocumentLayers && f.imageref.value == "") f.image_align.selectedIndex = 0;
 	changeLinkType(1) ;
-}
-
-function checkFileName() {
-	var f = document.forms.ImageUploadForm ;
-	var thePath = f.file.value ;
-	var theFile = thePath;
-	var isValid = true ;
-	theFile = theFile.substring(theFile.lastIndexOf("/") + 1) ;
-	theFile = theFile.substring(theFile.lastIndexOf("\\") + 1) ;
-	theFile = theFile.substring(0, theFile.lastIndexOf(".")) ;
-	theFile = unescape(theFile) ;
-	for (var i = 0; i < theFile.length; i++) {
-		if (!re.test(theFile.charAt(i).toString())) {
-			isValid = false ;
-		}
-	}
-	if (theFile == "") {
-		alert("<? templates/sv/change_img.html/3000 ?>") ;
-		return false;
-	} else if (!isValid) {
-		var str = "<? templates/sv/change_img.html/3001 ?>" ;
-		alert(str);
-		return false;
-	} else {
-		return true;
-	}
 }
 
 /* *******************************************************************************************
@@ -69,11 +40,11 @@ function checkFileName() {
 var defValues = new Array("meta_id","http://") ;
 
 function changeLinkType(idx) {
-	var f   = document.forms.imgProp ;
+	var f   = document.forms[0] ;
 	var rad = f.linkType ;
 	var url = f.imageref_link ;
 	var val = url.value ;
-	var re  = /^GetDoc\?meta_id=(\d{4,5})$/ ;
+	var re  = /^GetDoc\?meta_id=(\d+)$/ ;
 	if (val == "" || val == defValues[0] || val == defValues[1]) {
 		url.value = defValues[idx] ;
 		rad[idx].checked = 1 ;
@@ -84,19 +55,19 @@ function changeLinkType(idx) {
 }
 
 function checkLinkType() {
-	var f = document.forms.imgProp ;
+	var f   = document.forms[0] ;
 	var url = f.imageref_link ;
 	var val = url.value ;
 	if (val == defValues[0] || val == defValues[1]) {
 		url.value = "" ;
-	} else if (/^\d{4,5}$/.test(val)) {
+	} else if (/^\d+$/.test(val)) {
 		url.value = "GetDoc?meta_id=" + val ;
 	}
 	return true ;
 }
 
 function checkLinkOnFocus() {
-	var f = document.forms.imgProp ;
+	var f   = document.forms[0] ;
 	var url = f.imageref_link ;
 	var val = url.value ;
 	if (val == defValues[0]) {
@@ -105,7 +76,7 @@ function checkLinkOnFocus() {
 }
 
 function checkLinkOnBlur() {
-	var f = document.forms.imgProp ;
+	var f   = document.forms[0] ;
 	var rad = f.linkType ;
 	var url = f.imageref_link ;
 	var val = url.value ;
@@ -118,7 +89,7 @@ function checkLinkOnBlur() {
 </script>
 
 </head>
-<body bgcolor="#FFFFFF" onLoad="focusField('ImageUploadForm','file'); setDef();">
+<body bgcolor="#FFFFFF" onLoad="setDef();">
 
 
 #gui_outer_start()

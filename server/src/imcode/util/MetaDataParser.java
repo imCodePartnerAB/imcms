@@ -5,12 +5,10 @@ import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.parser.AdminButtonParser;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.util.*;
-
-import org.apache.commons.lang.ArrayUtils;
 
 public class MetaDataParser {
 
@@ -27,13 +25,16 @@ public class MetaDataParser {
     private static final String RESTRICTED_2_AND_MAYBE_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE = "docinfo/default_templates.html";
     private static final String USER_HASH_KEY__TEMPORARY_PERMISSION_SETTINGS = "temp_perm_settings";
 
+    private MetaDataParser() {
+    }
+
     /**
      * parseMetaPermission parses the page which consists of  the information for a certain meta_id from the db and
      * parses the information into the change_meta.html (the plain admin mode file).
      */
     public static String parseMetaPermission( String metaIdStr, String parent_meta_id, UserDomainObject user,
-                                              String htmlFile, String meta_image ) {
-        int metaId = Integer.parseInt(metaIdStr);
+                                              String htmlFile ) {
+        int metaId = Integer.parseInt( metaIdStr );
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -48,7 +49,6 @@ public class MetaDataParser {
             "show_meta", "0", CHECKBOX,
             "meta_headline", null, NORMAL,
             "meta_text", null, NORMAL,
-            "meta_image", null, NORMAL,
             "date_created", null, OTHER,
             "date_modified", null, OTHER,
             "doc_type", null, NORMAL,
@@ -62,10 +62,6 @@ public class MetaDataParser {
         // Lets get all info for the meta id
         Map hash = imcref.sqlProcedureHash( "GetDocumentInfo", new String[]{"" + metaId} );
 
-        if ( null != meta_image ) {
-            hash.put( "meta_image", new String[]{meta_image} );
-        }
-
         // Get the info from the user object.
         // "temp_perm_settings" is an array containing a stringified meta-id, a hashtable of meta-info (column=value),
         // and a hashtable of roles and their corresponding set_id for this page (role_id=set_id).
@@ -74,15 +70,13 @@ public class MetaDataParser {
         // If they press another button, this array will be put in the user-object, to remember their settings.
         Object[] temp_perm_settings = (Object[])user.get( USER_HASH_KEY__TEMPORARY_PERMISSION_SETTINGS );
 
-        List vec = new Vector();
+        List vec = new ArrayList();
 
-        if ( true == true ) {
-            getRolesFromDb( metaId, user, vec );
-        }
+        getRolesFromDb( metaId, user, vec );
 
         user.remove( USER_HASH_KEY__TEMPORARY_PERMISSION_SETTINGS );	// Forget about it, so it won't appear on a reload.
 
-        if ( temp_perm_settings != null && metaId == Integer.parseInt((String)temp_perm_settings[0]) ) {		// Make sure this is the right document.
+        if ( temp_perm_settings != null && metaId == Integer.parseInt( (String)temp_perm_settings[0] ) ) {		// Make sure this is the right document.
             // Copy everything from this temporary hashtable into the meta-hash.
             Enumeration temp_enum = ( (Hashtable)temp_perm_settings[1] ).keys();
             while ( temp_enum.hasMoreElements() ) {
@@ -125,7 +119,7 @@ public class MetaDataParser {
 
         // Lets add the standard fileItemMap to the vector
         vec.add( "#meta_id#" );
-        vec.add( ""+metaId );
+        vec.add( "" + metaId );
 
         vec.add( "#parent_meta_id#" );
         vec.add( parent_meta_id );
@@ -136,16 +130,15 @@ public class MetaDataParser {
         vec.add( checks );
 
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument( metaId ) ;
+        DocumentDomainObject document = documentMapper.getDocument( metaId );
         // Lets get the menu with the buttons
-        String menuStr = imcref.getAdminButtons(user, document);
+        String menuStr = imcref.getAdminButtons( user, document );
         vec.add( "#adminMode#" );
         vec.add( menuStr );
 
         // Lets get the owner from the db and add it to vec
-        String owner = imcref.sqlQueryStr(
-                "select rtrim(first_name)+' '+rtrim(last_name) from users join meta on users.user_id = meta.owner_id and meta.meta_id = ?",
-                new String[]{""+metaId} );
+        String owner = imcref.sqlQueryStr( "select rtrim(first_name)+' '+rtrim(last_name) from users join meta on users.user_id = meta.owner_id and meta.meta_id = ?",
+                                           new String[]{"" + metaId} );
         vec.add( "#owner#" );
         if ( owner != null ) {
             vec.add( owner );
@@ -187,11 +180,11 @@ public class MetaDataParser {
 
         // Hey, hey! Watch as i fetch the permission-set set (pun intended) for each role!
         String[][] role_permissions = imcref.sqlProcedureMulti( "GetUserRolesDocPermissions",
-                                                                new String[]{""+meta_id, "" + user.getId()} );
+                                                                new String[]{"" + meta_id, "" + user.getId()} );
 
         // Now watch as i fetch the permission_set for the user...
         String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet",
-                                                            new String[]{""+meta_id, "" + user.getId()} );
+                                                            new String[]{"" + meta_id, "" + user.getId()} );
         int user_set_id = Integer.parseInt( current_permissions[0] );
         int currentdoc_perms = Integer.parseInt( current_permissions[2] );		// A bitvector containing the permissions for this document. (For example if Set-id 1 is more privileged than Set-id 2 (bit 0))
 
@@ -219,9 +212,11 @@ public class MetaDataParser {
             vec2.add( "#role_name#" );
             vec2.add( role_name );
             vec2.add( "#user_role#" );
-            vec2.add( String.valueOf( DocumentPermissionSetDomainObject.TYPE_ID__FULL ).equals( role_permissions[i][3] ) ? "" : "*" );
+            vec2.add( String.valueOf( DocumentPermissionSetDomainObject.TYPE_ID__FULL ).equals( role_permissions[i][3] )
+                      ? "" : "*" );
 
-            for ( int j = DocumentPermissionSetDomainObject.TYPE_ID__FULL; j <= DocumentPermissionSetDomainObject.TYPE_ID__NONE; ++j ) { // From DOC_PERM_SET_FULL to DOC_PERM_SET_NONE (0 to 4)
+            for ( int j = DocumentPermissionSetDomainObject.TYPE_ID__FULL; j
+                                                                           <= DocumentPermissionSetDomainObject.TYPE_ID__NONE; ++j ) { // From DOC_PERM_SET_FULL to DOC_PERM_SET_NONE (0 to 4)
                 vec2.add( "#" + j + "#" );
                 if ( user_set_id <= role_set_id		// User has more privileged set_id than role
                      && ( user_set_id <= j
@@ -435,59 +430,59 @@ public class MetaDataParser {
                                              boolean forNew ) {
         final IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument( meta_id ) ;
+        DocumentDomainObject document = documentMapper.getDocument( meta_id );
 
-        List tags = new ArrayList() ;
-        tags.add("document") ;
-        tags.add(document) ;
+        List tags = new ArrayList();
+        tags.add( "document" );
+        tags.add( document );
 
-        DocumentPermissionSetDomainObject documentPermissionSet = null ;
-        if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == set_id && !forNew) {
-            documentPermissionSet = document.getPermissionSetForRestrictedOne() ;
-        } else if (DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == set_id && !forNew ) {
-            documentPermissionSet = document.getPermissionSetForRestrictedTwo() ;
-        } else if (DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == set_id && forNew ) {
-            documentPermissionSet = document.getPermissionSetForRestrictedOneForNewDocuments() ;
-        } else if (DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == set_id && forNew ) {
-            documentPermissionSet = document.getPermissionSetForRestrictedTwoForNewDocuments() ;
+        DocumentPermissionSetDomainObject documentPermissionSet = null;
+        if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == set_id && !forNew ) {
+            documentPermissionSet = document.getPermissionSetForRestrictedOne();
+        } else if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == set_id && !forNew ) {
+            documentPermissionSet = document.getPermissionSetForRestrictedTwo();
+        } else if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == set_id && forNew ) {
+            documentPermissionSet = document.getPermissionSetForRestrictedOneForNewDocuments();
+        } else if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == set_id && forNew ) {
+            documentPermissionSet = document.getPermissionSetForRestrictedTwoForNewDocuments();
         }
 
         if ( document instanceof TextDocumentDomainObject ) {
-            TextDocumentPermissionSetDomainObject currentUsersDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, document ) ;
-            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = ((TextDocumentPermissionSetDomainObject)documentPermissionSet);
+            TextDocumentPermissionSetDomainObject currentUsersDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, document );
+            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = ( (TextDocumentPermissionSetDomainObject)documentPermissionSet );
             SortedMap templateGroups = getAllowedTemplateGroupsMap( currentUsersDocumentPermissionSet, textDocumentPermissionSet );
-            tags.add("templateGroupsMap") ;
-            tags.add(templateGroups) ;
+            tags.add( "templateGroupsMap" );
+            tags.add( templateGroups );
 
             SortedMap documentTypesMap = getAllowedDocumentTypesMap( currentUsersDocumentPermissionSet, textDocumentPermissionSet, documentMapper, user );
-            tags.add("documentTypesMap") ;
-            tags.add(documentTypesMap) ;
+            tags.add( "documentTypesMap" );
+            tags.add( documentTypesMap );
         }
 
-        tags.add("documentPermissionSet") ;
-        tags.add(documentPermissionSet) ;
-        tags.add("forNew") ;
-        tags.add(new Boolean( forNew )) ;
+        tags.add( "documentPermissionSet" );
+        tags.add( documentPermissionSet );
+        tags.add( "forNew" );
+        tags.add( new Boolean( forNew ) );
 
-        return imcref.getAdminTemplate( "permissions/define_permissions.html", user, tags ) ;
+        return imcref.getAdminTemplate( "permissions/define_permissions.html", user, tags );
     }
 
     private static SortedMap getAllowedDocumentTypesMap(
             TextDocumentPermissionSetDomainObject currentUsersDocumentPermissionSet,
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet, DocumentMapper documentMapper,
             final UserDomainObject user ) {
-        int[] selectableDocumentTypeIds = currentUsersDocumentPermissionSet.getAllowedDocumentTypeIds() ;
-        int[] selectedDocumentTypeIds = textDocumentPermissionSet.getAllowedDocumentTypeIds() ;
-        Map documentTypes = documentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user) ;
-        SortedMap documentTypesMap = new TreeMap() ;
+        int[] selectableDocumentTypeIds = currentUsersDocumentPermissionSet.getAllowedDocumentTypeIds();
+        int[] selectedDocumentTypeIds = textDocumentPermissionSet.getAllowedDocumentTypeIds();
+        Map documentTypes = documentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage( user );
+        SortedMap documentTypesMap = new TreeMap();
         for ( Iterator iterator = documentTypes.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry)iterator.next() ;
-            Integer documentTypeId = (Integer)entry.getKey() ;
-            String documentTypeNameInUsersLanguage = (String)documentTypes.get(documentTypeId) ;
-            IdNamePair documentType = new IdNamePair(documentTypeId.intValue(), documentTypeNameInUsersLanguage) ;
-            if (ArrayUtils.contains(selectableDocumentTypeIds, documentTypeId.intValue())) {
-                Boolean selected = new Boolean(ArrayUtils.contains( selectedDocumentTypeIds, documentTypeId.intValue() ));
-                documentTypesMap.put(documentType, selected) ;
+            Map.Entry entry = (Map.Entry)iterator.next();
+            Integer documentTypeId = (Integer)entry.getKey();
+            String documentTypeNameInUsersLanguage = (String)documentTypes.get( documentTypeId );
+            IdNamePair documentType = new IdNamePair( documentTypeId.intValue(), documentTypeNameInUsersLanguage );
+            if ( ArrayUtils.contains( selectableDocumentTypeIds, documentTypeId.intValue() ) ) {
+                Boolean selected = new Boolean( ArrayUtils.contains( selectedDocumentTypeIds, documentTypeId.intValue() ) );
+                documentTypesMap.put( documentType, selected );
             }
         }
         return documentTypesMap;
@@ -496,104 +491,15 @@ public class MetaDataParser {
     private static SortedMap getAllowedTemplateGroupsMap(
             TextDocumentPermissionSetDomainObject currentUsersDocumentPermissionSet,
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet ) {
-        TemplateGroupDomainObject[] selectableTemplateGroups = currentUsersDocumentPermissionSet.getAllowedTemplateGroups() ;
-        List selectedTemplateGroups = Arrays.asList(textDocumentPermissionSet.getAllowedTemplateGroups()) ;
-        SortedMap templateGroups = new TreeMap() ;
+        TemplateGroupDomainObject[] selectableTemplateGroups = currentUsersDocumentPermissionSet.getAllowedTemplateGroups();
+        List selectedTemplateGroups = Arrays.asList( textDocumentPermissionSet.getAllowedTemplateGroups() );
+        SortedMap templateGroups = new TreeMap();
         for ( int i = 0; i < selectableTemplateGroups.length; i++ ) {
             TemplateGroupDomainObject selectableTemplateGroup = selectableTemplateGroups[i];
-            Boolean selected = new Boolean(selectedTemplateGroups.contains(selectableTemplateGroup)) ;
-            templateGroups.put( selectableTemplateGroup, selected ) ;
+            Boolean selected = new Boolean( selectedTemplateGroups.contains( selectableTemplateGroup ) );
+            templateGroups.put( selectableTemplateGroup, selected );
         }
         return templateGroups;
-    }
-
-    private static String getTemplateGroupsOptionList( final IMCServiceInterface imcref, String newstr, int meta_id,
-                                                       int user_set_id, int set_id, int currentdoc_perms ) {
-        // Fetch all templategroups from the db and put them in an option-list
-        // First we get the templategroups the current user may use
-        String[] user_tg = imcref.sqlProcedure( "GetTemplateGroupsWith" + newstr + "Permissions",
-                                                new String[]{"" + meta_id, "" + user_set_id} );
-
-        Set user_templategroups = new HashSet();
-
-        // I'll fill a HashSet with all the templategroups the current user may use,
-        // for easy retrieval.
-        for ( int i = 0; i < user_tg.length; i += 3 ) {
-            if ( !"-1".equals( user_tg[i + 2] ) ) {
-                user_templategroups.add( user_tg[i] );
-            }
-        }
-
-        // Now we get the templategroups the set-id we are editing may use.
-        String[] templategroups = imcref.sqlProcedure( "GetTemplateGroupsWith" + newstr + "Permissions",
-                                                       new String[]{"" + meta_id, "" + set_id} );
-        // We allocate a string to contain the option-list
-        String options_templategroups = "";
-        for ( int i = 0; i < templategroups.length; i += 3 ) {
-            // Check if the current user may set this templategroup for any set-id (May he use it himself?)
-            if ( user_set_id == 0			// If current user has full rights,
-                 || ( user_set_id == 1	// or has set-id 1
-                      && set_id == 2		// and is changing set-id 2
-                      && user_templategroups.contains( templategroups[i] )	// and the user may use this group.
-                      && ( currentdoc_perms & 1 ) != 0// and set-id 1 is more privleged than set-id 2 for this document. (Bit 0)
-                    ) ) {
-                options_templategroups +=
-                "<option value=\"524288_"
-                + templategroups[i]
-
-                + ( ( !"-1".equals( templategroups[i + 2] ) ) ? "\" selected>" : "\">" )
-                + templategroups[i
-                                 + 1]
-                + "</option>";
-            }
-        }
-        return options_templategroups;
-    }
-
-    private static String getDocTypesOptionList( final IMCServiceInterface imcref, String newstr, int meta_id,
-                                                 int user_set_id, final String lang_prefix, int set_id,
-                                                 int currentdoc_perms ) {
-        // Fetch all doctypes from the db and put them in an option-list
-        // First, get the doc_types the current user may use.
-
-        String[] user_dt = imcref.sqlProcedure( "GetDocTypesWith" + newstr + "Permissions",
-                                                new String[]{"" + meta_id, "" + user_set_id, lang_prefix} );
-        Set user_doc_types = new HashSet();
-
-        // I'll fill a HashSet with all the doc-types the current user may use,
-        // for easy retrieval.
-        // A value of "-1" means the user may not use it.
-        for ( int i = 0; i < user_dt.length; i += 3 ) {
-            if ( !"-1".equals( user_dt[i + 2] ) ) {
-                user_doc_types.add( user_dt[i] );
-            }
-        }
-
-        // Now we get the doc_types the set-id we are editing may use.
-        String[] doctypes = imcref.sqlProcedure( "GetDocTypesWith" + newstr + "Permissions",
-                                                 new String[]{"" + meta_id, "" + set_id, lang_prefix} );
-        // We allocate a string to contain the option-list
-        String options_doctypes = "";
-        for ( int i = 0; i < doctypes.length; i += 3 ) {
-            // Check if the current user may set this doc-type for any set-id
-            if ( user_set_id == 0			// If current user has full rights,
-                 || ( user_set_id == 1	// or has set-id 1
-                      && set_id == 2		// and is changing set-id 2
-                      && user_doc_types.contains( doctypes[i] )	// and the user may use this doc-type.
-                      && ( currentdoc_perms & 1 ) != 0// and set-id 1 is more privleged than set-id 2 for this document. (Bit 0)
-                    ) ) {
-
-                options_doctypes +=
-                "<option value=\"8_"
-                + doctypes[i]
-                // Check if the set-id may currently use this doc-type
-                + ( ( !"-1".equals( doctypes[i + 2] ) ) ? "\" selected>" : "\">" )
-                + doctypes[i
-                           + 1]
-                + "</option>";
-            }
-        }
-        return options_doctypes;
     }
 
 } // End of class

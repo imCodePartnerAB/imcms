@@ -102,7 +102,7 @@ public class ChangeImage extends HttpServlet {
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
         } );
-        imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageCommand() {
+        imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
             public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
                 image.setUrl( imageUrl );
                 goToImageEditPage( document, imageIndex, image, request, response );

@@ -131,11 +131,9 @@ public class AdminDoc extends HttpServlet {
             return GetDoc.getDoc( meta_id, req, res );
         }
 
-        String metaImageUri = ImageBrowse.getImageUri( req );
-
         // Lets detect which view the admin wants
         if ( ( flags & 4 ) != 0 ) { // User rights
-            htmlStr = imcode.util.MetaDataParser.parseMetaPermission( String.valueOf( meta_id ), String.valueOf( meta_id ), user, "docinfo/change_meta_rights.html", metaImageUri );
+            htmlStr = imcode.util.MetaDataParser.parseMetaPermission( String.valueOf( meta_id ), String.valueOf( meta_id ), user, "docinfo/change_meta_rights.html" );
             return htmlStr;
         }
 

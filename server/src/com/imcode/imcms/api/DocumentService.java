@@ -251,7 +251,7 @@ public class DocumentService {
 
     public Category createNewCategory( String name, String description, String imageUrl, CategoryType categoryType ) throws NoPermissionException, CategoryAlreadyExistsException {
         securityChecker.isSuperAdmin();
-        if ( !categoryType.getInternal().hasCategoryWithName( categoryType.getInternal(), name ) ) {
+        if ( !categoryType.getInternal().hasCategoryWithName( name ) ) {
             CategoryDomainObject newCategoryDO = documentMapper.addCategoryToDb( categoryType.getInternal().getId(), name, description, imageUrl );
             return new Category( newCategoryDO );
         } else {
