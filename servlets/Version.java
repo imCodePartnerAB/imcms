@@ -5,7 +5,7 @@ import javax.servlet.http.* ;
 
 import org.apache.oro.text.perl.* ;
 
-public class Version extends HttpServlet implements FilenameFilter {
+public class Version extends HttpServlet {
 
     private final static String CVS_REV =  "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
@@ -22,11 +22,16 @@ public class Version extends HttpServlet implements FilenameFilter {
 
     }
 
-    private String classes_path ;
+    private class NotDirectoryFilter implements FileFilter {
+	
+	public boolean accept(File file) {
+	    return !file.isDirectory() ;
+	}
+
+    }
 
     public void init (ServletConfig config) throws ServletException {
 	super.init(config) ;
-	classes_path = new File(this.getServletContext().getRealPath("/"),"/WEB-INF/classes").getPath()+'/' ;
     }
 
     public void doGet (HttpServletRequest req, HttpServletResponse res) throws java.io.IOException {
@@ -35,28 +40,25 @@ public class Version extends HttpServlet implements FilenameFilter {
 	ServletOutputStream out = res.getOutputStream() ;
 
 	// Print out the tag this file was checked out with.
-	out.println(CVS_TAG.replace('_','.')) ;
+	out.println(CVS_TAG.length() > 0 ? CVS_TAG : "Unknown" ) ;
 
-	// Find /WEB-INF/classes
-
-	checksumDirectory(new File(classes_path), out) ;
-
+	checksumDirectory(new File(this.getServletContext().getRealPath("/")), "", out) ;
     }
 
-    public void checksumDirectory(File dir, ServletOutputStream out) throws java.io.IOException {
+    public void checksumDirectory(File parent_dir, String sub_dir, ServletOutputStream out) throws java.io.IOException {
 	Perl5Util perl = new Perl5Util() ;
 
-	// Get all .class-files in /WEB-INF/classes
-	File[] classes = dir.listFiles(this) ;
+	File dir = new File(parent_dir,sub_dir) ;
+	File[] files = dir.listFiles(new NotDirectoryFilter()) ;
 
-	// Loop through the classfiles and get a checksum for each.
-	for (int i = 0; i < classes.length; ++i) {
-	    out.print(classes[i].getPath().substring(classes_path.length())+' ') ;
+	// Loop through the files and get a checksum for each.
+	for (int i = 0; i < files.length; ++i) {
+	    out.print(files[i].getPath().substring(parent_dir.getPath().length()+1)+' ') ;
 
 	    Checksum checksum = new CRC32() ;
-	    int class_length = (int)classes[i].length() ;
+	    int class_length = (int)files[i].length() ;
 	    char[] buffer = new char[BUFFERLENGTH] ;
-	    Reader in = new InputStreamReader(new CheckedInputStream(new FileInputStream(classes[i]), checksum), "8859_1") ;
+	    Reader in = new InputStreamReader(new CheckedInputStream(new FileInputStream(files[i]), checksum), "8859_1") ;
 	    StringBuffer file_buffer = new StringBuffer() ;
 	    // Read the classfile, and have the inputstream compute the checksum as we go.
 	    for (int read; -1 != (read = in.read(buffer,0,BUFFERLENGTH));) {
@@ -87,13 +89,8 @@ public class Version extends HttpServlet implements FilenameFilter {
 	File[] subdirs = dir.listFiles(new DirectoryFilter()) ;
 
 	for (int i = 0; i < subdirs.length; ++i) {
-	    checksumDirectory(subdirs[i],out) ;
+	    checksumDirectory(parent_dir, subdirs[i].getPath().substring(parent_dir.getPath().length()), out) ;
 	}
 
     }
-
-    public boolean accept(File dir, String name) {
-	return name.endsWith(".class") ;
-    }
-
 }
