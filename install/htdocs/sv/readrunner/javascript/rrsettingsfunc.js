@@ -67,11 +67,11 @@ function startRR() {
 
 var iDefaultSpeed = 10;
 var bDefaultPausRow = 1;
-var iDefaultPausRow = 0.4;
+var iDefaultPausRow = 0.2;
 var bDefaultPausStop = 1;
-var iDefaultPausStop = 0.4;
+var iDefaultPausStop = 0.0;
 var bDefaultPausDiv = 1;
-var iDefaultPausDiv = 0.4;
+var iDefaultPausDiv = 0.0;
 var bDefaultPausScroll = 1;
 var iDefaultPausScroll = 0.8;
 

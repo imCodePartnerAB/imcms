@@ -381,11 +381,11 @@ var bDefaultSaveSpeed = 1;
 var bDefaultSaveSettings = 1;
 var iDefaultSpeed = 10;
 var bDefaultPausRow = 1;
-var iDefaultPausRow = 0.5;
+var iDefaultPausRow = 0.2;
 var bDefaultPausStop = 1;
-var iDefaultPausStop = 0.5;
+var iDefaultPausStop = 0.0;
 var bDefaultPausDiv = 1;
-var iDefaultPausDiv = 0.5;
+var iDefaultPausDiv = 0.0;
 var bDefaultPausScroll = 0;
 var iDefaultPausScroll = 0.8;
 

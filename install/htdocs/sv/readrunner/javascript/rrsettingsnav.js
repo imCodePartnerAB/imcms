@@ -7,7 +7,7 @@ var moz = (document.getElementById) ? 1 : 0;
 var activeTd = '';
 var active11Td = 'form112';
 var active12Td = 'form123';
-var active13Td = 'form138';
+var active13Td = 'form139';
 
 
 /* ***** Layers in use (short form) / Settings ***** */
