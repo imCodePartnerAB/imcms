@@ -199,7 +199,7 @@ public class TemplateAdd extends HttpServlet {
 			} else if ( mp.getParameter("view_demo") != null ) {
 				Object[] suffixAndStream = IMCServiceRMI.getDemoTemplate(imcserver,Integer.parseInt(template)) ;
 				String htmlStr ;
-				
+				res.setContentType("text/html");				
 				if ( suffixAndStream == null) {
 					htmlStr = IMCServiceRMI.parseDoc( imcserver, null, "no_demotemplate.html", lang_prefix ) ;
 					out.print(htmlStr) ;
@@ -222,7 +222,7 @@ public class TemplateAdd extends HttpServlet {
 						
 						// create frameset with topframe containing return-button
 						// and the main-frame doing a redirect
-						res.setContentType("text/html");
+					   //FIXME: What The Fawk is this? Put it in a template, or suffer the consequences!
 						out.print(
 						"<html><head><title></title></head>"
 						+ "<frameset rows=\"80,*\" frameborder=\"NO\" border=\"0\" framespacing=\"0\">"
