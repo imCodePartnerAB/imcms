@@ -3,7 +3,189 @@
 <META content="text/html; charset=iso-8859-1" http-equiv=Content-Type>
 <META content="MSHTML 5.00.2014.210" name=GENERATOR>
 <SCRIPT language=JavaScript>
-<? sv/diagram/template_changeDiagram.htm/2 ?>
+<!--
+function saveAndExit(formObj) {
+	//alert("<? sv/diagram/template_changeDiagram.htm/2/1 ?>" + formObj.text1.value) ;
+	//formObj.submit();
+	
+	//document.settings.action.click() ;
+	//alert("<? sv/diagram/template_changeDiagram.htm/2/2 ?>");
+	closeThisWindow();
+}
+
+function closeThisWindow() {
+	// alert("<? sv/diagram/template_changeDiagram.htm/2/3 ?>") ;
+	window.close();
+} //END FUNCTION CloseThisWindow
+
+//==============================================================================> CREATE ARRAY
+function createArray(antalTabeller,arraySize) {
+	arraySize++;
+	tabell=new Array(antalTabeller);
+	theSettings=new Array(antalTabeller);
+	for(n=0;n<=antalTabeller;n++) {
+		tabell[n]=new Array(arraySize);
+		theSettings[n]=new Array(6);
+		for(m=0;m<=arraySize;m++) {
+			tabell[n][m]=new Array(arraySize);
+		} //END FOR
+	} //END FOR
+} //END FUNCTION
+//==============================================================================> SET TABLE SIZE
+function setTableSize(tabellNr,theRow,theCol) {
+	tabell[tabellNr][0][0]=theRow;
+	tabell[tabellNr][arraySize][arraySize]=theCol;
+	theSettings[tabellNr][1].value=theRow;
+	theSettings[tabellNr][2].value=theCol;
+}//END FUNCTION
+//==============================================================================> GET TABLE SIZE
+function getTableSize(tabellNr) {
+	rader=tabell[tabellNr][0][0];
+	kolumner=tabell[tabellNr][arraySize][arraySize];
+}//END FUNCTION
+//==============================================================================> DELETE ARRAY
+function deleteArray(tabellNr,theRow,theCol,theID,tableRef) {
+	HTMLinput(tabellNr,theID,tableRef);
+	getTableSize(tabellNr);
+	radOff=0;kolOff=0;
+	for(mRad=1;mRad<=rader;mRad++) {
+		if(theRow>0&&mRad>theRow) radOff=1;
+		for(mKol=1;mKol<=kolumner;mKol++) {
+			if(theCol>0&&mKol>theCol) {
+				kolOff=1;
+				} else {
+				kolOff=0;
+			}//END IF
+			tabell[tabellNr][mRad-radOff][mKol-kolOff]=tabell[tabellNr][mRad][mKol];
+		}//END FOR
+	}//END FOR
+	rader-=(theRow>0);kolumner-=(theCol>0);
+	setTableSize(tabellNr,rader,kolumner);
+	arrayToHTML(tabellNr,theID,tableRef);
+}//END FUNCTION
+//==============================================================================> TAB DELIMITED INPUT
+function tabDelimitedInput(tabellNr,fieldValue) {
+	numbers=new Array(arraySize*arraySize);index=1;rader=0;
+	tab=fieldValue.indexOf("\t",0);ent=fieldValue.indexOf("\n",0);
+	if(ent!=-1&&ent<tab) {
+		tab=ent;rader++;
+		}//END IF
+	while(tab!=-1) {
+		urklipp=fieldValue.substr(0,tab);
+		numbers[index]=urklipp;index++;
+		fieldValue=fieldValue.substr(tab+1);
+		tab=fieldValue.indexOf("\t",0);ent=fieldValue.indexOf("\n",0);
+		if(ent!=-1&&ent<tab) {
+			tab=ent;rader++;
+			}//END IF
+		}//END WHILE
+	numbers[index]=fieldValue;rader++;
+	kolumner=index/rader;
+	for(mRad=1;mRad<=rader;mRad++) {
+		for(mKol=1;mKol<=kolumner;mKol++) {
+			theIndex=(mRad-1)*kolumner+mKol
+			tabell[tabellNr][mRad][mKol]=numbers[theIndex];
+			}//END FOR
+		}//END FOR
+	setTableSize(tabellNr,rader,kolumner);
+}//END FUNCTION
+//==============================================================================> ARRAY TO HTML
+function arrayToHTML(tabellNr,theID,tableRef) {
+	prefix='<table id='+theID+' border=1>';
+	suffix='</table>';insert='';kolumn='a';
+	getTableSize(tabellNr);
+	for(mRad=1;mRad<=rader;mRad++) {
+		insert+='<tr>';
+		for(mKol=1;mKol<=kolumner;mKol++) {
+			value=""+tabell[tabellNr][mRad][mKol];
+			value=value.replace(/undefined/gi," ");
+				
+			value=value.replace(/name=diagram.+$/gi,"");
+			value=value.replace(/name=table.+$/gi,"");
+			
+			value=value.replace(/"/gi,"");
+			if(value.length==0) value=" ";
+			value=value.replace(/\s/gi," ");
+			insert+='<td><input type=text name='+theSettings[tabellNr][0]+'_'+kolumn+'_'+mRad+' size=11 value="'+value+'"></td>';
+			temp=kolumn.charCodeAt(0);temp++;
+			kolumn=String.fromCharCode(temp);
+			}//END FOR
+		insert+='</tr>';
+		kolumn='a';
+		}//END FOR
+	insert=prefix+insert+suffix;
+	tableRef.outerHTML=insert;
+	setTableSize(tabellNr,rader,kolumner);
+	doDeleteList(tabellNr,theID);
+	
+	//alert("<? sv/diagram/template_changeDiagram.htm/2/4 ?>" +insert) ;
+
+}//END FUNCTION
+//==============================================================================> HTML INPUT
+function HTMLinput(tabellNr,theID,tableRef) {
+	HTMLkoden=tableRef.outerHTML;
+	getTableSize(tabellNr);
+	for(mRad=1;mRad<=rader;mRad++) {
+		for(mKol=1;mKol<=kolumner;mKol++) {
+			start=HTMLkoden.indexOf("value=",0);value="";
+			if(start!=-1) {
+				HTMLkoden=HTMLkoden.substr(start+6);
+				slut=HTMLkoden.indexOf(">",0);
+				value=HTMLkoden.substr(0,slut);
+				value=value.replace(/"/gi,"");
+				}//END IF
+			tabell[tabellNr][mRad][mKol]=value;
+			}//END FOR
+		}//END FOR
+}//END FUNCTION
+//==============================================================================> EXPAND ARRAY
+function expandArray(tabellNr,theRow,theCol,theID,tableRef) {
+	HTMLinput(tabellNr,theID,tableRef);
+	getTableSize(tabellNr);
+	for(rr=rader*theRow+1;rr<=rader+1;rr++) {
+		for(kk=kolumner*theCol+1;kk<=kolumner;kk++) {
+			tabell[tabellNr][rr][kk]=tabell[0][0][0];
+		}//END FOR
+			tabell[tabellNr][rr][kk]=tabell[0][0][0];
+	}//END FOR
+	tabell[tabellNr][0][0]+=theRow;
+	tabell[tabellNr][arraySize][arraySize]+=theCol;
+}//END FUNCTION
+//==============================================================================> DO DELETE-LIST
+function doDeleteList(tabellNr,theID) {
+	getTableSize(tabellNr);
+	radLista='';kolLista='';
+	theID=""+theID;
+	prefixR="<select name=select size=1 onChange=deleteArray("+tabellNr+",this.selectedIndex,0,'"+theID+"',"+theSettings[tabellNr][6]+");>";
+	prefixK="<select name=select size=1 onChange=deleteArray("+tabellNr+",0,this.selectedIndex,'"+theID+"',"+theSettings[tabellNr][6]+");>";
+	for(n=0;n<=rader;n++) radLista+='<option>'+n+'</option>';
+	for(n=0;n<=kolumner;n++) kolLista+='<option>'+n+'</option>';
+	theSettings[tabellNr][3].innerHTML=prefixR+radLista+'</select>';
+	theSettings[tabellNr][4].innerHTML=prefixK+kolLista+'</select>';
+}
+//==============================================================================> DEBUGGER <
+function clear() {
+debug="";
+}//END FUNCTION
+function add(something) {
+	debug+=something+"\n";
+}//END FUNCTION
+function show() {
+	alert(debug);
+}//END FUNCTION
+function showTableContent(aTable) {
+	clear();
+	for(rr=1;rr<=100;rr++) {
+		aString="";
+		for(kk=1;kk<=100;kk++) {
+			aString+=""+aTable[rr][kk]+"-";
+		}//END FOR
+	aString=aString.replace(/undefined/gi,"");
+	add(aString);
+	}//END FOR
+show();
+}//END FUNCTION
+//-->
 </SCRIPT>
 </HEAD>
 <BODY bgColor=#ffffff>
