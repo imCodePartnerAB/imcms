@@ -102,18 +102,14 @@ if (isMoz) {
 </tr>
 <tr>
 	<td width="20%" class="imcmsAdmText" nowrap><? templates/sv/template_upload.html/1001 ?> &nbsp;</td>
-	<td><script>
-writeFormField("FILE","file\" id=\"sfile",85,null,null,null);
-</script></td>
+	<td><input type="file" name="file" id="sfile" size="85"></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText" nowrap><? templates/sv/template_upload.html/1002 ?> &nbsp;</td>
 	<td>
 	<table border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td><script>
-writeFormField("TEXT","name\" id=\"sname",45,255,null,null);
-</script></td>
+		<td><input type="text" name="name" id="sname" size="45" maxlength="255"></td>
 		<td>&nbsp;</td>
 		<td nowrap>
 		<script language="JavaScript">

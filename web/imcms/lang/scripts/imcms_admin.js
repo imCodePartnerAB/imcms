@@ -55,43 +55,6 @@ function getNsFormSize(theVal) {
 	return theVal;
 }
 
-function writeFormField(theType,theName,theSize,theMaxLength,theWidth,theValue) {
-	var retVal = "<input";
-	var sType, sName, sSize, sMaxLength, sWidth, sValue ;
-	sType = " type=\"" + theType + "\"";
-	sName = (theName.indexOf("id=") != -1) ? " name=\"" + theName + "\"" : " name=\"" + theName + "\" id=\"" + theName + "\"";
-	sSize = (theType.toUpperCase() == "TEXTAREA") ? " cols=\"" + getNsFormSize(theSize) + "\"" : " size=\"" + getNsFormSize(theSize) + "\"";
-	if (theMaxLength == null)     sMaxLength = "";
-	if (isNS || theWidth == null) sWidth = "";
-	if (theValue == null)         sValue = "";
-
-	switch (theType.toUpperCase()) {
-		case "FILE":
-			retVal += sType + sName + sSize;
-			retVal += (sValue != "") ? " value=\"" + theValue + "\"" : "";
-			retVal += ">";
-		break;
-		case "HIDDEN":
-			retVal += sType + sName;
-			retVal += (sValue != "") ? " value=\"" + theValue + "\"" : "";
-			retVal += ">";
-		break;
-		case "TEXTAREA": // use "theMaxLength" for "ROWS="
-			retVal  = "<textarea" + sName + sSize;
-			retVal += (sMaxLength != "") ? " rows=\"" + theMaxLength + "\"" : " rows=\"3\"";
-			if (theWidth != "") retVal += " style=\"overflow:auto; width:" + theWidth + "\"";
-			retVal += " wrap=\"VIRTUAL\">";
-		break;
-		default: // TEXT / PASSWORD
-			retVal += sType + sName + sSize;
-			retVal += (sMaxLength != "") ? " maxlength=\"" + theMaxLength + "\"" : "";
-			retVal += (sValue != "") ? " value=\"" + theValue + "\"" : "";
-			if (sWidth != "") retVal += " style=\"width:" + theWidth + "\"";
-			retVal += ">";
-	}
-	document.write(retVal);
-}
-
 function hr(theWidth, theWidthNs, theColor) {
 	if (theColor == "blue") theColor = "20568d";
 	theWidth = (isMoz) ? theWidth : theWidthNs;
