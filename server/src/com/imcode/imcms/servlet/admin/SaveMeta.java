@@ -350,8 +350,6 @@ public class SaveMeta extends HttpServlet {
         ArrayList sqlUpdateColumns = new ArrayList();
         ArrayList sqlUpdateValues = new ArrayList();
 
-        addNullForPublisherIdToSqlStringIfInvalid( metaprops, sqlUpdateColumns );
-
         Enumeration propkeys = metaprops.propertyNames();
         while ( propkeys.hasMoreElements() ) {
             String columnName = (String)propkeys.nextElement();
@@ -417,11 +415,6 @@ public class SaveMeta extends HttpServlet {
 
         // Update the date_modified for all parents.
         DocumentMapper.sprocUpdateParentsDateModified( imcref, Integer.parseInt( metaIdStr ) );
-
-        if ( imcref.checkAdminRights( user )
-             || imcref.checkDocAdminRights( metaId, user, IMCConstants.PERM_EDIT_DOCINFO ) ) {
-            setSectionInDbFromRequest( req, imcref, metaId );
-        }
 
         // Let's split this joint!
         res.sendRedirect( "AdminDoc?meta_id="+metaId);
