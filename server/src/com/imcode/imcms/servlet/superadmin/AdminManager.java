@@ -221,7 +221,7 @@ public class AdminManager extends Administrator {
                 }
             };
             searchAdminManagerPage.setTabName( "search" );
-            searchAdminManagerPage.setHeading( new LocalizedMessage( "<? global/Search ?>" ) );
+            searchAdminManagerPage.setHeading( new LocalizedMessage( "global/Search" ) );
             adminManagerPage = searchAdminManagerPage;
         }
 

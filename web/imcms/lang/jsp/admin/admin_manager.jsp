@@ -6,7 +6,8 @@
                  imcode.server.Imcms,
                  com.imcode.imcms.servlet.beans.AdminManagerSubreport,
                  java.util.*,
-                 imcode.server.document.*"%>
+                 imcode.server.document.*,
+                 com.imcode.imcms.servlet.beans.Tab"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
