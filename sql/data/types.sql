@@ -112,7 +112,7 @@ INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(28,'Macintosh 
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(29,'Macintosh Netscape 3','Mozilla/3%(%mac%;%[UIN][ );]%',5)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(30,'Macintosh Netscape 4','Mozilla/4%(%mac%;%[UIN][ );]%',5)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(31,'Macintosh Netscape 6','Mozilla/5%(%mac%;%[UIN][ );]%',5)
-INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(0,'Övriga','%',0)
+INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(0,'<? sql/types.sql/1 ?>','%',0)
 
 SET IDENTITY_INSERT sys_types ON
 INSERT INTO sys_types (type_id,name) VALUES(0,'StartDocument')
@@ -182,7 +182,7 @@ INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(1,2,'Meta 
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(2,1,'Meta ID')
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(2,2,'Meta ID')
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(3,1,'Dokument typ')
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(3,2,'Document type')
+INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(3,2,'Page type')
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(4,1,'Ändrat datum')
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(4,2,'Date modified')
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(5,1,'Skapat datum')

@@ -1633,6 +1633,12 @@ set type = 'Conference page' where doc_type = 102 and lang_prefix = 'en'
 
 -- 2004-01-12 Lennart Å
 
+update display_name
+set display_name = 'Page type'
+where sort_by_id = 3 AND lang_id = 2
+
+-- 2004-01-14 Hasse
+
 print ' OBS !!!!! '
 print 'Följande åtgärder behöver genomföras efter detta script '
 print ''
