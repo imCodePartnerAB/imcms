@@ -1,17 +1,17 @@
-<%@ page import="com.imcode.imcms.*, imcode.server.*,java.util.*"%>
+<%@ page import="com.imcode.imcms.*, imcode.server.*,java.util.*" %>
 
 <h1>Show document permissions</h1>
-There are three basic kinds of constant permissions<br>
+There are three basic kinds of permissions<br>
 <ul>
-  <li><%=DocumentPermissionSet.FULL %></li>
-  <li><%=DocumentPermissionSet.READ %></li>
-  <li><%=DocumentPermissionSet.NONE %></li>
+  <li><%=DocumentPermissionSet.FULL%></li>
+  <li><%=DocumentPermissionSet.READ%></li>
+  <li><%=DocumentPermissionSet.NONE%></li>
 </ul>
 
-In between the first two there can also be defined two that can be modified, they are called
+In between "<%=DocumentPermissionSet.FULL%>" and "<%=DocumentPermissionSet.READ%>" there can also be defined two that can be modified, they are called
 <ul>
-  <li><%=DocumentPermissionSet.NAME_RESTRICTED_1 %></li>
-  <li><%=DocumentPermissionSet.NAME_RESTRICTED_2 %></li>
+  <li><%=DocumentPermissionSet.RESTRICTED_1 %></li>
+  <li><%=DocumentPermissionSet.RESTRICTED_2 %></li>
 </ul>
 and can be set differently for different pages (and sub pages).
 To learn more about these, and what can be specified about them, see <a href="document_modify_permission_se_restricted_1.jsp">document_modify_permission_se_restricted_1.jsp</a><br>
@@ -30,7 +30,10 @@ This is the mapping for document <%= metaId %>:<br>
     while( roleIteratore.hasNext() ) {
         String roleName = (String)roleIteratore.next();
         DocumentPermissionSet documentPermission = (DocumentPermissionSet)permissionsMap.get( roleName );%>
-        The user "<%=roleName%>" has permission "<%= documentPermission.getPermissonType() %>" <br><%
+        The role "<%=roleName%>" has permission "<%= documentPermission.toString() %>" <br><br><%
     }
 %>
+<br>
+Notice: Only the roles that has some permissions is shown above. If a role has <%=DocumentPermissionSet.NONE%> then
+that role is not part of the result map.<br>
 

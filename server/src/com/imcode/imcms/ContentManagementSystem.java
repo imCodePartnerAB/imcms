@@ -1,14 +1,14 @@
 package com.imcode.imcms;
 
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
-import imcode.server.document.DocumentMapper;
 import imcode.server.IMCService;
+import imcode.server.document.DocumentMapper;
+import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 
 public class ContentManagementSystem  {
 
-    UserService userMapper;
-    DocumentService docMapper;
-    User accessingUser;
+    private UserService userMapper;
+    private DocumentService docMapper;
+    private User accessingUser;
 
     public ContentManagementSystem( IMCService service, imcode.server.user.UserDomainObject accessor ) {
         accessingUser = new User( accessor );

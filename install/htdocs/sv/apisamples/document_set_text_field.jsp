@@ -5,7 +5,7 @@
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
     DocumentService documentMapper = imcmsSystem.getDocumentMapper() ;
     int metaId = 1001 ;
-    TextDocumentBean document = (TextDocumentBean)documentMapper.getDocument(metaId) ;
+    TextDocument document = (TextDocument)documentMapper.getDocument(metaId) ;
 
     int textFieldIndexInDocument = 1;
     String newHtmlText = "<h2>Albert Einstein quotation</h2>";

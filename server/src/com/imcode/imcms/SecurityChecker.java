@@ -2,11 +2,12 @@ package com.imcode.imcms;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.server.user.UserDomainObject;
 
-import java.util.HashSet;
 import java.util.Arrays;
+import java.util.HashSet;
 
-public class SecurityChecker {
+class SecurityChecker {
 
     private final static String SUPERADMIN_ROLE = "Superadmin";
     private final static String USER_ADMIN = "Useradmin";
@@ -18,7 +19,7 @@ public class SecurityChecker {
     private boolean isSuperAdmin;
     private boolean isUserAdmin;
 
-    public SecurityChecker( DocumentMapper docMapper, imcode.server.user.UserDomainObject accessor, String[] accessorRoles ) {
+    public SecurityChecker( DocumentMapper docMapper, UserDomainObject accessor, String[] accessorRoles ) {
         this.docMapper = docMapper;
         this.accessingUser = accessor;
         this.accessorRoles = new HashSet( Arrays.asList( accessorRoles ) );
@@ -39,21 +40,19 @@ public class SecurityChecker {
         }
     }
 
+    /*
     public void isUserAdmin() throws NoPermissionException {
         if( !isUserAdmin ) {
             throw new NoPermissionException( "User is not " + USER_ADMIN );
         }
     }
+    */
 
     void isSuperAdminOrIsUserAdminOrIsSameUser( User userBean ) throws NoPermissionException {
         boolean isSameUser = userBean.getLoginName().equalsIgnoreCase( accessingUser.getLoginName() );
         if( !isSuperAdmin && !isUserAdmin && !isSameUser ) {
             throw new NoPermissionException( "User is not superadmin, useradmin nor the same user." );
         }
-    }
-
-    void hasEditPermission( User user ) throws NoPermissionException {
-        throw new NoPermissionException( "Not implemented yet. Didn't feel like it." );
     }
 
     public void hasEditPermission( DocumentDomainObject document ) throws NoPermissionException  {
@@ -64,5 +63,9 @@ public class SecurityChecker {
 
     public imcode.server.user.UserDomainObject getAccessingUser() {
         return accessingUser;
+    }
+
+    public void hasDocumentRights( int metaId ) throws NoPermissionException {
+        // todo
     }
 }

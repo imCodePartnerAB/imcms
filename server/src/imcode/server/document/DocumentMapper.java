@@ -19,7 +19,7 @@ import java.util.Vector;
 public class DocumentMapper {
     private IMCService service;
     private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
-    private Logger log = Logger.getLogger( DocumentMapper.class );
+    private static Logger log = Logger.getLogger( DocumentMapper.class );
     private static final String DATE_FORMATING_STRING = "yyyy-MM-dd HH:mm:ss";
 
     /**
@@ -28,11 +28,57 @@ public class DocumentMapper {
     private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
     private static final String SPROC_GET_TEST_DOC_DATA = "GetTextDocData";
     private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
-    private static final String SPROC_GET_FILE_NAME = "GetFileName ";
-    private static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo ";
+    private static final String SPROC_GET_FILE_NAME = "GetFileName";
+    private static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo";
     private static final String SPROC_GET_USER_PERMISSION_SET = "GetUserPermissionSet";
-    private static final String SPROC_GET_TEXT = "GetText ";
-    private static final String SPROC_INSERT_TEXT = "InsertText ";
+    private static final String SPROC_GET_TEXT = "GetText";
+    private static final String SPROC_INSERT_TEXT = "InsertText";
+    private static final String SPROC_GET_PERMISSION_SET = "GetPermissionSet";
+    //    private static final String SPROC_GET_DOC_TYPES_WITH_PERMISSIONS = "GetDocTypesWithPermissions";
+
+    /**
+     *
+     * @param metaId
+     * @param permissionSetId
+     * @param langPrefix
+     * @return Map of type (permissionId<Integer>, hasPermission<Boolean>)
+     */
+    /*    private Map sprocGetDocTypesWithPermissions( int metaId, int permissionSetId, String langPrefix ) {
+            String[] params = new String[]{ String.valueOf(metaId), String.valueOf(permissionSetId), langPrefix };
+            String[] result = service.sqlProcedure( SPROC_GET_DOC_TYPES_WITH_PERMISSIONS, params );
+        }
+    */
+    //    private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "GetTemplateGroupsWithPermissions";
+    //    private static final String SPROC_GET_ROLES_DOC_PERMISSONS = "getrolesdocpermissions";
+
+    private static class PermissionTuple {
+        int permissionId;
+        boolean hasPermission;
+
+        public PermissionTuple( int permissionId, boolean hasPermission ) {
+            this.permissionId = permissionId;
+            this.hasPermission = hasPermission;
+        }
+    }
+
+    /**
+     * @param metaId
+     * @param permissionSetId
+     * @param langPrefix
+     * @return PermissionTuple[]
+     */
+    private PermissionTuple[] sprocGetPermissionSet( int metaId, int permissionSetId, String langPrefix ) {
+        String[] sqlParams = {String.valueOf( metaId ), String.valueOf( permissionSetId ), langPrefix};
+        String[] sqlResult = service.sqlProcedure( SPROC_GET_PERMISSION_SET, sqlParams );
+        PermissionTuple[] result = new PermissionTuple[sqlResult.length / 3];
+        for( int i = 0, r = 0; i < sqlResult.length; i = i + 3, r++ ) {
+            int permissionId = Integer.parseInt( sqlResult[i] );
+            String permissionDescriptionStr = sqlResult[i + 1];
+            boolean hasPermission = Integer.parseInt( sqlResult[i + 2] ) == 1;
+            result[r] = new PermissionTuple(permissionId,hasPermission);
+        }
+        return result;
+    }
 
     private String[] sprocGetUserPermissionSet( int metaId, int userId ) {
         String[] sqlParams = {String.valueOf( metaId ), String.valueOf( userId )};
@@ -58,6 +104,31 @@ public class DocumentMapper {
         return result;
     }
 
+    /** @return the section for a internalDocument, or null if there was none **/
+    private String sprocSectionGetInheritId( int meta_id ) {
+        String[] section_data = service.sqlProcedure( SPROC_SECTION_GET_INHERIT_ID, new String[]{String.valueOf( meta_id )} );
+
+        if( section_data.length < 2 ) {
+            return null;
+        }
+        return section_data[1];
+    }
+
+    private void sprocInsertText( int meta_id, int txt_no, IMCText text, String textstring ) {
+        String[] params = new String[]{"" + meta_id, "" + txt_no, "" + text.getType(), textstring};
+        service.sqlUpdateProcedure( SPROC_INSERT_TEXT, params );
+    }
+
+    /**
+     Set the modified datetime of a internalDocument to now
+     @param meta_id The id of the internalDocument
+     **/
+    private void sqlTouchDocument( int meta_id ) {
+        Date date = new Date();
+        SimpleDateFormat dateformat = new SimpleDateFormat( DATE_FORMATING_STRING );
+        service.sqlUpdateQuery( "update meta set date_modified = '" + dateformat.format( date ) + "' where meta_id = " + meta_id );
+    }
+
     public DocumentMapper( IMCService service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
         this.service = service;
         this.imcmsAAUM = imcmsAAUM;
@@ -66,6 +137,12 @@ public class DocumentMapper {
     private String[] sprocGetTestDocData( int metaId ) {
         String[] textdoc_data = service.sqlProcedure( SPROC_GET_TEST_DOC_DATA, new String[]{String.valueOf( metaId )} );
         return textdoc_data;
+    }
+
+    private String[] sprocGetText( int meta_id, int no ) {
+        String[] params = new String[]{"" + meta_id, "" + no};
+        String[] results = service.sqlProcedure( SPROC_GET_TEXT, params, false );
+        return results;
     }
 
     public DocumentDomainObject getDocument( int metaId ) {
@@ -94,7 +171,7 @@ public class DocumentMapper {
 
             document.setArchived( result[12] == "0" ? false : true );
 
-            document.setSection( getSection( metaId ) );
+            document.setSection( sprocSectionGetInheritId( metaId ) );
 
             try {
                 document.setCreatedDatetime( dateform.parse( result[16] ) );
@@ -144,16 +221,6 @@ public class DocumentMapper {
 
     }
 
-    /** @return the section for a internalDocument, or null if there was none **/
-    private String getSection( int meta_id ) {
-        String[] section_data = service.sqlProcedure( SPROC_SECTION_GET_INHERIT_ID, new String[]{String.valueOf( meta_id )} );
-
-        if( section_data.length < 2 ) {
-            return null;
-        }
-        return section_data[1];
-    }
-
     public Map getAllRolesMappedToPermissions( DocumentDomainObject document ) {
         Map result = new HashMap();
         String[] sprocResult = sprocGetUserRolesDocPermissions( document.getMetaId() );
@@ -162,7 +229,12 @@ public class DocumentMapper {
             // String roleId = sprocResult[i];
             String roleName = sprocResult[i + 1];
             String userPermissionSetId = sprocResult[i + 2];
-            result.put( roleName, userPermissionSetId );
+            DocumentPermissionSetDomainObject docPermSetDO = new DocumentPermissionSetDomainObject( Integer.parseInt( userPermissionSetId ) );
+            if( docPermSetDO.getPermissionType() == IMCConstants.DOC_PERM_SET_RESTRICTED_1 || docPermSetDO.getPermissionType() == IMCConstants.DOC_PERM_SET_RESTRICTED_2 ) {
+                PermissionTuple[] permissionMapping = sprocGetPermissionSet( document.getMetaId(), docPermSetDO.getPermissionType(), "en" );
+                mapPermissions( docPermSetDO, permissionMapping );
+            }
+            result.put( roleName, docPermSetDO );
         }
         return result;
     }
@@ -203,9 +275,7 @@ public class DocumentMapper {
 
     public IMCText getText( int meta_id, int no ) {
         try {
-            String[] params = new String[]{"" + meta_id, "" + no};
-            String[] results = service.sqlProcedure( SPROC_GET_TEXT, params, false );
-            log.debug( "Asked db for text " + meta_id + ", " + no );
+            String[] results = sprocGetText( meta_id, no );
 
             if( results == null || results.length == 0 ) {
                 /* There was no text. Return null. */
@@ -220,7 +290,7 @@ public class DocumentMapper {
 
         } catch( NumberFormatException ex ) {
             /* There was no text, but we shouldn't come here unless the db returned something wrong. */
-            log.error( "SProc '" + SPROC_GET_TEXT + "' returned an invalid text-type.", ex );
+            log.error( "SProc 'sprocGetText()' returned an invalid text-type.", ex );
             return null;
         }
     }
@@ -229,11 +299,10 @@ public class DocumentMapper {
         String textstring = text.getText();
 
         // update text
-        String[] params = new String[]{"" + meta_id, "" + txt_no, "" + text.getType(), textstring};
-        service.sqlUpdateProcedure( SPROC_INSERT_TEXT, params );
+        sprocInsertText( meta_id, txt_no, text, textstring );
 
         // update the date
-        touchDocument( meta_id );
+        sqlTouchDocument( meta_id );
 
         service.updateLogs( "Text " + txt_no + " in  " + "[" + meta_id + "] modified by user: [" + user.getFullName() + "]" );
 
@@ -246,14 +315,57 @@ public class DocumentMapper {
         }
     }
 
-    /**
-     Set the modified datetime of a internalDocument to now
-     @param meta_id The id of the internalDocument
-     **/
-    public void touchDocument( int meta_id ) {
-        Date date = new Date();
-        SimpleDateFormat dateformat = new SimpleDateFormat( DATE_FORMATING_STRING );
-        service.sqlUpdateQuery( "update meta set date_modified = '" + dateformat.format( date ) + "' where meta_id = " + meta_id );
+    private final static int EDIT_HEADLINE_PERMISSON_ID = 1;
+    private final static int EDIT_DOCINFO_PERMISSON_ID = 2;
+    private final static int EDIT_PERMISSIONS_PERMISSON_ID = 4;
+    private final static int EDIT_TEXTS_PERMISSON_ID = 65536;
+    private final static int EDIT_PICTURES_PERMISSON_ID = 131072;
+    private final static int EDIT_MENUES_PERMISSON_ID = 262144;
+    private final static int EDIT_TEMPLATE_PERMISSON_ID = 524288;
+    private final static int EDIT_INCLUDE_PERMISSON_ID = 1048576;
+    /*
+        private final static Integer[] permissionIds = new Integer[]{ new Integer( EDIT_HEADLINE_PERMISSON_ID ),
+                                                              new Integer( EDIT_DOCINFO_PERMISSON_ID ),
+                                                              new Integer( EDIT_PERMISSIONS_PERMISSON_ID ),
+                                                              new Integer( EDIT_TEXTS_PERMISSON_ID ),
+                                                              new Integer( EDIT_PICTURES_PERMISSON_ID ),
+                                                              new Integer( EDIT_MENUES_PERMISSON_ID ),
+                                                              new Integer( EDIT_TEMPLATE_PERMISSON_ID ),
+                                                              new Integer( EDIT_INCLUDE_PERMISSON_ID) };   */
+
+    static void mapPermissions( DocumentPermissionSetDomainObject docPermSetDO, PermissionTuple[] permissionMapping ) {
+
+        for( int i = 0; i < permissionMapping.length; i++ ) {
+            switch( permissionMapping[i].permissionId ) {
+                case EDIT_HEADLINE_PERMISSON_ID:
+                    docPermSetDO.setEditHeadline( permissionMapping[i].hasPermission );
+                    break;
+                case EDIT_DOCINFO_PERMISSON_ID:
+                    docPermSetDO.setEditDocumentInformation( permissionMapping[i].hasPermission );
+                    break;
+                case EDIT_PERMISSIONS_PERMISSON_ID:
+                    docPermSetDO.setEditPermissions( permissionMapping[i].hasPermission );
+                    break;
+                case EDIT_TEXTS_PERMISSON_ID:
+                    docPermSetDO.setEditTexts( permissionMapping[i].hasPermission );
+                    break;
+                case EDIT_PICTURES_PERMISSON_ID:
+                    docPermSetDO.setEditPictures( permissionMapping[i].hasPermission );
+                    break;
+                case EDIT_MENUES_PERMISSON_ID:
+                    docPermSetDO.setEditMenues( permissionMapping[i].hasPermission );
+                    break;
+                case EDIT_TEMPLATE_PERMISSON_ID:
+                    docPermSetDO.setEditTemplates( permissionMapping[i].hasPermission );
+                    break;
+                case EDIT_INCLUDE_PERMISSON_ID:
+                    docPermSetDO.setEditIncludes( permissionMapping[i].hasPermission );
+                    break;
+                default:
+                    log.warn( "Missing permission_id in mapPermissions()" );
+                    break;
+            }
+        }
     }
 }
 

@@ -376,7 +376,7 @@ public class SaveMeta extends HttpServlet {
 	}
 
 	for (int i=0; i<role_permissions.length; ++i) {
-	    String role_id = (String)role_permissions[i][0] ;
+	    String role_id = role_permissions[i][0] ;
 	    String new_set_id = temp_permission_settings.getProperty(role_id) ;
 	    if (new_set_id == null) {
 		continue ;

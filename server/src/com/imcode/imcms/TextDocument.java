@@ -1,18 +1,18 @@
 package com.imcode.imcms;
 
-import imcode.server.document.DocumentMapper;
 import imcode.server.IMCText;
+import imcode.server.document.DocumentMapper;
 
-public class TextDocumentBean extends Document {
+public class TextDocument extends Document {
 
-    TextDocumentBean( SecurityChecker securityChecker,  imcode.server.document.DocumentDomainObject document, DocumentMapper documentMapper ) {
+    TextDocument( SecurityChecker securityChecker,  imcode.server.document.DocumentDomainObject document, DocumentMapper documentMapper ) {
         super( securityChecker, document, documentMapper );
     }
 
-    public TextDocumentBean.TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
+    public TextDocument.TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
         securityChecker.hasEditPermission( internalDocument );
         IMCText imcmsText = internalDocumentMapper.getTextField( internalDocument, textFieldIndexInDocument ) ;
-        TextDocumentBean.TextField textField = new TextDocumentBean.TextField(imcmsText) ;
+        TextDocument.TextField textField = new TextDocument.TextField(imcmsText) ;
         return textField;
     }
 

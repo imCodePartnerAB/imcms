@@ -2,6 +2,12 @@ Christoffer:
 - Säkerheten och *.jsp sidor. Ska vi lägga loginfilter på alla *.jsp sidor? Eller *.*, går det?
 - Namnen på paket och "Den inloggade användaren"
 
+Hasse
+- Ta bort metaId från APi:et
+- Gå igenom så att det sker säkerhetskollar på samtliga metoder
+- Rita på något sätt paket-beroende trädet
+- Fixa inloggningen på sampe sidorna
+
 Hillar, prioritera
 (?) Inloggningschecken till filtret
 (?) Duplicering av APIet i Servletarna

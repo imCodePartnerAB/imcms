@@ -1,19 +1,20 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.*;
+import com.imcode.imcms.ContentManagementSystem;
+import com.imcode.imcms.RequestConstants;
 import imcode.server.IMCService;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IMCServiceRMI;
 import org.apache.log4j.Logger;
 
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.servlet.*;
 import java.io.IOException;
 
 public class ImcmsSetupFilter implements Filter {
     private Logger log = Logger.getLogger( ImcmsSetupFilter.class );
-    public static final String USER = "logon.isDone";
+    private static final String USER = "logon.isDone";
 
     public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
 
