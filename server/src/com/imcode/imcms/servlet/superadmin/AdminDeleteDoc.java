@@ -81,7 +81,7 @@ public class AdminDeleteDoc extends Administrator {
             log.debug("FoundMetaId: " + foundMetaId);
 
             if (foundMetaId == null) {
-                String header = "Error in AdminUserProps. ";
+                String header = "Error in AdminDeleteDoc. ";
                 Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_metaid_in_db") + "( " + metaId + " ) <br>";
                 log.debug(header + "- metaid could not be found in db");

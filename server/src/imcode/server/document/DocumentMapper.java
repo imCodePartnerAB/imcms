@@ -13,13 +13,16 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.IdNamePair;
+import imcode.util.FileUtility;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.log4j.NDC;
+import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1084,16 +1087,10 @@ public class DocumentMapper {
     }
 
     public void deleteDocument( DocumentDomainObject document, UserDomainObject user ) {
-
-        documentIndex.removeDocument( document );
-
-        //If meta_id is a file document we have to delete the file from file system
-        if ( !new File( service.getFilePath(), "" + document.getId() ).delete() ) {
-            new File( service.getFilePath(), document.getId() + "_se" ).delete();
-        }
-
         // Create a db connection and execte sp DocumentDelete on meta_id
         service.sqlUpdateProcedure( "DocumentDelete", new String[]{"" + document.getId()} );
+        document.accept(new DocumentDeletingVisitor());
+        documentIndex.removeDocument( document );
     }
 
     public String getStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
@@ -1190,6 +1187,18 @@ public class DocumentMapper {
         return documentIds;
     }
 
+    static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
+        File filePath = ApplicationServer.getIMCServiceInterface().getConfig().getFilePath();
+        File[] filesToDelete = filePath.listFiles(fileFilter);
+        for (int i = 0; i < filesToDelete.length; i++) {
+            filesToDelete[i].delete();
+        }
+    }
+
+    static void deleteAllFileDocumentFiles(FileDocumentDomainObject fileDocument) {
+        deleteFileDocumentFilesAccordingToFileFilter(new FileDocumentFileFilter(fileDocument));
+    }
+
     public static class TextDocumentMenuIndexPair {
 
         private TextDocumentDomainObject document;
@@ -1238,6 +1247,43 @@ public class DocumentMapper {
 
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
             ApplicationServer.getIMCServiceInterface().getDocumentMapper().saveDocument( document, user );
+        }
+    }
+
+    static class FileDocumentFileFilter implements FileFilter {
+        protected final FileDocumentDomainObject fileDocument;
+
+        public FileDocumentFileFilter(FileDocumentDomainObject fileDocument) {
+            this.fileDocument = fileDocument;
+        }
+
+        public boolean accept(File file) {
+            String filename = file.getName();
+            Perl5Util perl5Util = new Perl5Util();
+            if (perl5Util.match("/(\\d+)(?:\\.(.*))?/", filename)) {
+                String idStr = perl5Util.group(1);
+                String variantName = FileUtility.unescapeFilename(StringUtils.defaultString(perl5Util.group(2)));
+                return accept(Integer.parseInt(idStr), variantName) ;
+            }
+            return false ;
+        }
+
+        public boolean accept(int fileDocumentId, String fileId) {
+            if (fileDocumentId == fileDocument.getId()) {
+                return true ;
+            }
+            return false ;
+        }
+    }
+
+    static class SuperfluousFileDocumentFilesFileFilter extends FileDocumentFileFilter {
+
+        public SuperfluousFileDocumentFilesFileFilter(FileDocumentDomainObject fileDocument) {
+            super(fileDocument) ;
+        }
+
+        public boolean accept(int fileDocumentId, String fileId) {
+            return super.accept(fileDocumentId, fileId) && null == fileDocument.getFile(fileId) ;
         }
     }
 
