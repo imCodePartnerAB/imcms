@@ -2,6 +2,20 @@
 declare @webroot varchar(30)
 set @webroot='/imcms' 
 
+-- kollar att det inte redan finns mallar med id 2 eller 3
+DECLARE @temp int 
+declare @message varchar(100)
+SET @temp = 0  
+SELECT @temp = template_id
+FROM templates
+WHERE template_id=2 or template_id=3
+IF @temp = 2 or @temp=3
+	select 'Du har inte läst manualen för att installera hjälp! Läs manualen för att se hur ni ska göra!'as message
+else
+begin
+
+-- ok vi kan börja ösa in i databasen
+
 SET IDENTITY_INSERT meta ON 
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
 values (1,'',2,'Hj&auml;lpsidan','','',1,0,0,1,0,1,0,1,'se','','2001-09-14 00:00:00','2001-09-14 00:00:00',1,1,0,'_self','',1,'2001-09-14 00:00:00',NULL)
@@ -4847,3 +4861,5 @@ INSERT INTO roles_rights (role_id, meta_id ,set_id )
 values (0,199,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
 values (0,200,3)
+
+END
