@@ -167,7 +167,7 @@ public class AdminUser extends Administrator {
             if ( !userToChange.isImcmsExternal() ) {
                 redirectChangeUser( req, res, imcref, user, isUseradmin, session, userToChangeId );
             } else {
-                String queryString = "?" + java.net.URLEncoder.encode( WebAppGlobalConstants.USER_LOGIN_NAME, "UTF-8" ) + "=" + java.net.URLEncoder.encode( userToChange.getLoginName(), "UTF-8" );
+                String queryString = "?" + java.net.URLEncoder.encode( WebAppGlobalConstants.USER_LOGIN_NAME_PARAMETER_NAME, "UTF-8" ) + "=" + java.net.URLEncoder.encode( userToChange.getLoginName(), "UTF-8" );
                 RequestDispatcher rd = req.getRequestDispatcher( CHANGE_EXTERNAL_USER_URL + queryString );
                 rd.forward( req, res );
             }

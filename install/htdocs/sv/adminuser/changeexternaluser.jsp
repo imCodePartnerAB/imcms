@@ -35,7 +35,7 @@ private static void updateUserRoles( HttpServletRequest request, UserService use
 DefaultContentManagementSystem  imcms = (DefaultContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
 UserService  userMapper = imcms.getUserService();
 
-String userLoginName = request.getParameter( WebAppGlobalConstants.USER_LOGIN_NAME );
+String userLoginName = request.getParameter( WebAppGlobalConstants.USER_LOGIN_NAME_PARAMETER_NAME );
 User user = userMapper.getUser( userLoginName );
 
 if ( buttonPressed(request, ACTION_CANCEL) ) {
@@ -226,7 +226,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 <tr>
 	<td>&nbsp;</td>
 	<td colspan="3">
-	<input type="hidden" name="<%=WebAppGlobalConstants.USER_LOGIN_NAME%>" value="<%=userLoginName%>">
+	<input type="hidden" name="<%=WebAppGlobalConstants.USER_LOGIN_NAME_PARAMETER_NAME%>" value="<%=userLoginName%>">
 	<input type="submit" name="<%= ACTION_SAVE_USER %>" value="<? sv/adminuser/changeexternaluser.jsp/2001 ?>">
 	<input type="submit" name="<%= ACTION_CANCEL %>" value="<? sv/adminuser/changeexternaluser.jsp/2002 ?>"></td>
 	<td>&nbsp;</td>
