@@ -42,6 +42,28 @@ function openEditor(metaId,txtNr) {
 function openLinkEditor() {
 	popWinOpen(450,395,"$contextPath/imcms/$language/html/link_editor.jsp","linkEditorWin",1,0) ;
 }
+
+function readCookie(name) {
+	if (document.cookie) {
+		var namearg = name + "=";
+		var nlen = namearg.length;
+		var clen = document.cookie.length;
+		var i = 0;
+		while (i < clen) {
+			var j = i + nlen;
+			if (document.cookie.substring(i, j) == namearg) {
+				var endpos = document.cookie.indexOf(";", j);
+				if (endpos == -1) endpos = document.cookie.length;
+				return unescape(document.cookie.substring(j, endpos));
+			}
+			i = document.cookie.indexOf(" ", i) + 1;
+			if (i == 0) break;
+		}
+		return "" ;
+	} else {
+		return "" ;
+	}
+}
 //-->
 </script>
 
