@@ -115,6 +115,18 @@
             </p>
             <bug id="2887"/>
         </change>
+        <change>
+            <p>
+                Added the constants <variable>Document.LifeCyclePhase.NEW</variable>,
+                <variable>Document.LifeCyclePhase.APPROVED</variable>,
+                <variable>Document.LifeCyclePhase.DISAPPROVED</variable>,
+                <variable>Document.LifeCyclePhase.PUBLISHED</variable>,
+                <variable>Document.LifeCyclePhase.ARCHIVED</variable>,
+                and <variable>Document.LifeCyclePhase.UNPUBLISHED</variable>,
+                to be used as values in searches on the field "phase".
+            </p>
+            <bug id="2880"/>
+        </change>
     </changes>
 
 </changeset>
