@@ -68,7 +68,7 @@ public class SendMailServlet extends HttpServlet {
 	*/
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException{
 		
-		System.out.println("test");
+		//System.out.println("test");
 		//params to use to check if its a shop-mail or not
 		String metaId = req.getParameter("metaid");
 		String param = req.getParameter("param");
