@@ -134,9 +134,6 @@
                 <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/filename_label ?></th>
                 <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/size_label ?></th>
                 <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/mime_type_label ?></th>
-                <% if (!creatingNewDocument) { %>
-                <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/link_label ?></th>
-                <% } %>
                 <% if (allowChoiceOfDefault) { %>
                 <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/default_label ?></th>
                 <% } %>
@@ -155,12 +152,13 @@
                         <td><input type="text" size="10" maxlength="50"
                                 name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__NEW_FILE_ID_PREFIX + escapedFileId %>"
                                 value="<%= escapedFileId %>"></td>
+                        <% if (!creatingNewDocument) { %>
+                        <td><a href="GetDoc?meta_id=<%= document.getId() %>&<%= GetDoc.REQUEST_PARAMETER__FILE_ID %>=<%= escapedFileId %>" target="_blank"><%= StringEscapeUtils.escapeHtml(file.getFilename()) %></a></td>
+                        <% }else{ %>
                         <td><%= StringEscapeUtils.escapeHtml(file.getFilename()) %></td>
+                        <% } %>
                         <td><%= file.getInputStreamSource().getSize() %></td>
                         <td><%= StringEscapeUtils.escapeHtml(file.getMimeType()) %></td>
-                        <% if (!creatingNewDocument) { %>
-                        <td><a href="GetDoc?meta_id=<%= document.getId() %>&<%= GetDoc.REQUEST_PARAMETER__FILE_ID %>=<%= escapedFileId %>" target="_blank">GetDoc?meta_id=<%= document.getId() %>&<%= GetDoc.REQUEST_PARAMETER__FILE_ID %>=<%= escapedFileId %></a></td>
-                        <% } %>
                         <% if (allowChoiceOfDefault) { %>
                         <td align="center"><input type="radio"
                                 name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__DEFAULT_FILE %>"
