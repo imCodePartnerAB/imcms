@@ -1,8 +1,10 @@
 Version 1.11.0:
 
-    Of importance:
+    Of importance to administrators:
 
-    * The "SelectMethod" in the JdbcUrl in "server.properties" MUST be set to "SelectMethod=cursor".
+    * The "SelectMethod" in the JdbcUrl in "server.properties" MUST be set to "SelectMethod=cursor",
+      otherwise you will get the error "Can't start a cloned connection while in manual transaction mode."
+      when you try to save a document. This is due to the new transaction code.
       The default used to be "SelectMethod=direct". (Bug 2569)
 
     Of interest to users:
@@ -22,9 +24,24 @@ Version 1.11.0:
     * HTML is now removed from text-fields before indexing, so a search for "foo bar"
       will now also find "<em>foo</em> bar". (Bug 2593)
     * Changed swedish name of text-document, "Ny sida" to "Textsida".
-    * Put the imCMS-commercial html-comment (imcms_message.html) before <html>-tag
-      instead of before doctype declaration. (Bug 2623)
     * Image-preview in old image archive was broken. (Bug 2628)
+
+    Of interest to template creators:
+
+    * Put the imCMS-commercial html-comment (imcms_message.html) before the <html>-tag
+      instead of the before doctype declaration. (Bug 2623)
+
+    Of interest to administrators:
+
+    * Disallow editing of user "user". (Bug 2479)
+    * Fixed a bug that made it impossible to create a category. (Bug 2514)
+    * Fixed a bug that prevented changing a category-type from multi-choice to single-choice. (Bug 2515)
+    * Database connections are now tested before use. This allows imCMS to survive database server restarts. (Bug 2144)
+    * "IndexingSchedulePeriodInMinutes" in "server.properties" now controls the time period
+      between reindexings in minutes. (Bug 2614)
+    * Reindexing is no longer performed on startup unless needed. (Bug 2625)
+    * Added a little note about running SQL-scripts to INSTALL.TXT. (Bug 2484)
+    * The admin button is now visible for users with role "Useradmin" again. (Bug 2629)
 
     Of interest to API-using developers:
 
@@ -67,17 +84,6 @@ Version 1.11.0:
           DocumentPermissionSet.setEditHeadlinePermission(boolean) -
           use DocumentPermissionSet.setEditDocumentInformationPermission(boolean) (Bug 2609)
         - DocumentPermissionSet.getEditableMenuDocumentTypeNames() - removed, returning type-names is broken. (Bug 2609)
-
-    Of interest to administrators:
-
-    * Disallow editing of user "user". (Bug 2479)
-    * Fixed a bug that made it impossible to create a category. (Bug 2514)
-    * Fixed a bug that prevented changing a category-type from multi-choice to single-choice. (Bug 2515)
-    * Database connections are now tested before use. This allows imCMS to survive database server restarts. (Bug 2144)
-    * "IndexingSchedulePeriodInMinutes" in "server.properties" now controls the time period
-      between reindexings in minutes. (Bug 2614)
-    * Reindexing is no longer performed on startup unless needed. (Bug 2625)
-    * Added a little note about running SQL-scripts to INSTALL.TXT.
 
     Of interest to developers:
 
