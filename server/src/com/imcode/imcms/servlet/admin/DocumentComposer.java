@@ -62,9 +62,11 @@ public class DocumentComposer extends HttpServlet {
     public static final String ACTION__CREATE_NEW_HTML_DOCUMENT = "createNewHtmlDocument";
     public static final String ACTION__CREATE_NEW_FILE_DOCUMENT = "createNewFileDocument";
     public static final String ACTION__CREATE_NEW_BROWSER_DOCUMENT = "createNewBrowserDocument";
-    public static final String ACTION__EDIT_DOCUMENT_INFORMATION = "editDocument";
-    public static final String ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION = "processEditedDocumentInformation";
 
+    public static final String ACTION__EDIT_DOCUMENT_INFORMATION = "editDocumentInformation";
+    public static final String ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION = "processEditedDocumentInformation";
+    public static final String ACTION__EDIT_BROWSER_DOCUMENT = "editBrowserDocument";
+    public static final String ACTION__EDITED_BROWSER_DOCUMENT = "editedBrowserDocument";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
@@ -75,7 +77,6 @@ public class DocumentComposer extends HttpServlet {
 
         String action = request.getParameter(REQUEST_ATTR_OR_PARAM__ACTION);
         request.setAttribute(REQUEST_ATTR_OR_PARAM__ACTION, action);
-        UserDomainObject user = Utility.getLoggedOnUser(request);
 
         NewDocumentParentInformation newDocumentParentInformation = (NewDocumentParentInformation) getObjectFromSessionWithKeyInRequest(request, REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
 
@@ -89,6 +90,8 @@ public class DocumentComposer extends HttpServlet {
             request.getRequestDispatcher("ImageBrowse?" + ImageBrowse.PARAMETER__CALLER + "=" + java.net.URLEncoder.encode(returningUrl)).forward(request, response);
             return;
         }
+
+        UserDomainObject user = Utility.getLoggedOnUser(request);
 
         if ( null != request.getParameter(PARAMETER__RETURNING_FROM_IMAGE_BROWSE)) {
             action = request.getParameter( PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION );
@@ -105,6 +108,7 @@ public class DocumentComposer extends HttpServlet {
             }
         }
 
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
         if (ACTION__CREATE_NEW_DOCUMENT.equalsIgnoreCase(action)) {
             DocumentDomainObject newDocument = createCloneFromParent(newDocumentParentInformation);
             addObjectToSessionAndSetSessionAttributeNameInRequest("newDocument", newDocument, request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME);
@@ -130,16 +134,26 @@ public class DocumentComposer extends HttpServlet {
         } else if (ACTION__CREATE_NEW_BROWSER_DOCUMENT.equalsIgnoreCase( action )) {
             BrowserDocumentDomainObject newBrowserDocument = (BrowserDocumentDomainObject)document;
             saveNewDocumentAndAddToMenuAndRemoveSessionAttributesAndRedirectToParent( newBrowserDocument, newDocumentParentInformation, user, request, response );
+        } else if (ACTION__EDITED_BROWSER_DOCUMENT.equalsIgnoreCase( action )) {
+            BrowserDocumentDomainObject browserDocument = (BrowserDocumentDomainObject)document;
+            try {
+                documentMapper.saveDocument( browserDocument );
+            } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
+                throw new ServletException(e);
+            }
+            response.sendRedirect("AdminDoc?meta_id=" + document.getId()) ;
         } else if (ACTION__EDIT_DOCUMENT_INFORMATION.equalsIgnoreCase(action)) {
             forwardToDocinfoPage(request, response, user);
         } else if (ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION.equalsIgnoreCase(action)) {
             setDocumentAttributesFromRequestParameters(document, request);
             try {
-                ApplicationServer.getIMCServiceInterface().getDocumentMapper().saveDocument(document);
+                documentMapper.saveDocument(document);
             } catch (MaxCategoryDomainObjectsOfTypeExceededException e) {
                 throw new ServletException(e);
             }
-            request.getRequestDispatcher("GetDoc?meta_id=" + document.getId()).forward(request, response);
+            response.sendRedirect("AdminDoc?meta_id=" + document.getId()) ;
+        } else if (ACTION__EDIT_BROWSER_DOCUMENT.equalsIgnoreCase( action )) {
+            forwardToBrowserDocumentComposerPage( request, response, user);
         }
     }
 
@@ -239,7 +253,7 @@ public class DocumentComposer extends HttpServlet {
         return newDocument;
     }
 
-    public void forwardToCreateNewBrowserDocumentPage( HttpServletRequest request, HttpServletResponse response,
+    public void forwardToBrowserDocumentComposerPage( HttpServletRequest request, HttpServletResponse response,
                                                        UserDomainObject user ) throws IOException, ServletException {
         request.getRequestDispatcher( URL__BROWSER_DOCUMENT_COMPOSER ).forward( request, response );
     }

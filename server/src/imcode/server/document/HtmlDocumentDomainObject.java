@@ -22,7 +22,7 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
         this.htmlDocumentHtml = htmlDocumentHtml;
     }
 
-    public String getHtmlDocumentHtml() {
+    public String getHtml() {
         return htmlDocumentHtml;
     }
 
@@ -36,6 +36,10 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
                                                HttpServletResponse response ) throws IOException, ServletException {
         documentInformation.forwardToCreateNewHtmlDocumentPage( request, response, user );
 
+    }
+
+    public void saveDocument( DocumentMapper documentMapper ) {
+        documentMapper.saveHtmlDocument( this ) ;
     }
 
     public void saveNewDocument( DocumentMapper documentMapper ) {

@@ -677,7 +677,7 @@ public class DocumentMapper {
         String sqlUrlDocsInsertStr = makeSqlInsertString( "frameset_docs", htmlDocumentColumns );
 
         service.sqlUpdateQuery( sqlUrlDocsInsertStr, new String[]{
-            "" + document.getId(), document.getHtmlDocumentHtml()
+            "" + document.getId(), document.getHtml()
         } );
     }
 
@@ -701,7 +701,9 @@ public class DocumentMapper {
         for ( Iterator iterator = browserDocumentMap.keySet().iterator(); iterator.hasNext(); ) {
             BrowserDocumentDomainObject.Browser browser = (BrowserDocumentDomainObject.Browser)iterator.next();
             Integer metaIdForBrowser = (Integer)browserDocumentMap.get( browser );
-            service.sqlUpdateQuery( sqlBrowserDocsInsertStr, new String[] {""+document.getId(), ""+metaIdForBrowser, ""+browser.getId()}) ;
+            service.sqlUpdateQuery( sqlBrowserDocsInsertStr, new String[]{
+                "" + document.getId(), "" + metaIdForBrowser, "" + browser.getId()
+            } );
         }
     }
 
@@ -728,16 +730,7 @@ public class DocumentMapper {
 
         updateDocumentKeywords( document.getId(), document.getKeywords() );
 
-        if ( document instanceof TextDocumentDomainObject ) {
-            TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
-            sqlUpdateTextPartOfDocument( document.getId(), textDocument.getTextDocumentTemplate(), textDocument.getTextDocumentMenuSortOrder(),
-                                         textDocument.getTextDocumentTemplateGroupId() );
-        } else if ( document instanceof UrlDocumentDomainObject ) {
-            sqlUpdateUrlPartOfDocument( document.getId(), ( (UrlDocumentDomainObject)document ).getUrlDocumentUrl() );
-        } else if ( document instanceof FileDocumentDomainObject ) {
-            FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
-            sqlUpdateFilePartOfDocument( document.getId(), fileDocument.getFileDocumentFilename(), fileDocument.getFileDocumentMimeType() );
-        }
+        document.saveDocument( this );
 
         touchDocument( document );
     }
@@ -825,25 +818,6 @@ public class DocumentMapper {
         sqlUpdateValues.add( "" + document.getId() );
         service.sqlUpdateQuery( sqlStr.toString(),
                                 (String[])sqlUpdateValues.toArray( new String[sqlUpdateValues.size()] ) );
-    }
-
-    private void sqlUpdateFilePartOfDocument( int metaId, String fileName, String mime ) {
-        String sqlStr = "UPDATE fileupload_docs SET filename = ?,mime = ? WHERE meta_id = ?";
-        service.sqlUpdateQuery( sqlStr, new String[]{fileName, mime, "" + metaId} );
-    }
-
-    private void sqlUpdateUrlPartOfDocument( int metaId, String urlRef ) {
-        String sqlStr = "UPDATE url_docs SET url_ref = ? WHERE meta_id = ?";
-        service.sqlUpdateQuery( sqlStr, new String[]{urlRef, "" + metaId} );
-    }
-
-    private void sqlUpdateTextPartOfDocument( int metaId, TemplateDomainObject template, int menuSortOrder,
-                                              int templateGroupId ) {
-        String sqlStr = "UPDATE text_docs SET template_id = ?, sort_order = ?, group_id = ? WHERE meta_id = ?";
-        service.sqlUpdateQuery( sqlStr,
-                                new String[]{
-                                    "" + template.getId(), "" + menuSortOrder, "" + templateGroupId, "" + metaId
-                                } );
     }
 
     /**
@@ -1535,13 +1509,13 @@ public class DocumentMapper {
     }
 
     public BrowserDocumentDomainObject.Browser getBrowserById( int browserIdToGet ) {
-        if (browserIdToGet == BrowserDocumentDomainObject.Browser.DEFAULT.getId()) {
-            return BrowserDocumentDomainObject.Browser.DEFAULT ;
+        if ( browserIdToGet == BrowserDocumentDomainObject.Browser.DEFAULT.getId() ) {
+            return BrowserDocumentDomainObject.Browser.DEFAULT;
         }
         String sqlStr = "SELECT browser_id, name, value FROM browsers WHERE browser_id = ?";
         String[] sqlRow = service.sqlQuery( sqlStr, new String[]{"" + browserIdToGet} );
         BrowserDocumentDomainObject.Browser browser = createBrowserFromSqlRow( sqlRow );
-        return browser ;
+        return browser;
     }
 
     private BrowserDocumentDomainObject.Browser createBrowserFromSqlRow( String[] sqlRow ) {
@@ -1550,6 +1524,44 @@ public class DocumentMapper {
         int browserSpecificity = Integer.parseInt( sqlRow[2] );
         BrowserDocumentDomainObject.Browser browser = new BrowserDocumentDomainObject.Browser( browserId, browserName, browserSpecificity );
         return browser;
+    }
+
+    void saveTextDocument( TextDocumentDomainObject textDocument ) {
+        String sqlStr = "UPDATE text_docs SET template_id = ?, sort_order = ?, group_id = ? WHERE meta_id = ?";
+        service.sqlUpdateQuery( sqlStr, new String[]{
+            "" + textDocument.getTextDocumentTemplate().getId(),
+            "" + textDocument.getTextDocumentMenuSortOrder(),
+            "" + textDocument.getTextDocumentTemplateGroupId(),
+            "" + textDocument.getId()
+        } );
+    }
+
+    void saveUrlDocument( UrlDocumentDomainObject urlDocument ) {
+        String sqlStr = "UPDATE url_docs SET url_ref = ? WHERE meta_id = ?";
+        service.sqlUpdateQuery( sqlStr, new String[]{urlDocument.getUrlDocumentUrl(), "" + urlDocument.getId()} );
+    }
+
+    void saveFileDocument( FileDocumentDomainObject fileDocument ) {
+        String sqlStr = "UPDATE fileupload_docs SET filename = ?,mime = ? WHERE meta_id = ?";
+        service.sqlUpdateQuery( sqlStr, new String[]{
+            fileDocument.getFileDocumentFilename(), fileDocument.getFileDocumentMimeType(), "" + fileDocument.getId()
+        } );
+    }
+
+    void saveBrowserDocument( BrowserDocumentDomainObject browserDocument ) {
+        deleteBrowserDocument( browserDocument );
+        saveNewBrowserDocument( browserDocument );
+    }
+
+    private void deleteBrowserDocument( BrowserDocumentDomainObject browserDocument ) {
+        String sqlStr = "DELETE FROM browser_docs WHERE meta_id = ?" ;
+        service.sqlUpdateQuery( sqlStr, new String[] {""+browserDocument.getId()}) ;
+    }
+
+
+    void saveHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
+        String sqlStr = "UPDATE frameset_docs SET frame_set = ? WHERE meta_id = ?" ;
+        service.sqlUpdateQuery( sqlStr, new String[] {htmlDocument.getHtml(), ""+htmlDocument.getId()} ) ;
     }
 
     public static class DocumentAlreadyInMenuException extends Exception {

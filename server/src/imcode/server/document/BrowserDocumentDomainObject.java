@@ -16,10 +16,11 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.HashMap;
 
 public class BrowserDocumentDomainObject extends DocumentDomainObject {
 
-    private Map browserDocumentIdMap = new TreeMap();
+    private Map browserDocumentIdMap = new HashMap();
 
     public Map getBrowserDocumentIdMap() {
         return Collections.unmodifiableMap( browserDocumentIdMap );
@@ -33,8 +34,12 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
                                                DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
                                                UserDomainObject user, HttpServletRequest request,
                                                HttpServletResponse response ) throws IOException, ServletException {
-        documentInformation.forwardToCreateNewBrowserDocumentPage( request, response, user );
+        documentInformation.forwardToBrowserDocumentComposerPage( request, response, user );
 
+    }
+
+    public void saveDocument( DocumentMapper documentMapper ) {
+        documentMapper.saveBrowserDocument( this ) ;
     }
 
     public void saveNewDocument( DocumentMapper documentMapper ) throws IOException {

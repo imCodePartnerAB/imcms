@@ -297,6 +297,8 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
                                                UserDomainObject user, HttpServletRequest request,
                                                HttpServletResponse response ) throws IOException, ServletException;
 
+    public abstract void saveDocument( DocumentMapper documentMapper ) ;
+
     public abstract void saveNewDocument( DocumentMapper documentMapper ) throws IOException;
 
     public abstract void initDocumentFromDb( DocumentMapper documentMapper ) ;

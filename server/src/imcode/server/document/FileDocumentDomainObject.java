@@ -57,6 +57,10 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
     }
 
+    public void saveDocument( DocumentMapper documentMapper ) {
+        documentMapper.saveFileDocument( this ) ;
+    }
+
     public void saveNewDocument( DocumentMapper documentMapper ) throws IOException {
         documentMapper.saveNewFileDocument(this);
     }

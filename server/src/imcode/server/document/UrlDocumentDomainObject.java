@@ -37,6 +37,10 @@ public class UrlDocumentDomainObject extends DocumentDomainObject {
         documentInformation.forwardToCreateNewUrlDocumentPage( request, response, user );
     }
 
+    public void saveDocument( DocumentMapper documentMapper ) {
+        documentMapper.saveUrlDocument(this) ;
+    }
+
     public void saveNewDocument( DocumentMapper documentMapper ) {
         documentMapper.saveNewUrlDocument( this );
     }

@@ -4,6 +4,7 @@ import com.imcode.imcms.servlet.GetDoc;
 import imcode.server.*;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
@@ -19,6 +20,8 @@ import java.util.Hashtable;
 import java.util.Stack;
 import java.util.Vector;
 
+import org.apache.commons.lang.ObjectUtils;
+
 public class AdminDoc extends HttpServlet {
 
     private static final String PARAMETER__META_ID = "meta_id";
@@ -31,15 +34,19 @@ public class AdminDoc extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         int metaId = Integer.parseInt( req.getParameter( PARAMETER__META_ID ) );
-        int flags = Integer.parseInt( req.getParameter( PARAMETER__DISPATCH_FLAGS ) );
-        if ( IMCConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
-            DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
-            DocumentDomainObject document = documentMapper.getDocument( metaId );
-            DocumentComposer.addObjectToSessionAndSetSessionAttributeNameInRequest( AdminDoc.class.getName()
-                                                                                       + ".document", document, req, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
+        int flags = Integer.parseInt( (String)ObjectUtils.defaultIfNull( req.getParameter( PARAMETER__DISPATCH_FLAGS ), "0") );
 
-            req.getRequestDispatcher( "DocumentComposer?action="
-                                      + DocumentComposer.ACTION__EDIT_DOCUMENT_INFORMATION ).forward( req, res );
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( metaId );
+        if ( IMCConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
+            DocumentComposer.addObjectToSessionAndSetSessionAttributeNameInRequest( AdminDoc.class.getName()
+                                                                                    + ".document", document, req, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
+
+            req.getRequestDispatcher( "DocumentComposer?"+DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION+"="+DocumentComposer.ACTION__EDIT_DOCUMENT_INFORMATION ).forward( req, res );
+        } else if ( document instanceof BrowserDocumentDomainObject && IMCConstants.DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT == flags ) {
+            DocumentComposer.addObjectToSessionAndSetSessionAttributeNameInRequest( AdminDoc.class.getName()
+                                                                                    + ".document", document, req, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
+            req.getRequestDispatcher( "DocumentComposer?"+DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION+"="+DocumentComposer.ACTION__EDIT_BROWSER_DOCUMENT ).forward( req, res );
         } else {
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 

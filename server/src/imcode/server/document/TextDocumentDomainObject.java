@@ -74,6 +74,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
             documentInformation.saveNewDocumentAndAddToMenuAndRemoveSessionAttributesAndRedirectToParent( this, newDocumentParentInformation, user, request, response );
     }
 
+    public void saveDocument( DocumentMapper documentMapper ) {
+            documentMapper.saveTextDocument(this) ;
+    }
+
     public void saveNewDocument( DocumentMapper documentMapper ) {
         documentMapper.saveNewTextDocument( this );
     }

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.HashMap;
 
 public class BrowserDocumentComposer extends HttpServlet {
 
@@ -32,26 +33,32 @@ public class BrowserDocumentComposer extends HttpServlet {
 
     public final static String PARAMETER__BROWSERS = "browsers";
     public final static String PARAMETER_PREFIX__DESTINATION = "destination_";
-    public static final String REQUEST_ATTRIBUTE__ADDED_BROWSERS = "addedBrowsers";
     public static final String PARAMETER__DEFAULT_DESTINATION = "default_destination";
+
+    public static final String REQUEST_ATTRIBUTE__ADDED_BROWSERS = "addedBrowsers";
 
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         doPost( request, response );
     }
 
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        Map addedBrowsers = getAddedBrowsersFromRequest( request );
 
         String action = request.getParameter( DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION ) ;
-        if (DocumentComposer.ACTION__PROCESS_NEW_DOCUMENT_INFORMATION.equalsIgnoreCase( action ) || null != request.getParameter( PARAMETER_BUTTON__ADD_BROWSERS)) {
+        BrowserDocumentDomainObject document = (BrowserDocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) ;
+        Map addedBrowsers = document.getBrowserDocumentIdMap() ;
+        if (null != request.getParameter( PARAMETER_BUTTON__ADD_BROWSERS)) {
+            addedBrowsers = getAddedBrowsersFromRequest( request );
+        }
+
+        if (DocumentComposer.ACTION__PROCESS_NEW_DOCUMENT_INFORMATION.equalsIgnoreCase( action )
+            || DocumentComposer.ACTION__EDIT_BROWSER_DOCUMENT.equalsIgnoreCase( action )
+            || null != request.getParameter( PARAMETER_BUTTON__ADD_BROWSERS)) {
             UserDomainObject user = Utility.getLoggedOnUser( request );
-            request.setAttribute( DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME, DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) );
-            request.setAttribute( DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME, DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME ) );
             request.setAttribute( REQUEST_ATTRIBUTE__ADDED_BROWSERS, addedBrowsers );
             request.getRequestDispatcher( DocumentComposer.URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2()
                                           + URL_I15D_PAGE__BROWSERDOC ).forward( request, response );
         } else if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
-            BrowserDocumentDomainObject document = (BrowserDocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) ;
+            addedBrowsers = getAddedBrowsersFromRequest( request );
             for ( Iterator iterator = addedBrowsers.keySet().iterator(); iterator.hasNext(); ) {
                 BrowserDocumentDomainObject.Browser browser = (BrowserDocumentDomainObject.Browser)iterator.next();
                 Integer documentId = (Integer)addedBrowsers.get(browser) ;
@@ -61,14 +68,14 @@ public class BrowserDocumentComposer extends HttpServlet {
             }
             request.getRequestDispatcher( "DocumentComposer" ).forward( request,response );
         } else if ( null != request.getParameter( PARAMETER_BUTTON__CANCEL ) ) {
-
+            response.sendRedirect( "AdminDoc?meta_id="+document.getId() );
         }
     }
 
     private Map getAddedBrowsersFromRequest( HttpServletRequest request ) {
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
 
-        Map addedBrowsers = new TreeMap();
+        Map addedBrowsers = new HashMap();
 
         addedBrowsers.put(BrowserDocumentDomainObject.Browser.DEFAULT, null) ;
         String[] addedBrowserIdStrings = request.getParameterValues( PARAMETER__BROWSERS );

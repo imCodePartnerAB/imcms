@@ -37,9 +37,25 @@ imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660">
 <form method="POST" action="BrowserDocumentComposer">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>" value="<%= DocumentComposer.ACTION__CREATE_NEW_BROWSER_DOCUMENT %>">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
+<%
+    DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = (DocumentComposer.NewDocumentParentInformation)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
+    boolean creatingNewDocument = null != newDocumentParentInformation;
+
+    if (creatingNewDocument) { %>
+        <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
+            value="<%= DocumentComposer.ACTION__CREATE_NEW_BROWSER_DOCUMENT %>">
+        <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>"
+            value="<%= DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
+<% } else {%>
+        <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
+            value="<%= DocumentComposer.ACTION__EDITED_BROWSER_DOCUMENT %>">
+<% } %>
+        <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
+            value="<%= DocumentComposer.getSessionAttributeNameFromRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
 <tr>
 	<td colspan="3"><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/4/1 ?>",656);</script></td>
 </tr>
@@ -68,7 +84,8 @@ imcmsGui("mid", null);
 	<td>
         <table border="0">
             <%
-                for ( Iterator iterator = addedBrowsers.keySet().iterator(); iterator.hasNext(); ) {
+
+                for ( Iterator iterator = new TreeSet(addedBrowsers.keySet()).iterator(); iterator.hasNext(); ) {
                     BrowserDocumentDomainObject.Browser browser = (BrowserDocumentDomainObject.Browser)iterator.next();
                     if ( browser.equals( BrowserDocumentDomainObject.Browser.DEFAULT )) {
                         continue ;
