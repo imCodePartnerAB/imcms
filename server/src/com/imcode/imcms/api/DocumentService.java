@@ -145,7 +145,13 @@ public class DocumentService {
         documentMapper.saveDocument( internalParentDocument, user );
     }
 
-    public void saveChanges( Document document ) throws NoPermissionException, MaxCategoriesOfTypeExceededException {
+    /** Saves the changes on a modified document. Warning this mehtod is synchronized, witch meens that it only handles one
+     *  request at a time, no concurrent handling of multiple calls.
+     * @param document
+     * @throws NoPermissionException
+     * @throws MaxCategoriesOfTypeExceededException
+     */
+    public synchronized  void saveChanges( Document document ) throws NoPermissionException, MaxCategoriesOfTypeExceededException {
         securityChecker.hasEditPermission( document );
         try {
             documentMapper.saveDocument( document.getInternal(), securityChecker.getCurrentLoggedInUser() );
