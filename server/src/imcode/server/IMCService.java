@@ -1546,4 +1546,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         }
          return langproperties_eng;
     }
+
+    public File getFilePath() {
+        return filePath;
+    }
 }

@@ -292,4 +292,6 @@ public interface IMCServiceInterface {
     SMTP getSMTP();
 
     public Properties getLangProperties(UserDomainObject user);
+
+    File getFilePath();
 }

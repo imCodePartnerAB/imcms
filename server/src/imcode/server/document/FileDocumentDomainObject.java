@@ -14,7 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class FileDocumentDomainObject extends DocumentDomainObject {
 
@@ -42,11 +41,8 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         this.inputStreamSource = inputStreamSource;
     }
 
-    public InputStream getInputStream() throws IOException {
-        if (null == inputStreamSource) {
-            return null ;
-        }
-        return inputStreamSource.getInputStream();
+    public InputStreamSource getInputStreamSource() throws IOException {
+        return inputStreamSource ;
     }
 
     public int getDocumentTypeId() {

@@ -8,6 +8,7 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
+import imcode.util.InputStreamSource;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -392,14 +393,28 @@ public class DocumentMapper {
         document.setUrlDocumentUrl( sqlGetFromUrlDocs( service, document.getId() ) );
     }
 
-    void initFileDocument( FileDocumentDomainObject document ) {
+    void initFileDocument( final FileDocumentDomainObject document ) {
         String[] sqlResult = sqlGetFromFileDocs( service, document.getId() );
         if ( null != sqlResult && sqlResult.length == 2 ) {
             String fileName = sqlResult[0];
             String mime = sqlResult[1];
             document.setFilename( fileName );
             document.setMimeType( mime );
+            document.setInputStreamSource( new InputStreamSource() {
+                public InputStream getInputStream() throws IOException {
+                    return new FileInputStream( getUploadedFile( document )) ;
+                }
+            } );
         }
+    }
+
+    private File getUploadedFile( final FileDocumentDomainObject document ) {
+        File file = new File( service.getFilePath(), ""+document.getId() );
+        if (!file.exists()) {
+            // FIXME: deprecated
+            file = new File( service.getFilePath(), ""+document.getId()+"_se" );
+        }
+        return file ;
     }
 
     public void initBrowserDocument( BrowserDocumentDomainObject document ) {
@@ -594,7 +609,7 @@ public class DocumentMapper {
 
     private void saveFile( FileDocumentDomainObject newFileDocument ) {
         try {
-            InputStream in = newFileDocument.getInputStream();
+            InputStream in = newFileDocument.getInputStreamSource().getInputStream();
             if ( null == in ) {
                 return;
             }

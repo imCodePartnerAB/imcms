@@ -203,18 +203,12 @@ public class GetDoc extends HttpServlet {
             trackLog.info( documentRequest );
             return htmlStr;
         } else if ( document instanceof FileDocumentDomainObject ) {
-            String[] sqlResult = DocumentMapper.sqlGetFromFileDocs( imcref, meta_id );
-            String filename = sqlResult[0];
-            String mimetype = sqlResult[1];
-            BufferedInputStream fr;
-            File file = new File( file_path, String.valueOf( meta_id ) );
-            if ( !file.exists() ) {
-                // FIXME: deprecated
-                file = new File( file_path, String.valueOf( meta_id ) + "_se" );
-            }
+            FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document ;
+            String filename = fileDocument.getFilename() ;
+            String mimetype = fileDocument.getMimeType() ;
+            InputStream fr;
             try {
-                fr =
-                new BufferedInputStream( new FileInputStream( file ) );
+                fr = new BufferedInputStream( ((FileDocumentDomainObject)document).getInputStreamSource().getInputStream() );
             } catch ( IOException ex ) {
                 htmlStr = imcref.getAdminTemplate( NO_PAGE_URL, user, vec );
                 return htmlStr;
@@ -235,7 +229,7 @@ public class GetDoc extends HttpServlet {
                     out.write( buffer, 0, bytes_read );
                 }
             } catch ( java.net.SocketException ex ) {
-                log.debug( "Exception occured" + ex );
+                log.debug( "Exception occured", ex );
             }
             fr.close();
             out.flush();

@@ -516,6 +516,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         return null;
     }
 
+    public File getFilePath() {
+        return null;  // TODO
+    }
+
     public TemplateDomainObject getTemplate( int meta_id ) {
       return null;
    }
