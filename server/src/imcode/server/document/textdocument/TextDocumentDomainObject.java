@@ -1,7 +1,6 @@
 package imcode.server.document.textdocument;
 
 import imcode.server.document.*;
-import imcode.util.LocalizedMessage;
 
 import java.util.*;
 
@@ -165,5 +164,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public void setDefaultTemplate( TemplateDomainObject defaultTemplate ) {
         this.defaultTemplate = defaultTemplate;
+    }
+
+    public void removeInclude( int includeIndex ) {
+        includes.remove( new Integer( includeIndex )) ;
     }
 }

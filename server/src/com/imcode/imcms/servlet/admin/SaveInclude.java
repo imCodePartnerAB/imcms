@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -15,7 +16,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SaveInclude extends HttpServlet {
 
@@ -46,7 +48,10 @@ public class SaveInclude extends HttpServlet {
             included_meta_id = included_meta_id.trim();
             include_id = include_id.trim();
             if ( "".equals( included_meta_id ) ) {
-                DocumentMapper.sprocDeleteInclude( imcref, meta_id, Integer.parseInt( include_id ) );
+                DocumentMapper documentMapper = imcref.getDocumentMapper();
+                TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id );
+                document.removeInclude( Integer.parseInt(include_id) );
+                documentMapper.saveDocument( document, user );
                 imcref.updateMainLog( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id + "] on ["
                               + meta_id_str
                               + "] removed by user: ["
@@ -68,6 +73,9 @@ public class SaveInclude extends HttpServlet {
                     // Make sure the user has permission to share the included document
                     DocumentDomainObject includedDocument = documentMapper.getDocument( included_meta_id_int );
                     if ( user.canAddDocumentToAnyMenu( includedDocument ) ) {
+                        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( meta_id ) ;
+                        document.setInclude( Integer.parseInt(include_id), includedDocument.getId() );
+                        documentMapper.saveDocument( document, user );
                         DocumentMapper.sprocSetInclude( imcref, meta_id, Integer.parseInt( include_id ), included_meta_id_int );
                         imcref.updateMainLog( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id
                                       + "] on ["
@@ -92,11 +100,10 @@ public class SaveInclude extends HttpServlet {
         if ( tempstring != null ) {
             out.write( tempstring );
         }
-        return;
     }
 
     private void sendPermissionDenied( ImcmsServices imcref, Writer out, int meta_id, UserDomainObject user ) throws IOException {
-        Vector vec = new Vector( 2 );
+        List vec = new ArrayList( 2 );
         vec.add( "#meta_id#" );
         vec.add( String.valueOf( meta_id ) );
         String htmlStr = imcref.getAdminTemplate( "include_permission_denied.html", user, vec );
@@ -104,7 +111,7 @@ public class SaveInclude extends HttpServlet {
     }
 
     private void sendBadId( ImcmsServices imcref, Writer out, int meta_id, UserDomainObject user ) throws IOException {
-        Vector vec = new Vector( 2 );
+        List vec = new ArrayList( 2 );
         vec.add( "#meta_id#" );
         vec.add( String.valueOf( meta_id ) );
         String htmlStr = imcref.getAdminTemplate( "include_bad_id.html", user, vec );

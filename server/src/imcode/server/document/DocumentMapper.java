@@ -42,7 +42,6 @@ public class DocumentMapper {
     private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
     private static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo";
     private static final String SPROC_GET_TEXT = "GetText";
-    private static final String SPROC_UPDATE_PARENTS_DATE_MODIFIED = "UpdateParentsDateModified";
     private static final String SPROC_SECTION_GET_ALL = "SectionGetAll";
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
 
@@ -424,7 +423,7 @@ public class DocumentMapper {
         }
 
         document.setCreatedDatetime( new Date() );
-        
+
         int newMetaId = sqlInsertIntoMeta( document );
 
         if ( !user.isSuperAdminOrHasFullPermissionOn( document ) ) {
@@ -686,10 +685,6 @@ public class DocumentMapper {
         service.sqlUpdateProcedure( "SetRoleDocPermissionSetId", new String[]{"" + roleId, "" + metaId, "" + newSetId} );
     }
 
-    public static void sprocUpdateParentsDateModified( ImcmsServices imcref, int meta_id ) {
-        imcref.sqlUpdateProcedure( SPROC_UPDATE_PARENTS_DATE_MODIFIED, new String[]{"" + meta_id} );
-    }
-
     private void addCategoriesFromDatabaseToDocument( DocumentDomainObject document ) {
         String[][] categories = service.sqlQueryMulti( "SELECT categories.category_id, categories.name, categories.image, categories.description, category_types.category_type_id, category_types.name, category_types.max_choices"
                                                        + " FROM document_categories"
@@ -763,20 +758,6 @@ public class DocumentMapper {
 
     private static void removeAllSectionsFromDocument( ImcmsServices imcref, int metaId ) {
         imcref.sqlUpdateQuery( "DELETE FROM meta_section WHERE meta_id = ?", new String[]{"" + metaId} );
-    }
-
-    public void removeDocumentFromMenu( UserDomainObject user, DocumentDomainObject menuDocument,
-                                        int menuIndex, DocumentDomainObject toBeRemoved ) {
-        String sqlStr = "delete from childs\n" + "where to_meta_id = ?\n"
-                        + "and menu_id = (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
-
-        service.sqlUpdateQuery( sqlStr,
-                                new String[]{
-                                    "" + toBeRemoved.getId(), "" + menuDocument.getId(), ""
-                                                                                         + menuIndex
-                                } );
-
-        invalidateDocument( toBeRemoved );
     }
 
     private void updateDocumentSections( int metaId,
@@ -1015,10 +996,6 @@ public class DocumentMapper {
 
     public void clearDocumentCache() {
         documentCache.clear();
-    }
-
-    public DocumentTypeDomainObject[] getAllDocumentTypes() {
-        return DocumentDomainObject.ALL_DOCUMENT_TYPES ;
     }
 
     public static class TextDocumentMenuIndexPair {

@@ -192,14 +192,18 @@ class TagParser {
             label = label == null ? "" : label;
             Integer includedDocumentId = document.getIncludedDocumentId( no );
             if ( includeMode ) {
-                return service.getAdminTemplate( "change_include.html", documentRequest.getUser(),
-                                                 Arrays.asList( new String[]{
-                                                     "#label#", label,
-                                                     "#meta_id#", String.valueOf( document.getId() ),
-                                                     "#include_id#", String.valueOf( no ),
-                                                     "#include_meta_id#", includedDocumentId == null
-                                                                          ? "" : "" + includedDocumentId
-                                                 } ) );
+                HttpServletRequest request = documentRequest.getHttpServletRequest();
+                HttpServletResponse response = documentRequest.getHttpServletResponse();
+                UserDomainObject user = documentRequest.getUser();
+                try {
+                    request.setAttribute( "includingDocument", document );
+                    request.setAttribute( "includedDocumentId", includedDocumentId );
+                    request.setAttribute( "label", label );
+                    request.setAttribute( "includeIndex", new Integer( no ));
+                    return Utility.getContents( "/imcms/"+user.getLanguageIso639_2()+"/jsp/docadmin/text/edit_include.jsp",request, response ) ;
+                } catch ( Exception e ) {
+                    throw new UnhandledException( e );
+                }
             } else if ( includeLevel > 0 ) {
                 if ( null == includedDocumentId ) {
                     return "";
