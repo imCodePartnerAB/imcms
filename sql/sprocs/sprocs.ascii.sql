@@ -1243,7 +1243,9 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 	SELECT	@copy_id,
 		template_id,
 		group_id,
-		sort_order
+		sort_order,
+		default_template_1,
+		default_template_2
 	FROM	text_docs
 	WHERE	meta_id = @meta_id
 
