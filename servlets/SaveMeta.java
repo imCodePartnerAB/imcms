@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +32,12 @@ public class SaveMeta extends HttpServlet {
      * doPost()
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+
+        if( null != req.getParameter("ImageBrowse") ) {
+            RequestDispatcher rd =  req.getRequestDispatcher("ImageBrowse");
+            rd.forward( req, res );
+            return;
+        }
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
@@ -337,7 +344,8 @@ public class SaveMeta extends HttpServlet {
                 temp_permission_settings.setProperty( roles_no_rights[i], "3" );
             }
             putTemporaryPermissionSettingsInUser( user, metaIdStr, metaprops, temp_permission_settings, temp_default_templates );
-            out.write( MetaDataParser.parseMetaPermission( metaIdStr, metaIdStr, user, "docinfo/change_meta_rights.html" ) );
+
+            out.write( MetaDataParser.parseMetaPermission( metaIdStr, metaIdStr, user, "docinfo/change_meta_rights.html", null) );
             return;
         }
 
@@ -460,7 +468,7 @@ public class SaveMeta extends HttpServlet {
     }
 
     private static void addNullForPublisherIdToSqlStringIfInvalid( Properties metaprops, List sqlUpdateColumns ) {
-        String publisher_id = (String)metaprops.getProperty( "publisher_id" );
+        String publisher_id = metaprops.getProperty( "publisher_id" );
         if ( null != publisher_id ) {
             try {
                 Integer.parseInt( publisher_id );

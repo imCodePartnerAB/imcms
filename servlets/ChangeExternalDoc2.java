@@ -22,7 +22,7 @@ public class ChangeExternalDoc2 extends HttpServlet {
 		String start_url        	= imcref.getStartUrl() ;
 
 		imcode.server.user.UserDomainObject user ;
-		String htmlStr = "" ;                         	
+		String htmlStr;
 		int meta_id ;
 		int parent_meta_id ;
 
@@ -34,7 +34,7 @@ public class ChangeExternalDoc2 extends HttpServlet {
 		// Check if user logged on
 		if( (user=Utility.getLoggedOnUserOrRedirect( req,res,start_url ))==null ) {
 			return ;
-		} 
+		}
 
 		if ( !imcref.checkDocAdminRights(meta_id,user,65536 ) ) {	// Checking to see if user may edit this
 			String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
@@ -45,7 +45,7 @@ public class ChangeExternalDoc2 extends HttpServlet {
 		}
 
 		if( req.getParameter("metadata")!=null ) {
-			htmlStr = imcode.util.MetaDataParser.parseMetaData(String.valueOf(meta_id), String.valueOf(parent_meta_id),user) ;
+			htmlStr = imcode.util.MetaDataParser.parseMetaData(String.valueOf(meta_id), String.valueOf(parent_meta_id),user, null) ;
 			out.write( htmlStr ) ;
 			return ;
 		}

@@ -12,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
@@ -28,6 +29,14 @@ public class AddDoc extends HttpServlet {
 
     private static final String DOCINFO_TEMPLATE_NAME_PREFIX = "docinfo/";
 
+
+    class SessionData {
+        String meta_id;
+        String edit_menu;
+        String item_selected;
+        String doc_menu_no;
+    }
+
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -36,12 +45,22 @@ public class AddDoc extends HttpServlet {
         res.setContentType("text/html");
         Writer out = res.getWriter();
 
-        String meta_id = req.getParameter("meta_id");
-        int meta_id_int = Integer.parseInt(meta_id);
+        HttpSession session = req.getSession(true);
+        String SESSION_DATA_IDENTIFIER = "AddDoc.session.data";
+        SessionData sessionData = (SessionData)session.getAttribute(SESSION_DATA_IDENTIFIER);
+        if( null == sessionData ) {
+            sessionData = new SessionData();
+            session.setAttribute( SESSION_DATA_IDENTIFIER, sessionData );
 
-        String item_selected = req.getParameter("edit_menu");
-        String doc_menu_no = req.getParameter("doc_menu_no");
+            sessionData.meta_id = req.getParameter("meta_id");
+            sessionData.item_selected = req.getParameter("edit_menu");
+            sessionData.doc_menu_no = req.getParameter("doc_menu_no");
+        }
+
+        int meta_id_int = Integer.parseInt(sessionData.meta_id);
         String doc_type = "2";
+
+
 
         // Check if user logged on
         UserDomainObject user;
@@ -50,9 +69,9 @@ public class AddDoc extends HttpServlet {
         }
         String lang_prefix = user.getLangPrefix();
 
-        boolean userHasRights = DocumentMapper.checkUsersRights(imcref, user, meta_id, lang_prefix, doc_type);
+        boolean userHasRights = DocumentMapper.checkUsersRights(imcref, user, sessionData.meta_id, lang_prefix, doc_type);
 
-        if (!"0".equals(item_selected) && !userHasRights) {
+        if (!"0".equals(sessionData.item_selected) && !userHasRights) {
             String output = AdminDoc.adminDoc(meta_id_int, meta_id_int, user, req, res);
             if (output != null) {
                 out.write(output);
@@ -61,20 +80,20 @@ public class AddDoc extends HttpServlet {
         }
 
         // Lets detect the doctype were gonna add
-        if (item_selected.equals("2")) {
+        if (sessionData.item_selected.equals("2")) {
             doc_type = "2";
-        } else if (item_selected.equals("8")) {
+        } else if (sessionData.item_selected.equals("8")) {
             doc_type = "8";
-        } else if (item_selected.equals("6")) {
+        } else if (sessionData.item_selected.equals("6")) {
             doc_type = "6";
-        } else if (item_selected.equals("7")) {
+        } else if (sessionData.item_selected.equals("7")) {
             doc_type = "7";
-        } else if (item_selected.equals("0")) { // its an existing document
+        } else if (sessionData.item_selected.equals("0")) { // its an existing document
             Vector vec = new Vector();
             vec.add("#meta_id#");
-            vec.add(meta_id);
+            vec.add(sessionData.meta_id);
             vec.add("#doc_menu_no#");
-            vec.add(doc_menu_no);
+            vec.add(sessionData.doc_menu_no);
 
             // Lets get todays date
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -124,10 +143,10 @@ public class AddDoc extends HttpServlet {
             out.write(imcref.parseDoc(vec, "existing_doc.html", user));
             return;
 
-        } else if (item_selected.equals("5")) {
+        } else if (sessionData.item_selected.equals("5")) {
             doc_type = "5";
         } else {
-            doc_type = item_selected;
+            doc_type = sessionData.item_selected;
         }
 
         final int NORMAL = 0;
@@ -162,7 +181,12 @@ public class AddDoc extends HttpServlet {
 
         // Lets get the meta information
         String sqlStr = "select * from meta where meta_id = ?";
-        Hashtable hash = imcref.sqlQueryHash( sqlStr, new String[] { meta_id } );
+        Hashtable hash = imcref.sqlQueryHash( sqlStr, new String[] { sessionData.meta_id } );
+
+        String meta_image = AdminDoc.getImageUri(req);
+        if( null != meta_image ) {
+            hash.put("meta_image", new String[]{meta_image});
+        }
 
         // Lets get the html template file
 
@@ -174,7 +198,7 @@ public class AddDoc extends HttpServlet {
             advanced = "adv_";
         }
 
-        if (item_selected.equals("2")) {
+        if (sessionData.item_selected.equals("2")) {
             htmlStr = imcref.parseDoc(null, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta_text.html", user);
         } else {
             htmlStr = imcref.parseDoc(null, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta.html", user);
@@ -224,7 +248,7 @@ public class AddDoc extends HttpServlet {
         vec.add("#parent_meta_id#");
         vec.add(((String[]) hash.get("meta_id"))[0]);
 
-        String keywords = imcref.getDocumentMapper().getKeywordsAsOneString(Integer.parseInt(meta_id));
+        String keywords = imcref.getDocumentMapper().getKeywordsAsOneString(meta_id_int);
 
         vec.add("#classification#");
         vec.add(keywords);
@@ -244,17 +268,17 @@ public class AddDoc extends HttpServlet {
 
         // Lets add the document informtion, the creator etc
         vec.add("#doc_menu_no#");
-        vec.add(doc_menu_no);
+        vec.add(sessionData.doc_menu_no);
         vec.add("#doc_type#");
         vec.add(doc_type);
 
-        MetaDataParser.getSectionDataFromDbAndAddSectionRelatedTagsToParseList( imcref, meta_id, vec, user);
+        MetaDataParser.getSectionDataFromDbAndAddSectionRelatedTagsToParseList( imcref, sessionData.meta_id, vec, user);
 
         vec.add("#categories#");
-        vec.add(MetaDataParser.createHtmlListBoxesOfCategoriesForEachCategoryType(imcref.getDocumentMapper(), Integer.parseInt(meta_id), imcref, user));
+        vec.add(MetaDataParser.createHtmlListBoxesOfCategoriesForEachCategoryType(imcref.getDocumentMapper(), meta_id_int, imcref, user));
 
         // Lets parse the information and send it to the browser
-        if (item_selected.equals("2")) {
+        if (sessionData.item_selected.equals("2")) {
             out.write(imcref.parseDoc(vec, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta_text.html", user));
         } else {
             out.write(imcref.parseDoc(vec, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta.html", user));

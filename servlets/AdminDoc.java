@@ -14,12 +14,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Stack;
-import java.util.Vector;
+import java.util.*;
 
 
 public class AdminDoc extends HttpServlet {
+
+    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+        doGet(req, res);
+    }
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
@@ -29,7 +31,7 @@ public class AdminDoc extends HttpServlet {
         // Find the start-page
         int start_doc = imcref.getSystemData().getStartDocument();
 
-        imcode.server.user.UserDomainObject user;
+        UserDomainObject user;
         int meta_id;
 
         // Check if user logged on
@@ -59,7 +61,6 @@ public class AdminDoc extends HttpServlet {
 
     public static String adminDoc( int meta_id, int parent_meta_id, UserDomainObject user, HttpServletRequest req, HttpServletResponse res ) throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
 
         String htmlStr = "";
         String lang_prefix = user.getLangPrefix();
@@ -98,12 +99,14 @@ public class AdminDoc extends HttpServlet {
             return GetDoc.getDoc( meta_id, parent_meta_id, req, res );
         }
 
+        String metaImageUri = getImageUri(req);
+
         // Lets detect which view the admin wants
         if( (flags & 1) != 0 ) { // Header, (the plain meta view)
-            htmlStr = imcode.util.MetaDataParser.parseMetaData( String.valueOf( meta_id ), String.valueOf( meta_id ), user);
+            htmlStr = imcode.util.MetaDataParser.parseMetaData( String.valueOf( meta_id ), String.valueOf( meta_id ), user, metaImageUri);
             return htmlStr;
         } else if( (flags & 4) != 0 ) { // User rights
-            htmlStr = imcode.util.MetaDataParser.parseMetaPermission( String.valueOf( meta_id ), String.valueOf( meta_id ), user, "docinfo/change_meta_rights.html");
+            htmlStr = imcode.util.MetaDataParser.parseMetaPermission( String.valueOf( meta_id ), String.valueOf( meta_id ), user, "docinfo/change_meta_rights.html", metaImageUri);
             return htmlStr;
         }
 
@@ -116,8 +119,8 @@ public class AdminDoc extends HttpServlet {
                 String result = imcref.parsePage( documentRequest, flags, new ParserParameters() );
                 return result;
 
-            case 101:
-            case 102:
+            case DocumentDomainObject.DOCTYPE_DIAGRAM:
+            case DocumentDomainObject.DOCTYPE_CONFERENCE:
                 if( req == null || res == null ) {
                     throw new NullPointerException( "Request or response cannot be null for external docs." );
                 }
@@ -132,7 +135,7 @@ public class AdminDoc extends HttpServlet {
                 }
                 break;
 
-            case 5:
+            case DocumentDomainObject.DOCTYPE_URL:
                 Vector urlvec = new Vector();
                 String[] strary = imcref.sqlQuery( "select u.url_ref,m.target, m.frame_name from url_docs u, meta m where m.meta_id = u.meta_id and m.meta_id = ?", new String[] { ""+meta_id });
                 String url_ref = strary[0];
@@ -149,7 +152,6 @@ public class AdminDoc extends HttpServlet {
                     urlvec.add( "checked" );
                 } else if( "_other".equals( target ) ) {
                     frame_name = strary[2];
-                    target = frame_name;
                     urlvec.add( "#_other#" );
                     urlvec.add( "checked" );
                 } else {
@@ -169,7 +171,7 @@ public class AdminDoc extends HttpServlet {
                 htmlStr = imcref.parseDoc( urlvec, "change_url_doc.html", user);
                 break;
 
-            case 7:
+            case DocumentDomainObject.DOCTYPE_HTML:
                 Vector fsetvec = new Vector();
                 String fset = imcref.sqlQueryStr( "select frame_set from frameset_docs where meta_id = ?", new String[] { ""+meta_id });
                 fsetvec.add( "#frame_set#" );
@@ -182,7 +184,7 @@ public class AdminDoc extends HttpServlet {
 
                 break;
 
-            case 6:
+            case DocumentDomainObject.DOCTYPE_BROWSER:
                 Vector vec = new Vector();
                 String sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = ? order by value desc,name asc";
                 Hashtable hash = imcref.sqlQueryHash( sqlStr, new String[] { ""+meta_id } );
@@ -223,7 +225,7 @@ public class AdminDoc extends HttpServlet {
                 htmlStr = imcref.parseDoc( vec, "change_browser_doc.html", user);
                 break;
 
-            case 8:
+            case DocumentDomainObject.DOCTYPE_FILE:
                 sqlStr = "select mime from fileupload_docs where meta_id = ?";
                 String mimetype = imcref.sqlQueryStr( sqlStr, new String[]{""+meta_id} );
                 sqlStr = "select filename from fileupload_docs where meta_id = ?";
@@ -234,7 +236,7 @@ public class AdminDoc extends HttpServlet {
                 String mime_name[] = (String[])hash.get( "mime_name" );
                 String optStr = "";
                 String other = mimetype;
-                String tmp = "";
+                String tmp;
                 for( int i = 0; i < mime.length; i++ ) {
                     if( mime[i].equals( mimetype ) ) {
                         tmp = "\"" + mime[i] + "\" selected";
@@ -262,5 +264,15 @@ public class AdminDoc extends HttpServlet {
         htmlStr = imcode.util.Parser.parseDoc( htmlStr, parsetmp );
 
         return htmlStr;
+    }
+
+    static String getImageUri(HttpServletRequest req) {
+        // Check if AdminDoc is invoked by ImageBrowse, hence containing
+        // an image filename
+        String meta_image = req.getParameter( "imglist" );
+        if( null != meta_image ) {
+            meta_image = "../images/" + meta_image;
+        }
+        return meta_image;
     }
 }

@@ -64,7 +64,7 @@ function writeFormField(theType,theName,theSize,theMaxLength,theWidth,theValue) 
 	if (theMaxLength == null)     sMaxLength = "";
 	if (isNS || theWidth == null) sWidth = "";
 	if (theValue == null)         sValue = "";
-	
+
 	switch (theType.toUpperCase()) {
 		case "FILE":
 			retVal += sType + sName + sSize;
@@ -135,12 +135,6 @@ function getParam(attrib) {			// get querystring-parameters from document.locati
 
 function openHelpW(id){
 	window.open("@documentationurl@/GetDoc?meta_id=" + id,"help");
-}
-
-function openImgBrowse() {
-	var defaultVal = document.forms[1].meta_image.value;
-	alert("Bortkopplad på denna site!");
-	//popWinOpen(430,400,"@imcmsjspurl@/DokInfo_metaImage_select.jsp?defaultVal=" + defaultVal,"metaImageBrowse",1,1);
 }
 
 function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {

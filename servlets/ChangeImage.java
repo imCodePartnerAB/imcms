@@ -37,7 +37,7 @@ public class ChangeImage extends HttpServlet {
         }
 
         res.setContentType( "text/html" );
-        res.getOutputStream().print( ImageBrowse.getPage( req ) );
+        ImageBrowse.getPage( req, res, this.getServletContext());
         return;
     }
 
@@ -50,7 +50,7 @@ public class ChangeImage extends HttpServlet {
         String image_url = imcref.getImageUrl();
         File image_path = Utility.getDomainPrefPath( "image_path" );
         imcode.server.user.UserDomainObject user;
-        String htmlStr = "";
+
         int meta_id;
         int img_no;
 
@@ -285,10 +285,7 @@ public class ChangeImage extends HttpServlet {
         vec.add( "#label#" );
         vec.add( label );
 
-        String lang_prefix = user.getLangPrefix();
-
-        htmlStr = imcref.parseDoc( vec, "change_img.html", user);
-
+        String htmlStr = imcref.parseDoc( vec, "change_img.html", user );
         out.print( htmlStr );
 
     }

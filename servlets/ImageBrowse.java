@@ -3,6 +3,7 @@ import imcode.external.diverse.HtmlGenerator;
 import imcode.external.diverse.VariableManager;
 import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
+import imcode.server.user.UserDomainObject;
 import imcode.util.GetImages;
 import imcode.util.Utility;
 
@@ -10,24 +11,37 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
+
+import org.apache.log4j.Logger;
+import formbeans.ImageBrowseBean;
 
 /**
  * Browse images in image-directory.
  */
 public class ImageBrowse extends HttpServlet {
 
+    // todo: make sure this is used in the jsp page.
+    public static final String IMAGE_BROWSE_BEAN = "imagebrowsebean";
+
     private final static String IMG_NEXT_LIST_TEMPLATE = "Admin_Img_List_Next.html";
     private final static String IMG_PREVIOUS_LIST_TEMPLATE = "Admin_Img_List_Previous.html";
 
+    private final static Logger log = Logger.getLogger("ImageBrowse");
     /**
      * doGet
      */
+
+    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws IOException {
+        doGet( req, res );
+    }
+
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -37,7 +51,7 @@ public class ImageBrowse extends HttpServlet {
         HttpSession session = req.getSession( true );
 
         // Does the session indicate this user already logged in?
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
+        UserDomainObject user = (UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
 
         if ( user == null ) {
             // No logon.isDone means he hasn't logged in.
@@ -50,43 +64,42 @@ public class ImageBrowse extends HttpServlet {
             return;
         }
 
-        res.setContentType( "text/html" );
-        PrintWriter out = res.getWriter();
-        out.print( getPage( req ) );
+        getPage( req, res, this.getServletContext() );
     }
 
-    public static String getPage( HttpServletRequest req ) throws IOException {
+    public static void getPage(HttpServletRequest request, HttpServletResponse response, ServletContext application) throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String image_url = imcref.getImageUrl();
         File file_path = Utility.getDomainPrefPath( "image_path" );
 
         // Get the session
-        HttpSession session = req.getSession( false );
+        HttpSession session = request.getSession( false );
         imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
 
-        String meta_id = req.getParameter( "meta_id" );
-        String img_no = req.getParameter( "img_no" );
-        String img_preset = req.getParameter( "imglist" );//the choosen image to show
-        String img_dir_preset = req.getParameter( "dirlist" );//the dir to chow
-        String img_tag = "";
+
+        String meta_id = request.getParameter( "meta_id" );
+        String img_no = request.getParameter( "img_no" );
+        String img_preset = request.getParameter( "imglist" );//the choosen image to show
+        String img_dir_preset = request.getParameter( "dirlist" );//the dir to chow
 
         // get img label
-        String label = req.getParameter( "label" );
+        String label = request.getParameter( "label" );
         if ( label == null ) {
             label = "";
         }
 
         if ( img_dir_preset == null ) {
             //if img_dir_preset null then its first time, or a prew. of choosen image
-            img_dir_preset = req.getParameter( "dirlist_preset" ) == null ? "" : req.getParameter( "dirlist_preset" );
+            img_dir_preset = request.getParameter( "dirlist_preset" ) == null ? "" : request.getParameter( "dirlist_preset" );
         }
 
-        if ( req.getParameter( "PREVIOUS_IMG" ) != null || req.getParameter( "NEXT_IMG" ) != null ) {
+        if ( request.getParameter( "PREVIOUS_IMG" ) != null || request.getParameter( "NEXT_IMG" ) != null ) {
             session.removeAttribute( "ImageBrowse.optionlist" );
             img_preset = null;
         }
 
         //**handles the case when we have a image to show
+        String img_tag = "";
         if ( img_preset == null ) {
             img_preset = "";
         } else {
@@ -122,7 +135,7 @@ public class ImageBrowse extends HttpServlet {
         String adminImgPath = user.getLangPrefix() + "/admin/";
         String previousButton = "&nbsp;";
         String nextButton = "&nbsp;";
-        String startStr = req.getParameter( "img_curr_max" );
+        String startStr = request.getParameter( "img_curr_max" );
         int max = 1000;//the nr of img th show at the time
         int counter = 0; //the current startNr
         int img_numbers = imgList.size();//the total numbers of img
@@ -130,7 +143,7 @@ public class ImageBrowse extends HttpServlet {
             counter = Integer.parseInt( startStr );
         }
         //lest see if a previous button whas punshed
-        if ( req.getParameter( "PREVIOUS_IMG" ) != null ) {
+        if ( request.getParameter( "PREVIOUS_IMG" ) != null ) {
             counter = counter - ( max * 2 );
             if ( counter < 0 ) counter = 0;
         }
@@ -153,11 +166,11 @@ public class ImageBrowse extends HttpServlet {
         //now we have to find out what buttons to show
         if ( counter > 0 ) {
             HtmlGenerator previousButtonHtmlObj = new HtmlGenerator( templatePath, ImageBrowse.IMG_PREVIOUS_LIST_TEMPLATE );
-            previousButton = previousButtonHtmlObj.createHtmlString( prevButtonVm, req );
+            previousButton = previousButtonHtmlObj.createHtmlString( prevButtonVm, request );
         }
         if ( img_numbers > counter + max ) {
             HtmlGenerator nextButtonHtmlObj = new HtmlGenerator( templatePath, ImageBrowse.IMG_NEXT_LIST_TEMPLATE );
-            nextButton = nextButtonHtmlObj.createHtmlString( nextButtonVm, req );
+            nextButton = nextButtonHtmlObj.createHtmlString( nextButtonVm, request );
         }
 
         //*lets create the image folder option list
@@ -259,58 +272,43 @@ public class ImageBrowse extends HttpServlet {
 
             imageOptions.append( "<option value=\"" + parsedFilePath + "\"" + ( parsedFilePath.equals( img_preset ) ? " selected" : "" ) + ">" + imagePath + "\t[" + fileObj.length() + "]</option>\r\n" );
         }
-        counter += max; //image counter
 
-        //** ok now we have to set up the response page
-        // TEMPLATE ImageBrowse.html
-        Vector vec = new Vector();
-        vec.add( "#folders#" );
-        vec.add( folderOptions.toString() );
+        ImageBrowseBean formBean = new ImageBrowseBean();
 
-        vec.add( "#meta_id#" );
-        vec.add( meta_id );
+        String caller = request.getParameter("caller");
+        formBean.setCaller( caller );
 
-        vec.add( "#img_preview#" );
-        vec.add( img_tag );
+        formBean.setMetaId( meta_id );
+        formBean.setImageNumber(img_no);
+        formBean.setImageList( img_preset );
+        formBean.setDirListPreset( img_dir_preset );
+        formBean.setFolders( folderOptions.toString() );
+        formBean.setImagePreview( img_tag );
+        formBean.setLabel(label);
+        formBean.setNextButton(nextButton);
+        formBean.setPreviousButton( previousButton );
+        formBean.setStartNumber(Integer.toString( counter - max + 1 ));
+        formBean.setOptions(imageOptions.toString());
 
-        vec.add( "#img_no#" );
-        vec.add( img_no );
+        if ( counter > img_numbers ) {
+            counter = img_numbers;
+        }
+        formBean.setStopNumber(Integer.toString( counter ));
+        formBean.setMaxNumber( Integer.toString( img_numbers ) );
 
-        vec.add( "#label#" );
-        vec.add( label );
-
-        vec.add( "#dirlist_preset#" );
-        vec.add( img_dir_preset );
-
-        vec.add( "#imglist#" );
-        vec.add( img_preset );
-
-        vec.add( "#SERVLET_URL#" );
-        vec.add( "" );
-
-        vec.add( "#options#" );
-        vec.add( imageOptions.toString() );
-
-        vec.add( "#nextButton#" );
-        vec.add( nextButton );
-
-        vec.add( "#previousButton#" );
-        vec.add( previousButton );
-
-        vec.add( "#img_startNr#" );
-        vec.add( Integer.toString( counter - max + 1 ) );
-
-        if ( counter > img_numbers ) counter = img_numbers;
-        vec.add( "#img_stopNr#" );
-        vec.add( Integer.toString( counter ) );
-
-        vec.add( "#img_maxNr#" );
-        vec.add( Integer.toString( img_numbers ) );
+        // används denna? vec.add( "#SERVLET_URL#" );
 
         session.setAttribute( "ImageBrowse.optionlist", imgList );
+        request.setAttribute( IMAGE_BROWSE_BEAN, formBean );
 
-        String lang_prefix = user.getLangPrefix();
-        return imcref.parseDoc( vec, "ImageBrowse.html", user);
+        try {
+            String forwardPath = "/imcms/swe/jsp/ImageBrowse.jsp";
+            RequestDispatcher rd = application.getRequestDispatcher( forwardPath );
+            rd.forward( request, response );
+        } catch( ServletException ex ) {
+            log.error("Error while dispatching: " + ex.getMessage(), ex );
+        }
+
     }
 
     /**

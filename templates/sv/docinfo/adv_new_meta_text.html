@@ -1,5 +1,5 @@
 <!--
-Template: adv_change_meta.html
+Template: adv_new_meta_text.html
 --><html>
 <head>
 <title><? sv/docinfo/adv_new_meta_text.html/1 ?></title>
@@ -178,7 +178,10 @@ writeFormField("TEXT","meta_headline",105,255,"100%","");
 <script>
 writeFormField("TEXT","meta_image",85,255,450,"#meta_image#");
 </script></td>
-			<td align="right"><!--input type="BUTTON" class="imcmsFormBtnSmall" name="ChooseImg" value=" Välj " onClick="openImgBrowse(); return false"--></td>
+			<td align="right">
+                <input type="hidden" name="caller" value="AddDoc">
+                <input type="submit" class="imcmsFormBtnSmall" name="ImageBrowse" value=" <? sv/docinfo/adv_change_meta.html/11/1 ?> ">
+			</td>
 		</tr>
 		</table></td>
 	</tr>

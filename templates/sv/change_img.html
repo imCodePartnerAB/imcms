@@ -69,7 +69,7 @@ function checkFileName() {
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField('ImageUploadForm','file'); setDef();"
 >
-<!-- 
+<!--
 <body bgcolor="#FFFFFF" onLoad="focusField('ImageUpload','file'); setDef(); openImageHelp();" onUnLoad="closeImageHelp();">
  -->
 <script>
@@ -95,6 +95,7 @@ imcmsGui("head", null);
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<form name="imgbr" method="get" action="ImageBrowse">
+	<input type="hidden" name="caller" value="ChangeImage">
 	<input type="hidden" name="meta_id" value="#getMetaId#">
 	<input type="hidden" name="img_no" value="#img_no#">
 	<input type="hidden" name="label" value="#label#">
@@ -285,7 +286,7 @@ writeFormField("TEXT","imageref_link",92,255,"100%","#imgRefLink#");
 			<option value="_blank" #blank_checked#><? sv/change_img.html/48 ?>
 			<option value="_parent" #parent_checked#><? sv/change_img.html/49 ?>
 			<option value="_self" #self_checked#><? sv/change_img.html/50 ?>
-			<option value="_other" #other_checked#><? sv/change_img.html/51 ?> 
+			<option value="_other" #other_checked#><? sv/change_img.html/51 ?>
 		</select></td>
 		<td>&nbsp;&nbsp;</td>
 		<td><script>

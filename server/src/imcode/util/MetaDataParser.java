@@ -11,7 +11,6 @@ import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
 import org.apache.log4j.Logger;
 
-import javax.swing.text.html.HTML;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,7 +20,7 @@ public class MetaDataParser {
 
     private static final Logger log = Logger.getLogger("imcode.util.MetaDataParser");
 
-    public final static String SECTION_MSG_TEMPLATE = "sections/admin_section_no_one_msg.html";
+    private final static String SECTION_MSG_TEMPLATE = "sections/admin_section_no_one_msg.html";
 
     private static final String ADVANCED_CHANGE_DOCINFO_TEMPLATE                          = "docinfo/adv_change_meta.html"                                          ;
     private static final String SIMPLE_CHANGE_DOCINFO_TEMPLATE                            = "docinfo/change_meta.html"                                              ;
@@ -44,7 +43,7 @@ public class MetaDataParser {
      parseMetaData collects the information for a certain meta_id from the db and
      parses the information into the change_meta.html (the plain admin mode file).
      */
-    static public String parseMetaData(String meta_id, String parent_meta_id, UserDomainObject user)
+    static public String parseMetaData(String meta_id, String parent_meta_id, UserDomainObject user, String meta_image)
             throws IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -56,9 +55,9 @@ public class MetaDataParser {
         int currentuser_perms = Integer.parseInt(current_permissions[1]);
 
         if (currentuser_set_id == 0 || (currentuser_perms & 2) != 0) {
-            return getMetaDataFromDb(meta_id, parent_meta_id, user, ADVANCED_CHANGE_DOCINFO_TEMPLATE, false);
+            return getMetaDataFromDb(meta_id, parent_meta_id, user, ADVANCED_CHANGE_DOCINFO_TEMPLATE, false, meta_image);
         } else {
-            return getMetaDataFromDb(meta_id, parent_meta_id, user, SIMPLE_CHANGE_DOCINFO_TEMPLATE, false);
+            return getMetaDataFromDb(meta_id, parent_meta_id, user, SIMPLE_CHANGE_DOCINFO_TEMPLATE, false, meta_image);
         }
     } // end of parseMetaData
 
@@ -67,11 +66,10 @@ public class MetaDataParser {
      parseMetaPermission parses the page which consists of  the information for a certain meta_id from the db and
      parses the information into the change_meta.html (the plain admin mode file).
      */
-    static public String parseMetaPermission(String meta_id, String parent_meta_id, UserDomainObject user,
-                                             String htmlFile) throws IOException {
-        //	return getMetaDataFromDb(meta_id, parent_meta_id, user, host, "change_meta.html") ;
-        return getMetaDataFromDb(meta_id, parent_meta_id, user, htmlFile, true);
-    } // end of parseMetaData
+    public static String parseMetaPermission(String meta_id, String parent_meta_id, UserDomainObject user,
+                                             String htmlFile, String meta_image) throws IOException {
+        return getMetaDataFromDb(meta_id, parent_meta_id, user, htmlFile, true, meta_image);
+    }
 
 
     /**
@@ -79,8 +77,8 @@ public class MetaDataParser {
      parses the information into the assigned htmlFile. If the htmlfile doesnt has
      all the properties, hidden fields will be created by default into the htmlfile
      */
-    static public String getMetaDataFromDb(String meta_id, String parent_meta_id, UserDomainObject user,
-                                           String htmlFile, boolean showRoles) throws IOException {
+    static private String getMetaDataFromDb(String meta_id, String parent_meta_id, UserDomainObject user,
+                                           String htmlFile, boolean showRoles, String meta_image) throws IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -109,11 +107,12 @@ public class MetaDataParser {
             "publisher_id", null, OTHER,
         };
 
-        // Lets get the langprefix
-        String lang_prefix = "" + user.getLangPrefix();
-
         // Lets get all info for the meta id
         Hashtable hash = imcref.sqlProcedureHash("GetDocumentInfo", new String[]{ ""+meta_id });
+
+        if( null != meta_image ) {
+            hash.put("meta_image", new String[]{meta_image});
+        }
 
         // Get the info from the user object.
         // "temp_perm_settings" is an array containing a stringified meta-id, a hashtable of meta-info (column=value),
@@ -211,7 +210,7 @@ public class MetaDataParser {
         SimpleDateFormat dateFormat_date = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat dateFormat_time = new SimpleDateFormat("HH:mm");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date theDate = null;
+        Date theDate;
         try {
             theDate = dateFormat.parse(((String[]) hash.get("activated_datetime"))[0]);
             vec.add("#activated_date#");
@@ -482,9 +481,6 @@ public class MetaDataParser {
             throws IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
-        // Lets get the langprefix
-        final String lang_prefix = user.getLangPrefix();
 
         // Lets get the roles_rights_table_header template file
         StringBuffer roles_rights = new StringBuffer(
