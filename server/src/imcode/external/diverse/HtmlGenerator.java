@@ -84,7 +84,7 @@ public class HtmlGenerator {
              throws ServletException, IOException {
 
         HttpSession session = req.getSession(true);
-        Object done = session.getValue("logon.isDone");
+        Object done = session.getAttribute("logon.isDone");
         // marker object
         imcode.server.User user = (imcode.server.User) done;
 

@@ -55,7 +55,7 @@ public class Conference extends HttpServlet {
 		if( metaId == null ) {
 			HttpSession session = req.getSession(false) ;
 			if (session != null) {
-				metaId =	(String) session.getValue("Conference.meta_id") ;
+				metaId =	(String) session.getAttribute("Conference.meta_id") ;
 			}
 		}
 		if( metaId == null) {
@@ -77,7 +77,7 @@ public class Conference extends HttpServlet {
 		if( forumId == null ) {
 			HttpSession session = req.getSession(false) ;
 			if (session != null) {
-				forumId =	(String) session.getValue("Conference.forum_id") ;
+				forumId =	(String) session.getAttribute("Conference.forum_id") ;
 			}
 		}
 		if( forumId == null) {
@@ -134,7 +134,7 @@ public class Conference extends HttpServlet {
 			// Get the session
 			HttpSession session = req.getSession(true);
 			// Does the session indicate this user already logged in?
-			Object done = session.getValue("logon.isDone");  // marker object
+			Object done = session.getAttribute("logon.isDone");  // marker object
 			imcode.server.User user = (imcode.server.User) done ;
 
 			return user ;
@@ -160,9 +160,9 @@ public class Conference extends HttpServlet {
 
 		// Get the session
 		HttpSession session = req.getSession(true);
-		String metaId = (	(String) session.getValue("Conference.meta_id")==null) ? "" : ((String) session.getValue("Conference.meta_id")) ;
-		String parentId = (	(String) session.getValue("Conference.parent_meta_id")==null) ? "" : ((String) session.getValue("Conference.parent_meta_id")) ;
-		String cookieId = (	(String) session.getValue("Conference.cookie_id")==null) ? "" : ((String) session.getValue("Conference.cookie_id")) ;
+		String metaId = (	(String) session.getAttribute("Conference.meta_id")==null) ? "" : ((String) session.getAttribute("Conference.meta_id")) ;
+		String parentId = (	(String) session.getAttribute("Conference.parent_meta_id")==null) ? "" : ((String) session.getAttribute("Conference.parent_meta_id")) ;
+		String cookieId = (	(String) session.getAttribute("Conference.cookie_id")==null) ? "" : ((String) session.getAttribute("Conference.cookie_id")) ;
 
 		Properties reqParams= new Properties() ;
 		reqParams.setProperty("META_ID", metaId) ;
@@ -189,8 +189,8 @@ public class Conference extends HttpServlet {
 
 		// Get the session
 		HttpSession session = req.getSession(true);
-		String forumId = (	(String) session.getValue("Conference.forum_id")==null) ? "" : ((String) session.getValue("Conference.forum_id")) ;
-		String discId = (	(String) session.getValue("Conference.disc_id")==null) ? "" : ((String) session.getValue("Conference.disc_id")) ;
+		String forumId = (	(String) session.getAttribute("Conference.forum_id")==null) ? "" : ((String) session.getAttribute("Conference.forum_id")) ;
+		String discId = (	(String) session.getAttribute("Conference.disc_id")==null) ? "" : ((String) session.getAttribute("Conference.disc_id")) ;
 
 		if( params == null)
 			params = new Properties() ;
@@ -212,7 +212,7 @@ public class Conference extends HttpServlet {
 		// Get the session
 		HttpSession session = req.getSession(true);
 		// Does the session indicate this user already logged in?
-		Object done = session.getValue("logon.isDone");  // marker object
+		Object done = session.getAttribute("logon.isDone");  // marker object
 		imcode.server.User user = (imcode.server.User) done ;
 
 		// Lets get serverinformation
@@ -223,7 +223,7 @@ public class Conference extends HttpServlet {
 		if (done == null) {
 			// No logon.isDone means he hasn't logged in.
 			// Save the request URL as the true target and redirect to the login page.
-			session.putValue("login.target", HttpUtils.getRequestURL(req).toString());
+			session.setAttribute("login.target", HttpUtils.getRequestURL(req).toString());
 			String serverName = MetaInfo.getServerName(req) ;
 			String startUrl = RmiConf.getLoginUrl(host) ;
 			res.sendRedirect(serverName + startUrl) ;
@@ -469,7 +469,7 @@ public class Conference extends HttpServlet {
 		if( confForumId == null ) {
 			HttpSession session = req.getSession(false) ;
 			if (session != null) {
-				confForumId =	(String) session.getValue("Conference.forum_id") ;
+				confForumId =	(String) session.getAttribute("Conference.forum_id") ;
 			}
 		}
 		reqParams.setProperty("FORUM_ID", confForumId) ;
@@ -740,20 +740,20 @@ public class Conference extends HttpServlet {
 		// Lets store some values in his session object
 		HttpSession session = req.getSession(false) ;
 		if (session != null) {
-			session.putValue("Conference.meta_id", params.getProperty("META_ID")) ;
-			session.putValue("Conference.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
-			session.putValue("Conference.cookie_id", params.getProperty("COOKIE_ID")) ;
-			session.putValue("Conference.viewedDiscList", new Properties()) ;
-			session.putValue("Conference.last_login_date", lastLoginDate);
-			session.putValue("Conference.user_id", loginUserId) ;
-			session.putValue("Conference.disc_index", "0");
+			session.setAttribute("Conference.meta_id", params.getProperty("META_ID")) ;
+			session.setAttribute("Conference.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
+			session.setAttribute("Conference.cookie_id", params.getProperty("COOKIE_ID")) ;
+			session.setAttribute("Conference.viewedDiscList", new Properties()) ;
+			session.setAttribute("Conference.last_login_date", lastLoginDate);
+			session.setAttribute("Conference.user_id", loginUserId) ;
+			session.setAttribute("Conference.disc_index", "0");
 
 
 			// Ok, we need to catch a forum_id. Lets get the first one for this meta_id.
 			// if not a forumid exists, the sp will return -1
 			rmi = new RmiConf(user) ;
 			String aForumId = rmi.execSqlProcedureStr(ConfPoolServer, "A_GetFirstForum " + params.getProperty("META_ID")) ;
-			session.putValue("Conference.forum_id", aForumId) ;
+			session.setAttribute("Conference.forum_id", aForumId) ;
 
 			// Ok, Lets get the last discussion in that forum
 			String aDiscId = rmi.execSqlProcedureStr(ConfPoolServer, "A_GetLastDiscussionId " +
@@ -761,7 +761,7 @@ public class Conference extends HttpServlet {
 
 			// Lets get the lastdiscussionid for that forum
 			// if not a aDiscId exists, then the  sp will return -1
-			session.putValue("Conference.disc_id", aDiscId) ;
+			session.setAttribute("Conference.disc_id", aDiscId) ;
 
 			String url = MetaInfo.getServletPath(req) ;
 			url += "ConfViewer" ;
@@ -999,7 +999,7 @@ public class Conference extends HttpServlet {
 
 		//lets get if user authorized or not
 		boolean authorized = true;
-		String stringMetaId = (String)session.getValue( "Conference.meta_id" );
+		String stringMetaId = (String)session.getAttribute( "Conference.meta_id" );
 		if ( stringMetaId == null ) {
 			authorized = false;
 			//lets send unauthorized users out

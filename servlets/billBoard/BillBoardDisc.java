@@ -145,12 +145,12 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			//	}
 				String latestDiscId = "-1";
 				discIndex = "0";
-				session.putValue("BillBoard.disc_id", latestDiscId) ;//
-				session.putValue("BillBoard.section_id", aSectionId) ;//
-				session.putValue("BillBoard.disc_index", discIndex) ;//
+				session.setAttribute("BillBoard.disc_id", latestDiscId) ;//
+				session.setAttribute("BillBoard.section_id", aSectionId) ;//
+				session.setAttribute("BillBoard.disc_index", discIndex) ;//
 			}
 
-			//	log("LastLoginDate: " + session.getValue("Conference.last_login_date")) ;
+			//	log("LastLoginDate: " + session.getAttribute("Conference.last_login_date")) ;
 			// Lets redirect to the servlet which holds in us.
 			String where = MetaInfo.getServletPath(req) ;
 
@@ -618,7 +618,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
 		// Get the session and the list
 		HttpSession session = req.getSession(true);
-		Properties viewedDiscs = (Properties) session.getValue("BillBoard.viewedDiscList") ;//Conference.viewedDiscList
+		Properties viewedDiscs = (Properties) session.getAttribute("BillBoard.viewedDiscList") ;//Conference.viewedDiscList
 
 		// Lets get info from the db. the format on the vector is:
 		// newFlag, discussion_id, create_date, headline, count_replies, first_name, last_name , updated_date
@@ -730,32 +730,6 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		return retVal ;
 	}
 
-
-	/**
-	Shows the session variables
-	**/
-	public boolean showSession( HttpServletRequest req)
-	{
-		HttpSession session = null ;
-		try {
-			session = req.getSession(false) ;
-			if(session != null)
-			{
-				String[] arr = session.getValueNames() ;
-				for( int i = 0 ; i < arr.length ; i++ )
-				{
-					//log(arr[i] + " : " + session.getValue(arr[i]).toString()) ;
-					// log("Value: " + arr[i]) ;
-				}
-
-			}
-			} catch(Exception e ) {
-				log("Showsession failed!") ;
-			return false ;
-			}
-		return true ;
-	}
-
 	/**
 	Increases the current discussion index. If somethings happens, zero will be set.
 	**/
@@ -766,12 +740,12 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			session = req.getSession(false) ;
 			if(session != null)
 			{
-				String indexStr = (String) session.getValue("BillBoard.disc_index") ;//Conference.disc_index
+				String indexStr = (String) session.getAttribute("BillBoard.disc_index") ;//Conference.disc_index
 				int anInt = Integer.parseInt(indexStr) + incFactor ;
-				session.putValue("BillBoard.disc_index" , "" + anInt) ;//
+				session.setAttribute("BillBoard.disc_index" , "" + anInt) ;//
 			}
 			} catch(Exception e ) {
-				session.putValue("BillBoard.disc_index" , "0") ;//
+				session.setAttribute("BillBoard.disc_index" , "0") ;//
 			log("IncreaseIndex failed!") ;
 			return false ;
 			}
@@ -788,13 +762,13 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			session = req.getSession(false) ;
 			if(session != null)
 			{
-				String indexStr = (String) session.getValue("BillBoard.disc_index") ;
+				String indexStr = (String) session.getAttribute("BillBoard.disc_index") ;
 				int anInt = Integer.parseInt(indexStr) - incFactor ;
 				if (anInt < 0) anInt = 0 ;
-				session.putValue("BillBoard.disc_index" , "" + anInt) ;
+				session.setAttribute("BillBoard.disc_index" , "" + anInt) ;
 			}
 			} catch(Exception e ) {
-			session.putValue("BillBoard.disc_index" , "0") ;
+			session.setAttribute("BillBoard.disc_index" , "0") ;
 			log("DecreaseIndex failed!") ;
 			return false ;
 			}
@@ -811,7 +785,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			HttpSession session = req.getSession(false) ;
 			if(session != null)
 			{
-				String indexStr = (String) session.getValue("BillBoard.disc_index") ;
+				String indexStr = (String) session.getAttribute("BillBoard.disc_index") ;
 				int anInt = Integer.parseInt(indexStr) ;
 				return anInt ;
 			}
@@ -833,7 +807,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			HttpSession session = req.getSession(false) ;
 			if(session != null)
 			{
-				session.putValue("BillBoard.disc_index", "" + newIndex ) ;
+				session.setAttribute("BillBoard.disc_index", "" + newIndex ) ;
 				return true ;
 			}
 		} catch(Exception e )
@@ -963,8 +937,8 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		if(session != null)
 		{
 			// Lets get the parameters we know we are supposed to get from the request object
-			String sectionId = ( (String) session.getValue("BillBoard.section_id")==null) ? "" : ((String) session.getValue("BillBoard.section_id")) ;
-			String discIndex = (	(String) session.getValue("BillBoard.disc_index")==null) ? "" : ((String) session.getValue("BillBoard.disc_index")) ;
+			String sectionId = ( (String) session.getAttribute("BillBoard.section_id")==null) ? "" : ((String) session.getAttribute("BillBoard.section_id")) ;
+			String discIndex = (	(String) session.getAttribute("BillBoard.disc_index")==null) ? "" : ((String) session.getAttribute("BillBoard.disc_index")) ;
 			reqParams.setProperty("DISC_INDEX", discIndex) ;
 			reqParams.setProperty("SECTION_ID", sectionId) ;
 
@@ -994,8 +968,8 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		if (session != null)
 		{
 			if(confForumId == null)
-				confForumId =	(String) session.getValue("BillBoard.section_id") ;
-			discIndex = (String) session.getValue("BillBoard.disc_index") ;
+				confForumId =	(String) session.getAttribute("BillBoard.section_id") ;
+			discIndex = (String) session.getAttribute("BillBoard.disc_index") ;
 			if(discIndex == null || discIndex.equalsIgnoreCase("null"))	discIndex = "0" ;
 		}
 		reqParams.setProperty("SECTION_ID", confForumId) ;

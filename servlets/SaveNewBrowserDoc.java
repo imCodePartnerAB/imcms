@@ -47,7 +47,7 @@ public class SaveNewBrowserDoc extends HttpServlet {
 	HttpSession session = req.getSession(true);
 
 	// Does the session indicate this user already logged in?
-	Object done = session.getValue("logon.isDone");  // marker object
+	Object done = session.getAttribute("logon.isDone");  // marker object
 	user = (imcode.server.User)done ;
 
 	if (done == null) {

@@ -1078,9 +1078,9 @@ public class ConfAdmin extends Conference {
 		HttpSession session = req.getSession(false) ;
 		if(session != null) {
 			// Lets get the parameters we know we are supposed to get from the request object
-			String forumId = ( (String) session.getValue("Conference.forum_id")==null) ? "" : ((String) session.getValue("Conference.forum_id")) ;
-			String discId = (	(String) session.getValue("Conference.disc_id")==null) ? "" : ((String) session.getValue("Conference.disc_id")) ;
-			String lastLogindate = (	(String) session.getValue("Conference.last_login_date")==null) ? "" : ((String) session.getValue("Conference.last_login_date")) ;
+			String forumId = ( (String) session.getAttribute("Conference.forum_id")==null) ? "" : ((String) session.getAttribute("Conference.forum_id")) ;
+			String discId = (	(String) session.getAttribute("Conference.disc_id")==null) ? "" : ((String) session.getAttribute("Conference.disc_id")) ;
+			String lastLogindate = (	(String) session.getAttribute("Conference.last_login_date")==null) ? "" : ((String) session.getAttribute("Conference.last_login_date")) ;
 			reqParams.setProperty("LAST_LOGIN_DATE", lastLogindate) ;
 			reqParams.setProperty("FORUM_ID", forumId) ;
 			reqParams.setProperty("DISC_ID", discId) ;

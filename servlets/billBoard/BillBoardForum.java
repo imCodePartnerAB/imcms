@@ -74,8 +74,8 @@ public class BillBoardForum extends BillBoard {//ConfForum
 
 		RmiConf rmi = new RmiConf(user) ;
 		HttpSession session = req.getSession(false) ;
-		String aMetaId = (String) session.getValue("BillBoard.meta_id") ;
-		String aSectionId = (String) session.getValue("BillBoard.section_id") ;
+		String aMetaId = (String) session.getAttribute("BillBoard.meta_id") ;
+		String aSectionId = (String) session.getAttribute("BillBoard.section_id") ;
 		String discIndex = params.getProperty("DISC_INDEX") ;
 
 		// Lets get the url to the servlets directory

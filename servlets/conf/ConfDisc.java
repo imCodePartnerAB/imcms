@@ -122,12 +122,12 @@ public class ConfDisc extends Conference {
 						discIndex  = "0";
 					}
 				}
-				session.putValue("Conference.disc_id", latestDiscId) ;
-				session.putValue("Conference.forum_id", aForumId) ;
-				session.putValue("Conference.disc_index", discIndex) ;
+				session.setAttribute("Conference.disc_id", latestDiscId) ;
+				session.setAttribute("Conference.forum_id", aForumId) ;
+				session.setAttribute("Conference.disc_index", discIndex) ;
 			}
 
-			//	log("LastLoginDate: " + session.getValue("Conference.last_login_date")) ;
+			//	log("LastLoginDate: " + session.getAttribute("Conference.last_login_date")) ;
 			// Lets redirect to the servlet which holds in us.
 			String where = MetaInfo.getServletPath(req) ;
 
@@ -557,7 +557,7 @@ public class ConfDisc extends Conference {
 
 		// Get the session and the list
 		HttpSession session = req.getSession(true);
-		Properties viewedDiscs = (Properties) session.getValue("Conference.viewedDiscList") ;
+		Properties viewedDiscs = (Properties) session.getAttribute("Conference.viewedDiscList") ;
 
 		// Lets get info from the db. the format on the vector is:
 		// newFlag, discussion_id, create_date, headline, count_replies, first_name, last_name , updated_date
@@ -659,28 +659,6 @@ public class ConfDisc extends Conference {
 
 
 	/**
-	Shows the session variables
-	**/
-	public boolean showSession( HttpServletRequest req) {
-		HttpSession session = null ;
-		try {
-			session = req.getSession(false) ;
-			if(session != null) {
-				String[] arr = session.getValueNames() ;
-				for( int i = 0 ; i < arr.length ; i++ ) {
-					log(arr[i] + " : " + session.getValue(arr[i]).toString()) ;
-					// log("Value: " + arr[i]) ;
-				}
-
-			}
-			} catch(Exception e ) {
-				log("Showsession failed!") ;
-			return false ;
-			}
-		return true ;
-	}
-
-	/**
 	Increases the current discussion index. If somethings happens, zero will be set.
 	**/
 	public boolean increaseDiscIndex( HttpServletRequest req, int incFactor ) {
@@ -688,12 +666,12 @@ public class ConfDisc extends Conference {
 		try {
 			session = req.getSession(false) ;
 			if(session != null) {
-				String indexStr = (String) session.getValue("Conference.disc_index") ;
+				String indexStr = (String) session.getAttribute("Conference.disc_index") ;
 				int anInt = Integer.parseInt(indexStr) + incFactor ;
-				session.putValue("Conference.disc_index" , "" + anInt) ;
+				session.setAttribute("Conference.disc_index" , "" + anInt) ;
 			}
 			} catch(Exception e ) {
-				session.putValue("Conference.disc_index" , "0") ;
+				session.setAttribute("Conference.disc_index" , "0") ;
 			log("IncreaseIndex failed!") ;
 			return false ;
 			}
@@ -708,13 +686,13 @@ public class ConfDisc extends Conference {
 		try {
 			session = req.getSession(false) ;
 			if(session != null) {
-				String indexStr = (String) session.getValue("Conference.disc_index") ;
+				String indexStr = (String) session.getAttribute("Conference.disc_index") ;
 				int anInt = Integer.parseInt(indexStr) - incFactor ;
 				if (anInt < 0) anInt = 0 ;
-				session.putValue("Conference.disc_index" , "" + anInt) ;
+				session.setAttribute("Conference.disc_index" , "" + anInt) ;
 			}
 			} catch(Exception e ) {
-			session.putValue("Conference.disc_index" , "0") ;
+			session.setAttribute("Conference.disc_index" , "0") ;
 			log("DecreaseIndex failed!") ;
 			return false ;
 			}
@@ -728,7 +706,7 @@ public class ConfDisc extends Conference {
 		try {
 			HttpSession session = req.getSession(false) ;
 			if(session != null) {
-				String indexStr = (String) session.getValue("Conference.disc_index") ;
+				String indexStr = (String) session.getAttribute("Conference.disc_index") ;
 				int anInt = Integer.parseInt(indexStr) ;
 				return anInt ;
 			}
@@ -746,7 +724,7 @@ public class ConfDisc extends Conference {
 		try {
 			HttpSession session = req.getSession(false) ;
 			if(session != null) {
-				session.putValue("Conference.disc_index", "" + newIndex ) ;
+				session.setAttribute("Conference.disc_index", "" + newIndex ) ;
 				return true ;
 			}
 		} catch(Exception e ) {
@@ -887,11 +865,11 @@ public class ConfDisc extends Conference {
 		HttpSession session = req.getSession(false) ;
 		if(session != null) {
 			// Lets get the parameters we know we are supposed to get from the request object
-			String forumId = ( (String) session.getValue("Conference.forum_id")==null) ? "" : ((String) session.getValue("Conference.forum_id")) ;
-			//	String discId = (	(String) session.getValue("Conference.forum_id")==null) ? "" : ((String) session.getValue("Conference.forum_id")) ;
-			String discId = (	(String) session.getValue("Conference.disc_id")==null) ? "" : ((String) session.getValue("Conference.disc_id")) ;
-			String lastLogindate = (	(String) session.getValue("Conference.last_login_date")==null) ? "" : ((String) session.getValue("Conference.last_login_date")) ;
-			String discIndex = (	(String) session.getValue("Conference.disc_index")==null) ? "" : ((String) session.getValue("Conference.disc_index")) ;
+			String forumId = ( (String) session.getAttribute("Conference.forum_id")==null) ? "" : ((String) session.getAttribute("Conference.forum_id")) ;
+			//	String discId = (	(String) session.getAttribute("Conference.forum_id")==null) ? "" : ((String) session.getAttribute("Conference.forum_id")) ;
+			String discId = (	(String) session.getAttribute("Conference.disc_id")==null) ? "" : ((String) session.getAttribute("Conference.disc_id")) ;
+			String lastLogindate = (	(String) session.getAttribute("Conference.last_login_date")==null) ? "" : ((String) session.getAttribute("Conference.last_login_date")) ;
+			String discIndex = (	(String) session.getAttribute("Conference.disc_index")==null) ? "" : ((String) session.getAttribute("Conference.disc_index")) ;
 
 			reqParams.setProperty("DISC_INDEX", discIndex) ;
 			reqParams.setProperty("LAST_LOGIN_DATE", lastLogindate) ;
@@ -922,8 +900,8 @@ public class ConfDisc extends Conference {
 		HttpSession session = req.getSession(false) ;
 		if (session != null) {
 			if(confForumId == null)
-				confForumId =	(String) session.getValue("Conference.forum_id") ;
-			discIndex = (String) session.getValue("Conference.disc_index") ;
+				confForumId =	(String) session.getAttribute("Conference.forum_id") ;
+			discIndex = (String) session.getAttribute("Conference.disc_index") ;
 			if(discIndex == null || discIndex.equalsIgnoreCase("null"))	discIndex = "0" ;
 		}
 		reqParams.setProperty("FORUM_ID", confForumId) ;

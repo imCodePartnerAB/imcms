@@ -465,31 +465,31 @@ public class ChatCreator extends ChatBase
 
 			//get the msgTypes
 			Vector msgTypesV ;
-			if( (Vector)session.getValue("msgTypesV")==null ){
+			if( (Vector)session.getAttribute("msgTypesV")==null ){
 				String[][] msgTypes = rmi.execProcedureMulti(chatPoolServer, "C_GetTheMsgTypesBase");
 				msgTypesV = super.convert2Vector(msgTypes);
-				session.putValue("msgTypesV",msgTypesV);
+				session.setAttribute("msgTypesV",msgTypesV);
 			}
-			msgTypesV = (Vector)session.getValue("msgTypesV");
+			msgTypesV = (Vector)session.getAttribute("msgTypesV");
 
 			//get the authorization types 
 			Vector autTypeV ;
-			if( (Vector)session.getValue("autTypesV")==null ){
+			if( (Vector)session.getAttribute("autTypesV")==null ){
 				String[][] autTypes = rmi.execProcedureMulti(chatPoolServer, "C_GetAuthorizationTypes");
 				autTypeV = super.convert2Vector(autTypes);
-				session.putValue("autTypesV",autTypeV);
+				session.setAttribute("autTypesV",autTypeV);
 			}
-			autTypeV = (Vector)session.getValue("autTypesV");
+			autTypeV = (Vector)session.getAttribute("autTypesV");
 	   		
 			//lets get the selected autotypes
 			String[] selAuto = (req.getParameterValues("authorized")==null) ? new String[0] : (req.getParameterValues("authorized"));
 			Vector selAutoV = super.convert2Vector(selAuto);			
 
 			//get existing rooms
-			Vector roomsV = ( (Vector)session.getValue("roomList")==null ) ? new Vector() : (Vector)session.getValue("roomList");
+			Vector roomsV = ( (Vector)session.getAttribute("roomList")==null ) ? new Vector() : (Vector)session.getAttribute("roomList");
 
 			//get existing new msgTypes
-			Vector newMsgTypeV = ( (Vector)session.getValue("newMsgTypes")==null ) ? new Vector() : (Vector)session.getValue("newMsgTypes");
+			Vector newMsgTypeV = ( (Vector)session.getAttribute("newMsgTypes")==null ) ? new Vector() : (Vector)session.getAttribute("newMsgTypes");
 
 
 			//****************If newRoom or newMsgTypebutton is pressed:************************
@@ -535,7 +535,7 @@ public class ChatCreator extends ChatBase
 						roomsV.add( theRoom );
 
 						//add room to session
-						session.putValue("roomList",roomsV);
+						session.setAttribute("roomList",roomsV);
 					}
 					//Add new MsgType
 					else if ( req.getParameter("addMsgType") != null && paramName.equals("msgType") )
@@ -549,8 +549,8 @@ public class ChatCreator extends ChatBase
 						newMsgTypeV.add( theType );
 
 						//add type to session
-						session.putValue("newMsgTypes",newMsgTypeV);
-						session.putValue("msgTypesV",msgTypesV);
+						session.setAttribute("newMsgTypes",newMsgTypeV);
+						session.setAttribute("msgTypesV",msgTypesV);
 					}
 				}//end while
 				
@@ -667,10 +667,10 @@ public class ChatCreator extends ChatBase
 			}
 			
 			//put the parameters needed to create a chat in the session
-			session.putValue("chatId",metaId);
-			//session.putValue("roomList",roomsV);
-			//session.putValue("msgTypes",msgTypesV);
-			//session.putValue("chatParams",chatParams);			
+			session.setAttribute("chatId",metaId);
+			//session.setAttribute("roomList",roomsV);
+			//session.setAttribute("msgTypes",msgTypesV);
+			//session.setAttribute("chatParams",chatParams);			
 			
 			Enumeration e = chatParams.propertyNames();
 			while (e.hasMoreElements())
@@ -867,9 +867,9 @@ public class ChatCreator extends ChatBase
 			//log("ChatName: " + chatName);
 			vm.addProperty("chatName", chatName ) ;
 
-			String metaId = (String)session.getValue("Chat.meta_id");
+			String metaId = (String)session.getAttribute("Chat.meta_id");
 			//log("MetaId: " + metaId);
-			ChatMember myMember = (ChatMember) session.getValue("theChatMember");
+			ChatMember myMember = (ChatMember) session.getAttribute("theChatMember");
 			if (myMember == null)
 			{
 				log("chatMembern was null so return");
@@ -894,8 +894,8 @@ public class ChatCreator extends ChatBase
 				//log("grupp: " + temp );
 			}
 
-			Vector addGroups = (Vector)session.getValue("NewRooms") == null ? new Vector() : (Vector)session.getValue("NewRooms") ;//sessionen
-			Vector delGroups = (Vector)session.getValue("DelRooms") == null ? new Vector() : (Vector)session.getValue("DelRooms") ;//sessionen
+			Vector addGroups = (Vector)session.getAttribute("NewRooms") == null ? new Vector() : (Vector)session.getAttribute("NewRooms") ;//sessionen
+			Vector delGroups = (Vector)session.getAttribute("DelRooms") == null ? new Vector() : (Vector)session.getAttribute("DelRooms") ;//sessionen
 
 			if ( req.getParameter("addRoom") != null )
 			{
@@ -905,7 +905,7 @@ public class ChatCreator extends ChatBase
 				addGroups.add(newRoom);
 				addGroups.add(newRoom);
 				
-				session.putValue("NewRooms",addGroups);
+				session.setAttribute("NewRooms",addGroups);
 				//log("*** end addRoom ***");
 			}
 
@@ -921,7 +921,7 @@ public class ChatCreator extends ChatBase
 				delGroups.add(delRoom);
 				delGroups.add(delRoom);
 
-				session.putValue("DelRooms",delGroups);
+				session.setAttribute("DelRooms",delGroups);
 				//log("*** end removeRoom ***");
 			}
 
@@ -948,10 +948,10 @@ public class ChatCreator extends ChatBase
 			}
 
 			//hämta redan tillagda typer
-			Vector addTypes = (Vector)session.getValue("NewTypes") == null ? new Vector() : (Vector)session.getValue("NewTypes") ;
-			Vector delTypes = (Vector)session.getValue("DelTypes") == null ? new Vector() : (Vector)session.getValue("DelTypes") ;
+			Vector addTypes = (Vector)session.getAttribute("NewTypes") == null ? new Vector() : (Vector)session.getAttribute("NewTypes") ;
+			Vector delTypes = (Vector)session.getAttribute("DelTypes") == null ? new Vector() : (Vector)session.getAttribute("DelTypes") ;
 			
-			Vector autTypeV = (Vector) session.getValue("Chat_autTypeV");
+			Vector autTypeV = (Vector) session.getAttribute("Chat_autTypeV");
 			String[] selAuto = (req.getParameterValues("authorized")==null) ? new String[0] : (req.getParameterValues("authorized"));
 			Vector selAutoV = super.convert2Vector(selAuto);
 			
@@ -965,7 +965,7 @@ public class ChatCreator extends ChatBase
 				addTypes.add(newMsgType);
 				addTypes.add(newMsgType);
 
-				session.putValue("NewTypes",addTypes);
+				session.setAttribute("NewTypes",addTypes);
 			} 
 
 			//*************** delete msgType **********
@@ -978,7 +978,7 @@ public class ChatCreator extends ChatBase
 				delTypes.add(delType);
 				delTypes.add(delType);
 
-				session.putValue("DelTypes",delTypes);
+				session.setAttribute("DelTypes",delTypes);
 
 			}
 
@@ -1034,8 +1034,8 @@ public class ChatCreator extends ChatBase
 				//rmi.execSqlUpdateProcedure(chatPoolServer , delete );
 
 				//lets get all current connected rooms 
-				Vector currGroupsV 		= (Vector)session.getValue("chat_V_room");
-				Vector currMsgTypesV 	= (Vector)session.getValue("chat_V_msgTypes");
+				Vector currGroupsV 		= (Vector)session.getAttribute("chat_V_room");
+				Vector currMsgTypesV 	= (Vector)session.getAttribute("chat_V_msgTypes");
 				if (currGroupsV == null)
 				{
 					//fixa så att de hämtas från db #### OBS ####
@@ -1066,10 +1066,10 @@ public class ChatCreator extends ChatBase
 						rmi.execSqlUpdateProcedure(chatPoolServer, "C_AddNewChatRoom '"+metaId+"','"+name+"'");
 					}					
 				}
-				session.removeValue("NewRooms");
+				session.removeAttribute("NewRooms");
 				//lets see if there is any to delete
-				Vector dellV = (Vector) session.getValue("DelRooms");
-				session.removeValue("DelRooms");
+				Vector dellV = (Vector) session.getAttribute("DelRooms");
+				session.removeAttribute("DelRooms");
 				if (dellV != null)//ok we have some to delete
 				{
 					for(int i=0; i<dellV.size();i+=2)
@@ -1116,10 +1116,10 @@ public class ChatCreator extends ChatBase
 					}					
 				}
 				
-				session.removeValue("NewTypes");
+				session.removeAttribute("NewTypes");
 				//lets see if there is any to delete
-				Vector dellMsgV = (Vector) session.getValue("DelTypes");
-				session.removeValue("DelTypes");
+				Vector dellMsgV = (Vector) session.getAttribute("DelTypes");
+				session.removeAttribute("DelTypes");
 				if (dellMsgV != null)//ok we have some to delete
 				{
 					for(int i=0; i<dellMsgV.size();i+=2)

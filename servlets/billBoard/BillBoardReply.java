@@ -105,7 +105,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 			String userId = userParams.getProperty("USER_ID") ;
 			HttpSession session = req.getSession(false) ;
 			if (session != null) {
-				userId = (String) session.getValue("BillBoard.user_id") ;
+				userId = (String) session.getAttribute("BillBoard.user_id") ;
 			}
 
 			String metaId = params.getProperty("META_ID") ;
@@ -220,8 +220,8 @@ public class BillBoardReply extends BillBoard {//ConfReply
 		// Lets update the sessions DISC_ID
 		
 		if(session != null  ) {
-			session.putValue("BillBoard.disc_id", discId) ;
-			userId = (String) session.getValue("BillBoard.user_id") ;
+			session.setAttribute("BillBoard.disc_id", discId) ;
+			userId = (String) session.getAttribute("BillBoard.user_id") ;
 		}
 
 		if (discId.equals("-1"))
@@ -325,7 +325,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 
 		// Get the session and add the clicked discussion to the list. Put list back
 		HttpSession session = req.getSession(true);
-		Properties viewedDiscs = (Properties) session.getValue("BillBoard.viewedDiscList") ;
+		Properties viewedDiscs = (Properties) session.getAttribute("BillBoard.viewedDiscList") ;
 		// Lets check if we got a list, if not, then create one
 		if( viewedDiscs == null) {
 			log("ViewedDiscs == null") ;
@@ -348,9 +348,9 @@ public class BillBoardReply extends BillBoard {//ConfReply
 			dateString = "" + dateString ;
 		}
 		viewedDiscs.setProperty(discId, dateString) ; // id
-		session.putValue("BillBoard.viewedDiscList", viewedDiscs) ;
+		session.setAttribute("BillBoard.viewedDiscList", viewedDiscs) ;
 		// Ok, Lets print what we just updated
-		viewedDiscs = (Properties) session.getValue("BillBoard.viewedDiscList") ;
+		viewedDiscs = (Properties) session.getAttribute("BillBoard.viewedDiscList") ;
 		//log("*** ConfReply ***" + "\n") ;
 		//log(props2String(viewedDiscs)) ;
 	}
@@ -467,7 +467,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 		if( confDiscId.equals("") ) {
 			HttpSession session = req.getSession(false) ;
 			if (session != null) {
-				confDiscId =	(String) session.getValue("BillBoard.disc_id") ;
+				confDiscId =	(String) session.getAttribute("BillBoard.disc_id") ;
 			}
 		}
 		//log("GetParameters: " + confDiscId) ;

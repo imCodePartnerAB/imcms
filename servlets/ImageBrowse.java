@@ -38,7 +38,7 @@ public class ImageBrowse extends HttpServlet {
 		HttpSession session = req.getSession(true);
 
 		// Does the session indicate this user already logged in?
-		imcode.server.User user  = (imcode.server.User)session.getValue("logon.isDone");  // marker object
+		imcode.server.User user  = (imcode.server.User)session.getAttribute("logon.isDone");  // marker object
 
 		if (user == null)
 		{
@@ -67,7 +67,7 @@ public class ImageBrowse extends HttpServlet {
 			
 		// Get the session
 		HttpSession session = req.getSession(false);
-		imcode.server.User user  = (imcode.server.User)session.getValue("logon.isDone");  // marker object
+		imcode.server.User user  = (imcode.server.User)session.getAttribute("logon.isDone");  // marker object
 		
 		
 		String meta_id = req.getParameter("meta_id");
@@ -84,7 +84,7 @@ public class ImageBrowse extends HttpServlet {
 		
 		if (req.getParameter("PREVIOUS_IMG")!=null || req.getParameter("NEXT_IMG")!=null)
 		{
-			session.removeValue("ImageBrowse.optionlist") ;
+			session.removeAttribute("ImageBrowse.optionlist") ;
 			img_preset = null;
 		}
 		
@@ -364,7 +364,7 @@ public class ImageBrowse extends HttpServlet {
 		vec.add("#img_maxNr#");
 		vec.add(Integer.toString(img_numbers));
 
-		session.putValue("ImageBrowse.optionlist",imgList);
+		session.setAttribute("ImageBrowse.optionlist",imgList);
 
 		String lang_prefix = user.getLangPrefix() ;
 		return IMCServiceRMI.parseDoc(imcserver,vec,"ImageBrowse.html", lang_prefix) ;

@@ -184,12 +184,12 @@ public class AdminUser extends Administrator
 			vm.addProperty("LANG_TYPES", htm.createHtmlCode("ID_OPTION",selectedLangV, /* super. */ convert2Vector(langList))) ;
 
 			//store all data into the session
-			session.putValue("RESET_allRolesV", allRolesV);			
-			session.putValue("RESET_usersArr", usersArr);			
-			session.putValue("RESET_userCreateDate", " ");			
-			session.putValue("Ok_phoneNumbers", phonesV);				
-			session.putValue("RESET_langList", langList);
-			session.putValue("RESET_selectedLangV", selectedLangV);
+			session.setAttribute("RESET_allRolesV", allRolesV);			
+			session.setAttribute("RESET_usersArr", usersArr);			
+			session.setAttribute("RESET_userCreateDate", " ");			
+			session.setAttribute("Ok_phoneNumbers", phonesV);				
+			session.setAttribute("RESET_langList", langList);
+			session.setAttribute("RESET_selectedLangV", selectedLangV);
 
 			// Lets create the HTML page
 			this.sendHtml(req, res, vm, HTML_RESPONSE) ;
@@ -285,13 +285,13 @@ public class AdminUser extends Administrator
 			vm.addProperty("ROLES_MENU", htm.createHtmlCode("ID_OPTION",theUserRolesV, allRolesV)) ;
 			
 			//store all data into the session
-			session.putValue("RESET_userId",userId);
-			session.putValue("RESET_allRolesV", allRolesV);
-			session.putValue("RESET_usersArr", usersArr);
-			session.putValue("RESET_userCreateDate", userCreateDate);
-			session.putValue("Ok_phoneNumbers", phoneNumbers);	
-			session.putValue("RESET_langList", langList);
-			session.putValue("RESET_selectedLangV", selectedLangV);
+			session.setAttribute("RESET_userId",userId);
+			session.setAttribute("RESET_allRolesV", allRolesV);
+			session.setAttribute("RESET_usersArr", usersArr);
+			session.setAttribute("RESET_userCreateDate", userCreateDate);
+			session.setAttribute("Ok_phoneNumbers", phoneNumbers);	
+			session.setAttribute("RESET_langList", langList);
+			session.setAttribute("RESET_selectedLangV", selectedLangV);
 			
 			
 			this.sendHtml(req, res, vm, HTML_RESPONSE) ;
@@ -307,13 +307,13 @@ public class AdminUser extends Administrator
 
 			//lets get the session to get all data in incase of reset
 			HttpSession session = req.getSession(false);	
-			Properties params =(Properties) session.getValue("ok_phones_params");		
+			Properties params =(Properties) session.getAttribute("ok_phones_params");		
 
 			// Lets get the user which should be changed
 			String userId = req.getParameter("user_Id");
 
 			if (userId == null)	return ;//kolla om det blir null eller fnuttfnutt	
-			//	String[] userInfo  = (String[]) session.getValue("RESET_userInfo");	
+			//	String[] userInfo  = (String[]) session.getAttribute("RESET_userInfo");	
 			String[] userInfo = new String[20];
 			// Lets get all Userinformation and add it to html page
 			// Lets get the parameters we know we are supposed to get from the params object
@@ -353,11 +353,11 @@ public class AdminUser extends Administrator
 			
 			// Lets get the information for users roles
 			// Lets collect the current rolesIds for the user
-			Vector theUserRolesV = (Vector)session.getValue("ok_phones_roles");	
+			Vector theUserRolesV = (Vector)session.getAttribute("ok_phones_roles");	
 			if(	theUserRolesV == null) return;	
 
 			// Lets get all roles from the database
-			Vector allRolesV = (Vector)session.getValue("RESET_allRolesV");	
+			Vector allRolesV = (Vector)session.getAttribute("RESET_allRolesV");	
 			if (	allRolesV == null) 	
 			{
 				AdminError err = new AdminError(req,res,"Add/edit user", "An eror occured!") ;
@@ -373,26 +373,26 @@ public class AdminUser extends Administrator
 			String theUsersType = params.getProperty("user_type");		
 			log("theUsersType:"+theUsersType);
 			// Lets get all USERTYPES from DB
-			String[] usersArr = (String[]) session.getValue("RESET_usersArr");
+			String[] usersArr = (String[]) session.getAttribute("RESET_usersArr");
 
 			Vector usersV  = /* super. */ convert2Vector(usersArr) ;
 			String user_type = htm.createHtmlCode("ID_OPTION", theUsersType, usersV ) ;
 			vm.addProperty("USER_TYPES", user_type  ) ;
 
 			// Lets get the users create date
-			String userCreateDate = (String) session.getValue("RESET_userCreateDate");
+			String userCreateDate = (String) session.getAttribute("RESET_userCreateDate");
 
 			vm.addProperty("USER_CREATE_DATE", "" + userCreateDate  ) ;
 
 			// Lets fix all users phone numbers from the session
-			Vector  phoneNumbers = (Vector)session.getValue("Ok_phoneNumbers");
+			Vector  phoneNumbers = (Vector)session.getAttribute("Ok_phoneNumbers");
 			Vector phonesV  = this.getPhonesVector(phoneNumbers); 			
 			log("test"+req.getParameter("edit_phones"));
 			
 			boolean found = false;	
 			if (req.getParameter("edit_phones")!= null)
 			{
-			//	Vector phonesV  = (Vector)session.getValue("Ok_phoneNumbers");
+			//	Vector phonesV  = (Vector)session.getAttribute("Ok_phoneNumbers");
 				Enumeration enum = phoneNumbers.elements();
 						
 				while (enum.hasMoreElements() && !found)
@@ -425,8 +425,8 @@ public class AdminUser extends Administrator
 
 
 			// Lets get the the users language id
-			String[] langList = (String[])session.getValue("RESET_langList");
-			Vector selectedLangV = (Vector)session.getValue("RESET_selectedLangV");
+			String[] langList = (String[])session.getAttribute("RESET_langList");
+			Vector selectedLangV = (Vector)session.getAttribute("RESET_selectedLangV");
 			selectedLangV.add(userV.get(16).toString()) ;
 			vm.addProperty("LANG_TYPES", htm.createHtmlCode("ID_OPTION",selectedLangV, /* super. */ convert2Vector(langList))) ;
 

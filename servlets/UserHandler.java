@@ -525,8 +525,8 @@ public String fixUpdateUserSql(Properties p, String newUserId) {
 	  // Lets set the user id we are working on
 		//	HttpSession session = req.getSession(true) ;
 			if(session != null  ) {
-			  session.putValue("AdminUser.user_id", userId ) ;
-		   session.putValue("AdminUser.passedLogin", "1" ) ;
+			  session.setAttribute("AdminUser.user_id", userId ) ;
+		   session.setAttribute("AdminUser.passedLogin", "1" ) ;
 			}
 
 	  // ok, redirect to myself
@@ -545,10 +545,10 @@ public String fixUpdateUserSql(Properties p, String newUserId) {
 		 }
 
 		 if(session != null  ) {
-		 userId = (String) session.getValue("AdminUser.user_id") ;
+		 userId = (String) session.getAttribute("AdminUser.user_id") ;
 	   }
 
-	   String showUserInfo = (String) session.getValue("AdminUser.passedLogin" ) ;
+	   String showUserInfo = (String) session.getAttribute("AdminUser.passedLogin" ) ;
 	   if(showUserInfo.equals("1")) {
 		// Ok, we got the user. Lets get his settings.
 		VariableManager vm = new VariableManager() ;
@@ -574,8 +574,8 @@ public String fixUpdateUserSql(Properties p, String newUserId) {
 			// HttpSession session = req.getSession(true) ;
 			String theUserId = null ;
 			if(session != null  ) {
-			  session.putValue("AdminUser.user_id", userId ) ;
-		   session.putValue("AdminUser.passedLogin", "1" ) ;
+			  session.setAttribute("AdminUser.user_id", userId ) ;
+		   session.setAttribute("AdminUser.passedLogin", "1" ) ;
 			}
 
 	 // Lets generete the change user page

@@ -99,7 +99,7 @@ public class PostcardServlet extends HttpServlet {
 		File templateLib  = getExternalTemplateFolder(req);
 		
 		HttpSession session = req.getSession(true);
-		Object done = session.getValue("logon.isDone"); 		
+		Object done = session.getAttribute("logon.isDone"); 		
 		imcode.server.User user = (imcode.server.User) done ;
 						
 		String qLine = "1";
@@ -280,7 +280,7 @@ public class PostcardServlet extends HttpServlet {
 		String imcserver			= Utility.getDomainPref("userserver",host) ;
 		
 		HttpSession session = req.getSession(true);
-		Object done = session.getValue("logon.isDone"); 		
+		Object done = session.getAttribute("logon.isDone"); 		
 		imcode.server.User user = (imcode.server.User) done ;
 		
 		// Since our templates are located into the 105 folder, we'll have to hang on 105

@@ -80,9 +80,9 @@ public class BillBoardManager extends BillBoard	  //ConfManager
 			if (session != null)
 			{
 				// log("Ok nu sätter vi metavärdena");
-				session.putValue("BillBoard.meta_id", params.getProperty("META_ID")) ;
-				session.putValue("BillBoard.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
-				session.putValue("BillBoard.cookie_id", params.getProperty("COOKIE_ID")) ;
+				session.setAttribute("BillBoard.meta_id", params.getProperty("META_ID")) ;
+				session.setAttribute("BillBoard.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
+				session.setAttribute("BillBoard.cookie_id", params.getProperty("COOKIE_ID")) ;
 			}
 
 			String url = MetaInfo.getServletPath(req) + "BillBoardCreator?action=NEW" ;
@@ -118,10 +118,10 @@ public class BillBoardManager extends BillBoard	  //ConfManager
 				if (session != null)
 				{
 					// log("Ok nu sätter vi metavärdena");
-					session.putValue("BillBoard.meta_id", params.getProperty("META_ID")) ;
-					session.putValue("BillBoard.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
-					session.putValue("BillBoard.cookie_id", params.getProperty("COOKIE_ID")) ;
-					session.putValue("BillBoard.viewedDiscList", new Properties()) ;
+					session.setAttribute("BillBoard.meta_id", params.getProperty("META_ID")) ;
+					session.setAttribute("BillBoard.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
+					session.setAttribute("BillBoard.cookie_id", params.getProperty("COOKIE_ID")) ;
+					session.setAttribute("BillBoard.viewedDiscList", new Properties()) ;
 					//log("OK, nu sätter vi viewedDiscList") ;
 				}
 

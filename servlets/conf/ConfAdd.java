@@ -76,7 +76,7 @@ public class ConfAdd extends Conference {
 				String userId = "" ;
 				HttpSession session = req.getSession(false) ;
 				if (session != null) {
-					userId = (String) session.getValue("Conference.user_id") ;
+					userId = (String) session.getAttribute("Conference.user_id") ;
 				}
 				// log("USERPARAMS :" + userParams.toString()) ;
 				// Before Adding something, we need to see if the user exists in DB
@@ -123,8 +123,8 @@ public class ConfAdd extends Conference {
 				if (session != null) {
 					String latestDiscId = rmi.execSqlProcedureStr(confPoolServer, "A_GetLastDiscussionId " +
 						params.getProperty("META_ID") + ", " + aForumId) ;
-					session.putValue("Conference.disc_id", latestDiscId) ;
-					//	userId = (String) session.getValue("Conference.user_id") ;
+					session.setAttribute("Conference.disc_id", latestDiscId) ;
+					//	userId = (String) session.getAttribute("Conference.user_id") ;
 				}
 
 				// Lets update the users logindate. As he is writing, then we know that
@@ -156,7 +156,7 @@ public class ConfAdd extends Conference {
 				String userId = "" ;
 				HttpSession session = req.getSession(false) ;
 				if (session != null) {
-					userId = (String) session.getValue("Conference.user_id") ;
+					userId = (String) session.getAttribute("Conference.user_id") ;
 				}
 
 				// Lets get the users reply level
@@ -240,7 +240,7 @@ public class ConfAdd extends Conference {
 			String loginUserId = "" ;
 			HttpSession session = req.getSession(false) ;
 			if (session != null) {
-				loginUserId = (String) session.getValue("Conference.user_id") ;
+				loginUserId = (String) session.getAttribute("Conference.user_id") ;
 			}
 			// log("INLOGGAD ANVÄNDARES ID: " + loginUserId) ;
 

@@ -85,7 +85,7 @@ public class ChatBindingListener implements HttpSessionBindingListener
 	//servlet class 
 	{
 		ChatBindingListener bindLyss = new ChatBindingListener(...);
-	    session.putValue("chatBinding",bindLyss);
+	    session.setAttribute("chatBinding",bindLyss);
 	}
 	// when session is invalidated valueUnbound function gets the event
 */

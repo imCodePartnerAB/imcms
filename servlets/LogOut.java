@@ -27,7 +27,7 @@ public class LogOut extends HttpServlet {
 		res.setContentType("text/html") ;
 		ServletOutputStream out = res.getOutputStream () ;
 		HttpSession session = req.getSession (true) ;
-		Object done = session.getValue("logon.isDone");  // marker object
+		Object done = session.getAttribute("logon.isDone");  // marker object
 		imcode.server.User user = (imcode.server.User)done ;
 		if ( user == null ) {
 			res.sendRedirect(start_url) ;              

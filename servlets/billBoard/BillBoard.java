@@ -65,7 +65,7 @@ public class BillBoard extends HttpServlet { //Conference
 			HttpSession session = req.getSession(false) ;
 			if (session != null)
 			{
-				metaId =	(String) session.getValue("BillBoard.meta_id") ;
+				metaId =	(String) session.getAttribute("BillBoard.meta_id") ;
 			}
 		}
 		if( metaId == null)
@@ -91,7 +91,7 @@ public class BillBoard extends HttpServlet { //Conference
 			HttpSession session = req.getSession(false) ;
 			if (session != null)
 			{
-				forumId =	(String) session.getValue("BillBoard.section_id") ;
+				forumId =	(String) session.getAttribute("BillBoard.section_id") ;
 			}
 		}
 		if( forumId == null)
@@ -152,7 +152,7 @@ public class BillBoard extends HttpServlet { //Conference
 			// Get the session
 			HttpSession session = req.getSession(true);
 			// Does the session indicate this user already logged in?
-			Object done = session.getValue("logon.isDone");  // marker object
+			Object done = session.getAttribute("logon.isDone");  // marker object
 			imcode.server.User user = (imcode.server.User) done ;
 
 			return user ;
@@ -182,9 +182,9 @@ public class BillBoard extends HttpServlet { //Conference
 
 		// Get the session
 		HttpSession session = req.getSession(true);
-		String metaId = (	(String) session.getValue("BillBoard.meta_id")==null) ? "" : ((String) session.getValue("BillBoard.meta_id")) ;//Conference.meta_id
-		String parentId = (	(String) session.getValue("BillBoard.parent_meta_id")==null) ? "" : ((String) session.getValue("BillBoard.parent_meta_id")) ;//Conference.parent_meta_id
-		String cookieId = (	(String) session.getValue("BillBoard.cookie_id")==null) ? "" : ((String) session.getValue("BillBoard.cookie_id")) ;//Conference.cookie_id
+		String metaId = (	(String) session.getAttribute("BillBoard.meta_id")==null) ? "" : ((String) session.getAttribute("BillBoard.meta_id")) ;//Conference.meta_id
+		String parentId = (	(String) session.getAttribute("BillBoard.parent_meta_id")==null) ? "" : ((String) session.getAttribute("BillBoard.parent_meta_id")) ;//Conference.parent_meta_id
+		String cookieId = (	(String) session.getAttribute("BillBoard.cookie_id")==null) ? "" : ((String) session.getAttribute("BillBoard.cookie_id")) ;//Conference.cookie_id
 
 		Properties reqParams= new Properties() ;
 		reqParams.setProperty("META_ID", metaId) ;
@@ -212,8 +212,8 @@ public class BillBoard extends HttpServlet { //Conference
 
 		// Get the session
 		HttpSession session = req.getSession(true);
-		String sectionId = (	(String) session.getValue("BillBoard.section_id")==null) ? "" : ((String) session.getValue("BillBoard.section_id")) ;//"Conference.forum_id"
-		String discId = (	(String) session.getValue("BillBoard.disc_id")==null) ? "" : ((String) session.getValue("BillBoard.disc_id")) ;//"Conference.disc_id"
+		String sectionId = (	(String) session.getAttribute("BillBoard.section_id")==null) ? "" : ((String) session.getAttribute("BillBoard.section_id")) ;//"Conference.forum_id"
+		String discId = (	(String) session.getAttribute("BillBoard.disc_id")==null) ? "" : ((String) session.getAttribute("BillBoard.disc_id")) ;//"Conference.disc_id"
 
 		if( params == null)
 			params = new Properties() ;
@@ -237,7 +237,7 @@ public class BillBoard extends HttpServlet { //Conference
 		HttpSession session = req.getSession(true);
 		// Does the session indicate this user already logged in?
 
-		Object done = session.getValue("logon.isDone");  // marker object
+		Object done = session.getAttribute("logon.isDone");  // marker object
 		imcode.server.User user = (imcode.server.User) done ;
 
 		// Lets get serverinformation
@@ -248,7 +248,7 @@ public class BillBoard extends HttpServlet { //Conference
 		{
 			// No logon.isDone means he hasn't logged in.
 			// Save the request URL as the true target and redirect to the login page.
-			session.putValue("login.target", HttpUtils.getRequestURL(req).toString());
+			session.setAttribute("login.target", HttpUtils.getRequestURL(req).toString());
 			String serverName = MetaInfo.getServerName(req) ;
 			String startUrl = RmiConf.getLoginUrl(host) ;
 			res.sendRedirect(serverName + startUrl) ;
@@ -509,7 +509,7 @@ public class BillBoard extends HttpServlet { //Conference
 			HttpSession session = req.getSession(false) ;
 			if (session != null)
 			{
-				billBoardSectionId =	(String) session.getValue("BillBoard.section_id") ;//"Conference.forum_id"
+				billBoardSectionId =	(String) session.getAttribute("BillBoard.section_id") ;//"Conference.forum_id"
 			}
 		}
 		reqParams.setProperty("SECTION_ID", billBoardSectionId) ;
@@ -711,19 +711,19 @@ public class BillBoard extends HttpServlet { //Conference
 		HttpSession session = req.getSession(false) ;
 		if (session != null)
 		{
-			session.putValue("BillBoard.meta_id", params.getProperty("META_ID")) ;//Conference.meta_id
-			session.putValue("BillBoard.parent_meta_id", params.getProperty("PARENT_META_ID")) ;//Conference.parent_meta_id
-			session.putValue("BillBoard.cookie_id", params.getProperty("COOKIE_ID")) ;//Conference.cookie_id
-			session.putValue("BillBoard.viewedDiscList", new Properties()) ;//Conference.viewedDiscList
-			session.putValue("BillBoard.user_id", loginUserId) ;//Conference.user_id
-			//session.putValue("BillBoard.ipAdr", ipAdr);
-			session.putValue("BillBoard.disc_index", "0");
+			session.setAttribute("BillBoard.meta_id", params.getProperty("META_ID")) ;//Conference.meta_id
+			session.setAttribute("BillBoard.parent_meta_id", params.getProperty("PARENT_META_ID")) ;//Conference.parent_meta_id
+			session.setAttribute("BillBoard.cookie_id", params.getProperty("COOKIE_ID")) ;//Conference.cookie_id
+			session.setAttribute("BillBoard.viewedDiscList", new Properties()) ;//Conference.viewedDiscList
+			session.setAttribute("BillBoard.user_id", loginUserId) ;//Conference.user_id
+			//session.setAttribute("BillBoard.ipAdr", ipAdr);
+			session.setAttribute("BillBoard.disc_index", "0");
 
 			// Ok, we need to catch a forum_id. Lets get the first one for this meta_id.
 			// if not a forumid exists, the sp will return -1
 			rmi = new RmiConf(user) ;
 			String aSectionId = rmi.execSqlProcedureStr(ConfPoolServer, "B_GetFirstSection " + params.getProperty("META_ID")) ;
-			session.putValue("BillBoard.section_id", aSectionId) ;//Conference.forum_id
+			session.setAttribute("BillBoard.section_id", aSectionId) ;//Conference.forum_id
 
 			
 			
@@ -735,8 +735,8 @@ public class BillBoard extends HttpServlet { //Conference
 
 			// Lets get the lastdiscussionid for that forum
 			// if not a aDiscId exists, then the  sp will return -1
-			session.putValue("BillBoard.disc_id", "-1") ;
-			//session.putValue("BillBoard.disc_id", aDiscId) ;
+			session.setAttribute("BillBoard.disc_id", "-1") ;
+			//session.setAttribute("BillBoard.disc_id", aDiscId) ;
 			
 			
 
@@ -768,7 +768,7 @@ public class BillBoard extends HttpServlet { //Conference
 			return "No meta_id could be found!" ;
 		}
 		HttpSession session = req.getSession(true);
-		imcode.server.User user = (imcode.server.User)session.getValue("logon.isDone");
+		imcode.server.User user = (imcode.server.User)session.getAttribute("logon.isDone");
 		if (user == null)
 		{
 			return null;
@@ -994,7 +994,7 @@ public class BillBoard extends HttpServlet { //Conference
 
 		//lets get if user authorized or not
 		boolean authorized = true;
-		String stringMetaId = (String)session.getValue( "BillBoard.meta_id" );//Conference.meta_id
+		String stringMetaId = (String)session.getAttribute( "BillBoard.meta_id" );//Conference.meta_id
 		if ( stringMetaId == null )
 		{
 			authorized = false;

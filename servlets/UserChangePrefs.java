@@ -51,7 +51,7 @@ public class UserChangePrefs extends Administrator {
 	// Lets update the session with a return back to variable which the phonenbr
 	// function will look for
 	  if(session != null  ) {
-		session.putValue("UserChangePrefs.goBack", "1" ) ;
+		session.setAttribute("UserChangePrefs.goBack", "1" ) ;
 		}
 	  res.sendRedirect("AdminUserPhones?user_id=" + user_id);
    }   // End of editphones
@@ -61,7 +61,7 @@ public class UserChangePrefs extends Administrator {
 	if( req.getParameter("SAVE_USER") != null ) {
 		// log("Ok, save user parameters") ;
 
-	  userId = (String) session.getValue("AdminUser.user_id" ) ;
+	  userId = (String) session.getAttribute("AdminUser.user_id" ) ;
    // Lets get the users information from db
 		Properties currUserInfo = UserHandler.getUserInfoDB(adminServer, userId) ;
 
@@ -144,8 +144,8 @@ public class UserChangePrefs extends Administrator {
 	  // Lets set the user id we are working on
 		//	HttpSession session = req.getSession(true) ;
 			if(session != null  ) {
-			  session.putValue("AdminUser.user_id", userId ) ;
-		   session.putValue("AdminUser.passedLogin", "1" ) ;
+			  session.setAttribute("AdminUser.user_id", userId ) ;
+		   session.setAttribute("AdminUser.passedLogin", "1" ) ;
 			}
 
 	  // ok, redirect to myself
@@ -166,10 +166,10 @@ public class UserChangePrefs extends Administrator {
 		 }
 
 		 if(session != null  ) {
-		 userId = (String) session.getValue("AdminUser.user_id") ;
+		 userId = (String) session.getAttribute("AdminUser.user_id") ;
 	   }
 
-	   String showUserInfo = (String) session.getValue("AdminUser.passedLogin" ) ;
+	   String showUserInfo = (String) session.getAttribute("AdminUser.passedLogin" ) ;
 	   if(showUserInfo.equals("1")) {
 
 		// Ok, we got the user. Lets get his settings.
@@ -209,8 +209,8 @@ public class UserChangePrefs extends Administrator {
 			// HttpSession session = req.getSession(true) ;
 			String theUserId = null ;
 			if(session != null  ) {
-			  session.putValue("AdminUser.user_id", userId ) ;
-		   session.putValue("AdminUser.passedLogin", "1" ) ;
+			  session.setAttribute("AdminUser.user_id", userId ) ;
+		   session.setAttribute("AdminUser.passedLogin", "1" ) ;
 			}
 
 	 // Lets generete the change user page

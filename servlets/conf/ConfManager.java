@@ -50,9 +50,9 @@ public class ConfManager extends Conference {
 			HttpSession session = req.getSession(false) ;
 		if (session != null) {
 			// log("Ok nu sätter vi metavärdena");
-			session.putValue("Conference.meta_id", params.getProperty("META_ID")) ;
-			session.putValue("Conference.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
-			session.putValue("Conference.cookie_id", params.getProperty("COOKIE_ID")) ;
+			session.setAttribute("Conference.meta_id", params.getProperty("META_ID")) ;
+			session.setAttribute("Conference.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
+			session.setAttribute("Conference.cookie_id", params.getProperty("COOKIE_ID")) ;
 		}
 
 			String url = "ConfCreator?action=NEW" ;
@@ -85,10 +85,10 @@ public class ConfManager extends Conference {
 				HttpSession session = req.getSession(false) ;
 				if (session != null) {
 					// log("Ok nu sätter vi metavärdena");
-					session.putValue("Conference.meta_id", params.getProperty("META_ID")) ;
-					session.putValue("Conference.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
-					session.putValue("Conference.cookie_id", params.getProperty("COOKIE_ID")) ;
-					session.putValue("Conference.viewedDiscList", new Properties()) ;
+					session.setAttribute("Conference.meta_id", params.getProperty("META_ID")) ;
+					session.setAttribute("Conference.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
+					session.setAttribute("Conference.cookie_id", params.getProperty("COOKIE_ID")) ;
+					session.setAttribute("Conference.viewedDiscList", new Properties()) ;
 	  log("OK, nu sätter vi viewedDiscList") ;
 	}
 

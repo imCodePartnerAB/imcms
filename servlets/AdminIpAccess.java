@@ -213,10 +213,10 @@ public void doPost(HttpServletRequest req, HttpServletResponse res)
 				 String arr[] = req.getParameterValues(paramName) ;
 		 /*if(arr.length == 1) { // its a string
 		   log("Det är en sträng: " + arr[0]) ;
-		   session.putValue("IP." + paramName, arr[0]) ;
+		   session.setAttribute("IP." + paramName, arr[0]) ;
 		 } else { // its an array
 				log("Det är en array: " + arr[0]) ; */
-			session.putValue("IP." + paramName , arr) ;
+			session.setAttribute("IP." + paramName , arr) ;
 		// }
 	  }
 	} else {
@@ -239,12 +239,12 @@ public void doPost(HttpServletRequest req, HttpServletResponse res)
 		HttpSession session = req.getSession(false) ;
 	if(session != null ) {
 		log("Ok, ta bort en Ip-access: " + session.toString()) ;
-	  //String arr[] = session.getValueNames() ;
+	  //String arr[] = session.getAttributeNames() ;
 	  // for(int i = 0 ; i < arr.length ; i++ ) {
 	  // 	log("session: " + arr[i]) ;
 	  // }
 
-	  String[] deleteIds = (String[]) session.getValue("IP.EDIT_IP_ACCESS") ;
+	  String[] deleteIds = (String[]) session.getAttribute("IP.EDIT_IP_ACCESS") ;
 	  //log("Det här fick vi: " + deleteIds.toString()) ;
 	  // String[] deleteIds = (String[]) obj ;
 	 // log("Antal IP-accesser att ta bort: " + deleteIds.length) ;
@@ -255,7 +255,7 @@ public void doPost(HttpServletRequest req, HttpServletResponse res)
 			if( deleteIds != null ) {
 				for(int i = 0 ; i < deleteIds.length ; i++ ){
 			String tmpId = "IP.IP_ACCESS_ID_" + deleteIds[i] ;
-			String[] tmpArr = (String[]) session.getValue(tmpId) ;
+			String[] tmpArr = (String[]) session.getAttribute(tmpId) ;
 			String ipAccessId = tmpArr[0] ;
 		  String sqlQ = "IPAccessDelete " + ipAccessId ;
 			log("IP-Delete: " + sqlQ) ;

@@ -65,13 +65,13 @@ public class VerifyUser extends HttpServlet {
 
 			// Valid login.  Make a note in the session object.
 			HttpSession session = req.getSession( true );
-			session.putValue( "logon.isDone", user );  // just a marker object
-			session.putValue("browser_id",value) ;
+			session.setAttribute( "logon.isDone", user );  // just a marker object
+			session.setAttribute("browser_id",value) ;
 
 			// Try redirecting the client to the page he first tried to access
-				String target = (String) session.getValue("login.target");
+				String target = (String) session.getAttribute("login.target");
 				if (target != null) {
-					session.removeValue("login.target") ;
+					session.removeAttribute("login.target") ;
 					res.sendRedirect(target);
 					return ;
 				}

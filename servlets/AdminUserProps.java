@@ -64,7 +64,7 @@ public class AdminUserProps extends Administrator
 			HttpSession session = req.getSession(false);
 			if(session == null) return;
 				
-			String userId = (String)session.getValue("RESET_userId");
+			String userId = (String)session.getAttribute("RESET_userId");
 			if(userId == null)
 			{
 				this.sendErrorMsg(req,res, "Add/edit user", "An eror occured!");
@@ -85,19 +85,19 @@ public class AdminUserProps extends Administrator
 			HttpSession session = req.getSession(false);
 			if(session == null) return;
 
-			String userId = session.getValue("RESET_userId") == null ? "":(String) session.getValue("RESET_userId");
+			String userId = session.getAttribute("RESET_userId") == null ? "":(String) session.getAttribute("RESET_userId");
 			String servletPath = MetaInfo.getServletPath(req) ;
 			//måste fixa så att all anv. data sparas undan i servleten
 			log("ok_phones");
 
 
-			session.putValue("ok_phones_params", this.getParameters(req));
-			session.putValue("ok_phones_roles", getRolesParameters(req,res)==null ? new Vector() : getRolesParameters(req,res));
+			session.setAttribute("ok_phones_params", this.getParameters(req));
+			session.setAttribute("ok_phones_roles", getRolesParameters(req,res)==null ? new Vector() : getRolesParameters(req,res));
 
 			//lets get the phonenumber from the form			
-			session.putValue("country_code",req.getParameter("country_code"));
-			session.putValue("area_code",req.getParameter("area_code"));
-			session.putValue("local_code",req.getParameter("local_code"));
+			session.setAttribute("country_code",req.getParameter("country_code"));
+			session.setAttribute("area_code",req.getParameter("area_code"));
+			session.setAttribute("local_code",req.getParameter("local_code"));
 
 			//add it into Vectorn
 			//gets all phonenumbers from the session
@@ -106,7 +106,7 @@ public class AdminUserProps extends Administrator
 			if (! req.getParameter("area_code").equals("") &&
 				!req.getParameter("local_code").equals(""))
 			{
-				Vector phonesV  = (Vector)session.getValue("Ok_phoneNumbers");
+				Vector phonesV  = (Vector)session.getAttribute("Ok_phoneNumbers");
 				if (phonesV == null)
 				{
 					this.sendErrorMsg(req,res, "Add/edit user", "An eror occured!");
@@ -170,12 +170,12 @@ public class AdminUserProps extends Administrator
 			log("edit_phones");
 			HttpSession session = req.getSession(false);
 
-			String userId = (String)session.getValue("RESET_userId");
+			String userId = (String)session.getAttribute("RESET_userId");
 			String servletPath = MetaInfo.getServletPath(req) ;
 
 
-			session.putValue("ok_phones_params", this.getParameters(req));
-			session.putValue("ok_phones_roles", getRolesParameters(req,res)==null ? new Vector() : getRolesParameters(req,res));
+			session.setAttribute("ok_phones_params", this.getParameters(req));
+			session.setAttribute("ok_phones_roles", getRolesParameters(req,res)==null ? new Vector() : getRolesParameters(req,res));
 
 			String selectedNr = req.getParameter("user_phones");
 			//		log("Number: "+selectedNr);
@@ -190,13 +190,13 @@ public class AdminUserProps extends Administrator
 			HttpSession session = req.getSession(false);
 			if(session == null) return;
 
-			String userId = (String)session.getValue("RESET_userId");
+			String userId = (String)session.getAttribute("RESET_userId");
 			String servletPath = MetaInfo.getServletPath(req) ;
 
 
 			log("lets delete_phones from templist");
 
-			Vector phonesV  = (Vector)session.getValue("Ok_phoneNumbers");
+			Vector phonesV  = (Vector)session.getAttribute("Ok_phoneNumbers");
 			if (phonesV == null)
 			{
 				this.sendErrorMsg(req, res, "Add/edit user", "An eror occured!");
@@ -224,9 +224,9 @@ public class AdminUserProps extends Administrator
 				selectedNr = temp[0];
 			}
 
-			session.putValue("Ok_phoneNumbers", phonesV);
-			session.putValue("ok_phones_params", this.getParameters(req));
-			session.putValue("ok_phones_roles", getRolesParameters(req,res)==null ? new Vector() : getRolesParameters(req,res));
+			session.setAttribute("Ok_phoneNumbers", phonesV);
+			session.setAttribute("ok_phones_params", this.getParameters(req));
+			session.setAttribute("ok_phones_roles", getRolesParameters(req,res)==null ? new Vector() : getRolesParameters(req,res));
 
 			res.sendRedirect(servletPath + "AdminUser?delete_phones=true&user_Id="+userId+"&selected_id="+selectedNr+"&adminTask="+adminTask) ;
 		}
@@ -276,7 +276,7 @@ public class AdminUserProps extends Administrator
 			if( newUserId == null) return ;
 			
 			//Lets get phonenumbers from the session
-			Vector phonesV  = (Vector)session.getValue("Ok_phoneNumbers");
+			Vector phonesV  = (Vector)session.getAttribute("Ok_phoneNumbers");
 			if (phonesV == null)
 			{
 				this.sendErrorMsg(req, res, "Add/edit user", "An eror occured!");
@@ -364,7 +364,7 @@ public class AdminUserProps extends Administrator
 			if( UserHandler.verifyPassword(params,req,res) == false)	return ;
 			
 			// Lets get phonnumbers from the session
-			Vector phonesV  = (Vector)session.getValue("Ok_phoneNumbers");
+			Vector phonesV  = (Vector)session.getAttribute("Ok_phoneNumbers");
 			if (phonesV == null)
 			{
 				this.sendErrorMsg(req, res, "Add/edit user", "An eror occured!");
@@ -430,8 +430,8 @@ public class AdminUserProps extends Administrator
 		HttpSession session = req.getSession(false) ;
 		if(session != null  )
 		{
-		session.putValue("AdminUser.user_id", userId ) ;
-		//userId = (String) session.getValue("AdminUser.user_id") ;
+		session.setAttribute("AdminUser.user_id", userId ) ;
+		//userId = (String) session.getAttribute("AdminUser.user_id") ;
 		}
 		res.sendRedirect("AdminUserPhones?user_id=" + userId );
 		return ;
@@ -476,18 +476,18 @@ public class AdminUserProps extends Administrator
 		if (session == null) return;
 		try
 		{					
-			session.removeValue("ok_phones_params");
-			session.removeValue("ok_phones_roles");
-			session.removeValue("country_code");
-			session.removeValue("area_code");
-			session.removeValue("local_code");		
-			session.removeValue ("RESET_userId");
-			session.removeValue ("RESET_allRolesV");
-			session.removeValue ("RESET_usersArr");
-			session.removeValue ("RESET_userCreateDate");
-			session.removeValue ("Ok_phoneNumbers");	
-			session.removeValue ("RESET_langList");
-			session.removeValue ("RESET_selectedLangV");
+			session.removeAttribute("ok_phones_params");
+			session.removeAttribute("ok_phones_roles");
+			session.removeAttribute("country_code");
+			session.removeAttribute("area_code");
+			session.removeAttribute("local_code");		
+			session.removeAttribute ("RESET_userId");
+			session.removeAttribute ("RESET_allRolesV");
+			session.removeAttribute ("RESET_usersArr");
+			session.removeAttribute ("RESET_userCreateDate");
+			session.removeAttribute ("Ok_phoneNumbers");	
+			session.removeAttribute ("RESET_langList");
+			session.removeAttribute ("RESET_selectedLangV");
 
 		}catch(IllegalStateException ise)
 		{

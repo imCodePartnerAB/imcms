@@ -230,7 +230,7 @@ public class ChatBase extends HttpServlet {
 			HttpSession session = req.getSession(false) ;
 			if (session != null)
 			{
-				forumId =	(String) session.getValue("Chat.forum_id") ;
+				forumId =	(String) session.getAttribute("Chat.forum_id") ;
 			}
 		}
 		if( forumId == null)
@@ -1122,18 +1122,21 @@ public class ChatBase extends HttpServlet {
 	//logon_isDone and browser_id
 	
 	public void cleanUpSessionParams(HttpSession session){
-		String[] namnen = session.getValueNames();
-		for(int i=0; i< namnen.length; i++){
-			if (namnen[i].equals("chatBinding")) {
-				ChatBindingListener binLaban = (ChatBindingListener) session.getAttribute(namnen[i]);
+	
+		Enumeration enum = session.getAttributeNames();
+		
+		while(enum.hasMoreElements()){
+			String name = (String) enum.nextElement();
+			if (name.equals("chatBinding")) {
+				ChatBindingListener binLaban = (ChatBindingListener) session.getAttribute(name);
 				binLaban.valueUnbound(new HttpSessionBindingEvent(session, "ChatBindingListener"));
 				//System.out.println("======================");
 				
 			}else {
-				if(namnen[i].equals("logon.isDone") || namnen[i].equals("browser_id")){
+				if(name.equals("logon.isDone") || name.equals("browser_id")){
 					//do nothing
 				}else{
-					session.removeValue(namnen[i]);
+					session.removeAttribute(name);
 				}
 			}
 		}

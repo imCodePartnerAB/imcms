@@ -30,13 +30,13 @@ public class ChangeDiagramCoordinator extends HttpServlet {
 	// Get the session
     HttpSession session = req.getSession(true);
     // Does the session indicate this user already logged in?
-    Object done = session.getValue("logon.isDone");  // marker object
+    Object done = session.getAttribute("logon.isDone");  // marker object
     imcode.server.User user = (imcode.server.User) done ;
 
     if (done == null) {
       // No logon.isDone means he hasn't logged in.
       // Save the request URL as the true target and redirect to the login page.
-      session.putValue("login.target", HttpUtils.getRequestURL(req).toString());
+      session.setAttribute("login.target", HttpUtils.getRequestURL(req).toString());
       String serverName = MetaInfo.getServerName(req) ;
       String startUrl = MetaInfo.getStartUrl(req) ;
      // log("StartUrl: " + serverName + startUrl) ;

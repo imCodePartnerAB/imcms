@@ -52,8 +52,8 @@ public class ConfForum extends Conference {
 
 		RmiConf rmi = new RmiConf(user) ;
 		HttpSession session = req.getSession(false) ;
-		String aMetaId = (String) session.getValue("Conference.meta_id") ;
-		String aForumId = (String) session.getValue("Conference.forum_id") ;
+		String aMetaId = (String) session.getAttribute("Conference.meta_id") ;
+		String aForumId = (String) session.getAttribute("Conference.forum_id") ;
 		String discIndex = params.getProperty("DISC_INDEX") ;
 
 		// Lets get the url to the servlets directory

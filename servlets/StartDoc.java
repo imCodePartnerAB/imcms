@@ -45,7 +45,7 @@ public class StartDoc extends HttpServlet {
 		HttpSession session = req.getSession( true );
 
 		// Does the session indicate this user already logged in?
-		Object done = session.getValue( "logon.isDone" );  // marker object
+		Object done = session.getAttribute( "logon.isDone" );  // marker object
 		user = (imcode.server.User)done ;
 //		String domain = req.getParameter("domain") ;
 
@@ -58,7 +58,7 @@ public class StartDoc extends HttpServlet {
 
 			// Valid login.  Make a note in the session object.
 //			session = req.getSession( true );
-			session.putValue( "logon.isDone", user );  // just a marker object
+			session.setAttribute( "logon.isDone", user );  // just a marker object
 
 			// get type of browser
 			String value = req.getHeader( "User-Agent" ) ;
@@ -66,13 +66,13 @@ public class StartDoc extends HttpServlet {
 			if ( value == null ) {
 				value = "" ;
 			}
-			session.putValue("browser_id",value) ;
+			session.setAttribute("browser_id",value) ;
 
 			if( user == null ) {
 				// No logon.isDone means he hasn't logged in.
 				// Save the request URL as the true target and redirect to the login page.
 
-				session.putValue( "login.target", HttpUtils.getRequestURL( req ).toString( ) );
+				session.setAttribute( "login.target", HttpUtils.getRequestURL( req ).toString( ) );
 				String scheme = req.getScheme( );
 				String serverName = req.getServerName( );
 				int p = req.getServerPort( );

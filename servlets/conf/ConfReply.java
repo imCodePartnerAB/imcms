@@ -82,7 +82,7 @@ public class ConfReply extends Conference {
 			String userId = userParams.getProperty("USER_ID") ;
 			HttpSession session = req.getSession(false) ;
 			if (session != null) {
-				userId = (String) session.getValue("Conference.user_id") ;
+				userId = (String) session.getAttribute("Conference.user_id") ;
 			}
 
 			String metaId = params.getProperty("META_ID") ;
@@ -146,8 +146,8 @@ public class ConfReply extends Conference {
 		// Lets update the sessions DISC_ID
 		HttpSession session = req.getSession(false) ;
 		if(session != null  ) {
-			session.putValue("Conference.disc_id", discId) ;
-			userId = (String) session.getValue("Conference.user_id") ;
+			session.setAttribute("Conference.disc_id", discId) ;
+			userId = (String) session.getAttribute("Conference.user_id") ;
 		}
 
 		// Lets get serverinformation
@@ -273,7 +273,7 @@ public class ConfReply extends Conference {
 
 		// Get the session and add the clicked discussion to the list. Put list back
 		HttpSession session = req.getSession(true);
-		Properties viewedDiscs = (Properties) session.getValue("Conference.viewedDiscList") ;
+		Properties viewedDiscs = (Properties) session.getAttribute("Conference.viewedDiscList") ;
 		// Lets check if we got a list, if not, then create one
 		if( viewedDiscs == null) {
 			log("ViewedDiscs == null") ;
@@ -296,9 +296,9 @@ public class ConfReply extends Conference {
 			dateString = "" + dateString ;
 		}
 		viewedDiscs.setProperty(discId, dateString) ; // id
-		session.putValue("Conference.viewedDiscList", viewedDiscs) ;
+		session.setAttribute("Conference.viewedDiscList", viewedDiscs) ;
 		// Ok, Lets print what we just updated
-		viewedDiscs = (Properties) session.getValue("Conference.viewedDiscList") ;
+		viewedDiscs = (Properties) session.getAttribute("Conference.viewedDiscList") ;
 		//log("*** ConfReply ***" + "\n") ;
 		//log(props2String(viewedDiscs)) ;
 	}
@@ -461,7 +461,7 @@ public class ConfReply extends Conference {
 		if( confDiscId.equals("") ) {
 			HttpSession session = req.getSession(false) ;
 			if (session != null) {
-				confDiscId =	(String) session.getValue("Conference.disc_id") ;
+				confDiscId =	(String) session.getAttribute("Conference.disc_id") ;
 			}
 		}
 		//log("GetParameters: " + confDiscId) ;

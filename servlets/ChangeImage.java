@@ -32,7 +32,7 @@ public class ChangeImage extends HttpServlet {
 	}
 	
 	HttpSession session = req.getSession(true);
-	imcode.server.User user = (imcode.server.User)session.getValue("logon.isDone");
+	imcode.server.User user = (imcode.server.User)session.getAttribute("logon.isDone");
 
 	if (user == null) {
 	    // No logon.isDone means he hasn't logged in.
@@ -91,7 +91,7 @@ public class ChangeImage extends HttpServlet {
 		HttpSession session = req.getSession(true);
 
 		// Does the session indicate this user already logged in?
-		Object done = session.getValue("logon.isDone");  // marker object
+		Object done = session.getAttribute("logon.isDone");  // marker object
 		user = (imcode.server.User)done ;
 		//log ("a") ;
 

@@ -45,7 +45,7 @@ public class GetDoc extends HttpServlet {
 	StringBuffer strBuff = new StringBuffer( dateFormat.format(new Date()) );
 	strBuff.append(" #session#["+session.getId()+"]" );
 	strBuff.append(" #ipnr#["+ipNr+"]" );
-	User user = (User)session.getValue("logon.isDone");  // marker object
+	User user = (User)session.getAttribute("logon.isDone");  // marker object
 	if ( user != null )
 	    {
 		strBuff.append(" #user#["+user.getUserId()+"]" );
@@ -108,7 +108,7 @@ public class GetDoc extends HttpServlet {
 	String port = (p == 80 || p == 443) ? "" : ":" + p ;
 
 	HttpSession session = req.getSession(true) ;
-	Object done = session.getValue("logon.isDone");  // marker object
+	Object done = session.getAttribute("logon.isDone");  // marker object
 	imcode.server.User user = (imcode.server.User)done ;
 
 	if (done == null) {
@@ -119,11 +119,11 @@ public class GetDoc extends HttpServlet {
 	    // Valid login.  Make a note in the session object.
 	    //			session = req.getSession( true );
 	    if ( user == null ) {
-		session.putValue("login.target", HttpUtils.getRequestURL(req).toString()+"?"+req.getQueryString());
+		session.setAttribute("login.target", HttpUtils.getRequestURL(req).toString()+"?"+req.getQueryString());
 		res.sendRedirect(start_url) ;
 		return null ;
 	    }
-	    session.putValue( "logon.isDone", user );  // just a marker object
+	    session.setAttribute( "logon.isDone", user );  // just a marker object
 
 	    // get type of browser
 	    String value = req.getHeader( "User-Agent" ) ;
@@ -131,7 +131,7 @@ public class GetDoc extends HttpServlet {
 	    if ( value == null ) {
 		value = "" ;
 	    }
-	    session.putValue("browser_id",value) ;
+	    session.setAttribute("browser_id",value) ;
 	    if ( !( user.getString("login_name").equals("user") && user.getString("login_password").equals("user") && req.getParameter("no_count")!=null)) {
 		//ok its not user user whith param no_count so lets increment the sessioncounter
 		IMCServiceRMI.incCounter(imcserver) ;
@@ -161,7 +161,7 @@ public class GetDoc extends HttpServlet {
 	// checking permissions. Number three, since the user obviously has logged in, give him the page in his own language!
 
 	if ( !IMCServiceRMI.checkDocRights(imcserver,meta_id,user ) ) {
-	    session.putValue("login.target", HttpUtils.getRequestURL(req).toString()+"?"+req.getQueryString());
+	    session.setAttribute("login.target", HttpUtils.getRequestURL(req).toString()+"?"+req.getQueryString());
 	    String redirect = no_permission_url ;
 	    res.sendRedirect( redirect ) ;
 	    return null ;

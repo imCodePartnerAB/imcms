@@ -272,13 +272,13 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			
 			//***
 			HttpSession session = req.getSession(false);
-			String aSectionId = (String) session.getValue("BillBoard.section_id");
+			String aSectionId = (String) session.getAttribute("BillBoard.section_id");
 			String sqlStr = "B_GetLastDiscussionId " +params.getProperty("META_ID") + ", " + aSectionId;
 			//log("sqlStr= "+sqlStr);
 			String aDiscId = rmi.execSqlProcedureStr(confPoolServer, sqlStr) ;
 			//log("aDiscId = "+aDiscId);
 
-			session.putValue("BillBoard.disc_id", aDiscId) ;
+			session.setAttribute("BillBoard.disc_id", aDiscId) ;
 			String param="";
 			if (!aDiscId.equals("-1"))
 			{
@@ -407,7 +407,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			HttpSession session = req.getSession(false);
 			String sqlStr = "B_GetLastDiscussionId " +params.getProperty("META_ID") + ", " + aSectionId;
 			String aDiscId = rmi.execSqlProcedureStr(confPoolServer, sqlStr) ;
-			session.putValue("BillBoard.disc_id", aDiscId) ;
+			session.setAttribute("BillBoard.disc_id", aDiscId) ;
 			
 			//ok lets rebuild the page
 			res.sendRedirect(MetaInfo.getServletPath(req) + "BillBoardAdmin?ADMIN_TYPE="+redirectParam) ;
@@ -447,7 +447,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			HttpSession session = req.getSession(false);
 			String sqlStr = "B_GetLastDiscussionId " +params.getProperty("META_ID") + ", " + aSectionId;
 			String aDiscId = rmi.execSqlProcedureStr(confPoolServer, sqlStr) ;
-			session.putValue("BillBoard.disc_id", aDiscId) ;
+			session.setAttribute("BillBoard.disc_id", aDiscId) ;
 			
 			//ok lets rebuild the page
 			res.sendRedirect(MetaInfo.getServletPath(req) + "BillBoardDiscView") ;
@@ -490,7 +490,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			String sqlGetFirst = "B_GetFirstSection " + params.getProperty("META_ID") ;//GetAllDiscussions
 			String first = rmi.execSqlProcedureStr(confPoolServer, sqlGetFirst ) ;
 			HttpSession session = req.getSession(false);
-			session.putValue("BillBoard.section_id", first) ;
+			session.setAttribute("BillBoard.section_id", first) ;
 			
 			this.doGet(req, res) ;
 			return ;
@@ -1310,9 +1310,9 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		HttpSession session = req.getSession(false) ;
 		if(session != null) {
 			// Lets get the parameters we know we are supposed to get from the request object
-			String sectionId = ( (String) session.getValue("BillBoard.section_id")==null) ? "" : ((String) session.getValue("BillBoard.section_id")) ;//Conference.forum_id
-			String discId = (	(String) session.getValue("BillBoard.disc_id")==null) ? "" : ((String) session.getValue("BillBoard.disc_id")) ;//Conference.disc_id
-//			String lastLogindate = (	(String) session.getValue("BillBoard.last_login_date")==null) ? "" : ((String) session.getValue("BillBoard.last_login_date")) ;//Conference.last_login_date"
+			String sectionId = ( (String) session.getAttribute("BillBoard.section_id")==null) ? "" : ((String) session.getAttribute("BillBoard.section_id")) ;//Conference.forum_id
+			String discId = (	(String) session.getAttribute("BillBoard.disc_id")==null) ? "" : ((String) session.getAttribute("BillBoard.disc_id")) ;//Conference.disc_id
+//			String lastLogindate = (	(String) session.getAttribute("BillBoard.last_login_date")==null) ? "" : ((String) session.getAttribute("BillBoard.last_login_date")) ;//Conference.last_login_date"
 //			reqParams.setProperty("LAST_LOGIN_DATE", lastLogindate) ;
 			reqParams.setProperty("SECTION_ID", sectionId) ;
 			reqParams.setProperty("DISC_ID", discId) ;

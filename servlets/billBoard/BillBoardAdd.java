@@ -116,7 +116,7 @@ public class BillBoardAdd extends BillBoard	{
 				HttpSession session = req.getSession(false) ;
 				if (session != null)
 				{
-					userId = (String) session.getValue("BillBoard.user_id") ;//Conference.user_id
+					userId = (String) session.getAttribute("BillBoard.user_id") ;//Conference.user_id
 				}else
 				{
 					//lets get rid of the user
@@ -195,7 +195,7 @@ public class BillBoardAdd extends BillBoard	{
 				HttpSession session = req.getSession(false) ;
 				if (session != null)
 				{
-					userId = (String) session.getValue("BillBoard.user_id") ;//Conference.user_id
+					userId = (String) session.getAttribute("BillBoard.user_id") ;//Conference.user_id
 				}else
 				{
 					//lets get rid of the user
@@ -274,8 +274,8 @@ public class BillBoardAdd extends BillBoard	{
 				{
 					String latestDiscId = rmi.execSqlProcedureStr(confPoolServer, "B_GetLastDiscussionId " +
 						params.getProperty("META_ID") + ", " + aSectionId) ;
-					session.putValue("BillBoard.disc_id", latestDiscId) ;//Conference.disc_id
-					//	userId = (String) session.getValue("Conference.user_id") ;
+					session.setAttribute("BillBoard.disc_id", latestDiscId) ;//Conference.disc_id
+					//	userId = (String) session.getAttribute("Conference.user_id") ;
 				}
 
 				// Lets redirect to the servlet which holds in us.
@@ -299,7 +299,7 @@ public class BillBoardAdd extends BillBoard	{
 				HttpSession session = req.getSession(false) ;
 				if (session != null)
 				{
-					userId = (String) session.getValue("BillBoard.user_id") ;//Conference.user_id
+					userId = (String) session.getAttribute("BillBoard.user_id") ;//Conference.user_id
 				}
 				
 				String addHeader;
@@ -435,7 +435,7 @@ public class BillBoardAdd extends BillBoard	{
 			HttpSession session = req.getSession(false) ;
 			if (session != null)
 			{
-				loginUserId = (String) session.getValue("BillBoard.user_id") ;//Conference.user_id
+				loginUserId = (String) session.getAttribute("BillBoard.user_id") ;//Conference.user_id
 			}
 			//log("INLOGGAD ANVÄNDARES ID: " + loginUserId) ;
 
