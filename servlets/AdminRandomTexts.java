@@ -4,6 +4,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.external.diverse.* ;
 import imcode.util.* ;
+import imcode.util.fortune.* ;
+import java.text.SimpleDateFormat;
 
 
 public class AdminRandomTexts extends Administrator implements imcode.server.IMCConstants{
@@ -102,8 +104,8 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 
 		HttpSession session = req.getSession();
 
-		Map lines 	= Collections.synchronizedMap(new TreeMap());
-		Map results = Collections.synchronizedMap(new TreeMap());
+	//	Map lines 	= Collections.synchronizedMap(new TreeMap());
+	//	Map results = Collections.synchronizedMap(new TreeMap());
 
 		String whichFile = req.getParameter("AdminFile") ;
 
@@ -119,71 +121,22 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 
 		session.setAttribute("file",whichFile);
 
-		/*	if (req.getParameter("result")!=null)
-		{
-		String options = "";
-
-		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
-		File file = new File(fortune_path,whichFile + "statistics.txt");
-		if (file.exists())
-		{	//öppna filen med detta namnet, om det finns en statisticsfil, annars skriv felmeddelande	//öppna filen med detta namnet, om det finns en statisticsfil, annars skriv felmeddelande
-		String openFile = IMCServiceRMI.getFortune(imcServer,whichFile + "statistics.txt") ;
-		BufferedReader readFile = new BufferedReader( new StringReader( openFile ) );
-
-		String line = readFile.readLine();
-		int row = 0;
-		while ( line!=null && !(line.length()<=12) )
-		{
-		String fullLine = line.replace('#',' ');
-		options = options + "<option value=\""  + row + "\" > " + fullLine + "</option>";
-		results.put( new Integer(row) , fullLine );
-		//	originalLines.put( new Integer(row) , fullLine );
-		line = readFile.readLine();
-		row++;
-		}
-
-
-		//Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
-		Vector values = new Vector();
-		values.add("#options#");
-		values.add(options);
-
-
-		String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, "ShowQuestions.htm" , "se", "admin");
-		out.print(parsed);
-
-		session.setAttribute("results",results);	
-
-		return;
-		}
-		else
-		{
-		
-		res.sendRedirect(AdminRandomTexts") ;
-		return;
-		}
-
-		}*/
+	
 
 		if (req.getParameter("edit")!=null)	{
 			String options = IMCServiceRMI.parseExternalDoc(imcServer, null, OPTION_LINE , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
-
-			//öppna filen med detta namnet
-			String openFile = IMCServiceRMI.getFortune(imcServer,whichFile + ".txt") ;
-			BufferedReader readFile = new BufferedReader( new StringReader( openFile ) );
-
-			String line = readFile.readLine();
-			//out.println("Line: " + line);
-
-			int row = 0;
-			while ( line!=null && !(line.length()<=12) ){
-				String fullLine = line.replace('#',' ');
-				
-				options = options + "<option value=\""  + row + "\" > " + fullLine + "</option>";
-				lines.put( new Integer(row) , fullLine );
-				line = readFile.readLine();
-				row++;
+			
+			StringBuffer buff = new StringBuffer();
+			List lines = IMCServiceRMI.getQuoteList(imcServer, whichFile+".txt");
+			Iterator iter = lines.iterator();
+			int counter = 0;
+			SimpleDateFormat dateForm = new SimpleDateFormat("yyMMdd");
+			while (iter.hasNext()) {
+				Quote quote = (Quote) iter.next();
+				DateRange dates = quote.getDateRange();
+				buff.append("<option value=\""  + counter++ + "\" > "+dateForm.format(dates.getStartDate()) +" "+dateForm.format(dates.getEndDate())+" "+ quote.getText() + "</option>");
 			}
+							
 
 			String date1 = "";
 			String date2 = "";
@@ -200,10 +153,9 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 			values.add("#file#");
 			values.add(whichFile);
 			values.add("#options#");
-			values.add(options);
+			values.add(buff.toString());
 			
 			out.print(IMCServiceRMI.parseExternalDoc(imcServer, values, HTML_TEMPLATE_ADMIN , user.getLangPrefix(), DOCTYPE_FORTUNES+""));
-
 			session.setAttribute("lines",lines);
 			return;
 		}

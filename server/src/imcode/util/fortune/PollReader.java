@@ -14,7 +14,6 @@ import imcode.util.Parser ;
 import imcode.util.DateRange ;
 
 public class PollReader {
-
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
 

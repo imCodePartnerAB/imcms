@@ -9,60 +9,78 @@ import imcode.util.* ;
    with possible answers, each with an answercount.
 **/
 public class Poll {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
-    private DateRange dateRange ;
+	private DateRange dateRange ;
 
-    private String question ;
-    private Map answers = Collections.synchronizedMap(new HashMap()) ;
+	private String question ;
+	private Map answers = Collections.synchronizedMap(new HashMap()) ;
 
-    public Poll(String question) {
-	this.question = question ;
-    }
-
-    // Add one answer.
-    public void addAnswer(String answer) {
-	Integer answerCount = (Integer)answers.get(answer) ;
-	if (answerCount == null) {
-	    answers.put(answer,new Integer(1)) ;
-	} else {
-	    answers.put(answer, new Integer(answerCount.intValue() + 1)) ; 
+	public Poll(String question)
+	{
+		this.question = question ;
 	}
-    } ;
 
-    public void removeAnswer(String answer) {
-	Integer answerCount = (Integer)answers.get(answer) ;
-	if (answerCount != null) {
-	    if (answerCount.intValue() > 0) {
-		answers.put(answer, new Integer(answerCount.intValue() - 1)) ; 
-	    } else {
-		answers.remove(answer) ;
-	    }
+	// Add one answer.
+	public void addAnswer(String answer)
+	{
+		Integer answerCount = (Integer)answers.get(answer) ;
+		if (answerCount == null)
+		{
+			answers.put(answer,new Integer(1)) ;
+		}
+		else
+		{
+			answers.put(answer, new Integer(answerCount.intValue() + 1)) ; 
+		}
+	} 
+
+	public void removeAnswer(String answer)
+	{
+		Integer answerCount = (Integer)answers.get(answer) ;
+		if (answerCount != null)
+		{
+			if (answerCount.intValue() > 0)
+			{
+				answers.put(answer, new Integer(answerCount.intValue() - 1)) ; 
+			}
+			else
+			{
+				answers.remove(answer) ;
+			}
+		}
+	} 
+
+	public int getAnswerCount(String answer)
+	{
+		Integer answerCount = (Integer)answers.get(answer) ;
+		return answerCount == null ? 0 : answerCount.intValue() ;
 	}
-    } ;
 
-    public int getAnswerCount(String answer) {
-	Integer answerCount = (Integer)answers.get(answer) ;
-	return answerCount == null ? 0 : answerCount.intValue() ;
-    }
+	public void setAnswerCount(String answer, int count)
+	{
+		answers.put(answer,new Integer(count)) ;
+	}
 
-    public void setAnswerCount(String answer, int count) {
-	answers.put(answer,new Integer(count)) ;
-    }
+	public DateRange getDateRange()
+	{
+		return dateRange ;
+	}
 
-    public DateRange getDateRange() {
-	return dateRange ;
-    }
+	public void setDateRange(DateRange dateRange)
+	{
+		this.dateRange = dateRange ;
+	}
 
-    public void setDateRange(DateRange dateRange) {
-	this.dateRange = dateRange ;
-    }
+	public String getQuestion()
+	{
+		return question ;
+	}
 
-    public String getQuestion() {
-	return question ;
-    }
-
-    public void setQuestion(String question) {
-	this.question = question ;
-    }
+	public void setQuestion(String question)
+	{
+		this.question = question ;
+	}
 
 }

@@ -1,1 +1,1 @@
-<option value=\"No_Choice\" selected>-- V&auml;lj Rad --</option>
+<option value="No_Choice" selected>-- V&auml;lj Rad --</option>
