@@ -1083,7 +1083,7 @@ public class AdminUserProps extends Administrator {
             // if we are processing data from a admin template and
             // if user isSuperadmin or
             // isUseradmin and not is going to change his own data
-            // then we have to take care of userroles and ReadRunner data
+            // then we have to take care of userroles
             if ( null == req.getParameter( "userTemplate" )
                  && ( ( user.isSuperAdmin() || user.isUserAdmin() && user.getId() != userToChange.getId() ) ) ) {
 
