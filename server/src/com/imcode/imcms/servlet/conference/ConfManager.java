@@ -2,6 +2,8 @@ package com.imcode.imcms.servlet.conference;
 
 import imcode.external.diverse.MetaInfo;
 import imcode.server.user.UserDomainObject;
+import imcode.server.IMCServiceInterface;
+import imcode.server.ApplicationServer;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -24,6 +26,7 @@ public class ConfManager extends Conference {
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         MetaInfo.Parameters params = MetaInfo.getParameters( req );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         int testMetaId = params.getMetaId();
@@ -58,9 +61,6 @@ public class ConfManager extends Conference {
         // ********* VIEW ********
         if ( action.equalsIgnoreCase( "VIEW" ) ) {
 
-            // Lets get userparameters
-            String userId = "" + user.getId();
-
             // Lets detect which type of user we got
             String loginType = user.getLoginType();
 
@@ -68,7 +68,11 @@ public class ConfManager extends Conference {
             // We got 3 logintypes: "Extern"=web users, "ip_access"= people from a certain ip nbr
             // and "verify" = people who has logged into the system
 
-            if ( !loginType.equalsIgnoreCase( "VERIFY" ) ) {
+
+            // lets verify that the user is a member of this conference
+            boolean foundUserInConf = userIsMemberOfConference(params.getMetaId(), user.getId(), imcref );
+
+            if ( !loginType.equalsIgnoreCase( "VERIFY" ) || !foundUserInConf ) {
                 // Lets store  the standard metavalues in his session object
                 HttpSession session = req.getSession( false );
                 if ( session != null ) {
@@ -87,7 +91,7 @@ public class ConfManager extends Conference {
             log( "Ok, användaren har loggat in, förbered honom för konferensen" );
             //  Lets update the users sessionobject with a with a ok login to the conference
             //	Send him to the manager with the ability to get in
-            if ( !super.prepareUserForConf( req, res, params, userId ) ) {
+            if ( !super.prepareUserForConf( req, res, params, user ) ) {
                 log( "Error in prepareUserFor Conf" );
             }
 

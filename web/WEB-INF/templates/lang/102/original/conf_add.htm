@@ -21,7 +21,7 @@ function FocusField() {
 <body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 <table width="320" cellpadding="0" cellspacing="0" border="0">
   <tr> 
-    <td width="285" valign="middle" bgcolor="#333999" height="20"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;&nbsp;<? templates/sv/conf/original/Conf_Add.htm/1001 ?></font> </td>
+    <td width="285" valign="middle" bgcolor="#333999" height="20"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;&nbsp;<b><? templates/sv/conf/original/Conf_Add.htm/1001 ?>:&nbsp;#CURRENT_FORUM_NAME#</b></font> </td>
     <td width="35" bgcolor="#333999">&nbsp; </td>
   </tr>
   <tr> 
@@ -31,8 +31,8 @@ function FocusField() {
 <form method="post" action="#SERVLET_URL#ConfAdd" target=_parent name="NewMsgForm">
   <table border=0 width="270" cellpadding="0" cellspacing="0">
     <tr> 
-      <td colspan=2 valign=Top>&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><font color="#000000"><? templates/sv/conf/original/Conf_Add.htm/1002 ?>
-        &nbsp;&nbsp;<font size="1"><? templates/sv/conf/original/Conf_Add.htm/2 ?></font></font></font></td>
+      <td colspan=2 valign=Top>&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><font color="#000000">#ADD_TYPE_HEADER#
+        &nbsp;&nbsp;<font size="1"><? templates/sv/conf/original/Conf_Add.htm/2 ?>&nbsp;&nbsp; #FIRST_NAME# #LAST_NAME#</font></font></font></td>
     </tr>
     <tr> 
       <td valign=Top colspan=2> <br>

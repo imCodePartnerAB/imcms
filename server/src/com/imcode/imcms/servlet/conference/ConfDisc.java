@@ -78,6 +78,12 @@ public class ConfDisc extends Conference {
         // Lets get serverinformation
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
+        
+        if(req.getParameter("Quit") !=null){
+            res.sendRedirect( "BackDoc" );
+            return;
+        }
+
         // ********* UPDATE DISCUSSIONS ********
         if ( req.getParameter( "UPDATE" ) != null ) {
             // log("NU uppdaterar vi discussions") ;

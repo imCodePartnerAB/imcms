@@ -812,11 +812,6 @@ WHERE usr.user_id = @wanted_user_id
 --AND c.meta_id = @meta_id
 
 
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
 
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -825,114 +820,53 @@ GO
 
 
 
+SET QUOTED_IDENTIFIER OFF
+GO
+SET ANSI_NULLS ON
+GO
 
 
 /* 
 
-This procedure is used when we shall add a new user to the  conf_users table
+This procedure is used when we will add a new user to the conf_users table
 
 */
 
 CREATE PROCEDURE A_ConfUsersAdd
 
 	@user_id int,
-
 	@conf_id int,
-
 	@aFirstName char(25),
-
 	@aLastName char(30)
 
 AS
 
+declare @lastLoginDate datetime
 
+-- set lastLoginDate to the oldest date for this conference to let a new user see the "new" icon the first time he log in.
+select @lastLoginDate =
+	(select min(create_date)
+ 	from A_discussion , A_conf_forum
+	where conf_id = @conf_id)
 
 -- Lets check if the user is a member of any other conference or if this is the first one
-
 IF (NOT EXISTS 	( SELECT user_id
-
-			FROM A_conf_users
-
-			WHERE user_id = @user_id )   ) 
+		        FROM A_conf_users
+			    WHERE user_id = @user_id )   )
 
 BEGIN
 
--- Ok, Lets add him to the conference
-
-	INSERT INTO A_CONF_USERS(  user_id, first_name, last_name )
-
-	VALUES (@user_id, @aFirstName, @aLastName )
+    -- Ok, Lets add him to the conference
+    INSERT INTO A_CONF_USERS(  user_id, first_name, last_name )
+    VALUES (@user_id, @aFirstName, @aLastName )
 
 END
 
-
-
--- Lets link tthe user to the conference in CONF_USERS_CROSSREF
+-- Lets link the user to the conference in CONF_USERS_CROSSREF
 
 INSERT INTO A_CONF_USERS_CROSSREF ( conf_id,  user_id, last_login_date )
+VALUES ( @conf_id, @user_id,  @lastLoginDate )
 
-VALUES ( @conf_id, @user_id,  GETDATE() )
-
-
-
-
-
-
-
-
-
-/*
-
-CREATE PROCEDURE ConfUsersAdd
-
- 
-
-This procedure is used when we shall add a new user to the  conf_users table
-
-
-
-	@user_id int,
-
-	@conf_id int,
-
-	@aFirstName char(25),
-
-	@aLastName char(30)
-
-AS
-
--- Lets check if the user is a member of any other conference or if this is the first one
-
-IF (NOT EXISTS 	( SELECT user_id
-
-			FROM conf_users
-
-			WHERE user_id = @user_id )   ) 
-
-BEGIN
-
--- Ok, Lets add him to the conference
-
-	INSERT INTO CONF_USERS(  user_id, first_name, last_name )
-
-	VALUES (@user_id, @aFirstName, @aLastName )
-
-END
-
--- Lets link tthe user to the conference in CONF_USERS_CROSSREF
-
-INSERT INTO CONF_USERS_CROSSREF ( conf_id,  user_id, last_login_date )
-
-VALUES ( @conf_id, @user_id,  GETDATE() )
-
-*/
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
 
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -941,22 +875,16 @@ GO
 
 
 
-
+SET QUOTED_IDENTIFIER OFF
+GO
+SET ANSI_NULLS ON
+GO
 
 CREATE PROCEDURE A_ConfUsersGetReplyDate AS
-
-
-
-
 
 SELECT * FROM A_conf_users
 
 
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
 
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -964,7 +892,10 @@ SET ANSI_NULLS ON
 GO
 
 
-
+SET QUOTED_IDENTIFIER OFF
+GO
+SET ANSI_NULLS ON
+GO
 
 
 CREATE PROCEDURE A_ConfUsersGetReplyOrder

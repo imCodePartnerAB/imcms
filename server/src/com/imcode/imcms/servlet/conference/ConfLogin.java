@@ -10,11 +10,13 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.util.Utility;
 import imcode.util.Html;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Vector;
@@ -164,6 +166,7 @@ public class ConfLogin extends Conference {
 
         // Lets get serverinformation
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        ImcmsAuthenticatorAndUserMapper userMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper();
 
         // ************* VERIFY LOGIN TO CONFERENCE **************
         // Ok, the user wants to login
@@ -177,9 +180,8 @@ public class ConfLogin extends Conference {
             String userName = lparams.getProperty( "LOGIN_NAME" );
             String password = lparams.getProperty( "PASSWORD" );
 
-            // Validate loginparams against Janus DB
+            // Validate loginparams against DB
             String userId = imcref.sqlProcedureStr( "GetUserIdFromName", new String[]{userName, password} );
-            //log("Användarens id var: " + userId) ;
 
             // Lets check that we the found the user. Otherwise send unvailid username password
             if ( userId == null ) {
@@ -187,51 +189,44 @@ public class ConfLogin extends Conference {
                 ConfError err = new ConfError( req, res, header, 50, LOGIN_ERROR_HTML, user );
                 log( header + err.getErrorMsg() );
                 return;
+            }else{
+                user =  userMapper.getUser(Integer.parseInt(userId));
             }
 
             // Ok, we found the user, lets verify that the user is a member of this conference
-            // MemberInConf	@meta_id int,	@user_id int
-            String foundUserInConf = imcref.sqlProcedureStr( "A_MemberInConf", new String[]{
-                ""+params.getMetaId(), ""+userId
-            } );
+            boolean foundUserInConf = userIsMemberOfConference(params.getMetaId(), user.getId(), imcref );
 
             // Ok, The user is not a user in this conference, lets check if he has
             // the right to be a member.
             boolean okToLogIn = false;
-            if ( foundUserInConf == null ) {
+            if ( !foundUserInConf  ) {
                 log( "Ok, the user is not a member here, lets find out if he could be" );
                 DocumentMapper documentMapper = imcref.getDocumentMapper();
                 DocumentDomainObject document = documentMapper.getDocument( params.getMetaId() );
-                okToLogIn = documentMapper.userHasAtLeastDocumentReadPermission( user, document);
+                addAllConferenceSelfRegRolesToUser(user, params.getMetaId()+"", imcref);
+                //renew the user object
+                user = userMapper.getUser(Integer.parseInt(user.getId()+""));
+                okToLogIn = documentMapper.userHasMoreThanReadPermissionOnDocument( user, document);
                 log( "Ok, let the user in and let him be a member: " + okToLogIn );
             }
 
-            if ( foundUserInConf == null && okToLogIn == false ) {
+            if ( !foundUserInConf  && !okToLogIn ) {
                 String header = "ConfLogin servlet.";
                 ConfError err = new ConfError( req, res, header, 50, LOGIN_ERROR_HTML, user );
                 log( header + err.getErrorMsg() + "\n the user exists, but is not a member in this conference" );
                 return;
-            } else {
-                // Ok, The user is here for the first time, and he has the rights to go in
-                // Lets update his user object
-                //log("Lets update the users userObject") ;
-                String firstName = imcref.sqlProcedureStr( "GetUserNames", new String[]{userId, "1"} );
-                String lastName = imcref.sqlProcedureStr( "GetUserNames", new String[]{userId, "2"} );
-                if ( firstName == null || lastName == null ) {
-                    String header = "ConfLogin servlet.";
-                    ConfError err = new ConfError( req, res, header, 62, LOGIN_ERROR_HTML, user );
-                    log( header + err.getErrorMsg() + "\n the user exists, but is not a member in this conference" );
-                    return;
-                }
-                user.setId( Integer.parseInt( userId ) );
-                user.setFirstName( firstName );
-                user.setLastName( lastName );
             }
 
-            //  Lets update the users sessionobject with a a ok login to the conference
+            // Valid login.  Make a note in the session object.
+            // Get session
+            HttpSession session = req.getSession( true );
+            session.setAttribute( "logon.isDone", user );  // just a marker object
+            user.setLoginType( "verify" );
+
+            //  Lets update the users sessionobject with a ok login to the conference
             //	Send him to the manager with the ability to get in
             log( "Ok, nu förbereder vi användaren på att logga in" );
-            if ( !super.prepareUserForConf( req, res, params, userId ) ) {
+            if ( !super.prepareUserForConf( req, res, params, user ) ) {
                 log( "Error in prepareUserFor Conf" );
             }
             return;
@@ -258,15 +253,8 @@ public class ConfLogin extends Conference {
 
             // Lets validate the phonenbr. Error message will be generated in method
             boolean result = true;
-            try {
-                String[] arr = {
-                    userParams.getProperty( "country_code" ), userParams.getProperty( "area_code" ),
-                    userParams.getProperty( "local_code" )
-                };
-
-                for ( int i = 0; i < arr.length; i++ ) {
-                    Integer.parseInt( arr[i] );
-                }
+            try{
+               Integer.parseInt( userParams.getProperty( "phone" ).replaceAll("[\\- ]", "") );
 
             } catch ( NumberFormatException e ) {
                 // log(e.getMessage()) ;
@@ -280,6 +268,7 @@ public class ConfLogin extends Conference {
             if ( result == false ) {
                 return;
             }
+
 
             // Lets validate the userparameters before the sql
             userParams = super.verifyForSql( userParams );
@@ -321,26 +310,7 @@ public class ConfLogin extends Conference {
 
             // Ok, lets get the roles the user will get when he is selfregistering  and
             // add those roles to the user
-            String[] sqlAnswer = imcref.sqlProcedure( "A_SelfRegRoles_GetAll2", new String[]{"" + params.getMetaId()} );
-
-            // First, get the langprefix
-            String langPrefix = user.getLanguageIso639_2();
-
-            if ( sqlAnswer != null ) {
-                for ( int i = 0; i < sqlAnswer.length; i += 2 ) {
-                    String aRoleId = sqlAnswer[i].toString();
-                    // Lets check that the role id is still valid to use against
-                    // the host system
-
-                    String found = imcref.sqlProcedureStr( "RoleCheckConferenceAllowed", new String[]{
-                        langPrefix, aRoleId
-                    } );
-
-                    if ( found != null ) {
-                        imcref.sqlUpdateProcedure( "AddUserRole", new String[]{newUserId, aRoleId} );
-                    }
-                }
-            }
+            addAllConferenceSelfRegRolesToUser(user, params.getMetaId()+"", imcref );
 
             // Ok, Lets add the users roles into db, first get the role his in the system with
             String userId = "" + user.getId();
@@ -486,9 +456,7 @@ public class ConfLogin extends Conference {
                                  ? "" : ( req.getParameter( "country_council" ) );
         String email = ( req.getParameter( "email" ) == null ) ? "" : ( req.getParameter( "email" ) );
 
-        String cCode = ( req.getParameter( "country_code" ) == null ) ? "" : ( req.getParameter( "country_code" ) );
-        String aCode = ( req.getParameter( "area_code" ) == null ) ? "" : ( req.getParameter( "area_code" ) );
-        String lCode = ( req.getParameter( "local_code" ) == null ) ? "" : ( req.getParameter( "local_code" ) );
+        String phone = ( req.getParameter( "phone" ) == null ) ? "" : ( req.getParameter( "phone" ) );
 
         String active = ( req.getParameter( "active" ) == null ) ? "1" : ( req.getParameter( "active" ) );
 
@@ -519,15 +487,6 @@ public class ConfLogin extends Conference {
             email = "--";
         }
 
-        if ( cCode.trim().equals( "" ) ) {
-            cCode = "00";
-        }
-        if ( aCode.trim().equals( "" ) ) {
-            aCode = "00";
-        }
-        if ( lCode.trim().equals( "" ) ) {
-            lCode = "00";
-        }
 
         userInfo.setProperty( "login_name", login_name.trim() );
         userInfo.setProperty( "password1", password1.trim() );
@@ -543,10 +502,7 @@ public class ConfLogin extends Conference {
         userInfo.setProperty( "country", country.trim() );
         userInfo.setProperty( "country_council", country_council.trim() );
         userInfo.setProperty( "email", email.trim() );
-
-        userInfo.setProperty( "country_code", cCode.trim() );
-        userInfo.setProperty( "area_code", aCode.trim() );
-        userInfo.setProperty( "local_code", lCode.trim() );
+        userInfo.setProperty( "phone", phone.trim() );
 
         userInfo.setProperty( "active", active.trim() );
 

@@ -207,7 +207,7 @@ public class Conference extends HttpServlet {
      */
 
     boolean prepareUserForConf( HttpServletRequest req, HttpServletResponse res,
-                                MetaInfo.Parameters params, String loginUserId ) throws IOException {
+                                MetaInfo.Parameters params, UserDomainObject user ) throws IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
         // Lets get userparameters
@@ -215,54 +215,24 @@ public class Conference extends HttpServlet {
 
         // Ok, Lets prepare the user for the conference.
         // Lets get his lastLoginDate and update it to today
-        String lastLoginDate = imcref.sqlProcedureStr( "A_GetLastLoginDate2", new String[]{metaId, loginUserId} );
-        String firstName;
-        String lastName;
+        String lastLoginDate = imcref.sqlProcedureStr( "A_GetLastLoginDate2", new String[]{metaId, ""+user.getId()} );
 
-        // Ok, if lastlogindate is null, then it has to be the a user who has logged in
-        // to the system and comes here to the conference for the first time
-        // Lets add the user to conference db.
+        // If lastlogindate is null, then it has to be a user who has logged in
+        // to the system and the conference for the first time so lets add the user to conference db.
         if ( lastLoginDate == null ) {
             // Ok, det är första gången användaren är här.
-
-            UserDomainObject user = Utility.getLoggedOnUser( req );
-            firstName = user.getFirstName();
-            lastName = user.getLastName();
-
-            imcref.sqlUpdateProcedure( "A_ConfUsersAdd", new String[]{loginUserId, metaId, firstName, lastName} );
-
-            // Ok, try to get the lastLoginDate now and validate it
-            lastLoginDate = imcref.sqlProcedureStr( "A_GetLastLoginDate2", new String[]{} );
-
-            if ( lastLoginDate == null ) {
-                String header = "ConfManager servlet. ";
-                ConfError err = new ConfError( req, res, header, 30, user );
-                log( header + err.getErrorMsg() );
-                return false;
-            }	// End lastLoginCheck
-            // Exta add 2000-09-14, Lets set the lastlogindate in the users
-            // object to an old date so all discussions will have a new flag
-            // so all flags will be shown
-            lastLoginDate = "1997-01-01 00:00";
-            // log("Nytt last login date:" + lastLoginDate) ;
-
-        } else {
-            // Ok, the user has logged in to the conference by the loginpage
-            // for the conference, he has a logindate. Lets get his names
-            // Lets get the users first and last names
-            firstName = imcref.sqlProcedureStr( "A_GetConfLoginNames", new String[]{metaId, loginUserId, "1"} );
-            lastName = imcref.sqlProcedureStr( "A_GetConfLoginNames", new String[]{metaId, loginUserId, "2"} );
-        } // end else
+            imcref.sqlUpdateProcedure( "A_ConfUsersAdd", new String[]{""+user.getId(), metaId, ""+user.getFirstName(), ""+user.getLastName()} );
+        }
 
         // Lets update his logindate and usernames
-        imcref.sqlUpdateProcedure( "A_ConfUsersUpdate", new String[]{metaId, loginUserId, firstName, lastName} );
-        // Lets store some values in his session object
+        imcref.sqlUpdateProcedure( "A_ConfUsersUpdate", new String[]{metaId, ""+user.getId(), ""+user.getFirstName(), ""+user.getLastName()} );
+        // Lets store some values in his session  object
         HttpSession session = req.getSession( false );
         if ( session != null ) {
             setSessionAttributes( session, params );
             session.setAttribute( "Conference.viewedDiscList", new Properties() );
             session.setAttribute( "Conference.last_login_date", lastLoginDate );
-            session.setAttribute( "Conference.user_id", loginUserId );
+            session.setAttribute( "Conference.user_id", ""+user.getId() );
             session.setAttribute( "Conference.disc_index", "0" );
 
 
@@ -524,4 +494,36 @@ public class Conference extends HttpServlet {
         session.setAttribute( "Conference.meta_id", "" + params.getMetaId() );
     }
 
+    /** verify that the user is a member of a conference
+    */
+    boolean userIsMemberOfConference(int metaId, int userId, IMCServiceInterface imcref){
+        String foundId = imcref.sqlProcedureStr( "A_MemberInConf", new String[]{
+        ""+metaId, ""+userId });
+        if((""+userId).equals(foundId)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    void addAllConferenceSelfRegRolesToUser (UserDomainObject user, String metaId, IMCServiceInterface imcref ){
+
+        // Ok, lets get the roles the user will get when he is selfregistering  and
+        // add those roles to the user
+        String[] selfRegRolesIds = imcref.sqlProcedure( "A_SelfRegRoles_GetAll2", new String[]{"" + metaId} );
+
+        if ( selfRegRolesIds != null ) {
+            for ( int i = 0; i < selfRegRolesIds.length; i += 2 ) {
+                String aRoleId = selfRegRolesIds[i].toString();
+                // Lets check that the role id is still valid to use against
+                // the host system
+                String found = imcref.sqlProcedureStr( "RoleCheckConferenceAllowed", new String[]{
+                    user.getLanguageIso639_2(), aRoleId } );
+
+                if ( found != null ) {
+                    imcref.sqlUpdateProcedure( "AddUserRole", new String[]{user.getId()+"", aRoleId} );
+                }
+            }
+        }
+    }
 } // End class
