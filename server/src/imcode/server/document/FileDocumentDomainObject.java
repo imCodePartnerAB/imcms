@@ -42,6 +42,9 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     }
 
     private FileDocumentFile cloneFile( FileDocumentFile file ) {
+        if (null == file) {
+            return null ;
+        }
         FileDocumentFile fileClone;
         try {
             fileClone = (FileDocumentFile)file.clone();
@@ -62,8 +65,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     }
 
     public FileDocumentFile getFile( String fileId ) {
-        FileDocumentFile file = (FileDocumentFile)files.get( fileId );
-        return cloneFile( file );
+        return cloneFile( (FileDocumentFile)files.get( fileId ) );
     }
 
     public FileDocumentFile removeFile( String fileId ) {

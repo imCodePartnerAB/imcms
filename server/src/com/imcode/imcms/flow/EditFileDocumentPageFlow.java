@@ -75,10 +75,7 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
         FileDocumentDomainObject.FileDocumentFile file = fileDocument.getFile( selectedFileId );
         boolean isNewFile = null == file;
         if ( isNewFile ) {
-            if ( null == unfinishedNewFile ) {
-                unfinishedNewFile = new FileDocumentDomainObject.FileDocumentFile();
-            }
-            file = this.unfinishedNewFile ;
+            file = getUnfinishedNewFile();
         } else {
             unfinishedNewFile = null ;
         }
@@ -162,12 +159,16 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
     private FileDocumentEditPage createFileDocumentEditPage( String fileId ) {
         FileDocumentDomainObject.FileDocumentFile file = ( (FileDocumentDomainObject)document ).getFile( fileId );
         if ( null == file ) {
-            if ( null == unfinishedNewFile ) {
-                unfinishedNewFile = new FileDocumentDomainObject.FileDocumentFile();
-            }
-            file = unfinishedNewFile;
+            file = getUnfinishedNewFile();
         }
         return new FileDocumentEditPage( mimeTypeRestriction, fileId, file );
+    }
+
+    private FileDocumentDomainObject.FileDocumentFile getUnfinishedNewFile() {
+        if ( null == unfinishedNewFile ) {
+            unfinishedNewFile = new FileDocumentDomainObject.FileDocumentFile();
+        }
+        return unfinishedNewFile;
     }
 
     protected void dispatchToFirstPage( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
