@@ -27,7 +27,7 @@
     <td><img src="<%= imagesPath %>/1x1.gif" width="1" height="3"><br>
     <%= document.getDocumentType().getName().toLocalizedString(request) %></td>
     <td><img src="<%= imagesPath %>/1x1.gif" width="1" height="3"><br>
-        <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId()%>"<%
+        <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId()%>" target="<%= document.getTarget() %>"<%
 				%> title="GetDoc?meta_id=<%= document.getId() %>"><%= StringEscapeUtils.escapeHtml(document.getHeadline()) %></a><br>
         <%= StringEscapeUtils.escapeHtml(document.getMenuText() ) %></td>
     <td align="left"><img src="<%= imagesPath %>/1x1.gif" width="1" height="3">

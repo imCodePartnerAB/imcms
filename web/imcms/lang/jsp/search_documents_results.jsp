@@ -76,7 +76,7 @@
 							} %></td>
                             <td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br><%= document.getDocumentType().getName().toLocalizedString(request)%></td>
 							<td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br><%
-							%><a href="GetDoc?meta_id=<%= document.getId() %>"<%
+							%><a href="GetDoc?meta_id=<%= document.getId() %>" target="<%= document.getTarget() %>"<%
 								%><%= (user.canEditDocumentInformationFor(document)) ? " title=\"GetDoc?meta_id=" + document.getId() + "\"" : "" %>><%
 								%><%= document.getHeadline() %><%
 							%></a></td><%
