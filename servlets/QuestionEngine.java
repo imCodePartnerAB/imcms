@@ -24,8 +24,8 @@ public class QuestionEngine extends HttpServlet
 		
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
-		File fortune_path = Utility.getDomainPrefPath("fortune_path",host);
-			
+		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
+		
 		//get parameters
 		String inFile = req.getParameter("file");
 
@@ -60,7 +60,7 @@ public class QuestionEngine extends HttpServlet
 				//get todays date
 				Date date = new Date();
 		
-				if  ( ( date1.before(date)||date1.equals(date) ) && ( date2.after(date)||date2.equals(date) ))
+				if( ( date1.before(date) || (dateF.format(date1)).equals(dateF.format(date))  ) && ( date2.after(date) || (dateF.format(date2)).equals(dateF.format(date)) ) )
 				{
 					question = tokens.nextToken();
 				}
@@ -117,9 +117,6 @@ public class QuestionEngine extends HttpServlet
 		BufferedReader readFile = new BufferedReader( new StringReader( IMCServiceRMI.getFortune(imcServer,inFile + ".txt") ) );
 		SimpleDateFormat dateF = new SimpleDateFormat("yyMMdd");
 	
-		//rownr
-	//	int row = -1;	
-		
 		//the dates
 		Date date1 = new Date(2);
 		Date date2 = new Date(1);
@@ -130,8 +127,8 @@ public class QuestionEngine extends HttpServlet
 		String theQuestion = "Ingen text kan visas";
 		
 		String line = readFile.readLine();
-		
-		while ( ( line != null) && !( ( date1.before(date)||date1.equals(date) ) && ( date2.after(date)||date2.equals(date) ) ) )
+
+		while ( (line != null) && !( ( date1.before(date) || ( (dateF.format(date1)).equals(dateF.format(date)) ) ) && ( date2.after(date)  || ( (dateF.format(date2)).equals(dateF.format(date)) ) ) ) )
 		{	
 		
 			StringTokenizer tokens = new StringTokenizer(line,"#");
@@ -145,13 +142,11 @@ public class QuestionEngine extends HttpServlet
 		
 			theQuestion = tokens.nextToken();
 		
-		//	row++;
-			
 			line = readFile.readLine();
 		
 		}
 		//update svarfilen
-		File fortune_path = Utility.getDomainPrefPath("fortune_path",host);
+		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
 		File file = new File(fortune_path,inFile + "current.txt");
 		BufferedWriter fileW = new BufferedWriter( new FileWriter(file) );
 		fileW.write(dateF.format(date1) + "#" + dateF.format(date2) +"#" + theQuestion + "#" +"ja: 0" + "#" + "nej: 0" + "#"); 
