@@ -8,13 +8,15 @@ Version 1.9.0:
 * The link checker will now also check linked images and urls in text-fields.
 * "Administer conferences" functionality moved to "List new/updated pages".
 * The session counter now counts sessions, not logins.
-  This means that each user is only counted once per browser session,
+  This means that each visitor is only counted once per browser session,
   instead of once when entering the site and then again when logging in.
 
 = Of interest to template creators:
 
 * New template tag: <?imcms:contextpath?> will be replaced by the "context path" of the webapp.
-  (For example, "/imcms" or "".)
+  The context path is the root path to the webapp, usually the name of the webapp preceded by a slash,
+  for example "/imcms". This is useful when one wants to construct an absolute URL.
+  Example: <img src="<?imcms:contextpath?>/images/imCMSpower.gif" alt="Powered by imCMS">
 
 = Of interest to administrators:
 
@@ -48,7 +50,7 @@ Version 1.9.0:
 = Of interest to developers:
 
 * Cleaned up the file organization in the project.
-* Renamed all the ant-targets using more consitent names.
+* Renamed all the ant-targets using more consistent names.
 * The API now has its own connection pool,
   so developers using the API can't accidentally starve the system of connections.
 * Jakarta Velocity (http://jakarta.apache.org/velocity/) can now be used in admintemplates and JSP-pages.
