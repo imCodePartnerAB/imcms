@@ -3,10 +3,14 @@ package imcode.server.user;
 import imcode.server.document.TemplateGroupDomainObject;
 
 import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.Arrays;
+import java.util.Set;
 
 public class UserDomainObject extends Hashtable {
 
-   UserDomainObject() {
+
+    UserDomainObject() {
    }
 
    /** Good stuff **/
@@ -37,6 +41,7 @@ public class UserDomainObject extends Hashtable {
    private String loginType;
 
    private boolean imcmsExternal = false;
+   private Set roles;
 
    /**
     get user-id
@@ -380,4 +385,16 @@ public class UserDomainObject extends Hashtable {
    public void setImcmsExternal( boolean external ) {
       this.imcmsExternal = external;
    }
+
+    public void setRoles( RoleDomainObject[] rolesForUser ) {
+        this.roles = new HashSet(Arrays.asList(rolesForUser)) ;
+    }
+
+    public boolean hasRole(RoleDomainObject role) {
+        return this.roles.contains(role) ;
+    }
+
+    public RoleDomainObject[] getRoles() {
+        return (RoleDomainObject[])roles.toArray( new RoleDomainObject[roles.size()]) ;
+    }
 }

@@ -46,7 +46,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
 
 	int orderId = Integer.parseInt(dbData[0]) ;
 	int userId = Integer.parseInt(dbData[2]) ;
-	UserDomainObject user = imcref.getUserById(userId) ;
+        UserDomainObject user = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUser( userId ) ;
 	String datetimeStr = dbData[1] ;
 
 	ShoppingOrder theOrder = new ShoppingOrder() ;

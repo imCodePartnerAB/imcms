@@ -8,6 +8,7 @@ package imcode.server.document;
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -26,9 +27,7 @@ import org.apache.lucene.search.Query;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class DocumentIndex {
 
@@ -41,29 +40,29 @@ public class DocumentIndex {
         this.dir = dir;
     }
 
-    public DocumentDomainObject[] search( Query query ) throws IOException {
-        NDC.push( "search" );
+    public DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IOException {
         IndexReader indexReader = IndexReader.open( dir );
         IndexSearcher indexSearcher = new IndexSearcher( indexReader );
-        StopWatch searchStopWatch = new StopWatch() ;
+        StopWatch searchStopWatch = new StopWatch();
         searchStopWatch.start();
         Hits hits = indexSearcher.search( query );
-        searchStopWatch.stop();
-        log.debug("Search for "+query.toString()+" took " +searchStopWatch.getTime()+"ms.");
-        DocumentDomainObject[] result = new DocumentDomainObject[hits.length()];
+        log.debug( "Search for " + query.toString() + " took " + searchStopWatch.getTime() + "ms." );
+        List result = new ArrayList( hits.length() );
         StopWatch getDocumentStopWatch = new StopWatch();
         final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface()
                 .getDocumentMapper();
         for ( int i = 0; i < hits.length(); ++i ) {
             int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
             DocumentDomainObject document = getDocument( getDocumentStopWatch, documentMapper, metaId );
-            result[i] = document;
+            if ( documentMapper.hasAtLeastDocumentReadPermission( searchingUser, document ) ) {
+                result.add( document );
+            }
         }
-        logGetDocumentsStopWatch( getDocumentStopWatch, result.length );
+        log.debug("Search and result lookup took "+searchStopWatch.getTime()+"ms.") ;
+        logGetDocumentsStopWatch( getDocumentStopWatch, result.size() );
         indexSearcher.close();
         indexReader.close();
-        NDC.pop() ;
-        return result;
+        return (DocumentDomainObject[])result.toArray( new DocumentDomainObject[result.size()] );
     }
 
     public Query parseLucene( String queryString ) throws ParseException {
@@ -74,7 +73,7 @@ public class DocumentIndex {
     }
 
     public void indexAllDocuments() {
-        NDC.push("indexAll") ;
+        NDC.push("indexAllDocuments") ;
         try {
             IndexWriter indexWriter = new IndexWriter( dir, new WhitespaceLowerCaseAnalyzer(), true );
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -104,15 +103,17 @@ public class DocumentIndex {
             indexWriter.close();
         } catch ( Exception e ) {
             log.error( "Failed to index all documents", e );
+        } finally {
+            NDC.pop() ;
         }
-        NDC.pop() ;
     }
 
     private void logGetDocumentsStopWatch( StopWatch getDocumentStopWatch, int documentCount ) {
         long time = getDocumentStopWatch.getTime();
-        if (0 != documentCount) {
-            long millisecondsPerDocument = time / documentCount ;
-            log.debug( "Spent " + time + "ms ("+millisecondsPerDocument+"ms/document) fetching "+documentCount+" documents from the database." );
+        if ( 0 != documentCount ) {
+            long millisecondsPerDocument = time / documentCount;
+            log.debug( "Spent " + time + "ms (" + millisecondsPerDocument + "ms/document) fetching " + documentCount
+                       + " documents from the database." );
         }
     }
 
@@ -144,7 +145,7 @@ public class DocumentIndex {
     }
 
     private void addDocumentToIndex( DocumentDomainObject document, IndexWriter indexWriter ) throws IOException {
-        if (!document.isSearchDisabled()) {
+        if ( !document.isSearchDisabled() ) {
             Document indexDocument = createIndexDocument( document );
             indexWriter.addDocument( indexDocument );
         }
@@ -195,6 +196,15 @@ public class DocumentIndex {
         for ( int i = 0; i < documentKeywords.length; i++ ) {
             String documentKeyword = documentKeywords[i];
             indexDocument.add( unStoredKeyword( "keyword", documentKeyword ) );
+        }
+
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        String[][] parentDocumentAndMenuIds = documentMapper.getParentDocumentAndMenuIdsForDocument( document );
+        for ( int i = 0; i < parentDocumentAndMenuIds.length; i++ ) {
+            String parentId = parentDocumentAndMenuIds[i][0];
+            String menuId = parentDocumentAndMenuIds[i][1];
+            indexDocument.add( unStoredKeyword( "parent_id", parentId ) );
+            indexDocument.add( unStoredKeyword( "parent_menu_id", parentId + "_" + menuId ) );
         }
 
         return indexDocument;

@@ -20,10 +20,6 @@ public interface IMCServiceInterface {
     UserDomainObject verifyUser(String login, String password)
 	;
 
-    /** Get a user by user-id **/
-    UserDomainObject getUserById(int userId)
-	;
-
 
     /** Check if a user has a special admin role **/
     public boolean checkUserAdminrole ( int userId, int adminRole )
@@ -264,7 +260,7 @@ public interface IMCServiceInterface {
 
     DocumentMapper getDocumentMapper();
 
-    ImcmsAuthenticatorAndUserMapper getUserAndRoleMapper();
+    ImcmsAuthenticatorAndUserMapper getImcmsAuthenticatorAndUserAndRoleMapper();
 
     String getDefaultLanguageAsIso639_2();
 

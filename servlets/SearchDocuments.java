@@ -2,21 +2,19 @@
 import imcode.external.diverse.Html;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
-import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.SectionDomainObject;
-import imcode.server.document.WhitespaceLowerCaseAnalyzer;
 import imcode.server.document.DocumentIndex;
+import imcode.server.document.SectionDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -24,9 +22,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.io.IOException;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -62,9 +60,6 @@ public class SearchDocuments extends HttpServlet {
 
         //this is the params we can get from the browser
         String searchString = req.getParameter( "question_field" ) == null ? "" : req.getParameter( "question_field" );
-        String fromDoc = req.getParameter( "fromDoc" ) == null ? "1001" : req.getParameter( "fromDoc" );
-        String toDoc = req.getParameter( "toDoc" ) == null ? "-1" : req.getParameter( "toDoc" );
-        String sortBy = req.getParameter( "sortBy" ) == null ? "meta_headline" : req.getParameter( "sortBy" );
         String startNr = req.getParameter( "starts" ) == null ? "0" : req.getParameter( "starts" );
         String hitsAtTime = req.getParameter( "no_of_hits" ) == null ? "15" : req.getParameter( "no_of_hits" );
         String prev_search = req.getParameter( "prev_search" ) == null ? "" : req.getParameter( "prev_search" );
@@ -93,8 +88,6 @@ public class SearchDocuments extends HttpServlet {
         }
 
         String format = "yyyy-MM-dd HH:mm";
-        Date date = new Date();
-        java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat( format );
 
         //ok the rest of params we need to set up search sql
         DocumentDomainObject[] searchResults = null;
@@ -132,22 +125,10 @@ public class SearchDocuments extends HttpServlet {
             }
         } else {
 
-            searchResults = searchDocuments( user.getUserId(),
-                                             searchString,
+            searchResults = searchDocuments( searchString,
                                              docTypeIds,
-                                             Integer.parseInt( fromDoc ),
-                                             Integer.parseInt( toDoc ),
-                                             sortBy,
-                                             new Date(),
-                                             new Date(),
-                                             new Date(),
-                                             new Date(),
-                                             new Date(),
-                                             new Date(),
-                                             new Date(),
-                                             new Date(),
-                                             section, false,
-                                             true );
+                                             section,
+                                             user );
             session.setAttribute( "search_hit_list", searchResults );
         }
 
@@ -167,7 +148,7 @@ public class SearchDocuments extends HttpServlet {
             selected_hitsToShow = req.getParameter( "prev_hitsToShow" );
         }
 
-        for ( int i = 10; i < 101; i += 10 ) {
+        for ( int i = 10; i <= 1000; i *= 10 ) {
             noofhits_option_list += "<option value=\"" + i + "\" "
                                     + ( i == Integer.parseInt( selected_hitsToShow ) ? "selected" : "" )
                                     + ">"
@@ -194,7 +175,7 @@ public class SearchDocuments extends HttpServlet {
             selected_sectionToShow = req.getParameter( "prev_sectionToShow" );
         }
         if ( all_sections != null ) {
-            Vector onlyTemp = new Vector();
+            List onlyTemp = new ArrayList();
             for ( int i = 0; i < all_sections.length; i++ ) {
                 onlyTemp.add( all_sections[i] );
             }
@@ -245,7 +226,7 @@ public class SearchDocuments extends HttpServlet {
             }
             //now we need to count the number of hit-pages
             hitPages = hits / noOfHit;
-            if ( ( hits % noOfHit ) != 0 ) {
+            if ( hits % noOfHit != 0 ) {
                 hitPages++;
             }
 
@@ -254,7 +235,7 @@ public class SearchDocuments extends HttpServlet {
             //lets start with the prev button
             if ( prevButtonOn ) {
                 String[] prevArrOn = {
-                    "#nexOrPrev#", "0", "#startNr#", ( startNrInt - noOfHit ) + "", "#value#", prevTextTemplate
+                    "#nexOrPrev#", "0", "#startNr#", startNrInt - noOfHit + "", "#value#", prevTextTemplate
                 };
                 buttonsSetupHtml.append( Parser.parseDoc( ahrefTemplate, prevArrOn ) + "\n" );
             } else {
@@ -326,16 +307,14 @@ public class SearchDocuments extends HttpServlet {
         return;
     } // End of doPost
 
-    private DocumentDomainObject[] searchDocuments( int userId, String searchString, int[] docTypeIds, int fromDoc, int toDoc,
-                                                    String sortBy, Date created_start, Date create_stop, Date changed_start,
-                                                    Date changed_stop, Date activated_start, Date activated_stop,
-                                                    Date archived_start, Date archived_stop, SectionDomainObject section, boolean only_addable,
-                                                    boolean activate ) throws IOException {
-        DocumentIndex documentIndex = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentIndex() ;
+    private DocumentDomainObject[] searchDocuments( String searchString, int[] docTypeIds,
+                                                    SectionDomainObject section, UserDomainObject user )
+            throws IOException {
+        DocumentIndex documentIndex = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentIndex();
         BooleanQuery query = new BooleanQuery();
         if ( null != searchString && !"".equals( searchString.trim() ) ) {
             try {
-                Query textQuery = documentIndex.parseLucene( searchString ) ;
+                Query textQuery = documentIndex.parseLucene( searchString );
                 query.add( textQuery, true, false );
             } catch ( ParseException e ) {
                 log.warn( e.getMessage() + " in search-string " + searchString );
@@ -352,9 +331,7 @@ public class SearchDocuments extends HttpServlet {
             query.add( new TermQuery( new Term( "doc_type_id", "" + docTypeId ) ), true, false );
         }
 
-        log.debug( "Query: " + query.toString() );
-
-        return documentIndex.search( query ) ;
+        return documentIndex.search( query, user );
     }
 
     /**

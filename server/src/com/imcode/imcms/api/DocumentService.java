@@ -180,7 +180,7 @@ public class DocumentService {
 
     public Document[] search( SearchQuery query ) throws SearchException {
         try {
-            DocumentDomainObject[] documentDomainObjects = documentMapper.getDocumentIndex().search( query.getQuery() );
+            DocumentDomainObject[] documentDomainObjects = documentMapper.getDocumentIndex().search( query.getQuery(), securityChecker.getCurrentLoggedInUser() );
             Document[] documents = new Document[documentDomainObjects.length];
             for ( int i = 0; i < documentDomainObjects.length; i++ ) {
                 DocumentDomainObject documentDomainObject = documentDomainObjects[i];

@@ -482,35 +482,12 @@ public class DocumentMapper {
         return service.getText(document.getMetaId(), textFieldIndexInDocument);
     }
 
-    public boolean hasAtLeastDocumentReadPermission(int documentId, UserDomainObject user) {
-        int[] wantedPermissionSetIds = {
-            IMCConstants.DOC_PERM_SET_FULL,
-            IMCConstants.DOC_PERM_SET_RESTRICTED_1,
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2,
-            IMCConstants.DOC_PERM_SET_READ
-        };
-        return userIsSuperAdminOrHasPermissionSetId(documentId, user, wantedPermissionSetIds);
+    public boolean hasAtLeastDocumentReadPermission( UserDomainObject user, DocumentDomainObject document ) {
+        return userIsSuperAdminOrHasAtLeastPermissionSetId(document, user, IMCConstants.DOC_PERM_SET_READ);
     }
 
-    /**
-     * @param documentId
-     * @param user
-     * @return
-     * @deprecated Use hasAtLeastDocumentReadPermission(...) instead.
-     */
-    public boolean hasDocumentPermission(int documentId, UserDomainObject user) {
-        return hasAtLeastDocumentReadPermission(documentId, user);
-    }
-
-    public boolean hasEditPermission(int documentId, UserDomainObject user) {
-
-        int[] wantedPermissionSetIds = {
-            IMCConstants.DOC_PERM_SET_FULL,
-            IMCConstants.DOC_PERM_SET_RESTRICTED_1,
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2
-        };
-
-        return userIsSuperAdminOrHasPermissionSetId(documentId, user, wantedPermissionSetIds);
+    public boolean hasEditPermission(DocumentDomainObject document, UserDomainObject user) {
+        return userIsSuperAdminOrHasAtLeastPermissionSetId(document, user, IMCConstants.DOC_PERM_SET_RESTRICTED_2);
     }
 
     public boolean hasSharePermission(UserDomainObject user, int documentId) {
@@ -1202,8 +1179,8 @@ public class DocumentMapper {
         return textMap;
     }
 
-    private boolean userIsSuperAdminOrHasPermissionSetId(int documentId, UserDomainObject user,
-                                                         int[] wantedPermissionSetIds) {
+    private boolean userIsSuperAdminOrHasAtLeastPermissionSetId(DocumentDomainObject document, UserDomainObject user,
+                                                         int leastPrivilegedPermissionSetIdWanted) {
         boolean result = false;
 
         boolean userHasSuperAdminRole = imcmsAAUM.hasSuperAdminRole(user);
@@ -1212,12 +1189,15 @@ public class DocumentMapper {
             result = true;
         } else {
 
-            String[] perms = sprocGetUserPermissionSet(service, documentId, user.getUserId());
-
-            if (perms.length > 0) {
-                int userPermissionSetId = Integer.parseInt(perms[0]);
-
-                result = arrayContains(wantedPermissionSetIds, userPermissionSetId);
+            RoleDomainObject[] userRoles = user.getRoles() ;
+            Map rolesMappedToPermissionSetIds = document.getRolesMappedToPermissionSetIds() ;
+            for ( int i = 0; i < userRoles.length; i++ ) {
+                RoleDomainObject userRole = userRoles[i];
+                Integer permissionSetIdForUserRole = (Integer)rolesMappedToPermissionSetIds.get(userRole) ;
+                if (permissionSetIdForUserRole.intValue() <= leastPrivilegedPermissionSetIdWanted) {
+                    result = true ;
+                    break ;
+                }
             }
         }
         return result;
@@ -1225,6 +1205,11 @@ public class DocumentMapper {
 
     public DocumentIndex getDocumentIndex() {
         return documentIndex;
+    }
+
+    String[][] getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
+        String sqlStr = "SELECT meta_id,menu_sort FROM childs WHERE to_meta_id = ?" ;
+        return service.sqlQueryMulti( sqlStr, new String[] {""+document.getMetaId()} ) ;
     }
 
     public static void insertIntoUrlDocs(IMCServiceInterface imcref, int new_meta_id, String url_ref, String target) {

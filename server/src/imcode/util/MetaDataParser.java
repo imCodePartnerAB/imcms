@@ -398,7 +398,7 @@ public class MetaDataParser {
     public static void addPublisherRelatedTagsForDocInfoPageToParseList( Vector vec, Hashtable hash,
                                                                          IMCServiceInterface imcref,
                                                                          UserDomainObject user ) {
-        ImcmsAuthenticatorAndUserMapper userAndRoleMapper = imcref.getUserAndRoleMapper();
+        ImcmsAuthenticatorAndUserMapper userAndRoleMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
 
         String publisherIdStr = ( (String[])hash.get( "publisher_id" ) )[0];
         UserDomainObject publisher = null;

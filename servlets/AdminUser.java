@@ -162,7 +162,7 @@ public class AdminUser extends Administrator {
         } else if ( req.getParameter( "CHANGE_USER" ) != null ) {
 
             String userToChangeId = getCurrentUserId( req, res );
-            UserDomainObject userToChange = imcref.getUserById( Integer.parseInt( userToChangeId ) );
+            UserDomainObject userToChange = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUser( Integer.parseInt( userToChangeId ) );
 
             if ( !userToChange.isImcmsExternal() ) {
                 redirectChangeUser( req, res, imcref, user, isUseradmin, session, userToChangeId );

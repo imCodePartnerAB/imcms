@@ -105,13 +105,14 @@ public class GetDoc extends HttpServlet {
             user.put( "emphasize", emp_ary );
         }
 
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( meta_id );
         int doc_type;
         DocumentRequest documentRequest;
         Revisits revisits;
         String referrer = req.getHeader( "Referer" ); // Note, intended misspelling of "Referrer", according to the HTTP spec.
         DocumentDomainObject referringDocument = null;
         Perl5Util perlrx = new Perl5Util();
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
         if ( null != referrer && perlrx.match( "/meta_id=(\\d+)/", referrer ) ) {
             int referring_meta_id = Integer.parseInt( perlrx.group( 1 ) );
             try {
@@ -121,7 +122,6 @@ public class GetDoc extends HttpServlet {
             }
         }
         try {
-            DocumentDomainObject document = documentMapper.getDocument( meta_id );
             documentRequest = new DocumentRequest( imcref, user, document, referringDocument, req );
 
             // Get all cookies from request
@@ -169,9 +169,8 @@ public class GetDoc extends HttpServlet {
             return null;
         }
 
-        DocumentDomainObject reqDoc = imcref.getDocumentMapper().getDocument( meta_id );
         Vector params = new Vector();
-        if ( !reqDoc.isActive() && !imcref.checkDocAdminRights( meta_id, user ) ) {
+        if ( !document.isActive() && !documentMapper.hasEditPermission( document, user ) ) {
             params.add( "#start#" );
             params.add( "StartDoc" );
             params.add( "#back#" );

@@ -197,7 +197,7 @@ public class Document {
 
     public void setPermissionSetForRole( String roleName, int permissionSet ) throws NoSuchRoleException, NoPermissionException {
         securityChecker.hasEditPermission( this );
-        RoleDomainObject role = userAndRoleMapper.getRole( roleName );
+        RoleDomainObject role = userAndRoleMapper.getRoleByName( roleName );
         if (null == role) {
             throw new NoSuchRoleException( "No role by the name '" + roleName + "'." );
         }

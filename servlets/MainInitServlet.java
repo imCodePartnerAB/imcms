@@ -1,7 +1,9 @@
 
 import imcode.server.document.DocumentIndex;
+import imcode.server.ApplicationServer;
 import imcode.util.Prefs;
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import javax.servlet.ServletConfig;
@@ -21,9 +23,9 @@ import java.io.File;
 public class MainInitServlet extends HttpServlet {
 
     public void init( ServletConfig config ) throws ServletException {
+        NDC.push("init") ;
         try {
             super.init( config );
-
             final File realPathToWebApp = new File( this.getServletContext().getRealPath( "/" ) );
             imcode.server.WebAppGlobalConstants.init( realPathToWebApp );
 
@@ -33,7 +35,7 @@ public class MainInitServlet extends HttpServlet {
             configureLogging( confPath );
 
             final File indexDirectory = new File( realPathToWebApp, "WEB-INF/index" );
-            Thread indexThread = new Thread() {
+            Thread indexThread = new Thread("Startup indexing thread") {
                 public void run() {
                     DocumentIndex documentIndexer = new DocumentIndex( indexDirectory );
                     documentIndexer.indexAllDocuments();
@@ -45,6 +47,7 @@ public class MainInitServlet extends HttpServlet {
         } catch ( Exception e ) {
             System.err.println( e.getMessage() );
         }
+        NDC.pop() ;
     }
 
     private void configureLogging( File confPath ) {

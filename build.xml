@@ -370,11 +370,17 @@
             path="/${webappname}"/>
     </target>
 
-    <target name="tomcat-reload" description="reloads the web app in tomcat">
+
+    <target name="tomcat-reload" depends="install, tomcat-noinstall-reload"
+        description="install and reload the web app in tomcat"/>
+
+
+    <target name="tomcat-noinstall-reload" description="reloads the web app in tomcat">
         <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask"/>
          <reload url="${webapp.manager.url}" username="${tomcat.admin.username}" password="${tomcat.admin.password}"
             path="/${webappname}"/>
     </target>
+
 
     <!-- Run JUnit-tests -->
     <target name="test" depends="classes,junit-task-available" description="Runs JUnit-tests.">

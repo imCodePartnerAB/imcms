@@ -4,6 +4,7 @@ import imcode.server.db.ConnectionPool;
 import imcode.server.db.ConnectionPoolForNonPoolingDriver;
 import imcode.util.Prefs;
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -31,7 +32,8 @@ public class ApplicationServer {
             throw new RuntimeException(e) ;
         }
         ConnectionPool connectionPool = createConnectionPool( serverprops );
-        return new IMCService( connectionPool, serverprops );
+        IMCService imcref = new IMCService( connectionPool, serverprops );
+        return imcref ;
     }
 
     public static IMCPoolInterface getIMCPoolInterface() throws IOException {

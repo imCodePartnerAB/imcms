@@ -102,7 +102,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         return null;
     }
 
-    public ImcmsAuthenticatorAndUserMapper getUserAndRoleMapper() {
+    public ImcmsAuthenticatorAndUserMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
         return null;
     }
 

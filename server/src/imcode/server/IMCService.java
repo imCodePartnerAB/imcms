@@ -275,12 +275,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return instance;
     }
 
-    public UserDomainObject getUserById( int id ) {
-        ImcmsAuthenticatorAndUserMapper userMapper = new ImcmsAuthenticatorAndUserMapper( this );
-        UserDomainObject result = userMapper.getUser( id );
-        return result;
-    }
-
     //Check if user has a special adminRole
     public boolean checkUserAdminrole( int userId, int adminRole ) {
         String[] adminrole = sqlProcedure( "checkUserAdminrole ", new String[]{"" + userId, "" + adminRole} );
@@ -681,7 +675,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return templateMapper ;
     }
 
-    public ImcmsAuthenticatorAndUserMapper getUserAndRoleMapper() {
+    public ImcmsAuthenticatorAndUserMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
         return imcmsAuthenticatorAndUserMapper;
     }
 
@@ -933,7 +927,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      checkDocAdminRights
      */
     public boolean checkDocAdminRights( int meta_id, UserDomainObject user ) {
-        return documentMapper.hasEditPermission( meta_id, user );
+        return documentMapper.hasEditPermission( documentMapper.getDocument( meta_id ), user );
     }
 
     /**

@@ -76,14 +76,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
     public String parsePage( DocumentRequest documentRequest, int flags, int includelevel, ParserParameters paramsToParse ) throws IOException {
         try {
-            DocumentDomainObject myDoc = documentRequest.getDocument();
-            int meta_id = myDoc.getMetaId();
+            DocumentDomainObject document = documentRequest.getDocument();
+            int meta_id = document.getMetaId();
             String meta_id_str = String.valueOf( meta_id );
 
             UserDomainObject user = documentRequest.getUser();
             int user_id = user.getUserId();
             String user_id_str = String.valueOf( user_id );
-
 
             //handles the extra parameters
             String template_name = paramsToParse.getTemplate();
@@ -91,10 +90,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             String extparam_value = paramsToParse.getExternalParameter();
 
             String[] user_permission_set = ImcmsAuthenticatorAndUserMapper.sprocGetUserPermissionSet( service, meta_id_str, user_id_str );
-            if ( user_permission_set == null ) {
-                log.error( "parsePage: GetUserPermissionset returned null" );
-                return ( "GetUserPermissionset returned null" );
-            }
 
             int user_set_id = Integer.parseInt( user_permission_set[0] );
             int user_perm_set = Integer.parseInt( user_permission_set[1] );
@@ -116,11 +111,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             String[] included_docs = DocumentMapper.sprocGetIncludes( service, meta_id );
 
-            TemplateDomainObject documentTemplate = myDoc.getTemplate();
+            TemplateDomainObject documentTemplate = document.getTemplate();
             int documentTemplateId = documentTemplate.getId();
             String simple_name = documentTemplate.getName();
-            int sort_order = myDoc.getMenuSortOrder();
-            String group_id = "" + myDoc.getTemplateGroupId();
+            int sort_order = document.getMenuSortOrder();
+            String group_id = "" + document.getTemplateGroupId();
 
             if ( template_name != null ) {
                 //lets validate that the template exists before we changes the original one
@@ -336,11 +331,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             tags.setProperty( "#userName#", user.getFullName() );
             tags.setProperty( "#session_counter#", String.valueOf( service.getSessionCounter() ) );
             tags.setProperty( "#session_counter_date#", service.getSessionCounterDate() );
-            tags.setProperty( "#lastDate#", DATETIMEFORMAT.format( myDoc.getModifiedDatetime() ) );
-            tags.setProperty( "#metaHeadline#", myDoc.getHeadline() );
-            tags.setProperty( "#metaText#", myDoc.getText() );
+            tags.setProperty( "#lastDate#", DATETIMEFORMAT.format( document.getModifiedDatetime() ) );
+            tags.setProperty( "#metaHeadline#", document.getHeadline() );
+            tags.setProperty( "#metaText#", document.getText() );
 
-            String meta_image = myDoc.getImage();
+            String meta_image = document.getImage();
             if ( !"".equals( meta_image ) ) {
                 meta_image = "<img src=\"" + meta_image + "\" border=\"0\">";
             }
@@ -359,7 +354,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             tags.setProperty( "#externalparam#", extparam_value );
 
             // Give the user a row of buttons if he is privileged enough.
-            if ( ( service.checkDocAdminRights( meta_id, user ) || service.checkUserAdminrole( user.getUserId(), 2 ) ) && flags >= 0 ) {
+            if ( ( service.getDocumentMapper().hasEditPermission( document, user ) || service.checkUserAdminrole( user.getUserId(), 2 ) ) && flags >= 0 ) {
                 tags.setProperty( "#adminMode#", service.getMenuButtons( meta_id, user ) );
             }
 

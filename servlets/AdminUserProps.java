@@ -107,7 +107,7 @@ public class AdminUserProps extends Administrator {
         // get a user object by userToChangeId
         UserDomainObject userToChange = null;
         if ( null != userToChangeId ) {
-            userToChange = imcref.getUserById( Integer.parseInt( userToChangeId ) );
+            userToChange = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUser( Integer.parseInt( userToChangeId ) );
         }
 
         String login_name = "";
@@ -489,7 +489,7 @@ public class AdminUserProps extends Administrator {
         // get a user object by userToChangeId
         imcode.server.user.UserDomainObject userToChange = null;
         if ( null != userToChangeId ) {
-            userToChange = imcref.getUserById( Integer.parseInt( userToChangeId ) );
+            userToChange = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUser( Integer.parseInt( userToChangeId ) );
         }
 
         Properties userInfoP = new Properties();

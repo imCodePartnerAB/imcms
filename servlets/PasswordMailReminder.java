@@ -166,7 +166,7 @@ public class PasswordMailReminder extends HttpServlet {
 
             String sqlProcedureName = "PermissionsGetPermission";
             String[] queryResult = imcref.sqlProcedure(sqlProcedureName, new String[]{postedLoginName, "" + PasswordMailReminder.PASSWORD_PERMISSION_ID});
-            UserDomainObject user = imcref.getUserAndRoleMapper().getUser(postedLoginName);
+            UserDomainObject user = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUser(postedLoginName);
             if ((queryResult != null) && (queryResult.length > 0)) {
 
                 firstName = queryResult[1];
