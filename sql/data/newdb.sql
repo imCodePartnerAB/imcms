@@ -49,7 +49,7 @@ INSERT INTO texts
  VALUES( 1001, 1, '<? sql/sql/newdb.sql/17 ?>',1)
 INSERT INTO texts
  VALUES( 1001, 2, '<a href="@rooturl@/login/" title="<? sql/sql/newdb.sql/7 ?>"><b><? sql/sql/newdb.sql/2 ?>!</b></a><br><br><br><a href="@rooturl@/servlet/SearchDocuments" target="_blank" title="<? sql/sql/newdb.sql/8 ?>"><b><? sql/sql/newdb.sql/4 ?></b></a><br><? sql/sql/newdb.sql/9 ?> <i> <? sql/sql/newdb.sql/10 ?></i><br><br><a href="@documentationwebappurl@/" target="_blank" title="<? sql/sql/newdb.sql/11 ?>"><b><? sql/sql/newdb.sql/5 ?></b></a><br><? sql/sql/newdb.sql/12 ?><br><br><a href="http://www.imcms.net" target="_blank" title="<? sql/sql/newdb.sql/13 ?> www.imcms.net"><b><? sql/sql/newdb.sql/14 ?></b></a><br><? sql/sql/newdb.sql/15 ?><br><br><a href="@rooturl@/imcms/docs/apisamples/"  target="_blank" title="<? sql/sql/newdb.sql/13 ?>API-samples"><b><? sql/sql/newdb.sql/6 ?></b></a><br><? sql/sql/newdb.sql/16 ?>',1)
-INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , align , alt_text , low_scr , imgurl , linkurl )
-values (1001,100,29,0,0,0,3,'','_blank','top','','','imCMSpower.gif','http://www.imcms.net')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , align , alt_text , low_scr , imgurl , linkurl, type )
+values (1001,100,29,0,0,0,3,'','_blank','top','','','imCMSpower.gif','http://www.imcms.net','0')
 
 

@@ -1,27 +1,26 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.servlet.admin.ImageArchive;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
-import javax.servlet.RequestDispatcher;
 
 import imcode.util.HttpSessionUtils;
 import imcode.server.document.FileDocumentDomainObject;
 
 import java.io.IOException;
 
-public class ImageArchiveFacade extends ServletFacade {
+public class ImageArchive extends WebComponent {
     private boolean imageSelected;
     private FileDocumentDomainObject fileDocumentDomainObject;
 
-    public static ImageArchiveFacade getInstance( HttpServletRequest request ) {
-        ImageArchiveFacade imageArhiveFacade = (ImageArchiveFacade)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, ImageArchive.REQUEST_ATTRIBUTE_PARAMETER__IMAGE_ARHCIVE );
-        if ( null == imageArhiveFacade ) {
-            imageArhiveFacade = new ImageArchiveFacade();
+    public static final String REQUEST_ATTRIBUTE_PARAMETER__IMAGE_ARHCIVE = "imageArchive";
+
+    public static ImageArchive getInstance( HttpServletRequest request ) {
+        ImageArchive imageArhive = (ImageArchive)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, REQUEST_ATTRIBUTE_PARAMETER__IMAGE_ARHCIVE );
+        if ( null == imageArhive ) {
+            imageArhive = new ImageArchive();
         }
-        return imageArhiveFacade;
+        return imageArhive;
     }
 
     public boolean isImageSelected() {
@@ -39,9 +38,14 @@ public class ImageArchiveFacade extends ServletFacade {
 
     public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         HttpSessionUtils.addObjectToSessionAndSetSessionAttributeNameInRequest( this, request, ImageArchive.REQUEST_ATTRIBUTE_PARAMETER__IMAGE_ARHCIVE );
-        RequestDispatcher rd = request.getRequestDispatcher( "ImageArchive" );
-        rd.forward( request, response );
+        request.getRequestDispatcher( "ImageArchiveServlet" ).forward( request, response );
+
+        /*
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        setFileDocumentDomainObject( (FileDocumentDomainObject)documentMapper.getDocument( 1002 ));
+
+        String forwardReturnUrl = getForwardReturnUrl();
+        request.getRequestDispatcher( forwardReturnUrl ).forward( request, response );
+        */
     }
-
-
 }

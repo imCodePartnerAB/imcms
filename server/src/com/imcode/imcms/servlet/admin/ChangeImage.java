@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import com.imcode.imcms.servlet.ImageArchiveFacade;
+import com.imcode.imcms.servlet.ImageArchive;
 import org.apache.log4j.Logger;
 
 /**
@@ -33,6 +33,9 @@ import org.apache.log4j.Logger;
  */
 public class ChangeImage extends HttpServlet {
     private Logger log = Logger.getLogger(  ChangeImage.class );
+    static String REQUEST_PARAM__IMAGE_FILE_DOCUMENT_ID = "imageFileDocumentId";
+    private String imagArchiveToFrom;
+    private String REQUEST_PARAM__TO_FROM_IMAGE_ARCHIVE;
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         if ( req.getParameter( "preview" ) == null ) {
@@ -60,19 +63,27 @@ public class ChangeImage extends HttpServlet {
         int widthFromFile = 0;
         int heightFromFile = 0;
 
+        DocumentMapper documentMapper = imcref.getDocumentMapper() ;
+        ImageDomainObject imageDomainObject = documentMapper.getDocumentImage( meta_id, getImageNumberParam( req ) );
+
+        String imageFileDocumentId = "dummy text";
+        if( null != imageDomainObject && ImageDomainObject.FILE_DOCUMENT_IMAGE_TYPE == imageDomainObject.getType() ) {
+            imageFileDocumentId = imageDomainObject.getUrl();
+        }
+
         boolean fileImageDocumentChoosen = false;
-        String fileDocumentIdStr = "dummy text";
-        String gotoImageArchive = req.getParameter( "GotoImageArchive");
-        if( null != gotoImageArchive ) {
-            ImageArchiveFacade imageArhiveFacade = ImageArchiveFacade.getInstance( req );
-            if ( !imageArhiveFacade.isImageSelected() ) {
-                imageArhiveFacade.setForwardReturnUrl( "ChangeImage?meta_id=" + req.getParameter("meta_id") + "&img=" + req.getParameter( "img" ) + "&label=" + req.getParameter( "label" ) );
-                imageArhiveFacade.forward( req, res );
+        REQUEST_PARAM__TO_FROM_IMAGE_ARCHIVE = imagArchiveToFrom = "GotoImageArchive";
+        String toFromImageArchive = req.getParameter( imagArchiveToFrom );
+        if( null != toFromImageArchive ) {
+            ImageArchive imageArhive = (ImageArchive) ImageArchive.getInstance( req );
+            if ( !imageArhive.isImageSelected() ) {
+                imageArhive.setForwardReturnUrl( "ChangeImage?meta_id=" + req.getParameter("meta_id") + "&img=" + getImageNumberParam(req) + "&label=" + req.getParameter( "label" ) + "&" + REQUEST_PARAM__TO_FROM_IMAGE_ARCHIVE + "=" + toFromImageArchive );
+                imageArhive.forward( req, res );
             } else {
-                FileDocumentDomainObject imageFileDocument = imageArhiveFacade.getSelectedImage();
+                FileDocumentDomainObject imageFileDocument = imageArhive.getSelectedImage();
                 if( null != imageFileDocument ) {
                     fileImageDocumentChoosen = true;
-                    fileDocumentIdStr = ""+imageFileDocument.getId();
+                    imageFileDocumentId = ""+imageFileDocument.getId();
                     ImageFileMetaData imageFileMetaData = new ImageFileMetaData( imageFileDocument.getInputStreamSource().getInputStream(), imageFileDocument.getFilename() );
                     widthFromFile = imageFileMetaData.getWidth();
                     heightFromFile = imageFileMetaData.getHeight();
@@ -87,9 +98,6 @@ public class ChangeImage extends HttpServlet {
         HttpSession session = req.getSession( true );
         StringBuffer folderOptions = createImageFolderOptionList(imageFolders,image_path);
         session.setAttribute( "imageFolderOptionList", folderOptions.toString() );
-
-        DocumentMapper documentMapper = imcref.getDocumentMapper() ;
-        ImageDomainObject imageDomainObject = documentMapper.getDocumentImage( meta_id, getImageNumberParam( req ) );
 
         String browsedImageUrl = getChoosenImageFromImageBrowse( req );
 
@@ -248,8 +256,8 @@ public class ChangeImage extends HttpServlet {
 
         vec.add( "#label#" );
         vec.add( getLabelParam( req ) );
-        vec.add( "#imageFileDocumentId#" );
-        vec.add( fileDocumentIdStr );
+        vec.add( "#"+REQUEST_PARAM__IMAGE_FILE_DOCUMENT_ID+"#" );
+        vec.add( imageFileDocumentId );
 
         String htmlStr = imcref.getAdminTemplate( "change_img.html", user, vec );
         Utility.setDefaultHtmlContentType( res );

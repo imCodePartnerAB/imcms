@@ -1,4 +1,4 @@
-<%@ page import="com.imcode.imcms.servlet.admin.UserBrowserFacade,
+<%@ page import="com.imcode.imcms.servlet.admin.UserFinder,
                  com.imcode.imcms.servlet.admin.UserBrowser,
                  org.apache.commons.lang.StringEscapeUtils,
                  imcode.util.HttpSessionUtils,
@@ -7,11 +7,11 @@
                  org.apache.commons.lang.StringUtils"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
-    UserBrowserFacade userBrowserFacade = (UserBrowserFacade)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
+    UserFinder userFinder = (UserFinder)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
     UserBrowser.FormData formData = (UserBrowser.FormData)request.getAttribute( UserBrowser.REQUEST_ATTRIBUTE__FORM_DATA ) ;
 %>
 <vel:velocity>
-#gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/2 ?>" "<%= userBrowserFacade.getForwardReturnUrl() %>" "" "38" "" )
+#gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/2 ?>" "<%= userFinder.getForwardReturnUrl() %>" "" "38" "" )
 <table border="0" cellspacing="0" cellpadding="0" width="600" align="center">
     <form name="argumentForm" action="UserBrowser" method="GET" target="_top">
             <input type="hidden" name="<%= UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE %>"
@@ -74,7 +74,7 @@
             <td>&nbsp;</td>
             <td>
             <%  String selectButtonValue = "" ;
-                switch (userBrowserFacade.getSelectButton()) {
+                switch (userFinder.getSelectButton()) {
                     case UserBrowser.SELECT_BUTTON__EDIT_USER :
                         selectButtonValue = "<? templates/sv/AdminChangeUser.htm/2006 ?>" ;
                         break;
@@ -87,7 +87,7 @@
             <input type="submit" class="imcmsFormBtnSmall" name="<%= UserBrowser.REQUEST_PARAMETER__SELECT_USER_BUTTON %>" value="<%= selectButtonValue %>" onClick="if(!evalEditUser()) return false;" style="width:80">
             <%
                 UserDomainObject user = Utility.getLoggedOnUser(request);
-                if (userBrowserFacade.isUsersAddable() && (user.isSuperAdmin() || user.isUserAdmin())) { %>
+                if (userFinder.isUsersAddable() && (user.isSuperAdmin() || user.isUserAdmin())) { %>
                     <br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
                     <input type="submit" class="imcmsFormBtnSmall" name="<%= UserBrowser.REQUEST_PARAMETER__ADD_USER %>" value="<? templates/sv/AdminChangeUser.htm/2005 ?>" style="width:80">
             <% } %>

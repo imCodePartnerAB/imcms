@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.servlet.admin.UserBrowserFacade;
+import com.imcode.imcms.servlet.admin.UserFinder;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
@@ -35,15 +35,15 @@ public class AdminUser extends Administrator {
             return;
         }
 
-        UserBrowserFacade userBrowserFacade = UserBrowserFacade.getInstance( req );
-        if ( null != userBrowserFacade.getSelectedUser() ) {
-            gotoChangeUser(req, res, user, userBrowserFacade.getSelectedUser() );
+        UserFinder userFinder = (UserFinder) UserFinder.getInstance( req );
+        if ( null != userFinder.getSelectedUser() ) {
+            gotoChangeUser(req, res, user, userFinder.getSelectedUser() );
         } else {
-            userBrowserFacade.setUsersAddable( true );
-            userBrowserFacade.setNullSelectable( false );
-            userBrowserFacade.setSelectButton( UserBrowserFacade.SELECT_BUTTON__EDIT_USER );
-            userBrowserFacade.setForwardReturnUrl( "AdminUser" );
-            userBrowserFacade.forward( req, res );
+            userFinder.setUsersAddable( true );
+            userFinder.setNullSelectable( false );
+            userFinder.setSelectButton( UserFinder.SELECT_BUTTON__EDIT_USER );
+            userFinder.setForwardReturnUrl( "AdminUser" );
+            userFinder.forward( req, res );
         }
     }
 

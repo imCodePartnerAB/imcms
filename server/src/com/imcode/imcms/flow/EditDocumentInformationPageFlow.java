@@ -2,7 +2,7 @@ package com.imcode.imcms.flow;
 
 import com.imcode.imcms.servlet.admin.DocumentComposer;
 import com.imcode.imcms.servlet.admin.ImageBrowse;
-import com.imcode.imcms.servlet.admin.UserBrowserFacade;
+import com.imcode.imcms.servlet.admin.UserFinder;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.CategoryDomainObject;
@@ -92,16 +92,16 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     }
 
     private void dispatchFromPublisherUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        UserBrowserFacade userBrowserFacade = UserBrowserFacade.getInstance( request );
-        if ( userBrowserFacade.isUserSelected() ) {
-            document.setPublisher( userBrowserFacade.getSelectedUser() );
+        UserFinder userFinder = (UserFinder) UserFinder.getInstance( request );
+        if ( userFinder.isUserSelected() ) {
+            document.setPublisher( userFinder.getSelectedUser() );
         }
         dispatchToFirstPage( request, response );
     }
 
     private void dispatchFromCreatorUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        UserBrowserFacade userBrowserFacade = UserBrowserFacade.getInstance( request );
-        UserDomainObject selectedUser = userBrowserFacade.getSelectedUser();
+        UserFinder userFinder = (UserFinder) UserFinder.getInstance( request );
+        UserDomainObject selectedUser = userFinder.getSelectedUser();
         if ( null != selectedUser ) {
             document.setCreator( selectedUser );
         }
@@ -135,13 +135,13 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
     private void dispatchToUserBrowser( HttpServletRequest request, HttpServletResponse response, String page,
                                         boolean nullSelectable ) throws IOException, ServletException {
-        UserBrowserFacade userBrowserFacade = UserBrowserFacade.getInstance( request );
-        userBrowserFacade.setSelectButton( UserBrowserFacade.SELECT_BUTTON__SELECT_USER );
-        userBrowserFacade.setUsersAddable( false );
-        userBrowserFacade.setNullSelectable( nullSelectable );
+        UserFinder userFinder = (UserFinder) UserFinder.getInstance( request );
+        userFinder.setSelectButton( UserFinder.SELECT_BUTTON__SELECT_USER );
+        userFinder.setUsersAddable( false );
+        userFinder.setNullSelectable( nullSelectable );
         String returnUrl = createReturnUrlFromPage( request, page );
-        userBrowserFacade.setForwardReturnUrl( returnUrl );
-        userBrowserFacade.forward( request, response );
+        userFinder.setForwardReturnUrl( returnUrl );
+        userFinder.forward( request, response );
     }
 
     private String createReturnUrlFromPage( HttpServletRequest request, String fromPage ) {

@@ -327,7 +327,8 @@ CREATE TABLE [dbo].[images] (
 	[alt_text] [varchar] (255) NOT NULL ,
 	[low_scr] [varchar] (255) NOT NULL ,
 	[imgurl] [varchar] (255) NOT NULL ,
-	[linkurl] [varchar] (255) NOT NULL 
+	[linkurl] [varchar] (255) NOT NULL,
+	[type] [int] NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -1134,7 +1135,7 @@ ALTER TABLE [dbo].[images] WITH NOCHECK ADD
 	(
 		[meta_id],
 		[name]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[lang_prefixes] WITH NOCHECK ADD 

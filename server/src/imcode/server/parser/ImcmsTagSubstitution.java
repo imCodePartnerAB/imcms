@@ -107,6 +107,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
             StringBuffer value = new StringBuffer( 96 );
             if ( !"".equals( image.getUrl() ) ) {
+
                 if ( !"".equals( image.getLinkUrl() ) ) {
                     value.append( "<a href=\"" ).append( image.getLinkUrl() ).append( "\"" );
                     if ( !"".equals( image.getTarget() ) ) {
@@ -115,7 +116,14 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
                     value.append( '>' );
                 }
 
-                value.append( "<img src=\"" + service.getImageUrl() + image.getUrl() + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
+                String imageUrl;
+                if( ImageDomainObject.FILE_DOCUMENT_IMAGE_TYPE == image.getType()) {
+                    imageUrl = "GetDoc?meta_id=" + image.getUrl(); 
+                } else {
+                    imageUrl = service.getImageUrl() + image.getUrl();
+                }
+
+                value.append( "<img src=\"" + imageUrl + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
                 if ( 0 != image.getWidth() ) {
                     value.append( " width=\"" + image.getWidth() + "\"" );
                 }

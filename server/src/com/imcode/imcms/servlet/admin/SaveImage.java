@@ -381,20 +381,24 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
             out.write( htmlStr );
             return;
         } else {
-            String imageDocumentFileId = req.getParameter( "imageDocumentFileId" );
+            String imageDocumentFileId = req.getParameter( ChangeImage.REQUEST_PARAM__IMAGE_FILE_DOCUMENT_ID );
             if ( null != imageDocumentFileId ) {
+                int metaId = Integer.parseInt( imageDocumentFileId );
                 log.debug( "todo, save imageFileDocument and link it to the document. Image file id = " + imageDocumentFileId );
-            } else {
-                imcref.saveImage( meta_id, user, img_no, image );
-
-                DocumentMapper documentMapper = imcref.getDocumentMapper();
-                documentMapper.touchDocument( documentMapper.getDocument( meta_id ) );
-
-                String tempstring = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
-                if ( tempstring != null ) {
-                    out.write( tempstring );
-                }
+                image.setType( ImageDomainObject.FILE_DOCUMENT_IMAGE_TYPE );
+                image.setUrl( "" + metaId );
             }
+
+            imcref.saveImage( meta_id, user, img_no, image );
+
+            DocumentMapper documentMapper = imcref.getDocumentMapper();
+            documentMapper.touchDocument( documentMapper.getDocument( meta_id ) );
+
+            String tempstring = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
+            if ( tempstring != null ) {
+                out.write( tempstring );
+            }
+            
             return;
         }
     }

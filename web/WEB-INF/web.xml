@@ -364,8 +364,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.ImageArchive</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.ImageArchive</servlet-class>
+        <servlet-name>com.imcode.imcms.servlet.ImageArchiveServlet</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.ImageArchiveServlet</servlet-class>
     </servlet>
 
     <servlet>
@@ -864,8 +864,8 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.ImageArchive</servlet-name>
-        <url-pattern>/servlet/ImageArchive</url-pattern>
+        <servlet-name>com.imcode.imcms.servlet.ImageArchiveServlet</servlet-name>
+        <url-pattern>/servlet/ImageArchiveServlet</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

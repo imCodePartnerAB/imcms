@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet;
 
-public class ServletFacade {
+public class WebComponent {
     private String forwardReturnUrl;
 
     public final void setForwardReturnUrl( String forwardReturnUrl ) {

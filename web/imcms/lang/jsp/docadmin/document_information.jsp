@@ -21,7 +21,7 @@
             java.text.Collator,
             java.util.*,
             com.imcode.imcms.servlet.admin.UserBrowser,
-            com.imcode.imcms.servlet.admin.UserBrowserFacade,
+            com.imcode.imcms.servlet.admin.UserFinder,
             imcode.util.*,
             imcode.server.document.textdocument.TextDocumentDomainObject,
             com.imcode.imcms.flow.EditDocumentInformationPageFlow,

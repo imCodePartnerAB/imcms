@@ -30,19 +30,19 @@ public class UserBrowser extends HttpServlet {
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
-        UserBrowserFacade userBrowserFacade = (UserBrowserFacade)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
+        UserFinder userFinder = (UserFinder)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
         if ( null != request.getParameter( REQUEST_PARAMETER__SHOW_USERS_BUTTON ) ) {
             listUsers( request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__SELECT_USER_BUTTON ) ) {
             UserDomainObject selectedUser = getSelectedUserFromRequest( request );
-            if (null == selectedUser && !userBrowserFacade.isNullSelectable()) {
+            if (null == selectedUser && !userFinder.isNullSelectable()) {
                 listUsers( request, response );
             } else {
-                userBrowserFacade.setSelectedUser( selectedUser );
-                String forwardReturnUrl = userBrowserFacade.getForwardReturnUrl();
+                userFinder.setSelectedUser( selectedUser );
+                String forwardReturnUrl = userFinder.getForwardReturnUrl();
                 request.getRequestDispatcher( forwardReturnUrl ).forward( request, response );
             }
-        } else if ( null != request.getParameter( REQUEST_PARAMETER__ADD_USER ) && userBrowserFacade.isUsersAddable() ) {
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__ADD_USER ) && userFinder.isUsersAddable() ) {
             response.sendRedirect( "AdminUserProps?ADD_USER=true" );
         }
     }

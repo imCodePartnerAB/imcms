@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import com.imcode.imcms.servlet.ServletFacade;
+import com.imcode.imcms.servlet.WebComponent;
 
-public class UserBrowserFacade extends ServletFacade {
+public class UserFinder extends WebComponent {
 
     private boolean userSelected;
     private UserDomainObject selectedUser;
@@ -22,12 +22,12 @@ public class UserBrowserFacade extends ServletFacade {
     public static final int SELECT_BUTTON__SELECT_USER = UserBrowser.SELECT_BUTTON__SELECT_USER;
     public static final int SELECT_BUTTON__EDIT_USER = UserBrowser.SELECT_BUTTON__EDIT_USER;
 
-    public static UserBrowserFacade getInstance( HttpServletRequest request ) {
-        UserBrowserFacade userBrowserFacade = (UserBrowserFacade)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
-        if ( null == userBrowserFacade ) {
-            userBrowserFacade = new UserBrowserFacade();
+    public static UserFinder getInstance( HttpServletRequest request ) {
+        UserFinder userFinder = (UserFinder)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
+        if ( null == userFinder ) {
+            userFinder = new UserFinder();
         }
-        return userBrowserFacade;
+        return userFinder;
     }
 
     public boolean isUserSelected() {
@@ -79,4 +79,5 @@ public class UserBrowserFacade extends ServletFacade {
     public void setNullSelectable( boolean nullSelectable ) {
         this.nullSelectable = nullSelectable;
     }
+
 }

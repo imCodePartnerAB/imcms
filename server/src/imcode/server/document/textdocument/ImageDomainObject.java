@@ -9,7 +9,12 @@ package imcode.server.document.textdocument;
 import java.io.Serializable;
 
 public class ImageDomainObject implements Serializable {
+    final static int UN_MANAGED_IMAGE = 0;
+    public final static int FILE_DOCUMENT_IMAGE_TYPE = 1;
+
+    private int type; // se above, the url is a meta_id if FILE_DOCUMENT_IMAGE_TYPE is the type
     private String url;
+
     private String name;
     private int width;
     private int height;
@@ -116,5 +121,13 @@ public class ImageDomainObject implements Serializable {
 
     public void setLinkUrl( String image_ref_link ) {
         this.linkUrl = image_ref_link;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType( int type ) {
+        this.type = type;
     }
 }

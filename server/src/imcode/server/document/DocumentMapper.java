@@ -1315,7 +1315,7 @@ public class DocumentMapper {
         return service.sqlQueryMulti(sqlStr, new String[]{"" + document.getId()});
     }
 
-    private final static String IMAGE_SQL_COLUMNS = "name,image_name,imgurl,width,height,border,v_space,h_space,target,align,alt_text,low_scr,linkurl";
+    private final static String IMAGE_SQL_COLUMNS = "name,image_name,imgurl,width,height,border,v_space,h_space,target,align,alt_text,low_scr,linkurl,type";
 
     private Map getDocumentImages(DocumentDomainObject document) {
         String[][] imageRows = service.sqlQueryMulti("select " + IMAGE_SQL_COLUMNS + " from images\n"
@@ -1358,7 +1358,7 @@ public class DocumentMapper {
         image.setAlternateText(sqlResult[10]);
         image.setLowResolutionUrl(sqlResult[11]);
         image.setLinkUrl(sqlResult[12]);
-
+        image.setType(Integer.parseInt(sqlResult[13]));
         return image;
     }
 
@@ -1376,14 +1376,15 @@ public class DocumentMapper {
                 + "align       = ?, \n"
                 + "alt_text    = ?, \n"
                 + "low_scr     = ?, \n"
-                + "linkurl     = ?  \n"
+                + "linkurl     = ?, \n"
+                + "type        = ?  \n"
                 + "where meta_id = ? \n"
                 + "and name = ? \n";
 
         int rowUpdateCount = sqlImageUpdateQuery(sqlStr, image, meta_id, img_no);
         if (0 == rowUpdateCount) {
-            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, align, alt_text, low_scr, linkurl, meta_id, name)"
-                    + " values(?,?,?, ?,?,?, ?,?,?, ?,?,?, ?,?)";
+            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, align, alt_text, low_scr, linkurl, type, meta_id, name)"
+                    + " values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)";
 
             sqlImageUpdateQuery(sqlStr, image, meta_id, img_no);
         }
@@ -1407,8 +1408,9 @@ public class DocumentMapper {
             image.getAlternateText(),
             image.getLowResolutionUrl(),
             image.getLinkUrl(),
+            "" + image.getType(),
             "" + meta_id,
-            "" + img_no
+            "" + img_no,
         });
     }
 
