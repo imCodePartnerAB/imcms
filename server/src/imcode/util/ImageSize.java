@@ -1,11 +1,11 @@
 package imcode.util;
 
-public class ImageData {
+public class ImageSize {
 
     private int width;
     private int height;
 
-    public ImageData( int width, int height ) {
+    public ImageSize( int width, int height ) {
         this.width = width;
         this.height = height;
     }

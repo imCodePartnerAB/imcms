@@ -15,10 +15,7 @@ import imcode.server.document.index.QueryParser;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.ImageData;
-import imcode.util.ImageParser;
-import imcode.util.LocalizedMessage;
-import imcode.util.Utility;
+import imcode.util.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.Term;
@@ -258,53 +255,10 @@ public class ChangeImage extends HttpServlet {
                                     HttpServletRequest request,
                                     HttpServletResponse response ) throws IOException, ServletException {
 
-        ImageData imageData = getImageData( image );
+        ImageSize imageSize = ImcmsImageUtils.getImageSize( image );
         String label = StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__LABEL ) );
 
-        new ImageEditPage( document, imageIndex, image, imageData, label ).forward( request, response );
-    }
-
-    private ImageData getImageData( ImageDomainObject image ) throws IOException {
-        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
-        DocumentMapper documentMapper = service.getDocumentMapper();
-        File image_path = service.getConfig().getImagePath();
-        ImageData imageData = new ImageData( 0, 0 );
-        String imageUrl = image.getUrl();
-        if ( StringUtils.isNotBlank( imageUrl ) ) {
-            File imageFile = new File( image_path, image.getUrl() );
-            Integer imageFileDocumentId = getDocumentIdFromImageUrl( imageUrl );
-            if ( null != imageFileDocumentId ) {
-                DocumentDomainObject document = documentMapper.getDocument( imageFileDocumentId.intValue() );
-                if ( document instanceof FileDocumentDomainObject ) {
-                    imageData = getImageDataFromFileDocument( (FileDocumentDomainObject)document );
-                }
-            } else if ( imageFile.isFile() ) {
-                imageData = new ImageParser().parseImageFile( imageFile );
-            }
-        }
-        return imageData;
-    }
-
-    public static Integer getDocumentIdFromImageUrl( String imageUrl ) {
-        Integer documentId = null;
-        Perl5Util perl5util = new Perl5Util();
-        if ( perl5util.match( "/GetDoc\\?meta_id=(\\d+)/", imageUrl ) ) {
-            documentId = Integer.valueOf( perl5util.group( 1 ) );
-        }
-        return documentId;
-    }
-
-    private static ImageData getImageDataFromFileDocument( FileDocumentDomainObject imageFileDocument ) {
-        ImageData imageData;
-        try {
-            InputStream imageFileDocumentInputStream = imageFileDocument.getInputStreamSource().getInputStream();
-            imageData = new ImageParser().parseImageStream( imageFileDocumentInputStream, imageFileDocument.getFilename() );
-        } catch ( IllegalArgumentException iae ) {
-            imageData = new ImageData( 0, 0 );
-        } catch ( IOException ioe ) {
-            imageData = new ImageData( 0, 0 );
-        }
-        return imageData;
+        new ImageEditPage( document, imageIndex, image, imageSize, label ).forward( request, response );
     }
 
     private int getImageNumberParam( HttpServletRequest req ) {
@@ -318,15 +272,15 @@ public class ChangeImage extends HttpServlet {
         private TextDocumentDomainObject document;
         private int imageIndex;
         private ImageDomainObject image;
-        private ImageData imageFileData;
+        private ImageSize imageFileSize;
         private String label;
 
         public ImageEditPage( TextDocumentDomainObject document, int imageIndex, ImageDomainObject image,
-                              ImageData imageFileData, String label ) {
+                              ImageSize imageFileSize, String label ) {
             this.document = document;
             this.image = image;
             this.imageIndex = imageIndex;
-            this.imageFileData = imageFileData;
+            this.imageFileSize = imageFileSize;
             this.label = label;
         }
 
@@ -342,8 +296,8 @@ public class ChangeImage extends HttpServlet {
             return imageIndex;
         }
 
-        public ImageData getImageFileData() {
-            return imageFileData;
+        public ImageSize getImageFileData() {
+            return imageFileSize;
         }
 
         private void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
@@ -382,10 +336,10 @@ public class ChangeImage extends HttpServlet {
 
         public String render( DocumentDomainObject document, HttpServletRequest request ) {
             UserDomainObject user = Utility.getLoggedOnUser( request );
-            ImageData imageData = getImageDataFromFileDocument( (FileDocumentDomainObject)document );
+            ImageSize imageSize = ImcmsImageUtils.getImageDataFromFileDocument( (FileDocumentDomainObject)document );
             List values = Arrays.asList( new Object[]{
                 "imageUrl", "GetDoc?meta_id=" + document.getId(),
-                "imageSize", imageData,
+                "imageSize", imageSize,
             } );
             return ApplicationServer.getIMCServiceInterface().getAdminTemplate( "images/thumbnail.frag", user, values );
         }

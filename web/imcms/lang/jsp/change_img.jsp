@@ -4,21 +4,22 @@
                  imcode.server.ApplicationServer,
                  org.apache.commons.lang.StringEscapeUtils,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
-                 imcode.util.ImageData,
+                 imcode.util.ImageSize,
                  org.apache.commons.lang.ObjectUtils,
                  imcode.util.Utility,
                  imcode.util.Html,
                  org.apache.commons.collections.Transformer,
                  imcode.server.document.DocumentMapper,
                  imcode.server.user.UserDomainObject,
-                 imcode.server.document.DocumentDomainObject"%>
+                 imcode.server.document.DocumentDomainObject,
+                 imcode.util.ImcmsImageUtils"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     ChangeImage.ImageEditPage imageEditPage = (ChangeImage.ImageEditPage)request.getAttribute( ChangeImage.ImageEditPage.REQUEST_ATTRIBUTE__PAGE ) ;
     TextDocumentDomainObject document = imageEditPage.getDocument() ;
     ImageDomainObject image = imageEditPage.getImage() ;
     int imageIndex = imageEditPage.getImageIndex() ;
-    ImageData imageFileData = imageEditPage.getImageFileData() ;
+    ImageSize imageFileSize = imageEditPage.getImageFileData() ;
 %>
 <vel:velocity>
 <html>
@@ -124,11 +125,11 @@ function checkLinkOnBlur() {
         <% if (StringUtils.isNotBlank(image.getUrl())) { %>
         <tr>
             <td colspan="2" align="center">
-                <%= Html.getImageTag( image ) %>
+                <%= ImcmsImageUtils.getImageTag( image ) %>
             </td>
         </tr>
         <%
-            Integer imageFileDocumentId = ChangeImage.getDocumentIdFromImageUrl(image.getUrl());
+            Integer imageFileDocumentId = ImcmsImageUtils.getDocumentIdFromImageUrl(image.getUrl());
             if ( null != imageFileDocumentId ) { %>
             <tr>
                 <td colspan="2" align="center">
@@ -201,9 +202,9 @@ function checkLinkOnBlur() {
                         <td><? templates/sv/change_img.html/size_explanation ?></td>
                     </tr>
                     <tr>
-                        <td height="20">&nbsp;<%= imageFileData.getWidth() %></td>
+                        <td height="20">&nbsp;<%= imageFileSize.getWidth() %></td>
                         <td>&nbsp;X&nbsp;</td>
-                        <td>&nbsp;<%= imageFileData.getHeight() %></td>
+                        <td>&nbsp;<%= imageFileSize.getHeight() %></td>
                         <td>&nbsp;</td>
                         <td colspan="3"><? templates/sv/change_img.html/originalSize ?></td>
                     </tr>

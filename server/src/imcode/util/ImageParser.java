@@ -54,11 +54,11 @@ public class ImageParser {
 
     private final static Logger log = Logger.getLogger( "imcode.util.ImageFileMetaData" );
 
-    public ImageData parseImageFile( File imageFile ) throws IOException {
+    public ImageSize parseImageFile( File imageFile ) throws IOException {
         return parseImageStream( new FileInputStream( imageFile ), imageFile.getName() );
     }
 
-    public ImageData parseImageStream( InputStream imageStream, String fileName ) throws IOException, IllegalArgumentException {
+    public ImageSize parseImageStream( InputStream imageStream, String fileName ) throws IOException, IllegalArgumentException {
         if ( fileName.toLowerCase().endsWith( ".gif" ) ) {
             return parseGifStream( imageStream );
         } else if ( fileName.toLowerCase().endsWith( ".jpg" ) || fileName.toLowerCase().endsWith( ".jpeg" ) ) { // FIXME: Move into a separate (protected?) method. Preferably one that takes just a File
@@ -70,7 +70,7 @@ public class ImageParser {
         }
     }
 
-    private ImageData parsePngStream( InputStream imageStream ) throws IOException {
+    private ImageSize parsePngStream( InputStream imageStream ) throws IOException {
         // PNG starts with 8 bytes (here in decimal): 137 80 78 71 13 10 26 10
         //  indicating this is a PNG-file
         // Then blocks in this format:
@@ -107,13 +107,13 @@ public class ImageParser {
                     height = ( dis.read() << 24 ) | ( dis.read() << 16 ) | ( dis.read() << 8 ) | dis.read();
                 }
             }
-            return new ImageData( width, height );
+            return new ImageSize( width, height );
         } finally {
             dis.close();
         }
     }
 
-    private ImageData parseJpegStream( InputStream imageStream, String fileName ) throws IOException {
+    private ImageSize parseJpegStream( InputStream imageStream, String fileName ) throws IOException {
         DataInputStream dis = new DataInputStream( new BufferedInputStream( imageStream ) );
         try {
             if ( dis.read() != MARKER || dis.read() != SOI ) {
@@ -160,7 +160,7 @@ public class ImageParser {
                         }
                 }
             }
-            return new ImageData( width, height );
+            return new ImageSize( width, height );
         } finally {
             dis.close();
         }
@@ -200,7 +200,7 @@ public class ImageParser {
         }
     }
 
-    private ImageData parseGifStream( InputStream imageStream ) throws IOException {
+    private ImageSize parseGifStream( InputStream imageStream ) throws IOException {
         DataInputStream dis = new DataInputStream( new BufferedInputStream( imageStream ) );
         try {
             byte[] t = new byte[6];
@@ -211,7 +211,7 @@ public class ImageParser {
             }
             int width = ( dis.read() + ( dis.read() << 8 ) );
             int height = ( dis.read() + ( dis.read() << 8 ) );
-            return new ImageData( width, height );
+            return new ImageSize( width, height );
         } finally {
             dis.close();
         }

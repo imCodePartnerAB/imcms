@@ -124,7 +124,7 @@ public class DocumentService {
     }
 
     /**
-     * @deprecated Use createNewTextDocument( int parentId ) instead.
+     * @deprecated Use createAndSaveNewTextDocument( int parentId ) instead.
      */
     public TextDocument createNewTextDocument( int parentId, int parentMenuNumber ) throws NoPermissionException {
         Document parentDocument = getDocument( parentId );

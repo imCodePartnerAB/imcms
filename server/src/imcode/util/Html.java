@@ -1,19 +1,20 @@
 package imcode.util;
 
+import com.imcode.imcms.servlet.admin.AdminDoc;
+import com.imcode.imcms.servlet.admin.ChangeImage;
+import imcode.server.ApplicationServer;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.server.ApplicationServer;
 import org.apache.commons.collections.Transformer;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 
+import java.io.IOException;
 import java.util.*;
-
-import com.imcode.imcms.servlet.admin.AdminDoc;
 
 public class Html {
 
@@ -124,56 +125,9 @@ public class Html {
         return statusIconTemplate;
     }
 
-    public static String getImageTag( ImageDomainObject image ) {
-        StringBuffer imageTagBuffer = new StringBuffer( 96 );
-        if ( !"".equals( image.getUrl() ) ) {
-
-            if ( StringUtils.isNotBlank( image.getLinkUrl() ) ) {
-                imageTagBuffer.append( "<a href=\"" ).append( StringEscapeUtils.escapeHtml( image.getLinkUrl() ) ).append( "\"" );
-                if ( !"".equals( image.getTarget() ) ) {
-                    imageTagBuffer.append( " target=\"" ).append( StringEscapeUtils.escapeHtml( image.getTarget() ) ).append( "\"" );
-                }
-                imageTagBuffer.append( '>' );
-            }
-
-            String imageUrl = ApplicationServer.getIMCServiceInterface().getConfig().getImageUrl() + image.getUrl();
-
-            imageTagBuffer.append( "<img src=\"" + StringEscapeUtils.escapeHtml( imageUrl ) + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
-            if ( 0 != image.getWidth() ) {
-                imageTagBuffer.append( " width=\"" + image.getWidth() + "\"" );
-            }
-            if ( 0 != image.getHeight() ) {
-                imageTagBuffer.append( " height=\"" + image.getHeight() + "\"" );
-            }
-            imageTagBuffer.append( " border=\"" + image.getBorder() + "\"" );
-
-            if ( 0 != image.getVerticalSpace() ) {
-                imageTagBuffer.append( " vspace=\"" + image.getVerticalSpace() + "\"" );
-            }
-            if ( 0 != image.getHorizontalSpace() ) {
-                imageTagBuffer.append( " hspace=\"" + image.getHorizontalSpace() + "\"" );
-            }
-            if ( StringUtils.isNotBlank( image.getName() ) ) {
-                imageTagBuffer.append( " name=\"" + StringEscapeUtils.escapeHtml( image.getName() ) + "\"" );
-            }
-            if ( StringUtils.isNotBlank( image.getAlternateText() ) ) {
-                imageTagBuffer.append( " alt=\"" + StringEscapeUtils.escapeHtml( image.getAlternateText() ) + "\"" );
-            }
-            if ( StringUtils.isNotBlank( image.getLowResolutionUrl() ) ) {
-                imageTagBuffer.append( " lowsrc=\"" + StringEscapeUtils.escapeHtml( image.getLowResolutionUrl() ) + "\"" );
-            }
-            if ( StringUtils.isNotBlank( image.getAlign() ) && !"none".equals( image.getAlign() ) ) {
-                imageTagBuffer.append( " align=\"" + StringEscapeUtils.escapeHtml( image.getAlign() ) + "\"" );
-            }
-            imageTagBuffer.append( ">" );
-            if ( StringUtils.isNotBlank( image.getLinkUrl() ) ) {
-                imageTagBuffer.append( "</a>" );
-            }
-        }
-        return imageTagBuffer.toString();
-    }
-
     public static String hidden( String name, String value ) {
-        return "<input type=\"hidden\" name=\""+StringEscapeUtils.escapeHtml( name )+"\" value=\""+StringEscapeUtils.escapeHtml( value )+"\">";
+        return "<input type=\"hidden\" name=\"" + StringEscapeUtils.escapeHtml( name ) + "\" value=\""
+               + StringEscapeUtils.escapeHtml( value )
+               + "\">";
     }
 }

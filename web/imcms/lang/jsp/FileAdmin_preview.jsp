@@ -77,10 +77,10 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
     br.close() ;
 
     statSrc = statSrc.replaceAll("<head>","<head>\n\n<base target=\"_blank\">");	/* add some buttons in some browsers */
-	
+
 	String theButtons = "" ;
 	boolean hasInlineButtons = false ;
-	
+
 	theButtons = "<table border=0 bgcolor=\"#d6d3ce\" align=\"right\">\n<tr>" ;
 	if (hasGetElementById && !hasDocumentAll && !isMac) {
 		hasInlineButtons = true ;
@@ -91,13 +91,13 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
 		theButtons += "\n	<td><a href=\"javascript: print(); return false\"><img src=\"" + IMG_PATH + "btn_print.gif\" border=\"0\" alt=\"Skriv ut!!\"></a></td>" ;
 	}
 	theButtons += "\n</tr>\n</table>\n" ;
-	
+
 	if (hasInlineButtons) {
 		statSrc = statSrc.replaceAll("<body>", "<body>\n\n" + theButtons + "\n");
 	}
-	
+
 	/* print it */
-	
+
 	out.print(statSrc) ;
 	return ;
 }
@@ -106,7 +106,7 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
 
 String image_ref = fn.getCanonicalPath() ;
 
-ImageData imagefile = new ImageParser().parseImageFile( new File(image_ref) ) ;
+ImageSize imagefile = new ImageParser().parseImageFile( new File(image_ref) ) ;
 int width = imagefile.getWidth() ;
 int height = imagefile.getHeight() ;
 
@@ -147,9 +147,9 @@ if (frame.equalsIgnoreCase("MAIN")) { %>
 if (isImage) {
 	%><div style="padding: 5 0 <%
 	if (hasBorder) {
-		%>5<% 
+		%>5<%
 	} else {
-		%>6<% 
+		%>6<%
 	} %> 0; font: 10px Verdana, Geneva, sans-serif; color:#999999;">&quot;<%= request.getContextPath() + "/"+file %>&quot;<%
 	if (width > 0 && height > 0 && !size.equals("")) {
 		%> (<%
@@ -179,7 +179,7 @@ if (isImage) {
 
 
 <STYLE TYPE="text/css">
-<!-- 
+<!--
 .imHeading { font: bold 17px Verdana, Geneva, sans-serif; color:#000066; }
 .imFilename { font: bold italic 10px Verdana, Geneva, sans-serif; color:#009900; }
 .norm { font: 11px Verdana, Geneva, sans-serif; color:#333333; }
@@ -249,9 +249,9 @@ function findIt(str) {
 	if (isStat) {
 		%><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1002/1 ?><%
 	} else {
-		%><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1002/2 ?><% 
+		%><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1002/2 ?><%
 	} %> &nbsp;</span></td>
-	
+
 	<td align="right"><%
 	if (isStat) {
 		%>
@@ -298,7 +298,7 @@ function findIt(str) {
 		<a href="javascript: closeIt();"><b><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/4 ?></b></a> &nbsp; | &nbsp;</td>
 	</tr>
 	</form>
-	</table><% 
+	</table><%
 	} %></td>
 </tr>
 </table>
@@ -314,9 +314,9 @@ function findIt(str) {
  ******************************************************************************************* */
 
 } else if (frame.equalsIgnoreCase("FRAME")) {
-	
+
 	if (session.getAttribute("zoom") != null) session.setAttribute("zoom", "1.0") ; // Reset to 100%
-	
+
 	%>
 <html>
 <head>
@@ -333,9 +333,9 @@ function findIt(str) {
 	</body>
 	</noframes>
 </frameset><%
-		
+
 	} else { /* Image File */
-		
+
 		%>
 <frameset rows="30,*" border="0" framespacing="0" frameborder="NO" style="border:0">
 	<frame name="topframe" src="<%= thisPage %>?frame=top&file=<%= file %>" marginwidth="0" marginheight="0" frameborder="NO" scrolling="NO" noresize>

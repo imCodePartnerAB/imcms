@@ -18,9 +18,7 @@ my @keys = (qw( 	empty 		        true
 			equals=in=key=      	backslash\\=and\\=equals\\=in\\=key\\=
 			linecontinuation ), 	'space in key ' ) ;
 
-chdir 't' unless -e 'test.properties' ;
-
-my $p = new Properties('test.properties') ;
+my $p = new Properties(*DATA) ;
 
 ok( defined $p, 'new' ) ;
 
@@ -86,3 +84,36 @@ my %copy = %$p ;
 delete $copy{$_} for @keys ;
 
 ok( (0 == keys %copy), 'unwanted keys') or diag("Unwanted keys:\n". join "\n", map { "'".Properties::escape_key($_)."'" } keys %copy) ;
+__END__
+true=1
+
+equals = 1
+
+colon : 1
+
+space 1
+
+empty
+
+unicode=\u0041
+
+tab=\t
+
+formfeed=\f
+
+newline=\n
+
+carriagereturn=\r
+
+backslash=\\
+
+linecontinuation=foo\
+                 bar
+
+backslash\\in\\key\\ = foobar
+
+equals\=in\=key\= = foobar
+
+backslash\\\=and\\\=equals\\\=in\\\=key\\\= = foobar
+
+space\ in\ key\ =foobar
