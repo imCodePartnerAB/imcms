@@ -117,22 +117,22 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         StringTokenizer doc_types = new StringTokenizer( externalDocTypes, ";", false );
         m_ExDoc = new ExternalDocType[doc_types.countTokens()];
         try {
-            for( int doc_count = 0; doc_types.hasMoreTokens(); ++doc_count ) {
+            for ( int doc_count = 0; doc_types.hasMoreTokens(); ++doc_count ) {
                 StringTokenizer tempStr = new StringTokenizer( doc_types.nextToken(), ":", false );
                 String items[] = new String[tempStr.countTokens()];
-                for( int i = 0; tempStr.hasMoreTokens(); ++i ) {
+                for ( int i = 0; tempStr.hasMoreTokens(); ++i ) {
                     items[i] = tempStr.nextToken();
                 }
                 m_ExDoc[doc_count] = new ExternalDocType( Integer.parseInt( items[0] ), items[1], items[2], "" );
             }
-        } catch( NoSuchElementException e ) {
+        } catch ( NoSuchElementException e ) {
             e.printStackTrace();
         }
 
         try {
             m_SessionCounter = Integer.parseInt( this.sqlProcedureStr( "GetCurrentSessionCounter" ) );
             m_SessionCounterDate = this.sqlProcedureStr( "GetCurrentSessionCounterDate" );
-        } catch( NumberFormatException ex ) {
+        } catch ( NumberFormatException ex ) {
             log.fatal( "Failed to get SessionCounter from db.", ex );
             throw ex;
         }
@@ -158,17 +158,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         PrefixRemovedProperties authenticatorPropertiesSubset = new PrefixRemovedProperties( props, "ExternalAuthenticator." );
         PrefixRemovedProperties userAndRoleMapperPropertiesSubset = new PrefixRemovedProperties( props, "ExternalUserAndRoleMapper." );
 
-        if( null != externalAuthenticatorName && null != externalUserAndRoleMapperName ) {
+        if ( null != externalAuthenticatorName && null != externalUserAndRoleMapperName ) {
             log.info( "ExternalAuthenticator: " + externalAuthenticatorName );
             log.info( "ExternalUserAndRoleMapper: " + externalUserAndRoleMapperName );
             externalAuthenticator = initExternalAuthenticator( externalAuthenticatorName, authenticatorPropertiesSubset );
             externalUserAndRoleMapper = initExternalUserAndRoleMapper( externalUserAndRoleMapperName, userAndRoleMapperPropertiesSubset );
-            if( null == externalAuthenticator || null == externalUserAndRoleMapper ) {
+            if ( null == externalAuthenticator || null == externalUserAndRoleMapper ) {
                 log.error( "Failed to initialize both authenticator and user-and-role-internalDocumentMapper, using default implementations." );
                 externalAuthenticator = null;
                 externalUserAndRoleMapper = null;
             }
-        } else if( null == externalAuthenticatorName && null == externalUserAndRoleMapperName ) {
+        } else if ( null == externalAuthenticatorName && null == externalUserAndRoleMapperName ) {
             log.info( "ExternalAuthenticator not set." );
             log.info( "ExternalUserAndRoleMapper not set." );
         } else {
@@ -197,15 +197,15 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         boolean userAuthenticates = externalizedImcmsAuthAndMapper.authenticate( login, password );
         UserDomainObject user = externalizedImcmsAuthAndMapper.getUser( login );
-        if( userAuthenticates ) {
+        if ( userAuthenticates ) {
             result = user;
-            mainLog.info( "->User '" + (login) + "' successfully logged in." );
-        } else if( null == user ) {
-            mainLog.info( "->User '" + (login) + "' failed to log in: User not found." );
-        } else if( !user.isActive() ) {
-            mainLog.info( "->User '" + (login) + "' failed to log in: User deactivated." );
+            mainLog.info( "->User '" + ( login ) + "' successfully logged in." );
+        } else if ( null == user ) {
+            mainLog.info( "->User '" + ( login ) + "' failed to log in: User not found." );
+        } else if ( !user.isActive() ) {
+            mainLog.info( "->User '" + ( login ) + "' failed to log in: User deactivated." );
         } else {
-            mainLog.info( "->User '" + (login) + "' failed to log in: Wrong password." );
+            mainLog.info( "->User '" + ( login ) + "' failed to log in: Wrong password." );
         }
 
         return result;
@@ -213,12 +213,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     private UserAndRoleMapper initExternalUserAndRoleMapper( String externalUserAndRoleMapperName, Properties userAndRoleMapperPropertiesSubset ) {
         UserAndRoleMapper externalUserAndRoleMapper = null;
-        if( null == externalUserAndRoleMapperName ) {
+        if ( null == externalUserAndRoleMapperName ) {
             externalUserAndRoleMapper = null;
-        } else if( EXTERNAL_USER_AND_ROLE_MAPPER_LDAP.equalsIgnoreCase( externalUserAndRoleMapperName ) ) {
+        } else if ( EXTERNAL_USER_AND_ROLE_MAPPER_LDAP.equalsIgnoreCase( externalUserAndRoleMapperName ) ) {
             try {
                 externalUserAndRoleMapper = new LdapUserAndRoleMapper( userAndRoleMapperPropertiesSubset );
-            } catch( LdapUserAndRoleMapper.LdapInitException e ) {
+            } catch ( LdapUserAndRoleMapper.LdapInitException e ) {
                 log.error( "LdapUserAndRoleMapper could not be created, using default user and role internalDocumentMapper.", e );
             }
         } else {
@@ -229,14 +229,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     private Authenticator initExternalAuthenticator( String externalAuthenticatorName, Properties authenticatorPropertiesSubset ) {
         Authenticator externalAuthenticator = null;
-        if( null == externalAuthenticatorName ) {
+        if ( null == externalAuthenticatorName ) {
             externalAuthenticator = null;
-        } else if( EXTERNAL_AUTHENTICATOR_SMB.equalsIgnoreCase( externalAuthenticatorName ) ) {
+        } else if ( EXTERNAL_AUTHENTICATOR_SMB.equalsIgnoreCase( externalAuthenticatorName ) ) {
             externalAuthenticator = new SmbAuthenticator( authenticatorPropertiesSubset );
-        } else if( EXTERNAL_AUTHENTICATOR_LDAP.equalsIgnoreCase( externalAuthenticatorName ) ) {
+        } else if ( EXTERNAL_AUTHENTICATOR_LDAP.equalsIgnoreCase( externalAuthenticatorName ) ) {
             try {
                 externalAuthenticator = new LdapUserAndRoleMapper( authenticatorPropertiesSubset );
-            } catch( LdapUserAndRoleMapper.LdapInitException e ) {
+            } catch ( LdapUserAndRoleMapper.LdapInitException e ) {
                 log.error( "LdapUserAndRoleMapper could not be created, using default user and role internalDocumentMapper.", e );
             }
         } else {
@@ -249,7 +249,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         Object instance = null;
         try {
             instance = Class.forName( className ).newInstance();
-        } catch( Exception e ) {
+        } catch ( Exception e ) {
             log.error( "Could not create instance of class '" + className + "'.", e );
         }
         return instance;
@@ -268,8 +268,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     //Check if user has a special adminRole
     public boolean checkUserAdminrole( int userId, int adminRole ) {
         String[] adminrole = sqlProcedure( "checkUserAdminrole ", new String[]{"" + userId, "" + adminRole} );
-        if( adminrole.length > 0 ) {
-            if( ("" + adminRole).equals( adminrole[0] ) ) {
+        if ( adminrole.length > 0 ) {
+            if ( ( "" + adminRole ).equals( adminrole[0] ) ) {
                 return true;
             }
         }
@@ -290,7 +290,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         // Find out what permissions the user has
         String[] permissions = sqlProcedure( "GetUserPermissionSet", new String[]{String.valueOf( meta_id ), String.valueOf( user.getUserId() )} );
 
-        if( permissions.length == 0 ) {
+        if ( permissions.length == 0 ) {
             return "";
         }
 
@@ -308,7 +308,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             templatebuffer = new StringBuffer( fileCache.getCachedFileString( new File( m_TemplateHome, templatebuffer_filename ) ) );
             superadmin = new StringBuffer( fileCache.getCachedFileString( new File( m_TemplateHome, superadmin_filename ) ) );
 
-        } catch( IOException e ) {
+        } catch ( IOException e ) {
             log.error( e.toString() );
             return "";
         }
@@ -332,7 +332,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         tags.put( "doc_type", doctypeStr );
 
         // if user is superadmin or useradmin lets add superadmin button
-        if( checkAdminRights( user ) || checkUserAdminrole( user.getUserId(), 2 ) ) {
+        if ( checkAdminRights( user ) || checkUserAdminrole( user.getUserId(), 2 ) ) {
             tags.put( "superadmin", superadmin.toString() );
         } else {
             tags.put( "superadmin", "" );
@@ -409,11 +409,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         // create a db connection an get meta data
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
         sqlStr = "select * from images where meta_id = " + meta_id + " and name = " + img_no;
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        if( dbc.executeQuery().size() > 0 ) {
+        if ( dbc.executeQuery().size() > 0 ) {
             sqlStr = "update images";
             sqlStr += " set imgurl      = '" + image.getImageRef() + "'";
             sqlStr += ",width       = " + image.getImageWidth();
@@ -432,9 +430,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             sqlStr += " and name = " + img_no;
 
             dbc.setSQLString( sqlStr );
-            dbc.createStatement();
             dbc.executeUpdateQuery();
-            dbc.clearResultSet();
 
         } else {
             sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, target_name, align, alt_text, low_scr, linkurl, meta_id, name)" + " values('" + image.getImageRef() + "'";
@@ -454,15 +450,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             sqlStr += "," + img_no + ")";
 
             dbc.setSQLString( sqlStr );
-            dbc.createStatement();
             dbc.executeUpdateQuery();
-            dbc.clearResultSet();
         }
 
         this.updateLogs( "ImageRef " + img_no + " =" + image.getImageRef() + " in  " + "[" + meta_id + "] modified by user: [" + user.getFullName() + "]" );
 
         // close connection
-        dbc.closeConnection();
         dbc = null;
 
     }
@@ -479,20 +472,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         //System.out.println("FilePath: " + file.toString()) ;
 
         //If meta_id is a file internalDocument we have to delete the file from file system
-        if( file.exists() ) {
+        if ( file.exists() ) {
             file.delete();
         }
 
         // Create a db connection and execte sp DocumentDelete on meta_id
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         dbc.executeUpdateQuery();
         this.updateLogs( "Document  " + "[" + meta_id + "] ALL deleted by user: [" + user.getFullName() + "]" );
 
         //close connection
-        dbc.closeConnection();
         dbc = null;
 
     }
@@ -505,7 +495,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         String sqlStr = "AddExistingDocToMenu  " + meta_id + ", " + existing_meta_id + ", " + doc_menu_no;
         int addDoc = sqlUpdateProcedure( sqlStr );
 
-        if( 1 == addDoc ) {	// if existing doc is added to the menu
+        if ( 1 == addDoc ) {	// if existing doc is added to the menu
             this.updateLogs( "(AddExisting) Child links for [" + meta_id + "] updated by user: [" + user.getFullName() + "]" );
         }
     }
@@ -515,20 +505,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         // create a db connection
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
         //	 m_output.append("Childs"  + childs.toString() + "\n");
         //	 m_output.append("sort_no" + sort_no.toString() + "\n");
 
 
         // update child table
-        for( int i = 0; i < childs.size(); i++ ) {
+        for ( int i = 0; i < childs.size(); i++ ) {
             sqlStr = "update childs\n";
             sqlStr += "set manual_sort_order = " + sort_no.elementAt( i ).toString() + "\n";
             sqlStr += "where meta_id = " + meta_id + " and \n";
             sqlStr += "to_meta_id=" + childs.elementAt( i ).toString();
             dbc.setSQLString( sqlStr );
-            dbc.createStatement();
             dbc.executeUpdateQuery();
         }
 
@@ -539,7 +527,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
         //close connection
-        dbc.closeConnection();
         dbc = null;
 
     }
@@ -552,9 +539,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         String childStr = "[";
         // create a db connection an get meta data
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
-        for( int i = 0; i < childsThisMenu.length; i++ ) {
+        for ( int i = 0; i < childsThisMenu.length; i++ ) {
             sqlStr = "delete from childs\n";
             sqlStr += " where to_meta_id =" + childsThisMenu[i] + "\n";
             sqlStr += " and meta_id = " + meta_id;
@@ -568,11 +554,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
             dbc.setSQLString( sqlStr );
-            dbc.createStatement();
             dbc.executeUpdateQuery();
 
             childStr += childsThisMenu[i];
-            if( i < childsThisMenu.length - 1 )
+            if ( i < childsThisMenu.length - 1 )
                 childStr += ",";
         }
         childStr += "]";
@@ -580,7 +565,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         this.updateLogs( "Childs " + childStr + " from " + "[" + meta_id + "] deleted by user: [" + user.getFullName() + "]" );
 
         //close connection
-        dbc.closeConnection();
         dbc = null;
     }
 
@@ -598,14 +582,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      **/
     public String[] copyDocs( int meta_id, int doc_menu_no, UserDomainObject user, String[] childsThisMenu, String copyPrefix ) {
 
-        if( childsThisMenu != null && childsThisMenu.length > 0 ) {
+        if ( childsThisMenu != null && childsThisMenu.length > 0 ) {
 
             StringBuffer logchilds = new StringBuffer( childsThisMenu[0] );
-            for( int i = 1; i < childsThisMenu.length; ++i ) {
+            for ( int i = 1; i < childsThisMenu.length; ++i ) {
                 logchilds.append( "," + childsThisMenu[i] );
             }
             String[] uncopyable = sqlProcedure( "CheckForFileDocs", new String[]{logchilds.toString()} );
-            if( uncopyable.length == 0 ) {
+            if ( uncopyable.length == 0 ) {
                 sqlUpdateProcedure( "CopyDocs", new String[]{logchilds.toString(), "" + meta_id, "" + doc_menu_no, "" + user.getUserId(), copyPrefix} );
                 this.updateLogs( "Childs [" + logchilds.toString() + "] on [" + meta_id + "] copied by user: [" + user.getFullName() + "]" );
             }
@@ -623,18 +607,16 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         String childStr = "[";
         // create a db connection an get meta data
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
-        for( int i = 0; i < childsThisMenu.length; i++ ) {
+        for ( int i = 0; i < childsThisMenu.length; i++ ) {
             sqlStr = "update meta";
             sqlStr += " set archive = 1";
             sqlStr += " where meta_id =" + childsThisMenu[i] + "\n";
 
             dbc.setSQLString( sqlStr );
-            dbc.createStatement();
             dbc.executeUpdateQuery();
             childStr += childsThisMenu[i];
-            if( i < childsThisMenu.length - 1 )
+            if ( i < childsThisMenu.length - 1 )
                 childStr += ",";
         }
         childStr += "]";
@@ -642,7 +624,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         this.updateLogs( "Childs " + childStr + " from " + "[" + meta_id + "] archived by user: [" + user.getFullName() + "]" );
 
         //close connection
-        dbc.closeConnection();
         dbc = null;
     }
 
@@ -654,7 +635,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         // create a db connection an get meta data
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
 
         // update url doc
@@ -664,11 +644,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         sqlStr += " where meta_id = " + meta_id;
 
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         dbc.executeUpdateQuery();
 
         // close connection
-        dbc.closeConnection();
         dbc = null;
 
         this.updateLogs( "UrlDoc [" + meta_id + "] modified by user: [" + user.getFullName() + "]" );
@@ -683,7 +661,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         // create a db connection an get meta data
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
 
         // create new url doc
@@ -695,11 +672,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         sqlStr += "','se')";
 
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         dbc.executeUpdateQuery();
 
         // close connection
-        dbc.closeConnection();
         dbc = null;
 
         this.activateChild( meta_id, user );
@@ -716,26 +691,20 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         imcode.server.Table url_doc;
 
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
         sqlStr = "select doc_type from meta where meta_id = " + meta_id;
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         Vector vec_doc_type = dbc.executeQuery();
-        dbc.clearResultSet();
 
-        if( Integer.parseInt( vec_doc_type.elementAt( 0 ).toString() ) == 5 ) {
+        if ( Integer.parseInt( vec_doc_type.elementAt( 0 ).toString() ) == 5 ) {
             sqlStr = "select * from url_docs where meta_id = " + meta_id;
             dbc.setSQLString( sqlStr );
-            dbc.createStatement();
             url_doc = new Table( dbc.executeQuery() );
             url_doc.addFieldNames( dbc.getMetaData() );
-            dbc.clearResultSet();
         } else
             url_doc = null;
 
         //close connection
-        dbc.closeConnection();
         dbc = null;
 
         return url_doc;
@@ -750,7 +719,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         // create a db connection an get meta data
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
 
         // create new url doc
@@ -758,11 +726,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         sqlStr += "values(" + meta_id + ",'" + doc.getString( "frame_set" ) + "')";
 
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         dbc.executeUpdateQuery();
 
         // close connection
-        dbc.closeConnection();
         dbc = null;
 
         this.activateChild( meta_id, user );
@@ -779,7 +745,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         // create a db connection an get meta data
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
 
         // create new url doc
@@ -788,11 +753,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         sqlStr += "where meta_id  = " + meta_id;
 
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         dbc.executeUpdateQuery();
 
         // close connection
-        dbc.closeConnection();
 
         this.updateLogs( "FramesetDoc [" + meta_id + "] updated by user: [" + user.getFullName() + "]" );
 
@@ -816,27 +779,19 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         String html_str = "";
 
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
         sqlStr = "select doc_type from meta where meta_id = " + meta_id;
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         Vector vec_doc_type = dbc.executeQuery();
-        dbc.clearResultSet();
 
-        if( Integer.parseInt( vec_doc_type.elementAt( 0 ).toString() ) == 7 ) {
+        if ( Integer.parseInt( vec_doc_type.elementAt( 0 ).toString() ) == 7 ) {
             sqlStr = "select frame_set from frameset_docs where meta_id = " + meta_id;
             dbc.setSQLString( sqlStr );
-            dbc.createStatement();
             frame_set = dbc.executeQuery();
-            dbc.clearResultSet();
             html_str = frame_set.elementAt( 0 ).toString();
-        } else
+        } else {
             html_str = null;
-
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
+        }
 
         return html_str;
 
@@ -850,26 +805,20 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         ExternalDocType external_doc = null;
 
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
         sqlStr = "select doc_type from meta where meta_id = " + meta_id;
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         Vector vec_doc_type = dbc.executeQuery();
-        dbc.clearResultSet();
 
         int doc_type = Integer.parseInt( vec_doc_type.elementAt( 0 ).toString() );
-        if( doc_type > 100 ) {
-            for( int i = 0; i < m_ExDoc.length && m_ExDoc[i] != null; i++ )
-                if( m_ExDoc[i].getDocType() == doc_type ) {
+        if ( doc_type > 100 ) {
+            for ( int i = 0; i < m_ExDoc.length && m_ExDoc[i] != null; i++ )
+                if ( m_ExDoc[i].getDocType() == doc_type ) {
                     //		external_doc = new ExternalDocType(m_ExDoc[i].getDocType(),m_ExDoc[i].getCallServlet(),
                     //	m_ExDoc[i].getDocName(),m_ExDoc[i].getParamStr()) ;
                     external_doc = m_ExDoc[i];
                 }
         }
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
 
         return external_doc;
 
@@ -882,20 +831,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         String sqlStr = "";
 
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
         sqlStr = "delete from childs where meta_id = " + parent_meta_id;
         sqlStr += "and to_meta_id = " + meta_id;
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         dbc.executeUpdateQuery();
 
         this.updateLogs( "Child [" + meta_id + "] removed from " + parent_meta_id + "by user: [" + user.getFullName() + "]" );
-
-
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
 
     }
 
@@ -907,47 +849,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         String sqlStr = "";
 
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
         sqlStr = "update meta\n";
         sqlStr += "set activate=1\n";
         sqlStr += "where meta_id = " + meta_id;
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         dbc.executeUpdateQuery();
 
         this.updateLogs( "Child [" + meta_id + "] activated  " + "by user: [" + user.getFullName() + "]" );
-
-
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
-
-    }
-
-    /**
-     Deactivate (sigh) child from child-table.
-     **/
-    public void inActiveChild( int meta_id, imcode.server.user.UserDomainObject user ) {
-
-        String sqlStr = "";
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-        sqlStr = "update meta\n";
-        sqlStr += "set activate=0\n";
-        sqlStr += "where meta_id = " + meta_id;
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
-
-        this.updateLogs( "Child [" + meta_id + "] made inactive  " + "by user: [" + user.getFullName() + "]" );
-
-
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
 
     }
 
@@ -956,27 +865,30 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      @deprecated Use {@link #sqlProcedure(String, String[])} instead.
      **/
     public String[] sqlQuery( String sqlQuery ) {
+        return sqlQuery( sqlQuery, null );
+    }
 
-        Vector data = new Vector();
+    public String[] sqlQuery( String sqlQuery, String[] queryParameters ) {
+        DBConnect dbc = new DBConnect( m_conPool );
+        dbc.setSQLString( sqlQuery, queryParameters );
+        List data = dbc.executeQuery();
 
-        DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-        dbc.getConnection();
-        dbc.createStatement();
-        data = dbc.executeQuery();
+        return convertResultListToArray( data );
+    }
 
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-
-        if( data != null ) {
-            String result[] = new String[data.size()];
-            for( int i = 0; i < data.size(); i++ ) {
-                result[i] = null != data.elementAt( i ) ? data.elementAt( i ).toString() : null;
-            }
-            return result;
-        } else {
+    private static String[] convertResultListToArray( List data ) {
+        if ( null == data ) {
             return null;
         }
+
+        String result[] = new String[data.size()];
+        for ( int i = 0; i < data.size(); i++ ) {
+            result[i] =
+                    ( null == data.get( i ) )
+                    ? null
+                    : data.get( i ).toString();
+        }
+        return result;
     }
 
     /**
@@ -984,23 +896,15 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      @deprecated Use {@link #sqlProcedure(String, String[])} instead.
      **/
     public String sqlQueryStr( String sqlQuery ) {
-        Vector data = new Vector();
-
-        DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-        dbc.getConnection();
-        dbc.createStatement();
-        data = dbc.executeQuery();
-
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-
-        if( data.size() > 0 ) {
-            return null != data.elementAt( 0 ) ? data.elementAt( 0 ).toString() : null;
-        } else {
-            return null;
-        }
+        return sqlQueryStr( sqlQuery, null );
     }
+
+    public String sqlQueryStr( String sqlQuery, String[] params ) {
+        String[] data = sqlQuery( sqlQuery, params );
+
+        return getFirstElementOfResultArrayOrNull( data );
+    }
+
 
     /**
      Send a sql update query to the database
@@ -1009,10 +913,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public void sqlUpdateQuery( String sqlStr ) {
         DBConnect dbc = new DBConnect( m_conPool );
         dbc.setSQLString( sqlStr );
-        dbc.getConnection();
-        dbc.createStatement();
         dbc.executeUpdateQuery();
-        dbc.closeConnection();
     }
 
     /**
@@ -1020,25 +921,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      @deprecated Use {@link #sqlProcedure(String, String[])} instead.
      **/
     public String[] sqlProcedure( String procedure ) {
-
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
         dbc.setProcedure( procedure );
-        // dbc.createStatement() ;
-        Vector data = dbc.executeProcedure();
+        List data = dbc.executeProcedure();
 
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-
-        if( data != null ) {
-            String result[] = new String[data.size()];
-            for( int i = 0; i < data.size(); i++ ) {
-                result[i] = null != data.elementAt( i ) ? data.elementAt( i ).toString() : null;
-            }
-            return result;
-        }
-        return null;
+        return convertResultListToArray( data );
     }
 
     /**
@@ -1058,26 +945,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      @param trim      Whether to String.trim() the results.
      **/
     public String[] sqlProcedure( String procedure, String[] params, boolean trim ) {
-        Vector data = new Vector();
-
         DBConnect dbc = new DBConnect( m_conPool );
         dbc.setTrim( trim );
-        dbc.getConnection();
 
         dbc.setProcedure( procedure, params );
-        data = dbc.executeProcedure();
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
+        List data = dbc.executeProcedure();
 
-        if( data != null ) {
-            String result[] = new String[data.size()];
-            for( int i = 0; i < data.size(); i++ ) {
-                result[i] = null != data.elementAt( i ) ? data.elementAt( i ).toString() : null;
-            }
-            return result;
-        }
-        return null;
+        return convertResultListToArray( data );
     }
 
     /**
@@ -1088,12 +962,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      **/
     public int sqlUpdateProcedure( String procedure, String[] params ) {
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
         dbc.setProcedure( procedure, params );
         int res = dbc.executeUpdateProcedure();
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
         return res;
     }
 
@@ -1102,26 +972,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      @deprecated Use {@link #sqlProcedureStr(String, String[])} instead.
      **/
     public String sqlProcedureStr( String procedure ) {
-        Vector data;
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-        dbc.setProcedure( procedure );
-        data = dbc.executeProcedure();
-
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-
-        if( data != null ) {
-
-            if( data.size() > 0 ) {
-                return null != data.elementAt( 0 ) ? data.elementAt( 0 ).toString() : null;
-            } else {
-                return null;
-            }
-        } else
-            return null;
+        return sqlProcedureStr( procedure, null );
     }
 
     /**
@@ -1135,27 +986,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      Send a procedure to the database and return a string.
      **/
     public String sqlProcedureStr( String procedure, String[] params, boolean trim ) {
+        String[] data = sqlProcedure( procedure, params, trim );
 
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.setTrim( trim );
-        dbc.getConnection();
-        dbc.setProcedure( procedure, params );
-        List data = dbc.executeProcedure();
+        return getFirstElementOfResultArrayOrNull( data );
+    }
 
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-
-        if( data != null ) {
-
-            if( data.size() > 0 ) {
-                Object obj = data.get( 0 );
-                return null != obj ? obj.toString() : null;
-            } else {
-                return null;
-            }
-        } else
+    private static String getFirstElementOfResultArrayOrNull( String[] data ) {
+        if ( 0 == data.length ) {
             return null;
+        }
+        return ( null == data[0] )
+                ? null
+                : data[0].toString();
     }
 
     /**
@@ -1164,12 +1006,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      **/
     public int sqlUpdateProcedure( String procedure ) {
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
         dbc.setProcedure( procedure );
         int res = dbc.executeUpdateProcedure();
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
         return res;
     }
 
@@ -1182,41 +1020,28 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String[] sqlQueryExt( String sqlQuery ) {
 
         DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-        dbc.getConnection();
-        dbc.createStatement();
-        Vector data = dbc.executeQuery();
+        List data = dbc.executeQuery();
 
         String[] meta = dbc.getMetaData();
 
-        if( data.size() > 0 ) {
-            String result[] = new String[data.size() + dbc.getColumnCount() + 1];
-
-            // no of fields
-            result[0] = dbc.getColumnCount() + "";
-
-            // meta
-            int i = 0;
-            for( i = 0; i < dbc.getColumnCount(); i++ )
-                result[i + 1] = meta[i];
-
-            // data
-            for( int j = 0; j < data.size(); j++ )
-                result[j + i + 1] = null != data.elementAt( j ) ? data.elementAt( j ).toString() : null;
-
-            dbc.clearResultSet();
-            dbc.closeConnection();
-            dbc = null;
-            data = null;
-            meta = null;
-            return result;
-        } else {
-            dbc.clearResultSet();
-            dbc.closeConnection();
-            dbc = null;
-            data = null;
-            meta = null;
-            return null;
+        if ( 0 == data.size() ) {
+            return null ;
         }
+        String result[] = new String[data.size() + dbc.getColumnCount() + 1];
+
+        // no of fields
+        result[0] = dbc.getColumnCount() + "";
+
+        // meta
+        int i = 0;
+        for ( i = 0; i < dbc.getColumnCount(); i++ )
+            result[i + 1] = meta[i];
+
+        // data
+        for ( int j = 0; j < data.size(); j++ )
+            result[j + i + 1] = null != data.get( j ) ? data.get( j ).toString() : null;
+
+        return result;
 
     }
 
@@ -1231,13 +1056,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String[] sqlProcedureExt( String procedure ) {
 
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
         dbc.setProcedure( procedure );
 
         Vector data = dbc.executeProcedure();
         String[] meta = dbc.getMetaData();
 
-        if( data != null && data.size() > 0 ) {
+        if ( data != null && data.size() > 0 ) {
 
             String result[] = new String[data.size() + dbc.getColumnCount() + 1];
 
@@ -1246,22 +1070,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
             // meta
             int i = 0;
-            for( i = 0; i < dbc.getColumnCount(); i++ )
+            for ( i = 0; i < dbc.getColumnCount(); i++ )
                 result[i + 1] = meta[i];
 
             // data
-            for( int j = 0; j < data.size(); j++ )
+            for ( int j = 0; j < data.size(); j++ )
                 result[j + i + 1] = null != data.elementAt( j ) ? data.elementAt( j ).toString() : null;
 
-            dbc.clearResultSet();
-            dbc.closeConnection();
             dbc = null;
             data = null;
             meta = null;
             return result;
         } else {
-            dbc.clearResultSet();
-            dbc.closeConnection();
             dbc = null;
             data = null;
             meta = null;
@@ -1276,8 +1096,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public Hashtable sqlQueryHash( String sqlQuery ) {
 
         DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-        dbc.getConnection();
-        dbc.createStatement();
 
         Vector data = dbc.executeQuery();
         String[] meta = dbc.getMetaData();
@@ -1286,16 +1104,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         Hashtable result = new Hashtable( columns, 0.5f );
 
-        dbc.clearResultSet();
-        dbc.closeConnection();
+        if ( data.size() > 0 ) {
 
-        if( data.size() > 0 ) {
-
-            for( int i = 0; i < columns; i++ ) {
+            for ( int i = 0; i < columns; i++ ) {
                 String temp_str[] = new String[data.size() / columns];
                 int counter = 0;
 
-                for( int j = i; j < data.size(); j += columns )
+                for ( int j = i; j < data.size(); j += columns )
                     temp_str[counter++] = null != data.elementAt( j ) ? data.elementAt( j ).toString() : null;
 
                 result.put( meta[i], temp_str );
@@ -1315,7 +1130,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public Hashtable sqlProcedureHash( String procedure ) {
 
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
         dbc.setProcedure( procedure );
 
         Vector data = dbc.executeProcedure();
@@ -1324,16 +1138,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         Hashtable result = new Hashtable( columns, 0.5f );
 
-        dbc.clearResultSet();
-        dbc.closeConnection();
+        if ( data.size() > 0 ) {
 
-        if( data.size() > 0 ) {
-
-            for( int i = 0; i < columns; i++ ) {
+            for ( int i = 0; i < columns; i++ ) {
                 String temp_str[] = new String[data.size() / columns];
                 int counter = 0;
 
-                for( int j = i; j < data.size(); j += columns ) {
+                for ( int j = i; j < data.size(); j += columns ) {
                     temp_str[counter++] = null != data.elementAt( j ) ? data.elementAt( j ).toString() : null;
                 }
                 result.put( meta[i], temp_str );
@@ -1359,11 +1170,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         DBConnect dbc = new DBConnect( m_conPool );
         dbc.setTrim( trim );
-        dbc.getConnection();
-        if( params.length > 0 ) {
+        if ( params.length > 0 ) {
             StringBuffer procedureBuffer = new StringBuffer( procedure );
             procedureBuffer.append( " ?" );
-            for( int i = 1; i < params.length; ++i ) {
+            for ( int i = 1; i < params.length; ++i ) {
                 procedureBuffer.append( ",?" );
             }
             procedure = procedureBuffer.toString();
@@ -1372,13 +1182,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         dbc.setProcedure( procedure, params );
         data = dbc.executeProcedure();
         int columns = dbc.getColumnCount();
-        dbc.clearResultSet();
-        dbc.closeConnection();
         dbc = null;
 
-        if( data != null && columns > 0 ) {
+        if ( data != null && columns > 0 ) {
             String result[][] = new String[data.size() / columns][columns];
-            for( int i = 0; i < data.size(); i++ ) {
+            for ( int i = 0; i < data.size(); i++ ) {
                 result[i / columns][i % columns] = null != data.elementAt( i ) ? data.elementAt( i ).toString() : null;
             }
             return result;
@@ -1395,22 +1203,19 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         Vector data = new Vector();
 
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
         dbc.setProcedure( procedure );
 
         data = dbc.executeProcedure();
         int columns = dbc.getColumnCount();
 
-        if( columns == 0 )
+        if ( columns == 0 )
             return new String[0][0];
 
         int rows = data.size() / columns;
-        dbc.clearResultSet();
-        dbc.closeConnection();
 
         String result[][] = new String[rows][columns];
-        for( int i = 0; i < rows; i++ ) {
-            for( int j = 0; j < columns; j++ ) {
+        for ( int i = 0; i < rows; i++ ) {
+            for ( int j = 0; j < columns; j++ ) {
                 result[i][j] = null != data.elementAt( i * columns + j ) ? data.elementAt( i * columns + j ).toString() : null;
             }
 
@@ -1428,22 +1233,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         Vector data = new Vector();
 
         DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-        dbc.getConnection();
-        dbc.createStatement();
 
         data = dbc.executeQuery();
         int columns = dbc.getColumnCount();
 
-        if( columns == 0 )
+        if ( columns == 0 )
             return new String[0][0];
 
         int rows = data.size() / columns;
-        dbc.clearResultSet();
-        dbc.closeConnection();
 
         String result[][] = new String[rows][columns];
-        for( int i = 0; i < rows; i++ ) {
-            for( int j = 0; j < columns; j++ ) {
+        for ( int i = 0; i < rows; i++ ) {
+            for ( int j = 0; j < columns; j++ ) {
                 result[i][j] = null != data.elementAt( i * columns + j ) ? data.elementAt( i * columns + j ).toString() : null;
             }
 
@@ -1474,12 +1275,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String parseDoc( java.util.List variables, String admin_template_name, String lang_prefix ) {
         try {
             String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/admin/" + admin_template_name ) );
-            if( variables == null ) {
+            if ( variables == null ) {
                 return htmlStr;
             }
             String[] foo = new String[variables.size()];
             return imcode.util.Parser.parseDoc( htmlStr, (String[])variables.toArray( foo ) );
-        } catch( IOException ex ) {
+        } catch ( IOException ex ) {
             log.error( ex.toString() );
             return "";
         }
@@ -1491,15 +1292,15 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String parseExternalDoc( java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type ) {
         try {
             String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/" + doc_type + "/" + external_template_name ) );
-            if( variables == null ) {
+            if ( variables == null ) {
                 return htmlStr;
             }
             String[] foo = new String[variables.size()];
             return imcode.util.Parser.parseDoc( htmlStr, (String[])variables.toArray( foo ) );
-        } catch( RuntimeException e ) {
+        } catch ( RuntimeException e ) {
             log.error( "parseExternalDoc(Vector, String, String, String): RuntimeException", e );
             throw e;
-        } catch( IOException e ) {
+        } catch ( IOException e ) {
             log.error( "parseExternalDoc(Vector, String, String, String): IOException", e );
             return "";
         }
@@ -1511,15 +1312,15 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String parseExternalDoc( java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type, String templateSet ) {
         try {
             String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/" + doc_type + "/" + templateSet + "/" + external_template_name ) );
-            if( variables == null ) {
+            if ( variables == null ) {
                 return htmlStr;
             }
             String[] foo = new String[variables.size()];
             return imcode.util.Parser.parseDoc( htmlStr, (String[])variables.toArray( foo ) );
-        } catch( RuntimeException e ) {
+        } catch ( RuntimeException e ) {
             log.error( "parseExternalDoc(Vector, String, String, String): RuntimeException", e );
             throw e;
-        } catch( IOException e ) {
+        } catch ( IOException e ) {
             log.error( "parseExternalDoc(Vector, String, String, String): IOException", e );
             return "";
         }
@@ -1535,18 +1336,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         DBConnect dbc = new DBConnect( m_conPool );
         String sqlStr = "select doc_type,lang_prefix from meta where meta_id = " + meta_id;
         dbc.setSQLString( sqlStr );
-        dbc.getConnection();
-        dbc.createStatement();
         data = dbc.executeQuery();
 
-        dbc.clearResultSet();
-        dbc.closeConnection();
         dbc = null;
 
-        if( Integer.parseInt( data.elementAt( 0 ).toString() ) > 100 ) {
-            return new File( m_TemplateHome, (data.elementAt( 1 ).toString() + "/" + data.elementAt( 0 ).toString() + "/") );
+        if ( Integer.parseInt( data.elementAt( 0 ).toString() ) > 100 ) {
+            return new File( m_TemplateHome, ( data.elementAt( 1 ).toString() + "/" + data.elementAt( 0 ).toString() + "/" ) );
         } else {
-            return new File( m_TemplateHome, (data.elementAt( 1 ).toString() + "/") );
+            return new File( m_TemplateHome, ( data.elementAt( 1 ).toString() + "/" ) );
         }
     }
 
@@ -1632,15 +1429,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public int getDocType( int meta_id ) {
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
         dbc.setProcedure( "GetDocType " + meta_id );
         Vector data = dbc.executeProcedure();
-        dbc.clearResultSet();
-        dbc.closeConnection();
         dbc = null;
 
-        if( data != null ) {
-            if( data.size() > 0 )
+        if ( data != null ) {
+            if ( data.size() > 0 )
                 return Integer.parseInt( data.elementAt( 0 ).toString() );
             else
                 return 0;
@@ -1664,9 +1458,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         String checkAdminSql = "CheckAdminRights " + currUser_id;
         String[] roles = sqlProcedure( checkAdminSql );
 
-        for( int i = 0; i < roles.length; i++ ) {
+        for ( int i = 0; i < roles.length; i++ ) {
             String aRole = roles[i];
-            if( aRole.equalsIgnoreCase( "0" ) )
+            if ( aRole.equalsIgnoreCase( "0" ) )
                 return true;
         }
         return false;
@@ -1686,21 +1480,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public boolean checkDocRights( int meta_id, UserDomainObject user ) {
         try {
             DBConnect dbc = new DBConnect( m_conPool );
-            dbc.getConnection();
 
             String sqlStr = "GetUserPermissionSet";
             String[] sqlAry = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
             dbc.setProcedure( sqlStr, sqlAry );
             Vector perms = dbc.executeProcedure();
-            dbc.clearResultSet();
-            dbc.closeConnection();
 
-            if( perms.size() > 0 && Integer.parseInt( (String)perms.elementAt( 0 ) ) < 4 ) {
+            if ( perms.size() > 0 && Integer.parseInt( (String)perms.elementAt( 0 ) ) < 4 ) {
                 return true;
             } else {
                 return false;
             }
-        } catch( RuntimeException ex ) {
+        } catch ( RuntimeException ex ) {
             log.error( "Exception in checkDocRights(int,User)", ex );
             throw ex;
         }
@@ -1715,26 +1506,23 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public boolean checkDocAdminRightsAny( int meta_id, UserDomainObject user, int permission ) {
         try {
             DBConnect dbc = new DBConnect( m_conPool );
-            dbc.getConnection();
 
             String sqlStr = "GetUserPermissionSet";
             String[] sqlAry = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
             dbc.setProcedure( sqlStr, sqlAry );
             Vector perms = dbc.executeProcedure();
-            dbc.clearResultSet();
-            dbc.closeConnection();
 
             int set_id = Integer.parseInt( (String)perms.elementAt( 0 ) );
             int set = Integer.parseInt( (String)perms.elementAt( 1 ) );
 
-            if( perms.size() > 0 && set_id == 0		// User has full permission for this internalDocument
-                || (set_id < 3 && ((set & permission) > 0))	// User has at least one of the permissions given.
+            if ( perms.size() > 0 && set_id == 0		// User has full permission for this internalDocument
+                    || ( set_id < 3 && ( ( set & permission ) > 0 ) )	// User has at least one of the permissions given.
             ) {
                 return true;
             } else {
                 return false;
             }
-        } catch( RuntimeException ex ) {
+        } catch ( RuntimeException ex ) {
             log.error( "Exception in checkDocAdminRightsAny(int,User,int)", ex );
             throw ex;
         }
@@ -1749,29 +1537,26 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public boolean checkDocAdminRights( int meta_id, UserDomainObject user, int permission ) {
         try {
             DBConnect dbc = new DBConnect( m_conPool );
-            dbc.getConnection();
             String sqlStr = "GetUserPermissionSet";
             String[] sqlAry = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
             dbc.setProcedure( sqlStr, sqlAry );
             Vector perms = dbc.executeProcedure();
-            dbc.clearResultSet();
-            dbc.closeConnection();
 
-            if( perms.size() == 0 ) {
+            if ( perms.size() == 0 ) {
                 return false;
             }
 
             int set_id = Integer.parseInt( (String)perms.elementAt( 0 ) );
             int set = Integer.parseInt( (String)perms.elementAt( 1 ) );
 
-            if( set_id == 0		// User has full permission for this internalDocument
-                || (set_id < 3 && ((set & permission) == permission))	// User has all the permissions given.
+            if ( set_id == 0		// User has full permission for this internalDocument
+                    || ( set_id < 3 && ( ( set & permission ) == permission ) )	// User has all the permissions given.
             ) {
                 return true;
             } else {
                 return false;
             }
-        } catch( RuntimeException ex ) {
+        } catch ( RuntimeException ex ) {
             log.error( "Exception in checkDocAdminRights(int,User,int)", ex );
             throw ex;
         }
@@ -1787,21 +1572,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public int getUserHighestPermissionSet( int meta_id, int user_id ) {
         try {
             DBConnect dbc = new DBConnect( m_conPool );
-            dbc.getConnection();
             String sqlStr = "GetUserPermissionSet";
             String[] sqlAry = {String.valueOf( meta_id ), String.valueOf( user_id )};
             dbc.setProcedure( sqlStr, sqlAry );
             Vector perms = dbc.executeProcedure();
-            dbc.clearResultSet();
-            dbc.closeConnection();
 
-            if( perms.size() == 0 ) {
+            if ( perms.size() == 0 ) {
                 return IMCConstants.DOC_PERM_SET_NONE;//nothing was returned so give no rights at all.
             }
 
             int set_id = Integer.parseInt( (String)perms.elementAt( 0 ) );
 
-            switch( set_id ) {
+            switch ( set_id ) {
                 case IMCConstants.DOC_PERM_SET_FULL:         // User has full permission for this internalDocument
                 case IMCConstants.DOC_PERM_SET_RESTRICTED_1: // User has restricted 1 permission for this internalDocument
                 case IMCConstants.DOC_PERM_SET_RESTRICTED_2: // User has restricted 2 permission for this internalDocument
@@ -1812,7 +1594,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                     return DOC_PERM_SET_NONE;               // User has no permission at all for this internalDocument
             }
 
-        } catch( RuntimeException ex ) {
+        } catch ( RuntimeException ex ) {
             log.error( "Exception in getUserHighestPermissionSet(int,int)", ex );
             throw ex;
         }
@@ -1828,7 +1610,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         try {
             file = new String( template, "8859_1" );
-        } catch( UnsupportedEncodingException e ) {
+        } catch ( UnsupportedEncodingException e ) {
             return -2;
         }
 
@@ -1836,42 +1618,35 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         int no_of_img = 0;
         int no_of_url = 0;
 
-        for( int index = 0; (index = file.indexOf( "#txt", index )) != -1; no_of_txt++ )
+        for ( int index = 0; ( index = file.indexOf( "#txt", index ) ) != -1; no_of_txt++ )
             index += 4;
-        for( int index = 0; (index = file.indexOf( "#img", index )) != -1; no_of_img++ )
+        for ( int index = 0; ( index = file.indexOf( "#img", index ) ) != -1; no_of_img++ )
             index += 4;
-        for( int index = 0; (index = file.indexOf( "#url", index )) != -1; no_of_url++ )
+        for ( int index = 0; ( index = file.indexOf( "#url", index ) ) != -1; no_of_url++ )
             index += 4;
 
         // create connectionobject
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
 
         // check if template exists
         sqlStr = "select template_id from templates\n";
         sqlStr += "where simple_name = '" + name + "'";
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         Vector template_id = dbc.executeQuery();
-        dbc.clearResultSet();
-        if( template_id.size() == 0 ) {
+        if ( template_id.size() == 0 ) {
 
             // get new template_id
             sqlStr = "select max(template_id) + 1 from templates\n";
             dbc.setSQLString( sqlStr );
-            dbc.createStatement();
             new_template_id = dbc.executeQuery().elementAt( 0 ).toString();
-            dbc.clearResultSet();
 
             sqlStr = "insert into templates\n";
             sqlStr += "values (" + new_template_id + ",'" + file_name + "','" + name + "','" + lang_prefix + "'," + no_of_txt + "," + no_of_img + "," + no_of_url + ")";
             dbc.setSQLString( sqlStr );
-            dbc.createStatement();
             dbc.executeUpdateQuery();
         } else { //update
-            if( !overwrite ) {
-                dbc.closeConnection();
+            if ( !overwrite ) {
                 dbc = null;
                 return -1;
             }
@@ -1879,11 +1654,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
             sqlStr = "update templates\n" + "set template_name = '" + file_name + "'," + "no_of_txt =" + no_of_txt + "," + "no_of_img =" + no_of_img + "," + "no_of_url =" + no_of_url + "where template_id = " + new_template_id;
             dbc.setSQLString( sqlStr );
-            dbc.createStatement();
             dbc.executeUpdateQuery();
         }
 
-        dbc.closeConnection();
         dbc = null;
 
         File f = new File( m_TemplateHome, "text/" + new_template_id + ".html" );
@@ -1894,7 +1667,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             fw.flush();
             fw.close();
 
-        } catch( IOException e ) {
+        } catch ( IOException e ) {
             return -2;
         }
 
@@ -1915,11 +1688,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         String suffix = null;
         String[] suffixList = {"jpg", "jpeg", "gif", "png", "html", "htm"};
 
-        for( int i = 0; i < suffixList.length; i++ ) { // Looking for a template with one of six suffixes
+        for ( int i = 0; i < suffixList.length; i++ ) { // Looking for a template with one of six suffixes
             File fileObj = new File( m_TemplateHome, "/text/demo/" + template_id + "." + suffixList[i] );
             long date = 0;
             long fileDate = fileObj.lastModified();
-            if( fileObj.exists() && fileDate > date ) {
+            if ( fileObj.exists() && fileDate > date ) {
                 // if a template was not properly removed, the template
                 // with the most recens modified-date is returned
                 date = fileDate;
@@ -1927,7 +1700,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                 try {
                     fr = new BufferedReader( new InputStreamReader( new FileInputStream( fileObj ), "8859_1" ) );
                     suffix = suffixList[i];
-                } catch( IOException e ) {
+                } catch ( IOException e ) {
                     return null; //Could not read
                 }
             } // end IF
@@ -1936,12 +1709,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         char[] buffer = new char[4096];
         try {
             int read;
-            while( (read = fr.read( buffer, 0, 4096 )) != -1 ) {
+            while ( ( read = fr.read( buffer, 0, 4096 ) ) != -1 ) {
                 str.append( buffer, 0, read );
             }
-        } catch( IOException e ) {
+        } catch ( IOException e ) {
             return null;
-        } catch( NullPointerException e ) {
+        } catch ( NullPointerException e ) {
             return null;
         }
 
@@ -1959,17 +1732,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         try {
             fr = new BufferedReader( new FileReader( m_TemplateHome + "/text/" + template_id + ".html" ) );
-        } catch( FileNotFoundException e ) {
+        } catch ( FileNotFoundException e ) {
             log.info( "Failed to find template number " + template_id );
             return null;
         }
 
         try {
             int temp;
-            while( (temp = fr.read()) != -1 ) {
+            while ( ( temp = fr.read() ) != -1 ) {
                 str += (char)temp;
             }
-        } catch( IOException e ) {
+        } catch ( IOException e ) {
             log.info( "Failed to read template number " + template_id );
             return null;
         }
@@ -1985,14 +1758,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         // create connectiobject
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
 
         // delete from database
         sqlStr = "delete from templates_cref\n";
         sqlStr += "where template_id = " + template_id + "\n";
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         dbc.executeUpdateQuery();
 
 
@@ -2001,15 +1772,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         sqlStr = "delete from templates\n";
         sqlStr += "where template_id = " + template_id + "\n";
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         dbc.executeUpdateQuery();
 
-        dbc.closeConnection();
         dbc = null;
 
         // test if template exists and delete it
         File f = new File( m_TemplateHome + "/text/" + template_id + ".html" );
-        if( f.exists() ) {
+        if ( f.exists() ) {
             f.delete();
         }
 
@@ -2025,9 +1794,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         // See if there are templete_id:s with other file-formats and delete them
         // WARNING: Uggly Code
         String[] suffixes = {"jpg", "jpeg", "gif", "png", "htm", "html"};
-        for( int i = 0; i <= 5; i++ ) {
+        for ( int i = 0; i <= 5; i++ ) {
             File file = new File( m_TemplateHome + "/text/demo/" + template_id + "." + suffixes[i] );
-            if( file.exists() )
+            if ( file.exists() )
                 file.delete();
             // doesn't always delete the file, made sure the right template is
             // shown using the file-date & time in getDemoTemplate
@@ -2037,7 +1806,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             FileOutputStream fw = new FileOutputStream( m_TemplateHome + "/text/demo/" + template_id + "." + suffix );
             fw.write( data );
             fw.close();
-        } catch( IOException e ) {
+        } catch ( IOException e ) {
             return -2;
         }
 
@@ -2054,7 +1823,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         // create connectiobject
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
 
         // get lang prefix
@@ -2062,17 +1830,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         sqlStr += "where users.lang_id = lang_prefixes.lang_id\n";
         sqlStr += "and user_id =" + user.getUserId();
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         String lang_prefix = dbc.executeQuery().elementAt( 0 ).toString();
-        dbc.clearResultSet();
 
 
         // get new group_id
         sqlStr = "select max(group_id) + 1 from templategroups\n";
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         String new_group_id = dbc.executeQuery().elementAt( 0 ).toString();
-        dbc.clearResultSet();
 
 
 
@@ -2080,10 +1844,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         sqlStr = "insert into templategroups\n";
         sqlStr += "values(" + new_group_id + ",'" + lang_prefix + "','" + group_name + "')";
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         dbc.executeUpdateQuery();
 
-        dbc.closeConnection();
         dbc = null;
     }
 
@@ -2095,16 +1857,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         // create connectiobject
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
 
         // change name
         sqlStr = "delete from templategroups\n";
         sqlStr += "where group_id = " + group_id + "\n";
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         dbc.executeUpdateQuery();
-        dbc.closeConnection();
         dbc = null;
 
     }
@@ -2117,7 +1876,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         // create connectiobject
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
 
 
         // change name
@@ -2125,10 +1883,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         sqlStr += "set group_name = '" + new_name + "'";
         sqlStr += "where group_id = " + group_id + "\n";
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         dbc.executeUpdateQuery();
 
-        dbc.closeConnection();
         dbc = null;
     }
 
@@ -2152,8 +1908,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         String[] name_list = new String[file_list.length];
 
-        if( file_list != null ) {
-            for( int i = 0; i < name_list.length; i++ ) {
+        if ( file_list != null ) {
+            for ( int i = 0; i < name_list.length; i++ ) {
                 String filename = file_list[i].getName();
                 int dot = filename.indexOf( "." );
                 name_list[i] = dot > -1 ? filename.substring( 0, dot ) : filename;
@@ -2171,7 +1927,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public int deleteDemoTemplate( int template_id ) {
 
         File f = new File( m_TemplateHome + "/text/demo/" + template_id + ".html" );
-        if( f.exists() ) {
+        if ( f.exists() ) {
             f.delete();
             return 0;
         }
@@ -2208,15 +1964,15 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         sd.setStartDocument( startDocument == null ? DEFAULT_STARTDOCUMENT : Integer.parseInt( startDocument ) );
         sd.setSystemMessage( systemMessage );
 
-        if( serverMaster.length > 0 ) {
+        if ( serverMaster.length > 0 ) {
             sd.setServerMaster( serverMaster[0] );
-            if( serverMaster.length > 1 ) {
+            if ( serverMaster.length > 1 ) {
                 sd.setServerMasterAddress( serverMaster[1] );
             }
         }
-        if( webMaster.length > 0 ) {
+        if ( webMaster.length > 0 ) {
             sd.setWebMaster( webMaster[0] );
-            if( webMaster.length > 1 ) {
+            if ( webMaster.length > 1 ) {
                 sd.setWebMasterAddress( webMaster[1] );
             }
         }
@@ -2254,29 +2010,26 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         // Lets build a comma separed string to send to the sproc
         StringBuffer sBuf = new StringBuffer();
-        for( int i = 0; i < meta_id.length; i++ ) {
+        for ( int i = 0; i < meta_id.length; i++ ) {
             sBuf.append( meta_id[i] );
-            if( i != meta_id.length )
+            if ( i != meta_id.length )
                 sBuf.append( "," );
         }
 
         DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
         dbc.setProcedure( "ExistingDocsGetSelectedMetaIds ", sBuf.toString() );
         Vector data = dbc.executeProcedure();
         String[] meta = dbc.getMetaData();
         int columns = dbc.getColumnCount();
-        dbc.clearResultSet();
-        dbc.closeConnection();
         dbc = null;
 
         // Lets build the result into an hashtable
         Hashtable result = new Hashtable( columns, 0.5f );
-        if( data.size() > 0 ) {
-            for( int i = 0; i < columns; i++ ) {
+        if ( data.size() > 0 ) {
+            for ( int i = 0; i < columns; i++ ) {
                 String temp_str[] = new String[data.size() / columns];
                 int counter = 0;
-                for( int j = i; j < data.size(); j += columns )
+                for ( int j = i; j < data.size(); j += columns )
                     temp_str[counter++] = data.elementAt( j ).toString();
                 result.put( meta[i], temp_str );
             }
@@ -2334,11 +2087,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             File file = new File( m_FortunePath, quoteListName );
             StringReader reader = new StringReader( fileCache.getUncachedFileString( file ) );
             QuoteReader quoteReader = new QuoteReader( reader );
-            for( Quote quote; null != (quote = quoteReader.readQuote()); ) {
+            for ( Quote quote; null != ( quote = quoteReader.readQuote() ); ) {
                 theList.add( quote );
             }
             reader.close();
-        } catch( IOException ignored ) {
+        } catch ( IOException ignored ) {
             log.debug( "Failed to load quote-list " + quoteListName );
         }
         return theList;
@@ -2354,7 +2107,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         FileWriter writer = new FileWriter( new File( m_FortunePath, quoteListName ) );
         QuoteWriter quoteWriter = new QuoteWriter( writer );
         Iterator quotesIterator = quoteList.iterator();
-        while( quotesIterator.hasNext() ) {
+        while ( quotesIterator.hasNext() ) {
             quoteWriter.writeQuote( (Quote)quotesIterator.next() );
         }
         writer.flush();
@@ -2370,11 +2123,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             File file = new File( m_FortunePath, pollListName );
             StringReader reader = new StringReader( fileCache.getUncachedFileString( file ) );
             PollReader pollReader = new PollReader( reader );
-            for( Poll poll; null != (poll = pollReader.readPoll()); ) {
+            for ( Poll poll; null != ( poll = pollReader.readPoll() ); ) {
                 theList.add( poll );
             }
             reader.close();
-        } catch( IOException ignored ) {
+        } catch ( IOException ignored ) {
             log.debug( "Failed to load poll-list " + pollListName );
         }
         return theList;
@@ -2390,7 +2143,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         FileWriter writer = new FileWriter( new File( m_FortunePath, pollListName ) );
         PollWriter pollWriter = new PollWriter( writer );
         Iterator pollIterator = pollList.iterator();
-        while( pollIterator.hasNext() ) {
+        while ( pollIterator.hasNext() ) {
             pollWriter.writePoll( (Poll)pollIterator.next() );
         }
         writer.flush();
@@ -2411,16 +2164,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public File getInternalTemplateFolder( int meta_id ) {
         Vector data = new Vector();
 
-        if( meta_id != -1 ) {
+        if ( meta_id != -1 ) {
             DBConnect dbc = new DBConnect( m_conPool );
             String sqlStr = "select doc_type,lang_prefix from meta where meta_id = " + meta_id;
             dbc.setSQLString( sqlStr );
-            dbc.getConnection();
-            dbc.createStatement();
             data = dbc.executeQuery();
 
-            dbc.clearResultSet();
-            dbc.closeConnection();
             dbc = null;
             return new File( m_TemplateHome, data.elementAt( 1 ).toString() + "/" );
 
@@ -2440,14 +2189,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         String[] texts = sqlProcedure( "GetTexts", new String[]{String.valueOf( meta_id )}, false );
         Map textMap = new HashMap();
         Iterator it = Arrays.asList( texts ).iterator();
-        while( it.hasNext() ) {
+        while ( it.hasNext() ) {
             try {
                 it.next(); // the key, not needed
                 String txt_no = (String)it.next();
                 int txt_type = Integer.parseInt( (String)it.next() );
                 String value = (String)it.next();
                 textMap.put( txt_no, new TextDocumentTextDomainObject( value, txt_type ) );
-            } catch( NumberFormatException e ) {
+            } catch ( NumberFormatException e ) {
                 log.error( "SProc 'GetTexts " + meta_id + "' returned a non-number where a number was expected.", e );
                 return null;
             }
@@ -2473,7 +2222,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public ReadrunnerUserData getReadrunnerUserData( UserDomainObject user ) {
         int userId = user.getUserId();
         String[] dbData = sqlProcedure( "GetReadrunnerUserDataForUser", new String[]{String.valueOf( userId )} );
-        if( 0 == dbData.length ) {
+        if ( 0 == dbData.length ) {
             // There was no readrunner-user-data
             return null;
         }
@@ -2486,7 +2235,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             rrUserData.setUses( Integer.parseInt( dbData[0] ) );
             rrUserData.setMaxUses( Integer.parseInt( dbData[1] ) );
             rrUserData.setMaxUsesWarningThreshold( Integer.parseInt( dbData[2] ) );
-            if( null != dbData[3] ) {
+            if ( null != dbData[3] ) {
                 rrUserData.setExpiryDate( dateFormat.parse( dbData[3] ) );
             } else {
                 rrUserData.setExpiryDate( null );
@@ -2495,10 +2244,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             rrUserData.setExpiryDateWarningSent( Integer.parseInt( dbData[5] ) != 0 );
             // Return it
             return rrUserData;
-        } catch( NumberFormatException nfe ) {
+        } catch ( NumberFormatException nfe ) {
             log.error( "GetReadrunnerUserData returned malformed integer-data.", nfe );
             throw nfe;
-        } catch( ParseException pe ) {
+        } catch ( ParseException pe ) {
             log.error( "GetReadrunnerUserData returned malformed date-data: '" + dbData[3] + "'", pe );
             throw new RuntimeException( "GetReadrunnerUserData returned malformed date-data: '" + dbData[3] + "'" );
         }
@@ -2515,7 +2264,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         String expiryDateString = null != rrUserData.getExpiryDate() ? new SimpleDateFormat( "yyyy-MM-dd" ).format( rrUserData.getExpiryDate() ) : null;
 
         String temp[] = {"" + userId, "" + rrUserData.getUses(), "" + rrUserData.getMaxUses(), "" + rrUserData.getMaxUsesWarningThreshold(), expiryDateString, "" + rrUserData.getExpiryDateWarningThreshold(), "" + rrUserData.getExpiryDateWarningSent()};
-        for( int i = 0; i < temp.length; i++ ) {
+        for ( int i = 0; i < temp.length; i++ ) {
             System.out.println( "temp[]= " + temp[i] );
         }
 
@@ -2582,7 +2331,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private Map getUserFlags( String dbData[] ) {
         Map theFlags = new HashMap();
 
-        for( int i = 0; i < dbData.length; i += 4 ) {
+        for ( int i = 0; i < dbData.length; i += 4 ) {
             String flagName = dbData[i + 1];
             int flagType = Integer.parseInt( dbData[i + 2] );
             String flagDescription = dbData[i + 3];

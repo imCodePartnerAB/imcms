@@ -34,11 +34,7 @@ public interface IMCPoolInterface {
 	String[] sqlQuery(String sqlQuery)
 	;
 
-	// Send a sqlquery to the database/set database and return a string array
-	String[] sqlQuery(String sqlQuery,String catalog)
-	;
-
-	// Send a sql update query to the database
+    // Send a sql update query to the database
 	void sqlUpdateQuery(String sqlStr) ;
 
 

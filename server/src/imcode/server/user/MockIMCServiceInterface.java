@@ -122,11 +122,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    public void activateChild( int meta_id, UserDomainObject user ) {
    }
 
-   // make child inactive
-   public void inActiveChild( int meta_id, UserDomainObject user ) {
-   }
-
-   // Parse doc replace variables with data
+    // Parse doc replace variables with data
    public String parseDoc( String htmlStr, Vector variables ) {
       return null;
    }

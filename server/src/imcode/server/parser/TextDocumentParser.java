@@ -107,7 +107,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             Vector user_permission_set = ImcmsAuthenticatorAndUserMapper.sprocGetUserPermissionSet( dbc, meta_id_str, user_id_str );
             if( user_permission_set == null ) {
-                dbc.closeConnection();
                 log.error( "parsePage: GetUserPermissionset returned null" );
                 return ("GetUserPermissionset returned null");
             }
@@ -178,7 +177,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 }
 
                 templates = TemplateMapper.sprocGetTemplatesInGroup( dbc, selected_group );
-                groupnamevec = TemplateMapper.sqlSelectGrouuName( dbc, group_id );
+                groupnamevec = TemplateMapper.sqlSelectGroupName( dbc, group_id );
             }
 
             String[] emp = (String[])user.get( "emphasize" );
@@ -190,34 +189,28 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             Vector childs = (Vector)dbc.executeProcedure();
 
             if( childs == null ) {
-                dbc.closeConnection();
                 log.error( "parsePage: GetChilds returned null" );
                 return ("GetChilds returned null");
             }
 
             int child_cols = dbc.getColumnCount();
             int child_rows = childs.size() / child_cols;
-            dbc.clearResultSet();
 
             // Get the images from the db
             // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
             //					0                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
             dbc.setProcedure( "GetImgs", String.valueOf( meta_id ) );
             Vector images = (Vector)dbc.executeProcedure();
-            dbc.clearResultSet();
             if( images == null ) {
-                dbc.closeConnection();
                 log.error( "parsePage: GetImgs returned null" );
                 return ("GetImgs returned null");
             }
 
             dbc.setProcedure( "SectionGetInheritId", String.valueOf( meta_id ) );
             Vector section_data = (Vector)dbc.executeProcedure();
-            dbc.clearResultSet();
 
             String section_name = null;
             if( section_data == null ) {
-                dbc.closeConnection();
                 log.error( "parsePage: SectionGetInheritId returned null" );
                 return ("SectionGetInheritId returned null");
             } else if( section_data.size() < 2 ) {
@@ -225,7 +218,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             } else {
                 section_name = (String)section_data.get( 1 );
             }
-            dbc.closeConnection();
 
             File admintemplate_path = new File( templatePath, "/" + lang_prefix + "/admin/" );
 
@@ -242,7 +234,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             int images_cols = dbc.getColumnCount();
             int images_rows = images.size() / images_cols;
-            dbc.clearResultSet();
             Iterator imit = images.iterator();
             // This is where we gather all images from the database and put them in our maps.
             while( imit.hasNext() ) {

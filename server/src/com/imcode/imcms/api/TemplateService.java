@@ -64,4 +64,10 @@ public class TemplateService {
         Template[] result = (Template[])temp.toArray( new Template[ temp.size()] );
         return result;
     }
+
+    public Template getTemplate( String templateName ) {
+        TemplateDomainObject template = templateMapper.getTemplate(templateName) ;
+        return new Template(template) ;
+    }
+
 }

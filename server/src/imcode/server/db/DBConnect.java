@@ -12,12 +12,10 @@ public class DBConnect {
     ConnectionPool conPool; // Inet poolmanager
 
     protected Connection con = null;                 // The JDBC Connection
-    protected Statement stmt = null;		    // The JDBC Statement
-    protected ResultSet rs = null;		    // The JDBC ResultSet
+    protected PreparedStatement preparedStatement = null;		    // The JDBC Statement
+    protected CallableStatement callableStatement = null;	    // The JDBC CallableStatement
+    protected ResultSet resultSet = null;		    // The JDBC ResultSet
     protected ResultSetMetaData rsmd = null;	    // The JDBC ResultSetMetaData
-    protected CallableStatement cs = null;	    // The JDBC CallableStatement
-    protected String strSQLString = "";		    // SQL query-string
-    protected String strProcedure = "";		    // Procedure
     protected String[] meta_data;       // Meta info
     protected String catalog = "";		    // Current database
     protected String default_catalog = "";	    // Default database
@@ -33,211 +31,53 @@ public class DBConnect {
 
     // constructor
     public DBConnect( ConnectionPool conPool, String sqlString ) {
-        this.conPool = conPool;
-        strSQLString = sqlString;
+        this(conPool) ;
+        setSQLString(sqlString);
     }
 
-    // get a connection
-    public void getConnection() {
+    private void getConnection() {
         try {
-            con = conPool.getConnection();
+            if (null == con || con.isClosed()) {
+                con = conPool.getConnection();
+            }
         } catch( SQLException ex ) {
             log.error( "getConnection()", ex );
         }
     }
 
-    // create a statement object.
-    public void createStatement() {
-        try {
-            stmt = con.createStatement();						  // Create statement
-        } catch( SQLException ex ) {
-            log.error( "createStatement()", ex );
-        }
-    }
-
-    /**
-     * <p>Execute a database query.
-     */
-    public Vector executeQuery() {
-
-        Vector results = new Vector();
-
-        // Execute SQL-string
-        try {
-            stmt.execute( strSQLString );
-            rs = stmt.getResultSet();
-            rsmd = rs.getMetaData();
-            columnCount = rsmd.getColumnCount();
-            meta_data = new String[columnCount];
-            for( int i = 0; i < columnCount; ) {
-                meta_data[i] = rsmd.getColumnLabel( ++i );
-            }
-
-            while( rs.next() ) {
-                for( int i = 1; i <= columnCount; i++ ) {
-                    String s = rs.getString( i );
-                    if( s == null ) {
-                        s = "";
-                    } else if( trimStr ) {
-                        s = s.trim();
-                    }
-                    results.addElement( s );
-                }
-            }
-
-            rs.close();
-            stmt.close();
-
-        } catch( SQLException e ) {
-            log.error( "executeQuery()", e );
-        }
-
-        return results;
-    }
-
-    /**
-     * <p>Execute a database query with a database name.
-     */
-    public Vector executeQuery( String catalog ) {
-        Vector result = null;
-        try {
-            con.setCatalog( catalog );
-            result = executeQuery();
-        } catch( SQLException e ) {
-            log.error( "executeQuery(String)", e );
-        }
-        return result;
-    }
-
-    /**
-     * <p>Update databasequery.
-     */
-    public void executeUpdateQuery() {
-        // Execute SQL-string
-        try {
-            stmt.executeUpdate( strSQLString );
-            stmt.close();
-        } catch( SQLException e ) {
-            log.error( "executeUpdateQuery()", e );
-        }
-    }
-
-    /**
-     * <p>Execute a database procedure.
-     */
-    public Vector executeProcedure() {
-
-        Vector results = new Vector();
-        try {
-            if( cs == null ) {
-                throw new NullPointerException( "DBConnect.executeProcedure() cs == null" );
-            }
-            rs = cs.executeQuery();
-            if( rs == null ) {
-                throw new NullPointerException( "DBConnect.executeProcedure() rs == null" );
-            }
-            rsmd = rs.getMetaData();
-            columnCount = rsmd.getColumnCount();
-
-            meta_data = new String[columnCount];
-            for( int i = 0; i < columnCount; ) {
-                meta_data[i] = rsmd.getColumnLabel( ++i );
-            }
-            while( rs.next() ) {
-                for( int i = 1; i <= columnCount; i++ ) {
-                    String s = rs.getString( i );
-                    if( null != s && trimStr ) {
-                        results.addElement( s.trim() );
-                    } else {
-                        results.addElement( s );
-                    }
-                }
-            }
-
-            rs.close();
-            cs.close();
-        } catch( SQLException e ) {
-            log.error( "executeProcedure() failed: " + strProcedure, e );
-        }
-        return results;
-    }
-
-
-    /**
-     * <p>Update database procedure.
-     * @return updatecount or -1 if error
-     */
-    public int executeUpdateProcedure() {
-        int res = 0;
-        try {
-            res = cs.executeUpdate();
-            cs.close();
-        } catch( SQLException e ) {
-            log.error( "executeUpdateProcedure() - "+strProcedure, e );
-        }
-        return res;
-    }
-
-
-    /**
-     * <p>Get metadata.
-     */
-    public String[] getMetaData() {
-        return meta_data;
-    }
-
-
-    /**
-     * <p>Get columncount.
-     */
-    public int getColumnCount() {
-        return columnCount;
-    }
-
-
-    /**
-     * <p>Close a database connection.
-     */
-    public void closeConnection() {
-        try {
-            con.close();
-        } catch( SQLException e ) {
-            log.error( "closeConnection()", e );
-        }
-        con = null;
-    }
-
-    /**
-     * <p>Get sqlquery.
-     */
-    public String getSQLString() {
-        return strSQLString;
-    }
-
-
     /**
      * <p>Set sqlquery.
      */
     public void setSQLString( String sqlString ) {
-        strSQLString = sqlString;
+        setSQLString( sqlString, null );
     }
 
+    public void setSQLString( String sqlString, String[] params ) {
+        getConnection();
+        try {
+            preparedStatement = con.prepareStatement(sqlString) ;
+            setParameters(preparedStatement, params);
+        } catch ( SQLException e ) {
+            log.error( "setSQLString("+Arrays.asList(emptyArrayIfNull( params ))+")", e );
+        }
+    }
 
     /**
      * <p>Set procedure.
      */
     public void setProcedure( String procedure, String param ) {
+        getConnection();
         if( procedure == null ) {
             throw new NullPointerException( "DBConnect.setProcedure() procedure == null" );
         }
+        String strProcedure ;
         if( param == null ) {
             strProcedure = "{call " + procedure + "}";
         } else {
             strProcedure = "{call " + procedure + " (?)}";
         }
         try {
-            cs = con.prepareCall( strProcedure );
-            cs.setString( 1, param );
+            prepareCallAndSetParameters( strProcedure, Arrays.asList(new String[] { param }) );
         } catch( SQLException e ) {
             log.error( "", e );
         }
@@ -247,31 +87,25 @@ public class DBConnect {
      * <p>Set procedure.
      */
     public void setProcedure( String procedure, String params[] ) {
+        getConnection();
         if( procedure == null ) {
             throw new NullPointerException( "DBConnect.setProcedure() procedure == null" );
-        }
-        if( params == null ) {
-            throw new NullPointerException( "DBConnect.setProcedure() param == null" );
         }
 
         StringBuffer procStr = new StringBuffer();
         procStr.append( "{call " );
         procStr.append( procedure.trim() );
         procStr.append( "(");
-        for( int i = 0; i < params.length ; i++ ){
+        for( int i = 0; null != params && i < params.length ; i++ ){
             procStr.append( "?" );
             if( i < params.length - 1 ) {
                 procStr.append(",");
             }
         }
         procStr.append(")}");
-        strProcedure = procStr.toString();
 
         try {
-            cs = con.prepareCall( strProcedure );
-            for( int i = 0; i < params.length; ++i ) {
-                cs.setString( i + 1, params[i] );
-            }
+            prepareCallAndSetParameters( procStr.toString(), Arrays.asList(emptyArrayIfNull(params))) ;
         } catch( SQLException ex ) {
             log.error( procStr.toString(), ex );
         }
@@ -287,6 +121,7 @@ public class DBConnect {
         // The string comes in as (for example) "ProcedureName 'String', 47911,'{ThisIsAStringInsideBraces}',17, 'ThisIsAString,WithACommas,And''SingleQuotes'''"
         // This needs to become "ProcedureName (?,?,?,?,?)", and the appropriate calls to setString().
 
+        getConnection();
         StringTokenizer st = new StringTokenizer( procedure, ",' ", true );
         String procedurename = st.nextToken();
         LinkedList params = new LinkedList();
@@ -350,40 +185,181 @@ public class DBConnect {
         result.append( ')' ); // And finally, top it off with a ')'.
 
         // Build the ugly java sql-escape-string. The very reason we need this method at all.
-        strProcedure = "{call " + result.toString() + "}";
+        String strProcedure = "{call " + result.toString() + "}";
         // Prepare the call.
         try {
-            cs = con.prepareCall( strProcedure );
-
-            Iterator it = params.iterator();
-            int i = 0;
-            // Hand over the parameters.
-            while( it.hasNext() ) {
-                String parm = (String)it.next();
-                cs.setString( ++i, parm );
-            }
+            prepareCallAndSetParameters(strProcedure, params) ;
         } catch( SQLException ex ) {
-            String paramstr = "";
+            StringBuffer paramstr = new StringBuffer();
             Iterator it = params.iterator();
-            int i = 0;
             while( it.hasNext() ) {
-                paramstr += (String)it.next();
+                paramstr.append( (String)it.next() );
                 if( it.hasNext() ) {
-                    paramstr += ", ";
+                    paramstr.append(", ");
                 }
             }
-            log.error( "setProcedure(String)", ex );
+            log.error( "setProcedure("+paramstr+")", ex );
         }
+    }
+
+    /**
+     * <p>Execute a database query.
+     */
+    public Vector executeQuery() {
+
+        Vector results = new Vector();
+
+        // Execute SQL-string
+        try {
+            resultSet = preparedStatement.executeQuery();
+            rsmd = resultSet.getMetaData();
+            columnCount = rsmd.getColumnCount();
+            meta_data = new String[columnCount];
+            for( int i = 0; i < columnCount; ) {
+                meta_data[i] = rsmd.getColumnLabel( ++i );
+            }
+
+            while( resultSet.next() ) {
+                for( int i = 1; i <= columnCount; i++ ) {
+                    String s = resultSet.getString( i );
+                    if( s == null ) {
+                        s = "";
+                    } else if( trimStr ) {
+                        s = s.trim();
+                    }
+                    results.addElement( s );
+                }
+            }
+            resultSet.close() ;
+            preparedStatement.close() ;
+
+        } catch( SQLException e ) {
+            log.error( "executeQuery() failed: "+preparedStatement, e );
+        } finally {
+            returnConnection() ;
+        }
+
+        return results;
+    }
+
+    /**
+     * <p>Update databasequery.
+     */
+    public void executeUpdateQuery() {
+        // Execute SQL-string
+        try {
+            preparedStatement.executeUpdate();
+            preparedStatement.close() ;
+        } catch( SQLException e ) {
+            log.error( "executeUpdateQuery() failed: "+preparedStatement, e );
+        } finally {
+            returnConnection() ;
+        }
+    }
+
+    /**
+     * <p>Execute a database procedure.
+     */
+    public Vector executeProcedure() {
+
+        Vector results = new Vector();
+        try {
+            if( callableStatement == null ) {
+                throw new NullPointerException( "DBConnect.executeProcedure() callableStatement == null" );
+            }
+            resultSet = callableStatement.executeQuery();
+            if( resultSet == null ) {
+                throw new NullPointerException( "DBConnect.executeProcedure() resultSet == null" );
+            }
+            rsmd = resultSet.getMetaData();
+            columnCount = rsmd.getColumnCount();
+
+            meta_data = new String[columnCount];
+            for( int i = 0; i < columnCount; ) {
+                meta_data[i] = rsmd.getColumnLabel( ++i );
+            }
+            while( resultSet.next() ) {
+                for( int i = 1; i <= columnCount; i++ ) {
+                    String s = resultSet.getString( i );
+                    if( null != s && trimStr ) {
+                        results.addElement( s.trim() );
+                    } else {
+                        results.addElement( s );
+                    }
+                }
+            }
+            resultSet.close() ;
+            callableStatement.close() ;
+        } catch( SQLException e ) {
+            log.error( "executeProcedure() failed: " + callableStatement, e );
+        } finally {
+            returnConnection() ;
+        }
+        return results;
     }
 
 
     /**
-     * <p>Clear resultset vector.
+     * <p>Update database procedure.
+     * @return updatecount or -1 if error
      */
-    public void clearResultSet() {
-        meta_data = null;
+    public int executeUpdateProcedure() {
+        int res = 0;
+        try {
+            res = callableStatement.executeUpdate();
+            callableStatement.close() ;
+        } catch( SQLException e ) {
+            log.error( "executeUpdateProcedure() - "+callableStatement, e );
+        } finally {
+            returnConnection() ;
+        }
+        return res;
     }
 
+
+    /**
+     * <p>Get metadata.
+     */
+    public String[] getMetaData() {
+        return meta_data;
+    }
+
+
+    /**
+     * <p>Get columncount.
+     */
+    public int getColumnCount() {
+        return columnCount;
+    }
+
+
+    private void prepareCallAndSetParameters( String strProcedure, List params ) throws SQLException {
+        callableStatement = con.prepareCall( strProcedure );
+        setParameters(callableStatement, params ) ;
+    }
+
+    private static String[] emptyArrayIfNull( String[] params ) {
+        if (null == params) {
+            params = new String[]{};
+        }
+        return params;
+    }
+
+    private static void setParameters( PreparedStatement stmt, String[] params ) throws SQLException {
+        params = emptyArrayIfNull( params );
+        setParameters(stmt, Arrays.asList(params));
+    }
+
+    private static void setParameters( PreparedStatement stmt, List params ) throws SQLException {
+        if (null == params ) {
+            return ;
+        }
+        int i = 0;
+        for( Iterator it = params.iterator() ; it.hasNext() ; ) {
+            String param = (String)it.next();
+            stmt.setString( ++i, param );
+        }
+    }
 
     /**
      * <p>Set trim. true = trim strings, false = do not trim strings.
@@ -392,32 +368,17 @@ public class DBConnect {
         trimStr = status;
     }
 
-
-    /**
-     * <p>Execute a sql query and close connection.
-     */
-    public String sqlQueryStr( String sqlStr ) {
-
-        this.getConnection();
-        this.setSQLString( sqlStr );
-        this.createStatement();
-        Vector result = (Vector)this.executeQuery();
-        this.clearResultSet();
-        this.closeConnection();
-        return result.elementAt( 0 ).toString();
+    private void returnConnection() {
+        try {
+            con.close() ;
+            con = null ;
+        } catch ( SQLException e ) {
+            log.error("Failed to close connection.",e) ;
+        }
     }
 
-
-    /**
-     * <p>Execute a sql query and close connection.
-     */
-    public Vector sqlQuery( String sqlStr ) {
-        this.getConnection();
-        this.setSQLString( sqlStr );
-        this.createStatement();
-        Vector result = (Vector)this.executeQuery();
-        this.clearResultSet();
-        this.closeConnection();
-        return result;
+    protected void finalize() throws SQLException {
+        returnConnection() ;
     }
+
 } // END CLASS DBConnect

@@ -324,11 +324,8 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     }
 
     public static Vector sprocGetUserPermissionSet( DBConnect dbc, String meta_id_str, String user_id_str ) {
-        dbc.getConnection();
-        dbc.createStatement();
         dbc.setProcedure( "GetUserPermissionSet", new String[]{meta_id_str, user_id_str} );
         Vector user_permission_set = (Vector)dbc.executeProcedure();
-        dbc.clearResultSet();
         return user_permission_set;
     }
 }

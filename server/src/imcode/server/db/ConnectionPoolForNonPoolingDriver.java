@@ -4,11 +4,13 @@ import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDriver;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool.ObjectPool;
 import org.apache.log4j.Category;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * This class is purpose is to help JDBC drivers that lacks Connection Pooling.
@@ -19,6 +21,7 @@ public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
     private final static String POOLED_DATA_SOURCE_NAME_PREFIX = "imcode.server.db.";
     private final static String URI_FOR_POOLED_DRIVER = "jdbc:apache:commons:dbcp:";
 
+    private ObjectPool connectionPool ;
     private String serverName;
     private String userName;
     private String password;
@@ -68,14 +71,21 @@ public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
         setupPoolingDriver();
 
         s_logDriverInfo( nonPooledDriverClass );
-        s_logDatabaseData( getConnection() );
+        Connection connection = getConnection() ;
+        s_logDatabaseData(connection);
+        connection.close() ;
+    }
+
+    private static String getUsedConnectionsString(ObjectPool connectionPool) {
+        return "Used: "+connectionPool.getNumActive()+"/"+(connectionPool.getNumIdle()+connectionPool.getNumActive()) ;
     }
 
     public Connection getConnection() throws SQLException {
         Connection result = null;
         try {
-            Connection result11 = DriverManager.getConnection( URI_FOR_POOLED_DRIVER + pooledDataSourceName, userName, password );
-            result = result11;
+            log.debug("Getting connection from pool. "+getUsedConnectionsString(connectionPool), null);
+            result = DriverManager.getConnection( URI_FOR_POOLED_DRIVER + pooledDataSourceName, userName, password );
+            log.debug("Got connection from pool. "+getUsedConnectionsString(connectionPool), null);
         } catch( org.apache.commons.dbcp.DbcpException ex ) {
             log.debug( getAttributeAsString(), ex );
             throw (SQLException)ex.getCause();
@@ -85,7 +95,7 @@ public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
 
     public void testConnectionAndLoggResultToTheErrorLog() {
         try {
-            getConnection();
+            getConnection().close();
             log.debug( getAttributeAsString(), null );
             log.info( "Test Connection OK" );
         } catch( SQLException e ) {
@@ -103,8 +113,8 @@ public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
         return result.toString();
     }
 
-    private static void s_logDatabaseData( Connection con ) throws SQLException {
-        DatabaseMetaData metaData = con.getMetaData();
+    private static void s_logDatabaseData(Connection connection) throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
         log.info( "Database product version = " + metaData.getDatabaseProductVersion() );
     }
 
@@ -122,13 +132,15 @@ public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
     private Driver setupPoolingDriver() throws Exception {
         // This holds all connecions that are reused
         // +1 is a bug fix
-        GenericObjectPool connectionPool = new GenericObjectPool( null, maxActiveConnections+1 ); // Use AbandonedObjectPool instead? To be able to trace leaks
+        // Use AbandonedObjectPool instead? To be able to trace leaks
+        connectionPool = new GenericObjectPool( null, maxActiveConnections+1 );
 
         // This creates all the actual connections to the database
         DriverManagerConnectionFactory actualConnectionFactory = new DriverManagerConnectionFactory( dbUrl, userName, password );
 
         // This creates all wrapper connections that are pooled (and that uses the actual connections)
         new PoolableConnectionFactory( actualConnectionFactory, connectionPool, null, null, false, true );
+
         // It seems that it does some magic behind the scenes, tie itself to the pool I guess.
         // Anyhow, it needs to be instantiated.
 
@@ -138,6 +150,7 @@ public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
         // Allthoug you need to use a differens uri than you normaly wolud, see getConnection
         PoolingDriver result = new PoolingDriver();
         result.registerPool( pooledDataSourceName, connectionPool );
+
         return result;
     }
 

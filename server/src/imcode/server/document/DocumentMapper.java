@@ -117,7 +117,6 @@ public class DocumentMapper {
         String[] sqlAry2 = {String.valueOf( meta_id ), String.valueOf( user.getUserId() ), lang_prefix};
         dbc.setProcedure( sqlStr, sqlAry2 );
         Vector doc_types_vec = dbc.executeProcedure();
-        dbc.clearResultSet();
         return doc_types_vec;
     }
 

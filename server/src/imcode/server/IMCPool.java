@@ -36,78 +36,30 @@ public class IMCPool implements IMCPoolInterface {
       Vector data = new Vector();
 
       DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-      dbc.getConnection();
-      dbc.createStatement();
-      data = (Vector)dbc.executeQuery();
+      data = dbc.executeQuery();
 
       if( data != null ) {
          String result[] = new String[data.size()];
          for( int i = 0; i < data.size(); i++ )
             result[i] = data.elementAt( i ).toString();
 
-         dbc.clearResultSet();
-         dbc.closeConnection();
-         dbc = null;
-         data = null;
          return result;
       } else {
-         dbc.clearResultSet();
-         dbc.closeConnection();
-         dbc = null;
-         data = null;
-         return null;
-      }
-   }
-
-   /**
-    Send a sqlquery to the database and return a string array
-    */
-   public String[] sqlQuery( String sqlQuery, String catalog ) {
-
-      Vector data = new Vector();
-
-      DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-      dbc.getConnection();
-      dbc.createStatement();
-      data = (Vector)dbc.executeQuery( catalog );
-
-      if( data != null ) {
-         String result[] = new String[data.size()];
-         for( int i = 0; i < data.size(); i++ )
-            result[i] = data.elementAt( i ).toString();
-
-         dbc.clearResultSet();
-         dbc.closeConnection();
-         dbc = null;
-         data = null;
-         return result;
-      } else {
-         dbc.clearResultSet();
-         dbc.closeConnection();
-         dbc = null;
-         data = null;
          return null;
       }
    }
 
 
-   /**
+    /**
     Send a sqlquery to the database and return a string
     */
    public String sqlQueryStr( String sqlQuery ) {
-      Vector data = new Vector();
 
       DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-      dbc.getConnection();
-      dbc.createStatement();
-      data = (Vector)dbc.executeQuery();
-
-      dbc.clearResultSet();
-      dbc.closeConnection();
-      dbc = null;
+      List data = dbc.executeQuery();
 
       if( data != null )
-         return data.elementAt( 0 ).toString();
+         return data.get( 0 ).toString();
       else
          return null;
    }
@@ -118,11 +70,7 @@ public class IMCPool implements IMCPoolInterface {
     */
    public void sqlUpdateQuery( String sqlStr ) {
       DBConnect dbc = new DBConnect( m_conPool, sqlStr );
-      dbc.getConnection();
-      dbc.createStatement();
       dbc.executeUpdateQuery();
-      dbc.closeConnection();
-      dbc = null;
    }
 
 
@@ -134,7 +82,6 @@ public class IMCPool implements IMCPoolInterface {
       Vector data = new Vector();
 
       DBConnect dbc = new DBConnect( m_conPool );
-      dbc.getConnection();
       dbc.setProcedure( procedure );
 
 
@@ -145,14 +92,10 @@ public class IMCPool implements IMCPoolInterface {
          for( int i = 0; i < data.size(); i++ )
             result[i] = data.elementAt( i ).toString();
 
-         dbc.clearResultSet();
-         dbc.closeConnection();
          dbc = null;
          data = null;
          return result;
       } else {
-         dbc.clearResultSet();
-         dbc.closeConnection();
          dbc = null;
          data = null;
          return null;
@@ -168,13 +111,10 @@ public class IMCPool implements IMCPoolInterface {
       Vector data = new Vector();
 
       DBConnect dbc = new DBConnect( m_conPool );
-      dbc.getConnection();
       dbc.setProcedure( procedure );
       data = (Vector)dbc.executeProcedure().clone();
 
 
-      dbc.clearResultSet();
-      dbc.closeConnection();
       dbc = null;
 
       if( data != null ) {
@@ -194,10 +134,8 @@ public class IMCPool implements IMCPoolInterface {
     */
    public void sqlUpdateProcedure( String procedure ) {
       DBConnect dbc = new DBConnect( m_conPool );
-      dbc.getConnection();
       dbc.setProcedure( procedure );
       dbc.executeUpdateProcedure();
-      dbc.closeConnection();
       dbc = null;
    }
 
@@ -262,8 +200,6 @@ public class IMCPool implements IMCPoolInterface {
       String[] meta = new String[0];
 
       DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-      dbc.getConnection();
-      dbc.createStatement();
       data = (Vector)dbc.executeQuery();
       meta = dbc.getMetaData();
 
@@ -282,15 +218,11 @@ public class IMCPool implements IMCPoolInterface {
          for( int j = 0; j < data.size(); j++ )
             result[j + i + 1] = data.elementAt( j ).toString();
 
-         dbc.clearResultSet();
-         dbc.closeConnection();
          dbc = null;
          data = null;
          meta = null;
          return result;
       } else {
-         dbc.clearResultSet();
-         dbc.closeConnection();
          dbc = null;
          data = null;
          meta = null;
@@ -309,7 +241,6 @@ public class IMCPool implements IMCPoolInterface {
       Vector data = new Vector();
       String[] meta = new String[0];
       DBConnect dbc = new DBConnect( m_conPool );
-      dbc.getConnection();
       dbc.setProcedure( procedure );
 
 
@@ -334,15 +265,11 @@ public class IMCPool implements IMCPoolInterface {
             result[j + i + 1] = data.elementAt( j ).toString();
 
 
-         dbc.clearResultSet();
-         dbc.closeConnection();
          dbc = null;
          data = null;
          meta = null;
          return result;
       } else {
-         dbc.clearResultSet();
-         dbc.closeConnection();
          dbc = null;
          data = null;
          meta = null;
@@ -362,8 +289,6 @@ public class IMCPool implements IMCPoolInterface {
       String[] meta = new String[0];
 
       DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-      dbc.getConnection();
-      dbc.createStatement();
       data = (Vector)dbc.executeQuery().clone();
 
       meta = dbc.getMetaData();
@@ -372,8 +297,6 @@ public class IMCPool implements IMCPoolInterface {
       Hashtable result = new Hashtable( columns, 0.5f );
 
 
-      dbc.clearResultSet();
-      dbc.closeConnection();
 
 
       if( data.size() > 0 ) {
@@ -407,7 +330,6 @@ public class IMCPool implements IMCPoolInterface {
       String[] meta = new String[0];
 
       DBConnect dbc = new DBConnect( m_conPool );
-      dbc.getConnection();
       dbc.setProcedure( procedure );
 
       data = (Vector)dbc.executeProcedure().clone();
@@ -417,8 +339,6 @@ public class IMCPool implements IMCPoolInterface {
 
       Hashtable result = new Hashtable( columns, 0.5f );
 
-      dbc.clearResultSet();
-      dbc.closeConnection();
 
 
       if( data.size() > 0 ) {
@@ -456,14 +376,10 @@ public class IMCPool implements IMCPoolInterface {
       sqlStr += "and user_roles_crossref.role_id = 0\n";
       sqlStr += "and users.user_id = " + user.getUserId();
       DBConnect dbc = new DBConnect( m_conPool );
-      dbc.getConnection();
       dbc.setSQLString( sqlStr );
-      dbc.createStatement();
       Vector super_admin_vec = (Vector)dbc.executeQuery().clone();
-      dbc.clearResultSet();
 
       if( super_admin_vec.size() > 0 ) {
-         dbc.closeConnection();
          dbc = null;
          return true;
       }
@@ -477,10 +393,7 @@ public class IMCPool implements IMCPoolInterface {
       sqlStr += " and user_roles_crossref.user_id =" + user.getUserId();
 
       dbc.setSQLString( sqlStr );
-      dbc.createStatement();
       Vector hasAdminRights = (Vector)dbc.executeQuery().clone();
-      dbc.clearResultSet();
-      dbc.closeConnection();
       dbc = null;
 
       if( hasAdminRights.size() > 0 ) {
@@ -498,14 +411,11 @@ public class IMCPool implements IMCPoolInterface {
       Vector data = new Vector();
 
       DBConnect dbc = new DBConnect( m_conPool );
-      dbc.getConnection();
       dbc.setProcedure( procedure );
 
       data = (Vector)dbc.executeProcedure().clone();
       int columns = dbc.getColumnCount();
       int rows = data.size() / columns;
-      dbc.clearResultSet();
-      dbc.closeConnection();
 
 
       String result[][] = new String[rows][columns];

@@ -110,9 +110,6 @@ public interface IMCServiceInterface {
     // activate child to child table
     void activateChild(int meta_id,UserDomainObject user)
 	;
-    // make child inactive
-    void inActiveChild(int meta_id,UserDomainObject user)
-	;
 
     // Parse doc replace variables with data
     String  parseDoc(String htmlStr,java.util.Vector variables)

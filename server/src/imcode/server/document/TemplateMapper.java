@@ -36,7 +36,6 @@ public class TemplateMapper {
         String[] sqlAry2 = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
         dbc.setProcedure( sqlStr, sqlAry2 );
         Vector templategroups = dbc.executeProcedure();
-        dbc.clearResultSet();
         return templategroups;
     }
 
@@ -44,7 +43,6 @@ public class TemplateMapper {
         String sqlStr = SPROC_GET_TEMPLATES_IN_GROUP;
         dbc.setProcedure( sqlStr, String.valueOf( selected_group ) );
         Vector templates = dbc.executeProcedure();
-        dbc.clearResultSet();
         return templates;
     }
 
@@ -65,9 +63,7 @@ public class TemplateMapper {
 
     public TemplateGroupDomainObject[] getAllTemplateGroups( UserDomainObject user, int metaId ) {
         DBConnect dbc = new DBConnect( service.getConnectionPool() );
-        dbc.getConnection();
         Vector sprocResult = sprocGetTemplateGroupsForUser( dbc, user, metaId );
-        dbc.closeConnection();
         Iterator iter = sprocResult.iterator();
         int noOfColumnsInResult = 2;
         TemplateGroupDomainObject[] result = new TemplateGroupDomainObject[sprocResult.size()/noOfColumnsInResult];
@@ -81,9 +77,7 @@ public class TemplateMapper {
 
     public TemplateDomainObject[] getTemplates( int groupId ) {
         DBConnect dbc = new DBConnect( service.getConnectionPool() );
-        dbc.getConnection();
         Vector templates = sprocGetTemplatesInGroup( dbc, groupId );
-        dbc.closeConnection();
         Iterator iterator = templates.iterator();
         int noOfColumns = 2;
         TemplateDomainObject[] result = new TemplateDomainObject[templates.size()/noOfColumns];
@@ -97,17 +91,15 @@ public class TemplateMapper {
         return result;
     }
 
-    public static Vector sqlSelectGrouuName( DBConnect dbc, String group_id ) {
+    public static Vector sqlSelectGroupName( DBConnect dbc, String group_id ) {
         String sqlStr = "select group_name from templategroups where group_id = " + group_id;
         dbc.setSQLString( sqlStr );
         Vector groupnamevec = dbc.executeQuery();
-        dbc.clearResultSet();
         return groupnamevec;
     }
 
     public static void sqlUpdateUnassignTemplateFromGroup( IMCService service, int[] group_id, int template_id ) {
         DBConnect dbc = new DBConnect( service.getConnectionPool() );
-        dbc.getConnection();
 
         // delete current refs
         for( int i = 0; i < group_id.length; i++ ) {
@@ -115,25 +107,31 @@ public class TemplateMapper {
             sqlStr += "where template_id = " + template_id;
             sqlStr += "and group_id = " + group_id[i];
             dbc.setSQLString( sqlStr );
-            dbc.createStatement();
             dbc.executeUpdateQuery();
         }
 
-        dbc.closeConnection();
     }
 
     public static TemplateDomainObject getTemplate( IMCService service, int template_id ) {
         String sqlStr = "select template_id,template_name,simple_name from templates where template_id = " + template_id;
         DBConnect dbc = new DBConnect( service.getConnectionPool() );
-        dbc.getConnection();
         dbc.setSQLString( sqlStr );
-        dbc.createStatement();
         Vector queryResult = dbc.executeQuery();
-        dbc.closeConnection();
         int templateId = Integer.parseInt((String)queryResult.elementAt(0));
         String templateName = (String)queryResult.elementAt(1);
         String simpleName = (String)queryResult.elementAt(2);
         TemplateDomainObject result = new TemplateDomainObject( templateId, templateName, simpleName );
         return result;
     }
+
+    public TemplateDomainObject getTemplate( String templateSimpleName ) {
+        String sqlStr = "select template_id,template_name,simple_name from templates where simple_name = ?" ;
+        String[] queryResult = service.sqlQuery(sqlStr, new String[] { templateSimpleName } ) ;
+        int templateId = Integer.parseInt(queryResult[0]);
+        String templateName = queryResult[1];
+        String simpleName = queryResult[2];
+        TemplateDomainObject result = new TemplateDomainObject( templateId, templateName, simpleName );
+        return result;
+    }
+
 }
