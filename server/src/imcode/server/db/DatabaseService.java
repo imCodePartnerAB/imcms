@@ -977,9 +977,9 @@ public abstract class DatabaseService {
     int sproc_DelUserRoles( int user_id, int role_id ) {
         int rowCount = 0;
         if( role_id == -1 ) {
-            rowCount = deletaAllUserRoles( user_id );
+            rowCount += deletaAllUserRoles( user_id );
         } else {
-            rowCount = deleteUserRole( user_id, role_id );
+            rowCount += deleteUserRole( user_id, role_id );
         }
         return rowCount;
     }
@@ -1563,8 +1563,14 @@ public abstract class DatabaseService {
         String linkurl;
     }
 
+    // todo: Varning, Denna sproc returnerar inte exakt i den ordning som den ursprungliga sproc ville ha det.
+    // todo: ej heller inehåller resultatet den formaterade varianten av name: '#img'+convert(varchar(5), name)+'#'
+    Table_images[] sproc_getImages( int meta_id ) {
+        return getFromTable_images( new Integer( meta_id ));
+    }
+
     private Table_images[] getFromTable_images( Integer meta_id ) {
-        String sql = "SELECT meta_id, width, height, border, v_space, h_space, name, image_name, target, target_name," +
+        String sql = "SELECT meta_id, width, height, border, v_space, h_space, name, image_name, target, target_name, " +
             "align, alt_text, low_scr, imgurl, linkurl FROM images WHERE meta_id = ?";
         Object[] paramValues = new Object[]{ meta_id };
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
@@ -1614,8 +1620,12 @@ public abstract class DatabaseService {
         int included_meta_id;
     }
 
-    private Table_includes getFromTable_includes( Integer meta_id ) {
-        String sql = "SELECT meta_id, include_id, included_meta_id FROM includes WHERE meta_id = ? ";
+    Table_includes[] sproc_GetInclues( int meta_id ) {
+        return getFromTable_includes( new Integer( meta_id ));
+    }
+
+    private Table_includes[] getFromTable_includes( Integer meta_id ) {
+        String sql = "SELECT meta_id, include_id, included_meta_id FROM includes WHERE meta_id = ? ORDER BY include_id";
         Object[] paramValues = new Object[]{ meta_id };
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
@@ -1625,11 +1635,7 @@ public abstract class DatabaseService {
                 return new Table_includes( meta_id, include_id, included_meta_id );
             }
         } );
-        if( queryResult.size() == 0 ) {
-            return null;
-        } else {
-            return (Table_includes)queryResult.get( 0 );
-        }
+            return (Table_includes[])queryResult.toArray( new Table_includes[queryResult.size()] );
     }
 
     private int addToTable_includes( SQLProcessor.SQLTransaction transaction, Table_includes tableData ) throws SQLException {
@@ -1947,10 +1953,11 @@ public abstract class DatabaseService {
                 rowCount += addToTable_images( transaction, imageToBeCopied );
             }
 
-            Table_includes includesToBeCopied = getFromTable_includes( meta_id );
-            if( null != includesToBeCopied ) {
-                includesToBeCopied.meta_id = nexFreeMetaId;
-                rowCount += addToTable_includes( transaction, includesToBeCopied );
+            Table_includes[] includesToBeCopied = getFromTable_includes( meta_id );
+            for( int i = 0; i < includesToBeCopied.length; i++ ) {
+                Table_includes table_includes = includesToBeCopied[i];
+                table_includes.meta_id = nexFreeMetaId;
+                rowCount += addToTable_includes( transaction, table_includes );
             }
 
             Table_doc_permission_sets docPermissionSetsToBeCopied = getFromTable_doc_permission_sets( meta_id );

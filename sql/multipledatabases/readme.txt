@@ -27,7 +27,7 @@ Kvar att undersöka/göra
 Sproc:ar kvar att flytta in i koden:
 (Ta bort den du håller på med)
 classification_fix.prc
-Hasse: copydocs.prc
+Hasse, arbetar med denna, färdigimplementerade men ej testad klart: copydocs.prc
 deleteinclude.prc
 deletenewdocpermissionsetex.prc
 deleteuseradminpermissibleroles.prc
@@ -40,8 +40,6 @@ getcurrentsessioncounterdate.prc
 getdoctypeswithnewpermissions.prc
 getdoctypeswithpermissions.prc
 getdocumentinfo.prc
-getimgs.prc
-getincludes.prc
 getlangprefix.prc
 getlangprefixfromid.prc
 getlanguagelist.prc
@@ -49,7 +47,7 @@ getlanguages.prc
 getmenudocchilds.prc
 getmetapathinfo.prc
 getnooftemplates.prc
-Hasse: getpermissionset.prc
+getpermissionset.prc
 getreadrunneruserdataforuser.prc
 getroleidbyrolename.prc
 getrolesdocpermissions.prc
@@ -60,7 +58,6 @@ gettemplategroupswithpermissions.prc
 gettemplateid.prc
 gettemplates.prc
 gettextdocdata.prc
-gettextnumber.prc
 gettexts.prc
 getuseradminpermissibleroles.prc
 getusercreatedate.prc

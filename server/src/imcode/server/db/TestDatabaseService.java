@@ -79,8 +79,17 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_GetDocTypes( databaseService );
             test_sproc_GetDocTypesForUser( databaseService ) ;
             test_sproc_GetText( databaseService );
+            test_sproc_GetIncludes( databaseService );
+            test_sproc_GetImgs( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+    private void test_sproc_GetImgs(  DatabaseService databaseService  ) {
+        assertEquals( 1, databaseService.sproc_getImages( DOC_TEST_FIRST_ID ).length );
+    }
+
+    private void test_sproc_GetIncludes( DatabaseService databaseService ) {
+        assertEquals( 1, databaseService.sproc_GetInclues( DOC_TEST_FIRST_ID ).length );
     }
 
     private void test_sproc_GetText( DatabaseService databaseService ) {
@@ -331,8 +340,9 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         for( int i = 0; i < databaseServices.length; i++ ) {
             DatabaseService databaseService = databaseServices[i];
             assertEquals( 0, databaseService.sproc_DelUserRoles( USER_NEXT_FREE_ID, ROLE_NEXT_FREE_ID ) );
-            assertEquals( 1, databaseService.sproc_AddUserRole( USER_TEST_ID, ROLE_TEST_ID ) );
             assertEquals( 1, databaseService.sproc_DelUserRoles( USER_TEST_ID, ROLE_TEST_ID ) );
+            assertEquals( 1, databaseService.sproc_DelUserRoles( USER_TEST_ID, -1 ) );
+            assertEquals( 0, databaseService.sproc_DelUserRoles( USER_TEST_ID, -1 ) );
         }
     }
 
