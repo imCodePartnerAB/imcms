@@ -25,7 +25,7 @@ public class ChatLogin extends ChatBase {
 
 	private final static String USER_UNADMIN_LINK_TEMPLATE = "Conf_User_Unadmin_Link.htm";
 
-	String LOGIN_HTML = "Conf_Login.htm" ;	   // The login page
+	String LOGIN_HTML = "ChatLogin2.htm" ;	   // The login page
 	String CREATE_HTML = "Conf_Add_User.htm" ;   // The create new user page
 	String LOGIN_ERROR_HTML = "Conf_Login_Error.htm" ;  // The error
 	// page used for specialized messages to user
