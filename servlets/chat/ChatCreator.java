@@ -91,10 +91,13 @@ public class ChatCreator extends ChatBase
 			
 			VariableManager vm = new VariableManager() ;
 			Html htm = new  Html();
+			log("null");
 			
 			//get new parameters
 			chatParams.setProperty("chatRoom",req.getParameter("chatRoom").trim());
 			chatParams.setProperty("msgType",req.getParameter("msgType").trim());
+			
+			
 			
 			//get all chatparameters
 			Enumeration chatEnum = chatParams.propertyNames();
@@ -192,8 +195,7 @@ public class ChatCreator extends ChatBase
 			log("AddNewChat sql:" + sqlQ ) ;
 			rmi.execSqlUpdateProcedure(chatPoolServer, sqlQ) ;
 			
-			session.putValue("chatName",chatName);
-			session.putValue("chatId",metaId);
+			
 			
 			// Lets add the new rooms to the chat
 			for (int i=0;i<roomsV.size();i+=2)
@@ -213,7 +215,7 @@ public class ChatCreator extends ChatBase
 				
 			}
 			
-			session.putValue("roomList",roomsV);
+			
 		
 		/*	// Lets get the administrators user_id
 			String user_id = user.getString("user_id") ;
@@ -257,13 +259,26 @@ public class ChatCreator extends ChatBase
 				log("msgType: " + msgTypeV.get(i) );
 			}
 			
-			session.putValue("msgTypes",msgTypeV);
+			
 			
 		//	Chat theChat = new Chat((Integer.valueOf(metaId)).intValue(),chatName,roomsV);
 		//	theChat._name=chatName;
 			
 		//	ServletContext context = getServletContext() ;
 		//	context.setAttribute(metaId,theChat);
+			session.putValue("chatName",chatName);
+			session.putValue("chatId",metaId);
+			session.putValue("roomList",roomsV);
+			session.putValue("msgTypes",msgTypeV);
+			session.putValue("updateTime",chatParams.getProperty("updateTime"));
+			session.putValue("reload",chatParams.getProperty("reload"));
+			session.putValue("inOut",chatParams.getProperty("inOut"));
+			session.putValue("privat",chatParams.getProperty("privat"));
+			session.putValue("publik",chatParams.getProperty("publik"));
+			session.putValue("dateTime",chatParams.getProperty("dateTime"));
+			session.putValue("font",chatParams.getProperty("font"));
+			
+			//spara till databasen
 			
 			// Ok, were done creating the conference. Lets tell Janus system to show this child.
 			rmi.activateChild(imcServer, metaId) ;
@@ -382,6 +397,7 @@ public class ChatCreator extends ChatBase
 //	String authorized = (req.getParameter("authorized")==null ) ? "3":(req.getParameter("authorized"));
 		String template = (req.getParameter("template")==null ) ? "ORIGINAL" : (req.getParameter("template"));
 		String updateTime = (req.getParameter("updateTime")==null ) ? "" :(req.getParameter("updateTime"));
+		
 		String reload = (req.getParameter("reload")==null ) ? "" :(req.getParameter("reload"));
 		String inOut = (req.getParameter("inOut")==null ) ? "" :(req.getParameter("inOut"));
 		String privat = (req.getParameter("private")==null ) ? "" :(req.getParameter("private"));
@@ -397,6 +413,7 @@ public class ChatCreator extends ChatBase
 //	chatP.setProperty("authorized",authorized.trim());
 		chatP.setProperty("template",template.trim());
 		chatP.setProperty("updateTime",updateTime.trim());
+		
 		chatP.setProperty("reload",reload.trim());
 		chatP.setProperty("inOut",inOut.trim());
 		chatP.setProperty("privat",privat.trim());
