@@ -1,13 +1,7 @@
 
-import com.imcode.imcms.api.ContentManagementSystem;
-import com.imcode.imcms.api.DocumentService;
-import com.imcode.imcms.api.NoPermissionException;
-import com.imcode.imcms.api.RequestConstants;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.MetaDataParser;
@@ -176,6 +170,7 @@ public class SaveMeta extends HttpServlet {
             "frame_name", null,
             "target", null,
             "lang_prefix", null,
+            "publisher_id", null,
         };
 
         final int metatable_cols = 2;
@@ -216,6 +211,7 @@ public class SaveMeta extends HttpServlet {
             2, 2, //"frame_name",
             2, 2, //"target",
             2, 2, //"lang_prefix",
+            2, 2, //"publisher_id",
         };
 
         HashMap inputMap = new HashMap();
@@ -341,9 +337,6 @@ public class SaveMeta extends HttpServlet {
         // We also need a name for this temporary variable... i think i shall call it... (Drumroll, please...) "temp_perm_settings" !
         //
 
-        ContentManagementSystem imcmsSystem = (ContentManagementSystem) req.getAttribute(RequestConstants.SYSTEM);
-        DocumentService documentService = imcmsSystem.getDocumentService();
-        String host = req.getServerName();
         putTemporaryPermissionSettingsInUser(user, meta_id, metaprops, temp_permission_settings, temp_default_templates);
         if (req.getParameter("define_set_1") != null) {	// If user want's to edit permission-set 1
             out.write(MetaDataParser.parsePermissionSet(meta_id_int, user, 1, false));
@@ -417,6 +410,7 @@ public class SaveMeta extends HttpServlet {
             }
         }
 
+        // todo: Move this to DocumentMapper
         if (sqlStr.length() > 0) {
             imcref.sqlUpdateQuery("update meta set " + sqlStr + " where meta_id = " + meta_id);
         }
