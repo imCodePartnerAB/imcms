@@ -2,10 +2,7 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.servlet.GetDoc;
 import imcode.server.*;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.BrowserDocumentDomainObject;
-import imcode.server.document.HtmlDocumentDomainObject;
+import imcode.server.document.*;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
@@ -45,6 +42,8 @@ public class AdminDoc extends HttpServlet {
             forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_BROWSER_DOCUMENT );
         } else if ( document instanceof HtmlDocumentDomainObject && IMCConstants.DISPATCH_FLAG__EDIT_HTML_DOCUMENT == flags ) {
             forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_HTML_DOCUMENT );
+        } else if ( document instanceof UrlDocumentDomainObject && IMCConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT == flags ) {
+            forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_URL_DOCUMENT );
         } else {
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 

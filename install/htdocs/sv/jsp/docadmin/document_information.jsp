@@ -379,7 +379,7 @@ imcmsGui("mid", null);
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
             <% String target = document.getTarget() ; %>
-			<td><input type="radio" name="<%= DocumentComposer.PARAMETER__TARGET %>" value="_self"<% if ("_self".equalsIgnoreCase( target ) ) { %> checked<% target = null; } %>></td>
+			<td><input type="radio" name="<%= DocumentComposer.PARAMETER__TARGET %>" value="_self"<% if ("_self".equalsIgnoreCase( target ) || "".equals( target )) { %> checked<% target = null; } %>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1015 ?> &nbsp;</td>
 			<td><input type="radio" name="<%= DocumentComposer.PARAMETER__TARGET %>" value="_blank"<% if ("_blank".equalsIgnoreCase( target ) ) { %> checked<% target = null; } %>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1016 ?> &nbsp;</td>

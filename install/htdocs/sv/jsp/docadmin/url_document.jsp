@@ -1,8 +1,10 @@
 <%@ page import="com.imcode.imcms.servlet.admin.DocumentComposer,
                  imcode.server.document.DocumentDomainObject,
-                 org.apache.commons.lang.StringEscapeUtils" contentType="text/html"%>
+                 org.apache.commons.lang.StringEscapeUtils,
+                 org.apache.commons.lang.ObjectUtils,
+                 imcode.server.document.UrlDocumentDomainObject" contentType="text/html"%>
 <%
-    DocumentDomainObject document = (DocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) ;
+    UrlDocumentDomainObject document = (UrlDocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) ;
 %>
 <html>
 <head>
@@ -33,15 +35,32 @@ imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <form method="POST" action="DocumentComposer">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>" value="<%= DocumentComposer.ACTION__CREATE_NEW_URL_DOCUMENT %>">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
+<%
+    DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = (DocumentComposer.NewDocumentParentInformation)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
+    boolean creatingNewDocument = null != newDocumentParentInformation;
+
+    if (creatingNewDocument) { %>
+        <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
+            value="<%= DocumentComposer.ACTION__CREATE_NEW_URL_DOCUMENT %>">
+        <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>"
+            value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
+<%  } else { %>
+        <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
+            value="<%= DocumentComposer.ACTION__PROCESS_EDITED_URL_DOCUMENT %>">
+<% } %>
+        <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
+            value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
 <tr>
 	<td colspan="2"><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/url_document.jsp/4/1 ?>",396);</script></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/url_document.jsp/1001 ?>&nbsp;</td>
-	<td><input type="text" name="<%= DocumentComposer.PARAMETER__URL_DOC__URL %>" size="62" maxlength="255" value=""></td>
+	<td><input type="text" name="<%= DocumentComposer.PARAMETER__URL_DOC__URL %>" size="62" maxlength="255"
+                value="<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getUrlDocumentUrl(), "" )) %>"></td>
 </tr>
 <tr>
 	<td colspan="2"><script>hr("100%",396,"cccccc");</script></td>
@@ -52,7 +71,7 @@ imcmsGui("mid", null);
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
         <% String target = document.getTarget() ; %>
-		<td><input type="radio" name="target" value="_self"<% if ("_self".equalsIgnoreCase( target )) {%> checked<% target = null; }%>></td>
+		<td><input type="radio" name="target" value="_self"<% if ("_self".equalsIgnoreCase( target ) || "".equals( target )) {%> checked<% target = null; }%>></td>
 		<td class="imcmsAdmText" nowrap>&nbsp;<? install/htdocs/sv/jsp/docadmin/url_document.jsp/1003 ?> &nbsp;</td>
 		<td><input type="radio" name="target" value="_blank"<% if ("_blank".equalsIgnoreCase( target )) {%> checked<% target = null; }%>></td>
 		<td class="imcmsAdmText" nowrap>&nbsp;<? install/htdocs/sv/jsp/docadmin/url_document.jsp/1004 ?> &nbsp;</td>
@@ -60,7 +79,7 @@ imcmsGui("mid", null);
 		<td class="imcmsAdmText" nowrap>&nbsp;<? install/htdocs/sv/jsp/docadmin/url_document.jsp/1005 ?> &nbsp;</td>
 	</tr>
 	<tr>
-		<td><input type="radio" name="target" value="_other"<% if (null != target) {%> checked<%}%>></td>
+		<td><input type="radio" name="target"<% if (null != target) {%> checked<%}%>></td>
 		<td class="imcmsAdmText" nowrap>&nbsp;<? install/htdocs/sv/jsp/docadmin/url_document.jsp/1006 ?> &nbsp;</td>
 		<td colspan="4">
             <input type="text" name="target" size="17" maxlength="50"

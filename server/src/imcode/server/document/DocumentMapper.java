@@ -12,6 +12,7 @@ import imcode.util.poll.PollHandlingSystem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
@@ -916,8 +917,10 @@ public class DocumentMapper {
     }
 
     public void updateDocumentKeywords( int meta_id, String separatedKeywords ) {
-        String[] keywords = separatedKeywords.split( "\\W+" );
-        updateDocumentKeywords( meta_id, keywords );
+        Perl5Util perl5util = new Perl5Util();
+        List keywords = new ArrayList() ;
+        perl5util.split(keywords, "/\\W+/", separatedKeywords ) ;
+        updateDocumentKeywords( meta_id, (String[])keywords.toArray( new String[keywords.size()]) );
     }
 
     private void updateDocumentKeywords( int meta_id, String[] keywords ) {
