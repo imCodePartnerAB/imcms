@@ -135,7 +135,7 @@
 	<filter token="adminbuttonsurl"     value="${adminbuttonsurl}"/>
 	<filter token="imcmsimageurl"       value="${imcmsimageurl}"/>
     <filter token="imcmshtmlurl"        value="${imcmshtmlurl}"/>
-    <filter token="imcmsscriptsurl"     value="${imcmsscripturl}"/>
+    <filter token="imcmsscripturl"      value="${imcmsscripturl}"/>
     <filter token="imcmscssurl"         value="${imcmscssurl}"/>
     <filter token="imcmsjspurl"         value="${imcmsjspurl}"/>
 
