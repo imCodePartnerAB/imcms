@@ -965,7 +965,8 @@ ALTER TABLE [dbo].[mime_types] WITH NOCHECK ADD
 	CONSTRAINT [DF_mime_types_lang_prefix] DEFAULT ('se') FOR [lang_prefix],
 	CONSTRAINT [PK_mime_types] PRIMARY KEY  NONCLUSTERED 
 	(
-		[mime_id]
+		[mime_id],
+		[lang_prefix]
 	)  ON [PRIMARY] 
 GO
 
