@@ -143,23 +143,23 @@ if (isNS) { %>
 .imcmsFormBtnSmall {
 	background-color: #20568D;
 	color: #ffffff;
-	font: 11px Tahoma, Arial, sans-serif;
+	font: 10px Tahoma, Arial, sans-serif;
 	border: 2px outset #668DB6;
 	border-color: <%= BORDER_COLOR_NORMAL %>;
 	cursor:hand;
 	cursor:pointer;
-	height:24;
+	height:18;
 	padding: 0 2; }
 
 .imcmsFormBtnSmallDisabled {
 	background-color: #B8C6D5;
 	color: #ffffff;
-	font: 11px Tahoma, Arial, sans-serif;
+	font: 10px Tahoma, Arial, sans-serif;
 	border: 2px outset #DAE4EF;
 	border-color: <%= BORDER_COLOR_DISABLED %>;
 	cursor:hand;
 	cursor:pointer;
-	height:24;
+	height:18;
 	padding: 0 2; }<%
 }
 
