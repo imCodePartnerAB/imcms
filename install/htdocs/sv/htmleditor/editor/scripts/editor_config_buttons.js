@@ -85,7 +85,7 @@ arrBtns[15] = '<button unselectable="on" class="button" id="btn1" unselectable="
 // copy
 arrBtns[16] = '<button unselectable="on" class="button" id="btn2" unselectable="On" onClick="doExecCommand(\'Copy\',true,null)\;" title="<? install/htdocs/sv/htmleditor/scripts/editor_config_buttons.js/15 ?>"><img src="images/btn_copy.gif"></button>';
 // paste
-arrBtns[17] = '<button unselectable="on" class="button" id="btn3" unselectable="On" onClick="doExecCommand(\'Paste\',true,null)\;" title="<? install/htdocs/sv/htmleditor/scripts/editor_config_buttons.js/16 ?>"><img src="images/btn_paste.gif"></button>';
+arrBtns[17] = '<button unselectable="on" class="button" id="btn3" unselectable="On" onClick="doExecCommand(\'Paste\',true,null)\; if (isWordEnabled && preview) checkWordCode(editorDiv.innerHTML)" title="<? install/htdocs/sv/htmleditor/scripts/editor_config_buttons.js/16 ?>"><img src="images/btn_paste.gif"></button>';
 // preview in browser
 arrBtns[18] = '<button unselectable="on" class="button" id="btn4" unselectable="On" title="<? install/htdocs/sv/htmleditor/scripts/editor_config_buttons.js/17 ?>" onClick="if(document.forms[0].execState.value == \'2\'){ showHelpLayer(\'Preview\')\; } else { popWinOpen(\'100%\',\'100%\',\'preview.html\',\'Preview\',0,1,1)\; }"><img src="images/btn_preview.gif"></button>';
 // find/search
