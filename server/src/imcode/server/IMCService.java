@@ -59,7 +59,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private FileCache fileCache = new FileCache() ;
 
     private final static Logger mainLog = Logger.getLogger( IMCConstants.MAIN_LOG ) ;
-    private final static Logger log = Logger.getLogger( "server" ) ;
+    private final static Logger log = Logger.getLogger( IMCService.class.getName() ) ;
 
     static {
 	mainLog.info("Main log started." );
@@ -201,7 +201,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-       
+       @return An object representing the user with the given id.
     **/
     public User getUserById(int userId) {
 
@@ -2805,13 +2805,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd") ;
 	    rrUserData.setUses                       ( Integer.parseInt(dbData[0]) ) ;
 	    rrUserData.setMaxUses                    ( Integer.parseInt(dbData[1]) ) ;
-	    /* rrUserData.setMaxUsesWarningThreshold    ( Integer.parseInt(dbData[2]) ) ; */
+	    rrUserData.setMaxUsesWarningThreshold    ( Integer.parseInt(dbData[2]) ) ;
 	    if (null != dbData[3]) {
 		rrUserData.setExpiryDate                 ( dateFormat.parse(dbData[3]) ) ;
 	    } else {
 		rrUserData.setExpiryDate(null) ;
 	    }
-	    /* rrUserData.setExpiryDateWarningThreshold ( Integer.parseInt(dbData[4]) ) ; */
+	    rrUserData.setExpiryDateWarningThreshold ( Integer.parseInt(dbData[4]) ) ;
 	    // Return it
 	    return rrUserData ;
 	} catch (NumberFormatException nfe) {

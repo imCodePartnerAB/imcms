@@ -236,9 +236,10 @@ public class DBConnect {
 	    throw new NullPointerException("DBConnect.setProcedure() procedure == null") ;
 	}
 	if (param == null) {
-	    throw new NullPointerException("DBConnect.setProcedure() param == null") ;
+	    strProcedure = "{call " + procedure + "}" ;
+	} else {
+	    strProcedure = "{call " + procedure + " (?)}" ;
 	}
-	strProcedure = "{call " + procedure + " (?)}" ;
 	try {
 	    cs = con.prepareCall(strProcedure) ;
 	    cs.setString(1,param) ;

@@ -2,7 +2,6 @@ import imcode.server.parser.* ;
 import imcode.server.* ;
 import imcode.util.* ;
 import imcode.readrunner.* ;
-
 import java.io.* ;
 import java.util.* ;
 import java.text.* ;
@@ -16,6 +15,15 @@ import org.apache.log4j.* ;
 public class Readrunner extends HttpServlet {
 
     private static Category log = Logger.getInstance( Readrunner.class.getName() ) ;
+
+    private final static String EXPIRED_DATE_PAGE = "readrunner/expired_date.html" ;
+    private final static String EXPIRED_USES_PAGE = "readrunner/expired_uses.html" ;
+
+    private final static String EXPIRED_DATE_MAIL = "readrunner/expired_date_mail.txt" ;
+    private final static String EXPIRED_USES_MAIL = "readrunner/expired_uses_mail.txt" ;
+
+    /** The number of milliseconds in one day **/
+    private final int ONE_DAY = 86400000 ;
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
 
@@ -67,7 +75,6 @@ public class Readrunner extends HttpServlet {
 
 	    // We add one day to the expiry-date since it's an inclusive range,
 	    // not an exclusive one.
-	    final int ONE_DAY = 86400000 ;
 	    // If the expiry-date is null, it is disabled.
 	    boolean date_expired = (null != rrUserData.getExpiryDate()) && (new Date().after(new Date(rrUserData.getExpiryDate().getTime()+ONE_DAY))) ;
 
@@ -76,7 +83,7 @@ public class Readrunner extends HttpServlet {
 		ArrayList tags = new ArrayList(2) ;
 		tags.add("#max_uses#") ; tags.add(""+rrUserData.getMaxUses()) ;
 
-		out.write(imcref.parseDoc(tags,"readrunner/expired_uses.html", user.getLangPrefix())) ;
+		out.write(imcref.parseDoc(tags,EXPIRED_USES_PAGE, user.getLangPrefix())) ;
 		return ;
 	    } else if (date_expired) {
 		Writer out = res.getWriter() ;
@@ -84,7 +91,7 @@ public class Readrunner extends HttpServlet {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd") ;
 		tags.add("#expiry_date#") ; tags.add(dateFormat.format(rrUserData.getExpiryDate())) ;
 
-		out.write(imcref.parseDoc(tags,"readrunner/expired_date.html", user.getLangPrefix())) ;
+		out.write(imcref.parseDoc(tags,EXPIRED_DATE_PAGE, user.getLangPrefix())) ;
 		return ;
 	    }
 
@@ -134,10 +141,80 @@ public class Readrunner extends HttpServlet {
 	    fileOut.close() ;
 
 	    imcref.incrementReadrunnerUsesForUser(user) ;
+	    rrUserData.setUses(rrUserData.getUses()+1) ;
 
 	    // and redirect to the temporary file
 	    res.sendRedirect(readrunnerUrl+tempFile.getName()) ;
+	    res.flushBuffer() ;
 
+	    sendWarningMail(imcref, user, host, rrUserData) ;
+	}
+    }
+
+    private void sendWarningMail(IMCServiceInterface imcref, User user, String host, ReadrunnerUserData rrUserData) {
+	int max_uses_warning_threshold = rrUserData.getMaxUses() - (int)(rrUserData.getMaxUsesWarningThreshold() * rrUserData.getMaxUses() * 0.01 ) ;
+	String theMailTemplate = null ;
+	if (0 != max_uses_warning_threshold && rrUserData.getUses() > max_uses_warning_threshold) {
+	    theMailTemplate = EXPIRED_USES_MAIL ;
+	} else if (null != rrUserData.getExpiryDate() && 0 != rrUserData.getExpiryDateWarningThreshold()) {
+	    int threshold_millis = ONE_DAY * rrUserData.getExpiryDateWarningThreshold() ;
+	    Date expiry_date_warning_threshold = new Date(rrUserData.getExpiryDate().getTime()-threshold_millis) ;
+	    if (new Date().after(expiry_date_warning_threshold)) {
+		theMailTemplate = EXPIRED_DATE_MAIL ;
+	    }
+	}
+
+	if (null == theMailTemplate) {
+	    log.info("No need to send warning-mail. Uses: "+rrUserData.getUses()+" Max-uses: "+rrUserData.getMaxUses()+" Uses-threshold: "+max_uses_warning_threshold) ;
+	    return ;
+	}
+
+	imcode.server.SystemData sysData = imcref.getSystemData() ;
+	String fromAddress = sysData.getServerMasterAddress() ;
+	String toAddress = user.getEmailAddress() ;
+	String mailserver = "" ;
+	int mailport = 25 ;
+	try {
+	    mailserver = Utility.getDomainPref( "smtp_server", host );
+	    String stringMailPort = Utility.getDomainPref( "smtp_port", host );
+	    String stringMailtimeout = Utility.getDomainPref( "smtp_timeout", host );
+
+	    // Handling of default-values is another area where java can't hold a candle to perl.
+	    try {
+		mailport = Integer.parseInt( stringMailPort );
+	    } catch (NumberFormatException ignored) {
+		// Do nothing, let mailport stay at default.
+	    }
+
+	    int mailtimeout = 10000 ;
+	    try {
+		mailtimeout = Integer.parseInt( stringMailtimeout );
+	    } catch (NumberFormatException ignored) {
+		// Do nothing, let mailtimeout stay at default.
+	    }
+
+	    String expiryDateString =
+		null != rrUserData.getExpiryDate()
+		? new SimpleDateFormat("yyyy-MM-dd").format(rrUserData.getExpiryDate())
+		: "" ;
+
+	    Vector tags = new Vector() ;
+	    tags.add("#user_first_name#") ;               tags.add(user.getFirstName()) ;
+	    tags.add("#user_last_name#") ;                tags.add(user.getLastName()) ;
+	    tags.add("#user_full_name#") ;                tags.add(user.getFullName()) ;
+	    tags.add("#uses#") ;                          tags.add(""+rrUserData.getUses()) ;
+	    tags.add("#max_uses#") ;                      tags.add(""+rrUserData.getMaxUses()) ;
+	    tags.add("#max_uses_warning_threshold#") ;    tags.add(""+rrUserData.getMaxUsesWarningThreshold()) ;
+	    tags.add("#expiry_date#") ;                   tags.add(expiryDateString) ;
+	    tags.add("#expiry_date_warning_threshold#") ; tags.add(""+rrUserData.getExpiryDateWarningThreshold()) ;
+
+	    String theMail = imcref.parseDoc( tags, theMailTemplate, user.getLangPrefix());
+
+	    SMTP smtp = new SMTP(mailserver, mailport, mailtimeout) ;
+	    smtp.sendMailWait( fromAddress, toAddress, "Readrunner", theMail ) ;
+	    log.info("Sent mail to "+toAddress) ;
+	} catch (IOException ioex) {
+	    log.warn("Failed to send mail from '"+fromAddress+"' to '"+toAddress+"' ("+user.getLoginName()+") via " +mailserver+":"+mailport+" - "+ ioex.toString()) ;
 	}
     }
 

@@ -65,9 +65,9 @@ public class AdminUserReadrunner extends HttpServlet {
 	try {
 	    rrUserData.setUses                       ( Integer.parseInt(req.getParameter("uses")) ) ;
 	    rrUserData.setMaxUses                    ( Integer.parseInt(req.getParameter("max_uses")) ) ;
-	    /* rrUserData.setMaxUsesWarningThreshold    ( Integer.parseInt(req.getParameter("max_uses_warning_threshold")) ) ; */
+	    rrUserData.setMaxUsesWarningThreshold    ( Integer.parseInt(req.getParameter("max_uses_warning_threshold")) ) ;
 	    rrUserData.setExpiryDate                 ( expiryDate ) ;
-	    /* rrUserData.setExpiryDateWarningThreshold ( Integer.parseInt(req.getParameter("expiry_date_warning_threshold")) ) ; */
+	    rrUserData.setExpiryDateWarningThreshold ( Integer.parseInt(req.getParameter("expiry_date_warning_threshold")) ) ;
 	    imcref.setReadrunnerUserData(theEditedUser,rrUserData) ;
 	} catch (NumberFormatException nfe) {
 	    throw nfe ;
@@ -92,9 +92,9 @@ public class AdminUserReadrunner extends HttpServlet {
 	parseList.add("#user_id#") ;                       parseList.add(""+theEditedUser.getUserId()) ;
 	parseList.add("#uses#") ;                          parseList.add(""+rrUserData.getUses()) ;
 	parseList.add("#max_uses#") ;                      parseList.add(""+rrUserData.getMaxUses()) ;
-	/* parseList.add("#max_uses_warning_threshold#") ;    parseList.add(""+rrUserData.getMaxUsesWarningThreshold()) ; */
+	parseList.add("#max_uses_warning_threshold#") ;    parseList.add(""+rrUserData.getMaxUsesWarningThreshold()) ;
 	parseList.add("#expiry_date#") ;                   parseList.add(expiryDateString) ;
-	/* parseList.add("#expiry_date_warning_threshold#") ; parseList.add(""+rrUserData.getExpiryDateWarningThreshold()) ; */
+	parseList.add("#expiry_date_warning_threshold#") ; parseList.add(""+rrUserData.getExpiryDateWarningThreshold()) ;
 
 	res.setContentType("text/html") ;
 	Writer out = res.getWriter() ;

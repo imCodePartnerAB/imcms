@@ -10,20 +10,20 @@ function evalPrepareAdd() {
 	//if( document.forms[0].password1.value == "" ) valFieldsOk = false
 	//if( document.forms[0].password2.value == "" ) valFieldsOk = false
 	if( document.forms[0].first_name.value == "" ) valFieldsOk = false
-	if( document.forms[0].last_name.value == "" ) valFieldsOk = false	
-	
+	if( document.forms[0].last_name.value == "" ) valFieldsOk = false
+
 	if(!valFieldsOk) {
 		var msg = "Du har inte fyllt i ett obligatoriskt fält! Fyll i alla obligatoriska fält"
 		alert(msg)
 		return false
 	}
-	
+
 	if(document.forms[0].password1.value != document.forms[0].password2.value){
 		var msg = "Obs! Verifieringen av lösenordet misslyckades!"
-		document.forms[0].password1.value = "" 
+		document.forms[0].password1.value = ""
 		document.forms[0].password2.value = ""
 		document.forms[0].password1.focus()
-		alert(msg)		
+		alert(msg)
 		return false
 	}
 	var userType
@@ -34,7 +34,7 @@ function evalPrepareAdd() {
 		alert(msg)
 		return false
 	}
-	
+
 	var userRole
 	userRole = document.forms[0].roles.selectedIndex
 	if(userRole == "-1") {
