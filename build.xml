@@ -405,7 +405,7 @@
     <target name="tools" depends="server" description="Builds extra tools needed for building.">
     	<ant dir="tools"/>
     	<taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
-        <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
+    	<taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
     </target>
 
 

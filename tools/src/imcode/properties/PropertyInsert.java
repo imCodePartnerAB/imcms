@@ -59,20 +59,25 @@ public class PropertyInsert {
                 fileFinder.find(fileStringReplacer,new File(".")) ;
             }
             allProperties.remove( propertyKey ) ;
-            for ( int i = 0; i < propertieses.length; i++ ) {
-                Properties properties = propertieses[i];
-                OutputStream out = new BufferedOutputStream(new FileOutputStream(new File(args[i]))) ;
-                properties.store(out, null);
-                out.flush() ;
-                out.close() ;
-            }
+            savePropertieses( propertieses, args );
+            propertieses = getPropertiesesFromArgs(args) ;
+        }
+    }
+
+    private void savePropertieses( Properties[] propertieses, String[] args ) throws IOException {
+        for ( int i = 0; i < propertieses.length; i++ ) {
+            Properties properties = propertieses[i];
+            OutputStream out = new BufferedOutputStream(new FileOutputStream(new File(args[i]))) ;
+            properties.store(out, null);
+            out.flush() ;
+            out.close() ;
         }
     }
 
     private String replaceStringsInPropertyValue( int propertyValueIndex, String propertyKey, BufferedReader bufferedReader,
                                                   String propertyValue, Properties[] propertieses ) throws IOException {
         int replacementStringsWanted = Integer.MAX_VALUE;
-        for ( int replacementStringIndex = 0; replacementStringIndex < replacementStringsWanted; ++replacementStringIndex ) {
+        for ( int replacementStringIndex = 0; replacementStringIndex < replacementStringsWanted; ) {
             int replacementStringsCount = ( replacementStringIndex + 1 );
             askForReplacement: {
                 String replacement = askForReplacement( replacementStringsCount, propertyValueIndex,
@@ -92,8 +97,15 @@ public class PropertyInsert {
                 }
                 String replacementPropertyKey = propertyKey + "/" + replacementStringsCount;
                 String tag = "<? " + replacementPropertyKey + " ?>";
-                propertyValue = StringUtils.replace( propertyValue, replacement, tag );
+                String replacementRegex = replacement.replaceAll( "\\s+", "\\\\s+") ;
+                String replacedPropertyValue = propertyValue.replaceAll( replacementRegex, tag ) ;
+                if ( replacedPropertyValue.equals(propertyValue) ) {
+                    System.out.println("The regex "+replacement+" was not found in value "+(propertyValueIndex+1)) ;
+                    break askForReplacement ;
+                }
+                propertyValue = replacedPropertyValue ;
                 propertieses[propertyValueIndex].setProperty( replacementPropertyKey, replacement );
+                ++replacementStringIndex ;
             }
         }
         for (int i = 0; i < propertieses.length; ++i) {
