@@ -140,7 +140,7 @@ public class SearchDocuments extends HttpServlet {
 		sqlBuff.append(",'0'");						//@only_addable TINYINT
 		sqlBuff.append(",'1'"); 					//@starts_with TINYINT
   	
-  		System.out.println("SQL: " + sqlBuff.toString()) ;
+  		//System.out.println("SQL: " + sqlBuff.toString()) ;
 		String[][] sqlResults = IMCServiceRMI.sqlProcedureMulti(imcserver, sqlBuff.toString());
 		String hits = "";
 		if (sqlResults != null) {
