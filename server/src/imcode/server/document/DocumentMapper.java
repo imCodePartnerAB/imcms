@@ -1,17 +1,18 @@
 package imcode.server.document;
 
 import com.imcode.imcms.flow.DocumentPageFlow;
-import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
-import imcode.server.LanguageMapper;
-import imcode.server.WebAppGlobalConstants;
+import imcode.server.*;
 import imcode.server.document.index.AutorebuildingDirectoryIndex;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.*;
-import imcode.server.user.*;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.FileUtility;
 import imcode.util.IdNamePair;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.map.LazyMap;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -50,6 +51,12 @@ public class DocumentMapper {
     private ImcmsServices service;
     private DocumentPermissionSetMapper documentPermissionSetMapper;
     private DocumentIndex documentIndex;
+
+    private Map documentCache = LazyMap.decorate( new HashMap(), new Transformer() {
+        public Object transform( Object input ) {
+            return getDocumentFromDb( ( (Integer)input ).intValue() );
+        }
+    } );
 
     private static final String TEMPLATE__STATUS_NEW = "status/new.frag";
     private static final String TEMPLATE__STATUS_DISAPPROVED = "status/disapproved.frag";
@@ -97,8 +104,8 @@ public class DocumentMapper {
     }
 
     public int getDocumentPermissionSetIdForUser( DocumentDomainObject document, UserDomainObject user ) {
-        if (null == document) {
-            return DocumentPermissionSetDomainObject.TYPE_ID__NONE ;
+        if ( null == document ) {
+            return DocumentPermissionSetDomainObject.TYPE_ID__NONE;
         }
         if ( user.isSuperAdmin() ) {
             return DocumentPermissionSetDomainObject.TYPE_ID__FULL;
@@ -161,27 +168,6 @@ public class DocumentMapper {
         newDocument.setArchivedDatetime( null );
         newDocument.setPublicationEndDatetime( null );
         return newDocument;
-    }
-
-    /**
-     * Delete childs from a menu.
-     */
-    public void deleteChilds( DocumentDomainObject document, int menu, UserDomainObject user,
-                              String[] childsThisMenu ) {
-        StringBuffer childStr = new StringBuffer( "[" );
-        // create a db connection an get meta data
-
-        for ( int i = 0; i < childsThisMenu.length; i++ ) {
-            int childId = Integer.parseInt( childsThisMenu[i] );
-            DocumentDomainObject child = getDocument( childId );
-            removeDocumentFromMenu( user, document, menu, child );
-            childStr.append( childsThisMenu[i] );
-            if ( i < childsThisMenu.length - 1 ) {
-                childStr.append( ", " );
-            }
-        }
-        childStr.append( "]" );
-        documentIndex.indexDocument( document );
     }
 
     public CategoryDomainObject[] getAllCategoriesOfType( CategoryTypeDomainObject categoryType ) {
@@ -358,14 +344,32 @@ public class DocumentMapper {
     public DocumentDomainObject getDocument( int metaId ) {
         NDC.push( "getDocument" );
 
+        DocumentDomainObject document = null;
+        try {
+            document = (DocumentDomainObject)( (DocumentDomainObject)documentCache.get( new Integer( metaId ) ) ).clone();
+        } catch ( CloneNotSupportedException e ) {
+            throw new UnhandledException( e );
+        }
+
+        NDC.pop();
+        return document;
+    }
+
+    public DocumentReference getDocumentReference( int documentId ) {
+        return new DocumentReference( documentId, this );
+    }
+
+    private DocumentDomainObject getDocumentFromDb( int metaId ) {
+        NDC.push( "getDocumentFromDb" );
+        log.debug( "Getting document " + metaId + " from db." );
+
         String[] result = sprocGetDocumentInfo( metaId );
 
-        if ( 0 == result.length ) {
-            return null;
+        DocumentDomainObject document = null;
+        if ( 0 != result.length ) {
+            document = getDocumentFromSqlResultRow( result );
+            document.accept( new DocumentInitializingVisitor() );
         }
-        DocumentDomainObject document = getDocumentFromSqlResultRow( result );
-        document.accept( new DocumentInitializingVisitor() );
-
         NDC.pop();
         return document;
     }
@@ -451,7 +455,7 @@ public class DocumentMapper {
                 menu = new MenuDomainObject( menuId, sortOrder );
                 document.setMenu( menuIndex, menu );
             }
-            menu.addMenuItem( new MenuItemDomainObject( getDocument( childId ), new Integer( manualSortKey ), treeSortKey ) );
+            menu.addMenuItem( new MenuItemDomainObject( this.getDocumentReference( childId ), new Integer( manualSortKey ), treeSortKey ) );
         }
     }
 
@@ -495,15 +499,14 @@ public class DocumentMapper {
 
     public SectionDomainObject getSectionByName( String name ) {
         String[] sectionSqlRow = service.sqlQuery( "SELECT section_id, section_name FROM sections WHERE section_name = ?",
-                                                  new String[]{name} );
+                                                   new String[]{name} );
         if ( 0 == sectionSqlRow.length ) {
             return null;
         }
-        int sectionId = Integer.parseInt( sectionSqlRow[0] ) ;
-        String sectionName = sectionSqlRow[1] ;
+        int sectionId = Integer.parseInt( sectionSqlRow[0] );
+        String sectionName = sectionSqlRow[1];
         return new SectionDomainObject( sectionId, sectionName );
     }
-
 
     /**
      * @return the sections for a document, empty array if there is none.
@@ -588,7 +591,7 @@ public class DocumentMapper {
 
         document.setId( newMetaId );
 
-        document.accept(new DocumentCreatingVisitor(user)) ;
+        document.accept( new DocumentCreatingVisitor( user ) );
 
         saveDocument( document, user );
     }
@@ -662,10 +665,15 @@ public class DocumentMapper {
 
             documentPermissionSetMapper.saveRestrictedDocumentPermissionSets( document );
 
-            document.accept(new DocumentSavingVisitor(user)) ;
+            document.accept( new DocumentSavingVisitor( user ) );
         } finally {
-            documentIndex.indexDocument( document );
+            invalidateDocument( document );
         }
+    }
+
+    public void invalidateDocument( DocumentDomainObject document ) {
+        documentIndex.indexDocument( document );
+        documentCache.remove( new Integer( document.getId() ) );
     }
 
     private void updateDocumentRolePermissions( DocumentDomainObject document ) {
@@ -919,7 +927,7 @@ public class DocumentMapper {
                                                                                          + menuIndex
                                 } );
 
-        documentIndex.indexDocument( toBeRemoved );
+        invalidateDocument( toBeRemoved );
     }
 
     private void updateDocumentSections( int metaId,
@@ -953,7 +961,7 @@ public class DocumentMapper {
         document.setCreatedDatetime( parseDateFormat( dateFormat, result[10] ) );
         Date modifiedDatetime = parseDateFormat( dateFormat, result[11] );
         document.setModifiedDatetime( modifiedDatetime );
-        document.setLastModifiedDatetime( modifiedDatetime ) ;
+        document.setLastModifiedDatetime( modifiedDatetime );
         document.setSearchDisabled( getBooleanFromSqlResultString( result[12] ) );
         document.setTarget( result[13] );
         document.setArchivedDatetime( parseDateFormat( dateFormat, result[14] ) );
@@ -1042,16 +1050,16 @@ public class DocumentMapper {
         String imageSource = sqlResult[2];
 
         image.setName( sqlResult[1] );
-        if (ImageDomainObject.ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType) {
+        if ( ImageDomainObject.ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {
             try {
-                int fileDocumentId = Integer.parseInt(imageSource) ;
-                image.setSource( new ImageDomainObject.FileDocumentImageSource((FileDocumentDomainObject)getDocument( fileDocumentId )));
-            } catch( NumberFormatException nfe ) {
-                log.warn("Non-numeric document-id \""+imageSource+"\" for image in database.") ;
-            } catch( ClassCastException cce ) {
-                log.warn("Non-file-document-id \""+imageSource+"\" for image in database.") ;
+                int fileDocumentId = Integer.parseInt( imageSource );
+                image.setSource( new ImageDomainObject.FileDocumentImageSource( (FileDocumentDomainObject)getDocument( fileDocumentId ) ) );
+            } catch ( NumberFormatException nfe ) {
+                log.warn( "Non-numeric document-id \"" + imageSource + "\" for image in database." );
+            } catch ( ClassCastException cce ) {
+                log.warn( "Non-file-document-id \"" + imageSource + "\" for image in database." );
             }
-        } else if (ImageDomainObject.ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH == imageType) {
+        } else if ( ImageDomainObject.ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH == imageType ) {
             image.setSource( new ImageDomainObject.ImagesPathRelativePathImageSource( imageSource ) );
         }
 
@@ -1082,7 +1090,7 @@ public class DocumentMapper {
 
     public void addToMenu( TextDocumentDomainObject parentDocument, int parentMenuIndex,
                            DocumentDomainObject documentToAddToMenu, UserDomainObject user ) {
-        parentDocument.getMenu( parentMenuIndex ).addMenuItem( new MenuItemDomainObject( documentToAddToMenu ) );
+        parentDocument.getMenu( parentMenuIndex ).addMenuItem( new MenuItemDomainObject( this.getDocumentReference( documentToAddToMenu.getId() ) ) );
         saveDocument( parentDocument, user );
     }
 
@@ -1117,12 +1125,12 @@ public class DocumentMapper {
     public void deleteDocument( DocumentDomainObject document, UserDomainObject user ) {
         // Create a db connection and execte sp DocumentDelete on meta_id
         service.sqlUpdateProcedure( "DocumentDelete", new String[]{"" + document.getId()} );
-        document.accept(new DocumentDeletingVisitor());
+        document.accept( new DocumentDeletingVisitor() );
         documentIndex.removeDocument( document );
     }
 
     public String getStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
-        String statusIconTemplateName ;
+        String statusIconTemplateName;
         if ( DocumentDomainObject.STATUS_NEW == document.getStatus() ) {
             statusIconTemplateName = TEMPLATE__STATUS_NEW;
         } else if ( DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == document.getStatus() ) {
@@ -1215,24 +1223,24 @@ public class DocumentMapper {
         return documentIds;
     }
 
-    static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
+    static void deleteFileDocumentFilesAccordingToFileFilter( FileFilter fileFilter ) {
         File filePath = Imcms.getServices().getConfig().getFilePath();
-        File[] filesToDelete = filePath.listFiles(fileFilter);
-        for (int i = 0; i < filesToDelete.length; i++) {
+        File[] filesToDelete = filePath.listFiles( fileFilter );
+        for ( int i = 0; i < filesToDelete.length; i++ ) {
             filesToDelete[i].delete();
         }
     }
 
-    static void deleteAllFileDocumentFiles(FileDocumentDomainObject fileDocument) {
-        deleteFileDocumentFilesAccordingToFileFilter(new FileDocumentFileFilter(fileDocument));
+    static void deleteAllFileDocumentFiles( FileDocumentDomainObject fileDocument ) {
+        deleteFileDocumentFilesAccordingToFileFilter( new FileDocumentFileFilter( fileDocument ) );
     }
 
     public DocumentPermissionSetMapper getDocumentPermissionSetMapper() {
         return documentPermissionSetMapper;
     }
 
-    static void deleteOtherFileDocumentFiles(final FileDocumentDomainObject fileDocument) {
-        deleteFileDocumentFilesAccordingToFileFilter(new SuperfluousFileDocumentFilesFileFilter(fileDocument));
+    static void deleteOtherFileDocumentFiles( final FileDocumentDomainObject fileDocument ) {
+        deleteFileDocumentFilesAccordingToFileFilter( new SuperfluousFileDocumentFilesFileFilter( fileDocument ) );
     }
 
     public static class TextDocumentMenuIndexPair {
@@ -1287,41 +1295,43 @@ public class DocumentMapper {
     }
 
     private static class FileDocumentFileFilter implements FileFilter {
+
         protected final FileDocumentDomainObject fileDocument;
 
-        protected FileDocumentFileFilter(FileDocumentDomainObject fileDocument) {
+        protected FileDocumentFileFilter( FileDocumentDomainObject fileDocument ) {
             this.fileDocument = fileDocument;
         }
 
-        public boolean accept(File file) {
+        public boolean accept( File file ) {
             String filename = file.getName();
             Perl5Util perl5Util = new Perl5Util();
-            if (perl5Util.match("/(\\d+)(?:_se|\\.(.*))?/", filename)) {
-                String idStr = perl5Util.group(1);
-                String variantName = FileUtility.unescapeFilename(StringUtils.defaultString(perl5Util.group(2)));
-                return accept(file, Integer.parseInt(idStr), variantName) ;
+            if ( perl5Util.match( "/(\\d+)(?:_se|\\.(.*))?/", filename ) ) {
+                String idStr = perl5Util.group( 1 );
+                String variantName = FileUtility.unescapeFilename( StringUtils.defaultString( perl5Util.group( 2 ) ) );
+                return accept( file, Integer.parseInt( idStr ), variantName );
             }
-            return false ;
+            return false;
         }
 
         public boolean accept( File file, int fileDocumentId, String fileId ) {
-            if (fileDocumentId == fileDocument.getId()) {
-                return true ;
+            if ( fileDocumentId == fileDocument.getId() ) {
+                return true;
             }
-            return false ;
+            return false;
         }
     }
 
     private static class SuperfluousFileDocumentFilesFileFilter extends FileDocumentFileFilter {
 
-        private SuperfluousFileDocumentFilesFileFilter(FileDocumentDomainObject fileDocument) {
-            super(fileDocument) ;
+        private SuperfluousFileDocumentFilesFileFilter( FileDocumentDomainObject fileDocument ) {
+            super( fileDocument );
         }
 
         public boolean accept( File file, int fileDocumentId, String fileId ) {
-            boolean correctFileForFileDocumentFile = file.equals(DocumentSavingVisitor.getFileForFileDocument( fileDocumentId, fileId));
-            boolean fileDocumentHasFile = null != fileDocument.getFile( fileId ) ;
-            return super.accept( file, fileDocumentId, fileId) && (!correctFileForFileDocumentFile || !fileDocumentHasFile) ;
+            boolean correctFileForFileDocumentFile = file.equals( DocumentSavingVisitor.getFileForFileDocument( fileDocumentId, fileId ) );
+            boolean fileDocumentHasFile = null != fileDocument.getFile( fileId );
+            return super.accept( file, fileDocumentId, fileId )
+                   && ( !correctFileForFileDocumentFile || !fileDocumentHasFile );
         }
     }
 

@@ -6,6 +6,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.MetaDataParser;
 import imcode.util.Utility;
@@ -44,6 +45,9 @@ public class SaveMeta extends HttpServlet {
 
         String metaIdStr = req.getParameter( "meta_id" );
         int metaId = Integer.parseInt( metaIdStr );
+
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( metaId );
 
         if ( !imcref.checkDocAdminRightsAny( metaId, user, ImcmsConstants.PERM_EDIT_HEADLINE
                                                            | ImcmsConstants.PERM_EDIT_DOCINFO
@@ -241,9 +245,7 @@ public class SaveMeta extends HttpServlet {
         for ( int i = 0; i < metatable.length; i += metatable_cols ) {
             String tmp = (String)inputMap.get( metatable[i] );
             if ( userSetId > metatable_restrictions[i]						// Check on set_id if user is allowed to set this particular property.
-                 || ( userSetId > 0										// If user not has full access (0)...
-                      && ( ( userPermSet & metatable_restrictions[i + 1] ) == 0 )// check permission-bitvector for the users set_id.
-                    ) ) {
+                 || userSetId > 0 && ( userPermSet & metatable_restrictions[i + 1] ) == 0 ) {
                 continue;
             }
             if ( tmp != null ) {
@@ -361,7 +363,9 @@ public class SaveMeta extends HttpServlet {
         }
 
         // Update the date_modified for all parents.
-        DocumentMapper.sprocUpdateParentsDateModified( imcref, Integer.parseInt( metaIdStr ) );
+        DocumentMapper.sprocUpdateParentsDateModified( imcref, metaId );
+
+        documentMapper.invalidateDocument(document) ;
 
         // Let's split this joint!
         res.sendRedirect( "AdminDoc?meta_id="+metaId);

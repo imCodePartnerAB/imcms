@@ -3,11 +3,8 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.textdocument.MenuDomainObject;
-import imcode.server.document.textdocument.MenuItemDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.*;
+import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
@@ -18,8 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Date;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Save document sorting (date,name,manual)
@@ -36,10 +32,15 @@ public class SaveSort extends HttpServlet {
         Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+
         ImcmsServices imcref = Imcms.getServices();
         int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
-        UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !imcref.checkDocAdminRights( documentId, user, ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) ) {	// Checking to see if user may edit this
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
+
+        TextDocumentPermissionSetDomainObject documentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( document, user );
+        if ( !documentPermissionSet.getEditMenus() ) {
             String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
             if ( output != null ) {
                 out.write( output );
@@ -47,64 +48,55 @@ public class SaveSort extends HttpServlet {
             return;
         }
 
-        String temp_str;
-        String[] selectedChildrenIds;
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
-        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
-
-        String[] children = imcref.sqlQuery( "select to_meta_id from childs, menus where childs.menu_id = menus.menu_id AND meta_id = ?", new String[]{
-            "" + documentId
-        } );
-
-        Vector childs = new Vector();
-        Vector sort_no = new Vector();
-        for ( int i = 0; i < children.length; ++i ) {
-            temp_str = req.getParameter( children[i] );
-            if ( temp_str != null ) {
-                childs.add( children[i] );
-                sort_no.add( temp_str );
-            }
-        }
-
-        selectedChildrenIds = req.getParameterValues( "archiveDelBox" );
-
-        user.put( "flags", new Integer( ImcmsConstants.DISPATCH_FLAG__EDIT_MENU ) );
-
+        String[] selectedChildrenIds = req.getParameterValues( "archiveDelBox" );
         int menuIndex = Integer.parseInt( req.getParameter( "doc_menu_no" ) );
-        String sortParam = req.getParameter( "sort" );
-        if ( sortParam != null ) {
-            int sort_order = Integer.parseInt( req.getParameter( "sort_order" ) );
-            String[] queryResult = imcref.sqlQuery( "select sort_order from menus where meta_id = ? AND menu_index = ?",
-                                                    new String[]{"" + documentId, "" + menuIndex} );
-            int currentSortOrder = MenuDomainObject.MENU_SORT_ORDER__DEFAULT;
-            if ( 0 < queryResult.length ) {
-                String currentSortOrderStr = queryResult[0];
-                currentSortOrder = Integer.parseInt( currentSortOrderStr );
-            }
-            if ( currentSortOrder != sort_order ) {
-                imcref.sqlUpdateQuery( "update menus set sort_order = ? where meta_id = ? AND menu_index = ?",
-                                       new String[]{"" + sort_order, "" + documentId, "" + menuIndex} );
-                logSortOrderUpdateToMainLog( imcref, documentId, user );
+        MenuDomainObject menu = document.getMenu( menuIndex );
 
+        List logMessages = new ArrayList() ;
+        if ( req.getParameter( "sort" ) != null ) {
+            int sortOrder = Integer.parseInt( req.getParameter( "sort_order" ) );
+            if ( menu.getSortOrder() != sortOrder ) {
+                menu.setSortOrder( sortOrder );
             } else {
-                if ( childs.size() > 0 ) {
-                    if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED == sort_order ) {
-                        imcref.saveManualSort( documentId, user, childs, sort_no, menuIndex );
-                    } else if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER == sort_order ) {
-                        imcref.saveTreeSortIndex( documentId, user, childs, sort_no, menuIndex );
+                MenuItemDomainObject[] menuItems = menu.getMenuItems();
+                for ( int i = 0; i < menuItems.length; i++ ) {
+                    MenuItemDomainObject menuItem = menuItems[i];
+                    String newSortKey = req.getParameter( "" + menuItem.getDocument().getId() );
+                    if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED == sortOrder ) {
+                        try {
+                            menuItem.setSortKey( new Integer( newSortKey ) );
+                        } catch ( NumberFormatException ignored ) { }
+                    } else if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER == sortOrder ) {
+                        menuItem.setTreeSortKey( new TreeSortKeyDomainObject( newSortKey ) );
                     }
                 }
             }
+            logMessages.add("Child sort order for [" + documentId + "] updated by user: [" + user.getFullName() + "]");
         } else if ( req.getParameter( "delete" ) != null ) {
             if ( selectedChildrenIds != null ) {
-                documentMapper.deleteChilds( document, menuIndex, user, selectedChildrenIds );
-                logDeletionToMainLog( selectedChildrenIds, imcref, document, menuIndex, user );
+                for ( int i = 0; i < selectedChildrenIds.length; i++ ) {
+                    int childId = Integer.parseInt(selectedChildrenIds[i]);
+                    menu.removeMenuItemByDocumentId(childId) ;
+                    imcref.updateMainLog( "Link from [" + document.getId() + "] in menu [" + menuIndex + "] to ["
+                                          + childId
+                                          + "] removed by user: ["
+                                          + user.getFullName()
+                                          + "]" );
+                }
             }
         } else if ( req.getParameter( "archive" ) != null ) {
             if ( selectedChildrenIds != null ) {
-                imcref.archiveChilds( documentId, user, selectedChildrenIds );
-                logArchivationToMainLog( imcref, selectedChildrenIds, documentId, user );
-
+                Date now = new Date();
+                for ( int i = 0; i < selectedChildrenIds.length; i++ ) {
+                    int childId = Integer.parseInt( selectedChildrenIds[i] );
+                    DocumentDomainObject child = documentMapper.getDocument( childId );
+                    child.setArchivedDatetime( now );
+                    documentMapper.saveDocument( child, user );
+                }
+                logMessages.add("Childs [" + StringUtils.join( selectedChildrenIds, ", " ) + "] from " + "[" + documentId
+                             + "] archived by user: ["
+                             + user.getFullName()
+                             + "]");
             }
         } else if ( req.getParameter( "copy" ) != null ) {
             if ( selectedChildrenIds != null ) {
@@ -118,35 +110,19 @@ public class SaveSort extends HttpServlet {
                     selectedChild.setStatus( DocumentDomainObject.STATUS_NEW );
                     selectedChild.setPublicationStartDatetime( new Date() );
                     documentMapper.saveNewDocument( selectedChild, user );
-                    document.getMenu( menuIndex ).addMenuItem( new MenuItemDomainObject( selectedChild ) );
+                    menu.addMenuItem( new MenuItemDomainObject( documentMapper.getDocumentReference( selectedChild.getId() ) ) );
                 }
-                documentMapper.saveDocument( document, user );
             }
         }
 
+        documentMapper.saveDocument( document, user );
+
+        for ( Iterator iterator = logMessages.iterator(); iterator.hasNext(); ) {
+            String logMessage = (String)iterator.next();
+            imcref.updateMainLog( logMessage );
+        }
         res.sendRedirect( "AdminDoc?meta_id=" + documentId + "&flags=" + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU
                           + "&editmenu="
                           + menuIndex );
-    }
-
-    private void logSortOrderUpdateToMainLog( ImcmsServices imcref, int documentId, UserDomainObject user ) {
-        imcref.updateMainLog( "Child sort order for [" + documentId + "] updated by user: [" +
-                    user.getFullName() + "]" );
-    }
-
-    private void logArchivationToMainLog( ImcmsServices imcref, String[] selectedChildrenIds, int documentId, UserDomainObject user ) {
-        imcref.updateMainLog( "Childs [" + StringUtils.join( selectedChildrenIds, ", " ) + "] from " +
-                         "[" + documentId + "] archived by user: [" + user.getFullName() + "]" );
-    }
-
-    private void logDeletionToMainLog( String[] selectedChildrenIds, ImcmsServices imcref, TextDocumentDomainObject document, int menuIndex, UserDomainObject user ) {
-        for ( int i = 0; i < selectedChildrenIds.length; i++ ) {
-            int childId = Integer.parseInt( selectedChildrenIds[i] );
-            imcref.updateMainLog( "Link from [" + document.getId() + "] in menu [" + menuIndex + "] to ["
-                    + childId
-                    + "] removed by user: ["
-                    + user.getFullName()
-                    + "]" );
-        }
     }
 }

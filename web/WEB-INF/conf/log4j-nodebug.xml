@@ -48,27 +48,21 @@
         <appender-ref ref="ERROR"/>
     </appender>
 
-    <appender name="NULL" class="org.apache.log4j.varia.NullAppender"/>
-
     <!-- Set up accesslog with priority 'info' -->
-    <category name="accesslog" additivity="false">
+    <category name="com.imcode.imcms.log.access" additivity="false">
         <priority value="info"/>
         <appender-ref ref="WEBAPPACCESS"/>
     </category>
 
     <!-- Set up mainlog with priority 'info' -->
-    <category name="mainlog" additivity="false">
+    <category name="com.imcode.imcms.log.main" additivity="false">
         <priority value="info"/>
         <appender-ref ref="WEBAPPMAIN"/>
     </category>
 
-    <category name="velocity" additivity="false">
+    <category name="org.apache" additivity="false">
         <priority value="warn"/>
         <appender-ref ref="WEBAPPERROR"/>
-    </category>
-
-    <category name="org.apache" additivity="false">
-        <appender-ref ref="NULL"/>
     </category>
 
     <!-- Set up the errorlog with priority 'info' -->

@@ -31,14 +31,6 @@ public interface ImcmsServices {
 
     String parsePage( ParserParameters paramsToParse ) throws IOException ;
 
-    /** @deprecated Use {@link imcode.server.document.textdocument.MenuItemDomainObject#setSortKey(Integer)} **/
-    void saveManualSort(int meta_id,imcode.server.user.UserDomainObject user,List childs, List sort_no, int menuNumber)
-	;
-
-    /** @deprecated Use {@link DocumentDomainObject#setArchivedDatetime(java.util.Date)} */
-    void archiveChilds(int meta_id,UserDomainObject user,String[] childsThisMenu)
-	;
-
     /**
      * @deprecated Use {@link imcode.server.document.UrlDocumentDomainObject#getUrl()} instead. *
      */
@@ -194,8 +186,6 @@ public interface ImcmsServices {
     String sqlProcedureStr( String procedure, String[] params );
 
     int sqlUpdateQuery(String sqlStr, String[] params);
-
-    void saveTreeSortIndex( int meta_id, UserDomainObject user, List childs, List sort_no, int menuNumber);
 
     String[][] sqlProcedureMulti(String procedure, String[] params);
 

@@ -3,9 +3,7 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.textdocument.MenuItemDomainObject;
@@ -223,7 +221,7 @@ public class GetExistingDoc extends HttpServlet {
         boolean canAddToMenu = allowedDocumentTypeIds.contains( new Integer( document.getDocumentTypeId() ) )
                                && sharePermission;
         if ( canAddToMenu ) {
-            parentDocument.getMenu( menuIndex ).addMenuItem( new MenuItemDomainObject( document ) );
+            parentDocument.getMenu( menuIndex ).addMenuItem( new MenuItemDomainObject( documentMapper.getDocumentReference( document.getId() ) ) );
             documentMapper.saveDocument( parentDocument, user );
         }
     }

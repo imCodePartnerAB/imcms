@@ -20,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.apache.oro.text.perl.Perl5Util;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
@@ -43,7 +42,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private int sessionCounter = 0;
     private FileCache fileCache = new FileCache();
 
-    private final static Logger mainLog = Logger.getLogger( "mainlog" );
+    private final static Logger mainLog = Logger.getLogger( ImcmsConstants.MAIN_LOG );
 
     private final static Logger log = Logger.getLogger( DefaultImcmsServices.class.getName() );
 
@@ -314,23 +313,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return documentMapper.getText( meta_id, no );
     }
 
-    public void saveManualSort( int meta_id, UserDomainObject user, List childs,
-                                List sort_no, int menuNumber ) {
-        String columnName = "manual_sort_order";
-        saveChildSortOrder( columnName, childs, sort_no, meta_id, menuNumber );
-    }
-
-    public void saveTreeSortIndex( int meta_id, UserDomainObject user, List childs, List sort_no, int menuNumber ) {
-        String columnName = "tree_sort_index";
-        for ( ListIterator iterator = sort_no.listIterator(); iterator.hasNext(); ) {
-            String menuItemTreeSortKey = (String)iterator.next();
-            Perl5Util perl5util = new Perl5Util();
-            menuItemTreeSortKey = perl5util.substitute( "s/\\D+/./g", menuItemTreeSortKey );
-            iterator.set( menuItemTreeSortKey );
-        }
-        saveChildSortOrder( columnName, childs, sort_no, meta_id, menuNumber );
-    }
-
     private void saveChildSortOrder( String columnName, List childs, List sort_no, int meta_id, int menuIndex ) {
         for ( int i = 0; i < childs.size(); i++ ) {
             String columnValue = sort_no.get( i ).toString();
@@ -338,23 +320,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
             String sql = "UPDATE childs SET " + columnName
                          + " = ? WHERE to_meta_id = ? AND menu_id = (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
             sqlUpdateQuery( sql, new String[]{columnValue, to_meta_id, "" + meta_id, "" + menuIndex} );
-        }
-    }
-
-    /**
-     * Archive childs for a menu.
-     */
-    public void archiveChilds( int meta_id, UserDomainObject user, String[] childsThisMenu ) {
-
-        Date now = getCurrentDate();
-        for ( int i = 0; i < childsThisMenu.length; i++ ) {
-            DocumentDomainObject document = documentMapper.getDocument( Integer.parseInt( childsThisMenu[i] ) );
-            document.setArchivedDatetime( now );
-            try {
-                documentMapper.saveDocument( document, user );
-            } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
-                throw new UnhandledException( e );
-            }
         }
     }
 
@@ -516,7 +481,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         velocity.setProperty( VelocityEngine.VM_LIBRARY, languageIso639_2 + "/gui.vm" );
         velocity.setProperty( VelocityEngine.VM_LIBRARY_AUTORELOAD, "true" );
         velocity.setProperty( VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem" );
-        velocity.setProperty( "runtime.log.logsystem.log4j.category", "velocity" );
+        velocity.setProperty( "runtime.log.logsystem.log4j.category", "org.apache.velocity" );
         velocity.init();
         return velocity;
     }

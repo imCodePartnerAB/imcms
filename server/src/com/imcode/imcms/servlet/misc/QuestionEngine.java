@@ -1,17 +1,22 @@
 package com.imcode.imcms.servlet.misc;
 
-import java.io.*;
-import java.util.*;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.util.* ;
-import imcode.util.fortune.* ;
-import imcode.server.* ;
+import imcode.server.HTMLConv;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
+import imcode.util.fortune.DateRange;
+import imcode.util.fortune.Poll;
+import imcode.util.fortune.Quote;
+import org.apache.log4j.Logger;
 
-import org.apache.log4j.Category ;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
 
 /**
  * @author  Monika Hurtig
@@ -23,7 +28,7 @@ public class QuestionEngine extends HttpServlet
 {
     private final static String questionTemplate = "QuestionEngine.htm";
 
-    private static Category log = Category.getInstance(imcode.server.ImcmsConstants.ERROR_LOG) ;
+    private final static Logger log = Logger.getLogger( QuestionEngine.class.getName() );
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
     {

@@ -59,10 +59,9 @@ public interface ImcmsConstants {
     /* Log instances. */
 
     /** The access-log, used for keeping track of page hits. **/
-    public final static String ACCESS_LOG		= "accesslog";
+    public final static String ACCESS_LOG		= "com.imcode.imcms.log.access";
 
-    /** The error-log, used for logging errors, exceptions, and the like. */
-    public final static String ERROR_LOG		= "errorlog";
+    public final static String MAIN_LOG         = "com.imcode.imcms.log.main";
 
     final static int PASSWORD_MINIMUM_LENGTH = 4;
 

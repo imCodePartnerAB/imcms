@@ -1,9 +1,6 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentStoringVisitor;
-import imcode.server.document.TemplateDomainObject;
-import imcode.server.document.DocumentMapper;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -411,7 +408,7 @@ public class TextDocument extends Document {
         public void addDocument(Document documentToAdd) throws NoPermissionException, DocumentAlreadyInMenuException {
             getSecurityChecker().hasEditPermission(documentToAdd);
             getSecurityChecker().userHasPermissionToAddDocumentToAnyMenu(documentToAdd);
-            internalTextDocument.getMenu(menuIndex).addMenuItem(new MenuItemDomainObject(documentToAdd.getInternal()));
+            internalTextDocument.getMenu(menuIndex).addMenuItem(new MenuItemDomainObject(getDocumentMapper().getDocumentReference( documentToAdd.getInternal().getId() ) ));
         }
 
         /**
@@ -422,7 +419,7 @@ public class TextDocument extends Document {
          */
         public void removeDocument(Document documentToRemove) throws NoPermissionException {
             getSecurityChecker().hasEditPermission(documentToRemove);
-            internalTextDocument.getMenu(menuIndex).removeMenuItem(new MenuItemDomainObject(documentToRemove.getInternal()));
+            internalTextDocument.getMenu(menuIndex).removeMenuItem(new MenuItemDomainObject( getDocumentMapper().getDocumentReference( documentToRemove.getInternal().getId() ) ) );
         }
 
         public Document[] getDocuments() {
@@ -431,10 +428,8 @@ public class TextDocument extends Document {
             for (int i = 0; i < menuItemDomainObjects.length; i++) {
                 MenuItemDomainObject menuItemDomainObject = menuItemDomainObjects[i];
                 DocumentDomainObject documentDomainObject = menuItemDomainObject.getDocument();
-                boolean documentIsVisibleInMenu = documentDomainObject.isPublishedAndNotArchived()
-                                                  && getDocumentMapper().userHasAtLeastDocumentReadPermission( contentManagementSystem.getCurrentUser().getInternal(), documentDomainObject )
-                        || getDocumentMapper().userHasMoreThanReadPermissionOnDocument(contentManagementSystem.getCurrentUser().getInternal(), documentDomainObject);
-                if (documentIsVisibleInMenu) {
+                imcode.server.user.UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
+                if (user.canList( documentDomainObject )) {
                     Document document = contentManagementSystem.getDocumentService().wrapDocumentDomainObject(documentDomainObject);
                     documentList.add(document);
                 }

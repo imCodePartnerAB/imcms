@@ -31,6 +31,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public static final int STATUS_PUBLICATION_DISAPPROVED = 1;
     public static final int STATUS_PUBLICATION_APPROVED = 2;
 
+    public static final int ID_NEW = 0;
+
     private Attributes attributes;
     private static Logger log = Logger.getLogger( DocumentDomainObject.class );
 

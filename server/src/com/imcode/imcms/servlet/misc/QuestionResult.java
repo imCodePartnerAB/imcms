@@ -1,17 +1,21 @@
 package com.imcode.imcms.servlet.misc;
 
-import java.io.*;
-import java.util.*;
-import java.text.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.util.*;
-import imcode.util.fortune.*;
-import imcode.server.*;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
+import imcode.util.fortune.Poll;
+import org.apache.log4j.Logger;
 
-import org.apache.log4j.Category;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Writer;
+import java.text.NumberFormat;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author Monika Hurtig
@@ -22,8 +26,7 @@ import org.apache.log4j.Category;
 public class QuestionResult extends HttpServlet {
     private final static String RESULTTEMPLATE = "QuestionResult.htm";
 
-    private static Category log = Category.getInstance(imcode.server.ImcmsConstants.ERROR_LOG);
-
+    private final static Logger log = Logger.getLogger( QuestionResult.class.getName() );
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {

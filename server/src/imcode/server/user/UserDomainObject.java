@@ -45,9 +45,10 @@ public class UserDomainObject extends Hashtable {
 
     private Set roles = new HashSet();
 
-    /** FIXME - Kludge to get context path into template methods **/
+    /**
+     * FIXME - Kludge to get context path into template methods *
+     */
     private String currentContextPath;
-
 
     /**
      * get user-id
@@ -401,7 +402,7 @@ public class UserDomainObject extends Hashtable {
     }
 
     public void addRole( RoleDomainObject role ) {
-        roles.add( role ) ;
+        roles.add( role );
     }
 
     public void removeRole( RoleDomainObject role ) {
@@ -447,7 +448,7 @@ public class UserDomainObject extends Hashtable {
     }
 
     public boolean isDefaultUser() {
-        return 2 == id ;
+        return 2 == id;
     }
 
     public boolean isSuperAdmin() {
@@ -464,6 +465,12 @@ public class UserDomainObject extends Hashtable {
 
     public boolean canAccess( DocumentDomainObject document ) {
         return Imcms.getServices().getDocumentMapper().userHasAtLeastDocumentReadPermission( this, document );
+    }
+
+    public boolean canList( DocumentDomainObject documentDomainObject ) {
+        return documentDomainObject.isPublishedAndNotArchived()
+               && canAccess( documentDomainObject )
+               || canEdit( documentDomainObject );
     }
 
     public String toString() {
