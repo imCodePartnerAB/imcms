@@ -45,8 +45,8 @@ if (inDefaultMode) {
 <head>
 <title><? templates/sv/AdminManager_adminTask_element.htm/17 ?></title>
 
-<link rel="stylesheet" type="text/css" href="/imcms/css/imcms_admin.css.jsp">
-<script src="/imcms/eng/scripts/imcms_admin.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="$contextPath/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body onLoad="focusField(1,'template')">
