@@ -198,9 +198,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     private void sqlInsertMenu( TextDocumentDomainObject textDocument, int menuIndex,
                                 MenuDomainObject menu ) {
-        if ( null == menu ) {
-            menu = new MenuDomainObject();
-        }
         String sqlInsertMenu = "INSERT INTO menus (meta_id, menu_index, sort_order) VALUES(?,?,?) SELECT @@IDENTITY";
         String menuIdString = service.sqlQueryStr( sqlInsertMenu, new String[]{
             "" + textDocument.getId(), "" + menuIndex, "" + menu.getSortOrder()

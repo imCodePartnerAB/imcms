@@ -96,11 +96,11 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         this.textMap = document.getTexts();
 
         this.imageMode = imagemode;
-        this.imageMap = getImageMap( document, imagemode );
+        this.imageMap = getImageMap( document );
 
     }
 
-    private Map getImageMap( TextDocumentDomainObject document, boolean imagemode ) {
+    private Map getImageMap( TextDocumentDomainObject document ) {
         Map images = document.getImages();
         Map imageMap = new HashMap();
         for ( Iterator iterator = images.keySet().iterator(); iterator.hasNext(); ) {

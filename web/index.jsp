@@ -1,7 +1,7 @@
-<% response.sendRedirect(request.getContextPath()+"/servlet/StartDoc") ; %>
+<% response.sendRedirect("servlet/StartDoc") ; %>
 <html> 
     <head> 
-	<meta http-equiv="refresh" content="0;URL="<%= request.getContextPath() %>/servlet/StartDoc">
+	<meta http-equiv="refresh" content="0;URL=servlet/StartDoc">
     </head>
     <body>
     </body>

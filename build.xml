@@ -477,7 +477,7 @@
                  casesensitive="false"/>
 
         <!-- Locations for the final packages -->
-        <property name="warfilename" value="${webappname}${versionfilesuffix}.war"/>
+        <property name="warfilename" value="imcms${versionfilesuffix}.war"/>
         <property name="bindist-war" value="${dist}/${warfilename}"/>
 
         <property name="bindist-jar" value="${dist}/imcms${versionfilesuffix}.jar"/>

@@ -21,8 +21,6 @@ public class Image {
         if( !"".equals(internalImage.getUrl())){
             result =  ApplicationServer.getIMCServiceInterface().getConfig().getImageUrl() + internalImage.getUrl();
         }
-
-
         return result;
     }
 
