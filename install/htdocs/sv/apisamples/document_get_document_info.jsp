@@ -15,9 +15,10 @@ for document with id <%=documentId%>
 Headline: "<%=document.getHeadline()%>"
 Menu text: "<%=document.getMenuText()%>"
 Menu image url: "<%=document.getMenuImageURL()%>"
-Published date/time: <%=document.getPublicationStartDatetime()%>
-Archived date/Time: <%=document.getArchivedDatetime()%>
-Archived flag: <%=document.getArchivedFlag()%>
+Status: The document is <% if (Document.STATUS_PUBLICATION_APPROVED != document.getStatus()) {%>not<%}%> approved for publication.
+Publication start datetime: <%=document.getPublicationStartDatetime()%>
+Archived datetime: <%=document.getArchivedDatetime()%>
+Publication end datetime: <%=document.getPublicationEndDatetime()%>
 Sections:
 <%
      Section[] sections = document.getSections();

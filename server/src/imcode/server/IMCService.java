@@ -723,25 +723,25 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Parse doc replace variables with data , use template
      */
-    public String parseDoc( java.util.List variables, String admin_template_name, UserDomainObject user ) {
+    public String getAdminTemplate( String adminTemplateName, UserDomainObject user, java.util.List tagsWithReplacements ) {
         // FIXME Fugly workaround
         String langPrefix = getUserLangPrefixOrDefaultLanguage( user );
         String htmlStr;
         try {
-            if( "logged_out.html".equals(admin_template_name)){
+            if( "logged_out.html".equals(adminTemplateName)){
                 htmlStr = fileCache.getCachedFileString(
-                    new File( imcmsPath, langPrefix + "/login/" + admin_template_name ) );
+                    new File( imcmsPath, langPrefix + "/login/" + adminTemplateName ) );
             }else{
                 htmlStr = fileCache.getCachedFileString(
-                    new File( templatePath, langPrefix + "/admin/" + admin_template_name ) );
+                    new File( templatePath, langPrefix + "/admin/" + adminTemplateName ) );
             }
 
 
-            if ( variables == null ) {
+            if ( tagsWithReplacements == null ) {
                 return htmlStr;
             }
-            String[] foo = new String[variables.size()];
-            return imcode.util.Parser.parseDoc( htmlStr, (String[])variables.toArray( foo ) );
+            String[] foo = new String[tagsWithReplacements.size()];
+            return imcode.util.Parser.parseDoc( htmlStr, (String[])tagsWithReplacements.toArray( foo ) );
         } catch ( IOException ex ) {
             log.error( ex.toString(), ex );
             return "";

@@ -113,8 +113,8 @@ public class AdminDoc extends HttpServlet {
                     vec.add( "#adminMode#" );
                     vec.add( imcref.getMenuButtons( meta_id, user ) );
                     vec.add( "#doc_type_description#" );
-                    vec.add( imcref.parseDoc( null, "adminbuttons/adminbuttons" + doc_type + "_description.html", user ) );
-                    return imcref.parseDoc( vec, "docinfo.html", user );
+                    vec.add( imcref.getAdminTemplate( "adminbuttons/adminbuttons" + doc_type + "_description.html", user, null ) );
+                    return imcref.getAdminTemplate( "docinfo.html", user, vec );
                 }
             }
         }
@@ -193,7 +193,7 @@ public class AdminDoc extends HttpServlet {
                 urlvec.add( "#getParentMetaId#" );
                 urlvec.add( String.valueOf( parent_meta_id ) );
 
-                htmlStr = imcref.parseDoc( urlvec, "change_url_doc.html", user );
+                htmlStr = imcref.getAdminTemplate( "change_url_doc.html", user, urlvec );
                 break;
 
             case DocumentDomainObject.DOCTYPE_HTML:
@@ -207,7 +207,7 @@ public class AdminDoc extends HttpServlet {
                 fsetvec.add( String.valueOf( meta_id ) );
                 fsetvec.add( "#getParentMetaId#" );
                 fsetvec.add( String.valueOf( parent_meta_id ) );
-                htmlStr = imcref.parseDoc( fsetvec, "change_frameset_doc.html", user );
+                htmlStr = imcref.getAdminTemplate( "change_frameset_doc.html", user, fsetvec );
 
                 break;
 
@@ -259,7 +259,7 @@ public class AdminDoc extends HttpServlet {
                 vec.add( "" );
                 vec.add( "#getParentMetaId#" );
                 vec.add( String.valueOf( parent_meta_id ) );
-                htmlStr = imcref.parseDoc( vec, "change_browser_doc.html", user );
+                htmlStr = imcref.getAdminTemplate( "change_browser_doc.html", user, vec );
                 break;
 
             case DocumentDomainObject.DOCTYPE_FILE:
@@ -293,7 +293,7 @@ public class AdminDoc extends HttpServlet {
                 d.add( String.valueOf( meta_id ) );
                 d.add( "#parent_meta_id#" );
                 d.add( String.valueOf( parent_meta_id ) );
-                htmlStr = imcref.parseDoc( d, "change_fileupload.html", user );
+                htmlStr = imcref.getAdminTemplate( "change_fileupload.html", user, d );
                 break;
         }
         String[] parsetmp = {"#adminMode#", imcref.getMenuButtons( meta_id, user )};

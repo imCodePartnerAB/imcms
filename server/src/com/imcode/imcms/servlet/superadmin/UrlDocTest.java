@@ -40,7 +40,7 @@ public class UrlDocTest extends HttpServlet {
 			return ;
 		}
 
-		out.print(imcref.parseDoc(null,"UrlDocTestHead.html", user)) ;
+		out.print(imcref.getAdminTemplate( "UrlDocTestHead.html", user, null )) ;
 		out.flush() ;
 		for ( int i = 0; meta_id != null && i<meta_id.length ; i++ ) {
 			String found = "green", reached = "green", ok = "red" ;
@@ -106,10 +106,10 @@ public class UrlDocTest extends HttpServlet {
 			vec.add(reached) ;
 			vec.add("#ok#") ;
 			vec.add(ok) ;
-			out.print(imcref.parseDoc(vec,"UrlDocTestRow.html", user)) ;
+			out.print(imcref.getAdminTemplate( "UrlDocTestRow.html", user, vec )) ;
 			out.flush() ;
 		}
-		out.print(imcref.parseDoc(null,"UrlDocTestTail.html", user)) ;
+		out.print(imcref.getAdminTemplate( "UrlDocTestTail.html", user, null )) ;
 	}
 
 	private String testUrl (URL url) throws IOException {

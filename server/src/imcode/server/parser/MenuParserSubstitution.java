@@ -241,7 +241,7 @@ class MenuParserSubstitution implements Substitution {
         if ( headline.length() == 0 ) {
             headline = "&nbsp;";
         } else {
-            if ( !menuItem.getDocument().isActivated() ) {
+            if ( !menuItem.getDocument().isPublished() ) {
                 headline = "<em><i>" + headline;
                 headline += "</i></em>";
             }
@@ -283,8 +283,7 @@ class MenuParserSubstitution implements Substitution {
 
         UserDomainObject user = documentRequest.getUser();
 
-        String a_href = documentRequest.getServerObject().parseDoc( menuItemAHref,
-                                                                    "textdoc/menuitem_a_href.frag", user );
+        String a_href = documentRequest.getServerObject().getAdminTemplate( "textdoc/menuitem_a_href.frag", user, menuItemAHref );
 
         tags.setProperty( "#menuitemlinkonly#", a_href );
         tags.setProperty( "#/menuitemlinkonly#", "</a>" );
@@ -310,27 +309,24 @@ class MenuParserSubstitution implements Substitution {
                 menuItemSortKeyTags.add( "#sortkey#" );
                 menuItemSortKeyTags.add( sortKey );
 
-                a_href = documentRequest.getServerObject().parseDoc( menuItemSortKeyTags,
-                                                                     sortKeyTemplate, user ) + a_href;
+                a_href = documentRequest.getServerObject().getAdminTemplate( sortKeyTemplate, user, menuItemSortKeyTags ) + a_href;
             }
 
             List menuItemCheckboxTags = new ArrayList( 2 );
             menuItemCheckboxTags.add( "#meta_id#" );
             menuItemCheckboxTags.add( "" + menuItem.getDocument().getId() );
 
-            a_href = documentRequest.getServerObject().parseDoc( menuItemCheckboxTags,
-                                                                 "textdoc/admin_menuitem_checkbox.frag", user ) + a_href;
+            a_href = documentRequest.getServerObject().getAdminTemplate( "textdoc/admin_menuitem_checkbox.frag", user, menuItemCheckboxTags ) + a_href;
         }
 
         tags.setProperty( "#menuitemlink#", a_href );
         tags.setProperty( "#/menuitemlink#",
                           menuItem.getParentMenu().isMenuMode() && menuItem.isEditable()
                           ? "</a>"
-                            + documentRequest.getServerObject().parseDoc( Arrays.asList( new String[]{
+                            + documentRequest.getServerObject().getAdminTemplate( "textdoc/admin_menuitem.frag", user, Arrays.asList( new String[]{
                                 "#meta_id#", ""
                                              + menuItem.getDocument().getId()
-                            } ),
-                                                                          "textdoc/admin_menuitem.frag", user )
+                            } ) )
                           : "</a>" );
 
         return new MapSubstitution( tags, true );

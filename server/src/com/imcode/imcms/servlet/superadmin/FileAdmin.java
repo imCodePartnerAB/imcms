@@ -419,7 +419,7 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir2.getCanonicalPath() );
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        out.print( imcref.parseDoc( vec, "FileAdminMoveOverwriteWarning.html", user) );
+        out.print( imcref.getAdminTemplate( "FileAdminMoveOverwriteWarning.html", user, vec ) );
     }
 
     private void ouputCopyOverwriteWarning( StringBuffer option_list, File sourceDir, File destDir,
@@ -440,7 +440,7 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir2.getCanonicalPath() );
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        out.print( imcref.parseDoc( vec, "FileAdminCopyOverwriteWarning.html", user) );
+        out.print( imcref.getAdminTemplate( "FileAdminCopyOverwriteWarning.html", user, vec ) );
     }
 
     private void outputFileExistedAndTheOriginalWasRenamedNotice( File dir1, File dir2, String newFilename,
@@ -455,7 +455,7 @@ public class FileAdmin extends HttpServlet {
         vec.add( newFilename );
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        out.print( imcref.parseDoc( vec, "FileAdminFileExisted.html", user) );
+        out.print( imcref.getAdminTemplate( "FileAdminFileExisted.html", user, vec ) );
     }
 
     private void outputBlankFileError( File dir1, File dir2, HttpServletResponse res, UserDomainObject user,
@@ -467,7 +467,7 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir2.getCanonicalPath() );
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        out.print( imcref.parseDoc( vec, "FileAdminFileBlank.html", user) );
+        out.print( imcref.getAdminTemplate( "FileAdminFileBlank.html", user, vec ) );
     }
 
     private void outputDeleteWarning( File[] filelist, File dir1, File dir2, File sourceDir, HttpServletResponse res,
@@ -495,7 +495,7 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir2.getCanonicalPath() );
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        out.print( imcref.parseDoc( vec, "FileAdminDeleteWarning.html", user) );
+        out.print( imcref.getAdminTemplate( "FileAdminDeleteWarning.html", user, vec ) );
         return;
     }
 
@@ -508,7 +508,7 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir2.getCanonicalPath() );
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        out.print( imcref.parseDoc( vec, "FileAdminNameBlank.html", user) );
+        out.print( imcref.getAdminTemplate( "FileAdminNameBlank.html", user, vec ) );
         return;
     }
 
@@ -722,7 +722,7 @@ public class FileAdmin extends HttpServlet {
             vec.add( "" );
         }
 
-        return imcref.parseDoc( vec, "FileAdmin.html", user);
+        return imcref.getAdminTemplate( "FileAdmin.html", user, vec );
     }
 
     private String createDirectoryOptionList( File[] rootlist, File directory, DirectoryFilter dirfilt,

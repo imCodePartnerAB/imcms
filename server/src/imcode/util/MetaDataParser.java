@@ -35,6 +35,7 @@ public class MetaDataParser {
     private static final String CATEGORIES_MULTICHOICE_LIST_TEMPLATE = "docinfo/category_list.html";
     private static final String CATEGORIES_SINGLECHOICE_DROPDOWN_TEMPLATE = "docinfo/category_dropdown.html";
     private static final String PUBLISHER_NONE_MSG_TEMPLATE = "docinfo/publisher_no_one_msg.html";
+    public static final String USER_HASH_KEY__TEMPORARY_PERMISSION_SETTINGS = "temp_perm_settings";
 
     /**
      * parseMetaData collects the information for a certain meta_id from the db and
@@ -88,19 +89,16 @@ public class MetaDataParser {
             /* Nullable		        Nullvalue   Type */
             "shared", "0", CHECKBOX,
             "disable_search", "0", CHECKBOX,
-            "archive", "0", CHECKBOX,
             "show_meta", "0", CHECKBOX,
-            "description", null, NORMAL,
             "meta_headline", null, NORMAL,
             "meta_text", null, NORMAL,
             "meta_image", null, NORMAL,
             "date_created", null, OTHER,
             "date_modified", null, OTHER,
             "doc_type", null, NORMAL,
-            "activated_datetime", null, OTHER,
+            "publication_start_datetime", null, OTHER,
             "archived_datetime", null, OTHER,
             "target", null, OTHER,
-            "frame_name", null, OTHER,
             "lang_prefix", null, OTHER,
             "publisher_id", null, OTHER,
         };
@@ -118,7 +116,7 @@ public class MetaDataParser {
         // This array comes from selecting the permissionpage. People set a lot of stuff in the page,
         // and then they forget to press "Save" before pressing another button.
         // If they press another button, this array will be put in the user-object, to remember their settings.
-        Object[] temp_perm_settings = (Object[])user.get( "temp_perm_settings" );
+        Object[] temp_perm_settings = (Object[])user.get( USER_HASH_KEY__TEMPORARY_PERMISSION_SETTINGS );
 
         Vector vec = new Vector();
 
@@ -126,7 +124,7 @@ public class MetaDataParser {
             getRolesFromDb( meta_id, user, vec );
         }
 
-        user.remove( "temp_perm_settings" );	// Forget about it, so it won't appear on a reload.
+        user.remove( USER_HASH_KEY__TEMPORARY_PERMISSION_SETTINGS );	// Forget about it, so it won't appear on a reload.
 
         if ( temp_perm_settings != null && meta_id.equals( temp_perm_settings[0] ) ) {		// Make sure this is the right document.
             // Copy everything from this temporary hashtable into the meta-hash.
@@ -139,7 +137,7 @@ public class MetaDataParser {
         }
 
         // Lets get the template file
-        String htmlStr = imcref.parseDoc( null, htmlFile, user );
+        String htmlStr = imcref.getAdminTemplate( htmlFile, user, null );
 
         // Lets fill the info from db into the vector vec
 
@@ -170,18 +168,12 @@ public class MetaDataParser {
         }
 
         String target = HTMLConv.toHTMLSpecial( ( (String[])hash.get( "target" ) )[0] );
-        String frame_name = HTMLConv.toHTMLSpecial( ( (String[])hash.get( "frame_name" ) )[0] );
 
         if ( "_self".equals( target ) || "_top".equals( target ) || "_blank".equals( target ) ) {
             vec.add( "#" + target + "#" );
             vec.add( "checked" );
             vec.add( "#frame_name#" );
             vec.add( "" );
-        } else if ( "_other".equals( target ) || ( target.length() == 0 && frame_name.length() != 0 ) ) {
-            vec.add( "#_other#" );
-            vec.add( "checked" );
-            vec.add( "#frame_name#" );
-            vec.add( frame_name );
         } else if ( target.length() == 0 ) {
             vec.add( "#_self#" );
             vec.add( "checked" );
@@ -334,7 +326,7 @@ public class MetaDataParser {
         SimpleDateFormat dateformat = new SimpleDateFormat( "yyyy-MM-dd" );
         vec.add( dateformat.format( new Date() ) );
 
-        return imcref.parseDoc( vec, htmlFile, user );
+        return imcref.getAdminTemplate( htmlFile, user, vec );
 
     } // end of parseMetaData
 
@@ -369,7 +361,7 @@ public class MetaDataParser {
 
             final String template = 1 == categoryType.getMaxChoices()
                                     ? CATEGORIES_SINGLECHOICE_DROPDOWN_TEMPLATE : CATEGORIES_MULTICHOICE_LIST_TEMPLATE;
-            result.append( imcref.parseDoc( tags, template, user ) );
+            result.append( imcref.getAdminTemplate( template, user, tags ) );
 
         }
         return result.toString();
@@ -390,7 +382,7 @@ public class MetaDataParser {
         if ( null != publisher ) {
             vec.add( publisher.getLastName() + ", " + publisher.getFirstName() );
         } else {
-            vec.add( imcref.parseDoc( null, PUBLISHER_NONE_MSG_TEMPLATE, user ) );
+            vec.add( imcref.getAdminTemplate( PUBLISHER_NONE_MSG_TEMPLATE, user, null ) );
         }
 
         String optionList = Html.createPublisherOptionList( userAndRoleMapper, publisher );
@@ -422,7 +414,7 @@ public class MetaDataParser {
         vec.add( "#current_section_name#" );
         StringBuffer documentSectionNames = new StringBuffer();
         if ( 0 == documentSections.length ) {
-            vec.add( imcref.parseDoc( null, SECTION_MSG_TEMPLATE, user ) );
+            vec.add( imcref.getAdminTemplate( SECTION_MSG_TEMPLATE, user, null ) );
         } else {
             for ( int i = 0; i < documentSections.length; i++ ) {
                 if ( 0 != i ) {
@@ -457,7 +449,7 @@ public class MetaDataParser {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         // Lets get the roles_rights_table_header template file
-        StringBuffer roles_rights = new StringBuffer( imcref.parseDoc( null, PERMISSIONS_TABLE_HEAD_TEMPLATE, user ) );
+        StringBuffer roles_rights = new StringBuffer( imcref.getAdminTemplate( PERMISSIONS_TABLE_HEAD_TEMPLATE, user, null ) );
 
         // Get the info from the user object.
         // "temp_perm_settings" is an array containing a stringified meta-id, a hashtable of meta-info (column=value),
@@ -465,7 +457,7 @@ public class MetaDataParser {
         // This array comes from selecting the permissionpage. People set a lot of stuff in the page,
         // and then they forget to press "Save" before pressing another button.
         // If they press another button, this array will be put in the user-object, to remember their settings.
-        Object[] temp_perm_settings = (Object[])user.remove( "temp_perm_settings" );
+        Object[] temp_perm_settings = (Object[])user.remove( USER_HASH_KEY__TEMPORARY_PERMISSION_SETTINGS );
 
         Hashtable temp_perm_hash = null;
         String[] temp_default_templates = null;
@@ -541,13 +533,13 @@ public class MetaDataParser {
                     vec2.add( ( j == role_set_id ) ? "*" : "O" );
                 }
             }
-            roles_rights.append( imcref.parseDoc( vec2, PERMISSIONS_TABLE_ROW_TEMPLATE, user ) );
+            roles_rights.append( imcref.getAdminTemplate( PERMISSIONS_TABLE_ROW_TEMPLATE, user, vec2 ) );
 
         }
         vec.add( "#roles_no_rights#" );
         vec.add( roles_no_rights.toString() );
 
-        roles_rights.append( imcref.parseDoc( null, PERMISSIONS_TABLE_TAIL_TEMPLATE, user ) );
+        roles_rights.append( imcref.getAdminTemplate( PERMISSIONS_TABLE_TAIL_TEMPLATE, user, null ) );
         vec.add( "#roles_rights#" );
         vec.add( roles_rights.toString() );
 
@@ -566,20 +558,18 @@ public class MetaDataParser {
                     perm_vec.add( "#permissions#" );
                     perm_vec.add( "checked" );
                 }
-                String sets_precedence = imcref.parseDoc( perm_vec,
-                                                          RESTRICTED_1_ADMINISTRATES_RESTRICTED_2_CHECKBOX_TEMPLATE,
-                                                          user );
+                String sets_precedence = imcref.getAdminTemplate( RESTRICTED_1_ADMINISTRATES_RESTRICTED_2_CHECKBOX_TEMPLATE, user, perm_vec );
                 ftr.add( "#sets_precedence#" );
                 ftr.add( sets_precedence );
                 ftr.add( "#set_1#" );
-                ftr.add( imcref.parseDoc( null, DEFINE_RESTRICTED_1_BUTTON_TEMPLATE, user ) );
+                ftr.add( imcref.getAdminTemplate( DEFINE_RESTRICTED_1_BUTTON_TEMPLATE, user, null ) );
                 ftr.add( "#set_2#" );
-                ftr.add( imcref.parseDoc( null, DEFINE_RESTRICTED_2_BUTTON_TEMPLATE, user ) );
+                ftr.add( imcref.getAdminTemplate( DEFINE_RESTRICTED_2_BUTTON_TEMPLATE, user, null ) );
                 if ( doc_type == DocumentDomainObject.DOCTYPE_TEXT ) {
                     ftr.add( "#new_set_1#" );
-                    ftr.add( imcref.parseDoc( null, DEFINE_NEW_RESTRICTED_1_BUTTON_TEMPLATE, user ) );
+                    ftr.add( imcref.getAdminTemplate( DEFINE_NEW_RESTRICTED_1_BUTTON_TEMPLATE, user, null ) );
                     ftr.add( "#new_set_2#" );
-                    ftr.add( imcref.parseDoc( null, DEFINE_NEW_RESTRICTED_2_BUTTON_TEMPLATE, user ) );
+                    ftr.add( imcref.getAdminTemplate( DEFINE_NEW_RESTRICTED_2_BUTTON_TEMPLATE, user, null ) );
                     //ok lets setup the default_template-option-lists for restricted 1 & 2
 
                     default_templates =
@@ -595,7 +585,7 @@ public class MetaDataParser {
                     ftr.add( "" );
                 }
                 vec.add( "#define_sets#" );
-                vec.add( imcref.parseDoc( ftr, ALL_DEFINE_RESTRICTED_BUTTONS_TEMPLATE, user ) );
+                vec.add( imcref.getAdminTemplate( ALL_DEFINE_RESTRICTED_BUTTONS_TEMPLATE, user, ftr ) );
 
             } else if ( ( currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 ) != 0 ) {
 
@@ -606,13 +596,13 @@ public class MetaDataParser {
                 ftr.add( "#new_set_1#" );
                 ftr.add( "" );
                 ftr.add( "#set_2#" );
-                ftr.add( imcref.parseDoc( null, "permissions/set_2_button.html", user ) );
+                ftr.add( imcref.getAdminTemplate( "permissions/set_2_button.html", user, null ) );
                 if ( doc_type == DocumentDomainObject.DOCTYPE_TEXT ) {
                     default_templates =
                     getDefaultTemplateOptionList( imcref, temp_default_templates, meta_id, user, false );
 
                     ftr.add( "#new_set_2#" );
-                    ftr.add( imcref.parseDoc( null, "permissions/new_set_2_button.html", user ) );
+                    ftr.add( imcref.getAdminTemplate( "permissions/new_set_2_button.html", user, null ) );
                 } else {
                     ftr.add( "#new_set_2#" );
                     ftr.add( "" );
@@ -620,7 +610,7 @@ public class MetaDataParser {
                 ftr.add( "#default_templates#" );
                 ftr.add( default_templates );
                 vec.add( "#define_sets#" );
-                vec.add( imcref.parseDoc( ftr, "permissions/define_sets.html", user ) );
+                vec.add( imcref.getAdminTemplate( "permissions/define_sets.html", user, ftr ) );
             } else {
                 vec.add( "#define_sets#" );
                 vec.add( "" );
@@ -666,7 +656,7 @@ public class MetaDataParser {
             Vector tempV = new Vector();
             tempV.add( "#templ_option_list#" );
             tempV.add( tempStr );
-            options_templates_1 = imcref.parseDoc( tempV, RESTRICTED_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE, user );
+            options_templates_1 = imcref.getAdminTemplate( RESTRICTED_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE, user, tempV );
         }
         String options_templates_2 = "";
         for ( int i = 0; i < templates.length; i++ ) {
@@ -684,7 +674,7 @@ public class MetaDataParser {
             vect.add( options_templates_1 );
             vect.add( "#def_templ_2#" );
             vect.add( options_templates_2 );
-            returnValue = imcref.parseDoc( vect, RESTRICTED_2_AND_MAYBE_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE, user );
+            returnValue = imcref.getAdminTemplate( RESTRICTED_2_AND_MAYBE_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE, user, vect );
         }
         return returnValue;
     }// end getDefaultTemplateOptionList(...)
@@ -768,10 +758,10 @@ public class MetaDataParser {
         int currentdoc_perms = Integer.parseInt( current_permissions[2] );
 
         // Create an anonymous adminbuttonparser that retrieves the file from the server instead of from the disk.
-        AdminButtonParser vec = new AdminButtonParser( "permissions/define_permission_" + doc_type + "_", ".html",
+        AdminButtonParser adminButtonParser = new AdminButtonParser( "permissions/define_permission_" + doc_type + "_", ".html",
                                                        user_set_id, user_perm_set ) {
             protected StringBuffer getContent( String name ) {
-                return new StringBuffer( imcref.parseDoc( null, name, user ) );
+                return new StringBuffer( imcref.getAdminTemplate( name, user, null ) );
             }
         };
 
@@ -789,9 +779,9 @@ public class MetaDataParser {
         final int ps_cols = 3;
         for ( int i = 0; i < permissionset.length; i += ps_cols ) {
             if ( !"0".equals( permissionset[i + 2] ) ) {
-                vec.put( "check_" + permissionset[i], "checked" );
+                adminButtonParser.put( "check_" + permissionset[i], "checked" );
             } else {
-                vec.put( "check_" + permissionset[i], "" );
+                adminButtonParser.put( "check_" + permissionset[i], "" );
             }
         }
 
@@ -835,7 +825,7 @@ public class MetaDataParser {
                 + "</option>";
             }
         }
-        vec.put( "doctypes", options_doctypes );
+        adminButtonParser.put( "doctypes", options_doctypes );
 
         // Fetch all templategroups from the db and put them in an option-list
         // First we get the templategroups the current user may use
@@ -875,32 +865,32 @@ public class MetaDataParser {
                 + "</option>";
             }
         }
-        vec.put( "templategroups", options_templategroups );
+        adminButtonParser.put( "templategroups", options_templategroups );
 
-        vec.put( "set_id", String.valueOf( set_id ) );
+        adminButtonParser.put( "set_id", String.valueOf( set_id ) );
 
-        vec.put( "meta_id", String.valueOf( meta_id ) );
+        adminButtonParser.put( "meta_id", String.valueOf( meta_id ) );
 
         // Put the values for all the tags inserted in vec so far in the "define_permissions_"+doc_type+".html" file
         // That is, the doc-specific
         StringBuffer doc_specific = new StringBuffer(
-                imcref.parseDoc( null, "permissions/define_permissions_" + doc_type + ".html", user ) );
+                imcref.getAdminTemplate( "permissions/define_permissions_" + doc_type + ".html", user, null ) );
 
-        Parser.parseTags( doc_specific, '#', " <>\"\n\r\t", vec, true, 1 );
+        Parser.parseTags( doc_specific, '#', " <>\"\n\r\t", adminButtonParser, true, 1 );
 
-        vec.put( "doc_rights", doc_specific.toString() );
+        adminButtonParser.put( "doc_rights", doc_specific.toString() );
 
         StringBuffer complete;
         if ( for_new ) {
             complete =
-            new StringBuffer( imcref.parseDoc( null, "permissions/define_new_permissions.html", user ) );
+            new StringBuffer( imcref.getAdminTemplate( "permissions/define_new_permissions.html", user, null ) );
         } else {
-            complete = new StringBuffer( imcref.parseDoc( null, "permissions/define_permissions.html", user ) );
+            complete = new StringBuffer( imcref.getAdminTemplate( "permissions/define_permissions.html", user, null ) );
         }
 
-        vec.setPrefix( "permissions/define_permission_" );
+        adminButtonParser.setPrefix( "permissions/define_permission_" );
 
-        return Parser.parseTags( complete, '#', " <>\"\n\r\t", vec, true, 1 ).toString();
+        return Parser.parseTags( complete, '#', " <>\"\n\r\t", adminButtonParser, true, 1 ).toString();
     }
 
 } // End of class

@@ -342,7 +342,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 
             vec.add( "#folders#" );
             vec.add( dirList );
-            String htmlStr = imcref.parseDoc( vec, "change_img.html", user);
+            String htmlStr = imcref.getAdminTemplate( "change_img.html", user, vec );
             out.write( htmlStr );
             return;
         } else if ( req.getParameter( "delete" ) != null ) {
@@ -383,7 +383,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
             vec.add( "#folders#" );
             vec.add( dirList );
 
-            String htmlStr = imcref.parseDoc( vec, "change_img.html", user);
+            String htmlStr = imcref.getAdminTemplate( "change_img.html", user, vec );
             out.write( htmlStr );
             return;
         } else {

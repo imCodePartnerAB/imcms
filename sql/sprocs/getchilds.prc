@@ -20,10 +20,11 @@ AS
   Nice little query that lists the children of a document that a particular user may see, and includes a field that tells you wether he may do something to it or not.
  */
 select  to_meta_id, c.menu_sort,manual_sort_order, tree_sort_index, doc_type,
-  target, convert (varchar,date_created,120), convert (varchar,date_modified,120),
+  target, convert (varchar,date_created,120) as created_datetime, convert (varchar,date_modified,120) as modified_datetime,
   meta_headline,meta_text,meta_image,
   publication_start_datetime,archived_datetime,publication_end_datetime,
-  min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1))
+  min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1)),
+  status
 from   childs c
 join   meta m
      on    m.meta_id = c.to_meta_id     -- meta.meta_id corresponds to childs.to_meta_id
@@ -47,7 +48,7 @@ join user_roles_crossref urc           -- This table tells us which users have w
 group by to_meta_id, c.menu_sort,manual_sort_order, tree_sort_index, doc_type,
   target, convert (varchar,date_created,120), convert (varchar,date_modified,120),
   meta_headline,meta_text,meta_image,
-  publication_start_datetime,archived_datetime,publication_end_datetime
+  publication_start_datetime,archived_datetime,publication_end_datetime,status
 order by  menu_sort
 
 GO

@@ -274,7 +274,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // parsedoc use template
-   public String parseDoc(List variables, String admin_template_name, UserDomainObject user) {
+   public String getAdminTemplate( String adminTemplateName, UserDomainObject user, List tagsWithReplacements ) {
       return null;
    }
 

@@ -123,7 +123,7 @@ public class SendMailServlet extends HttpServlet {
             mailTextV.add( mailTo );
             mailTextV.add( "#mailFrom#" );
             mailTextV.add( mailFrom );
-            mailBody = imcref.parseDoc( mailTextV, BODY_TEMPLATE_SHOP, user);
+            mailBody = imcref.getAdminTemplate( BODY_TEMPLATE_SHOP, user, mailTextV );
         } else {
             //ok lets see if we got a subject or not
             if ( mailSubject != null ) {
@@ -134,7 +134,7 @@ public class SendMailServlet extends HttpServlet {
                 mailTextV.add( mailTo );
                 mailTextV.add( "#mailFrom#" );
                 mailTextV.add( mailFrom );
-                mailBody = imcref.parseDoc( mailTextV, BODY_TEMPLATE_TO_ADMIN, user);
+                mailBody = imcref.getAdminTemplate( BODY_TEMPLATE_TO_ADMIN, user, mailTextV );
             } else {
                 //its a mail from the system
                 mailFrom = webmaster;
@@ -143,9 +143,9 @@ public class SendMailServlet extends HttpServlet {
                 mailTextV.add( "#mailFrom#" );
                 mailTextV.add( mailFrom );
                 //it also means that we must parse the subject line thrue SUBJECT_TEMPLATE so lets rock
-                mailSubject = imcref.parseDoc( mailTextV, SUBJECT_TEMPLATE, user);
+                mailSubject = imcref.getAdminTemplate( SUBJECT_TEMPLATE, user, mailTextV );
                 //ok lets parse the mailbody into a string
-                mailBody = imcref.parseDoc( mailTextV, BODY_TEMPLATE, user);
+                mailBody = imcref.getAdminTemplate( BODY_TEMPLATE, user, mailTextV );
             }
         }
         //a simple check that @ symbol exists

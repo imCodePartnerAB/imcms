@@ -111,7 +111,7 @@ public interface IMCServiceInterface {
     Date getCounterDate()  ;
 
     // parsedoc use template
-    public String  parseDoc(java.util.List variables, String admin_template_name, UserDomainObject user)  ;
+    public String getAdminTemplate( String adminTemplateName, UserDomainObject user, java.util.List tagsWithReplacements )  ;
 
     // parseExternaldoc use template
     public String parseExternalDoc(java.util.List variables, String external_template_name, UserDomainObject user, String doc_type)

@@ -52,9 +52,9 @@ public class AdminManager extends Administrator {
         String html_admin_part;
 
         if (imcref.checkAdminRights(user)) {
-            html_admin_part = imcref.parseDoc(vec, HTML_ADMINTASK, user); // if superadmin
+            html_admin_part = imcref.getAdminTemplate( HTML_ADMINTASK, user, vec ); // if superadmin
         } else { //if user is useradmin
-            html_admin_part = imcref.parseDoc(vec, HTML_USERADMINTASK, user); //if useradmin
+            html_admin_part = imcref.getAdminTemplate( HTML_USERADMINTASK, user, vec ); //if useradmin
         }
 
         vm.addProperty("ADMIN_TASK", html_admin_part);

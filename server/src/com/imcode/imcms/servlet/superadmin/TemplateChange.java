@@ -119,7 +119,7 @@ public class TemplateChange extends HttpServlet {
 
     private String createAddNameEmptyErrorDialog( IMCServiceInterface imcref, UserDomainObject user ) {
         String htmlStr;
-        htmlStr = imcref.parseDoc( null, "templategroup_add_name_blank.html", user );
+        htmlStr = imcref.getAdminTemplate( "templategroup_add_name_blank.html", user, null );
         return htmlStr;
     }
 
@@ -134,7 +134,7 @@ public class TemplateChange extends HttpServlet {
         }
         vec2.add( "#language#" );
         vec2.add( lang );
-        String htmlStr = imcref.parseDoc( vec2, "template_list.html", user );
+        String htmlStr = imcref.getAdminTemplate( "template_list.html", user, vec2 );
         return htmlStr;
     }
 
@@ -143,7 +143,7 @@ public class TemplateChange extends HttpServlet {
         List vec = new ArrayList();
         vec.add( "#language#" );
         vec.add( lang );
-        htmlStr = imcref.parseDoc( vec, "template_rename_name_blank.html", user );
+        htmlStr = imcref.getAdminTemplate( "template_rename_name_blank.html", user, vec );
         return htmlStr;
     }
 
@@ -155,13 +155,13 @@ public class TemplateChange extends HttpServlet {
         vec.add( lang );
         vec.add( "#templates#" );
         vec.add( templateMapper.createHtmlOptionListOfTemplates( templateMapper.getAllTemplates(), null ) );
-        htmlStr = imcref.parseDoc( vec, "template_rename.html", user );
+        htmlStr = imcref.getAdminTemplate( "template_rename.html", user, vec );
         return htmlStr;
     }
 
     private String createTemplateGroupExistsErrorDialog( IMCServiceInterface imcref, UserDomainObject user ) {
         String htmlStr;
-        htmlStr = imcref.parseDoc( null, "templategroup_add_exists.html", user );
+        htmlStr = imcref.getAdminTemplate( "templategroup_add_exists.html", user, null );
         return htmlStr;
     }
 

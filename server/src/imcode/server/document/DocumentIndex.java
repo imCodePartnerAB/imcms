@@ -18,8 +18,8 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -40,7 +40,7 @@ public class DocumentIndex {
         this.dir = dir;
     }
 
-    public DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IOException {
+    public synchronized DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IOException {
         IndexReader indexReader = IndexReader.open( dir );
         IndexSearcher indexSearcher = new IndexSearcher( indexReader );
         StopWatch searchStopWatch = new StopWatch();
@@ -66,13 +66,13 @@ public class DocumentIndex {
     }
 
     public Query parseLucene( String queryString ) throws ParseException {
-        return MultiFieldQueryParser.parse( queryString,
-                                            new String[]{"meta_headline", "meta_text", "text", "keyword"},
+        return QueryParser.parse( queryString,
+                                            "default",
                                             new WhitespaceLowerCaseAnalyzer() );
 
     }
 
-    public void indexAllDocuments() {
+    public synchronized void indexAllDocuments() {
         NDC.push( "indexAllDocuments" );
         try {
             openIndexWriter( true );
@@ -96,8 +96,8 @@ public class DocumentIndex {
                 }
             }
             indexingStopWatch.stop();
-            log.info(
-                    "Completed index of " + documentIds.length + " documents in " + indexingStopWatch.getTime() + "ms" );
+            log.info( "Completed index of " + documentIds.length + " documents in " + indexingStopWatch.getTime()
+                      + "ms" );
             logGetDocumentsStopWatch( getDocumentStopWatch, documentIds.length );
             optimizeIndex( indexWriter );
             closeIndexWriter();
@@ -168,10 +168,12 @@ public class DocumentIndex {
 
     private Document createIndexDocument( DocumentDomainObject document ) {
         Document indexDocument = new Document();
+
         indexDocument.add( Field.Keyword( "meta_id", "" + document.getId() ) );
-        indexDocument.add( unStoredKeyword( "meta_headline_keyword", document.getHeadline().toLowerCase() ) );
         indexDocument.add( Field.UnStored( "meta_headline", document.getHeadline() ) );
+        indexDocument.add( Field.UnStored( "default" , document.getHeadline())) ;
         indexDocument.add( Field.UnStored( "meta_text", document.getMenuText() ) );
+        indexDocument.add( Field.UnStored( "default" , document.getMenuText())) ;
         indexDocument.add( unStoredKeyword( "doc_type_id", "" + document.getDocumentTypeId() ) );
         SectionDomainObject[] sections = document.getSections();
         for ( int i = 0; i < sections.length; i++ ) {
@@ -186,10 +188,16 @@ public class DocumentIndex {
         }
         if ( null != document.getPublicationStartDatetime() ) {
             indexDocument.add( unStoredKeyword( "activated_datetime", document.getPublicationStartDatetime() ) );
+            indexDocument.add( unStoredKeyword( "publication_start_datetime", document.getPublicationStartDatetime() ) );
+        }
+        if ( null != document.getPublicationEndDatetime() ) {
+            indexDocument.add( unStoredKeyword( "publication_end_datetime", document.getPublicationEndDatetime() ) );
         }
         if ( null != document.getArchivedDatetime() ) {
             indexDocument.add( unStoredKeyword( "archived_datetime", document.getArchivedDatetime() ) );
         }
+
+        indexDocument.add( unStoredKeyword( "status", ""+document.getStatus() ) );
 
         Iterator textsIterator = ApplicationServer.getIMCServiceInterface().getDocumentMapper()
                 .getTexts( document.getId() ).entrySet().iterator();
@@ -199,6 +207,7 @@ public class DocumentIndex {
             TextDocumentTextDomainObject text = (TextDocumentTextDomainObject)textEntry.getValue();
             indexDocument.add( Field.UnStored( "text", text.getText() ) );
             indexDocument.add( Field.UnStored( "text" + textIndexString, text.getText() ) );
+            indexDocument.add( Field.UnStored( "default" , text.getText())) ;
         }
 
         CategoryDomainObject[] categories = document.getCategories();
@@ -211,6 +220,7 @@ public class DocumentIndex {
         for ( int i = 0; i < documentKeywords.length; i++ ) {
             String documentKeyword = documentKeywords[i];
             indexDocument.add( unStoredKeyword( "keyword", documentKeyword ) );
+            indexDocument.add( unStoredKeyword( "default" , documentKeyword )) ;
         }
 
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
@@ -225,7 +235,7 @@ public class DocumentIndex {
         return indexDocument;
     }
 
-    private void deleteDocumentFromIndex( DocumentDomainObject document ) throws IOException {
+    private synchronized void deleteDocumentFromIndex( DocumentDomainObject document ) throws IOException {
         IndexReader indexReader = IndexReader.open( dir );
         indexReader.delete( new Term( "meta_id", "" + document.getId() ) );
         indexReader.close();

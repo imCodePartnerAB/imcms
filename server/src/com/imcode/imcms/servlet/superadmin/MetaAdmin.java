@@ -106,7 +106,7 @@ public class MetaAdmin extends HttpServlet {
         }
         vec.add( tmp );
         String lang_prefix = user.getLanguageIso639_2();
-        out.println( imcref.parseDoc( vec, "MetaAdminControl.html", user) );
+        out.println( imcref.getAdminTemplate( "MetaAdminControl.html", user, vec ) );
         if ( !list ) {
             return;
         }

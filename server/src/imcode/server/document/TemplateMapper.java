@@ -83,7 +83,7 @@ public class TemplateMapper {
             tags.add( "" + templateMapper.getCountOfDocumentsUsingTemplate( template ) );
             tags.add( "#template_id#" );
             tags.add( "" + template.getId() );
-            htmlStr += service.parseDoc( tags, "template_list_row.html", user );
+            htmlStr += service.getAdminTemplate( "template_list_row.html", user, tags );
         }
         return htmlStr;
     }

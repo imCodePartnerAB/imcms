@@ -41,7 +41,7 @@ public class AdminSection extends Administrator {
 
         //ok so far lets load the admin page
         ServletOutputStream out = res.getOutputStream();
-        out.print(imcref.parseDoc(null, ADMIN_TEMPLATE, user));
+        out.print(imcref.getAdminTemplate( ADMIN_TEMPLATE, user, null ));
         out.flush();
         out.close();
         return;
@@ -98,7 +98,7 @@ public class AdminSection extends Administrator {
             vec.add("#section_list#");
             vec.add(createOptionList(section_arr, user, null));
             //ok lets parse the page with right template
-            htmlToSend.append(imcref.parseDoc(vec, ADD_TEMPLATE, user));
+            htmlToSend.append(imcref.getAdminTemplate( ADD_TEMPLATE, user, vec ));
         }//end if(req.getParameter("add_section")!= null)
         //**** end add_section-case ****
 
@@ -118,7 +118,7 @@ public class AdminSection extends Administrator {
             vec.add("#section_list#");
             vec.add(createOptionList(section_arr, user, null));
             //ok lets parse the page with right template
-            htmlToSend.append(imcref.parseDoc(vec, NAME_TEMPLATE, user));
+            htmlToSend.append(imcref.getAdminTemplate( NAME_TEMPLATE, user, vec ));
 
         }//end if (req.getParameter("edit_section")!= null)
         //**** lend edit_section-case ****
@@ -176,7 +176,7 @@ public class AdminSection extends Administrator {
                     vec.add(doc_nrs);
                     vec.add("#delete_section#");
                     vec.add(section_id);
-                    htmlToSend.append(imcref.parseDoc(vec, DELETE_CONFIRM_TEMPLATE, user));
+                    htmlToSend.append(imcref.getAdminTemplate( DELETE_CONFIRM_TEMPLATE, user, vec ));
                     got_confirm_page = true;
                 } else {
                     //ok we can delete it right a way an carry on with it
@@ -192,7 +192,7 @@ public class AdminSection extends Administrator {
                 vec.add("#section_list#");
                 vec.add(createOptionList(section_arr, user, null));
                 //ok lets parse the page with right template
-                htmlToSend.append(imcref.parseDoc(vec, DELETE_TEMPLATE, user));
+                htmlToSend.append(imcref.getAdminTemplate( DELETE_TEMPLATE, user, vec ));
             }
 
         }//end if (req.getParameter("edit_section")!= null)
@@ -233,7 +233,7 @@ public class AdminSection extends Administrator {
                 vec.add(arr[i][1]);
                 vec.add("#docs#");
                 vec.add(arr[i][2]);
-                buff.append(imcref.parseDoc(vec, LINE_TEMPLATE, user));
+                buff.append(imcref.getAdminTemplate( LINE_TEMPLATE, user, vec ));
             }
         }
         return buff.toString();

@@ -81,7 +81,7 @@ public class ImageUpload extends HttpServlet {
                 vec.add( String.valueOf( img_no ) );
                 vec.add( "#label#" );
                 vec.add( label );
-                String htmlStr = imcref.parseDoc( vec, "file_exists.html", user);
+                String htmlStr = imcref.getAdminTemplate( "file_exists.html", user, vec );
                 out.println( htmlStr );
                 return;
             }
@@ -149,7 +149,7 @@ public class ImageUpload extends HttpServlet {
         vec.add( "#folders#" );
         vec.add( buff.toString() );
 
-        String htmlStr = imcref.parseDoc( vec, "change_img.html", user);
+        String htmlStr = imcref.getAdminTemplate( "change_img.html", user, vec );
         out.print( htmlStr );
 
         return;

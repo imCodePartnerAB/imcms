@@ -48,8 +48,6 @@
 <head>
 <title><? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_information_title ?></title>
 
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
 
@@ -60,56 +58,54 @@
 imcmsGui("outer_start", null);
 imcmsGui("head", null);
 </script>
+<form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentComposer">
 <table border="0" cellspacing="0" cellpadding="0">
-<form>
 <tr>
-	<td><input type="BUTTON" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2001 ?>" onClick="document.forms.abortForm.submit(); return false"></td>
+	<td><input type="submit" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2001 ?>"></td>
 	<td>&nbsp;</td>
     <td><input type="button" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2002 ?>" title="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(77)"></td>
 </tr>
-</form>
 </table>
 <script>
 imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
-<form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentComposer">
-<%
-    if (creatingNewDocument) { %>
-    <input type="hidden" name="<%=DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION%>" value="<%=DocumentComposer.ACTION__PROCESS_NEW_DOCUMENT_INFORMATION%>" />
-    <input type="hidden"
-        name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>"
-        value="<%= DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME ) %>">
-<tr>
-	<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/new_document_procedure_description ?>
-	&nbsp;</td>
-</tr>
-<tr>
-	<td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/create_document_heading ?>","656");</script></td>
-</tr>
-<% } else { %>
-    <input type="hidden" name="<%=DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION%>" value="<%=DocumentComposer.ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION%>" />
-    <input type="hidden"
-        name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
-        value="<%= DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) %>">
-<tr>
-	<td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/edit_document_heading ?> <%= document.getId() %>","656");</script></td>
-</tr>
-<% } %>
-<tr>
+    <%
+        if (creatingNewDocument) { %>
+        <input type="hidden" name="<%=DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION%>" value="<%=DocumentComposer.ACTION__PROCESS_NEW_DOCUMENT_INFORMATION%>" />
+        <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>"
+            value="<%= DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME ) %>">
+    <tr>
+        <td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/new_document_procedure_description ?>
+        &nbsp;</td>
+    </tr>
+    <tr>
+        <td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/create_document_heading ?>","656");</script></td>
+    </tr>
+    <% } else { %>
+        <input type="hidden" name="<%=DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION%>" value="<%=DocumentComposer.ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION%>" />
+        <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
+            value="<%= DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) %>">
+    <tr>
+        <td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/edit_document_heading ?> <%= document.getId() %>","656");</script></td>
+    </tr>
+    <% } %>
+    <tr>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="656">
 	<tr>
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/6 ?><sup class="imNote">1</sup></td>
 		<td>
-            <input type="text" name="meta_headline" size="105" maxlength="255" style="width: 100%"
+            <input type="text" name="<%= DocumentComposer.PARAMETER__HEADLINE %>" size="105" maxlength="255" style="width: 100%"
             value="<%= StringEscapeUtils.escapeHtml(document.getHeadline()) %>">
         </td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1002 ?>&nbsp;</td>
 		<td class="imcmsAdmForm">
-		<textarea name="meta_text" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%">
+		<textarea name="<%= DocumentComposer.PARAMETER__MENUTEXT %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%">
 <%= StringEscapeUtils.escapeHtml(document.getMenuText()) %></textarea>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
@@ -123,7 +119,7 @@ imcmsGui("mid", null);
 		<table border="0" cellspacing="0" cellpadding="0" width="560">
 		<tr>
 			<td>
-                <input type="text" name="meta_image" size="85" maxlength="255" style="width: 100%"
+                <input type="text" name="<%= DocumentComposer.PARAMETER__IMAGE %>" size="85" maxlength="255" style="width: 100%"
                     value="<%= StringEscapeUtils.escapeHtml( document.getImage() ) %>">
             </td>
 			<td align="right">
@@ -134,46 +130,115 @@ imcmsGui("mid", null);
 		</table></td>
 	</tr>
 	</table>
-	<table border="0" cellspacing="0" cellpadding="0" width="656" id="dateHide">
+	<table border="0" cellspacing="0" cellpadding="0" width="656">
 	<tr>
 		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
-	<tr>
-		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/15 ?></td>
-		<td>
-		<table border="0" cellspacing="0" cellpadding="0">
-		<tr>
-			<td>
-                <input type="text" name="activated_date" size="11" maxlength="10" style="width: 7em;"
-                    value="<%= StringEscapeUtils.escapeHtml( formatDate(document.getPublicationStartDatetime()) ) %>">
-            </td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1007 ?></td>
-			<td>
-                <input type="text" name="activated_time" size="5" maxlength="5" style="width: 4em;"
-                    value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getPublicationStartDatetime()) ) %>">
-            </td>
-			<td class="imcmsAdmDim">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/date_format ?></td>
-		</tr>
-		</table></td>
-	</tr>
-	<tr>
-		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/18 ?></td>
-		<td>
-		<table border="0" cellspacing="0" cellpadding="0">
-		<tr>
-			<td>
-                <input type="text" name="archived_date" size="11" maxlength="10" style="width: 7em;"
-                    value="<%= StringEscapeUtils.escapeHtml( formatDate(document.getArchivedDatetime()) ) %>">
-            </td>
-			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
-			<td>
-                <input type="text" name="archived_time" size="5" maxlength="5" style="width: 4em;"
-                    value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getArchivedDatetime()) ) %>">
-            </td>
-			<td class="imcmsAdmDim">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/date_format ?></td>
-		</tr>
-		</table></td>
-	</tr>
+    <tr>
+        <td class="imcmsAdmText">
+            <? install/htdocs/sv/jsp/docadmin/document_information.jsp/status ?>
+        </td>
+        <td>
+            <select name="<%= DocumentComposer.PARAMETER__STATUS %>">
+                <option value="<%= DocumentDomainObject.STATUS_NEW %>"<% if (DocumentDomainObject.STATUS_NEW == document.getStatus()) { %> selected<% } %>>
+                    <? install/htdocs/sv/jsp/docadmin/document_information.jsp/status_new ?>
+                </option>
+                <option value="<%= DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED %>"<% if (DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == document.getStatus()) { %> selected<% } %>>
+                    <? install/htdocs/sv/jsp/docadmin/document_information.jsp/status_publication_disapproved ?>
+                </option>
+                <option value="<%= DocumentDomainObject.STATUS_PUBLICATION_APPROVED %>"<% if (DocumentDomainObject.STATUS_PUBLICATION_APPROVED == document.getStatus()) { %> selected<% } %>>
+                    <? install/htdocs/sv/jsp/docadmin/document_information.jsp/status_publication_approved ?>
+                </option>
+            </select>
+            <table border="0">
+                <tr>
+                    <td class="imcmsAdmText">
+                        <%
+                            Date now = new Date();
+                            Date publicationStartDatetime = document.getPublicationStartDatetime();
+                            if (null == publicationStartDatetime || publicationStartDatetime.after(now)) { %>
+                                <? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_will_be_published_at ?>
+                            <% } else { %>
+                                <? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_was_published_at ?>
+                            <% } %>
+                    </td>
+                    <td>
+                        <table border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td>
+                                    <%= formatDate( publicationStartDatetime ) %><% if (null != publicationStartDatetime) {%><br><% } %>
+                                    <input type="text" name="<%= DocumentComposer.PARAMETER__PUBLICATION_START_DATE %>" size="11" maxlength="10" style="width: 7em;"
+                                        value="<%= StringEscapeUtils.escapeHtml( formatDate(publicationStartDatetime) ) %>">
+                                </td>
+                                <td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1007 ?></td>
+                                <td>
+                                    <%= formatTime( publicationStartDatetime ) %><% if (null != publicationStartDatetime) {%><br><% } %>
+                                    <input type="text" name="<%= DocumentComposer.PARAMETER__PUBLICATION_START_TIME %>" size="5" maxlength="5" style="width: 4em;"
+                                        value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getPublicationStartDatetime()) ) %>">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="imcmsAdmText">
+                        <%
+                            Date archivedDatetime = document.getArchivedDatetime();
+                            if (null == archivedDatetime || archivedDatetime.after(now)) { %>
+                                <? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_will_be_archived_at ?>
+                            <% } else { %>
+                                <? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_was_archived_at ?>
+                            <% } %>
+                    </td>
+                    <td>
+                        <table border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td>
+                                <%= formatDate( archivedDatetime ) %><% if (null != archivedDatetime) {%><br><% } %>
+                                <input type="text" name="<%= DocumentComposer.PARAMETER__ARCHIVED_DATE %>" size="11" maxlength="10" style="width: 7em;"
+                                    value="<%= StringEscapeUtils.escapeHtml( formatDate(archivedDatetime) ) %>">
+                            </td>
+                            <td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
+                            <td>
+                                <%= formatTime( archivedDatetime ) %><% if (null != archivedDatetime) {%><br><% } %>
+                                <input type="text" name="<%= DocumentComposer.PARAMETER__ARCHIVED_TIME %>" size="5" maxlength="5" style="width: 4em;"
+                                    value="<%= StringEscapeUtils.escapeHtml( formatTime(archivedDatetime) ) %>">
+                            </td>
+                        </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="imcmsAdmText">
+                        <%
+                            Date publicationEndDatetime = document.getPublicationEndDatetime();
+                            if (null == publicationEndDatetime || publicationEndDatetime.after(now)) { %>
+                                <? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_will_cease_to_be_published_at ?>
+                            <% } else { %>
+                                <? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_ceased_to_be_published_at ?>
+                            <% } %>
+                    </td>
+                    <td>
+                        <table border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td>
+                                <%= formatDate( publicationEndDatetime ) %><% if (null != publicationEndDatetime) {%><br><% } %>
+                                <input type="text" name="<%= DocumentComposer.PARAMETER__PUBLICATION_END_DATE %>" size="11" maxlength="10" style="width: 7em;"
+                                    value="<%= StringEscapeUtils.escapeHtml( formatDate(publicationEndDatetime) ) %>">
+                            </td>
+                            <td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
+                            <td>
+                                <%= formatTime( publicationEndDatetime ) %><% if (null != publicationEndDatetime) {%><br><% } %>
+                                <input type="text" name="<%= DocumentComposer.PARAMETER__PUBLICATION_END_TIME %>" size="5" maxlength="5" style="width: 4em;"
+                                    value="<%= StringEscapeUtils.escapeHtml( formatTime(publicationEndDatetime) ) %>">
+                            </td>
+                        </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
 	<tr>
 		<td><img src="@imcmsimageurl@/admin/1x1.gif" width="96" height="1"></td>
 		<td><img src="@imcmsimageurl@/admin/1x1.gif" width="556" height="1"></td>
@@ -189,7 +254,7 @@ imcmsGui("mid", null);
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/22 ?></td>
 		<td class="imcmsAdmText">
-		<select name="change_section" size="5" multiple>
+		<select name="<%= DocumentComposer.PARAMETER__SECTIONS %>" size="5" multiple>
             <% SectionDomainObject[] sections = documentMapper.getAllSections() ;
                 Arrays.sort(sections) ;
                 SectionDomainObject[] documentSections = document.getSections() ;
@@ -215,7 +280,7 @@ imcmsGui("mid", null);
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/26 ?></td>
 		<td class="imcmsAdmText">
-		<select name="lang_prefix" size="1">
+		<select name="<%= DocumentComposer.PARAMETER__LANGUAGE %>" size="1">
 		    <%= LanguageMapper.getLanguageOptionList( service, user, document.getLanguageIso639_2() ) %>
         </select>
 		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_language ?> <%= LanguageMapper.getCurrentLanguageNameInUsersLanguage( service, user, document.getLanguageIso639_2() )%></td>
@@ -234,7 +299,7 @@ imcmsGui("mid", null);
                         <div style="float: left; margin: auto 1em 1ex auto;">
                         <a href="@imcmsjspurl@/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>"
                             target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br>
-                        <select name="categories"<% if (1 != categoryType.getMaxChoices()) { %>size="4" multiple<% } %>>
+                        <select name="<%= DocumentComposer.PARAMETER__CATEGORIES %>"<% if (1 != categoryType.getMaxChoices()) { %>size="4" multiple<% } %>>
                             <%= Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType, document) %>
                         </select>
                     <%
@@ -264,7 +329,7 @@ imcmsGui("mid", null);
                             boolean hasImage = !category.getImage().equals("");
                             String imageStr = hasImage?"<img src=\"" + category.getImage() + "\"/>":"";
                             %>
-                                <input name="categories" type="<%=typeStr%>" value="<%=category.getId()%>" <%=checkedStr%> > <%=imageStr%> <%=category.getName()%><br>
+                                <input name="<%= DocumentComposer.PARAMETER__CATEGORIES %>" type="<%=typeStr%>" value="<%=category.getId()%>" <%=checkedStr%> > <%=imageStr%> <%=category.getName()%><br>
                             <%
                         }
                     }
@@ -283,11 +348,11 @@ imcmsGui("mid", null);
 		<td class="imcmsAdmText">
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><input type="CHECKBOX" name="show_meta" value="1"<% if (document.isVisibleInMenuForUnauthorizedUsers()) {%> checked<%} %>></td>
+			<td><input type="CHECKBOX" name="<%= DocumentComposer.PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS %>" value="1"<% if (document.isVisibleInMenusForUnauthorizedUsers()) {%> checked<%} %>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/global/pageinfo/show_link_to_unauthorized_user ?></td>
    		</tr>
         <tr>
-			<td><input type="CHECKBOX" name="shared" value="1" <% if (document.isLinkableByOtherUsers()) {%> checked<%}%>></td>
+			<td><input type="CHECKBOX" name="<%= DocumentComposer.PARAMETER__LINKABLE_BY_OTHER_USERS %>" value="1" <% if (document.isLinkableByOtherUsers()) {%> checked<%}%>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/global/pageinfo/share ?></td>
 		</tr>
 		</table>	</tr>
@@ -297,10 +362,10 @@ imcmsGui("mid", null);
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/35 ?></td>
 		<td class="imcmsAdmText">
-        <input type="text" name="classification" size="105" maxlength="200" style="width: 100%"
+        <input type="text" name="<%= DocumentComposer.PARAMETER__KEYWORDS %>" size="105" maxlength="200" style="width: 100%"
                 value="<%= StringEscapeUtils.escapeHtml( StringUtils.join( document.getKeywords(), ", " ) ) %>"><br>
 		<span class="imcmsAdmDim"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1014 ?></span><br>
-		<input type="CHECKBOX" name="disable_search" value="1" <% if (document.isSearchDisabled()) { %> checked<% } %>> <? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?></td>
+		<input type="CHECKBOX" name="<%= DocumentComposer.PARAMETER__SEARCH_DISABLED %>" value="1" <% if (document.isSearchDisabled()) { %> checked<% } %>> <? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?></td>
 	</tr>
 	<tr>
 		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
@@ -311,16 +376,16 @@ imcmsGui("mid", null);
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
             <% String target = document.getTarget() ; %>
-			<td><input type="radio" name="target" value="_self"<% if ("_self".equalsIgnoreCase( target ) ) { %> checked<% target = null; } %>></td>
+			<td><input type="radio" name="<%= DocumentComposer.PARAMETER__TARGET %>" value="_self"<% if ("_self".equalsIgnoreCase( target ) ) { %> checked<% target = null; } %>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1015 ?> &nbsp;</td>
-			<td><input type="radio" name="target" value="_blank"<% if ("_blank".equalsIgnoreCase( target ) ) { %> checked<% target = null; } %>></td>
+			<td><input type="radio" name="<%= DocumentComposer.PARAMETER__TARGET %>" value="_blank"<% if ("_blank".equalsIgnoreCase( target ) ) { %> checked<% target = null; } %>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1016 ?> &nbsp;</td>
-			<td><input type="radio" name="target" value="_top"<% if ("_top".equalsIgnoreCase( target ) ) { %> checked<% target = null; } %>></td>
+			<td><input type="radio" name="<%= DocumentComposer.PARAMETER__TARGET %>" value="_top"<% if ("_top".equalsIgnoreCase( target ) ) { %> checked<% target = null; } %>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1017 ?> &nbsp;</td>
-			<td><input type="radio" name="target" <% if (null != target) { %> checked<% } %>></td>
+			<td><input type="radio" name="<%= DocumentComposer.PARAMETER__TARGET %>" <% if (null != target) { %> checked<% } %>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1018 ?>&nbsp;</td>
 			<td>
-            <input type="text" name="target" size="20" maxlength="20"
+            <input type="text" name="<%= DocumentComposer.PARAMETER__TARGET %>" size="20" maxlength="20"
                 value="<% if (null != target) { %><%= StringEscapeUtils.escapeHtml( target ) %><% } %>">
         </td>
 		</tr>
@@ -336,12 +401,12 @@ imcmsGui("mid", null);
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td>
-                <input type="text" name="date_created" size="11" maxlength="10" style="width: 7em;"
+                <input type="text" name="<%= DocumentComposer.PARAMETER__CREATED_DATE %>" size="11" maxlength="10" style="width: 7em;"
                         value="<%= formatDate( document.getCreatedDatetime() ) %>">
             </td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/time ?></td>
 			<td>
-                <input type="text" name="created_time" size="5" maxlength="5" style="width: 4em;"
+                <input type="text" name="<%= DocumentComposer.PARAMETER__CREATED_TIME %>" size="5" maxlength="5" style="width: 4em;"
                         value="<%= formatTime( document.getCreatedDatetime() ) %>">
             </td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/created_by ?> <%= document.getCreator().getFullName() %> (<%= document.getCreator().getLoginName() %>)</td>
@@ -354,12 +419,12 @@ imcmsGui("mid", null);
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td>
-                <input type="text" name="date_modified" size="11" maxlength="10" style="width: 7em;"
+                <input type="text" name="<%= DocumentComposer.PARAMETER__MODIFIED_DATE %>" size="11" maxlength="10" style="width: 7em;"
                         value="<%= formatDate( document.getModifiedDatetime() ) %>">
             </td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/time ?></td>
 			<td>
-                <input type="text" name="modified_time" size="5" maxlength="5" style="width: 4em;"
+                <input type="text" name="<%= DocumentComposer.PARAMETER__MODIFIED_TIME %>" size="5" maxlength="5" style="width: 4em;"
                         value="<%= formatTime( document.getModifiedDatetime() ) %>">
             </td>
 			<td class="imcmsAdmDim">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/date_format ?></td>
@@ -373,7 +438,7 @@ imcmsGui("mid", null);
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/42 ?></td>
 		<td class="imcmsAdmText">
-		<select name="publisher_id" size="1">
+		<select name="<%= DocumentComposer.PARAMETER__PUBLISHER_ID %>" size="1">
 			<%= Html.createPublisherOptionList( service.getImcmsAuthenticatorAndUserAndRoleMapper(), document.getPublisher()) %>
 		</select>
 		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_publisher ?> <% UserDomainObject publisher = document.getPublisher() ; %>
@@ -396,21 +461,11 @@ imcmsGui("mid", null);
 			<td align="right">
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
-				<td><input type="SUBMIT" class="imcmsFormBtn" value=" <? install/htdocs/sv/jsp/docadmin/document_information.jsp/2004 ?> " name="ok"></td>
+				<td><input type="SUBMIT" class="imcmsFormBtn" value=" <? install/htdocs/sv/jsp/docadmin/document_information.jsp/2004 ?> " name="<%= DocumentComposer.PARAMETER_BUTTON__OK %>"></td>
 				<td>&nbsp;</td>
 				<td><input type="RESET" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2005 ?>" name="reset"></td>
 				<td>&nbsp;</td>
-				<td>
-				<table border="0" cellspacing="0" cellpadding="0">
-				</form>
-				<form name="abortForm" action="AdminDoc">
-				<!-- input type="hidden" name="meta_id" value="#parent_meta_id#" -->
-				<!-- input type="hidden" name="flags" value="262144" -->
-				<tr>
-					<td><input type="BUTTON" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2006 ?>" onClick="document.forms.abortForm.submit(); return false"></td>
-				</tr>
-				</form>
-				</table></td>
+			    <td><input type="SUBMIT" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2006 ?>"></td>
 			</tr>
 			</table></td>
 		</tr>
@@ -426,6 +481,7 @@ imcmsGui("mid", null);
 	<td>&nbsp;</td>
 </tr>
 </table>
+</form>
 <script>
 imcmsGui("bottom", null);
 imcmsGui("outer_end", null);

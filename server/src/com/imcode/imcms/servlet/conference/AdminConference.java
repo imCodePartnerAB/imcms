@@ -180,8 +180,8 @@ public class AdminConference extends Administrator {
             IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface();
 
             //lets get htmltemplate for conferencerow
-            String htmlConferenceElement = imcref.parseDoc( null, TEMPLATE_CONF_ELEMENT, user);
-            String htmlForumElement = imcref.parseDoc( null, TEMPLATE_FORUM_ELEMENT, user);
+            String htmlConferenceElement = imcref.getAdminTemplate( TEMPLATE_CONF_ELEMENT, user, null );
+            String htmlForumElement = imcref.getAdminTemplate( TEMPLATE_FORUM_ELEMENT, user, null );
 
             String[][] listOfConferences = imcref.sqlProcedureMulti( "ListConferences", new String[0] );
 

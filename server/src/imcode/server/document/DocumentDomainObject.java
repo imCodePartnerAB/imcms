@@ -1,18 +1,16 @@
 package imcode.server.document;
 
+import com.imcode.imcms.servlet.admin.DocumentComposer;
 import imcode.server.IMCConstants;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 
-import java.util.*;
-import java.io.IOException;
-import java.io.Serializable;
-
-import com.imcode.imcms.servlet.admin.DocumentComposer;
-
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Stores info about a document. *
@@ -31,7 +29,7 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
     public final static int DOCTYPE_BILLBOARD = 104;
     public static final int DOCTYPE_FORTUNES = 106;
 
-    protected DocumentProperties documentInformation = new DocumentProperties();
+    protected DocumentProperties documentProperties = new DocumentProperties();
     public static final int STATUS_NEW = 0;
     public static final int STATUS_PUBLICATION_DISAPPROVED = 1;
     public static final int STATUS_PUBLICATION_APPROVED = 2;
@@ -40,239 +38,213 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
 
     }
 
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone() ;
-    }
-
-    public abstract int getDocumentTypeId();
-
-    public DocumentProperties getDocumentInformation() {
-        return documentInformation;
-    }
-
-    public void setDocumentInformation( DocumentProperties documentInformation ) {
-        this.documentInformation = documentInformation;
-    }
-
-    public void addCategory( CategoryDomainObject category ) {
-        getDocumentInformation().addCategory( category );
-    }
-
-    public void addSection( SectionDomainObject section ) {
-        getDocumentInformation().addSection( section );
-    }
-
-    public boolean equals( Object o ) {
-        return getDocumentInformation().equals( o );
-    }
-
-    public Date getPublicationStartDatetime() {
-        return getDocumentInformation().getPublicationStartDatetime();
-    }
-
     public Date getArchivedDatetime() {
-        return getDocumentInformation().getArchivedDatetime();
-    }
-
-    public CategoryDomainObject[] getCategories() {
-        return getDocumentInformation().getCategories();
-    }
-
-    public CategoryDomainObject[] getCategoriesOfType( CategoryTypeDomainObject type ) {
-        return getDocumentInformation().getCategoriesOfType( type );
-    }
-
-    public Date getCreatedDatetime() {
-        return getDocumentInformation().getCreatedDatetime();
-    }
-
-    public UserDomainObject getCreator() {
-        return getDocumentInformation().getCreator();
-    }
-
-    public String getHeadline() {
-        return getDocumentInformation().getHeadline();
-    }
-
-    public String getImage() {
-        return getDocumentInformation().getImage();
-    }
-
-    public String[] getKeywords() {
-        return getDocumentInformation().getKeywords();
-    }
-
-    public String getLanguageIso639_2() {
-        return getDocumentInformation().getLanguageIso639_2();
-    }
-
-    public String getMenuText() {
-        return getDocumentInformation().getMenuText();
-    }
-
-    public int getId() {
-        return getDocumentInformation().getId();
-    }
-
-    public Date getModifiedDatetime() {
-        return getDocumentInformation().getModifiedDatetime();
-    }
-
-    public UserDomainObject getPublisher() {
-        return getDocumentInformation().getPublisher();
-    }
-
-    public Map getRolesMappedToPermissionSetIds() {
-        return getDocumentInformation().getRolesMappedToPermissionSetIds();
-    }
-
-    public SectionDomainObject[] getSections() {
-        return getDocumentInformation().getSections();
-    }
-
-    public int getStatus() {
-        return getDocumentInformation().getStatus() ;
-    }
-
-    public String getTarget() {
-        return getDocumentInformation().getTarget();
-    }
-
-    public int hashCode() {
-        return getDocumentInformation().hashCode();
-    }
-
-    public boolean isActivated() {
-        return getDocumentInformation().isActivated();
-    }
-
-    public boolean isActivatedAndNotArchived() {
-        return getDocumentInformation().isActivatedAndNotArchived();
-    }
-
-    public boolean isActivatedAtTime( Date time ) {
-        return getDocumentInformation().isActivatedAtTime( time );
-    }
-
-    public boolean isArchived() {
-        return getDocumentInformation().isArchived();
-    }
-
-    public boolean isArchivedAtTime( Date time ) {
-        return getDocumentInformation().isArchivedAtTime( time );
-    }
-
-    public boolean isLinkableByOtherUsers() {
-        return getDocumentInformation().isLinkableByOtherUsers();
-    }
-
-    public boolean isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo() {
-        return getDocumentInformation().isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo();
-    }
-
-    public boolean isSearchDisabled() {
-        return getDocumentInformation().isSearchDisabled();
-    }
-
-    public boolean isVisibleInMenuForUnauthorizedUsers() {
-        return getDocumentInformation().isVisibleInMenuForUnauthorizedUsers();
-    }
-
-    public void removeAllCategories() {
-        getDocumentInformation().removeAllCategories();
-    }
-
-    public void removeAllSections() {
-        getDocumentInformation().removeAllSections();
-    }
-
-    public void removeCategory( CategoryDomainObject category ) {
-        getDocumentInformation().removeCategory( category );
-    }
-
-    public void setPublicationStartDatetime( Date v ) {
-        getDocumentInformation().setPublicationStartDatetime( v );
+        return getDocumentProperties().getArchivedDatetime();
     }
 
     public void setArchivedDatetime( Date v ) {
-        getDocumentInformation().setArchivedDatetime( v );
+        getDocumentProperties().setArchivedDatetime( v );
+    }
+
+    public CategoryDomainObject[] getCategories() {
+        return getDocumentProperties().getCategories();
+    }
+
+    public Date getCreatedDatetime() {
+        return getDocumentProperties().getCreatedDatetime();
     }
 
     public void setCreatedDatetime( Date v ) {
-        getDocumentInformation().setCreatedDatetime( v );
+        getDocumentProperties().setCreatedDatetime( v );
+    }
+
+    public UserDomainObject getCreator() {
+        return getDocumentProperties().getCreator();
     }
 
     public void setCreator( UserDomainObject creator ) {
-        getDocumentInformation().setCreator( creator );
+        getDocumentProperties().setCreator( creator );
+    }
+
+    public DocumentProperties getDocumentProperties() {
+        return documentProperties;
+    }
+
+    public void setDocumentProperties( DocumentProperties documentProperties ) {
+        this.documentProperties = documentProperties;
+    }
+
+    public String getHeadline() {
+        return getDocumentProperties().getHeadline();
     }
 
     public void setHeadline( String v ) {
-        getDocumentInformation().setHeadline( v );
+        getDocumentProperties().setHeadline( v );
+    }
+
+    public int getId() {
+        return getDocumentProperties().getId();
+    }
+
+    public void setId( int v ) {
+        getDocumentProperties().setId( v );
+    }
+
+    public String getImage() {
+        return getDocumentProperties().getImage();
     }
 
     public void setImage( String v ) {
-        getDocumentInformation().setImage( v );
+        getDocumentProperties().setImage( v );
+    }
+
+    public String[] getKeywords() {
+        return getDocumentProperties().getKeywords();
     }
 
     public void setKeywords( String[] keywords ) {
-        getDocumentInformation().setKeywords( keywords );
+        getDocumentProperties().setKeywords( keywords );
+    }
+
+    public String getLanguageIso639_2() {
+        return getDocumentProperties().getLanguageIso639_2();
     }
 
     public void setLanguageIso639_2( String languageIso639_2 ) {
-        getDocumentInformation().setLanguageIso639_2( languageIso639_2 );
+        getDocumentProperties().setLanguageIso639_2( languageIso639_2 );
     }
 
-    public void setLinkableByOtherUsers( boolean linkableByOtherUsers ) {
-        getDocumentInformation().setLinkableByOtherUsers( linkableByOtherUsers );
+    public String getMenuText() {
+        return getDocumentProperties().getMenuText();
     }
 
     public void setMenuText( String v ) {
-        getDocumentInformation().setMenuText( v );
+        getDocumentProperties().setMenuText( v );
     }
 
-    public void setMetaId( int v ) {
-        getDocumentInformation().setMetaId( v );
+    public Date getModifiedDatetime() {
+        return getDocumentProperties().getModifiedDatetime();
     }
 
     public void setModifiedDatetime( Date v ) {
-        getDocumentInformation().setModifiedDatetime( v );
+        getDocumentProperties().setModifiedDatetime( v );
     }
 
-    public void setPermissionSetForRole( RoleDomainObject role, int permissionSetId ) {
-        getDocumentInformation().setPermissionSetForRole( role, permissionSetId );
+    public Date getPublicationEndDatetime() {
+        return getDocumentProperties().getPublicationEndDatetime();
+    }
+
+    public void setPublicationEndDatetime( Date datetime ) {
+        getDocumentProperties().setPublicationEndDatetime( datetime );
+    }
+
+    public Date getPublicationStartDatetime() {
+        return getDocumentProperties().getPublicationStartDatetime();
+    }
+
+    public void setPublicationStartDatetime( Date v ) {
+        getDocumentProperties().setPublicationStartDatetime( v );
+    }
+
+    public UserDomainObject getPublisher() {
+        return getDocumentProperties().getPublisher();
+    }
+
+    public void setPublisher( UserDomainObject user ) {
+        getDocumentProperties().setPublisher( user );
+    }
+
+    public Map getRolesMappedToPermissionSetIds() {
+        return getDocumentProperties().getRolesMappedToPermissionSetIds();
+    }
+
+    public SectionDomainObject[] getSections() {
+        return getDocumentProperties().getSections();
+    }
+
+    public void setSections( SectionDomainObject[] sections ) {
+        getDocumentProperties().setSections( sections );
+    }
+
+    public int getStatus() {
+        return getDocumentProperties().getStatus();
+    }
+
+    public void setStatus( int status ) {
+        getDocumentProperties().setStatus( status );
+    }
+
+    public String getTarget() {
+        return getDocumentProperties().getTarget();
+    }
+
+    public void setTarget( String v ) {
+        getDocumentProperties().setTarget( v );
+    }
+
+    public boolean isArchived() {
+        return isArchivedAtTime( new Date() );
+    }
+
+    public boolean isLinkableByOtherUsers() {
+        return getDocumentProperties().isLinkableByOtherUsers();
+    }
+
+    public void setLinkableByOtherUsers( boolean linkableByOtherUsers ) {
+        getDocumentProperties().setLinkableByOtherUsers( linkableByOtherUsers );
+    }
+
+    public boolean isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo() {
+        return getDocumentProperties().isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo();
     }
 
     public void setPermissionSetOneIsMorePrivilegedThanPermissionSetTwo(
             boolean permissionSetOneIsMorePrivilegedThanPermissionSetTwo ) {
-        getDocumentInformation().setPermissionSetOneIsMorePrivilegedThanPermissionSetTwo( permissionSetOneIsMorePrivilegedThanPermissionSetTwo );
+        getDocumentProperties().setPermissionSetOneIsMorePrivilegedThanPermissionSetTwo( permissionSetOneIsMorePrivilegedThanPermissionSetTwo );
     }
 
-    public void setPublisher( UserDomainObject user ) {
-        getDocumentInformation().setPublisher( user );
+    public boolean isPublished() {
+        return isPublishedAtTime( new Date() );
+    }
+
+    public boolean isPublishedAndNotArchived() {
+        return isPublished() && !isArchived();
+    }
+
+    public boolean isSearchDisabled() {
+        return getDocumentProperties().isSearchDisabled();
     }
 
     public void setSearchDisabled( boolean searchDisabled ) {
-        getDocumentInformation().setSearchDisabled( searchDisabled );
+        getDocumentProperties().setSearchDisabled( searchDisabled );
     }
 
-    public void setSections( SectionDomainObject[] sections ) {
-        getDocumentInformation().setSections( sections );
+    public boolean isVisibleInMenusForUnauthorizedUsers() {
+        return getDocumentProperties().isVisibleInMenusForUnauthorizedUsers();
     }
 
-    public void setStatus( int status ) {
-        getDocumentInformation().setStatus( status );
+    public void setVisibleInMenusForUnauthorizedUsers( boolean visibleInMenusForUnauthorizedUsers ) {
+        getDocumentProperties().setVisibleInMenusForUnauthorizedUsers( visibleInMenusForUnauthorizedUsers );
     }
 
-    public void setTarget( String v ) {
-        getDocumentInformation().setTarget( v );
+    public void addCategory( CategoryDomainObject category ) {
+        getDocumentProperties().addCategory( category );
     }
 
-    public void setVisibleInMenuForUnauthorizedUsers( boolean visibleInMenuForUnauthorizedUsers ) {
-        getDocumentInformation().setVisibleInMenuForUnauthorizedUsers( visibleInMenuForUnauthorizedUsers );
+    public void addSection( SectionDomainObject section ) {
+        getDocumentProperties().addSection( section );
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public boolean equals( Object o ) {
+        return getDocumentProperties().equals( o );
     }
 
     public static DocumentDomainObject fromDocumentTypeId( int documentTypeId ) {
-        DocumentDomainObject document = null ;
+        DocumentDomainObject document = null;
 
         switch ( documentTypeId ) {
             case DOCTYPE_TEXT:
@@ -301,26 +273,69 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
                 break;
         }
 
-        return document ;
+        return document;
+    }
+
+    public CategoryDomainObject[] getCategoriesOfType( CategoryTypeDomainObject type ) {
+        return getDocumentProperties().getCategoriesOfType( type );
+    }
+
+    public abstract int getDocumentTypeId();
+
+    public int hashCode() {
+        return getDocumentProperties().hashCode();
+    }
+
+    public abstract void initDocumentFromDb( DocumentMapper documentMapper );
+
+    public boolean isActivatedAtTime( Date time ) {
+        DocumentProperties documentProperties = getDocumentProperties();
+        return ( documentProperties.publicationStartDatetime != null
+                 && documentProperties.publicationStartDatetime.before( time ) )
+               &&
+               ( documentProperties.publicationEndDatetime == null
+                 || documentProperties.publicationEndDatetime.after( time ) );
+    }
+
+    public boolean isArchivedAtTime( Date time ) {
+        DocumentProperties documentProperties = getDocumentProperties();
+        return ( documentProperties.archivedDatetime != null && documentProperties.archivedDatetime.before( time ) );
     }
 
     public abstract void processNewDocumentInformation( DocumentComposer documentInformation,
-                                               DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
-                                               UserDomainObject user, HttpServletRequest request,
-                                               HttpServletResponse response ) throws IOException, ServletException;
+                                                        DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
+                                                        UserDomainObject user, HttpServletRequest request,
+                                                        HttpServletResponse response ) throws IOException, ServletException;
 
-    public abstract void saveDocument( DocumentMapper documentMapper ) ;
+    public void removeAllCategories() {
+        getDocumentProperties().removeAllCategories();
+    }
+
+    public void removeAllSections() {
+        getDocumentProperties().removeAllSections();
+    }
+
+    public void removeCategory( CategoryDomainObject category ) {
+        getDocumentProperties().removeCategory( category );
+    }
+
+    public abstract void saveDocument( DocumentMapper documentMapper );
 
     public abstract void saveNewDocument( DocumentMapper documentMapper ) throws IOException;
 
-    public abstract void initDocumentFromDb( DocumentMapper documentMapper ) ;
-
-    public void setPublicationEndDatetime( Date datetime ) {
-        getDocumentInformation().setPublicationEndDatetime( datetime ) ;
+    public void setPermissionSetForRole( RoleDomainObject role, int permissionSetId ) {
+        getDocumentProperties().setPermissionSetForRole( role, permissionSetId );
     }
 
-    public Date getPublicationEndDatetime() {
-        return getDocumentInformation().getPublicationEndDatetime() ;
+    private boolean isPublishedAtTime( Date date ) {
+        DocumentProperties documentProperties = getDocumentProperties();
+        boolean publicationStartDatetimeIsNotNullAndInThePast = documentProperties.publicationStartDatetime != null
+                                                                && documentProperties.publicationStartDatetime.before( date );
+        boolean publicationEndDatetimeIsNullOrInTheFuture = documentProperties.publicationEndDatetime == null
+                                                            || documentProperties.publicationEndDatetime.after( date );
+        boolean statusIsApproved = documentProperties.getStatus() == STATUS_PUBLICATION_APPROVED;
+        boolean isPublished = statusIsApproved && publicationStartDatetimeIsNotNullAndInThePast && publicationEndDatetimeIsNullOrInTheFuture;
+        return isPublished;
     }
 
     public static class DocumentProperties implements Cloneable, Serializable {
@@ -335,7 +350,7 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
         private String languageIso639_2;
         private boolean linkableByOtherUsers;
         private String menuText;
-        private int metaId;
+        private int id;
         private Date modifiedDatetime;
         private boolean permissionSetOneIsMorePrivilegedThanPermissionSetTwo;
         private Date publicationStartDatetime;
@@ -346,149 +361,221 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
         private Set sections = new HashSet();
         private int status;
         private String target;
-        private boolean visibleInMenuForUnauthorizedUsers;
+        private boolean visibleInMenusForUnauthorizedUsers;
 
-        public Date getPublicationStartDatetime() {
-            return publicationStartDatetime;
-        }
-
-        public void setPublicationStartDatetime( Date v ) {
-            this.publicationStartDatetime = v;
-        }
-
-        public Date getArchivedDatetime() {
+        private Date getArchivedDatetime() {
             return archivedDatetime;
         }
 
-        public void setArchivedDatetime( Date v ) {
+        private void setArchivedDatetime( Date v ) {
             this.archivedDatetime = v;
         }
 
-        public CategoryDomainObject[] getCategories() {
+        private CategoryDomainObject[] getCategories() {
             return (CategoryDomainObject[])categories.toArray( new CategoryDomainObject[categories.size()] );
         }
 
-        public Date getCreatedDatetime() {
+        private Date getCreatedDatetime() {
             return createdDatetime;
         }
 
-        public void setCreatedDatetime( Date v ) {
+        private void setCreatedDatetime( Date v ) {
             this.createdDatetime = v;
         }
 
-        public UserDomainObject getCreator() {
+        private UserDomainObject getCreator() {
             return creator;
         }
 
-        public void setCreator( UserDomainObject creator ) {
+        private void setCreator( UserDomainObject creator ) {
             this.creator = creator;
         }
 
-        public String getHeadline() {
+        private String getHeadline() {
             return headline;
         }
 
-        public void setHeadline( String v ) {
+        private void setHeadline( String v ) {
             this.headline = v;
         }
 
-        public String getImage() {
+        private int getId() {
+            return id;
+        }
+
+        private void setId( int v ) {
+            this.id = v;
+        }
+
+        private String getImage() {
             return image;
         }
 
-        public void setImage( String v ) {
+        private void setImage( String v ) {
             this.image = v;
         }
 
-        public String[] getKeywords() {
+        private String[] getKeywords() {
             return (String[])keywords.toArray( new String[keywords.size()] );
         }
 
-        public void setKeywords( String[] keywords ) {
+        private void setKeywords( String[] keywords ) {
             this.keywords = new HashSet( Arrays.asList( keywords ) );
         }
 
-        public String getLanguageIso639_2() {
+        private String getLanguageIso639_2() {
             return languageIso639_2;
         }
 
-        public void setLanguageIso639_2( String languageIso639_2 ) {
+        private void setLanguageIso639_2( String languageIso639_2 ) {
             this.languageIso639_2 = languageIso639_2;
         }
 
-        public int getId() {
-            return metaId;
-        }
-
-        public void setMetaId( int v ) {
-            this.metaId = v;
-        }
-
-        public Date getModifiedDatetime() {
-            return modifiedDatetime;
-        }
-
-        public void setModifiedDatetime( Date v ) {
-            this.modifiedDatetime = v;
-        }
-
-        public UserDomainObject getPublisher() {
-            return publisher;
-        }
-
-        public void setPublisher( UserDomainObject user ) {
-            publisher = user;
-        }
-
-        public Map getRolesMappedToPermissionSetIds() {
-            return Collections.unmodifiableMap( rolesMappedToPermissionSetIds );
-        }
-
-        public SectionDomainObject[] getSections() {
-            return (SectionDomainObject[])sections.toArray( new SectionDomainObject[sections.size()] );
-        }
-
-        public void setSections( SectionDomainObject[] sections ) {
-            this.sections = new HashSet( Arrays.asList( sections ) );
-        }
-
-        public String getTarget() {
-            return target;
-        }
-
-        public void setTarget( String v ) {
-            this.target = v;
-        }
-
-        public String getMenuText() {
+        private String getMenuText() {
             return menuText;
         }
 
-        public void setMenuText( String v ) {
+        private void setMenuText( String v ) {
             this.menuText = v;
         }
 
-        public boolean isArchived() {
-            return isArchivedAtTime( new Date() );
+        private Date getModifiedDatetime() {
+            return modifiedDatetime;
         }
 
-        public boolean isSearchDisabled() {
+        private void setModifiedDatetime( Date v ) {
+            this.modifiedDatetime = v;
+        }
+
+        private Date getPublicationEndDatetime() {
+            return publicationEndDatetime;
+        }
+
+        private void setPublicationEndDatetime( Date publicationEndDatetime ) {
+            this.publicationEndDatetime = publicationEndDatetime;
+        }
+
+        private Date getPublicationStartDatetime() {
+            return publicationStartDatetime;
+        }
+
+        private void setPublicationStartDatetime( Date v ) {
+            this.publicationStartDatetime = v;
+        }
+
+        private UserDomainObject getPublisher() {
+            return publisher;
+        }
+
+        private void setPublisher( UserDomainObject user ) {
+            publisher = user;
+        }
+
+        private Map getRolesMappedToPermissionSetIds() {
+            return Collections.unmodifiableMap( rolesMappedToPermissionSetIds );
+        }
+
+        private SectionDomainObject[] getSections() {
+            return (SectionDomainObject[])sections.toArray( new SectionDomainObject[sections.size()] );
+        }
+
+        private void setSections( SectionDomainObject[] sections ) {
+            this.sections = new HashSet( Arrays.asList( sections ) );
+        }
+
+        private int getStatus() {
+            return status;
+        }
+
+        private void setStatus( int status ) {
+            switch ( status ) {
+                default:
+                    throw new IllegalArgumentException( "Bad status." );
+                case STATUS_NEW:
+                case STATUS_PUBLICATION_APPROVED:
+                case STATUS_PUBLICATION_DISAPPROVED:
+                    this.status = status;
+            }
+        }
+
+        private String getTarget() {
+            return target;
+        }
+
+        private void setTarget( String v ) {
+            this.target = v;
+        }
+
+        private boolean isLinkableByOtherUsers() {
+            return linkableByOtherUsers;
+        }
+
+        private void setLinkableByOtherUsers( boolean linkableByOtherUsers ) {
+            this.linkableByOtherUsers = linkableByOtherUsers;
+        }
+
+        private boolean isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo() {
+            return permissionSetOneIsMorePrivilegedThanPermissionSetTwo;
+        }
+
+        private void setPermissionSetOneIsMorePrivilegedThanPermissionSetTwo(
+                boolean permissionSetOneIsMorePrivilegedThanPermissionSetTwo ) {
+            this.permissionSetOneIsMorePrivilegedThanPermissionSetTwo =
+            permissionSetOneIsMorePrivilegedThanPermissionSetTwo;
+        }
+
+        private boolean isSearchDisabled() {
             return searchDisabled;
         }
 
-        public void setSearchDisabled( boolean searchDisabled ) {
+        private void setSearchDisabled( boolean searchDisabled ) {
             this.searchDisabled = searchDisabled;
         }
 
-        public void addCategory( CategoryDomainObject category ) {
+        private boolean isVisibleInMenusForUnauthorizedUsers() {
+            return visibleInMenusForUnauthorizedUsers;
+        }
+
+        private void setVisibleInMenusForUnauthorizedUsers( boolean visibleInMenusForUnauthorizedUsers ) {
+            this.visibleInMenusForUnauthorizedUsers = visibleInMenusForUnauthorizedUsers;
+        }
+
+        private void addCategory( CategoryDomainObject category ) {
             categories.add( category );
         }
 
-        public void addSection( SectionDomainObject section ) {
+        private void addSection( SectionDomainObject section ) {
             sections.add( section );
         }
 
-        public CategoryDomainObject[] getCategoriesOfType( CategoryTypeDomainObject type ) {
+        public Object clone() throws CloneNotSupportedException {
+            DocumentProperties clone = (DocumentProperties)super.clone();
+            clone.categories = new HashSet( categories );
+            clone.keywords = new HashSet( keywords );
+            clone.rolesMappedToPermissionSetIds = new HashMap( rolesMappedToPermissionSetIds );
+            clone.sections = new HashSet( sections );
+
+            return clone;
+        }
+
+        public boolean equals( Object o ) {
+            if ( this == o ) {
+                return true;
+            }
+            if ( !( o instanceof DocumentProperties ) ) {
+                return false;
+            }
+
+            final DocumentProperties documentInformation = (DocumentProperties)o;
+
+            if ( id != documentInformation.id ) {
+                return false;
+            }
+
+            return true;
+        }
+
+        private CategoryDomainObject[] getCategoriesOfType( CategoryTypeDomainObject type ) {
             CategoryDomainObject[] categories = getCategories();
             List categoriesOfType = new ArrayList();
             for ( int i = 0; i < categories.length; i++ ) {
@@ -502,109 +589,23 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
         }
 
         public int hashCode() {
-            return metaId;
+            return id;
         }
 
-        public boolean isActivated() {
-            Date now = new Date();
-            return isActivatedAtTime( now );
-        }
-
-        private boolean isActivatedAtTime( Date time ) {
-            return ( publicationStartDatetime == null || publicationStartDatetime.before( time ) );
-        }
-
-        public boolean isActivatedAndNotArchived() {
-            return isActivated() && !isArchived();
-        }
-
-        public boolean isArchivedAtTime( Date time ) {
-            return ( archivedDatetime != null && archivedDatetime.before( time ) );
-        }
-
-        public void removeAllCategories() {
+        private void removeAllCategories() {
             categories.clear();
         }
 
-        public void removeCategory( CategoryDomainObject category ) {
-            categories.remove( category );
-        }
-
-        public void setPermissionSetForRole( RoleDomainObject role, int permissionSetId ) {
-            rolesMappedToPermissionSetIds.put( role, new Integer( permissionSetId ) );
-        }
-
-        public boolean isVisibleInMenuForUnauthorizedUsers() {
-            return visibleInMenuForUnauthorizedUsers;
-        }
-
-        public void setVisibleInMenuForUnauthorizedUsers( boolean visibleInMenuForUnauthorizedUsers ) {
-            this.visibleInMenuForUnauthorizedUsers = visibleInMenuForUnauthorizedUsers;
-        }
-
-        public boolean isLinkableByOtherUsers() {
-            return linkableByOtherUsers;
-        }
-
-        public void setLinkableByOtherUsers( boolean linkableByOtherUsers ) {
-            this.linkableByOtherUsers = linkableByOtherUsers;
-        }
-
-        public void removeAllSections() {
+        private void removeAllSections() {
             sections.clear();
         }
 
-        public Object clone() throws CloneNotSupportedException {
-            DocumentProperties clone = (DocumentProperties)super.clone();
-            clone.categories = new HashSet( categories );
-            clone.keywords = new HashSet( keywords );
-            clone.rolesMappedToPermissionSetIds = new HashMap( rolesMappedToPermissionSetIds );
-            clone.sections = new HashSet( sections );
-
-            return clone;
+        private void removeCategory( CategoryDomainObject category ) {
+            categories.remove( category );
         }
 
-        public boolean isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo() {
-            return permissionSetOneIsMorePrivilegedThanPermissionSetTwo;
-        }
-
-        public void setPermissionSetOneIsMorePrivilegedThanPermissionSetTwo(
-                boolean permissionSetOneIsMorePrivilegedThanPermissionSetTwo ) {
-            this.permissionSetOneIsMorePrivilegedThanPermissionSetTwo =
-            permissionSetOneIsMorePrivilegedThanPermissionSetTwo;
-        }
-
-        public boolean equals( Object o ) {
-            if ( this == o ) {
-                return true;
-            }
-            if ( !( o instanceof DocumentProperties ) ) {
-                return false;
-            }
-
-            final DocumentProperties documentInformation = (DocumentProperties)o;
-
-            if ( metaId != documentInformation.metaId ) {
-                return false;
-            }
-
-            return true;
-        }
-
-        public void setStatus( int status ) {
-            this.status = status;
-        }
-
-        public int getStatus() {
-            return status;
-        }
-
-        public void setPublicationEndDatetime( Date publicationEndDatetime ) {
-            this.publicationEndDatetime = publicationEndDatetime;
-        }
-
-        public Date getPublicationEndDatetime() {
-            return publicationEndDatetime;
+        private void setPermissionSetForRole( RoleDomainObject role, int permissionSetId ) {
+            rolesMappedToPermissionSetIds.put( role, new Integer( permissionSetId ) );
         }
 
     }

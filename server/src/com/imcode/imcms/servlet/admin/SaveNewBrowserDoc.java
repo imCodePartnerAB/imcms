@@ -130,7 +130,7 @@ public class SaveNewBrowserDoc extends HttpServlet {
             vec.add( "" );
             vec.add( "#getMetaId#" );
             vec.add( String.valueOf( parent_meta_id ) );
-            htmlStr = imcref.parseDoc( vec, "new_browser_doc.html", user);
+            htmlStr = imcref.getAdminTemplate( "new_browser_doc.html", user, vec );
         }
 
         out.write( htmlStr );

@@ -129,7 +129,7 @@ public class SaveBrowserDoc extends HttpServlet {
             vec.add( "#adminMode#" );
             vec.add( imcref.getMenuButtons( meta_id, user ) );
 
-            htmlStr = imcref.parseDoc( vec, "change_browser_doc.html", user);
+            htmlStr = imcref.getAdminTemplate( "change_browser_doc.html", user, vec );
         }
         out.write( htmlStr );
     }

@@ -116,7 +116,7 @@ public class ErrorMessageGenerator {
         tagParsList.add("#EMAIL_SERVER_MASTER#");
         tagParsList.add(emailServerMaster);
 
-        return imcref.parseDoc(tagParsList, htmlErrorTemplate, user);
+        return imcref.getAdminTemplate( htmlErrorTemplate, user, tagParsList );
     }
 
     /**

@@ -65,7 +65,7 @@ public class SaveInPage extends HttpServlet {
                 Vector vec = new Vector();
                 vec.add( "#meta_id#" );
                 vec.add( String.valueOf( meta_id ) );
-                String htmlStr = imcref.parseDoc( vec, "inPage_admin_no_template.html", user);
+                String htmlStr = imcref.getAdminTemplate( "inPage_admin_no_template.html", user, vec );
                 out.write( htmlStr );
                 return;
             }
@@ -87,7 +87,7 @@ public class SaveInPage extends HttpServlet {
                 vec.add( "#meta_id#" );
                 vec.add( String.valueOf( meta_id ) );
                 res.setContentType( "text/html" );
-                String htmlStr = imcref.parseDoc( vec, "inPage_admin_no_template.html", user);
+                String htmlStr = imcref.getAdminTemplate( "inPage_admin_no_template.html", user, vec );
                 Writer out = res.getWriter();
                 out.write( htmlStr );
                 return;
@@ -104,7 +104,7 @@ public class SaveInPage extends HttpServlet {
                 return;
             } else {
                 res.setContentType( "text/html" );
-                String htmlStr = imcref.parseDoc( null, "no_demotemplate.html", user);
+                String htmlStr = imcref.getAdminTemplate( "no_demotemplate.html", user, null );
                 Writer out = res.getWriter();
                 out.write( htmlStr );
                 return;

@@ -161,7 +161,7 @@ public class DocumentMapper {
 
         touchDocument( getDocument( parentId ) );
         DocumentMapper.copyTemplateData( service, user, String.valueOf( parentId ), String.valueOf( newMetaId ) );
-        DocumentMapper.sqlUpdateDocumentActivated( service, newMetaId, true);
+        DocumentMapper.sqlUpdateDocumentActivated( service, newMetaId, true );
 
         return getDocument( newMetaId );
     }
@@ -330,7 +330,7 @@ public class DocumentMapper {
     public DocumentDomainObject getDocument( int metaId ) {
         NDC.push( "getDocument" );
 
-        DocumentDomainObject document = sprocGetDocumentInfo( metaId );
+        DocumentDomainObject document = getDocumentFromDb( metaId );
 
         if ( null != document ) {
             document.initDocumentFromDb( this );
@@ -392,20 +392,20 @@ public class DocumentMapper {
     }
 
     public void initBrowserDocumentFromDb( BrowserDocumentDomainObject document ) {
-        String sqlStr = "SELECT to_meta_id, browser_id FROM browser_docs WHERE meta_id = ?" ;
+        String sqlStr = "SELECT to_meta_id, browser_id FROM browser_docs WHERE meta_id = ?";
         String[][] sqlResult = service.sqlQueryMulti( sqlStr, new String[]{"" + document.getId()} );
         for ( int i = 0; i < sqlResult.length; i++ ) {
             String[] sqlRow = sqlResult[i];
             int toMetaId = Integer.parseInt( sqlRow[0] );
-            int browserId = Integer.parseInt( sqlRow[1] ) ;
-            BrowserDocumentDomainObject.Browser browser = getBrowserById( browserId ) ;
+            int browserId = Integer.parseInt( sqlRow[1] );
+            BrowserDocumentDomainObject.Browser browser = getBrowserById( browserId );
             document.setBrowserDocumentId( browser, toMetaId );
         }
     }
 
     public void initHtmlDocumentFromDb( HtmlDocumentDomainObject htmlDocument ) {
-        String sqlStr = "SELECT frame_set FROM frameset_docs WHERE meta_id = ?" ;
-        String html = service.sqlQueryStr( sqlStr, new String[] {""+htmlDocument.getId()} ) ;
+        String sqlStr = "SELECT frame_set FROM frameset_docs WHERE meta_id = ?";
+        String html = service.sqlQueryStr( sqlStr, new String[]{"" + htmlDocument.getId()} );
         htmlDocument.setHtmlDocumentHtml( html );
     }
 
@@ -506,34 +506,28 @@ public class DocumentMapper {
     }
 
     public TextDocumentTextDomainObject getText( int metaId, int no ) {
-        try {
-            String[] results = sprocGetText( metaId, no );
+        String[] results = sprocGetText( metaId, no );
 
-            if ( results == null || results.length == 0 ) {
-                /* There was no text. Return null. */
-                return null;
-            }
-
-            /* Return the text */
-            String text = results[0];
-            int type = Integer.parseInt( results[1] );
-
-            return new TextDocumentTextDomainObject( text, type );
-
-        } catch ( NumberFormatException ex ) {
-            /* There was no text, but we shouldn't come here unless the db returned something wrong. */
-            log.error( "SProc 'sprocGetText()' returned an invalid text-type.", ex );
+        if ( results == null || results.length == 0 ) {
+            /* There was no text. Return null. */
             return null;
         }
+
+        /* Return the text */
+        String text = results[0];
+        int type = Integer.parseInt( results[1] );
+
+        return new TextDocumentTextDomainObject( text, type );
+
     }
 
     public TextDocumentTextDomainObject getTextField( DocumentDomainObject document, int textFieldIndexInDocument ) {
-        return service.getText( document.getId(), textFieldIndexInDocument );
+        return getText( document.getId(), textFieldIndexInDocument );
     }
 
     public boolean hasPermissionToSearchDocument( UserDomainObject searchingUser, DocumentDomainObject document ) {
         final boolean searchingUserHasPermissionToFindDocument;
-        if ( document.isActivated() ) {
+        if ( document.isPublished() ) {
             searchingUserHasPermissionToFindDocument = hasAtLeastDocumentReadPermission( searchingUser, document );
         } else {
             searchingUserHasPermissionToFindDocument = hasEditPermission( searchingUser, document );
@@ -574,7 +568,7 @@ public class DocumentMapper {
 
         int newMetaId = sqlInsertIntoMeta( document );
 
-        document.setMetaId( newMetaId );
+        document.setId( newMetaId );
 
         document.saveNewDocument( this );
 
@@ -602,7 +596,7 @@ public class DocumentMapper {
             "doc_type", "meta_headline", "meta_text", "meta_image",
             "owner_id", "permissions", "shared", "show_meta",
             "lang_prefix", "date_created", "date_modified", "disable_search",
-            "target", "activate", "archived_datetime",  "publisher_id",
+            "target", "activate", "archived_datetime", "publisher_id",
             "status", "publication_start_datetime", "publication_end_datetime"
         };
 
@@ -618,7 +612,7 @@ public class DocumentMapper {
         sqlColumnValues.add( document.getCreator().getUserId() + "" );
         sqlColumnValues.add( makeSqlStringFromBoolean( document.isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo() ) );
         sqlColumnValues.add( makeSqlStringFromBoolean( document.isLinkableByOtherUsers() ) );
-        sqlColumnValues.add( makeSqlStringFromBoolean( document.isVisibleInMenuForUnauthorizedUsers() ) );
+        sqlColumnValues.add( makeSqlStringFromBoolean( document.isVisibleInMenusForUnauthorizedUsers() ) );
         sqlColumnValues.add( document.getLanguageIso639_2() );
         sqlColumnValues.add( makeSqlStringFromDate( document.getCreatedDatetime() ) );
         sqlColumnValues.add( makeSqlStringFromDate( document.getModifiedDatetime() ) );
@@ -627,7 +621,7 @@ public class DocumentMapper {
         sqlColumnValues.add( "1" );
         sqlColumnValues.add( makeSqlStringFromDate( document.getArchivedDatetime() ) );
         sqlColumnValues.add( null != document.getPublisher() ? document.getPublisher().getUserId() + "" : null );
-        sqlColumnValues.add( ""+document.getStatus() );
+        sqlColumnValues.add( "" + document.getStatus() );
         sqlColumnValues.add( makeSqlStringFromDate( document.getPublicationStartDatetime() ) );
         sqlColumnValues.add( makeSqlStringFromDate( document.getPublicationEndDatetime() ) );
 
@@ -793,11 +787,11 @@ public class DocumentMapper {
         makeStringSqlUpdateClause( "lang_prefix", document.getLanguageIso639_2(), sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSqlUpdateClause( "disable_search", document.isSearchDisabled(), sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSqlUpdateClause( "shared", document.isLinkableByOtherUsers(), sqlUpdateColumns, sqlUpdateValues );
-        makeBooleanSqlUpdateClause( "show_meta", document.isVisibleInMenuForUnauthorizedUsers(), sqlUpdateColumns, sqlUpdateValues );
+        makeBooleanSqlUpdateClause( "show_meta", document.isVisibleInMenusForUnauthorizedUsers(), sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSqlUpdateClause( "permissions", document.isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo(), sqlUpdateColumns, sqlUpdateValues );
         makeIntSqlUpdateClause( "publisher_id", ( publisher == null ? null : new Integer( publisher.getUserId() ) ), sqlUpdateColumns,
                                 sqlUpdateValues );
-        makeIntSqlUpdateClause( "status", new Integer(document.getStatus()),sqlUpdateColumns,sqlUpdateValues );
+        makeIntSqlUpdateClause( "status", new Integer( document.getStatus() ), sqlUpdateColumns, sqlUpdateValues );
 
         sqlStr.append( StringUtils.join( sqlUpdateColumns.iterator(), "," ) );
         sqlStr.append( " where meta_id = ?" );
@@ -976,8 +970,10 @@ public class DocumentMapper {
                                new String[]{meta_id, mText} );
     }
 
-    public static void sqlUpdateDocumentActivated(IMCServiceInterface imcref, int meta_id, boolean activate) {
-        imcref.sqlUpdateQuery( "update meta set activate = ? where meta_id = ?", new String[]{ "" + (activate?1:0), "" + meta_id} );
+    public static void sqlUpdateDocumentActivated( IMCServiceInterface imcref, int meta_id, boolean activate ) {
+        imcref.sqlUpdateQuery( "update meta set activate = ? where meta_id = ?", new String[]{
+            "" + ( activate ? 1 : 0 ), "" + meta_id
+        } );
     }
 
     public static void sqlUpdateMetaDateCreated( IMCServiceInterface imcref, String meta_id, String created_datetime ) {
@@ -1181,24 +1177,30 @@ public class DocumentMapper {
         return user_doc_types;
     }
 
-    private DocumentDomainObject sprocGetDocumentInfo( int metaId ) {
+    private DocumentDomainObject getDocumentFromDb( int metaId ) {
 
         String[] result = service.sqlProcedure( SPROC_GET_DOCUMENT_INFO, new String[]{String.valueOf( metaId )} );
 
         if ( 0 == result.length ) {
             return null;
         }
+        DocumentDomainObject document = getDocumentFromSqlResultRow( result );
+
+        return document;
+    }
+
+    private DocumentDomainObject getDocumentFromSqlResultRow( String[] result ) {
         final int documentTypeId = Integer.parseInt( result[1] );
         DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId( documentTypeId );
 
-        document.setMetaId( Integer.parseInt( result[0] ) );
+        document.setId( Integer.parseInt( result[0] ) );
         document.setHeadline( result[2] );
         document.setMenuText( result[3] );
         document.setImage( result[4] );
         document.setCreator( imcmsAAUM.getUser( Integer.parseInt( result[5] ) ) );
         document.setPermissionSetOneIsMorePrivilegedThanPermissionSetTwo( getBooleanFromSqlResultString( result[6] ) );
         document.setLinkableByOtherUsers( getBooleanFromSqlResultString( result[7] ) );
-        document.setVisibleInMenuForUnauthorizedUsers( getBooleanFromSqlResultString( result[8] ) );
+        document.setVisibleInMenusForUnauthorizedUsers( getBooleanFromSqlResultString( result[8] ) );
         document.setLanguageIso639_2( LanguageMapper.getAsIso639_2OrDefaultLanguage( result[9], service ) );
         DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
         document.setCreatedDatetime( parseDateFormat( dateFormat, result[10] ) );
@@ -1211,10 +1213,9 @@ public class DocumentMapper {
             UserDomainObject publisher = imcmsAAUM.getUser( Integer.parseInt( publisherIdStr ) );
             document.setPublisher( publisher );
         }
-        document.setStatus(Integer.parseInt(result[16])) ;
+        document.setStatus( Integer.parseInt( result[16] ) );
         document.setPublicationStartDatetime( parseDateFormat( dateFormat, result[17] ) );
         document.setPublicationEndDatetime( parseDateFormat( dateFormat, result[18] ) );
-
         return document;
     }
 
@@ -1541,14 +1542,13 @@ public class DocumentMapper {
     }
 
     private void deleteBrowserDocument( BrowserDocumentDomainObject browserDocument ) {
-        String sqlStr = "DELETE FROM browser_docs WHERE meta_id = ?" ;
-        service.sqlUpdateQuery( sqlStr, new String[] {""+browserDocument.getId()}) ;
+        String sqlStr = "DELETE FROM browser_docs WHERE meta_id = ?";
+        service.sqlUpdateQuery( sqlStr, new String[]{"" + browserDocument.getId()} );
     }
 
-
     void saveHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
-        String sqlStr = "UPDATE frameset_docs SET frame_set = ? WHERE meta_id = ?" ;
-        service.sqlUpdateQuery( sqlStr, new String[] {htmlDocument.getHtml(), ""+htmlDocument.getId()} ) ;
+        String sqlStr = "UPDATE frameset_docs SET frame_set = ? WHERE meta_id = ?";
+        service.sqlUpdateQuery( sqlStr, new String[]{htmlDocument.getHtml(), "" + htmlDocument.getId()} );
     }
 
     public static class DocumentAlreadyInMenuException extends Exception {

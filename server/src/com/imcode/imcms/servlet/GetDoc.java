@@ -88,7 +88,7 @@ public class GetDoc extends HttpServlet {
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( meta_id );
         if ( null == document ) {
-            return imcref.parseDoc( vec, NO_PAGE_URL, user );
+            return imcref.getAdminTemplate( NO_PAGE_URL, user, vec );
         }
 
         DocumentRequest documentRequest;
@@ -143,11 +143,9 @@ public class GetDoc extends HttpServlet {
             return null;
         }
 
-        Vector params = new Vector();
-        if ( !document.isActivated() && !documentMapper.hasEditPermission( user, document ) ) {
-            return imcref.parseDoc( params, NO_ACTIVE_DOCUMENT_URL, user );
+        if ( !document.isPublished() && !documentMapper.hasEditPermission( user, document ) ) {
+            return imcref.getAdminTemplate( NO_ACTIVE_DOCUMENT_URL, user, null );
         }
-
 
         // check if external doc
         imcode.server.ExternalDocType ex_doc = imcref.isExternalDoc( meta_id, user );
@@ -218,7 +216,7 @@ public class GetDoc extends HttpServlet {
                 fr =
                 new BufferedInputStream( new FileInputStream( file ) );
             } catch ( IOException ex ) {
-                htmlStr = imcref.parseDoc( vec, NO_PAGE_URL, user );
+                htmlStr = imcref.getAdminTemplate( NO_PAGE_URL, user, vec );
                 return htmlStr;
             }
             int len = fr.available();

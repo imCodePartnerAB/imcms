@@ -250,7 +250,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 }
                 MenuItem menuItem = new MenuItem( currentMenu );
                 DocumentDomainObject menuItemDocument = DocumentDomainObject.fromDocumentTypeId( Integer.parseInt( childRow[4] ) ) ;
-                menuItemDocument.setMetaId( childMetaId );
+                menuItemDocument.setId( childMetaId );
                 menuItem.setSortKey( Integer.parseInt( childRow[2] ) );      // What order the document is sorted in in the menu, using sort-order 2 (manual sort)
                 menuItem.setTreeSortKey( childRow[3] );
                 menuItemDocument.setTarget( childRow[5] );
@@ -281,8 +281,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 } catch ( ParseException ignored ) {
                 }
                 menuItem.setEditable( "0".equals( childRow[14] ) );           // if the user may admin it.
+                menuItemDocument.setStatus( Integer.parseInt( childRow[15]));
 
-                if ( ( !menuItemDocument.isActivated() || menuItemDocument.isArchived() ) && !menumode ) { // if not menumode, and document is inactive or archived, don't include it.
+                if ( !menuItemDocument.isPublishedAndNotArchived() && !menumode ) { // if not menumode, and document is inactive or archived, don't include it.
                     continue;
                 }
                 menuItem.setDocument(menuItemDocument) ;

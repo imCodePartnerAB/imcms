@@ -85,7 +85,7 @@ public class ChangeText extends HttpServlet {
         vec.add( String.valueOf( txt_no ) );
         vec.add( "#txt_type#" );
         vec.add( text_type );
-        String outputString = imcref.parseDoc( vec, "change_text.html", user);
+        String outputString = imcref.getAdminTemplate( "change_text.html", user, vec );
         out.write( outputString );
     }
 

@@ -259,7 +259,7 @@ public class GetExistingDoc extends HttpServlet {
         List outVector = new ArrayList();
 
         // Lets get the resultpage fragment used for an result
-        String oneRecHtmlSrc = imcref.parseDoc( null, ONE_SEARCH_HIT, user );
+        String oneRecHtmlSrc = imcref.getAdminTemplate( ONE_SEARCH_HIT, user, null );
 
         // Lets get all document types and put them in a hashTable
         String[][] allDocTypesArray = imcref.getDocumentTypesInList( langPrefix );
@@ -273,7 +273,7 @@ public class GetExistingDoc extends HttpServlet {
         List tmpV = new ArrayList();
         tmpV.add( "#searchResults#" );
         tmpV.add( searchResults.toString() );
-        searchResults.replace( 0, searchResults.length(), imcref.parseDoc( tmpV, SEARCH_RESULTS, user ) );
+        searchResults.replace( 0, searchResults.length(), imcref.getAdminTemplate( SEARCH_RESULTS, user, tmpV ) );
 
         // Lets parse out hidden fields
         outVector.add( "#meta_id#" );
@@ -373,7 +373,7 @@ public class GetExistingDoc extends HttpServlet {
 
         // Send page to browser
         // htmlOut = imcref.parseDoc( htmlOut, outVector);
-        String htmlOut = imcref.parseDoc( outVector, "existing_doc.html", user );
+        String htmlOut = imcref.getAdminTemplate( "existing_doc.html", user, outVector );
         out.write( htmlOut );
         return;
     }

@@ -94,7 +94,7 @@ public class SaveSort extends HttpServlet {
             }
         } else if ( req.getParameter( "copy" ) != null ) {
             if ( childsThisMenu != null ) {
-                String copyPrefix = imcref.parseDoc( null, COPY_PREFIX_TEMPLATE, user );
+                String copyPrefix = imcref.getAdminTemplate( COPY_PREFIX_TEMPLATE, user, null );
 
                 String[] file_meta_ids = imcref.copyDocs( meta_id, doc_menu_no, user, childsThisMenu, copyPrefix );
                 if ( file_meta_ids.length > 0 ) {
@@ -110,7 +110,7 @@ public class SaveSort extends HttpServlet {
                     vec.add( "" + meta_id );
                     vec.add( "#filedocs#" );
                     vec.add( fileMetaIds.toString() );
-                    String fileWarning = imcref.parseDoc( vec, FILE_WARNING_TEMPLATE, user );
+                    String fileWarning = imcref.getAdminTemplate( FILE_WARNING_TEMPLATE, user, vec );
                     out.write( fileWarning );
                     return;
                 }

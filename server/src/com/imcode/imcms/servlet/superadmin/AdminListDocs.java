@@ -210,7 +210,7 @@ public class AdminListDocs extends Administrator {
             if ( noErrors ) {
 
                 //lets get htmltemplate for tablerow
-                String htmlListElement = imcref.parseDoc( null, TEMPLATE_LISTDOC_LIST_ELEMENT, user);
+                String htmlListElement = imcref.getAdminTemplate( TEMPLATE_LISTDOC_LIST_ELEMENT, user, null );
 
                 String[] tagData = {
                     "#META_ID#", null,

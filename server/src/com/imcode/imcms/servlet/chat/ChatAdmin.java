@@ -173,8 +173,8 @@ public class ChatAdmin extends Administrator {
         if (noErrors) {
 
 //lets get htmltemplate for chatrow
-            String htmlChatElement = imcref.parseDoc(null, TEMPLATE_CONF_ELEMENT, user);
-            String htmlForumElement = imcref.parseDoc(null, TEMPLATE_FORUM_ELEMENT, user);
+            String htmlChatElement = imcref.getAdminTemplate( TEMPLATE_CONF_ELEMENT, user, null );
+            String htmlForumElement = imcref.getAdminTemplate( TEMPLATE_FORUM_ELEMENT, user, null );
 
             String[][] listOfChats = imcref.sqlProcedureMulti("ListChats", new String[0]);
 

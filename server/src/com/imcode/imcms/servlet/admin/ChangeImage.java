@@ -238,7 +238,7 @@ public class ChangeImage extends HttpServlet {
         vec.add( "#label#" );
         vec.add( label );
 
-        String htmlStr = imcref.parseDoc( vec, "change_img.html", user );
+        String htmlStr = imcref.getAdminTemplate( "change_img.html", user, vec );
         out.print( htmlStr );
 
     }

@@ -284,16 +284,6 @@ public class Document {
         internalDocument.setArchivedDatetime( datetime );
     }
 
-    public boolean getArchivedFlag() throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission( this );
-        return internalDocument.isArchivedFlag();
-    }
-
-    public void setArchivedFlag( boolean value ) throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission( this );
-        internalDocument.setArchivedFlag( value );
-    }
-
     public void setPublisher( User user ) throws NoPermissionException {
         securityChecker.hasEditPermission( this );
         internalDocument.setPublisher( user.getInternalUser() );
@@ -380,6 +370,16 @@ public class Document {
         internalDocument.setPublicationEndDatetime( datetime ) ;
     }
 
+    public Date getPublicationEndDatetime() throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission( this );
+        return internalDocument.getPublicationEndDatetime();
+    }
+
+    public int getStatus() throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission( this );
+        return internalDocument.getStatus() ;
+    }
+
     public abstract static class Comparator extends ChainableReversibleNullComparator {
 
         public int compare( Object o1, Object o2 ) {
@@ -420,9 +420,18 @@ public class Document {
             }
         };
 
-        public final static Comparator ACTIVATED_DATETIME = new Comparator() {
+        public final static Comparator PUBLICATION_START_DATETIME = new Comparator() {
             protected int compareDocuments( Document document1, Document document2 ) throws NoPermissionException {
                 return document1.getPublicationStartDatetime().compareTo( document2.getPublicationStartDatetime() );
+            }
+        };
+
+        /** @deprecated Use {@link #PUBLICATION_START_DATETIME} instead **/
+        public final static Comparator ACTIVATED_DATETIME = PUBLICATION_START_DATETIME ;
+
+        public final static Comparator PUBLICATION_END_DATETIME = new Comparator() {
+            protected int compareDocuments( Document document1, Document document2 ) throws NoPermissionException {
+                return document1.getPublicationEndDatetime().compareTo( document2.getPublicationEndDatetime() );
             }
         };
 

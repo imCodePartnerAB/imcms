@@ -104,7 +104,7 @@ public class PasswordMailReminder extends HttpServlet {
         parsVector.add("#errorininput#");
         parsVector.add("");
 
-        String returnString = imcref.parseDoc(parsVector, PasswordMailReminder.RETURNING_DOCUMENT_INPUT, null);
+        String returnString = imcref.parseDoc( PasswordMailReminder.RETURNING_DOCUMENT_INPUT, null, parsVector );
         out.print(returnString);
     }
 
@@ -215,8 +215,7 @@ public class PasswordMailReminder extends HttpServlet {
                 parsVector.add("#password#");
                 parsVector.add(password);
 
-                String userMessage = imcref.parseDoc(parsVector,
-                        PasswordMailReminder.USER_MAIL_BODY, user);
+                String userMessage = imcref.getAdminTemplate( PasswordMailReminder.USER_MAIL_BODY, user, parsVector );
 
                 smtp.sendMailWait(mailFrom, userEmail, null, userMessage);
 
@@ -233,18 +232,18 @@ public class PasswordMailReminder extends HttpServlet {
             parsVector.add(host);
 
 
-            String serverMasterMessage = imcref.parseDoc(parsVector, serverMasterMailBody, user);
+            String serverMasterMessage = imcref.getAdminTemplate( serverMasterMailBody, user, parsVector );
 
             smtp.sendMailWait(emailFromServer, eMailServerMaster, null, serverMasterMessage);
 
-            returnString = imcref.parseDoc(null, returnFileBody, user);
+            returnString = imcref.getAdminTemplate( returnFileBody, user, null );
 
         } else {
-            String errorString = imcref.parseDoc(null, PasswordMailReminder.ERROR_STRING, null);
+            String errorString = imcref.parseDoc( PasswordMailReminder.ERROR_STRING, null, null );
 
             errorParsVector.add("#errorininput#");
             errorParsVector.add(errorString);
-            returnString = imcref.parseDoc(errorParsVector, PasswordMailReminder.RETURNING_DOCUMENT_INPUT, null);
+            returnString = imcref.parseDoc( PasswordMailReminder.RETURNING_DOCUMENT_INPUT, null, errorParsVector );
         }
 
         res.setContentType("text/html");

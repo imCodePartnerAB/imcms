@@ -351,7 +351,7 @@ public class SaveNewMeta extends HttpServlet {
         vec.add( "" );
         vec.add( "#getMetaId#" );
         vec.add( String.valueOf( parentMetaId ) );
-        htmlStr = imcref.parseDoc( vec, "new_browser_doc.html", user);
+        htmlStr = imcref.getAdminTemplate( "new_browser_doc.html", user, vec );
         out.write(htmlStr) ;
         return ;
     }
@@ -372,7 +372,7 @@ public class SaveNewMeta extends HttpServlet {
         vec.add( String.valueOf( metaId ) );
         vec.add( "#getMetaId#" );
         vec.add( String.valueOf( parentMetaId ) );
-        htmlStr = imcref.parseDoc( vec, "new_fileupload.html", user);
+        htmlStr = imcref.getAdminTemplate( "new_fileupload.html", user, vec );
         out.write( htmlStr );
         return;
     }
@@ -385,7 +385,7 @@ public class SaveNewMeta extends HttpServlet {
         vec.add( String.valueOf( metaId ) );
         vec.add( "#getMetaId#" );
         vec.add( String.valueOf( parentMetaId ) );
-        htmlStr = imcref.parseDoc( vec, "new_url_doc.html", user);
+        htmlStr = imcref.getAdminTemplate( "new_url_doc.html", user, vec );
         out.write( htmlStr );
         return;
     }
@@ -398,7 +398,7 @@ public class SaveNewMeta extends HttpServlet {
         vec.add( String.valueOf( metaId ) );
         vec.add( "#getMetaId#" );
         vec.add( String.valueOf( parentMetaId ) );
-        htmlStr = imcref.parseDoc( vec, "new_frameset.html", user);
+        htmlStr = imcref.getAdminTemplate( "new_frameset.html", user, vec );
         out.write( htmlStr );
         return;
     }
