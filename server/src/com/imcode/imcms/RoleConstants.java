@@ -1,7 +1,7 @@
 package com.imcode.imcms;
 
 public interface RoleConstants {
-    public final static String USERS = "Users";
-    public final static String USERADMIN = "Useradmin";
-    public final static String SUPERADMIN = "Superadmin";
+    final static String USERS = "Users";
+    final static String USER_ADMIN = "Useradmin";
+    final static String SUPER_ADMIN = "Superadmin";
 }
