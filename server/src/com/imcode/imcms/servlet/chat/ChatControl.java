@@ -1,24 +1,28 @@
 package com.imcode.imcms.servlet.chat;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
-import imcode.server.*;
-import imcode.server.user.UserDomainObject;
-
 import imcode.external.chat.*;
+import imcode.external.diverse.VariableManager;
+import imcode.server.HTMLConv;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.*;
+
 public class ChatControl extends ChatBase {
 
-    private final static String HTML_TEMPLATE = "theChat.htm";
+    private final static String HTML_TEMPLATE = "thechat.htm";
     private final static String SETTINGS_TEMPLATE = "chat_settings.html";
-    private final static String ADMIN_GET_RID_OF_A_SESSION = "Chat_Admin_End_A_Session.htm";
-    private final static String ADMIN_BUTTON = "Chat_Admin_Button.htm";
+    private final static String ADMIN_GET_RID_OF_A_SESSION = "chat_admin_end_a_session.htm";
+    private final static String ADMIN_BUTTON = "chat_admin_button.htm";
     private final static String SETTINGS_BUTTON = "chat_settings_button.html";
     private final static String CHAT_LOGOUT_TEMPLATE = "chat_logout_message.html";
     private final static String CHAT_AUTOLOGOUT_TEMPLATE = "chat_autologout_message.html";

@@ -7,13 +7,12 @@ import imcode.util.Utility;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 public class ChatError extends ChatBase {
 
-    private static final String ERROR_FILE = "Chat_Error.htm";
+    private static final String ERROR_FILE = "chat_error.htm";
     private String errorMessage;
 
     public ChatError( HttpServletRequest req, HttpServletResponse res, String header, int errorCode )

@@ -1,13 +1,17 @@
 package com.imcode.imcms.servlet.chat;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
-import imcode.external.chat.*;
+import imcode.external.chat.ChatBase;
+import imcode.external.chat.ChatMember;
 import imcode.external.chat.ChatSessionsSingleton;
+import imcode.external.diverse.MetaInfo;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Vector;
 
 
 //meningen är att denna ska ladda framesetet och kolla
@@ -15,7 +19,7 @@ import imcode.external.chat.ChatSessionsSingleton;
 
 public class ChatViewer extends ChatBase {
 
-    private final static String HTML_TEMPLATE = "Chat_Frameset.htm" ;
+    private final static String HTML_TEMPLATE = "chat_frameset.htm" ;
 
 	public void service(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{
 		HttpSession session = req.getSession(true);

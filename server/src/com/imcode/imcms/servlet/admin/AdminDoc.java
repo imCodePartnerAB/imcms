@@ -131,7 +131,7 @@ public class AdminDoc extends HttpServlet {
             case DocumentDomainObject.DOCTYPE_ID_CONFERENCE:
             case DocumentDomainObject.DOCTYPE_ID_BILLBOARD:
             case DocumentDomainObject.DOCTYPE_ID_CHAT:
-                GetDoc.redirectToExternalDocumentTypeWithAction( document, res, "change" );
+                GetDoc.redirectToExternalDocumentTypeWithAction( document, req, res, "change" );
                 return null;
 
             default:

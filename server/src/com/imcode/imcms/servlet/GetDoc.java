@@ -55,7 +55,7 @@ public class GetDoc extends HttpServlet {
         }
     }
 
-    public static String getDoc(int meta_id, HttpServletRequest req, HttpServletResponse res)
+    public static String getDoc( int meta_id, HttpServletRequest req, HttpServletResponse res )
             throws IOException, ServletException {
         ImcmsServices imcref = Imcms.getServices();
 
@@ -140,7 +140,7 @@ public class GetDoc extends HttpServlet {
 
         if ( document instanceof FormerExternalDocumentDomainObject ) {
             Utility.setDefaultHtmlContentType( res );
-            redirectToExternalDocumentTypeWithAction( document, res, "view" );
+            redirectToExternalDocumentTypeWithAction( document, req, res, "view" );
             // Log to accesslog
             trackLog.info( documentRequest );
             return null;
@@ -188,9 +188,9 @@ public class GetDoc extends HttpServlet {
             trackLog.info( documentRequest );
             return htmlStr;
         } else if ( document instanceof FileDocumentDomainObject ) {
-            String fileId = req.getParameter(REQUEST_PARAMETER__FILE_ID);
+            String fileId = req.getParameter( REQUEST_PARAMETER__FILE_ID );
             FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
-            FileDocumentDomainObject.FileDocumentFile file = fileDocument.getFileOrDefault(fileId) ;
+            FileDocumentDomainObject.FileDocumentFile file = fileDocument.getFileOrDefault( fileId );
             String filename = file.getFilename();
             String mimetype = file.getMimeType();
             InputStream fr;
@@ -244,7 +244,7 @@ public class GetDoc extends HttpServlet {
                 }
             }
             user.setTemplateGroup( null );
-            ParserParameters paramsToParser = new ParserParameters(documentRequest );
+            ParserParameters paramsToParser = new ParserParameters( documentRequest );
 
             paramsToParser.setTemplate( req.getParameter( "template" ) );
             paramsToParser.setParameter( req.getParameter( "param" ) );
@@ -257,19 +257,19 @@ public class GetDoc extends HttpServlet {
     }
 
     public static void redirectToExternalDocumentTypeWithAction( DocumentDomainObject document,
-                                                                 HttpServletResponse res,
+                                                                 HttpServletRequest request, HttpServletResponse res,
                                                                  String action ) throws IOException {
         String externalDocumentTypeServlet = "";
         if ( document instanceof ConferenceDocumentDomainObject ) {
             externalDocumentTypeServlet = "ConfManager";
         } else if ( document instanceof ChatDocumentDomainObject ) {
             externalDocumentTypeServlet = "ChatManager";
-        } else if ( document instanceof BillboardDocumentDomainObject) {
+        } else if ( document instanceof BillboardDocumentDomainObject ) {
             externalDocumentTypeServlet = "BillBoardManager";
         }
 
         String paramStr = "?meta_id=" + document.getId() + "&";
         paramStr += "cookie_id=1A&action=" + action;
-        res.sendRedirect( externalDocumentTypeServlet + paramStr );
-        }
+        res.sendRedirect( request.getContextPath()+"/servlet/"+externalDocumentTypeServlet + paramStr );
+    }
 }

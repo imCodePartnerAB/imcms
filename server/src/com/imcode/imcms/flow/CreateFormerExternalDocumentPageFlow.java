@@ -24,6 +24,6 @@ public class CreateFormerExternalDocumentPageFlow extends CreateDocumentPageFlow
 
     protected void dispatchOkFromDocumentInformation( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         saveDocument( request );
-        GetDoc.redirectToExternalDocumentTypeWithAction( getDocument(), response, "new" );
+        GetDoc.redirectToExternalDocumentTypeWithAction( getDocument(), request, response, "new" );
     }
 }

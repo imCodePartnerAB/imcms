@@ -1,22 +1,24 @@
 package com.imcode.imcms.servlet.chat;
 
-import java.io.*;
-import java.util.*;
-import java.net.URLEncoder;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.chat.*;
-
-import imcode.server.*;
-import imcode.server.user.UserDomainObject;
 import com.imcode.imcms.servlet.BackDoc;
+import imcode.external.chat.*;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
+import imcode.server.user.UserDomainObject;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.*;
 
 public class ChatLogin extends ChatBase {
 
-    private String LOGIN_HTML = "CLogin4.htm";	   // The login page
-    private String LOGIN_ERROR_HTML = "Chat_Error.htm";
+    private String LOGIN_HTML = "clogin4.htm";	   // The login page
+    private String LOGIN_ERROR_HTML = "chat_error.htm";
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
@@ -86,22 +88,22 @@ public class ChatLogin extends ChatBase {
 
         if ( aliasBol && !imCmsRegBol ) {//only alias login
             //log("alt 1");
-            LOGIN_HTML = "CLogin1.htm";
+            LOGIN_HTML = "clogin1.htm";
         } else if ( !aliasBol && imCmsRegBol ) {//only registred imcms users
             if ( loggedOnOk ) {//ok the user has loged in so lets fill in he's name
                 //log("alt 2");
-                LOGIN_HTML = "CLogin2.htm";
+                LOGIN_HTML = "clogin2.htm";
             } else {
                 //log("alt 3");
-                LOGIN_HTML = "CLogin3.htm";
+                LOGIN_HTML = "clogin3.htm";
             }
         } else {
             if ( loggedOnOk ) {
                 //log("alt 5");
-                LOGIN_HTML = "CLogin5.htm";
+                LOGIN_HTML = "clogin5.htm";
             } else {
                 //log("alt 4");
-                LOGIN_HTML = "CLogin4.htm";
+                LOGIN_HTML = "clogin4.htm";
             }
 
         }
