@@ -695,15 +695,14 @@ public class DocumentMapper {
     public void saveNewBrowserDocument( BrowserDocumentDomainObject document ) {
         String[] browserDocumentColumns = {"meta_id", "to_meta_id", "browser_id"};
 
-        String sqlBrowserDocsInsertStr = makeSqlInsertString( "fileupload_docs", browserDocumentColumns );
+        String sqlBrowserDocsInsertStr = makeSqlInsertString( "browser_docs", browserDocumentColumns );
 
         Map browserDocumentMap = document.getBrowserDocumentIdMap();
         for ( Iterator iterator = browserDocumentMap.keySet().iterator(); iterator.hasNext(); ) {
             BrowserDocumentDomainObject.Browser browser = (BrowserDocumentDomainObject.Browser)iterator.next();
             Integer metaIdForBrowser = (Integer)browserDocumentMap.get( browser );
-
+            service.sqlUpdateQuery( sqlBrowserDocsInsertStr, new String[] {""+document.getId(), ""+metaIdForBrowser, ""+browser.getId()}) ;
         }
-
     }
 
     private String makeSqlInsertString( String tableName, String[] columnNames ) {
@@ -1536,6 +1535,9 @@ public class DocumentMapper {
     }
 
     public BrowserDocumentDomainObject.Browser getBrowserById( int browserIdToGet ) {
+        if (browserIdToGet == BrowserDocumentDomainObject.Browser.DEFAULT.getId()) {
+            return BrowserDocumentDomainObject.Browser.DEFAULT ;
+        }
         String sqlStr = "SELECT browser_id, name, value FROM browsers WHERE browser_id = ?";
         String[] sqlRow = service.sqlQuery( sqlStr, new String[]{"" + browserIdToGet} );
         BrowserDocumentDomainObject.Browser browser = createBrowserFromSqlRow( sqlRow );

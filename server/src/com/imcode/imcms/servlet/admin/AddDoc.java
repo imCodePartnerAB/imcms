@@ -18,7 +18,7 @@ public class AddDoc extends HttpServlet {
         DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = new DocumentComposer.NewDocumentParentInformation( request );
 
         DocumentComposer.addObjectToSessionAndSetSessionAttributeNameInRequest( "newDocumentParentInformation", newDocumentParentInformation,request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
-        request.getRequestDispatcher( "/servlet/DocumentComposer" ).forward( request, response );
+        request.getRequestDispatcher( "DocumentComposer" ).forward( request, response );
         return ;
     }
 }

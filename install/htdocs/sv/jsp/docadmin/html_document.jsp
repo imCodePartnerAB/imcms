@@ -29,7 +29,7 @@ imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="POST" action="DocumentComposer">
-<input type="hidden" name="<%= DocumentComposer.PARAMETER__ACTION %>" value="<%= DocumentComposer.ACTION__CREATE_NEW_HTML_DOCUMENT %>">
+<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>" value="<%= DocumentComposer.ACTION__CREATE_NEW_HTML_DOCUMENT %>">
 <input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
 <input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
 <tr>

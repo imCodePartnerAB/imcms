@@ -6,10 +6,8 @@
                                          org.apache.commons.lang.ObjectUtils,
                                          org.apache.commons.lang.StringEscapeUtils,
                                          com.imcode.imcms.servlet.admin.BrowserDocumentComposer,
-                                         java.util.*"%>
-<%!
-    public static final String PARAMETER__BROWSERS = "browsers";
-%>
+                                         java.util.*,
+                                         org.apache.commons.lang.StringUtils"%>
 <html>
 <head>
 
@@ -39,7 +37,7 @@ imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660">
 <form method="POST" action="BrowserDocumentComposer">
-<input type="hidden" name="<%= DocumentComposer.PARAMETER__ACTION %>" value="<%= DocumentComposer.ACTION__CREATE_NEW_BROWSER_DOCUMENT %>">
+<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>" value="<%= DocumentComposer.ACTION__CREATE_NEW_BROWSER_DOCUMENT %>">
 <input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
 <input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
 <tr>
@@ -47,46 +45,43 @@ imcmsGui("mid", null);
 </tr>
 <tr>
 	<td align="right">
-	<select name="<%= PARAMETER__BROWSERS %>" size="7" multiple>
-		<%
-            DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+	<select name="<%= BrowserDocumentComposer.PARAMETER__BROWSERS %>" size="7" multiple>
+        <%
+            Map addedBrowsers = (Map)request.getAttribute( BrowserDocumentComposer.REQUEST_ATTRIBUTE__ADDED_BROWSERS );
 
-            Set addedBrowsers = new TreeSet() ;
-            String[] addedBrowserIdStrings = request.getParameterValues( PARAMETER__BROWSERS ) ;
-
-            for ( int i = 0; null != addedBrowserIdStrings && i < addedBrowserIdStrings.length; i++ ) {
-                int addedBrowserId = Integer.parseInt(addedBrowserIdStrings[i]);
-                BrowserDocumentDomainObject.Browser browser = documentMapper.getBrowserById(addedBrowserId) ;
-                addedBrowsers.add(browser) ;
-            }
-
-            BrowserDocumentDomainObject.Browser[] allBrowsers = documentMapper.getAllBrowsers() ;
+            BrowserDocumentDomainObject.Browser[] allBrowsers = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getAllBrowsers() ;
             Arrays.sort(allBrowsers) ;
 
             for ( int i = 0; i < allBrowsers.length; i++ ) {
                 BrowserDocumentDomainObject.Browser browser = allBrowsers[i];
-                if (!addedBrowsers.contains( browser )) {
+                if (!addedBrowsers.containsKey( browser )) {
                     %><option value="<%= browser.getId() %>"><%= StringEscapeUtils.escapeHtml( browser.getName() ) %></option><%
                 }
             }
-
-		%>
-	</select></td>
-	<td align="center"><input type="submit" class="imcmsFormBtnSmall" name="<%= BrowserDocumentComposer.PARAMETER_BUTTON__ADD_BROWSERS %>" value="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2004 ?>"></td>
+        %>
+	</select>
+    </td>
+	<td align="center">
+        <input type="submit" class="imcmsFormBtnSmall" name="<%= BrowserDocumentComposer.PARAMETER_BUTTON__ADD_BROWSERS %>"
+                value="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2004 ?>">
+    </td>
 	<td>
-        <table width="50%" border="0">
+        <table border="0">
             <%
-                for ( Iterator iterator = addedBrowsers.iterator(); iterator.hasNext(); ) {
+                for ( Iterator iterator = addedBrowsers.keySet().iterator(); iterator.hasNext(); ) {
                     BrowserDocumentDomainObject.Browser browser = (BrowserDocumentDomainObject.Browser)iterator.next();
+                    if ( browser.equals( BrowserDocumentDomainObject.Browser.DEFAULT )) {
+                        continue ;
+                    }
                     %><tr>
-                        <td><%= browser.getName() %></td>
-                        <td><input type="text" name="browser_<%= browser.getId() %>" value=""></td>
+                        <td><%= browser.getName() %>:</td>
+                        <td><input type="text" name="<%= BrowserDocumentComposer.PARAMETER_PREFIX__DESTINATION %><%= browser.getId() %>" size="5" maxlength="9" value="<%= ObjectUtils.defaultIfNull( addedBrowsers.get(browser),"") %>"></td>
                     </tr><%
                 }
             %>
             <tr>
-                <td></td>
-                <td><input type="text" name="browser_0" value=""></td>
+                <td><? install/htdocs/sv/jsp/docadmin/browser_document.jsp/other_browsers ?>:</td>
+                <td><input type="text" name="<%= BrowserDocumentComposer.PARAMETER_PREFIX__DESTINATION %><%= BrowserDocumentDomainObject.Browser.DEFAULT.getId() %>" size="5" maxlength="9" value="<%= ObjectUtils.defaultIfNull( addedBrowsers.get(BrowserDocumentDomainObject.Browser.DEFAULT),"") %>"></td>
             </tr>
         </table>
     </td>

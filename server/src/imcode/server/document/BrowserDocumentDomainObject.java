@@ -45,11 +45,14 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
         documentMapper.initBrowserDocumentFromDb( this );
     }
 
-    public void setBrowserDocumentId( Browser browser, int toMetaId ) {
-        browserDocumentIdMap.put( browser, new Integer( toMetaId ) );
+    public void setBrowserDocumentId( Browser browser, int documentId ) {
+        this.browserDocumentIdMap.put(browser, new Integer(documentId)) ;
     }
 
     public static class Browser implements Comparable {
+
+        /* Null object */
+        public final static Browser DEFAULT = new Browser(0, "", 0) ;
 
         private int id;
         private String name;
@@ -92,7 +95,7 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
 
         public int compareTo( Object o ) {
             Browser browser = (Browser)o ;
-            int comparison = specificity - browser.specificity ;
+            int comparison = browser.specificity - specificity ;
             if (0 == comparison) {
                 comparison = name.compareTo( browser.name ) ;
             }

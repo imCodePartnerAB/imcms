@@ -31,13 +31,13 @@ import java.util.*;
 
 public class DocumentComposer extends HttpServlet {
 
-    private final static String URL_I15D_PAGE__PREFIX = "/imcms/";
+    final static String URL_I15D_PAGE__PREFIX = "/imcms/";
 
     private final static String URL_I15D_PAGE__DOCINFO = "/jsp/docadmin/document_information.jsp";
     private final static String URL_I15D_PAGE__URLDOC = "/jsp/docadmin/url_document.jsp";
     private final static String URL_I15D_PAGE__HTMLDOC = "/jsp/docadmin/html_document.jsp";
     private static final String URL_I15D_PAGE__FILEDOC = "/jsp/docadmin/file_document.jsp";
-    static final String URL_I15D_PAGE__BROWSERDOC = "/jsp/docadmin/browser_document.jsp";
+    private static final String URL__BROWSER_DOCUMENT_COMPOSER = "BrowserDocumentComposer";
 
     private static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
     private static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
@@ -45,12 +45,16 @@ public class DocumentComposer extends HttpServlet {
     public static final String REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME = "document.sessionAttributeName";
     public static final String REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME = "newDocumentParentInformation.sessionAttributeName";
 
-    public static final String PARAMETER__ACTION = "action";
+    public static final String REQUEST_ATTR_OR_PARAM__ACTION = "action";
 
     public static final String PARAMETER__URL_DOC__URL = "url";
     public static final String PARAMETER__HTML_DOC__HTML = "html";
     public static final String PARAMETER__FILE_DOC__FILE = "file";
     public static final String PARAMETER__FILE_DOC__MIME_TYPE = "mimetype";
+
+    public static final String PARAMETER__GO_TO_IMAGE_BROWSE = "browseForMenuImage";
+    public static final String PARAMETER__RETURNING_FROM_IMAGE_BROWSE = "returningFromImageBrowse";
+    public static final String PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION = "imageBrowse.originalAction";
 
     public static final String ACTION__CREATE_NEW_DOCUMENT = "createNewDocument";
     public static final String ACTION__PROCESS_NEW_DOCUMENT_INFORMATION = "processNewDocumentInformation";
@@ -61,9 +65,6 @@ public class DocumentComposer extends HttpServlet {
     public static final String ACTION__EDIT_DOCUMENT_INFORMATION = "editDocument";
     public static final String ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION = "processEditedDocumentInformation";
 
-    public static final String PARAMETER__GO_TO_IMAGE_BROWSE = "browseForMenuImage";
-    public static final String PARAMETER__RETURNING_FROM_IMAGE_BROWSE = "returningFromImageBrowse";
-    public static final String PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION = "imageBrowse.originalAction";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
@@ -72,11 +73,13 @@ public class DocumentComposer extends HttpServlet {
     public void doPost(HttpServletRequest r, HttpServletResponse response) throws ServletException, IOException {
         MultipartHttpServletRequest request = new MultipartHttpServletRequest(r);
 
-        String action = request.getParameter(PARAMETER__ACTION);
-        request.setAttribute(PARAMETER__ACTION, action);
+        String action = request.getParameter(REQUEST_ATTR_OR_PARAM__ACTION);
+        request.setAttribute(REQUEST_ATTR_OR_PARAM__ACTION, action);
+        UserDomainObject user = Utility.getLoggedOnUser(request);
+
+        NewDocumentParentInformation newDocumentParentInformation = (NewDocumentParentInformation) getObjectFromSessionWithKeyInRequest(request, REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
 
         DocumentDomainObject document = (DocumentDomainObject) getObjectFromSessionWithKeyInRequest(request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME);
-        NewDocumentParentInformation newDocumentParentInformation = (NewDocumentParentInformation) getObjectFromSessionWithKeyInRequest(request, REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
 
         if (null != request.getParameter(PARAMETER__GO_TO_IMAGE_BROWSE)) {
             String parentInfoAttributeName = getSessionAttributeNameFromRequest(request, REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
@@ -87,11 +90,9 @@ public class DocumentComposer extends HttpServlet {
             return;
         }
 
-        UserDomainObject user = Utility.getLoggedOnUser(request);
-
         if ( null != request.getParameter(PARAMETER__RETURNING_FROM_IMAGE_BROWSE)) {
             action = request.getParameter( PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION );
-            request.setAttribute(PARAMETER__ACTION, action);
+            request.setAttribute(REQUEST_ATTR_OR_PARAM__ACTION, action);
             String imageUrl = AdminDoc.getImageUri(request);
             if( ACTION__CREATE_NEW_DOCUMENT.equalsIgnoreCase(action) ){
                 DocumentDomainObject newDocument = createCloneFromParent(newDocumentParentInformation);
@@ -126,6 +127,9 @@ public class DocumentComposer extends HttpServlet {
             newFileDocument.setFileDocumentInputStream(fileItem.getInputStream());
             newFileDocument.setFileDocumentMimeType(getMimeTypeFromRequest(request));
             saveNewDocumentAndAddToMenuAndRemoveSessionAttributesAndRedirectToParent(newFileDocument, newDocumentParentInformation, user, request, response);
+        } else if (ACTION__CREATE_NEW_BROWSER_DOCUMENT.equalsIgnoreCase( action )) {
+            BrowserDocumentDomainObject newBrowserDocument = (BrowserDocumentDomainObject)document;
+            saveNewDocumentAndAddToMenuAndRemoveSessionAttributesAndRedirectToParent( newBrowserDocument, newDocumentParentInformation, user, request, response );
         } else if (ACTION__EDIT_DOCUMENT_INFORMATION.equalsIgnoreCase(action)) {
             forwardToDocinfoPage(request, response, user);
         } else if (ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION.equalsIgnoreCase(action)) {
@@ -235,9 +239,9 @@ public class DocumentComposer extends HttpServlet {
         return newDocument;
     }
 
-    public void forwardToCreateNewBrowserDocumentPage(HttpServletRequest request, HttpServletResponse response,
-                                                      UserDomainObject user) throws IOException, ServletException {
-        request.getRequestDispatcher(URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2() + URL_I15D_PAGE__BROWSERDOC).forward(request, response);
+    public void forwardToCreateNewBrowserDocumentPage( HttpServletRequest request, HttpServletResponse response,
+                                                       UserDomainObject user ) throws IOException, ServletException {
+        request.getRequestDispatcher( URL__BROWSER_DOCUMENT_COMPOSER ).forward( request, response );
     }
 
     public void forwardToCreateNewFileDocumentPage(HttpServletRequest request, HttpServletResponse response,

@@ -23,7 +23,7 @@
     final DocumentMapper documentMapper = service.getDocumentMapper();
 
     DocumentDomainObject document = (DocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME);
-    final boolean editingExistingDocument = DocumentComposer.ACTION__EDIT_DOCUMENT_INFORMATION.equalsIgnoreCase( (String)request.getAttribute( DocumentComposer.PARAMETER__ACTION  )) ;
+    final boolean editingExistingDocument = DocumentComposer.ACTION__EDIT_DOCUMENT_INFORMATION.equalsIgnoreCase( (String)request.getAttribute( DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION  )) ;
     boolean creatingNewDocument = !editingExistingDocument;
 %>
 <%!
@@ -76,7 +76,7 @@ imcmsGui("mid", null);
 <form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentComposer">
 <%
     if (creatingNewDocument) { %>
-    <input type="hidden" name="<%=DocumentComposer.PARAMETER__ACTION%>" value="<%=DocumentComposer.ACTION__PROCESS_NEW_DOCUMENT_INFORMATION%>" />
+    <input type="hidden" name="<%=DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION%>" value="<%=DocumentComposer.ACTION__PROCESS_NEW_DOCUMENT_INFORMATION%>" />
     <input type="hidden"
         name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>"
         value="<%= DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME ) %>">
@@ -88,7 +88,7 @@ imcmsGui("mid", null);
 	<td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/create_document_heading ?>","656");</script></td>
 </tr>
 <% } else { %>
-    <input type="hidden" name="<%=DocumentComposer.PARAMETER__ACTION%>" value="<%=DocumentComposer.ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION%>" />
+    <input type="hidden" name="<%=DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION%>" value="<%=DocumentComposer.ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION%>" />
     <input type="hidden"
         name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
         value="<%= DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) %>">
@@ -128,7 +128,7 @@ imcmsGui("mid", null);
             </td>
 			<td align="right">
                 <input type="submit" class="imcmsFormBtnSmall" name="<%= DocumentComposer.PARAMETER__GO_TO_IMAGE_BROWSE%>" value=" <? install/htdocs/global/pageinfo/browse ?> ">
-                <input type="hidden" name="<%=DocumentComposer.PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION%>" value="<%= request.getAttribute( DocumentComposer.PARAMETER__ACTION )%>"/>
+                <input type="hidden" name="<%=DocumentComposer.PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION%>" value="<%= request.getAttribute( DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION )%>"/>
 			</td>
 		</tr>
 		</table></td>

@@ -68,11 +68,14 @@ public class MultipartHttpServletRequest extends HttpServletRequestWrapper {
     }
 
     public Map getParameterMap() {
-        Map map = new HashMap( super.getParameterMap() );
-        Set fileItemKeys = fileItemMap.keySet();
-        for ( Iterator iterator = fileItemKeys.iterator(); iterator.hasNext(); ) {
-            String key = (String)iterator.next();
-            map.put( key, getParameterValues( key ) );
+        Map map = super.getParameterMap() ;
+        if ( null != fileItemMap ) {
+            map = new HashMap( map );
+            Set fileItemKeys = fileItemMap.keySet();
+            for ( Iterator iterator = fileItemKeys.iterator(); iterator.hasNext(); ) {
+                String key = (String)iterator.next();
+                map.put( key, getParameterValues( key ) );
+            }
         }
         return map;
     }
