@@ -24,8 +24,12 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     static String MYSQL_DATABASE_USER = "root";
     static String MYSQL_DATABASE_PASSWORD = "";
 
-    private final static int ADMIN_ID = 1;
-    private final static int USER_ID = 2;
+    private final static int ADMIN_USER_ID = 1;
+    private final static int USER_USER_ID = 2;
+    private final static int TEST_USER_ID = 3;
+
+    private final static int TEST_ROLE_ID = 3;
+
     private final static int TEST_DOC_ID_FIRST = 9001;
     private final static int TEST_DOC_ID_SECOND = 9002;
     private final static int TEST_DOC_ID_THIRD_FILE_DOC_TYPE = 9003;
@@ -246,9 +250,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     public void test_sproc_AddUseradminPermissibleRoles() {
         assertEquals( 1, sqlServer.sproc_AddUseradminPermissibleRoles( 1, 2 ) );
         assertEquals( 1, mySql.sproc_AddUseradminPermissibleRoles( 1, 2 ) );
-        {
-            assertEquals( 1, mimer.sproc_AddUseradminPermissibleRoles( 1, 2 ) );
-        }
+        assertEquals( 1, mimer.sproc_AddUseradminPermissibleRoles( 1, 2 ) );
     }
 
     public void test_sproc_ChangeUserActiveStatus() {
@@ -257,9 +259,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
         static_test_sproc_ChangeUserActiveStatus( sqlServer, user );
         static_test_sproc_ChangeUserActiveStatus( mySql, user );
-        {
-            static_test_sproc_ChangeUserActiveStatus( mimer, user );
-        }
+        static_test_sproc_ChangeUserActiveStatus( mimer, user );
     }
 
     private static void static_test_sproc_ChangeUserActiveStatus( DatabaseService dbService, DatabaseService.Table_users user ) {
@@ -275,18 +275,15 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     public void test_sproc_AddUserRole() {
-        DatabaseService.Table_user_roles_crossref existing = new DatabaseService.Table_user_roles_crossref( 1, 0 );
-        DatabaseService.Table_user_roles_crossref nonExisting = new DatabaseService.Table_user_roles_crossref( 1, 1 );
-
-        static_test_sproc_AddUserRole( sqlServer, existing, nonExisting );
-        static_test_sproc_AddUserRole( mySql, existing, nonExisting );
-        static_test_sproc_AddUserRole( mimer, existing, nonExisting );
+        static_test_sproc_AddUserRole( sqlServer );
+        static_test_sproc_AddUserRole( mySql );
+        static_test_sproc_AddUserRole( mimer );
     }
 
-    private static void static_test_sproc_AddUserRole( DatabaseService dbService, DatabaseService.Table_user_roles_crossref existing, DatabaseService.Table_user_roles_crossref nonExisting ) {
-        assertEquals( 0, dbService.sproc_AddUserRole( existing ) );
-        assertEquals( 1, dbService.sproc_AddUserRole( nonExisting ) );
-        assertEquals( 0, dbService.sproc_AddUserRole( nonExisting ) );
+    private static void static_test_sproc_AddUserRole( DatabaseService dbService ) {
+        assertEquals( 0, dbService.sproc_AddUserRole( 1,0 ) );
+        assertEquals( 1, dbService.sproc_AddUserRole( 1,1 ) );
+        assertEquals( 0, dbService.sproc_AddUserRole( 1,1 ) );
     }
 
     public void test_sproc_FindUserName() {
@@ -343,10 +340,10 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_getChilds( DatabaseService dbService ) {
-        DatabaseService.View_ChildData[] children = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, ADMIN_ID );
+        DatabaseService.View_ChildData[] children = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, ADMIN_USER_ID );
         assertEquals( 0, children.length );
 
-        children = dbService.sproc_getChilds( TEST_DOC_ID_FIRST, ADMIN_ID );
+        children = dbService.sproc_getChilds( TEST_DOC_ID_FIRST, ADMIN_USER_ID );
         assertEquals( 1, children.length );
     }
 
@@ -357,24 +354,24 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_AddExistingDocToMenu( DatabaseService dbService ) {
-        int linksBefore = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, ADMIN_ID ).length;
+        int linksBefore = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, ADMIN_USER_ID ).length;
 
         int rowCount = dbService.sproc_AddExistingDocToMenu(TEST_DOC_ID_DETACHED, TEST_DOC_ID_DETACHED, 1 );
         assertEquals( 1, rowCount );
 
-        int linksAfter = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, ADMIN_ID ).length;
+        int linksAfter = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, ADMIN_USER_ID ).length;
         assertEquals( linksBefore + 1 , linksAfter );
     }
 
     public void test_sproc_CheckAdminRights() {
-        assertTrue( sqlServer.sproc_CheckAdminRights( ADMIN_ID ));
-        assertFalse( sqlServer.sproc_CheckAdminRights( USER_ID ));
+        assertTrue( sqlServer.sproc_CheckAdminRights( ADMIN_USER_ID ));
+        assertFalse( sqlServer.sproc_CheckAdminRights( USER_USER_ID ));
 
-        assertTrue( mySql.sproc_CheckAdminRights( ADMIN_ID ));
-        assertFalse( mySql.sproc_CheckAdminRights( USER_ID ));
+        assertTrue( mySql.sproc_CheckAdminRights( ADMIN_USER_ID ));
+        assertFalse( mySql.sproc_CheckAdminRights( USER_USER_ID ));
 
-        assertTrue( mimer.sproc_CheckAdminRights( ADMIN_ID ));
-        assertFalse( mimer.sproc_CheckAdminRights( USER_ID ));
+        assertTrue( mimer.sproc_CheckAdminRights( ADMIN_USER_ID ));
+        assertFalse( mimer.sproc_CheckAdminRights( USER_USER_ID ));
     }
 
     public void test_sproc_CheckUserDocSharePermission() {
@@ -405,6 +402,18 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private static DatabaseService.Table_users static_createDummyUser( int nextFreeUserId ) {
         DatabaseService.Table_users user = new DatabaseService.Table_users( nextFreeUserId, "test login name", "test password", "First name", "Last name", "Titel", "Company", "Adress", "City", "Zip", "Country", "Country council", "Email adress", 0, 1001, 0, 1, 1, 1, new Timestamp( new java.util.Date().getTime() ) );
         return user;
+    }
+
+    public void test_deleteUserRole() {
+        test_deleteUserRole( sqlServer );
+        test_deleteUserRole( mySql );
+        test_deleteUserRole( mimer );
+    }
+
+    private void test_deleteUserRole( DatabaseService dbService ) {
+        assertEquals( 0, dbService.sproc_DelUserRoles( TEST_USER_ID, TEST_ROLE_ID) );
+        dbService.sproc_AddUserRole( TEST_USER_ID, TEST_ROLE_ID );
+        assertEquals( 1, dbService.sproc_DelUserRoles( TEST_USER_ID, TEST_ROLE_ID) );
     }
 
     // todo: this should be a method on Service?

@@ -496,41 +496,20 @@ public class DatabaseService {
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
-    static class Table_user_roles_crossref {
-        int user_id;
-        int role_id;
-
-        public Table_user_roles_crossref( int user_id, int role_id ) {
-            this.user_id = user_id;
-            this.role_id = role_id;
-        }
-
-        public boolean equals( Object o ) {
-            if( this == o )
-                return true;
-            if( !(o instanceof Table_user_roles_crossref) )
-                return false;
-
-            final Table_user_roles_crossref table_user_roles_crossref = (Table_user_roles_crossref)o;
-
-            if( role_id != table_user_roles_crossref.role_id )
-                return false;
-            if( user_id != table_user_roles_crossref.user_id )
-                return false;
-
-            return true;
-        }
-    }
-
     /**
      * Adds a role to a particular user
      */
-    int sproc_AddUserRole( Table_user_roles_crossref userRoleTupple ) {
+    int sproc_AddUserRole( int user_id, int role_id ) {
         // Lets check if the role already exists
-        ArrayList querryResult = sql_selectUserAndRoleFrom_user_roles_crossref( userRoleTupple );
+        String sqlSelect = "SELECT role_id FROM user_roles_crossref WHERE user_id = ? AND role_id = ? ";
+        Object[] paramValues = new Object[]{new Integer( user_id ), new Integer( role_id )};
+        ArrayList querryResult = sqlProcessor.executeQuery( sqlSelect, paramValues, new SQLProcessor.ResultProcessor() {
+                            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                                return new Integer(rs.getInt( "role_id" ));
+                            }
+                        } );
 
         if( querryResult.size() == 0 ) {
-            Object[] paramValues = new Object[]{new Integer( userRoleTupple.user_id ), new Integer( userRoleTupple.role_id )};
             String sqlInsert = "INSERT INTO user_roles_crossref(user_id, role_id) VALUES( ? , ? )";
             return sqlProcessor.executeUpdate( sqlInsert, paramValues );
         } else {
@@ -544,16 +523,6 @@ public class DatabaseService {
         Integer userIdInteger = new Integer( user_id );
         Object[] paramValues = new Object[]{activeInteger, userIdInteger};
         return sqlProcessor.executeUpdate( sql, paramValues );
-    }
-
-    private ArrayList sql_selectUserAndRoleFrom_user_roles_crossref( Table_user_roles_crossref userRoleTupple ) {
-        String sqlSelect = "SELECT user_id, role_id FROM user_roles_crossref WHERE user_id = ? AND role_id = ? ";
-        Object[] paramValues = new Object[]{new Integer( userRoleTupple.user_id ), new Integer( userRoleTupple.role_id )};
-        return sqlProcessor.executeQuery( sqlSelect, paramValues, new SQLProcessor.ResultProcessor() {
-            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                return new Table_user_roles_crossref( rs.getInt( "user_id" ), rs.getInt( "role_id" ) );
-            }
-        } );
     }
 
     /**
@@ -1046,5 +1015,39 @@ public class DatabaseService {
             }
         } );
         return queryResult.size() == 1;
+    }
+
+    /**
+     * Delete roles for a user
+     * If roleId = -1 then the administrator is a Superadmin and we have to delete
+     * all roles.
+     * Else the administrator is a Useradmin and we delete only a one role
+     *
+     * @param user_id
+     * @param role_id
+     * @return
+     */
+    // todo: se till att man använder de två implementations metoderna direkt i stället.
+    // todo: döp om till deleteUsersRole
+    int sproc_DelUserRoles( int user_id, int role_id ) {
+        int rowCount = 0;
+        if( role_id == -1 ) {
+            rowCount = deletaAllUserRoles( user_id );
+        } else {
+            rowCount = deleteUserRole( user_id, role_id );
+        }
+        return rowCount;
+    }
+
+    private int deletaAllUserRoles( int user_id ) {
+        String sql = "DELETE FROM user_roles_crossref WHERE user_id = ? ";
+        Object[] paramValues = new Object[]{ new Integer( user_id ) };
+        return sqlProcessor.executeUpdate( sql, paramValues );
+    }
+
+    private int deleteUserRole( int user_id, int role_id ) {
+        String sql = "DELETE FROM user_roles_crossref WHERE user_id = ? AND role_id = ? ";
+        Object[] paramValues = new Object[]{ new Integer( user_id ), new Integer( role_id ) };
+        return sqlProcessor.executeUpdate( sql, paramValues );
     }
 }

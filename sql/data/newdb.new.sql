@@ -7,8 +7,8 @@ INSERT INTO sys_data (sys_id, type_id, sysdata_value) VALUES(5, 5, '@servermaste
 INSERT INTO sys_data (sys_id, type_id, sysdata_value) VALUES(6, 6, '@webmaster-name@');
 INSERT INTO sys_data (sys_id, type_id, sysdata_value) VALUES(7, 7, '@webmaster-email@');
 
-INSERT INTO users VALUES (1,'admin', 'admin', 'Admin', 'Super','','','','','','','','',1,1001,0,1,1,1,CURRENT_TIMESTAMP);
-INSERT INTO users VALUES (2,'user', 'user', 'User', 'Extern','','','','','','','','',1,1001,0,1,1,1,CURRENT_TIMESTAMP);
+INSERT INTO users VALUES (1,'admin', 'admin', 'Admin', 'Super','','','','','','','','',0,1001,0,1,1,1,CURRENT_TIMESTAMP);
+INSERT INTO users VALUES (2,'user', 'user', 'User', 'Extern','','','','','','','','',0,1001,0,1,1,1,CURRENT_TIMESTAMP);
 
 INSERT INTO roles VALUES(0, 'Superadmin', 0, 1);
 INSERT INTO roles VALUES(1, 'Useradmin', 0, 2);
