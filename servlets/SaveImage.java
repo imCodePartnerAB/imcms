@@ -5,6 +5,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.util.* ;
+import javax.swing.ImageIcon;
 /**
   Save image data.
   */
@@ -63,6 +64,16 @@ public class SaveImage extends HttpServlet {
 		// get horizonal_space
 		String h_space = req.getParameter( "h_space" ) ;
 
+//******************************		
+		boolean keepAspectRatio = (req.getParameter("keepAspectRatio") != null);
+		log("SaveImage: KEEP_ASPECT_RATIO =" + req.getParameter("keepAspectRatio"));
+		
+		String sqlStr = "select image_name,imgurl,width,height,border,v_space,h_space,target,target_name,align,alt_text,low_scr,linkurl from images where meta_id = "+meta_id+" and name = "+img_no;
+		String[] sql = IMCServiceRMI.sqlQuery(imcserver,sqlStr);
+		String origWidth = req.getParameter("origW"); // width
+		String origHeight = req.getParameter("origH"); // height
+		
+//*****************************
 
 		try {
 			image.setImageHeight( Integer.parseInt( image_height ) ) ;
@@ -84,6 +95,50 @@ public class SaveImage extends HttpServlet {
 			image_width = "0" ;
 			image.setImageWidth( 0 ) ;
 		}
+		
+	// ****************************** Här börjar Mårtens lilla lekstuga
+if(keepAspectRatio && req.getParameter("ok") != null) {
+	int iHeight = Integer.parseInt(image_height); // form width
+	int iWidth = Integer.parseInt(image_width); // form height
+	log("REQUESTED SIZE " + iWidth + "/" + iHeight);
+	int oldWidth = Integer.parseInt(sql[2]); // database width
+	int oldHeight = Integer.parseInt(sql[3]); // database height
+	
+	int oHeight = Integer.parseInt(origHeight); // image height
+	int oWidth = Integer.parseInt(origWidth); // image width
+	
+	double asp_rat = ((double)oWidth/(double)oHeight);
+	
+	int heightDiff = Math.abs(iHeight - oldHeight);
+	int widthDiff = Math.abs(iWidth - oldWidth);
+	
+	// Dominant value:
+	// 1. greatest diff, 2. greatest int, 3. width
+	
+	if(widthDiff > heightDiff)
+		iHeight = (int)(iWidth/asp_rat);
+	else if(heightDiff > widthDiff)
+		iWidth = (int)(iHeight*asp_rat);	
+	else if(heightDiff == widthDiff)
+		{
+			if(iHeight>iWidth)
+				iWidth = (int)(iHeight*asp_rat);
+			else
+				iHeight = (int)(iWidth/asp_rat);	
+		}
+	else
+		iHeight = (int)(iWidth*asp_rat);
+
+	image.setImageHeight( iHeight ) ;
+	image.setImageWidth( iWidth ) ;
+	image_width = "" + iWidth;
+	image_height = "" + iHeight;
+	//log("CALCULATED SIZE " + image_width + "/" + image_height);
+
+}
+
+//*******************************  
+		
 
 		try {
 			image.setVerticalSpace( Integer.parseInt( v_space ) ) ;
@@ -179,15 +234,30 @@ public class SaveImage extends HttpServlet {
 			return ;
 
 		} else if( req.getParameter( "show_img" )!=null ) {
+					String imagePath = Utility.getDomainPref( "image_path",host );
+		//****************************************************************
+			// Delete relative path if there...
+			String imageName = (image_ref.lastIndexOf("/") != -1)?image_ref.substring(image_ref.lastIndexOf("/") +1):image_ref;	
+			ImageIcon icon = new ImageIcon(imagePath + imageName);
+			int width = icon.getIconWidth();
+			int height = icon.getIconHeight();
+		//****************************************************************
 			Vector vec = new Vector () ;
 			vec.add("#imgName#") ;
 			vec.add(image_name) ;
 			vec.add("#imgRef#") ;
-			vec.add(image_ref) ;
+			vec.add(Utility.getDomainPref( "image_url",host ) + image_ref) ;
+			log("SaveImage: image_ref");
 			vec.add("#imgWidth#") ;
 			vec.add(image_width) ;
 			vec.add("#imgHeight#") ;
 			vec.add(image_height) ;
+			
+			vec.add("#origW#");
+			vec.add("" + width);
+			vec.add("#origH#");
+			vec.add("" + height);
+			
 			vec.add("#imgBorder#") ;
 			vec.add(image_border) ;
 			vec.add("#imgVerticalSpace#") ;
@@ -298,7 +368,7 @@ public class SaveImage extends HttpServlet {
 			SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
 			Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
 
-			String sqlStr = "update meta set date_modified = '"+dateformat.format(dt)+"' where meta_id = "+meta_id ;
+			sqlStr = "update meta set date_modified = '"+dateformat.format(dt)+"' where meta_id = "+meta_id ;
 			IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr);
 
 			//			htmlStr = IMCServiceRMI.interpretTemplate( imcserver,meta_id,user ) ;

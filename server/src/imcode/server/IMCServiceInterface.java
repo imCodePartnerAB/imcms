@@ -310,7 +310,7 @@ public interface IMCServiceInterface extends java.rmi.Remote {
 	throws java.rmi.RemoteException ;
 
 	// get demo template data
-	public byte[] getDemoTemplate(int template_id)
+	public Object[] getDemoTemplate(int template_id)
 	throws java.io.IOException ;
 
 	// check if user can view document
@@ -333,7 +333,7 @@ public interface IMCServiceInterface extends java.rmi.Remote {
 */
 
 	// save demo template
-	public int saveDemoTemplate(int template_id,byte [] data)
+	public int saveDemoTemplate(int template_id,byte [] data, String suffix)
 	throws java.rmi.RemoteException ;
 
 

@@ -1,0 +1,19 @@
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>
+</head>
+<body bgcolor='#FFFFFF'>
+<form name='form1' action='/servlet/ChangeImage'>
+<select name='imglist' size='25'>
+#options#
+</select>
+<p> 
+<INPUT TYPE=HIDDEN NAME=meta_id VALUE=#meta_id#>
+<INPUT TYPE=HIDDEN NAME=img VALUE=#img_no#>
+<p>
+    <input type='submit' name='OK' value='Anv&auml;nd markerad bild'>
+    <input type='button' name='preview' value='F&ouml;rhandsgranska markerad bild' onClick='window.open(imglist.options[imglist.selectedIndex].value)'>
+</form>
+</body>
+</html>

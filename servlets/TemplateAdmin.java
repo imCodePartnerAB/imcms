@@ -6,7 +6,6 @@ import java.rmi.*;
 import java.rmi.registry.*;
 
 import imcode.util.* ;
-//import imcode.external.diverse.* ;
 import imcode.server.* ;
 
 public class TemplateAdmin extends HttpServlet {
@@ -90,7 +89,7 @@ public class TemplateAdmin extends HttpServlet {
 		String lang = req.getParameter("language") ;
 		String htmlStr = null ;
 		if ( req.getParameter("cancel") != null ) {
-			res.sendRedirect("AdminManager") ;
+			Utility.redirect(req,res,"AdminManager") ;
 			return ;
 		} else if ( req.getParameter("add_template") != null ) {
 			Vector vec = new Vector() ;

@@ -8,7 +8,8 @@ import java.rmi.* ;
 import java.rmi.registry.* ;
 
 public class Utility {
-
+	static protected Hashtable mimetypes ;
+	
 	private Utility () {
 		
 	}
@@ -97,4 +98,12 @@ public class Utility {
 		}
 		return ipInt ;
 	}
+	
+	 /**
+       Get the mime-type of a file-extension.
+       @param ext The extension, without a preceding dot.
+     */
+    public static String getMimeTypeFromExtension(String ext) {
+	return (String)mimetypes.get(ext) ;
+    }
 }

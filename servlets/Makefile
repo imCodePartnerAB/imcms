@@ -1,4 +1,4 @@
-CLASSPATH = /usr/local/java/jakarta-oro-2.0.2-dev-2.jar:/usr/local/java/jdbc2_0-stdext.jar:/usr/local/java/Opta2000.jar:/usr/local/java/JSDK2.0/lib/jsdk.jar:/home/kreiger/imCMS/1.3/server/classes:/usr/local/java/jcchart400K.jar:.
+CLASSPATH = /usr/local/java/jakarta-oro-2.0.2-dev-2.jar:/usr/local/java/jdbc2_0-stdext.jar:/usr/local/java/Opta2000.jar:/usr/local/java/JSDK2.0/lib/jsdk.jar:/home/kreiger/imCMS/1.3/server/classes:/usr/local/java/jcchart400K.jar:.:diagram/:conf/
 COMPILER = javac
 VM = java
 COPTIONS = -g -deprecation
@@ -61,7 +61,35 @@ CLASSES = AddDoc.class \
           ErrorMessageGenerator.class \
           PasswordMailReminder.class \
           UserChangePrefs.class \
-          UserHandler.class
+          UserHandler.class \
+          \
+          diagram/ChangeDiagram.class \
+          diagram/ChangeDiagram1.class \
+          diagram/ChangeDiagramCoordinator.class \
+          diagram/DiagramChanger.class \
+          diagram/DiagramCreator.class \
+          diagram/DiagramManager.class \
+          diagram/DiagramViewer.class \
+          diagram/Error.class \
+          diagram/NewDiagram.class \
+          diagram/NewDiagramCoordinator.class \
+          diagram/ViewDiagram1.class \
+          \
+          conf/AdminConference.class \
+          conf/ConfAdd.class \
+          conf/ConfAdmin.class \
+          conf/ConfCreator.class \
+          conf/ConfDisc.class \
+          conf/ConfDiscView.class \
+          conf/ConfError.class \
+          conf/ConfForum.class \
+          conf/ConfHelp.class \
+          conf/ConfLogin.class \
+          conf/ConfManager.class \
+          conf/ConfReply.class \
+          conf/ConfViewer.class \
+          conf/Conference.class \
+          \
 
 .SUFFIXES: .java .class
 

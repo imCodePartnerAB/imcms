@@ -123,7 +123,7 @@ public class SaveInPage extends HttpServlet {
 				out.print(htmlStr) ;
 				return ;
 			}
-			byte[] temp = null ;
+			Object[] temp = null ;
 			try {
 				temp = IMCServiceRMI.getDemoTemplate(imcserver,Integer.parseInt(template)) ;
 			} catch ( NumberFormatException ex ) {
@@ -131,7 +131,7 @@ public class SaveInPage extends HttpServlet {
 			if ( temp == null ) {
 				htmlStr = IMCServiceRMI.parseDoc( imcserver, null, "no_demotemplate.html", lang_prefix ) ;
 			} else {
-				htmlStr = new String(temp,"8859_1") ;
+				htmlStr = new String((byte[])temp[1],"8859_1") ;
 			}
 		} else if ( req.getParameter("change_group")!=null ) {
 			user.put("flags",new Integer(524288)) ;

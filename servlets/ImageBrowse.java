@@ -54,54 +54,71 @@ public class ImageBrowse extends HttpServlet {
 			res.sendRedirect(scheme + "://" + serverName + port + start_url) ;              
 			return ;
 		}
-	String meta_id = req.getParameter("meta_id");
-	String img_no = req.getParameter("img_no");
+		
+		
+			String meta_id = req.getParameter("meta_id");
+			String img_no = req.getParameter("img_no");
 
-	GetImages gi = new GetImages();
-	String FILE_SEP = System.getProperty("file.separator");
-	log("MW - OK:BREAKPOINT 1");
-	List imgList = gi.getImageFiles("D:\\Apache\\htdocs\\images", true, true);
-	log("MW - OK:BREAKPOINT 2");
-	String filePath;
-	File fileObj;
-	
-	
-	
-		String options = "";
-		for(Iterator it=imgList.iterator();it.hasNext();) 
-			{
-				fileObj = (File) it.next();
-				filePath = "" + fileObj;
-				// make absolute path relative
-				filePath = filePath.substring(filePath.lastIndexOf("\\images\\"));
-				try 
-				{
-					 String fileLen = "" + fileObj.length();
-				} catch (SecurityException e) 
-				{
-					String fileLen = "Read ERROR";
-				}
-				
+			GetImages gi = new GetImages();
+			String FILE_SEP = System.getProperty("file.separator");
+
+			File file_path = new File(Utility.getDomainPref( "image_path", host ));
+			List imgList = gi.getImageFiles("" + file_path, true, true);
+			String filePath;
+			File fileObj;
 			
-				filePath = filePath.replace('\\','/');
-				options += "<option value='" + filePath + "'>[" + fileObj.length() + "] " + filePath.substring(filePath.lastIndexOf(FILE_SEP)+1) + "</option>";
-			}
-		
-		
-		// TEMPLATE ImageBrowse.html
-		Vector vec = new Vector () ;
-		vec.add("#meta_id#");
-		vec.add(meta_id);
-		
-		vec.add("#img_no#");
-		vec.add(img_no);
-		
-		vec.add("#options#");
-		vec.add(options);
-		
-		String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
-		htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"ImageBrowse.html", lang_prefix) ;
-		out.print(htmlStr) ;
+			
+			
+				String options = "";
+								
+				String whatToSelect = (req.getParameter("select")==null)?"":req.getParameter("select");
+				String selected = (whatToSelect.equals(""))?"selected":"";
+				
+				System.out.println("whatToSelect & selected " + whatToSelect + " & " + selected);
+				
+				for(Iterator it=imgList.iterator();it.hasNext();) 
+					{
+						fileObj = (File) it.next();
+						filePath = "" + fileObj;
+						// make absolute path relative
+						filePath = filePath.substring(filePath.lastIndexOf("\\images\\"));
+						try 
+						{
+							 String fileLen = "" + fileObj.length();
+						} catch (SecurityException e) 
+						{
+							String fileLen = "Read ERROR";
+						}
+						
+					
+						filePath = filePath.replace('\\','/');
+						if(filePath.equals(whatToSelect))
+							selected="selected";
+						options += "<option name='select' value='" + filePath + "' " + selected + ">[" + fileObj.length() + "] " + filePath.substring(filePath.lastIndexOf(FILE_SEP)+1) + "</option>";
+						if(selected.equals("selected"))
+							selected = "";
+					}
+				
+				
+				// TEMPLATE ImageBrowse.html
+				Vector vec = new Vector () ;
+				vec.add("#meta_id#");
+				vec.add(meta_id);
+				
+				vec.add("#img_preview#");
+				vec.add("");
+				
+				vec.add("#img_no#");
+				vec.add(img_no);
+				
+				vec.add("#options#");
+				vec.add(options);
+				session.putValue("optionlist",options);
+				
+				String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+				htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"ImageBrowse.html", lang_prefix) ;
+				out.print(htmlStr) ;
+
 
 	}
 
