@@ -87,7 +87,7 @@ public class VerifyUser extends HttpServlet {
             if ( req.getParameter( "Ändra" ) != null ) {
 
                 // don't allow "user" "user" ( User Extern ) id=2 to be changed
-                if(user.getId()== 2 || user.getLoginName().equals("user")){
+                if(user.isDefaultUser()){
                     res.sendRedirect( accessDeniedUrl );
                     return;
                 }

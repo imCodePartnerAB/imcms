@@ -6,7 +6,7 @@ User currentLoggedinUser = imcmsSystem.getCurrentUser();
 <html>
     <body>
         <p>
-            You are logged in as "<%=currentLoggedinUser.getLoginName()%>".
+            You are logged in as "<%=currentLoggedinUser.getLoginName() %>" with user-id <%= currentLoggedinUser.getId() %><% if (currentLoggedinUser.isDefaultUser()) { %>, the default user<% } %>.
         </p>
         <p>
             Your roles are:

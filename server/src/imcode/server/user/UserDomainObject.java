@@ -501,6 +501,10 @@ public class UserDomainObject extends Hashtable {
         return result;
     }
 
+    public boolean isDefaultUser() {
+        return 2 == id ;
+    }
+
     public boolean isSuperAdmin() {
         return hasRole( RoleDomainObject.SUPERADMIN );
     }

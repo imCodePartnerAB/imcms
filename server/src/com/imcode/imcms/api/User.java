@@ -23,6 +23,10 @@ public class User {
         this.contentManagementSystem = contentManagementSystem;
     }
 
+    public int getId() {
+        return internalUser.getId();
+    }
+
     public String getLoginName() {
         return internalUser.getLoginName();
     }
@@ -91,6 +95,10 @@ public class User {
         contentManagementSystem.getSecurityChecker().isSuperAdminOrSameUser(this);
         RoleDomainObject role = getMapper().getRoleByName( roleName );
         return internalUser.hasRole(role) ;
+    }
+
+    public boolean isDefaultUser() {
+        return internalUser.isDefaultUser() ;
     }
 
     public boolean isSuperAdmin() {
