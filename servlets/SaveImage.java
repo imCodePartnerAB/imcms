@@ -6,10 +6,11 @@ import javax.servlet.http.*;
 
 import imcode.util.* ;
 
+
 /**
    Save image data.
 */
-public class SaveImage extends HttpServlet {
+public class SaveImage extends HttpServlet implements imcode.server.IMCConstants {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
 
@@ -490,7 +491,7 @@ public class SaveImage extends HttpServlet {
 	} else {
 	    IMCServiceRMI.saveImage( imcserver,meta_id,user,img_no,image ) ;
 
-	    SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
+	    SimpleDateFormat dateformat = new SimpleDateFormat(DATETIME_FORMAT_STD) ;
 	    Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
 
 	    sqlStr = "update meta set date_modified = '"+dateformat.format(dt)+"' where meta_id = "+meta_id ;
