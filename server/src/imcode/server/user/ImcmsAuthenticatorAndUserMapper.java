@@ -3,6 +3,8 @@ package imcode.server.user;
 import imcode.server.IMCServiceInterface;
 import org.apache.log4j.Logger;
 
+import java.util.*;
+
 public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authenticator {
 
    // todo: make sure that these stored procedures are accesed (called) only used within this class
@@ -16,6 +18,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
    private static final String SPROC_ROLE_FIND_NAME = "RoleFindName";
    private static final String SPROC_GET_ALL_ROLES = "GetAllRoles";
    private static final String SPROC_GET_USER_ROLES = "GetUserRoles";
+   private static final String SPROC_DEL_USER_ROLES = "DelUserRoles" ;
    private static final String SPROC_GET_HIGHEST_USER_ID = "GetHighestUserId";
    private static final String SPROC_ADD_NEW_USER = "AddNewUser";
    private static final String SPROC_UPDATE_USER = "UpdateUser";
@@ -180,11 +183,15 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
    public String[] getAllRoleNames() {
       String[] roleNamesMinusUsers = service.sqlProcedure( SPROC_GET_ALL_ROLES );
-      String[] roleNames = new String[roleNamesMinusUsers.length + 1];
-      roleNames[0] = ALWAYS_EXISTING_USERS_ROLE;
-      for( int i = 0; i < roleNamesMinusUsers.length; i++ ) {
-         roleNames[i + 1] = roleNamesMinusUsers[i];
+      Set roleNamesSet = new HashSet() ;
+      for( int i = 0; i < roleNamesMinusUsers.length; i+=2 ) {
+         String roleName = roleNamesMinusUsers[i+1] ;
+         roleNamesSet.add(roleName) ;
       }
+
+      roleNamesSet.add(ALWAYS_EXISTING_USERS_ROLE) ;
+
+      String[] roleNames = (String[])roleNamesSet.toArray(new String[roleNamesSet.size()]);
       return roleNames;
    }
 
@@ -203,7 +210,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
       }
    }
 
-   public void assignRoleToUser( User user, String roleName ) {
+   public void addRoleToUser( User user, String roleName ) {
       String userIdStr = String.valueOf( user.getUserId() );
       addRole( roleName );
       log.debug( "Trying to assign role " + roleName + " to user " + user.getLoginName() );
@@ -223,5 +230,18 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
          result[i] = getUser( Integer.parseInt(userId) );
       }
       return result;
+   }
+
+   public void setUserRoles( User user, String[] roleNames ) {
+      this.removeAllRoles( user );
+
+      for( int i = 0; i < roleNames.length; i++ ) {
+         String roleName = roleNames[i];
+         this.addRoleToUser( user, roleName );
+      }
+   }
+
+   private void removeAllRoles( User user ) {
+      service.sqlUpdateProcedure( SPROC_DEL_USER_ROLES, new String[] { ""+user.getUserId(), "-1" }) ;
    }
 }

@@ -10,10 +10,12 @@ import imcode.server.user.User;
 import imcode.util.*;
 
 import org.apache.log4j.*;
+import com.imcode.imcms.WebAppConstants;
 
 public class AdminUser extends Administrator {
    private final static String HTML_TEMPLATE = "AdminChangeUser.htm";
    private static Category log = Logger.getInstance( AdminUser.class.getName() );
+   private String CHANGE_EXTERNAL_USER_URL = "/adminuser/changeexternaluser.jsp";
 
    /**
     The GET method creates the html page when this side has been
@@ -124,7 +126,7 @@ public class AdminUser extends Administrator {
          String header = "Error in AdminCounter.";
          String msg = "Couldnt create an user object." + "<BR>";
          this.log( header + msg );
-         AdminError err = new AdminError( req, res, header, msg );
+         new AdminError( req, res, header, msg );
          return;
       }
 
@@ -140,96 +142,77 @@ public class AdminUser extends Administrator {
          String header = "Error in AdminCounter.";
          String msg = "The user is not an administrator." + "<BR>";
          this.log( header + msg );
-         AdminError err = new AdminError( req, res, header, msg );
+         new AdminError( req, res, header, msg );
          return;
       }
-
 
       if( req.getParameter( "searchstring" ) != null ) {
          res.sendRedirect( "AdminUser?search=" + req.getParameter( "searchstring" ) + "&category=" + req.getParameter( "user_categories" ) + "&showall=" + req.getParameter( "showall" ) );
          return;
       }
 
-      //Lets get the prefered lang prefix
-      String lang_prefix = user.getLangPrefix();
-
-
-      // ******* GENERATE AN ADD_USER PAGE **********
-
       if( req.getParameter( "ADD_USER" ) != null ) {
+         redirectAddUser( res );
+      } else if( req.getParameter( "CHANGE_USER" ) != null ) {
 
-         log( "Add_User" );
-
-         VariableManager vm = new VariableManager();
-         Html htm = new Html();
-
-
-
-         // Lets redirect to AdminUserProps and get the HTML page to add a new user.
-         res.sendRedirect( "AdminUserProps?ADD_USER=true" );
-         return;
-      }
-
-
-      // ******* GENERATE AN CHANGE_USER PAGE**********
-      if( req.getParameter( "CHANGE_USER" ) != null ) {
-
-         log( "Change_User" );
-
-         // Lets get the user which should be changed
-
-         // lets first get userId for the user to be changed
          String userToChangeId = getCurrentUserId( req, res );
+         User userToChange = imcref.getUserById( Integer.parseInt( userToChangeId ) );
 
-         /*	// else we try to get userId from the requset object.
-            if (userToChangeId == null){
-               userToChangeId = this.getCurrentUserId(req,res) ;
-            }
-         */
-         // return if we don´t get a user
-         if( userToChangeId == null )
-            return;
+         if( !userToChange.isImcmsExternal() ) {
+            redirectChangeUser( req, res, imcref, user, isUseradmin, session, userToChangeId );
+         }
+         else {
+            // req.setAttribute( WebAppConstants.USER_LOGIN_NAME, userToChange.getLoginName() );
+            String queryString =
+               "?" + java.net.URLEncoder.encode(WebAppConstants.USER_LOGIN_NAME, "UTF-8") +
+               "=" + java.net.URLEncoder.encode(userToChange.getLoginName(), "UTF-8") ;
+            RequestDispatcher rd = req.getRequestDispatcher( CHANGE_EXTERNAL_USER_URL + queryString );
+            rd.forward( req, res );
+         }
+      } else if( req.getParameter( "DELETE_USER" ) != null ) {
+      } else if( req.getParameter( "GO_BACK" ) != null ) {
+         res.sendRedirect( "AdminManager" );
+      } else {
+         doGet( req, res );
+      }
+   } // end HTTP POST
 
+   private void redirectChangeUser( HttpServletRequest req, HttpServletResponse res,
+                                    IMCServiceInterface imcref,
+                                    User user,
+                                    boolean useradmin,
+                                    HttpSession session, String userToChangeId ) throws ServletException, IOException {
+      // ******* GENERATE AN CHANGE_USER PAGE**********
+      log( "Change_User" );
+
+      // return if we don´t get a user
+      if( userToChangeId != null ) {
          // Lets check if the user has right to do changes
          // only if he is an superadmin, useradmin or if he try to change his own values
          // otherwise throw him out.
-         if( imcref.checkAdminRights( user ) == false && !isUseradmin && !userToChangeId.equals( "" + user.getUserId() ) ) {
+         if( imcref.checkAdminRights( user ) == false && !useradmin && !userToChangeId.equals( "" + user.getUserId() ) ) {
             String header = "Error in AdminCounter.";
             String msg = "The user has no rights to change user values." + "<BR>";
             this.log( header + msg );
-            AdminError err = new AdminError( req, res, header, msg );
-            return;
+            new AdminError( req, res, header, msg );
+         } else {
+            // get a user object by userToChangeId
+            session.setAttribute( "userToChange", userToChangeId );
+            // Lets redirect to AdminUserProps and get the HTML page to change a user.
+            res.sendRedirect( "AdminUserProps?CHANGE_USER=true" );
          }
-
-
-         // get a user object by userToChangeId
-         imcode.server.user.User userToChange = imcref.getUserById( Integer.parseInt( userToChangeId ) );
-
-         session.setAttribute( "userToChange", userToChangeId );
-
-         // Lets redirect to AdminUserProps and get the HTML page to change a user.
-         res.sendRedirect( "AdminUserProps?CHANGE_USER=true" );
-         return;
       }
+   }
 
+   private void redirectAddUser( HttpServletResponse res ) throws IOException {
+      log( "Add_User" );
 
+      VariableManager vm = new VariableManager();
+      Html htm = new Html();
 
-
-      //******* DELETE A USER ***********
-      if( req.getParameter( "DELETE_USER" ) != null ) {
-         return;
-      }
-
-      // ***** RETURN TO ADMIN MANAGER *****
-
-      if( req.getParameter( "GO_BACK" ) != null ) {
-         res.sendRedirect( "AdminManager" );
-         return;
-      }
-
-      doGet( req, res );
-
-   } // end HTTP POST
+      // Lets redirect to AdminUserProps and get the HTML page to add a new user.
+      res.sendRedirect( "AdminUserProps?ADD_USER=true" );
+   }
 
 
 
@@ -264,7 +247,7 @@ public class AdminUser extends Administrator {
          String header = "ChangeUser error. ";
          String msg = "No user_id was available." + "<BR>";
          this.log( header + msg );
-         AdminError err = new AdminError( req, res, header, msg );
+         new AdminError( req, res, header, msg );
          return null;
       } else {
          this.log( "AnvändarId=" + userId );

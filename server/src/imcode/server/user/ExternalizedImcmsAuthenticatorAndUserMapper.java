@@ -110,12 +110,12 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
 
 
    private void updateRoleAssignments( User user ) {
-      imcmsAuthenticatorAndUserMapper.assignRoleToUser( user, ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE );
+      imcmsAuthenticatorAndUserMapper.addRoleToUser( user, ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE );
 
       String[] roleNames = externalUserMapper.getRoleNames( user );
       for( int i = 0; i < roleNames.length; i++ ) {
          String roleName = roleNames[i];
-         imcmsAuthenticatorAndUserMapper.assignRoleToUser( user, roleName );
+         imcmsAuthenticatorAndUserMapper.addRoleToUser( user, roleName );
       }
    }
 

@@ -22,8 +22,6 @@ public class AdminUserProps extends Administrator {
 
    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-      IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
-
       // Lets validate the session
       if( super.checkSession( req, res ) == false )
          return;
@@ -41,6 +39,8 @@ public class AdminUserProps extends Administrator {
          new AdminError( req, res, header, msg );
          return;
       }
+
+      IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
 
       // check if user is a Useradmin, adminRole = 2
       boolean isUseradmin = imcref.checkUserAdminrole( user.getUserId(), 2 );
@@ -63,6 +63,50 @@ public class AdminUserProps extends Administrator {
       // Get a new Vector:  phonetype_id, typename
       Vector phoneTypesV = new Vector( java.util.Arrays.asList( phonetypesA ) );
 
+      // ******* GENERATE AN ADD_USER PAGE **********
+
+      if( req.getParameter( "ADD_USER" ) != null ) {
+
+         // Lets check if the user is an admin, otherwise throw him out.
+         //if (imcref.checkAdminRights(user) == false) {
+         if( !isSuperadmin && !isUseradmin ) {
+            showErrorPageUserNotAnAdministrator( req, res );
+            return;
+         }
+
+         showAddUserPage( tmp_userInfo, res, phoneTypesV, tmp_phones, user, imcref, req, session );
+         return;
+      }
+
+      // ******* GENERATE AN CHANGE_USER PAGE**********
+      if( req.getParameter( "CHANGE_USER" ) != null ) {
+
+         log( "Changeuser" );
+
+         // lets first try to get userId from the session if we has been redirectet from authenticate
+         String userToChangeId = getCurrentUserId( req, res );
+
+         // Lets check if the user has right to do changes
+         // only if he is an superadmin, useradmin or if he try to change his own values
+         // otherwise throw him out.
+         if( imcref.checkAdminRights( user ) == false && !isUseradmin && !userToChangeId.equals( "" + user.getUserId() ) ) {
+            showErrorPageUserHasNoRightsToChangeUserValues( req, res );
+            return;
+         }
+
+         showChangeUserPage( userToChangeId, imcref, tmp_userInfo, tmp_phones, user, res, session, phoneTypesV, isSuperadmin, isUseradmin, req );
+         return;
+      }
+
+
+   }
+
+   private void showChangeUserPage( String userToChangeId, IMCServiceInterface imcref, Properties tmp_userInfo, Vector tmp_phones, User user, HttpServletResponse res, HttpSession session, Vector phoneTypesV, boolean superadmin, boolean useradmin, HttpServletRequest req ) throws IOException {
+      // get a user object by userToChangeId
+      User userToChange = null;
+      if( userToChangeId != "" ) {
+         userToChange = imcref.getUserById( Integer.parseInt( userToChangeId ) );
+      }
 
       String login_name = "";
       String password1 = "";
@@ -80,338 +124,320 @@ public class AdminUserProps extends Administrator {
       String country_council = "";
       String email = "";
 
-      // ******* GENERATE AN ADD_USER PAGE **********
+      //Lets set values from session if we have any
+      if( tmp_userInfo != null ) {
+         login_name = tmp_userInfo.getProperty( "login_name" );
+         password1 = tmp_userInfo.getProperty( "password1" );
+         password2 = tmp_userInfo.getProperty( "password2" );
+         new_pwd1 = tmp_userInfo.getProperty( "new_pwd1" ); //hidden fildes
+         new_pwd2 = tmp_userInfo.getProperty( "new_pwd2" ); //hidden fildes
+         first_name = tmp_userInfo.getProperty( "first_name" );
+         last_name = tmp_userInfo.getProperty( "last_name" );
+         title = tmp_userInfo.getProperty( "title" );
+         company = tmp_userInfo.getProperty( "company" );
 
-      if( req.getParameter( "ADD_USER" ) != null ) {
+         address = tmp_userInfo.getProperty( "address" );
+         city = tmp_userInfo.getProperty( "city" );
+         zip = tmp_userInfo.getProperty( "zip" );
+         country = tmp_userInfo.getProperty( "country" );
+         country_council = tmp_userInfo.getProperty( "country_council" );
+         email = tmp_userInfo.getProperty( "email" );
 
-         // Lets check if the user is an admin, otherwise throw him out.
-         //if (imcref.checkAdminRights(user) == false) {
-         if( !isSuperadmin && !isUseradmin ) {
-            String header = "Error in AdminCounter.";
-            String msg = "The user is not an administrator." + "<BR>";
-            this.log( header + msg );
-            new AdminError( req, res, header, msg );
-            return;
-         }
+      } else {
+         login_name = userToChange.getLoginName();
+         password1 = userToChange.getPassword();
+         password2 = userToChange.getPassword();
 
-         //Lets set values from session if we have any
-         if( tmp_userInfo != null ) {
-            login_name = tmp_userInfo.getProperty( "login_name" );
-            password1 = tmp_userInfo.getProperty( "password1" );
-            password2 = tmp_userInfo.getProperty( "password2" );
-            new_pwd1 = tmp_userInfo.getProperty( "new_pwd1" ); //hidden fildes
-            new_pwd2 = tmp_userInfo.getProperty( "new_pwd2" ); //hidden fildes
-            first_name = tmp_userInfo.getProperty( "first_name" );
-            last_name = tmp_userInfo.getProperty( "last_name" );
-            title = tmp_userInfo.getProperty( "title" );
-            company = tmp_userInfo.getProperty( "company" );
+         first_name = userToChange.getFirstName();
+         last_name = userToChange.getLastName();
+         title = userToChange.getTitle();
+         company = userToChange.getCompany();
 
-            address = tmp_userInfo.getProperty( "address" );
-            city = tmp_userInfo.getProperty( "city" );
-            zip = tmp_userInfo.getProperty( "zip" );
-            country = tmp_userInfo.getProperty( "country" );
-            country_council = tmp_userInfo.getProperty( "country_council" );
-            email = tmp_userInfo.getProperty( "email" );
-         }
-
-         Vector vec = new Vector();		// hold tags and values to parse html page
-         res.setContentType( "text/html" ); // set content type
-         Writer out = res.getWriter();	// to write out html page
-
-         //	VariableManager vm = new VariableManager() ;
-         Html htm = new Html();
-
-
-         vec.add( "#LOGIN_NAME#" );
-         vec.add( login_name );
-         vec.add( "#PWD1#" );
-         vec.add( password1 );
-         vec.add( "#PWD2#" );
-         vec.add( password2 );
-
-         vec.add( "#NEW_PWD1#" );
-         vec.add( new_pwd1 ); //hidden fildes
-         vec.add( "#NEW_PWD2#" );
-         vec.add( new_pwd2 ); //hidden fildes
-
-         vec.add( "#FIRST_NAME#" );
-         vec.add( first_name );
-         vec.add( "#LAST_NAME#" );
-         vec.add( last_name );
-         vec.add( "#TITLE#" );
-         vec.add( title );
-         vec.add( "#COMPANY#" );
-         vec.add( company );
-
-         vec.add( "#ADDRESS#" );
-         vec.add( address );
-         vec.add( "#CITY#" );
-         vec.add( city );
-         vec.add( "#ZIP#" );
-         vec.add( zip );
-         vec.add( "#COUNTRY#" );
-         vec.add( country );
-         vec.add( "#COUNTRY_COUNCIL#" );
-         vec.add( country_council );
-         vec.add( "#EMAIL#" );
-         vec.add( email );
-
-
-         vec.add( "#ADMIN_TASK#" );
-         vec.add( "ADD_USER" );
-
-         vec.add( "#PHONE_ID#" );
-         vec.add( "" );
-         vec.add( "#NUMBER#" );
-         vec.add( "" );
-
-         // phonetype list
-         String phonetypes = htm.createHtmlCode( "ID_OPTION", "1", phoneTypesV );
-         vec.add( "#PHONETYPES_MENU#" );
-         vec.add( phonetypes );
-
-         // phoneslist
-         String phones = htm.createHtmlCode( "ID_OPTION", "", tmp_phones );
-         vec.add( "#PHONES_MENU#" );
-         vec.add( phones );
-
-
-         // Lets add html for admin_part in AdminUserResp
-         vec.add( "#ADMIN_PART#" );
-         vec.add( createAdminPartHtml( user, null, imcref, req, res, session ) );
-
-
-         // language id: lets set swedish as default
-         String[] langList = imcref.sqlProcedure( "GetLanguageList 'se'" );
-         Vector selectedLangV = new Vector();
-         selectedLangV.add( "1" );
-         vec.add( "#LANG_TYPES#" );
-         vec.add( htm.createHtmlCode( "ID_OPTION", selectedLangV, new Vector( java.util.Arrays.asList( langList ) ) ) );
-
-         //store all data into the session
-         session.setAttribute( "Ok_phoneNumbers", tmp_phones );
-
-         // Lets create the HTML page
-         String outputString = imcref.parseDoc( vec, HTML_RESPONSE, user.getLangPrefix() );
-         out.write( outputString );
-
-         return;
+         address = userToChange.getAddress();
+         city = userToChange.getCity();
+         zip = userToChange.getZip();
+         country = userToChange.getCountry();
+         country_council = userToChange.getCountyCouncil();
+         email = userToChange.getEmailAddress();
+         //			userType= tmp_userType;
+         //active = tmp_userInfo.getProperty("active");
+         //userCreateDate = tmp_userInfo.getProperty("createDate") ;
       }
 
 
+      // Lets get all users phone numbers from session if we have any else we get them from db
+      // return value from db= phone_id, number, user_id, phonetype_id, typename
+      Html htm = new Html();
+      String[][] phonesArr = imcref.sqlProcedureMulti( "GetUserPhoneNumbers " + userToChange.getUserId() );
 
-      // ******* GENERATE AN CHANGE_USER PAGE**********
-      if( req.getParameter( "CHANGE_USER" ) != null ) {
+      // Get a new Vector:  phone_id, number, user_id, phonetype_id, typename  ex. 10, 46 498 123456, 3, 1
+      Vector phoneNumbers = getPhonesArrayVector( phonesArr );
 
-         log( "Changeuser" );
+      if( tmp_phones.size() > 0 ) {
+         phoneNumbers = tmp_phones;
+      }
 
-         // lets first try to get userId from the session if we has been redirectet from authenticate
-         String userToChangeId = getCurrentUserId( req, res );
+      // Get a new Vector: phone_id, (typename) number   ex.  { 10, (Hem) 46 498 123456 }
+      Vector phonesV = this.getPhonesVector( phoneNumbers, "" + user.getLangId(), imcref );
 
-         // Lets check if the user has right to do changes
-         // only if he is an superadmin, useradmin or if he try to change his own values
-         // otherwise throw him out.
-         if( imcref.checkAdminRights( user ) == false && !isUseradmin && !userToChangeId.equals( "" + user.getUserId() ) ) {
-            String header = "Error in AdminCounter.";
-            String msg = "The user has no rights to change user values." + "<BR>";
-            this.log( header + msg );
-            new AdminError( req, res, header, msg );
-            return;
-         }
+      String selected = "";
+      if( phonesV.size() > 0 ) {
+         selected = (String)phonesV.get( 0 );
+      }
 
+      //System.out.println("selected= " + selected);
 
-         // get a user object by userToChangeId
-         imcode.server.user.User userToChange = null;
-         if( userToChangeId != "" ) {
-            userToChange = imcref.getUserById( Integer.parseInt( userToChangeId ) );
-         }
+      String phones = htm.createHtmlCode( "ID_OPTION", selected, phonesV );
 
+      res.setContentType( "text/html" ); // set content type
+      Writer out = res.getWriter();
 
-         //Lets set values from session if we have any
-         if( tmp_userInfo != null ) {
-            login_name = tmp_userInfo.getProperty( "login_name" );
-            password1 = tmp_userInfo.getProperty( "password1" );
-            password2 = tmp_userInfo.getProperty( "password2" );
-            new_pwd1 = tmp_userInfo.getProperty( "new_pwd1" ); //hidden fildes
-            new_pwd2 = tmp_userInfo.getProperty( "new_pwd2" ); //hidden fildes
-            first_name = tmp_userInfo.getProperty( "first_name" );
-            last_name = tmp_userInfo.getProperty( "last_name" );
-            title = tmp_userInfo.getProperty( "title" );
-            company = tmp_userInfo.getProperty( "company" );
+      Vector vec = new Vector();
 
-            address = tmp_userInfo.getProperty( "address" );
-            city = tmp_userInfo.getProperty( "city" );
-            zip = tmp_userInfo.getProperty( "zip" );
-            country = tmp_userInfo.getProperty( "country" );
-            country_council = tmp_userInfo.getProperty( "country_council" );
-            email = tmp_userInfo.getProperty( "email" );
-
-         } else {
-            login_name = userToChange.getLoginName();
-            password1 = userToChange.getPassword();
-            password2 = userToChange.getPassword();
-
-            first_name = userToChange.getFirstName();
-            last_name = userToChange.getLastName();
-            title = userToChange.getTitle();
-            company = userToChange.getCompany();
-
-            address = userToChange.getAddress();
-            city = userToChange.getCity();
-            zip = userToChange.getZip();
-            country = userToChange.getCountry();
-            country_council = userToChange.getCountyCouncil();
-            email = userToChange.getEmailAddress();
-            //			userType= tmp_userType;
-            //active = tmp_userInfo.getProperty("active");
-            //userCreateDate = tmp_userInfo.getProperty("createDate") ;
-         }
+      vec.add( "#CURR_USER_ID#" );
+      vec.add( userToChangeId );
+      vec.add( "#LOGIN_NAME#" );
+      vec.add( login_name );
 
 
-         // Lets get all users phone numbers from session if we have any else we get them from db
-         // return value from db= phone_id, number, user_id, phonetype_id, typename
-         Html htm = new Html();
-         String[][] phonesArr = imcref.sqlProcedureMulti( "GetUserPhoneNumbers " + userToChange.getUserId() );
+      // Lets fix the password string to show just ****
+      vec.add( "#PWD1#" );
+      vec.add( doPasswordString( password1 ) );
+      vec.add( "#PWD2#" );
+      vec.add( doPasswordString( password1 ) );
+      vec.add( "#NEW_PWD1#" );
+      vec.add( new_pwd1 ); 	//hidden fildes
+      vec.add( "#NEW_PWD2#" );
+      vec.add( new_pwd2 ); 	//hidden fildes
 
-         // Get a new Vector:  phone_id, number, user_id, phonetype_id, typename  ex. 10, 46 498 123456, 3, 1
-         Vector phoneNumbers = getPhonesArrayVector( phonesArr );
+      vec.add( "#FIRST_NAME#" );
+      vec.add( first_name );
+      vec.add( "#LAST_NAME#" );
+      vec.add( last_name );
+      vec.add( "#TITLE#" );
+      vec.add( title );
+      vec.add( "#COMPANY#" );
+      vec.add( company );
+      vec.add( "#ADDRESS#" );
+      vec.add( address );
+      vec.add( "#ZIP#" );
+      vec.add( zip );
+      vec.add( "#CITY#" );
+      vec.add( city );
+      vec.add( "#COUNTRY_COUNCIL#" );
+      vec.add( country_council );
+      vec.add( "#COUNTRY#" );
+      vec.add( country );
+      vec.add( "#EMAIL#" );
+      vec.add( email );
 
-         if( tmp_phones.size() > 0 ) {
-            phoneNumbers = tmp_phones;
-         }
-
-         // Get a new Vector: phone_id, (typename) number   ex.  { 10, (Hem) 46 498 123456 }
-         Vector phonesV = this.getPhonesVector( phoneNumbers, "" + user.getLangId(), imcref );
-
-         String selected = "";
-         if( phonesV.size() > 0 ) {
-            selected = (String)phonesV.get( 0 );
-         }
-
-         //System.out.println("selected= " + selected);
-
-         String phones = htm.createHtmlCode( "ID_OPTION", selected, phonesV );
-
-         res.setContentType( "text/html" ); // set content type
-         Writer out = res.getWriter();
-
-         Vector vec = new Vector();
-
-         vec.add( "#CURR_USER_ID#" );
-         vec.add( userToChangeId );
-         vec.add( "#LOGIN_NAME#" );
-         vec.add( login_name );
-
-
-         // Lets fix the password string to show just ****
-         vec.add( "#PWD1#" );
-         vec.add( doPasswordString( password1 ) );
-         vec.add( "#PWD2#" );
-         vec.add( doPasswordString( password1 ) );
-         vec.add( "#NEW_PWD1#" );
-         vec.add( new_pwd1 ); 	//hidden fildes
-         vec.add( "#NEW_PWD2#" );
-         vec.add( new_pwd2 ); 	//hidden fildes
-
-         vec.add( "#FIRST_NAME#" );
-         vec.add( first_name );
-         vec.add( "#LAST_NAME#" );
-         vec.add( last_name );
-         vec.add( "#TITLE#" );
-         vec.add( title );
-         vec.add( "#COMPANY#" );
-         vec.add( company );
-         vec.add( "#ADDRESS#" );
-         vec.add( address );
-         vec.add( "#ZIP#" );
-         vec.add( zip );
-         vec.add( "#CITY#" );
-         vec.add( city );
-         vec.add( "#COUNTRY_COUNCIL#" );
-         vec.add( country_council );
-         vec.add( "#COUNTRY#" );
-         vec.add( country );
-         vec.add( "#EMAIL#" );
-         vec.add( email );
-
-         vec.add( "#NEXT_URL#" );
-         if( null != (String)session.getAttribute( "next_url" ) ) {
-            vec.add( session.getAttribute( "next_url" ) );
-         } else {
-            vec.add( "" );
-         }
-
-
-         //add the phone nr fields
-         vec.add( "#PHONE_ID#" );
+      vec.add( "#NEXT_URL#" );
+      if( null != (String)session.getAttribute( "next_url" ) ) {
+         vec.add( session.getAttribute( "next_url" ) );
+      } else {
          vec.add( "" );
-         vec.add( "#COUNTRY_CODE#" );
-         vec.add( "" );
-         vec.add( "#AREA_CODE#" );
-         vec.add( "" );
-         vec.add( "#NUMBER#" );
-         vec.add( "" );
-
-         // phonetype list
-         String phonetypes = htm.createHtmlCode( "ID_OPTION", "1", phoneTypesV );
-         vec.add( "#PHONETYPES_MENU#" );
-         vec.add( phonetypes );
-
-         vec.add( "#PHONES_MENU#" );
-         vec.add( phones );
-
-
-         // Lets add html for admin_part in AdminUserResp
-         vec.add( "#ADMIN_PART#" );
-         if( isSuperadmin || (isUseradmin && user.getUserId() != userToChange.getUserId()) ) {
-            vec.add( createAdminPartHtml( user, userToChange, imcref, req, res, session ) );
-         } else {
-            vec.add( "" );
-         }
-
-         String adminTask = req.getParameter( "adminTask" );
-         if( adminTask == null ) {
-            adminTask = "SAVE_CHANGED_USER";
-         }
-         vec.add( "#ADMIN_TASK#" );
-         vec.add( adminTask );
-
-
-         // Lets get the the users language id
-         String[] langList = imcref.sqlProcedure( "GetLanguageList 'se'" ); // FIXME: Get the correct language for the user
-         Vector selectedLangV = new Vector();
-         selectedLangV.add( "" + userToChange.getLangId() );
-         vec.add( "LANG_TYPES" );
-         vec.add( htm.createHtmlCode( "ID_OPTION", selectedLangV, new Vector( java.util.Arrays.asList( langList ) ) ) );
-
-
-         //store all data into the session
-         session.setAttribute( "userToChange", userToChangeId );
-         session.setAttribute( "Ok_phoneNumbers", phoneNumbers );
-         //session.setAttribute("RESET_langList", langList);
-         //session.setAttribute("RESET_selectedLangV", selectedLangV);
-
-         // Lets renove session we dont need anymore.
-         try {
-            session.removeAttribute( "tempUserRoles" );
-            session.removeAttribute( "tempUseradminRoles" );
-            session.removeAttribute( "tempUserType" );
-            session.removeAttribute( "tempUser" );
-            //session.getAttribute("Ok_phoneNumbers");
-
-         } catch( IllegalStateException ise ) {
-            log( "session has been invalidated so no need to remove parameters" );
-         }
-
-
-         String outputString = imcref.parseDoc( vec, HTML_RESPONSE, userToChange.getLangPrefix() );
-         out.write( outputString );
-
-         return;
       }
 
 
-   } /** End GET **/
+      //add the phone nr fields
+      vec.add( "#PHONE_ID#" );
+      vec.add( "" );
+      vec.add( "#COUNTRY_CODE#" );
+      vec.add( "" );
+      vec.add( "#AREA_CODE#" );
+      vec.add( "" );
+      vec.add( "#NUMBER#" );
+      vec.add( "" );
+
+      // phonetype list
+      String phonetypes = htm.createHtmlCode( "ID_OPTION", "1", phoneTypesV );
+      vec.add( "#PHONETYPES_MENU#" );
+      vec.add( phonetypes );
+
+      vec.add( "#PHONES_MENU#" );
+      vec.add( phones );
+
+
+      // Lets add html for admin_part in AdminUserResp
+      vec.add( "#ADMIN_PART#" );
+      if( superadmin || (useradmin && user.getUserId() != userToChange.getUserId()) ) {
+         vec.add( createAdminPartHtml( user, userToChange, imcref, req, res, session ) );
+      } else {
+         vec.add( "" );
+      }
+
+      String adminTask = req.getParameter( "adminTask" );
+      if( adminTask == null ) {
+         adminTask = "SAVE_CHANGED_USER";
+      }
+      vec.add( "#ADMIN_TASK#" );
+      vec.add( adminTask );
+
+
+      // Lets get the the users language id
+      String[] langList = imcref.sqlProcedure( "GetLanguageList 'se'" ); // FIXME: Get the correct language for the user
+      Vector selectedLangV = new Vector();
+      selectedLangV.add( "" + userToChange.getLangId() );
+      vec.add( "LANG_TYPES" );
+      vec.add( htm.createHtmlCode( "ID_OPTION", selectedLangV, new Vector( Arrays.asList( langList ) ) ) );
+
+
+      //store all data into the session
+      session.setAttribute( "userToChange", userToChangeId );
+      session.setAttribute( "Ok_phoneNumbers", phoneNumbers );
+      //session.setAttribute("RESET_langList", langList);
+      //session.setAttribute("RESET_selectedLangV", selectedLangV);
+
+      // Lets renove session we dont need anymore.
+      try {
+         session.removeAttribute( "tempUserRoles" );
+         session.removeAttribute( "tempUseradminRoles" );
+         session.removeAttribute( "tempUserType" );
+         session.removeAttribute( "tempUser" );
+         //session.getAttribute("Ok_phoneNumbers");
+
+      } catch( IllegalStateException ise ) {
+         log( "session has been invalidated so no need to remove parameters" );
+      }
+
+
+      String outputString = imcref.parseDoc( vec, HTML_RESPONSE, userToChange.getLangPrefix() );
+      out.write( outputString );
+   }
+
+   private void showErrorPageUserHasNoRightsToChangeUserValues( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+      String header = "Error in AdminCounter.";
+      String msg = "The user has no rights to change user values." + "<BR>";
+      this.log( header + msg );
+      new AdminError( req, res, header, msg );
+   }
+
+   private void showAddUserPage( Properties tmp_userInfo, HttpServletResponse res, Vector phoneTypesV, Vector tmp_phones, User user, IMCServiceInterface imcref, HttpServletRequest req, HttpSession session ) throws IOException {
+      String login_name = "";
+      String password1 = "";
+      String password2 = "";
+      String new_pwd1 = "";   //hidden fildes
+      String new_pwd2 = "";   //hidden fildes
+      String first_name = "";
+      String last_name = "";
+      String title = "";
+      String company = "";
+      String address = "";
+      String city = "";
+      String zip = "";
+      String country = "";
+      String country_council = "";
+      String email = "";
+
+      //Lets set values from session if we have any
+      if( tmp_userInfo != null ) {
+         login_name = tmp_userInfo.getProperty( "login_name" );
+         password1 = tmp_userInfo.getProperty( "password1" );
+         password2 = tmp_userInfo.getProperty( "password2" );
+         new_pwd1 = tmp_userInfo.getProperty( "new_pwd1" ); //hidden fildes
+         new_pwd2 = tmp_userInfo.getProperty( "new_pwd2" ); //hidden fildes
+         first_name = tmp_userInfo.getProperty( "first_name" );
+         last_name = tmp_userInfo.getProperty( "last_name" );
+         title = tmp_userInfo.getProperty( "title" );
+         company = tmp_userInfo.getProperty( "company" );
+
+         address = tmp_userInfo.getProperty( "address" );
+         city = tmp_userInfo.getProperty( "city" );
+         zip = tmp_userInfo.getProperty( "zip" );
+         country = tmp_userInfo.getProperty( "country" );
+         country_council = tmp_userInfo.getProperty( "country_council" );
+         email = tmp_userInfo.getProperty( "email" );
+      }
+
+      Vector vec = new Vector();		// hold tags and values to parse html page
+      res.setContentType( "text/html" ); // set content type
+      Writer out = res.getWriter();	// to write out html page
+
+      //	VariableManager vm = new VariableManager() ;
+      Html htm = new Html();
+
+
+      vec.add( "#LOGIN_NAME#" );
+      vec.add( login_name );
+      vec.add( "#PWD1#" );
+      vec.add( password1 );
+      vec.add( "#PWD2#" );
+      vec.add( password2 );
+
+      vec.add( "#NEW_PWD1#" );
+      vec.add( new_pwd1 ); //hidden fildes
+      vec.add( "#NEW_PWD2#" );
+      vec.add( new_pwd2 ); //hidden fildes
+
+      vec.add( "#FIRST_NAME#" );
+      vec.add( first_name );
+      vec.add( "#LAST_NAME#" );
+      vec.add( last_name );
+      vec.add( "#TITLE#" );
+      vec.add( title );
+      vec.add( "#COMPANY#" );
+      vec.add( company );
+
+      vec.add( "#ADDRESS#" );
+      vec.add( address );
+      vec.add( "#CITY#" );
+      vec.add( city );
+      vec.add( "#ZIP#" );
+      vec.add( zip );
+      vec.add( "#COUNTRY#" );
+      vec.add( country );
+      vec.add( "#COUNTRY_COUNCIL#" );
+      vec.add( country_council );
+      vec.add( "#EMAIL#" );
+      vec.add( email );
+
+
+      vec.add( "#ADMIN_TASK#" );
+      vec.add( "ADD_USER" );
+
+      vec.add( "#PHONE_ID#" );
+      vec.add( "" );
+      vec.add( "#NUMBER#" );
+      vec.add( "" );
+
+      // phonetype list
+      String phonetypes = htm.createHtmlCode( "ID_OPTION", "1", phoneTypesV );
+      vec.add( "#PHONETYPES_MENU#" );
+      vec.add( phonetypes );
+
+      // phoneslist
+      String phones = htm.createHtmlCode( "ID_OPTION", "", tmp_phones );
+      vec.add( "#PHONES_MENU#" );
+      vec.add( phones );
+
+
+      // Lets add html for admin_part in AdminUserResp
+      vec.add( "#ADMIN_PART#" );
+      vec.add( createAdminPartHtml( user, null, imcref, req, res, session ) );
+
+
+      // language id: lets set swedish as default
+      String[] langList = imcref.sqlProcedure( "GetLanguageList 'se'" );
+      Vector selectedLangV = new Vector();
+      selectedLangV.add( "1" );
+      vec.add( "#LANG_TYPES#" );
+      vec.add( htm.createHtmlCode( "ID_OPTION", selectedLangV, new Vector( Arrays.asList( langList ) ) ) );
+
+      //store all data into the session
+      session.setAttribute( "Ok_phoneNumbers", tmp_phones );
+
+      // Lets create the HTML page
+      String outputString = imcref.parseDoc( vec, HTML_RESPONSE, user.getLangPrefix() );
+      out.write( outputString );
+   }
+
+   private void showErrorPageUserNotAnAdministrator( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+      String header = "Error in AdminCounter.";
+      String msg = "The user is not an administrator." + "<BR>";
+      this.log( header + msg );
+      new AdminError( req, res, header, msg );
+   }
+   /** End GET **/
 
 
    /**

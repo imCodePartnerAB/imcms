@@ -20,4 +20,24 @@ public class UserMapperImpl implements UserMapper {
       }
       return result;
    }
+
+   public User getUser( String userLoginName ) throws NoPermissionException {
+      imcode.server.user.User internalUser =  mapper.getUser( userLoginName );
+      UserImpl result = new UserImpl( internalUser );
+      return result;
+   }
+
+   public String[] getAllRolesNames() throws NoPermissionException {
+      return mapper.getAllRoleNames();
+   }
+
+   public String[] getRoleNames( User user ) {
+      UserImpl userImpl = (UserImpl)user;
+      return mapper.getRoleNames( userImpl.getInternalUser() );
+   }
+
+   public void setUserRoles( User user, String[] roleNames ) {
+      UserImpl userImpl = (UserImpl)user;
+      mapper.setUserRoles( userImpl.getInternalUser() , roleNames );
+   }
 }
