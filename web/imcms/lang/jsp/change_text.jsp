@@ -1,7 +1,7 @@
 <%@ page import="imcode.server.document.textdocument.TextDomainObject,
                  com.imcode.imcms.servlet.admin.ChangeText,
                  org.apache.commons.lang.StringEscapeUtils"%>
-
+                 
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttribute(ChangeText.TextEditPage.REQUEST_ATTRIBUTE__PAGE);
@@ -81,7 +81,7 @@ function readCookie(name) {
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'text'); checkMode();">
 
-<div id="theLabel" style="display:none"><i><%= textEditPage.getLabel() %></i></div>
+<div id="theLabel" style="display:none"><i><%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></i></div>
 
 <script language="JavaScript">
 <!--
@@ -112,11 +112,11 @@ if(isIE55 && readCookie("imcms_use_editor") != "true") {
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <tr>
-	<td colspan="2">#gui_heading( "<? templates/sv/change_text.html/4/1 ?>" )<div class="imcmsAdmText"><i><%= textEditPage.getLabel() %></i></div></td>
+	<td colspan="2">#gui_heading( "<? templates/sv/change_text.html/4/1 ?>" )<div class="imcmsAdmText"><i><%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></i></div></td>
 </tr>
 <tr>
 	<td colspan="2" class="imcmsAdmForm"><textarea name="text" id="txtCont" cols="125" rows="18" style="overflow: auto; width: 100%" wrap="virtual">
-<%= textEditPage.getTextString() %></textarea></td>
+<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea></td>
 </tr>
 <tr>
 	<td colspan="2">
