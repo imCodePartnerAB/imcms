@@ -92,6 +92,12 @@ public class AddDoc extends HttpServlet {
 			vec.add("#doc_menu_no#") ;
 			vec.add(doc_menu_no) ;
 
+                        // Lets get todays date
+                        SimpleDateFormat formatter = new SimpleDateFormat ("yyyy-MM-dd");
+                        Date toDay = new Date() ;
+                        vec.add("#now#") ;
+                        vec.add(  formatter.format(toDay) ) ;
+
 		// Lets parse the html page which consists of the add an existing doc
 			out.print(IMCServiceRMI.parseDoc(imcserver,vec,"existing_doc.html",lang_prefix)) ;
 			return ;
@@ -158,15 +164,15 @@ public class AddDoc extends HttpServlet {
 		// Lets get the html template file
 
 		String htmlStr ;
-		
+
 		String advanced = "" ;
-		
+
 		if (IMCServiceRMI.checkDocAdminRights( imcserver, meta_id_int, user, 2 )) {
 			advanced = "adv_" ;
 		}
 
 		if (item_selected.equals ( "2" )) {
-			
+
 			htmlStr = IMCServiceRMI.parseDoc(imcserver,null,advanced+"new_meta_text.html",lang_prefix ) ;
 		} else {
 			htmlStr = IMCServiceRMI.parseDoc(imcserver,null,advanced+"new_meta.html",lang_prefix ) ;
