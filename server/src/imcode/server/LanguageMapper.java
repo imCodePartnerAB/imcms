@@ -3,6 +3,7 @@ package imcode.server;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -83,6 +84,9 @@ public class LanguageMapper {
 
     public static String getAsIso639_2OrDefaultLanguage( String langStr, String defaultLanguage ) {
         try {
+            if (StringUtils.isBlank( langStr )) {
+                return defaultLanguage ;
+            }
             return getAsIso639_2(langStr);
         } catch ( LanguageNotSupportedException e ) {
             log.error( "Unsupported language '"

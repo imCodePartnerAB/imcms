@@ -40,7 +40,7 @@ public class DocumentMapper {
     // Stored procedure names used in this class
     // todo make sure all these is only used in one sprocMethod
     private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
-    private static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo";
+    static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo";
     private static final String SPROC_GET_TEXT = "GetText";
     private static final String SPROC_SECTION_GET_ALL = "SectionGetAll";
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
@@ -337,7 +337,7 @@ public class DocumentMapper {
             initDocumentCategories( document );
             initRolesMappedToDocumentPermissionSetIds( document );
 
-            document.accept( new DocumentInitializingVisitor() );
+            document.accept( new DocumentInitializingVisitor( services, database ) );
         }
         NDC.pop();
         return document;
@@ -934,7 +934,7 @@ public class DocumentMapper {
         // Create a db connection and execte sp DocumentDelete on meta_id
         database.sqlUpdateProcedure( "DocumentDelete", new String[]{"" + document.getId()} );
         document.accept( new DocumentDeletingVisitor() );
-        documentIndex.removeDocument( document );
+        invalidateDocument( document );
     }
 
     public IdNamePair[] getCreatableDocumentTypeIdsAndNamesInUsersLanguage( DocumentDomainObject document,

@@ -27,6 +27,7 @@ public class MockImcmsServices implements ImcmsServices {
 
     private Database database ;
     private KeyStore keyStore;
+    private TemplateMapper templateMapper;
 
     public UserDomainObject verifyUser( String login, String password ) {
         return null;
@@ -287,7 +288,7 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public TemplateMapper getTemplateMapper() {
-        return null;
+        return templateMapper;
     }
 
     public SMTP getSMTP() {
@@ -345,5 +346,9 @@ public class MockImcmsServices implements ImcmsServices {
 
     public void setKeyStore( KeyStore keyStore ) {
         this.keyStore = keyStore;
+    }
+
+    public void setTemplateMapper( TemplateMapper templateMapper ) {
+        this.templateMapper = templateMapper;
     }
 }

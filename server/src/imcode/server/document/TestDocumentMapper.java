@@ -6,7 +6,9 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.IndexException;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.Config;
+import imcode.server.MockImcmsServices;
 import junit.framework.TestCase;
 import org.apache.lucene.search.Query;
 
@@ -33,7 +35,19 @@ public class TestDocumentMapper extends TestCase {
         textDocument = new TextDocumentDomainObject();
         textDocument.setId( 1002 );
         database = new MockDatabase();
-        documentMapper = new DocumentMapper( null, database, null, new DocumentPermissionSetMapper( database ), new TestDocumentMapper.MockDocumentIndex(), null, new Config() );
+        ImcmsAuthenticatorAndUserAndRoleMapper userRegistry = new ImcmsAuthenticatorAndUserAndRoleMapper( null, null ) {
+            public UserDomainObject getUser( int userId ) {
+                return user ;
+            }
+
+        };
+        MockImcmsServices services = new MockImcmsServices() ;
+        services.setTemplateMapper(new TemplateMapper(null) {
+            public TemplateDomainObject getTemplateById( int template_id ) {
+                return null ;
+            }
+        }) ;
+        documentMapper = new DocumentMapper( services, database, userRegistry, new DocumentPermissionSetMapper( database ), new TestDocumentMapper.MockDocumentIndex(), null, new Config() );
     }
 
     public void testNotSerializable() {
@@ -105,6 +119,21 @@ public class TestDocumentMapper extends TestCase {
         database.verifyExpectedSqlCalls();
         database.assertCallCount( 1, new MockDatabase.InsertIntoTableSqlCallPredicate( "browser_docs" ));
         assertEquals( 1002, browserDocument.getId() ) ;
+    }
+
+    public void testDeleteDocument() {
+        String[] documentResultRow = new String[19];
+        documentResultRow[0] = ""+textDocument.getId() ;
+        documentResultRow[1] = ""+textDocument.getDocumentTypeId() ;
+        documentResultRow[5] = ""+user.getId() ;
+        documentResultRow[16] = ""+textDocument.getStatus() ;
+        database.addExpectedSqlCall( new MockDatabase.ProcedureSqlCallPredicate( DocumentMapper.SPROC_GET_DOCUMENT_INFO ), documentResultRow );
+        String[] textDocsResultRow = new String[] { "1","1","1","1","1" } ;
+        database.addExpectedSqlCall( new MockDatabase.StartsWithSqlCallPredicate( "SELECT template_id"), textDocsResultRow );
+        assertNotNull( documentMapper.getDocument( textDocument.getId() ) ) ;
+        documentMapper.deleteDocument( textDocument, user );
+        database.addExpectedSqlCall( new MockDatabase.ProcedureSqlCallPredicate( DocumentMapper.SPROC_GET_DOCUMENT_INFO ), new String[0] );
+        assertNull( documentMapper.getDocument( textDocument.getId() ) ) ;
     }
 
     public class MockDocumentIndex implements DocumentIndex {

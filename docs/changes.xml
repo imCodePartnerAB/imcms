@@ -25,6 +25,15 @@
         </change>
     </changes>
 
+    <changes for="administrators">
+        <change>
+            <p>
+                Fixed a bug where deleted documents would remain in the cache.
+            </p>
+            <bug id="2882"/>
+        </change>
+    </changes>
+
 </changeset>
 
 <changeset version="2.0.0">
