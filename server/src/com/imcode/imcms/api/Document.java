@@ -212,6 +212,7 @@ public class Document {
         return categories;
     }
 
+    /** @deprecated Use {@link #setPermissionSetIdForRole(Role, int)} instead. Will be removed in 3.0. */
     public void setPermissionSetForRole( String roleName, int permissionSet ) throws NoSuchRoleException, NoPermissionException {
         getSecurityChecker().hasEditPermission( this );
         RoleDomainObject role = contentManagementSystem.getInternal().getImcmsAuthenticatorAndUserAndRoleMapper().getRoleByName( roleName );
@@ -219,6 +220,20 @@ public class Document {
             throw new NoSuchRoleException( "No role by the name '" + roleName + "'." );
         }
         internalDocument.setPermissionSetIdForRole( role, permissionSet );
+    }
+
+    /**
+        @param permissionSetId One of the constants in {@link DocumentPermissionSet}.
+     **/
+    public void setPermissionSetIdForRole( Role role, int permissionSetId ) throws NoSuchRoleException, NoPermissionException {
+        getSecurityChecker().hasEditPermission( this );
+        if ( null != role ) {
+            internalDocument.setPermissionSetIdForRole( role.getInternal(), permissionSetId );
+        }
+    }
+
+    public int getPermissionSetIdForRole( Role role ) {
+        return internalDocument.getPermissionSetIdForRole( role.getInternal() );
     }
 
     /**

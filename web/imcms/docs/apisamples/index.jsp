@@ -65,6 +65,7 @@ Show template for a document, <%= makeLinks("document_show_templates.jsp") %><br
 Change template for a document, <%= makeLinks("document_change_template.jsp") %><br>
 Set template for a document to "Start", <%= makeLinks("document_change_template_by_name.jsp") %><br>
 Set template for a document to one with id=1, <%= makeLinks("document_change_template_by_id.jsp") %><br>
+List all possible templates and template groups, <%= makeLinks("templates_show_all.jsp") %><br>
 <br>
 Get the first text field from the document, <%= makeLinks("document_get_texts_from_fields.jsp") %><br>
 Change the first and the second field, <%= makeLinks("document_set_text_field.jsp") %><br>
@@ -89,9 +90,6 @@ To list files in file-documents, <%= makeLinks("file_document_search.jsp") %><br
 <h3>Categories</h3>
 List all possible document categories, <%= makeLinks("categories_show_all.jsp") %><br>
 Create a new Category type, and a category, <%= makeLinks("category_create.jsp") %><br>
-
-<h3>Templates</h3>
-List all possible templates and template groups, <%= makeLinks("templates_show_all.jsp") %><br>
 
 <h3>Searching for documents</h3>
 Searching for documents, <%= makeLinks("document_search.jsp") %><br>

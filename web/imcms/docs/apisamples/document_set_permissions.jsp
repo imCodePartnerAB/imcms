@@ -1,28 +1,25 @@
 <%@ page import="com.imcode.imcms.api.*,
 java.util.*" errorPage="error.jsp" %>
-<%!
-    int documentId = 1001;
-    int permissionSet = DocumentPermissionSet.NONE;
-    String roleName = RoleConstants.USERS;
-    //String roleName = "Non-existent role" ;
-%>
-
 <html>
 <body>
 <%
+    final int documentId = 1001;
+
     ContentManagementSystem imcms = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcms.getDocumentService() ;
+    UserService userService = imcms.getUserService();
+    Role role = userService.getRole( Role.USERS_ID ) ;
 
     TextDocument document = documentService.getTextDocument(documentId) ;
 
-    try {
-        document.setPermissionSetForRole(roleName, permissionSet) ;
-        documentService.saveChanges( document );
-        %>Done, see <a href="document_permissions.jsp">document_permissions.jsp</a>.<%
-    } catch (NoSuchRoleException nsre) {
-        %>No such role '<%= roleName %>'.<%
+    int oldPermissionSet = document.getPermissionSetIdForRole( role ) ;
+    int permissionSet = DocumentPermissionSet.NONE;
+    if (oldPermissionSet == DocumentPermissionSet.NONE ) {
+        permissionSet = DocumentPermissionSet.READ ;
     }
-
+    document.setPermissionSetIdForRole( role, permissionSet );
+    documentService.saveChanges( document );
+    %>Done, see <a href="document_permissions.jsp">document_permissions.jsp</a>.<%
 %>
 </body>
 </html>

@@ -7,13 +7,11 @@
     int documentId = 1001 ;
     TextDocument document = documentService.getTextDocument(documentId) ;
 
-    int textFieldIndexInDocument = 1;
     String newHtmlText = "<a href=\""+request.getContextPath()+"/login/\">Log in!</a><br><a href=\""+request.getContextPath()+"/imcms/docs/apisamples/\">API-samples.</a>";
-    document.setHtmlTextField( textFieldIndexInDocument, newHtmlText ) ;
+    document.setHtmlTextField( 1, newHtmlText ) ;
 
-    textFieldIndexInDocument = 2;
     String newPlainText = "If we knew what it was we were doing, it would not be called research, would it? -- Albert Einstein";
-    document.setPlainTextField( textFieldIndexInDocument, newPlainText ) ;
+    document.setPlainTextField( 2, newPlainText ) ;
 
     documentService.saveChanges( document );
 %>

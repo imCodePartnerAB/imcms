@@ -140,9 +140,8 @@ public class TextDocument extends Document {
     }
 
     /**
-     * @throws NoPermissionException
-     * @deprecated Use {@link #setImage(int, java.lang.String, java.lang.String, int, int, int, int, int, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)} instead. link_target is used instead of link_targetname.
-     */
+     * @deprecated Use {@link #setImage(int, Image)} instead. Will be removed in 3.0. 
+     **/
     public void setImage(int imageIndexInDocument, String image_src, String image_name,
                          int width, int heigth, int border, int v_space, int h_space, String align,
                          String link_target, String link_targetname, String link_href,
@@ -229,9 +228,9 @@ public class TextDocument extends Document {
     public void setInclude(int includeIndexInDocument, TextDocument documentToBeIncluded) throws NoPermissionException {
         getSecurityChecker().hasEditPermission(this);
         if (null == documentToBeIncluded) {
-            getDocumentMapper().removeInclusion(this.getId(), includeIndexInDocument);
+            getInternalTextDocument().removeInclude( includeIndexInDocument );
         } else {
-            getDocumentMapper().setInclude(this.getId(), includeIndexInDocument, documentToBeIncluded.getId());
+            getInternalTextDocument().setInclude( includeIndexInDocument, documentToBeIncluded.getId() );
         }
     }
 

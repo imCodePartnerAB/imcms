@@ -9,6 +9,7 @@
     int includeIndexInDocument = 1;
 
     document.setInclude(includeIndexInDocument,null) ;
+    documentService.saveChanges( document );
 
 %>
 Done.

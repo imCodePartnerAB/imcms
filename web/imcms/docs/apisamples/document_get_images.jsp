@@ -1,15 +1,11 @@
 <%@ page import="com.imcode.imcms.api.*,
                  java.util.SortedMap,
                  java.util.Iterator,
-                 java.util.Map" errorPage="error.jsp" %>
-<%!
+                 java.util.Map" errorPage="error.jsp" %><%!
     int documentId = 1001 ;
-    int imageIndex = 2 ;
-%>
-
-<html>
+    int imageIndex = 3 ;
+%><html>
 <body>
-Image <%= imageIndex %> in document <%= documentId %> has content:<br>
 <%
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService();
@@ -17,16 +13,15 @@ Image <%= imageIndex %> in document <%= documentId %> has content:<br>
     Image image = document.getImage(imageIndex) ;
     String contextPath = request.getContextPath();
 
-    if( image.isEmpty() ) { %>
-    <%= "No image found at index " + imageIndex + " in document with id " + documentId %>
-<%} else { %>
-    imageSrc = <%=image.getSrc(contextPath)%><br>
-    imageHeigth = <%=image.getHeight()%><br>
-    imageWidth = <%=image.getWidth()%><br>
-    imageAltText = <%=image.getAltText()%><br>
-    imageLinkTarget = <%=image.getLinkTarget()%><br>
-    imageLinkHref = <%=image.getLinkHref()%><br>
-    imageSize = <%= image.getSize() %><br>
+    if( !image.isEmpty() ) { %>
+        Image <%= imageIndex %> in document <%= documentId %> has content:<br>
+        imageSrc = <%=image.getSrc(contextPath)%><br>
+        imageHeigth = <%=image.getHeight()%><br>
+        imageWidth = <%=image.getWidth()%><br>
+        imageAltText = <%=image.getAltText()%><br>
+        imageLinkTarget = <%=image.getLinkTarget()%><br>
+        imageLinkHref = <%=image.getLinkHref()%><br>
+        imageSize = <%= image.getSize() %><br>
 <%}%>
 
 <br><br>

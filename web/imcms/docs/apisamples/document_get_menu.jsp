@@ -1,6 +1,4 @@
-<%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
-
-<%!
+<%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %><%!
     private String makeLink(Document document,HttpServletRequest request) throws NoPermissionException {
         return "<a href=\""+request.getContextPath()+"/servlet/GetDoc?meta_id="+ document.getId() +"\">document "+ document.getId() + "</a> with headline <b>"+document.getHeadline()+"</b>" ;
     }
@@ -9,7 +7,6 @@
         StringBuffer result = new StringBuffer();
         int index = startIndex;
         if( "".equals( menuItems[index].getTreeKey().toString()) ){
-            result.append("Warning, tree key (at index " + index + ") has no value, stepping to next.<br>");
             if ( index+1 < menuItems.length  ){
                 result.append(getTreeOutput( treeLevel, index+1, menuItems, request ));
             }
@@ -45,53 +42,44 @@
         }
         return result;
     }
-%>
-
-<%
+%><%
     int documentId = 1001 ;
     int menuIndex = 1 ;
-%>
-
-The documents in menu number <%= menuIndex %> on <%= documentId %> is:<br>
+%><html>
+<body>
+<p>
+    The documents in menu number <%= menuIndex %> on <%= documentId %> are:
+</p>
 <%
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService();
     TextDocument document = documentService.getTextDocument(documentId) ;
     TextDocument.Menu menu = document.getMenu(menuIndex) ;
 
-    Document[] documents = menu.getDocuments() ;
-    if (documents.length > 0) {
-        for ( int i = 0; i < documents.length; i++ ) {
-            Document linkedDocument = documents[i];
-            %><%=makeLink( linkedDocument, request )%><br><%
+    TextDocument.MenuItem[] menuItems = menu.getMenuItems();
+    if (menuItems.length > 0) { %>
+        <ul><%
+        for ( int i = 0; i < menuItems.length; i++ ) {
+            TextDocument.MenuItem menuItem = menuItems[i];
+            Document linkedDocument = menuItem.getDocument();
+            %><li><%=makeLink( linkedDocument, request )%><br>
+            Manual sort key:<%=menuItem.getManualNumber()%><br>
+            Tree key:<%=menuItem.getTreeKey()%></li><%
         }
+        %></ul><%
     } else {
-        %>there are no documents in menu <%= menuIndex %> on <%= documentId %>.<%
+        %>There are no documents in menu <%= menuIndex %> on <%= documentId %>.<%
     }
 %>
-<br><br>
-If you want to user any kind of ordering you have to use the sort keys.<br>
-The menu items with there sort keys:<br><br>
+<p>
+Using the tree keys to order the documents in a tree structure:
+</p>
 <%
-    TextDocument.MenuItem[] menuItems = menu.getMenuItems();
-    for (int i = 0; i < menuItems.length; i++) {
-        TextDocument.MenuItem menuItem = menuItems[i];
-        %>
-            Manual sort key:<%=menuItem.getManualNumber()+"<br>"%>
-            Tree key:<%=menuItem.getTreeKey()+"<br><br>"%>
-        <%
-    }
-%><br>
-
-When the (tree) keys is used to order the document in a tree structure:<br>
-<%
-    String treeStr = "";
     int treeStartLevel = 1;
     int startIndex = 0;
     if( menuItems.length > 0 ) {
-        treeStr = getTreeOutput( treeStartLevel, startIndex, menuItems, request );
+        %><%= getTreeOutput( treeStartLevel, startIndex, menuItems, request ) %><%
     }
 %>
-<%=treeStr%>
-
-
+</body>
+</html>

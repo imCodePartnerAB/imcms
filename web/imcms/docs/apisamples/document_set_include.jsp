@@ -12,6 +12,7 @@
 
     int includeIndexInDocument = 1;
     document.setInclude( includeIndexInDocument, documentToBeIncluded ) ;
+    documentService.saveChanges( document );
 %>
 Done. Document <%= documentId %> now includes document <%= documentToBeIncluded.getId() %>.
 </body>

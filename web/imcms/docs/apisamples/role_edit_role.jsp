@@ -15,14 +15,20 @@ Before:<br>
     if (null == role) {
         %>The role "<%= roleName %>" does not exist.<%
     } else {
-        role.setName("Test") ;
-        userService.saveRole( role );
-        %>After renaming "<%= roleName %>" to "<%= role.getName() %>":<br>
-        <%=java.util.Arrays.asList( userService.getAllRoles() )%><br><%
-        role.setName(roleName) ;
-        userService.saveRole( role );
-        %>After renaming it back:<br>
-        <%=java.util.Arrays.asList( userService.getAllRoles() )%><%
+        String newRoleName = "Test role 2";
+        %>Renaming "<%= roleName %>" to "<%= newRoleName %>":<br><%
+        role.setName(newRoleName) ;
+        try {
+            userService.saveRole( role );
+            %>After renaming "<%= roleName %>" to "<%= role.getName() %>":<br>
+            <%=java.util.Arrays.asList( userService.getAllRoles() )%><br><%
+            role.setName(roleName) ;
+            userService.saveRole( role );
+            %>After renaming it back:<br>
+            <%=java.util.Arrays.asList( userService.getAllRoles() )%><%
+        } catch ( AlreadyExistsException aee ) {
+            %>The name "<%= newRoleName %>" already exists.<%
+        }
     }
 %>
 </body>

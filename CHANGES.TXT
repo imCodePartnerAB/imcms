@@ -66,7 +66,7 @@ Version 2.0.0
     * Sometimes when using the file administrator, some files would be unremovable.
       Trying to remove them will now give a rather nasty error message instead of failing silently.
       This still needs improvement. (Bug 2442)
-    * The link checker should now be a little more responsive. (Bug 2587) 
+    * The link checker should now be a little more responsive. (Bug 2587)
 
     Of interest to API-using developers:
 
@@ -93,6 +93,8 @@ Version 2.0.0
         - com.imcode.imcms.api.util.ComparatorWrapper - Moved to com.imcode.util
     * Added methods:
         - ContentManagementSystem.fromRequest(ServletRequest) - Get the ContentManagementSystem. (Bug 2648)
+        - Document.setPermissionSetIdForRole(Role,int) - Replaces Document.setPermissionSetForRole(String,int)
+        - Document.getPermissionSetIdForRole(Role) - Get the permission set id for a role
         - DocumentService.getSection(String) - Get a section by name. (Bug 2648)
         - Section.getId() - Get the id for a section.
         - User.getRoles() - Get the user's roles.
@@ -112,9 +114,11 @@ Version 2.0.0
         - User.set* - Added a bunch of setters.
         - User.get* - Added a few missing getters.
     * Changed methods:
-        - UserService.addNewRole(String) - Returns the new role.
         - DocumentService.saveChanges(Document) - Throws SaveException instead of MaxCategoriesOfTypeExceededException.
+        - TextDocument.setInclude(int,TextDocument) - Now requires you to call DocumentService.saveChanges() afterwards.
+        - UserService.addNewRole(String) - Returns the new role.
     * Deprecated methods:
+        - Document.setPermissionSetForRole(String,int) - Use Document.setPermissionSetIdForRole(Role,int).
         - User.getRoleNames() - Use User.getRoles()
         - User.hasRole(String) - Use User.hasRole(Role)
         - UserService.deleteRole(String) - Use UserService.deleteRole(Role)

@@ -1,5 +1,6 @@
 <%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
-
+<html>
+<body>
 <%
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     DocumentService documentService = imcmsSystem.getDocumentService();
@@ -8,10 +9,10 @@
     Template docTemplate = document.getTemplate();
 %>
 
-<h3>Current template</h3>
+<h1>Current template</h1>
 TextDocument <%=document.getId()%> is shown with the template named "<%= docTemplate.getName() %>" <br>
 
-<h4>All possible templates to play with this document (for the current logged in user)</h4>
+<h2>All templates available for document <%= document.getId() %> (for the current logged in user)</h2>
 <%
     TemplateService templateService = imcmsSystem.getTemplateService();
     TemplateGroup[] templateGroups = templateService.getTemplatesGroups( document );
@@ -28,5 +29,5 @@ TextDocument <%=document.getId()%> is shown with the template named "<%= docTemp
     }
 
 %>
-
-
+</body>
+</html>
