@@ -2,11 +2,8 @@
                  com.imcode.imcms.api.Category,
                  imcode.server.document.CategoryDomainObject"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
-<vel:velocity>
+<vel:velocity><%
 
-#gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/17 ?>" "AdminManager" "back" 124 "focusField(1,'template')" )
-
-<%
 AdminCategories.AdminCategoriesPage adminCategoriesPage = (AdminCategories.AdminCategoriesPage)request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
 String mode = adminCategoriesPage.getMode() ;
 StringBuffer messageToUser = new StringBuffer("");
@@ -42,48 +39,71 @@ if (inDefaultMode) {
 } else if(inViewCategoryMode) {
 	heading = "<? install/htdocs/sv/jsp/category_admin/view_categories ?>";
 }
+
 %>
-<table border="0" cellspacing="0" cellpadding="2" width="400">
+<html>
+<head>
+<title><? templates/sv/AdminManager_adminTask_element.htm/17 ?></title>
+
+<link rel="stylesheet" type="text/css" href="/imcms/css/imcms_admin.css.jsp">
+<script src="/imcms/eng/scripts/imcms_admin.js" type="text/javascript"></script>
+
+</head>
+<body onLoad="focusField(1,'template')">
+
+#gui_outer_start()
+#gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/17 ?>" )
+
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="head" action="AdminCategories" method="post">
 <tr>
-	<td colspan="2" class="imcmsAdmText"><b class="lighterBlue"><? install/htdocs/sv/jsp/category_admin/category_type ?>:</b></td>
+	<td colspan="2" class="imcmsAdmText"><b class="white"><? install/htdocs/sv/jsp/category_admin/category_type ?>:</b></td>
 </tr>
 <tr>
 	<td colspan="2">
 	<input type="submit" class="imcmsFormBtn<%=
-	inAddCategoryTypeMode ? "Disabled" : "" %>" name="<%=
+	inAddCategoryTypeMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__ADD_CATEGORY_TYPE %>" value="<? global/create ?>">
 	<input type="submit" class="imcmsFormBtn<%=
-	inEditCategoryTypeMode ? "Disabled" : "" %>" name="<%=
+	inEditCategoryTypeMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__EDIT_CATEGORY_TYPE %>" value="<? global/edit ?>" >
 	<input type="submit" class="imcmsFormBtn<%=
-	inDeleteCategoryTypeMode ? "Disabled" : "" %>" name="<%=
+	inDeleteCategoryTypeMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__DELETE_CATEGORY_TYPE %>" value="<? global/remove ?>"></td>
 </tr>
 <tr>
-	<td colspan="2" class="imcmsAdmText"><b class="lighterBlue"><? install/htdocs/sv/jsp/category_admin/category ?>:</b></td>
+	<td colspan="2" class="imcmsAdmText"><b class="white"><? install/htdocs/sv/jsp/category_admin/category ?>:</b></td>
 </tr>
 <tr>
-	<td colspan="2">
+	<td>
 	<input type="submit" class="imcmsFormBtn<%=
-	inAddCategoryMode ? "Disabled" : "" %>" name="<%=
+	inAddCategoryMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__ADD_CATEGORY %>" value="<? global/create ?>">
 	<input type="submit" class="imcmsFormBtn<%=
-	inEditCategoryMode ? "Disabled" : "" %>" name="<%=
+	inEditCategoryMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__EDIT_CATEGORY %>" value="<? global/edit ?>">
 	<input type="submit" class="imcmsFormBtn<%=
-	inDeleteCategoryMode ? "Disabled" : "" %>" name="<%=
+	inDeleteCategoryMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__DELETE_CATEGORY %>" value="<? global/remove ?>">
 	<input type="submit" class="imcmsFormBtn<%=
-	inViewCategoryMode ? "Disabled" : "" %>" name="<%=
+	inViewCategoryMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__VIEW_CATEGORY %>" value="<? global/view ?>"></td>
+	<td align="right">
+	<table border="0" cellspacing="0" cellpadding="0">
+	</form>
+	<form action="AdminManager">
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" value="<? global/cancel ?>" title="<? global/cancel ?>" class="imcmsFormBtn"></td>
+		<td>&nbsp;</td>
+		<td><input type="button" value="<? global/help ?>" title="<? global/help ?>" class="imcmsFormBtn" onClick="openHelpW(124)"></td>
+	</tr>
+	</form>
+	</table></td>
 </tr>
-<tr>
-	<td colspan="2">&nbsp;</td>
-</tr>
-</form>
 </table>
 
+#gui_mid()
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="main" action="AdminCategories" method="post">
@@ -422,30 +442,41 @@ if (inDefaultMode) {
     } %>
 </table></td>
 </tr>
-
+<%
+if (!inDefaultMode &&
+		(
+			inAddCategoryTypeMode ||
+			(inEditCategoryTypeMode && null != adminCategoriesPage.getCategoryTypeToEdit()) ||
+			inAddCategoryMode ||
+			(inEditCategoryMode && null != adminCategoriesPage.getCategoryToEdit()) ||
+			(inDeleteCategoryMode && null != adminCategoriesPage.getCategoryToEdit())
+		)
+	) { %>
 <tr>
-    <td colspan="2">#gui_hr( "blue" )</td>
+	<td colspan="2">#gui_hr( "blue" )</td>
 </tr>
 <tr>
-    <td colspan="2" align="right">
-
-        <%
-            if (!inDefaultMode) {
-                if( inAddCategoryTypeMode ) { %>
-                    <input type="submit" class="imcmsFormBtn" name="<%=AdminCategories.PARAMETER_CATEGORY_TYPE_ADD%>" value="<? global/create ?>">
-                <%}else if( inEditCategoryTypeMode && null != adminCategoriesPage.getCategoryTypeToEdit() ) { %>
-                    <input type="submit" class="imcmsFormBtn" name="<%=AdminCategories.PARAMETER_CATEGORY_TYPE_SAVE%>" value="<? global/save ?>" >
-                <%}else if( inAddCategoryMode ) { %>
-                    <input type="submit" class="imcmsFormBtn" name="category_add" value="<? global/create ?>" >
-                <%}else if( inEditCategoryMode && null != adminCategoriesPage.getCategoryToEdit() ) { %>
-                    <input type="submit" class="imcmsFormBtn" name="category_save" value="<? global/save ?>" >
-                <%}else if( inDeleteCategoryMode && null != adminCategoriesPage.getCategoryToEdit() ) { %>
-                    <input type="submit" class="imcmsFormBtn" name="category_delete" value="<? global/remove ?>" >
-                <%}%>
-        <%  }  %>
-
-        </td>
-</tr>
+	<td colspan="2" align="right"><%
+	if (!inDefaultMode) {
+		if ( inAddCategoryTypeMode ) { %>
+	<input type="submit" class="imcmsFormBtn"<%
+			%> name="<%= AdminCategories.PARAMETER_CATEGORY_TYPE_ADD%>" value="<? global/create ?>"><%
+		} else if ( inEditCategoryTypeMode && null != adminCategoriesPage.getCategoryTypeToEdit() ) { %>
+	<input type="submit" class="imcmsFormBtn"<%
+			%> name="<%= AdminCategories.PARAMETER_CATEGORY_TYPE_SAVE%>" value="<? global/save ?>" ><%
+		} else if ( inAddCategoryMode ) { %>
+	<input type="submit" class="imcmsFormBtn"<%
+			%> name="category_add" value="<? global/create ?>" ><%
+		} else if ( inEditCategoryMode && null != adminCategoriesPage.getCategoryToEdit() ) { %>
+	<input type="submit" class="imcmsFormBtn"<%
+			%> name="category_save" value="<? global/save ?>" ><%
+		} else if ( inDeleteCategoryMode && null != adminCategoriesPage.getCategoryToEdit() ) { %>
+	<input type="submit" class="imcmsFormBtn"<%
+			%> name="category_delete" value="<? global/remove ?>" ><%
+		}
+	}  %></td>
+</tr><%
+} %>
 </form>
 </table>
 #gui_bottom()

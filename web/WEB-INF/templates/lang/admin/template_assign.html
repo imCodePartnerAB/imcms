@@ -39,7 +39,16 @@
 	<input type="submit" class="imcmsFormBtn" name="rename_group" value="<? templates/sv/template_assign.html/2010 ?>">
 	<input type="submit" class="imcmsFormBtnDisabled" name="assign_group" value="<? templates/sv/template_assign.html/2011 ?>" disabled="disabled"></td>
 	<td align="right">
-	<input type="button" value="<? templates/sv/template_assign.html/2012 ?>" title="<? templates/sv/template_assign.html/2013 ?>" class="imcmsFormBtn" onClick="openHelpW(10)"></td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	</form>
+	<form action="AdminManager">
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" value="<? global/cancel ?>" title="<? global/cancel ?>" class="imcmsFormBtn"></td>
+		<td>&nbsp;</td>
+		<td><input type="button" value="<? global/help ?>" title="<? global/help ?>" class="imcmsFormBtn" onClick="openHelpW(10)"></td>
+	</tr>
+	</table></td>
 </tr>
 </form>
 </table>
@@ -83,7 +92,8 @@
 		#unassigned#
 		</select></td>
 		<td align="center">
-		&nbsp;<input type="submit" class="imcmsFormBtnSmall" style="width:60" name="assign" value="<? templates/sv/template_assign.html/2015 ?>">&nbsp;
+		&nbsp;<input type="submit" class="imcmsFormBtnSmall" style="width:60" name="assign" value="<? templates/sv/template_assign.html/2015 ?>">&nbsp;<br>
+		<img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
 		&nbsp;<input type="submit" class="imcmsFormBtnSmall" style="width:60" name="deassign" value="<? templates/sv/template_assign.html/2016 ?>">&nbsp;</td>
 		<td>
 		<select name="assigned" size="7" style="width:100%" multiple>
