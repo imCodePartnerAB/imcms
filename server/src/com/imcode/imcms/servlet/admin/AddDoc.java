@@ -27,7 +27,7 @@ public class AddDoc extends HttpServlet {
         DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = new DocumentComposer.NewDocumentParentInformation( request );
 
         if (newDocumentParentInformation.documentTypeId == 0) {
-            createExistingDocPage( newDocumentParentInformation.parentId, newDocumentParentInformation.parentMenuNumber, request, response);
+            createExistingDocPage( newDocumentParentInformation.parentId, newDocumentParentInformation.parentMenuIndex, request, response);
         } else {
             DocumentComposer.addObjectToSessionAndSetSessionAttributeNameInRequest( "newDocumentParentInformation", newDocumentParentInformation,request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
             request.getRequestDispatcher( "DocumentComposer" ).forward( request, response );

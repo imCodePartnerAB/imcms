@@ -13,9 +13,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.HashMap;
 
 public class BrowserDocumentDomainObject extends DocumentDomainObject {
@@ -54,7 +54,7 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
         this.browserDocumentIdMap.put(browser, new Integer(documentId)) ;
     }
 
-    public static class Browser implements Comparable {
+    public static class Browser implements Comparable, Serializable {
 
         /* Null object */
         public final static Browser DEFAULT = new Browser(0, "", 0) ;

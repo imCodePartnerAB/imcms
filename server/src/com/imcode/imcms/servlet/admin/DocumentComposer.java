@@ -156,13 +156,13 @@ public class DocumentComposer extends HttpServlet {
                 request.setAttribute( REQUEST_ATTR_OR_PARAM__ACTION, action );
                 if ( null != request.getParameter( ImageBrowse.PARAMETER_BUTTON__OK ) ) {
                     String imageUrl = AdminDoc.getImageUri( request );
-                    document.setMenuImage(imageUrl);
+                    document.setMenuImage( imageUrl );
                 }
             }
 
             if ( ACTION__CREATE_NEW_DOCUMENT.equalsIgnoreCase( action ) ) {
                 DocumentDomainObject newDocument;
-                if( null == document ) {
+                if ( null == document ) {
                     DocumentDomainObject parentDocument = documentMapper.getDocument( newDocumentParentInformation.parentId );
                     newDocument = createDocumentOfTypeFromParent( newDocumentParentInformation.documentTypeId, parentDocument, user );
                     newDocument.setHeadline( "" );
@@ -186,7 +186,7 @@ public class DocumentComposer extends HttpServlet {
                     if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
                         processNewDocumentInformation( newDocumentParentInformation, request, response, user );
                     } else {
-                        redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
+                        redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId, newDocumentParentInformation.parentMenuIndex );
                     }
                 } else if ( ACTION__CREATE_NEW_URL_DOCUMENT.equalsIgnoreCase( action ) ) {
                     if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
@@ -196,14 +196,14 @@ public class DocumentComposer extends HttpServlet {
                         newUrlDocument.setTarget( getTargetFromRequest( request ) );
                         saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newUrlDocument, newDocumentParentInformation, user, request );
                     }
-                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
+                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId, newDocumentParentInformation.parentMenuIndex );
                 } else if ( ACTION__CREATE_NEW_HTML_DOCUMENT.equalsIgnoreCase( action ) ) {
                     if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
                         HtmlDocumentDomainObject newHtmlDocument = (HtmlDocumentDomainObject)document;
                         newHtmlDocument.setHtmlDocumentHtml( request.getParameter( PARAMETER__HTML_DOC__HTML ) );
                         saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newHtmlDocument, newDocumentParentInformation, user, request );
                     }
-                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
+                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId, newDocumentParentInformation.parentMenuIndex );
                 } else if ( ACTION__CREATE_NEW_FILE_DOCUMENT.equalsIgnoreCase( action ) ) {
                     if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
                         FileDocumentDomainObject newFileDocument = (FileDocumentDomainObject)document;
@@ -213,13 +213,13 @@ public class DocumentComposer extends HttpServlet {
                         newFileDocument.setMimeType( getMimeTypeFromRequest( request ) );
                         saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newFileDocument, newDocumentParentInformation, user, request );
                     }
-                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
+                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId, newDocumentParentInformation.parentMenuIndex );
                 } else if ( ACTION__CREATE_NEW_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
                     if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
                         BrowserDocumentDomainObject newBrowserDocument = (BrowserDocumentDomainObject)document;
                         saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newBrowserDocument, newDocumentParentInformation, user, request );
                     }
-                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
+                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId, newDocumentParentInformation.parentMenuIndex );
                 } else if ( ACTION__EDIT_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
                     forwardToBrowserDocumentComposer( request, response );
                 } else if ( ACTION__PROCESS_EDITED_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
@@ -311,9 +311,9 @@ public class DocumentComposer extends HttpServlet {
         return mimeType;
     }
 
-    private void redirectToDocumentIdInMenumode( HttpServletResponse response, int parentId ) throws IOException {
+    private void redirectToDocumentIdInMenumode( HttpServletResponse response, int parentId, int menuIndex ) throws IOException {
         response.sendRedirect( "AdminDoc?meta_id=" + parentId + "&flags="
-                               + IMCConstants.PERM_DT_TEXT_EDIT_MENUS );
+                               + IMCConstants.PERM_DT_TEXT_EDIT_MENUS + "&editmenu=" + menuIndex );
     }
 
     public static void saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( DocumentDomainObject newDocument,
@@ -362,15 +362,15 @@ public class DocumentComposer extends HttpServlet {
                 TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject)newDocument;
                 newTextDocument.removeAllTexts();
                 int permissionSetId = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, parent );
-                TemplateMapper templateMapper = service.getTemplateMapper() ;
-                TemplateDomainObject template = null ;
+                TemplateMapper templateMapper = service.getTemplateMapper();
+                TemplateDomainObject template = null;
                 if ( IMCConstants.DOC_PERM_SET_RESTRICTED_1 == permissionSetId ) {
                     template = templateMapper.getTemplateById( newTextDocument.getDefaultTemplateIdForRestrictedPermissionSetOne() );
                 } else if ( IMCConstants.DOC_PERM_SET_RESTRICTED_2 == permissionSetId ) {
                     template = templateMapper.getTemplateById( newTextDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo() );
                 }
-                if (null != template) {
-                    newTextDocument.setTemplate( template ) ;
+                if ( null != template ) {
+                    newTextDocument.setTemplate( template );
                 }
             } else {
                 newDocument = DocumentDomainObject.fromDocumentTypeId( documentTypeId );
@@ -628,20 +628,20 @@ public class DocumentComposer extends HttpServlet {
             newTextDocument.setText( 2, new TextDocumentDomainObject.Text( newTextDocument.getMenuText(), TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN ) );
         }
         saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newTextDocument, newDocumentParentInformation, user, request );
-        redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
+        redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId, newDocumentParentInformation.parentMenuIndex );
     }
 
     public static class NewDocumentParentInformation implements Serializable {
 
         public int parentId;
-        public int parentMenuNumber;
+        public int parentMenuIndex;
         public int documentTypeId;
         public static final String MENU_NUMBER_PARAMETER_NAME = "doc_menu_no";
         public static final String DOCUMENT_TYPE_PARAMETER_NAME = "edit_menu";
         public static final String PARENT_ID_PARAMETER_NAME = "parent_meta_id";
 
         public NewDocumentParentInformation( HttpServletRequest request ) throws NumberFormatException {
-            parentMenuNumber = Integer.parseInt( request.getParameter( MENU_NUMBER_PARAMETER_NAME ) );
+            parentMenuIndex = Integer.parseInt( request.getParameter( MENU_NUMBER_PARAMETER_NAME ) );
             parentId =
             Integer.parseInt( request.getParameter( PARENT_ID_PARAMETER_NAME ) );
             documentTypeId = Integer.parseInt( request.getParameter( DOCUMENT_TYPE_PARAMETER_NAME ) );

@@ -1592,7 +1592,7 @@ public class DocumentMapper {
                                              DocumentComposer.NewDocumentParentInformation newDocumentParentInformation ) throws IOException, MaxCategoryDomainObjectsOfTypeExceededException, DocumentAlreadyInMenuException {
         saveNewDocument( newDocument, user );
         addDocumentToMenu( user, newDocumentParentInformation.parentId,
-                           newDocumentParentInformation.parentMenuNumber,
+                           newDocumentParentInformation.parentMenuIndex,
                            newDocument.getId() );
 
     }
