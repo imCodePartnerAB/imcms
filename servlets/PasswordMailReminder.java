@@ -100,7 +100,7 @@ public class PasswordMailReminder extends HttpServlet {
 		
 		/* server info */
 		String host = req.getHeader("Host") ;
-		String imcserver = Utility.getDomainPref( "adminserver", host );
+		String imcserver = Utility.getDomainPref( "userserver", host );
 		String deafultLanguagePrefix = IMCServiceRMI.getLanguage( imcserver );
 		
 		res.setContentType("text/html");
@@ -124,7 +124,7 @@ public class PasswordMailReminder extends HttpServlet {
 	
 		/* server info */
 		String host = req.getHeader("Host") ;
-		String imcserver = Utility.getDomainPref( "adminserver", host );
+		String imcserver = Utility.getDomainPref( "userserver", host );
 		String hostName = emptyString;
 		try {
 			hostName = InetAddress.getLocalHost().getHostName();
@@ -133,11 +133,14 @@ public class PasswordMailReminder extends HttpServlet {
 		}
 		
 		/* mailserver info */
-		String mailserver = Utility.getDomainPref( "smtp_server", host );
-		String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );
-		String emailFromServer = Utility.getDomainPref( "system_email", host );;
+		imcode.server.SystemData sysData = IMCServiceRMI.getSystemData(imcserver) ;
+		String eMailServerMaster = sysData.getServerMasterAddress() ;
+		String emailFromServer = sysData.getServerMasterAddress() ;
+
 		String mailFrom = eMailServerMaster;
 		String deafultLanguagePrefix = IMCServiceRMI.getLanguage( imcserver );
+
+		String mailserver = Utility.getDomainPref( "smtp_server", host );
 		String stringMailPort = Utility.getDomainPref( "smtp_port", host );
 		String stringMailtimeout = Utility.getDomainPref( "smtp_timeout", host );
 
