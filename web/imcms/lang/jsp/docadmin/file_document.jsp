@@ -176,9 +176,6 @@
             </table>
         </td>
 	</tr>
-    <tr>
-	    <td colspan="2" align="right"><input type="submit" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/new_file_button ?>" name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__NEW_FILE_BUTTON %>"></td>
-    </tr>
     <% } %>
 	</table></td>
 </tr>

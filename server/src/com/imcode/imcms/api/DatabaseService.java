@@ -1,20 +1,16 @@
 package com.imcode.imcms.api;
 
-import imcode.server.IMCServiceInterface;
-import imcode.server.ApplicationServer;
 import imcode.server.db.ConnectionPool;
 
-import java.sql.SQLException;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public class DatabaseService {
 
-    private IMCServiceInterface service;
-    private ConnectionPool myOwnConnectionPool;
+    private ConnectionPool connectionPool;
 
-    public DatabaseService( IMCServiceInterface service ) {
-        this.service = service;
-        this.myOwnConnectionPool = ApplicationServer.getApiConnectionPool();
+    public DatabaseService(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
     }
 
     /**
@@ -29,6 +25,6 @@ public class DatabaseService {
      */
 
     public Connection getConnection() throws SQLException {
-        return myOwnConnectionPool.getConnection() ;
+        return connectionPool.getConnection() ;
     }
 }

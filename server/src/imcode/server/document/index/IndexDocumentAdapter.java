@@ -47,7 +47,11 @@ class IndexDocumentAdapter {
 
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
 
-        document.accept( new IndexDocumentAdaptingVisitor( indexDocument ) );
+        try {
+            document.accept( new IndexDocumentAdaptingVisitor( indexDocument ) );
+        } catch (RuntimeException re) {
+            log.error( "Error indexing document-type-specific data of document "+document.getId(), re) ;
+        }
 
         CategoryDomainObject[] categories = document.getCategories();
         for ( int i = 0; i < categories.length; i++ ) {
@@ -134,7 +138,9 @@ class IndexDocumentAdapter {
 
         public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
             FileDocumentDomainObject.FileDocumentFile file = fileDocument.getDefaultFile();
-            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__MIME_TYPE, file.getMimeType() ) );
+            if (null != file) {
+                indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__MIME_TYPE, file.getMimeType() ) );
+            }
         }
     }
 }

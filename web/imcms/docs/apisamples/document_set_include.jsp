@@ -7,7 +7,8 @@
     int documentId = 1001 ;
     TextDocument document = documentService.getTextDocument(documentId) ;
 
-    TextDocument documentToBeIncluded = documentService.createNewTextDocument( documentId, 1 ) ;
+    TextDocument documentToBeIncluded = documentService.createNewTextDocument( document ) ;
+    documentService.saveChanges( documentToBeIncluded );
 
     int includeIndexInDocument = 1;
     document.setInclude( includeIndexInDocument, documentToBeIncluded ) ;

@@ -1,21 +1,18 @@
 package com.imcode.imcms.api;
 
 import imcode.server.user.UserDomainObject;
-import imcode.server.user.UserAndRoleMapper;
 
 public class User {
     private UserDomainObject internalUser;
-    private UserAndRoleMapper userAndRoleMapper;
-    private SecurityChecker securityChecker;
+    private ContentManagementSystem contentManagementSystem;
 
-    imcode.server.user.UserDomainObject getInternalUser() {
+    imcode.server.user.UserDomainObject getInternal() {
         return internalUser;
     }
 
-    public User( UserDomainObject internalUser, UserAndRoleMapper userAndRoleMapper, SecurityChecker securityChecker ) {
+    public User( UserDomainObject internalUser, ContentManagementSystem contentManagementSystem ) {
         this.internalUser = internalUser;
-        this.userAndRoleMapper = userAndRoleMapper;
-        this.securityChecker = securityChecker;
+        this.contentManagementSystem = contentManagementSystem;
     }
 
     public String getLoginName() {
@@ -83,7 +80,11 @@ public class User {
     }
 
     public boolean hasRole(String roleName) throws NoPermissionException {
-        securityChecker.isSuperAdminOrSameUser(this);
-        return internalUser.hasRole(userAndRoleMapper.getRoleByName( roleName )) ;
+        contentManagementSystem.getSecurityChecker().isSuperAdminOrSameUser(this);
+        return internalUser.hasRole(contentManagementSystem.getInternal().getImcmsAuthenticatorAndUserAndRoleMapper().getRoleByName( roleName )) ;
+    }
+
+    public boolean isSuperAdmin() {
+        return internalUser.isSuperAdmin() ;
     }
 }

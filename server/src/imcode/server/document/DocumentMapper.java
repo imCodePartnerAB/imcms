@@ -47,6 +47,7 @@ public class DocumentMapper {
     private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
 
     private IMCServiceInterface service;
+    private DocumentPermissionSetMapper documentPermissionSetMapper;
     private DocumentIndex documentIndex;
 
     private static final String TEMPLATE__STATUS_NEW = "status/new.frag";
@@ -58,6 +59,7 @@ public class DocumentMapper {
 
     public DocumentMapper( IMCServiceInterface service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
         this.service = service;
+        documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
         this.imcmsAAUM = imcmsAAUM;
         File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
         File indexDirectory = new File( webAppPath, "WEB-INF/index" );
@@ -148,6 +150,7 @@ public class DocumentMapper {
         } catch ( CloneNotSupportedException e ) {
             throw new UnhandledException( e );
         }
+        newDocument.setId( 0 );
         newDocument.setCreator( user );
         newDocument.setStatus( DocumentDomainObject.STATUS_NEW );
         newDocument.setHeadline( "" );
@@ -372,7 +375,6 @@ public class DocumentMapper {
 
         document.setKeywords( getKeywords( document.getId() ) );
 
-        DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
         document.setPermissionSetForRestrictedOne( documentPermissionSetMapper.getPermissionSetRestrictedOne( document ) );
         document.setPermissionSetForRestrictedTwo( documentPermissionSetMapper.getPermissionSetRestrictedTwo( document ) );
 
@@ -645,7 +647,6 @@ public class DocumentMapper {
 
             updateDocumentKeywords( document.getId(), document.getKeywords() );
 
-            DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
             documentPermissionSetMapper.saveRestrictedDocumentPermissionSets( document );
 
             document.accept(new DocumentSavingVisitor(user)) ;
@@ -1199,6 +1200,14 @@ public class DocumentMapper {
         deleteFileDocumentFilesAccordingToFileFilter(new FileDocumentFileFilter(fileDocument));
     }
 
+    public DocumentPermissionSetMapper getDocumentPermissionSetMapper() {
+        return documentPermissionSetMapper;
+    }
+
+    static void deleteOtherFileDocumentFiles(final FileDocumentDomainObject fileDocument) {
+        deleteFileDocumentFilesAccordingToFileFilter(new SuperfluousFileDocumentFilesFileFilter(fileDocument));
+    }
+
     public static class TextDocumentMenuIndexPair {
 
         private TextDocumentDomainObject document;
@@ -1250,10 +1259,10 @@ public class DocumentMapper {
         }
     }
 
-    static class FileDocumentFileFilter implements FileFilter {
+    private static class FileDocumentFileFilter implements FileFilter {
         protected final FileDocumentDomainObject fileDocument;
 
-        public FileDocumentFileFilter(FileDocumentDomainObject fileDocument) {
+        private FileDocumentFileFilter(FileDocumentDomainObject fileDocument) {
             this.fileDocument = fileDocument;
         }
 
@@ -1276,9 +1285,9 @@ public class DocumentMapper {
         }
     }
 
-    static class SuperfluousFileDocumentFilesFileFilter extends FileDocumentFileFilter {
+    private static class SuperfluousFileDocumentFilesFileFilter extends FileDocumentFileFilter {
 
-        public SuperfluousFileDocumentFilesFileFilter(FileDocumentDomainObject fileDocument) {
+        private SuperfluousFileDocumentFilesFileFilter(FileDocumentDomainObject fileDocument) {
             super(fileDocument) ;
         }
 

@@ -1,4 +1,4 @@
-package imcode.util;
+package com.imcode.imcms.api.util;
 
 import java.io.InputStream;
 import java.io.IOException;

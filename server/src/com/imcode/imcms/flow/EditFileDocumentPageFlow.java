@@ -4,7 +4,7 @@ import imcode.server.ApplicationServer;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.InputStreamSource;
+import com.imcode.imcms.api.util.InputStreamSource;
 import imcode.util.LocalizedMessage;
 import imcode.util.MultipartHttpServletRequest;
 import imcode.util.Utility;
@@ -31,16 +31,11 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__SELECT_FILE_BUTTON_PREFIX = "select_file_";
     public static final String REQUEST_PARAMETER__DEFAULT_FILE = "default_file";
     public static final String REQUEST_PARAMETER__DELETE_FILE_BUTTON_PREFIX = "delete_file_";
-    public static final String REQUEST_PARAMETER__FILE_DOC__FILE_ID = "file_id";
     public static final String REQUEST_PARAMETER__FILE_DOC__SELECTED_FILE_ID = "selected_file_id";
     public static final String REQUEST_PARAMETER__SAVE_FILE_BUTTON = "save_file_button";
-    public static final String REQUEST_PARAMETER__NEW_FILE_BUTTON = "new_file_button";
     public static final String REQUEST_PARAMETER__FILE_DOC__NEW_FILE_ID_PREFIX = "new_file_id_";
 
     private static final String URL_I15D_PAGE__FILEDOC = "/jsp/docadmin/file_document.jsp";
-
-    private static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
-    private static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
 
     private static final LocalizedMessage ERROR_MESSAGE__UNABLE_TO_AUTODETECT_MIMETYPE = new LocalizedMessage( "server/src/com/imcode/imcms/flow/EditFileDocumentPageFlow/unable_to_autodetect_mimetype" );
     private static final LocalizedMessage ERROR_MESSAGE__NO_FILE_UPLOADED = new LocalizedMessage( "server/src/com/imcode/imcms/flow/EditFileDocumentPageFlow/no_file_uploaded" );
@@ -106,7 +101,7 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
                 errorMessage = ERROR_MESSAGE__NO_FILE_UPLOADED;
             } else if ( StringUtils.isBlank( mimeType ) ) {
                 errorMessage = ERROR_MESSAGE__UNABLE_TO_AUTODETECT_MIMETYPE;
-                setFileDocumentMimeTypeIfAllowed( file, MIME_TYPE__UNKNOWN_DEFAULT );
+                setFileDocumentMimeTypeIfAllowed( file, FileDocumentDomainObject.MIME_TYPE__UNKNOWN_DEFAULT );
             } else if ( !mimeTypeRestriction.allows( mimeType ) ) {
                 errorMessage = mimeTypeRestriction.getErrorMessage();
                 String mimeTypeForFilename = getMimeTypeForFilename( file.getFilename() );
@@ -202,9 +197,6 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
                      || null == fileDocumentFile.getInputStreamSource() ) {
                     unfinishedNewFile = fileDocument.removeFile( fileId );
                 }
-            }
-            if ( null != request.getParameter( REQUEST_PARAMETER__NEW_FILE_BUTTON ) ) {
-                unfinishedNewFile = null ;
             }
             createFileDocumentEditPage( selectedFileId ).forward( request, response );
         }

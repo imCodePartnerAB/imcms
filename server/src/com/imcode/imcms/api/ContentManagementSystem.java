@@ -4,10 +4,10 @@ import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 
-/**
- * @author kreiger
- */
 public abstract class ContentManagementSystem {
+
+    protected IMCServiceInterface service;
+    protected SecurityChecker securityChecker;
 
     public abstract UserService getUserService();
 
@@ -25,5 +25,13 @@ public abstract class ContentManagementSystem {
         UserDomainObject user = imcref.verifyUser( userName, password );
         ContentManagementSystem cms = new DefaultContentManagementSystem( imcref, user );
         return cms;
+    }
+
+    IMCServiceInterface getInternal() {
+        return service ;
+    }
+
+    SecurityChecker getSecurityChecker() {
+        return securityChecker;
     }
 }

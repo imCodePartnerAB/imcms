@@ -3,20 +3,23 @@ package imcode.server;
 import imcode.server.db.ConnectionPool;
 import imcode.util.Prefs;
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.UnhandledException;
 
 import java.io.IOException;
 import java.util.Properties;
 
 public class ApplicationServer {
 
+    private static final String SERVER_PROPERTIES_FILENAME = "server.properties";
     private final static Logger log = Logger.getLogger( imcode.server.ApplicationServer.class.getName() );
-    private static IMCServiceInterface imcServiceInterface ;
+    private final static IMCServiceInterface imcServiceInterface = createIMCServiceInterface();
+
     private static ConnectionPool apiConnectionPool ;
 
+    private ApplicationServer() {
+    }
+
     public synchronized static IMCServiceInterface getIMCServiceInterface() {
-        if ( null == imcServiceInterface ) {
-            imcServiceInterface = createIMCServiceInterface();
-        }
         return imcServiceInterface;
     }
 
@@ -36,18 +39,15 @@ public class ApplicationServer {
     }
 
     private static Properties getServerProperties() {
-        Properties serverprops = null;
         try {
-            serverprops = Prefs.getProperties( "server.properties" );
+            return Prefs.getProperties( SERVER_PROPERTIES_FILENAME );
         } catch ( IOException e ) {
             log.fatal( "Failed to initialize imCMS", e);
-            throw new RuntimeException(e) ;
+            throw new UnhandledException(e) ;
         }
-        return serverprops;
     }
 
     private static ConnectionPool createConnectionPool( Properties props ) {
-        ConnectionPool connectionPool = null;
 
         String jdbcDriver = props.getProperty( "JdbcDriver" );
         String jdbcUrl = props.getProperty( "JdbcUrl" );
@@ -60,9 +60,7 @@ public class ApplicationServer {
         log.debug( "User = " + user );
         log.debug( "MaxConnectionCount = " + maxConnectionCount );
 
-        connectionPool = ConnectionPool.createConnectionPool( jdbcDriver, jdbcUrl, user, password, maxConnectionCount);
-
-        return connectionPool;
+        return ConnectionPool.createConnectionPool( jdbcDriver, jdbcUrl, user, password, maxConnectionCount );
     }
 
 }

@@ -1,9 +1,3 @@
-/*
- * Created by IntelliJ IDEA.
- * User: kreiger
- * Date: 2004-feb-18
- * Time: 13:30:03
- */
 package com.imcode.imcms.api.util;
 
 import org.apache.commons.collections.ComparatorUtils;

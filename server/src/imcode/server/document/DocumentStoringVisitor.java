@@ -1,12 +1,12 @@
 package imcode.server.document;
 
+import com.imcode.imcms.api.util.InputStreamSource;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FileInputStreamSource;
 import imcode.util.FileUtility;
-import imcode.util.InputStreamSource;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringUtils;
@@ -47,8 +47,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             }
 
             File file = getFileForFileDocument( fileDocumentId, fileId );
-            boolean sameFileOnDisk = inputStreamSource instanceof FileInputStreamSource && file.exists();
-            if (sameFileOnDisk) {
+            boolean sameFileOnDisk = inputStreamSource instanceof FileInputStreamSource
+                                     && ( (FileInputStreamSource)inputStreamSource ).getFile().equals( file )
+                                     && file.exists() ;
+            if ( sameFileOnDisk ) {
                 return;
             }
             byte[] buffer = new byte[FILE_BUFFER_LENGTH];
@@ -300,11 +302,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             service.sqlUpdateQuery( sqlInsert, new String[]{""+ fileDocument.getId(), fileId, filename, fileDocumentFile.getMimeType(), fileDocumentFile.isCreatedAsImage() ? "1" : "0", isDefaultFile ? "1" : "0"} );
             saveFileDocumentFile( fileDocument.getId(), fileDocumentFile, fileId );
         }
-        deleteOtherFileDocumentFiles( fileDocument ) ;
-    }
-
-    private void deleteOtherFileDocumentFiles(final FileDocumentDomainObject fileDocument) {
-        DocumentMapper.deleteFileDocumentFilesAccordingToFileFilter(new DocumentMapper.SuperfluousFileDocumentFilesFileFilter(fileDocument));
+        DocumentMapper.deleteOtherFileDocumentFiles( fileDocument ) ;
     }
 
     private String truncateFilename(String filename, int length) {

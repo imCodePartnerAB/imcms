@@ -1,9 +1,7 @@
 package com.imcode.imcms.api;
 
 import imcode.server.IMCServiceInterface;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentPermissionSetMapper;
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.ApplicationServer;
 import imcode.server.user.UserDomainObject;
 
 public class DefaultContentManagementSystem extends ContentManagementSystem {
@@ -15,18 +13,17 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
     private User currentUser;
 
     public DefaultContentManagementSystem( IMCServiceInterface service, UserDomainObject accessor ) {
-        DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
+        this.service = service ;
+        init( accessor );
+    }
 
-        ImcmsAuthenticatorAndUserMapper imcmsAAUM = new ImcmsAuthenticatorAndUserMapper( service );
-        DocumentMapper documentMapper = service.getDocumentMapper();
-        SecurityChecker securityChecker = new SecurityChecker( documentMapper, accessor );
-
-        currentUser = new User( accessor, imcmsAAUM, securityChecker );
-
-        userService = new UserService( securityChecker, imcmsAAUM );
-        documentService = new DocumentService( service, securityChecker, documentMapper, documentPermissionSetMapper, imcmsAAUM );
-        templateService = new TemplateService( service, securityChecker );
-        databaseService = new DatabaseService( service ) ;
+    private void init( UserDomainObject accessor ) {
+        securityChecker = new SecurityChecker( this );
+        currentUser = new User( accessor, this );
+        userService = new UserService( this );
+        documentService = new DocumentService( this ) ;
+        templateService = new TemplateService( this );
+        databaseService = new DatabaseService( ApplicationServer.getApiConnectionPool() );
     }
 
     public UserService getUserService(){

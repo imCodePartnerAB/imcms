@@ -1,17 +1,20 @@
 package imcode.server.document;
 
-import imcode.util.InputStreamSource;
+import com.imcode.imcms.api.util.InputStreamSource;
 import imcode.util.Utility;
-import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.NullArgumentException;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FileDocumentDomainObject extends DocumentDomainObject {
 
     private Map files = createFilesMap();
 
     private String defaultFileId ;
+    public static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
+    public static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
 
     protected void loadAllLazilyLoadedDocumentTypeSpecificAttributes() {
         // nothing lazily loaded
@@ -113,7 +116,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     public static class FileDocumentFile {
 
         private String filename;
-        private String mimeType;
+        private String mimeType = MIME_TYPE__UNKNOWN_DEFAULT;
         private InputStreamSource inputStreamSource;
         private boolean createdAsImage;
 
