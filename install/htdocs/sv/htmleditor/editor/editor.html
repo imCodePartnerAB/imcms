@@ -901,13 +901,13 @@ if (isWordEnabled) {
 	document.write('<button id="btnFixWord" unselectable="on" cl'+'ass="fButtonSmall" style="width:100; visibility:hidden" onClick="doFixWordHTML()\;"><? install/htdocs/sv/htmleditor/editor/editor.html/116/1 ?></button><img src="images/1x1.gif" width="23" height="1">');
 }
 
-if (show<? install/htdocs/sv/htmleditor/editor/editor.html/116/2 ?>Btn) {
-	document.write('<button unselectable="on" cl'+'ass="fButtonSmall" style="width:45" onClick="do<? install/htdocs/sv/htmleditor/editor/editor.html/116/2 ?>()\;"><? install/htdocs/sv/htmleditor/editor/editor.html/116/2 ?></button><img src="images/1x1.gif" width="3" height="1">');
+if (showCloseBtn) {
+	document.write('<button unselectable="on" cl'+'ass="fButtonSmall" style="width:45" onClick="doClose()\;"><? install/htdocs/sv/htmleditor/editor/editor.html/116/2 ?></button><img src="images/1x1.gif" width="3" height="1">');
 }
 if (showResetBtn) {
-	document.write('<button unselectable="on" cl'+'ass="fButtonSmall" style="width:45" onClick="if(confirm(\'<? install/htdocs/sv/htmleditor/editor/editor.html/116/3 ?>\'))\{ <? install/htdocs/sv/htmleditor/editor/editor.html/116/4 ?>()\; \}"><? install/htdocs/sv/htmleditor/editor/editor.html/116/4 ?></button><img src="images/1x1.gif" width="3" height="1">');
+	document.write('<button unselectable="on" cl'+'ass="fButtonSmall" style="width:45" onClick="if(confirm(\'<? install/htdocs/sv/htmleditor/editor/editor.html/116/3 ?>\'))\{ Clear()\; \}"><? install/htdocs/sv/htmleditor/editor/editor.html/116/4 ?></button><img src="images/1x1.gif" width="3" height="1">');
 }
-if (show<? install/htdocs/sv/htmleditor/editor/editor.html/116/5 ?>Btn) {
+if (showSaveBtn) {
 	document.write('<button unselectable="on" cl'+'ass="fButtonSmall" style="width:47" onClick="doSend()\; return false"><? install/htdocs/sv/htmleditor/editor/editor.html/116/5 ?></button><img src="images/1x1.gif" width="3" height="1">');
 }
 //-->
