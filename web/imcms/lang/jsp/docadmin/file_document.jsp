@@ -59,7 +59,12 @@
 <input type="hidden" name="<%= PageFlow.REQUEST_PARAMETER__PAGE %>" value="<%=
 	EditDocumentPageFlow.PAGE__EDIT %>">
 <tr>
-	<td>#gui_heading( "<? install/htdocs/sv/jsp/docadmin/file_document.jsp/4/1 ?>" )</td>
+	<td><%
+	if (StringUtils.isNotBlank(selectedFile.getFilename())) {
+		%>#gui_heading( "<? install/htdocs/sv/jsp/docadmin/file_document.jsp/4/2 ?> &nbsp; &quot;<%= selectedFile.getFilename() %>&quot;" )<%
+	} else {
+		%>#gui_heading( "<? install/htdocs/sv/jsp/docadmin/file_document.jsp/4/1 ?>" )<%
+	} %></td>
 </tr>
 <tr>
 	<td>
@@ -71,8 +76,8 @@ if (null != localizedErrorMessage) { %>
 	</tr><%
 } %>
 	<tr>
-		<td width="20%" height="22"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/filename_label ?></td>
-		<td width="80%"><%
+		<td width="85" height="22"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/filename_label ?></td>
+		<td><%
 if (StringUtils.isNotBlank(selectedFile.getFilename())) {
 	%><%= StringEscapeUtils.escapeHtml( StringUtils.defaultString( selectedFile.getFilename()) ) %><br><%
 } %>
@@ -117,13 +122,30 @@ if (!documentMimeTypeFoundInDropDown) {
 	EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__MIME_TYPE %>').selectedIndex = 0;"></td>
 	</tr>
 	<tr>
+		<td colspan="2">#gui_hr( "blue" )</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<tr>
+			<td><? install/htdocs/sv/jsp/docadmin/file_document.jsp/target_label ?></td>
+			<td><%
+			request.setAttribute( "target", document.getTarget() );%>
+			<jsp:include page="target.jsp"/></td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td colspan="2">#gui_hr( "blue" )</td>
+	</tr>
+	<tr>
 		<td colspan="2" align="right">
 		<input type="submit" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/save_file_button ?>" name="<%=
 	EditFileDocumentPageFlow.REQUEST_PARAMETER__SAVE_FILE_BUTTON %>"></td>
 	</tr><%
 if (!files.isEmpty()) { %>
 	<tr>
-		<td colspan="2">#gui_hr( "blue" )</td>
+		<td colspan="2">&nbsp;<br>#gui_heading( "<? install/htdocs/sv/jsp/docadmin/file_document.jsp/heading_added_files ?>" )</td>
 	</tr>
 	<tr>
 		<td colspan="2">
@@ -177,22 +199,6 @@ if (!files.isEmpty()) { %>
 	</tr><%
 } %>
 	</table></td>
-</tr>
-<tr>
-	<td>#gui_hr( "blue" )</td>
-</tr>
-<tr>
-    <td>
-        <table border="0" cellspacing="0" cellpadding="0" width="100%">
-            <tr>
-                <td><? install/htdocs/sv/jsp/docadmin/file_document.jsp/target_label ?></td>
-                <td>
-                    <% request.setAttribute( "target", document.getTarget() );%>
-                    <jsp:include page="target.jsp"/>
-                </td>
-            </tr>
-        </table>
-    </td>
 </tr>
 <tr>
 	<td>#gui_hr( "blue" )</td>
