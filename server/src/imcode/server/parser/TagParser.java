@@ -325,7 +325,8 @@ class TagParser {
             includedParserParameters.setParameter( attributes.getProperty( "param" ) );
             includedParserParameters.getDocumentRequest().setDocument( service.getDocumentMapper().getDocument( included_meta_id ) );
             includedParserParameters.getDocumentRequest().setReferrer( document );
-            includedParserParameters.setFlags( -1 );
+            includedParserParameters.setFlags( 0 );
+            includedParserParameters.setAdminButtonsVisible( false ) ;
         } catch ( CloneNotSupportedException e ) {
             // ignored, supported
         }

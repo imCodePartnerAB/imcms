@@ -2,7 +2,6 @@ package imcode.server.parser;
 
 import imcode.server.DocumentRequest;
 import imcode.server.ImcmsConstants;
-import imcode.server.user.UserDomainObject;
 import imcode.server.document.*;
 
 public class ParserParameters implements Cloneable {
@@ -13,10 +12,9 @@ public class ParserParameters implements Cloneable {
     private Integer editingMenuIndex;
     private DocumentRequest documentRequest;
     private int flags;
-    private DocumentMapper documentMapper;
+    private boolean adminButtonsVisible = true ;
 
-    public ParserParameters( DocumentRequest documentRequest, DocumentMapper documentMapper ) {
-        this.documentMapper = documentMapper;
+    public ParserParameters( DocumentRequest documentRequest ) {
         this.documentRequest = documentRequest;
     }
 
@@ -75,5 +73,13 @@ public class ParserParameters implements Cloneable {
     public boolean isMenuMode() {
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)documentRequest.getUser().getPermissionSetFor( documentRequest.getDocument() );
         return ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 && permissionSet.getEditMenus();
+    }
+
+    public void setAdminButtonsVisible( boolean adminButtonsVisible ) {
+        this.adminButtonsVisible = adminButtonsVisible;
+    }
+
+    public boolean isAdminButtonsVisible() {
+        return adminButtonsVisible;
     }
 }
