@@ -22,7 +22,6 @@ public class FileAdmin extends HttpServlet {
     public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host				= req.getHeader("Host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
-	String rootpaths			= Utility.getDomainPref( "fileadmin_rootpaths",host ) ;
 	String start_url	= imcref.getStartUrl() ;
 
 	// Check if user logged on
@@ -48,19 +47,16 @@ public class FileAdmin extends HttpServlet {
 	File fd1 = null ;
 	File fd2 = null ;
 
-	if ( rootpaths != null ) {
-	    StringTokenizer st = new StringTokenizer(rootpaths,File.pathSeparator) ;
-
-	    switch (st.countTokens()) {
-	    default:
-		fd1 = Utility.getAbsolutePathFromString(st.nextToken()) ;
-		fd2 = Utility.getAbsolutePathFromString(st.nextToken()) ;
-		break ;
-	    case 1:
-		fd1 = Utility.getAbsolutePathFromString(st.nextToken()) ;
-		fd2 = fd1 ;
-	    case 0:
-	    }
+	File[] rootpaths = getRootPaths(host) ;
+	switch (rootpaths.length) {
+	default:
+	    fd1 = rootpaths[0] ;
+	    fd2 = rootpaths[1] ;
+	    break ;
+	case 1:
+	    fd1 = rootpaths[0] ;
+	    fd2 = fd1 ;
+	case 0:
 	}
 
 	res.setContentType("text/html") ;
@@ -704,24 +700,7 @@ public class FileAdmin extends HttpServlet {
 	ServletOutputStream out = res.getOutputStream() ;
 	out.print(parseFileAdmin(user,host,dir1,dir2)) ;
     }
-    /*
-      private Object[] push (Object[] foo, Object[] bar) {
-      if ((foo == null) && (bar != null)) {
-      return bar ;
-      } else if ( bar == null ) {
-      return foo ;
-      }
-      Object[] baz = new Object[foo.length+bar.length] ;
-      int j = 0 ;
-      for ( int i=0; i<foo.length ; i++ ) {
-      baz[j++] = foo[i] ;
-      }
-      for ( int i=0; i<bar.length ; i++ ) {
-      baz[j++] = bar[i] ;
-      }
-      return baz ;
-      }
-    */
+
     /**
        Takes a list of files that are supposed to share a common parent, and returns them in an array.
     */
@@ -792,45 +771,36 @@ public class FileAdmin extends HttpServlet {
 	return result ;
     }
 
-    private String parseFileAdmin (User user, String host, File fd1, File fd2) throws IOException {
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
-	String rootpaths			= Utility.getDomainPref( "fileadmin_rootpaths",host ) ;
+    private File[] getRootPaths(String host) throws IOException {
+	String rootpaths = Utility.getDomainPref( "fileadmin_rootpaths",host ) ;
 
-	String files1 = "" ;
-	String files2 = "" ;
-	Vector vec = new Vector () ;
-	File[] rootlist = null ;
+	File[] rootlist = new File[0] ;
 	if ( rootpaths != null ) {
-	    StringTokenizer st = new StringTokenizer(rootpaths,File.pathSeparator) ;
+	    StringTokenizer st = new StringTokenizer(rootpaths,":;") ;
 	    rootlist = new File[st.countTokens()] ;
 	    for ( int i = 0 ; i<rootlist.length && st.hasMoreTokens() ; i++ ) {
 		String oneRoot = st.nextToken().trim() ;
 		rootlist[i] = Utility.getAbsolutePathFromString(oneRoot) ;
 	    }
 	}
-	DirectoryFilter dirfilt = new DirectoryFilter() ;
-	NotDirectoryFilter notdirfilt = new NotDirectoryFilter() ;
+
+	return rootlist ;
+    }
+
+    private String parseFileAdmin (User user, String host, File fd1, File fd2) throws IOException {
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
+
+	File[] rootlist = getRootPaths(host) ;
+
+	String files1 = "" ;
+	String files2 = "" ;
+	Vector vec = new Vector () ;
+
 	if ( fd1!=null ) {
 	    vec.add("#dir1#") ;
 	    vec.add(fd1.getCanonicalPath()) ;
-	    String optionlist = "" ;
-	    for ( int i = 0 ; i < rootlist.length ; i++ ) {
-		String foo = rootlist[i].getCanonicalPath() + File.separator ;
-		optionlist+="<option value=\""+foo+"\">"+foo+"</option>" ;
-	    }
-	    optionlist+="<option value=\"..\">.."+File.separator+"</option>" ;
-	    File[] filelist = fd1.listFiles(dirfilt) ;
-	    for ( int i = 0 ; i < filelist.length ; i++ ) {
-		String foo = filelist[i].getName() + File.separator ;
-		optionlist+="<option value=\""+foo+"\">"+foo+"</option>" ;
-	    }
-	    filelist = fd1.listFiles(notdirfilt) ;
-	    for ( int i = 0 ; i < filelist.length ; i++ ) {
-		String foo = filelist[i].getName() + " ["+filelist[i].length()+"]" ;
-		optionlist+="<option value=\""+filelist[i].getName()+"\">"+foo+"</option>" ;
-	    }
 	    vec.add("#files1#") ;
-	    vec.add(optionlist) ;
+	    vec.add(createOptionListForDirectory(fd1,rootlist)) ;
 	} else {
 	    vec.add("#dir1#") ;
 	    vec.add("") ;
@@ -840,24 +810,8 @@ public class FileAdmin extends HttpServlet {
 	if ( fd2!=null ) {
 	    vec.add("#dir2#") ;
 	    vec.add(fd2.getCanonicalPath()) ;
-	    String optionlist = "" ;
-	    for ( int i = 0 ; i < rootlist.length ; i++ ) {
-		String foo = rootlist[i].getCanonicalPath() + File.separator ;
-		optionlist+="<option value=\""+foo+"\">"+foo+"</option>" ;
-	    }
-	    optionlist+="<option value=\"..\">.."+File.separator+"</option>" ;
-	    File[] filelist = fd2.listFiles(dirfilt) ;
-	    for ( int i = 0 ; filelist!=null && i < filelist.length ; i++ ) {
-		String foo = filelist[i].getName() + File.separator ;
-		optionlist+="<option value=\""+foo+"\">"+foo+"</option>" ;
-	    }
-	    filelist = fd2.listFiles(notdirfilt) ;
-	    for ( int i = 0 ; filelist!=null && i < filelist.length ; i++ ) {
-		String foo = filelist[i].getName() + " ["+filelist[i].length()+"]" ;
-		optionlist+="<option value=\""+filelist[i].getName()+"\">"+foo+"</option>" ;
-	    }
 	    vec.add("#files2#") ;
-	    vec.add(optionlist) ;
+	    vec.add(createOptionListForDirectory(fd2,rootlist)) ;
 	} else {
 	    vec.add("#dir2#") ;
 	    vec.add("") ;
@@ -867,6 +821,31 @@ public class FileAdmin extends HttpServlet {
 
 	String lang_prefix = user.getLangPrefix() ;
 	return imcref.parseDoc( vec,"FileAdmin.html",lang_prefix) ;
+    }
+
+    private String createOptionListForDirectory(File directory, File[] rootlist) throws IOException {
+
+	StringBuffer optionlist = new StringBuffer() ;
+
+	DirectoryFilter dirfilt = new DirectoryFilter() ;
+	NotDirectoryFilter notdirfilt = new NotDirectoryFilter() ;
+
+	for ( int i = 0 ; i < rootlist.length ; i++ ) {
+	    String foo = rootlist[i].getCanonicalPath() + File.separator ;
+	    optionlist.append("<option value=\"").append(foo).append("\">").append(foo).append("</option>") ;
+	}
+	optionlist.append("<option value=\"..\">..").append(File.separator).append("</option>") ;
+	File[] filelist = directory.listFiles(dirfilt) ;
+	for ( int i = 0 ; filelist!=null && i < filelist.length ; i++ ) {
+	    String foo = filelist[i].getName() + File.separator ;
+	    optionlist.append("<option value=\"").append(foo).append("\">").append(foo).append("</option>") ;
+	}
+	filelist = directory.listFiles(notdirfilt) ;
+	for ( int i = 0 ; filelist!=null && i < filelist.length ; i++ ) {
+	    String foo = filelist[i].getName() + " ["+filelist[i].length()+"]" ;
+	    optionlist.append("<option value=\"").append(filelist[i].getName()).append("\">").append(foo).append("</option>") ;
+	}
+	return optionlist.toString() ;
     }
 
     private class DirectoryFilter implements FileFilter {
