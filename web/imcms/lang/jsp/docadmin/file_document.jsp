@@ -20,7 +20,6 @@
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
-
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'file')">
 #gui_outer_start()
@@ -44,11 +43,11 @@
     FileDocumentDomainObject document = (FileDocumentDomainObject)httpFlow.getDocument() ;
     FileDocumentDomainObject.FileVariant fileVariant = editPage.getFileVariant() ;
     boolean creatingNewDocument = httpFlow instanceof CreateDocumentPageFlow ;
-    EditFileDocumentPageFlow.MimeTypeRestriction mimeTypeRestriction = editPage.getMimeTypeRestriction() ;
+    EditFileDocumentPageFlow.MimeTypeRestriction mimeTypeRestriction = editPage.getPageMimeTypeRestriction() ;
 
     String selectedFileVariantName = editPage.getFileVariantName();
     Map fileVariants = document.getFileVariants();
-    boolean addingNewFile = StringUtils.isBlank(selectedFileVariantName);
+    boolean allowChoiceOfDefault = fileVariants.size() > 1;
 %>
 <input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
     value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
@@ -134,18 +133,17 @@
                 <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/file_id_label ?></th>
                 <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/filename_label ?></th>
                 <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/mime_type_label ?></th>
-                <th>&nbsp;</th>
-                <th>&nbsp;</th>
-                <% if (fileVariants.size() > 1) { %>
+                <% if (!creatingNewDocument) { %>
+                <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/link_label ?></th>
+                <% } %>
+                <% if (allowChoiceOfDefault) { %>
                 <th><? install/htdocs/sv/jsp/docadmin/file_document.jsp/default_label ?></th>
                 <% } %>
-                <% if (!creatingNewDocument) { %>
                 <th>&nbsp;</th>
-                <% } %>
+                <th>&nbsp;</th>
             </tr>
             <%
-            Set fileVariantNames = new TreeSet(String.CASE_INSENSITIVE_ORDER);
-            fileVariantNames.addAll(fileVariants.keySet()) ;
+            Set fileVariantNames = fileVariants.keySet();
             for ( Iterator iterator = fileVariantNames.iterator(); iterator.hasNext(); ) {
                 String fileVariantName = (String)iterator.next();
                 String escapedFileVariantName = StringEscapeUtils.escapeHtml(fileVariantName) ;
@@ -158,26 +156,29 @@
                                 value="<%= escapedFileVariantName %>"></td>
                         <td><%= StringEscapeUtils.escapeHtml(aFileVariant.getFilename()) %></td>
                         <td><%= StringEscapeUtils.escapeHtml(aFileVariant.getMimeType()) %></td>
+                        <% if (!creatingNewDocument) { %>
+                        <td><%= StringEscapeUtils.escapeHtml(request.getContextPath()) %>/servlet/GetDoc?meta_id=<%= document.getId() %>&<%= GetDoc.REQUEST_PARAMETER__FILE_VARIANT_NAME %>=<%= escapedFileVariantName %></td>
+                        <% } %>
+                        <% if (allowChoiceOfDefault) { %>
+                        <td align="center"><input type="radio"
+                                name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__DEFAULT_VARIANT %>"
+                                value="<%= escapedFileVariantName %>" <% if (isDefaultFileVariantName) {%>checked<% } %>></td>
+                        <% } %>
                         <td><input type="submit" class="imcmsFormBtnSmall"
                                 name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__EDIT_VARIANT_BUTTON_PREFIX +escapedFileVariantName%>"
                                 value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/select_variant_for_edit_button ?>"></td>
                         <td><input type="submit" class="imcmsFormBtnSmall"
                                 name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__DELETE_VARIANT_BUTTON_PREFIX +escapedFileVariantName%>"
                                 value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/delete_variant_button ?>"></td>
-                        <% if (fileVariants.size() > 1) { %>
-                        <td align="center"><input type="radio"
-                                name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__DEFAULT_VARIANT %>"
-                                value="<%= escapedFileVariantName %>" <% if (isDefaultFileVariantName) {%>checked<% } %>></td>
-                        <% } %>
-                        <% if (!creatingNewDocument) { %>
-                        <td><a href="<%= request.getContextPath() %>/servlet/GetDoc?meta_id=<%= document.getId() %>&<%= GetDoc.REQUEST_PARAMETER__FILE_VARIANT_NAME %>=<%= escapedFileVariantName %>"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/link_label ?></a></td>
-                        <% } %>
                     </tr><%
                 }
             %>
             </table>
         </td>
 	</tr>
+    <tr>
+	    <td colspan="2" align="right"><input type="submit" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/new_variant_button ?>" name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__NEW_FILE_BUTTON %>"></td>
+    </tr>
     <% } %>
 	</table></td>
 </tr>
@@ -187,10 +188,9 @@
 <tr>
 	<td align="right">
     <% if (!fileVariants.isEmpty()) { %>
-	<input type="submit" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/new_variant_button ?>" name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__NEW_FILE_BUTTON %>">
     <input type="submit" class="imcmsFormBtn" value="<? global/OK ?>" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>">
     <% } %>
-	<input type="submit" class="imcmsFormBtn" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>%>" value="<? global/cancel ?>"></td>
+	<input type="submit" class="imcmsFormBtn" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/cancel ?>"></td>
 </tr>
 </form>
 </table>

@@ -21,7 +21,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     }
 
     public void visitFileDocument( FileDocumentDomainObject document ) {
-        String[][] sqlResult = service.sqlQueryMulti( "SELECT variant_name, filename, mime, created_as_image, default_variant FROM fileupload_docs WHERE meta_id = ?",
+        String[][] sqlResult = service.sqlQueryMulti( "SELECT variant_name, filename, mime, created_as_image, default_variant FROM fileupload_docs WHERE meta_id = ? ORDER BY default_variant DESC, variant_name",
                                                       new String[]{"" + document.getId()} );
         for ( int i = 0; i < sqlResult.length; i++ ) {
             String[] sqlRow = sqlResult[i];

@@ -3,12 +3,14 @@ package imcode.server.document;
 import imcode.util.InputStreamSource;
 import imcode.util.Utility;
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.collections.MapUtils;
 
 import java.util.*;
 
 public class FileDocumentDomainObject extends DocumentDomainObject {
 
-    private HashMap fileVariants = new HashMap();
+    private Map fileVariants = createFileVariantsMap();
+
     private String defaultFileVariantName ;
 
     protected void loadAllLazilyLoadedDocumentTypeSpecificAttributes() {
@@ -34,7 +36,13 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     }
 
     public Map getFileVariants() {
-        return (Map)fileVariants.clone();
+        Map map = createFileVariantsMap();
+        map.putAll( fileVariants ) ;
+        return map;
+    }
+
+    private Map createFileVariantsMap() {
+        return MapUtils.orderedMap( new HashMap() );
     }
 
     public FileVariant getFileVariant( String fileVariantName ) {

@@ -112,8 +112,10 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
             } else {
                 fileVariant.setMimeType( mimeType );
                 if ( isNewFile ) {
-                    selectedFileVariantName = findUniqueName( new UniqueFileVariantNamePredicate( fileDocument ), new CounterNameFactory() );
-                    fileDocument.addFileVariant( selectedFileVariantName, fileVariant );
+                    String newFileVariantName = findUniqueName( new UniqueFileVariantNamePredicate( fileDocument ), new CounterNameFactory(fileDocument.getFileVariants().size()+1) );
+                    fileDocument.addFileVariant( newFileVariantName, fileVariant );
+                    selectedFileVariantName = null ;
+                    unfinishedNewFile = null ;
                 }
             }
 
@@ -135,7 +137,8 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
             String fileVariantName = (String)iterator.next();
             String newFileVariantName = request.getParameter( REQUEST_PARAMETER__FILE_DOC__NEW_VARIANT_NAME_PREFIX
                                                               + fileVariantName );
-            if ( StringUtils.isNotBlank( newFileVariantName )
+            if (  StringUtils.isNotBlank( newFileVariantName )
+                 && !selectedFileVariantName.equals( newFileVariantName )
                  && null == fileDocument.getFileVariant( newFileVariantName ) ) {
                 fileDocument.renameFileVariant( fileVariantName, newFileVariantName );
                 if ( fileVariantName.equals( selectedFileVariantName ) ) {
@@ -173,8 +176,7 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
     }
 
     protected void dispatchToFirstPage( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
-        createFileDocumentEditPage( fileDocument.getDefaultFileVariantName() ).forward( request, response );
+        createFileDocumentEditPage( null ).forward( request, response );
     }
 
     protected void dispatchFromEditPage( HttpServletRequest r, HttpServletResponse response, String page ) throws IOException, ServletException {
@@ -197,14 +199,12 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
                 if ( null
                      != request.getParameter( REQUEST_PARAMETER__DELETE_VARIANT_BUTTON_PREFIX + fileVariantName )
                      || null == fileVariant.getInputStreamSource() ) {
-                    fileDocument.removeFileVariant( fileVariantName );
+                    unfinishedNewFile = fileDocument.removeFileVariant( fileVariantName );
                 }
-            }
-            if ( null == fileDocument.getFileVariant( selectedFileVariantName ) && !fileVariants.isEmpty() ) {
-                selectedFileVariantName = (String)Utility.firstElementOfSetByOrderOf( fileVariants.keySet(), String.CASE_INSENSITIVE_ORDER );
             }
             if ( null != request.getParameter( REQUEST_PARAMETER__NEW_FILE_BUTTON ) ) {
                 selectedFileVariantName = null;
+                unfinishedNewFile = null ;
             }
             createFileDocumentEditPage( selectedFileVariantName ).forward( request, response );
         }
@@ -237,16 +237,16 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
     }
 
     private String getMimeTypeIfTreatedAsFilenameExtension( String mimeType ) {
-        String mimeTypeTreatedAsFilenameExtension = mimeType;
-        if ( '.' != mimeTypeTreatedAsFilenameExtension.charAt( 0 ) ) {
-            mimeTypeTreatedAsFilenameExtension = '.' + mimeTypeTreatedAsFilenameExtension;
+        String filenameExtension = mimeType;
+        if ( '.' != filenameExtension.charAt( 0 ) ) {
+            filenameExtension = '.' + filenameExtension;
         }
-        mimeTypeTreatedAsFilenameExtension = servletContext.getMimeType( '_'
-                                                                         + mimeTypeTreatedAsFilenameExtension );
-        if ( null != mimeTypeTreatedAsFilenameExtension ) {
-            mimeType = mimeTypeTreatedAsFilenameExtension;
+        String mimeTypeFromFilenameExtension = servletContext.getMimeType( '_'
+                                                                         + filenameExtension );
+        if ( null == mimeTypeFromFilenameExtension ) {
+            mimeTypeFromFilenameExtension = mimeType ;
         }
-        return mimeType;
+        return mimeTypeFromFilenameExtension;
     }
 
     public static class FileItemInputStreamSource implements InputStreamSource {
@@ -267,19 +267,19 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
         private final static String REQUEST_ATTRIBUTE__FILE_DOCUMENT_EDIT_PAGE = "fileDocumentEditPage";
 
         private LocalizedMessage errorMessage;
-        private MimeTypeRestriction mimeTypeRestriction;
+        private MimeTypeRestriction pageMimeTypeRestriction;
         private String fileVariantName;
         private FileDocumentDomainObject.FileVariant fileVariant;
 
         public FileDocumentEditPage( MimeTypeRestriction allowedMimeTypes, String fileVariantName,
                                      FileDocumentDomainObject.FileVariant fileVariant ) {
-            this.mimeTypeRestriction = allowedMimeTypes;
+            this.pageMimeTypeRestriction = allowedMimeTypes;
             this.fileVariantName = fileVariantName;
             this.fileVariant = fileVariant;
         }
 
-        public MimeTypeRestriction getMimeTypeRestriction() {
-            return mimeTypeRestriction;
+        public MimeTypeRestriction getPageMimeTypeRestriction() {
+            return pageMimeTypeRestriction;
         }
 
         public static FileDocumentEditPage fromRequest( HttpServletRequest request ) {
@@ -343,7 +343,7 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
         private String[] allowedMimeTypes;
 
         public ArrayMimeTypeRestriction( String[] allowedMimeTypes, LocalizedMessage errorMessage ) {
-            this.allowedMimeTypes = allowedMimeTypes;
+            this.allowedMimeTypes = (String[])ArrayUtils.clone(allowedMimeTypes);
             this.errorMessage = errorMessage;
         }
 
@@ -369,6 +369,10 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
     private static class CounterNameFactory implements Factory {
 
         int counter = 1;
+
+        CounterNameFactory( int counterStartValue ) {
+            counter = counterStartValue ;
+        }
 
         public Object create() {
             return "" + counter++;
