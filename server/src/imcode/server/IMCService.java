@@ -26,14 +26,11 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	String m_ServletUrl  ; 			   // servlet url
 	String m_ImageFolder ;            // image folder
 	String m_ExternalDocTypes  = "" ;      // external docs
-	String m_StartUrl          = "" ;      // start url
 	String m_Language          = "" ;      // language
-	String m_WebMaster         = "" ;      // webmaster
-	String m_WebMasterEmail    = "" ;      // webmaster email
-	String m_ServerMaster      = "" ;      // servmaster
-	String m_ServerMasterEmail = "" ;      // servmaster email
 	String m_serverName        = "" ;      // servername
-	boolean m_PrintLogToWindow = false ;  // flag - if true -> print log to app. window
+    //boolean m_PrintLogToWindow = false ;  // flag - if true -> print log to app. window
+
+    SystemData sysData ;
 
 	ExternalDocType m_ExDoc[]  = new ExternalDocType[20] ;
 	String m_SessionCounterDate = "" ;
@@ -82,6 +79,8 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
     SimpleDateFormat dateparser = new SimpleDateFormat("yyyy-MM-ddHH:mm") ;
 
+    SimpleDateFormat SQL_DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd") ;
+    
     Log log = Log.getLog("server") ;
 
 
@@ -94,30 +93,23 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		super();
 		m_conPool    = conPool ;
 
+		sysData = getSystemDataFromDb() ;
+
 		m_TemplateHome      = props.getProperty("TemplatePath") ;
 		m_DefaultHomePage   = Integer.parseInt(props.getProperty("StartDocument")) ;    //FIXME: Get from DB
 		m_ServletUrl        = props.getProperty("ServletUrl") ; //FIXME: Get from webserver, or get rid of if possible.
 		// FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 		m_ImageFolder       = props.getProperty("ImageUrl") ; //FIXME: Get from webserver, or get rid of if possible.
 		m_ExternalDocTypes  = props.getProperty("ExternalDoctypes") ; //FIXME: Get rid of, if possible.
-		m_StartUrl          = props.getProperty("StartUrl") ; //FIXME: Get from webserver, or get rid of if possible.
 		m_Language          = props.getProperty("DefaultLanguage") ; //FIXME: Get from DB
-		m_WebMaster         = props.getProperty("WebmasterName") ; //FIXME: Get from DB
-		m_WebMasterEmail    = props.getProperty("WebmasterAddress") ; //FIXME: Get from DB
-		m_ServerMaster      = props.getProperty("ServermasterName") ; //FIXME: Get from DB
-		m_ServerMasterEmail = props.getProperty("ServermasterAddress") ; //FIXME: Get from DB
+
 
 		log.log(Log.INFO, "TemplatePath: " + m_TemplateHome) ;
 		log.log(Log.INFO, "StartDocument: " + m_DefaultHomePage) ;
 		log.log(Log.INFO, "ServletUrl: " + m_ServletUrl) ;
 		log.log(Log.INFO, "ImageUrl: " + m_ImageFolder) ;
 		log.log(Log.INFO, "ExternalDoctypes: " + m_ExternalDocTypes) ;
-		log.log(Log.INFO, "StartUrl: " + m_StartUrl) ;
 		log.log(Log.INFO, "DefaultLanguage: " + m_Language) ;
-		log.log(Log.INFO, "WebmasterName: " + m_WebMaster) ;
-		log.log(Log.INFO, "WebmasterAddress: " + m_WebMasterEmail) ;
-		log.log(Log.INFO, "ServermasterName: " + m_ServerMaster) ;
-		log.log(Log.INFO, "ServermasterAddress: " + m_ServerMasterEmail) ;
 
 
 
@@ -156,6 +148,8 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		log.log(Log.INFO, "SessionCounterDate: "+m_SessionCounterDate) ;
 		log.log(Log.INFO, "TemplateCount: "+m_NoOfTemplates) ;
 	}
+
+    
 
 	/**
 	* <p>Get me page _id.
@@ -743,10 +737,10 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	tags.setProperty("#metaHeadline#",			meta.get(1).toString()) ;
 	tags.setProperty("#sys_message#",			(String)sys_data.get(0)) ;
 	tags.setProperty("#servlet_url#",			m_ServletUrl) ;
-	tags.setProperty("#webMaster#",				m_WebMaster) ;
-	tags.setProperty("#webMasterEmail#",		m_WebMasterEmail) ;
-	tags.setProperty("#serverMaster#",			m_ServerMaster) ;
-	tags.setProperty("#serverMasterEmail#",		m_ServerMasterEmail) ;
+	tags.setProperty("#webMaster#",				sysData.getWebMaster()) ;
+	tags.setProperty("#webMasterEmail#",		sysData.getWebMasterAddress()) ;
+	tags.setProperty("#serverMaster#",			sysData.getServerMaster()) ;
+	tags.setProperty("#serverMasterEmail#",		sysData.getServerMasterAddress()) ;
 
 	tags.setProperty("#addDoc*#","") ;
 	tags.setProperty("#saveSortStart*#","") ;
@@ -1439,15 +1433,6 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		return i ;
 	}
 
-
-	/**
-	 set logflag
-	  */
-	public void setLogFlag(boolean flag) {
-		m_PrintLogToWindow = flag ;
-	}
-
-
 	/**
 	* <p>Find a variable and replace it with data from SQL database,system or other source.
 	*/
@@ -1576,34 +1561,37 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 							return str + "\n" ;
 			}
 
-
+			/* FIXME: DELETE, ERADICATE, ANNIHILATE, REMOVE, DESTROY
 			if ( (i = IMCService.findTag(str,"#webMaster#")) != -1 ) {
 				str = IMCService.replaceTag("#webMaster#",i,str,m_WebMaster) ;
 				if ( ++varFound == varCount )
 					return str + "\n" ;
 			}
+			*/
 
-
+			/* FIXME: DELETE, ERADICATE, ANNIHILATE, REMOVE, DESTROY
 			if ( (i = IMCService.findTag(str,"#webMasterEmail#")) != -1 ) {
 				str = IMCService.replaceTag("#webMasterEmail#",i,str,m_WebMasterEmail) ;
 				if ( ++varFound == varCount )
 					return str + "\n" ;
 			}
+			*/
 
-
+			/* FIXME: DELETE, ERADICATE, ANNIHILATE, REMOVE, DESTROY
 			if ( (i = IMCService.findTag(str,"#serverMaster#")) != -1 ) {
 				str = IMCService.replaceTag("#serverMaster#",i,str,m_ServerMaster) ;
 				if ( ++varFound == varCount )
 					return str + "\n" ;
 			}
+			*/
 
-
+			/* FIXME: DELETE, ERADICATE, ANNIHILATE, REMOVE, DESTROY
 			if ( (i = IMCService.findTag(str,"#serverMasterEmail#")) != -1 ) {
 				str = IMCService.replaceTag("#serverMasterEmail#",i,str,m_ServerMasterEmail) ;
 				if ( ++varFound == varCount )
 					return str + "\n" ;
 			}
-
+			*/
 
 
 			if ( (i = IMCService.findTag(str,"#adminEmail#")) != -1 ) {
@@ -6049,10 +6037,8 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 			while ( (tempchar = br.read())!= -1 ) {
 				sb.append((char)tempchar) ;
 			}
-			htmlStr = sb.toString() ;
-
-			//IMPORTANT!!!! - CLOSE THE STREAM!!!!!
 			br.close();
+			htmlStr = sb.toString() ;
 
 			if ( variables == null ) {
 			    return htmlStr ;
@@ -6065,7 +6051,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 			throw e ;
 		} catch ( IOException e ) {
 			log.log(Log.ERROR,"parseDoc(Vector, String, String): IOException", e );
-			return e.getMessage() ;
+			return "" ;
 		}
 	}
 
@@ -7080,6 +7066,51 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		return sqlProcedureStr("GetLangPrefixFromId " + lang_id) ;
 	}
 
+    /** Fetch the systemdata from the db */
+    protected SystemData getSystemDataFromDb() {
 
+	/** Fetch everything from the DB */
+	String serverMaster[] = this.sqlProcedure("ServerMasterGet") ;
+	String webMaster[] = this.sqlProcedure("WebMasterGet") ;
+	String systemMessage = this.sqlProcedureStr("SystemMessageGet") ;
 
+	/** Create a new SystemData object */
+	SystemData sd = new SystemData() ;
+
+	/** Store everything in the object */
+
+	sd.setSystemMessage(systemMessage) ;
+
+	if (serverMaster.length > 0) {
+	    sd.setServerMaster(serverMaster[0]) ;
+	    if (serverMaster.length > 1) {
+		sd.setServerMasterAddress(serverMaster[1]) ;
+	    }
+	}
+	if (webMaster.length > 0) {
+	    sd.setWebMaster(webMaster[0]) ;
+	    if (webMaster.length > 1) {
+		sd.setWebMasterAddress(webMaster[1]) ;
+	    }
+	}
+
+	return sd ;
+    }
+
+    public SystemData getSystemData () {
+	return sysData ;
+    }
+
+    
+    public void setSystemData (SystemData sd) {
+	sysData = sd ;
+	String sqlStr = "WebMasterSet '"+sd.getWebMaster()+"','"+sd.getWebMasterAddress()+"'" ;
+	sqlUpdateProcedure(sqlStr) ;
+
+	sqlStr = "ServerMasterSet '"+sd.getServerMaster()+"','"+sd.getServerMasterAddress()+"'" ;
+	sqlUpdateProcedure(sqlStr) ;
+
+	sqlStr = "SystemMessageSet '"+sd.getSystemMessage()+"'" ;
+	sqlUpdateProcedure(sqlStr) ;
+    }
 } // END CLASS IMCService

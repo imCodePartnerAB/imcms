@@ -11,7 +11,8 @@ SOURCE  = \
         IMCPool.java \
         IMCServiceInterface.java \
         IMCService.java \
-        ImcServer.java 
+        ImcServer.java \
+        SystemData.java
 
 RMI_SOURCE = IMCPool.java IMCService.java
 
