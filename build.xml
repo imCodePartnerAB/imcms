@@ -527,9 +527,11 @@
             <fileset dir="install/htdocs/css"/>
         </copy>
 
-        <copy todir="${imcmshtml}" filtering="true">
+        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${imcmshtml}" filtering="true">
             <fileset dir="install/htdocs/imcms/html"/>
-        </copy>
+        </imtranslate>
 
         <copy todir="${imcmsimages}/${defaultlanguage}/admin">
             <fileset dir="install/htdocs/imcms/images"/>
@@ -554,8 +556,12 @@
                 <include name="*.jsp"/>
             </patternset>
             </fileset>
+        </imtranslate>
 
-            <!-- Copy swedish text-files -->
+        <!-- Copy swedish text-files -->
+        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${webroot}" filtering="true">
             <fileset dir="install/htdocs/sv">
             <include name="adminuser/**"/>
             <include name="shop/**"/>
@@ -584,18 +590,22 @@
             </fileset>
         </copy>
 
-        <copy todir="${imcmsimages}/${defaultlanguage}/admin">
+        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${imcmsimages}/${defaultlanguage}/admin" filtering="true">
             <fileset dir="install/htdocs/sv/imagebrowse"/>
             <fileset dir="install/htdocs/sv/fileadmin"/>
-        </copy>
+        </imtranslate>
 
-        <copy todir="${imcmsjsp}" filtering="true">
+        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${imcmsjsp}" filtering="true">
             <fileset dir="install/htdocs/sv/jsp">
             <patternset>
                 <include name="*.jsp"/>
             </patternset>
             </fileset>
-        </copy>
+        </imtranslate>
 
     </target>
 
