@@ -1,8 +1,8 @@
 package imcode.server.parser;
 
 import imcode.server.DocumentRequest;
-import imcode.server.IMCServiceInterface;
 import imcode.server.IMCConstants;
+import imcode.server.IMCServiceInterface;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -71,12 +71,22 @@ public class TextDocumentParser {
 
             TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( document, user );
 
-            boolean textmode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 && permissionSet.getEditTexts();
-            boolean imagemode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0 && permissionSet.getEditImages();
-            boolean menumode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 && permissionSet.getEditMenus();
-            boolean templatemode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0
-                                   && permissionSet.getEditTemplates();
-            boolean includemode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0 && permissionSet.getEditIncludes();
+            boolean textmode = false ;
+            boolean imagemode = false ;
+            boolean menumode = false ;
+            boolean templatemode = false ;
+            boolean includemode = false ;
+
+            if ( flags > 0 ) {
+                textmode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 && permissionSet.getEditTexts();
+                imagemode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0
+                            && permissionSet.getEditImages();
+                menumode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 && permissionSet.getEditMenus();
+                templatemode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0
+                               && permissionSet.getEditTemplates();
+                includemode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0
+                              && permissionSet.getEditIncludes();
+            }
 
             String template = getTemplate( document, parserParameters );
 
