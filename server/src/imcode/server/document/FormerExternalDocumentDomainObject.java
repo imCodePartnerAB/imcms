@@ -4,10 +4,6 @@ import imcode.server.user.UserDomainObject;
 
 public abstract class FormerExternalDocumentDomainObject extends DocumentDomainObject {
 
-    protected void loadAllLazilyLoadedDocumentTypeSpecificAttributes() {
-        // nothing lazily loaded
-    }
-
     public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
     }
 

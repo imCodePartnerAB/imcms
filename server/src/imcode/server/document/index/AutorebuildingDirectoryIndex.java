@@ -83,7 +83,6 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
     }
 
     public synchronized DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IndexException {
-        log.debug( "search - called" );
         try {
             DocumentDomainObject[] documents = index.search( query, searchingUser );
             if (index.isInconsistent()) {

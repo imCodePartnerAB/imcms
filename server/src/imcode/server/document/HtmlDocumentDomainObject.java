@@ -12,10 +12,6 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
         return html;
     }
 
-    protected void loadAllLazilyLoadedDocumentTypeSpecificAttributes() {
-        // nothing lazily loaded
-    }
-
     public int getDocumentTypeId() {
         return DOCTYPE_HTML;
     }

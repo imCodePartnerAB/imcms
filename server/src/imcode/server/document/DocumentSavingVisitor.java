@@ -4,14 +4,20 @@ import imcode.server.db.DatabaseCommand;
 import imcode.server.db.DatabaseConnection;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import org.apache.log4j.Logger;
 
 import java.util.Iterator;
 import java.util.Map;
 
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
-    public DocumentSavingVisitor( UserDomainObject user ) {
+    private final static Logger log = Logger.getLogger( DocumentSavingVisitor.class.getName() );
+
+    private DocumentDomainObject oldDocument;
+
+    public DocumentSavingVisitor( UserDomainObject user, DocumentDomainObject documentInDatabase ) {
         super( user );
+        this.oldDocument = documentInDatabase;
     }
 
     public void visitBrowserDocument( BrowserDocumentDomainObject browserDocument ) {
@@ -64,10 +70,14 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         updateTextDocumentImages( textDocument );
         updateTextDocumentIncludes( textDocument );
 
-        service.getDatabase().executeTransaction( new DatabaseCommand() {
-            public void executeOn( DatabaseConnection connection ) {
-                updateTextDocumentMenus( connection, textDocument );
-            }
-        } );
+        boolean menusChanged = !textDocument.getMenus().equals( ( (TextDocumentDomainObject)oldDocument ).getMenus() );
+        if ( menusChanged ) {
+            log.debug("Menus changed.") ;
+            service.getDatabase().executeTransaction( new DatabaseCommand() {
+                public void executeOn( DatabaseConnection connection ) {
+                    updateTextDocumentMenus( connection, textDocument );
+                }
+            } );
+        }
     }
 }

@@ -1,14 +1,16 @@
 package imcode.server.document.textdocument;
 
-import org.apache.commons.collections.*;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.lang.UnhandledException;
 
 import java.util.*;
 
-public class MenuDomainObject {
+public class MenuDomainObject implements Cloneable {
 
     private int id;
     private int sortOrder;
-    private Set menuItems;
+    private Map menuItems;
 
     public final static int MENU_SORT_ORDER__BY_HEADLINE = 1;
     public final static int MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED = 2;
@@ -23,14 +25,26 @@ public class MenuDomainObject {
         this( 0, MENU_SORT_ORDER__DEFAULT );
     }
 
+    public Object clone() throws CloneNotSupportedException {
+        try {
+            MenuDomainObject clone = (MenuDomainObject)super.clone() ;
+            clone.menuItems = new HashMap() ;
+            for ( Iterator iterator = menuItems.entrySet().iterator(); iterator.hasNext(); ) {
+                Map.Entry entry = (Map.Entry)iterator.next();
+                Integer documentId = (Integer)entry.getKey();
+                MenuItemDomainObject menuItem = (MenuItemDomainObject)entry.getValue();
+                clone.menuItems.put(documentId, menuItem.clone()) ;
+            }
+            return clone ;
+        } catch ( CloneNotSupportedException e ) {
+            throw new UnhandledException( e );
+        }
+    }
+
     public MenuDomainObject( int id, int sortOrder ) {
         this.id = id;
         this.sortOrder = sortOrder;
-        menuItems = SetUtils.predicatedSet( new HashSet(), new Predicate() {
-            public boolean evaluate( Object o ) {
-                return o instanceof MenuItemDomainObject && null != ( (MenuItemDomainObject)o ).getSortKey();
-            }
-        } );
+        menuItems = new HashMap();
     }
 
     public int getId() {
@@ -46,7 +60,7 @@ public class MenuDomainObject {
     }
 
     public MenuItemDomainObject[] getMenuItems() {
-        MenuItemDomainObject[] menuItemsArray = (MenuItemDomainObject[])menuItems.toArray( new MenuItemDomainObject[menuItems.size()] );
+        MenuItemDomainObject[] menuItemsArray = (MenuItemDomainObject[])menuItems.values().toArray( new MenuItemDomainObject[menuItems.size()] );
         Arrays.sort( menuItemsArray, getMenuItemComparatorForSortOrder( sortOrder ) );
         return menuItemsArray;
     }
@@ -63,11 +77,11 @@ public class MenuDomainObject {
             menuItem.setSortKey( sortKey );
         }
 
-        menuItems.add( menuItem );
+        menuItems.put( new Integer(menuItem.getDocumentReference().getDocumentId()), menuItem );
     }
 
     private Integer getMaxSortKey() {
-        Collection menuItemSortKeys = CollectionUtils.collect( menuItems, new Transformer() {
+        Collection menuItemSortKeys = CollectionUtils.collect( menuItems.values(), new Transformer() {
             public Object transform( Object o ) {
                 return ( (MenuItemDomainObject)o ).getSortKey();
             }
@@ -76,10 +90,6 @@ public class MenuDomainObject {
             return null;
         }
         return (Integer)Collections.max( menuItemSortKeys );
-    }
-
-    public void removeMenuItem( MenuItemDomainObject menuItem ) {
-        menuItems.remove( menuItem );
     }
 
     private Comparator getMenuItemComparatorForSortOrder( int sortOrder ) {
@@ -113,11 +123,18 @@ public class MenuDomainObject {
     }
 
     public void removeMenuItemByDocumentId( int childId ) {
-        for ( Iterator iterator = menuItems.iterator(); iterator.hasNext(); ) {
-            MenuItemDomainObject menuItem = (MenuItemDomainObject)iterator.next();
-            if (menuItem.getDocument().getId() == childId) {
-                iterator.remove();
-            }
+        menuItems.remove( new Integer( childId )) ;
+    }
+
+    public boolean equals( Object obj ) {
+        if (!(obj instanceof MenuDomainObject)) {
+            return false ;
         }
+        MenuDomainObject otherMenu = (MenuDomainObject)obj;
+        return otherMenu.sortOrder == sortOrder && otherMenu.menuItems.equals( menuItems ) ;
+    }
+
+    public int hashCode() {
+        return sortOrder + menuItems.hashCode() ;
     }
 }

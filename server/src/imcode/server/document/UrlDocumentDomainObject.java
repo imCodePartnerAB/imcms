@@ -12,10 +12,6 @@ public class UrlDocumentDomainObject extends DocumentDomainObject {
         this.url = url;
     }
 
-    protected void loadAllLazilyLoadedDocumentTypeSpecificAttributes() {
-        // nothing lazily loaded
-    }
-
     public int getDocumentTypeId() {
         return DOCTYPE_URL;
     }

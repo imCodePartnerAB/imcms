@@ -11,9 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.*;
 
-/**
- * Stores info about a document. *
- */
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public final static int DOCTYPE_TEXT = 2;
@@ -49,7 +46,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public static DocumentDomainObject fromDocumentTypeId( int documentTypeId ) {
-        DocumentDomainObject document = null;
+        DocumentDomainObject document ;
 
         switch ( documentTypeId ) {
             case DOCTYPE_TEXT:
@@ -79,7 +76,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             default:
                 String errorMessage = "Unknown document-type-id: " + documentTypeId;
                 log.error(errorMessage);
-                throw new RuntimeException( errorMessage );
+                throw new IllegalArgumentException( errorMessage );
         }
 
         return document;
@@ -140,10 +137,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         getLazilyLoadedDocumentAttributes();
         getLazilyLoadedDocumentCategories();
         getLazilyLoadedRolesMappedToDocumentPermissionSetIds();
-        loadAllLazilyLoadedDocumentTypeSpecificAttributes();
     }
-
-    protected abstract void loadAllLazilyLoadedDocumentTypeSpecificAttributes();
 
     public String getMenuImage() {
         return attributes.image;
@@ -354,7 +348,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private boolean isArchivedAtTime( Date time ) {
         Attributes documentProperties = this.attributes;
-        return ( documentProperties.archivedDatetime != null && documentProperties.archivedDatetime.before( time ) );
+        return documentProperties.archivedDatetime != null && documentProperties.archivedDatetime.before( time );
     }
 
     public void removeAllCategories() {

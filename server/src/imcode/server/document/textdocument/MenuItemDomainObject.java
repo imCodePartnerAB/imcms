@@ -3,9 +3,9 @@ package imcode.server.document.textdocument;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentReference;
 
-public class MenuItemDomainObject {
+public class MenuItemDomainObject implements Cloneable {
 
-    private DocumentReference documentReference ;
+    private DocumentReference documentReference;
     private Integer sortKey;
     private TreeSortKeyDomainObject treeSortKey;
 
@@ -15,7 +15,7 @@ public class MenuItemDomainObject {
 
     public MenuItemDomainObject( DocumentReference documentReference,
                                  Integer sortKey, String treeSortKey ) {
-        this.documentReference = documentReference ;
+        this.documentReference = documentReference;
         this.sortKey = sortKey;
         this.treeSortKey = new TreeSortKeyDomainObject( treeSortKey );
     }
@@ -28,20 +28,15 @@ public class MenuItemDomainObject {
             return false;
         }
 
-        final MenuItemDomainObject menuItem = (MenuItemDomainObject)o;
+        final MenuItemDomainObject otherMenuItem = (MenuItemDomainObject)o;
 
-        DocumentDomainObject document = documentReference.getDocument();
-        DocumentDomainObject otherDocument = menuItem.documentReference.getDocument();
-        if ( document != null
-             ? !document.equals( otherDocument ) : otherDocument != null ) {
-            return false;
-        }
-
-        return true;
+        return sortKey.equals( otherMenuItem.sortKey )
+               && treeSortKey.equals( otherMenuItem.treeSortKey )
+               && documentReference.equals( otherMenuItem.documentReference );
     }
 
     public int hashCode() {
-        return documentReference.hashCode() ;
+        return sortKey.hashCode() + treeSortKey.hashCode() + documentReference.hashCode();
     }
 
     public DocumentDomainObject getDocument() {
@@ -49,7 +44,7 @@ public class MenuItemDomainObject {
     }
 
     public Integer getSortKey() {
-        return sortKey ;
+        return sortKey;
     }
 
     public void setSortKey( Integer sortKey ) {
@@ -62,5 +57,13 @@ public class MenuItemDomainObject {
 
     public void setTreeSortKey( TreeSortKeyDomainObject treeSortKey ) {
         this.treeSortKey = treeSortKey;
+    }
+
+    public DocumentReference getDocumentReference() {
+        return documentReference;
+    }
+
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

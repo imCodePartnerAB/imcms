@@ -419,7 +419,7 @@ public class TextDocument extends Document {
          */
         public void removeDocument(Document documentToRemove) throws NoPermissionException {
             getSecurityChecker().hasEditPermission(documentToRemove);
-            internalTextDocument.getMenu(menuIndex).removeMenuItem(new MenuItemDomainObject( getDocumentMapper().getDocumentReference( documentToRemove.getInternal() ) ) );
+            internalTextDocument.getMenu(menuIndex).removeMenuItemByDocumentId(documentToRemove.getId());
         }
 
         public Document[] getDocuments() {

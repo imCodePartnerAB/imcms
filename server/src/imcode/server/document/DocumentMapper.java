@@ -4,16 +4,17 @@ import com.imcode.imcms.flow.DocumentPageFlow;
 import imcode.server.*;
 import imcode.server.document.index.AutorebuildingDirectoryIndex;
 import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.FileUtility;
 import imcode.util.IdNamePair;
-import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.map.AbstractMapDecorator;
 import org.apache.commons.collections.map.LRUMap;
-import org.apache.commons.collections.map.LazyMap;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -28,6 +29,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.lang.ref.SoftReference;
 
 public class DocumentMapper {
 
@@ -53,13 +55,7 @@ public class DocumentMapper {
 
     private static final int DOCUMENT_CACHE_MAX_SIZE = 100;
 
-    private Map documentCache = LazyMap.decorate( new LRUMap(DOCUMENT_CACHE_MAX_SIZE), new Transformer() {
-        public Object transform( Object input ) {
-            DocumentDomainObject document = getDocumentFromDb( ( (Integer)input ).intValue() );
-            document.loadAllLazilyLoaded();
-            return getDocumentReference(document);
-        }
-    } );
+    private DocumentCache documentCache = new DocumentCache( new LRUMap( DOCUMENT_CACHE_MAX_SIZE ), this ) ;
 
     private static final String TEMPLATE__STATUS_NEW = "status/new.frag";
     private static final String TEMPLATE__STATUS_DISAPPROVED = "status/disapproved.frag";
@@ -348,8 +344,8 @@ public class DocumentMapper {
 
         DocumentDomainObject document ;
         try {
-            DocumentReference documentReference = (DocumentReference)documentCache.get( new Integer( metaId ) );
-            document = (DocumentDomainObject)documentReference.getDocument().clone();
+            document = (DocumentDomainObject)documentCache.get( new Integer( metaId ) );
+            document = (DocumentDomainObject)document.clone();
         } catch ( CloneNotSupportedException e ) {
             throw new UnhandledException( e );
         }
@@ -359,10 +355,10 @@ public class DocumentMapper {
     }
 
     public DocumentReference getDocumentReference( DocumentDomainObject document ) {
-        return new DocumentReference( document, this );
+        return getDocumentReference( document.getId() ) ;
     }
 
-    private DocumentReference getDocumentReference( int childId ) {
+    DocumentReference getDocumentReference( int childId ) {
         return new DocumentReference( childId, this );
     }
 
@@ -418,81 +414,6 @@ public class DocumentMapper {
             document.setPermissionSetIdForRole( role, rolePermissionSetId );
         }
 
-    }
-
-    public void initLazilyLoadedTextDocumentAttributes( TextDocumentDomainObject document ) {
-        // all from the table text_doc
-        String[] sqlResult = service.sqlQuery( "SELECT template_id, group_id, default_template_1, default_template_2 FROM text_docs WHERE meta_id = ?",
-                                               new String[]{String.valueOf( document.getId() )} );
-        if ( sqlResult.length >= 4 ) {
-            int template_id = Integer.parseInt( sqlResult[0] );
-            int group_id = Integer.parseInt( sqlResult[1] );
-            int defaultTemplateIdForRestrictedPermissionSetOne = Integer.parseInt( sqlResult[2] );
-            int defaultTemplateIdForRestrictedPermissionSetTwo = Integer.parseInt( sqlResult[3] );
-
-            TemplateDomainObject template = service.getTemplateMapper().getTemplateById( template_id );
-            document.setTemplate( template );
-            document.setTemplateGroupId( group_id );
-            document.setDefaultTemplateIdForRestrictedPermissionSetOne( defaultTemplateIdForRestrictedPermissionSetOne );
-            document.setDefaultTemplateIdForRestrictedPermissionSetTwo( defaultTemplateIdForRestrictedPermissionSetTwo );
-        }
-
-        setDocumentTexts( document );
-        setDocumentImages( document );
-        setDocumentIncludes( document );
-        setDocumentMenus( document );
-
-    }
-
-    private void setDocumentMenus( TextDocumentDomainObject document ) {
-        String sqlSelectDocumentMenus = "SELECT menus.menu_id, menu_index, sort_order, to_meta_id, manual_sort_order, tree_sort_index FROM menus,childs WHERE menus.menu_id = childs.menu_id AND meta_id = ? ORDER BY menu_index";
-        String[][] sqlRows = service.sqlQueryMulti( sqlSelectDocumentMenus, new String[]{"" + document.getId()} );
-        MenuDomainObject menu = null;
-        int previousMenuIndex = 0;
-        for ( int i = 0; i < sqlRows.length; i++ ) {
-            String[] sqlRow = sqlRows[i];
-            int menuId = Integer.parseInt( sqlRow[0] );
-            int menuIndex = Integer.parseInt( sqlRow[1] );
-            int sortOrder = Integer.parseInt( sqlRow[2] );
-            int childId = Integer.parseInt( sqlRow[3] );
-            int manualSortKey = Integer.parseInt( sqlRow[4] );
-            String treeSortKey = sqlRow[5];
-            if ( null == menu || menuIndex != previousMenuIndex ) {
-                previousMenuIndex = menuIndex;
-                menu = new MenuDomainObject( menuId, sortOrder );
-                document.setMenu( menuIndex, menu );
-            }
-            menu.addMenuItem( new MenuItemDomainObject( getDocumentReference( childId ), new Integer( manualSortKey ), treeSortKey ) );
-        }
-    }
-
-    private void setDocumentIncludes( TextDocumentDomainObject document ) {
-        String sqlSelectDocumentIncludes = "SELECT include_id, included_meta_id FROM includes WHERE meta_id = ?";
-        String[][] documentIncludesSqlResult = service.sqlQueryMulti( sqlSelectDocumentIncludes, new String[]{
-            "" + document.getId()
-        } );
-        for ( int i = 0; i < documentIncludesSqlResult.length; i++ ) {
-            String[] documentIncludeSqlRow = documentIncludesSqlResult[i];
-            int includeIndex = Integer.parseInt( documentIncludeSqlRow[0] );
-            int includedDocumentId = Integer.parseInt( documentIncludeSqlRow[1] );
-            document.setInclude( includeIndex, includedDocumentId );
-        }
-    }
-
-    private void setDocumentImages( TextDocumentDomainObject document ) {
-        document.setImages( getDocumentImages( document ) );
-    }
-
-    private void setDocumentTexts( TextDocumentDomainObject document ) {
-        String sqlSelectTexts = "SELECT name, text, type FROM texts WHERE meta_id = ?";
-        String[][] sqlTextsResult = service.sqlQueryMulti( sqlSelectTexts, new String[]{"" + document.getId()} );
-        for ( int i = 0; i < sqlTextsResult.length; i++ ) {
-            String[] sqlTextsRow = sqlTextsResult[i];
-            int textIndex = Integer.parseInt( sqlTextsRow[0] );
-            String text = sqlTextsRow[1];
-            int textType = Integer.parseInt( sqlTextsRow[2] );
-            document.setText( textIndex, new TextDomainObject( text, textType ) );
-        }
     }
 
     public SectionDomainObject getSectionById( int sectionId ) {
@@ -652,9 +573,11 @@ public class DocumentMapper {
             return; // TODO: More specific check needed. Throw exception ?
         }
 
-        try {
-            checkMaxDocumentCategoriesOfType( document );
+        checkMaxDocumentCategoriesOfType( document );
 
+        DocumentDomainObject oldDocument = getDocument( document.getId() ) ;
+
+        try {
             boolean modifiedDatetimeChanged = !document.getLastModifiedDatetime().equals( document.getModifiedDatetime() );
             if ( !modifiedDatetimeChanged ) {
                 document.setModifiedDatetime( service.getCurrentDate() );
@@ -672,7 +595,7 @@ public class DocumentMapper {
 
             documentPermissionSetMapper.saveRestrictedDocumentPermissionSets( document );
 
-            document.accept( new DocumentSavingVisitor( user ) );
+            document.accept( new DocumentSavingVisitor( user, oldDocument ) );
         } finally {
             invalidateDocument( document );
         }
@@ -1036,55 +959,6 @@ public class DocumentMapper {
         return service.sqlQueryMulti( sqlStr, new String[]{"" + document.getId()} );
     }
 
-    private final static String IMAGE_SQL_COLUMNS = "name,image_name,imgurl,width,height,border,v_space,h_space,target,align,alt_text,low_scr,linkurl,type";
-
-    private Map getDocumentImages( DocumentDomainObject document ) {
-        String[][] imageRows = service.sqlQueryMulti( "select " + IMAGE_SQL_COLUMNS + " from images\n"
-                                                      + "where meta_id = ?",
-                                                      new String[]{"" + document.getId()} );
-        Map imageMap = new HashMap();
-        for ( int i = 0; i < imageRows.length; i++ ) {
-            String[] imageRow = imageRows[i];
-            Integer imageIndex = Integer.valueOf( imageRow[0] );
-            ImageDomainObject image = createImageFromSqlResultRow( imageRow );
-            imageMap.put( imageIndex, image );
-        }
-        return imageMap;
-    }
-
-    private ImageDomainObject createImageFromSqlResultRow( String[] sqlResult ) {
-        ImageDomainObject image = new ImageDomainObject();
-
-        int imageType = Integer.parseInt( sqlResult[13] );
-        String imageSource = sqlResult[2];
-
-        image.setName( sqlResult[1] );
-        if ( ImageDomainObject.ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {
-            try {
-                int fileDocumentId = Integer.parseInt( imageSource );
-                image.setSource( new ImageDomainObject.FileDocumentImageSource( getDocumentReference( getDocument(fileDocumentId) ) ) );
-            } catch ( NumberFormatException nfe ) {
-                log.warn( "Non-numeric document-id \"" + imageSource + "\" for image in database." );
-            } catch ( ClassCastException cce ) {
-                log.warn( "Non-file-document-id \"" + imageSource + "\" for image in database." );
-            }
-        } else if ( ImageDomainObject.ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH == imageType ) {
-            image.setSource( new ImageDomainObject.ImagesPathRelativePathImageSource( imageSource ) );
-        }
-
-        image.setWidth( Integer.parseInt( sqlResult[3] ) );
-        image.setHeight( Integer.parseInt( sqlResult[4] ) );
-        image.setBorder( Integer.parseInt( sqlResult[5] ) );
-        image.setVerticalSpace( Integer.parseInt( sqlResult[6] ) );
-        image.setHorizontalSpace( Integer.parseInt( sqlResult[7] ) );
-        image.setTarget( sqlResult[8] );
-        image.setAlign( sqlResult[9] );
-        image.setAlternateText( sqlResult[10] );
-        image.setLowResolutionUrl( sqlResult[11] );
-        image.setLinkUrl( sqlResult[12] );
-        return image;
-    }
-
     public String[][] getAllMimeTypesWithDescriptions( UserDomainObject user ) {
         String sqlStr = "SELECT mime, mime_name FROM mime_types WHERE lang_prefix = ? AND mime_id > 0 ORDER BY mime_id";
         String[][] mimeTypes = service.sqlQueryMulti( sqlStr, new String[]{user.getLanguageIso639_2()} );
@@ -1252,11 +1126,6 @@ public class DocumentMapper {
         deleteFileDocumentFilesAccordingToFileFilter( new SuperfluousFileDocumentFilesFileFilter( fileDocument ) );
     }
 
-    public boolean hasNewerDocument( int documentId, Date time ) {
-        DocumentReference documentReference = (DocumentReference)documentCache.get( new Integer( documentId ));
-        return documentReference.getTime().after( time ) ;
-    }
-
     public static class TextDocumentMenuIndexPair {
 
         private TextDocumentDomainObject document;
@@ -1349,6 +1218,39 @@ public class DocumentMapper {
         }
     }
 
+    private static class DocumentCache extends AbstractMapDecorator {
+
+        private DocumentMapper documentMapper;
+
+        DocumentCache( Map map, DocumentMapper documentMapper ) {
+            super( map );
+            this.documentMapper = documentMapper;
+        }
+
+        public Object get( Object key ) {
+
+            SoftReference[] documentSoftReferenceArray = (SoftReference[])map.get( key ) ;
+            DocumentDomainObject document = null ;
+            if (null != documentSoftReferenceArray ) {
+                document = (DocumentDomainObject)documentSoftReferenceArray[0].get() ;
+            }
+            if (null == document) {
+                int documentId = ( (Integer)key ).intValue();
+                documentSoftReferenceArray = new SoftReference[1] ;
+                map.put(key, documentSoftReferenceArray) ;
+                document = documentMapper.getDocumentFromDb( documentId );
+                if (null != document) {
+                    document.loadAllLazilyLoaded();
+                }
+                documentSoftReferenceArray[0] = new SoftReference( document );
+            }
+            if (null == documentSoftReferenceArray[0]) {
+                throw new RuntimeException( "Loop in document cache.") ;
+            }
+            return document ;
+        }
+
+    }
 
 }
 

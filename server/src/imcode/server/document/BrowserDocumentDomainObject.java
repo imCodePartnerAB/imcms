@@ -16,10 +16,6 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
         return Collections.unmodifiableMap( browserDocumentIdMap );
     }
 
-    protected void loadAllLazilyLoadedDocumentTypeSpecificAttributes() {
-        // nothing lazily loaded
-    }
-
     public int getDocumentTypeId() {
         return DOCTYPE_BROWSER;
     }

@@ -2,7 +2,6 @@ package imcode.server.document;
 
 import imcode.util.InputStreamSource;
 import imcode.util.Utility;
-import imcode.util.InputStreamSource;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.UnhandledException;
@@ -17,10 +16,6 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     private String defaultFileId;
     public static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
     public static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
-
-    protected void loadAllLazilyLoadedDocumentTypeSpecificAttributes() {
-        // nothing lazily loaded
-    }
 
     public int getDocumentTypeId() {
         return DOCTYPE_FILE;
