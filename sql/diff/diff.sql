@@ -1610,6 +1610,29 @@ COMMIT
 -- 2003-12-17 Johan / Hasse
 
 
+update doc_types
+set type = 'New Page' where doc_type = 2 and lang_prefix = 'en'
+
+update doc_types
+set type = 'External Link' where doc_type = 5 and lang_prefix = 'en'
+
+update doc_types
+set type = 'Upload file' where doc_type = 8 and lang_prefix = 'en'
+
+update doc_types
+set type = 'Browser controled link' where doc_type = 6 and lang_prefix = 'en'
+
+update doc_types
+set type = 'Chat page' where doc_type = 103 and lang_prefix = 'en'
+
+update doc_types
+set type = 'Bulletin board' where doc_type = 104 and lang_prefix = 'en'
+
+update doc_types
+set type = 'Conference page' where doc_type = 102 and lang_prefix = 'en'
+
+-- 2004-01-12 Lennart Å
+
 print ' OBS !!!!! '
 print 'Följande åtgärder behöver genomföras efter detta script '
 print ''

@@ -421,7 +421,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 docTypesList.add( 1, existing_doc_name );
 
                 final int[] docTypesSortOrder = {DocumentDomainObject.DOCTYPE_TEXT, 0, // "Befintligt dokument"
-                                                 DocumentDomainObject.DOCTYPE_FILE, DocumentDomainObject.DOCTYPE_URL, DocumentDomainObject.DOCTYPE_HTML, DocumentDomainObject.DOCTYPE_BROWSER, DocumentDomainObject.DOCTYPE_CONFERENCE, DocumentDomainObject.DOCTYPE_CHAT, DocumentDomainObject.DOCTYPE_BILLBOARD, DocumentDomainObject.DOCTYPE_DIAGRAM, DocumentDomainObject.DOCTYPE_CALENDER, };
+                                                 DocumentDomainObject.DOCTYPE_URL, DocumentDomainObject.DOCTYPE_FILE, DocumentDomainObject.DOCTYPE_BROWSER, DocumentDomainObject.DOCTYPE_HTML, DocumentDomainObject.DOCTYPE_CHAT, DocumentDomainObject.DOCTYPE_BILLBOARD, DocumentDomainObject.DOCTYPE_CONFERENCE, DocumentDomainObject.DOCTYPE_DIAGRAM, DocumentDomainObject.DOCTYPE_CALENDER, };
                 Map sortOrderMap = new HashMap();
                 for ( int i = 0; i < docTypesSortOrder.length; i++ ) {
                     int docTypeId = docTypesSortOrder[i];
