@@ -80,9 +80,6 @@ public class ConfCreator extends Conference {
             // adding the discussion
             imcref.sqlUpdateProcedure( "A_ConfUsersAdd", new String[]{user_id, metaId, user.getFirstName(), user.getLastName()} );
 
-            // Ok, were done creating the conference. Lets tell the system to show this child.
-            imcref.activateChild( Integer.parseInt( metaId ), user );
-
             // Ok, Were done adding the conference, Lets go back to the Manager
             String loginPage = "ConfLogin?login_type=login";
             res.sendRedirect( loginPage );

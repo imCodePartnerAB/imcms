@@ -420,18 +420,6 @@ final public class IMCService implements IMCServiceInterface {
 
     }
 
-    /**
-     * Activate child to child-table.
-     */
-    public void activateChild( int meta_id, UserDomainObject user ) {
-
-        String sqlStr = "update meta set activate = 1 where meta_id = ?";
-        sqlUpdateQuery( sqlStr, new String[]{"" + meta_id} );
-
-        this.updateMainLog( "Child [" + meta_id + "] activated  " + "by user: [" + user.getFullName() + "]" );
-
-    }
-
     public String[] sqlQuery( String sqlQuery, String[] parameters ) {
         return SqlHelpers.sqlQuery( connectionPool, sqlQuery, parameters );
     }

@@ -123,10 +123,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         return null;
     }
 
-    // activate child to child table
-    public void activateChild( int meta_id, UserDomainObject user ) {
-    }
-
     // Send a procedure to the database and return a string array
     public String[] sqlProcedure( String procedure, String[] params ) {
         this.sqlProcedureCalls.addActual( procedure );

@@ -56,10 +56,6 @@ public interface IMCServiceInterface {
     String isFramesetDoc( int meta_id )
 	;
 
-    // activate child to child table
-    void activateChild(int meta_id,UserDomainObject user)
-	;
-
     // Send a procedure to the database and return a string array
     public String[] sqlProcedure(String procedure, String[] params)
 	;

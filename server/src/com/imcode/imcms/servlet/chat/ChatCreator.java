@@ -269,11 +269,7 @@ public class ChatCreator extends ChatBase {
         ServletContext myContext = getServletContext();
         myContext.setAttribute("theChat" + metaId, myChat);
 
-        // Ok, we're done creating the chat. Lets tell imCMS system to show this child.
-        imcref.activateChild(metaId, user);
-
         // Ok, we're done adding the chat, Lets log in to it!
-
         res.sendRedirect("ChatLogin?login_type=login&meta_id=" + metaId);
     }
 

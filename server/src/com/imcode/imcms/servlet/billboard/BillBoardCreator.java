@@ -103,9 +103,6 @@ public class BillBoardCreator extends BillBoard {//BillBoardCreator
             final String daysToShow = "14";
             imcref.sqlUpdateProcedure( "B_AddNewSection", new String[]{metaId, confParams.getProperty( "SECTION_NAME" ), archiveMode, archiveTime, daysToShow} );
 
-            // Ok, were done creating the billBoard. Lets tell Janus system to show this child.
-            imcref.activateChild( Integer.parseInt( metaId ), user );
-
             // Ok, Were done adding the billBoard, Lets go back to the Manager
             String loginPage = "BillBoardLogin?login_type=login";
             res.sendRedirect( loginPage );
