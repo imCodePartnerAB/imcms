@@ -6,8 +6,11 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.IndexException;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.server.Config;
 import junit.framework.TestCase;
 import org.apache.lucene.search.Query;
+
+import java.io.Serializable;
 
 public class TestDocumentMapper extends TestCase {
 
@@ -30,7 +33,13 @@ public class TestDocumentMapper extends TestCase {
         textDocument = new TextDocumentDomainObject();
         textDocument.setId( 1002 );
         database = new MockDatabase();
-        documentMapper = new DocumentMapper( null, database, null, new DocumentPermissionSetMapper( database ), new TestDocumentMapper.MockDocumentIndex(), null );
+        documentMapper = new DocumentMapper( null, database, null, new DocumentPermissionSetMapper( database ), new TestDocumentMapper.MockDocumentIndex(), null, new Config() );
+    }
+
+    public void testNotSerializable() {
+        if (DocumentMapper.class.isAssignableFrom( Serializable.class )) {
+            fail("DocumentMapper must not be serializable so it can't be put in the session.") ;
+        }
     }
 
     public void testUpdateDocumentRolePermissionsWithNoPermissions() throws Exception {

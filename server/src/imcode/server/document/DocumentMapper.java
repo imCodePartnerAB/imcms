@@ -1,9 +1,7 @@
 package imcode.server.document;
 
 import com.imcode.imcms.flow.DocumentPageFlow;
-import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
-import imcode.server.LanguageMapper;
+import imcode.server.*;
 import imcode.server.db.Database;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
@@ -48,28 +46,28 @@ public class DocumentMapper {
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
     static final String SPROC_SET_PERMISSION_SET_ID_FOR_ROLE_ON_DOCUMENT = "SetRoleDocPermissionSetId";
 
-    private ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper;
-    private Database database;
-    private DocumentPermissionSetMapper documentPermissionSetMapper;
-    private DocumentIndex documentIndex;
-
-    private static final int DOCUMENT_CACHE_MAX_SIZE = 100;
-
-    private DocumentCache documentCache = new DocumentCache( new LRUMap( DOCUMENT_CACHE_MAX_SIZE ), this );
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
-    private Clock clock;
-    private ImcmsServices services;
+
+    private final ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper;
+    private final Database database;
+    private final DocumentPermissionSetMapper documentPermissionSetMapper;
+    private final DocumentIndex documentIndex;
+    private final DocumentCache documentCache;
+    private final Clock clock;
+    private final ImcmsServices services;
 
     public DocumentMapper( ImcmsServices services, Database database,
                            ImcmsAuthenticatorAndUserAndRoleMapper userRegistry,
                            DocumentPermissionSetMapper documentPermissionSetMapper, DocumentIndex documentIndex,
-                           Clock clock ) {
+                           Clock clock, Config config ) {
         this.database = database;
         this.clock = clock;
         this.services = services;
         this.userAndRoleMapper = userRegistry;
         this.documentPermissionSetMapper = documentPermissionSetMapper;
         this.documentIndex = documentIndex;
+        int documentCacheMaxSize = config.getDocumentCacheMaxSize() ;
+        documentCache = new DocumentCache( new LRUMap( documentCacheMaxSize ), this );
     }
 
     public DocumentDomainObject createDocumentOfTypeFromParent( int documentTypeId, final DocumentDomainObject parent,
@@ -1049,7 +1047,6 @@ public class DocumentMapper {
 
     public void copyDocument( DocumentDomainObject selectedChild,
                               UserDomainObject user ) {
-        ImcmsServices services = Imcms.getServices();
         String copyHeadlineSuffix = services.getAdminTemplate( COPY_HEADLINE_SUFFIX_TEMPLATE, user, null );
         selectedChild.setHeadline( selectedChild.getHeadline() + copyHeadlineSuffix );
         makeDocumentLookNew( selectedChild, user );

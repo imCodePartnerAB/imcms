@@ -2,6 +2,7 @@ package com.imcode.imcms.flow;
 
 import com.imcode.test.mock.MockHttpServletRequest;
 import imcode.server.ImcmsServices;
+import imcode.server.Config;
 import imcode.server.db.Database;
 import imcode.server.db.MockDatabase;
 import imcode.server.document.BrowserDocumentDomainObject;
@@ -26,7 +27,7 @@ public class TestEditBrowserDocumentPageFlow extends TestCase {
         browserDocument = new BrowserDocumentDomainObject();
         otherBrowser = new BrowserDocumentDomainObject.Browser( 1, "Other", 1 );
         editBrowserDocumentPageFlow = new EditBrowserDocumentPageFlow( browserDocument, null, null );
-        documentMapper = new TestEditBrowserDocumentPageFlow.MockDocumentMapper(null, new MockDatabase(), null, null, null, null);
+        documentMapper = new TestEditBrowserDocumentPageFlow.MockDocumentMapper(null, new MockDatabase(), null, null, null, null, new Config() );
     }
 
     public void testGetAddedBrowsersFromRequest() throws Exception {
@@ -44,9 +45,11 @@ public class TestEditBrowserDocumentPageFlow extends TestCase {
 
 
 
-        public MockDocumentMapper( ImcmsServices services, Database database, ImcmsAuthenticatorAndUserAndRoleMapper userRegistry,
-                        DocumentPermissionSetMapper documentPermissionSetMapper, DocumentIndex documentIndex, Clock clock ) {
-            super( services, database, userRegistry, documentPermissionSetMapper, documentIndex, clock );
+        public MockDocumentMapper( ImcmsServices services, Database database,
+                                   ImcmsAuthenticatorAndUserAndRoleMapper userRegistry,
+                                   DocumentPermissionSetMapper documentPermissionSetMapper,
+                                   DocumentIndex documentIndex, Clock clock, Config config ) {
+            super( services, database, userRegistry, documentPermissionSetMapper, documentIndex, clock, config );
         }
 
         protected BrowserDocumentDomainObject.Browser createBrowserFromSqlRow( String[] sqlRow ) {

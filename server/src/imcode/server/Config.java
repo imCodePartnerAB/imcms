@@ -18,6 +18,7 @@ public class Config {
     private String fileAdminRootPaths;
     private int indexingSchedulePeriodInMinutes = 1440 ;
     private String documentPathPrefix;
+    private int documentCacheMaxSize = 100 ;
 
     public void setTemplatePath( File templatePath ) {
         this.templatePath = templatePath;
@@ -136,5 +137,13 @@ public class Config {
 
     public void setDocumentPathPrefix( String documentPathPrefix ) {
         this.documentPathPrefix = documentPathPrefix;
+    }
+
+    public int getDocumentCacheMaxSize() {
+        return documentCacheMaxSize;
+    }
+
+    public void setDocumentCacheMaxSize( int documentCacheMaxSize ) {
+        this.documentCacheMaxSize = documentCacheMaxSize;
     }
 }

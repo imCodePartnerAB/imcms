@@ -152,7 +152,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private void initDocumentMapper() {
         File indexDirectory = new File( getRealContextPath(), "WEB-INF/index" );
         DocumentIndex documentIndex = new AutorebuildingDirectoryIndex( indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes() );
-        documentMapper = new DocumentMapper( this, this.getDatabase(), this.getImcmsAuthenticatorAndUserAndRoleMapper(), new DocumentPermissionSetMapper( this ), documentIndex, this.getClock() );
+        documentMapper = new DocumentMapper( this, this.getDatabase(), this.getImcmsAuthenticatorAndUserAndRoleMapper(), new DocumentPermissionSetMapper( this ), documentIndex, this.getClock(), this.getConfig() );
     }
 
     private void initTemplateMapper() {
