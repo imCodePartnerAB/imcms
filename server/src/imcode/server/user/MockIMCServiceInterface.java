@@ -83,15 +83,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    public void saveTextDoc( IMCService service, UserDomainObject user, int meta_id, Table doc ) {
    }
 
-   // Save a url_doc
-   public void saveUrlDoc( int meta_id, UserDomainObject user, Table doc ) {
-   }
-
-   // Save a new url_doc
-   public void saveNewUrlDoc( int meta_id, UserDomainObject user, Table doc ) {
-   }
-
-   // check if url doc
+    // check if url doc
    public Table isUrlDoc( int meta_id, UserDomainObject user ) {
       return null;
    }
@@ -114,24 +106,11 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   // remove child from child table
-   public void removeChild( int meta_id, int parent_meta_id, UserDomainObject user ) {
-   }
-
-   // activate child to child table
+    // activate child to child table
    public void activateChild( int meta_id, UserDomainObject user ) {
    }
 
-   // make child inactive
-   public void inActiveChild( int meta_id, UserDomainObject user ) {
-   }
-
-   // Parse doc replace variables with data
-   public String parseDoc( String htmlStr, Vector variables ) {
-      return null;
-   }
-
-   // Send a sqlquery to the database and return a string array
+    // Send a sqlquery to the database and return a string array
    public String[] sqlQuery( String sqlQuery ) {
       return new String[0];
    }
@@ -222,17 +201,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   // Send a sqlquery to the database and return a string array and metadata
-   public String[] sqlQueryExt( String sqlQuery ) {
-      return new String[0];
-   }
-
-   // Send a procedure to the database and return a string array
-   public String[] sqlProcedureExt( String procedure ) {
-      return new String[0];
-   }
-
-   // Send a sqlquery to the database and return a Hashtable
+    // Send a sqlquery to the database and return a Hashtable
    public Hashtable sqlQueryHash( String sqlQuery ) {
       return null;
    }
@@ -334,11 +303,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return 0;
    }
 
-   // save templategroup
-   public void saveTemplateGroup( String group_name, UserDomainObject user ) {
-   }
-
-   // delete templategroup
+    // delete templategroup
    public void deleteTemplateGroup( int group_id ) {
    }
 
@@ -399,29 +364,15 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    public void setSystemData( SystemData sd ) {
    }
 
-   // Get the information for each selected metaid. Used by existing documents
-   // Wow. Wonderful methodname. Indeed. Just beautiful.
-   public Hashtable ExistingDocsGetMetaIdInfo( String[] meta_id ) {
-      return null;
-   }
-
-   public String[] getDocumentTypesInList( String langPrefixStr ) {
+    public String[] getDocumentTypesInList( String langPrefixStr ) {
       return new String[0];
    }
 
-   public Hashtable getDocumentTypesInHash( String langPrefixStr ) {
-      return null;
-   }
-
-   public boolean checkUserDocSharePermission( UserDomainObject user, int meta_id ) {
+    public boolean checkUserDocSharePermission( UserDomainObject user, int meta_id ) {
       return false;
    }
 
-   public String getInclude( String path ) throws IOException {
-      return null;
-   }
-
-   public String getFortune( String path ) throws IOException {
+    public String getFortune( String path ) throws IOException {
       return null;
    }
 
@@ -492,29 +443,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   public Map getUserFlags() {
-      return null;
-   }
-
-   public Map getUserFlags( UserDomainObject user ) {
-      return null;
-   }
-
-   public Map getUserFlags( int type ) {
-      return null;
-   }
-
-   public Map getUserFlags( UserDomainObject user, int type ) {
-      return null;
-   }
-
-   public void setUserFlag( UserDomainObject user, String flagName ) {
-   }
-
-   public void unsetUserFlag( UserDomainObject user, String flagName ) {
-   }
-
-   public PollHandlingSystem getPollHandlingSystem() {
+    public PollHandlingSystem getPollHandlingSystem() {
       return null;
    }
 

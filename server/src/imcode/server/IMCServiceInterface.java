@@ -71,14 +71,6 @@ public interface IMCServiceInterface {
     /** Copy documents and insert them in a new textdocument and menu **/
     String[] copyDocs( int meta_id, int doc_menu_no,  UserDomainObject user, String[] childsThisMenu, String copyPrefix)  ;
 
-    // Save a url_doc
-    void saveUrlDoc(int meta_id,UserDomainObject user,imcode.server.Table doc)
-	;
-
-    // Save a new url_doc
-    void saveNewUrlDoc(int meta_id,UserDomainObject user,imcode.server.Table doc)
-	;
-
     // List all archived docs
     //    String listArchive(int meta_id,imcode.server.user.User user)
     //;
@@ -103,19 +95,8 @@ public interface IMCServiceInterface {
     ExternalDocType isExternalDoc(int meta_id,UserDomainObject user)
 	;
 
-    // remove child from child table
-    void removeChild(int meta_id,int parent_meta_id,UserDomainObject user)
-	;
-
     // activate child to child table
     void activateChild(int meta_id,UserDomainObject user)
-	;
-    // make child inactive
-    void inActiveChild(int meta_id,UserDomainObject user)
-	;
-
-    // Parse doc replace variables with data
-    String  parseDoc(String htmlStr,java.util.Vector variables)
 	;
 
     // Send a sqlquery to the database and return a string array
@@ -183,14 +164,6 @@ public interface IMCServiceInterface {
 
     // set  session counter date
     String getCounterDate()  ;
-
-    // Send a sqlquery to the database and return a string array and metadata
-    String[] sqlQueryExt(String sqlQuery)
-	;
-
-    // Send a procedure to the database and return a string array
-    public String[] sqlProcedureExt(String procedure)
-	;
 
     // Send a sqlquery to the database and return a Hashtable
     public Hashtable sqlQueryHash(String sqlQuery)
@@ -274,10 +247,6 @@ public interface IMCServiceInterface {
     public int saveDemoTemplate(int template_id,byte [] data, String suffix)
 	;
 
-    // save templategroup
-    public void saveTemplateGroup(String group_name,UserDomainObject user)
-	;
-
     // delete templategroup
     public void deleteTemplateGroup(int group_id)
 	;
@@ -320,17 +289,9 @@ public interface IMCServiceInterface {
 
     public void setSystemData(SystemData sd)  ;
 
-    // Get the information for each selected metaid. Used by existing documents
-    // Wow. Wonderful methodname. Indeed. Just beautiful.
-    public Hashtable ExistingDocsGetMetaIdInfo( String[] meta_id)   ;
-
     public String[] getDocumentTypesInList(String langPrefixStr)  ;
 
-    public Hashtable getDocumentTypesInHash(String langPrefixStr)   ;
-
     public boolean checkUserDocSharePermission(UserDomainObject user, int meta_id)  ;
-
-    public String getInclude(String path) throws IOException ;
 
     public String getFortune(String path) throws IOException ;
 
@@ -364,19 +325,6 @@ public interface IMCServiceInterface {
     public int getSessionCounter();
 
     public String getSessionCounterDate();
-
-    /** Get all possible userflags **/
-    public Map getUserFlags() ;
-    /** Get all userflags for a single user **/
-    public Map getUserFlags(UserDomainObject user) ;
-    /** Get all userflags of a single type **/
-    public Map getUserFlags(int type) ;
-    /** Get all userflags for a single user of a single type **/
-    public Map getUserFlags(UserDomainObject user, int type) ;
-
-    public void setUserFlag(UserDomainObject user, String flagName);
-
-    public void unsetUserFlag(UserDomainObject user, String flagName);
 
     /** Get an interface to the poll handling system **/
     public imcode.util.poll.PollHandlingSystem getPollHandlingSystem();

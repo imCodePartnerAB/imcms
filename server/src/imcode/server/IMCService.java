@@ -646,68 +646,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * Save an url internalDocument.
-     */
-    public void saveUrlDoc( int meta_id, UserDomainObject user, imcode.server.Table doc ) {
-        String sqlStr = "";
-
-        // create a db connection an get meta data
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-
-        // update url doc
-        sqlStr = "update url_docs\n";
-        sqlStr += "set url_ref ='" + doc.getString( "url_ref" ) + "'";
-        sqlStr += ",url_txt ='" + doc.getString( "url_txt" ) + "'";
-        sqlStr += " where meta_id = " + meta_id;
-
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
-
-        // close connection
-        dbc.closeConnection();
-        dbc = null;
-
-        this.updateLogs( "UrlDoc [" + meta_id + "] modified by user: [" + user.getFullName() + "]" );
-
-    }
-
-    /**
-     * Save a new url internalDocument.
-     */
-    public void saveNewUrlDoc( int meta_id, UserDomainObject user, imcode.server.Table doc ) {
-        String sqlStr = "";
-
-        // create a db connection an get meta data
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-
-        // create new url doc
-        sqlStr = "insert into url_docs(meta_id,frame_name,target,url_ref,url_txt,lang_prefix)\n";
-        sqlStr += "values(" + meta_id + ",'" + doc.getString( "frame_name" ) + "','";
-        sqlStr += doc.getString( "destination" ) + "','";
-        sqlStr += doc.getString( "url_ref" ) + "','";
-        sqlStr += doc.getString( "url_txt" );
-        sqlStr += "','se')";
-
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
-
-        // close connection
-        dbc.closeConnection();
-        dbc = null;
-
-        this.activateChild( meta_id, user );
-
-        this.updateLogs( "UrlDoc [" + meta_id + "] created by user: [" + user.getFullName() + "]" );
-
-    }
-
-    /**
      * Check if url doc.
      */
     public imcode.server.Table isUrlDoc( int meta_id, UserDomainObject user ) {
@@ -875,30 +813,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * Remove child from child-table.
-     */
-    public void removeChild( int meta_id, int parent_meta_id, UserDomainObject user ) {
-        String sqlStr = "";
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-        sqlStr = "delete from childs where meta_id = " + parent_meta_id;
-        sqlStr += "and to_meta_id = " + meta_id;
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
-
-        this.updateLogs( "Child [" + meta_id + "] removed from " + parent_meta_id + "by user: [" + user.getFullName() + "]" );
-
-
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
-
-    }
-
-    /**
      * Activate child to child-table.
      */
     public void activateChild( int meta_id, imcode.server.user.UserDomainObject user ) {
@@ -916,32 +830,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         dbc.executeUpdateQuery();
 
         this.updateLogs( "Child [" + meta_id + "] activated  " + "by user: [" + user.getFullName() + "]" );
-
-
-        //close connection
-        dbc.closeConnection();
-        dbc = null;
-
-    }
-
-    /**
-     Deactivate (sigh) child from child-table.
-     **/
-    public void inActiveChild( int meta_id, imcode.server.user.UserDomainObject user ) {
-
-        String sqlStr = "";
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-        sqlStr = "update meta\n";
-        sqlStr += "set activate=0\n";
-        sqlStr += "where meta_id = " + meta_id;
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
-
-        this.updateLogs( "Child [" + meta_id + "] made inactive  " + "by user: [" + user.getFullName() + "]" );
 
 
         //close connection
@@ -1173,103 +1061,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     Send a sqlQuery to the database and return a string array
-     Array[0]                 = number of field in the record
-     Array[1]   - array[n]    = metadata
-     Array[n+1] - array[size] = data
-     */
-    public String[] sqlQueryExt( String sqlQuery ) {
-
-        DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
-        dbc.getConnection();
-        dbc.createStatement();
-        Vector data = dbc.executeQuery();
-
-        String[] meta = dbc.getMetaData();
-
-        if( data.size() > 0 ) {
-            String result[] = new String[data.size() + dbc.getColumnCount() + 1];
-
-            // no of fields
-            result[0] = dbc.getColumnCount() + "";
-
-            // meta
-            int i = 0;
-            for( i = 0; i < dbc.getColumnCount(); i++ )
-                result[i + 1] = meta[i];
-
-            // data
-            for( int j = 0; j < data.size(); j++ )
-                result[j + i + 1] = null != data.elementAt( j ) ? data.elementAt( j ).toString() : null;
-
-            dbc.clearResultSet();
-            dbc.closeConnection();
-            dbc = null;
-            data = null;
-            meta = null;
-            return result;
-        } else {
-            dbc.clearResultSet();
-            dbc.closeConnection();
-            dbc = null;
-            data = null;
-            meta = null;
-            return null;
-        }
-
-    }
-
-    /**
-     Send a procedure to the database and return a string array
-     Array[0]                 = number of field in the record
-     Array[1]   - array[n]    = metadata
-     Array[n+1] - array[size] = data
-     @deprecated Use {@link #sqlProcedure(String, String[])} instead.
-
-     **/
-    public String[] sqlProcedureExt( String procedure ) {
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-        dbc.setProcedure( procedure );
-
-        Vector data = dbc.executeProcedure();
-        String[] meta = dbc.getMetaData();
-
-        if( data != null && data.size() > 0 ) {
-
-            String result[] = new String[data.size() + dbc.getColumnCount() + 1];
-
-            // no of fields
-            result[0] = dbc.getColumnCount() + "";
-
-            // meta
-            int i = 0;
-            for( i = 0; i < dbc.getColumnCount(); i++ )
-                result[i + 1] = meta[i];
-
-            // data
-            for( int j = 0; j < data.size(); j++ )
-                result[j + i + 1] = null != data.elementAt( j ) ? data.elementAt( j ).toString() : null;
-
-            dbc.clearResultSet();
-            dbc.closeConnection();
-            dbc = null;
-            data = null;
-            meta = null;
-            return result;
-        } else {
-            dbc.clearResultSet();
-            dbc.closeConnection();
-            dbc = null;
-            data = null;
-            meta = null;
-            return null;
-        }
-
-    }
-
-    /**
      Send a sqlQuery to the database and return a Hastable
      */
     public Hashtable sqlQueryHash( String sqlQuery ) {
@@ -1448,14 +1239,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         }
         return result;
-    }
-
-    /**
-     Parse doc replace variables with data
-     */
-    public String parseDoc( String htmlStr, java.util.Vector variables ) {
-        String[] foo = new String[variables.size()];
-        return imcode.util.Parser.parseDoc( htmlStr, (String[])variables.toArray( foo ) );
     }
 
     /**
@@ -2045,48 +1828,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     save templategroup
-     */
-    public void saveTemplateGroup( String group_name, UserDomainObject user ) {
-        String sqlStr = "";
-
-
-        // create connectiobject
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-
-        // get lang prefix
-        sqlStr = "select lang_prefix from users,lang_prefixes\n";
-        sqlStr += "where users.lang_id = lang_prefixes.lang_id\n";
-        sqlStr += "and user_id =" + user.getUserId();
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        String lang_prefix = dbc.executeQuery().elementAt( 0 ).toString();
-        dbc.clearResultSet();
-
-
-        // get new group_id
-        sqlStr = "select max(group_id) + 1 from templategroups\n";
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        String new_group_id = dbc.executeQuery().elementAt( 0 ).toString();
-        dbc.clearResultSet();
-
-
-
-        // change name
-        sqlStr = "insert into templategroups\n";
-        sqlStr += "values(" + new_group_id + ",'" + lang_prefix + "','" + group_name + "')";
-        dbc.setSQLString( sqlStr );
-        dbc.createStatement();
-        dbc.executeUpdateQuery();
-
-        dbc.closeConnection();
-        dbc = null;
-    }
-
-    /**
      delete templategroup
      */
     public void deleteTemplateGroup( int group_id ) {
@@ -2247,46 +1988,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     Returns the information for each meta id passed as argument.
-     */
-    public Hashtable ExistingDocsGetMetaIdInfo( String[] meta_id ) {
-
-        // Lets build a comma separed string to send to the sproc
-        StringBuffer sBuf = new StringBuffer();
-        for( int i = 0; i < meta_id.length; i++ ) {
-            sBuf.append( meta_id[i] );
-            if( i != meta_id.length )
-                sBuf.append( "," );
-        }
-
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-        dbc.setProcedure( "ExistingDocsGetSelectedMetaIds ", sBuf.toString() );
-        Vector data = dbc.executeProcedure();
-        String[] meta = dbc.getMetaData();
-        int columns = dbc.getColumnCount();
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
-
-        // Lets build the result into an hashtable
-        Hashtable result = new Hashtable( columns, 0.5f );
-        if( data.size() > 0 ) {
-            for( int i = 0; i < columns; i++ ) {
-                String temp_str[] = new String[data.size() / columns];
-                int counter = 0;
-                for( int j = i; j < data.size(); j += columns )
-                    temp_str[counter++] = data.elementAt( j ).toString();
-                result.put( meta[i], temp_str );
-            }
-            return result;
-
-        } else {
-            return new Hashtable( 1, 0.5f );
-        }
-    }
-
-    /**
      * Returns an array with with all the documenttypes stored in the database
      * the array consists of pairs of id:, value. Suitable for parsing into select boxes etc.
      */
@@ -2294,23 +1995,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return this.sqlProcedure( "GetDocTypes '" + langPrefixStr + "'" );
     }
 
-    /**
-     * Returns an hashtable with with all the documenttypes stored in the database
-     * the hashtable consists of pairs of id:, value.
-     */
-    public Hashtable getDocumentTypesInHash( String langPrefixStr ) {
-        return this.sqlQueryHash( "GetDocTypes '" + langPrefixStr + "'" );
-    }
-
     public boolean checkUserDocSharePermission( UserDomainObject user, int meta_id ) {
         return sqlProcedure( "CheckUserDocSharePermission " + user.getUserId() + "," + meta_id ).length > 0;
-    }
-
-    /**
-     Return a file relative to the include-path.
-     **/
-    public String getInclude( String path ) throws IOException {
-        return fileCache.getCachedFileString( new File( m_IncludePath, path ) );
     }
 
     /**
@@ -2519,62 +2205,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         }
 
         sqlUpdateProcedure( "SetReadrunnerUserDataForUser", new String[]{"" + userId, "" + rrUserData.getUses(), "" + rrUserData.getMaxUses(), "" + rrUserData.getMaxUsesWarningThreshold(), expiryDateString, "" + rrUserData.getExpiryDateWarningThreshold(), rrUserData.getExpiryDateWarningSent() ? "1" : "0"} );
-    }
-
-    /**
-     Set a user flag
-     **/
-    public void setUserFlag( UserDomainObject user, String flagName ) {
-        int userId = user.getUserId();
-
-        sqlUpdateProcedure( "SetUserFlag", new String[]{"" + userId, flagName} );
-    }
-
-    /**
-     Unset a user flag
-     **/
-    public void unsetUserFlag( UserDomainObject user, String flagName ) {
-        int userId = user.getUserId();
-
-        sqlUpdateProcedure( "UnsetUserFlag", new String[]{"" + userId, flagName} );
-    }
-
-    /**
-     Get all possible userflags
-     **/
-    public Map getUserFlags() {
-        String[] dbData = sqlProcedure( "GetUserFlags" );
-
-        return getUserFlags( dbData );
-    }
-
-    /**
-     Get all userflags for a single user
-     **/
-    public Map getUserFlags( UserDomainObject user ) {
-        int userId = user.getUserId();
-        String[] dbData = sqlProcedure( "GetUserFlagsForUser", new String[]{String.valueOf( userId )} );
-
-        return getUserFlags( dbData );
-    }
-
-    /**
-     Get all userflags of a single type
-     **/
-    public Map getUserFlags( int type ) {
-        String[] dbData = sqlProcedure( "GetUserFlagsOfType", new String[]{String.valueOf( type )} );
-
-        return getUserFlags( dbData );
-    }
-
-    /**
-     Get all userflags for a single user of a single type
-     **/
-    public Map getUserFlags( UserDomainObject user, int type ) {
-        int userId = user.getUserId();
-        String[] dbData = sqlProcedure( "GetUserFlagsForUserOfType", new String[]{String.valueOf( userId ), String.valueOf( type )} );
-
-        return getUserFlags( dbData );
     }
 
     /** Used by the other getUserFlags*-methods to put the database-data in a Set **/
