@@ -88,9 +88,14 @@ public class ChangeImage extends HttpServlet {
         String imageUrl = ( "".equals( browsedImageUrl ) && null != image ? image.getUrl() : browsedImageUrl ); // selected OPTION or ""
 
         //****************************************************************
-        ImageFileMetaData imageFileMetaData = new ImageFileMetaData( new File( image_path, imageUrl ) );
-        int widthFromFile = imageFileMetaData.getWidth();
-        int heightFromFile = imageFileMetaData.getHeight();
+        File imageFile = new File( image_path, imageUrl );
+        int widthFromFile = 0;
+        int heightFromFile = 0;
+        if (imageFile.isFile()) {
+            ImageFileMetaData imageFileMetaData = new ImageFileMetaData( imageFile );
+            widthFromFile = imageFileMetaData.getWidth();
+            heightFromFile = imageFileMetaData.getHeight();
+        }
         //****************************************************************
 
         Vector vec = new Vector();
