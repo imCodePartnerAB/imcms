@@ -59,7 +59,7 @@ public class SendMailServlet extends HttpServlet {
 
 	public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException{
 		//loads mailform page UNDER CONSRTRUCTION
-		System.out.println("start doGet");
+		//System.out.println("start doGet");
 		return;
 	}
 
@@ -82,6 +82,7 @@ public class SendMailServlet extends HttpServlet {
 		String webmaster = sysData.getWebMasterAddress();		
 		String mailTo = req.getParameter("mailTo") ;	
 		String mailFrom = req.getParameter("mailFrom") ;
+		if(mailFrom == null) mailFrom = webmaster;
 		String mailSubject = req.getParameter("mailSubject") ;
 		//lets get the meta_id where to send when were done
 		String mailDone = req.getParameter("mailDone") ;
@@ -115,10 +116,10 @@ public class SendMailServlet extends HttpServlet {
 			mailTextV.add("#mailText"+i+"#");
 			mailTextV.add( mailTextArr[i] );
 		}
-		Enumeration enum2 = mailTextV.elements();
-		while (enum2.hasMoreElements()){
-			System.out.println(((String)enum2.nextElement()));
-		}
+	//	Enumeration enum2 = mailTextV.elements();
+	//	while (enum2.hasMoreElements()){
+	//		System.out.println(((String)enum2.nextElement()));
+	//	}
 		
 		String mailBody;
 		//ok lets see if its a shop-mail or not
@@ -166,7 +167,7 @@ public class SendMailServlet extends HttpServlet {
 		String stringMailPort = Utility.getDomainPref( "smtp_port", host );
 		String stringMailtimeout = Utility.getDomainPref( "smtp_timeout", host );
 		
-		System.out.println(mailSubject)	;
+		//System.out.println(mailSubject)	;
 		// Handling of default-values is another area where java can't hold a candle to perl.
 		int mailport = 25 ;
 		try	{

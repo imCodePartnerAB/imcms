@@ -315,9 +315,29 @@ public class GetDoc extends HttpServlet {
 			return null ;
 
 		default:
+		
+			String externalparam = null;
+			if (req.getParameter("externalClass") != null || req.getAttribute("externalClass") != null){
+				String className;
+				if (req.getParameter("externalClass") != null){
+					className = req.getParameter("externalClass");
+				}else{
+					className = (String) req.getAttribute("externalClass");
+				}
+				try{
+					Class cl = Class.forName(className);					
+					imcode.external.GetDocControllerInterface obj =(imcode.external.GetDocControllerInterface) cl.newInstance();
+					externalparam = obj.createString(req);
+				}catch(Exception e)	{
+					//obs do nothing, let the externalParam be null
+				}	
+			}
+			
 			user.setTemplateGroup(-1) ;
 			ParserParameters paramsToParser = new ParserParameters(req.getParameter("template"),
-																	req.getParameter("param"));
+																	req.getParameter("param"),
+																	externalparam);
+																	
 			// track user
 			//			IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
 			

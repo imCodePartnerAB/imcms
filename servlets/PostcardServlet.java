@@ -57,7 +57,8 @@ public class PostcardServlet extends HttpServlet {
 			this.sendPostcardMail(req,res);
 			return;
 		}
-	
+		
+
 		//här ska vi ladda första sidan av sidan skicka citat köret
 		//System.out.println("doGet");
 		HttpSession session = req.getSession(true);
@@ -70,9 +71,13 @@ public class PostcardServlet extends HttpServlet {
 		
 		session.setAttribute("postCardStuff",pCStuff);
 		
-		qText = URLEncoder.encode(HTMLConv.toHTML(qText));
-		res.sendRedirect("/imcms/servlet/GetDoc?meta_id="+metaId+"&param="+qText);
+		req.setAttribute("externalClass","QuoteLineCollector");
+		req.setAttribute("qFile",QUOTE_FILE);
+		req.setAttribute("qLine",qRow);
 		
+		RequestDispatcher rd = req.getRequestDispatcher("GetDoc");
+		rd.forward(req,res);
+
 		return;
 	}
 
@@ -132,17 +137,6 @@ public class PostcardServlet extends HttpServlet {
 		while (token.hasMoreTokens())
 		{
 			String tmp = token.nextToken();		
-		/*  the qengine does not suplie us with the correct number
-			so we dont use this codsnippet at the moment, instead we 
-			compare the whoole quot-text
-			counter = counter +1;
-			if ((counter/3) == qInt)
-			{
-				qText = tmp;
-				break;
-			}
-		*/	//System.out.println(qText);
-			//System.out.println(tmp);
 			if (qText.equals(tmp))
 			{
 				qTextToSend = tmp;
@@ -152,7 +146,6 @@ public class PostcardServlet extends HttpServlet {
 		
 		qTextToSend = HTMLConv.toHTML(qTextToSend);		
 		//ok now we have the quot in the string qLine		
-		//System.out.println("jippi: "+qTextToSend);	
 		//lets get the info we need
 		String friendName 		= req.getParameter("mailText0");	
 		String friendEmail 		= req.getParameter("mailTo");
@@ -180,7 +173,7 @@ public class PostcardServlet extends HttpServlet {
 		vect.add("#citat#");		vect.add(qTextToSend);
 		vect.add("#cont1#");		vect.add(friendName);
 		vect.add("#cont3#");		vect.add(senderName);
-		vect.add("#cont4#");		vect.add(HTMLConv.toHTMLSpecial(senderMessage));
+		vect.add("#cont4#");		vect.add(HTMLConv.toHTML(HTMLConv.toHTMLSpecial(senderMessage)));
 		
 		//ok nu ska vi parsa skiten med ett mall skrälle
 		File pcTemplate = new File(templateLib, HTML_TEMPLATE);
