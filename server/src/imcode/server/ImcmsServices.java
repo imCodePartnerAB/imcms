@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.text.Collator;
 import java.util.*;
 
-public interface ImcmsServices {
+public interface ImcmsServices extends Database {
 
     /** Verify a Internet/Intranet user. Data from any SQL Database. **/
     UserDomainObject verifyUser(String login, String password)
@@ -38,10 +38,6 @@ public interface ImcmsServices {
 
     /** @deprecated Use {@link imcode.server.document.HtmlDocumentDomainObject#getHtml()} instead. **/
     String isFramesetDoc( int meta_id )
-	;
-
-    // Send a procedure to the database and return a string array
-    String[] sqlProcedure(String procedure, String[] params)
 	;
 
     // get external template folder
@@ -175,22 +171,6 @@ public interface ImcmsServices {
     ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper();
 
     String getDefaultLanguageAsIso639_2();
-
-    Map sqlProcedureHash( String procedure, String[] params );
-
-    int sqlUpdateProcedure( String procedure, String[] params );
-
-    String sqlProcedureStr( String procedure, String[] params );
-
-    int sqlUpdateQuery(String sqlStr, String[] params);
-
-    String[][] sqlProcedureMulti(String procedure, String[] params);
-
-    String[] sqlQuery(String sqlStr, String[] params);
-
-    String sqlQueryStr(String sqlStr, String[] params);
-
-    String[][] sqlQueryMulti(String sqlstr, String[] params);
 
     TemplateMapper getTemplateMapper();
 

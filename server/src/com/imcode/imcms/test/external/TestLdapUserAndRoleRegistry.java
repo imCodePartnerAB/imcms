@@ -35,16 +35,20 @@ public class TestLdapUserAndRoleRegistry extends TestCase {
         String ldapUrl = ldapProperties.getProperty( "ldap-url" );
         String ldapPassword = ldapProperties.getProperty( "ldap-password" );
         String ldapBindDN = ldapProperties.getProperty( "ldap-bind-dn" );
+        String ldapUserObjectClass = ldapProperties.getProperty( "ldap-user-object-class") ;
+        String ldapAttributeLoginName = ldapProperties.getProperty( "ldap-attribute-login-name" );
+
         testUserName = ldapProperties.getProperty( "ldap-test-user" );
         testPassword = ldapProperties.getProperty( "ldap-test-password" );
         if ( StringUtils.isBlank( testUserName ) ) {
             throw new Exception( "Set ldap-test-user in " + propertyFileName );
         }
 
-        String ldapUserObjectClass = "person";
-        return new LdapUserAndRoleRegistry( ldapUrl, LdapUserAndRoleRegistry.AUTHENTICATION_TYPE_SIMPLE,
-                                          ldapUserObjectClass,
-                                          ldapBindDN, ldapPassword, ldapAttributesMappedToRoles );
+        LdapUserAndRoleRegistry ldapUserAndRoleRegistry = new LdapUserAndRoleRegistry( ldapUrl, LdapUserAndRoleRegistry.AUTHENTICATION_TYPE_SIMPLE,
+                                                                                       ldapUserObjectClass,
+                                                                                       ldapBindDN, ldapPassword, ldapAttributesMappedToRoles );
+        ldapUserAndRoleRegistry.setUserPropertyLdapAttribute("LoginName", ldapAttributeLoginName) ;
+        return ldapUserAndRoleRegistry;
     }
 
     public void setUp() throws Exception {

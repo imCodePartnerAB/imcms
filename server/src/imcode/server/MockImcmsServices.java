@@ -1,7 +1,7 @@
 package imcode.server;
 
 import imcode.server.db.Database;
-import imcode.server.document.DocumentDomainObject;
+import imcode.server.db.DatabaseCommand;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -14,8 +14,6 @@ import imcode.util.shop.ShoppingOrderSystem;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.text.Collator;
@@ -29,23 +27,23 @@ public class MockImcmsServices implements ImcmsServices {
     private Map expectedSqlCalls = new HashMap() ;
 
     public UserDomainObject verifyUser( String login, String password ) {
-        return null;  // TODO
+        return null;
     }
 
     public TextDomainObject getText( int meta_id, int txt_no ) {
-        return null;  // TODO
+        return null;
     }
 
     public String parsePage( ParserParameters paramsToParse ) throws IOException {
-        return null;  // TODO
+        return null;
     }
 
     public String isUrlDoc( int meta_id ) {
-        return null;  // TODO
+        return null;
     }
 
     public String isFramesetDoc( int meta_id ) {
-        return null;  // TODO
+        return null;
     }
 
     // Send a procedure to the database and return a string array
@@ -56,195 +54,195 @@ public class MockImcmsServices implements ImcmsServices {
 
     // get external template folder
     public File getExternalTemplateFolder( int meta_id, UserDomainObject user ) {
-        return null;  // TODO
+        return null;
     }
 
     public void incrementSessionCounter() {
-        // TODO
+
     }
 
     // set session counter
     public void setSessionCounter( int value ) {
-        // TODO
+
     }
 
     // set  session counter date
     public void setSessionCounterDate( Date date ) {
-        // TODO
+
     }
 
     // set  session counter date
     public Date getSessionCounterDate() {
-        return null;  // TODO
+        return null;
     }
 
     // parsedoc use template
     public String getAdminTemplate( String adminTemplateName, UserDomainObject user, List tagsWithReplacements ) {
-        return null;  // TODO
+        return null;
     }
 
     // parseExternaldoc use template
     public String getTemplateFromDirectory( String adminTemplateName, UserDomainObject user, List variables,
                                             String directory ) {
-        return null;  // TODO
+        return null;
     }
 
     // parseExternaldoc use template
     public String getTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user,
                                                           List variables, String directory, String subDirectory ) {
-        return null;  // TODO
+        return null;
     }
 
     // get templatehome
     public String getTemplateData( int template_id ) throws IOException {
-        return null;  // TODO
+        return null;
     }
 
     // get templatehome
     public File getTemplatePath() {
-        return null;  // TODO
+        return null;
     }
 
     // get file-path to imcmsimages
     public File getImcmsPath() {
-        return null;  // TODO
+        return null;
     }
 
     // get language prefix by id
     public String getLanguagePrefixByLangId( int lang_id ) {
-        return null;  // TODO
+        return null;
     }
 
     // get language prefix for user
     public String getUserLangPrefixOrDefaultLanguage( UserDomainObject user ) {
-        return null;  // TODO
+        return null;
     }
 
     // get doctype
     public int getDocType( int meta_id ) {
-        return 0;  // TODO
+        return 0;
     }
 
     public boolean checkDocAdminRights( int meta_id, UserDomainObject user ) {
-        return false;  // TODO
+        return false;
     }
 
     // save template to disk
     public int saveTemplate( String name, String file_name, byte[] data, boolean overwrite, String lang_prefix ) {
-        return 0;  // TODO
+        return 0;
     }
 
     // get demo template data
     public Object[] getDemoTemplate( int template_id ) throws IOException {
-        return new Object[0];  // TODO
+        return new Object[0];
     }
 
     public boolean checkDocAdminRights( int meta_id, UserDomainObject user, int permissions ) {
-        return false;  // TODO
+        return false;
     }
 
     public boolean checkDocAdminRightsAny( int meta_id, UserDomainObject user, int permissions ) {
-        return false;  // TODO
+        return false;
     }
 
     // save demo template
     public void saveDemoTemplate( int template_id, byte[] data, String suffix ) throws IOException {
-        // TODO
+
     }
 
     // get server date
     public Date getCurrentDate() {
-        return null;  // TODO
+        return null;
     }
 
     // get demotemplates
     public String[] getDemoTemplateIds() {
-        return new String[0];  // TODO
+        return new String[0];
     }
 
     // delete demotemplate
     public void deleteDemoTemplate( int template_id ) throws IOException {
-        // TODO
+
     }
 
     public SystemData getSystemData() {
-        return null;  // TODO
+        return null;
     }
 
     public void setSystemData( SystemData sd ) {
-        // TODO
+
     }
 
     public String[][] getAllDocumentTypes( String langPrefixStr ) {
-        return new String[0][];  // TODO
+        return new String[0][];
     }
 
     public String getFortune( String path ) throws IOException {
-        return null;  // TODO
+        return null;
     }
 
     public List getQuoteList( String quoteListName ) {
-        return null;  // TODO
+        return null;
     }
 
     public void setQuoteList( String quoteListName, List quoteList ) throws IOException {
-        // TODO
+
     }
 
     public List getPollList( String pollListName ) {
-        return null;  // TODO
+        return null;
     }
 
     public void setPollList( String pollListName, List pollList ) throws IOException {
-        // TODO
+
     }
 
     public int getSessionCounter() {
-        return 0;  // TODO
+        return 0;
     }
 
     public String getSessionCounterDateAsString() {
-        return null;  // TODO
+        return null;
     }
 
     public Map getUserFlags() {
-        return null;  // TODO
+        return null;
     }
 
     public Map getUserFlags( UserDomainObject user ) {
-        return null;  // TODO
+        return null;
     }
 
     public Map getUserFlags( int type ) {
-        return null;  // TODO
+        return null;
     }
 
     public Map getUserFlags( UserDomainObject user, int type ) {
-        return null;  // TODO
+        return null;
     }
 
     public void setUserFlag( UserDomainObject user, String flagName ) {
-        // TODO
+
     }
 
     public void unsetUserFlag( UserDomainObject user, String flagName ) {
-        // TODO
+
     }
 
     public PollHandlingSystem getPollHandlingSystem() {
-        return null;  // TODO
+        return null;
     }
 
     public ShoppingOrderSystem getShoppingOrderSystem() {
-        return null;  // TODO
+        return null;
     }
 
     public void updateMainLog( String logMessage ) {
-        // TODO
+
     }
 
     public DocumentMapper getDocumentMapper() {
-        return null;  // TODO
+        return null;
     }
 
     public ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
@@ -252,7 +250,7 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public String getDefaultLanguageAsIso639_2() {
-        return null;  // TODO
+        return null;
     }
 
     public Map sqlProcedureHash( String procedure, String[] params ) {
@@ -301,40 +299,44 @@ public class MockImcmsServices implements ImcmsServices {
         return (String[][])getSqlCall( sqlstr, params ).getResult();
     }
 
+    public void executeTransaction( DatabaseCommand databaseCommand ) {
+
+    }
+
     public TemplateMapper getTemplateMapper() {
-        return null;  // TODO
+        return null;
     }
 
     public SMTP getSMTP() {
-        return null;  // TODO
+        return null;
     }
 
     public Properties getLanguageProperties( UserDomainObject user ) {
-        return null;  // TODO
+        return null;
     }
 
     public File getIncludePath() {
-        return null;  // TODO
+        return null;
     }
 
     public Collator getDefaultLanguageCollator() {
-        return null;  // TODO
+        return null;
     }
 
     public VelocityEngine getVelocityEngine( UserDomainObject user ) {
-        return null;  // TODO
+        return null;
     }
 
     public VelocityContext getVelocityContext( UserDomainObject user ) {
-        return null;  // TODO
+        return null;
     }
 
     public Config getConfig() {
-        return null;  // TODO
+        return null;
     }
 
     public Database getDatabase() {
-        return null;  // TODO
+        return null;
     }
 
     public void setImcmsAuthenticatorAndUserAndRoleMapper(

@@ -1,6 +1,8 @@
 package imcode.server;
 
 import imcode.server.db.ConnectionPool;
+import imcode.server.db.ConnectionPoolDatabase;
+import imcode.server.db.Database;
 import imcode.util.Prefs;
 import org.apache.log4j.Logger;
 import org.apache.commons.lang.UnhandledException;
@@ -28,7 +30,8 @@ public class Imcms {
     private static ImcmsServices createServices() {
         Properties serverprops = getServerProperties();
         ConnectionPool connectionPool = createConnectionPool( serverprops );
-        DefaultImcmsServices imcref = new DefaultImcmsServices( connectionPool, serverprops );
+        Database database = new ConnectionPoolDatabase( connectionPool );
+        DefaultImcmsServices imcref = new DefaultImcmsServices( database, serverprops );
         return imcref ;
     }
 

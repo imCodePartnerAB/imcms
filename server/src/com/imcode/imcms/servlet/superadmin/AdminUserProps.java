@@ -4,6 +4,7 @@ import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
+import imcode.server.db.Database;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -876,14 +877,14 @@ public class AdminUserProps extends Administrator {
 
             String workPhone = req.getParameter( "workphone" );
             String mobilePhone = req.getParameter( "mobilephone" );
-
+            Database database = imcref.getDatabase() ;
             if ( !( "" ).equals( workPhone ) ) {
                 int phoneNumberType = 2;
-                ImcmsAuthenticatorAndUserAndRoleMapper.staticSprocPhoneNbrAdd( imcref, userFromRequest.getId(), workPhone, phoneNumberType );
+                ImcmsAuthenticatorAndUserAndRoleMapper.addPhoneNumber( userFromRequest.getId(), workPhone, phoneNumberType, database);
             }
             if ( !( "" ).equals( mobilePhone ) ) {
                 int phoneNumberType = 3;
-                ImcmsAuthenticatorAndUserAndRoleMapper.staticSprocPhoneNbrAdd( imcref, userFromRequest.getId(), workPhone, phoneNumberType );
+                ImcmsAuthenticatorAndUserAndRoleMapper.addPhoneNumber( userFromRequest.getId(), workPhone, phoneNumberType, database );
             }
         }
 

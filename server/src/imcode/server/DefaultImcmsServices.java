@@ -1,7 +1,6 @@
 package imcode.server;
 
-import imcode.server.db.ConnectionPool;
-import imcode.server.db.Database;
+import imcode.server.db.*;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
@@ -66,8 +65,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
     /**
      * Contructs an DefaultImcmsServices object.
      */
-    public DefaultImcmsServices( ConnectionPool conPool, Properties props ) {
-        database = new Database( conPool );
+    public DefaultImcmsServices( Database database, Properties props ) {
+        this.database = database;
         initConfig( props );
         initSysData();
         initSessionCounter();
@@ -184,7 +183,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
             log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
         }
-        imcmsAuthenticatorAndUserMapperAndRole = new ImcmsAuthenticatorAndUserAndRoleMapper( this );
+        imcmsAuthenticatorAndUserMapperAndRole = new ImcmsAuthenticatorAndUserAndRoleMapper( this, this );
         externalizedImcmsAuthAndMapper =
         new ExternalizedImcmsAuthenticatorAndUserRegistry( imcmsAuthenticatorAndUserMapperAndRole, externalAuthenticator,
                                                            externalUserAndRoleRegistry, getDefaultLanguageAsIso639_2() );
@@ -583,6 +582,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public String[][] sqlQueryMulti( String sqlQuery, String[] params ) {
         return database.sqlQueryMulti( sqlQuery, params );
+    }
+
+    public void executeTransaction( DatabaseCommand databaseCommand ) {
+        database.executeTransaction( databaseCommand );
     }
 
     /**

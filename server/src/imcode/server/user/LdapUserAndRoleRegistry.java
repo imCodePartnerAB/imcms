@@ -387,6 +387,10 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
         return (String[])settableBeanPropertyNames.toArray( new String[settableBeanPropertyNames.size()] );
     }
 
+    public void setUserPropertyLdapAttribute( String userPropertyName, String ldapAttribute ) {
+        userPropertyNameToLdapAttributeNameMap.put( userPropertyName, ldapAttribute ) ;
+    }
+
     public class LdapInitException extends Exception {
 
         public LdapInitException( String message ) {

@@ -41,6 +41,12 @@ ldap-bind-dn =
 ldap-password =
 ldap-test-user =
 ldap-test-password =
+ldap-user-object-class = inetOrgPerson
+ldap-attribute-login-name = uid
+
+# For Microsoft Active Directory
+#ldap-user-object-class = user
+#ldap-attribute-login-name = sAMAccountName
 
 
 # The smtp-server used for sending mails.
