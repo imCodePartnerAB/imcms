@@ -1,10 +1,7 @@
 package imcode.util;
 
 import imcode.external.diverse.Html;
-import imcode.server.ApplicationServer;
-import imcode.server.IMCConstants;
-import imcode.server.IMCServiceInterface;
-import imcode.server.LanguageMapper;
+import imcode.server.*;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
@@ -14,6 +11,7 @@ import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
 import org.apache.log4j.Logger;
 
+import javax.swing.text.html.HTML;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -174,8 +172,8 @@ public class MetaDataParser {
 
         }
 
-        String target = ((String[]) hash.get("target"))[0];
-        String frame_name = ((String[]) hash.get("frame_name"))[0];
+        String target = HTMLConv.toHTMLSpecial(((String[]) hash.get("target"))[0]);
+        String frame_name = HTMLConv.toHTMLSpecial(((String[]) hash.get("frame_name"))[0]);
 
         if ("_self".equals(target) || "_top".equals(target) || "_blank".equals(target)) {
             vec.add("#" + target + "#");
@@ -204,9 +202,9 @@ public class MetaDataParser {
         String[] classifications = imcref.sqlQuery("select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = ?", new String[] {meta_id});
         String classification = "";
         if (classifications.length > 0) {
-            classification += classifications[0];
+            classification += HTMLConv.toHTMLSpecial(classifications[0]);
             for (int i = 1; i < classifications.length; ++i) {
-                classification += ", " + classifications[i];
+                classification += ", " + HTMLConv.toHTMLSpecial(classifications[i]);
             }
         }
 
