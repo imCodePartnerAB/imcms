@@ -42,6 +42,7 @@ ALTER TABLE childs ADD CONSTRAINT PK_childs_meta FOREIGN KEY (to_meta_id) REFERE
 GO
 
 DROP PROCEDURE CopyDocs
+DROP PROCEDURE UpdateTemplateTextsAndImages
 GO
 
 UPDATE images SET target = target_name WHERE target = '_other'

@@ -521,7 +521,6 @@ CREATE TABLE [dbo].[images] (
 	[name] [int] NOT NULL ,
 	[image_name] [varchar] (40) NOT NULL ,
 	[target] [varchar] (15) NOT NULL ,
-	[target_name] [varchar] (80) NOT NULL ,
 	[align] [varchar] (15) NOT NULL ,
 	[alt_text] [varchar] (255) NOT NULL ,
 	[low_scr] [varchar] (255) NOT NULL ,
