@@ -582,16 +582,10 @@ public class ConfAdmin extends Conference {
 
 				// Ok, Lets get root path to the external type
 				String metaId= params.getProperty("META_ID") ;
-				String externalPath = "" ;
-				if( uploadType.equalsIgnoreCase("TEMPLATE"))
-					externalPath = MetaInfo.getExternalTemplateFolder(imcServer, metaId) + setName + "/";
-				else
-					externalPath = rmi.getExternalImageHomeFolder(host, imcServer, metaId) + setName + "/" ;
-
-				//	log("ExternalPath: " + externalPath) ;
-				// Lets build the Responsepage
-				//VariableManager vm = new VariableManager() ;
-				vm.addProperty("EXTERNAL_PATH", externalPath ) ;
+				
+				vm.addProperty("UPLOAD_TYPE", uploadType );
+				vm.addProperty("FOLDER_NAME", setName );
+				vm.addProperty("META_ID", metaId);
 				vm.addProperty("UNADMIN_LINK_HTML", this.FORUM_TEMPLATE2_UNADMIN_LINK_TEMPLATE );
 
 				//this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
