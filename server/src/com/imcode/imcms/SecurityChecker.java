@@ -62,5 +62,4 @@ public class SecurityChecker {
             throw new NoPermissionException("The logged in user does not have permission to edit document: " + document.getMetaId() );
         };
     }
-
 }

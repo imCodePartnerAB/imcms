@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body>
+<H1>Imcms public API 1.0 samples</H1>
+
+<p>
+Warning!<br>
+These links works differently depending what user you are logged in as, and what permissions that user has.<br>
+When logged out, the only link that should work is the sample of exception handling at the bottom of this document.</p>
+<p>
+<a href="../login/index.html">Logg in</a>
+<a href="../servlet/LogOut">Logg out</a>
+</p>
+
+<h3>Users</h3>
+<a href="sample_user_listing.jsp">sample_user_listing.jsp</a><br>
+<h3>Roles</h3>
+<a href="sample_role_get_user_with_role.jsp">sample_role_get_user_with_role.jsp</a><br>
+<a href="sample_role_create_role.jsp">sample_role_create_role.jsp</a><br>
+
+<h3>Document</h3>
+<a href="sample_get_document_text.jsp">sample_get_document_text.jsp</a><br>
+<a href="sample_document_permissions.jsp">sample_document_permissions.jsp</a><br>
+
+<H3>NoPermissionException and exception hangling in jsp-pages</H3>
+<P>
+If the user that is accessing the page dosen't have the right permissions a NoPermissionException is thrown from the methods.
+There are two normal ways to handle this. <BR>
+1. In the jsp pages page-tag set the errorpage attribute and let that page handle the response to the user<BR>
+2. Use try/catch in an normal Java way.<BR>
+In this sample page, the first choice is made, see sample_restrictedoperations.jsp and sample_error.jsp files for details.
+</P>
+
+This document throws an exception in many cases.
+sample_error.jsp should not be called directly. It's called from whithin another jsp-page when an exception is thrown.
+Se <a href="sample_restrictedoperations.jsp">sample_restrictedoperations.jsp</a><br>
+</body>
+</html>
+
+

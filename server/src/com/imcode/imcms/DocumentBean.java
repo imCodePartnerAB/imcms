@@ -1,11 +1,9 @@
 package com.imcode.imcms;
 
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
-
 import java.util.Map;
-import java.util.HashMap;
 import imcode.server.document.Document ;
 import imcode.server.document.DocumentMapper;
+import imcode.server.IMCText;
 
 public class DocumentBean {
     private SecurityChecker securityChecker;
@@ -24,6 +22,37 @@ public class DocumentBean {
     public Map getAllRolesMappedToPermissions() throws NoPermissionException {
         securityChecker.hasEditPermission( document );
         return mapper.getAllRolesMappedToPermissions( document );
+    }
+
+    public TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
+        securityChecker.hasEditPermission( document );
+        IMCText imcmsText = mapper.getTextField( document, textFieldIndexInDocument ) ;
+        TextField textField = new TextField(imcmsText) ;
+        return textField;
+    }
+
+    public class TextField {
+        IMCText imcmsText ;
+
+        private TextField (IMCText imcmsText) {
+            this.imcmsText = imcmsText ;
+        }
+
+        public void setHtmlFormat() {
+            this.imcmsText.setType(IMCText.TEXT_TYPE_HTML) ;
+        }
+
+        public void setPlainFormat() {
+            this.imcmsText.setType(IMCText.TEXT_TYPE_PLAIN) ;
+        }
+
+        public String getText() {
+            return imcmsText.getText() ;
+        }
+
+        public String getHtmlFormattedText() {
+            return imcmsText.toHtmlString() ;
+        }
     }
 
 }

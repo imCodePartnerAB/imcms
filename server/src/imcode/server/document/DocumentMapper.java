@@ -1,18 +1,21 @@
 package imcode.server.document;
 
-import imcode.server.IMCServiceInterface;
-import imcode.server.Template;
 import imcode.server.IMCConstants;
-import imcode.server.user.*;
+import imcode.server.IMCServiceInterface;
+import imcode.server.IMCText;
+import imcode.server.Template;
+import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.user.User;
+import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
-import java.util.*;
-
-import org.apache.log4j.Logger;
-import com.imcode.imcms.Role;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 
 public class DocumentMapper {
     private IMCServiceInterface service;
@@ -167,6 +170,10 @@ public class DocumentMapper {
         }
 
         return result;
+    }
+
+    public IMCText getTextField( Document document, int textFieldIndexInDocument ) {
+        return service.getText( document.getMetaId(), textFieldIndexInDocument );
     }
 
 }
