@@ -59,7 +59,7 @@ public class SendMailServlet extends HttpServlet {
 
 	public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException{
 		//loads mailform page UNDER CONSRTRUCTION
-		//System.out.println("start doGet");
+		System.out.println("start doGet ska aldrig anropas");
 		return;
 	}
 
@@ -68,6 +68,7 @@ public class SendMailServlet extends HttpServlet {
 	*/
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException{
 		
+		System.out.println("test");
 		//params to use to check if its a shop-mail or not
 		String metaId = req.getParameter("metaid");
 		String param = req.getParameter("param");
@@ -79,11 +80,18 @@ public class SendMailServlet extends HttpServlet {
 		SystemData sysData 	= imcode.util.IMCServiceRMI.getSystemData (imcserver);
 	
 		// Lets get the parameters we need
-		String webmaster = sysData.getWebMasterAddress();		
+		String webmaster = sysData.getWebMasterAddress();;
 		String mailTo = req.getParameter("mailTo") ;	
 		String mailFrom = req.getParameter("mailFrom") ;
-		if(mailFrom == null) mailFrom = webmaster;
+		if (mailFrom == null) { 
+			mailFrom = webmaster;
+		}else{
+			if (mailFrom.trim().equals("")){
+				mailFrom = webmaster;
+			}
+		}
 		String mailSubject = req.getParameter("mailSubject") ;
+		
 		//lets get the meta_id where to send when were done
 		String mailDone = req.getParameter("mailDone") ;
 		//lets get the meta_id where to send if some thing goes wrong
