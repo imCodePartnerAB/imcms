@@ -224,6 +224,14 @@ public class ImcmsTagSubstitution implements Substitution {
 	    } else {
 		result = "" ;
 	    }
+	} else {
+	    String tempAtt = null ;
+	    if ((tempAtt = attributes.getProperty("pre")) != null) {
+		result = tempAtt + result ;
+	    }
+	    if ((tempAtt = attributes.getProperty("post")) != null) {
+		result = result + tempAtt ;
+	    }
 	}
 	return result ;
     }
@@ -248,6 +256,14 @@ public class ImcmsTagSubstitution implements Substitution {
 		result = "<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+"\"><img src=\""+imageUrl+"bild.gif\" border=\"0\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
 	    } else {
 		result = "" ;
+	    }
+	} else {
+	    String tempAtt = null ;
+	    if ((tempAtt = attributes.getProperty("pre")) != null) {
+		result = tempAtt + result ;
+	    }
+	    if ((tempAtt = attributes.getProperty("post")) != null) {
+		result = result + tempAtt ;
 	    }
 	}
 	return result ;
