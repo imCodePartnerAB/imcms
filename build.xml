@@ -30,6 +30,7 @@
     <!-- The webroot. Everything put here can be seen by any visitor. -->
     <property name="webroot"               value="${build}"/>
 
+    <property name="buildlang"             value=""/>
     <property name="images"                value="${webroot}/images"/>
     <property name="login"                 value="${webroot}/login"/>
     <property name="css"                   value="${webroot}/css"/>
@@ -43,7 +44,6 @@
     <property name="imcmsjsp"              value="${imcms}/jsp"/>
     <property name="imcmshtml"             value="${imcms}/html"/>
 
-    <property name="adminbuttons"          value="${imcmsimages}/admin/${defaultlanguage}"/>
     <property name="readrunner"	   	       value="${webroot}/readrunner"/>
     <property name="shop"	               value="${webroot}/shop"/>
     <property name="htmleditor"            value="${webroot}/htmleditor"/>
@@ -66,19 +66,6 @@
     <property name="texttemplates"         value="${templates}/text"/>
     <property name="demotemplates"         value="${texttemplates}/demo"/>
 
-    <property name="languagetemplates"     value="${templates}/${defaultlanguage}"/>
-    <property name="admintemplates"        value="${languagetemplates}/admin"/>
-    <property name="searchtemplates"       value="${admintemplates}/search/original"/>
-
-    <property name="readrunnertemplates"   value="${admintemplates}/readrunner"/>
-
-    <!-- Paths for templates for the plugins -->
-    <property name="conference-templates"  value="${languagetemplates}/102"/>
-    <property name="chat-templates"        value="${languagetemplates}/103"/>
-    <property name="billboard-templates"   value="${languagetemplates}/104"/>
-    <property name="postcard-templates"    value="${languagetemplates}/105"/>
-    <property name="fortune-templates"     value="${languagetemplates}/106"/>
-
 
        <!-- URIs -->
     <property name="apiuri"                   value="${rooturl}/apisamples"/>
@@ -90,13 +77,11 @@
     <property name="jspurl"                   value="${rooturl}/jsp"/>
     <property name="postcardsurl"             value="${rooturl}/postcards"/>
     <property name="imcmsimageurl"            value="${rooturl}/imcms/images"/>
-    <property name="imcmsimageurllang"        value="${rooturl}/imcms/images/${defaultlanguage}"/>
     <property name="imcmshtmlurl"             value="${rooturl}/imcms/html"/>
     <property name="imcmsscripturl"           value="${rooturl}/imcms/scripts"/>
     <property name="imcmscssurl"              value="${rooturl}/imcms/css"/>
     <property name="imcmsjspurl"              value="${rooturl}/imcms/jsp"/>
     <property name="shopurl"                  value="${rooturl}/shop"/>
-    <property name="adminbuttonsurl"          value="${rooturl}/imcms/images/admin/${defaultlanguage}"/>
     <property name="readrunnerurl"	          value="${rooturl}/readrunner"/>
     <property name="readrunnerimagesurl"      value="${readrunnerurl}/images"/>
     <property name="readrunnercssurl"         value="${readrunnerurl}/css"/>
@@ -202,9 +187,7 @@
         <filter token="imageurl"            value="${imageurl}"/>
         <filter token="cssurl"              value="${cssurl}"/>
         <filter token="postcardsurl"        value="${postcardsurl}"/>
-        <filter token="adminbuttonsurl"     value="${adminbuttonsurl}"/>
         <filter token="imcmsimageurl"       value="${imcmsimageurl}"/>
-        <filter token="imcmsimageurllang"   value="${imcmsimageurllang}"/>
         <filter token="imcmshtmlurl"        value="${imcmshtmlurl}"/>
         <filter token="imcmsscripturl"      value="${imcmsscripturl}"/>
         <filter token="imcmscssurl"         value="${imcmscssurl}"/>
@@ -254,7 +237,6 @@
         <filter token="webmaster-email"     value="${webmaster-email}"/>
 
     </target>
-
 
     <!-- Checks that build.properties is up-to-date. -->
     <target name="check-build-properties" description="Checks that ${build.properties} is up-to-date." unless="build-properties-up-to-date">
@@ -347,9 +329,7 @@
 		     classes,
 		     templates,
 		     libraries,
-		     web,conf,dir,sql,
-		     conference,chat,billboard,postcard,
-		     fortune,shop,html-editor"
+		     web,conf,dir,sql"
 	    description="Builds everything.">
 
     	<copy todir="${WEB-INF}" file="install/web.xml"/>
@@ -510,11 +490,50 @@
     <target name="servlets" depends="init,server" description="Builds the servlets.">
 
 	<mkdir dir="${classes}"/>
-	<javac srcdir="servlets" destdir="${classes}" includes="*.java" classpath="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
+	<javac srcdir="servlets"
+            destdir="${classes}"
+            includes="*.java"
+            classpath="${classes}"
+            debug="${debug}"
+            optimize="${optimize}"
+            deprecation="${deprecation}">
 
         <classpath refid="classes-and-libraries"/>
 
 	</javac>
+
+    <javac srcdir="servlets/conf"
+            destdir="${classes}"
+            includes="*.java"
+            classpath="${classes}"
+            debug="${debug}"
+            optimize="${optimize}"
+            deprecation="${deprecation}">
+
+            <classpath refid="classes-and-libraries"/>
+    </javac>
+
+    <javac srcdir="servlets/chat"
+            destdir="${classes}"
+            includes="*.java"
+            classpath="${classes}"
+            debug="${debug}"
+            optimize="${optimize}"
+            deprecation="${deprecation}">
+
+            <classpath refid="classes-and-libraries"/>
+    </javac>
+    <javac srcdir="servlets/billBoard"
+                 destdir="${classes}"
+                 includes="*.java"
+                 classpath="${classes}"
+                 debug="${debug}"
+                 optimize="${optimize}"
+                 deprecation="${deprecation}">
+
+                 <classpath refid="classes-and-libraries"/>
+    </javac>
+
 
     </target>
 
@@ -557,7 +576,24 @@
         <mkdir dir="${jsp}"/>
         <mkdir dir="${imcmsimages}"/>
 
-        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+        <antcall target= "web-copy">
+            <param name="buildlanguage" value="swe"/>
+            <param name="srclanguage" value="sv"/>
+        </antcall>
+        <antcall target= "web-copy">
+            <param name="buildlanguage" value="eng"/>
+            <param name="srclanguage" value="en"/>
+        </antcall>
+    </target>
+
+    <target name="web-copy"
+            depends="init,tools,language-property-files"
+            description="copy and translate files for the public web">
+
+        <filter token="adminbuttonsurl"     value="${imcmsimageurl}/admin/${buildlanguage}"/>
+        <filter token="imcmsimageurllang"   value="${imcmsimageurl}/${buildlanguage}"/>
+
+        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${login}" filtering="true">
             <fileset dir="templates/login"/>
@@ -571,16 +607,16 @@
             <fileset dir="install/htdocs/css"/>
         </copy>
 
-        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
+        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${imcmshtml}" filtering="true">
             <fileset dir="install/htdocs/imcms/html"/>
         </imtranslate>
 
-        <copy todir="${imcmsimages}/${defaultlanguage}/admin">
+        <copy todir="${imcmsimages}/${buildlanguage}/admin">
             <fileset dir="install/htdocs/imcms/images"/>
-            <fileset dir="install/htdocs/en/images"/>
-            <fileset dir="install/htdocs/en/fileadmin">
+            <fileset dir="install/htdocs/${srclanguage}/images"/>
+            <fileset dir="install/htdocs/${srclanguage}/fileadmin">
                 <patternset>
                     <include name="*.gif"/>
                     <include name="*.jpg"/>
@@ -596,7 +632,7 @@
             <fileset dir="install/htdocs/imcms/scripts"/>
         </copy>
 
-        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${webroot}" filtering="true">
             <fileset dir="templates">
@@ -608,8 +644,8 @@
             </fileset>
         </imtranslate>
 
-        <!-- Copy swedish text-files -->
-        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
+        <!-- Copy text-files -->
+        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${webroot}" filtering="true">
             <fileset dir="install/htdocs/sv">
@@ -632,26 +668,26 @@
             </fileset>
         </copy>
 
-        <copy todir="${adminbuttons}">
-            <fileset dir="install/htdocs/en/adminbuttons">
+        <!-- Copy images for adminibuttons -->
+        <copy todir="${imcmsimages}/admin/${buildlanguage}">
+            <fileset dir="install/htdocs/${srclanguage}/adminbuttons">
             <patternset>
                 <include name="*.gif"/>
             </patternset>
             </fileset>
         </copy>
 
-        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
-                     starttoken="&lt;? " endtoken=" ?&gt;"
-                     todir="${imcmsimages}/${defaultlanguage}/admin" filtering="true">
-            <fileset dir="install/htdocs/sv/fileadmin">
+        <!-- Copy images for fileadmin  -->
+        <copy todir="${imcmsimages}/${buildlanguage}/admin" >
+            <fileset dir="install/htdocs/${srclanguage}/fileadmin">
                 <patternset>
-                    <exclude name="*.gif"/>
+                    <include name="*.gif"/>
                 </patternset>
             </fileset>
+        </copy>
 
-        </imtranslate>
-
-        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
+        <!-- Copy and translate imcms-jsp files -->
+        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${imcmsjsp}" filtering="true">
             <fileset dir="install/htdocs/sv/jsp">
@@ -663,19 +699,98 @@
 
     </target>
 
-      <!-- Copies and filters all non-plugin templates. -->
+      <!-- Copies and filters all templates. -->
     <target name="templates"
-            depends="init,dir,texttemplates,admintemplates"
-            description="Copies and filters the templates."/>
+            depends="init,dir"
+            description="Copies and filters the templates.">
 
-    <!-- Copies and filters the texttemplates. -->
+        <!-- copy and translate texttemplates files -->
+        <antcall target="texttemplates">
+            <param name="buildlanguage" value="${defaultlanguage}"/>
+        </antcall>
+
+         <!-- copy and translate admintemplates files -->
+         <antcall target="admintemplates">
+            <param name="buildlanguage" value="swe"/>
+        </antcall>
+        <antcall target= "admintemplates">
+            <param name="buildlanguage" value="eng"/>
+        </antcall>
+
+         <!-- copy and translate conference files -->
+        <antcall target="conference">
+            <param name="buildlanguage" value="swe"/>
+            <param name="srclanguage" value="sv"/>
+        </antcall>
+        <antcall target= "conference">
+            <param name="buildlanguage" value="eng"/>
+            <param name="srclanguage" value="en"/>
+        </antcall>
+
+         <!-- copy and translate billboard files -->
+        <antcall target="billboard">
+            <param name="buildlanguage" value="swe"/>
+            <param name="srclanguage" value="sv"/>
+        </antcall>
+        <antcall target= "billboard">
+            <param name="buildlanguage" value="eng"/>
+            <param name="srclanguage" value="en"/>
+        </antcall>
+
+         <!-- copy and translate chat files -->
+        <antcall target="chat">
+            <param name="buildlanguage" value="swe"/>
+            <param name="srclanguage" value="sv"/>
+        </antcall>
+        <antcall target= "chat">
+            <param name="buildlanguage" value="eng"/>
+            <param name="srclanguage" value="en"/>
+        </antcall>
+
+        <!-- Create empty files needed by fortune -->
+        <mkdir dir="${fortunes}"/>
+        <touch file="${fortunes}/poll.poll.txt" millis="0"/>
+        <touch file="${fortunes}/quotes.txt" millis="0"/>
+
+        <!-- copy and translate fortunes files -->
+        <antcall target="fortune">
+            <param name="buildlanguage" value="swe"/>
+            <param name="srclanguage" value="sv"/>
+        </antcall>
+        <antcall target= "fortune">
+            <param name="buildlanguage" value="eng"/>
+            <param name="srclanguage" value="en"/>
+        </antcall>
+
+        <!-- copy and translate postcard files -->
+        <antcall target="postcard">
+            <param name="buildlanguage" value="swe"/>
+            <param name="srclanguage" value="sv"/>
+        </antcall>
+        <antcall target= "postcard">
+            <param name="buildlanguage" value="eng"/>
+            <param name="srclanguage" value="en"/>
+        </antcall>
+
+        <!-- copy and translate html-editor files -->
+        <antcall target= "html-editor">
+            <param name="buildlanguage" value="${defaultlanguage}"/>
+        </antcall>
+
+    </target>
+
+    <!-- Copies and filters the text templates. -->
     <target name="texttemplates" depends="init,tools,language-property-files" description="Copies and filters the texttemplates">
 
-        <mkdir dir="${demotemplates}"/>
+        <filter token="adminbuttonsurl"     value="${imcmsimageurl}/admin/${buildlanguage}"/>
+        <filter token="imcmsimageurllang"   value="${imcmsimageurl}/${buildlanguage}"/>
 
-        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+        <property name="installdir" value="${templates}/text"/>
+        <mkdir dir="${installdir}/demo"/>
+
+        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
-                     todir="${texttemplates}" filtering="true">
+                     todir="${installdir}" filtering="true">
             <fileset dir="templates/text"/>
         </imtranslate>
 
@@ -687,10 +802,15 @@
             depends="init,tools,language-property-files"
             description="Copies and filters the admintemplates.">
 
-        <mkdir dir="${admintemplates}"/>
-        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+        <filter token="adminbuttonsurl"     value="${imcmsimageurl}/admin/${buildlanguage}"/>
+        <filter token="imcmsimageurllang"   value="${imcmsimageurl}/${buildlanguage}"/>
+
+        <property name="installdir" value="${templates}/${buildlanguage}/admin"/>
+
+        <mkdir dir="${installdir}"/>
+        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
-                     todir="${admintemplates}" filtering="true">
+                     todir="${installdir}" filtering="true">
             <fileset dir="templates/sv">
                 <patternset>
                     <include name="adminbuttons/**"/>
@@ -707,17 +827,19 @@
             </fileset>
         </imtranslate>
 
+        <property name="searchtemplates" value="${templates}/${buildlanguage}/admin/search/original"/>
         <mkdir dir="${searchtemplates}"/>
-        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${searchtemplates}" filtering="true">
             <fileset dir="templates/sv/search"/>
          </imtranslate>
 
-        <replace dir="${admintemplates}/adminbuttons" excludes="adminbuttons.html"
+        <property name="adminbuttonstemplates" value="${templates}/${buildlanguage}/admin/adminbuttons"/>
+        <replace dir="${adminbuttonstemplates}" excludes="adminbuttons.html"
             token="&#10;" value=""/>
 
-        <replace dir="${admintemplates}/adminbuttons" excludes="adminbuttons.html"
+        <replace dir="${adminbuttonstemplates}" excludes="adminbuttons.html"
             token="&#13;" value=""/>
 
     </target>
@@ -734,56 +856,39 @@
     </target>
 
 
-    <!-- Builds the 'conference'-plugin. -->
+    <!-- Copy and translate the conference files. -->
     <target name="conference"
 	    depends="init,tools"
-	    description="Builds the conference."
-	    if="build-conference">
+	    description="Copy and translate the conference files.">
 
-        <mkdir dir="${classes}"/>
-        <javac srcdir="servlets/conf"
-            destdir="${classes}"
-            includes="*.java"
-            classpath="${classes}"
-            debug="${debug}"
-            optimize="${optimize}"
-            deprecation="${deprecation}">
+        <filter token="adminbuttonsurl"     value="${imcmsimageurl}/admin/${buildlanguage}"/>
+        <filter token="imcmsimageurllang"   value="${imcmsimageurl}/${buildlanguage}"/>
 
-            <classpath refid="classes-and-libraries"/>
-        </javac>
+        <property name="conference-templates" value="${templates}/${buildlanguage}/102"/>
 
-        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${conference-templates}" filtering="true">
             <fileset dir="templates/sv/conf" excludes="original/images/"/>
         </imtranslate>
 
-       <copy todir="${imcmsimages}/${defaultlanguage}/102/original">
-            <fileset dir="templates/sv/conf/original/images" includes="*"/>
+       <copy todir="${imcmsimages}/${buildlanguage}/102/original">
+            <fileset dir="install/htdocs/${srclanguage}/conference/original/images" includes="*"/>
         </copy>
 
     </target>
 
 
-    <!-- Builds the 'chat'-plugin. -->
+    <!-- Copy and translate the chat files . -->
     <target name="chat"
 	    depends="init,tools"
-	    description="Builds the chat."
-	    if="build-chat">
+	    description="Copy and translate the chat files.">
 
-        <mkdir dir="${classes}"/>
-        <javac srcdir="servlets/chat"
-            destdir="${classes}"
-            includes="*.java"
-            classpath="${classes}"
-            debug="${debug}"
-            optimize="${optimize}"
-            deprecation="${deprecation}">
+        <filter token="adminbuttonsurl"     value="${imcmsimageurl}/admin/${buildlanguage}"/>
+        <filter token="imcmsimageurllang"   value="${imcmsimageurl}/${buildlanguage}"/>
 
-            <classpath refid="classes-and-libraries"/>
-        </javac>
-
-        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+        <property name="chat-templates" value="${templates}/${buildlanguage}/103"/>
+        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${chat-templates}" filtering="true">
             <fileset dir="templates/sv/chat"/>
@@ -792,81 +897,78 @@
     </target>
 
 
-    <!-- Builds the 'billboard'-plugin. -->
+    <!-- Copy and translate the billboard files. -->
     <target name="billboard"
 	    depends="init,tools"
-	    description="Builds the billboard."
-	    if="build-billboard">
+	    description="Copy and translate the billboard files.">
 
-        <mkdir dir="${classes}"/>
-        <javac srcdir="servlets/billBoard"
-            destdir="${classes}"
-            includes="*.java"
-            classpath="${classes}"
-            debug="${debug}"
-            optimize="${optimize}"
-            deprecation="${deprecation}">
+        <filter token="adminbuttonsurl"     value="${imcmsimageurl}/admin/${buildlanguage}"/>
+        <filter token="imcmsimageurllang"   value="${imcmsimageurl}/${buildlanguage}"/>
 
-            <classpath refid="classes-and-libraries"/>
-        </javac>
-
-        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+        <property name="billboard-templates" value="${templates}/${buildlanguage}/104"/>
+        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${billboard-templates}" filtering="true">
-            <fileset dir="templates/sv/billboard" excludes="images/"/>
+            <fileset dir="templates/sv/billboard" excludes="original/images/"/>
         </imtranslate>
 
-        <copy todir="${imcmsimages}/${defaultlanguage}/104/original">
-            <fileset dir="templates/sv/billboard/original/images" includes="*"/>
+        <copy todir="${imcmsimages}/${buildlanguage}/104/original">
+            <fileset dir="install/htdocs/${srclanguage}/billboard/original/images" includes="*"/>
         </copy>
 
     </target>
 
-
+    <!-- Copy and translates the files for the postcard. -->
     <target name="postcard"
 	    depends="init,tools"
-	    description="Builds the postcard."
-	    if="build-postcard">
+	    description="Copy and translates the files for the postcard.">
 
-        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+        <filter token="adminbuttonsurl"     value="${imcmsimageurl}/admin/${buildlanguage}"/>
+        <filter token="imcmsimageurllang"   value="${imcmsimageurl}/${buildlanguage}"/>
+
+        <property name="postcard-templates" value="${templates}/${buildlanguage}/105"/>
+        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${postcard-templates}" filtering="true">
             <fileset dir="templates/sv/postcard"/>
         </imtranslate>
 
-        <copy todir="${imcmsimages}/${defaultlanguage}/105">
-            <fileset dir="install/htdocs/${defaultlanguage}/postcard/images" includes="*.gif"/>
+        <copy todir="${imcmsimages}/${buildlanguage}/105">
+            <fileset dir="install/htdocs/${srclanguage}/postcard/images" includes="*.gif"/>
         </copy>
 
     </target>
 
 
-    <!-- Copies the files for the 'fortune'-plugin. -->
+    <!-- Copy and translates the files for the fortune. -->
     <target name="fortune"
 	    depends="init,tools"
-	    description="Copies the files for the 'fortune'-plugin.">
+	    description="Copies the files for the 'fortune'.">
 
-        <mkdir dir="${fortunes}"/>
+        <filter token="adminbuttonsurl"     value="${imcmsimageurl}/admin/${buildlanguage}"/>
+        <filter token="imcmsimageurllang"   value="${imcmsimageurl}/${buildlanguage}"/>
 
-        <!-- Create empty files needed by fortune -->
-        <touch file="${fortunes}/poll.poll.txt" millis="0"/>
-        <touch file="${fortunes}/quotes.txt" millis="0"/>
-
-        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+        <property name="fortune-templates" value="${templates}/${buildlanguage}/106"/>
+        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${fortune-templates}" filtering="true">
             <fileset dir="templates/sv/fortunes"/>
         </imtranslate>
 
         <copy todir="${imcmsimages}/${defaultlanguage}/106">
-            <fileset dir="install/htdocs/${defaultlanguage}/fortunes/images" includes="*.gif"/>
+            <fileset dir="install/htdocs/${srclanguage}/fortunes/images" includes="*.gif"/>
         </copy>
 
     </target>
 
 
     <!-- Copies the shop files. -->
-    <target name="shop" depends="init,tools" description="Copies the shop files." if="build-shop">
+    <target name="shop"
+            depends="init,tools"
+            description="Copies the shop files." >
+
+        <filter token="adminbuttonsurl"     value="${imcmsimageurl}/admin/${buildlanguage}"/>
+        <filter token="imcmsimageurllang"   value="${imcmsimageurl}/${buildlanguage}"/>
 
         <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
@@ -881,9 +983,13 @@
     <target name="html-editor"
 	    depends="init,tools"
 	    description="Copies the html-editor files.">
+
+        <filter token="adminbuttonsurl"     value="${imcmsimageurl}/admin/${buildlanguage}"/>
+        <filter token="imcmsimageurllang"   value="${imcmsimageurl}/${buildlanguage}"/>
+
         <mkdir dir="${htmleditor}"/>
 
-        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
+        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${htmleditor}" filtering="true">
             <fileset dir="install/htdocs/sv/htmleditor/editor" excludes="images/*.jpg,images/*.gif"/>
