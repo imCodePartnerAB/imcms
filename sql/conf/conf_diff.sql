@@ -77,4 +77,81 @@ UPDATE A_conf_templates
 SET template_id= @new_lib_id
 WHERE conf_id = @meta_id
 GO
+
 -- 2002-01-23
+
+
+-- update because off spelling mistake in A_discussion
+GO
+ALTER PROCEDURE A_AddReply
+/* 
+This procedure is the one which actually adds replies to a discussion.
+*/
+	@user_id int,
+	@theDiscussionId int,
+	@headline varchar(255),
+	@text text ,
+	@reply_level int
+AS
+/* Lets get today's date */
+DECLARE @toDay datetime
+SELECT @toDay = GETDATE()
+INSERT INTO A_replies (user_id, parent_id, create_date, headline, text, reply_level)
+VALUES ( @user_id, @theDiscussionId, @toDay, @headline, @text, @reply_level )
+/* Lets increment the discussions counter */
+Declare @nbrOfRepliesInDisc int
+SELECT @nbrOfRepliesInDisc  = max(count_replies) + 1 FROM A_discussion
+WHERE A_discussion.discussion_id = @theDiscussionId
+UPDATE A_discussion 
+SET count_replies =  @nbrOfRepliesInDisc
+WHERE A_discussion.discussion_id = @theDiscussionId
+/* Lets update the discussions lastModified date */
+
+EXEC A_UpdateDiscussionModifyDate @theDiscussionId
+
+GO
+
+
+--Update A_discussion.count_replies and last_mod_date 
+declare @discId int, @nbrOfReplies int, @lastReplyDate datetime, @lastMod datetime
+declare posCursor  Cursor scroll
+for 	SELECT	discussion_id
+FROM    A_discussion
+open posCursor
+fetch next from posCursor
+into @discId
+while @@fetch_status = 0
+begin 
+	SELECT @nbrOfReplies = COUNT(rep.reply_id) 
+	FROM A_replies rep WHERE rep.parent_id = @discId
+	-- Lets update the counter 
+	UPDATE A_discussion 
+	SET count_replies = @nbrOfReplies 
+	WHERE discussion_id = @discId
+
+	-- Lets get the last reply date in the discussion
+	
+	
+	SELECT @lastReplyDate = r.create_date
+	FROM A_replies r
+	WHERE r.parent_id = @discId
+	ORDER BY r.create_date 
+	
+	-- Lets update discussion.last_mod_date
+	select @lastMod = last_mod_date
+	from A_discussion
+	where discussion_id = @discId
+	if  @lastMod < @lastReplyDate
+	begin
+		UPDATE A_discussion
+		SET last_mod_date = @lastReplyDate
+		WHERE discussion_id = @discId
+	end 
+	fetch next from posCursor
+	into @discId
+END
+close posCursor
+deallocate posCursor		
+GO
+-- 2002-01-28
+
