@@ -9,7 +9,7 @@ Prerequisites:
 
     * Install Microsoft SQL Server 2000 and the accompanying Full Text Index Server.
 
-    * Download the Microsoft JDBC driver for SQL Server 2000 from www.microsoft.com.
+    * Download the Microsoft JDBC driver for SQL Server 2000 Service Pack 2 or later from www.microsoft.com.
 
 
 Building:
@@ -35,6 +35,9 @@ Installing imCMS:
       If the war-file isn't named "imcms.war", rename it first,
       or it will be unpacked in a directory named after the file,
       and internal references to the url-path "/imcms" will not work.
+
+    * Copy the JDBC files (3 files) from the /lib directory where you have unpacked the JDBC driver
+    	to directory "tomcat/webapps/imcms/WEB_INF/lib". 	
 
     * Start Tomcat.
       The servlet engine will find the war-file you installed, and unpack it.
