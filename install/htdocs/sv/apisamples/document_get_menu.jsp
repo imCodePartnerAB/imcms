@@ -8,14 +8,14 @@
     public String getTreeOutput( int treeLevel, int startIndex, TextDocument.MenuItem[] menuItems ) throws NoPermissionException {
         StringBuffer result = new StringBuffer();
         int index = startIndex;
-        if( null == menuItems[index].getTreeKey() ){
-            result.append("Warning, tree key has no value, stepping to next.<br>");
+        if( "".equals( menuItems[index].getTreeKey().toString()) ){
+            result.append("Warning, tree key (at index " + index + ") has no value, stepping to next.<br>");
             result.append(getTreeOutput( treeLevel, startIndex+1, menuItems));
         } else {
             result.append( "<ul>\n" ); // Beginning of each branch
-            while( existKeysInBranch( treeLevel, index, menuItems ) ){
-                if( treeLevel == menuItems[index].getTreeKey().getLevel() ) {
-                    result.append( "<li>"+ menuItems[index].getTreeKey().getValue() + ", " + makeLink(menuItems[index].getDocument()) + "</li>\n" ); // Node output
+            while( existMoreKeysInBranch( treeLevel, index, menuItems ) ){
+                if( treeLevel == menuItems[index].getTreeKey().getLevelCount() ) {
+                    result.append( "<li>"+ menuItems[index].getTreeKey() + ", " + makeLink(menuItems[index].getDocument()) + "</li>\n" ); // Node output
                     index++;
                 } else { /* sublevel */
                     String subLevelResult = getTreeOutput( treeLevel + 1, index, menuItems );
@@ -30,15 +30,15 @@
 
     private int numberOfUsedIndexInSubLevelTree( int treeLevel, int index, TextDocument.MenuItem[] menuItems ) {
         int count = 0;
-        for( int i = index; i < menuItems.length && treeLevel <= menuItems[i].getTreeKey().getLevel(); i++ ){
+        for( int i = index; i < menuItems.length && treeLevel <= menuItems[i].getTreeKey().getLevelCount(); i++ ){
             count++;
         }
         return count;
     }
 
-    private  boolean existKeysInBranch( int treeLevel, int startIndex, TextDocument.MenuItem[] menuItems ) {
+    private  boolean existMoreKeysInBranch( int treeLevel, int startIndex, TextDocument.MenuItem[] menuItems ) {
         boolean result = false;
-        for (int i = startIndex; i < menuItems.length && treeLevel <= menuItems[i].getTreeKey().getLevel() ; i++) {
+        for (int i = startIndex; i < menuItems.length && treeLevel <= menuItems[i].getTreeKey().getLevelCount() ; i++) {
             result = true;
         }
         return result;
@@ -81,26 +81,12 @@ The menu items with there sort keys:<br><br>
     }
 %><br>
 
-When the keys is used to order the document in a tree structure:<br>
+When the (tree) keys is used to order the document in a tree structure:<br>
 <%
     String treeStr = "";
     int treeStartLevel = 1;
     int startIndex = 0;
-    boolean allHasTreeKey = true;
-    for (int i = 0; i < menuItems.length; i++) {
-        TextDocument.MenuItem menuItem = menuItems[i];
-        if( "".equals(menuItem.getTreeKey())){
-            allHasTreeKey = false;
-            break;
-        }
-    }
-    if( allHasTreeKey ) {
-        treeStr = getTreeOutput( treeStartLevel, startIndex, menuItems );
-    } else {
-        out.println("Not all documents in the menu has a tree key set.<br>");
-        out.println("Please set that manually first.");
-    }
-
+    treeStr = getTreeOutput( treeStartLevel, startIndex, menuItems );
 %>
 <%=treeStr%>
 

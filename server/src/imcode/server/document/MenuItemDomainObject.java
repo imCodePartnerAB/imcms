@@ -8,14 +8,14 @@ public class MenuItemDomainObject {
         this.child = child;
         this.menuSort = menuSort;
         this.manualSortOrder = manualSortOrder;
-        this.treeSortIndex = treeSortIndex;
+        this.treeKey = new TreeKeyDomainObject( treeSortIndex );
     }
 
-    DocumentDomainObject parent;
-    DocumentDomainObject child;
-    int menuSort;
-    int manualSortOrder;
-    String treeSortIndex;
+    private  DocumentDomainObject parent;
+    private     DocumentDomainObject child;
+        private int menuSort;
+    private     int manualSortOrder;
+    private TreeKeyDomainObject treeKey;
 
     public DocumentDomainObject getParentDocument() {
         return parent;
@@ -30,10 +30,7 @@ public class MenuItemDomainObject {
     }
 
     public TreeKeyDomainObject getTreeKey() {
-        if( null == treeSortIndex || "".equals( treeSortIndex ) ) {
-            return null;
-        }
-        return new TreeKeyDomainObject( treeSortIndex );
+        return treeKey;
     }
 
     static class TreeKeyCoparator implements Comparator {
@@ -63,11 +60,11 @@ public class MenuItemDomainObject {
         }
 
         private int compareTreeSortKeys( TreeKeyDomainObject key1, TreeKeyDomainObject key2, int level ) {
-            boolean hasKeyOnThisLevel1 = key1.getLevel() >= level;
-            boolean hasKeyOnThisLevel2 = key2.getLevel() >= level;
+            boolean hasKeyOnThisLevel1 = key1.getLevelCount() >= level;
+            boolean hasKeyOnThisLevel2 = key2.getLevelCount() >= level;
             if( hasKeyOnThisLevel1 && hasKeyOnThisLevel2 ) {
-                int firstNumber1 = key1.getSortNumber( level );
-                int firstNumber2 = key2.getSortNumber( level );
+                int firstNumber1 = key1.getLevelKey( level );
+                int firstNumber2 = key2.getLevelKey( level );
                 if ( firstNumber1 != firstNumber2 ) {
                     return firstNumber1 - firstNumber2;
                 }

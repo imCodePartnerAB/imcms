@@ -822,7 +822,7 @@ public class DocumentMapper {
     public CategoryDomainObject getCategory( int categoryId ) {
         String sqlQuery = "SELECT categories.name, categories.description, category_types.name \n" +
                 "FROM categories\n" + "JOIN category_types\n" + "ON categories.category_type_id = category_types.category_type_id\n" +
-                "WHERE category.category_id = ?";
+                "WHERE categories.category_id = ?";
         String[] sqlResult = service.sqlQuery( sqlQuery, new String[]{"" + categoryId} );
         if ( 0 != sqlResult.length ) {
             final String categoryNameFromDb = sqlResult[0];

@@ -93,10 +93,6 @@ Set the permissions for a role on a document, <%= makeLink("document_set_permiss
 There are two different levels of configurable "restricted" permissions that can be modified.
 To see what specified "Restricted One" permissions a page has, see <%= makeLink("document_permission_show_restricted_1.jsp") %><br>
 
-This doesn't work yet:<br>
-(To change the "Restricted One" permission,<%= makeLink("document_permission_change_restricted_1.jsp") %>)<br>
-<br>
-
 <h3>Database connection</h3>
 Get access to the database, <%= makeLink("database_get_connection.jsp") %><br>
 

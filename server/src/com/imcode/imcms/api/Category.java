@@ -44,4 +44,8 @@ public class Category {
         return internalCategory.getDescription() ;
     }
 
+    public int getId() {
+        return internalCategory.getId();
+    }
+
 }

@@ -178,9 +178,6 @@ public class TextDocument extends Document {
         }
 
         public TreeKey getTreeKey() {
-            if( null == internalMenuItem.getTreeKey()) {
-                return null;
-            }
             return new TreeKey( internalMenuItem.getTreeKey() );
         }
 
@@ -191,22 +188,22 @@ public class TextDocument extends Document {
                 this.internalTreeKey = internalTreeKey;
             }
 
-            public int getLevel() {
-                return internalTreeKey.getLevel();
+            public int getLevelCount() {
+                return internalTreeKey.getLevelCount();
             }
 
-            public int getSortNumber( int level ) {
-                return internalTreeKey.getSortNumber( level );
-            }
-
-            public String getValue() {
-                return internalTreeKey.getValue();
+           /**
+            * @param level The level in this three key that you want the sort number from.
+            *              If the tree key is 1.3.5 then the level key on level 2 is 3.
+            * @return the key on the level requested. Throws a NoSuchElementException() if there is none.
+            */
+            public int getLevelKey( int level ) {
+                return internalTreeKey.getLevelKey( level );
             }
 
             public String toString() {
-                return  getValue();
+                return  internalTreeKey.toString();
             }
-
         }
     }
 

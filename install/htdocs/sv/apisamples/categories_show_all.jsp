@@ -19,7 +19,7 @@
             Category[] categories = documentService.getAllCategoriesOfType(categoryType);
             for (int j = 0; j < categories.length; j++) {
                 Category category = categories[j];
-                %><li><%= category.getName() %> - <%= category.getDescription() %></li><%
+                %><li><%= category.getName() + " - " + category.getDescription() + " (ID: " + category.getId() + ")" %></li><%
             }
             %></ul></li><%
         }
