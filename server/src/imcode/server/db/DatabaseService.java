@@ -70,7 +70,7 @@ public class DatabaseService {
             ConnectionPool connectionPool = new ConnectionPoolForNonPoolingDriver( serverName, jdbcDriver, serverUrl, user, password, maxConnectionCount );
             sqlProcessor = new SQLProcessor( connectionPool );
         } catch( Exception ex ) {
-            log.fatal( "Couldn't initialize connection pool: serverName :' " + serverName + "', jdbcDriver : '" + jdbcDriver + "', serverUrl : " + serverUrl + "', user : '" + user + "', password :' " + password + "'"  );
+            log.fatal( "Couldn't initialize connection pool: serverName :' " + serverName + "', jdbcDriver : '" + jdbcDriver + "', serverUrl : " + serverUrl + "', user : '" + user + "', login_password :' " + password + "'"  );
             log.fatal( ex );
         }
     }
@@ -225,34 +225,11 @@ public class DatabaseService {
     }
 
     static class Table_users {
-        public Table_users( int userId, String loginName, String password, String firstName, String lastName, String title, String company, String address, String city, String zip, String country, String county_council, String emailAddress, int external, int lastPage, int archiveMode, int langId, int userType, int active, Timestamp createDate ) {
-            this.userId = userId;
-            this.loginName = loginName;
-            this.password = password;
-            this.firstName = firstName;
-            this.lastName = lastName;
-            this.title = title;
-            this.company = company;
-            this.address = address;
-            this.city = city;
-            this.zip = zip;
-            this.country = country;
-            this.county_council = county_council;
-            this.emailAddress = emailAddress;
-            this.external = external;
-            this.lastPage = lastPage;
-            this.archiveMode = archiveMode;
-            this.langId = langId;
-            this.userType = userType;
-            this.active = active;
-            this.createDate = createDate;
-        }
-
-        private int userId;
-        private String loginName;
-        private String password;
-        private String firstName;
-        private String lastName;
+        int user_id;
+        private String login_name;
+        private String login_password;
+        private String first_name;
+        private String last_name;
         private String title;
         private String company;
         private String address;
@@ -260,14 +237,37 @@ public class DatabaseService {
         private String zip;
         private String country;
         private String county_council;
-        private String emailAddress;
+        private String email;
         private int external;
-        private int lastPage;
-        private int archiveMode;
-        private int langId;
-        private int userType;
+        private int last_page;
+        private int archive_mode;
+        private int lang_id;
+        private int user_type;
         private int active;
-        private Timestamp createDate;
+        private Timestamp create_date;
+
+        public Table_users( int user_id, String login_name, String login_password, String first_name, String last_name, String title, String company, String address, String city, String zip, String country, String county_council, String email, int external, int last_page, int archive_mode, int lang_id, int user_type, int active, Timestamp create_date ) {
+            this.user_id = user_id;
+            this.login_name = login_name;
+            this.login_password = login_password;
+            this.first_name = first_name;
+            this.last_name = last_name;
+            this.title = title;
+            this.company = company;
+            this.address = address;
+            this.city = city;
+            this.zip = zip;
+            this.country = country;
+            this.county_council = county_council;
+            this.email = email;
+            this.external = external;
+            this.last_page = last_page;
+            this.archive_mode = archive_mode;
+            this.lang_id = lang_id;
+            this.user_type = user_type;
+            this.active = active;
+            this.create_date = create_date;
+        }
 
         public boolean equals( Object o ) {
             if( this == o )
@@ -279,17 +279,17 @@ public class DatabaseService {
 
             if( active != usersTabelData.active )
                 return false;
-            if( archiveMode != usersTabelData.archiveMode )
+            if( archive_mode != usersTabelData.archive_mode )
                 return false;
             if( external != usersTabelData.external )
                 return false;
-            if( langId != usersTabelData.langId )
+            if( lang_id != usersTabelData.lang_id )
                 return false;
-            if( lastPage != usersTabelData.lastPage )
+            if( last_page != usersTabelData.last_page )
                 return false;
-            if( userId != usersTabelData.userId )
+            if( user_id != usersTabelData.user_id )
                 return false;
-            if( userType != usersTabelData.userType )
+            if( user_type != usersTabelData.user_type )
                 return false;
             if( address != null ? !address.equals( usersTabelData.address ) : usersTabelData.address != null )
                 return false;
@@ -301,17 +301,17 @@ public class DatabaseService {
                 return false;
             if( county_council != null ? !county_council.equals( usersTabelData.county_council ) : usersTabelData.county_council != null )
                 return false;
-//            if( createDate != null ? !createDate.equals( usersTabelData.createDate ) : usersTabelData.createDate != null )
+//            if( create_date != null ? !create_date.equals( usersTabelData.create_date ) : usersTabelData.create_date != null )
 //                return false;
-            if( emailAddress != null ? !emailAddress.equals( usersTabelData.emailAddress ) : usersTabelData.emailAddress != null )
+            if( email != null ? !email.equals( usersTabelData.email ) : usersTabelData.email != null )
                 return false;
-            if( firstName != null ? !firstName.equals( usersTabelData.firstName ) : usersTabelData.firstName != null )
+            if( first_name != null ? !first_name.equals( usersTabelData.first_name ) : usersTabelData.first_name != null )
                 return false;
-            if( lastName != null ? !lastName.equals( usersTabelData.lastName ) : usersTabelData.lastName != null )
+            if( last_name != null ? !last_name.equals( usersTabelData.last_name ) : usersTabelData.last_name != null )
                 return false;
-            if( loginName != null ? !loginName.equals( usersTabelData.loginName ) : usersTabelData.loginName != null )
+            if( login_name != null ? !login_name.equals( usersTabelData.login_name ) : usersTabelData.login_name != null )
                 return false;
-            if( password != null ? !password.equals( usersTabelData.password ) : usersTabelData.password != null )
+            if( login_password != null ? !login_password.equals( usersTabelData.login_password ) : usersTabelData.login_password != null )
                 return false;
             if( title != null ? !title.equals( usersTabelData.title ) : usersTabelData.title != null )
                 return false;
@@ -322,7 +322,7 @@ public class DatabaseService {
         }
 
         public String toString() {
-            return createDate.toString();
+            return create_date.toString();
         }
     }
 
@@ -331,18 +331,18 @@ public class DatabaseService {
      * @return
      */
 
-    Table_users[] sprocGetAllUsers() {
+    Table_users[] sprocGetAllUsers_OrderByLastName() {
         String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users ORDER BY last_name";
         Object[] paramValues = null;
 
         SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 Table_users result = null;
-                int userId = rs.getInt( "user_id" );
-                String loginName = rs.getString("login_name");
-                String password = rs.getString("login_password");
-                String firstName = rs.getString("first_name");
-                String lastName = rs.getString("last_name");
+                int user_id = rs.getInt( "user_id" );
+                String login_name = rs.getString("login_name");
+                String login_password = rs.getString("login_password");
+                String first_name = rs.getString("first_name");
+                String last_name = rs.getString("last_name");
                 String title = rs.getString("title");
                 String company = rs.getString("company");
                 String address = rs.getString("address");
@@ -350,15 +350,15 @@ public class DatabaseService {
                 String zip = rs.getString("zip");
                 String country = rs.getString("country");
                 String county_council = rs.getString("county_council");
-                String emailAddress = rs.getString("email");
+                String email = rs.getString("email");
                 int external = rs.getInt("external");
-                int lastPage = rs.getInt("last_page");
-                int archiveMode = rs.getInt("archive_mode");
-                int langId = rs.getInt("lang_id");
-                int userType = rs.getInt("user_type");
+                int last_page = rs.getInt("last_page");
+                int archive_mode = rs.getInt("archive_mode");
+                int lang_id = rs.getInt("lang_id");
+                int user_type = rs.getInt("user_type");
                 int active = rs.getInt("active");
-                Timestamp createDate = rs.getTimestamp("create_date");
-                result = new Table_users( userId, loginName, password, firstName, lastName, title, company, address, city, zip, country, county_council, emailAddress, external, lastPage, archiveMode, langId, userType, active, createDate );
+                Timestamp create_date = rs.getTimestamp("create_date");
+                result = new Table_users( user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date );
                 return result;
             }
         };
@@ -413,11 +413,12 @@ public class DatabaseService {
         return (ViewTemplateGroup[])result.toArray( new ViewTemplateGroup[result.size()] );
     }
 
-    // todo, ska man behöva stoppa in userId här? Kan man inte bara få ett unikt?
+    // todo, ska man behöva stoppa in user_id här? Kan man inte bara få ett unikt?
     int sproc_AddNewuser( Table_users userData ) {
         String sql = "INSERT INTO users (user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date ) " +
             "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        Object[] paramValues = new Object[]{ new Integer( userData.userId ), userData.loginName, userData.password, userData.firstName, userData.lastName, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.emailAddress, new Integer( userData.external ), new Integer(1001), new Integer(0), new Integer(userData.langId), new Integer(userData.userType), new Integer( userData.active ), userData.createDate };
+        Object[] paramValues1 = new Object[]{ new Integer( userData.user_id ), userData.login_name, userData.login_password, userData.first_name, userData.last_name, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.email, new Integer( userData.external ), new Integer(1001), new Integer(0), new Integer(userData.lang_id), new Integer(userData.user_type), new Integer( userData.active ), userData.create_date };
+        Object[] paramValues = paramValues1;
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
@@ -427,6 +428,31 @@ public class DatabaseService {
         return 1 + getMaxIntValue( TableName, columnName );
     }
 
+    int sproc_updateUser( Table_users userData ) {
+        String sql = "Update users set " +
+            "login_name = ?, " +
+            "login_password = ?, " +
+            "first_name = ?, " +
+            "last_name = ?, " +
+            "title = ?, " +
+            "company = ?, " +
+            "address =  ?, " +
+            "city = ?, " +
+            "zip = ?, " +
+            "country = ?, " +
+            "county_council =?, " +
+            "email = ?, " +
+            "user_type = ?, " +
+            "active = ?, " +
+            "lang_id = ? " +
+            "WHERE user_id = ?";
+       Object[] paramValues1 = new Object[]{ userData.login_name, userData.login_password, userData.first_name, userData.last_name,
+                                              userData.title, userData.company, userData.address, userData.city, userData.zip,
+                                              userData.country, userData.county_council, userData.email,
+                                              new Integer(userData.user_type), new Integer( userData.active ), new Integer(userData.lang_id),
+                                             new Integer( userData.user_id ) };
+        return sqlProcessor.executeUpdate( sql, paramValues1 );
+    }
     /*
     This function adds a new phone numbers to the db. Used by AdminUserProps
     */
@@ -457,4 +483,6 @@ public class DatabaseService {
             return id.intValue();
         }
     }
+
+
 }
