@@ -10,7 +10,6 @@ import imcode.util.Utility;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

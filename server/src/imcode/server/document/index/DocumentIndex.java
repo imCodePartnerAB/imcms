@@ -36,6 +36,7 @@ public abstract class DocumentIndex {
     public Query parseLucene( String queryString ) throws ParseException {
         return MultiFieldQueryParser.parse( queryString,
                                             new String[]{
+                                                FIELD__META_ID,
                                                 FIELD__META_HEADLINE,
                                                 FIELD__META_TEXT,
                                                 FIELD__TEXT,

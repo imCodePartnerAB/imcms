@@ -5,16 +5,13 @@ import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.index.AutorebuildingDocumentIndex;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.document.index.AutorebuildingDocumentIndex;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
-import imcode.util.IdNamePair;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -37,18 +34,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- * Templates in use by this servlet:
- * existing_doc.html     = the startpage
- * existing_doc_hit.html = One record hit html
- * existing_doc_res.html = summary page for all hits on the search
- */
-
 public class GetExistingDoc extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( GetExistingDoc.class.getName() );
     private static final String ONE_SEARCH_HIT = "existing_doc_hit.html";
     private static final String SEARCH_RESULTS = "existing_doc_res.html";
+    private static final String ADMIN_TEMPLATE_EXISTING_DOC = "existing_doc.html";
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -80,10 +71,8 @@ public class GetExistingDoc extends HttpServlet {
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( req.getParameter( "cancel" ) != null || req.getParameter( "cancel.x" ) != null ) {
-            String tempstring = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
-            if ( tempstring != null ) {
-                out.write( tempstring );
-            }
+            res.sendRedirect( "AdminDoc?meta_id=" + meta_id + "&flags="
+                                   + IMCConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + doc_menu_no );
             return;
         } else if ( req.getParameter( "search" ) != null || req.getParameter( "search.x" ) != null ) {
             // SEARCH
@@ -197,7 +186,7 @@ public class GetExistingDoc extends HttpServlet {
 
     }
 
-    private void addDocument( imcode.server.user.UserDomainObject user, HttpServletRequest req,
+    private void addDocument( UserDomainObject user, HttpServletRequest req,
                               IMCServiceInterface imcref, int meta_id, int menuIndex, HttpServletResponse res ) throws IOException {
         user.put( "flags", new Integer( IMCConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) );
 
@@ -356,7 +345,7 @@ public class GetExistingDoc extends HttpServlet {
 
         // Send page to browser
         // htmlOut = imcref.replaceTagsInStringWithData( htmlOut, outVector);
-        String htmlOut = imcref.getAdminTemplate( "existing_doc.html", user, outVector );
+        String htmlOut = imcref.getAdminTemplate( ADMIN_TEMPLATE_EXISTING_DOC, user, outVector );
         out.write( htmlOut );
         return;
     }
