@@ -33,11 +33,11 @@ public class Image {
     }
 
     public int getWidth() {
-        return internalImage.getWidth();
+        return internalImage.getDisplayImageSize().getWidth();
     }
 
     public int getHeight() {
-        return internalImage.getHeight();
+        return internalImage.getDisplayImageSize().getHeight();
     }
 
     public int getBorder() {

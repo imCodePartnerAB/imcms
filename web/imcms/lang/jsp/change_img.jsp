@@ -125,7 +125,7 @@ function checkLinkOnBlur() {
         <% if (StringUtils.isNotBlank(image.getUrl())) { %>
         <tr>
             <td colspan="2" align="center">
-                <%= ImcmsImageUtils.getImageTag( image ) %>
+                <%= ImcmsImageUtils.getImageHtmlTag( image ) %>
             </td>
         </tr>
         <%

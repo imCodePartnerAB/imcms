@@ -110,7 +110,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             Integer documentId = ImcmsImageUtils.getDocumentIdFromImageUrl( image.getUrl() ) ;
             DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
             if (null == documentId || imageMode || documentMapper.userHasAtLeastDocumentReadPermission( user, documentMapper.getDocument( documentId.intValue() ))) {
-                imageMap.put( imageIndex, ImcmsImageUtils.getImageTag( image ) );
+                imageMap.put( imageIndex, ImcmsImageUtils.getImageHtmlTag( image ) );
             }
         }
         return imageMap;

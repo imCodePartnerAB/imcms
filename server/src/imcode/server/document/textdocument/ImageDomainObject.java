@@ -6,7 +6,20 @@
  */
 package imcode.server.document.textdocument;
 
+import imcode.util.ImcmsImageUtils;
+import imcode.util.ImageSize;
+import imcode.util.ImageParser;
+import imcode.server.IMCServiceInterface;
+import imcode.server.ApplicationServer;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.FileDocumentDomainObject;
+
 import java.io.Serializable;
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.lang.StringUtils;
 
 public class ImageDomainObject implements Serializable {
     final static int NON_FILE_DOCUMENT_IMAGE_TYPE_ID = 0;
@@ -33,6 +46,47 @@ public class ImageDomainObject implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public ImageSize getDisplayImageSize() {
+        ImageSize realImageSize = getRealImageSize();
+
+        int width = getWidth() ;
+        int height = getHeight() ;
+        if ( 0 == width && 0 != height && 0 != realImageSize.getHeight() ) {
+            width = (int)( realImageSize.getWidth() * ( (double)height / realImageSize.getHeight() ) );
+        } else if ( 0 == height && 0 != width && 0 != realImageSize.getWidth() ) {
+            height = (int)( realImageSize.getHeight() * ( (double)width / realImageSize.getWidth() ) );
+        } else if ( 0 == width && 0 == height ) {
+            width = realImageSize.getWidth() ;
+            height = realImageSize.getHeight() ;
+        }
+        return new ImageSize( width, height ) ;
+    }
+
+    public ImageSize getRealImageSize() {
+        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+        DocumentMapper documentMapper = service.getDocumentMapper();
+        File image_path = service.getConfig().getImagePath();
+        ImageSize imageSize = new ImageSize( 0, 0 );
+        String imageUrl = getUrl();
+        if ( StringUtils.isNotBlank( imageUrl ) ) {
+            File imageFile = new File( image_path, getUrl() );
+            Integer imageFileDocumentId = ImcmsImageUtils.getDocumentIdFromImageUrl( imageUrl );
+            if ( null != imageFileDocumentId ) {
+                DocumentDomainObject document = documentMapper.getDocument( imageFileDocumentId.intValue() );
+                if ( document instanceof FileDocumentDomainObject ) {
+                    imageSize = ImcmsImageUtils.getImageSizeFromFileDocument( (FileDocumentDomainObject)document );
+                }
+            } else if ( imageFile.isFile() ) {
+                try {
+                    imageSize = new ImageParser().parseImageFile( imageFile );
+                } catch (IOException ioe) {
+                    // ignored
+                }
+            }
+        }
+        return imageSize;
     }
 
     public int getWidth() {

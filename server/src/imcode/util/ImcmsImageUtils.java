@@ -17,27 +17,6 @@ import org.apache.oro.text.perl.Perl5Util;
 
 public class ImcmsImageUtils {
 
-    public static ImageSize getImageSize( ImageDomainObject image ) throws IOException {
-        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
-        DocumentMapper documentMapper = service.getDocumentMapper();
-        File image_path = service.getConfig().getImagePath();
-        ImageSize imageSize = new ImageSize( 0, 0 );
-        String imageUrl = image.getUrl();
-        if ( StringUtils.isNotBlank( imageUrl ) ) {
-            File imageFile = new File( image_path, image.getUrl() );
-            Integer imageFileDocumentId = getDocumentIdFromImageUrl( imageUrl );
-            if ( null != imageFileDocumentId ) {
-                DocumentDomainObject document = documentMapper.getDocument( imageFileDocumentId.intValue() );
-                if ( document instanceof FileDocumentDomainObject ) {
-                    imageSize = getImageDataFromFileDocument( (FileDocumentDomainObject)document );
-                }
-            } else if ( imageFile.isFile() ) {
-                imageSize = new ImageParser().parseImageFile( imageFile );
-            }
-        }
-        return imageSize;
-    }
-
     public static Integer getDocumentIdFromImageUrl( String imageUrl ) {
         Integer documentId = null;
         Perl5Util perl5util = new Perl5Util();
@@ -47,7 +26,7 @@ public class ImcmsImageUtils {
         return documentId;
     }
 
-    public static ImageSize getImageDataFromFileDocument( FileDocumentDomainObject imageFileDocument ) {
+    public static ImageSize getImageSizeFromFileDocument( FileDocumentDomainObject imageFileDocument ) {
         ImageSize imageSize;
         try {
             InputStream imageFileDocumentInputStream = imageFileDocument.getInputStreamSource().getInputStream();
@@ -60,7 +39,7 @@ public class ImcmsImageUtils {
         return imageSize;
     }
 
-    public static String getImageTag( ImageDomainObject image ) {
+    public static String getImageHtmlTag( ImageDomainObject image ) {
         StringBuffer imageTagBuffer = new StringBuffer( 96 );
         if ( !"".equals( image.getUrl() ) ) {
 
@@ -76,24 +55,10 @@ public class ImcmsImageUtils {
 
             imageTagBuffer.append( "<img src=\"" + StringEscapeUtils.escapeHtml( imageUrl ) + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 
-            ImageSize imageSize = new ImageSize( 0, 0 );
-            try {
-                imageSize = getImageSize( image );
-            } catch ( IOException e ) {
-            }
+            ImageSize displayImageSize = image.getDisplayImageSize();
 
-            int width = image.getWidth();
-            int height = image.getHeight();
-
-            if ( 0 == width && 0 != height && 0 != imageSize.getHeight() ) {
-                width = (int)( imageSize.getWidth() * ( (double)height / imageSize.getHeight() ) );
-            } else if ( 0 == height && 0 != width && 0 != imageSize.getWidth() ) {
-                height = (int)( imageSize.getHeight() * ( (double)width / imageSize.getWidth() ) );
-            } else if ( 0 == width && 0 == height ) {
-                width = imageSize.getWidth() ;
-                height = imageSize.getHeight() ;
-            }
-
+            int width = displayImageSize.getWidth();
+            int height = displayImageSize.getHeight();
             if ( 0 != width ) {
                 imageTagBuffer.append( " width=\"" + width + "\"" );
             }
@@ -128,4 +93,5 @@ public class ImcmsImageUtils {
         }
         return imageTagBuffer.toString();
     }
+
 }

@@ -36,7 +36,15 @@ All images used in the document:
         Map.Entry entry = (Map.Entry) imagesEntries.next();
         Integer index = (Integer) entry.getKey();
         Image tempImage = (Image) entry.getValue();
-        %><p>Image <%=index%>'s source is :<br> <%=tempImage.getSrc()%></p><%
+        %><p>Image <%=index%>:<br> <%=tempImage.getSrc()%>
+            imageSrc = <%=tempImage.getSrc()%><br>
+            imageHeigth = <%=tempImage.getHeight()%><br>
+            imageWidth = <%=tempImage.getWidth()%><br>
+            imageAltText = <%=tempImage.getAltText()%><br>
+            imageLinkTarget = <%=tempImage.getLinkTarget()%><br>
+            imageLinkHref = <%=tempImage.getLinkHref()%><br>
+            imageSrcUrl = <%=tempImage.getSrcUrl()%><br>
+        </p><%
     }
 %>
 </body>

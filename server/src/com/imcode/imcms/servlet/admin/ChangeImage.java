@@ -255,10 +255,10 @@ public class ChangeImage extends HttpServlet {
                                     HttpServletRequest request,
                                     HttpServletResponse response ) throws IOException, ServletException {
 
-        ImageSize imageSize = ImcmsImageUtils.getImageSize( image );
+        ImageSize realImageSize = image.getRealImageSize();
         String label = StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__LABEL ) );
 
-        new ImageEditPage( document, imageIndex, image, imageSize, label ).forward( request, response );
+        new ImageEditPage( document, imageIndex, image, realImageSize, label ).forward( request, response );
     }
 
     private int getImageNumberParam( HttpServletRequest req ) {
@@ -336,7 +336,7 @@ public class ChangeImage extends HttpServlet {
 
         public String render( DocumentDomainObject document, HttpServletRequest request ) {
             UserDomainObject user = Utility.getLoggedOnUser( request );
-            ImageSize imageSize = ImcmsImageUtils.getImageDataFromFileDocument( (FileDocumentDomainObject)document );
+            ImageSize imageSize = ImcmsImageUtils.getImageSizeFromFileDocument( (FileDocumentDomainObject)document );
             List values = Arrays.asList( new Object[]{
                 "imageUrl", "GetDoc?meta_id=" + document.getId(),
                 "imageSize", imageSize,
