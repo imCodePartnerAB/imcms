@@ -28,6 +28,7 @@ import java.util.Vector;
 public class AddDoc extends HttpServlet {
 
     private static final String DOCINFO_TEMPLATE_NAME_PREFIX = "docinfo/";
+    static final String SESSION__DATA__IDENTIFIER = "AddDoc.session.data";
 
 
     class SessionData {
@@ -46,11 +47,10 @@ public class AddDoc extends HttpServlet {
         Writer out = res.getWriter();
 
         HttpSession session = req.getSession(true);
-        String SESSION_DATA_IDENTIFIER = "AddDoc.session.data";
-        SessionData sessionData = (SessionData)session.getAttribute(SESSION_DATA_IDENTIFIER);
+        SessionData sessionData = (SessionData)session.getAttribute(SESSION__DATA__IDENTIFIER);
         if( null == sessionData ) {
             sessionData = new SessionData();
-            session.setAttribute( SESSION_DATA_IDENTIFIER, sessionData );
+            session.setAttribute( SESSION__DATA__IDENTIFIER, sessionData );
 
             sessionData.meta_id = req.getParameter("meta_id");
             sessionData.item_selected = req.getParameter("edit_menu");

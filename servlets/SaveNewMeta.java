@@ -18,6 +18,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.ParseException;
@@ -39,7 +40,14 @@ public class SaveNewMeta extends HttpServlet {
             rd.forward( req, res );
             return;
         }
-        
+
+        // We need to invalidate session data used by AddDoc, so it dosen't interfere with subsecwent new calls to AddDoc.
+        HttpSession session = req.getSession(true);
+        AddDoc.SessionData addDocSessionData = (AddDoc.SessionData) session.getAttribute( AddDoc.SESSION__DATA__IDENTIFIER );
+        if( null != addDocSessionData ) {
+            session.removeAttribute( AddDoc.SESSION__DATA__IDENTIFIER );
+        }
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
