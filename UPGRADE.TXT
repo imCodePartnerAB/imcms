@@ -1,5 +1,7 @@
 Upgrading imCMS:
 
+* First check CHANGES.TXT to see if there's anything you have to do that is not noted in this file.
+
 * If you have a version of imCMS older than 1.7.5,
   you must delete any documents of the types "diagram" (101) or "calendar" (107).
   They are no longer supported. The diff scripts will fail if this is not done.
@@ -35,6 +37,7 @@ Upgrading imCMS:
     - /WEB-INF/logs ( new log files will be created, restore only access.log files used to generate statistics )
     - /WEB-INF/templates/text
     - /WEB-INF/uploads
+  Note that this is not an exhaustive list.
 
 * Restart tomcat.
 

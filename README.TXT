@@ -1,5 +1,6 @@
 Welcome to the imCMS Content Management System.
 
+For changes, see CHANGES.TXT
 For information about licensing, see LICENSE.TXT
 For install instructions, see INSTALL.TXT
 To upgrade from a previous version, see UPGRADE.TXT
@@ -25,4 +26,4 @@ This version is tested on Windows XP, Windows 2000 and Linux.
 Should also work on Windows NT.
 
 Browsers
-This version is tested with IE 6 on Windows, Firefox 0.8 on Windows, and Mozilla 1.6 on Linux.
+We test using the latest versions of Microsoft Internet Explorer, Mozilla Firefox, and Mozilla Browser.

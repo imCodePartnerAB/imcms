@@ -14,6 +14,17 @@ Version 1.11.0:
     * Fixed exception when trying to create an HTML-document. (Bug 2543)
     * Changed some swedish names for different document types. (Bug 1496)
     * Some form elements looked strange in "page info" in Internet Explorer 5.2 on Macintosh. (Bug 2391)
+    * Fixed a bug that made it hard to remove images. (Bug 2567)
+    * Show file-size on file-document-files and images. (Bug 2520)
+    * Distinguish directories in "FileAdmin" with gray background color,
+      sort files and directories in alphabetical order, and make file-sizes more readable. (Bug 2572)
+    * Fixed a bug making it impossible to delete a text-document with more than one menu. (Bug 2585)
+    * HTML is now removed from text-fields before indexing, so a search for "foo bar"
+      will now also find "<em>foo</em> bar". (Bug 2593)
+    * Changed swedish name of text-document, "Ny sida" to "Textsida".
+    * Put the imCMS-commercial html-comment (imcms_message.html) before <html>-tag
+      instead of before doctype declaration. (Bug 2623)
+    * Image-preview in old image archive was broken. (Bug 2628)
 
     Of interest to API-using developers:
 
@@ -35,6 +46,12 @@ Version 1.11.0:
         - Image.getSrc(String contextPath) - returns image-src with contextPath prepended. (Bug 2491)
         - Image.getSrcRelativeToContextPath() - returns image-src without contextPath prepended. (Bug 2491)
         - Image.getSize() - returns the size of the image in bytes. (Bug 2491)
+        - User.getId() - returns the user id. (Bug 2616)
+        - User.isDefaultUser() - returns true if the user is the default user ("user/user"). (Bug 2616)
+        - DocumentPermissionSet.getEditMenusPermission() - returns true if this permission-set
+          allows editing of menus. (Bug 2609)
+        - DocumentPermissionSet.setEditMenusPermission(boolean) - sets whether this permission-set
+          allows editing of menus. (Bug 2609)
     * Removed fields:
         - Document.Comparator.ACTIVATED_DATETIME - use Document.Comparator.PUBLICATION_START_DATETIME
     * Removed methods
@@ -44,13 +61,23 @@ Version 1.11.0:
         - Image.getSrc() - use Image.getSrc(String contextPath) or Image.getSrcRelativeToContextPath() (Bug 2491)
         - Image.getSrcUrl() - use Image.getSrc(String contextPath) or Image.getSrcRelativeToContextPath() (Bug 2491)
         - TextDocument.getMenuSortOrder() - use Menu.getSortOrder() (Bug 2560)
-        - TextDocument.setMenuSortOrder(int) - use Menu.setSortOrder() (Bug 2560)
+        - TextDocument.setMenuSortOrder(int) - use Menu.setSortOrder(int) (Bug 2560)
+        - DocumentPermissionSet.getEditHeadlinePermission() -
+          use DocumentPermissionSet.getEditDocumentInformationPermission() (Bug 2609)
+          DocumentPermissionSet.setEditHeadlinePermission(boolean) -
+          use DocumentPermissionSet.setEditDocumentInformationPermission(boolean) (Bug 2609)
+        - DocumentPermissionSet.getEditableMenuDocumentTypeNames() - removed, returning type-names is broken. (Bug 2609)
 
     Of interest to administrators:
 
     * Disallow editing of user "user". (Bug 2479)
     * Fixed a bug that made it impossible to create a category. (Bug 2514)
     * Fixed a bug that prevented changing a category-type from multi-choice to single-choice. (Bug 2515)
+    * Database connections are now tested before use. This allows imCMS to survive database server restarts. (Bug 2144)
+    * "IndexingSchedulePeriodInMinutes" in "server.properties" now controls the time period
+      between reindexings in minutes. (Bug 2614)
+    * Reindexing is no longer performed on startup unless needed. (Bug 2625)
+    * Added a little note about running SQL-scripts to INSTALL.TXT.
 
     Of interest to developers:
 
@@ -60,6 +87,7 @@ Version 1.11.0:
       GNU classpathx project. (Bug 2542)
     * Replaced imCMS own image-parsing routines with java.imageio.ImageIO (Bug 2493)
     * Started to change the database API to allow for transactions. (Bug 2569)
+    * Text document menus are now saved inside a transaction. (Bug 2569)
 
 
 Version 1.10.3:
