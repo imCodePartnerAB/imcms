@@ -47,7 +47,7 @@ public class GetDoc extends HttpServlet {
         }
         String tempstring = getDoc( meta_id, meta_id, req, res );
         if ( tempstring != null ) {
-            byte[] tempbytes = tempstring.getBytes( WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
+            byte[] tempbytes = tempstring.getBytes( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
             res.setContentLength( tempbytes.length );
             out.write( tempbytes );
         }

@@ -68,7 +68,7 @@ public class AdminDoc extends HttpServlet {
             String tempstring = AdminDoc.adminDoc(meta_id, parent_meta_id, user, req, res);
 
             if (tempstring != null) {
-                byte[] tempbytes = tempstring.getBytes(WebAppGlobalConstants.DEFAULT_ENCODING_CP1252);
+                byte[] tempbytes = tempstring.getBytes(WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252);
                 res.setContentLength(tempbytes.length);
                 out.write(tempbytes);
             }

@@ -107,7 +107,7 @@ public class DocumentComposer extends HttpServlet {
     }
 
     public void doPost( HttpServletRequest r, HttpServletResponse response ) throws ServletException, IOException {
-        r.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
+        r.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
         MultipartHttpServletRequest request = new MultipartHttpServletRequest( r );
 
         String action = request.getParameter( REQUEST_ATTR_OR_PARAM__ACTION );

@@ -34,7 +34,7 @@ public class SaveMeta extends HttpServlet {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        req.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
+        req.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
 
         if ( null != req.getParameter( "ImageBrowse" ) ) {
             RequestDispatcher rd = req.getRequestDispatcher( "ImageBrowse" );

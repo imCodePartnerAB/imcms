@@ -21,7 +21,7 @@ import java.io.Writer;
 public class SaveText extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        req.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
+        req.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
         Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 

@@ -123,7 +123,7 @@ public class Utility {
     }
 
     public static void setDefaultHtmlContentType( HttpServletResponse res ) {
-        res.setContentType( "text/html; charset="+WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
+        res.setContentType( "text/html; charset="+WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
     }
 
 }
