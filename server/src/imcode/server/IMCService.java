@@ -991,7 +991,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    emptime = (System.currentTimeMillis()-emptime) ;
 	    log.log(Log.WILD, "Emphasized "+meta_id+" with "+emp.length+" strings in "+emptime+" ms") ;
 	}
-	
+
 	log.log(Log.DEBUG, ""+meta_id+": "+(System.currentTimeMillis()-totaltime)+" Txt: "+texttime+" Img: "+imagetime+" Mnu: "+menutime+" Prs: "+time+" Mnuprs: "+menuparsetime+" OMnuprs: "+oldmenutime+" Tgs: "+tagtime) ;
 	return returnresult.getBytes("8859_1") ;
 	} catch (RuntimeException ex) {
@@ -999,7 +999,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    return ex.toString().getBytes("8859_1") ;
 	}
     }
-       
+
     private String emphasizeString(String str,
 				   String[] emp,
 				   Substitution emphasize_substitution,
@@ -7230,6 +7230,22 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
             }
     }
 
+
+    /**
+     * Returns an array with with all the documenttypes stored in the database
+     * the array consists of pairs of id:, value. Suitable for parsing into select boxes etc.
+     */
+   public String[] getDocumentTypesInList(String langPrefixStr) {
+            return this.sqlProcedure("GetDocTypes '" + langPrefixStr + "'" ) ;
+    }
+
+     /**
+     * Returns an hashtable with with all the documenttypes stored in the database
+     * the hashtable consists of pairs of id:, value.
+     */
+   public Hashtable getDocumentTypesInHash(String langPrefixStr) {
+      return this.sqlQueryHash("GetDocTypes '" + langPrefixStr +  "'") ;
+   }
 
 
 } // END CLASS IMCService
