@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -33,14 +34,15 @@ public class BackDoc extends HttpServlet {
         if ( lastTextDocumentId != 0 ) {
             //	history.push(new Integer(meta_id)) ;
             user.put( "history", history );
-            redirectToDocumentId( res, lastTextDocumentId );
+            redirectToDocumentId( req, res, lastTextDocumentId );
         } else {
-            redirectToDocumentId( res, imcref.getSystemData().getStartDocument() );
+            redirectToDocumentId( req, res, imcref.getSystemData().getStartDocument() );
         }
     }
 
-    private void redirectToDocumentId( HttpServletResponse res, int meta_id ) throws IOException {
-        res.sendRedirect( "GetDoc?meta_id=" + meta_id );
+    private void redirectToDocumentId( HttpServletRequest request, HttpServletResponse response, int meta_id ) throws IOException {
+        DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument( meta_id ) ;
+        response.sendRedirect( Utility.getAbsolutePathToDocument( request, document ) );
     }
 
     public static int getLastTextDocumentFromHistory( Stack history, boolean useNextToLastTextDocument,
