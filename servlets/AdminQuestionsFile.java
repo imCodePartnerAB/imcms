@@ -73,6 +73,23 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 
 	    IMCServiceRMI.setPollList(imcserver, whichFile+".poll.txt", lines);
 
+	    // Get the current poll
+	    List currentPollList = IMCServiceRMI.getPollList(imcserver,whichFile+".current.txt") ;
+	    if ( currentPollList.isEmpty() ) {
+		// There was no poll, get one.
+		currentPollList = this.getNewQuestion(imcserver,whichFile) ;
+	    }
+	    Poll currentPoll = (Poll) currentPollList.get(0) ;
+
+	    // Get a new poll
+	    List newPollList = this.getNewQuestion(imcserver,whichFile) ;
+	    Poll newCurrentPoll = (Poll) newPollList.get(0) ;
+
+	    // Replace the current poll if it changed.
+	    if (!newCurrentPoll.getQuestion().equals(currentPoll.getQuestion())) {
+		IMCServiceRMI.setPollList(imcserver,whichFile+".current.txt",newPollList) ;
+	    }
+
 	    //tillbaks till
 	    res.sendRedirect("AdminQuestions") ;
 	    return;
@@ -199,12 +216,12 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	String	date2 = (req.getParameter("date2")).trim();
 	String	text = (req.getParameter("text")).trim();
 
-	if ( text.length()>1 ) {
+	if( text.length()>1 ){
 	    try {
-		DateRange range = new DateRange(dateForm.parse(date1), new Date(dateForm.parse(date2).getTime()+86400000));
+		DateRange range = new DateRange(dateForm.parse(date1), new Date(dateForm.parse(date2).getTime()+ONE_DAY));
 		Poll poll = new Poll(text,range);
 		lines.add(poll);
-	    } catch(ParseException ignored) {
+	    }catch(ParseException ignored) {
 		// ignored
 	    }
 	}
@@ -241,34 +258,12 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	    }
 	}
 
-	return null ;
+	// FIXME: We didn't find a question/poll... what to do, what to do?
+	List newPollList = new LinkedList() ;
+	DateRange dateRange = new DateRange(new Date(0),new Date(0)) ;
+	newPollList.add(new Poll("",dateRange)) ;
+	return newPollList ;
 
-    }
-
-    private void updateCurrentQuestion(String imcserver, String whichFile) throws IOException, ServletException {
-	// Get the current poll
-	List currentPollList = IMCServiceRMI.getPollList(imcserver,whichFile+".current.txt") ;
-	if ( currentPollList.isEmpty() ) {
-	    // There was no poll, get one.
-	    currentPollList = this.getNewQuestion(imcserver,whichFile) ;
-	}
-	Poll currentPoll = (Poll) currentPollList.get(0) ;
-
-	// Get a new poll
-	List newPollList = this.getNewQuestion(imcserver,whichFile) ;
-	Poll newCurrentPoll = (Poll) newPollList.get(0) ;
-
-	// Replace the current poll if it changed.
-	if (!newCurrentPoll.getQuestion().equals(currentPoll.getQuestion())) {
-
-	    // The poll was no longer current, archive it...
-	    List pollStatsList = IMCServiceRMI.getPollList(imcserver,whichFile+".stat.txt") ;
-	    pollStatsList.add(currentPoll) ;
-	    IMCServiceRMI.setPollList(imcserver,whichFile+".stat.txt",pollStatsList) ;
-
-	    IMCServiceRMI.setPollList(imcserver,whichFile+".current.txt",newPollList) ;
-
-	}
     }
 
 } // End of class
