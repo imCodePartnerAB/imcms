@@ -122,11 +122,13 @@ function checkLinkOnBlur() {
             <td colspan="2" align="center">
                 <%= Html.getImageTag( image ) %>
             </td>
+            <tr>
+                <td colspan="2">#gui_hr( "blue" )</td>
+            </tr>
         </tr>
         <% } %>
         <tr>
-            <td>&nbsp;</td>
-            <td>
+            <td colspan="2" align="center">
                 <table>
                     <tr>
                         <td>
@@ -141,6 +143,9 @@ function checkLinkOnBlur() {
                     </tr>
                 </table>
              </td>
+        </tr>
+        <tr>
+            <td colspan="2">#gui_hr( "blue" )</td>
         </tr>
         <tr>
             <td nowrap><? templates/sv/change_img.html/12 ?></td>

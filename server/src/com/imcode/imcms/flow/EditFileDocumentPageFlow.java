@@ -23,13 +23,14 @@ import java.util.Set;
 
 public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 
-    private ServletContext servletContext;
     private static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
     public static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
     public static final String REQUEST_PARAMETER__FILE_DOC__FILE = "file";
     public static final String REQUEST_PARAMETER__FILE_DOC__MIME_TYPE = "mimetype";
     private static final String URL_I15D_PAGE__FILEDOC = "/jsp/docadmin/file_document.jsp";
+
     private MimeTypeRestriction mimeTypeRestriction = new NoMimeTypeRestriction();
+    private ServletContext servletContext;
 
     public EditFileDocumentPageFlow( FileDocumentDomainObject document, ServletContext servletContext,
                                      DispatchCommand returnCommand,
@@ -44,8 +45,7 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
     protected void dispatchOkFromEditPage( HttpServletRequest r, HttpServletResponse response ) throws IOException, ServletException {
         MultipartHttpServletRequest request = (MultipartHttpServletRequest)r;
         String mimeType = getMimeTypeFromRequest( request );
-        boolean mimeTypeAllowed = null == mimeTypeRestriction || mimeTypeRestriction.allows( mimeType );
-        if ( !mimeTypeAllowed ) {
+        if ( !mimeTypeRestriction.allows( mimeType ) ) {
             FileDocumentEditPage fileDocumentEditPage = createFileDocumentEditPage();
             fileDocumentEditPage.setErrorMessage( mimeTypeRestriction.getErrorMessage() );
             fileDocumentEditPage.forward( request, response );
