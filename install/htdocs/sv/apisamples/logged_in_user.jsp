@@ -2,7 +2,6 @@
 
 <%
 ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
-User accessingUser = imcmsSystem.getCurrentUser();
+User currentLoggedinUser = imcmsSystem.getCurrentUser();
 %>
-
-You are logged in as "<%=accessingUser.getLoginName()%>"
+You are logged in as "<%=currentLoggedinUser.getLoginName()%>"

@@ -4,13 +4,13 @@
 
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
-    UserService userMapper = imcmsSystem.getUserService();
+    UserService userService = imcmsSystem.getUserService();
 %>
 Before:<br>
-<%=java.util.Arrays.asList( userMapper.getAllRolesNames() )%>
+<%=java.util.Arrays.asList( userService.getAllRolesNames() )%>
 <%
    String role = "Test role";
-   userMapper.deleteRole( role );
+   userService.deleteRole( role );
 %><br>
 After delete the role named "<%=role%>":<br>
-<%=java.util.Arrays.asList( userMapper.getAllRolesNames() )%>
+<%=java.util.Arrays.asList( userService.getAllRolesNames() )%>

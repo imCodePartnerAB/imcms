@@ -1,16 +1,16 @@
 <%@ page import="com.imcode.imcms.*"%>
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
-    DocumentService documentMapper = imcmsSystem.getDocumentService();
+    DocumentService documentService = imcmsSystem.getDocumentService();
     int docId = 1001;
-    TextDocument document = (TextDocument)documentMapper.getDocument(docId);
+    TextDocument document = (TextDocument)documentService.getDocument(docId);
     Template docTemplate = document.getTemplate();
 %>
 
 <h3>Current template</h3>
 TextDocument <%=document.getId()%> is shown with the template <%= docTemplate.getName() %>
 
-<h3>All possible templtates to play with this document</h3>
+<h4>All possible templtates to play with this document (for the current logged in user)</h4>
 <%
     TemplateService templateService = imcmsSystem.getTemplateService();
     TemplateGroup[] templateGroups = templateService.getTemplatesGroups( document );

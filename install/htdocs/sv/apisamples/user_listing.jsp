@@ -3,8 +3,8 @@
 <h2>Listing current users in the IMCMS system</h2>
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
-    UserService userMapper = imcmsSystem.getUserService();
-    User[] users = userMapper.getAllUsers();
+    UserService userService = imcmsSystem.getUserService();
+    User[] users = userService.getAllUsers();
     for( int i = 0; i < users.length ; i++ ){%>
         <p>
         User "<%= users[i].getLoginName()%>" has the following attributes:<br><%

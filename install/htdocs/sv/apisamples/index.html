@@ -11,6 +11,8 @@
 <p>
 Warning!<br>
 These links works differently depending what user you are logged in as, and what permissions that user has.<br>
+That means that even thoug you dont specify a user in most of the API:s method, usually the current logged in user
+is passed as a invisible parameter.<br>
 When logged out, the only link that should work is the sample of exception handling at the bottom of this document.</p>
 <p>
 
@@ -26,14 +28,16 @@ Log out (and become an non-logged in user) : <a href="../servlet/LogOut">../serv
 
 <h3>Users</h3>
 To see what useras that exists in the system: <a href="user_listing.jsp">user_listing.jsp</a><br>
+
 <h3>Roles</h3>
-<a href="role_get_user_with_role.jsp">role_get_user_with_role.jsp</a><br>
+List all roles: <a href="role_list_all.jsp">role_list_all.jsp</a><br>
 Add: <a href="role_create_role.jsp">role_create_role.jsp</a><br>
 Delete: <a href="role_delete_role.jsp">role_delete_role.jsp</a><br>
+<br>
+List users with different roles:<a href="role_get_user_with_role.jsp">role_get_user_with_role.jsp</a><br>
 
 <h3>Document</h3>
-The following samples is modifying document 1001.<br>
-It lookes like this: <a href="../servlet/GetDoc?meta_id=1001">document</a><br>
+The following samples is modifying document 1001. It currently lookes like this: <a href="../servlet/GetDoc?meta_id=1001">document</a><br>
 <br>
 Get the information about the document <a href="document_get_document_info.jsp">document_get_document_info.jsp</a><br>
 Change the document information <a href="document_change_document_info.jsp">document_change_document_info.jsp</a><br>

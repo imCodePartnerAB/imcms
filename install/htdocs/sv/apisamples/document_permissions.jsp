@@ -22,8 +22,8 @@ This is a map of the format (RoleName,DocumentPermissionSet)<br><br>
 This is the mapping for document <%= documentId %>:<br>
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
-    DocumentService documentMapper = imcmsSystem.getDocumentService();
-    Document doc = documentMapper.getDocument(documentId);
+    DocumentService documentService = imcmsSystem.getDocumentService();
+    Document doc = documentService.getDocument(documentId);
     Map permissionsMap = doc.getAllRolesMappedToPermissions();
     Set roles = permissionsMap.keySet();
     Iterator roleIteratore = roles.iterator();
