@@ -133,6 +133,6 @@ public interface IMCConstants {
     public final static int MENU_SORT_BY_DATETIME        = 3 ;
 	
 	/* Default-dateTime-format */
-	public final static String DATETIME_FORMAT_STD        = "yyyy-MM-dd hh:mm" ;
+	public final static String DATETIME_FORMAT_STD        = "yyyy-MM-dd HH:mm" ;
 
 }
