@@ -86,8 +86,8 @@ public class VerifyUser extends HttpServlet {
             // if user have pushed button "Ändra" from login page
             if ( req.getParameter( "Ändra" ) != null ) {
 
-                // don't allow "user" "user" ( User Extern ) to be changed
-                if(user.getLoginName().equals("user")){
+                // don't allow "user" "user" ( User Extern ) id=2 to be changed
+                if(user.getId()== 2 || user.getLoginName().equals("user")){
                     res.sendRedirect( accessDeniedUrl );
                     return;
                 }
