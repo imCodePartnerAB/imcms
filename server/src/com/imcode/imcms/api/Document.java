@@ -19,7 +19,7 @@ public class Document {
     public static final int STATUS_PUBLICATION_DISAPPROVED = DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED;
     public static final int STATUS_PUBLICATION_APPROVED = DocumentDomainObject.STATUS_PUBLICATION_APPROVED;
 
-    public Document( DocumentDomainObject document, ContentManagementSystem contentManagementSystem ) {
+    protected Document( DocumentDomainObject document, ContentManagementSystem contentManagementSystem ) {
         this.internalDocument = document;
         this.contentManagementSystem = contentManagementSystem;
     }
