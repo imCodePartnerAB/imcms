@@ -51,6 +51,8 @@
     <property name="texttemplates" value="${templates}/text"/>
     <property name="demotemplates" value="${texttemplates}/demo"/>
 
+    <property name="imcmsurl" value="${rooturl}/imcms"/>
+
 
     <path id="libraries">
         <fileset dir="lib">
@@ -511,16 +513,17 @@
     <target name="init-global-filters"
             depends="check-build-properties,init-version-properties">
 
-        <filter token="apiuri"              value="${rooturl}/imcms/docs/apisamples"/>
-        <filter token="defaultlanguage"     value="${defaultlanguage}"/>
         <filter token="rooturl"             value="${rooturl}"/>
         <filter token="servleturl"          value="${rooturl}/servlet"/>
         <filter token="loginurl"            value="${rooturl}/login"/>
-        <filter token="imcmsurl"            value="${rooturl}/imcms"/>
         <filter token="imageurl"            value="${rooturl}/images"/>
         <filter token="cssurl"              value="${rooturl}/css"/>
         <filter token="postcardsurl"        value="${rooturl}/postcards"/>
-        <filter token="imcmscssurl"         value="${rooturl}/imcms/css"/>
+        <filter token="imcmsurl"            value="${imcmsurl}"/>
+        <filter token="imcmscssurl"         value="${imcmsurl}/css"/>
+        <filter token="apiuri"              value="${imcmsurl}/docs/apisamples"/>
+
+        <filter token="defaultlanguage"     value="${defaultlanguage}"/>
 
         <filter token="documentationwebappurl"    value="http://${documentation-host}/${versionnumber}"/>
         <filter token="documentationurl"          value="http://${documentation-host}/${versionnumber}/servlet"/>
