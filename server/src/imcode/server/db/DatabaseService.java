@@ -629,4 +629,35 @@ public class DatabaseService {
         } );
         return (View_phonetypes[])queryResult.toArray( new View_phonetypes[queryResult.size()] );
     }
+
+
+    static class View_userPhone {
+        public View_userPhone( int phone_id, String phoneNumber ) {
+            this.phone_id = phone_id;
+            this.phoneNumber = phoneNumber;
+        }
+
+        int phone_id;
+        String phoneNumber;
+    }
+
+    /**
+     * Used to generate a list with all type of users. Used from UserChangePrefs
+     * @param user_id
+     * @return
+     */
+    // todo: Warning, this method used to RTIM the phone numer result, not any longer...
+    View_userPhone[] sproc_GetUserPhones( int user_id ) {
+        String sql = "SELECT p.phone_id, p.number FROM users u , phones p " +
+            "WHERE u.user_id = p.user_id AND u.user_id = ? ";
+        Object[] paramValues = new Object[]{ new Integer(user_id) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                int phone_id = rs.getInt("phone_id");
+                String phoneNumber = rs.getString("number");
+                return new View_userPhone( phone_id, phoneNumber );
+            }
+        } );
+        return (View_userPhone[])queryResult.toArray( new View_userPhone[ queryResult.size()] );
+    }
 }

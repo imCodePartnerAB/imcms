@@ -6,8 +6,6 @@ import java.sql.Timestamp;
 
 public class TestDatabaseService extends Log4JConfiguredTestCase {
 
-    private final boolean testMimer = true ;  // because it is so slow to test this database we need sometimes to turn those tests off.
-
     static final String DB_HOST = "localhost";
 
     static final int SQLSERVER_PORT = 1433;
@@ -32,45 +30,25 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     protected void setUp() {
         mySql = static_initMySql();
         sqlServer = static_initSqlServer();
-        if( testMimer )
-            mimer = static_initMimer();
+        mimer = static_initMimer();
     }
 
-    /** in order to speed up the testing a bit, i clumped together all the "SELECT" cases in one test **/
-    public void testAllNonModifyingTests() {
-        nonmodifyingTest_sproc_getHighestUserId();
-        nonmodifyingTestSameResultFrom_sproc_getAllRoles();
-        nonmodifyingTestSameResultFrom_sproc_getAllUsers();
-        nonmodifyingTestSameResultFrom_sproc_getTemplatesInGroup();
+    public void test_sproc_getAllRoles() {
+        assertEquals( 2, sqlServer.sproc_GetAllRoles_but_user().length );
+        assertEquals( 2, mySql.sproc_GetAllRoles_but_user().length );
+
+        assertEquals( 2, mimer.sproc_GetAllRoles_but_user().length );
+        static_assertEquals( sqlServer.sproc_GetAllRoles_but_user(), mySql.sproc_GetAllRoles_but_user(), mimer.sproc_GetAllRoles_but_user() );
     }
 
-    private void nonmodifyingTestSameResultFrom_sproc_getAllRoles() {
-        DatabaseService.Table_roles[] sqlServerRoles = sqlServer.sproc_GetAllRoles_but_user();
-        DatabaseService.Table_roles[] mySQLRoles = mySql.sproc_GetAllRoles_but_user();
-        assertEquals( 2, sqlServerRoles.length );
-        assertEquals( 2, mySQLRoles.length );
-
-        if( testMimer ) {
-            DatabaseService.Table_roles[] mimerRoles = mimer.sproc_GetAllRoles_but_user();
-            assertEquals( 2, mimerRoles.length );
-            static_assertEquals( mimerRoles, sqlServerRoles, mySQLRoles );
-        }
+    public void test_sproc_getAllUsers() {
+        assertEquals( 2, sqlServer.sproc_GetAllUsers_OrderByLastName().length );
+        assertEquals( 2, mySql.sproc_GetAllUsers_OrderByLastName().length );
+        assertEquals( 2, mimer.sproc_GetAllUsers_OrderByLastName().length );
+        static_assertEquals( mimer.sproc_GetAllUsers_OrderByLastName(), sqlServer.sproc_GetAllUsers_OrderByLastName(), mySql.sproc_GetAllUsers_OrderByLastName() );
     }
 
-    private void nonmodifyingTestSameResultFrom_sproc_getAllUsers() {
-        DatabaseService.Table_users[] sqlServerUsers = sqlServer.sproc_GetAllUsers_OrderByLastName();
-        DatabaseService.Table_users[] mySQLUsers = mySql.sproc_GetAllUsers_OrderByLastName();
-        assertEquals( 2, sqlServerUsers.length );
-        assertEquals( 2, mySQLUsers.length );
-
-        if( testMimer ) {
-            DatabaseService.Table_users[] mimerUsers = mimer.sproc_GetAllUsers_OrderByLastName();
-            assertEquals( 2, mimerUsers.length );
-            static_assertEquals( mimerUsers, sqlServerUsers, mySQLUsers );
-        }
-    }
-
-    private void nonmodifyingTestSameResultFrom_sproc_getTemplatesInGroup() {
+    public void test_sproc_getTemplatesInGroup() {
         DatabaseService.View_TemplateGroup templateGroupZero = new DatabaseService.View_TemplateGroup( 1, "Start" );
 
         DatabaseService.View_TemplateGroup[] sqlServerTemplatesInGroupZero = sqlServer.sproc_GetTemplatesInGroup( 0 );
@@ -85,33 +63,28 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         DatabaseService.View_TemplateGroup[] mySQLTemplatesInGroupOne = mySql.sproc_GetTemplatesInGroup( 1 );
         DatabaseService.View_TemplateGroup[] mySQLTemplatesInGroupTwo = mySql.sproc_GetTemplatesInGroup( 2 );
 
-        if( testMimer ) {
-            DatabaseService.View_TemplateGroup[] mimerTemplatesInGroupZero = mimer.sproc_GetTemplatesInGroup( 0 );
-            assertEquals( 1, mimerTemplatesInGroupZero.length );
-            assertEquals( templateGroupZero, mimerTemplatesInGroupZero[0] );
-            DatabaseService.View_TemplateGroup[] mimerTemplatesInGroupOne = mimer.sproc_GetTemplatesInGroup( 1 );
-            assertEquals( mimerTemplatesInGroupOne.length, sqlServerTemplatesInGroupOneo.length );
-            assertEquals( mimerTemplatesInGroupOne.length, mySQLTemplatesInGroupOne.length );
-            DatabaseService.View_TemplateGroup[] mimerTemplatesInGroupTwo = mimer.sproc_GetTemplatesInGroup( 2 );
-            assertEquals( mimerTemplatesInGroupTwo.length, sqlServerTemplatesInGroupTwo.length );
-            assertEquals( mimerTemplatesInGroupTwo.length, mySQLTemplatesInGroupTwo.length );
-        }
+        DatabaseService.View_TemplateGroup[] mimerTemplatesInGroupZero = mimer.sproc_GetTemplatesInGroup( 0 );
+        assertEquals( 1, mimerTemplatesInGroupZero.length );
+        assertEquals( templateGroupZero, mimerTemplatesInGroupZero[0] );
+        DatabaseService.View_TemplateGroup[] mimerTemplatesInGroupOne = mimer.sproc_GetTemplatesInGroup( 1 );
+        DatabaseService.View_TemplateGroup[] mimerTemplatesInGroupTwo = mimer.sproc_GetTemplatesInGroup( 2 );
+
+        assertEquals( mimerTemplatesInGroupOne.length, sqlServerTemplatesInGroupOneo.length );
+        assertEquals( mimerTemplatesInGroupOne.length, mySQLTemplatesInGroupOne.length );
+        assertEquals( mimerTemplatesInGroupTwo.length, sqlServerTemplatesInGroupTwo.length );
+        assertEquals( mimerTemplatesInGroupTwo.length, mySQLTemplatesInGroupTwo.length );
     }
 
-    private void nonmodifyingTest_sproc_getHighestUserId() {
+    public void test_sproc_getHighestUserId() {
         int sqlServerUserMax = sqlServer.sproc_getHighestUserId();
         assertEquals( 3, sqlServerUserMax );
 
         int mySqlUserMax = mySql.sproc_getHighestUserId();
         assertEquals( 3, mySqlUserMax );
 
-        if( testMimer ) {
-            int mimerUserMax = mimer.sproc_getHighestUserId();
-            assertEquals( 3, mimerUserMax );
-        }
+        int mimerUserMax = mimer.sproc_getHighestUserId();
+        assertEquals( 3, mimerUserMax );
     }
-
-    // Modifiying tests below.
 
     public void test_sproc_AddNewuser() {
         int nextFreeUserId = 3;
@@ -119,9 +92,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
         static_test_sproc_AddNewuser( sqlServer, user );
         static_test_sproc_AddNewuser( mySql, user );
-        if( testMimer ) {
-            static_test_sproc_AddNewuser( mimer, user );
-        }
+        static_test_sproc_AddNewuser( mimer, user );
     }
 
     private void static_test_sproc_AddNewuser( DatabaseService dbService, DatabaseService.Table_users user ) {
@@ -137,9 +108,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
         test_sproc_updateUser( sqlServer, user, nextFreeUserId );
         test_sproc_updateUser( mySql, user, nextFreeUserId );
-        if( testMimer ) {
-            test_sproc_updateUser( mimer, user, nextFreeUserId );
-        }
+        test_sproc_updateUser( mimer, user, nextFreeUserId );
     }
 
     private void test_sproc_updateUser( DatabaseService dbService, DatabaseService.Table_users user, int nextFreeUserId ) {
@@ -156,9 +125,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
         static_test_sproc_delUsers( mySql, user, nextFreeUserId );
         static_test_sproc_delUsers( sqlServer, user, nextFreeUserId );
-        if( testMimer ) {
-            static_test_sproc_delUsers( mimer, user, nextFreeUserId );
-        }
+        static_test_sproc_delUsers( mimer, user, nextFreeUserId );
     }
 
     private static void static_test_sproc_delUsers( DatabaseService dbService, DatabaseService.Table_users user, int nextFreeUserId ) {
@@ -170,11 +137,36 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         static_assertEquals( usersBefore, usersAfter );
     }
 
+    public void test_sproc_GetPhonetypeName() {
+        assertEquals( "Annat", sqlServer.sproc_GetPhonetypeName( 0, 1 ) );
+        assertEquals( "Annat", mySql.sproc_GetPhonetypeName( 0, 1 ) );
+        assertEquals( "Annat", mimer.sproc_GetPhonetypeName( 0, 1 ) );
+    }
+
+    public void test_sproc_GetPhonetypes_ORDER_BY_phonetype_id() {
+        assertEquals( 5, sqlServer.sproc_GetPhonetypes_ORDER_BY_phonetype_id( 1 ).length );
+        assertEquals( 5, mySql.sproc_GetPhonetypes_ORDER_BY_phonetype_id( 1 ).length );
+        assertEquals( 5, mimer.sproc_GetPhonetypes_ORDER_BY_phonetype_id( 1 ).length );
+    }
+
+    public void test_sproc_GetUserPhones() {
+        test_sproc_GetUserPhones( sqlServer );
+        test_sproc_GetUserPhones( mySql );
+        test_sproc_GetUserPhones( mimer );
+    }
+
+    private void test_sproc_GetUserPhones( DatabaseService dbService ) {
+        int user_id = 2;
+        assertEquals( 0, dbService.sproc_GetUserPhones( user_id ).length );
+        dbService.sproc_phoneNbrAdd( user_id, "345345-34534", 0 );
+        assertEquals( 1, dbService.sproc_GetUserPhones( user_id ).length );
+    }
+
     public void test_sproc_phoneNbrAdd() {
         DatabaseService.Table_users user = static_createDummyUser( 3 );
         static_test_sproc_phoneNbrAdd( sqlServer, user );
         static_test_sproc_phoneNbrAdd( mySql, user );
-        if( testMimer ) {
+        {
             static_test_sproc_phoneNbrAdd( mimer, user );
         }
     }
@@ -182,21 +174,21 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     public void test_sproc_PhoneNbrUpdate() {
         static_test_sproc_PhoneNbrUpdate( sqlServer );
         static_test_sproc_PhoneNbrUpdate( mySql );
-        if( testMimer ) static_test_sproc_PhoneNbrUpdate( mimer );
+        static_test_sproc_PhoneNbrUpdate( mimer );
     }
 
     private void static_test_sproc_PhoneNbrUpdate( DatabaseService dbService ) {
         int rowCount = dbService.sproc_PhoneNbrUpdate( 2, 1, "666666", 1 );
-        assertEquals( 0 , rowCount );
+        assertEquals( 0, rowCount );
         dbService.sproc_phoneNbrAdd( 2, "034985", 0 );
         rowCount = dbService.sproc_PhoneNbrUpdate( 2, 1, "666666", 1 );
-        assertEquals( 1 , rowCount );
+        assertEquals( 1, rowCount );
     }
 
     public void test_sproc_DelPhoneNr() {
         static_test_sproc_DelPhoneNr( sqlServer );
         static_test_sproc_DelPhoneNr( mySql );
-        if( testMimer ) static_test_sproc_DelPhoneNr( sqlServer );
+        static_test_sproc_DelPhoneNr( sqlServer );
     }
 
     private void static_test_sproc_DelPhoneNr( DatabaseService dbService ) {
@@ -211,7 +203,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     public void test_sproc_PhoneNbrDelete() {
         static_test_sproc_PhoneNbrDelete( sqlServer );
         static_test_sproc_PhoneNbrDelete( mySql );
-        if( testMimer ) static_test_sproc_PhoneNbrDelete( mimer );
+        static_test_sproc_PhoneNbrDelete( mimer );
     }
 
     private void static_test_sproc_PhoneNbrDelete( DatabaseService dbService ) {
@@ -230,22 +222,10 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertEquals( 1, rowCount );
     }
 
-    public void test_sproc_GetPhonetypeName() {
-        assertEquals( "Annat", sqlServer.sproc_GetPhonetypeName(0,1));
-        assertEquals( "Annat", mySql.sproc_GetPhonetypeName(0,1));
-        if( testMimer ) assertEquals( "Annat", mimer.sproc_GetPhonetypeName(0,1));
-    }
-
-    public void test_sproc_GetPhonetypes_ORDER_BY_phonetype_id() {
-        assertEquals( 5, sqlServer.sproc_GetPhonetypes_ORDER_BY_phonetype_id(1).length );
-        assertEquals( 5, mySql.sproc_GetPhonetypes_ORDER_BY_phonetype_id(1).length );
-        if( testMimer ) assertEquals( 5, mimer.sproc_GetPhonetypes_ORDER_BY_phonetype_id(1).length );
-    }
-
     public void test_sproc_AddUseradminPermissibleRoles() {
         assertEquals( 1, sqlServer.sproc_AddUseradminPermissibleRoles( 1, 2 ) );
         assertEquals( 1, mySql.sproc_AddUseradminPermissibleRoles( 1, 2 ) );
-        if( testMimer ) {
+        {
             assertEquals( 1, mimer.sproc_AddUseradminPermissibleRoles( 1, 2 ) );
         }
     }
@@ -256,7 +236,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
         static_test_sproc_ChangeUserActiveStatus( sqlServer, user );
         static_test_sproc_ChangeUserActiveStatus( mySql, user );
-        if( testMimer ) {
+        {
             static_test_sproc_ChangeUserActiveStatus( mimer, user );
         }
     }
@@ -266,11 +246,11 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
         dbService.sproc_ChangeUserActiveStatus( 3, false );
         DatabaseService.Table_users modifiedUser = getUser( dbService, 3 );
-        assertEquals( 0 , modifiedUser.active );
+        assertEquals( 0, modifiedUser.active );
 
         dbService.sproc_ChangeUserActiveStatus( 3, true );
         DatabaseService.Table_users modifiedUser2 = getUser( dbService, 3 );
-        assertEquals( 1 , modifiedUser2.active );
+        assertEquals( 1, modifiedUser2.active );
     }
 
     public void test_sproc_AddUserRole() {
@@ -279,7 +259,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
         static_test_sproc_AddUserRole( sqlServer, existing, nonExisting );
         static_test_sproc_AddUserRole( mySql, existing, nonExisting );
-        if( testMimer ) static_test_sproc_AddUserRole( mimer, existing, nonExisting );
+        static_test_sproc_AddUserRole( mimer, existing, nonExisting );
     }
 
     private static void static_test_sproc_AddUserRole( DatabaseService dbService, DatabaseService.Table_user_roles_crossref existing, DatabaseService.Table_user_roles_crossref nonExisting ) {
@@ -291,16 +271,16 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     public void test_sproc_FindUserName() {
         static_test_sproc_FindUserName( sqlServer );
         static_test_sproc_FindUserName( mySql );
-        if( testMimer ) static_test_sproc_FindUserName( mimer );
+        static_test_sproc_FindUserName( mimer );
     }
 
     private void static_test_sproc_FindUserName( DatabaseService dbService ) {
         String name = "Admin";
-        String nameResult = dbService.sproc_FindUserName(name);
-        assertTrue( name.equalsIgnoreCase( nameResult ));
+        String nameResult = dbService.sproc_FindUserName( name );
+        assertTrue( name.equalsIgnoreCase( nameResult ) );
         name = "admin";
-        nameResult = dbService.sproc_FindUserName(name);
-        assertTrue( name.equalsIgnoreCase( nameResult ));
+        nameResult = dbService.sproc_FindUserName( name );
+        assertTrue( name.equalsIgnoreCase( nameResult ) );
     }
 
     // Below is helper functions to more than one test.
