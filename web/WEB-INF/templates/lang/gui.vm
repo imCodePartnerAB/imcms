@@ -67,9 +67,9 @@
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="$formAction">
 <tr>
-	<td><input type="submit"  class="imcmsFormBtn" name="$cancelButtonName" value="<? global/back ?>"></td>
+	<td><input type="submit"  class="imcmsFormBtn" name="$cancelButtonName" value="<? global/back ?>"></td>#if( '' != $help_id )
 	<td>&nbsp;</td>
-	<td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW($help_id)"></td>
+	<td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW($help_id)"></td>#end
 </tr>
 </form>
 </table>

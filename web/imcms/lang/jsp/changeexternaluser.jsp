@@ -4,8 +4,9 @@
                  java.io.IOException,
                  imcode.server.WebAppGlobalConstants,
                  com.imcode.imcms.api.*,
-                 imcode.util.Utility"%>
-<%!
+                 imcode.util.Utility"
+%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"
+%><vel:velocity><%!
 
 private final static String ACTION_SAVE_USER       = "SAVE_USER" ;
 private final static String ACTION_CANCEL          = "CANCEL" ;
@@ -50,191 +51,129 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 %>
 <html>
 <head>
-
 <title><? install/htdocs/sv/adminuser/changeexternaluser.jsp/1 ?></title>
 
-</head>
-<body bgcolor="#ffffff">
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
-<form method="POST" action="<%=request.getContextPath() %>/imcms/<%= Utility.getLoggedOnUser( request ).getLanguageIso639_2() %>/jsp/changeexternaluser.jsp">
-<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
-<tr bgcolor="#333366">
-	<td width="5%">&nbsp;</td>
-	<td colspan="3" align="center"><font face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff" size="2"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/2 ?></font></td>
-	<td width="5%">&nbsp;</td>
+</head>
+<body>
+
+#gui_outer_start()
+#gui_head( "<? install/htdocs/sv/adminuser/changeexternaluser.jsp/1 ?>" )
+<table border="0" cellspacing="0" cellpadding="0">
+<form method="POST" action="$contextPath/imcms/$language/jsp/changeexternaluser.jsp">
+<input type="hidden" name="<%= WebAppGlobalConstants.USER_LOGIN_NAME_PARAMETER_NAME %>" value="<%= userLoginName %>">
+<tr>
+	<td><input type="submit" class="imcmsFormBtn" name="<%= ACTION_CANCEL %>" value="<? global/back ?>"></td>
+</tr>
+</table>
+#gui_mid()
+<table border="0" cellspacing="0" cellpadding="2" width="400">
+<tr>
+	<td colspan="2">#gui_heading( "<? install/htdocs/sv/adminuser/changeexternaluser.jsp/2 ?>" )</td>
 </tr>
 <tr>
-	<td colspan="5">&nbsp;</td>
+	<td colspan="2"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/3 ?><br>&nbsp;</td>
 </tr>
 <tr>
-	<td>&nbsp;</td>
-	<td colspan="3"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/3 ?></font></td>
-	<td>&nbsp;</td>
+	<td width="30%"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/4 ?></td>
+	<td width="70%" nowrap><%=user.getLoginName()%></td>
 </tr>
 <tr>
-	<td colspan="5">&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/4 ?></font></td>
-	<td width="2%">&nbsp;</td>
-	<td width="65%" nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getLoginName()%></font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/5 ?></font></td>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> <%=user.getFirstName()%>&nbsp;</font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/6 ?></font></td>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> <%=user.getLastName()%>&nbsp;</font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/7 ?></font></td>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getTitle()%>&nbsp;</font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/8 ?></font></td>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getCompany()%>&nbsp;</font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/9 ?></font></td>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getAddress()%>&nbsp;</font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/10 ?></font></td>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getZip()%>&nbsp;</font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/11 ?></font></td>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getCity()%>&nbsp;</font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/12 ?></font></td>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif" ><%=user.getWorkPhone()%></font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/13 ?></font></td>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getMobilePhone()%></font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/14 ?></font></td>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getHomePhone()%>&nbsp;</font></td>
-	<td>&nbsp;</td>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/5 ?></td>
+	<td><%= user.getFirstName() %>&nbsp;</td>
 </tr>
 <tr>
-	<td colspan="5">&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/15 ?></font></td>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getCountyCouncil()%>&nbsp;</font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/16 ?></font></td>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getCountry()%>&nbsp;</font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/17 ?></font></td>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getEmailAddress()%>&nbsp;</font></td>
-	<td>&nbsp;</td>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/6 ?></td>
+	<td><%= user.getLastName() %>&nbsp;</td>
 </tr>
 <tr>
-	<td>&nbsp;</td>
-	<td colspan="3"><hr></td>
-	<td>&nbsp;</td>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/7 ?></td>
+	<td><%= user.getTitle() %>&nbsp;</td>
+</tr>
+<tr>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/8 ?></td>
+	<td><%= user.getCompany() %>&nbsp;</td>
+</tr>
+<tr>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/9 ?></td>
+	<td><%= user.getAddress() %>&nbsp;</td>
+</tr>
+<tr>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/10 ?></td>
+	<td><%= user.getZip() %>&nbsp;</td>
+</tr>
+<tr>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/11 ?></td>
+	<td><%= user.getCity() %>&nbsp;</td>
+</tr>
+<tr>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/12 ?></td>
+	<td><%= user.getWorkPhone() %></td>
+</tr>
+<tr>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/13 ?></td>
+	<td><%= user.getMobilePhone() %></td>
+</tr>
+<tr>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/14 ?></td>
+	<td><%= user.getHomePhone() %>&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="2">&nbsp;</td>
+</tr>
+<tr>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/15 ?></td>
+	<td><%= user.getCountyCouncil() %>&nbsp;</td>
+</tr>
+<tr>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/16 ?></td>
+	<td><%= user.getCountry() %>&nbsp;</td>
+</tr>
+<tr>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/17 ?></td>
+	<td><%= user.getEmailAddress() %>&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="2">#gui_hr( "cccccc" )</td>
+</tr>
+<tr>
+	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/18 ?></td>
+	<td><img src="$contextPath/imcms/$language/images/admin/btn_checked_<%= user.isActive() ? "1" : "0" %>.gif" width="13" height="12" alt="">&nbsp;</td>
 </tr>
 <tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/18 ?></font></td>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.isActive()?"Ja":"Nej"%>&nbsp;</font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/19 ?></font></td>
-	<td>&nbsp;</td>
+	<td nowrap><? install/htdocs/sv/adminuser/changeexternaluser.jsp/19 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
-	<tr valign="top">
+	<tr>
 		<td>
-		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">
 		<select name="<%= FORM_SELECT_ROLES %>" size="5" multiple><%
-
 		Role[] allRoles = userMapper.getAllRoles();
 		Set allRolesSet = new TreeSet( Arrays.asList(allRoles) );
-
 		Role[] userRoles = user.getRoles();
 		Set userRolesSet = new HashSet( Arrays.asList( userRoles ));
-
 		for( Iterator iterator = allRolesSet.iterator(); iterator.hasNext(); ) {
-			Role role = (Role)iterator.next();
-			%><option value="<%= role.getName() %>"<%= (userRolesSet.contains(role) ? " selected" : "") %>><%= role.getName() %></option><%
+			Role role = (Role)iterator.next(); %>
+			<option value="<%= role.getName() %>"<%= (userRolesSet.contains(role) ? " selected" : "") %>><%= role.getName() %></option><%
 		} %>
-		</select></font></td>
+		</select></td>
 
 		<td>&nbsp;</td>
 
-		<td><font size="1" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/21 ?></font></td>
+		<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/21 ?></td>
 	</tr>
 	</table></td>
-	<td>&nbsp;</td>
 </tr>
 <tr>
-	<td>&nbsp;</td>
-	<td colspan="3"><hr></td>
-	<td>&nbsp;</td>
+	<td colspan="2">#gui_hr( "blue" )</td>
 </tr>
 <tr>
-	<td>&nbsp;</td>
-	<td colspan="3">
-	<input type="hidden" name="<%=WebAppGlobalConstants.USER_LOGIN_NAME_PARAMETER_NAME%>" value="<%=userLoginName%>">
-	<input type="submit" name="<%= ACTION_SAVE_USER %>" value="<? install/htdocs/sv/adminuser/changeexternaluser.jsp/2001 ?>">
-	<input type="submit" name="<%= ACTION_CANCEL %>" value="<? install/htdocs/sv/adminuser/changeexternaluser.jsp/2002 ?>"></td>
-	<td>&nbsp;</td>
+	<td colspan="2" align="right">
+	<input type="submit" class="imcmsFormBtn" name="<%= ACTION_SAVE_USER %>" value="<? global/save ?>">
+	<input type="submit" class="imcmsFormBtn" name="<%= ACTION_CANCEL %>" value="<? global/cancel ?>"></td>
 </tr>
-<tr>
-	<td colspan="5">&nbsp;</td>
-</tr>
-</table>
 </form>
-
-</body>
-</html>
+</table>
+#gui_end_of_page()
+</vel:velocity>
