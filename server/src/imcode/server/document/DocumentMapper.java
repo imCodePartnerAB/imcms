@@ -26,7 +26,7 @@ public class DocumentMapper {
     private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
     private static final int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
 
-    public DocumentMapper( IMCService service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
+    public DocumentMapper(IMCServiceInterface service, ImcmsAuthenticatorAndUserMapper imcmsAAUM) {
         this.service = service;
         this.imcmsAAUM = imcmsAAUM;
     }

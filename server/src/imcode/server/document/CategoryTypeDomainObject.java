@@ -8,9 +8,9 @@ public class CategoryTypeDomainObject {
     private String name ;
     private int maxChoices ;
 
-    public CategoryTypeDomainObject(String name, int minChoices) {
+    public CategoryTypeDomainObject(String name, int maxChoices) {
         this.name = name;
-        this.maxChoices = minChoices;
+        this.maxChoices = maxChoices;
     }
 
     public String getName() {

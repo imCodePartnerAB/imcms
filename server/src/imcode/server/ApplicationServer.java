@@ -48,7 +48,7 @@ public class ApplicationServer {
         String jdbcUrl = props.getProperty( "Url" );
         String host = props.getProperty( "Host" );
         String databaseName = props.getProperty( "DatabaseName" );
-        String port = props.getProperty( "Port" );
+        int port = Integer.parseInt(props.getProperty( "Port" ));
         String user = props.getProperty( "User" );
         String password = props.getProperty( "Password" );
         int maxConnectionCount = Integer.parseInt( props.getProperty( "MaxConnectionCount" ) );
@@ -62,27 +62,7 @@ public class ApplicationServer {
         log.debug( "Password = " + password );
         log.debug( "MaxConnectionCount = " + maxConnectionCount );
 
-        try {
-
-            /* To use the old, commercial pooled driver uncomment this code, and comment out the other code following */
-            /*
-            connectionPool = new InetPoolManager( servername, ""+maxConnectionCount,
-                                      host, port, databaseName,
-                                      user, password, "30");
-            */
-            String serverUrl = jdbcUrl + host + ":" + port + ";DatabaseName=" + databaseName;
-
-            connectionPool = new ConnectionPoolForNonPoolingDriver( jdbcDriver, serverUrl, user, password, maxConnectionCount );
-            connectionPool.testConnectionAndLogResultToTheErrorLog();
-
-
-        } catch ( Exception ex ) {
-            log.fatal( "Failed to create database connection pool" );
-            log.fatal( "Url = " + jdbcUrl );
-            log.fatal( "Driver = " + jdbcDriver );
-            log.fatal( "", ex );
-            throw new RuntimeException( ex );
-        }
+        connectionPool = ConnectionPool.createConnectionPool(jdbcUrl, host, port, databaseName, jdbcDriver, user, password, maxConnectionCount);
 
         return connectionPool;
     }

@@ -429,18 +429,18 @@ CREATE TABLE [dbo].[browsers] (
 GO
 
 CREATE TABLE [dbo].[categories] (
-	[category_id] [int] NOT NULL ,
-	[category_type_id] [int] NULL ,
-	[name] [varchar] (50) NULL ,
-	[description] [varchar] (500) NULL 
-) ON [PRIMARY]
+	category_id int NOT NULL IDENTITY (1, 1),
+	category_type_id int NOT NULL,
+	name varchar(50) NOT NULL,
+	description varchar(500) NULL
+	)  ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[category_types] (
-	[category_type_id] [int] NOT NULL ,
-	[name] [varchar] (50) NULL ,
-	[max_choices] [int] NOT NULL 
-) ON [PRIMARY]
+	category_type_id int NOT NULL IDENTITY (1, 1),
+	name varchar(50) NOT NULL,
+	max_choices int NOT NULL
+	)  ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[childs] (
@@ -912,6 +912,16 @@ ALTER TABLE [dbo].[document_categories] WITH NOCHECK ADD
 		[meta_id],
 		[category_id]
 	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE dbo.document_categories ADD CONSTRAINT
+	FK_document_categories_categories FOREIGN KEY
+	(
+	category_id
+	) REFERENCES dbo.categories
+	(
+	category_id
+	)
 GO
 
 ALTER TABLE [dbo].[includes] WITH NOCHECK ADD 

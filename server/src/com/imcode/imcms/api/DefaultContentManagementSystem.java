@@ -1,12 +1,12 @@
 package com.imcode.imcms.api;
 
-import imcode.server.IMCService;
+import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetMapper;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
 
-public class DefaultContentManagementSystem implements ContentManagementSystem {
+public class DefaultContentManagementSystem extends ContentManagementSystem {
 
     private UserService userService;
     private DocumentService documentService;
@@ -14,7 +14,7 @@ public class DefaultContentManagementSystem implements ContentManagementSystem {
     private DatabaseService databaseService;
     private User currentUser;
 
-    public DefaultContentManagementSystem( IMCService service, UserDomainObject accessor ) {
+    public DefaultContentManagementSystem( IMCServiceInterface service, UserDomainObject accessor ) {
         currentUser = new User( accessor );
         DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
 

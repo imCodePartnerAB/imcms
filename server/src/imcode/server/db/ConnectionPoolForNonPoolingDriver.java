@@ -5,23 +5,17 @@ import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDriver;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.commons.pool.ObjectPool;
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
-import org.apache.log4j.BasicConfigurator;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * The purpose of this class is to help JDBC drivers that lack Connection Pooling.
  * It does so by registrering with the DriverManager a new driver that has Connection Pooling that
  * in turn calls the non pooled driver.
  */
-public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
+public class ConnectionPoolForNonPoolingDriver extends ConnectionPool {
 
-    private final static String POOL_NAME = "imcode.server.db.ConnectionPoolForNonPoolingDriver";
     private final static String URI_FOR_POOLED_DRIVER = "jdbc:apache:commons:dbcp:";
 
     private ObjectPool connectionPool;

@@ -1,7 +1,7 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.TemplateDomainObject;
-import imcode.server.IMCService;
+import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.TemplateGroupDomainObject;
@@ -17,7 +17,7 @@ public class TemplateService {
     private SecurityChecker securityChecker;
     private TemplateMapper templateMapper;
 
-    TemplateService( IMCService service, SecurityChecker securityChecker ) {
+    TemplateService( IMCServiceInterface service, SecurityChecker securityChecker ) {
         this.securityChecker = securityChecker;
         this.templateMapper = new TemplateMapper( service );
     }

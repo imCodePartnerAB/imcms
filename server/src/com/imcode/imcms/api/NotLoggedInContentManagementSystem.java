@@ -3,7 +3,7 @@ package com.imcode.imcms.api;
 /**
  * @author kreiger
  */
-public class NotLoggedInContentManagementSystem implements ContentManagementSystem {
+public class NotLoggedInContentManagementSystem extends ContentManagementSystem {
 
     public UserService getUserService() throws NotLoggedInException {
         throw new NotLoggedInException() ;

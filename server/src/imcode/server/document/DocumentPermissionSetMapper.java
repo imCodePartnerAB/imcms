@@ -1,10 +1,8 @@
 package imcode.server.document;
 
-import imcode.server.IMCService;
 import imcode.server.IMCConstants;
+import imcode.server.IMCServiceInterface;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
@@ -28,7 +26,7 @@ public class DocumentPermissionSetMapper {
      * @param langPrefix
      * @return PermissionTuple[]
      */
-    private static PermissionTuple[] sprocGetPermissionSet( IMCService service, int metaId, int permissionSetId, String langPrefix ) {
+    private static PermissionTuple[] sprocGetPermissionSet( IMCServiceInterface service, int metaId, int permissionSetId, String langPrefix ) {
         String[] sqlParams = {String.valueOf( metaId ), String.valueOf( permissionSetId ), langPrefix};
         String[] sqlResult = service.sqlProcedure( DocumentPermissionSetMapper.SPROC_GET_PERMISSION_SET, sqlParams );
         DocumentPermissionSetMapper.PermissionTuple[] result = new DocumentPermissionSetMapper.PermissionTuple[sqlResult.length / 3];
@@ -48,7 +46,7 @@ public class DocumentPermissionSetMapper {
         String documentTypeName;
     }
 
-    private static DocumentIdEditablePermissionsTuple[] sprocGetDocTypesWithPermissions( IMCService service, int metaId, int permissionType, String langPrefix ) {
+    private static DocumentIdEditablePermissionsTuple[] sprocGetDocTypesWithPermissions( IMCServiceInterface service, int metaId, int permissionType, String langPrefix ) {
         String[] params = new String[]{String.valueOf( metaId ), String.valueOf( permissionType ), langPrefix};
         String[] sprocResult = service.sqlProcedure( SPROC_GET_DOC_TYPES_WITH_PERMISSIONS, params );
         int numberOfColumns = 3;
@@ -69,7 +67,7 @@ public class DocumentPermissionSetMapper {
         boolean hasPermission;
     }
 
-    private static GroupPermissionTuple[] sprocGetTemplateGroupsWithPermissions( IMCService service, int metaId, int permissionType ) {
+    private static GroupPermissionTuple[] sprocGetTemplateGroupsWithPermissions( IMCServiceInterface service, int metaId, int permissionType ) {
         String[] params = new String[]{ String.valueOf(metaId), String.valueOf( permissionType ) };
         String[] sprocResult = service.sqlProcedure( SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS, params );
         int numberOfColumns = 3;
@@ -85,7 +83,7 @@ public class DocumentPermissionSetMapper {
         return result;
     }
 
-    private IMCService service;
+    private IMCServiceInterface service;
     private static Logger log = Logger.getLogger( DocumentPermissionSetMapper.class );
 
     private final static int EDIT_HEADLINE_PERMISSON_ID = 1;
@@ -97,7 +95,7 @@ public class DocumentPermissionSetMapper {
     private final static int EDIT_TEMPLATE_PERMISSON_ID = 524288;
     private final static int EDIT_INCLUDE_PERMISSON_ID = 1048576;
 
-    public DocumentPermissionSetMapper( IMCService service ) {
+    public DocumentPermissionSetMapper( IMCServiceInterface service ) {
         this.service = service;
     }
 

@@ -1418,7 +1418,197 @@ COMMIT
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[AddPhoneNr]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[AddPhoneNr]
 GO
+
 -- 2003-11-28 Lennart
+
+BEGIN TRANSACTION
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.document_categories ADD CONSTRAINT
+	FK_document_categories_categories FOREIGN KEY
+	(
+	category_id
+	) REFERENCES dbo.categories
+	(
+	category_id
+	)
+GO
+COMMIT
+
+BEGIN TRANSACTION
+ALTER TABLE dbo.category_types
+	DROP CONSTRAINT DF__category___max_c__5E54FF49
+GO
+CREATE TABLE dbo.Tmp_category_types
+	(
+	category_type_id int NOT NULL,
+	name varchar(50) NOT NULL,
+	max_choices int NOT NULL
+	)  ON [PRIMARY]
+GO
+ALTER TABLE dbo.Tmp_category_types ADD CONSTRAINT
+	DF__category___max_c__5E54FF49 DEFAULT (0) FOR max_choices
+GO
+IF EXISTS(SELECT * FROM dbo.category_types)
+	 EXEC('INSERT INTO dbo.Tmp_category_types (category_type_id, name, max_choices)
+		SELECT category_type_id, name, max_choices FROM dbo.category_types TABLOCKX')
+GO
+ALTER TABLE dbo.categories
+	DROP CONSTRAINT FK__categorie__categ__4727812E
+GO
+DROP TABLE dbo.category_types
+GO
+EXECUTE sp_rename N'dbo.Tmp_category_types', N'category_types', 'OBJECT'
+GO
+ALTER TABLE dbo.category_types ADD CONSTRAINT
+	PK__category_types__78F3E6EC PRIMARY KEY CLUSTERED
+	(
+	category_type_id
+	) ON [PRIMARY]
+
+GO
+COMMIT
+BEGIN TRANSACTION
+CREATE TABLE dbo.Tmp_categories
+	(
+	category_id int NOT NULL,
+	category_type_id int NOT NULL,
+	name varchar(50) NOT NULL,
+	description varchar(500) NULL
+	)  ON [PRIMARY]
+GO
+IF EXISTS(SELECT * FROM dbo.categories)
+	 EXEC('INSERT INTO dbo.Tmp_categories (category_id, category_type_id, name, description)
+		SELECT category_id, category_type_id, name, description FROM dbo.categories TABLOCKX')
+GO
+ALTER TABLE dbo.document_categories
+	DROP CONSTRAINT FK_document_categories_categories
+GO
+DROP TABLE dbo.categories
+GO
+EXECUTE sp_rename N'dbo.Tmp_categories', N'categories', 'OBJECT'
+GO
+ALTER TABLE dbo.categories ADD CONSTRAINT
+	PK__categories__77FFC2B3 PRIMARY KEY CLUSTERED
+	(
+	category_id
+	) ON [PRIMARY]
+
+GO
+ALTER TABLE dbo.categories WITH NOCHECK ADD CONSTRAINT
+	FK__categorie__categ__4727812E FOREIGN KEY
+	(
+	category_type_id
+	) REFERENCES dbo.category_types
+	(
+	category_type_id
+	)
+GO
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.document_categories WITH NOCHECK ADD CONSTRAINT
+	FK_document_categories_categories FOREIGN KEY
+	(
+	category_id
+	) REFERENCES dbo.categories
+	(
+	category_id
+	)
+GO
+COMMIT
+
+BEGIN TRANSACTION
+ALTER TABLE dbo.category_types
+	DROP CONSTRAINT DF__category___max_c__5E54FF49
+GO
+CREATE TABLE dbo.Tmp_category_types
+	(
+	category_type_id int NOT NULL IDENTITY (1, 1),
+	name varchar(50) NOT NULL,
+	max_choices int NOT NULL
+	)  ON [PRIMARY]
+GO
+ALTER TABLE dbo.Tmp_category_types ADD CONSTRAINT
+	DF__category___max_c__5E54FF49 DEFAULT (0) FOR max_choices
+GO
+SET IDENTITY_INSERT dbo.Tmp_category_types ON
+GO
+IF EXISTS(SELECT * FROM dbo.category_types)
+	 EXEC('INSERT INTO dbo.Tmp_category_types (category_type_id, name, max_choices)
+		SELECT category_type_id, name, max_choices FROM dbo.category_types TABLOCKX')
+GO
+SET IDENTITY_INSERT dbo.Tmp_category_types OFF
+GO
+ALTER TABLE dbo.categories
+	DROP CONSTRAINT FK__categorie__categ__4727812E
+GO
+DROP TABLE dbo.category_types
+GO
+EXECUTE sp_rename N'dbo.Tmp_category_types', N'category_types', 'OBJECT'
+GO
+ALTER TABLE dbo.category_types ADD CONSTRAINT
+	PK__category_types__78F3E6EC PRIMARY KEY CLUSTERED
+	(
+	category_type_id
+	) ON [PRIMARY]
+
+GO
+COMMIT
+BEGIN TRANSACTION
+CREATE TABLE dbo.Tmp_categories
+	(
+	category_id int NOT NULL IDENTITY (1, 1),
+	category_type_id int NOT NULL,
+	name varchar(50) NOT NULL,
+	description varchar(500) NULL
+	)  ON [PRIMARY]
+GO
+SET IDENTITY_INSERT dbo.Tmp_categories ON
+GO
+IF EXISTS(SELECT * FROM dbo.categories)
+	 EXEC('INSERT INTO dbo.Tmp_categories (category_id, category_type_id, name, description)
+		SELECT category_id, category_type_id, name, description FROM dbo.categories TABLOCKX')
+GO
+SET IDENTITY_INSERT dbo.Tmp_categories OFF
+GO
+ALTER TABLE dbo.document_categories
+	DROP CONSTRAINT FK_document_categories_categories
+GO
+DROP TABLE dbo.categories
+GO
+EXECUTE sp_rename N'dbo.Tmp_categories', N'categories', 'OBJECT'
+GO
+ALTER TABLE dbo.categories ADD CONSTRAINT
+	PK__categories__77FFC2B3 PRIMARY KEY CLUSTERED
+	(
+	category_id
+	) ON [PRIMARY]
+
+GO
+ALTER TABLE dbo.categories WITH NOCHECK ADD CONSTRAINT
+	FK__categorie__categ__4727812E FOREIGN KEY
+	(
+	category_type_id
+	) REFERENCES dbo.category_types
+	(
+	category_type_id
+	)
+GO
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.document_categories WITH NOCHECK ADD CONSTRAINT
+	FK_document_categories_categories FOREIGN KEY
+	(
+	category_id
+	) REFERENCES dbo.categories
+	(
+	category_id
+	)
+GO
+COMMIT
+
+-- 2003-12-17 Johan / Hasse
+
 
 print ' OBS !!!!! '
 print 'Följande åtgärder behöver genomföras efter detta script '

@@ -3,6 +3,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.server.* ;
+import imcode.server.user.UserDomainObject;
 import imcode.util.* ;
 /**
    Verify a user.
@@ -24,32 +25,22 @@ public class VerifyUser extends HttpServlet {
        doPost()
     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-		String access_denied_url   	= Utility.getDomainPref( "access_denied_url" ) ;
-
-		imcode.server.user.UserDomainObject user ;
 		res.setContentType( "text/html" );
-
-		String scheme = req.getScheme( );
-		String serverName = req.getServerName( );
-		int p = req.getServerPort( );
-		String port = (p == 80 || p == 443) ? "" : ":" + p;
 
 		String name = req.getParameter( "name" );
 		String passwd = req.getParameter( "passwd" );
-		String value = req.getHeader( "User-Agent" ) ; 
-		
-		
+
 		// Check the name and password for validity
-		user = imcref.verifyUser( name, passwd );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+        UserDomainObject user = imcref.verifyUser( name, passwd );
 		
 		// Get session 
 		HttpSession session = req.getSession( true );
 
 		// if we don't have got any user from IMCService lets check out next url for redirect 
 		if( user == null ) {
-		
+
+            String access_denied_url   	= Utility.getDomainPref( "access_denied_url" ) ;
 			String nexturl = access_denied_url; // default
 			
 		    // lets set session next_meta if we have got any from request, we will use it later when 
@@ -76,6 +67,8 @@ public class VerifyUser extends HttpServlet {
 		
 		    // Valid login.  Make a note in the session object.
 		    session.setAttribute( "logon.isDone", user );  // just a marker object
+
+            String value = req.getHeader( "User-Agent" ) ;
 		    session.setAttribute("browser_id",value) ;
 			
 			StartDoc.incrementSessionCounter(imcref,user,req) ;
