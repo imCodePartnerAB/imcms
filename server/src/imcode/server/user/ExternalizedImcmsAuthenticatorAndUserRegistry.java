@@ -91,15 +91,6 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
         }
         if ( null != result && null == result.getLanguageIso639_2() ) {
             result.setLanguageIso639_2( defaultLanguage );
-            if ( "swe".equalsIgnoreCase( defaultLanguage ) ) {
-                result.setLangId( 1 );
-            } else if ( "eng".equalsIgnoreCase( defaultLanguage ) ) {
-                result.setLangId( 2 );
-            } else {
-                // FIXME: Make this general for all languages
-                log.error( "Language is not properly implemented!" );
-                throw new RuntimeException( "Language is not properly implemented!" );
-            }
         }
         return result;
     }

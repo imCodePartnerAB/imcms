@@ -39,7 +39,7 @@ public class AdminUserProps extends Administrator {
     private static final String REQUEST_PARAMETER__COUNTRY = "country";
     private static final String REQUEST_PARAMETER__COUNTY_COUNCIL = "country_council";
     private static final String REQUEST_PARAMETER__EMAIL = "email";
-    private static final String REQUEST_PARAMETER__LANGUAGE_ID = "lang_id";
+    private static final String REQUEST_PARAMETER__LANGUAGE = "lang_id";
     private static final String REQUEST_PARAMETER__ACTIVE = "active";
     private static final String REQUEST_PARAMETER__PASSWORD2 = "password2";
     private static final String REQUEST_PARAMETER__ROLES = "roles";
@@ -58,7 +58,8 @@ public class AdminUserProps extends Administrator {
             tmp_phones = new Vector();
         }
 
-        String[] phonetypesA = imcref.sqlProcedure( "GetPhonetypes", new String[]{"" + user.getLangId()} );
+        String[] phonetypesA = getPhoneTypes( imcref, user );
+
 
         // Get a new Vector:  phonetype_id, typename
         Vector phoneTypesV = new Vector( java.util.Arrays.asList( phonetypesA ) );
@@ -94,6 +95,13 @@ public class AdminUserProps extends Administrator {
             return;
         }
 
+    }
+
+    private String[] getPhoneTypes( ImcmsServices imcref, UserDomainObject user ) {
+        return imcref.sqlQuery( "SELECT  phonetype_id, typename\n"
+                                                + "FROM phonetypes, lang_prefixes\n"
+                                                + "WHERE  phonetypes.lang_id = lang_prefixes.lang_id AND lang_prefixes.lang_prefix = ?\n"
+                                                + "ORDER BY phonetype_id", new String[]{"" + user.getLanguageIso639_2()} );
     }
 
     private void showChangeUserPage( String userToChangeId, ImcmsServices imcref, Properties tmp_userInfo,
@@ -159,9 +167,7 @@ public class AdminUserProps extends Administrator {
 
         // Lets get all users phone numbers from session if we have any else we get them from db
         // return value from db= phone_id, number, user_id, phonetype_id, typename
-        String[][] phonesArr = imcref.sqlProcedureMulti( "GetUserPhoneNumbers", new String[]{
-            "" + userToChange.getId()
-        } );
+        String[][] phonesArr = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUserPhoneNumbers( userToChange.getId() ) ;
 
         // Get a new Vector:  phone_id, number, user_id, phonetype_id, typename  ex. 10, 46 498 123456, 3, 1
         Vector phoneNumbers = getPhonesArrayVector( phonesArr );
@@ -171,7 +177,7 @@ public class AdminUserProps extends Administrator {
         }
 
         // Get a new Vector: phone_id, (typename) number   ex.  { 10, (Hem) 46 498 123456 }
-        Vector phonesV = this.getPhonesVector( phoneNumbers, "" + user.getLangId(), imcref );
+        Vector phonesV = this.getPhonesVector( phoneNumbers, user, imcref );
 
         String selected = "";
         if ( phonesV.size() > 0 ) {
@@ -293,10 +299,9 @@ public class AdminUserProps extends Administrator {
     private String getLanguagesHtmlOptionList( UserDomainObject user, ImcmsServices imcref,
                                                UserDomainObject userToChange ) {
         // Lets get the the users language id
-        String userLanguage = user.getLanguageIso639_2();
-        String[] langList = imcref.sqlProcedure( "GetLanguageList", new String[]{userLanguage} );
+        String[] langList = imcref.sqlQuery( "SELECT lang_prefix, language FROM languages WHERE user_prefix = ?", new String[]{user.getLanguageIso639_2()} );
         Vector selectedLangV = new Vector();
-        selectedLangV.add( "" + userToChange.getLangId() );
+        selectedLangV.add( userToChange.getLanguageIso639_2() );
         String languagesHtmlOptionList = Html.createOptionList( new Vector( Arrays.asList( langList ) ), selectedLangV );
         return languagesHtmlOptionList;
     }
@@ -476,7 +481,7 @@ public class AdminUserProps extends Administrator {
         String password2 = req.getParameter( REQUEST_PARAMETER__PASSWORD2 );
 
         // Lets get all phonetypes from db
-        String[] phonetypesA = imcref.sqlProcedure( "GetPhonetypes", new String[]{"" + user.getLangId()} );
+        String[] phonetypesA = getPhoneTypes( imcref, user ) ;
 
         // Get a new Vector:  phonetype_id, typename
         Vector phoneTypesV = new Vector( java.util.Arrays.asList( phonetypesA ) );
@@ -500,7 +505,7 @@ public class AdminUserProps extends Administrator {
 
         if ( null != req.getParameter( "useradmin_settings" ) ) {
 
-            String[] theUserRoles = req.getParameterValues( "roles" );
+            String[] theUserRoles = req.getParameterValues( REQUEST_PARAMETER__ROLES );
             String[] theUseradminRoles = req.getParameterValues( "useradmin_roles" );
 
             if ( null != theUserRoles ) {
@@ -693,7 +698,7 @@ public class AdminUserProps extends Administrator {
         } else {
             // We are processing data from a user template
             // Get all phone numbers for user
-            String[][] phoneNbr = imcref.sqlProcedureMulti( "GetUserPhoneNumbers", new String[]{"" + userToChangeId} );
+            String[][] phoneNbr = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUserPhoneNumbers( userToChangeId );
 
             // Get workPhoneId and mobilePhoneId
             String workPhoneId = "";
@@ -751,7 +756,7 @@ public class AdminUserProps extends Administrator {
                 }
             }
             boolean useradminRoleIsSelected = false;
-            for ( int i = 0; i < roleIdsFromRequest.length; i++ ) {
+            for ( int i = 0; null != roleIdsFromRequest && i < roleIdsFromRequest.length; i++ ) {
                 int roleId = roleIdsFromRequest[i];
                 RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapperAndRole.getRoleById( roleId );
                 userFromRequest.addRole( role );
@@ -759,7 +764,6 @@ public class AdminUserProps extends Administrator {
                     useradminRoleIsSelected = true;
                 }
             }
-
 
             // Lets add the new useradmin roles. but first, delete the current roles
             // and then add the new ones
@@ -777,7 +781,8 @@ public class AdminUserProps extends Administrator {
             }
         }
 
-        imcmsAuthenticatorAndUserAndRoleMapperAndRole.updateUser( userFromRequest.getLoginName(), userFromRequest );
+        userFromRequest.setId(userFromDatabase.getId()) ;
+        imcmsAuthenticatorAndUserAndRoleMapperAndRole.updateUser( userFromRequest );
 
         this.goNext( req, res, session );
     }
@@ -1075,7 +1080,7 @@ public class AdminUserProps extends Administrator {
         }
 
         // Get a new Vector: phone_id, (typename) number    ex. { 10, (Hem) 46 498 123456 }
-        Vector phonesV = this.getPhonesVector( phoneNumbers, "" + user.getLangId(), imcref );
+        Vector phonesV = this.getPhonesVector( phoneNumbers, user, imcref );
 
         if ( phonesV == null ) {
             this.sendErrorMsg( req, res, "Add/edit user", "An eror occured!" );
@@ -1083,7 +1088,7 @@ public class AdminUserProps extends Administrator {
         }
 
         // update Vector phonesV from Vector phonesNumber: phone_id, (typename) number   ex.  { 10, (Hem) 46 498 123456 }
-        phonesV = this.getPhonesVector( phoneNumbers, "" + user.getLangId(), imcref );
+        phonesV = this.getPhonesVector( phoneNumbers, user, imcref );
 
         // add phones list
         String phones = Html.createOptionList( selectedPhoneId, phonesV );
@@ -1209,7 +1214,7 @@ public class AdminUserProps extends Administrator {
         userFromRequest.setCountry( req.getParameter( REQUEST_PARAMETER__COUNTRY ) );
         userFromRequest.setCountyCouncil( req.getParameter( REQUEST_PARAMETER__COUNTY_COUNCIL ) );
         userFromRequest.setEmailAddress( req.getParameter( REQUEST_PARAMETER__EMAIL ) );
-        userFromRequest.setLangId( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__LANGUAGE_ID ) ) );
+        userFromRequest.setLanguageIso639_2( req.getParameter( REQUEST_PARAMETER__LANGUAGE ) );
         userFromRequest.setActive( null != req.getParameter( REQUEST_PARAMETER__ACTIVE ) );
 
         return userFromRequest;
@@ -1280,13 +1285,15 @@ public class AdminUserProps extends Administrator {
      * ( phone_id, (typename) number,   ex. { 10, (Hem) 46 498 123456 } )
      * input vector  ex. 10, 46 498 123456, 3, 1
      */
-    private Vector getPhonesVector( Vector phonesArrV, String lang_id, ImcmsServices imcref ) {
+    private Vector getPhonesVector( Vector phonesArrV, UserDomainObject user, ImcmsServices imcref ) {
 
         Vector phonesV = new Vector();
         Enumeration enumeration = phonesArrV.elements();
         while ( enumeration.hasMoreElements() ) {
             String[] tempPhone = (String[])enumeration.nextElement();
-            String[] typename = imcref.sqlProcedure( "GetPhonetypeName", new String[]{tempPhone[3], lang_id} );
+            String[] typename = imcref.sqlQuery( "select typename from phonetypes, lang_prefixes\n"
+                                                     + "where phonetype_id = ? and phonetypes.lang_id = lang_prefixes.lang_id\n"
+                                                     + "AND lang_prefix = ?", new String[]{tempPhone[3], user.getLanguageIso639_2()} );
             String temp = "(" + typename[0] + ") " + tempPhone[1];
 
             phonesV.addElement( tempPhone[0] );

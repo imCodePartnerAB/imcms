@@ -159,6 +159,8 @@ public class UserService {
         UserDomainObject internalUser = new UserDomainObject();
         internalUser.setLoginName( loginName );
         internalUser.setPassword( password );
+        internalUser.setLanguageIso639_2( contentManagementSystem.getInternal().getDefaultLanguageAsIso639_2() );
+        internalUser.setActive( true );
         return new User( internalUser );
     }
 

@@ -644,11 +644,9 @@ CREATE TABLE [dbo].[users] (
 	[county_council] [varchar] (30) NOT NULL ,
 	[email] [varchar] (50) NOT NULL ,
 	[external] [int] NOT NULL ,
-	[last_page] [int] NOT NULL ,
-	[archive_mode] [int] NOT NULL ,
-	[lang_id] [int] NOT NULL ,
 	[active] [int] NOT NULL ,
-	[create_date] [smalldatetime] NOT NULL
+	[create_date] [smalldatetime] NOT NULL ,
+	[language] [varchar] (3) NOT NULL ,
 ) ON [PRIMARY]
 GO
 

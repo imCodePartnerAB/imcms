@@ -26,11 +26,10 @@ public class UserDomainObject extends Hashtable {
     private String country = "";
     private String countyCouncil = "";
     private String emailAddress = "";
-    private int lang_id;
     private boolean active;
     private String create_date;
 
-    private String languageIso639_2;
+    private String languageIso639_2 ;
 
     private TemplateGroupDomainObject templateGroup;
     private String loginType;
@@ -307,20 +306,6 @@ public class UserDomainObject extends Hashtable {
      */
     public void setOtherPhone( String otherphone ) {
         this.otherPhone = otherphone;
-    }
-
-    /**
-     * get lang_id
-     */
-    public int getLangId() {
-        return this.lang_id;
-    }
-
-    /**
-     * set lang_id
-     */
-    public void setLangId( int lang_id ) {
-        this.lang_id = lang_id;
     }
 
     /**

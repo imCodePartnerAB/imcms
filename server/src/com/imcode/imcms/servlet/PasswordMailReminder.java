@@ -97,9 +97,17 @@ public class PasswordMailReminder extends HttpServlet {
 
         if ( validLoginName ) {
 
-            String sqlProcedureName = "PermissionsGetPermission";
-            String[] queryResult = imcref.sqlProcedure( sqlProcedureName, new String[]{
-                postedLoginName, "" + PasswordMailReminder.PASSWORD_PERMISSION_ID
+            String[] queryResult = imcref.sqlQuery( "select login_password, first_name, last_name, email, min(permissions & ?), lang_prefix \n"
+                                                        + "from users u \n"
+                                                        + "join lang_prefixes lp \n"
+                                                        + "    on u.language = lp.lang_prefix\n"
+                                                        + "join user_roles_crossref urc \n"
+                                                        + "    on u.user_id = urc.user_id left \n"
+                                                        + "join roles r \n"
+                                                        + "    on r.role_id = urc.role_id\n"
+                                                        + "where login_name = ?\n"
+                                                        + "group by login_password, first_name, last_name, email, lang_prefix", new String[]{
+                "" + PasswordMailReminder.PASSWORD_PERMISSION_ID, postedLoginName
             } );
             UserDomainObject user = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUser( postedLoginName );
             user.setCurrentContextPath( req.getContextPath() );

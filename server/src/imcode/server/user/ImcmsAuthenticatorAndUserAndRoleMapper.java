@@ -3,6 +3,7 @@ package imcode.server.user;
 import com.imcode.imcms.api.RoleConstants;
 import imcode.server.ImcmsServices;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -10,9 +11,6 @@ import java.util.*;
 public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserAndRoleRegistry, Authenticator {
 
     private static final String SPROC_GET_HIGHEST_USER_ID = "GetHighestUserId";
-    private static final String SPROC_ADD_NEW_USER = "AddNewUser";
-    private static final String SPROC_UPDATE_USER = "UpdateUser";
-    private static final String SPROC_GET_USER_BY_LOGIN = "GetUserByLogin";
 
     private static final String SPROC_ADD_USER_ROLE = "AddUserRole";
     private static final String SPROC_ROLE_DELETE = "RoleDelete";
@@ -21,7 +19,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     private static final String SPROC_DEL_USER_ROLES = "DelUserRoles";
     private static final String SPROC_GET_USERS_WHO_BELONGS_TO_ROLE = "GetUsersWhoBelongsToRole";
 
-    private static final String SPROC_GET_USER_PHONE_NUMBERS = "GetUserPhoneNumbers ";
     private static final String SPROC_PHONE_NBR_ADD = "phoneNbrAdd";
     private static final String SPROC_DEL_PHONE_NR = "DelPhoneNr";
 
@@ -31,10 +28,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     private Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserAndRoleMapper.class );
     private static final String SQL_SELECT_USERS = "SELECT user_id, login_name, login_password, first_name, last_name, "
                                                    + "title, company, address, city, zip, country, county_council, "
-                                                   + "email, users.lang_id, lang_prefix, active, "
+                                                   + "email, language, active, "
                                                    + "create_date, external "
-                                                   + "FROM users, lang_prefixes "
-                                                   + "WHERE users.lang_id = lang_prefixes.lang_id ";
+                                                   + "FROM users";
 
     private static final String SQL_SELECT_ALL_ROLES = "SELECT role_id, role_name, admin_role FROM roles";
     private static final String SQL_SELECT_ROLE_BY_NAME = SQL_SELECT_ALL_ROLES + " WHERE role_name = ?";
@@ -66,7 +62,26 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     public UserDomainObject getUser( String loginName ) {
         loginName = loginName.trim();
 
-        String[] user_data = service.sqlProcedure( SPROC_GET_USER_BY_LOGIN, new String[]{loginName} );
+        String[] user_data = service.sqlQuery( "SELECT user_id,\n"
+                                                   + "login_name,\n"
+                                                   + "login_password,\n"
+                                                   + "first_name,\n"
+                                                   + "last_name,\n"
+                                                   + "title,\n"
+                                                   + "company,\n"
+                                                   + "address,\n"
+                                                   + "city,\n"
+                                                   + "zip,\n"
+                                                   + "country,\n"
+                                                   + "county_council,\n"
+                                                   + "email,\n"
+                                                   + "language,\n"
+                                                   + "active,\n"
+                                                   + "create_date,\n"
+                                                   + "[external]\n"
+                                                   + "FROM users\n"
+                                                   +"WHERE login_name = ?",
+                                               new String[]{loginName} );
 
         return getUserFromSqlRow( user_data );
     }
@@ -97,11 +112,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         user.setCountry( sqlResult[10] );
         user.setCountyCouncil( sqlResult[11] );
         user.setEmailAddress( sqlResult[12] );
-        user.setLangId( Integer.parseInt( sqlResult[13] ) );
-        user.setLanguageIso639_2( (String)ObjectUtils.defaultIfNull( sqlResult[14], service.getDefaultLanguageAsIso639_2() ) );
-        user.setActive( 0 != Integer.parseInt( sqlResult[15] ) );
-        user.setCreateDate( sqlResult[16] );
-        user.setImcmsExternal( 0 != Integer.parseInt( sqlResult[17] ) );
+        user.setLanguageIso639_2( (String)ObjectUtils.defaultIfNull( sqlResult[13], service.getDefaultLanguageAsIso639_2() ) );
+        user.setActive( 0 != Integer.parseInt( sqlResult[14] ) );
+        user.setCreateDate( sqlResult[15] );
+        user.setImcmsExternal( 0 != Integer.parseInt( sqlResult[16] ) );
     }
 
     private RoleDomainObject[] getRolesForUser( UserDomainObject user ) {
@@ -125,19 +139,23 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     }
 
     private String[][] sqlSelectAllUsers( boolean includeUserExtern, boolean includeInactiveUsers ) {
-        String sqlStr = SQL_SELECT_USERS;
+        List whereTests = new ArrayList() ;
         if ( !includeUserExtern ) {
-            sqlStr += " AND user_id != " + USER_EXTERN_ID;
+            whereTests.add("user_id != " + USER_EXTERN_ID);
         }
         if ( !includeInactiveUsers ) {
-            sqlStr += " AND active = 1";
+            whereTests.add("active = 1");
+        }
+        String sqlStr = SQL_SELECT_USERS;
+        if (whereTests.size() > 0) {
+            sqlStr += " WHERE "+StringUtils.join( whereTests.iterator(), " AND ") ;
         }
         return service.sqlQueryMulti( sqlStr, new String[0] );
     }
 
     String[] sqlSelectUserById( int userId ) {
         String sqlStr = SQL_SELECT_USERS
-                        + "AND user_id = ?";
+                        + " WHERE user_id = ?";
 
         return service.sqlQuery( sqlStr, new String[]{"" + userId} );
     }
@@ -149,19 +167,71 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         updateUser( tempUser );
     }
 
-    private void updateUser( UserDomainObject tempUser ) {
-        callSprocModifyUserProcedure( SPROC_UPDATE_USER, tempUser );
-        removePhoneNumbers( tempUser );
-        addPhoneNumbers( tempUser );
+    public void updateUser( UserDomainObject user ) {
+        String[] params = {
+            user.getLoginName(),
+            null == user.getPassword() ? "" : user.getPassword(),
+            user.getFirstName(),
+            user.getLastName(),
+            user.getTitle(),
+            user.getCompany(),
+            user.getAddress(),
+            user.getCity(),
+            user.getZip(),
+            user.getCountry(),
+            user.getCountyCouncil(),
+            user.getEmailAddress(),
+            user.isImcmsExternal() ? "1" : "0",
+            user.isActive() ? "1" : "0",
+            user.getLanguageIso639_2(),
+            "" + user.getId(),
+        };
+        service.sqlUpdateQuery( "UPDATE users \n"
+                                + "SET login_name = ?,\n"
+                                + "login_password = ?,\n"
+                                + "first_name = ?,\n"
+                                + "last_name = ?,\n"
+                                + "title = ?,\n"
+                                + "company = ?,\n"
+                                + "address =  ?,\n"
+                                + "city = ?,\n"
+                                + "zip = ?,\n"
+                                + "country = ?,\n"
+                                + "county_council = ?,\n"
+                                + "email = ?,\n"
+                                + "external = ?,\n"
+                                + "active = ?,\n"
+                                + "language = ?\n"
+                                + "WHERE user_id = ?", params );
+
+        sqlUpdateUserRoles( user );
+        removePhoneNumbers( user );
+        addPhoneNumbers( user );
     }
 
-    public synchronized void addUser( UserDomainObject newUser ) {
+    public synchronized void addUser( UserDomainObject user ) {
         String newUserId = service.sqlProcedureStr( SPROC_GET_HIGHEST_USER_ID, new String[]{} );
         int newIntUserId = Integer.parseInt( newUserId );
-        newUser.setId( newIntUserId );
+        user.setId( newIntUserId );
+        String[] usersColumns = new String[] {
+            "user_id", "login_name", "login_password",
+            "first_name", "last_name", "title",
+            "company", "address", "city", "zip",
+            "country", "county_council", "email",
+            "external", "active",
+            "language"
+        } ;
 
-        callSprocModifyUserProcedure( SPROC_ADD_NEW_USER, newUser );
-        addPhoneNumbers( newUser );
+        service.sqlUpdateQuery( "INSERT INTO users ("+StringUtils.join( usersColumns, ',')+", create_date)\n"
+                                + "VALUES ("+StringUtils.repeat( "?,", usersColumns.length )+" getDate())", new String[] {
+                                    ""+user.getId(),user.getLoginName(),user.getPassword(),
+                                    user.getFirstName(), user.getLastName(), user.getTitle(),
+                                    user.getCompany(), user.getAddress(), user.getCity(), user.getZip(),
+                                    user.getCountry(), user.getCountyCouncil(), user.getEmailAddress(),
+                                    user.isImcmsExternal() ? "1" : "0", user.isActive() ? "1" : "0",
+                                    user.getLanguageIso639_2()
+                                }) ;
+        addPhoneNumbers( user );
     }
 
     private void removePhoneNumbers( UserDomainObject newUser ) {
@@ -325,32 +395,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         return role;
     }
 
-    private void callSprocModifyUserProcedure( String modifyUserProcedureName, UserDomainObject tempUser ) {
-        String[] params = {
-            String.valueOf( tempUser.getId() ),
-            tempUser.getLoginName(),
-            null == tempUser.getPassword() ? "" : tempUser.getPassword(),
-            tempUser.getFirstName(),
-            tempUser.getLastName(),
-            tempUser.getTitle(),
-            tempUser.getCompany(),
-            tempUser.getAddress(),
-            tempUser.getCity(),
-            tempUser.getZip(),
-            tempUser.getCountry(),
-            tempUser.getCountyCouncil(),
-            tempUser.getEmailAddress(),
-            tempUser.isImcmsExternal() ? "1" : "0",
-            "1001",
-            "0",
-            String.valueOf( tempUser.getLangId() ),
-            tempUser.isActive() ? "1" : "0"
-        };
-        service.sqlUpdateProcedure( modifyUserProcedureName, params );
-
-        sqlUpdateUserRoles( tempUser );
-    }
-
     public void sqlUpdateUserRoles( UserDomainObject tempUser ) {
         tempUser.addRole( RoleDomainObject.USERS );
         RoleDomainObject[] userRoles = tempUser.getRoles();
@@ -370,7 +414,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     }
 
     public UserDomainObject[] findUsersByNamePrefix( String namePrefix, boolean includeInactiveUsers ) {
-        String sql = SQL_SELECT_USERS + " AND user_id != " + USER_EXTERN_ID
+        String sql = SQL_SELECT_USERS + " WHERE user_id != " + USER_EXTERN_ID
                      + " AND ( login_name LIKE ? + '%' OR first_name LIKE ? + '%' OR last_name LIKE ? + '%' )";
         if ( !includeInactiveUsers ) {
             sql += " AND active = 1";
@@ -388,8 +432,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     }
 
     public void initUserPhoneNumbers( UserDomainObject user ) {
-        String[][] phoneNbr = service.sqlProcedureMulti( SPROC_GET_USER_PHONE_NUMBERS,
-                                                         new String[]{"" + user.getId()} );
+        String[][] phoneNbr = getUserPhoneNumbers( user.getId() ) ;
         String workPhone = "";
         String mobilePhone = "";
         String homePhone = "";
@@ -433,6 +476,16 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         } else {
             updateUser(user) ;
         }
+    }
+
+    public String[][] getUserPhoneNumbers( int userToChangeId ) {
+        return service.sqlQueryMulti( "SELECT phones.phone_id, phones.number, phones.user_id, phones.phonetype_id, phonetypes.typename\n"
+                                     + "FROM   phones, users, phonetypes, lang_prefixes\n"
+                                     + "WHERE  phones.user_id = users.user_id\n"
+                                     + "AND    phones.phonetype_id = phonetypes.phonetype_id\n"
+                                     + "AND\t   users.language = lang_prefixes.lang_prefix\n"
+                                     + "AND    lang_prefixes.lang_id = phonetypes.lang_id\n"
+                                     + "AND    phones.user_id = ?", new String[]{"" + userToChangeId} );
     }
 
 }

@@ -123,3 +123,21 @@ DROP PROCEDURE RoleAddNew
 GO
 
 -- 2004-11-25 Kreiger
+
+ALTER TABLE users ADD language VARCHAR(3) NOT NULL DEFAULT ''
+UPDATE users SET language = 'swe' WHERE lang_id = 1
+UPDATE users SET language = 'eng' WHERE lang_id = 2
+ALTER TABLE users DROP COLUMN lang_id
+ALTER TABLE users DROP COLUMN last_page
+ALTER TABLE users DROP COLUMN archive_mode
+DROP PROCEDURE AddNewUser
+DROP PROCEDURE UpdateUser
+DROP PROCEDURE GetPhoneTypes
+DROP PROCEDURE GetPhoneTypeName
+DROP PROCEDURE GetLanguageList
+DROP PROCEDURE GetUserByLogin
+DROP PROCEDURE GetUserInfo
+DROP PROCEDURE GetUserPhoneNumbers
+DROP PROCEDURE PermissionsGetPermission
+
+-- 2004-11-25 Kreiger

@@ -315,7 +315,6 @@ public class ConfLogin extends Conference {
             newUser.setCountry(userParams.getProperty("country"));
             newUser.setCountyCouncil(userParams.getProperty("country_council"));
             newUser.setEmailAddress(userParams.getProperty("email"));
-            newUser.setLangId(Integer.parseInt(user.getLangId()+"")); //lang_id for loggdonuser
             newUser.setActive(true);
             newUser.setWorkPhone(userParams.getProperty( "phone" ));
 
@@ -374,8 +373,25 @@ public class ConfLogin extends Conference {
                 return;
             }
 
-            // Lets get all Userinformation from Janus db
-            String[] userInfo = imcref.sqlProcedure( "GetUserInfo", new String[]{userId} );
+            String[] userInfo = imcref.sqlQuery( "SELECT user_id,\n"
+                                                 + "login_name,\n"
+                                                 + "login_password,\n"
+                                                 + "first_name,\n"
+                                                 + "last_name,\n"
+                                                 + "title,\n"
+                                                 + "company,\n"
+                                                 + "address,\n"
+                                                 + "city,\n"
+                                                 + "zip,\n"
+                                                 + "country,\n"
+                                                 + "county_council,\n"
+                                                 + "email,\n"
+                                                 + "external,\n"
+                                                 + "active,\n"
+                                                 + "create_date,\n"
+                                                 + "language\n"
+                                                 + "FROM users\n"
+                                                 + "WHERE user_id = @aUserId", new String[]{userId} );
 
             // Lets get the selected users userlevel
             String level = imcref.sqlProcedureStr( "A_ConfUsersGetUserLevel", new String[]{
@@ -565,16 +581,6 @@ public class ConfLogin extends Conference {
      * then an empty one will be created
      */
     private VariableManager addUserInfo( VariableManager vm, Vector v ) {
-        // Here is the order in the vector
-        // [3, Rickard, tynne, Rickard, Larsson, programmerare, imcode,  Drakarve, Havdhem, 620 11, Sweden, Gotland,
-        // rickard@imcode.com, 0, 1001, 0, 1]
-        //(v.get(1)==null) ? "" : (req.getParameter("password1")) ;
-
-        if ( v.size() == 0 || v.size() < 14 ) {
-            for ( int i = v.size(); i < 13; i++ ) {
-                v.add( i, "" );
-            }
-        }
 
         vm.addProperty( "LOGIN_NAME", v.get( 1 ).toString() );
         vm.addProperty( "PWD1", v.get( 2 ).toString() );

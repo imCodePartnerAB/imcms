@@ -1,11 +1,12 @@
-
 INSERT INTO languages VALUES('swe','swe','Svenska')
 INSERT INTO languages VALUES('swe','eng','Swedish')
 INSERT INTO languages VALUES('eng','swe','Engelska')
 INSERT INTO languages VALUES('eng','eng','English')
+GO
 
 INSERT INTO lang_prefixes VALUES(1,'swe')
 INSERT INTO lang_prefixes VALUES(2,'eng')
+GO
 
 INSERT INTO doc_types VALUES(2, 'swe', 'Textsida')
 INSERT INTO doc_types VALUES(5, 'swe', 'Extern länk')
@@ -15,6 +16,7 @@ INSERT INTO doc_types VALUES(8, 'swe', 'Fil')
 INSERT INTO doc_types VALUES(102, 'swe', 'Konferens')
 INSERT INTO doc_types VALUES(103, 'swe', 'Chatt')
 INSERT INTO doc_types VALUES(104, 'swe', 'Anslagstavla')
+GO
 
 INSERT INTO doc_types VALUES(2, 'eng', 'Text page')
 INSERT INTO doc_types VALUES(5, 'eng', 'External link')
@@ -24,6 +26,7 @@ INSERT INTO doc_types VALUES(8, 'eng', 'File')
 INSERT INTO doc_types VALUES(102, 'eng', 'Conference')
 INSERT INTO doc_types VALUES(103, 'eng', 'Chat')
 INSERT INTO doc_types VALUES(104, 'eng', 'Billboard')
+GO
 
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,2,'swe','Ändra text')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,5,'swe','Redigera')
@@ -36,6 +39,7 @@ INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) 
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(262144,2,'swe','Ändra meny')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(524288,2,'swe','Ändra utseende')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(1048576,2,'swe','Ändra include')
+GO
 
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,2,'eng','Edit texts')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,5,'eng','Edit')
@@ -48,27 +52,33 @@ INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) 
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(262144,2,'eng','Edit menus')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(524288,2,'eng','Change template')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(1048576,2,'eng','Change include')
+GO
 
 INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(1,'swe','Ändra rubrik')
 INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(2,'swe','Ändra dokinfo')
 INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(4,'swe','Ändra rättigheter för roller')
 INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(8,'swe','Skapa dokument')
+GO
 
 INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(1,'eng','Edit headline')
 INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(2,'eng','Edit docinfo')
 INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(4,'eng','Edit permissions')
 INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(8,'eng','Create document')
+GO
 
 INSERT INTO roles_permissions (permission_id, lang_prefix, description) VALUES(1,'swe','Rätt att få lösenord per mail')
 INSERT INTO roles_permissions (permission_id, lang_prefix, description) VALUES(2,'swe','Självregistreringsrätt i konferens')
+GO
 
 INSERT INTO roles_permissions (permission_id, lang_prefix, description) VALUES(1,'eng','Permission to get password by email')
 INSERT INTO roles_permissions (permission_id, lang_prefix, description) VALUES(2,'eng','Selfregister rights in conference')
+GO
 
 INSERT INTO permission_sets (set_id, description) VALUES(0,'Full')
 INSERT INTO permission_sets (set_id, description) VALUES(1,'Begränsad 1')
 INSERT INTO permission_sets (set_id, description) VALUES(2,'Begränsad 2')
 INSERT INTO permission_sets (set_id, description) VALUES(3,'Läs')
+GO
 
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(1,'Internet Explorer','%MSIE%',2)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(2,'Netscape','Mozilla%(%;%[UIN][);]%',2)
@@ -82,6 +92,7 @@ INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(9,'Netscape 6'
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(10,'Netscape 7','Mozilla%/5;%netscape/7%',4)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(11,'Windows','%win%',1)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(12,'Macintosh','%mac%',1)
+GO
 
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(13,'Windows Internet Explorer','%MSIE%win%',3)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(14,'Windows Internet Explorer 3','%MSIE 3%win%',5)
@@ -89,22 +100,26 @@ INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(15,'Windows In
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(16,'Windows Internet Explorer 5.0','%MSIE 5.0%win%',5)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(17,'Windows Internet Explorer 5.5','%MSIE 5.5%win%',5)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(18,'Windows Internet Explorer 6','%MSIE 6%win%',5)
+GO
 
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(19,'Windows Netscape','Mozilla%(%win%;%[UIN][ );]%',3)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(20,'Windows Netscape 3','Mozilla/3%(%win%;%[UIN][ );]%',5)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(21,'Windows Netscape 4','Mozilla/4%(%win%;%[UIN][ );]%',5)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(22,'Windows Netscape 6','Mozilla/5%(%win%;%[UIN][ );]%',5)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(23,'Windows Netscape 7','Mozilla/5%(%win%netscape/7%',5)
+GO
 
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(24,'Macintosh Internet Explorer','%MSIE%mac%',3)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(25,'Macintosh Internet Explorer 3','%MSIE 3%mac%',5)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(26,'Macintosh Internet Explorer 4','%MSIE 4%mac%',5)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(27,'Macintosh Internet Explorer 5','%MSIE 5%mac%',5)
+GO
 
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(28,'Macintosh Netscape','Mozilla%(%mac%;%[UIN][ );]%',3)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(29,'Macintosh Netscape 3','Mozilla/3%(%mac%;%[UIN][ );]%',5)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(30,'Macintosh Netscape 4','Mozilla/4%(%mac%;%[UIN][ );]%',5)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(31,'Macintosh Netscape 6','Mozilla/5%(%mac%;%[UIN][ );]%',5)
+GO
 
 SET IDENTITY_INSERT sys_types ON
 INSERT INTO sys_types (type_id,name) VALUES(0,'StartDocument')
@@ -116,6 +131,7 @@ INSERT INTO sys_types (type_id,name) VALUES(5,'ServerMasterAddress')
 INSERT INTO sys_types (type_id,name) VALUES(6,'WebMaster')
 INSERT INTO sys_types (type_id,name) VALUES(7,'WebMasterAddress')
 SET IDENTITY_INSERT sys_types OFF
+GO
 
 SET IDENTITY_INSERT mime_types ON
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(0,'Annan...','other','swe')
@@ -156,6 +172,7 @@ INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(15,'MS Wor
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(16,'MS Excel-document','application/vnd.ms-excel','eng')
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(17,'MS Powerpoint-document','application/vnd.ms-powerpoint','eng')
 SET IDENTITY_INSERT mime_types OFF
+GO
 
 SET IDENTITY_INSERT SORT_BY ON
 INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (1, 'meta_headline')
@@ -168,6 +185,7 @@ INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (7, 'date_activated')
 INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (8, 'meta_text')
 INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (9, 'archive')
 SET IDENTITY_INSERT SORT_BY OFF
+GO
 
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(1,1,'Rubrik')
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(1,2,'Meta headline')
@@ -183,7 +201,7 @@ INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(6,1,'Arkiv
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(6,2,'Archived date')
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(7,1,'Aktiverat datum')
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(7,2,'Activated date')
-
+GO
 
 INSERT INTO phonetypes VALUES(0, 'Annat', 1 )
 INSERT INTO phonetypes VALUES(1, 'Bostad', 1 )
@@ -195,3 +213,4 @@ INSERT INTO phonetypes VALUES(1, 'Home', 2 )
 INSERT INTO phonetypes VALUES(2, 'Work', 2 )
 INSERT INTO phonetypes VALUES(3, 'Mobile', 2 )
 INSERT INTO phonetypes VALUES(4, 'Fax', 2 )
+GO

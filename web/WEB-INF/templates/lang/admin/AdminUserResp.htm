@@ -16,28 +16,19 @@ function evalPrepareAdd() {
 	//if( document.forms[0].password1.value == "" ) valFieldsOk = false
 	//if( document.forms[0].password2.value == "" ) valFieldsOk = false
 	if( document.forms[0].first_name.value == "" ) valFieldsOk = false
-	if( document.forms[0].last_name.value == "" ) valFieldsOk = false	
-	
+	if( document.forms[0].last_name.value == "" ) valFieldsOk = false
+
 	if(!valFieldsOk) {
 		var msg = "<? templates/sv/AdminUserResp.htm/2/1 ?>"
 		alert(msg)
 		return false
 	}
-	
+
 	if(document.forms[0].password1.value != document.forms[0].password2.value){
 		var msg = "<? templates/sv/AdminUserResp.htm/2/2 ?>"
-		document.forms[0].password1.value = "" 
+		document.forms[0].password1.value = ""
 		document.forms[0].password2.value = ""
 		document.forms[0].password1.focus()
-		alert(msg)		
-		return false
-	}
-
-	var userRole
-	userRole = document.forms[0].roles.selectedIndex
-	if(userRole == "-1") {
-		var msg = "<? templates/sv/AdminUserResp.htm/2/4 ?>"
-		msg += " "
 		alert(msg)
 		return false
 	}
@@ -49,9 +40,9 @@ function evalPrepareAdd() {
 			var list = document.forms[0].roles;
 			for ( i = 0 ; i < list.length ; i++ ){
 				if ( list.options[i].text == "Useradmin"  &&  !list.options[i].selected ){
-					var msg = "<? templates/sv/AdminUserResp.htm/2/5 ?>\n"; 
+					var msg = "<? templates/sv/AdminUserResp.htm/2/5 ?>\n";
 					msg += "<? templates/sv/AdminUserResp.htm/2/6 ?>" ;
-					alert(msg); 
+					alert(msg);
 				}
 			}
 		}
@@ -99,23 +90,23 @@ function activateUseradmin_roles(){
 #gui_mid()
 
 <table border="0" cellspacing="0" cellpadding="0" width="660" align="center">
-<tr> 
+<tr>
 	<td colspan="2">#gui_heading( "<? templates/sv/AdminUserResp.htm/5/1 ?>" )</td>
 </tr>
-<tr> 
+<tr>
 	<td colspan="2" class="imcmsAdmText">
 	<? templates/sv/AdminUserResp.htm/6 ?></td>
 </tr>
-<tr> 
+<tr>
 	<td colspan="2">#gui_hr( "cccccc" )</td>
 </tr>
-<tr> 
+<tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/8 ?></td>
 	<td><input type="text" name="login_name" size="25" maxlength="50" value="#LOGIN_NAME#"></td>
 </tr>
-<tr> 
+<tr>
 	<td class="imcmsAdmText" nowrap><? templates/sv/AdminUserResp.htm/10 ?> <span class="imcmsAdmDim"><? templates/sv/AdminUserResp.htm/11 ?></span> &nbsp;</td>
-	<td> 
+	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><input type="password" name="password1" size="16" maxlength="15" value="#PWD1#"></td>
@@ -124,27 +115,27 @@ function activateUseradmin_roles(){
 	</tr>
 	</table></td>
 </tr>
-<tr> 
+<tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/14 ?></td>
 	<td><input type="text" name="first_name" size="25" maxlength="25" value="#FIRST_NAME#"></td>
 </tr>
-<tr> 
+<tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/16 ?></td>
 	<td><input type="text" name="last_name" size="25" maxlength="30" value="#LAST_NAME#"></td>
 </tr>
-<tr> 
+<tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/18 ?></td>
 	<td><input type="text" name="title" size="25" maxlength="30" value="#TITLE#"></td>
 </tr>
-<tr> 
+<tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/20 ?></td>
 	<td><input type="text" name="company" size="25" maxlength="30" value="#COMPANY#"></td>
 </tr>
-<tr> 
+<tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/22 ?></td>
 	<td><input type="text" name="address" size="25" maxlength="30" value="#ADDRESS#"></td>
 </tr>
-<tr> 
+<tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/24 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
@@ -170,7 +161,7 @@ function activateUseradmin_roles(){
 <tr>
 	<td colspan="2">#gui_hr( "cccccc" )</td>
 </tr>
-<tr> 
+<tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/32 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">

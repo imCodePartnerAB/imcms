@@ -245,6 +245,14 @@ public class User {
         internalUser.setZip( zip );
     }
 
+    public void setLanguage( Language language ) {
+        internalUser.setLanguageIso639_2( language.getIsoCode639_2() );
+    }
+
+    public Language getLanguage() {
+        return Language.getLanguageByISO639_2( internalUser.getLanguageIso639_2() ) ;
+    }
+
     private static class RoleToRoleNameTransformer implements Transformer {
         public Object transform( Object role ) {
             return ((RoleDomainObject)role).getName() ;

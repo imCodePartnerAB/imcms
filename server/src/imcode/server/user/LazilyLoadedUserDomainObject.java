@@ -105,11 +105,6 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
         return super.getHomePhone();
     }
 
-    public int getLangId() {
-        loadAttributes();
-        return super.getLangId();
-    }
-
     public String getLanguageIso639_2() {
         loadAttributes();
         return super.getLanguageIso639_2();
@@ -238,11 +233,6 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
     public void setImcmsExternal( boolean external ) {
         loadAttributes();
         super.setImcmsExternal( external );
-    }
-
-    public void setLangId( int lang_id ) {
-        loadAttributes();
-        super.setLangId( lang_id );
     }
 
     public void setLanguageIso639_2( String languageIso639_2 ) {
