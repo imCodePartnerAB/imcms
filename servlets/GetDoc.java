@@ -133,7 +133,7 @@ public class GetDoc extends HttpServlet {
 		String port = (p == 80 || p == 443) ? "" : ":" + p ;
 
 		HttpSession session = req.getSession(true) ;
-		Object done = session.getValue("createLoggMessageon.isDone");  // marker object
+		Object done = session.getValue("logon.isDone");  // marker object
 		imcode.server.User user = (imcode.server.User)done ;
 
 		if (done == null)
