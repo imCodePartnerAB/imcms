@@ -4,59 +4,1136 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-   <display-name>imCMS</display-name>
+    <display-name>imCMS</display-name>
 
-   <filter>
-      <filter-name>ImcmsSetupFilter</filter-name>
-      <description>Setting up objects in request for api usage</description>
-      <filter-class>com.imcode.imcms.servlet.ImcmsSetupFilter</filter-class>
-   </filter>
-
-<!-- Filter that generates HttpUnit code for requests to a log4j category named "httpunit"
     <filter>
-        <filter-name>HttpUnitGeneratingFilter</filter-name>
-        <description>Generates HttpUnit code for all requests</description>
-        <filter-class>com.imcode.imcms.test.http.HttpUnitGeneratingFilter</filter-class>
+        <filter-name>ImcmsSetupFilter</filter-name>
+        <description>Setting up objects in request for api usage</description>
+        <filter-class>com.imcode.imcms.servlet.ImcmsSetupFilter</filter-class>
     </filter>
-
-    <filter-mapping>
-        <filter-name>HttpUnitGeneratingFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
--->
 
     <filter-mapping>
         <filter-name>ImcmsSetupFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-   <servlet>
-      <servlet-name>init</servlet-name>
-      <servlet-class>MainInitServlet</servlet-class>
-      <load-on-startup>1</load-on-startup>
-   </servlet>
+    <servlet>
+        <servlet-name>init</servlet-name>
+        <servlet-class>MainInitServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
 
-   <servlet>
-      <servlet-name>RD</servlet-name>
-      <servlet-class>ReDirecter</servlet-class>
-   </servlet>
+    <servlet>
+        <servlet-name>RD</servlet-name>
+        <servlet-class>ReDirecter</servlet-class>
+    </servlet>
 
-   <servlet-mapping>
-      <servlet-name>RD</servlet-name>
-      <url-pattern>/RD/*</url-pattern>
-   </servlet-mapping>
+    <servlet>
+        <servlet-name>AddDoc</servlet-name>
+        <servlet-class>AddDoc</servlet-class>
+    </servlet>
 
-   <session-config>
-      <session-timeout>
+    <servlet>
+        <servlet-name>AdminBillBoard</servlet-name>
+        <servlet-class>AdminBillBoard</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminConference</servlet-name>
+        <servlet-class>AdminConference</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminCounter</servlet-name>
+        <servlet-class>AdminCounter</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminDeleteDoc</servlet-name>
+        <servlet-class>AdminDeleteDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminDoc</servlet-name>
+        <servlet-class>AdminDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminError2</servlet-name>
+        <servlet-class>AdminError2</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminError</servlet-name>
+        <servlet-class>AdminError</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminFortuneFile</servlet-name>
+        <servlet-class>AdminFortuneFile</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminFortunes</servlet-name>
+        <servlet-class>AdminFortunes</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminIpAccess</servlet-name>
+        <servlet-class>AdminIpAccess</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>Administrator</servlet-name>
+        <servlet-class>Administrator</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminListDocs</servlet-name>
+        <servlet-class>AdminListDocs</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminManager</servlet-name>
+        <servlet-class>AdminManager</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminQuestions</servlet-name>
+        <servlet-class>AdminQuestions</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminQuestionsFile</servlet-name>
+        <servlet-class>AdminQuestionsFile</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminRandomTexts</servlet-name>
+        <servlet-class>AdminRandomTexts</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminRandomTextsFile</servlet-name>
+        <servlet-class>AdminRandomTextsFile</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminRoleBelongings</servlet-name>
+        <servlet-class>AdminRoleBelongings</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminRoles</servlet-name>
+        <servlet-class>AdminRoles</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminSection</servlet-name>
+        <servlet-class>AdminSection</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminSystemInfo</servlet-name>
+        <servlet-class>AdminSystemInfo</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminUser</servlet-name>
+        <servlet-class>AdminUser</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminUserProps</servlet-name>
+        <servlet-class>AdminUserProps</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>BackDoc</servlet-name>
+        <servlet-class>BackDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>BillBoardAdd</servlet-name>
+        <servlet-class>BillBoardAdd</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>BillBoardAdmin</servlet-name>
+        <servlet-class>BillBoardAdmin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>BillBoard</servlet-name>
+        <servlet-class>BillBoard</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>BillBoardCreator</servlet-name>
+        <servlet-class>BillBoardCreator</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>BillBoardDisc</servlet-name>
+        <servlet-class>BillBoardDisc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>BillBoardDiscView</servlet-name>
+        <servlet-class>BillBoardDiscView</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>BillBoardError</servlet-name>
+        <servlet-class>BillBoardError</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>BillBoardForum</servlet-name>
+        <servlet-class>BillBoardForum</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>BillBoardHelp</servlet-name>
+        <servlet-class>BillBoardHelp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>BillBoardLogin</servlet-name>
+        <servlet-class>BillBoardLogin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>BillBoardManager</servlet-name>
+        <servlet-class>BillBoardManager</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>BillBoardReply</servlet-name>
+        <servlet-class>BillBoardReply</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>BillBoardViewer</servlet-name>
+        <servlet-class>BillBoardViewer</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ChangeExternalDoc2</servlet-name>
+        <servlet-class>ChangeExternalDoc2</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ChangeImage</servlet-name>
+        <servlet-class>ChangeImage</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ChangeText</servlet-name>
+        <servlet-class>ChangeText</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ChatAdmin</servlet-name>
+        <servlet-class>ChatAdmin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ChatBoard</servlet-name>
+        <servlet-class>ChatBoard</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ChatControl</servlet-name>
+        <servlet-class>ChatControl</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ChatCreator</servlet-name>
+        <servlet-class>ChatCreator</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ChatHelp</servlet-name>
+        <servlet-class>ChatHelp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ChatLogin</servlet-name>
+        <servlet-class>ChatLogin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ChatManager</servlet-name>
+        <servlet-class>ChatManager</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ChatViewer</servlet-name>
+        <servlet-class>ChatViewer</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConfAdd</servlet-name>
+        <servlet-class>ConfAdd</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConfAdmin</servlet-name>
+        <servlet-class>ConfAdmin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConfAndBillbTemplateUpload</servlet-name>
+        <servlet-class>ConfAndBillbTemplateUpload</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConfCreator</servlet-name>
+        <servlet-class>ConfCreator</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConfDisc</servlet-name>
+        <servlet-class>ConfDisc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConfDiscView</servlet-name>
+        <servlet-class>ConfDiscView</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>Conference</servlet-name>
+        <servlet-class>Conference</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConfError</servlet-name>
+        <servlet-class>ConfError</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConfForum</servlet-name>
+        <servlet-class>ConfForum</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConfHelp</servlet-name>
+        <servlet-class>ConfHelp</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConfLogin</servlet-name>
+        <servlet-class>ConfLogin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConfManager</servlet-name>
+        <servlet-class>ConfManager</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConfReply</servlet-name>
+        <servlet-class>ConfReply</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ConfViewer</servlet-name>
+        <servlet-class>ConfViewer</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ErrorMessageGenerator</servlet-name>
+        <servlet-class>ErrorMessageGenerator</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>FileAdmin</servlet-name>
+        <servlet-class>FileAdmin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>GetDoc</servlet-name>
+        <servlet-class>GetDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>GetExistingDoc</servlet-name>
+        <servlet-class>GetExistingDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ImageBrowse</servlet-name>
+        <servlet-class>ImageBrowse</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ImageUpload</servlet-name>
+        <servlet-class>ImageUpload</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>LogOut</servlet-name>
+        <servlet-class>LogOut</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>MainInitServlet</servlet-name>
+        <servlet-class>MainInitServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>MetaAdmin</servlet-name>
+        <servlet-class>MetaAdmin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>PasswordMailReminder</servlet-name>
+        <servlet-class>PasswordMailReminder</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>PollHandler</servlet-name>
+        <servlet-class>PollHandler</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>PostcardServlet</servlet-name>
+        <servlet-class>PostcardServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>PutInShoppingCart</servlet-name>
+        <servlet-class>PutInShoppingCart</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>QEngine</servlet-name>
+        <servlet-class>QEngine</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>QuestionEngine</servlet-name>
+        <servlet-class>QuestionEngine</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>QuestionResult</servlet-name>
+        <servlet-class>QuestionResult</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>QuotPicEngine</servlet-name>
+        <servlet-class>QuotPicEngine</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ReDirecter</servlet-name>
+        <servlet-class>ReDirecter</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>Restart</servlet-name>
+        <servlet-class>Restart</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveBrowserDoc</servlet-name>
+        <servlet-class>SaveBrowserDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveFileUpload</servlet-name>
+        <servlet-class>SaveFileUpload</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveFrameset</servlet-name>
+        <servlet-class>SaveFrameset</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveImage</servlet-name>
+        <servlet-class>SaveImage</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveInclude</servlet-name>
+        <servlet-class>SaveInclude</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveInPage</servlet-name>
+        <servlet-class>SaveInPage</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveMeta</servlet-name>
+        <servlet-class>SaveMeta</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveNewBrowserDoc</servlet-name>
+        <servlet-class>SaveNewBrowserDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveNewFileUpload</servlet-name>
+        <servlet-class>SaveNewFileUpload</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveNewFrameset</servlet-name>
+        <servlet-class>SaveNewFrameset</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveNewMeta</servlet-name>
+        <servlet-class>SaveNewMeta</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveNewUrlDoc</servlet-name>
+        <servlet-class>SaveNewUrlDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SavePermissions</servlet-name>
+        <servlet-class>SavePermissions</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveSort</servlet-name>
+        <servlet-class>SaveSort</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveText</servlet-name>
+        <servlet-class>SaveText</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SaveUrlDoc</servlet-name>
+        <servlet-class>SaveUrlDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SearchDocuments</servlet-name>
+        <servlet-class>SearchDocuments</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>SendMailServlet</servlet-name>
+        <servlet-class>SendMailServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>StartDoc</servlet-name>
+        <servlet-class>StartDoc</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>TemplateAdd</servlet-name>
+        <servlet-class>TemplateAdd</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>TemplateAdmin</servlet-name>
+        <servlet-class>TemplateAdmin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>TemplateChange</servlet-name>
+        <servlet-class>TemplateChange</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>TestFileAdmin</servlet-name>
+        <servlet-class>TestFileAdmin</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>UrlDocTest</servlet-name>
+        <servlet-class>UrlDocTest</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>UserChangePrefs</servlet-name>
+        <servlet-class>UserChangePrefs</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>VerifyUser</servlet-name>
+        <servlet-class>VerifyUser</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>Version</servlet-name>
+        <servlet-class>Version</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>RD</servlet-name>
+        <url-pattern>/RD/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AddDoc</servlet-name>
+        <url-pattern>/servlet/AddDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminBillBoard</servlet-name>
+        <url-pattern>/servlet/AdminBillBoard</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminConference</servlet-name>
+        <url-pattern>/servlet/AdminConference</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminCounter</servlet-name>
+        <url-pattern>/servlet/AdminCounter</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminDeleteDoc</servlet-name>
+        <url-pattern>/servlet/AdminDeleteDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminDoc</servlet-name>
+        <url-pattern>/servlet/AdminDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminError2</servlet-name>
+        <url-pattern>/servlet/AdminError2</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminError</servlet-name>
+        <url-pattern>/servlet/AdminError</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminFortuneFile</servlet-name>
+        <url-pattern>/servlet/AdminFortuneFile</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminFortunes</servlet-name>
+        <url-pattern>/servlet/AdminFortunes</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminIpAccess</servlet-name>
+        <url-pattern>/servlet/AdminIpAccess</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Administrator</servlet-name>
+        <url-pattern>/servlet/Administrator</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminListDocs</servlet-name>
+        <url-pattern>/servlet/AdminListDocs</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminManager</servlet-name>
+        <url-pattern>/servlet/AdminManager</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminQuestions</servlet-name>
+        <url-pattern>/servlet/AdminQuestions</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminQuestionsFile</servlet-name>
+        <url-pattern>/servlet/AdminQuestionsFile</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminRandomTexts</servlet-name>
+        <url-pattern>/servlet/AdminRandomTexts</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminRandomTextsFile</servlet-name>
+        <url-pattern>/servlet/AdminRandomTextsFile</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminRoleBelongings</servlet-name>
+        <url-pattern>/servlet/AdminRoleBelongings</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminRoles</servlet-name>
+        <url-pattern>/servlet/AdminRoles</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminSection</servlet-name>
+        <url-pattern>/servlet/AdminSection</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminSystemInfo</servlet-name>
+        <url-pattern>/servlet/AdminSystemInfo</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminUser</servlet-name>
+        <url-pattern>/servlet/AdminUser</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminUserProps</servlet-name>
+        <url-pattern>/servlet/AdminUserProps</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BackDoc</servlet-name>
+        <url-pattern>/servlet/BackDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BillBoardAdd</servlet-name>
+        <url-pattern>/servlet/BillBoardAdd</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BillBoardAdmin</servlet-name>
+        <url-pattern>/servlet/BillBoardAdmin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BillBoard</servlet-name>
+        <url-pattern>/servlet/BillBoard</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BillBoardCreator</servlet-name>
+        <url-pattern>/servlet/BillBoardCreator</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BillBoardDisc</servlet-name>
+        <url-pattern>/servlet/BillBoardDisc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BillBoardDiscView</servlet-name>
+        <url-pattern>/servlet/BillBoardDiscView</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BillBoardError</servlet-name>
+        <url-pattern>/servlet/BillBoardError</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BillBoardForum</servlet-name>
+        <url-pattern>/servlet/BillBoardForum</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BillBoardHelp</servlet-name>
+        <url-pattern>/servlet/BillBoardHelp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BillBoardLogin</servlet-name>
+        <url-pattern>/servlet/BillBoardLogin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BillBoardManager</servlet-name>
+        <url-pattern>/servlet/BillBoardManager</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BillBoardReply</servlet-name>
+        <url-pattern>/servlet/BillBoardReply</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>BillBoardViewer</servlet-name>
+        <url-pattern>/servlet/BillBoardViewer</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ChangeExternalDoc2</servlet-name>
+        <url-pattern>/servlet/ChangeExternalDoc2</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ChangeImage</servlet-name>
+        <url-pattern>/servlet/ChangeImage</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ChangeText</servlet-name>
+        <url-pattern>/servlet/ChangeText</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ChatAdmin</servlet-name>
+        <url-pattern>/servlet/ChatAdmin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ChatBoard</servlet-name>
+        <url-pattern>/servlet/ChatBoard</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ChatControl</servlet-name>
+        <url-pattern>/servlet/ChatControl</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ChatCreator</servlet-name>
+        <url-pattern>/servlet/ChatCreator</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ChatHelp</servlet-name>
+        <url-pattern>/servlet/ChatHelp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ChatLogin</servlet-name>
+        <url-pattern>/servlet/ChatLogin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ChatManager</servlet-name>
+        <url-pattern>/servlet/ChatManager</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ChatViewer</servlet-name>
+        <url-pattern>/servlet/ChatViewer</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConfAdd</servlet-name>
+        <url-pattern>/servlet/ConfAdd</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConfAdmin</servlet-name>
+        <url-pattern>/servlet/ConfAdmin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConfAndBillbTemplateUpload</servlet-name>
+        <url-pattern>/servlet/ConfAndBillbTemplateUpload</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConfCreator</servlet-name>
+        <url-pattern>/servlet/ConfCreator</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConfDisc</servlet-name>
+        <url-pattern>/servlet/ConfDisc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConfDiscView</servlet-name>
+        <url-pattern>/servlet/ConfDiscView</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Conference</servlet-name>
+        <url-pattern>/servlet/Conference</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConfError</servlet-name>
+        <url-pattern>/servlet/ConfError</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConfForum</servlet-name>
+        <url-pattern>/servlet/ConfForum</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConfHelp</servlet-name>
+        <url-pattern>/servlet/ConfHelp</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConfLogin</servlet-name>
+        <url-pattern>/servlet/ConfLogin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConfManager</servlet-name>
+        <url-pattern>/servlet/ConfManager</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConfReply</servlet-name>
+        <url-pattern>/servlet/ConfReply</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ConfViewer</servlet-name>
+        <url-pattern>/servlet/ConfViewer</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ErrorMessageGenerator</servlet-name>
+        <url-pattern>/servlet/ErrorMessageGenerator</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>FileAdmin</servlet-name>
+        <url-pattern>/servlet/FileAdmin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GetDoc</servlet-name>
+        <url-pattern>/servlet/GetDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GetExistingDoc</servlet-name>
+        <url-pattern>/servlet/GetExistingDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ImageBrowse</servlet-name>
+        <url-pattern>/servlet/ImageBrowse</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ImageUpload</servlet-name>
+        <url-pattern>/servlet/ImageUpload</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>LogOut</servlet-name>
+        <url-pattern>/servlet/LogOut</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>MainInitServlet</servlet-name>
+        <url-pattern>/servlet/MainInitServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>MetaAdmin</servlet-name>
+        <url-pattern>/servlet/MetaAdmin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>PasswordMailReminder</servlet-name>
+        <url-pattern>/servlet/PasswordMailReminder</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>PollHandler</servlet-name>
+        <url-pattern>/servlet/PollHandler</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>PostcardServlet</servlet-name>
+        <url-pattern>/servlet/PostcardServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>PutInShoppingCart</servlet-name>
+        <url-pattern>/servlet/PutInShoppingCart</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>QEngine</servlet-name>
+        <url-pattern>/servlet/QEngine</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>QuestionEngine</servlet-name>
+        <url-pattern>/servlet/QuestionEngine</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>QuestionResult</servlet-name>
+        <url-pattern>/servlet/QuestionResult</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>QuotPicEngine</servlet-name>
+        <url-pattern>/servlet/QuotPicEngine</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ReDirecter</servlet-name>
+        <url-pattern>/servlet/ReDirecter</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Restart</servlet-name>
+        <url-pattern>/servlet/Restart</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveBrowserDoc</servlet-name>
+        <url-pattern>/servlet/SaveBrowserDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveFileUpload</servlet-name>
+        <url-pattern>/servlet/SaveFileUpload</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveFrameset</servlet-name>
+        <url-pattern>/servlet/SaveFrameset</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveImage</servlet-name>
+        <url-pattern>/servlet/SaveImage</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveInclude</servlet-name>
+        <url-pattern>/servlet/SaveInclude</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveInPage</servlet-name>
+        <url-pattern>/servlet/SaveInPage</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveMeta</servlet-name>
+        <url-pattern>/servlet/SaveMeta</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveNewBrowserDoc</servlet-name>
+        <url-pattern>/servlet/SaveNewBrowserDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveNewFileUpload</servlet-name>
+        <url-pattern>/servlet/SaveNewFileUpload</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveNewFrameset</servlet-name>
+        <url-pattern>/servlet/SaveNewFrameset</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveNewMeta</servlet-name>
+        <url-pattern>/servlet/SaveNewMeta</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveNewUrlDoc</servlet-name>
+        <url-pattern>/servlet/SaveNewUrlDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SavePermissions</servlet-name>
+        <url-pattern>/servlet/SavePermissions</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveSort</servlet-name>
+        <url-pattern>/servlet/SaveSort</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveText</servlet-name>
+        <url-pattern>/servlet/SaveText</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveUrlDoc</servlet-name>
+        <url-pattern>/servlet/SaveUrlDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SearchDocuments</servlet-name>
+        <url-pattern>/servlet/SearchDocuments</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SendMailServlet</servlet-name>
+        <url-pattern>/servlet/SendMailServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>StartDoc</servlet-name>
+        <url-pattern>/servlet/StartDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>TemplateAdd</servlet-name>
+        <url-pattern>/servlet/TemplateAdd</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>TemplateAdmin</servlet-name>
+        <url-pattern>/servlet/TemplateAdmin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>TemplateChange</servlet-name>
+        <url-pattern>/servlet/TemplateChange</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>TestFileAdmin</servlet-name>
+        <url-pattern>/servlet/TestFileAdmin</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>UrlDocTest</servlet-name>
+        <url-pattern>/servlet/UrlDocTest</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>UserChangePrefs</servlet-name>
+        <url-pattern>/servlet/UserChangePrefs</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>VerifyUser</servlet-name>
+        <url-pattern>/servlet/VerifyUser</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Version</servlet-name>
+        <url-pattern>/servlet/Version</url-pattern>
+    </servlet-mapping>
+
+    <session-config>
+        <session-timeout>
          30
-      </session-timeout>
-   </session-config>
+        </session-timeout>
+    </session-config>
 
-   <welcome-file-list>
-      <welcome-file>index.jsp</welcome-file>
-      <welcome-file>index.htm</welcome-file>
-      <welcome-file>index.html</welcome-file>
-   </welcome-file-list>
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>index.htm</welcome-file>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
 
     <error-page>
         <exception-type>java.lang.Throwable</exception-type>

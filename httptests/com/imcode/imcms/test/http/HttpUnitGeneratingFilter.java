@@ -9,10 +9,20 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
 import java.util.Enumeration;
 
-import com.meterware.httpunit.WebConversation;
-
 /**
- * @author kreiger
+    To use, put something like the following in web.xml :
+
+    <!-- Filter that generates HttpUnit code for requests to a log4j category named "httpunit" -->
+        <filter>
+            <filter-name>HttpUnitGeneratingFilter</filter-name>
+            <description>Generates HttpUnit code for all requests</description>
+            <filter-class>com.imcode.imcms.test.http.HttpUnitGeneratingFilter</filter-class>
+        </filter>
+
+        <filter-mapping>
+            <filter-name>HttpUnitGeneratingFilter</filter-name>
+            <url-pattern>/*</url-pattern>
+        </filter-mapping>
  */
 public class HttpUnitGeneratingFilter implements Filter {
 
