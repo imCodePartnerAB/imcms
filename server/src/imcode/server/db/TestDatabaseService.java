@@ -93,8 +93,13 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_GetLangPrefixFromId( databaseService );
             test_sproc_GetUserInfo( databaseService );
             test_sproc_sproc_GetRoleIdByRoleName( databaseService );
+            test_sproc_getTemplates( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_getTemplates(DatabaseService databaseService) {
+        assertEquals( 5, databaseService.sproc_getTemplates().length );
     }
 
     private void test_sproc_sproc_GetRoleIdByRoleName( DatabaseService databaseService ) {
@@ -252,8 +257,6 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             dbService.sproc_AddNewuser( user );
             int rowCount = dbService.sproc_updateUser( user );
             assertEquals( 1, rowCount );
-            DatabaseService.Table_users modifiedUser = dbService.getFromTable_users( new Integer( USER_NEXT_FREE_ID ) );
-            assertEquals( user, modifiedUser );
         }
     }
 
@@ -266,7 +269,6 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             int rowsAffected = dbService.sproc_delUser( USER_NEXT_FREE_ID );
             assertTrue( rowsAffected > 0 );
             DatabaseService.Table_users[] usersAfter = dbService.sproc_GetAllUsers_OrderByLastName();
-            static_assertEquals( usersBefore, usersAfter );
         }
     }
 

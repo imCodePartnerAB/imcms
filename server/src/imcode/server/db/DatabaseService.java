@@ -233,56 +233,30 @@ public abstract class DatabaseService {
             this.create_date = create_date;
         }
 
-        public boolean equals( Object o ) {
-            if( this == o )
-                return true;
-            if( !(o instanceof Table_users) )
-                return false;
-
-            final Table_users usersTabelData = (Table_users)o;
-
-            if( active != usersTabelData.active )
-                return false;
-            if( archive_mode != usersTabelData.archive_mode )
-                return false;
-            if( external != usersTabelData.external )
-                return false;
-            if( lang_id != usersTabelData.lang_id )
-                return false;
-            if( last_page != usersTabelData.last_page )
-                return false;
-            if( user_id != usersTabelData.user_id )
-                return false;
-            if( user_type != usersTabelData.user_type )
-                return false;
-            if( address != null ? !address.equals( usersTabelData.address ) : usersTabelData.address != null )
-                return false;
-            if( city != null ? !city.equals( usersTabelData.city ) : usersTabelData.city != null )
-                return false;
-            if( company != null ? !company.equals( usersTabelData.company ) : usersTabelData.company != null )
-                return false;
-            if( country != null ? !country.equals( usersTabelData.country ) : usersTabelData.country != null )
-                return false;
-            if( county_council != null ? !county_council.equals( usersTabelData.county_council ) : usersTabelData.county_council != null )
-                return false;
-            //            if( create_date != null ? !create_date.equals( usersTabelData.create_date ) : usersTabelData.create_date != null )
-            //                return false;
-            if( email != null ? !email.equals( usersTabelData.email ) : usersTabelData.email != null )
-                return false;
-            if( first_name != null ? !first_name.equals( usersTabelData.first_name ) : usersTabelData.first_name != null )
-                return false;
-            if( last_name != null ? !last_name.equals( usersTabelData.last_name ) : usersTabelData.last_name != null )
-                return false;
-            if( login_name != null ? !login_name.equals( usersTabelData.login_name ) : usersTabelData.login_name != null )
-                return false;
-            if( login_password != null ? !login_password.equals( usersTabelData.login_password ) : usersTabelData.login_password != null )
-                return false;
-            if( title != null ? !title.equals( usersTabelData.title ) : usersTabelData.title != null )
-                return false;
-            if( zip != null ? !zip.equals( usersTabelData.zip ) : usersTabelData.zip != null )
-                return false;
-
-            return true;
+        private static Table_users mapOneRowToFileds( ResultSet rs ) throws SQLException {
+            Table_users result = null;
+            int user_id = rs.getInt( "user_id" );
+            String login_name = rs.getString( "login_name" );
+            String login_password = rs.getString( "login_password" );
+            String first_name = rs.getString( "first_name" );
+            String last_name = rs.getString( "last_name" );
+            String title = rs.getString( "title" );
+            String company = rs.getString( "company" );
+            String address = rs.getString( "address" );
+            String city = rs.getString( "city" );
+            String zip = rs.getString( "zip" );
+            String country = rs.getString( "country" );
+            String county_council = rs.getString( "county_council" );
+            String email = rs.getString( "email" );
+            int external = rs.getInt( "external" );
+            int last_page = rs.getInt( "last_page" );
+            int archive_mode = rs.getInt( "archive_mode" );
+            int lang_id = rs.getInt( "lang_id" );
+            int user_type = rs.getInt( "user_type" );
+            int active = rs.getInt( "active" );
+            Timestamp create_date = rs.getTimestamp( "create_date" );
+            result = new Table_users( user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date );
+            return result;
         }
     }
 
@@ -295,61 +269,11 @@ public abstract class DatabaseService {
         String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users ORDER BY last_name";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                Table_users result = mapTableUsers( rs );
+                Table_users result = Table_users.mapOneRowToFileds( rs );
                 return result;
             }
         } );
         return (Table_users[])queryResult.toArray( new Table_users[queryResult.size()] );
-    }
-
-    private Table_users mapTableUsers( ResultSet rs ) throws SQLException {
-        Table_users result = null;
-        int user_id = rs.getInt( "user_id" );
-        String login_name = rs.getString( "login_name" );
-        String login_password = rs.getString( "login_password" );
-        String first_name = rs.getString( "first_name" );
-        String last_name = rs.getString( "last_name" );
-        String title = rs.getString( "title" );
-        String company = rs.getString( "company" );
-        String address = rs.getString( "address" );
-        String city = rs.getString( "city" );
-        String zip = rs.getString( "zip" );
-        String country = rs.getString( "country" );
-        String county_council = rs.getString( "county_council" );
-        String email = rs.getString( "email" );
-        int external = rs.getInt( "external" );
-        int last_page = rs.getInt( "last_page" );
-        int archive_mode = rs.getInt( "archive_mode" );
-        int lang_id = rs.getInt( "lang_id" );
-        int user_type = rs.getInt( "user_type" );
-        int active = rs.getInt( "active" );
-        Timestamp create_date = rs.getTimestamp( "create_date" );
-        result = new Table_users( user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date );
-        return result;
-    }
-
-    static class View_TemplateGroup {
-        private int id;
-        private String simpleName;
-
-        View_TemplateGroup( int id, String simpleName ) {
-            this.id = id;
-            this.simpleName = simpleName;
-        }
-    }
-
-    View_TemplateGroup[] sproc_GetTemplatesInGroup( int groupId ) {
-        String sql = "SELECT t.template_id,simple_name FROM  templates t JOIN templates_cref c ON  t.template_id = c.template_id " + "WHERE c.group_id = ? " + "ORDER BY simple_name";
-        Object[] paramValues = new Object[]{new Integer( groupId )};
-        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
-            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int templateId = rs.getInt( "template_id" );
-                String simpleName = rs.getString( "simple_name" );
-                View_TemplateGroup result = new View_TemplateGroup( templateId, simpleName );
-                return result;
-            }
-        } );
-        return (View_TemplateGroup[])queryResult.toArray( new View_TemplateGroup[queryResult.size()] );
     }
 
     // todo, ska man behöva stoppa in user_id här? Kan man inte bara få ett unikt?
@@ -2026,8 +1950,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{user_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                Table_users result = mapTableUsers( rs );
-                return result;
+                return Table_users.mapOneRowToFileds( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -2100,5 +2023,46 @@ public abstract class DatabaseService {
             }
         } );
         return ((Integer)queryResult.get(0)).intValue();
+    }
+
+    static class Table_templates {
+        private int id;
+        private String simpleName;
+
+        Table_templates( int id, String simpleName ) {
+            this.id = id;
+            this.simpleName = simpleName;
+        }
+
+        private static Object mapOneRowToFileds( ResultSet rs ) throws SQLException {
+            int templateId = rs.getInt( "template_id" );
+            String simpleName = rs.getString( "simple_name" );
+            Table_templates result = new Table_templates( templateId, simpleName );
+            return result;
+        }
+    }
+
+    Table_templates[] sproc_getTemplates() {
+        String sql = "select template_id, simple_name from templates";
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new SQLProcessor.ResultProcessor() {
+                                Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                                    return Table_templates.mapOneRowToFileds( rs );
+                                };
+                            } );
+        return (Table_templates[])queryResult.toArray( new Table_templates[ queryResult.size() ] );
+    }
+
+    Table_templates[] sproc_GetTemplatesInGroup( int groupId ) {
+        String sql = "SELECT t.template_id,simple_name FROM templates t " +
+            "JOIN templates_cref c ON  t.template_id = c.template_id " +
+            "WHERE c.group_id = ? " +
+            "ORDER BY simple_name";
+        Object[] paramValues = new Object[]{new Integer( groupId )};
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return Table_templates.mapOneRowToFileds( rs );
+            }
+        } );
+        return (Table_templates[])queryResult.toArray( new Table_templates[queryResult.size()] );
     }
 }
