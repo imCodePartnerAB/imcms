@@ -238,7 +238,7 @@ public class BillBoard extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        String extFolder = "/imcms/" + user.getLanguageIso639_2() + "/images/"
+        String extFolder = req.getContextPath()+"/imcms/" + user.getLanguageIso639_2() + "/images/"
                         + imcref.getDocType(metaId) + '/';
         extFolder += this.getTemplateLibName( imcref, metaId );
 
