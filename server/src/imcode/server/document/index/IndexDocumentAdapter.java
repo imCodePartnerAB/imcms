@@ -47,7 +47,7 @@ class IndexDocumentAdapter {
 
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
 
-        document.accept(new IndexDocumentAdaptingVisitor(indexDocument)) ;
+        document.accept( new IndexDocumentAdaptingVisitor( indexDocument ) );
 
         CategoryDomainObject[] categories = document.getCategories();
         for ( int i = 0; i < categories.length; i++ ) {
@@ -105,7 +105,8 @@ class IndexDocumentAdapter {
     }
 
     private static class IndexDocumentAdaptingVisitor extends DocumentVisitor {
-        Document indexDocument ;
+
+        Document indexDocument;
 
         private IndexDocumentAdaptingVisitor( Document indexDocument ) {
             this.indexDocument = indexDocument;
@@ -132,9 +133,8 @@ class IndexDocumentAdapter {
         }
 
         public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
-            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__MIME_TYPE, fileDocument.getMimeType()));
+            FileDocumentDomainObject.FileDocumentFile fileVariant = fileDocument.getDefaultFileVariant();
+            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__MIME_TYPE, fileVariant.getMimeType() ) );
         }
-
     }
-
 }

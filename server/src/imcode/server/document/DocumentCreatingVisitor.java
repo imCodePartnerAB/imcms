@@ -9,17 +9,6 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         super(user);
     }
 
-    public void visitFileDocument( FileDocumentDomainObject document ) {
-        String[] fileDocumentColumns = {"meta_id", "filename", "mime", "created_as_image"};
-
-        String sqlFileDocsInsertStr = makeSqlInsertString( "fileupload_docs", fileDocumentColumns );
-
-        service.sqlUpdateQuery( sqlFileDocsInsertStr, new String[]{
-            "" + document.getId(), document.getFilename(), document.getMimeType(), document.isCreatedAsImage() ? "1" : "0"
-        } );
-        saveFile( document );
-    }
-
     public void visitHtmlDocument( HtmlDocumentDomainObject document ) {
         String[] htmlDocumentColumns = {"meta_id", "frame_set"};
 

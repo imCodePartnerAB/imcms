@@ -1,54 +1,56 @@
 package imcode.server.document;
 
-import imcode.util.InputStreamSource;
-import imcode.util.FileInputStreamSource;
-import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
-import imcode.server.user.UserDomainObject;
+import imcode.server.IMCServiceInterface;
 import imcode.server.document.textdocument.*;
+import imcode.server.user.UserDomainObject;
+import imcode.util.FileInputStreamSource;
+import imcode.util.FileUtility;
+import imcode.util.InputStreamSource;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.*;
-import java.util.Map;
-import java.util.Iterator;
 import java.util.Collection;
-
-import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.Logger;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
 
     protected IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
     protected UserDomainObject user;
 
-    private final static Logger log = Logger.getLogger( DocumentStoringVisitor.class.getName() );
     private static final int FILE_BUFFER_LENGTH = 2048;
+    private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
 
     public DocumentStoringVisitor( UserDomainObject user ) {
         this.user = user;
     }
 
-    protected void saveFile( FileDocumentDomainObject fileDocument ) {
+    protected void saveFileDocumentFile( int fileDocumentId, FileDocumentDomainObject.FileDocumentFile fileVariant,
+                                       String variantName ) {
         try {
-            InputStreamSource inputStreamSource = fileDocument.getInputStreamSource();
+            InputStreamSource inputStreamSource = fileVariant.getInputStreamSource();
             InputStream in;
             try {
                 in = inputStreamSource.getInputStream();
             } catch ( FileNotFoundException e ) {
-                throw new UnhandledException( "The file for filedocument " + fileDocument.getId()
-                                            + " has disappeared.", e );
+                throw new UnhandledException( "The file for filedocument " + fileDocumentId
+                                              + " has disappeared.", e );
             }
             if ( null == in ) {
-                return;
+                return ;
             }
-            File filePath = service.getConfig().getFilePath();
 
-            File file = new File( filePath, "" + fileDocument.getId() );
+            File file = getFileForFileDocument( fileDocumentId, variantName );
             boolean sameFileOnDisk = inputStreamSource instanceof FileInputStreamSource && file.exists();
             if ( sameFileOnDisk ) {
-                return;
+                return ;
             }
             byte[] buffer = new byte[FILE_BUFFER_LENGTH];
             final OutputStream out = new FileOutputStream( file );
@@ -63,6 +65,16 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         } catch ( IOException e ) {
             throw new UnhandledException( e );
         }
+    }
+
+    public static File getFileForFileDocument( int fileDocumentId, String variantName ) {
+        File filePath = ApplicationServer.getIMCServiceInterface().getConfig().getFilePath();
+        String filename = "" + fileDocumentId ;
+        if (StringUtils.isNotBlank( variantName )) {
+            filename += "."+FileUtility.escapeFilename(variantName) ;
+        }
+        File file = new File( filePath, filename );
+        return file;
     }
 
     static String makeSqlInsertString( String tableName, String[] columnNames ) {
@@ -90,12 +102,13 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 }
             } );
             String sqlInMenuIds = StringUtils.join( menuIds.iterator(), "," );
- 
+
             String whereClause = "menu_id NOT IN (" + sqlInMenuIds + ")";
-            String sqlDeleteUnusedMenuItems = "DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?) AND " + whereClause;
-            service.sqlUpdateQuery( sqlDeleteUnusedMenuItems, new String[] {""+textDocument.getId()}  );
+            String sqlDeleteUnusedMenuItems = "DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?) AND "
+                                              + whereClause;
+            service.sqlUpdateQuery( sqlDeleteUnusedMenuItems, new String[]{"" + textDocument.getId()} );
             String sqlDeleteUnusedMenus = "DELETE FROM menus WHERE meta_id = ? AND " + whereClause;
-            service.sqlUpdateQuery( sqlDeleteUnusedMenus, new String[] { ""+textDocument.getId() } );
+            service.sqlUpdateQuery( sqlDeleteUnusedMenus, new String[]{"" + textDocument.getId()} );
         }
     }
 
@@ -114,14 +127,13 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     private void deleteTextDocumentMenu( TextDocumentDomainObject textDocument, Integer menuIndex ) {
         deleteTextDocumentMenuItems( textDocument, menuIndex );
         String sqlDeleteMenu = "DELETE FROM menus WHERE meta_id = ? AND menu_index = ?";
-        service.sqlUpdateQuery( sqlDeleteMenu, new String[]{""+textDocument.getId(), ""+menuIndex} );
+        service.sqlUpdateQuery( sqlDeleteMenu, new String[]{"" + textDocument.getId(), "" + menuIndex} );
     }
 
     private void deleteTextDocumentMenuItems( TextDocumentDomainObject textDocument, Integer menuIndex ) {
         String sqlDeleteMenuItems = "DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
-        service.sqlUpdateQuery( sqlDeleteMenuItems, new String[]{"" + textDocument.getId(), ""+menuIndex} );
+        service.sqlUpdateQuery( sqlDeleteMenuItems, new String[]{"" + textDocument.getId(), "" + menuIndex} );
     }
-
 
     void updateTextDocumentTexts( TextDocumentDomainObject textDocument ) {
         deleteTextDocumentTexts( textDocument );
@@ -267,6 +279,68 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             "" + meta_id,
             "" + img_no,
         } );
+    }
+
+    public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
+        Map fileDocumentFiles = fileDocument.getFileVariants();
+
+        String sqlDelete = "DELETE FROM fileupload_docs WHERE meta_id = ?";
+        service.sqlUpdateQuery( sqlDelete, new String[]{ ""+fileDocument.getId() } ) ;
+
+        for ( Iterator iterator = fileDocumentFiles.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry entry = (Map.Entry)iterator.next();
+            String variantName = (String)entry.getKey();
+            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = (FileDocumentDomainObject.FileDocumentFile)entry.getValue();
+
+            String filename = fileDocumentFile.getFilename();
+            if ( filename.length() > DB_FIELD_MAX_LENGTH__FILENAME ) {
+                filename = truncateFilename( filename, DB_FIELD_MAX_LENGTH__FILENAME );
+            }
+            String sqlInsert = "INSERT INTO fileupload_docs (meta_id, variant_name, filename, mime, created_as_image, default_variant) VALUES(?,?,?,?,?,?)";
+            boolean isDefaultVariant = variantName.equals( fileDocument.getDefaultFileVariantName());
+            service.sqlUpdateQuery( sqlInsert, new String[]{""+ fileDocument.getId(), variantName, filename, fileDocumentFile.getMimeType(), fileDocumentFile.isCreatedAsImage() ? "1" : "0", isDefaultVariant ? "1" : "0"} );
+            saveFileDocumentFile( fileDocument.getId(), fileDocumentFile, variantName );
+        }
+        deleteOtherFileDocumentFiles( fileDocument ) ;
+    }
+
+    private void deleteOtherFileDocumentFiles( final FileDocumentDomainObject fileDocument ) {
+        File filePath = ApplicationServer.getIMCServiceInterface().getConfig().getFilePath() ;
+        filePath.listFiles( new FileFilter() {
+            public boolean accept( File file ) {
+                String filename = file.getName() ;
+                Perl5Util perl5Util = new Perl5Util();
+                if (perl5Util.match( "/(\\d+)(?:\\.(.*))?/", filename)) {
+                    String idStr = perl5Util.group(1);
+                    String variantName = FileUtility.unescapeFilename( StringUtils.defaultString( perl5Util.group( 2 ) ) ) ;
+                    if (fileDocument.getId() == Integer.parseInt( idStr ) && null == fileDocument.getFileVariant( variantName ) ) {
+                        file.delete();
+                    }
+                }
+                return false ;
+            }
+        } ) ;
+    }
+
+    private String truncateFilename( String filename, int length ) {
+        String truncatedFilename = StringUtils.left( filename, length );
+        String extensions = getExtensionsFromFilename( filename );
+        if ( extensions.length() > length ) {
+            return truncatedFilename;
+        }
+        String basename = StringUtils.chomp( filename, extensions );
+        String truncatedBasename = StringUtils.substring( basename, 0, length - extensions.length() );
+        truncatedFilename = truncatedBasename + extensions;
+        return truncatedFilename;
+    }
+
+    private String getExtensionsFromFilename( String filename ) {
+        String extensions = "";
+        Matcher matcher = Pattern.compile( "(?:\\.\\w+)+$" ).matcher( filename );
+        if ( matcher.find() ) {
+            extensions = matcher.group();
+        }
+        return extensions;
     }
 
 }

@@ -68,7 +68,8 @@ public class ImageDomainObject implements Serializable {
             if ( null != imageFileDocumentId ) {
                 DocumentDomainObject document = documentMapper.getDocument( imageFileDocumentId.intValue() );
                 if ( document instanceof FileDocumentDomainObject ) {
-                    imageSize = ImcmsImageUtils.getImageSizeFromFileDocument( (FileDocumentDomainObject)document );
+                    String variantName = ImcmsImageUtils.getVariantNameFromImageUrl( imageUrl );
+                    imageSize = ImcmsImageUtils.getImageSizeFromFileDocument( (FileDocumentDomainObject)document, variantName );
                 }
             } else if ( imageFile.isFile() ) {
                 try {

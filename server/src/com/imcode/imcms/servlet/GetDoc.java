@@ -187,12 +187,14 @@ public class GetDoc extends HttpServlet {
             trackLog.info( documentRequest );
             return htmlStr;
         } else if ( document instanceof FileDocumentDomainObject ) {
+            String fileVariantName = req.getParameter("variant");
             FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
-            String filename = fileDocument.getFilename();
-            String mimetype = fileDocument.getMimeType();
+            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = fileDocument.getFileVariantOrDefault(fileVariantName) ;
+            String filename = fileDocumentFile.getFilename();
+            String mimetype = fileDocumentFile.getMimeType();
             InputStream fr;
             try {
-                fr = new BufferedInputStream( ( (FileDocumentDomainObject)document ).getInputStreamSource().getInputStream() );
+                fr = new BufferedInputStream( fileDocumentFile.getInputStreamSource().getInputStream() );
             } catch ( IOException ex ) {
                 return imcref.getAdminTemplate( NO_PAGE_URL, user, vec );
             }

@@ -1,10 +1,8 @@
 package imcode.server.document;
 
-import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
 import imcode.util.FileInputStreamSource;
-
-import java.io.File;
 
 class DocumentInitializingVisitor extends DocumentVisitor {
 
@@ -23,23 +21,22 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     }
 
     public void visitFileDocument( FileDocumentDomainObject document ) {
-        String[] sqlResult = service.sqlQuery( "SELECT filename, mime, created_as_image FROM fileupload_docs WHERE meta_id = ?",
-                                               new String[]{"" + document.getId()} );
-        if ( sqlResult.length > 0 ) {
-            document.setFilename( sqlResult[0] );
-            document.setMimeType( sqlResult[1] );
-            document.setCreatedAsImage( 0 != Integer.parseInt( sqlResult[2] ) );
-            document.setInputStreamSource( new FileInputStreamSource( getUploadedFile( document ) ) );
-        }
-    }
+        String[][] sqlResult = service.sqlQueryMulti( "SELECT variant_name, filename, mime, created_as_image, default_variant FROM fileupload_docs WHERE meta_id = ?",
+                                                      new String[]{"" + document.getId()} );
+        for ( int i = 0; i < sqlResult.length; i++ ) {
+            String[] sqlRow = sqlResult[i];
 
-    private File getUploadedFile( final FileDocumentDomainObject document ) {
-        File file = new File( service.getFilePath(), "" + document.getId() );
-        if ( !file.exists() ) {
-            // FIXME: deprecated
-            file = new File( service.getFilePath(), "" + document.getId() + "_se" );
+            String variantName = sqlRow[0];
+            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = new FileDocumentDomainObject.FileDocumentFile();
+            fileDocumentFile.setFilename( sqlRow[1] );
+            fileDocumentFile.setMimeType( sqlRow[2] );
+            fileDocumentFile.setCreatedAsImage( 0 != Integer.parseInt( sqlRow[3] ) );
+            fileDocumentFile.setInputStreamSource( new FileInputStreamSource( DocumentStoringVisitor.getFileForFileDocument( document.getId(), variantName ) ) );
+            document.addFileVariant( variantName, fileDocumentFile );
+            if ( 0 != Integer.parseInt( sqlRow[4] ) ) {
+                document.setDefaultFileVariantName( variantName );
+            }
         }
-        return file;
     }
 
     public void visitHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {

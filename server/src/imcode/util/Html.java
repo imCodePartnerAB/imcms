@@ -83,11 +83,11 @@ public class Html {
 
         StringBuffer option = new StringBuffer();
 
-        option.append( "<option value=\"" + elementValue + "\"" );
+        option.append( "<option value=\"" + StringEscapeUtils.escapeHtml( elementValue ) + "\"" );
         if ( selected ) {
             option.append( " selected" );
         }
-        option.append( ">" + elementName + "</option>" );
+        option.append( ">" + StringEscapeUtils.escapeHtml( elementName ) + "</option>" );
         return option.toString();
     }
 

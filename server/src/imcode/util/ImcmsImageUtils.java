@@ -1,19 +1,14 @@
 package imcode.util;
 
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.IOException;
-import java.io.File;
 import java.io.InputStream;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.oro.text.perl.Perl5Util;
 
 public class ImcmsImageUtils {
 
@@ -26,11 +21,22 @@ public class ImcmsImageUtils {
         return documentId;
     }
 
-    public static ImageSize getImageSizeFromFileDocument( FileDocumentDomainObject imageFileDocument ) {
+    public static String getVariantNameFromImageUrl( String imageUrl ) {
+        String variantName = "" ;
+        Perl5Util perl5util = new Perl5Util();
+        if ( perl5util.match( "/GetDoc\\?.*\\bvariant=([^&]+)/", imageUrl )) {
+            variantName = perl5util.group( 1 ) ;
+        }
+        return variantName;
+    }
+
+    public static ImageSize getImageSizeFromFileDocument( FileDocumentDomainObject imageFileDocument,
+                                                          String variantName ) {
         ImageSize imageSize;
         try {
-            InputStream imageFileDocumentInputStream = imageFileDocument.getInputStreamSource().getInputStream();
-            imageSize = new ImageParser().parseImageStream( imageFileDocumentInputStream, imageFileDocument.getFilename() );
+            FileDocumentDomainObject.FileDocumentFile fileVariant = imageFileDocument.getFileVariantOrDefault( variantName );
+            InputStream imageFileDocumentInputStream = fileVariant.getInputStreamSource().getInputStream();
+            imageSize = new ImageParser().parseImageStream( imageFileDocumentInputStream, fileVariant.getFilename() );
         } catch ( IllegalArgumentException iae ) {
             imageSize = new ImageSize( 0, 0 );
         } catch ( IOException ioe ) {

@@ -15,7 +15,10 @@ import imcode.server.document.index.QueryParser;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.*;
+import imcode.util.ImageSize;
+import imcode.util.ImcmsImageUtils;
+import imcode.util.LocalizedMessage;
+import imcode.util.Utility;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.Term;
@@ -24,17 +27,16 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
-import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class ChangeImage extends HttpServlet {
 
@@ -112,12 +114,17 @@ public class ChangeImage extends HttpServlet {
         DocumentPageFlow.SaveDocumentCommand saveNewImageFileDocument = new CreateDocumentPageFlow.SaveDocumentCommand() {
             public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
                 FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
-                if ( ArrayUtils.contains( IMAGE_MIME_TYPES, fileDocument.getMimeType() ) ) {
-                    fileDocument.setHeadline( fileDocument.getFilename() );
-                    fileDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
-                    fileDocument.setCreatedAsImage( true );
-                    documentMapper.saveNewDocument( document, user );
-                    image.setUrlAndClearSize( "../servlet/GetDoc?meta_id=" + document.getId() );
+                Map fileVariants = fileDocument.getFileVariants();
+                for ( Iterator iterator = fileVariants.values().iterator(); iterator.hasNext(); ) {
+                    FileDocumentDomainObject.FileDocumentFile fileDocumentFile = (FileDocumentDomainObject.FileDocumentFile)iterator.next();
+
+                    if ( ArrayUtils.contains( IMAGE_MIME_TYPES, fileDocumentFile.getMimeType() ) ) {
+                        fileDocument.setHeadline( fileDocumentFile.getFilename() );
+                        fileDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
+                        documentMapper.saveNewDocument( document, user );
+                        image.setUrlAndClearSize( "../servlet/GetDoc?meta_id=" + document.getId() );
+                        break;
+                    }
                 }
             }
         };
@@ -336,7 +343,7 @@ public class ChangeImage extends HttpServlet {
 
         public String render( DocumentDomainObject document, HttpServletRequest request ) {
             UserDomainObject user = Utility.getLoggedOnUser( request );
-            ImageSize imageSize = ImcmsImageUtils.getImageSizeFromFileDocument( (FileDocumentDomainObject)document );
+            ImageSize imageSize = ImcmsImageUtils.getImageSizeFromFileDocument( (FileDocumentDomainObject)document, "" );
             List values = Arrays.asList( new Object[]{
                 "imageUrl", "GetDoc?meta_id=" + document.getId(),
                 "imageSize", imageSize,

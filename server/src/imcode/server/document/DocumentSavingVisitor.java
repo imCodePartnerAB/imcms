@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
 
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
-    private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
-
     public DocumentSavingVisitor( UserDomainObject user ) {
         super( user );
     }
@@ -42,39 +40,6 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         }
     }
 
-    public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
-        String filename = fileDocument.getFilename();
-        if ( filename.length() > DB_FIELD_MAX_LENGTH__FILENAME ) {
-            filename = truncateFilename( filename, DB_FIELD_MAX_LENGTH__FILENAME );
-        }
-        String sqlStr = "UPDATE fileupload_docs SET filename = ?, mime = ?, created_as_image = ? WHERE meta_id = ?";
-        service.sqlUpdateQuery( sqlStr, new String[]{
-            filename, fileDocument.getMimeType(), fileDocument.isCreatedAsImage() ? "1" : "0", "" + fileDocument.getId()
-        } );
-        saveFile( fileDocument );
-    }
-
-    private String truncateFilename( String filename, int length ) {
-        String truncatedFilename = StringUtils.left( filename, length );
-        String extensions = getExtensionsFromFilename( filename );
-        if ( extensions.length() > length ) {
-            return truncatedFilename;
-        }
-        String basename = StringUtils.chomp( filename, extensions );
-        String truncatedBasename = StringUtils.substring( basename, 0, length - extensions.length() );
-        truncatedFilename = truncatedBasename + extensions;
-        return truncatedFilename;
-    }
-
-    private String getExtensionsFromFilename( String filename ) {
-        String extensions = "";
-        Matcher matcher = Pattern.compile( "(?:\\.\\w+)+$" ).matcher( filename );
-        if ( matcher.find() ) {
-            extensions = matcher.group();
-        }
-        return extensions;
-    }
-
     public void visitHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
         String sqlStr = "UPDATE frameset_docs SET frame_set = ? WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{htmlDocument.getHtml(), "" + htmlDocument.getId()} );
@@ -86,7 +51,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
     }
 
     public void visitTextDocument( TextDocumentDomainObject textDocument ) {
-                String sqlStr = "UPDATE text_docs SET template_id = ?, group_id = ?,\n"
+        String sqlStr = "UPDATE text_docs SET template_id = ?, group_id = ?,\n"
                         + "default_template_1 = ?, default_template_2 = ? WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{
             "" + textDocument.getTemplate().getId(),

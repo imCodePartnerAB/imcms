@@ -3,6 +3,8 @@ package imcode.util;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.oro.text.regex.*;
 
 import java.io.FileFilter;
 import java.io.File;
@@ -68,6 +70,27 @@ public class FileUtility {
         return directories;
     }
 
+    public static String escapeFilename( String filename ) {
+        StringBuffer escapedFilename = new StringBuffer() ;
+        for (int i = 0; i < filename.length(); ++i) {
+            char c = filename.charAt( i ) ;
+            if ( c > 127 || !Character.isLetterOrDigit( c ) ) {
+                escapedFilename.append( '_' ).append( StringUtils.leftPad( Integer.toHexString( c ), 4, '0' ) ) ;
+            } else {
+                escapedFilename.append( c ) ;
+            }
+        }
+        return escapedFilename.toString() ;
+    }
+
+    public static String unescapeFilename( String escapedFilename ) {
+        try {
+            return Util.substitute(new Perl5Matcher(), new Perl5Compiler().compile( "_([A-Fa-f0-9]{4})"), new UnescapeFilenameSubstitution(), escapedFilename,Util.SUBSTITUTE_ALL) ;
+        } catch ( MalformedPatternException e ) {
+            throw new UnhandledException( e );
+        }
+    }
+
     private static class DirectoryCollectingFileFilter implements FileFilter {
 
         private final Collection directories;
@@ -96,6 +119,17 @@ public class FileUtility {
 
         public Object transform( Object input ) {
             return relativizeFile( directory, (File)input );
+        }
+    }
+
+    private static class UnescapeFilenameSubstitution implements Substitution {
+
+        public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
+                                        PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
+                                        org.apache.oro.text.regex.Pattern pattern ) {
+            String hex = matchResult.group( 1 ) ;
+            char c = (char)Integer.parseInt( hex, 16 ) ;
+            stringBuffer.append( c ) ;
         }
     }
 }
