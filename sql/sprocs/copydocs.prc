@@ -3,15 +3,26 @@ GO
 SET ANSI_NULLS ON 
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[CopyDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[CopyDocs]
+/****** Object:  Stored Procedure imcms.CopyDocs    Script Date: 2002-09-24 12:03:12 ******/
+if exists (select * from sysobjects where id = object_id('dbo.CopyDocs') and sysstat & 0xf = 4)
+	drop procedure dbo.CopyDocs
 GO
 
 
 
-CREATE PROCEDURE CopyDocs @documents_string VARCHAR(200), @parent_id INT, @menu_id INT, @user INT, @copyPrefix VARCHAR(20) AS
+
+
+
+
+CREATE    PROCEDURE CopyDocs @documents_string VARCHAR(200), @parent_id INT, @menu_id INT, @user INT, @copyPrefix VARCHAR(20) AS
 /**
-	DOCME: Document me!
+   @documents_string =  commasepatated string with meta_id´s	
+   @parent_id = parent document
+   @menu_id = menu-number in parent document
+   @user = user id
+   @copyPrefix = prefix added to meta_headline
+
+   Make a copy off all meta passed in @documents_string and all data referensed to it.
 **/
 
 CREATE TABLE #documents (
@@ -204,6 +215,7 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 		template_id,
 		group_id,
 		sort_order,
+
 		default_template_1,
 		default_template_2
 	FROM	text_docs
@@ -308,6 +320,11 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 		class_id
 	FROM	meta_classification
 	WHERE	meta_id = @meta_id
+	INSERT INTO meta_section
+	SELECT 	@copy_id,
+       		section_id
+	FROM   	meta_section
+	WHERE  	meta_id = @meta_id
 	INSERT INTO childs
 	SELECT	@copy_id,
 			to_meta_id,
@@ -356,7 +373,12 @@ update meta
    set 	date_created=getDate(),
 	date_modified=getDate()
    where meta_id=@copy_id
+
+
+
+
 GO
+
 SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS ON 
