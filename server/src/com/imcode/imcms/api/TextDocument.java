@@ -222,7 +222,7 @@ public class TextDocument extends Document {
         public void removeDocument(Document documentToRemove) throws NoPermissionException {
             document.securityChecker.hasEditPermission(documentToRemove.getId());
 
-            document.documentMapper.removeDocumentFromMenu(document.securityChecker.getCurrentLoggedInUser(), documentToRemove.getId(), menuIndex, documentToRemove.getId()) ;
+            document.documentMapper.removeDocumentFromMenu(document.securityChecker.getCurrentLoggedInUser(), document.getId(), menuIndex, documentToRemove.getId()) ;
 
         }
     }

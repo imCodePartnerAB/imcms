@@ -1,19 +1,28 @@
 <%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
 
+<%!
+    int documentId = 1001;
+    int menuIndexInDocument = 1;
+    int documentToBeAddedId = 1003;
+%>
 
+<html>
+<body>
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
     DocumentService documentService = imcmsSystem.getDocumentService() ;
-    int documentId = 1001 ;
     TextDocument document = documentService.getTextDocument(documentId) ;
 
-    int menuIndexInDocument = 1;
     TextDocument.Menu menu = document.getMenu(menuIndexInDocument) ;
 
-    int documentToBeAddedId = 1003 ;
     TextDocument documentToBeAdded = documentService.getTextDocument(documentToBeAddedId) ;
 
-    menu.addDocument(documentToBeAdded) ;
-
+    try {
+        menu.addDocument(documentToBeAdded) ;
+        %>Done. See <a href="../servlet/GetDoc?meta_id=<%= documentId %>">document <%= documentId %></a>.<%
+    } catch (DocumentAlreadyInMenuException daim) {
+        %>Menu <%= menuIndexInDocument %> on document <%= documentId %> already contains document <%= documentToBeAddedId %>.<%
+    }
 %>
-Done. See <a href="../servlet/GetDoc?meta_id=<%= documentId %>">document <%= documentId %></a>.
+</body>
+</html>

@@ -161,11 +161,13 @@ public class Document {
         return internalDocument;
     }
 
-    public Language getLanguage() {
+    public Language getLanguage() throws NoPermissionException {
+        securityChecker.hasDocumentPermission(this);
         return Language.getLanguageByISO639_2(internalDocument.getLanguageIso639_2()) ;
     }
 
-    public void setPermissionSetForRole( String roleName, int permissionSet ) throws NoSuchRoleException {
+    public void setPermissionSetForRole( String roleName, int permissionSet ) throws NoSuchRoleException, NoPermissionException {
+        securityChecker.hasEditPermission( this );
         RoleDomainObject role = userAndRoleMapper.getRole(roleName);
         if (null == role) {
             throw new NoSuchRoleException("No role by the name '"+roleName+"'.") ;

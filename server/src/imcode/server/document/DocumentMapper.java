@@ -798,6 +798,8 @@ public class DocumentMapper {
         if ( 1 == updatedRows ) {	// if existing doc is added to the menu
             service.updateLogs( "Link from [" + menuDocumentId + "] in menu [" + menuIndex + "] to [" + toBeRemovedId
                                 + "] removed by user: [" + user.getFullName() + "]" );
+        } else {
+            throw new RuntimeException( "Failed to remove document " + toBeRemovedId + " from menu " + menuIndex + " on document " + menuDocumentId );
         }
     }
 
