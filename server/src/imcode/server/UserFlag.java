@@ -6,6 +6,14 @@ public class UserFlag {
     private String description ;
     private int    type ;
 
+    public boolean equals(Object o) {
+
+	return o instanceof UserFlag &&
+	    type == ((UserFlag)o).getType() &&
+	    name.equals(((UserFlag)o).getName())
+	    ;
+    }
+
     /**
        get-method for name
 
@@ -60,4 +68,5 @@ public class UserFlag {
 	this.type = type;
     }
 
+    
 }
