@@ -6,7 +6,7 @@ import javax.servlet.http.* ;
 public class Version extends HttpServlet implements FilenameFilter {
 
     private final static String CVS_NAME = "$Name$" ;
-    private final static String CVS_TAG = CVS_NAME.substring(CVS_NAME.indexOf(' '),CVS_NAME.lastIndexOf(' ')) ;
+    private final static String CVS_TAG = CVS_NAME.substring(CVS_NAME.indexOf(' ')+1,CVS_NAME.lastIndexOf(' ')) ;
 
     private final static int BUFFER_LEN = 16384 ;
 
