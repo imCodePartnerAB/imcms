@@ -12,6 +12,12 @@
     <property name="versionnumber"         value=""/>
     <property name="versionfilesuffix"     value=""/>
 
+
+     <!-- Read in 'build.properties' and set the properties therein. -->
+    <!-- Those properties are used as bases for later properties in this file. -->
+    <property name="build.properties"      value="build.properties"/>
+    <property file="${build.properties}"/>
+
     <!-- Paths. Later ones are built on earlier ones. -->
 
     <!-- The directory to build in. -->
@@ -24,7 +30,6 @@
     <!-- The webroot. Everything put here can be seen by any visitor. -->
     <property name="webroot"               value="${build}"/>
 
-    <property name="defaultlanguage"       value="en"/>
     <property name="images"                value="${webroot}/images"/>
     <property name="login"                 value="${webroot}/login"/>
     <property name="css"                   value="${webroot}/css"/>
@@ -75,12 +80,7 @@
     <property name="fortune-templates"     value="${languagetemplates}/106"/>
 
 
-    <!-- Read in 'build.properties' and set the properties therein. -->
-    <!-- Those properties are used as bases for later properties in this file. -->
-    <property name="build.properties"      value="build.properties"/>
-    <property file="${build.properties}"/>
-
-    <!-- URIs -->
+       <!-- URIs -->
     <property name="apiuri"                   value="${rooturl}/apisamples"/>
     <property name="servleturl"               value="${rooturl}/servlet"/>
     <property name="loginurl"                 value="${rooturl}/login"/>
