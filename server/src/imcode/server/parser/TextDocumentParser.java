@@ -35,7 +35,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    IMCMS_TAG_PATTERN = patComp.compile("<\\?imcms:([-\\w]+)(.*?)\\?>", Perl5Compiler.READ_ONLY_MASK) ;
 	    MENU_NO_PATTERN = patComp.compile("#doc_menu_no#",Perl5Compiler.READ_ONLY_MASK) ;
-	    HASHTAG_PATTERN = patComp.compile("#[^#\"<> \\t\\r\\n]+#",Perl5Compiler.READ_ONLY_MASK) ;
+	    HASHTAG_PATTERN = patComp.compile("#[^ #\"<>&;\\t\\r\\n]+#",Perl5Compiler.READ_ONLY_MASK) ;
 	    MENU_PATTERN = patComp.compile("<\\?imcms:menu(.*?)\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 	} catch (MalformedPatternException ignored) {
 	    // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
