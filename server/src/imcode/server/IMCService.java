@@ -103,14 +103,12 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		m_ExternalDocTypes  = props.getProperty("ExternalDoctypes") ; //FIXME: Get rid of, if possible.
 		m_Language          = props.getProperty("DefaultLanguage") ; //FIXME: Get from DB
 
-
 		log.log(Log.INFO, "TemplatePath: " + m_TemplateHome) ;
 		log.log(Log.INFO, "StartDocument: " + m_DefaultHomePage) ;
 		log.log(Log.INFO, "ServletUrl: " + m_ServletUrl) ;
 		log.log(Log.INFO, "ImageUrl: " + m_ImageFolder) ;
 		log.log(Log.INFO, "ExternalDoctypes: " + m_ExternalDocTypes) ;
 		log.log(Log.INFO, "DefaultLanguage: " + m_Language) ;
-
 
 
 	StringTokenizer doc_types = new StringTokenizer(m_ExternalDocTypes,";",false) ;
@@ -239,6 +237,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    lang_prefix = data.elementAt(0).toString() ;
 	} else {
 	    dbc.closeConnection() ;
+	    log.log(Log.ERROR, "parsePage: user "+user_id+" has nonexistent language "+user.getInt("lang_id")) ;
 	    return ("No language!").getBytes("8859_1") ;
 	}
 	//dbc.createStatement() ;
@@ -256,6 +255,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	dbc.clearResultSet() ;
 	if ( user_permission_set == null ) {
 	    dbc.closeConnection() ;			// Close connection to db.
+	    log.log(Log.ERROR, "parsePage: GetUserPermissionset returned null") ;
 	    return ("GetUserPermissionset returned null").getBytes("8859_1") ;
 	}
 	//log.log(Log.WILD, "Setting permissionstate", null) ;
@@ -275,7 +275,14 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	dbc.clearResultSet() ;
 	if ( text_docs == null ) {
 	    dbc.closeConnection() ;			// Close connection to db.
-	    return ("GetTextDocData returned null").getBytes("8859_1") ;
+	    log.log(Log.ERROR, "parsePage: GetTextDocData returned null") ;
+	    return "parsePage: GetTextDocData returned null".getBytes("8859_1") ;
+	}
+
+	if ( text_docs.size() == 0 ) {
+	    dbc.closeConnection() ;			// Close connection to db.
+	    log.log(Log.ERROR, "parsePage: GetTextDocData returned nothing") ;
+	    return "parsePage: GetTextDocData returned nothing".getBytes("8859_1") ;
 	}
 
 	String template_id = (String)text_docs.remove(0) ;
@@ -342,6 +349,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
 	if ( texts == null ) {
 	    dbc.closeConnection() ;			// Close connection to db.
+	    log.log(Log.ERROR, "parsePage: GetTexts returned null") ;
 	    return ("GetTexts returned null").getBytes("8859_1") ;
 	}
 
@@ -358,17 +366,8 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
 	if ( meta == null ) {
 	    dbc.closeConnection() ;			// Close connection to db.
+	    log.log(Log.ERROR, "parsePage: Query for date_modified returned null") ;
 	    return ("Query for date_modified returned null").getBytes("8859_1") ;
-	}
-
-	sqlStr  = "select value from sys_data where sys_id = 3 and type_id = 3" ;
-	dbc.setSQLString(sqlStr);
-	Vector sys_data = (Vector)dbc.executeQuery() ;
-	dbc.clearResultSet() ;
-
-	if ( sys_data == null || sys_data.size() == 0) {
-	    dbc.closeConnection() ;			// Close connection to db.
-	    return ("Query for sys_message returned null or nothing").getBytes("8859_1") ;
 	}
 
 	//log.log(Log.WILD, "Got docinfo. Getting childs.", null) ;
@@ -382,6 +381,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
 	if ( childs == null ) {
 	    dbc.closeConnection() ;			// Close connection to db.
+	    log.log(Log.ERROR, "parsePage: GetChilds returned null") ;
 	    return ("GetChilds returned null").getBytes("8859_1") ;
 	}
 
@@ -393,6 +393,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	Vector images = (Vector)dbc.executeProcedure() ;
 	if ( images == null ) {
 	    dbc.closeConnection() ;			// Close connection to db.
+	    log.log(Log.ERROR, "parsePage: GetImgs returned null") ;
 	    return ("GetImgs returned null").getBytes("8859_1") ;
 	}
 
@@ -637,8 +638,8 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		String sortBox = "<input type=\"text\" name=\""+child_meta_id+"\" value=\""+child_manual_sort_order+"\" size=\"4\" maxlength=\"4\">" ;
 		String archiveDelBox = "<input type=\"checkbox\" name=\"archiveDelBox\" value=\""+child_meta_id+"\">" ;
 
-		props.setProperty("#sortBox#",sortBox) ;
-		props.setProperty("#archiveDelBox#",archiveDelBox) ;
+		//props.setProperty("#sortBox#",sortBox) ;
+		//props.setProperty("#archiveDelBox#",archiveDelBox) ;
 
 		if ( "0".equals(child_admin) ) {
 		    // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
@@ -665,7 +666,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		archive_stop+="</strike>" ;
 	    }
 
-	    //props.setProperty("#adminStart#",admin_start) ;
+	    props.setProperty("#adminStart#",admin_start) ;
 	    props.setProperty("#adminStop#",admin_stop) ;
 	    //props.setProperty("#to_meta_id#",to_meta_id) ;
 	    //props.setProperty("#manual_sort_order#",child_manual_sort_order) ;
@@ -735,7 +736,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	tags.setProperty("#session_counter_date#",	m_SessionCounterDate) ;
 	tags.setProperty("#lastDate#",				meta.get(0).toString()) ;
 	tags.setProperty("#metaHeadline#",			meta.get(1).toString()) ;
-	tags.setProperty("#sys_message#",			(String)sys_data.get(0)) ;
+	tags.setProperty("#sys_message#",			sysData.getSystemMessage()) ;
 	tags.setProperty("#servlet_url#",			m_ServletUrl) ;
 	tags.setProperty("#webMaster#",				sysData.getWebMaster()) ;
 	tags.setProperty("#webMasterEmail#",		sysData.getWebMasterAddress()) ;
@@ -757,6 +758,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    numberedtags.setProperty("#txt*#","#txt_no#") ;
 	}
 
+	// Give the user a row of buttons if he is privileged enough.
 	if ( checkDocAdminRights(meta_id,user) ) {
 	    tags.setProperty("#adminMode#",getMenuButtons(meta_id,user)) ;
 	}
@@ -938,6 +940,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		MatchResult matres = patMat.getMatch() ;
 		int [] menu_param = { Integer.parseInt(matres.group(1)), Integer.parseInt(matres.group(2)), Integer.parseInt(matres.group(3)) } ;
 		int endoffset = matres.endOffset(0) ;
+		log.log(Log.WILD, "W00t! Happened upon an obsolete menu. no="+matres.group(1)+" rows="+matres.group(2)+" table_cols="+matres.group(3)) ;
 		obsoleteMenuParser(sbtemp,matres.beginOffset(0), endoffset, menu_param, menus, menumode, sort_order, patMat,tags) ;
 		String newinput = sbtemp.toString() ;
 		pmin.setInput(newinput, endoffset, newinput.length()-endoffset ) ;
@@ -1193,6 +1196,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
        @param tags Don't ask... this contains the other tags to parse in the page. Used for getMenuModePrefix
      */
     private void obsoleteMenuParser (StringBuffer sb, int sbindex, int reindex, int[] menu_param, HashMap menus, boolean menumode, int sort_order, PatternMatcher patMat, Properties tags) {
+	log.log(Log.WILD, "Starting to parse an obsolete menu on offset "+sbindex) ;
 	int menurowsindex = sbindex ;   // We'll store away the index of the start of the menu.
 	sbindex = reindex ;
 	// Now we'll read each row... so we'll need some storagespace...
@@ -1210,7 +1214,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    menu_rows[foo] = tmpsb.toString()+"\r\n" ;	// Store the line away... Note that "\r\n" is the standard html (,http, and dos) end-of-line.
 	    tmpsb.setLength(0) ;						// Clear the stringbuffer
 	}
-
+	log.log(Log.WILD, "Read the "+menu_param[1]+" rows of the menu") ;
 	//sb.replace(menurowsindex,sbindex,"") ;	// Remove the lines
 	//sbindex = menurowsindex ;
 
@@ -1222,7 +1226,12 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	// And i will one day, so help me Phil, lord of heck!
 	LinkedList currentMenu = getMenuById(menus,menu_param[0]) ;
 	if ( currentMenu == null ) {
-	    sb.replace( menurowsindex, sbindex,"") ;
+	    String menubuff_str = "" ;
+	    if (menumode) {
+		log.log(Log.WILD, "We don't seem to have a menu... got null.") ;
+		menubuff_str = "<!-- inserted by imcms --><tr><td>"+getMenuModePrefix(patMat,menu_param[0],tags)+"</td></tr><!-- empty menu --><tr><td>"+getMenuModeSuffix(tags)+"</td></tr><!-- /inserted by imcms -->" ;
+	    }
+	    sb.replace( menurowsindex, sbindex,menubuff_str) ;
 	    return ;
 	}
 	// Get an iterator over the elements in the current menu
@@ -1232,7 +1241,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	// If the "rows"-attribute of this menu is larger than 1, we need the second row too.
 	// Note that if there is only one row, we add the #adminStop# after parsing for <tr><td>
 	if ( menu_rows.length>1 ) {
-	    menurowstr += "#adminStop#"+menu_rows[1] ;
+	    menurowstr += "<!-- menuitem 2nd row -->#adminStop#"+menu_rows[1]+"<!-- /menuitem 2nd row -->" ;
 	}
 	// OK, menurowstr now contains a row of the menu, with all the tags and stuff.
 	// Now we need to check if it starts with <tr> or <td>
@@ -1246,18 +1255,22 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	/** Added 010212 **/
 	if ( patMat.contains(menurowstr,TR_START_PATTERN) ) {
 	    trstart = "\r\n<!-- t tr -->"+patMat.getMatch().group(1) ;
+	    log.log(Log.WILD, "Using the menu's own tr.") ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TR_START_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 	if ( patMat.contains(menurowstr,TR_STOP_PATTERN) ) {
 	    trstop = patMat.getMatch().group(1) + "<!-- t /tr -->\r\n" ;
+	    log.log(Log.WILD, "Using the menu's own /tr.") ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TR_STOP_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 	if ( patMat.contains(menurowstr,TD_START_PATTERN) ) {
 	    tdstart = "\r\n<!-- t td -->"+patMat.getMatch().group(1) ;
+	    log.log(Log.WILD, "Using the menu's own td.") ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TD_START_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 	if ( patMat.contains(menurowstr,TD_STOP_PATTERN) ) {
 	    tdstop = patMat.getMatch().group(1)+"<!-- t /td -->\r\n" ;
+	    log.log(Log.WILD, "Using the menu's own /td.") ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TD_STOP_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 
@@ -1268,10 +1281,13 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	// Note that if there is more than one line, we do it before
 	// all the regexing for <tr><td>
 	if ( menu_rows.length==1 ) {
-	    menurowstr += "#adminStop#" ;
+	    menurowstr = "#adminStart#"+menurowstr+"#adminStop#" ;
+	} else {
+	    menurowstr = "#adminStart#"+menurowstr ;
 	}
 	final Pattern HASHTAG_PATTERN = patCache.getPattern("#[^#\"<> \\t\\r\\n]+#") ;
 	// for each element of the menu...
+	log.log(Log.WILD, "Starting to parse the "+currentMenu.size()+" items of the menu." ) ;
 	MapSubstitution mapsubstitution = new MapSubstitution() ;
 	for ( int rowcount = 0 ; menuit.hasNext() ; ) {
 	    if ( rowcount % menu_param[2]==0 ) {	// If this is a new tablerow... (menu_param[2] contains the number of columns per row)
@@ -1284,6 +1300,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    Properties props = (Properties)menuit.next() ;	// Retrieve the tags and data for this menuitem...
 
 	    mapsubstitution.setMap(props, true) ;
+	    log.log(Log.WILD, "Parsing the individual tags of one menuitem.") ;
 	    String menurow = org.apache.oro.text.regex.Util.substitute(patMat,HASHTAG_PATTERN,mapsubstitution,menurowstr,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
 
 	    menubuff.append(menurow+tdstop) ;    // OK... one row done. Append it to the menubuffer and end the cell.
@@ -1295,8 +1312,10 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	String menubuff_str = menubuff.toString() ;
 
 	if (menumode) {
+	    log.log(Log.WILD, "We're in 'menumode'") ;
 	    menubuff_str = "<tr><td>"+getMenuModePrefix(patMat,menu_param[0],tags)+"</td></tr><!-- menu -->"+menubuff_str+"<!-- /menu --><tr><td>"+getMenuModeSuffix(tags)+"</td></tr>" ;
 	}
+	log.log(Log.WILD, "We're finished with this menu."+sbindex) ;
 	// Yay! One menu done. Insert into the pagebuffer...
 	sb.replace( menurowsindex, sbindex,menubuff_str) ;
 	//sb.insert(sbindex,menubuff_str) ;
