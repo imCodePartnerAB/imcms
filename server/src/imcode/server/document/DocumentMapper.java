@@ -38,7 +38,8 @@ public class DocumentMapper {
     public Document getDocument( int metaId ) {
         Document document = null;
         try {
-            String[] result = service.sqlProcedure( SPROC_GET_DOCUMENT_INFO + metaId );
+            String[] params = new String[]{String.valueOf(metaId)};
+            String[] result = service.sqlProcedure( SPROC_GET_DOCUMENT_INFO, params );
 
             //lets start and do some controlls of the resulted data
             if( result == null || result.length < 25 ) {
@@ -123,7 +124,8 @@ public class DocumentMapper {
 
     /** @return the filename for a fileupload-internalDocument, or null if the internalDocument isn't a fileupload-docuemnt. **/
     private String getFilename( int meta_id ) {
-        return service.sqlProcedureStr( SPROC_GET_FILE_NAME + meta_id );
+        String[] params = new String[]{ String.valueOf(meta_id)};
+        return service.sqlProcedureStr( SPROC_GET_FILE_NAME, params );
     }
 
     public Map getAllRolesMappedToPermissions( Document document ) {

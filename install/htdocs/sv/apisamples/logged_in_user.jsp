@@ -1,8 +1,8 @@
-<%@ page import="com.imcode.imcms.ImcmsSystem,
+<%@ page import="com.imcode.imcms.ContentManagementSystem,
                  com.imcode.imcms.RequestConstants,
                  com.imcode.imcms.UserBean"%>
 <%
-ImcmsSystem imcmsSystem = (ImcmsSystem)request.getAttribute( RequestConstants.SYSTEM );
+ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
 UserBean accessingUser = imcmsSystem.getAccessionUser();
 %>
 

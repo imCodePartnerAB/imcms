@@ -3,7 +3,7 @@
 <H3>Delete a role named "Test role"</H3>
 
 <%
-    ImcmsSystem imcmsSystem = (ImcmsSystem)request.getAttribute(RequestConstants.SYSTEM);
+    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
     UserMapperBean userMapper = imcmsSystem.getUserMapperBean();
 %>
 Before:<br>

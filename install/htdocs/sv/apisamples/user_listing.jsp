@@ -2,7 +2,7 @@
 
 <h2>A simple sample of using the UserMapperBean and basic operations on a UserBean  </h2>
 <%
-    ImcmsSystem imcmsSystem = (ImcmsSystem)request.getAttribute(RequestConstants.SYSTEM);
+    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
     UserMapperBean userMapper = imcmsSystem.getUserMapperBean();
     UserBean[] users = userMapper.getAllUsers();
     for( int i = 0; i < users.length ; i++ ){

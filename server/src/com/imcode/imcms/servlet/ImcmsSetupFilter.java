@@ -29,7 +29,7 @@ public class ImcmsSetupFilter implements Filter {
         if( null != accessor ) {
             try {
                 IMCService service = (IMCService)IMCServiceRMI.getIMCServiceInterface( (HttpServletRequest)request );
-                ImcmsSystem imcmsSystem = new ImcmsSystem( service, accessor );
+                ContentManagementSystem imcmsSystem = new ContentManagementSystem( service, accessor );
                 request.setAttribute( RequestConstants.SYSTEM, imcmsSystem );
             } catch( IOException e ) {
                 log.fatal( "Unable to get service object.", e );

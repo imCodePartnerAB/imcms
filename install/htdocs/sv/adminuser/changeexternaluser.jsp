@@ -32,7 +32,7 @@ private static void updateUserRoles( HttpServletRequest request, UserMapperBean 
 
 %><%
 
-ImcmsSystem  imcms = (ImcmsSystem)request.getAttribute( RequestConstants.SYSTEM );
+ContentManagementSystem  imcms = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
 UserMapperBean  userMapper = imcms.getUserMapperBean();
 
 String userLoginName = request.getParameter( WebAppGlobalConstants.USER_LOGIN_NAME );

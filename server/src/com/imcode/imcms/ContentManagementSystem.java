@@ -5,13 +5,13 @@ import imcode.server.user.User;
 import imcode.server.document.DocumentMapper;
 import imcode.server.IMCService;
 
-public class ImcmsSystem  {
+public class ContentManagementSystem  {
 
     UserMapperBean userMapper;
     DocumentMapperBean docMapper;
     UserBean accessingUser;
 
-    public ImcmsSystem( IMCService service, User accessor ) {
+    public ContentManagementSystem( IMCService service, User accessor ) {
         accessingUser = new UserBean( accessor );
 
         ImcmsAuthenticatorAndUserMapper imcmsAAUM = new ImcmsAuthenticatorAndUserMapper( service );

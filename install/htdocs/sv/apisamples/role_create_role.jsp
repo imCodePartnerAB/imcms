@@ -4,7 +4,7 @@
 <H3>Create a new role</H3>
 
 <%
-    ImcmsSystem imcmsSystem = (ImcmsSystem)request.getAttribute(RequestConstants.SYSTEM);
+    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
     UserMapperBean userMapper = imcmsSystem.getUserMapperBean();
 %>
 Before:<br>
