@@ -35,6 +35,8 @@ public class DatabaseService {
     private static final String ADD_TYPE_DATA = "data/types.new.sql";
     private static final String INSERT_NEW_DATA = "data/newdb.new.sql";
 
+    private String ADITIONAL_TEST_DATA = "data/aditionaltestdata.new.sql";
+
     private static String SQL92_TYPE_TIMESTAMP = "timestamp";
     private static String SQL_SERVER_TIMESTAMP_TYPE = "datetime";
 
@@ -112,6 +114,11 @@ public class DatabaseService {
         } catch( IOException ex ) {
             log.fatal( "Couldn't open a file ", ex );
         }
+    }
+
+    void initTestData() throws IOException {
+        Vector commands = readCommandsFromFile( ADITIONAL_TEST_DATA );
+        sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
     }
 
     private Vector changeCharInCurrentTimestampCast( Vector commands ) {
@@ -203,7 +210,7 @@ public class DatabaseService {
         }
     }
 
-    public Table_roles[] sproc_GetAllRoles_but_user() {
+    Table_roles[] sproc_GetAllRoles_but_user() {
         String sql = "SELECT role_id, role_name FROM roles ORDER BY role_name";
         Object[] paramValues = null;
 
@@ -333,8 +340,7 @@ public class DatabaseService {
 
     Table_users[] sproc_GetAllUsers_OrderByLastName() {
         String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users ORDER BY last_name";
-
-        SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 Table_users result = null;
                 int user_id = rs.getInt( "user_id" );
@@ -360,9 +366,7 @@ public class DatabaseService {
                 result = new Table_users( user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date );
                 return result;
             }
-        };
-
-        ArrayList queryResult = sqlProcessor.executeQuery( sql, null, resultProcessor );
+        } );
         return (Table_users[])queryResult.toArray( new Table_users[queryResult.size()] );
     }
 
@@ -395,8 +399,7 @@ public class DatabaseService {
     View_TemplateGroup[] sproc_GetTemplatesInGroup( int groupId ) {
         String sql = "SELECT t.template_id,simple_name FROM  templates t JOIN templates_cref c ON  t.template_id = c.template_id " + "WHERE c.group_id = ? " + "ORDER BY simple_name";
         Object[] paramValues = new Object[]{new Integer( groupId )};
-
-        SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 View_TemplateGroup result = null;
                 int templateId = rs.getInt( "template_id" );
@@ -404,9 +407,7 @@ public class DatabaseService {
                 result = new View_TemplateGroup( templateId, simpleName );
                 return result;
             }
-        };
-
-        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
+        } );
         return (View_TemplateGroup[])queryResult.toArray( new View_TemplateGroup[queryResult.size()] );
     }
 
@@ -447,13 +448,12 @@ public class DatabaseService {
 
     private int getMaxIntValue( String tableName, String columnName ) {
         String sql = "SELECT MAX(" + columnName + ") FROM " + tableName;
-        SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int id = rs.getInt( 1 );
                 return new Integer( id );
             }
-        };
-        ArrayList queryResult = sqlProcessor.executeQuery( sql, null, resultProcessor );
+        } );
         Integer id = (Integer)(queryResult.get( 0 ));
         if( id == null ) {
             return 0;
@@ -762,7 +762,7 @@ public class DatabaseService {
         } );
         Integer countItem = (Integer)countResult.get(0);
 
-        Integer manualSortOrder = null;
+        int manualSortOrder = 500;
         if( countItem.intValue() > 0 ) {// update manual_sort_order
             String sqlSortOrder = "select max(manual_sort_order) from childs where meta_id = ? and menu_sort = ?";
             Object[] paramValuesSortOrder = new Object[]{ new Integer( meta_id ), new Integer( doc_menu_no )};
@@ -771,9 +771,7 @@ public class DatabaseService {
                     return new Integer(rs.getInt(1));
                 }
             } );
-            manualSortOrder = (Integer)sortOrderResult.get(0);
-        } else {
-            manualSortOrder = new Integer(500);
+            manualSortOrder = ((Integer)sortOrderResult.get(0)).intValue() + 10;
         }
 
         //- test if child already exist in this menu. If not, then we will add the child to the menu.
@@ -788,7 +786,7 @@ public class DatabaseService {
         Integer thisCountItem = (Integer)queryResult.get(0);
         if( thisCountItem.intValue() == 0 ) {
             String sql = "insert into childs( meta_id, to_meta_id, menu_sort, manual_sort_order) values( ?, ?, ?, ? )";
-            Object[] paramValues = new Object[]{ new Integer( meta_id ), new Integer( existing_meta_id ), new Integer(doc_menu_no), manualSortOrder };
+            Object[] paramValues = new Object[]{ new Integer( meta_id ), new Integer( existing_meta_id ), new Integer(doc_menu_no), new Integer(manualSortOrder) };
             return sqlProcessor.executeUpdate( sql, paramValues );
         } else {
             return 0;
@@ -837,4 +835,132 @@ public class DatabaseService {
         } );
         return (View_DocumentForUser[])queryResult.toArray( new View_DocumentForUser[ queryResult.size() ]);
     }
+
+    static class View_ChildData {
+        public View_ChildData( int to_meta_id, int menu_sort, int manual_sort_order, int doc_type, boolean archive, String target, Timestamp date_created, Timestamp date_modified, String meta_headline, String meta_text, String meta_image, String frame_name, Timestamp activated_datetime, Timestamp archived_datetime, String filename ) {
+            this.to_meta_id = to_meta_id;
+            this.menu_sort = menu_sort;
+            this.manual_sort_order = manual_sort_order;
+            this.doc_type = doc_type;
+            this.archive = archive;
+            this.target = target;
+            this.date_created = date_created;
+            this.date_modified = date_modified;
+            this.meta_headline = meta_headline;
+            this.meta_text = meta_text;
+            this.meta_image = meta_image;
+            this.frame_name = frame_name;
+            this.activated_datetime = activated_datetime;
+            this.archived_datetime = archived_datetime;
+            this.filename = filename;
+        }
+
+        int to_meta_id;
+        int menu_sort;
+        int manual_sort_order;
+        int doc_type;
+        boolean archive;
+        String target;
+        Timestamp date_created;
+        Timestamp date_modified;
+        String meta_headline;
+        String meta_text;
+        String meta_image;
+        String frame_name;
+        Timestamp activated_datetime;
+        Timestamp archived_datetime;
+        String filename;
+    }
+    /**
+     * Nice little query that lists the children of a document that a particular user may see, and includes a field that tells you wether he may do something to it or not.
+     * @param meta_id
+     * @param user_id
+     */
+    // todo WARNING, i anropande kod måste en förändring ske!
+    // todo Den bortkommenterade reden nedan beräknar om man har rätt att editera eller ej.
+    // todo Se till att göra den kollen på annat sätt efteråt för varje dokument.
+    View_ChildData[] sproc_getChilds( int meta_id, int user_id ) {
+        Integer sortOrder = getMenuSortOrder( meta_id );
+        String sql =
+            "select to_meta_id, c.menu_sort,manual_sort_order, doc_type," +
+            "  archive,target, date_created, date_modified," +
+            "  meta_headline,meta_text,meta_image,frame_name," +
+            "  activated_datetime,archived_datetime," +
+//            "  min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1))," +
+            "fd.filename " +
+            "from  childs c " +
+            "join meta m " +
+            "   on m.meta_id = c.to_meta_id " + // meta.meta_id corresponds to childs.to_meta_id
+            "   and  m.activate > 0 " + // Only include the documents that are active in the meta table
+            "   and  c.meta_id = ? " + // Only include documents that are children to this particular meta_id
+            "left join roles_rights rr " + // We may have permission, even though we don't have anything in role-permissions... That is, if we're docowner or superadmin
+            "   on c.to_meta_id = rr.meta_id " + // Only include rows with the documents we are interested in
+            "left join doc_permission_sets dps " + // Include the permission_sets
+            "   on c.to_meta_id = dps.meta_id " + // for each document
+            "   and dps.set_id = rr.set_id " + // and only the sets for the roles we are interested in
+            "   and dps.permission_id > 0 " + // and only the sets that have any permission
+            "join user_roles_crossref urc " + // This table tells us which users have which roles
+            "   on urc.user_id = ? " + // Only include the rows with the user we are interested in...
+            "   and ( " +
+            "      rr.role_id = urc.role_id " + //  Include rows where the users roles match the roles that have permissions on the documents
+            "   or urc.role_id = 0" + // and also include the rows that tells us this user is a superadmin
+            "      or ( " +
+            "         m.show_meta != 0 " + //  and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)
+            "      ) " +
+            "   ) " +
+            "left join fileupload_docs fd " +
+            "   on fd.meta_id = c.to_meta_id " +
+            "group by to_meta_id, c.menu_sort,manual_sort_order, doc_type, archive,target, date_created, date_modified, meta_headline,meta_text,meta_image,frame_name, activated_datetime,archived_datetime, fd.filename ";
+        Object[] paramValues = new Object[]{ new Integer( meta_id ), new Integer(user_id) };
+
+        if( sortOrder.intValue() == 3 ) {
+            sql += "order by  menu_sort,c.manual_sort_order desc";
+        } else if( sortOrder.intValue() == 2 ) {
+            sql += "order by  menu_sort,convert (varchar,date_modified,120) desc";
+        } else if( sortOrder.intValue() == 1 ) {
+            sql += "order by  menu_sort,meta_headline";
+        }
+
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                int to_meta_id = rs.getInt("to_meta_id");
+                int menu_sort = rs.getInt("menu_sort");
+                int manual_sort_order = rs.getInt("manual_sort_order");
+                int doc_type = rs.getInt("doc_type");
+                boolean archive = (rs.getInt("archive")==1);
+                String target = rs.getString("target");
+                Timestamp date_created = rs.getTimestamp("date_created");
+                Timestamp date_modified = rs.getTimestamp("date_modified");
+                String meta_headline = rs.getString("meta_headline");
+                String meta_text = rs.getString("meta_text");
+                String meta_image = rs.getString("meta_image");
+                String frame_name = rs.getString("frame_name");
+                Timestamp activated_datetime = rs.getTimestamp("activated_datetime");
+                Timestamp archived_datetime = rs.getTimestamp("archived_datetime");
+                String filename = rs.getString("filename");
+                return new View_ChildData( to_meta_id, menu_sort, manual_sort_order, doc_type, archive, target, date_created, date_modified, meta_headline,
+                                           meta_text, meta_image, frame_name, activated_datetime, archived_datetime, filename );
+            }
+        } );
+        return (View_ChildData[])queryResult.toArray( new View_ChildData[queryResult.size()] );
+    }
+
+    private Integer getMenuSortOrder( int meta_id ) {
+        String sql = "select sort_order from text_docs where meta_id = ?";
+        Object[] paramValues = new Object[]{ new Integer(meta_id)};
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Integer(rs.getInt("sort_order"));
+            }
+        } );
+        return (Integer)queryResult.get(0);
+    }
+
+    /*
+    Detects if a user is administrator or not
+    */
+/*
+    public sproc_CheckAdminRights() {
+
+    }*/
 }

@@ -3,6 +3,7 @@ package imcode.server.db;
 import imcode.server.test.Log4JConfiguredTestCase;
 
 import java.sql.Timestamp;
+import java.io.IOException;
 
 public class TestDatabaseService extends Log4JConfiguredTestCase {
 
@@ -23,11 +24,15 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     static String MYSQL_DATABASE_USER = "root";
     static String MYSQL_DATABASE_PASSWORD = "";
 
+    private final static int SUPERADMIN_ID = 1;
+    private final static int TEST_DOC_ID_FIRST = 9001;
+    private final static int TEST_DOC_ID_DETACHED = 9999;
+
+
     private DatabaseService sqlServer;
     private DatabaseService mimer;
     private DatabaseService mySql;
-
-    protected void setUp() {
+    protected void setUp() throws IOException {
         mySql = static_initMySql();
         sqlServer = static_initSqlServer();
         mimer = static_initMimer();
@@ -310,11 +315,40 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     public void test_sproc_getDocs() {
-        assertEquals( 1, sqlServer.sproc_getDocs(1, 1, 10000).length );
-        assertEquals( 1, mySql.sproc_getDocs(1, 1, 10000).length );
-        assertEquals( 1, mimer.sproc_getDocs(1, 1, 10000).length );
+        assertEquals( 4, sqlServer.sproc_getDocs(1, 1, 10000).length );
+        assertEquals( 4, mySql.sproc_getDocs(1, 1, 10000).length );
+        assertEquals( 4, mimer.sproc_getDocs(1, 1, 10000).length );
     }
 
+    public void test_sproc_getChilds() {
+        test_sproc_getChilds( sqlServer );
+        test_sproc_getChilds( mySql );
+        test_sproc_getChilds( mimer );
+    }
+
+    private void test_sproc_getChilds( DatabaseService dbService ) {
+        DatabaseService.View_ChildData[] children = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, SUPERADMIN_ID );
+        assertEquals( 0, children.length );
+
+        children = dbService.sproc_getChilds( TEST_DOC_ID_FIRST, SUPERADMIN_ID );
+        assertEquals( 1, children.length );
+    }
+
+    public void test_sproc_AddExistingDocToMenu() {
+        test_sproc_AddExistingDocToMenu( sqlServer );
+        test_sproc_AddExistingDocToMenu( mySql );
+        test_sproc_AddExistingDocToMenu( mimer );
+    }
+
+    private void test_sproc_AddExistingDocToMenu( DatabaseService dbService ) {
+        int linksBefore = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, SUPERADMIN_ID ).length;
+
+        int rowCount = dbService.sproc_AddExistingDocToMenu(TEST_DOC_ID_DETACHED, TEST_DOC_ID_DETACHED, 1 );
+        assertEquals( 1, rowCount );
+
+        int linksAfter = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, SUPERADMIN_ID ).length;
+        assertEquals( linksBefore + 1 , linksAfter );
+    }
     // Below is helper functions to more than one test.
 
     private static DatabaseService.Table_users static_createDummyUser( int nextFreeUserId ) {
@@ -358,21 +392,24 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         }
     }
 
-    private static DatabaseService static_initMimer() {
+    private static DatabaseService static_initMimer() throws IOException {
         DatabaseService dbService = new DatabaseService( DatabaseService.MIMER, TestDatabaseService.DB_HOST, TestDatabaseService.MIMER_PORT, TestDatabaseService.MIMMER_DATABASE_NAME, TestDatabaseService.MIMMER_DATABASE_USER, TestDatabaseService.MIMMER_DATABASE_PASSWORD );
         dbService.initializeDatabase();
+        dbService.initTestData();
         return dbService;
     }
 
-    private static DatabaseService static_initSqlServer() {
+    private static DatabaseService static_initSqlServer() throws IOException {
         DatabaseService dbService = new DatabaseService( DatabaseService.SQL_SERVER, TestDatabaseService.DB_HOST, TestDatabaseService.SQLSERVER_PORT, TestDatabaseService.SQLSERVER_DATABASE_NAME, TestDatabaseService.SQLSERVE_DATABASE_USER, TestDatabaseService.SQLSERVE_DATABASE_PASSWORD );
         dbService.initializeDatabase();
+        dbService.initTestData();
         return dbService;
     }
 
-    private static DatabaseService static_initMySql() {
+    private static DatabaseService static_initMySql() throws IOException {
         DatabaseService dbService = new DatabaseService( DatabaseService.MY_SQL, TestDatabaseService.DB_HOST, TestDatabaseService.MYSQL_PORT, TestDatabaseService.MYSQL_DATABASE_NAME, TestDatabaseService.MYSQL_DATABASE_USER, TestDatabaseService.MYSQL_DATABASE_PASSWORD );
         dbService.initializeDatabase();
+        dbService.initTestData();
         return dbService;
     }
 
