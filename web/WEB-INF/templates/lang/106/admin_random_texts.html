@@ -1,24 +1,19 @@
-#gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/13 ?>" "AdminManager" "" "97" )
+#gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/13 ?>" "AdminManager" "" "97" "" )
 
-<form method="post" action="AdminRandomTexts" name="AdminRandomTexts">
+<table width="600">
+    <form method="post" action="AdminRandomTexts" name="AdminRandomTexts">
+    <tr>
+        <td><? templates/sv/fortunes/admin_random_texts.html/3 ?></td>
+    </tr>
+    <tr>
+        <td colspan="2" nowrap>
+            <select name="AdminFile">
+            #options#</select> &nbsp;
+            <input type="submit" class="imcmsFormBtnSmall" name="edit" value="<? templates/sv/fortunes/admin_random_texts.html/2001 ?>">
+        </td>
+    </tr>
+    </form>
+</table>
 
- <table width="600">
-   <tr>
-     <td><? templates/sv/fortunes/admin_random_texts.html/3 ?></td>
-   </tr>
-   <tr>
-     <td colspan="2" nowrap> <select name="AdminFile">
-         #options#
-       </select> &nbsp; <input type="submit" class="imcmsFormBtnSmall" name="edit" value="<? templates/sv/fortunes/admin_random_texts.html/2001 ?>">       
-     </td>
-   </tr>
- </table>
-
- </form>
-
- #gui_bottom()
- #gui_outer_end()
-
-</body>
-</html>
+#gui_end_of_page()
 

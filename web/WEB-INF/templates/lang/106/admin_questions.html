@@ -1,39 +1,20 @@
-<html>
-<head>
-<title><? templates/sv/fortunes/admin_questions.html/2 ?></title>
-    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-    <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
-</head>
-<body>
+#gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/4 ?>" "AdminManager" "" "96" "" )
 
-#gui_outer_start()
-#gui_head( "<? templates/sv/fortunes/admin_questions.html/2 ?>" )
-#gui_head_help_and_back_buttons( 96  "AdminManager" "" "" )
-#gui_mid()
-
-<form method="post" action="AdminQuestions" name="AdminQuestions">
-  <table>
+<table width="300">
+    <form method="post" action="AdminQuestions" name="AdminQuestions">
     <tr>
-      <td colspan="2">
-        <? templates/sv/fortunes/admin_questions.html/3 ?>
-      </td>
+        <td colspan="2"><? templates/sv/fortunes/admin_questions.html/3 ?></td>
     </tr>
     <tr>
-      <td colspan="2" nowrap>
-        <select name="AdminFile">
-          #options#
-        </select>
-        &nbsp;
-        <input type="submit"  class="imcmsFormBtnSmall" name="edit" value="<? templates/sv/fortunes/admin_questions.html/2001 ?>">
-        <input type="submit"  class="imcmsFormBtnSmall" name="result" value="<? templates/sv/fortunes/admin_questions.html/2002 ?>">
-         </td>
+        <td colspan="2" nowrap>
+            <select name="AdminFile">#options#</select>
+            &nbsp;
+            <input type="submit"  class="imcmsFormBtnSmall" name="edit" value="<? templates/sv/fortunes/admin_questions.html/2001 ?>">
+            <input type="submit"  class="imcmsFormBtnSmall" name="result" value="<? templates/sv/fortunes/admin_questions.html/2002 ?>">
+        </td>
     </tr>
-  </table>
-  </form>
+    </form>
+</table>
 
-#gui_bottom()
-#gui_outer_end()
-
-</body>
-</html>
+#gui_end_of_page()
 
