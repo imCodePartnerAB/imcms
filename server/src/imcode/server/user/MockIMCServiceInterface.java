@@ -244,12 +244,12 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
     // set  session counter date
-    public void setCounterDate( String date ) {
+    public void setCounterDate( Date date ) {
         // TODO
     }
 
     // set  session counter date
-   public String getCounterDate() {
+   public Date getCounterDate() {
       return null;
    }
 

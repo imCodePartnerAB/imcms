@@ -20,6 +20,9 @@ import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.*;
 import java.util.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 import com.imcode.imcms.api.User;
 
@@ -908,16 +911,22 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Set session counter date.
      */
-    public void setCounterDate( String date ) {
-        sessionCounterDate = date;
-        this.sqlUpdateProcedure( "SetSessionCounterDate", new String[]{date} );
+    public void setCounterDate( Date date ) {
+        DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
+        sessionCounterDate = dateFormat.format(date);
+        this.sqlUpdateProcedure( "SetSessionCounterDate", new String[]{sessionCounterDate} );
     }
 
     /**
      * Get session counter date.
      */
-    public String getCounterDate() {
-        return sessionCounterDate;
+    public Date getCounterDate() {
+        DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
+        try{
+            return dateFormat.parse(sessionCounterDate);
+        }catch( ParseException pe){
+            return null;
+        }
     }
 
     public Hashtable sqlQueryHash( String sqlQuery, String[] params ) {

@@ -105,10 +105,10 @@ public interface IMCServiceInterface {
     int setCounter(int value)  ;
 
     // set  session counter date
-    void setCounterDate(String date)  ;
+    void setCounterDate(Date date)  ;
 
     // set  session counter date
-    String getCounterDate()  ;
+    Date getCounterDate()  ;
 
     // parsedoc use template
     public String  parseDoc(java.util.List variables, String admin_template_name, UserDomainObject user)  ;
