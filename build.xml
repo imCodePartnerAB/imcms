@@ -159,6 +159,7 @@
     <property name="billboard-templates"  value="${languagetemplates}/104"/>
     <property name="postcard-templates"   value="${languagetemplates}/105"/>
     <property name="fortune-templates"    value="${languagetemplates}/106"/>
+    <property name="calender-templates"	  value="${languagetemplates}/107"/>
 
   </target>
 
@@ -228,7 +229,7 @@
 
   <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
   <target name="build"
-	  depends="init,server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help,fortune,readrunner,sql"
+	  depends="init,server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help,fortune,readrunner,sql,calender"
 	  description="Builds everything.">
 
     <copy todir="${WEB-INF}" file="install/web.xml"/>
@@ -594,6 +595,95 @@
     <mkdir dir="${uploads}"/>
     <mkdir dir="${logs}"/>
   </target>
+
+<!-- Builds the 'calender'-plugin. -->
+  <target name="calender"
+	  depends="init,calender-servlets,calender-templates,calender-images"
+	  description="Builds the calender."/>
+
+ <!-- The calender-servlets. -->
+  <target name="calender-servlets"
+
+	  depends="init,server"
+	  description="Builds the calender-servlets.">
+
+    <mkdir dir="${classes}"/>
+    <javac srcdir="servlets/calender"
+	   destdir="${classes}"
+	   includes="*.java"
+	   classpath="${classes}"
+	   debug="${debug}"
+	   optimize="${optimize}"
+	   deprecation="${deprecation}">
+
+      <classpath>
+	<pathelement path="${classes}"/>
+	  <fileset dir="install/lib">
+	    <include name="**/*.jar"/>
+	  </fileset>
+      </classpath>
+    </javac>
+  </target>
+
+  <!-- The calender-templates. -->
+  <target name="calender-templates"
+	  depends="init"
+	  description="Copies the calender-templates.">
+
+    <antcall target="calender-templates-lang">
+      <param name="srclanguage" value="sv"/>
+      <param name="language"    value="se"/>
+    </antcall>
+
+    <antcall target="calender-templates-lang">
+      <param name="srclanguage" value="en"/>
+      <param name="language"    value="en"/>
+    </antcall>
+
+  </target>
+
+
+  <!-- The calender-templates. -->
+  <target name="calender-templates-lang"
+	  depends="language-properties,global-filters"
+	  description="Copies the calender-templates for one language.">
+
+    <copy todir="${calender-templates}" filtering="true">
+      <fileset dir="templates/${srclanguage}/calender" excludes="images/"/>
+    </copy>
+
+  </target>
+
+  <!-- The calender-images. -->
+  <target name="calender-images"
+	  depends="init,calender-templates"
+	  description="Copies the calender-images.">
+
+    <antcall target="calender-images-lang">
+      <param name="srclanguage" value="sv"/>
+      <param name="language"    value="se"/>
+    </antcall>
+
+    <antcall target="calender-images-lang">
+      <param name="srclanguage" value="en"/>
+      <param name="language"    value="en"/>
+    </antcall>
+
+  </target>
+
+
+  <!-- The calender-images. -->
+  <target name="calender-images-lang"
+	  depends="language-properties"
+	  description="Copies the calender-images for one language.">
+
+    <copy todir="${images}/${language}/107">
+      <fileset dir="templates/${srclanguage}/calender/images" includes="*"/>
+    </copy>
+
+  </target>
+
+
 
 
   <!-- Builds the 'conference'-plugin. -->

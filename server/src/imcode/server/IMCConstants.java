@@ -39,6 +39,9 @@ public interface IMCConstants {
 	
 	/** Document-type for fortune **/
 	public final static int DOCTYPE_FORTUNES   = 106 ;
+	
+	/** Document-type for calender **/
+	public final static int DOCTYPE_CALENDER   = 107 ;
 
 
     /* Permissions for restricted permission-sets 1 and 2, applicable for all document-types. */
