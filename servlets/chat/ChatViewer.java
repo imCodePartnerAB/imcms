@@ -73,7 +73,7 @@ public class ChatViewer extends ChatBase {
 	{
 
 		super.init(config);
-		HTML_TEMPLATE = "Conf_set.htm" ;
+		HTML_TEMPLATE = "Chat_frameset.htm" ;
 
 		/*
 		HTML_TEMPLATE = getInitParameter("html_template") ;
