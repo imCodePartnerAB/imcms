@@ -1,53 +1,106 @@
 <SCRIPT LANGUAGE="JavaScript">
+
 <!--
+
 function targetNewWindow() {
+
   var exampelWindow = window.open("", "Exempelmall", "height=400,width=700,resizable");
+
   document.myForm.target="Exempelmall";
+
 }
+
+
 
 function resetTarget() {
+
   document.myForm.target="";
+
 }
+
+
 
 function openHelp(id){
+
 	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+
 }
+
 //-->
+
 </SCRIPT>
+
 <FORM name="myForm" METHOD=POST ACTION="#servlet_url#SaveInPage">
+
   <table BORDER="1" cellspacing="0" cellpadding="2">
+
     <tr bgcolor="#333366">
+
       <td valign="top" colspan="3"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;Administrera 
+
         dokument </font></b><!--input type=HIDDEN name=flags value="0"--> <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">MetaId:&nbsp;&nbsp;#getMetaId#&nbsp;&nbsp; 
+
         </font><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><nobr>Akt 
+
         grupp: (#group#)</nobr></font>&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><nobr>Akt 
+
         mall: (#simple_name#)</nobr></font></td>
+
     </tr>
 
+
+
     <tr> 
+
       <td valign="bottom" bgcolor="#BABABA"> 
+
         <div><font size="1"><font face="Verdana, Arial, Helvetica, sans-serif"> 
+
           &nbsp;
+
 <select name="group" size=1>            #getTemplateGroups#                                                        </select>
+
           </font></font>
+
           <input type="submit" name="change_group" value="&Auml;ndra grupp" onClick="resetTarget()">
+
         </div>
+
       </td>
+
       <td valign="bottom" bgcolor="#BABABA"> 
+
         <div><font size="1"> <font face="Verdana, Arial, Helvetica, sans-serif"> 
+
           &nbsp;
+
 <select name="template" size=1>			#getTemplates#		                <option></option>
+
           </select>
+
           </font></font>
+
           <input type="submit" name="preview" value="Visa mall" onClick="targetNewWindow()">
+
         </div>
+
       </td>
+
       <td valign="bottom" bgcolor="#BABABA">
-<input type="submit" name="update" value="Spara" onClick="resetTarget()">&nbsp; <a href="javascript:openHelp('87');"><img src="/imcms/images/se/Helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+
+<input type="submit" name="update" value="Spara" onClick="resetTarget()">&nbsp; <a href="javascript:openHelp('87');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+
       </td>
+
     </tr>
+
   </table>
+
 <input type=HIDDEN name=meta_id value="#getMetaId#">
+
 #getDocType# 
+
 #DocMenuNo#  
+
 </FORM>
+
