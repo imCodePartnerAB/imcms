@@ -15,7 +15,6 @@ import imcode.util.DateConstants;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
@@ -128,16 +127,17 @@ public class GetExistingDoc extends HttpServlet {
             DocumentDomainObject[] searchResultDocuments = index.search( query, user );
 
             boolean onlyOneDocumentFound = 1 == searchResultDocuments.length;
-            boolean searchStringIsOnlyDigits = NumberUtils.isDigits( searchString );
 
-            if ( onlyOneDocumentFound && searchStringIsOnlyDigits ) {
+            if ( onlyOneDocumentFound ) {
                 DocumentDomainObject onlyDocumentFound = searchResultDocuments[0];
-                addDocumentToMenu( onlyDocumentFound, parentDocument, menuIndex, user, getUsersAllowedDocumentTypeIdsOnDocument( user, parentDocument ) );
-                redirectBackToMenu( res, parentDocument, menuIndex );
-            } else {
-                createSearchResultsPage( imcref, user, langPrefix, searchResultDocuments, parentDocument, menuIndex, req, startDate,
-                                         dateFormat, endDate, docTypes, sortBy, sortOrderV, out );
+                if ( searchString.equals( "" + onlyDocumentFound.getId() ) ) {
+                    addDocumentToMenu( onlyDocumentFound, parentDocument, menuIndex, user );
+                    redirectBackToMenu( res, parentDocument, menuIndex );
+                    return;
+                }
             }
+            createSearchResultsPage( imcref, user, langPrefix, searchResultDocuments, parentDocument, menuIndex, req, startDate,
+                                     dateFormat, endDate, docTypes, sortBy, sortOrderV, out );
 
         } else {
             addDocumentsFromRequestToMenu( user, req, imcref, parentDocument, menuIndex, res );
@@ -188,21 +188,20 @@ public class GetExistingDoc extends HttpServlet {
 
         DocumentMapper documentMapper = imcref.getDocumentMapper();
 
-        Set allowedDocumentTypeIds = getUsersAllowedDocumentTypeIdsOnDocument( user, parentDocument );
-
         // Lets loop through all the selected existsing meta ids and add them to the current menu
         for ( int m = 0; m < values.length; m++ ) {
             int existingDocumentId = Integer.parseInt( values[m] );
 
             DocumentDomainObject existingDocument = documentMapper.getDocument( existingDocumentId );
             // Add the document in menu if user is admin for the document OR the document is shared.
-            addDocumentToMenu( existingDocument, parentDocument, menuIndex, user, allowedDocumentTypeIds );
+            addDocumentToMenu( existingDocument, parentDocument, menuIndex, user );
 
         }
     }
 
     private void redirectBackToMenu( HttpServletResponse res, TextDocumentDomainObject parentDocument, int menuIndex ) throws IOException {
-        res.sendRedirect( "AdminDoc?meta_id=" + parentDocument.getId() + "&flags=" + IMCConstants.DISPATCH_FLAG__EDIT_MENU
+        res.sendRedirect( "AdminDoc?meta_id=" + parentDocument.getId() + "&flags="
+                          + IMCConstants.DISPATCH_FLAG__EDIT_MENU
                           + "&editmenu="
                           + menuIndex );
     }
@@ -216,7 +215,8 @@ public class GetExistingDoc extends HttpServlet {
     }
 
     private void addDocumentToMenu( DocumentDomainObject document, TextDocumentDomainObject parentDocument,
-                                    int menuIndex, UserDomainObject user, Set allowedDocumentTypeIds ) {
+                                    int menuIndex, UserDomainObject user ) {
+        Set allowedDocumentTypeIds = getUsersAllowedDocumentTypeIdsOnDocument( user, parentDocument ) ;
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
         boolean sharePermission = documentMapper.userHasPermissionToAddDocumentToAnyMenu( user, document );
         boolean canAddToMenu = allowedDocumentTypeIds.contains( new Integer( document.getDocumentTypeId() ) )
