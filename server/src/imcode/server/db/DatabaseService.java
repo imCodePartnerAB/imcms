@@ -959,8 +959,26 @@ public class DatabaseService {
     /*
     Detects if a user is administrator or not
     */
-/*
-    public sproc_CheckAdminRights() {
 
-    }*/
+    /**
+     *
+     * @return role_ids
+     */
+    // In the databse sproc it returned the user_id, role_id, but the code that used it
+    // assumed it was just roles. And only one role.
+    // So a changed this to return only role_id's.
+    // But I think that it should return a boolean true or fals if it is a
+    boolean sproc_CheckAdminRights( int user_id ) {
+        String sql = "SELECT roles.role_id FROM users " +
+            "INNER JOIN user_roles_crossref ON users.user_id = user_roles_crossref.user_id " +
+            "INNER JOIN roles ON user_roles_crossref.role_id = roles.role_id " +
+            "WHERE roles.role_id = 0 AND users.user_id = ?";
+        Object[] paramValues = new Object[]{ new Integer( user_id) } ;
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Integer( rs.getInt("role_id"));
+            }
+        } );
+        return queryResult.size() != 0;
+    }
 }

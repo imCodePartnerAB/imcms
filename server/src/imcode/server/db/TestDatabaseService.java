@@ -24,7 +24,8 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     static String MYSQL_DATABASE_USER = "root";
     static String MYSQL_DATABASE_PASSWORD = "";
 
-    private final static int SUPERADMIN_ID = 1;
+    private final static int ADMIN_ID = 1;
+    private final static int USER_ID = 2;
     private final static int TEST_DOC_ID_FIRST = 9001;
     private final static int TEST_DOC_ID_DETACHED = 9999;
 
@@ -327,10 +328,10 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_getChilds( DatabaseService dbService ) {
-        DatabaseService.View_ChildData[] children = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, SUPERADMIN_ID );
+        DatabaseService.View_ChildData[] children = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, ADMIN_ID );
         assertEquals( 0, children.length );
 
-        children = dbService.sproc_getChilds( TEST_DOC_ID_FIRST, SUPERADMIN_ID );
+        children = dbService.sproc_getChilds( TEST_DOC_ID_FIRST, ADMIN_ID );
         assertEquals( 1, children.length );
     }
 
@@ -341,14 +342,26 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_AddExistingDocToMenu( DatabaseService dbService ) {
-        int linksBefore = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, SUPERADMIN_ID ).length;
+        int linksBefore = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, ADMIN_ID ).length;
 
         int rowCount = dbService.sproc_AddExistingDocToMenu(TEST_DOC_ID_DETACHED, TEST_DOC_ID_DETACHED, 1 );
         assertEquals( 1, rowCount );
 
-        int linksAfter = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, SUPERADMIN_ID ).length;
+        int linksAfter = dbService.sproc_getChilds( TEST_DOC_ID_DETACHED, ADMIN_ID ).length;
         assertEquals( linksBefore + 1 , linksAfter );
     }
+
+    public void test_sproc_CheckAdminRights() {
+        assertTrue( sqlServer.sproc_CheckAdminRights( ADMIN_ID ));
+        assertFalse( sqlServer.sproc_CheckAdminRights( USER_ID ));
+
+        assertTrue( mySql.sproc_CheckAdminRights( ADMIN_ID ));
+        assertFalse( mySql.sproc_CheckAdminRights( USER_ID ));
+
+        assertTrue( mimer.sproc_CheckAdminRights( ADMIN_ID ));
+        assertFalse( mimer.sproc_CheckAdminRights( USER_ID ));
+    }
+
     // Below is helper functions to more than one test.
 
     private static DatabaseService.Table_users static_createDummyUser( int nextFreeUserId ) {
