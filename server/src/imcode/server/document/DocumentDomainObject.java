@@ -9,6 +9,9 @@ import java.util.Date;
 
 public class DocumentDomainObject implements IMCConstants {
 
+    /**
+     * These are taken from the databse table doc_types
+     */
     interface DocumentTypes {
         public static final String TEXT = "2";
         public static final String URL = "5";
@@ -16,9 +19,9 @@ public class DocumentDomainObject implements IMCConstants {
         public static final String HTML = "7";
         public static final String FILE = "8";
         public static final String CONFERANCE = "102";
-        public static final String CHAT = "103?";
+        public static final String CHAT = "103";
         public static final String BILLBOARD = "104";
-        public static final String CALENDAR = "105?";
+        public static final String CALENDAR = "107";
     }
 
     private int metaId;

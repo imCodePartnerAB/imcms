@@ -20,7 +20,11 @@ public class DocumentMapper {
     private IMCService service;
     private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
     private Logger log = Logger.getLogger( DocumentMapper.class );
+    private static final String DATE_FORMATING_STRING = "yyyy-MM-dd HH:mm:ss";
 
+    /**
+     * Stored procedure names used in this class
+     */
     private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
     private static final String SPROC_GET_TEST_DOC_DATA = "GetTextDocData";
     private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
@@ -30,23 +34,51 @@ public class DocumentMapper {
     private static final String SPROC_GET_TEXT = "GetText ";
     private static final String SPROC_INSERT_TEXT = "InsertText ";
 
+    private String[] sprocGetUserPermissionSet( int metaId, int userId ) {
+        String[] sqlParams = {String.valueOf( metaId ), String.valueOf( userId )};
+        String[] sqlResult = service.sqlProcedure( SPROC_GET_USER_PERMISSION_SET, sqlParams );
+        return sqlResult;
+    }
+
+    /** @return the filename for a fileupload-internalDocument, or null if the internalDocument isn't a fileupload-docuemnt. **/
+    private String sprocGetFilename( int meta_id ) {
+        String[] params = new String[]{String.valueOf( meta_id )};
+        return service.sqlProcedureStr( SPROC_GET_FILE_NAME, params );
+    }
+
+    private String[] sprocGetUserRolesDocPermissions( int metaId ) {
+        String[] params = {String.valueOf( metaId ), null};
+        String[] sprocResult = service.sqlProcedure( SPROC_GET_USER_ROLES_DOC_PERMISSONS, params );
+        return sprocResult;
+    }
+
+    private String[] sprocGetDocumentInfo( int metaId ) {
+        String[] params = new String[]{String.valueOf( metaId )};
+        String[] result = service.sqlProcedure( SPROC_GET_DOCUMENT_INFO, params );
+        return result;
+    }
+
     public DocumentMapper( IMCService service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
         this.service = service;
         this.imcmsAAUM = imcmsAAUM;
     }
 
+    private String[] sprocGetTestDocData( int metaId ) {
+        String[] textdoc_data = service.sqlProcedure( SPROC_GET_TEST_DOC_DATA, new String[]{String.valueOf( metaId )} );
+        return textdoc_data;
+    }
+
     public DocumentDomainObject getDocument( int metaId ) {
         DocumentDomainObject document = null;
         try {
-            String[] params = new String[]{String.valueOf(metaId)};
-            String[] result = service.sqlProcedure( SPROC_GET_DOCUMENT_INFO, params );
+            String[] result = sprocGetDocumentInfo( metaId );
 
             //lets start and do some controlls of the resulted data
             if( result == null || result.length < 25 ) {
                 throw new IndexOutOfBoundsException( "No such internalDocument: " + metaId );
             }
 
-            DateFormat dateform = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+            DateFormat dateform = new SimpleDateFormat( DATE_FORMATING_STRING );
             //ok lets set all the internalDocument stuff
             try {
                 document = new DocumentDomainObject();
@@ -93,10 +125,10 @@ public class DocumentMapper {
                 document.setArchivedDatetime( null );
             }
             if( document.getDocumentType() == IMCConstants.DOCTYPE_FILE ) {
-                document.setFilename( getFilename( metaId ) );
+                document.setFilename( sprocGetFilename( metaId ) );
             }
             if( document.getDocumentType() == IMCConstants.DOCTYPE_TEXT ) {
-                String[] textdoc_data = service.sqlProcedure( SPROC_GET_TEST_DOC_DATA, new String[]{String.valueOf( metaId )} );
+                String[] textdoc_data = sprocGetTestDocData( metaId );
 
                 if( textdoc_data.length >= 4 ) {
                     document.setTemplate( new Template( Integer.parseInt( textdoc_data[0] ), textdoc_data[1] ) );
@@ -122,22 +154,15 @@ public class DocumentMapper {
         return section_data[1];
     }
 
-    /** @return the filename for a fileupload-internalDocument, or null if the internalDocument isn't a fileupload-docuemnt. **/
-    private String getFilename( int meta_id ) {
-        String[] params = new String[]{ String.valueOf(meta_id)};
-        return service.sqlProcedureStr( SPROC_GET_FILE_NAME, params );
-    }
-
     public Map getAllRolesMappedToPermissions( DocumentDomainObject document ) {
         Map result = new HashMap();
-        String[] params = {String.valueOf( document.getMetaId() ), null};
-        String[] sprocResult = service.sqlProcedure( SPROC_GET_USER_ROLES_DOC_PERMISSONS, params );
+        String[] sprocResult = sprocGetUserRolesDocPermissions( document.getMetaId() );
         int columnsResult = 4;
         for( int i = 0; i < sprocResult.length; i += columnsResult ) {
             // String roleId = sprocResult[i];
             String roleName = sprocResult[i + 1];
-            String setId = sprocResult[i + 2];
-            result.put( roleName, Integer.valueOf( setId ) );
+            String userPermissionSetId = sprocResult[i + 2];
+            result.put( roleName, userPermissionSetId );
         }
         return result;
     }
@@ -152,11 +177,8 @@ public class DocumentMapper {
             result = true;
         } else {
 
-            String[] sqlParams = {String.valueOf( document.getMetaId() ), String.valueOf( user.getUserId() )};
-            String[] sqlResult = service.sqlProcedure( SPROC_GET_USER_PERMISSION_SET, sqlParams );
-
+            String[] sqlResult = sprocGetUserPermissionSet( document.getMetaId(), user.getUserId() );
             Vector perms = new Vector( Arrays.asList( sqlResult ) );
-
 
             if( perms.size() > 0 ) {
                 int userPermissionSetId = Integer.parseInt( (String)perms.elementAt( 0 ) );
@@ -230,8 +252,8 @@ public class DocumentMapper {
      **/
     public void touchDocument( int meta_id ) {
         Date date = new Date();
-        SimpleDateFormat dateformat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+        SimpleDateFormat dateformat = new SimpleDateFormat( DATE_FORMATING_STRING );
         service.sqlUpdateQuery( "update meta set date_modified = '" + dateformat.format( date ) + "' where meta_id = " + meta_id );
     }
-
 }
+
