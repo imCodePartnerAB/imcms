@@ -502,14 +502,14 @@ public abstract class DatabaseService {
         return (Table_phone[])queryResult.toArray( new Table_phone[queryResult.size()] );
     }
 
-    static class View_PhonesAndPhoneTypes {
+    static class MoreThanOneTable_PhonesAndPhoneTypes {
         private int phone_id;
         private String number;
         private int user_id;
         private int phonetype_id;
         private String typename;
 
-        View_PhonesAndPhoneTypes( int phone_id, String number, int user_id, int phonetype_id, String typename ) {
+        MoreThanOneTable_PhonesAndPhoneTypes( int phone_id, String number, int user_id, int phonetype_id, String typename ) {
             this.phone_id = phone_id;
             this.number = number;
             this.user_id = user_id;
@@ -520,7 +520,7 @@ public abstract class DatabaseService {
 
     // todo: Do we realy need to return user_id?
     // todo: This should be able to be used instead of sproc_GetUserPhones, why not?
-    View_PhonesAndPhoneTypes[] sproc_GetUserPhoneNumbers( int user_id ) {
+    MoreThanOneTable_PhonesAndPhoneTypes[] sproc_GetUserPhoneNumbers( int user_id ) {
         String sql = "SELECT phones.phone_id, phones.number, phones.user_id, phones.phonetype_id, phonetypes.typename " +
             "FROM phones " +
             "INNER JOIN users ON phones.user_id = users.user_id " +
@@ -534,10 +534,10 @@ public abstract class DatabaseService {
                 int user_id = rs.getInt( "user_id" );
                 int phonetype_id = rs.getInt( "phonetype_id" );
                 String typename = rs.getString( "typename" );
-                return new View_PhonesAndPhoneTypes( phone_id, number, user_id, phonetype_id, typename );
+                return new MoreThanOneTable_PhonesAndPhoneTypes( phone_id, number, user_id, phonetype_id, typename );
             }
         } );
-        return (View_PhonesAndPhoneTypes[])queryResult.toArray( new View_PhonesAndPhoneTypes[queryResult.size()] );
+        return (MoreThanOneTable_PhonesAndPhoneTypes[])queryResult.toArray( new MoreThanOneTable_PhonesAndPhoneTypes[queryResult.size()] );
     }
 
     int sproc_DocumentDelete( int meta_id ) {
@@ -684,7 +684,7 @@ public abstract class DatabaseService {
         return (PartOfTable_document[])queryResult.toArray( new PartOfTable_document[queryResult.size()] );
     }
 
-    static class View_ChildsAndMeta {
+    static class MoreThanOneTable_ChildsAndMeta {
         private int to_meta_id;
         private int menu_sort;
         private int manual_sort_order;
@@ -701,7 +701,7 @@ public abstract class DatabaseService {
         private Timestamp archived_datetime;
         private String filename;
 
-        View_ChildsAndMeta( int to_meta_id, int menu_sort, int manual_sort_order, int doc_type, boolean archive, String target, Timestamp date_created, Timestamp date_modified, String meta_headline, String meta_text, String meta_image, String frame_name, Timestamp activated_datetime, Timestamp archived_datetime, String filename ) {
+        MoreThanOneTable_ChildsAndMeta( int to_meta_id, int menu_sort, int manual_sort_order, int doc_type, boolean archive, String target, Timestamp date_created, Timestamp date_modified, String meta_headline, String meta_text, String meta_image, String frame_name, Timestamp activated_datetime, Timestamp archived_datetime, String filename ) {
             this.to_meta_id = to_meta_id;
             this.menu_sort = menu_sort;
             this.manual_sort_order = manual_sort_order;
@@ -727,7 +727,7 @@ public abstract class DatabaseService {
     // todo WARNING, i anropande kod måste en förändring ske!
     // todo Den bortkommenterade reden nedan beräknar om man har rätt att editera eller ej.
     // todo Se till att göra den kollen på annat sätt efteråt för varje dokument.
-    View_ChildsAndMeta[] sproc_getChilds( int meta_id, int user_id ) {
+    MoreThanOneTable_ChildsAndMeta[] sproc_getChilds( int meta_id, int user_id ) {
         Integer sortOrder = getMenuSortOrder( meta_id );
         String sql =
             "select to_meta_id, c.menu_sort,manual_sort_order, doc_type," +
@@ -786,11 +786,11 @@ public abstract class DatabaseService {
                 Timestamp activated_datetime = rs.getTimestamp( "activated_datetime" );
                 Timestamp archived_datetime = rs.getTimestamp( "archived_datetime" );
                 String filename = rs.getString( "filename" );
-                return new View_ChildsAndMeta( to_meta_id, menu_sort, manual_sort_order, doc_type, archive, target, date_created, date_modified, meta_headline,
+                return new MoreThanOneTable_ChildsAndMeta( to_meta_id, menu_sort, manual_sort_order, doc_type, archive, target, date_created, date_modified, meta_headline,
                                            meta_text, meta_image, frame_name, activated_datetime, archived_datetime, filename );
             }
         } );
-        return (View_ChildsAndMeta[])queryResult.toArray( new View_ChildsAndMeta[queryResult.size()] );
+        return (MoreThanOneTable_ChildsAndMeta[])queryResult.toArray( new MoreThanOneTable_ChildsAndMeta[queryResult.size()] );
     }
 
     private Integer getMenuSortOrder( int meta_id ) {
@@ -2051,5 +2051,65 @@ public abstract class DatabaseService {
             }
         } );
         return ((Integer)queryResult.get(0)).intValue();
+    }
+
+    String sproc_GetUserPassword( int user_id ) {
+        String sql = "SELECT login_password FROM USERS WHERE user_id = ? ";
+        Object[] paramValues = new Object[]{ new Integer( user_id ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return rs.getString("login_password");
+            }
+        } );
+        if( 0 == queryResult.size() ) {
+            return "";// todo: borde det inte vara null istället?
+        } else {
+            return (String)queryResult.get(0);
+        }
+    }
+
+    static class PartOfTable_roles {
+        private int role_id;
+        private String role_name;
+
+        public PartOfTable_roles( ResultSet rs ) throws SQLException {
+            this.role_id = rs.getInt("role_id");
+            this.role_name = rs.getString("role_name");
+        }
+    }
+
+    PartOfTable_roles[] sproc_getUserRoleIds( int user_id ) {
+        String sql = "SELECT roles.role_id, role_name FROM roles, user_roles_crossref WHERE roles.role_id = user_roles_crossref.role_id AND user_roles_crossref.user_id = ? ";
+        Object[] paramValues = new Object[]{ new Integer( user_id ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new PartOfTable_roles(rs);
+            }
+        } );
+        return (PartOfTable_roles[])queryResult.toArray( new PartOfTable_roles[queryResult.size()]);
+    }
+
+    static class PartOfTable_users {
+        private int user_id;
+        private String first_name;
+        private String last_name;
+
+        public PartOfTable_users( ResultSet rs ) throws SQLException {
+            this.user_id = rs.getInt("user_id");
+            this.first_name = rs.getString("first_name");
+            this.last_name = rs.getString("last_name");
+        }
+    }
+
+    PartOfTable_users[] sproc_GetUsersWhoBelongsToRole( int role_id ) {
+        String sql = "SELECT u.user_id, u.last_name, u.first_name FROM user_roles_crossref us " +
+            "JOIN users u ON us.user_id = u.user_id WHERE role_id = ? ORDER BY last_name";
+        Object[] paramValues = new Object[]{ new Integer(role_id ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new PartOfTable_users( rs );
+            }
+        } );
+        return (PartOfTable_users[])queryResult.toArray( new PartOfTable_users[ queryResult.size() ]);
     }
 }

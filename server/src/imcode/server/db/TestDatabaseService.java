@@ -95,8 +95,24 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_sproc_GetRoleIdByRoleName( databaseService );
             test_sproc_getTemplates( databaseService );
             test_sproc_GetTemplateId( databaseService );
+            test_sproc_GetUserPassword( databaseService );
+            test_sproc_getUserRoleIds( databaseService );
+            test_sproc_GetUsersWhoBelongsToRole( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_GetUsersWhoBelongsToRole( DatabaseService databaseService ) {
+        assertEquals( 2, databaseService.sproc_GetUsersWhoBelongsToRole( ROLE_USERS_ID ).length );
+    }
+
+    private void test_sproc_getUserRoleIds( DatabaseService databaseService ) {
+        assertEquals( 2, databaseService.sproc_getUserRoleIds( USER_TEST_ID ).length );
+    }
+
+    private void test_sproc_GetUserPassword( DatabaseService databaseService ) {
+        assertEquals( "admin", databaseService.sproc_GetUserPassword( USER_ADMIN_ID ) );
+        assertEquals( "", databaseService.sproc_GetUserPassword( USER_ID_NON_EXISTING ) );
     }
 
     private void test_sproc_GetTemplateId( DatabaseService databaseService ) {
@@ -205,7 +221,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_getChilds( DatabaseService dbService ) {
-        DatabaseService.View_ChildsAndMeta[] children = dbService.sproc_getChilds( DOC_TEST_ID_DETACHED, USER_ADMIN_ID );
+        DatabaseService.MoreThanOneTable_ChildsAndMeta[] children = dbService.sproc_getChilds( DOC_TEST_ID_DETACHED, USER_ADMIN_ID );
         assertEquals( 0, children.length );
 
         children = dbService.sproc_getChilds( DOC_TEST_FIRST_ID, USER_ADMIN_ID );
