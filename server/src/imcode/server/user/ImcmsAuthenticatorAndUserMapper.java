@@ -220,7 +220,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
       User[] result = new User[noOfUsers];
       for( int i = 0; i < noOfUsers; i++ ) {
          String userId = allUsersSqlResult[i * noOfColumnsInSearchResult];
-         result[i] = getUser( userId );
+         result[i] = getUser( Integer.parseInt(userId) );
       }
       return result;
    }

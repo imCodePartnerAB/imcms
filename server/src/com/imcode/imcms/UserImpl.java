@@ -17,4 +17,8 @@ class UserImpl implements User {
       String result = internalUser.getPassword();
       return result;
    }
+
+   public String getCompany() {
+      return internalUser.getCompany();
+   }
 }

@@ -5,7 +5,7 @@ import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 public class UserMapperImpl implements UserMapper {
    private ImcmsAuthenticatorAndUserMapper mapper;
 
-   UserMapperImpl( ImcmsAuthenticatorAndUserMapper mapper ) {
+   public UserMapperImpl( ImcmsAuthenticatorAndUserMapper mapper ) {
       this.mapper = mapper;
    }
 
