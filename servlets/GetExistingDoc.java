@@ -137,10 +137,15 @@ public class GetExistingDoc extends HttpServlet {
 
             // Lets fix the sortby list, first get the displaytexts from the database
             String[][] sortOrder = imcref.sqlProcedureMulti( "SortOrder_GetExistingDocs", new String[]{langPrefix} );
-            Vector sortOrderV = new Vector( Arrays.asList( sortOrder ) );
             Hashtable sortOrderHash = convert2Hashtable( sortOrder );
             if ( sortOrderHash.containsKey( sortBy ) == false ) {
                 sortBy = "meta_id";
+            }
+            //Vector sortOrderV = new Vector( Arrays.asList( sortOrder ) );
+            Vector sortOrderV = new Vector();
+            for(int i=0; i<sortOrder.length; i++){
+                sortOrderV.add(sortOrder[i][0]);
+                sortOrderV.add(sortOrder[i][1]);
             }
 
             //------------------------------------------------------------------
@@ -254,9 +259,9 @@ public class GetExistingDoc extends HttpServlet {
                 }
 
                 // Lets get all possible values of for the documenttypes from database
-                for ( int i = 0; i < allDocTypesArray.length; i += 2 ) {
-                    outVector.add( "#checked_" + allDocTypesArray[i] + "#" );
-                    if ( selectedDocTypes.containsKey( allDocTypesArray[i] ) )
+                for ( int i = 0; i < allDocTypesArray.length; i++ ) {
+                    outVector.add( "#checked_" + allDocTypesArray[i][0] + "#" );
+                    if ( selectedDocTypes.containsKey( allDocTypesArray[i][0] ) )
                         outVector.add( "checked" );
                     else
                         outVector.add( "" );
