@@ -29,6 +29,8 @@
 
   <property file="build.properties"/>
 
+  <property name="webappname"     value="imcms"/>
+
   <property name="servleturl"     value="/${webappname}/servlet"/>
   <property name="loginurl"       value="/${webappname}/login"/>
   <property name="imageurl"       value="/${webappname}/images"/>
@@ -145,9 +147,6 @@
       <filterset>
 
         <filter token="webapproot" value="${webapproot}"/>
-        <filter token="hostname" value="${hostname}"/>
-        <filter token="domainname" value="${domainname}"/>
-
         <filter token="serverobject" value="${serverobject}"/>
         <filter token="servleturl" value="${servleturl}"/>
         <filter token="loginurl" value="${loginurl}"/>
