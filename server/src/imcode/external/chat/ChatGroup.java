@@ -32,7 +32,7 @@ public class ChatGroup
 	*Default constructor
 	*@param groupNumber The groupNumber that this ChatGroup will have
 	*/
-	protected ChatGroup(int groupNumber,String groupName)
+	public ChatGroup(int groupNumber,String groupName)
 	{
 		_groupId = groupNumber;
 		_name = groupName;
