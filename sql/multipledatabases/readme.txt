@@ -39,7 +39,6 @@ existingdocsgetselectedmetaids.prc
 getcategoryusers.prc
 getdoctypeswithnewpermissions.prc
 
-getmenudocchilds.prc
 getmetapathinfo.prc
 getpermissionset.prc
 getreadrunneruserdataforuser.prc

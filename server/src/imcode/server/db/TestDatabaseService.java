@@ -136,8 +136,14 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_Poll_GetQuestion( databaseService );
             test_sproc_Poll_GetAnswer( databaseService );
             test_sporc_GetDocTypesWithPermissions( databaseService );
+            test_sproc_getMenuDocChilds( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_getMenuDocChilds( DatabaseService databaseService ) {
+        assertEquals(1, databaseService.sproc_getMenuDocChilds( DOC_TEST_FIRST_ID, USER_ADMIN_ID).length );
+        assertEquals(0, databaseService.sproc_getMenuDocChilds( DOC_TEST_FIRST_ID, USER_TEST_ID).length );
     }
 
     private void test_sporc_GetDocTypesWithPermissions( DatabaseService databaseService ) {

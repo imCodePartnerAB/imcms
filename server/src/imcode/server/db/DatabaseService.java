@@ -625,7 +625,7 @@ public abstract class DatabaseService {
         Integer thisCountItem = (Integer)queryResult.get( 0 );
         int rowCount = 0;
         if( thisCountItem.intValue() == 0 ) {
-            String sql = "insert into childs( meta_id, to_meta_id, menu_sort, manual_sort_order) values( ?, ?, ?, ? )";
+            String sql = "INSERT INTO childs( meta_id, to_meta_id, menu_sort, manual_sort_order) VALUES( ?, ?, ?, ? )";
             Object[] paramValues = new Object[]{new Integer( meta_id ), new Integer( existing_meta_id ), new Integer( doc_menu_no ), new Integer( manualSortOrder )};
             rowCount = sqlProcessor.executeUpdate( sql, paramValues );
 
@@ -2955,5 +2955,37 @@ public abstract class DatabaseService {
         } else {
             return (Table_poll_answers)queryResult.get(0);
         }
+    }
+
+    public class JoinedTables_meta_childs2 {
+        int to_meta_id;
+        String meta_headline;
+
+        public JoinedTables_meta_childs2( ResultSet rs ) throws SQLException {
+            to_meta_id = rs.getInt("to_meta_id");
+            meta_headline = rs.getString("meta_headline");
+        }
+    }
+    JoinedTables_meta_childs2[] sproc_getMenuDocChilds( int meta_id, int user_id ) {
+        String sql = "SELECT DISTINCT to_meta_id, meta_headline FROM childs c " +
+            "JOIN meta m " +
+                "ON c.to_meta_id = m.meta_id " +
+                "AND c.meta_id = ? " +
+            "LEFT JOIN roles_rights rr " +
+                "ON rr.meta_id = m.meta_id " +
+                "AND rr.set_id < 4 " +
+            "JOIN user_roles_crossref urc " +
+                "ON urc.user_id = ? " +
+                "AND (  urc.role_id = 0 " +
+                "OR urc.role_id = rr.role_id " +
+                "OR  m.shared = 1) " +
+            "WHERE m.activate = 1 ORDER BY to_meta_id" ;
+        Object[] paramValues = new Object[]{ new Integer( meta_id ), new Integer( user_id ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new JoinedTables_meta_childs2( rs );
+            }
+        } );
+        return (JoinedTables_meta_childs2[])queryResult.toArray( new JoinedTables_meta_childs2[queryResult.size()] );
     }
 }
