@@ -68,14 +68,7 @@ public class DocumentIndex {
         return (DocumentDomainObject[])result.toArray( new DocumentDomainObject[result.size()] );
     }
 
-    public Query parseLucene( String queryString ) throws ParseException {
-        return QueryParser.parse( queryString,
-                                  "default",
-                                  new WhitespaceLowerCaseAnalyzer() );
-
-    }
-
-    public synchronized void indexAllDocuments() {
+   public synchronized void indexAllDocuments() {
         NDC.push( "indexAllDocuments" );
         try {
             openIndexWriter( true );
@@ -110,6 +103,18 @@ public class DocumentIndex {
         }
     }
 
+    public synchronized void reindexOneDocument( DocumentDomainObject document ) throws IOException {
+        deleteDocumentFromIndex( document );
+        addDocumentToIndex( document );
+    }
+
+    public Query parseLucene( String queryString ) throws ParseException {
+        return QueryParser.parse( queryString,
+                                  "default",
+                                  new WhitespaceLowerCaseAnalyzer() );
+
+    }
+
     private void logIndexingCompleted( int numberOfDocuments, StopWatch indexingStopWatch ) {
         log.info( "Completed index of " + numberOfDocuments + " documents in " + indexingStopWatch.getTime()
                   + "ms" );
@@ -124,12 +129,12 @@ public class DocumentIndex {
         return imcref.sqlQuery( "SELECT meta_id FROM meta", new String[0] );
     }
 
-    private synchronized void closeIndexWriter() throws IOException {
+    private void closeIndexWriter() throws IOException {
         indexWriter.close();
         indexWriter = null;
     }
 
-    private synchronized void openIndexWriter( final boolean createIndex ) throws IOException {
+    private void openIndexWriter( final boolean createIndex ) throws IOException {
         if ( null == indexWriter ) {
             indexWriter = new IndexWriter( dir, new WhitespaceLowerCaseAnalyzer(), createIndex );
         }
@@ -160,18 +165,13 @@ public class DocumentIndex {
         log.info( "Optimized index in " + optimizeStopWatch.getTime() + "ms" );
     }
 
-    public void reindexOneDocument( DocumentDomainObject document ) throws IOException {
-        deleteDocumentFromIndex( document );
-        addDocumentToIndex( document );
-    }
-
-    private synchronized void addDocumentToIndex( DocumentDomainObject document ) throws IOException {
+    private void addDocumentToIndex( DocumentDomainObject document ) throws IOException {
         openIndexWriter( false );
         addDocumentToIndex( document, indexWriter );
         closeIndexWriter();
     }
 
-    private synchronized void addDocumentToIndex( DocumentDomainObject document, IndexWriter indexWriter ) throws IOException {
+    private void addDocumentToIndex( DocumentDomainObject document, IndexWriter indexWriter ) throws IOException {
         Document indexDocument = createIndexDocument( document );
         indexWriter.addDocument( indexDocument );
     }
@@ -254,7 +254,7 @@ public class DocumentIndex {
         }
     }
 
-    private synchronized void deleteDocumentFromIndex( DocumentDomainObject document ) throws IOException {
+    private void deleteDocumentFromIndex( DocumentDomainObject document ) throws IOException {
         IndexReader indexReader = IndexReader.open( dir );
         indexReader.delete( new Term( "meta_id", "" + document.getId() ) );
         indexReader.close();

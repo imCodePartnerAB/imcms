@@ -16,7 +16,7 @@ public class ApplicationServer {
     private static IMCPoolInterface imcPoolInterface;
 
 
-    public static IMCServiceInterface getIMCServiceInterface() {
+    public synchronized static IMCServiceInterface getIMCServiceInterface() {
         if ( null == imcServiceInterface ) {
             imcServiceInterface = createIMCServiceInterface();
         }
