@@ -13,9 +13,10 @@ CLASSES = AddDoc.class \
           ChangeText.class \
           ChangeUrl.class \
           FileAdmin.class \
+          GenericUpload.class \
           GetDoc.class \
           GetExistingDoc.class \
-	  ImageBrowse.class \
+          ImageBrowse.class \
           ImageUpload.class \
           LastRequest.class \
           LogOut.class \
