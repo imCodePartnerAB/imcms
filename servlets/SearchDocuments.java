@@ -353,9 +353,6 @@ public class SearchDocuments extends HttpServlet {
 						buff.append("\"not\",");
 					}
 				}else {
-					if ( !str.endsWith("*") ) {
-						str =  str + "*";
-					}
 					if ( !first ) {
 						return "\""+str+"\",";
 					}else {
