@@ -35,7 +35,7 @@ public class ChatLogin extends ChatBase
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-		log("start doGet");
+		//log("start doGet");
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
 		HttpSession session = req.getSession(true);
@@ -84,10 +84,7 @@ public class ChatLogin extends ChatBase
 			//get parameters from db
 			String getParamsSql = "C_GetChatParameters "+metaId;
 			String[] param = rmi.execSqlProcedure(chatPoolServer, "C_GetChatParameters '"+ metaId  + "' ");	
-			for(int i=0;i<param.length;i++)
-			{
-				log("???##= "+param[i]);
-			}				
+							
 			Properties chatParams = super.getChatParams(param);
 			String[] chatData = rmi.execSqlProcedure(chatPoolServer, "C_GetChatNameAndPerm '"+ metaId  + "' ");	
 			chatParams.setProperty("chatName",chatData[0]);
@@ -102,7 +99,7 @@ public class ChatLogin extends ChatBase
 			String[][] roomIdNr = rmi.execProcedureMulti(chatPoolServer, "C_GetRooms " + metaId) ;
 			for(int i=0; i<roomIdNr.length;i++)
 			{
-				log(roomIdNr[i][0]);
+				//log(roomIdNr[i][0]);
 				myChat.createNewChatGroup(Integer.parseInt(roomIdNr[i][0]), roomIdNr[i][1]);
 			}  
 			myContext.setAttribute("theChat"+metaId,myChat);
@@ -135,10 +132,10 @@ public class ChatLogin extends ChatBase
 			loggedOnOk = true;
 		}
 		
-		log("loggedOnOk = "+loggedOnOk);
-		log("aliasBol ="+aliasBol);
-		log("imCmsRegBol ="+imCmsRegBol);
-		log("selfRegBol ="+selfRegBol);
+		//log("loggedOnOk = "+loggedOnOk);
+		//log("aliasBol ="+aliasBol);
+		//log("imCmsRegBol ="+imCmsRegBol);
+		//log("selfRegBol ="+selfRegBol);
 		
 		
 		if (aliasBol && !imCmsRegBol)
@@ -240,7 +237,7 @@ public class ChatLogin extends ChatBase
 		vm.addProperty( "#IMAGE_URL#", this.getExternalImageFolder( req, res ) );
 		sendHtml(req,res,vm, LOGIN_HTML) ;
 		
-		log("end doGet");
+		//log("end doGet");
 		return ;
 
 	} // End doGet
@@ -250,7 +247,7 @@ public class ChatLogin extends ChatBase
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-		log("start doPost");
+		//log("start doPost");
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
 		HttpSession session = req.getSession(true);

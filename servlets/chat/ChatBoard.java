@@ -48,7 +48,7 @@ public class ChatBoard extends ChatBase
 			log("the params was null so return");
 			return;
 		}
-		log("params :"+params);
+		//log("params :"+params);
 
 		if (super.checkParameters(req, res, params) == false)
 		{
@@ -140,12 +140,12 @@ public class ChatBoard extends ChatBase
 			boolean autoReload = ((Boolean)theSettings.get("reloadBoolean")).booleanValue();
 			boolean inOut = ((Boolean)theSettings.get("inOutBoolean")).booleanValue();
 			int fontSizeInt = ((Integer)theSettings.get("fontSizeInteger")).intValue();
-			log("%%%= "+ fontSizeInt);
+			//log("%%%= "+ fontSizeInt);
 			String time = ((Integer)theSettings.get("reloadInteger")).toString();
-			log("reload"+time);
+			//log("reload"+time);
 			String fontSize = Integer.toString(fontSizeInt);
 
-			log("autoReload = "+autoReload);
+			//log("autoReload = "+autoReload);
 			//lets set up the autoreload or not
 			if (autoReload)
 			{
@@ -257,25 +257,26 @@ public class ChatBoard extends ChatBase
 					sendMsgString.append(generator.createHtmlString(vm, req)+"<br>\n");
 					if (lastMsgInt == tempMsg.getIdNumber())
 					{
-						sendMsgString.append("<hr>\n");
+						sendMsgString.append("<a name='#bottom'></a><hr>\n");
 					}
 				}
 				
 			}//end while loop
 		
 		}//end if (req.getParameter("ROOM_ID") != null )	
-
+		res.setHeader("Cashe-Control","no-cache");
+		res.setHeader("Pragma","no-cache");
 		
 		//<META HTTP-EQUIV="Refresh" CONTENT="3;URL=http://www.????.com">
 		//log("chatRefresh = "+chatRefresh);
 		VariableManager vm = new VariableManager() ;
 		vm.addProperty("CHAT_REFRESH", chatRefresh);
 		vm.addProperty("CHAT_MESSAGES", sendMsgString.toString()  );
-
+		
 
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
 		//	this.showSession(req) ;
-		log("ChatBoard doGet är färdig") ;
+		//log("ChatBoard doGet är färdig") ;
 
 	} //***  end DoGet  *****  end doGet  *****  end doGet *****  end doGet ***
 
@@ -335,7 +336,7 @@ public class ChatBoard extends ChatBase
 	throws ServletException, IOException
 	{
 
-		log("OBS!!!Properties getRequestParameters( HttpServletRequest req)");
+		//log("OBS!!!Properties getRequestParameters( HttpServletRequest req)");
 		Properties reqParams = new Properties() ;
 
 		// Lets get our own variables. We will first look for the discussion_id

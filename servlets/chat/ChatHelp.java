@@ -37,7 +37,7 @@ public class ChatHelp extends ChatBase
 			return ;
 		} 
 
-		log("tyest");
+		//log("tyest");
 		// Lets get the user object 	
 		imcode.server.User user = super.getUserObj(req,res) ;
 		if(user == null) return ;
@@ -117,7 +117,7 @@ public class ChatHelp extends ChatBase
 		//params.setProperty("HELP_SPEC", helpSpec) ;
 		params.setProperty("HELP_AREA", helpInfo) ;
 		params.setProperty("HELP_MODE", helpMode) ;
-		log(req.getParameter("helpmode"));
+		//log(req.getParameter("helpmode"));
 		return params ;
 	}
 

@@ -97,15 +97,13 @@ public class ChatViewer extends ChatBase {
 	
 		//log("req.getRequestedSessionId() = "+req.getRequestedSessionId());
 
-		
-
 		// Lets build the Responsepage
 		VariableManager vm = new VariableManager() ;
 		vm.addProperty("CHAT_MESSAGES", servletHome + "ChatBoard?" + paramStr);
 
 		vm.addProperty("CHAT_CONTROL", servletHome + "ChatControl?" + paramStr ) ;
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
-		log("Nu är ChatViewer klar") ;
+		//log("Nu är ChatViewer klar") ;
 		return ;
 
 	}//end doGet

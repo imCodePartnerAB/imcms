@@ -42,7 +42,7 @@ public class ChatManager extends ChatBase
 		}
 
 		String action = req.getParameter("action") ;
-		log("ChatManager is in action...") ;
+		//log("ChatManager is in action...") ;
 		if(action == null)
 		{
 			action = "" ;
@@ -56,7 +56,7 @@ public class ChatManager extends ChatBase
 		//i'ts here we end up when we creates a new chatlink
 		if(action.equalsIgnoreCase("NEW"))
 		{
-			log("Lets add a chat");
+			//log("Lets add a chat");
 			HttpSession session = req.getSession(false) ;
 			if (session != null)
 			{
@@ -67,7 +67,7 @@ public class ChatManager extends ChatBase
 			}
 
 			String url = MetaInfo.getServletPath(req) + "ChatCreator?action=NEW" ;
-			log("Redirect till:" + url) ;
+			//log("Redirect till:" + url) ;
 			res.sendRedirect(url) ;
 			return ;
 		}
@@ -85,8 +85,8 @@ public class ChatManager extends ChatBase
 			// Lets detect which type of user we got
 			String userType = userParams.getProperty("USER_TYPE") ;
 			String loginType = userParams.getProperty("LOGIN_TYPE") ;
-				log("Usertype:" + userType) ;
-				log("loginType:" + userType) ;
+				//log("Usertype:" + userType) ;
+				//log("loginType:" + userType) ;
 
 			// We got 3 usertypes: 0= specialusers, 1=normal, 2=confernce
 			// We got 3 logintypes: "Extern"=web users, "ip_access"= people from a certain ip nbr
@@ -102,11 +102,11 @@ public class ChatManager extends ChatBase
 					session.putValue("Chat.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
 					session.putValue("Chat.cookie_id", params.getProperty("COOKIE_ID")) ;
 					session.putValue("Chat.viewedDiscList", new Properties()) ;
-					log("OK, nu sätter vi viewedDiscList") ;
+					//log("OK, nu sätter vi viewedDiscList") ;
 				}
 
 String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
-				log("Redirect till:" + loginPage) ;
+				//log("Redirect till:" + loginPage) ;
 				res.sendRedirect(loginPage) ;
 				return ;
 		
@@ -118,7 +118,7 @@ String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
 			MetaInfo mInfo = new MetaInfo() ;
 			String url = MetaInfo.getServletPath(req) + "ChangeExternalDoc2?"
 				+ mInfo.passMeta(params) + "&metadata=meta" ;
-			this.log("Redirects to:" + url) ;
+			//log("Redirects to:" + url) ;
 			res.sendRedirect(url) ;
 			return ;
 		} // End if
@@ -131,7 +131,7 @@ String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
 			String host = req.getHeader("Host") ;
 			String imcServer = Utility.getDomainPref("userserver",host) ;
 			String ChatPoolServer = Utility.getDomainPref("conference_server",host) ;
-			log("confpoolserver " + ChatPoolServer ) ;
+			//log("confpoolserver " + ChatPoolServer ) ;
 			String metaId = req.getParameter("meta_id") ;
 			String frDate = req.getParameter("from_date") ;
 			String toDate = req.getParameter("to_date") ;
@@ -145,10 +145,10 @@ String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
 			StringBuffer sql = new StringBuffer() ;
 			sql.append("C_AdminStatistics1" + " " + metaId + ", '" + frDate + "', '" );
 			sql.append(toDate + "', " + mode) ;
-			log("C_AdminStatistics sql: " + sql.toString()) ;
+			//log("C_AdminStatistics sql: " + sql.toString()) ;
 			String[][] arr = ChatManager.getStatistics(ChatPoolServer, sql.toString()) ;
 
-			log("C_AdminStatistics sql: " + arr.length) ;
+			//log("C_AdminStatistics sql: " + arr.length) ;
 		} // End if
 
 

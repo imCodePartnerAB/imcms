@@ -201,8 +201,8 @@ public class ChatError extends ChatBase
 
 		HtmlGenerator htmlObj = new HtmlGenerator( templateLib, htmlFile ) ;
 		String html = htmlObj.createHtmlString(vm,req) ;
-		log(html);
-		log( htmlFile );
+		//log(html);
+		//log( htmlFile );
 
 		htmlObj.sendToBrowser( req, res, html ) ;
 	}

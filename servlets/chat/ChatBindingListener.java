@@ -67,11 +67,10 @@ public class ChatBindingListener implements HttpSessionBindingListener
 		HttpSession session = (HttpSession)_sessions.get(Integer.toString(memberNr));
 		if (session != null)
 		{
-			System.out.println("ok we have a session So Lets Rock");
 			session.invalidate();
 		}else
 		{
-			System.out.println("something got fucked up, when kick out");
+			System.out.println("something got wrong, when kick out");
 		}
 	}
 	

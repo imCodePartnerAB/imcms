@@ -169,7 +169,7 @@ public class ChatControl extends ChatBase
 		if(userHasAdminRights( imcServer, meta_Id, user ))
 		{
 			//lets get the kickout button
-			log("chatName = "+chatName);
+			//log("chatName = "+chatName);
 			chatAdminLink = createAdminButton(req, ADMIN_BUTTON,metaId,chatName);						
 			//lets set up the kick out button OBS fixa detta
 			adminButtonKickOut = createAdminButton(req, ADMIN_GET_RID_OF_A_SESSION,metaId,"");						
@@ -190,7 +190,7 @@ public class ChatControl extends ChatBase
 		vm.addProperty("CHAT_ADMIN_DISCUSSION", adminButtonKickOut  );
 
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
-		log("ChatControl doGet klar");
+		//log("ChatControl doGet klar");
 
 		return;
 
@@ -201,7 +201,7 @@ public class ChatControl extends ChatBase
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-		log("doPost start");
+		//log("doPost start");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)
@@ -271,7 +271,7 @@ public class ChatControl extends ChatBase
 		
 		if (req.getParameter("sendMsg") != null)
 		{//**** ok the user wants to send a message ****
-			log("*** start sendMsg ***");
+			//log("*** start sendMsg ***");
 			
 			String senderName = myMember.getName();
 
@@ -360,7 +360,7 @@ public class ChatControl extends ChatBase
 			
 			
 			//ok now lets build the page in doGet but
-			log("*** end sendMsg ***");	
+			//log("*** end sendMsg ***");	
 			doGet(req,res);		
 			return;
 		
@@ -374,7 +374,7 @@ public class ChatControl extends ChatBase
 				
 		if (req.getParameter("changeRoom") != null)
 		{
-			log("*** start changeRoom ***");
+			//log("*** start changeRoom ***");
 			//ok lets get the "new room number"
 			String roomNrStr = (req.getParameter("newRooms") == null ? "" : req.getParameter("newRooms").trim()); 
 	
@@ -432,7 +432,7 @@ public class ChatControl extends ChatBase
 			session.putValue("currentRoomId", roomNrStr);
 
 			//ok lets build the page in doGet
-			log("*** end changeRoom ***");	
+			//log("*** end changeRoom ***");	
 			doGet(req, res);				
 			return;
 		}//end if (req.getParameter("changeRoom") != null)
@@ -445,12 +445,12 @@ public class ChatControl extends ChatBase
 		if (req.getParameter("controlOK") != null || req.getParameter("fontInc")!= null ||
 													req.getParameter("fontDec")!= null)
 		{
-			log("*** start changeParams ***");
+			//log("*** start changeParams ***");
 			//lets collect the new settings
 			Hashtable hash = super.prepareChatBoardSettings(myChat, req, true);
 			session.putValue("ChatBoardHashTable", hash);
 			
-			log("*** end changeParams ***");
+			//log("*** end changeParams ***");
 			doGet(req, res);
 			return;
 		}//end if (req.getParameter("controlOK") != null)
@@ -466,7 +466,7 @@ public class ChatControl extends ChatBase
 		//ok the user wants to logOut so lets send the user to the start page
 		if (req.getParameter("logOut") != null)
 		{
-			log("*** start logOut ***");
+			//log("*** start logOut ***");
 			super.cleanUpSessionParams(session);
 			log("lets get rid of the user");
 			String lastPage = user.getString("last_page");
@@ -474,7 +474,7 @@ public class ChatControl extends ChatBase
 			{
 				lastPage = RmiConf.getLoginUrl(host);
 			}
-			log("*** end logOut ***");
+			//log("*** end logOut ***");
 			res.sendRedirect(servletHome+"GetDoc?meta_id="+lastPage);			
 			return;
 		}//end logout
@@ -484,10 +484,10 @@ public class ChatControl extends ChatBase
 		//ok lets kick out a messy chat member
 		if (req.getParameter("kickOut") != null && userHasAdminRights( imcServer, meta_Id, user))
 		{
-			log("*** start kickOut ***");
+			//log("*** start kickOut ***");
 			//lets get the membernumber
 			String memberNrStr = (req.getParameter("recipient") == null ? "" :  req.getParameter("recipient").trim());
-			log("memberNrStr = "+memberNrStr);
+			//log("memberNrStr = "+memberNrStr);
 			int idNr = 0;
 			if (memberNrStr.length() == 0)
 			{
@@ -509,7 +509,7 @@ public class ChatControl extends ChatBase
 //			ChatMember memb = (ChatMember)kickOut.getValue("theChatMember");
 			//log("=========="+memb.getUserId());
 //			super.cleanUpSessionParams(kickOut);
-			log("*** end kickOut ***");
+			//log("*** end kickOut ***");
 			doGet(req, res);
 			return;
 		}//end kickout		
@@ -525,7 +525,7 @@ public class ChatControl extends ChatBase
 									String chatPoolServer, String metaId, String servletHome, imcode.server.User user)
 									throws ServletException, IOException
 	{
-		log("*** start createSettingsPage ***");
+		//log("*** start createSettingsPage ***");
 		VariableManager vm = new VariableManager() ;
 
 	        File templetUrl =	super.getExternalTemplateFolder(req);
@@ -596,7 +596,7 @@ public class ChatControl extends ChatBase
 			vm.addProperty("font",		font	); 			
 		}
 		
-		log("*** end createSettingsPage ***");
+		//log("*** end createSettingsPage ***");
 		this.sendHtml(req,res,vm, "chat_settings.html") ;
 		return;
 	}//end createSettingsPage

@@ -55,7 +55,7 @@ public class ChatBase extends HttpServlet {
 	throws ServletException
 	{
 		super.init(config);
-		log("init");
+		//log("init");
 	}
 
 	/**
@@ -932,7 +932,7 @@ public class ChatBase extends HttpServlet {
 		 	hash = new Hashtable();
 		}
 		Properties settings = member.getChatParameters();	
-		log("settings "+settings);
+		//log("settings "+settings);
 		//lets convert them
 		boolean onOff = false;
 
@@ -1055,18 +1055,18 @@ public class ChatBase extends HttpServlet {
 				{
 					onOff = true;
 					timeStr = settings.getProperty(updateTime);
-					log("¤¤¤= "+timeStr);
+					//log("¤¤¤= "+timeStr);
 				}else
 				{
 					onOff = false;
 					timeStr = settings.getProperty(updateTime);
-					log("¤¤¤= "+timeStr);
+					//log("¤¤¤= "+timeStr);
 				}				
 			}else
 			{	
 				onOff = true;
 				timeStr = settings.getProperty(updateTime);
-				log("¤¤¤= "+timeStr);
+				//log("¤¤¤= "+timeStr);
 			}
 		}
 		try
@@ -1078,15 +1078,14 @@ public class ChatBase extends HttpServlet {
 			hash.put("reloadInteger", new Integer("30"));
 		}
 		
-		log("reloadBoolean = "+onOff);
+		//log("reloadBoolean = "+onOff);
 		hash.put("reloadBoolean", new Boolean(onOff));
 
 
 		//ok first time we dont have the font size so lets set it to 3
 		int size = 3;
 		String fontSizeInteger = "fontSizeInteger";
-		log(fontSizeInteger+"= "+((Integer)hash.get(fontSizeInteger)));
-		System.out.println( hash.hashCode() );
+		//log(fontSizeInteger+"= "+((Integer)hash.get(fontSizeInteger)));
 		if (settings.getProperty("font").equals("3"))
 		{
 			if (req.getParameter("fontInc") != null)
