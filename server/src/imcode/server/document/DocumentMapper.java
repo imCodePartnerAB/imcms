@@ -711,9 +711,15 @@ public class DocumentMapper {
         imcref.sqlUpdateProcedure( "DeleteInclude " + including_meta_id + "," + include_id );
     }
 
-    public TextDocumentLinkMenuDomainObject getMenu( DocumentDomainObject internalDocument, int menuIndexInDocument ) {
-        return null;
+    public String[] getMenuLinks( int documentId, int menuIndex) {
+        return service.sqlQuery("select to_meta_id from childs where meta_id = ? and menu_sort = ?",
+                               new String[] { ""+documentId, ""+menuIndex} ) ;
     }
+
+    public boolean hasSharePermission( UserDomainObject user, int documentId ) {
+        return service.checkUserDocSharePermission(user,documentId) ;
+    }
+
 
 }
 

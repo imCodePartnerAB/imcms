@@ -7,9 +7,9 @@ import javax.naming.directory.*;
 import java.util.*;
 
 /**
- * The internalDocumentMapper maps LDAP attributes to Imcms internal user objekt.
- * As a default way to map is to use the popular inetOrgPerson (2.16.840.1.113730.3.2.2) schema found in Netscape Directory Server <br>
- * The inetOrgPerson is based on rganizationalPerson (2.5.6.7) that is based on person (2.5.6.7) that is based on top (2.5.6.0)<br>
+ * The internalDocumentMapper maps LDAP attributes to Imcms internal user object.
+ * A default way to map is to use the popular inetOrgPerson (2.16.840.1.113730.3.2.2) schema found in Netscape Directory Server <br>
+ * The inetOrgPerson is based on organizationalPerson (2.5.6.7) that is based on person (2.5.6.7) that is based on top (2.5.6.0)<br>
  * See for example * @http://www.cio.ufl.edu/projects/directory/ldap-schema/oc-INETORGPERSON.html
  * or @link http://ldap.akbkhome.com/objectclasstree/inetOrgPerson.html for details witch attributes that exists.
  */

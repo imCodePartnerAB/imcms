@@ -520,4 +520,9 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
 
     public void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime ) {
     }
+
+    public String[] sqlQuery( String sqlQuery, String[] params ) {
+        return new String[0];
+    }
+
 }

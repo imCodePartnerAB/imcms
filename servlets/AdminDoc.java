@@ -10,7 +10,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.server.parser.ParserParameters;
 
 /**
- Administrate a document.
+
  */
 public class AdminDoc extends HttpServlet {
 
@@ -21,9 +21,7 @@ public class AdminDoc extends HttpServlet {
         super.init( config );
     }
 
-    /**
-     doGet()
-     */
+    
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -270,5 +268,6 @@ public class AdminDoc extends HttpServlet {
         htmlStr = imcode.util.Parser.parseDoc( htmlStr, parsetmp );
 
         return htmlStr;
+
     }
 }

@@ -1,18 +1,13 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.*;
-import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.NoPermissionException;
-import com.imcode.imcms.api.SecurityChecker;
-import com.imcode.imcms.api.Template;
 
 import java.util.Map;
-import java.util.List;
 
 public class TextDocument extends Document {
 
-    TextDocument( SecurityChecker securityChecker, DocumentService documentService, DocumentDomainObject document, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
-        super( securityChecker, documentService, document, documentMapper, permissionSetMapper );
+    TextDocument( DocumentDomainObject document, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
+        super( document, securityChecker, documentService, documentMapper, permissionSetMapper );
     }
 
     public TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
@@ -60,7 +55,7 @@ public class TextDocument extends Document {
         if (null != includedDocumentMetaId) {
             DocumentDomainObject includedDocument = documentMapper.getDocument( includedDocumentMetaId.intValue() );
             if( null != includedDocument && DocumentDomainObject.DOCTYPE_TEXT == includedDocument.getDocumentType() ) {
-                return new TextDocument( securityChecker, documentService, includedDocument, documentMapper, documentPermissionMapper );
+                return new TextDocument( includedDocument, securityChecker, documentService, documentMapper, documentPermissionMapper );
             }
         }
         return null;
@@ -77,8 +72,7 @@ public class TextDocument extends Document {
 
     public Menu getMenu( int menuIndexInDocument ) throws NoPermissionException {
         securityChecker.hasDocumentPermission( this );
-        TextDocumentLinkMenuDomainObject internalMenu = documentMapper.getMenu(internalDocument,menuIndexInDocument) ;
-        return new Menu(internalMenu) ;
+        return new Menu(menuIndexInDocument) ;
     }
 
     public static class TextField {
@@ -106,17 +100,35 @@ public class TextDocument extends Document {
     }
 
     public class Menu {
+        private int menuIndex ;
 
-        private TextDocumentLinkMenuDomainObject internalMenu;
-
-        public Menu( TextDocumentLinkMenuDomainObject internalMenu ) {
-            this.internalMenu = internalMenu;
+        private Menu( int menuIndex ) {
+            this.menuIndex = menuIndex;
         }
 
-        public List getLinks() {
-            return null ;
+        public Document[] getDocuments() {
+            String[] documentIds = documentMapper.getMenuLinks(getId(),menuIndex) ;
+            Document[] documents = new Document[documentIds.length] ;
+
+            for (int i = 0; i < documentIds.length; i++) {
+                String documentId = documentIds[i];
+                DocumentDomainObject document = documentMapper.getDocument(Integer.parseInt(documentId)) ;
+                if (document.getDocumentType() == DocumentDomainObject.DOCTYPE_TEXT) {
+                    documents[i] = new TextDocument( document, securityChecker, documentService, documentMapper, documentPermissionMapper) ;
+                } else {
+                    documents[i] = new Document( document, securityChecker, documentService, documentMapper, documentPermissionMapper) ;
+                }
+
+            }
+            return documents ;
         }
 
+        public void addDocument(Document document) throws NoPermissionException {
+            securityChecker.hasEditPermission(getInternal().getMetaId());
+            securityChecker.hasSharePermission(document) ;
+            
+
+        }
     }
 
 }

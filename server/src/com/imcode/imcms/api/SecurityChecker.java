@@ -49,14 +49,14 @@ class SecurityChecker {
         }
     }
 
-    public void hasEditPermission( int parentId ) {
-
+    public void hasEditPermission( int documentId ) throws NoPermissionException {
+        if( !docMapper.hasEditPermission( documentId, accessingUser ) ) {
+            throw new NoPermissionException("The logged in user does not have permission to edit document " + documentId );
+        };
     }
 
     void hasEditPermission( Document document ) throws NoPermissionException  {
-        if( !docMapper.hasEditPermission( document.internalDocument.getMetaId(), accessingUser ) ) {
-            throw new NoPermissionException("The logged in user does not have permission to edit document " + document.getId() );
-        };
+        hasEditPermission(document.internalDocument.getMetaId());
     }
 
     UserDomainObject getCurrentLoggedInUser() {
@@ -71,6 +71,12 @@ class SecurityChecker {
 
     public void hasTemplateGroupPermission( TemplateGroup templateGroup ) {
         // todo
+    }
+
+    public void hasSharePermission( Document document ) throws NoPermissionException {
+        if (!docMapper.hasSharePermission(accessingUser, document.getId())) {
+            throw new NoPermissionException("The logged in user does not have permission to share document "+document.getId()) ;
+        }
     }
 
 }

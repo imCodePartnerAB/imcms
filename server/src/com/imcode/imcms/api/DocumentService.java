@@ -24,16 +24,16 @@ public class DocumentService {
      */
     public TextDocument getTextDocument( int documentId ) throws NoPermissionException {
         imcode.server.document.DocumentDomainObject doc = documentMapper.getDocument( documentId );
-        TextDocument result = new TextDocument( securityChecker, this, doc, documentMapper, documentPermissionSetMapper );
+        TextDocument result = new TextDocument( doc, securityChecker, this, documentMapper, documentPermissionSetMapper );
         securityChecker.hasDocumentPermission( result );
         return result;
     }
 
-    public TextDocument createNewTextDocument( int parentId, int parentMenuNumber ) {
+    public TextDocument createNewTextDocument( int parentId, int parentMenuNumber ) throws NoPermissionException {
         securityChecker.hasEditPermission(parentId);
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
         DocumentDomainObject newDoc = documentMapper.createNewTextDocument( user, parentId, parentMenuNumber );
-        TextDocument result = new TextDocument( securityChecker, this, newDoc, documentMapper, documentPermissionSetMapper );
+        TextDocument result = new TextDocument( newDoc, securityChecker, this, documentMapper, documentPermissionSetMapper );
         return result;
     }
 

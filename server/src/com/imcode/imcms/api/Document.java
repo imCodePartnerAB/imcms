@@ -17,7 +17,7 @@ public class Document {
     DocumentMapper documentMapper;
     DocumentPermissionSetMapper documentPermissionMapper;
 
-    public Document( SecurityChecker securityChecker, DocumentService documentService, DocumentDomainObject document, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
+    public Document( DocumentDomainObject document, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
         this.securityChecker = securityChecker;
         this.documentService = documentService;
         this.internalDocument = document;

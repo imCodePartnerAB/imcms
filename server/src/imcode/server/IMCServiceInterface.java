@@ -382,4 +382,6 @@ public interface IMCServiceInterface {
     public imcode.util.shop.ShoppingOrderSystem getShoppingOrderSystem() ;
 
     void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime );
+
+    String[] sqlQuery( String sqlQuery, String[] params );
 }

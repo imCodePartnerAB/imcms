@@ -48,7 +48,14 @@
     <appender-ref ref="ERROR"/>
   </appender>
 
-  <!-- Set up accesslog with priority 'debug' -->
+  <appender name="SOCKETERROR" class="org.apache.log4j.net.SocketAppender">
+      <param name="Port" value="4445"/>
+      <param name="RemoteHost" value="localhost"/>
+      <param name="LocationInfo" value="true"/>
+      <param name="ReconnectionDelay" value="5000"/>
+  </appender>
+
+<!-- Set up accesslog with priority 'debug' -->
   <category name="accesslog" additivity="false">
     <priority value="debug"/>
     <appender-ref ref="WEBAPPACCESS"/>
@@ -64,6 +71,7 @@
   <root>
     <priority value="debug"/>
     <appender-ref ref="WEBAPPERROR"/>
+    <appender-ref ref="SOCKETERROR"/>
   </root>
 
 </log4j:configuration>
