@@ -48,4 +48,12 @@ public class ConnectionPoolForNonPoolingDriver extends ConnectionPool {
         return dataSource.getConnection();
     }
 
+    public void destroy() {
+        try {
+            dataSource.close();
+        } catch ( SQLException e ) {
+            log.error("Error closing datasource.",e) ;
+        }
+    }
+
 }

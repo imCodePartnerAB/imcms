@@ -109,5 +109,8 @@ public class TestDocumentMapper extends TestCase {
         public DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IndexException {
             return new DocumentDomainObject[0];
         }
+
+        public void rebuild() {
+        }
     }
 }

@@ -23,4 +23,6 @@ public abstract class ConnectionPool {
         }
         return connectionPool;
     }
+
+    public abstract void destroy() ;
 }

@@ -35,4 +35,5 @@ public interface DocumentIndex {
 
     DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IndexException;
 
+    void rebuild() throws IndexException;
 }

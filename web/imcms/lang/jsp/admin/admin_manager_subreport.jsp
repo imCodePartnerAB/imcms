@@ -42,17 +42,13 @@
                     <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/15 ?></b></td>
                     <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/21 ?></b></td>
                     <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/17 ?>/<? web/imcms/lang/jsp/admin/admin_manager.jsp/18 ?></b></td>
-                    <td align="right">
-                        <table border="0" cellspacing="0" cellpadding="0">
-                            <tr>
-                                <td nowrap><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/7 ?>:&nbsp;</td>
-                                <td>
-                                <select name="<%= subreport.getName() %>_sortorder" onChange="this.form.submit();">
-                                    <% request.setAttribute( "SORT", subreport.getSortorder() ); %>
-                                    <jsp:include page="admin_manager_inc_sortorder_select_option.jsp" />
-                                </select></td>
-                            </tr>
-                        </table>
+                    <td align="right" nowrap>
+                        <input type="submit" class="imcmsFormBtnSmall" value="<? web/imcms/lang/jsp/admin/admin_manager_search.jsp/7 ?>">
+                        &nbsp;
+                        <select name="<%= subreport.getName() %>_sortorder" onChange="this.form.submit();">
+                            <% request.setAttribute( "SORT", subreport.getSortorder() ); %>
+                            <jsp:include page="admin_manager_inc_sortorder_select_option.jsp" />
+                        </select>
                     </td>
                 </tr>
                 <tr>

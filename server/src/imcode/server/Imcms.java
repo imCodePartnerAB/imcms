@@ -16,6 +16,7 @@ public class Imcms {
     private final static Logger log = Logger.getLogger( imcode.server.Imcms.class.getName() );
     private static ImcmsServices services ;
     private static ConnectionPool apiConnectionPool ;
+    private static ConnectionPool connectionPool;
 
     private Imcms() {
     }
@@ -27,12 +28,12 @@ public class Imcms {
         return services;
     }
 
-    private static ImcmsServices createServices() {
+    private synchronized static ImcmsServices createServices() {
         Properties serverprops = getServerProperties();
-        ConnectionPool connectionPool = createConnectionPool( serverprops );
+        connectionPool = createConnectionPool( serverprops );
         Database database = new ConnectionPoolDatabase( connectionPool );
-        DefaultImcmsServices imcref = new DefaultImcmsServices( database, serverprops );
-        return imcref ;
+        DefaultImcmsServices services = new DefaultImcmsServices( database, serverprops );
+        return services ;
     }
 
     public synchronized static ConnectionPool getApiConnectionPool() {
@@ -68,4 +69,10 @@ public class Imcms {
         return ConnectionPool.createConnectionPool( jdbcDriver, jdbcUrl, user, password, maxConnectionCount );
     }
 
+    public synchronized static void restart() {
+        Prefs.flush();
+        apiConnectionPool.destroy();
+        connectionPool.destroy();
+        services = createServices() ;
+    }
 }

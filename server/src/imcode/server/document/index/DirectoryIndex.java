@@ -60,6 +60,14 @@ class DirectoryIndex implements DocumentIndex {
         }
     }
 
+    public void rebuild() {
+        try {
+            indexAllDocuments();
+        } catch ( IOException e ) {
+            throw new IndexException( e );
+        }
+    }
+
     private List getDocumentListForHits( Hits hits, UserDomainObject searchingUser ) throws IOException {
         List documentList = new ArrayList( hits.length() );
         final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();

@@ -424,6 +424,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.RebuildIndex</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.RebuildIndex</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.ReDirecter</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.ReDirecter</servlet-class>
     </servlet>
@@ -916,6 +921,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.misc.QuotPicEngine</servlet-name>
         <url-pattern>/servlet/QuotPicEngine</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.RebuildIndex</servlet-name>
+        <url-pattern>/servlet/RebuildIndex</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

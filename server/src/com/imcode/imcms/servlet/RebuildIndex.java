@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class Restart extends HttpServlet {
+public class RebuildIndex extends HttpServlet {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
@@ -21,7 +21,7 @@ public class Restart extends HttpServlet {
             return;
         }
 
-        Imcms.restart() ;
-        res.getOutputStream().println( "Restart complete." );
+        Imcms.getServices().getDocumentMapper().getDocumentIndex().rebuild() ;
+        res.getOutputStream().println( "Started rebuild of index." );
     }
 }

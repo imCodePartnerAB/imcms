@@ -3,6 +3,8 @@ package imcode.server.document;
 import imcode.server.user.RoleDomainObject;
 import junit.framework.TestCase;
 
+import java.util.Date;
+
 public class TestDocumentDomainObject extends TestCase {
 
     DocumentDomainObject document ;
@@ -27,4 +29,17 @@ public class TestDocumentDomainObject extends TestCase {
         assertEquals( document.getPermissionSetIdForRole( role ), DocumentPermissionSetDomainObject.TYPE_ID__NONE );
     }
 
+    public void testGetPublicationStatus() throws Exception {
+        assertEquals( DocumentDomainObject.PublicationStatus.NEW, document.getPublicationStatus() ) ;
+        document.setStatus( DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED );
+        assertEquals( DocumentDomainObject.PublicationStatus.DISAPPROVED, document.getPublicationStatus() );
+        document.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
+        assertEquals( DocumentDomainObject.PublicationStatus.APPROVED, document.getPublicationStatus() );
+        document.setPublicationStartDatetime( new Date( 0 ) );
+        assertEquals( DocumentDomainObject.PublicationStatus.PUBLISHED, document.getPublicationStatus() );
+        document.setArchivedDatetime( new Date( 0 ) );
+        assertEquals( DocumentDomainObject.PublicationStatus.ARCHIVED, document.getPublicationStatus() );
+        document.setPublicationEndDatetime( new Date( 0 ) );
+        assertEquals( DocumentDomainObject.PublicationStatus.UNPUBLISHED, document.getPublicationStatus() );
+    }
 }

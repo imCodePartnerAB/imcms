@@ -45,6 +45,7 @@ class IndexDocumentFactory {
         addDateFieldToIndexDocument( documentId, indexDocument, DocumentIndex.FIELD__ARCHIVED_DATETIME, document.getArchivedDatetime() );
 
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__STATUS, "" + document.getStatus() ) );
+        indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__STATUS, "" + document.getPublicationStatus() ) ) ;
 
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 

@@ -464,6 +464,24 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return request.getContextPath() + "/servlet/GetDoc?meta_id=" + getId();
     }
 
+    public PublicationStatus getPublicationStatus() {
+        DocumentDomainObject.PublicationStatus publicationStatus = null ;
+        if ( DocumentDomainObject.STATUS_NEW == getStatus() ) {
+            publicationStatus = PublicationStatus.NEW;
+        } else if ( DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == getStatus() ) {
+            publicationStatus = PublicationStatus.DISAPPROVED;
+        } else if ( isActive() ) {
+            publicationStatus = PublicationStatus.PUBLISHED;
+        } else if ( isNoLongerPublished() ) {
+            publicationStatus = PublicationStatus.UNPUBLISHED;
+        } else if ( isArchived() ) {
+            publicationStatus = PublicationStatus.ARCHIVED;
+        } else {
+            publicationStatus = PublicationStatus.APPROVED;
+        }
+        return publicationStatus ;
+    }
+
     public static class Attributes implements Cloneable, Serializable {
 
         private Date archivedDatetime;
@@ -507,4 +525,23 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     }
 
+    public static class PublicationStatus {
+
+        public static final PublicationStatus NEW = new PublicationStatus("new");
+        public static final PublicationStatus DISAPPROVED = new PublicationStatus("disapproved");
+        public static final PublicationStatus PUBLISHED = new PublicationStatus("published");
+        public static final PublicationStatus UNPUBLISHED = new PublicationStatus("unpublished");
+        public static final PublicationStatus ARCHIVED = new PublicationStatus("archived");
+        public static final PublicationStatus APPROVED = new PublicationStatus("approved");
+
+        private final String name;
+
+        private PublicationStatus( String name ) {
+            this.name = name ;
+        }
+
+        public String toString() {
+            return name ;
+        }
+    }
 }

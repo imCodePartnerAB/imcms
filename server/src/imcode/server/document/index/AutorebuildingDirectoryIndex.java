@@ -96,6 +96,10 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
         }
     }
 
+    public void rebuild() {
+        buildNewIndexInBackground();
+    }
+
     private void buildNewIndexInBackground() {
         Thread indexBuildingThread = new Thread( "Background indexing thread" ) {
             public void run() {

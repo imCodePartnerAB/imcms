@@ -8,11 +8,11 @@ import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.UnhandledException;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
-import java.util.*;
 import java.io.IOException;
+import java.util.*;
 
 public class Html {
 
@@ -95,7 +95,9 @@ public class Html {
                                                       HttpServletRequest request ) {
         String statusIconTemplate = getStatusIconTemplate( document, user );
         if ( user.canEditDocumentInformationFor( document ) ) {
-            statusIconTemplate = "<a href=\""+request.getContextPath()+"/servlet/AdminDoc?meta_id=" + document.getId() + "&"
+            statusIconTemplate = "<a href=\"" + request.getContextPath() + "/servlet/AdminDoc?meta_id="
+                                 + document.getId()
+                                 + "&"
                                  + AdminDoc.PARAMETER__DISPATCH_FLAGS
                                  + "=1\" target=\"_blank\">" +
                                  statusIconTemplate +
@@ -104,27 +106,24 @@ public class Html {
         return statusIconTemplate;
     }
 
-    private static final String TEMPLATE__STATUS_NEW = "status/new.frag";
-    private static final String TEMPLATE__STATUS_DISAPPROVED = "status/disapproved.frag";
-    private static final String TEMPLATE__STATUS_PUBLISHED = "status/published.frag";
-    private static final String TEMPLATE__STATUS_UNPUBLISHED = "status/unpublished.frag";
-    private static final String TEMPLATE__STATUS_ARCHIVED = "status/archived.frag";
-    private static final String TEMPLATE__STATUS_APPROVED = "status/approved.frag";
+    private static final Object[][] STATUS_TEMPLATE_PAIRS = {
+        {DocumentDomainObject.PublicationStatus.NEW, "status/new.frag"},
+        {DocumentDomainObject.PublicationStatus.DISAPPROVED, "status/disapproved.frag"},
+        {DocumentDomainObject.PublicationStatus.PUBLISHED, "status/published.frag"},
+        {DocumentDomainObject.PublicationStatus.UNPUBLISHED, "status/unpublished.frag"},
+        {DocumentDomainObject.PublicationStatus.ARCHIVED, "status/archived.frag"},
+        {DocumentDomainObject.PublicationStatus.APPROVED, "status/approved.frag"},
+    };
 
     public static String getStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
-        String statusIconTemplateName;
-        if ( DocumentDomainObject.STATUS_NEW == document.getStatus() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_NEW;
-        } else if ( DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == document.getStatus() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_DISAPPROVED;
-        } else if ( document.isActive() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_PUBLISHED;
-        } else if ( document.isNoLongerPublished() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_UNPUBLISHED;
-        } else if ( document.isArchived() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_ARCHIVED;
-        } else {
-            statusIconTemplateName = TEMPLATE__STATUS_APPROVED;
+        DocumentDomainObject.PublicationStatus publicationStatus = document.getPublicationStatus();
+        String statusIconTemplateName = null;
+        for ( int i = 0; i < STATUS_TEMPLATE_PAIRS.length; i++ ) {
+            Object[] statusTemplatePair = STATUS_TEMPLATE_PAIRS[i];
+            if (publicationStatus.equals( statusTemplatePair[0 ])) {
+                statusIconTemplateName = (String)statusTemplatePair[1] ;
+                break ;
+            }
         }
         return Imcms.getServices().getAdminTemplate( statusIconTemplateName, user, null );
     }
@@ -149,8 +148,8 @@ public class Html {
 
     public static String radio( String name, String value, boolean selected ) {
         return
-            "<input type=\"radio\" name=\""+StringEscapeUtils.escapeHtml( name )+"\" value=\""
-                + StringEscapeUtils.escapeHtml( value )+"\""+ (selected ? " checked" : "")+">" ;
+                "<input type=\"radio\" name=\"" + StringEscapeUtils.escapeHtml( name ) + "\" value=\""
+                + StringEscapeUtils.escapeHtml( value ) + "\"" + ( selected ? " checked" : "" ) + ">";
 
     }
 
@@ -158,15 +157,15 @@ public class Html {
      * Returns the menubuttonrow
      */
     public static String getAdminButtons( UserDomainObject user, DocumentDomainObject document, HttpServletRequest request,
-                                   HttpServletResponse response ) {
-        if ( !(user.canEdit( document ) || user.isUserAdmin() || user.canAccessAdminPages()) ) {
+                                          HttpServletResponse response ) {
+        if ( !( user.canEdit( document ) || user.isUserAdmin() || user.canAccessAdminPages() ) ) {
             return "";
         }
 
         try {
             request.setAttribute( "document", document );
             request.setAttribute( "user", user );
-            return Utility.getContents( "/imcms/"+user.getLanguageIso639_2()+"/jsp/admin/adminbuttons.jsp",request, response ) ;
+            return Utility.getContents( "/imcms/" + user.getLanguageIso639_2() + "/jsp/admin/adminbuttons.jsp", request, response );
         } catch ( ServletException e ) {
             throw new UnhandledException( e.getCause() );
         } catch ( IOException e ) {

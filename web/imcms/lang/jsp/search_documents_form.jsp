@@ -18,13 +18,13 @@
 <%
     SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage) Page.fromRequest(request) ;
     int documentsPerPage = searchDocumentsPage.getDocumentsPerPage() ;
-    int[] statusIds = searchDocumentsPage.getStatusIds() ;
+    String[] statuses = searchDocumentsPage.getStatuses() ;
     UserDomainObject user = Utility.getLoggedOnUser( request );
     String IMG_PATH  = request.getContextPath()+"/imcms/"+user.getLanguageIso639_2()+"/images/admin/" ;
 %>
 
 <%!
-    boolean isSelected(int a, int[] values) {
+    boolean isSelected(String a, String[] values) {
         return ArrayUtils.contains( values, a ) ;
     }
 %>
@@ -78,12 +78,18 @@
             <td colspan="3">
             <table border="0" cellspacing="0" cellpadding="2">
             <tr>
-                <td><input type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS_ID %>" value="<%= DocumentDomainObject.STATUS_NEW %>" <%= isSelected(DocumentDomainObject.STATUS_NEW, statusIds) ? "checked" : "" %> ></td>
-                <td><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/4 ?> &nbsp;</td>
-                <td><input type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS_ID %>" value="<%= DocumentDomainObject.STATUS_PUBLICATION_APPROVED %>" <%= isSelected(DocumentDomainObject.STATUS_PUBLICATION_APPROVED, statusIds) ? "checked" : "" %> ></td>
-                <td><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/5 ?> &nbsp;</td>
-                <td><input type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS_ID %>" value="<%= DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED %>" <%= isSelected(DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED, statusIds) ? "checked" : "" %> ></td>
-                <td><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/6 ?></td>
+                <td><input id="status_new" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.PublicationStatus.NEW %>" <%= isSelected(""+DocumentDomainObject.PublicationStatus.NEW, statuses) ? "checked" : "" %> ></td>
+                <td><label for="status_new"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/status/new ?></label></td>
+                <td><input id="status_disapproved" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.PublicationStatus.DISAPPROVED %>" <%= isSelected(""+DocumentDomainObject.PublicationStatus.DISAPPROVED, statuses) ? "checked" : "" %> ></td>
+                <td><label for="status_disapproved"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/status/disapproved ?></label></td>
+                <td><input id="status_approved" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.PublicationStatus.APPROVED %>" <%= isSelected(""+DocumentDomainObject.PublicationStatus.APPROVED, statuses) ? "checked" : "" %> ></td>
+                <td><label for="status_approved"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/status/approved ?></label></td>
+                <td><input id="status_published" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.PublicationStatus.PUBLISHED %>" <%= isSelected(""+DocumentDomainObject.PublicationStatus.PUBLISHED, statuses) ? "checked" : "" %> ></td>
+                <td><label for="status_published"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/status/published ?></label></td>
+                <td><input id="status_archived" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.PublicationStatus.ARCHIVED %>" <%= isSelected(""+DocumentDomainObject.PublicationStatus.ARCHIVED, statuses) ? "checked" : "" %> ></td>
+                <td><label for="status_archived"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/status/archived ?></label></td>
+                <td><input id="status_unpublished" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.PublicationStatus.UNPUBLISHED %>" <%= isSelected(""+DocumentDomainObject.PublicationStatus.UNPUBLISHED, statuses) ? "checked" : "" %> ></td>
+                <td><label for="status_unpublished"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/status/unpublished ?></label></td>
             </tr>
             </table></td>
         </tr>

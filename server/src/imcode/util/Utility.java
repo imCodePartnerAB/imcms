@@ -186,4 +186,12 @@ public class Utility {
         response.setStatus( HttpServletResponse.SC_FORBIDDEN );
         request.getRequestDispatcher( noPermissionPage ).forward( request,response );
     }
+
+    public static String[] getParameterValues( HttpServletRequest request, String parameterName ) {
+        String[] parameterValues = request.getParameterValues( parameterName );
+        if (null == parameterValues) {
+            parameterValues = new String[0];
+        }
+        return parameterValues ;
+    }
 }

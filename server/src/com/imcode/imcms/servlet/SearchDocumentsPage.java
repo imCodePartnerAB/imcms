@@ -45,14 +45,14 @@ public class SearchDocumentsPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__START_DATE = "start_date";
     public static final String REQUEST_PARAMETER__END_DATE = "end_date";
     public static final String REQUEST_PARAMETER__SORT_ORDER = "sort_order";
-    public static final String REQUEST_PARAMETER__STATUS_ID = "status_id";
+    public static final String REQUEST_PARAMETER__STATUS = "status_id";
 
     private static final int DEFAULT_DOCUMENTS_PER_PAGE = 10;
     private final static Logger log = Logger.getLogger( SearchDocumentsPage.class.getName() );
 
     private String queryString;
     private Set sections = new HashSet();
-    private int[] statusIds;
+    private String[] statuses;
     private String userDocumentsRestriction;
     private String dateTypeRestriction;
     private Date startDate;
@@ -108,7 +108,7 @@ public class SearchDocumentsPage extends OkCancelPage {
             } catch ( NumberFormatException nfe ) {
             }
 
-            statusIds = Utility.getParameterInts( request, REQUEST_PARAMETER__STATUS_ID );
+            statuses = Utility.getParameterValues( request, REQUEST_PARAMETER__STATUS );
         }
 
         String userDocumentsRestrictionParameter = request.getParameter( REQUEST_PARAMETER__PERMISSION );
@@ -184,12 +184,12 @@ public class SearchDocumentsPage extends OkCancelPage {
         }
 
         BooleanQuery statusQueries = new BooleanQuery();
-        for ( int i = 0; i < statusIds.length; i++ ) {
-            int statusId = statusIds[i];
-            Query statusQuery = new TermQuery( new Term( DocumentIndex.FIELD__STATUS, "" + statusId ) );
+        for ( int i = 0; i < statuses.length; i++ ) {
+            String status = statuses[i];
+            Query statusQuery = new TermQuery( new Term( DocumentIndex.FIELD__STATUS, "" + status ) );
             statusQueries.add( statusQuery, false, false );
         }
-        if ( statusIds.length > 0 ) {
+        if ( statuses.length > 0 ) {
             newQuery.add( statusQueries, true, false );
         }
 
@@ -334,8 +334,8 @@ public class SearchDocumentsPage extends OkCancelPage {
         this.documentFinder = documentFinder;
     }
 
-    public int[] getStatusIds() {
-        return statusIds;
+    public String[] getStatuses() {
+        return statuses;
     }
 
     public String getFormattedStartDate() {
