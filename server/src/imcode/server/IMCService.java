@@ -73,6 +73,10 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
     final static Pattern MENU_NO_PATTERN = patCache.getPattern("#doc_menu_no#",Perl5Compiler.READ_ONLY_MASK) ;
 
+    // OK, so this is simple, ugly, and prone to give a lot of errors.
+    // Very good. Very good. Know something? NO SOUP FOR YOU!
+    final static Pattern HTML_TAG_PATTERN = patCache.getPattern("\\<[^>]+?\\>",Perl5Compiler.READ_ONLY_MASK) ;
+
     //final static Perl5Substitution EMPHASIZE_SUBSTITUTION = new Perl5Substitution("<b><em><!--emphasized-->$1<!--/emphasized--></em></b>", Perl5Substitution.INTERPOLATE_ALL) ;
 
     final static Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
@@ -954,14 +958,61 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    result.append(nextbit) ;
 	} // end while (pit.hasNext())
 	time = (System.currentTimeMillis()-time) ;
+
 	String returnresult = result.toString() ;
 
+	/*
+	  So, it is here i shall have to put my magical markupemphhasizing code.
+	  First, i'll split the html (returnresult) on html-tags, and then go through every non-tag part and parse it for keywords to emphasize,
+	  and then i'll puzzle it to together again. Whe-hey. This will be fun. Not to mention fast. Oh yes, siree.
+	 */
+	if (emp!=null) {
+	    long emptime = System.currentTimeMillis() ;
+	    StringBuffer emphasized_result = new StringBuffer(returnresult.length()) ;
+	    PatternMatcherInput emp_input = new PatternMatcherInput(returnresult) ;
+	    int last_html_offset = 0 ;
+	    int current_html_offset = 0 ;
+	    String non_html_tag_string = null ;
+	    String html_tag_string = null ;
+	    while (patMat.contains(emp_input,HTML_TAG_PATTERN)) {
+		current_html_offset = emp_input.getMatchBeginOffset() ;
+		non_html_tag_string = result.substring(last_html_offset,current_html_offset) ;
+		last_html_offset = emp_input.getMatchEndOffset() ;
+		html_tag_string = result.substring(current_html_offset,last_html_offset) ;
+		non_html_tag_string = emphasizeString(non_html_tag_string,emp,emphasize_substitution,patMat) ;
+		// for each string to emphasize
+		emphasized_result.append(non_html_tag_string) ;
+		emphasized_result.append(html_tag_string) ;
+	    }
+	    non_html_tag_string = result.substring(last_html_offset) ;
+	    non_html_tag_string = emphasizeString(non_html_tag_string,emp,emphasize_substitution,patMat) ;
+	    emphasized_result.append(non_html_tag_string) ;
+	    returnresult = emphasized_result.toString() ;
+	    emptime = (System.currentTimeMillis()-emptime) ;
+	    log.log(Log.WILD, "Emphasized "+meta_id+" with "+emp.length+" strings in "+emptime+" ms") ;
+	}
+	
 	log.log(Log.DEBUG, ""+meta_id+": "+(System.currentTimeMillis()-totaltime)+" Txt: "+texttime+" Img: "+imagetime+" Mnu: "+menutime+" Prs: "+time+" Mnuprs: "+menuparsetime+" OMnuprs: "+oldmenutime+" Tgs: "+tagtime) ;
 	return returnresult.getBytes("8859_1") ;
 	} catch (RuntimeException ex) {
 	    log.log(Log.ERROR, "Error occurred during parsing.",ex ) ;
 	    return ex.toString().getBytes("8859_1") ;
 	}
+    }
+       
+    private String emphasizeString(String str,
+				   String[] emp,
+				   Substitution emphasize_substitution,
+				   PatternMatcher patMat) {
+	for (int i = 0 ; i < emp.length ; ++i) {
+	    str = org.apache.oro.text.regex.Util.substitute(patMat,
+							    patCache.getPattern("("+Perl5Compiler.quotemeta(emp[i])+")",Perl5Compiler.CASE_INSENSITIVE_MASK),
+							    emphasize_substitution,
+							    str,
+							    org.apache.oro.text.regex.Util.SUBSTITUTE_ALL
+							    ) ;
+	}
+	return str ;
     }
 
     private String hashTagHandler(PatternMatcher patMat, Properties tags, Properties numberedtags) {
