@@ -1,0 +1,485 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0022)http://internet.e-mail --><!-- saved from url=(0022)http://internet.e-mail --><!-- saved from url=(0022)http://internet.e-mail --><!-- saved from url=(0022)http://internet.e-mail --><HTML><HEAD><TITLE>Inmatningsformul&auml;r f&ouml;r Diagram</TITLE>
+<META content="text/html; charset=iso-8859-1" http-equiv=Content-Type>
+<META content="MSHTML 5.00.2014.210" name=GENERATOR>
+<SCRIPT language=JavaScript>
+<!--
+function saveAndExit(formObj) {
+	//alert("Har vi ett object:" + formObj.text1.value) ;
+	//formObj.submit();
+	
+	//document.settings.action.click() ;
+	//alert("The form was saved");
+	closeThisWindow();
+}
+
+function closeThisWindow() {
+	window.close();
+} //END FUNCTION CloseThisWindow
+
+//==============================================================================> CREATE ARRAY
+function createArray(antalTabeller,arraySize) {
+	arraySize++;
+	tabell=new Array(antalTabeller);
+	theSettings=new Array(antalTabeller);
+	for(n=0;n<=antalTabeller;n++) {
+		tabell[n]=new Array(arraySize);
+		theSettings[n]=new Array(6);
+		for(m=0;m<=arraySize;m++) {
+			tabell[n][m]=new Array(arraySize);
+		} //END FOR
+	} //END FOR
+} //END FUNCTION
+//==============================================================================> SET TABLE SIZE
+function setTableSize(tabellNr,theRow,theCol) {
+	tabell[tabellNr][0][0]=theRow;
+	tabell[tabellNr][arraySize][arraySize]=theCol;
+	theSettings[tabellNr][1].value=theRow;
+	theSettings[tabellNr][2].value=theCol;
+}//END FUNCTION
+//==============================================================================> GET TABLE SIZE
+function getTableSize(tabellNr) {
+	rader=tabell[tabellNr][0][0];
+	kolumner=tabell[tabellNr][arraySize][arraySize];
+}//END FUNCTION
+//==============================================================================> DELETE ARRAY
+function deleteArray(tabellNr,theRow,theCol,theID,tableRef) {
+	HTMLinput(tabellNr,theID,tableRef);
+	getTableSize(tabellNr);
+	radOff=0;kolOff=0;
+	for(mRad=1;mRad<=rader;mRad++) {
+		if(theRow>0&&mRad>theRow) radOff=1;
+		for(mKol=1;mKol<=kolumner;mKol++) {
+			if(theCol>0&&mKol>theCol) {
+				kolOff=1;
+				} else {
+				kolOff=0;
+			}//END IF
+			tabell[tabellNr][mRad-radOff][mKol-kolOff]=tabell[tabellNr][mRad][mKol];
+		}//END FOR
+	}//END FOR
+	rader-=(theRow>0);kolumner-=(theCol>0);
+	setTableSize(tabellNr,rader,kolumner);
+	arrayToHTML(tabellNr,theID,tableRef);
+}//END FUNCTION
+//==============================================================================> TAB DELIMITED INPUT
+function tabDelimitedInput(tabellNr,fieldValue) {
+	numbers=new Array(arraySize*arraySize);index=1;rader=0;
+	tab=fieldValue.indexOf("\t",0);ent=fieldValue.indexOf("\n",0);
+	if(ent!=-1&&ent<tab) {
+		tab=ent;rader++;
+		}//END IF
+	while(tab!=-1) {
+		urklipp=fieldValue.substr(0,tab);
+		numbers[index]=urklipp;index++;
+		fieldValue=fieldValue.substr(tab+1);
+		tab=fieldValue.indexOf("\t",0);ent=fieldValue.indexOf("\n",0);
+		if(ent!=-1&&ent<tab) {
+			tab=ent;rader++;
+			}//END IF
+		}//END WHILE
+	numbers[index]=fieldValue;rader++;
+	kolumner=index/rader;
+	for(mRad=1;mRad<=rader;mRad++) {
+		for(mKol=1;mKol<=kolumner;mKol++) {
+			theIndex=(mRad-1)*kolumner+mKol
+			tabell[tabellNr][mRad][mKol]=numbers[theIndex];
+			}//END FOR
+		}//END FOR
+	setTableSize(tabellNr,rader,kolumner);
+}//END FUNCTION
+//==============================================================================> ARRAY TO HTML
+function arrayToHTML(tabellNr,theID,tableRef) {
+	prefix='<table id='+theID+' border=1>';
+	suffix='</table>';insert='';kolumn='a';
+	getTableSize(tabellNr);
+	for(mRad=1;mRad<=rader;mRad++) {
+		insert+='<tr>';
+		for(mKol=1;mKol<=kolumner;mKol++) {
+			value=""+tabell[tabellNr][mRad][mKol];
+			value=value.replace(/undefined/gi," ");
+			value=value.replace(/"/gi,"");
+			if(value.length==0) value=" ";
+			value=value.replace(/\s/gi," ");
+			insert+='<td><input type=text name='+theSettings[tabellNr][0]+'_'+kolumn+'_'+mRad+' size=11 value="'+value+'"></td>';
+			temp=kolumn.charCodeAt(0);temp++;
+			kolumn=String.fromCharCode(temp);
+			}//END FOR
+		insert+='</tr>';
+		kolumn='a';
+		}//END FOR
+	insert=prefix+insert+suffix;
+	tableRef.outerHTML=insert;
+	setTableSize(tabellNr,rader,kolumner);
+	doDeleteList(tabellNr,theID);
+	
+	//alert("HŠr Šr:" +insert) ;
+
+}//END FUNCTION
+//==============================================================================> HTML INPUT
+function HTMLinput(tabellNr,theID,tableRef) {
+	HTMLkoden=tableRef.outerHTML;
+	getTableSize(tabellNr);
+	for(mRad=1;mRad<=rader;mRad++) {
+		for(mKol=1;mKol<=kolumner;mKol++) {
+			start=HTMLkoden.indexOf("value=",0);value="";
+			if(start!=-1) {
+				HTMLkoden=HTMLkoden.substr(start+6);
+				slut=HTMLkoden.indexOf(">",0);
+				value=HTMLkoden.substr(0,slut);
+				value=value.replace(/"/gi,"");
+				}//END IF
+			tabell[tabellNr][mRad][mKol]=value;
+			}//END FOR
+		}//END FOR
+}//END FUNCTION
+//==============================================================================> EXPAND ARRAY
+function expandArray(tabellNr,theRow,theCol,theID,tableRef) {
+	HTMLinput(tabellNr,theID,tableRef);
+	getTableSize(tabellNr);
+	for(rr=rader*theRow+1;rr<=rader+1;rr++) {
+		for(kk=kolumner*theCol+1;kk<=kolumner;kk++) {
+			tabell[tabellNr][rr][kk]=tabell[0][0][0];
+		}//END FOR
+			tabell[tabellNr][rr][kk]=tabell[0][0][0];
+	}//END FOR
+	tabell[tabellNr][0][0]+=theRow;
+	tabell[tabellNr][arraySize][arraySize]+=theCol;
+}//END FUNCTION
+//==============================================================================> DO DELETE-LIST
+function doDeleteList(tabellNr,theID) {
+	getTableSize(tabellNr);
+	radLista='';kolLista='';
+	theID=""+theID;
+	prefixR="<select name=select size=1 onChange=deleteArray("+tabellNr+",this.selectedIndex,0,'"+theID+"',"+theSettings[tabellNr][6]+");>";
+	prefixK="<select name=select size=1 onChange=deleteArray("+tabellNr+",0,this.selectedIndex,'"+theID+"',"+theSettings[tabellNr][6]+");>";
+	for(n=0;n<=rader;n++) radLista+='<option>'+n+'</option>';
+	for(n=0;n<=kolumner;n++) kolLista+='<option>'+n+'</option>';
+	theSettings[tabellNr][3].innerHTML=prefixR+radLista+'</select>';
+	theSettings[tabellNr][4].innerHTML=prefixK+kolLista+'</select>';
+}
+//==============================================================================> DEBUGGER <
+function clear() {
+debug="";
+}//END FUNCTION
+function add(something) {
+	debug+=something+"\n";
+}//END FUNCTION
+function show() {
+	alert(debug);
+}//END FUNCTION
+function showTableContent(aTable) {
+	clear();
+	for(rr=1;rr<=100;rr++) {
+		aString="";
+		for(kk=1;kk<=100;kk++) {
+			aString+=""+aTable[rr][kk]+"-";
+		}//END FOR
+	aString=aString.replace(/undefined/gi,"");
+	add(aString);
+	}//END FOR
+show();
+}//END FUNCTION
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgColor=#ffffff>
+<CENTER>
+<TABLE border=1 cellPadding=0 cellSpacing=0 width=474>
+  <TBODY>
+    <TR bgColor=#333366 align="center" valign="middle"> 
+      <TD height=26><B><FONT color=#ffffff 
+      face="Verdana, Arial, Helvetica, sans-serif" 
+      size=3>Inmatningsformul&auml;r f&ouml;r diagram och tabeller</FONT></B> 
+      </TD>
+    </TR>
+    <TR bgColor=#333366 align="center" valign="middle"> 
+      <TD><FONT color=#ffffff 
+      face="Verdana, Arial, Helvetica, sans-serif" size=2>* inneb&auml;r att f&auml;ltet 
+        m&aring;ste fyllas i.</FONT> </TD>
+    </TR></TBODY></TABLE>
+  <FORM action=#SERVLET_URL# method=post name=settings>
+    <H1><INPUT name=diaP type=hidden value=#DIA_PREFS_FILE#> <INPUT name=diaD 
+type=hidden value=#DIA_DATA_FILE#> <INPUT name=tabP type=hidden 
+value=#TAB_PREFS_FILE#> <INPUT name=tabD type=hidden value=#TAB_DATA_FILE#> 
+<INPUT name=parent_meta_id type=hidden value=#PARENT_META_ID#> <INPUT 
+name=cookie_id type=hidden value=#COOKIE_ID#> <INPUT name=meta_id type=hidden 
+value=#META_ID#>
+      <INPUT name=diagram_data type=hidden value=#DIAGRAM_DATA#> <INPUT 
+name=table_data type=hidden value=#TABLE_DATA#> </H1>
+<TABLE border=1 cellPadding=0 cellSpacing=0 width=470>
+  <TBODY>
+      <TR bgColor=#333366 align="center" valign="middle"> 
+        <TD height=26><B><FONT color=#ffffff 
+      face="Verdana, Arial, Helvetica, sans-serif" 
+      size=3>Diagraminst&auml;llningar:</FONT> </B></TD>
+      </TR>
+  <TR>
+    <TD vAlign=top>
+          <TABLE border=1 cellPadding=0 cellSpacing=0 width=470>
+            <TBODY> 
+            <TR> 
+              <TD bgColor=#bababa height=29 vAlign=center width=90>&nbsp;<FONT 
+            face="Verdana, Arial, Helvetica, sans-serif" 
+size=2>Rubrik:</FONT></TD>
+              <TD bgColor=#bababa colSpan=3 height=29 vAlign=center> 
+                <INPUT 
+            name=diaHeader size=40 value="#HEADER#">
+              </TD>
+            </TR>
+            <TR> 
+              <TD align=center bgColor=#333366 colSpan=2 vAlign=middle><B><FONT 
+            color=#ffffff face="Verdana, Arial, Helvetica, sans-serif" 
+            size=2>X-axel</FONT></B></TD>
+              <TD align=center bgColor=#333366 colSpan=2 vAlign=middle><B><FONT 
+            color=#ffffff face="Verdana, Arial, Helvetica, sans-serif" 
+            size=2>Y-axel</FONT></B></TD>
+            </TR>
+            <TR> 
+              <TD bgColor=#bababa height=29 vAlign=center width=90>&nbsp;<FONT 
+            face="Verdana, Arial, Helvetica, sans-serif" 
+            size=2><FONT size=1>&nbsp;<font 
+            face="Verdana, Arial, Helvetica, sans-serif" size=2>Bredd:<br>
+                <font 
+            size=1>&nbsp;(bildstorlek)</font></font></FONT></FONT></TD>
+              <TD bgColor=#bababa height=29 vAlign=center width=140> 
+                <input 
+            maxlength=4 name=diaWidth size=10 value=#WIDTH#>
+              </TD>
+              <TD bgColor=#bababa height=29 vAlign=center width=90><font 
+            face="Verdana, Arial, Helvetica, sans-serif" 
+            size=2>H&ouml;jd:<br>
+                &nbsp;<font size=1>(bildstorlek)</font></font></TD>
+              <TD bgColor=#bababa height=29 vAlign=center width=140>
+                <input 
+            maxlength=5 name=diaHeight size=12 value=#HEIGHT#>
+              </TD>
+            </TR>
+            <TR bgColor=#bababa> 
+              <TD height=29 vAlign=center width=90>&nbsp;<FONT 
+            face="Verdana, Arial, Helvetica, sans-serif" 
+size=2>Rubrik:</FONT></TD>
+              <TD height=29 vAlign=center width=140> 
+                <INPUT maxLength=80 
+            name=diaXHeader value="#XHEADER#">
+              </TD>
+              <TD height=29 vAlign=center width=90>&nbsp;<FONT 
+            face="Verdana, Arial, Helvetica, sans-serif" 
+size=2>Rubrik:</FONT></TD>
+              <TD height=29 vAlign=center width=140> 
+                <INPUT maxLength=80 
+            name=diayHeader value="#YHEADER#">
+              </TD>
+            </TR>
+            <TR bgColor=#bababa> 
+              <TD height=29 vAlign=center width=90>&nbsp;<FONT 
+            face="Verdana, Arial, Helvetica, sans-serif" 
+          size=2>Maxv&auml;rde:</FONT></TD>
+              <TD height=29 vAlign=center width=140> 
+                <INPUT maxLength=10 
+            name=diaHorizMax size=15 value=#HORIZAXISMAX#>
+              </TD>
+              <TD height=29 vAlign=center width=90>&nbsp;<FONT 
+            face="Verdana, Arial, Helvetica, sans-serif" 
+          size=2>Maxv&auml;rde:</FONT></TD>
+              <TD height=29 vAlign=center width=140> 
+                <INPUT maxLength=10 
+            name=diaVertMax size=15 value=#VERTAXISMAX#>
+              </TD>
+            </TR>
+            <TR bgColor=#bababa> 
+              <TD height=29 vAlign=center width=90>&nbsp;<FONT 
+            face="Verdana, Arial, Helvetica, sans-serif" 
+          size=2>Delta x:</FONT></TD>
+              <TD height=29 vAlign=center width=140> 
+                <INPUT maxLength=10 
+            name=diaBottomAxisIncrement size=15 value=#BOTTOMAXISINCREMENT#>
+              </TD>
+              <TD height=29 vAlign=center width=90>&nbsp;<FONT 
+            face="Verdana, Arial, Helvetica, sans-serif" 
+            size=2>Delta y:</FONT><B> </B></TD>
+              <TD height=29 vAlign=center width=140> 
+                <INPUT maxLength=10 
+            name=diaLeftAxisIncrement size=15 value=#LEFTAXISINCREMENT#>
+              </TD>
+            </TR>
+            <TR align=center bgColor=#333366 vAlign=middle> 
+              <TD colSpan=4><FONT color=#ffffff 
+            face="Verdana, Arial, Helvetica, sans-serif" 
+            size=2><B>F&ouml;rklaringstext f&ouml;r diagram:</B></FONT></TD>
+            </TR>
+            <TR bgColor=#bababa> 
+              <TD height=29 vAlign=center width=90>&nbsp;<FONT 
+            face="Verdana, Arial, Helvetica, sans-serif" size=2>Serietitel 1:*</FONT></TD>
+              <TD height=29 vAlign=center width=140> 
+                <INPUT maxLength=40 
+            name=diaSeriesTitle1 value="#SERIESTITLE1#">
+              </TD>
+              <TD height=29 vAlign=center width=90>&nbsp;<FONT 
+            face="Verdana, Arial, Helvetica, sans-serif" size=2>Serietitel 2:*</FONT></TD>
+              <TD height=29 vAlign=center width=140> 
+                <INPUT maxLength=40 
+            name=diaSeriesTitle2 value="#SERIESTITLE2#">
+              </TD>
+            </TR>
+            <tr bgcolor=#bababa> 
+              <td height=29 valign=center width=90>&nbsp;<font 
+            face="Verdana, Arial, Helvetica, sans-serif" size=2>Serietitel 3:*</font></td>
+              <td height=29 valign=center width=140> 
+                <input maxlength=40 
+            name=diaSeriesTitle3 value="#SERIESTITLE3#">
+              </td>
+              <td height=29 valign=center width=90><font 
+            face="Verdana, Arial, Helvetica, sans-serif" size=2>Serietitel 4:*</font> 
+              </td>
+              <td height=29 valign=center width=140> 
+                <input maxlength=40 
+            name=diaSeriesTitle4 value="#SERIESTITLE4#">
+              </td>
+            </tr>
+            </TBODY> 
+          </TABLE>
+      <TABLE border=1 cellPadding=0 cellSpacing=0 width=470>
+        <TBODY>
+            <TR bgColor=#333366 align="center" valign="middle"> 
+              <TD colSpan=4><font face="Verdana, Arial, Helvetica, sans-serif" 
+      size=2><b><font color=#ffffff>Modifiera Diagramutseende:</font> </b></font></TD>
+            </TR>
+        <TBODY>
+        <TR bgColor=#bababa>
+              <TD vAlign=center>&nbsp;<FONT 
+            face="Verdana, Arial, Helvetica, sans-serif" size=2>L&auml;gg till 
+                rad</FONT><BR>
+            <DIV>&nbsp;<INPUT name=addDiagramRow onclick='expandArray(1,1,0,"diagram",window.diagram);arrayToHTML(1,"diagram",window.diagram);' type=button value="Rad +"> 
+            </DIV></TD>
+              <TD vAlign=center>&nbsp;<FONT 
+            face="Verdana, Arial, Helvetica, sans-serif" size=2>L&auml;gg till 
+                kolumn </FONT><BR>
+            <DIV>&nbsp;<INPUT name=kolumn1 onclick='expandArray(1,0,1,"diagram",window.diagram);arrayToHTML(1,"diagram",window.diagram);' type=button value="Kolumn +"> 
+            </DIV></TD>
+          <TD vAlign=center>&nbsp;<FONT 
+            face="Verdana, Arial, Helvetica, sans-serif" size=2>Ta bort 
+            rad</FONT><BR>
+            <DIV id=delRadDia>&nbsp;<SELECT name=select size=1></SELECT> 
+          </DIV></TD>
+          <TD vAlign=center>&nbsp;<FONT 
+            face="Verdana, Arial, Helvetica, sans-serif" size=2>Ta bort kolumn 
+            </FONT><BR>
+            <DIV id=delKolDia>&nbsp;<SELECT name=select size=1></SELECT> 
+          </DIV></TD></TR></TBODY></TABLE></TD></TR>
+      <TR bgColor=#333366 align="center" vAlign=middle> 
+        <TD><FONT face="Verdana, Arial, Helvetica, sans-serif" 
+      size=2><B><font color=#ffffff>Excel --&gt; diagram: </font></B><font color=#ffffff>(Kopiera 
+          f&auml;lt i Excel, klistra in i rutan, tryck &quot;Skapa ...&quot;)</font><B><font color=#ffffff><br>
+          </font></B><font color=#ffffff>OBS! Excelfilens f&ouml;rsta kolumn skall 
+          alltid inneh&aring;lla namn, ej v&auml;rden</font> </FONT></TD>
+      </TR>
+      <TR bgColor=#bababa> 
+        <TD width=450 valign="center">
+<INPUT name=diaNbrOfRows size=5 type=hidden value=0> <INPUT 
+      name=diaNbrOfCols size=5 type=hidden value=0>
+          <input 
+      name=diaHorizMin size=5 type=hidden value=#HORIZAXISMIN#>
+          <input 
+      name=diaVertMin size=5 type=hidden value=#VERTAXISMIN#>
+          <BR>
+          &nbsp;<FONT 
+      face="Verdana, Arial, Helvetica, sans-serif" size=2>Klistra in diagramv&auml;rden 
+          h&auml;r</FONT><B><BR>
+          </B>&nbsp; <TEXTAREA cols=27 name=text1 onfocus='//document.settings.text1.value="";' rows=3 wrap=VIRTUAL></TEXTAREA> 
+          <INPUT name=button onclick='tabDelimitedInput(1,document.settings.text1.value);arrayToHTML(1,"diagram",window.diagram);' type=button value="Skapa diagramv&auml;rden">
+          <BR>&nbsp;</TD></TR></TBODY></TABLE>&nbsp;<!-- HŠr ligger tabellen DIAGRAM
+----------------------------------> 
+<TABLE border=1 cellPadding=0 cellSpacing=0 id=diagram>
+  <TBODY></TBODY></TABLE>
+    <input name=tabNbrOfCols size=5 type=hidden 
+      value=0>
+    <input name=tabNbrOfRows size=5 type=hidden 
+      value=0>
+    &nbsp; &nbsp;<!-- HŠr ligger tabellen TABLE
+----------------------------------> 
+    <TABLE border=1 id=table>
+  <TBODY></TBODY></TABLE>&nbsp; 
+    <TABLE border=1 cellPadding=0 cellSpacing=0 width=474>
+      <TBODY> 
+      <TR> 
+        <TD align=middle bgColor=#333366 colSpan=2 height=25> 
+          <DIV align=center><B><FONT color=#ffffff 
+      face="Verdana, Arial, Helvetica, sans-serif" 
+      size=3>Spara/Avsluta:</FONT></B></DIV>
+        </TD>
+      </TR>
+      <TR bgColor=#bababa> 
+        <TD vAlign=center width=264>&nbsp;<FONT 
+      face="Verdana, Arial, Helvetica, sans-serif" size=2>Spara diagram:</FONT></TD>
+        <TD vAlign=center width=204>&nbsp; 
+          <INPUT name=save type=submit value=Spara>
+        </TD>
+      </TR>
+      <tr bgcolor=#bababa> 
+        <td valign=center width=264>&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">&Aring;terg&aring; 
+          (till senast sparade version):</font></td>
+        <td valign=center width=204> &nbsp; 
+          <input name=revert type=submit value=&Aring;terg&aring;>
+        </td>
+      </tr>
+      <TR bgColor=#bababa> 
+        <TD vAlign=center width=264>&nbsp;<FONT 
+      face="Verdana, Arial, Helvetica, sans-serif" size=2>Avsluta:</FONT></TD>
+        <TD vAlign=center width=204>&nbsp; 
+          <INPUT name=action1 onclick=saveAndExit(document.settings); type=button value="Avsluta">
+        </TD>
+      </TR>
+      </TBODY>
+    </TABLE>
+  </FORM></CENTER>
+<H2>
+<SCRIPT language=JavaScript>
+<!--
+
+
+
+
+
+
+
+//==============================================================================> SETTINGS !
+var arraySize=100;											//TABELLSTORELEKEN
+var antalTabeller=2;										//ANTALET TABELLER
+var rader=0;												//GLOBAL RADR€KNARE
+var kolumner=0;												//GLOBAL KOLUMNR€KNARE
+createArray(antalTabeller,arraySize);
+theSettings[1][1]=document.settings.diaNbrOfRows; 			//DOLT F€LT RADER TABELL 1
+theSettings[1][2]=document.settings.diaNbrOfCols; 			//DOLT F€LT KOLUMNER TABELL 1
+theSettings[2][1]=document.settings.tabNbrOfRows; 			//DOLT F€LT RADER TABELL 2
+theSettings[2][2]=document.settings.tabNbrOfCols; 			//DOLT F€LT KOLUMNER TABELL 2
+setTableSize(1,0,0);setTableSize(2,0,0); 					//S€TT STORLEK TILL 0 (INITIERA)
+theSettings[1][0]="diagram";								//NAMN P TABELL 1
+theSettings[2][0]="table";									//NAMN P TABELL 2
+theSettings[1][3]=window.delRadDia; 						//ADRESS TILL DELETE-MENYS DIV-TAG-ID (RADER) TABELL 1
+theSettings[1][4]=window.delKolDia; 						//ADRESS TILL DELETE-MENYS DIV-TAG-ID (KOLUMNER) TABELL 1
+theSettings[2][3]=window.delRadTab; 						//ADRESS TILL DELETE-MENYS DIV-TAG-ID (RADER) TABELL 2
+theSettings[2][4]=window.delKolTab; 						//ADRESS TILL DELETE-MENYS DIV-TAG-ID (KOLUMNER) TABELL 2
+theSettings[1][5]=window.diagram; 							//ADRESS TILL DIV-TAG-ID (TABELLEN) TABELL 1
+theSettings[2][5]=window.table; 							//ADRESS TILL DIV-TAG-ID (TABELLEN) TABELL 2
+theSettings[1][6]="window.diagram"; 						//ADRESSEN SOM STR€NG
+theSettings[2][6]="window.table"; 							//ADRESSEN SOM STR€NG
+//==============================================================================> UPPSTART !
+// OLD if(document.settings.diagram_data.value=="# DIAGRAM_DATA#") {
+if(document.settings.diagram_data.value=="") {
+	setTableSize(1,4,5);
+	} else {
+	tabDelimitedInput(1,document.settings.diagram_data.value);
+}//END IF
+// OLD if(document.settings.table_data.value=="# TABLE_DATA#") {
+if(document.settings.table_data.value=="") {
+	setTableSize(2,5,5);
+	} else {
+	tabDelimitedInput(2,document.settings.table_data.value);
+}//END IF
+arrayToHTML(1,"diagram",window.diagram);
+//arrayToHTML(2,"table",window.table);
+//-->
+</SCRIPT>
+</H2></BODY></HTML>
+

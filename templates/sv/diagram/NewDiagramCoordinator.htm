@@ -1,0 +1,42 @@
+<html>
+<head>
+<title>Nytt Diagram Meny</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<script language="JavaScript">
+<!--
+function MM_openBrWindow(theURL,winName,features) { //v2.0
+  window.open(theURL,winName,features);
+}
+//-->
+</script>
+</head>
+
+<body bgcolor="#FFFFFF" onLoad="MM_openBrWindow('#NEW_DIAGRAM_URL#','','')">
+<form method="post" action="#SERVER_URL#ChangeExternalDoc2" name="">
+  <table border="1" width="400" align="center" cellpadding="0" cellspacing="0">
+    <tr bgcolor="#333366"> 
+      <td align="center" valign="middle" colspan="2" height="29"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font size="3" color="#FFFFFF">Nytt 
+        diagram meny</font></b></font></td>
+    </tr>
+    <tr> 
+      <td align="center" valign="middle" width="50%" bgcolor="#333366"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF">Tillbaka 
+        till &auml;ndra Metadata</font> </td>
+      <td align="center" valign="middle" width="50%" bgcolor="#333366"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Tillbaka 
+        till adminl&auml;get</font></td>
+    </tr>
+    <tr> 
+      <td align="center" valign="middle" width="50%" bgcolor="#BABABA"> 
+        <input type="submit" name="metadata" value="Metadata">
+      </td>
+      <td align="center" valign="middle" width="50%" bgcolor="#BABABA"> 
+        <input type="submit" name="cancel" value="&Aring;terg&aring;">
+      </td>
+    </tr>
+  </table>
+  <input type=HIDDEN name=meta_id value="#META_ID#">
+  <input type=HIDDEN name=parent_meta_id value=#PARENT_META_ID#>
+  <input type="hidden" name="cookie_id" value="#COOKIE_ID#">
+</form>
+</body>
+</html>
+
