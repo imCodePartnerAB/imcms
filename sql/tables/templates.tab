@@ -6,4 +6,8 @@
         <column name="no_of_txt" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
         <column name="no_of_img" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
         <column name="no_of_url" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+        <unique>
+            <unique-column name="simple_name"/>
+            <unique-column name="lang_prefix"/>
+        </unique>
     </table>

@@ -686,7 +686,7 @@
 
     </target>
 
-    <target name="taskdef-cat">
+    <target name="taskdef-cat" depends="tools">
         <taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
     </target>
 

@@ -6,4 +6,12 @@
         <foreign-key foreignTable="polls" onUpdate="none" onDelete="none">
             <reference foreign="id" local="poll_id" />
         </foreign-key>
+        <unique>
+            <unique-column name="poll_id"/>
+            <unique-column name="question_number"/>
+        </unique>
+        <unique>
+            <unique-column name="poll_id"/>
+            <unique-column name="text_id"/>
+        </unique>
     </table>

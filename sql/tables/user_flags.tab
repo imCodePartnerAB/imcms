@@ -3,4 +3,7 @@
         <column name="name" required="true" size="64" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
         <column name="type" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
         <column name="description" required="true" size="256" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <unique>
+            <unique-column name="name"/>
+        </unique>
     </table>

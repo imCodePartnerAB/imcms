@@ -8,4 +8,12 @@
         <foreign-key foreignTable="poll_questions" onUpdate="none" onDelete="none">
             <reference foreign="id" local="question_id" />
         </foreign-key>
+        <unique>
+            <unique-column name="question_id"/>
+            <unique-column name="text_id"/>
+        </unique>
+        <unique>
+            <unique-column name="question_id"/>
+            <unique-column name="option_number"/>
+        </unique>
     </table>
