@@ -1,13 +1,12 @@
 package imcode.server.document;
 
+import imcode.server.db.DatabaseCommand;
+import imcode.server.db.DatabaseConnection;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
@@ -50,7 +49,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         service.sqlUpdateQuery( sqlStr, new String[]{urlDocument.getUrl(), "" + urlDocument.getId()} );
     }
 
-    public void visitTextDocument( TextDocumentDomainObject textDocument ) {
+    public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
         String sqlStr = "UPDATE text_docs SET template_id = ?, group_id = ?,\n"
                         + "default_template_1 = ?, default_template_2 = ? WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{
@@ -64,6 +63,11 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         updateTextDocumentTexts( textDocument );
         updateTextDocumentImages( textDocument );
         updateTextDocumentIncludes( textDocument );
-        updateTextDocumentMenus( textDocument );
+
+        service.getDatabase().executeTransaction( new DatabaseCommand() {
+            public void executeOn( DatabaseConnection connection ) {
+                updateTextDocumentMenus( connection, textDocument );
+            }
+        } );
     }
 }

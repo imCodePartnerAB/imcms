@@ -1,12 +1,13 @@
 package imcode.server.document;
 
-import imcode.util.InputStreamSource;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.db.DatabaseConnection;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FileInputStreamSource;
 import imcode.util.FileUtility;
+import imcode.util.InputStreamSource;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringUtils;
@@ -83,18 +84,18 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 + "VALUES(?" + StringUtils.repeat(",?", columnNames.length - 1) + ")";
     }
 
-    void updateTextDocumentMenus(TextDocumentDomainObject textDocument) {
+    void updateTextDocumentMenus( DatabaseConnection connection, TextDocumentDomainObject textDocument ) {
         Map menuMap = textDocument.getMenus();
         for (Iterator iterator = menuMap.entrySet().iterator(); iterator.hasNext();) {
             Map.Entry entry = (Map.Entry) iterator.next();
             Integer menuIndex = (Integer) entry.getKey();
             MenuDomainObject menu = (MenuDomainObject) entry.getValue();
-            updateTextDocumentMenu(textDocument, menuIndex, menu);
+            updateTextDocumentMenu(connection, textDocument, menuIndex, menu);
         }
-        deleteUnusedMenus(textDocument);
+        deleteUnusedMenus(connection, textDocument);
     }
 
-    private void deleteUnusedMenus(TextDocumentDomainObject textDocument) {
+    private void deleteUnusedMenus( DatabaseConnection connection, TextDocumentDomainObject textDocument ) {
         Collection menus = textDocument.getMenus().values();
         if (!menus.isEmpty()) {
             Collection menuIds = CollectionUtils.collect(menus, new Transformer() {
@@ -107,33 +108,36 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             String whereClause = "menu_id NOT IN (" + sqlInMenuIds + ")";
             String sqlDeleteUnusedMenuItems = "DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?) AND "
                     + whereClause;
-            service.sqlUpdateQuery(sqlDeleteUnusedMenuItems, new String[]{"" + textDocument.getId()});
+            connection.executeUpdateQuery( sqlDeleteUnusedMenuItems, new String[]{"" + textDocument.getId()} );
             String sqlDeleteUnusedMenus = "DELETE FROM menus WHERE meta_id = ? AND " + whereClause;
-            service.sqlUpdateQuery(sqlDeleteUnusedMenus, new String[]{"" + textDocument.getId()});
+            connection.executeUpdateQuery( sqlDeleteUnusedMenus, new String[]{"" + textDocument.getId()});
         }
     }
 
-    private void updateTextDocumentMenu(TextDocumentDomainObject textDocument, Integer menuIndex,
-                                        MenuDomainObject menu) {
-        deleteTextDocumentMenu(textDocument, menuIndex);
-        insertTextDocumentMenu(textDocument, menuIndex, menu);
+    private void updateTextDocumentMenu( DatabaseConnection connection, TextDocumentDomainObject textDocument, Integer menuIndex,
+                                         MenuDomainObject menu ) {
+        deleteTextDocumentMenu(connection, textDocument, menuIndex);
+        insertTextDocumentMenu(connection, textDocument, menuIndex, menu);
     }
 
-    private void insertTextDocumentMenu(TextDocumentDomainObject textDocument, Integer menuIndex,
-                                        MenuDomainObject menu) {
-        sqlInsertMenu(textDocument, menuIndex.intValue(), menu);
-        insertTextDocumentMenuItems(menu);
+    private void insertTextDocumentMenu( DatabaseConnection connection, TextDocumentDomainObject textDocument, Integer menuIndex,
+                                         MenuDomainObject menu ) {
+        sqlInsertMenu(connection, textDocument, menuIndex.intValue(), menu);
+        insertTextDocumentMenuItems(connection, menu);
     }
 
-    private void deleteTextDocumentMenu(TextDocumentDomainObject textDocument, Integer menuIndex) {
-        deleteTextDocumentMenuItems(textDocument, menuIndex);
+    private void deleteTextDocumentMenu( DatabaseConnection connection, TextDocumentDomainObject textDocument,
+                                         Integer menuIndex ) {
+        deleteTextDocumentMenuItems(connection, textDocument, menuIndex);
         String sqlDeleteMenu = "DELETE FROM menus WHERE meta_id = ? AND menu_index = ?";
-        service.sqlUpdateQuery(sqlDeleteMenu, new String[]{"" + textDocument.getId(), "" + menuIndex});
+        connection.executeUpdateQuery( sqlDeleteMenu, new String[]{"" + textDocument.getId(), "" + menuIndex} );
     }
 
-    private void deleteTextDocumentMenuItems(TextDocumentDomainObject textDocument, Integer menuIndex) {
+    private void deleteTextDocumentMenuItems( DatabaseConnection connection, TextDocumentDomainObject textDocument,
+                                              Integer menuIndex ) {
         String sqlDeleteMenuItems = "DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
-        service.sqlUpdateQuery(sqlDeleteMenuItems, new String[]{"" + textDocument.getId(), "" + menuIndex});
+        connection.executeUpdateQuery( sqlDeleteMenuItems, new String[]{"" + textDocument.getId(),
+                                                                                    "" + menuIndex} );
     }
 
     void updateTextDocumentTexts(TextDocumentDomainObject textDocument) {
@@ -190,32 +194,33 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         service.sqlUpdateQuery(sqlDeleteTexts, new String[]{"" + textDocument.getId()});
     }
 
-    private void insertTextDocumentMenuItems(MenuDomainObject menu) {
+    private void insertTextDocumentMenuItems( DatabaseConnection connection, MenuDomainObject menu ) {
         MenuItemDomainObject[] menuItems = menu.getMenuItems();
         for (int i = 0; i < menuItems.length; i++) {
             MenuItemDomainObject menuItem = menuItems[i];
-            sqlInsertMenuItem(menu, menuItem);
+            sqlInsertMenuItem(connection, menu, menuItem);
         }
     }
 
-    private void sqlInsertMenuItem(MenuDomainObject menu, MenuItemDomainObject menuItem) {
+    private void sqlInsertMenuItem( DatabaseConnection connection, MenuDomainObject menu, MenuItemDomainObject menuItem ) {
         String sqlInsertMenuItem = "INSERT INTO childs (menu_id, to_meta_id, manual_sort_order, tree_sort_index) VALUES(?,?,?,?)";
-        service.sqlUpdateQuery(sqlInsertMenuItem, new String[]{
-            "" + menu.getId(),
-            "" + menuItem.getDocument().getId(),
-            "" + menuItem.getSortKey().intValue(),
-            "" + menuItem.getTreeSortKey()
-        });
+        String[] parameters = new String[]{
+                    "" + menu.getId(),
+                    "" + menuItem.getDocument().getId(),
+                    "" + menuItem.getSortKey().intValue(),
+                    "" + menuItem.getTreeSortKey()
+                };
+        connection.executeUpdateQuery( sqlInsertMenuItem, parameters);
     }
 
-    private void sqlInsertMenu(TextDocumentDomainObject textDocument, int menuIndex,
-                               MenuDomainObject menu) {
+    private void sqlInsertMenu( DatabaseConnection connection, TextDocumentDomainObject textDocument, int menuIndex,
+                                MenuDomainObject menu ) {
         String sqlInsertMenu = "INSERT INTO menus (meta_id, menu_index, sort_order) VALUES(?,?,?) SELECT @@IDENTITY";
-        String menuIdString = service.sqlQueryStr(sqlInsertMenu, new String[]{
-            "" + textDocument.getId(), "" + menuIndex, "" + menu.getSortOrder()
-        });
-        int menuId = Integer.parseInt(menuIdString);
-        menu.setId(menuId);
+        String[] parameters = new String[]{
+                    "" + textDocument.getId(), "" + menuIndex, "" + menu.getSortOrder()
+                };
+        int menuId = Integer.parseInt( connection.executeUpdateAndSelectString( sqlInsertMenu, parameters ) );
+        menu.setId( menuId );
     }
 
     private void insertTextDocumentIncludes(TextDocumentDomainObject textDocument) {

@@ -1,7 +1,7 @@
 package imcode.server;
 
 import imcode.server.db.ConnectionPool;
-import imcode.server.db.SqlHelpers;
+import imcode.server.db.Database;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.ParserParameters;
@@ -31,7 +31,7 @@ import java.util.*;
 
 final public class DefaultImcmsServices implements ImcmsServices {
 
-    private final ConnectionPool connectionPool;
+    private final Database database;
     private TextDocumentParser textDocParser;
     private Config config;
 
@@ -66,7 +66,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * Contructs an DefaultImcmsServices object.
      */
     public DefaultImcmsServices( ConnectionPool conPool, Properties props ) {
-        connectionPool = conPool;
+        database = new Database(conPool) ;
         initConfig( props );
         initSysData();
         initSessionCounter();
@@ -387,18 +387,18 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public String[] sqlQuery( String sqlQuery, String[] parameters ) {
-        return SqlHelpers.sqlQuery( connectionPool, sqlQuery, parameters );
+        return database.sqlQuery( sqlQuery, parameters );
     }
 
     public String sqlQueryStr( String sqlStr, String[] params ) {
-        return SqlHelpers.sqlQueryStr( connectionPool, sqlStr, params );
+        return database.sqlQueryStr( sqlStr, params );
     }
 
     /**
      * Send a sql update query to the database
      */
     public int sqlUpdateQuery( String sqlStr, String[] params ) {
-        return SqlHelpers.sqlUpdateQuery( connectionPool, sqlStr, params );
+        return database.sqlUpdateQuery( sqlStr, params );
     }
 
     /**
@@ -409,7 +409,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * @param params    The parameters of the procedure
      */
     public String[] sqlProcedure( String procedure, String[] params ) {
-        return SqlHelpers.sqlProcedure( connectionPool, procedure, params );
+        return database.sqlProcedure( procedure, params );
     }
 
     /**
@@ -420,11 +420,11 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * @return updateCount or -1 if error
      */
     public int sqlUpdateProcedure( String procedure, String[] params ) {
-        return SqlHelpers.sqlUpdateProcedure( connectionPool, procedure, params );
+        return database.sqlUpdateProcedure( procedure, params );
     }
 
     public String sqlProcedureStr( String procedure, String[] params ) {
-        return SqlHelpers.sqlProcedureStr( connectionPool, procedure, params );
+        return database.sqlProcedureStr( procedure, params );
     }
 
     public DocumentMapper getDocumentMapper() {
@@ -547,6 +547,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return config;
     }
 
+    public Database getDatabase() {
+        return database ;
+    }
+
     /**
      * @deprecated Ugly use {@link ImcmsServices#getTemplateFromDirectory(String,imcode.server.user.UserDomainObject,java.util.List,String)}
      *             or something else instead.
@@ -632,22 +636,22 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public Map sqlQueryHash( String sqlQuery, String[] params ) {
-        return SqlHelpers.sqlQueryHash( connectionPool, sqlQuery, params );
+        return database.sqlQueryHash( sqlQuery, params );
     }
 
     public Map sqlProcedureHash( String procedure, String[] params ) {
-        return SqlHelpers.sqlProcedureHash( connectionPool, procedure, params );
+        return database.sqlProcedureHash( procedure, params );
     }
 
     /**
      * Send a procedure to the database and return a multi string array
      */
     public String[][] sqlProcedureMulti( String procedure, String[] params ) {
-        return SqlHelpers.sqlProcedureMulti( connectionPool, procedure, params );
+        return database.sqlProcedureMulti( procedure, params );
     }
 
     public String[][] sqlQueryMulti( String sqlQuery, String[] params ) {
-        return SqlHelpers.sqlQueryMulti( connectionPool, sqlQuery, params );
+        return database.sqlQueryMulti( sqlQuery, params );
     }
 
     /**
@@ -1151,10 +1155,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         } catch ( LanguageMapper.LanguageNotSupportedException e ) {
             throw new RuntimeException( e );
         }
-    }
-
-    public ConnectionPool getConnectionPool() {
-        return connectionPool;
     }
 
     private static class WebappRelativeFileConverter implements Converter {

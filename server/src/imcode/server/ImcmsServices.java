@@ -1,6 +1,6 @@
 package imcode.server ;
 
-import imcode.server.db.ConnectionPool;
+import imcode.server.db.Database;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
@@ -15,10 +15,7 @@ import org.apache.velocity.app.VelocityEngine;
 import java.io.File;
 import java.io.IOException;
 import java.text.Collator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public interface ImcmsServices {
 
@@ -185,8 +182,6 @@ public interface ImcmsServices {
 
     void updateMainLog( String logMessage );
 
-    ConnectionPool getConnectionPool();
-
     DocumentMapper getDocumentMapper();
 
     ImcmsAuthenticatorAndUserMapper getImcmsAuthenticatorAndUserAndRoleMapper();
@@ -230,4 +225,6 @@ public interface ImcmsServices {
     VelocityContext getVelocityContext( UserDomainObject user );
 
     Config getConfig();
+
+    Database getDatabase();
 }
