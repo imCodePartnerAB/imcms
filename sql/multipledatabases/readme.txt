@@ -38,22 +38,14 @@ getmetapathinfo.prc
 getpermissionset.prc
 getreadrunneruserdataforuser.prc
 getrolesdocpermissions.prc
-gettemplategroups.prc
-gettemplategroupsforuser.prc
-gettemplategroupswithnewpermissions.prc
 gettemplategroupswithpermissions.prc
-gettemplates.prc
-gettexts.prc
 getuseradminpermissibleroles.prc
-getusercreatedate.prc
-getuseridfromname.prc
-getusernames.prc
-getuserpermissionset.prc
+(Används av Conferens och andra system, vänta, eller skriva om så att de använder befintliga istället?) getuseridfromname.prc
+(Används av Conferens och andra system, vänta, eller skriva om så att de använder befintliga istället? getusernames.prc
+Christoffer: getuserpermissionset.prc
 getuserpermissionsetex.prc
 getuserrolesdocpermissions.prc
 getuserswhobelongstorole.prc
-getusertype.prc
-getusertypes.prc
 inheritpermissions.prc
 inserttext.prc
 ipaccessadd.prc

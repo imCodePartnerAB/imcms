@@ -280,6 +280,30 @@ public abstract class DatabaseService {
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
+    public static class Table_user_types {
+        private int user_type;
+        private String type_name;
+
+        public Table_user_types( ResultSet rs ) throws SQLException {
+            user_type = rs.getInt("user_type");
+            type_name = rs.getString("type_name");
+        }
+    }
+
+    /*
+    Used to generate a list with all type of users. Used from AdminUserProps
+    */
+    Table_user_types[] sproc_GetUserTypes( String lang_prefix ) {
+        String sql = "SELECT DISTINCT user_type, type_name FROM user_types WHERE lang_prefix = ? ";
+        Object[] paramValues = new Object[]{ lang_prefix };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql,  paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Table_user_types(rs);
+            }
+        } );
+        return (Table_user_types[])queryResult.toArray( new Table_user_types[queryResult.size()] );
+    }
+
     /*
     This function adds a new phone numbers to the db. Used by AdminUserProps
     */
@@ -1317,7 +1341,7 @@ public abstract class DatabaseService {
     }
 
     class Table_texts {
-        private int meta_id;
+        public int meta_id;
         private int name;
         private String text;
         private int type;
@@ -1329,6 +1353,27 @@ public abstract class DatabaseService {
             text = rs.getString( "text" );
             type = rs.getInt( "type" );
             counter = rs.getInt( "counter" );
+        }
+    }
+
+     /**
+      *
+      * @param meta_id
+      * @param name
+      * @return
+      */
+     public Table_texts sproc_getText( int meta_id, int name ) {
+        String sql = "SELECT meta_id, name, text, type, counter FROM texts WHERE meta_id = ? AND name = ? ";
+        Object[] paramValues = new Object[] { new Integer( meta_id ), new Integer( name ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Table_texts(rs);
+            }
+        } );
+        if( queryResult.isEmpty() ) {
+            return null;
+        } else {
+            return (Table_texts)queryResult.get(0);
         }
     }
 
@@ -1813,6 +1858,10 @@ public abstract class DatabaseService {
         String sql = "DELETE FROM includes WHERE meta_id = ? AND include_id = ? ";
         Object[] paramValues = new Object[]{new Integer( meta_id ), new Integer( include_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
+    }
+
+    Table_users sproc_GetUserType( int meta_id ) {
+        return selectFrom_users( new Integer( meta_id ) );
     }
 
     Table_users selectFrom_users( Integer user_id ) {
@@ -2441,5 +2490,48 @@ public abstract class DatabaseService {
         } else {
             return (Integer)queryResult.get( 0 );
         }
+    }
+
+    static class Table_templategroups {
+        int group_id;
+        String group_name;
+
+        public Table_templategroups( ResultSet rs ) throws SQLException {
+            group_id = rs.getInt("group_id");
+            group_name = rs.getString("group_name");
+        }
+    }
+
+    public Table_templategroups[] sproc_getTemplategroups() {
+        String sql = "select group_id,group_name from templategroups order by group_name";
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Table_templategroups(rs);
+            }
+        } );
+        return (Table_templategroups[])queryResult.toArray( new Table_templategroups[ queryResult.size() ] );
+    }
+
+    /**
+     *
+     * Nice query that fetches all templategroups a user may use in a document,
+     * for easy insertion into an html-option-list, no less!
+    */
+    public Table_templategroups[] sproc_GetTemplateGroupsForUser( int meta_id, int user_id ) {
+        String sql = "SELECT distinct group_id,group_name FROM templategroups dt " +
+            "JOIN  user_roles_crossref urc ON urc.user_id = ? " +
+            "LEFT JOIN roles_rights rr ON rr.meta_id = ? AND rr.role_id = urc.role_id " +
+            "LEFT JOIN doc_permission_sets dps ON dps.meta_id = rr.meta_id AND dps.set_id = rr.set_id " +
+            "LEFT JOIN doc_permission_sets_ex dpse ON dpse.permission_data = dt.group_id " +
+                "AND (dpse.permission_id & dps.permission_id) > 0 AND dpse.meta_id = rr.meta_id " +
+                "AND dpse.set_id = rr.set_id AND dpse.permission_id = 524288 " + // = Change template
+            "WHERE dpse.permission_data IS NOT NULL OR rr.set_id = 0 OR urc.role_id = 0 ORDER BY dt.group_name";
+        Object[] paramValues = new Object[]{ new Integer( user_id ), new Integer( meta_id) };
+        ArrayList queryResult = sqlProcessor.executeQuery(sql, paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Table_templategroups( rs );
+            }
+        } );
+        return (Table_templategroups[])queryResult.toArray( new Table_templategroups[ queryResult.size() ] );
     }
 }
