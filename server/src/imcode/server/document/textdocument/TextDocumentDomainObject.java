@@ -36,7 +36,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public ImageDomainObject getImage( int imageIndex ) {
-        return (ImageDomainObject)getLazilyLoadedTextDocumentAttributes().images.get( new Integer( imageIndex )) ;
+        ImageDomainObject image = (ImageDomainObject)getLazilyLoadedTextDocumentAttributes().images.get( new Integer( imageIndex )) ;
+        if (null == image) {
+            image = new ImageDomainObject() ;
+        }
+        return image ;
     }
 
     public Integer getIncludedDocumentId( int includeIndex ) {

@@ -1,26 +1,30 @@
 package imcode.server.document;
 
-import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
-import imcode.server.document.textdocument.*;
-import imcode.server.user.UserDomainObject;
-import imcode.util.FileInputStreamSource;
 import imcode.util.InputStreamSource;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.UnhandledException;
+import imcode.util.FileInputStreamSource;
+import imcode.server.IMCServiceInterface;
+import imcode.server.ApplicationServer;
+import imcode.server.user.UserDomainObject;
+import imcode.server.document.textdocument.*;
 
 import java.io.*;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Iterator;
+import java.util.Collection;
+
+import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.Logger;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
 
     protected IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
-    private static final int FILE_BUFFER_LENGTH = 2048;
     protected UserDomainObject user;
+
+    private final static Logger log = Logger.getLogger( DocumentStoringVisitor.class.getName() );
+    private static final int FILE_BUFFER_LENGTH = 2048;
 
     public DocumentStoringVisitor( UserDomainObject user ) {
         this.user = user;
@@ -66,8 +70,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                + "VALUES(?" + StringUtils.repeat( ",?", columnNames.length - 1 ) + ")";
     }
 
-    protected void updateTextDocumentMenus( TextDocumentDomainObject textDocument ) {
-        Map menuMap = textDocument.getMenus() ;
+    void updateTextDocumentMenus( TextDocumentDomainObject textDocument ) {
+        Map menuMap = textDocument.getMenus();
         for ( Iterator iterator = menuMap.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
             Integer menuIndex = (Integer)entry.getKey();
@@ -78,35 +82,47 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     private void deleteUnusedMenus( TextDocumentDomainObject textDocument ) {
-        Collection menuIds = CollectionUtils.collect( textDocument.getMenus().values(), new Transformer() {
-            public Object transform( Object input ) {
-                return new Integer( ( (MenuDomainObject)input ).getId() ) ;
-            }
-        }) ;
-        String sqlInMenuIds = StringUtils.join( menuIds.iterator(), ",") ;
+        Collection menus = textDocument.getMenus().values();
+        if ( !menus.isEmpty() ) {
+            Collection menuIds = CollectionUtils.collect( menus, new Transformer() {
+                public Object transform( Object input ) {
+                    return new Integer( ( (MenuDomainObject)input ).getId() );
+                }
+            } );
+            String sqlInMenuIds = StringUtils.join( menuIds.iterator(), "," );
+            log.debug( sqlInMenuIds );
 
-        String whereClause = "WHERE menu_id NOT IN ("+sqlInMenuIds+")" ;
-        String sqlDeleteUnusedMenus = "DELETE FROM childs "+whereClause +" DELETE FROM menus "+whereClause ;
-        service.sqlUpdateQuery( sqlDeleteUnusedMenus, new String[0]) ;
+            String whereClause = "menu_id NOT IN (" + sqlInMenuIds + ")";
+            String sqlDeleteUnusedMenuItems = "DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?) AND " + whereClause;
+            service.sqlUpdateQuery( sqlDeleteUnusedMenuItems, new String[] {""+textDocument.getId()}  );
+            String sqlDeleteUnusedMenus = "DELETE FROM menus WHERE meta_id = ? AND " + whereClause;
+            service.sqlUpdateQuery( sqlDeleteUnusedMenus, new String[] { ""+textDocument.getId() } );
+        }
     }
-
 
     private void updateTextDocumentMenu( TextDocumentDomainObject textDocument, Integer menuIndex,
                                          MenuDomainObject menu ) {
-        deleteTextDocumentMenu(menu) ;
-        insertTextDocumentMenu( textDocument, menuIndex, menu);
+        deleteTextDocumentMenu( textDocument, menuIndex );
+        insertTextDocumentMenu( textDocument, menuIndex, menu );
     }
 
-    private void deleteTextDocumentMenu( MenuDomainObject menu ) {
-        deleteTextDocumentMenuItems(menu) ;
-        String sqlDeleteMenu = "DELETE FROM menus WHERE menu_id = ?" ;
-        service.sqlUpdateQuery( sqlDeleteMenu, new String[] { ""+menu.getId() } ) ;
+    private void insertTextDocumentMenu( TextDocumentDomainObject textDocument, Integer menuIndex,
+                                         MenuDomainObject menu ) {
+        sqlInsertMenu( textDocument, menuIndex.intValue(), menu );
+        insertTextDocumentMenuItems( menu );
     }
 
-    private void deleteTextDocumentMenuItems( MenuDomainObject menu ) {
-        String sqlDeleteMenuItems = "DELETE FROM childs WHERE menu_id = ?" ;
-        service.sqlUpdateQuery( sqlDeleteMenuItems, new String[] { ""+menu.getId() } ) ;
+    private void deleteTextDocumentMenu( TextDocumentDomainObject textDocument, Integer menuIndex ) {
+        deleteTextDocumentMenuItems( textDocument, menuIndex );
+        String sqlDeleteMenu = "DELETE FROM menus WHERE meta_id = ? AND menu_index = ?";
+        service.sqlUpdateQuery( sqlDeleteMenu, new String[]{""+textDocument.getId(), ""+menuIndex} );
     }
+
+    private void deleteTextDocumentMenuItems( TextDocumentDomainObject textDocument, Integer menuIndex ) {
+        String sqlDeleteMenuItems = "DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
+        service.sqlUpdateQuery( sqlDeleteMenuItems, new String[]{"" + textDocument.getId(), ""+menuIndex} );
+    }
+
 
     void updateTextDocumentTexts( TextDocumentDomainObject textDocument ) {
         deleteTextDocumentTexts( textDocument );
@@ -160,12 +176,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     private void deleteTextDocumentTexts( TextDocumentDomainObject textDocument ) {
         String sqlDeleteTexts = "DELETE FROM texts WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlDeleteTexts, new String[]{"" + textDocument.getId()} );
-    }
-
-    private void insertTextDocumentMenu( TextDocumentDomainObject textDocument, Integer menuIndex,
-                                         MenuDomainObject menu ) {
-        sqlInsertMenu( textDocument, menuIndex.intValue(), menu );
-        insertTextDocumentMenuItems( menu );
     }
 
     private void insertTextDocumentMenuItems( MenuDomainObject menu ) {
