@@ -444,6 +444,7 @@ public class DocumentMapper {
 
         document.accept( new DocumentCreatingVisitor( user ) );
 
+        invalidateDocument( document );
     }
 
     private void updateDocumentSectionsCategoriesKeywords( DocumentDomainObject document ) {
