@@ -92,12 +92,12 @@ imcmsGui("mid", null);
         &nbsp;</td>
     </tr>
     <tr>  
-        <td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/create_document_heading ?>","656");</script></td>
+        <td>#gui_heading( "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/create_document_heading ?>" )</td>
     </tr>
     <% } else { %>
         <input type="hidden" name="<%=DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION%>" value="<%=DocumentComposer.ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION%>" />
     <tr>
-        <td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/edit_document_heading ?> <%= document.getId() %>","656");</script></td>
+        <td>#gui_heading( "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/edit_document_heading ?> <%= document.getId() %>" )</td>
     </tr>
     <% } %>
     <tr>
@@ -261,7 +261,7 @@ imcmsGui("mid", null);
 </tr>
 <tbody id="advanced">
 <tr>
-	<td>&nbsp;<br><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/21/1 ?>","656");</script></td>
+	<td>&nbsp;<br>#gui_heading( "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/21/1 ?>" )</td>
 </tr>
 <tr>
 	<td>

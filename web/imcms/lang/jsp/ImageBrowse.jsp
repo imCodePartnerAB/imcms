@@ -41,9 +41,7 @@ imcmsGui("mid", null);
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <% if (null != imageBrowseFormData.getImageNumber()) { %>
 <tr>
-	<td colspan="3"><script>
-        imcHeading("<? install/htdocs/sv/jsp/ImageBrowse.html/4/1 ?> <%=imageBrowseFormData.getImageNumber()%> <? install/htdocs/sv/jsp/ImageBrowse.html/4/2 ?> <%=imageBrowseFormData.getMetaId()%>",656);
-    </script></td>
+	<td colspan="3">#gui_heading( "<? install/htdocs/sv/jsp/ImageBrowse.html/4/1 ?> <%=imageBrowseFormData.getImageNumber()%> <? install/htdocs/sv/jsp/ImageBrowse.html/4/2 ?> <%=imageBrowseFormData.getMetaId()%>" )</td>
 </tr>
 <% } %>
 <tr valign="top">

@@ -152,3 +152,8 @@
     <tr>
         <td class="imcmsAdmTable">
 #end
+
+#macro( gui_heading $heading )
+<span class="imcmsAdmHeading">$heading</span><br>
+<img src="@imcmsimageurl@/admin/1x1_20568d.gif" width="100%" height="1" vspace="8">
+#end

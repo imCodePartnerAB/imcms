@@ -55,7 +55,7 @@ imcmsGui("mid", null);
             name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
             value="<%= DocumentComposer.getSessionAttributeNameFromRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
 <tr>
-	<td colspan="3"><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/4/1 ?>",656);</script></td>
+	<td colspan="3">#gui_heading( "<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/4/1 ?>" )</td>
 </tr>
 <tr>
 	<td align="right">

@@ -87,7 +87,7 @@ imcmsGui("mid", null);
     }
  %>
 <tr>
-    <td colspan="2"><script>imcHeading("<%=heading%>",656);</script></td>
+    <td colspan="2">#gui_heading( "<%=heading%>" )</td>
 </tr>
 <tr>
     <td colspan="2">

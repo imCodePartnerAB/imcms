@@ -663,7 +663,7 @@ final public class IMCService implements IMCServiceInterface {
         velocity.setProperty( VelocityEngine.FILE_RESOURCE_LOADER_PATH, templatePath.getCanonicalPath() );
         velocity.setProperty( VelocityEngine.VM_LIBRARY, user.getLanguageIso639_2()+"/gui.vm");
         velocity.setProperty( VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem" );
-        velocity.setProperty("runtime.log.logsystem.log4j.logger", "velocity");
+        velocity.setProperty( "runtime.log.logsystem.log4j.category", "velocity");
         velocity.init();
         return velocity;
     }

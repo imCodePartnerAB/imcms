@@ -44,27 +44,9 @@ if (isMac && isNS) { // Mac NS 4.X
  *         Functions                                                                         *
  ******************************************************************************************* */
 
-function getNsFormSize(theVal) {
-	/* OBS! Dessa värden gäller vid nuvarande CSS */
-	theVal = parseInt(theVal);
-	if (isNS && isMac) {
-		theVal = (theVal < 12) ? parseInt(theVal * 1.0) : parseInt(theVal * .86);
-	} else if (isNS) {
-		theVal = (theVal < 5) ? parseInt(theVal * .55) : parseInt(theVal * .46);
-	}
-	return theVal;
-}
-
 function hr(theWidth, theWidthNs, theColor) {
 	if (theColor == "blue") theColor = "20568d";
 	theWidth = (isMoz) ? theWidth : theWidthNs;
-	document.write("<img src=\"@imcmsimageurl@/admin/1x1_" + theColor + ".gif\" width=\"" + theWidth + "\" height=\"1\" vspace=\"8\">");
-}
-
-function imcHeading(theHeading, theWidthNs) {
-	theColor = "20568d";
-	theWidth = (isMoz) ? "100%" : theWidthNs;
-	document.writeln("<span class=\"imcmsAdmHeading\">" + theHeading + "</span><br>");
 	document.write("<img src=\"@imcmsimageurl@/admin/1x1_" + theColor + ".gif\" width=\"" + theWidth + "\" height=\"1\" vspace=\"8\">");
 }
 
