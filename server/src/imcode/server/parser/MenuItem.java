@@ -31,7 +31,7 @@ public class MenuItem extends Document implements imcode.server.IMCConstants {
     }
 
     public MenuItem (Menu parent) {
-	
+
 	this.parentMenu = parent ;
     }
 
@@ -94,6 +94,7 @@ public class MenuItem extends Document implements imcode.server.IMCConstants {
 	tags.setProperty("#menuitemheadline#",headline) ;
 	tags.setProperty("#menuitemtext#",getText()) ;
 	tags.setProperty("#menuitemimage#",image) ;
+	tags.setProperty("#menuitemtarget#",getTarget()) ;
 	tags.setProperty("#menuitemdatecreated#",createdDate) ;
 	tags.setProperty("#menuitemdatemodified#",modifiedDate) ;
 
