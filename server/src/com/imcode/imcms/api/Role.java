@@ -2,13 +2,13 @@ package com.imcode.imcms.api;
 
 import imcode.server.user.RoleDomainObject;
 
-public class Role {
+public class Role implements Comparable {
 
     public static final int SUPERADMIN_ID = RoleDomainObject.SUPERADMIN_ID ;
     public static final int USERADMIN_ID = RoleDomainObject.USERADMIN_ID ;
     public static final int USERS_ID = RoleDomainObject.USERS_ID ;
 
-    private RoleDomainObject internalRole ;
+    private final RoleDomainObject internalRole ;
 
     Role( RoleDomainObject role ) {
         this.internalRole = role;
@@ -31,7 +31,7 @@ public class Role {
     }
 
     public boolean equals( Object o ) {
-        return internalRole.equals( o );
+        return internalRole.equals( ((Role)o).internalRole );
     }
 
     public int hashCode() {
@@ -52,5 +52,9 @@ public class Role {
 
     public boolean hasPasswordMailPermission() {
         return internalRole.hasPermission( RoleDomainObject.PASSWORD_MAIL_PERMISSION ) ;
+    }
+
+    public int compareTo( Object o ) {
+        return internalRole.compareTo( ((Role)o).internalRole ) ;
     }
 }
