@@ -911,8 +911,10 @@ public class BillBoard extends HttpServlet { //Conference
 	
 			//lets create unadminlink
 			unAdminLinkVM.addProperty( "UNADMIN_BUTTON", unAdminBtn );
-			HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, unAdminLinkFile );
-			unAdminLink = linkHtmlObj.createHtmlString( unAdminLinkVM, req );
+			if( !unAdminLinkFile.equals("")){
+				HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, unAdminLinkFile );
+				unAdminLink = linkHtmlObj.createHtmlString( unAdminLinkVM, req );
+			}
 		}
 		return unAdminLink ;
 	} // End CreateAdminHtml
