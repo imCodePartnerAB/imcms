@@ -126,10 +126,12 @@
             </td>
         </tr>
     <% } %>
-<% } else { %>
+<% } else {
+    NonTextDocumentPermissionSetDomainObject nonTextDocumentPermissionSet = (NonTextDocumentPermissionSetDomainObject)documentPermissionSet ;
+    %>
     <tr>
         <td class="imcmsAdmText"><? templates/sv/permissions/define_permission_5_65536.html/1 ?></td>
-        <td colspan="2"><input type="checkbox" name="<%= DocumentPermissionSetPage.REQUEST_PARAMETER__EDIT %>" value="1" <% if( documentPermissionSet.getEdit() ) { %>checked<% } %>></td>
+        <td colspan="2"><input type="checkbox" name="<%= DocumentPermissionSetPage.REQUEST_PARAMETER__EDIT %>" value="1" <% if( nonTextDocumentPermissionSet.getEdit() ) { %>checked<% } %>></td>
     </tr>
 <% } %>
 <tr>

@@ -1,10 +1,8 @@
 <%@ page contentType="text/html" import="imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
-                                         imcode.server.document.DocumentDomainObject,
                                          imcode.server.document.textdocument.TextDocumentDomainObject,
-                                         imcode.server.document.TextDocumentPermissionSetDomainObject,
-                                         imcode.server.document.DocumentPermissionSetDomainObject,
-                                         imcode.util.Html"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel" %>
+                                         imcode.util.Html,
+                                         imcode.server.document.*"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel" %>
 <%
     UserDomainObject user = (UserDomainObject)request.getAttribute("user") ;
     DocumentDomainObject document = (DocumentDomainObject)request.getAttribute("document") ;
@@ -93,7 +91,8 @@ B { font-weight: bold; }
               %> title="<? templates/sv/adminbuttons/adminbutton2_1048576.html/2001 ?>" id="admBtnInclude" border="0"></a><%
             }
         } else {
-            if( documentPermissionSet.getEdit() ) {
+            NonTextDocumentPermissionSetDomainObject nonTextDocumentPermissionSet = (NonTextDocumentPermissionSetDomainObject)documentPermissionSet ;
+            if( nonTextDocumentPermissionSet.getEdit() ) {
                 %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=65536" id="admHrefRedigera"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/redigera.gif"<%
               %> alt="<? templates/sv/adminbuttons/adminbutton7_65536.html/2001 ?>"<%
               %> title="<? templates/sv/adminbuttons/adminbutton7_65536.html/2001 ?>" id="admBtnRedigera" border="0"></a><%
