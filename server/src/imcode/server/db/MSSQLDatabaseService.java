@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-class MSSQLDatabaseService extends DatabaseService {
+public class MSSQLDatabaseService extends DatabaseService {
 
     private String TEXT_TYPE_INTERNATIONAL_SQL_SERVER = "NTEXT";
     private String TEXT_TYPE_SQL_SERVER = "TEXT";

@@ -1,28 +1,21 @@
 package imcode.server;
 
-import imcode.readrunner.ReadrunnerUserData;
-import imcode.server.db.DBConnect;
-import imcode.server.db.DatabaseService;
-import imcode.server.db.sql.ConnectionPool;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.DatabaseAccessor;
-import imcode.server.parser.ParserParameters;
-import imcode.server.parser.TextDocumentParser;
+import imcode.server.db.sql.*;
+import imcode.server.db.*;
+import imcode.server.parser.*;
 import imcode.server.user.*;
+import imcode.server.document.*;
 import imcode.util.*;
+import imcode.util.poll.*;
+import imcode.util.shop.*;
 import imcode.util.fortune.*;
-import imcode.util.poll.PollHandlingSystem;
-import imcode.util.poll.PollHandlingSystemImpl;
-import imcode.util.shop.ShoppingOrderSystem;
-import imcode.util.shop.ShoppingOrderSystemImpl;
-import org.apache.log4j.Logger;
+import imcode.readrunner.*;
 
 import java.io.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
+import java.text.*;
+
+import org.apache.log4j.*;
 
 /**
  Main services for the Imcode Net Server.
@@ -1408,7 +1401,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         Integer docType = m_databaseService.sproc_GetDocType(meta_id) ;
 
-        return docType == null ? -1 : docType.intValue() ; 
+        return docType == null ? -1 : docType.intValue() ;
     }
 
     /**

@@ -2,11 +2,9 @@ package imcode.server;
 
 import imcode.util.Prefs;
 import imcode.server.db.*;
-// import imcode.server.db.sql.InetPoolManager;
 import org.apache.log4j.Category;
 
 import java.io.IOException;
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -37,15 +35,15 @@ public class ApplicationServer {
             st = new StringTokenizer( servers, " ," );
             int serverObjectCount = st.countTokens();
             log.info( serverObjectCount + " Server" + (serverObjectCount == 1 ? ": " : "s: ") + servers );
-        } catch( IOException ex ) {
+        } catch (IOException ex) {
             log.fatal( "Unable to load properties from " + CONFIG_FILE, ex );
             throw new RuntimeException( ex.getMessage() );
-        } catch( NullPointerException ex ) {
+        } catch (NullPointerException ex) {
             log.fatal( "Unable to load properties from " + CONFIG_FILE, ex );
             throw ex;
         }
 
-        while( st.hasMoreTokens() ) {
+        while (st.hasMoreTokens()) {
             String servername = st.nextToken();
             log.info( "Reading properties for server " + servername );
 
@@ -54,7 +52,7 @@ public class ApplicationServer {
             try {
                 String serverpropsfile = Prefs.get( servername + ".properties", CONFIG_FILE );
                 serverprops = Prefs.getProperties( serverpropsfile );
-            } catch( IOException ex ) {
+            } catch (IOException ex) {
                 log.fatal( "Unable to load properties for server " + servername, ex );
                 continue;
             }
@@ -78,15 +76,15 @@ public class ApplicationServer {
 
                 serverObjects.put( servername, o );
 
-            } catch( ClassNotFoundException ex ) {
+            } catch (ClassNotFoundException ex) {
                 log.fatal( "Unable to find class " + classname, ex );
-            } catch( NoSuchMethodException ex ) {
+            } catch (NoSuchMethodException ex) {
                 log.fatal( "Class " + classname + " does not have a compatible constructor " + classname + "(InetPoolManager, Properties)", ex );
-            } catch( InstantiationException ex ) {
+            } catch (InstantiationException ex) {
                 log.fatal( "Failed to invoke found constructor " + classname + "(InetPoolManager, Properties) on class " + classname, ex );
-            } catch( IllegalAccessException ex ) {
+            } catch (IllegalAccessException ex) {
                 log.fatal( "Failed to invoke found constructor " + classname + "(InetPoolManager, Properties) on class " + classname, ex );
-            } catch( java.lang.reflect.InvocationTargetException ex ) {
+            } catch (java.lang.reflect.InvocationTargetException ex) {
                 log.fatal( "Failed to invoke found constructor " + classname + "(InetPoolManager, Properties) on class " + classname, ex );
             }
         }
@@ -105,9 +103,9 @@ public class ApplicationServer {
         String port = props.getProperty( "Port" );
         String user = props.getProperty( "User" );
         String password = props.getProperty( "Password" );
-        int maxConnectionCount = Integer.parseInt(props.getProperty( "MaxConnectionCount" ));
+        int maxConnectionCount = Integer.parseInt( props.getProperty( "MaxConnectionCount" ) );
 
-        log.debug( "Properties values for server '" + servername + "':");
+        log.debug( "Properties values for server '" + servername + "':" );
         log.debug( "DatabaseServiceClass=" + databaseServiceClass );
         log.debug( "host=" + host );
         log.debug( "DatabaseName=" + databaseName );
@@ -116,17 +114,15 @@ public class ApplicationServer {
         log.debug( "Password=" + password );
         log.debug( "MaxConnectionCount=" + maxConnectionCount );
 
-        try {
-
-            Class databaseClass = Class.forName(databaseServiceClass);
-            Constructor objConstructor = databaseClass.getConstructor( new Class[]{String.class, Integer.class, String.class, String.class, String.class, Integer.class } );
-            result = (DatabaseService)objConstructor.newInstance( new Object[]{ host, new Integer(port), databaseName, user, password, new Integer(port) });
-        } catch( Exception ex ) {
-            log.fatal( "Failed to create database connection pool");
-            log.fatal( "DatabaseServiceClass = " +databaseServiceClass );
-            log.fatal( "", ex );
+        if ("imcode.server.db.MySQLDatabaseService".equals( databaseServiceClass )) {
+            result = new MySQLDatabaseService( host, new Integer( port ), databaseName, user, password, new Integer( port ) );
+        } else if ("imcode.server.db.MSSQLDatabaseService".equals( databaseServiceClass )) {
+            result = new MSSQLDatabaseService( host, new Integer( port ), databaseName, user, password, new Integer( port ) );
+        } else if ("imcode.server.db.MimerDatabaseService".equals( databaseServiceClass )) {
+            result = new MimerDatabaseService( host, new Integer( port ), databaseName, user, password, new Integer( port ) );
+        } else {
+            log.fatal("The database of type " + databaseServiceClass + " is currently not supported. Misspelling?");
         }
-
         return result;
     }
 

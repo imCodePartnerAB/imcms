@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class MySQLDatabaseService extends DatabaseService {
+public class MySQLDatabaseService extends DatabaseService {
 
     private static final String TEXT_TYPE_MY_SQL = "TEXT";
     private static final String CREATE_TABLE_STR = "CREATE TABLE";

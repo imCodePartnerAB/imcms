@@ -9,10 +9,10 @@ import java.sql.SQLException;
 
 /**
  * Mimer transaction differ from many others, they uses optimistic transaction management, witch meens that
- * deadlock can't happend, but instead they throw Exceptions when to transaction clashes, 
+ * deadlock can't happend, but instead they throw Exceptions when to transaction clashes,
  * see http://developer.mimer.com/features/feature_12.htm
  */
-class MimerDatabaseService extends DatabaseService {
+public class MimerDatabaseService extends DatabaseService {
 
     public MimerDatabaseService( String hostName, Integer port, String databaseName, String user, String password, Integer maxConnectionCount ) {
         super( Logger.getLogger( MimerDatabaseService.class ), 3 );

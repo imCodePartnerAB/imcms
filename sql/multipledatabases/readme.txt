@@ -6,7 +6,7 @@ Se klassen DatabaseService för att se vilka databaser som stödjs.
 
 Vid förändring av skripen i denna katalog, se till att validera innehållet mot SQL 92/99 i möjligaste mån,
 http://developer.mimer.com/validator/parser92/index.tml
-http://developer.mimer.com/validator/parser92/index.tml
+http://developer.mimer.com/validator/parser99/index.tml
 Se även till att alla tester genom testklassen TestDatabaseService även fortsättningsvis gå att köra.
 
 För att kunna skapa DatabaseService objectet behöver man en tom databas.
