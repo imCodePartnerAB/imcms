@@ -22,13 +22,12 @@ public class ImageArchiveServlet extends HttpServlet {
     }
 
     public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        log.debug("Jorå");
         DocumentFinder documentFinder = DocumentFinder.getInstance( request );
 
         setSelectedDocument( request, documentFinder );
 
         if( !documentFinder.isDocumentSelected() ) {
-            String forwardReturnUrl = "ImageArchiveServlet?" + ImageArchive.REQUEST_ATTRIBUTE_PARAMETER__IMAGE_ARHCIVE + "=" + HttpSessionUtils.getSessionAttributeNameFromRequest( request, ImageArchive.REQUEST_ATTRIBUTE_PARAMETER__IMAGE_ARHCIVE );
+            String forwardReturnUrl = "ImageArchiveServlet?" + ImageArchive.REQUEST_ATTRIBUTE_PARAMETER__IMAGE_ARCHIVE + "=" + HttpSessionUtils.getSessionAttributeNameFromRequest( request, ImageArchive.REQUEST_ATTRIBUTE_PARAMETER__IMAGE_ARCHIVE );
             documentFinder.setForwardReturnUrl( forwardReturnUrl );
             documentFinder.forward( request, response );
         } else {

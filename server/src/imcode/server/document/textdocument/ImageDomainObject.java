@@ -9,8 +9,8 @@ package imcode.server.document.textdocument;
 import java.io.Serializable;
 
 public class ImageDomainObject implements Serializable {
-    final static int UN_MANAGED_IMAGE = 0;
-    public final static int FILE_DOCUMENT_IMAGE_TYPE = 1;
+    final static int NON_FILE_DOCUMENT_IMAGE_TYPE_ID = 0;
+    public final static int FILE_DOCUMENT_IMAGE_TYPE_ID = 1;
 
     private int type; // se above, the url is a meta_id if FILE_DOCUMENT_IMAGE_TYPE is the type
     private String url;

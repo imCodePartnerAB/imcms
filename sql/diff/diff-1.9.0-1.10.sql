@@ -13,7 +13,7 @@ DROP PROCEDURE UserPrefsChange
 ALTER TABLE images
     ADD type int NOT NULL CONSTRAINT DF_images_type DEFAULT 0
 
--- Hasse 2004-06-14=======
+-- Hasse 2004-06-14
 
 ALTER TABLE fileupload_docs ALTER COLUMN filename VARCHAR(255)
 

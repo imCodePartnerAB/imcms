@@ -13,10 +13,10 @@ public class ImageArchive extends WebComponent {
     private boolean imageSelected;
     private FileDocumentDomainObject fileDocumentDomainObject;
 
-    public static final String REQUEST_ATTRIBUTE_PARAMETER__IMAGE_ARHCIVE = "imageArchive";
+    public static final String REQUEST_ATTRIBUTE_PARAMETER__IMAGE_ARCHIVE = "imageArchive";
 
     public static ImageArchive getInstance( HttpServletRequest request ) {
-        ImageArchive imageArhive = (ImageArchive)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, REQUEST_ATTRIBUTE_PARAMETER__IMAGE_ARHCIVE );
+        ImageArchive imageArhive = (ImageArchive)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, REQUEST_ATTRIBUTE_PARAMETER__IMAGE_ARCHIVE );
         if ( null == imageArhive ) {
             imageArhive = new ImageArchive();
         }
@@ -37,15 +37,7 @@ public class ImageArchive extends WebComponent {
     }
 
     public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        HttpSessionUtils.addObjectToSessionAndSetSessionAttributeNameInRequest( this, request, ImageArchive.REQUEST_ATTRIBUTE_PARAMETER__IMAGE_ARHCIVE );
+        HttpSessionUtils.addObjectToSessionAndSetSessionAttributeNameInRequest( this, request, ImageArchive.REQUEST_ATTRIBUTE_PARAMETER__IMAGE_ARCHIVE );
         request.getRequestDispatcher( "ImageArchiveServlet" ).forward( request, response );
-
-        /*
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
-        setFileDocumentDomainObject( (FileDocumentDomainObject)documentMapper.getDocument( 1002 ));
-
-        String forwardReturnUrl = getForwardReturnUrl();
-        request.getRequestDispatcher( forwardReturnUrl ).forward( request, response );
-        */
     }
 }

@@ -12,27 +12,6 @@
 var re     = /[a-z0-9\(\)\[\]_-]/i ;     // ImageName check
 var reInfo = "a-z A-Z 0-9 ( ) [ ] _ -" ; // For alertBox - If error
 
-function doClear(){
-	var f = document.forms.imgProp;
-	f.imageref.value            = "";
-	f.image_name.value          = "";
-	f.image_width.value         = "";
-	f.image_height.value        = "";
-	f.image_border.value        = "";
-	f.keepAspectRatio.checked   = 1;
-	f.image_align.selectedIndex = 0;
-	f.alt_text.value            = "";
-	f.low_scr.value             = "";
-	f.v_space.value             = "";
-	f.h_space.value             = "";
-	f.imageref_link.value       = "";
-	f.target[0].selectedIndex   = 0;
-	f.target[1].value           = "";
-	if (hasGetElementById) {
-		if (document.getElementById("imgTable")) document.getElementById("imgTable").style.display = "none";
-	}
-}
-
 function setDef() {
 	var f = document.forms.imgProp;
 	if (!hasDocumentLayers && f.imageref.value == "") f.image_align.selectedIndex = 0;
@@ -148,23 +127,6 @@ function checkLinkOnBlur() {
 #gui_mid()
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
-    <tr>
-        <td colspan="2">#gui_heading( "Nya bildarkivet" )</td>
-    </tr>
-    <tr>
-        <td>
-            <form action="ChangeImage" method="POST">
-                <input type="HIDDEN" name="meta_id" value="#getMetaId#">
-                <input type="HIDDEN" name="img_no" value="#img_no#">
-                <input type="hidden" name="label" value="#label#">
-                <input type="submit" name="GotoImageArchive" class="imcmsFormBtnSmall" value="Hämta från det nya bildarkivet" >
-            </form>
-        </td>
-        <td>
-            #imageFileDocumentId#
-        </td>
-    </tr>
-    <tr><td>&nbsp;</td></tr>
 
 <form name="ImageUploadForm" action="ImageUpload" enctype="multipart/form-data" method="POST" onSubmit="return (checkFileName()); return false">
     <input type="HIDDEN" name="meta_id" value="#getMetaId#">
@@ -191,20 +153,38 @@ function checkLinkOnBlur() {
     <input type="submit" class="imcmsFormBtnSmall" name="ok" value="<? templates/sv/change_img.html/2005 ?>" style="width:110">
                 </td>
             </tr>
-</form>
             </table>
         </td>
+    </tr>
+</form>
+    <tr>
+        <td colspan="2">&nbsp;<br>
+        #gui_heading( "<? templates/sv/change_img.html/9/1 ?> #img_no# <? templates/sv/change_img.html/9/2 ?> #getMetaId#" )<div id="theLabel" class="imcmsAdmText"><i>#label#</i></div></td>
     </tr>
     <tr>
         <td>&nbsp;</td>
         <td>
-            <form name="imgbr" method="get" action="ImageBrowse">
-                <input type="hidden" name="caller" value="ChangeImage">
-                <input type="hidden" name="meta_id" value="#getMetaId#">
-                <input type="hidden" name="img_no" value="#img_no#">
-                <input type="hidden" name="label" value="#label#">
-                <input type="submit" class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/2004 ?>">
-            </form>
+            <table>
+                <tr>
+                    <td>
+                        <form name="imgbr" method="get" action="ImageBrowse">
+                            <input type="hidden" name="caller" value="ChangeImage">
+                            <input type="hidden" name="meta_id" value="#getMetaId#">
+                            <input type="hidden" name="img_no" value="#img_no#">
+                            <input type="hidden" name="label" value="#label#">
+                            <input type="submit" class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/2004 ?>">
+                        </form>
+                    </td>
+                    <td>
+                        <form action="ChangeImage" method="POST">
+                            <input type="HIDDEN" name="meta_id" value="#getMetaId#">
+                            <input type="HIDDEN" name="img_no" value="#img_no#">
+                            <input type="hidden" name="label" value="#label#">
+                            <input type="submit" name="GotoImageArchive" class="imcmsFormBtnSmall" value="Hämta från det nya bildarkivet" >
+                        </form>
+                    </td>
+                </tr>
+            </table>
          </td>
     </tr>
 <form name="imgProp" method="POST" action="SaveImage" onSubmit="return checkLinkType(); return false">
@@ -216,37 +196,12 @@ function checkLinkOnBlur() {
 <input type="HIDDEN" name="oldW" value="#imgWidth#">
 <input type="HIDDEN" name="oldH" value="#imgHeight#">
 <input type="hidden" name="label" value="#label#">
-    <tr>
-        <td colspan="2">&nbsp;<br>
-        #gui_heading( "<? templates/sv/change_img.html/9/1 ?> #img_no# <? templates/sv/change_img.html/9/2 ?> #getMetaId#" )<div id="theLabel" class="imcmsAdmText"><i>#label#</i></div></td>
-    </tr>
-<tr>
-	<td colspan="2">
-<script language="JavaScript">
-<!--
-var sUrl = "#imgUrl#"+"#imgRef#";
-var str  = "";
-if (sUrl.indexOf(".") < 0) {
-	str += "<img src=\"$contextPath/imcms/$language/images/admin/1x1.gif\" width=\"1\" height=\"1\" border=\"0\" style=\"display:none\">";
-} else {
-	str += "<table id=\"imgTable\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\" width=\"100%\">\n";
-	str += "<tr>\n";
-	str += "	<td align=\"center\" bgcolor=\"#ffffff\">\n";
-	str += "	<img src=\"#imgUrl#"+"#imgRef#\" width=\"#imgWidth#\" height=\"#imgHeight#\" border=\"#imgBorder#\"></td>\n";
-	str += "</tr>\n";
-	str += "</table>";
-}
-document.write(str);
-//-->
-</script></td>
-</tr>
 <tr>
 	<td nowrap><? templates/sv/change_img.html/12 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
-		<td><input type="text" name="imageref" size="50" maxlength="255" style="width: 350" value="#imgRef#"></td>
-		<td align="right"><input type="SUBMIT" class="imcmsFormBtnSmall" name="show_img" value="<? templates/sv/change_img.html/2006 ?>" style="width:110"></td>
+		<td colspan="2"><input type="text" name="imageref" size="50" maxlength="255" style="width: 350" value="#imgRef#"></td>
 	</tr>
 	</table></td>
 </tr>
@@ -363,7 +318,6 @@ document.write(str);
 <tr>
 	<td colspan="2" align="right">
 	<input type="SUBMIT" class="imcmsFormBtn" name="ok" value="  <? templates/sv/change_img.html/2007 ?>  ">
-	<input type="button" class="imcmsFormBtn" name="Rensa" value="  <? templates/sv/change_img.html/2009 ?>  " onClick="doClear();">
 	<input type="SUBMIT" class="imcmsFormBtn" name="cancel" value=" <? templates/sv/change_img.html/2008 ?> "></td>
 </tr>
 <tr>

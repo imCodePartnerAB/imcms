@@ -1,119 +1,102 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.ImageFileMetaData;
 import imcode.util.Utility;
-import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import java.io.FileInputStream;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.log4j.Logger;
-
-public class SaveImage extends HttpServlet implements imcode.server.IMCConstants {
+public class SaveImage extends HttpServlet {
     private Logger log = Logger.getLogger( SaveImage.class );
+
+    final static String REQUEST_PARAMETER__IMAGE_URL = "imageref" ;
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         String okParameter = req.getParameter( "ok" );
         String showImageParam = req.getParameter( "show_img" );
 
-        // get old image_height
-        String oldH = req.getParameter( "oldH" );
-
-        // get new image_height
-        String image_height = req.getParameter( "image_height" );
-
-        // get old image_width
-        String oldW = req.getParameter( "oldW" );
-
-        // get new image_width
-        String image_width = req.getParameter( "image_width" );
-
-        // get image_border
-        String image_border = req.getParameter( "image_border" );
-
-        // get vertical_space
-        String v_space = req.getParameter( "v_space" );
-
-        // get horizonal_space
-        String h_space = req.getParameter( "h_space" );
-
+        String imageHeight = req.getParameter( "image_height" );
+        String imageWidth = req.getParameter( "image_width" );
+        String oldImageHeight = req.getParameter( "oldH" );
+        String oldImageWidth = req.getParameter( "oldW" );
+        String imageBorder = req.getParameter( "image_border" );
+        String verticalSpace = req.getParameter( "v_space" );
+        String horizontalSpace = req.getParameter( "h_space" );
         boolean keepAspectRatio = (req.getParameter( "keepAspectRatio" ) != null);
-
-        String origWidth = req.getParameter( "origW" ); // width
-        String origHeight = req.getParameter( "origH" ); // height
-
+        String originalImageWidth = req.getParameter( "origW" );
+        String originalImageHeight = req.getParameter( "origH" );
         ImageDomainObject image = new ImageDomainObject();
         try {
-            image.setHeight( Integer.parseInt( image_height ) );
+            image.setHeight( Integer.parseInt( imageHeight ) );
         } catch ( NumberFormatException ex ) {
-            image_height = "0";
+            imageHeight = "0";
             image.setHeight( 0 );
         }
 
         try {
-            image.setBorder( Integer.parseInt( image_border ) );
+            image.setBorder( Integer.parseInt( imageBorder ) );
         } catch ( NumberFormatException ex ) {
-            image_border = "0";
+            imageBorder = "0";
             image.setBorder( 0 );
         }
 
         try {
-            image.setWidth( Integer.parseInt( image_width ) );
+            image.setWidth( Integer.parseInt( imageWidth ) );
         } catch ( NumberFormatException ex ) {
-            image_width = "0";
+            imageWidth = "0";
             image.setWidth( 0 );
         }
 
         if ( keepAspectRatio && (okParameter != null || showImageParam != null) ) {
             int oHeight = 0;
             try {
-                oHeight = Integer.parseInt( origHeight ); // image height
+                oHeight = Integer.parseInt( originalImageHeight ); // image height
             } catch ( NumberFormatException ex ) {
                 log( "Failed to parse origHeight" );
             }
             int oWidth = 0;
             try {
-                oWidth = Integer.parseInt( origWidth ); // image width
+                oWidth = Integer.parseInt( originalImageWidth ); // image width
             } catch ( NumberFormatException ex ) {
                 log( "Failed to parse origHeight" );
             }
 
             int iHeight = 0;
             try {
-                iHeight = Integer.parseInt( image_height ); // form width
+                iHeight = Integer.parseInt( imageHeight ); // form width
             } catch ( NumberFormatException ex ) {
                 log( "Failed to parse image_height" );
             }
             int iWidth = 0;
             try {
-                iWidth = Integer.parseInt( image_width ); // form height
+                iWidth = Integer.parseInt( imageWidth ); // form height
             } catch ( NumberFormatException ex ) {
                 log( "Failed to parse image_width" );
             }
 
             int oldHeight = 0;
             try {
-                oldHeight = (oldH.length() > 0) ? Integer.parseInt( oldH ) : oHeight;
+                oldHeight = (oldImageHeight.length() > 0) ? Integer.parseInt( oldImageHeight ) : oHeight;
             } catch ( NumberFormatException ex ) {
                 log( "Failed to parse oldHeight" );
             }
             int oldWidth = 0;
             try {
-                oldWidth = (oldW.length() > 0) ? Integer.parseInt( oldW ) : oWidth;
+                oldWidth = (oldImageWidth.length() > 0) ? Integer.parseInt( oldImageWidth ) : oWidth;
             } catch ( NumberFormatException ex ) {
                 log( "Failed to parse oldWidth" );
             }
@@ -142,28 +125,28 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 
             image.setHeight( iHeight );
             image.setWidth( iWidth );
-            image_width = "" + iWidth;
-            image_height = "" + iHeight;
+            imageWidth = "" + iWidth;
+            imageHeight = "" + iHeight;
         }
 
         try {
-            image.setVerticalSpace( Integer.parseInt( v_space ) );
+            image.setVerticalSpace( Integer.parseInt( verticalSpace ) );
         } catch ( NumberFormatException ex ) {
-            v_space = "0";
+            verticalSpace = "0";
             image.setVerticalSpace( 0 );
         }
 
         try {
-            image.setVerticalSpace( Integer.parseInt( v_space ) );
+            image.setVerticalSpace( Integer.parseInt( verticalSpace ) );
         } catch ( NumberFormatException ex ) {
-            v_space = "0";
+            verticalSpace = "0";
             image.setVerticalSpace( 0 );
         }
 
         try {
-            image.setHorizontalSpace( Integer.parseInt( h_space ) );
+            image.setHorizontalSpace( Integer.parseInt( horizontalSpace ) );
         } catch ( NumberFormatException ex ) {
-            h_space = "0";
+            horizontalSpace = "0";
             image.setHorizontalSpace( 0 );
         }
 
@@ -213,11 +196,8 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         int meta_id = Integer.parseInt( m_id );
 
         if ( !imcref.checkDocAdminRights( meta_id, user, 131072 ) ) {	// Checking to see if user may edit this
-            String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
-            if ( output != null ) {
-                out.write( output );
-            }
-            return;
+            goBack( meta_id, user, req, res, out );
+            return ;
         }
         user.put( "flags", new Integer( 131072 ) );
 
@@ -230,176 +210,82 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         int img_no = Integer.parseInt( i_no );
 
         if ( req.getParameter( "cancel" ) != null ) {
-            String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
-            if ( output != null ) {
-                out.write( output );
-            }
+            goBack( meta_id, user, req, res, out );
             return;
 
-        } else if ( req.getParameter( "show_img" ) != null ) {
-            //****************************************************************
-
-            File image_path = Utility.getDomainPrefPath( "image_path" );
-            ImageFileMetaData imagefile = new ImageFileMetaData( new FileInputStream(new File( image_path, image_ref )), image_ref );
-
-            int width = imagefile.getWidth();
-            int height = imagefile.getHeight();
-            //****************************************************************
-            Vector vec = new Vector();
-            vec.add( "#imgUrl#" );
-            vec.add( imcref.getImageUrl() );
-            vec.add( "#imgName#" );
-            vec.add( image_name );
-            vec.add( "#imgRef#" );
-            vec.add( image_ref );
-            vec.add( "#imgWidth#" );
-            vec.add( "0".equals( image_width ) ? "" + width : image_width );
-            vec.add( "#imgHeight#" );
-            vec.add( "0".equals( image_height ) ? "" + height : image_height );
-
-            vec.add( "#origW#" );
-            vec.add( "" + width );
-            vec.add( "#origH#" );
-            vec.add( "" + height );
-
-            vec.add( "#imgBorder#" );
-            vec.add( image_border );
-            vec.add( "#imgVerticalSpace#" );
-            vec.add( v_space );
-            vec.add( "#imgHorizontalSpace#" );
-            vec.add( h_space );
-            if ( "_top".equals( target ) ) {
-                vec.add( "#target_name#" );
-                vec.add( "" );
-                vec.add( "#top_checked#" );
-            } else if ( "_self".equals( target ) ) {
-                vec.add( "#target_name#" );
-                vec.add( "" );
-                vec.add( "#self_checked#" );
-            } else if ( "_blank".equals( target ) ) {
-                vec.add( "#target_name#" );
-                vec.add( "" );
-                vec.add( "#blank_checked#" );
-            } else if ( "_parent".equals( target ) ) {
-                vec.add( "#target_name#" );
-                vec.add( "" );
-                vec.add( "#blank_checked#" );
-            } else {
-                vec.add( "#target_name#" );
-                vec.add( target );
-                vec.add( "#other_checked#" );
-            }
-            vec.add( "selected" );
-
-            if ( "baseline".equals( image_align ) ) {
-                vec.add( "#baseline_selected#" );
-            } else if ( "top".equals( image_align ) ) {
-                vec.add( "#top_selected#" );
-            } else if ( "middle".equals( image_align ) ) {
-                vec.add( "#middle_selected#" );
-            } else if ( "bottom".equals( image_align ) ) {
-                vec.add( "#bottom_selected#" );
-            } else if ( "texttop".equals( image_align ) ) {
-                vec.add( "#texttop_selected#" );
-            } else if ( "absmiddle".equals( image_align ) ) {
-                vec.add( "#absmiddle_selected#" );
-            } else if ( "absbottom".equals( image_align ) ) {
-                vec.add( "#absbottom_selected#" );
-            } else if ( "left".equals( image_align ) ) {
-                vec.add( "#left_selected#" );
-            } else if ( "right".equals( image_align ) ) {
-                vec.add( "#right_selected#" );
-            } else {
-                vec.add( "#none_selected#" );
-            }
-            vec.add( "selected" );
-
-            vec.add( "#imgAltText#" );
-            vec.add( alt_text );
-            vec.add( "#imgLowScr#" );
-            vec.add( low_scr );
-            vec.add( "#imgRefLink#" );
-            vec.add( imageref_link );
-            vec.add( "#getMetaId#" );
-            vec.add( m_id );
-            vec.add( "#img_no#" );
-            vec.add( i_no );
-            vec.add( "#label#" );
-
-            // get img label
-            String label = req.getParameter( "label" );
-            if ( label == null ) {
-                label = "";
-            }
-
-            vec.add( label );
-
-            vec.add( "#folders#" );
-            vec.add( dirList );
-            String htmlStr = imcref.getAdminTemplate( "change_img.html", user, vec );
-            out.write( htmlStr );
-            return;
         } else if ( req.getParameter( "delete" ) != null ) {
-            Vector vec = new Vector();
-            vec.add( "#imgUrl#" );
-            vec.add( "" );
-            vec.add( "#imgName#" );
-            vec.add( "" );
-            vec.add( "#imgRef#" );
-            vec.add( "" );
-            vec.add( "#imgWidth#" );
-            vec.add( "0" );
-            vec.add( "#imgHeight#" );
-            vec.add( "0" );
-            vec.add( "#imgBorder#" );
-            vec.add( "0" );
-            vec.add( "#imgVerticalSpace#" );
-            vec.add( "0" );
-            vec.add( "#imgHorizontalSpace#" );
-            vec.add( "0" );
-            vec.add( "#target_name#" );
-            vec.add( "" );
-            vec.add( "#self_checked#" );
-            vec.add( "selected" );
-            vec.add( "#top_selected#" );
-            vec.add( "selected" );
-            vec.add( "#imgAltText#" );
-            vec.add( "" );
-            vec.add( "#imgLowScr#" );
-            vec.add( "" );
-            vec.add( "#imgRefLink#" );
-            vec.add( "" );
-            vec.add( "#getMetaId#" );
-            vec.add( String.valueOf( meta_id ) );
-            vec.add( "#img_no#" );
-            vec.add( String.valueOf( img_no ) );
-
-            vec.add( "#folders#" );
-            vec.add( dirList );
-
-            String htmlStr = imcref.getAdminTemplate( "change_img.html", user, vec );
-            out.write( htmlStr );
+            delete( meta_id, img_no, dirList, imcref, user, out );
             return;
+
         } else {
-            String imageDocumentFileId = req.getParameter( ChangeImage.REQUEST_PARAM__IMAGE_FILE_DOCUMENT_ID );
-            if ( null != imageDocumentFileId ) {
-                int metaId = Integer.parseInt( imageDocumentFileId );
-                log.debug( "todo, save imageFileDocument and link it to the document. Image file id = " + imageDocumentFileId );
-                image.setType( ImageDomainObject.FILE_DOCUMENT_IMAGE_TYPE );
-                image.setUrl( "" + metaId );
-            }
-
-            imcref.saveImage( meta_id, user, img_no, image );
-
-            DocumentMapper documentMapper = imcref.getDocumentMapper();
-            documentMapper.touchDocument( documentMapper.getDocument( meta_id ) );
-
-            String tempstring = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
-            if ( tempstring != null ) {
-                out.write( tempstring );
-            }
-            
+            save( req, image, imcref, meta_id, user, img_no, res, out );
             return;
+
         }
     }
+
+    private void goBack( int meta_id, UserDomainObject user, HttpServletRequest req, HttpServletResponse res,
+                         Writer out ) throws IOException, ServletException {
+        String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
+        if ( output != null ) {
+            out.write( output );
+        }
+    }
+
+    private void save( HttpServletRequest req, ImageDomainObject image, IMCServiceInterface imcref, int meta_id,
+                       UserDomainObject user, int img_no, HttpServletResponse res, Writer out ) throws IOException, ServletException {
+        String imageUrl = req.getParameter( REQUEST_PARAMETER__IMAGE_URL ) ;
+        image.setUrl( imageUrl );
+
+        imcref.saveImage( meta_id, user, img_no, image );
+
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        documentMapper.touchDocument( documentMapper.getDocument( meta_id ) );
+
+        goBack( meta_id, user, req, res, out );
+    }
+
+    private void delete( int meta_id, int img_no, String dirList, IMCServiceInterface imcref, UserDomainObject user,
+                         Writer out ) throws IOException {
+        List vec = new ArrayList();
+        vec.add( "#imgUrl#" );
+        vec.add( "" );
+        vec.add( "#imgName#" );
+        vec.add( "" );
+        vec.add( "#imgRef#" );
+        vec.add( "" );
+        vec.add( "#imgWidth#" );
+        vec.add( "0" );
+        vec.add( "#imgHeight#" );
+        vec.add( "0" );
+        vec.add( "#imgBorder#" );
+        vec.add( "0" );
+        vec.add( "#imgVerticalSpace#" );
+        vec.add( "0" );
+        vec.add( "#imgHorizontalSpace#" );
+        vec.add( "0" );
+        vec.add( "#target_name#" );
+        vec.add( "" );
+        vec.add( "#self_checked#" );
+        vec.add( "selected" );
+        vec.add( "#top_selected#" );
+        vec.add( "selected" );
+        vec.add( "#imgAltText#" );
+        vec.add( "" );
+        vec.add( "#imgLowScr#" );
+        vec.add( "" );
+        vec.add( "#imgRefLink#" );
+        vec.add( "" );
+        vec.add( "#getMetaId#" );
+        vec.add( String.valueOf( meta_id ) );
+        vec.add( "#img_no#" );
+        vec.add( String.valueOf( img_no ) );
+
+        vec.add( "#folders#" );
+        vec.add( dirList );
+
+        String htmlStr = imcref.getAdminTemplate( "change_img.html", user, vec );
+        out.write( htmlStr );
+    }
+
 }

@@ -47,7 +47,7 @@ public class SearchDocuments extends HttpServlet {
     private final static Logger log = Logger.getLogger(com.imcode.imcms.servlet.SearchDocuments.class.getName());
     public static final String REQUEST_ATTRIBUTE_PARAMETER__SEARCH_DOCUMENTS = "SearchDocuments";
     public static final String PARAM__SHOW_SELECT_LINK = "showSelectLinks";
-    public static final String PARAM__CHOOSEN_URL = "returningUrl";
+    public static final String PARAM__CHOSEN_URL = "returningUrl";
     public static final String REQUEST_PARAM_SELECTED_DOCUMENT = "selectedDocumentId";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

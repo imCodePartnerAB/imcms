@@ -22,7 +22,6 @@ public class DocumentFinder extends WebComponent {
         return documentFinder;
     }
 
-
     public boolean isDocumentSelected() {
         return documentSelected;
     }
@@ -42,7 +41,7 @@ public class DocumentFinder extends WebComponent {
         String SearchTargetString = "SearchDocuments?" +
                 SearchDocuments.PARAM__DOCUMENT_TYPE + "=" + DocumentDomainObject.DOCTYPE_FILE + "&" +
                 SearchDocuments.PARAM__SHOW_SELECT_LINK + "=" + "true" + "&" +
-                SearchDocuments.PARAM__CHOOSEN_URL + "=" + this.getForwardReturnUrl() ;
+                SearchDocuments.PARAM__CHOSEN_URL + "=" + this.getForwardReturnUrl() ;
         RequestDispatcher rd = request.getRequestDispatcher( SearchTargetString );
         rd.forward( request, response );
     }

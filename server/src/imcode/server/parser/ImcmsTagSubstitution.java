@@ -116,12 +116,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
                     value.append( '>' );
                 }
 
-                String imageUrl;
-                if( ImageDomainObject.FILE_DOCUMENT_IMAGE_TYPE == image.getType()) {
-                    imageUrl = "GetDoc?meta_id=" + image.getUrl(); 
-                } else {
-                    imageUrl = service.getImageUrl() + image.getUrl();
-                }
+                String imageUrl = service.getImageUrl() + image.getUrl();
 
                 value.append( "<img src=\"" + imageUrl + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
                 if ( 0 != image.getWidth() ) {
