@@ -60,13 +60,11 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
 
     private Procedure getProcedure( String wantedProcedure ) {
         String procedureName = wantedProcedure.toLowerCase();
-        Procedure procedure = (Procedure)procedureCache.get( procedureName );
         File file = getFile( procedureName );
-        if ( null == procedure ) {
-            String procedureContents = fileCache.getCachedFileStringIfRecent( file );
-            if ( null == procedureContents ) {
-                procedureContents = loadFile( file );
-            }
+        Procedure procedure = (Procedure)procedureCache.get( procedureName );
+        String procedureContents = fileCache.getCachedFileStringIfRecent( file );
+        if ( null == procedureContents ) {
+            procedureContents = loadFile( file );
             log.debug("Loading procedure "+procedureName) ;
             procedure = prepareProcedure( procedureContents, procedureName );
             procedureCache.put( procedureName, procedure ) ;
