@@ -398,13 +398,6 @@ public class SaveMeta extends HttpServlet {
             setSectionInDbFromRequest( req, imcref, metaId );
         }
 
-        DocumentMapper documentMapper = imcref.getDocumentMapper() ;
-        try {
-            documentMapper.getDocumentAndSetCategoriesFromFormAndSaveDocument( req, metaId );
-        } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
-            throw new ServletException( e );
-        }
-
         // Let's split this joint!
         String output = AdminDoc.adminDoc( metaId, metaId, user, req, res );
         if ( output != null ) {
