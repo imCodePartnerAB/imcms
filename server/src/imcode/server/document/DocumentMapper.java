@@ -54,7 +54,9 @@ public class DocumentMapper {
 
     private Map documentCache = LazyMap.decorate( new HashMap(), new Transformer() {
         public Object transform( Object input ) {
-            return getDocumentFromDb( ( (Integer)input ).intValue() );
+            DocumentDomainObject document = getDocumentFromDb( ( (Integer)input ).intValue() );
+            document.loadAllLazilyLoaded();
+            return document;
         }
     } );
 

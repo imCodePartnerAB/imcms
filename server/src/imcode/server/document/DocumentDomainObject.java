@@ -131,12 +131,16 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public void setId( int v ) {
         if ( 0 != attributes.id ) {
-            getLazilyLoadedDocumentAttributes();
-            getLazilyLoadedDocumentCategories();
-            getLazilyLoadedRolesMappedToDocumentPermissionSetIds();
-            loadAllLazilyLoadedDocumentTypeSpecificAttributes();
+            loadAllLazilyLoaded();
         }
         attributes.id = v;
+    }
+
+    void loadAllLazilyLoaded() {
+        getLazilyLoadedDocumentAttributes();
+        getLazilyLoadedDocumentCategories();
+        getLazilyLoadedRolesMappedToDocumentPermissionSetIds();
+        loadAllLazilyLoadedDocumentTypeSpecificAttributes();
     }
 
     protected abstract void loadAllLazilyLoadedDocumentTypeSpecificAttributes();
