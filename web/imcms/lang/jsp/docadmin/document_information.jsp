@@ -142,7 +142,7 @@ imcmsGui("mid", null);
 	</table>
 	<table border="0" cellspacing="0" cellpadding="0" width="656">
 	<tr>
-		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
     <tr>
         <td class="imcmsAdmText">
@@ -290,7 +290,7 @@ imcmsGui("mid", null);
         </td>
 	</tr>
 	<tr>
-		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/26 ?></td>
@@ -301,7 +301,7 @@ imcmsGui("mid", null);
 		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_language ?> <%= LanguageMapper.getCurrentLanguageNameInUsersLanguage( service, user, document.getLanguageIso639_2() )%></td>
 	</tr>
 	<tr>
-		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/29 ?></td>
@@ -352,7 +352,7 @@ imcmsGui("mid", null);
 		} %></td>
 	</tr>
 	<tr>
-		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/32 ?></td>
@@ -368,7 +368,7 @@ imcmsGui("mid", null);
 		</tr>
 		</table>	</tr>
 	<tr>
-		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/35 ?></td>
@@ -389,7 +389,7 @@ imcmsGui("mid", null);
 		<input type="CHECKBOX" name="<%= DocumentComposer.PARAMETER__SEARCH_DISABLED %>" value="1" <% if (document.isSearchDisabled()) { %> checked<% } %>> <? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?></td>
 	</tr>
 	<tr>
-		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/39 ?></td>
@@ -414,7 +414,7 @@ imcmsGui("mid", null);
 	</tr>
     <% if( editingExistingDocument ) { %>
 	<tr>
-		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/created ?></td>
@@ -454,7 +454,7 @@ imcmsGui("mid", null);
 	</tr>
     <% } %>
 	<tr>
-		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/42 ?></td>
@@ -474,7 +474,7 @@ imcmsGui("mid", null);
 </tr>
 </tbody>
 	<tr>
-		<td><script>hr("100%",656,"blue");</script></td>
+		<td>#gui_hr( "blue" )</td>
 	</tr>
 	<tr>
 		<td><table border="0" cellspacing="0" cellpadding="0" width="100%">
@@ -498,7 +498,7 @@ imcmsGui("mid", null);
 		</table></td>
 	</tr>
 	<tr>
-		<td><script>hr("100%",656,"blue");</script></td>
+		<td>#gui_hr( "blue" )</td>
 	</tr>
 <tr>
 	<td>&nbsp;</td>

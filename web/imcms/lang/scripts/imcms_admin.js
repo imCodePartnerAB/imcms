@@ -44,12 +44,6 @@ if (isMac && isNS) { // Mac NS 4.X
  *         Functions                                                                         *
  ******************************************************************************************* */
 
-function hr(theWidth, theWidthNs, theColor) {
-	if (theColor == "blue") theColor = "20568d";
-	theWidth = (isMoz) ? theWidth : theWidthNs;
-	document.write("<img src=\"@imcmsimageurl@/admin/1x1_" + theColor + ".gif\" width=\"" + theWidth + "\" height=\"1\" vspace=\"8\">");
-}
-
 function focusField(theFormName, theElementName) {
 	var f = (!isNaN(theFormName)) ? eval("document.forms[" + theFormName + "]") : eval("document.forms." + theFormName);
 	if (f) {

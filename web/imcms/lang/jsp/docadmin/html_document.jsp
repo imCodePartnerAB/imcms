@@ -63,7 +63,7 @@ imcmsGui("mid", null);
 <%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getHtmlDocumentHtml(), "") ) %></textarea></td>
 </tr>
 <tr>
-	<td><script>hr("100%",656,"blue");</script></td>
+	<td>#gui_hr( "blue" )</td>
 </tr>
 <tr>
 	<td align="right">

@@ -105,7 +105,7 @@ imcmsGui("mid", null);
 	<td colspan="3"><? install/htdocs/sv/jsp/docadmin/browser_document.jsp/7 ?> </td>
 </tr>
 <tr>
-	<td colspan="3"><script>hr("100%",656,"blue");</script></td>
+	<td colspan="3">#gui_hr( "blue" )</td>
 </tr>
 <tr>
 	<td colspan="3" align="right">

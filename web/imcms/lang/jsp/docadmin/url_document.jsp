@@ -61,7 +61,7 @@ imcmsGui("mid", null);
                 value="<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getUrlDocumentUrl(), "" )) %>"></td>
 </tr>
 <tr>
-	<td colspan="2"><script>hr("100%",396,"cccccc");</script></td>
+	<td colspan="2">#gui_hr( "cccccc" )</td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/url_document.jsp/1002 ?><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="22"></td>
@@ -87,7 +87,7 @@ imcmsGui("mid", null);
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script>hr("100%",396,"blue");</script></td>
+	<td colspan="2">#gui_hr( "blue" )</td>
 </tr>
 <tr>
 	<td colspan="2" align="right">

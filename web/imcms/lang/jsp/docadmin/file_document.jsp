@@ -104,7 +104,7 @@ imcmsGui("mid", null);
 	</table></td>
 </tr>
 <tr>
-	<td><script>hr("100%",396,"blue");</script></td>
+	<td>#gui_hr( "blue" )</td>
 </tr>
 <tr>
 	<td align="right">

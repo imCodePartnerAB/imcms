@@ -88,7 +88,7 @@ imcmsGui("mid", null);
 	</table></td>
 </tr>
 <tr>
-	<td colspan="3"><script>hr("100%",656,"blue");</script></td>
+	<td colspan="3">#gui_hr( "blue" )</td>
 </tr>
 <tr>
 	<td colspan="3" align="right">
