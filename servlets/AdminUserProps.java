@@ -262,7 +262,7 @@ public class AdminUserProps extends Administrator {
 			city = userToChange.getCity();
 			zip = userToChange.getZip();
 			country = userToChange.getCountry();
-			country_council = userToChange.getCountryCouncil();
+			country_council = userToChange.getCountyCouncil();
 			email = userToChange.getEmailAddress();
 //			userType= tmp_userType;
 			//active = tmp_userInfo.getProperty("active");	

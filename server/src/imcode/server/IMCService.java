@@ -221,7 +221,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    user.setCity         	( user_data[8] ) ;
 	    user.setZip          	( user_data[9] ) ;
 	    user.setCountry      	( user_data[10] ) ;
-	    user.setCountryCouncil 	( user_data[11] ) ;
+	    user.setCountyCouncil 	( user_data[11] ) ;
 	    user.setEmailAddress 	( user_data[12] ) ;
 	    user.setLangId       	( Integer.parseInt( user_data[13] ) ) ;
 	    user.setUserType     	( Integer.parseInt( user_data[15] ) ) ;
@@ -276,7 +276,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    user.setCity         ( user_data[8] ) ;
 	    user.setZip          ( user_data[9] ) ;
 	    user.setCountry      ( user_data[10] ) ;
-	    user.setCountryCouncil( user_data[11] ) ;
+	    user.setCountyCouncil( user_data[11] ) ;
 	    user.setEmailAddress ( user_data[12] ) ;
 	    user.setLangId       ( Integer.parseInt( user_data[13] ) ) ;
 	    user.setUserType     ( Integer.parseInt( user_data[15] ) ) ;

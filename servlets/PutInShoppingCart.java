@@ -156,7 +156,7 @@ public class PutInShoppingCart extends HttpServlet {
 
 	String forwardTo = null ;
 
-	if (null != req.getParameter("send")) {
+	if (null != req.getParameter("send") || null != req.getParameter("send.x")) {
 	    forwardTo = req.getParameter("send_next") ;
 	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	    User user = null ;
@@ -177,6 +177,8 @@ public class PutInShoppingCart extends HttpServlet {
 	    /* or, if there was no "next", back to where we came from */
 	    forwardTo = req.getHeader("referer") ;
 	}
+
+	log.debug("Redirecting to "+forwardTo) ;
 	/* Forward the request to the given location */
 	res.sendRedirect(forwardTo) ;
     }
@@ -281,10 +283,21 @@ public class PutInShoppingCart extends HttpServlet {
 	DateFormat dateFormat = new SimpleDateFormat(IMCConstants.DATETIME_FORMAT_STD) ;
 
 	HashMap mailStringMap = new HashMap() ;
-	mailStringMap.put("#items#", mailItems.toString()) ;
-	mailStringMap.put("#datetime#", dateFormat.format(new Date())) ;
-	mailStringMap.put("#user_login_name#", user.getLoginName()) ;
-	mailStringMap.put("#total_price#", ""+totalPrice) ;
+	mailStringMap.put("#items#",               mailItems.toString()) ;
+	mailStringMap.put("#datetime#",            dateFormat.format(new Date())) ;
+	mailStringMap.put("#user_login_name#",     user.getLoginName()) ;
+	mailStringMap.put("#user_title#",          user.getTitle()) ;
+	mailStringMap.put("#user_full_name#",      user.getFullName()) ;
+	mailStringMap.put("#user_first_name#",     user.getFirstName()) ;
+	mailStringMap.put("#user_last_name#",      user.getLastName()) ;
+	mailStringMap.put("#user_email#",          user.getEmailAddress()) ;
+	mailStringMap.put("#user_company#",        user.getCompany()) ;
+	mailStringMap.put("#user_address#",        user.getAddress()) ;
+	mailStringMap.put("#user_zip#",            user.getZip()) ;
+	mailStringMap.put("#user_city#",           user.getCity()) ;
+	mailStringMap.put("#user_country#",        user.getCountry()) ;
+	mailStringMap.put("#user_county_council#", user.getCountyCouncil()) ;
+	mailStringMap.put("#total_price#",         ""+totalPrice) ;
 
 	/* Put the mailitems in the mail */
 	String mail = Util.substitute(patternMatcher,
@@ -293,6 +306,8 @@ public class PutInShoppingCart extends HttpServlet {
 				      mailFormat,
 				      Util.SUBSTITUTE_ALL) ;
 
+
+	log.debug("Sending mail to "+mailToAddress) ;
 	/* Send the mail */
 	SMTP smtp = new SMTP(mailServer,mailport,mailtimeout) ;
 	smtp.sendMailWait(mailFromAddress, mailToAddress, mailSubject,mail) ;
