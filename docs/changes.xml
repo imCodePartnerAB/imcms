@@ -69,6 +69,13 @@
             </p>
             <bug id="2790"/>
         </change>
+        <change>
+            <p>
+                Methods <method>UserService.getRole(int)</method> and <method>UserService.getRole(String)</method>
+                no longer require superadmin-permissions.
+            </p>
+            <bug id="2884"/>
+        </change>
     </changes>
 
 </changeset>

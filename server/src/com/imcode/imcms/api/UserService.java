@@ -70,8 +70,6 @@ public class UserService {
      * @since 2.0
      */
     public Role getRole( int roleId ) throws NoPermissionException {
-        getSecurityChecker().isSuperAdmin();
-
         RoleDomainObject roleDO = getMapper().getRoleById( roleId );
         return null == roleDO ? null : new Role( roleDO );
     }
@@ -80,8 +78,6 @@ public class UserService {
      * @since 2.0
      */
     public Role getRole( String roleName ) throws NoPermissionException {
-        getSecurityChecker().isSuperAdmin();
-
         RoleDomainObject roleDO = getMapper().getRoleByName( roleName );
         return null == roleDO ? null : new Role( roleDO );
     }

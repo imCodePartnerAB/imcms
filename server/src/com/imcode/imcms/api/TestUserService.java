@@ -106,4 +106,19 @@ public class TestUserService extends TestCase {
         database.assertCalled( new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate( "roles", roleName ) );
     }
 
+    public void testGetAllRoles() {
+        try {
+            userService.getAllRoles() ;
+            fail() ;
+        } catch (NoPermissionException npe) {}
+    }
+
+    public void testGetRoleByName() throws NoPermissionException {
+        assertNull( userService.getRole( "" ) ) ;
+    }
+
+    public void testGetRoleById() throws NoPermissionException {
+        assertNull( userService.getRole( 1 ) ) ;
+    }
+
 }
