@@ -8,9 +8,9 @@ package com.imcode.imcms.servlet.admin;
  */
 
 import imcode.server.ApplicationServer;
+import imcode.server.ExternalDocType;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
-import imcode.server.ExternalDocType;
 import imcode.server.document.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
@@ -95,6 +95,9 @@ public class DocumentComposer extends HttpServlet {
     public static final String ACTION__EDIT_BROWSER_DOCUMENT = "editBrowserDocument";
     public static final String ACTION__PROCESS_EDITED_BROWSER_DOCUMENT = "processEditedBrowserDocument";
     public static final String ACTION__EDIT_HTML_DOCUMENT = "editHtmlDocument";
+    public static final String ACTION__PROCESS_EDITED_HTML_DOCUMENT = "processEditedHtmlDocument";
+    public static final String ACTION__PROCESS_EDITED_FILE_DOCUMENT = "processEditedFileDocument";
+    public static final String PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS = "copy_headline_and_text_to_textfields";
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         doPost( request, response );
@@ -132,64 +135,92 @@ public class DocumentComposer extends HttpServlet {
         }
 
         UserDomainObject user = Utility.getLoggedOnUser( request );
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
 
         if ( null != request.getParameter( PARAMETER__RETURNING_FROM_IMAGE_BROWSE ) ) {
             action = request.getParameter( PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION );
             request.setAttribute( REQUEST_ATTR_OR_PARAM__ACTION, action );
             String imageUrl = AdminDoc.getImageUri( request );
             if ( ACTION__CREATE_NEW_DOCUMENT.equalsIgnoreCase( action ) ) {
-                DocumentDomainObject newDocument = createCloneFromParent( newDocumentParentInformation );
-                newDocument.setImage( imageUrl );
+                DocumentDomainObject parentDocument = documentMapper.getDocument( newDocumentParentInformation.parentId );
+                DocumentDomainObject newDocument = createDocumentOfTypeFromParent( newDocumentParentInformation.documentTypeId, parentDocument );
+                newDocument.setMenuImage( imageUrl );
                 addObjectToSessionAndSetSessionAttributeNameInRequest( "newDocument", newDocument, request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
                 forwardToDocinfoPage( request, response, user );
                 return;
             } else {
-                document.setImage( imageUrl );
+                document.setMenuImage( imageUrl );
             }
         }
 
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
         if ( ACTION__CREATE_NEW_DOCUMENT.equalsIgnoreCase( action ) ) {
-            DocumentDomainObject newDocument = createCloneFromParent( newDocumentParentInformation );
+            DocumentDomainObject parentDocument = documentMapper.getDocument( newDocumentParentInformation.parentId );
+            DocumentDomainObject newDocument = createDocumentOfTypeFromParent( newDocumentParentInformation.documentTypeId, parentDocument );
+            newDocument.setHeadline( "" );
+            newDocument.setMenuText( "" );
+            newDocument.setStatus( DocumentDomainObject.STATUS_NEW );
+            newDocument.setPublicationStartDatetime( new Date() );
             addObjectToSessionAndSetSessionAttributeNameInRequest( "newDocument", newDocument, request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
             forwardToDocinfoPage( request, response, user );
         } else if ( ACTION__PROCESS_NEW_DOCUMENT_INFORMATION.equalsIgnoreCase( action ) ) {
             if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
                 processNewDocumentInformation( newDocumentParentInformation, request, response, user );
-            } else {
-                redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
             }
+            redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
         } else if ( ACTION__CREATE_NEW_URL_DOCUMENT.equalsIgnoreCase( action ) ) {
-            UrlDocumentDomainObject newUrlDocument = (UrlDocumentDomainObject)document;
-            newUrlDocument.setUrlDocumentUrl( request.getParameter( PARAMETER__URL_DOC__URL ) );
-            newUrlDocument.setTarget( getTargetFromRequest( request ) );
-            processNewDocumentInformation( newUrlDocument, newDocumentParentInformation, user, request, response );
+            if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+
+                UrlDocumentDomainObject newUrlDocument = (UrlDocumentDomainObject)document;
+                newUrlDocument.setUrlDocumentUrl( request.getParameter( PARAMETER__URL_DOC__URL ) );
+                newUrlDocument.setTarget( getTargetFromRequest( request ) );
+                processNewDocumentInformation( newUrlDocument, newDocumentParentInformation, request, response, user );
+            }
+            redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
         } else if ( ACTION__CREATE_NEW_HTML_DOCUMENT.equalsIgnoreCase( action ) ) {
-            HtmlDocumentDomainObject newHtmlDocument = (HtmlDocumentDomainObject)document;
-            newHtmlDocument.setHtmlDocumentHtml( request.getParameter( PARAMETER__HTML_DOC__HTML ) );
-            processNewDocumentInformation( newHtmlDocument, newDocumentParentInformation, user, request, response );
+            if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+                HtmlDocumentDomainObject newHtmlDocument = (HtmlDocumentDomainObject)document;
+                newHtmlDocument.setHtmlDocumentHtml( request.getParameter( PARAMETER__HTML_DOC__HTML ) );
+                processNewDocumentInformation( newHtmlDocument, newDocumentParentInformation, request, response, user );
+            }
+            redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
         } else if ( ACTION__CREATE_NEW_FILE_DOCUMENT.equalsIgnoreCase( action ) ) {
-            FileDocumentDomainObject newFileDocument = (FileDocumentDomainObject)document;
-            FileItem fileItem = request.getParameterFileItem( PARAMETER__FILE_DOC__FILE );
-            newFileDocument.setFileDocumentFilename( fileItem.getName() );
-            newFileDocument.setFileDocumentInputStream( fileItem.getInputStream() );
-            newFileDocument.setFileDocumentMimeType( getMimeTypeFromRequest( request ) );
-            processNewDocumentInformation( newFileDocument, newDocumentParentInformation, user, request, response );
+            if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+                FileDocumentDomainObject newFileDocument = (FileDocumentDomainObject)document;
+                FileItem fileItem = request.getParameterFileItem( PARAMETER__FILE_DOC__FILE );
+                newFileDocument.setFileDocumentFilename( fileItem.getName() );
+                newFileDocument.setFileDocumentInputStream( fileItem.getInputStream() );
+                newFileDocument.setFileDocumentMimeType( getMimeTypeFromRequest( request ) );
+                processNewDocumentInformation( newFileDocument, newDocumentParentInformation, request, response, user );
+            }
+            redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
         } else if ( ACTION__CREATE_NEW_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
-            BrowserDocumentDomainObject newBrowserDocument = (BrowserDocumentDomainObject)document;
-            processNewDocumentInformation( newBrowserDocument, newDocumentParentInformation, user, request, response );
+            if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+                BrowserDocumentDomainObject newBrowserDocument = (BrowserDocumentDomainObject)document;
+                processNewDocumentInformation( newBrowserDocument, newDocumentParentInformation, request, response, user );
+            }
+            redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
         } else if ( ACTION__EDIT_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
             forwardToBrowserDocumentComposer( request, response );
         } else if ( ACTION__PROCESS_EDITED_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
-            BrowserDocumentDomainObject browserDocument = (BrowserDocumentDomainObject)document;
             try {
-                documentMapper.saveDocument( browserDocument );
+                documentMapper.saveDocument( document );
             } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
                 throw new ServletException( e );
             }
-            redirectBackToDocument( response, document );
+            redirectToDocument( response, document );
         } else if ( ACTION__EDIT_HTML_DOCUMENT.equalsIgnoreCase( action ) ) {
             forwardToHtmlDocumentPage( request, response, user );
+        } else if ( ACTION__PROCESS_EDITED_HTML_DOCUMENT.equalsIgnoreCase( action ) ) {
+            if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+                HtmlDocumentDomainObject htmlDocument = (HtmlDocumentDomainObject)document;
+                htmlDocument.setHtmlDocumentHtml( request.getParameter( PARAMETER__HTML_DOC__HTML ) );
+                try {
+                    documentMapper.saveDocument( htmlDocument );
+                } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
+                    throw new ServletException( e );
+                }
+            }
+            redirectToDocument( response, document );
         } else if ( ACTION__EDIT_DOCUMENT_INFORMATION.equalsIgnoreCase( action ) ) {
             forwardToDocinfoPage( request, response, user );
         } else if ( ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION.equalsIgnoreCase( action ) ) {
@@ -201,24 +232,12 @@ public class DocumentComposer extends HttpServlet {
                     throw new ServletException( e );
                 }
             }
-            redirectBackToDocument( response, document );
+            redirectToDocument( response, document );
         }
     }
 
-    private void redirectBackToDocument( HttpServletResponse response, DocumentDomainObject document ) throws IOException {
+    private void redirectToDocument( HttpServletResponse response, DocumentDomainObject document ) throws IOException {
         response.sendRedirect( "AdminDoc?meta_id=" + document.getId() );
-    }
-
-    private DocumentDomainObject createCloneFromParent( NewDocumentParentInformation newDocumentParentInformation ) throws ServletException {
-        final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
-        final DocumentMapper documentMapper = service.getDocumentMapper();
-        DocumentDomainObject newDocument;
-        try {
-            newDocument = (DocumentDomainObject)documentMapper.getDocument( newDocumentParentInformation.parentId ).clone();
-        } catch ( CloneNotSupportedException e ) {
-            throw new ServletException( e );
-        }
-        return newDocument;
     }
 
     private String getMimeTypeFromRequest( MultipartHttpServletRequest request ) {
@@ -252,11 +271,9 @@ public class DocumentComposer extends HttpServlet {
 
     public void processNewDocumentInformation( DocumentDomainObject newDocument,
                                                NewDocumentParentInformation newDocumentParentInformation,
-                                               UserDomainObject user,
-                                               HttpServletRequest request,
-                                               HttpServletResponse response ) throws IOException {
+                                               HttpServletRequest request, HttpServletResponse response,
+                                               UserDomainObject user ) throws IOException {
         saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newDocument, newDocumentParentInformation, user, request );
-        redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
     }
 
     private void redirectToDocumentIdInMenumode( HttpServletResponse response, int parentId ) throws IOException {
@@ -286,16 +303,11 @@ public class DocumentComposer extends HttpServlet {
     private void processNewDocumentInformation( NewDocumentParentInformation newDocumentParentInformation,
                                                 HttpServletRequest request, HttpServletResponse response,
                                                 UserDomainObject user ) throws ServletException, IOException {
-        final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
-        final DocumentMapper documentMapper = service.getDocumentMapper();
-
-        final DocumentDomainObject parent = documentMapper.getDocument( newDocumentParentInformation.parentId );
-        int documentTypeId = newDocumentParentInformation.documentTypeId;
-        final DocumentDomainObject newDocument = createDocumentOfTypeFromParent( documentTypeId, parent );
+        DocumentDomainObject newDocument = (DocumentDomainObject)getObjectFromSessionWithKeyInRequest( request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) ;
 
         setDocumentAttributesFromRequestParameters( newDocument, request );
-        addObjectToSessionAndSetSessionAttributeNameInRequest( "document", newDocument, request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
 
+        request.setAttribute( REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME, getSessionAttributeNameFromRequest( request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) );
         request.setAttribute( REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME, getSessionAttributeNameFromRequest( request, REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME ) );
 
         newDocument.processNewDocumentInformation( this, newDocumentParentInformation, user, request, response );
@@ -306,6 +318,7 @@ public class DocumentComposer extends HttpServlet {
         try {
             if ( DocumentDomainObject.DOCTYPE_TEXT == documentTypeId ) {
                 newDocument = (DocumentDomainObject)parent.clone();
+                ((TextDocumentDomainObject)newDocument).removeAllTexts();
             } else {
                 newDocument = DocumentDomainObject.fromDocumentTypeId( documentTypeId );
                 newDocument.setDocumentProperties( (DocumentDomainObject.DocumentProperties)parent.getDocumentProperties().clone() );
@@ -358,7 +371,7 @@ public class DocumentComposer extends HttpServlet {
     }
 
     public static void redirectToExternalDocType( IMCServiceInterface imcref, int metaId,
-            UserDomainObject user, int parentMetaId, HttpServletResponse res ) throws IOException {
+                                                  UserDomainObject user, int parentMetaId, HttpServletResponse res ) throws IOException {
         // check if external doc
         ExternalDocType ex_doc;
         ex_doc = imcref.isExternalDoc( metaId, user );
@@ -421,7 +434,7 @@ public class DocumentComposer extends HttpServlet {
         document.setMenuText( menuText );
 
         String imageUrl = request.getParameter( PARAMETER__IMAGE );
-        document.setImage( imageUrl );
+        document.setMenuImage( imageUrl );
 
         int status = Integer.parseInt( request.getParameter( PARAMETER__STATUS ) );
         document.setStatus( status );
@@ -547,6 +560,18 @@ public class DocumentComposer extends HttpServlet {
         calendar.setTime( date );
         calendar.add( Calendar.MILLISECOND, (int)time.getTime() );
         return calendar.getTime();
+    }
+
+    public void processNewTextDocumentInformation( TextDocumentDomainObject textDocument,
+                                                   NewDocumentParentInformation newDocumentParentInformation,
+                                                   HttpServletRequest request, HttpServletResponse response,
+                                                   UserDomainObject user ) throws IOException {
+
+        if ( null != request.getParameter( PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS ) ) {
+            textDocument.setText( 1, new TextDocumentDomainObject.Text( textDocument.getHeadline(), TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN ) );
+            textDocument.setText( 2, new TextDocumentDomainObject.Text( textDocument.getMenuText(), TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN ) );
+        }
+        processNewDocumentInformation( textDocument, newDocumentParentInformation, request, response, user );
     }
 
     public static class NewDocumentParentInformation {

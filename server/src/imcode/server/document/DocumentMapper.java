@@ -375,6 +375,16 @@ public class DocumentMapper {
             document.setTextDocumentDefaultTemplateIdForRestrictedPermissionSetOne( defaultTemplateIdForRestrictedPermissionSetOne );
             document.setTextDocumentDefaultTemplateIdForRestrictedPermissionSetTwo( defaultTemplateIdForRestrictedPermissionSetTwo );
         }
+
+        String sqlSelectTexts = "SELECT name, text, type FROM texts WHERE meta_id = ?" ;
+        String[][] sqlTextsResult = service.sqlQueryMulti( sqlSelectTexts, new String[] {""+document.getId()} ) ;
+        for ( int i = 0; i < sqlTextsResult.length; i++ ) {
+            String[] sqlTextsRow = sqlTextsResult[i];
+            int textIndex = Integer.parseInt(sqlTextsRow[0]) ;
+            String text = sqlTextsRow[1] ;
+            int textType = Integer.parseInt(sqlTextsRow[2]) ;
+            document.setText( textIndex, new TextDocumentDomainObject.Text( text, textType ));
+        }
     }
 
     void initUrlDocumentFromDb( UrlDocumentDomainObject document ) {
@@ -505,7 +515,7 @@ public class DocumentMapper {
         return sections;
     }
 
-    public TextDocumentTextDomainObject getText( int metaId, int no ) {
+    public TextDocumentDomainObject.Text getText( int metaId, int no ) {
         String[] results = sprocGetText( metaId, no );
 
         if ( results == null || results.length == 0 ) {
@@ -517,11 +527,11 @@ public class DocumentMapper {
         String text = results[0];
         int type = Integer.parseInt( results[1] );
 
-        return new TextDocumentTextDomainObject( text, type );
+        return new TextDocumentDomainObject.Text( text, type );
 
     }
 
-    public TextDocumentTextDomainObject getTextField( DocumentDomainObject document, int textFieldIndexInDocument ) {
+    public TextDocumentDomainObject.Text getTextField( DocumentDomainObject document, int textFieldIndexInDocument ) {
         return getText( document.getId(), textFieldIndexInDocument );
     }
 
@@ -614,7 +624,7 @@ public class DocumentMapper {
         sqlColumnValues.add( document.getDocumentTypeId() + "" );
         sqlColumnValues.add( document.getHeadline() );
         sqlColumnValues.add( document.getMenuText() );
-        sqlColumnValues.add( document.getImage() );
+        sqlColumnValues.add( document.getMenuImage() );
         sqlColumnValues.add( document.getCreator().getUserId() + "" );
         sqlColumnValues.add( makeSqlStringFromBoolean( document.isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo() ) );
         sqlColumnValues.add( makeSqlStringFromBoolean( document.isLinkableByOtherUsers() ) );
@@ -641,8 +651,8 @@ public class DocumentMapper {
         service.sqlUpdateQuery( sqlTextDocsInsertStr,
                                 new String[]{
                                     "" + document.getId(), "" + document.getTextDocumentTemplate().getId(),
-                                    "" + document.getTextDocumentTemplateGroupId(), ""
-                                                                                    + document.getTextDocumentMenuSortOrder(),
+                                    "" + document.getTextDocumentTemplateGroupId(),
+                                    "" + document.getTextDocumentMenuSortOrder(),
                                     "" + document.getTextDocumentDefaultTemplateIdForRestrictedPermissionSetOne(),
                                     "" + document.getTextDocumentDefaultTemplateIdForRestrictedPermissionSetTwo()
                                 } );
@@ -664,7 +674,7 @@ public class DocumentMapper {
         String sqlUrlDocsInsertStr = makeSqlInsertString( "frameset_docs", htmlDocumentColumns );
 
         service.sqlUpdateQuery( sqlUrlDocsInsertStr, new String[]{
-            "" + document.getId(), document.getHtml()
+            "" + document.getId(), document.getHtmlDocumentHtml()
         } );
     }
 
@@ -785,7 +795,7 @@ public class DocumentMapper {
         String headlineThatFitsInDB = headline.substring( 0,
                                                           Math.min( headline.length(), META_HEADLINE_MAX_LENGTH - 1 ) );
         makeStringSqlUpdateClause( "meta_headline", headlineThatFitsInDB, sqlUpdateColumns, sqlUpdateValues );
-        makeStringSqlUpdateClause( "meta_image", document.getImage(), sqlUpdateColumns, sqlUpdateValues );
+        makeStringSqlUpdateClause( "meta_image", document.getMenuImage(), sqlUpdateColumns, sqlUpdateValues );
         makeDateSqlUpdateClause( "date_modified", document.getModifiedDatetime(), sqlUpdateColumns, sqlUpdateValues );
         makeStringSqlUpdateClause( "target", document.getTarget(), sqlUpdateColumns, sqlUpdateValues );
         String textThatFitsInDB = text.substring( 0, Math.min( text.length(), META_TEXT_MAX_LENGTH - 1 ) );
@@ -807,7 +817,7 @@ public class DocumentMapper {
     }
 
     /**
-     * Store the given TextDocumentTextDomainObject in the DB.
+     * Store the given TextDocumentDomainObject.Text in the DB.
      *
      * @param user      The user
      * @param document  The document
@@ -842,7 +852,7 @@ public class DocumentMapper {
      *                  pollparameter-description		  description for this poll
      */
 
-    public void saveText( TextDocumentTextDomainObject text, DocumentDomainObject document, int txt_no, UserDomainObject user,
+    public void saveText( TextDocumentDomainObject.Text text, DocumentDomainObject document, int txt_no, UserDomainObject user,
                           String text_type ) {
         String textstring = text.getText();
 
@@ -967,13 +977,6 @@ public class DocumentMapper {
 
     public static void sprocUpdateParentsDateModified( IMCServiceInterface imcref, int meta_id ) {
         imcref.sqlUpdateProcedure( SPROC_UPDATE_PARENTS_DATE_MODIFIED, new String[]{"" + meta_id} );
-    }
-
-    public static void sqlInsertIntoTexts( IMCServiceInterface imcref, String meta_id, String mHeadline, String mText ) {
-        imcref.sqlUpdateQuery( "insert into texts (meta_id,name,text,type) values (?, 1, ?, 1)",
-                               new String[]{meta_id, mHeadline} );
-        imcref.sqlUpdateQuery( "insert into texts (meta_id,name,text,type) values (?, 2, ?, 1)",
-                               new String[]{meta_id, mText} );
     }
 
     public static void sqlUpdateDocumentActivated( IMCServiceInterface imcref, int meta_id, boolean activate ) {
@@ -1202,7 +1205,7 @@ public class DocumentMapper {
         document.setId( Integer.parseInt( result[0] ) );
         document.setHeadline( result[2] );
         document.setMenuText( result[3] );
-        document.setImage( result[4] );
+        document.setMenuImage( result[4] );
         document.setCreator( imcmsAAUM.getUser( Integer.parseInt( result[5] ) ) );
         document.setPermissionSetOneIsMorePrivilegedThanPermissionSetTwo( getBooleanFromSqlResultString( result[6] ) );
         document.setLinkableByOtherUsers( getBooleanFromSqlResultString( result[7] ) );
@@ -1246,7 +1249,7 @@ public class DocumentMapper {
     }
 
     private static void sprocUpdateInsertText( IMCServiceInterface service, int meta_id, int txt_no,
-                                               TextDocumentTextDomainObject text, String textstring ) {
+                                               TextDocumentDomainObject.Text text, String textstring ) {
         String[] params = new String[]{"" + meta_id, "" + txt_no, "" + text.getType(), textstring};
         service.sqlUpdateProcedure( SPROC_INSERT_TEXT, params );
     }
@@ -1323,7 +1326,7 @@ public class DocumentMapper {
      * Retrieve the texts for a document
      *
      * @param meta_id The id of the document.
-     * @return A Map (String -> TextDocumentTextDomainObject) with all the  texts in the document.
+     * @return A Map (String -> TextDocumentDomainObject.Text) with all the  texts in the document.
      */
     public Map getTexts( int meta_id ) {
 
@@ -1337,7 +1340,7 @@ public class DocumentMapper {
                 String txt_no = (String)it.next();
                 int txt_type = Integer.parseInt( (String)it.next() );
                 String value = (String)it.next();
-                textMap.put( txt_no, new TextDocumentTextDomainObject( value, txt_type ) );
+                textMap.put( txt_no, new TextDocumentDomainObject.Text( value, txt_type ) );
             } catch ( NumberFormatException e ) {
                 log.error( "SProc 'GetTexts " + meta_id + "' returned a non-number where a number was expected.", e );
                 return null;
@@ -1531,6 +1534,17 @@ public class DocumentMapper {
             "" + textDocument.getTextDocumentTemplateGroupId(),
             "" + textDocument.getId()
         } );
+
+        String sqlDeleteTexts = "DELETE FROM texts WHERE meta_id = ?" ;
+        service.sqlUpdateQuery( sqlDeleteTexts, new String[] {""+textDocument.getId()}) ;
+
+        String sqlInsertTexts = "INSERT INTO texts (meta_id, name, text, type) VALUES(?,?,?,?)" ;
+        Map texts = textDocument.getTexts() ;
+        for ( Iterator iterator = texts.keySet().iterator(); iterator.hasNext(); ) {
+            Integer textIndex = (Integer)iterator.next();
+            TextDocumentDomainObject.Text text = (TextDocumentDomainObject.Text)texts.get(textIndex) ;
+            service.sqlUpdateQuery( sqlInsertTexts, new String[] {""+textDocument.getId(), ""+textIndex, text.getText(), ""+text.getType()}) ;
+        }
     }
 
     void saveUrlDocument( UrlDocumentDomainObject urlDocument ) {
@@ -1557,7 +1571,7 @@ public class DocumentMapper {
 
     void saveHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
         String sqlStr = "UPDATE frameset_docs SET frame_set = ? WHERE meta_id = ?";
-        service.sqlUpdateQuery( sqlStr, new String[]{htmlDocument.getHtml(), "" + htmlDocument.getId()} );
+        service.sqlUpdateQuery( sqlStr, new String[]{htmlDocument.getHtmlDocumentHtml(), "" + htmlDocument.getId()} );
     }
 
     public static class DocumentAlreadyInMenuException extends Exception {

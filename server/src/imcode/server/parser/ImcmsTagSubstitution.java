@@ -377,13 +377,13 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         }
         // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
         String noStr = attributes.getProperty("no");
-        TextDocumentTextDomainObject text = null;
+        TextDocumentDomainObject.Text text = null;
         if (null != noStr) {
             noStr = noStr.trim();
-            text = (TextDocumentTextDomainObject) textMap.get(noStr);
+            text = (TextDocumentDomainObject.Text) textMap.get(noStr);
             implicitTextNumber = Integer.parseInt(noStr) + 1;
         } else {
-            text = (TextDocumentTextDomainObject) textMap.get(noStr = String.valueOf(implicitTextNumber++));
+            text = (TextDocumentDomainObject.Text) textMap.get(noStr = String.valueOf(implicitTextNumber++));
         }
         String result;
         if (text == null) {

@@ -234,7 +234,7 @@ class MenuParserSubstitution implements Substitution {
      */
     private Substitution getMenuItemSubstitution( MenuItem menuItem, Properties parameters, int menuItemIndex ) {
 
-        String imageUrl = menuItem.getDocument().getImage();
+        String imageUrl = menuItem.getDocument().getMenuImage();
         String imageTag = ( imageUrl != null && imageUrl.length() > 0 )
                           ? ( "<img src=\"" + imageUrl + "\" border=\"0\">" ) : "";
         String headline = menuItem.getDocument().getHeadline();

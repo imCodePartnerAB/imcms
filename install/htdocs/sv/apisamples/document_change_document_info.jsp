@@ -12,7 +12,7 @@
 
     document.setPublicationStartDatetime( new Date() );
     document.setArchivedDatetime( new Date() );
-    document.setArchivedFlag( true );
+    document.setStatus( Document.STATUS_PUBLICATION_APPROVED );
 
     int sectionId = 1;
     Section section = documentService.getSection( sectionId );

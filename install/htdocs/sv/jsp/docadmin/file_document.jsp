@@ -33,9 +33,28 @@ imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <form method="POST" enctype="multipart/form-data" action="DocumentComposer">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>" value="<%= DocumentComposer.ACTION__CREATE_NEW_FILE_DOCUMENT %>">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
+<%
+    DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = (DocumentComposer.NewDocumentParentInformation)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
+    boolean creatingNewDocument = null != newDocumentParentInformation;
+
+    if (creatingNewDocument) { %>
+
+    <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
+            value="<%= DocumentComposer.ACTION__CREATE_NEW_FILE_DOCUMENT %>">
+    <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>"
+            value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
+
+    <% } else {%>
+        <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
+            value="<%= DocumentComposer.ACTION__PROCESS_EDITED_FILE_DOCUMENT %>">
+    <% }
+%>
+    <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
+            value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
 <tr>
 	<td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/file_document.jsp/4/1 ?>",396);</script></td>
 </tr>

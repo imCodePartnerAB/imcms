@@ -24,6 +24,7 @@
 
     DocumentDomainObject document = (DocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME);
     final boolean editingExistingDocument = DocumentComposer.ACTION__EDIT_DOCUMENT_INFORMATION.equalsIgnoreCase( (String)request.getAttribute( DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION  )) ;
+    DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = (DocumentComposer.NewDocumentParentInformation)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
     boolean creatingNewDocument = !editingExistingDocument;
 %>
 <%!
@@ -70,6 +71,9 @@ imcmsGui("head", null);
 imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+        <input type="hidden"
+            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
+            value="<%= DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) %>">
     <%
         if (creatingNewDocument) { %>
         <input type="hidden" name="<%=DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION%>" value="<%=DocumentComposer.ACTION__PROCESS_NEW_DOCUMENT_INFORMATION%>" />
@@ -85,9 +89,6 @@ imcmsGui("mid", null);
     </tr>
     <% } else { %>
         <input type="hidden" name="<%=DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION%>" value="<%=DocumentComposer.ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION%>" />
-        <input type="hidden"
-            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
-            value="<%= DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) %>">
     <tr>
         <td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/edit_document_heading ?> <%= document.getId() %>","656");</script></td>
     </tr>
@@ -108,10 +109,12 @@ imcmsGui("mid", null);
 		<textarea name="<%= DocumentComposer.PARAMETER__MENUTEXT %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%">
 <%= StringEscapeUtils.escapeHtml(document.getMenuText()) %></textarea>
 		<table border="0" cellspacing="0" cellpadding="0">
-		<tr>
-			<td><input type="CHECKBOX" name="copyMetaHeader" value="1" checked></td>
-			<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/9 ?></td>
+		<% if (creatingNewDocument && newDocumentParentInformation.documentTypeId == DocumentDomainObject.DOCTYPE_TEXT) { %>
+        <tr>
+			<td><input type="CHECKBOX" name="<%= DocumentComposer.PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS %>" value="1" checked></td>
+			<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/copy_headline_and_text_to_textfields ?></td>
 		</tr>
+        <% } %>
 		</table></td>
 	<tr>
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/10 ?></td>
@@ -120,7 +123,7 @@ imcmsGui("mid", null);
 		<tr>
 			<td>
                 <input type="text" name="<%= DocumentComposer.PARAMETER__IMAGE %>" size="85" maxlength="255" style="width: 100%"
-                    value="<%= StringEscapeUtils.escapeHtml( document.getImage() ) %>">
+                    value="<%= StringEscapeUtils.escapeHtml( document.getMenuImage() ) %>">
             </td>
 			<td align="right">
                 <input type="submit" class="imcmsFormBtnSmall" name="<%= DocumentComposer.PARAMETER__GO_TO_IMAGE_BROWSE%>" value=" <? install/htdocs/global/pageinfo/browse ?> ">

@@ -150,7 +150,7 @@ public class Document {
 
     public String getMenuImageURL() throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission( this );
-        return internalDocument.getImage();
+        return internalDocument.getMenuImage();
     }
 
     public void setHeadline( String headline ) throws NoPermissionException {
@@ -165,7 +165,7 @@ public class Document {
 
     public void setMenuImageURL( String imageUrl ) throws NoPermissionException {
         securityChecker.hasEditPermission( this );
-        internalDocument.setImage( imageUrl );
+        internalDocument.setMenuImage( imageUrl );
     }
 
     public User getCreator() throws NoPermissionException {

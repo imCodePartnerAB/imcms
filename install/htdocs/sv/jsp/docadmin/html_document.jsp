@@ -1,4 +1,7 @@
-<%@ page import="com.imcode.imcms.servlet.admin.DocumentComposer"%>
+<%@ page import="com.imcode.imcms.servlet.admin.DocumentComposer,
+                 org.apache.commons.lang.StringEscapeUtils,
+                 imcode.server.document.HtmlDocumentDomainObject,
+                 org.apache.commons.lang.ObjectUtils"%>
 <%@page contentType="text/html"%>
 <html>
 <head>
@@ -29,9 +32,26 @@ imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="POST" action="DocumentComposer">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>" value="<%= DocumentComposer.ACTION__CREATE_NEW_HTML_DOCUMENT %>">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
+<%
+    HtmlDocumentDomainObject document = (HtmlDocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME);
+    DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = (DocumentComposer.NewDocumentParentInformation)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
+    boolean creatingNewDocument = null != newDocumentParentInformation;
+
+    if (creatingNewDocument) { %>
+        <input type="hidden"
+                name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
+                value="<%= DocumentComposer.ACTION__CREATE_NEW_HTML_DOCUMENT %>">
+        <input type="hidden"
+                name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>"
+                value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
+    <% } else { %>
+        <input type="hidden"
+                name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
+                value="<%= DocumentComposer.ACTION__PROCESS_EDITED_HTML_DOCUMENT %>">
+    <% } %>
+        <input type="hidden"
+                name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
+                value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
 <tr>
 	<td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/html_document.jsp/6 ?>",656);</script></td>
 </tr>
@@ -40,7 +60,7 @@ imcmsGui("mid", null);
 </tr>
 <tr>
 	<td><textarea name="<%= DocumentComposer.PARAMETER__HTML_DOC__HTML %>" cols="57" rows="16" wrap="virtual" style="width:100%; overflow:auto">
-</textarea></td>
+<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getHtmlDocumentHtml(), "") ) %></textarea></td>
 </tr>
 <tr>
 	<td><script>hr("100%",656,"blue");</script></td>

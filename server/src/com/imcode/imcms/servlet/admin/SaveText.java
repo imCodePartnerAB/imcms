@@ -3,8 +3,9 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
-import imcode.server.document.TextDocumentTextDomainObject;
+import imcode.server.document.TextDocumentDomainObject.Text;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.TextDocumentDomainObject;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -48,7 +49,7 @@ public class SaveText extends HttpServlet {
             text_type = "";
         }
 
-        TextDocumentTextDomainObject text = new TextDocumentTextDomainObject( text_string, text_format );
+        TextDocumentDomainObject.Text text = new TextDocumentDomainObject.Text( text_string, text_format );
 
         user.put( "flags", new Integer( imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_TEXTS ) );
 

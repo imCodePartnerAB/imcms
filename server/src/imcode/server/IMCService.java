@@ -424,7 +424,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * @param no      The id of the text in the page.
      * @return The text from the db, or null if there was none.
      */
-    public TextDocumentTextDomainObject getText( int meta_id, int no ) {
+    public TextDocumentDomainObject.Text getText( int meta_id, int no ) {
         return documentMapper.getText( meta_id, no );
     }
 

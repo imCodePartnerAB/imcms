@@ -3,7 +3,8 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
-import imcode.server.document.TextDocumentTextDomainObject;
+import imcode.server.document.TextDocumentDomainObject.Text;
+import imcode.server.document.TextDocumentDomainObject;
 import imcode.util.Parser;
 import imcode.util.Utility;
 
@@ -48,10 +49,10 @@ public class ChangeText extends HttpServlet {
             return;
         }
 
-        TextDocumentTextDomainObject text = imcref.getText( meta_id, txt_no );
+        TextDocumentDomainObject.Text text = imcref.getText( meta_id, txt_no );
 
         if ( null == text ) {
-            text = new TextDocumentTextDomainObject( "", TextDocumentTextDomainObject.TEXT_TYPE_PLAIN );
+            text = new TextDocumentDomainObject.Text( "", TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN );
         }
 
         String[] tags = {
@@ -62,7 +63,7 @@ public class ChangeText extends HttpServlet {
         String text_string = Parser.parseDoc( text.getText(), tags );
 
         Vector vec = new Vector();
-        if ( text.getType() == TextDocumentTextDomainObject.TEXT_TYPE_HTML ) {
+        if ( text.getType() == TextDocumentDomainObject.Text.TEXT_TYPE_HTML ) {
             vec.add( "#html#" );
             vec.add( "checked" );
             vec.add( "#!html#" );

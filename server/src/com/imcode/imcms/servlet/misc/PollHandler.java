@@ -16,7 +16,8 @@ import imcode.util.poll.*;
 
 import imcode.server.parser.* ;
 import imcode.server.* ;
-import imcode.server.document.TextDocumentTextDomainObject;
+import imcode.server.document.TextDocumentDomainObject.Text;
+import imcode.server.document.TextDocumentDomainObject;
 
 public class PollHandler extends HttpServlet {
 
@@ -213,7 +214,7 @@ public class PollHandler extends HttpServlet {
 		
 		
 		// get poll name
-		TextDocumentTextDomainObject poll_name = new TextDocumentTextDomainObject("",0);
+		TextDocumentDomainObject.Text poll_name = new TextDocumentDomainObject.Text("",0);
 		
 		if ( poll_param != null && poll_param.length !=0 && poll_param[1] != null ){
 			int text_no = Integer.parseInt( poll_param[1] );
@@ -261,7 +262,7 @@ public class PollHandler extends HttpServlet {
 	//Get one text from db 
 	private String getText( IMCServiceInterface imcref, int meta_id, int text_no ){
 
-		TextDocumentTextDomainObject text;
+		TextDocumentDomainObject.Text text;
 		text = imcref.getText(meta_id, text_no);
 		
 		if ( text != null ) {

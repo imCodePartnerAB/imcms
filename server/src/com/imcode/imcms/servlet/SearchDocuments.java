@@ -420,7 +420,7 @@ public class SearchDocuments extends HttpServlet {
             "#shared#", "0",
             "#show_meta#", "0",
             "#disable_search#", "1",
-            "#meta_image#", document.getImage(),
+            "#meta_image#", document.getMenuImage(),
             "#hit_nbr#", "" + ( 1 + searchHitIndex )
         };
     }

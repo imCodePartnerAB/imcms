@@ -475,7 +475,6 @@
             <fileset dir="sql/sprocs"/>
             <fileset dir="sql/data" includes="types.sql"/>
             <fileset dir="sql/data" includes="newdb.sql"/>
-            <fileset dir="sql/index"/>
         </cat>
         <cat destfile="${sprocs-sql}" orderby="path" filtering="true">
             <fileset dir="sql/sprocs"/>

@@ -212,7 +212,7 @@ public class DocumentIndex {
         while ( textsIterator.hasNext() ) {
             Map.Entry textEntry = (Map.Entry)textsIterator.next();
             String textIndexString = (String)textEntry.getKey();
-            TextDocumentTextDomainObject text = (TextDocumentTextDomainObject)textEntry.getValue();
+            TextDocumentDomainObject.Text text = (TextDocumentDomainObject.Text)textEntry.getValue();
             indexDocument.add( Field.UnStored( "text", text.getText() ) );
             indexDocument.add( Field.UnStored( "text" + textIndexString, text.getText() ) );
             indexDocument.add( Field.UnStored( "default", text.getText() ) );
@@ -249,7 +249,7 @@ public class DocumentIndex {
                 indexDocument.add( unStoredKeyword( fieldName, date ) );
             } catch ( RuntimeException re ) {
                 DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING) ;
-                log.warn( "Failed to index date '"+dateFormat.format(date)+"' in field '"+fieldName+"' of document " + documentId, re ) ;
+                log.warn( "Failed to index datetime '"+dateFormat.format(date)+"' in field '"+fieldName+"' of document " + documentId, re ) ;
             }
         }
     }

@@ -16,13 +16,13 @@ import java.io.IOException;
 
 public class HtmlDocumentDomainObject extends DocumentDomainObject {
 
-    private String htmlDocumentHtml;
+    private String htmlDocumentHtml = "" ;
 
     public void setHtmlDocumentHtml( String htmlDocumentHtml ) {
         this.htmlDocumentHtml = htmlDocumentHtml;
     }
 
-    public String getHtml() {
+    public String getHtmlDocumentHtml() {
         return htmlDocumentHtml;
     }
 

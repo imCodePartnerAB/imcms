@@ -264,7 +264,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 }
                 menuItemDocument.setHeadline( childRow[8] );
                 menuItemDocument.setMenuText( childRow[9] );
-                menuItemDocument.setImage( childRow[10] );
+                menuItemDocument.setMenuImage( childRow[10] );
                 try {
                     menuItemDocument.setPublicationStartDatetime( datetimeFormatWithSeconds.parse( childRow[11] ) );
                 } catch ( NullPointerException ignored ) {
@@ -312,7 +312,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             tags.setProperty( "#metaHeadline#", document.getHeadline() );
             tags.setProperty( "#metaText#", document.getMenuText() );
 
-            String meta_image = document.getImage();
+            String meta_image = document.getMenuImage();
             if ( !"".equals( meta_image ) ) {
                 meta_image = "<img src=\"" + meta_image + "\" border=\"0\">";
             }

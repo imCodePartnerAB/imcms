@@ -43,7 +43,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return false;
    }
 
-   public TextDocumentTextDomainObject getText( int meta_id, int txt_no ) {
+   public TextDocumentDomainObject.Text getText( int meta_id, int txt_no ) {
       return null;
    }
 

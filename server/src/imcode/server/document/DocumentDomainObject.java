@@ -90,12 +90,12 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
         getDocumentProperties().setId( v );
     }
 
-    public String getImage() {
-        return getDocumentProperties().getImage();
+    public String getMenuImage() {
+        return getDocumentProperties().getMenuImage();
     }
 
-    public void setImage( String v ) {
-        getDocumentProperties().setImage( v );
+    public void setMenuImage( String v ) {
+        getDocumentProperties().setMenuImage( v );
     }
 
     public String[] getKeywords() {
@@ -407,11 +407,11 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
             this.id = v;
         }
 
-        private String getImage() {
+        private String getMenuImage() {
             return image;
         }
 
-        private void setImage( String v ) {
+        private void setMenuImage( String v ) {
             this.image = v;
         }
 

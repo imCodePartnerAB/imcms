@@ -5,9 +5,10 @@ import java.util.* ;
 
 import imcode.server.parser.ParserParameters ;
 import imcode.server.user.*;
-import imcode.server.document.TextDocumentTextDomainObject;
+import imcode.server.document.TextDocumentDomainObject.Text;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
+import imcode.server.document.TextDocumentDomainObject;
 import imcode.server.db.ConnectionPool;
 import imcode.util.net.SMTP;
 
@@ -28,7 +29,7 @@ public interface IMCServiceInterface {
     /**
        Retrieve a text-field
     **/
-    TextDocumentTextDomainObject getText(int meta_id,int txt_no)
+    TextDocumentDomainObject.Text getText(int meta_id,int txt_no)
 	;
 
     String parsePage(DocumentRequest docReq, int flags, ParserParameters paramsToParse) throws IOException ;

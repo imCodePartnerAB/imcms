@@ -1,4 +1,5 @@
-<%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
+<%@ page import="com.imcode.imcms.api.*,
+                 java.util.Date" errorPage="error.jsp" %>
 
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
@@ -9,12 +10,8 @@
     TextDocument textDocument = documentService.createNewTextDocument( parentId, parentMenuNumber ) ;
     textDocument.setHeadline( "Test headline" );
     textDocument.setPlainTextField( 1, "Test text field" );
-    textDocument.setStatus(Document.STATUS_NEW);
-    textDocument.setStatus(Document.STATUS_PUBLICATION_DISAPPROVED);
+    textDocument.setPublicationStartDatetime( new Date() );
     textDocument.setStatus(Document.STATUS_PUBLICATION_APPROVED);
-    textDocument.setPublicationStartDatetime( friday );
-    textDocument.setArchivedDatetime( saturday );
-    textDocument.setPublicationEndDatetime( sunday );
 
     documentService.saveChanges(textDocument);
 %>

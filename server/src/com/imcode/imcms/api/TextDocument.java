@@ -14,22 +14,22 @@ public class TextDocument extends Document {
 
     public TextField getTextField(int textFieldIndexInDocument) throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
-        TextDocumentTextDomainObject imcmsText = documentMapper.getTextField(internalDocument, textFieldIndexInDocument);
+        TextDocumentDomainObject.Text imcmsText = documentMapper.getTextField(internalDocument, textFieldIndexInDocument);
         TextField textField = new TextField(imcmsText, this);
         return textField;
     }
 
     public void setPlainTextField(int textFieldIndexInDocument, String newText) throws NoPermissionException {
-        setTextField(textFieldIndexInDocument, newText, TextDocumentTextDomainObject.TEXT_TYPE_PLAIN);
+        setTextField(textFieldIndexInDocument, newText, TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN);
     }
 
     public void setHtmlTextField(int textFieldIndexInDocument, String newText) throws NoPermissionException {
-        setTextField(textFieldIndexInDocument, newText, TextDocumentTextDomainObject.TEXT_TYPE_HTML);
+        setTextField(textFieldIndexInDocument, newText, TextDocumentDomainObject.Text.TEXT_TYPE_HTML);
     }
 
     private void setTextField(int textFieldIndexInDocument, String newText, int textType) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
-        TextDocumentTextDomainObject imcmsText = new TextDocumentTextDomainObject(newText, textType);
+        TextDocumentDomainObject.Text imcmsText = new TextDocumentDomainObject.Text(newText, textType);
         this.documentMapper.saveText(imcmsText,
                 internalDocument, textFieldIndexInDocument,
                 super.securityChecker.getCurrentLoggedInUser(),
@@ -159,10 +159,10 @@ public class TextDocument extends Document {
     }
 
     public static class TextField {
-        TextDocumentTextDomainObject imcmsText;
+        TextDocumentDomainObject.Text imcmsText;
         private TextDocument document;
 
-        private TextField(TextDocumentTextDomainObject imcmsText, TextDocument document) {
+        private TextField(TextDocumentDomainObject.Text imcmsText, TextDocument document) {
             this.imcmsText = imcmsText;
             this.document = document;
         }
@@ -172,7 +172,7 @@ public class TextDocument extends Document {
          */
         public void setHtmlFormat() throws NoPermissionException {
             document.securityChecker.hasEditPermission(document.getId());
-            this.imcmsText.setType(TextDocumentTextDomainObject.TEXT_TYPE_HTML);
+            this.imcmsText.setType(TextDocumentDomainObject.Text.TEXT_TYPE_HTML);
         }
 
         /**
@@ -180,7 +180,7 @@ public class TextDocument extends Document {
          */
         public void setPlainFormat() throws NoPermissionException {
             document.securityChecker.hasEditPermission(document.getId());
-            this.imcmsText.setType(TextDocumentTextDomainObject.TEXT_TYPE_PLAIN);
+            this.imcmsText.setType(TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN);
         }
 
         /**
