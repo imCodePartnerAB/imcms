@@ -85,27 +85,31 @@ public class ParserParameters implements Cloneable {
     }
 
     public boolean isTextMode() {
-        TextDocumentPermissionSetDomainObject permissionSet = getPermissionSet();
-        return ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 && permissionSet.getEditTexts();
+        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS, TextDocumentPermission.EDIT_TEXTS );
     }
 
     public boolean isMenuMode() {
-        TextDocumentPermissionSetDomainObject permissionSet = getPermissionSet();
-        return ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 && permissionSet.getEditMenus();
+        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS, TextDocumentPermission.EDIT_MENUS );
     }
 
     public boolean isImageMode() {
-        TextDocumentPermissionSetDomainObject permissionSet = getPermissionSet();
-        return ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0 && permissionSet.getEditImages();
+        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES, TextDocumentPermission.EDIT_IMAGES );
     }
 
     public boolean isIncludesMode() {
-        TextDocumentPermissionSetDomainObject permissionSet = getPermissionSet();
-        return ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0 && permissionSet.getEditIncludes();
+        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES, TextDocumentPermission.EDIT_INCLUDES );
     }
 
     public boolean isTemplateMode() {
-        TextDocumentPermissionSetDomainObject permissionSet = getPermissionSet();
-        return ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0 && permissionSet.getEditTemplates();
+        return isMode( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE, TextDocumentPermission.EDIT_TEMPLATE );
+    }
+
+    private boolean isMode( int flag,
+                            TextDocumentPermission permission ) {
+        return ( flags & flag ) != 0 && getPermissionSet().hasPermission(permission);
+    }
+
+    public boolean isAnyMode() {
+        return isTextMode() || isImageMode() || isMenuMode() || isIncludesMode() || isTemplateMode() ;
     }
 }

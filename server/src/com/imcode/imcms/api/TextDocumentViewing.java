@@ -30,6 +30,10 @@ public class TextDocumentViewing {
         return textDocument;
     }
 
+    public boolean isEditing() {
+        return parserParameters.isAnyMode() ;
+    }
+
     public boolean isEditingTexts() {
         return parserParameters.isTextMode();
     }

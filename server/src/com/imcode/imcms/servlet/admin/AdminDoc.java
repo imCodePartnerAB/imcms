@@ -99,12 +99,12 @@ public class AdminDoc extends HttpServlet {
             history.push( meta_int );
         }
 
-        int doc_type = imcref.getDocType( meta_id );
+        DocumentDomainObject document = imcref.getDocumentMapper().getDocument( meta_id );
+        int doc_type = document.getId();
 
         Integer userflags = (Integer)user.remove( PARAMETER__DISPATCH_FLAGS );		// Get the flags from the user-object
         int flags = userflags == null ? 0 : userflags.intValue();	// Are there flags? Set to 0 if not.
 
-        DocumentDomainObject document = imcref.getDocumentMapper().getDocument( meta_id );
 
         try {
             flags = Integer.parseInt( req.getParameter( PARAMETER__DISPATCH_FLAGS ) );	// Check if we have a "flags" in the request too. In that case it takes precedence.

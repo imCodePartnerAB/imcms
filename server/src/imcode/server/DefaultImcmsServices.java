@@ -594,9 +594,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * get doctype
      */
     public int getDocType( int meta_id ) {
-        String[] data = sqlProcedure( "GetDocType", new String[]{"" + meta_id} );
-        if ( data.length > 0 ) {
-            return Integer.parseInt( data[0] );
+        DocumentDomainObject document = documentMapper.getDocument( meta_id ) ;
+        if ( null != document ) {
+            return document.getDocumentTypeId() ;
         } else {
             return 0;
         }

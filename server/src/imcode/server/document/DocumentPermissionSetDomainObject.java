@@ -3,8 +3,8 @@ package imcode.server.document;
 import imcode.server.Imcms;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DocumentPermissionSetDomainObject implements Serializable {
 
@@ -15,13 +15,13 @@ public class DocumentPermissionSetDomainObject implements Serializable {
     public static final int TYPE_ID__NONE = 4 ;
 
     public static final DocumentPermissionSetDomainObject NONE = new TextDocumentPermissionSetDomainObject( TYPE_ID__NONE ) {
-        boolean hasPermission( String permissionName ) {
+        public boolean hasPermission( DocumentPermission permission ) {
             return false;
         }
     };
 
     public static final DocumentPermissionSetDomainObject READ = new TextDocumentPermissionSetDomainObject( TYPE_ID__READ ) {
-        boolean hasPermission( String permissionName ) {
+        public boolean hasPermission( DocumentPermission permission ) {
             return false ;
         }
     };
@@ -35,7 +35,7 @@ public class DocumentPermissionSetDomainObject implements Serializable {
             return Imcms.getServices().getDocumentMapper().getAllDocumentTypeIds() ;
         }
 
-        boolean hasPermission( String permissionName ) {
+        public boolean hasPermission( DocumentPermission permission ) {
             return true ;
         }
     };
@@ -46,13 +46,9 @@ public class DocumentPermissionSetDomainObject implements Serializable {
     private static final String PERMISSION_SET_NAME__READ = "Read";
     private static final String PERMISSION_SET_NAME__NONE = "None";
 
-    private static final String PERMISSION_NAME__EDIT_DOCUMENT_INFORMATION = "editDocumentInformation";
-    private static final String PERMISSION_NAME__EDIT_PERMISSIONS = "editPermissions";
-    private static final String PERMISSION_NAME__EDIT = "edit";
-
     private int typeId ;
 
-    private Map permissionNamesMappedToBooleans = new HashMap() ;
+    private Set permissions = new HashSet() ;
 
     public DocumentPermissionSetDomainObject( int typeId ) {
         if (TYPE_ID__FULL > typeId || TYPE_ID__NONE < typeId) {
@@ -61,18 +57,17 @@ public class DocumentPermissionSetDomainObject implements Serializable {
         this.typeId = typeId;
     }
 
-    void setPermission(String permissionName, boolean b) {
-        permissionNamesMappedToBooleans.put( permissionName, new Boolean(b) ) ;
-    }
-
-    boolean hasPermission(String permissionName) {
-        Boolean b = (Boolean)permissionNamesMappedToBooleans.get(permissionName) ;
-        if (null == b) {
-            return false ;
+    void setPermission(DocumentPermission permission, boolean b) {
+        if (b) {
+            permissions.add( permission ) ;
+        } else {
+            permissions.remove( permission ) ;
         }
-        return b.booleanValue() ;
     }
 
+    public boolean hasPermission(DocumentPermission permission) {
+        return permissions.contains( permission );
+    }
 
     public int getTypeId() {
         return typeId;
@@ -120,27 +115,27 @@ public class DocumentPermissionSetDomainObject implements Serializable {
     }
 
     public boolean getEditDocumentInformation() {
-        return hasPermission(PERMISSION_NAME__EDIT_DOCUMENT_INFORMATION);
+        return hasPermission(DocumentPermission.EDIT_DOCUMENT_INFORMATION);
     }
 
     public void setEditDocumentInformation( boolean editDocumentInformation ) {
-        setPermission( PERMISSION_NAME__EDIT_DOCUMENT_INFORMATION, editDocumentInformation);
+        setPermission( DocumentPermission.EDIT_DOCUMENT_INFORMATION, editDocumentInformation);
     }
 
     public boolean getEditPermissions() {
-        return hasPermission( PERMISSION_NAME__EDIT_PERMISSIONS ) ;
+        return hasPermission( DocumentPermission.EDIT_PERMISSIONS ) ;
     }
 
     public void setEditPermissions( boolean editPermissions ) {
-        setPermission( PERMISSION_NAME__EDIT_PERMISSIONS, editPermissions );
+        setPermission( DocumentPermission.EDIT_PERMISSIONS, editPermissions );
     }
 
     public boolean getEdit() {
-        return hasPermission( PERMISSION_NAME__EDIT );
+        return hasPermission( DocumentPermission.EDIT ) ;
     }
 
     public void setEdit( boolean edit ) {
-        setPermission( PERMISSION_NAME__EDIT, edit );
+        setPermission( DocumentPermission.EDIT, edit );
     }
 
     void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
