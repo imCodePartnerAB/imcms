@@ -1,0 +1,32 @@
+// Förändringar mot SQL Server orginalscriptet
+// * Default värden satta till NULL är borttagna
+// * tinyint är bytt mot smallint i alla tabeller
+// * Andra default värden är inte satta (ännu, går det, finns det en standard?)
+// * Microsofts Indexeringen är droppad
+// * Microsofts "datetime" & "smalldatetime" har bytts ut mot "timestamp"
+// * Microsofts text & ntext (unicode variant av text) utbytt mot VARCHAR(15000) vilket är max storlek enligt SQL92
+// * I user tabellen är external bytt mot external_user.
+// * I user tabellen är external bytt mot external_user.
+// * I browsers tabellen är value bytt mot browser_value
+// * I sys_data tabellen är value bytt mot sysdata_value
+
+// Ändra de saker som behövs i befintlig installation innan försök till migration.
+
+Nästa steg
+- Validera create och drop scripten mot MySQL när jag ändå håller på.
+- Gör förändringar på befintlig databas först
+    - Flytta samtliga sproc till ett ställe och byt ut, innan migrationen
+    - Flytta all SQL till ett och samma ställe
+    - Byt ut så att jag använder mig av PreparedStatment
+
+// * The following feature outside Core SQL-99 is used: F391, "Long identifiers"
+
+Efter varje förändring av create.sql och drop.sql se till att validera innehållet mot SQL 99:
+http://developer.mimer.com/validator/parser99/index.tml
+
+SQL Server
+Typen "timestamp" heter i SQL Server "datetime"
+Så i create skriptet: byt ut alla columndeklarationer som använder sig av  " timestamp " mot " datetime "
+
+Mimer
+Kör ett skript med kommandot CREATE DATABANK innan create.sql skriptet körs.

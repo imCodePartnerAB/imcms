@@ -1,7 +1,7 @@
 
 1. För att skapa en ny databas, gör så här.
 
-1. Kör scriptet tables.sql. Om du kör mot en nyskapad db utan tabeller i, kommer
+1. Kör scriptet tables.ascii.sql. Om du kör mot en nyskapad db utan tabeller i, kommer
 scriptet att skrika att det inte kan hitta tabellerna. Helt OK.
 
 2. Kör scriptet types.sql. 

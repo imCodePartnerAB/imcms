@@ -17,16 +17,16 @@ CREATE TABLE meta (
 	status_id int NOT NULL ,
 	lang_prefix varchar (3) NOT NULL ,
 	classification varchar (200) NOT NULL ,
-	date_created datetime NOT NULL ,
-	date_modified datetime NOT NULL ,
+	date_created timestamp NOT NULL ,
+	date_modified timestamp NOT NULL ,
 	sort_position int NOT NULL ,
 	menu_position int NOT NULL ,
 	disable_search int NOT NULL ,
 	target varchar (10) NOT NULL ,
 	frame_name varchar (20) NOT NULL ,
 	activate int NOT NULL ,
-	activated_datetime datetime,
-	archived_datetime datetime,
+	activated_datetime timestamp,
+	archived_datetime timestamp,
 	PRIMARY KEY (meta_id)
 );
 
@@ -34,7 +34,7 @@ CREATE TABLE browsers (
 	browser_id int NOT NULL ,
 	name varchar (50) NOT NULL ,
 	user_agent varchar (50) NOT NULL ,
-	value smallint NOT NULL ,
+	browser_value smallint NOT NULL ,
 	PRIMARY KEY (browser_id)
 );
 
@@ -96,7 +96,7 @@ CREATE TABLE languages (
 );
 
 CREATE TABLE main_log (
-	log_datetime datetime ,
+	log_datetime timestamp ,
 	event varchar (255)
 );
 
@@ -126,7 +126,7 @@ CREATE TABLE readrunner_user_data (
 	uses int ,
 	max_uses int ,
 	max_uses_warning_threshold int ,
-	expiry_date datetime ,
+	expiry_date timestamp ,
 	expiry_date_warning_threshold int ,
 	expiry_date_warning_sent int NOT NULL,
 	PRIMARY KEY (user_id)
@@ -190,7 +190,7 @@ CREATE TABLE templates (
 
 CREATE TABLE track_log (
 	user_id smallint ,
-	log_datetime datetime ,
+	log_datetime timestamp ,
 	from_meta_id int ,
 	to_meta_id int ,
 	cookie_id int
@@ -231,7 +231,7 @@ CREATE TABLE users (
 	lang_id int NOT NULL ,
 	user_type int NOT NULL ,
 	active int NOT NULL ,
-	create_date smalldatetime NOT NULL ,
+	create_date timestamp NOT NULL ,
 	PRIMARY KEY (user_id)
 );
 
@@ -371,7 +371,7 @@ CREATE TABLE roles_rights (
 CREATE TABLE sys_data (
 	sys_id smallint NOT NULL ,
 	type_id smallint NOT NULL ,
-	value varchar (80) ,
+	sysdata_value varchar (80) ,
 	PRIMARY KEY (sys_id,type_id) ,
     FOREIGN KEY (type_id) REFERENCES sys_types (type_id)
 );
