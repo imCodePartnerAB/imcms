@@ -34,28 +34,28 @@ public class AddDoc extends HttpServlet {
 
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
-        DocumentDomainObject parentDocument = documentMapper.getDocument( parentId ) ;
+        DocumentDomainObject parentDocument = documentMapper.getDocument( parentId );
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( documentTypeId, parentDocument, user) ;
+        DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( documentTypeId, parentDocument, user );
 
         if ( 0 == documentTypeId ) {
             createExistingDocPage( parentId, parentMenuIndex, request, response );
         } else {
-            HttpPageFlow httpPageFlow = null ;
+            HttpPageFlow httpPageFlow = null;
             DispatchCommand dispatchToMenuEditCommand = new DispatchToMenuEditCommand( (TextDocumentDomainObject)parentDocument, parentMenuIndex );
-            DocumentPageFlow.SaveDocumentCommand saveNewDocumentAndAddToMenuCommand = new SaveNewDocumentAndAddToMenuCommand((TextDocumentDomainObject)parentDocument, parentMenuIndex );
-            if (document instanceof TextDocumentDomainObject) {
-                httpPageFlow = new CreateTextDocumentPageFlow( (TextDocumentDomainObject)document, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand ) ;
-            } else if (document instanceof UrlDocumentDomainObject) {
-                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditUrlDocumentPageFlow( (UrlDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ));
-            } else if (document instanceof HtmlDocumentDomainObject) {
-                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditHtmlDocumentPageFlow( (HtmlDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ));
-            } else if (document instanceof FileDocumentDomainObject) {
-                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand, null ));
-            } else if (document instanceof BrowserDocumentDomainObject) {
-                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ));
-            } else if (document instanceof FormerExternalDocumentDomainObject) {
-                httpPageFlow = new CreateFormerExternalDocumentPageFlow( (FormerExternalDocumentDomainObject)document, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand ) ;
+            DocumentPageFlow.SaveDocumentCommand saveNewDocumentAndAddToMenuCommand = new SaveNewDocumentAndAddToMenuCommand( (TextDocumentDomainObject)parentDocument, parentMenuIndex );
+            if ( document instanceof TextDocumentDomainObject ) {
+                httpPageFlow = new CreateTextDocumentPageFlow( (TextDocumentDomainObject)document, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand );
+            } else if ( document instanceof UrlDocumentDomainObject ) {
+                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditUrlDocumentPageFlow( (UrlDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ) );
+            } else if ( document instanceof HtmlDocumentDomainObject ) {
+                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditHtmlDocumentPageFlow( (HtmlDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ) );
+            } else if ( document instanceof FileDocumentDomainObject ) {
+                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand, null ) );
+            } else if ( document instanceof BrowserDocumentDomainObject ) {
+                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ) );
+            } else if ( document instanceof FormerExternalDocumentDomainObject ) {
+                httpPageFlow = new CreateFormerExternalDocumentPageFlow( (FormerExternalDocumentDomainObject)document, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand );
             }
             httpPageFlow.dispatch( request, response );
         }
@@ -145,16 +145,20 @@ public class AddDoc extends HttpServlet {
 
         private TextDocumentDomainObject parentDocument;
         private int parentMenuIndex;
+        private boolean saved;
 
         SaveNewDocumentAndAddToMenuCommand( TextDocumentDomainObject parentDocument, int parentMenuIndex ) {
             this.parentDocument = parentDocument;
             this.parentMenuIndex = parentMenuIndex;
         }
 
-        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
-            final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-            documentMapper.saveNewDocument( document, user );
-            documentMapper.addToMenu( parentDocument, parentMenuIndex, document, user );
+        public synchronized void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
+            if ( !saved ) {
+                saved = true ;
+                final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+                documentMapper.saveNewDocument( document, user );
+                documentMapper.addToMenu( parentDocument, parentMenuIndex, document, user );
+            }
         }
     }
 }
