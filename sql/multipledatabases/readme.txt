@@ -27,20 +27,6 @@ Kvar att undersöka/göra
 Sproc:ar kvar att flytta in i koden:
 (Ta bort den du håller på med)
 
-Det saknas poll tabeller i create scipten. Var finns dessa?
-poll_addanswer.prc
-poll_addnew.prc
-poll_addquestion.prc
-poll_getall.prc
-poll_getallanswers.prc
-poll_getallquestions.prc
-poll_getanswer.prc
-poll_getone.prc
-poll_getquestion.prc
-poll_increaseansweroption.prc
-poll_setanswerpoint.prc
-poll_setparameter.prc
-
 (Används av Conferens och andra system, vänta, eller skriva om så att de använder befintliga istället?) getuseridfromname.prc
 (Används av Conferens och andra system, vänta, eller skriva om så att de använder befintliga istället? getusernames.prc
 
@@ -72,6 +58,16 @@ listdocsgetinternaldoctypes.prc
 listdocsgetinternaldoctypesvalue.prc
 permissionsgetpermission.prc
 removeuserfromrole.prc
+poll_addanswer.prc
+poll_addnew.prc
+poll_addquestion.prc
+poll_getallquestions.prc
+poll_getanswer.prc
+poll_getone.prc
+poll_getquestion.prc
+poll_increaseansweroption.prc
+poll_setanswerpoint.prc
+poll_setparameter.prc
 roleadmingetall.prc
 rolecheckconferenceallowed.prc
 rolecount.prc

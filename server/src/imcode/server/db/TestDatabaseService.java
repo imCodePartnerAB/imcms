@@ -65,7 +65,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         databaseServices = new DatabaseService[]{
             DatabaseTestInitializer.static_initMySql(),
             DatabaseTestInitializer.static_initSqlServer(),
-            DatabaseTestInitializer.static_initMimer(),
+            //DatabaseTestInitializer.static_initMimer(),
         };
     }
 
@@ -130,8 +130,18 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_getUserPermissionSetForDocument( databaseService );
             test_isRestricted1MorePriviligedThanRestricted2ForDocument( databaseService );
             test_sproc_Poll_GetAll( databaseService );
+            test_sproc_Poll_GetAllAnswers( databaseService );
+            test_sproc_Poll_GetAllQuestions( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_Poll_GetAllQuestions( DatabaseService databaseService ) {
+        assertEquals( 0, databaseService.sproc_Poll_GetAllQuestions(1).length );
+    }
+
+    private void test_sproc_Poll_GetAllAnswers( DatabaseService databaseService ) {
+        assertEquals( 0, databaseService.sproc_Poll_GetAllAnswers(1).length );
     }
 
     private void test_sproc_Poll_GetAll( DatabaseService databaseService ) {

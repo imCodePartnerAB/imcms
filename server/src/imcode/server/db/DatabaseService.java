@@ -2792,4 +2792,67 @@ public abstract class DatabaseService {
         } );
         return (Table_polls[])queryResult.toArray( new Table_polls[queryResult.size()] );
     }
+
+    public static class Table_poll_answers {
+        int id;
+        int question_id;
+        int text_id;
+        int option_number;
+        int answer_count;
+        int option_point;
+
+        public Table_poll_answers( ResultSet rs ) throws SQLException {
+            id = rs.getInt("id");
+            question_id = rs.getInt(" question_id");
+            text_id = rs.getInt(" text_id");
+            option_number = rs.getInt(" option_number");
+            answer_count = rs.getInt(" answer_count");
+            option_point = rs.getInt(" option_point");
+        }
+    }
+
+    /**
+     * Get all answer for one question
+     */
+     Table_poll_answers[] sproc_Poll_GetAllAnswers( int question_id ) {
+        String sql = "SELECT id, question_id, text_id, option_number, answer_count, option_point " +
+            "FROM poll_answers WHERE question_id = ? ORDER BY option_number";
+        Object[] paramValues = new Object[]{ new Integer( question_id ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Table_poll_answers( rs );
+            }
+        } );
+        return (Table_poll_answers[])queryResult.toArray( new Table_poll_answers[ queryResult.size()]);
+    }
+
+    public class Table_poll_questions {
+	    int id;
+	    int poll_id;
+	    int question_number;
+	    int text_id;
+
+        public Table_poll_questions( ResultSet rs ) throws SQLException {
+            id = rs.getInt("id!");
+            poll_id = rs.getInt("poll_id!");
+            question_number = rs.getInt("question_number!");
+            text_id = rs.getInt("text_id!");
+        }
+    }
+
+    /**
+     * Get all questions for one poll
+     * @param poll_id
+     * @return
+     */
+    Table_poll_questions[] sproc_Poll_GetAllQuestions( int poll_id ) {
+        String sql = "SELECT id, poll_id, question_number, text_id FROM poll_questions WHERE poll_id = ? ORDER BY question_number";
+        Object[] paramValues = new Object[]{ new Integer( poll_id ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Table_poll_questions( rs );
+            }
+        } );
+        return (Table_poll_questions[])queryResult.toArray( new Table_poll_questions[ queryResult.size()]);
+    }
 }

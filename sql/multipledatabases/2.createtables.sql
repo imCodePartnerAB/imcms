@@ -446,7 +446,7 @@ CREATE TABLE poll_answers (
 	text_id INT NOT NULL ,
 	option_number INT NOT NULL ,
 	answer_count INT NOT NULL ,
-	option_poINT INT DEFAULT NULL,
+	option_point INT DEFAULT NULL,
 	PRIMARY KEY (id)
 );
 
