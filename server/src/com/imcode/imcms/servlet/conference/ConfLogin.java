@@ -243,7 +243,7 @@ public class ConfLogin extends Conference {
             // Lets get the parameters from html page and validate them
             Properties userParams = this.getNewUserParameters( req );
             // Properties userParams = this.getNewUserParameters2(req) ;
-            if ( this.checkUserParameters( userParams ) == false ) {
+            if ( !this.checkUserParameters( userParams ) ) {
                 String header = "ConfLogin servlet.";
                 ConfError err = new ConfError( req, res, header, 51, LOGIN_ERROR_HTML, user );
                 log( header + err.getErrorMsg() );

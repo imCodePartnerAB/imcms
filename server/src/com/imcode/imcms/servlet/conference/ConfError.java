@@ -7,7 +7,6 @@ import imcode.util.Utility;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -110,13 +109,11 @@ public class ConfError extends Conference {
         vm.addProperty( "SERVLET_URL", "" );
 
         String html = getTemplate( htmlFile, user, vm.getTagsAndData() );
-        log( html );
-        log( htmlFile );
 
         // Lets send settings to a browser
         PrintWriter out = res.getWriter();
         Utility.setDefaultHtmlContentType( res );
-        out.println( html );
+        out.print( html );
     }
 
 } // End of class
