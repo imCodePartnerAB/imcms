@@ -12,14 +12,13 @@ public class Prefs {
 	private final static String CVS_REV="$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 	private final static Hashtable hash = new Hashtable () ;
-	private static String conf_path = "NOT INITIALIZED, CALL Prefs.setConfigPath() AT STARTUP";
+	private static File configPath = null ;
 
 /*
 * This static method must be called before any of the other static methods
 */
-	public static void setConfigPath( String realPathToConfCatalogue ) 
-	{
-		conf_path = realPathToConfCatalogue;
+	public static void setConfigPath( File confPath ) {
+		configPath = confPath ;
 	}
 
 	/**
@@ -37,7 +36,7 @@ public class Prefs {
 		@return The value of the preference.
 	*/	
 	public static String get (String key, String file) throws IOException {
-		return get (key,new File(conf_path,file)) ;
+		return get (key,new File(configPath,file)) ;
 	}
 
 	/**
@@ -62,7 +61,7 @@ public class Prefs {
 		@return The properties in the file.
 	*/
 	public static Properties getProperties (String file) throws IOException {
-		return getProperties (new File(conf_path,file)) ;
+		return getProperties (new File(configPath,file)) ;
 	}
 
 	/**

@@ -11,13 +11,9 @@
         <servlet-class>
             MainInitServlet
         </servlet-class>
-		<init-param>
-       		<param-name>log4j-init-file</param-name>
-       		<param-value>WEB-INF/conf/log4j.lcf</param-value>
-     	</init-param>
-		<load-on-startup>
+	<load-on-startup>
             1
-		</load-on-startup>		
+	</load-on-startup>		
     </servlet>
 	
     <session-config>
@@ -25,11 +21,12 @@
             30
         </session-timeout>
     </session-config>
-	<welcome-file-list>                                                   
+
+    <welcome-file-list>                                                   
 	<welcome-file>index.jsp</welcome-file> 
 	<welcome-file>index.htm</welcome-file> 
 	<welcome-file>index.html</welcome-file>                               
-	</welcome-file-list> 
+    </welcome-file-list> 
 </web-app>
 
 

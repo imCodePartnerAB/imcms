@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- Start log4j configuration, disable all debug logs -->
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" disable="debug">
+
+  <!-- The accesslog (logs usermovements) -->
+  <appender name="ACCESS" class="imcode.util.log.WebAppFileAppender">
+    <param name="File"
+           value="WEB-INF/logs/access.log"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" 
+             value="%d{ISO8601} %-5p %c - %m%n"/>
+    </layout>
+  </appender>
+
+  <appender name="ASYNCACCESS" class="org.apache.log4j.AsyncAppender">
+    <appender-ref ref="ACCESS"/>
+  </appender>
+
+  <!-- The mainlog (captures edits and changes) -->
+  <appender name="MAIN" class="imcode.util.log.WebAppFileAppender">
+    <param name="File"
+           value="WEB-INF/logs/main.log"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
+    </layout>
+  </appender>
+
+  <appender name="ASYNCMAIN" class="org.apache.log4j.AsyncAppender">
+    <appender-ref ref="MAIN"/>
+  </appender>
+
+  <!-- The errorlog (captures everything that doesn't go to one of the above. -->
+  <appender name="ERROR" class="imcode.util.log.WebAppFileAppender">
+    <param name="File"
+           value="WEB-INF/logs/error.log"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
+    </layout>
+  </appender>
+
+  <appender name="ASYNCERROR" class="org.apache.log4j.AsyncAppender">
+    <appender-ref ref="ERROR"/>
+  </appender>
+
+  <!-- Set up accesslog with priority 'info' -->
+  <category name="accesslog" additivity="false">
+    <priority value="info"/>
+    <appender-ref ref="ASYNCACCESS"/>
+  </category>
+
+  <!-- Set up mainlog with priority 'info' -->
+  <category name="mainlog" additivity="false">
+    <priority value="info"/>
+    <appender-ref ref="ASYNCMAIN"/>
+  </category>
+
+  <!-- Set up the errorlog with priority 'warn' -->
+  <root>
+    <priority value="warn"/>
+    <appender-ref ref="ASYNCERROR"/>
+  </root>
+
+</log4j:configuration>
