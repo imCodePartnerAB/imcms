@@ -12,11 +12,13 @@ import imcode.util.* ;
 import org.apache.log4j.Category;
 
 public class TextDocumentParser implements imcode.server.IMCConstants {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
+    private final static String CVS_REV = "$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
 
     private static Category log = Category.getInstance("server") ;
     private FileCache fileCache = new FileCache() ;
+
+    private final static String SECTION_MSG_TEMPLATE = "sections/admin_section_no_one_msg.html";
 
     private final static org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util() ; // Internally synchronized
 
@@ -103,7 +105,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    Vector user_permission_set = (Vector)dbc.executeProcedure() ;
 	    dbc.clearResultSet() ;
 	    if ( user_permission_set == null ) {
-		dbc.closeConnection() ;			// Close connection to db.
+		dbc.closeConnection() ;
 		log.error("parsePage: GetUserPermissionset returned null") ;
 		return ("GetUserPermissionset returned null") ;
 	    }
@@ -140,33 +142,34 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    dbc.setProcedure("GetTextDocData",String.valueOf(meta_id)) ;
 	    Vector text_docs = (Vector)dbc.executeProcedure() ;
 	    dbc.clearResultSet() ;
+
 	    if ( text_docs == null ) {
-		dbc.closeConnection() ;			// Close connection to db.
+		dbc.closeConnection() ;
 		log.error("parsePage: GetTextDocData returned null") ;
 		return "parsePage: GetTextDocData returned null" ;
 	    }
 
 	    if ( text_docs.size() == 0 ) {
-		dbc.closeConnection() ;			// Close connection to db.
+		dbc.closeConnection() ;
 		log.error("parsePage: GetTextDocData returned nothing") ;
 		return "parsePage: GetTextDocData returned nothing" ;
 	    }
 
-		String template_id = (String)text_docs.remove(0) ;
-		if (template_name != null){
-			//lets validate that the template exists before we changes the original one
-			dbc.setProcedure("GetTemplateId "+template_name);
-			Vector vectT = (Vector)dbc.executeProcedure();
-			if (vectT.size() > 0){
-				try	{
-					int temp_template = Integer.parseInt( (String)vectT.get(0) );
-					if(temp_template > 0)
-						template_id = temp_template+"";
-				} catch(NumberFormatException nfe){
-						//do nothing, we keep the original template
-				}
-			}
+	    String template_id = (String)text_docs.remove(0) ;
+	    if (template_name != null){
+		//lets validate that the template exists before we changes the original one
+		dbc.setProcedure("GetTemplateId "+template_name);
+		Vector vectT = (Vector)dbc.executeProcedure();
+		if (vectT.size() > 0){
+		    try	{
+			int temp_template = Integer.parseInt( (String)vectT.get(0) );
+			if(temp_template > 0)
+			    template_id = temp_template+"";
+		    } catch(NumberFormatException nfe){
+			//do nothing, we keep the original template
+		    }
 		}
+	    }
 
 	    String simple_name = (String)text_docs.remove(0) ;
 	    int sort_order = Integer.parseInt((String)text_docs.remove(0)) ;
@@ -231,7 +234,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    dbc.clearResultSet() ;
 
 	    if ( meta == null ) {
-		dbc.closeConnection() ;			// Close connection to db.
+		dbc.closeConnection() ;
 		log.error("parsePage: Query for date_modified returned null") ;
 		return ("Query for date_modified returned null") ;
 	    }
@@ -244,7 +247,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    Vector childs = (Vector)dbc.executeProcedure() ;
 
 	    if ( childs == null ) {
-		dbc.closeConnection() ;			// Close connection to db.
+		dbc.closeConnection() ;
 		log.error("parsePage: GetChilds returned null") ;
 		return ("GetChilds returned null") ;
 	    }
@@ -255,13 +258,29 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    dbc.setProcedure("GetImgs",String.valueOf(meta_id)) ;
 	    Vector images = (Vector)dbc.executeProcedure() ;
+	    dbc.clearResultSet() ;
 	    if ( images == null ) {
-		dbc.closeConnection() ;			// Close connection to db.
+		dbc.closeConnection() ;
 		log.error("parsePage: GetImgs returned null") ;
 		return ("GetImgs returned null") ;
 	    }
 
-	    dbc.closeConnection() ;			// Close connection to db.
+	    dbc.setProcedure("SectionGetInheritId",String.valueOf(meta_id)) ;
+	    Vector section_data = (Vector)dbc.executeProcedure() ;
+	    dbc.clearResultSet() ;
+
+	    String section_name = null ;
+	    if (section_data == null) {
+		dbc.closeConnection() ;
+		log.error("parsePage: SectionGetInheritId returned null") ;
+		return ("SectionGetInheritId returned null") ;
+	    } else if (section_data.size() < 2) {
+		section_name = serverObject.parseDoc(null, SECTION_MSG_TEMPLATE, lang_prefix) ;
+	    } else {
+		section_name = (String)section_data.get(1) ;
+	    }
+
+	    dbc.closeConnection() ;
 
 	    File admintemplate_path = new File(templatePath,  "/" +lang_prefix + "/admin/") ;
 
@@ -602,7 +621,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 															   templatePath,
 															   included_docs,includemode,includelevel,includePath,
 															   textMap,textmode,
-															   imageMap,imagemode,myDoc,paramsToParse) ;
+															   imageMap,imagemode,section_name,myDoc,paramsToParse) ;
 
 	    LinkedList parse = new LinkedList() ;
 	    perl5util.split(parse,"/(<!--\\/?IMSCRIPT-->)/",template) ;

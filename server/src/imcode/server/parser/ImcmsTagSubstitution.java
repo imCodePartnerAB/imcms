@@ -82,6 +82,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
     private int implicitImageNumber = 1 ;
 
     private String labelTemplate ;
+    private String sectionName ;
 
     private Document document;
 
@@ -124,6 +125,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 				 List included_list, boolean includemode, int includelevel, File includepath,
 				 Map textmap, boolean textmode,
 				 Map imagemap, boolean imagemode,
+				 String section_name,
 				 Document theDoc, ParserParameters parserParameters) {
 	this.textDocParser = textdocparser ;
 	this.user = user ;
@@ -143,6 +145,9 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
 	this.imageMap = imagemap ;
 	this.imageMode = imagemode ;
+
+	this.sectionName = section_name ;
+
 	this.document = theDoc;
 	this.parserParameters = parserParameters ;
 
@@ -155,11 +160,19 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
     }
 
     /**
-       Handle a <?imcms:meta-id?> tag.
+       Handle a <?imcms:metaid?> tag.
 
     **/
     public String tagMetaId () {
 	return ""+meta_id ;
+    }
+
+    /**
+       Handle a <?imcms:section?> tag.
+
+    **/
+    public String tagSection () {
+	return ""+sectionName ;
     }
 
     /**
@@ -463,7 +476,10 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	}
 	String result ;
 
-	// FIXME: This is quickly growing ugly. A better solution would be a class per tag (TagHandler's if you will), with a known interface, looked up through some HashMap. JSP already fixes this with tag-libs.
+	// FIXME: This is quickly growing ugly.
+	// A better solution would be a class per tag (TagHandler's if you will),
+	// with a known interface, looked up through some HashMap.
+	// JSP already fixes this with tag-libs.
 	if ("text".equals(tagname)) {
 	    result = tagText(attributes, patMat) ;
 	} else if ("image".equals(tagname)) {
@@ -474,6 +490,8 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    result = tagMetaId() ;
 	} else if ("datetime".equals(tagname)) {
 	    result = tagDatetime(attributes) ;
+	} else if ("section".equals(tagname)) {
+	    result= tagSection() ;
 	} else {
 	    result = matres.group(0) ;
 	}
