@@ -22,7 +22,7 @@
     <!-- The directory to build in. -->
     <property name="build"          value="${basedir}/build"/>
     <property name="dist"           value="${basedir}/dist"/>
-    <property name="tmp"            value="${dist}/tmp"/>
+    <property name="tmp"            value="${basedir}/tmp"/>
 
     <!-- The webroot. Everything put here can be seen by any visitor. -->
     <property name="webroot" value="${build}"/>
@@ -42,7 +42,8 @@
     <property name="srcincludes" value="MANIFEST.TXT"/>
 
     <property name="conf" value="${WEB-INF}/conf"/>
-    <property name="classes" value="${WEB-INF}/classes"/>
+    <property name="classes" value="${tmp}/classes"/>
+    <property name="lib" value="${WEB-INF}/lib"/>
     <property name="fortunes" value="${WEB-INF}/fortunes"/>
     <property name="templates" value="${WEB-INF}/templates"/>
     <property name="sql" value="${WEB-INF}/sql"/>
@@ -79,15 +80,16 @@
     <target name="dist" depends="bindist,srcdist" description="Build all binary and source distributions." />
 
 
-    <target name="bindist" depends="bindist-zip,bindist-tgz,bindist-jar" description="Build all binary distributions."/>
+    <target name="bindist" depends="bindist-jar,bindist-zip,bindist-tgz" description="Build all binary distributions."/>
 
 
     <target name="bindist-zip" depends="bindist-war">
+        <mkdir dir="${dist}"/>
         <fixcrlf srcdir="${basedir}" destdir="${tmp}"
             includes="*.TXT" excludes="${srcincludes}"
             eol="dos"/>
         <zip destfile="${bindist-zip}">
-            <fileset file="${bindist-war}"/>
+            <fileset file="${war}"/>
             <fileset dir="${dist}" includes="imcms*.sql"/>
             <fileset dir="${tmp}" includes="*.TXT"/>
         </zip>
@@ -95,25 +97,28 @@
 
 
     <target name="bindist-tgz" depends="bindist-war">
+        <mkdir dir="${dist}"/>
         <fixcrlf srcdir="${basedir}" destdir="${tmp}"
             includes="*.TXT" excludes="${srcincludes}"
             eol="unix"/>
         <tar destfile="${bindist-tgz}" compression="gzip">
-            <tarfileset file="${bindist-war}"/>
+            <tarfileset file="${war}"/>
             <tarfileset dir="${dist}" includes="imcms*.sql"/>
             <tarfileset dir="${tmp}" includes="*.TXT"/>
         </tar>
     </target>
 
 
-    <target name="bindist-jar" depends="build,check-webappname">
-        <jar destfile="${bindist-jar}" basedir="${classes}"/>
-        <jar destfile="${bindist-api-jar}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>
+    <target name="bindist-war" depends="build,check-webappname">
+        <mkdir dir="${dist}"/>
+        <war warfile="${war}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
     </target>
 
 
-    <target name="bindist-war" depends="build,check-webappname">
-        <war warfile="${bindist-war}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
+    <target name="bindist-jar" depends="classes,check-webappname">
+        <mkdir dir="${dist}"/>
+        <jar destfile="${bindist-api-jar}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>
+        <jar destfile="${bindist-util-jar}" basedir="${classes}" includes="com/imcode/util/**"/>
     </target>
 
 
@@ -146,7 +151,7 @@
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-        depends="init,classes,test,apidocs,libraries,web,conf,sql,versionfile,addon"
+        depends="init,jar,test,apidocs,libraries,web,conf,sql,versionfile,addon"
         description="Builds everything."/>
 
 
@@ -194,6 +199,11 @@
     </target>
 
 
+    <target name="jar" depends="check-webappname,classes,web">
+        <jar destfile="${jar}" basedir="${classes}"/>
+    </target>
+
+
     <target name="test" depends="classes,check-junit-task-available" description="Runs JUnit-tests.">
 
         <junit haltonfailure="yes" haltonerror="yes">
@@ -220,7 +230,7 @@
 
 
     <target name="warinstall" depends="init,bindist-war,check-deployroot" description="Builds and installs the war-file.">
-        <copy file="${bindist-war}" todir="${deployroot}" overwrite="yes"/>
+        <copy file="${war}" todir="${deployroot}" overwrite="yes"/>
     </target>
 
 
@@ -260,10 +270,11 @@
 
     <target name="apidocs">
         <javadoc sourcepath="server/src/" destdir="${apidocs}" windowtitle="imCMS API" classpathref="libraries" >
-            <packageset dir="server/src/" defaultexcludes="yes">
+            <fileset dir="server/src/" defaultexcludes="yes">
                 <include name="com/imcode/imcms/api/**"/>
                 <include name="com/imcode/util/**"/>
-            </packageset>
+                <exclude name="**/Test*.java"/>
+            </fileset>
         </javadoc>
     </target>
 
@@ -412,6 +423,7 @@
         <mkdir dir="${webroot}/jsp"/>
         <mkdir dir="${webroot}/user"/>
 
+        <mkdir dir="${lib}"/>
         <mkdir dir="${WEB-INF}/includes"/>
         <mkdir dir="${WEB-INF}/logs"/>
         <mkdir dir="${WEB-INF}/uploads"/>
@@ -539,10 +551,15 @@
 
         <!-- Locations for the final packages -->
         <property name="warfilename" value="imcms${versionfilesuffix}.war"/>
-        <property name="bindist-war" value="${dist}/${warfilename}"/>
+        <property name="war" value="${dist}/${warfilename}"/>
+        <property name="jar" value="${lib}/imcms${versionfilesuffix}.jar"/>
 
-        <property name="bindist-jar" value="${dist}/imcms${versionfilesuffix}.jar"/>
+        <property name="sprocs-sql" value="${sql}/imcms-sprocs${versionfilesuffix}.sql"/>
+        <property name="create-sql" value="${sql}/create_db${versionfilesuffix}.sql"/>
+        <property name="drop-sql" value="${sql}/drop_db${versionfilesuffix}.sql"/>
+
         <property name="bindist-api-jar" value="${dist}/imcms${versionfilesuffix}-api.jar"/>
+        <property name="bindist-util-jar" value="${dist}/imcms${versionfilesuffix}-util.jar"/>
 
         <property name="bindist-zip" value="${dist}/imcms${versionfilesuffix}.zip"/>
         <property name="bindist-tgz" value="${dist}/imcms${versionfilesuffix}.tar.gz"/>
@@ -550,10 +567,6 @@
         <property name="srcdist" value="imcms${versionfilesuffix}-src"/>
         <property name="srcdist-zip" value="${dist}/${srcdist}.zip"/>
         <property name="srcdist-tgz" value="${dist}/${srcdist}.tar.gz"/>
-
-        <property name="sprocs-sql" value="${sql}/imcms-sprocs${versionfilesuffix}.sql"/>
-        <property name="create-sql" value="${sql}/create_db${versionfilesuffix}.sql"/>
-        <property name="drop-sql" value="${sql}/drop_db${versionfilesuffix}.sql"/>
 
     </target>
 

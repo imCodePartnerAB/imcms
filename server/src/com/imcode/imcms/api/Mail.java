@@ -16,7 +16,7 @@ public class Mail {
         this.internal = new SMTP.Mail( fromAddress, toAddresses, subject, body );
     }
 
-    public SMTP.Mail getInternal() {
+    SMTP.Mail getInternal() {
         return internal ;
     }
 

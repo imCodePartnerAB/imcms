@@ -1,11 +1,13 @@
 package com.imcode.imcms.api;
 
 /**
- * These constanst is used in an jsp/servlet environement to get a referense to various instances.
+ * @deprecated Use {@link ContentManagementSystem#fromRequest(javax.servlet.ServletRequest)} instead. Will be removed in imCMS 3.0 or later.
  */
 public interface RequestConstants {
     /**
-     *  Is used to get the ImcmsSystem object from the request objects attributes.
+     *  Is used to get the ContentManagementSystem object from the request objects attributes.
+     *
+     * @deprecated Use {@link ContentManagementSystem#fromRequest(javax.servlet.ServletRequest)} instead.
      */
     public final static String SYSTEM = "com.imcode.imcms.ImcmsSystem";
 }
