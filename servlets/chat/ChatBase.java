@@ -64,7 +64,7 @@ public class ChatBase extends HttpServlet {
 	{
 		Properties chatP = new Properties();
 
-		String chatName = (req.getParameter("chatName")==null) ? "" : (req.getParameter("chatName"));
+		String chatName = (req.getParameter("chatName")==null) ? "" : req.getParameter("chatName");
 		String permission = (req.getParameter("permission")==null) ? "3" : (req.getParameter("permission"));
 		String updateTime = ( req.getParameter("updateTime")==null ) ? "20" : (req.getParameter("updateTime"));		
 		String reload = (req.getParameter("reload")==null ) ? "2" :(req.getParameter("reload"));
@@ -86,7 +86,19 @@ public class ChatBase extends HttpServlet {
 
 		return chatP ;
 	}
-
+	
+	public String getParamString(Properties propp)
+	{
+		StringBuffer buff = new StringBuffer("");
+		Enumeration enum = propp.propertyNames();
+		while (enum.hasMoreElements())
+		{
+			String st= (String) enum.nextElement();
+			
+			buff.append(st+"="+propp.getProperty(st,""));
+		}
+		return buff.toString();
+	}
 
 	
 	/**
@@ -1117,6 +1129,8 @@ public class ChatBase extends HttpServlet {
 		}
 		return aLine ;
 	}
+	
+	
 
 	/**
 	 * checks if user is authorized
@@ -1125,7 +1139,7 @@ public class ChatBase extends HttpServlet {
 	 * @param user
 	*/
 
-	//används av ChatViewer
+	//används av bla ChatViewer
 	protected boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, imcode.server.User user )
 	throws ServletException, IOException
 	{
@@ -1154,7 +1168,8 @@ public class ChatBase extends HttpServlet {
 			int metaId = Integer.parseInt( stringMetaId );
 			authorized = isUserAuthorized( req, res, metaId, user );
 		}
-
+		
+		
 		return authorized;
 	}
 
@@ -1185,7 +1200,7 @@ public class ChatBase extends HttpServlet {
 			String startUrl = RmiConf.getLoginUrl(host) ;
 			res.sendRedirect(serverName + startUrl) ;
 		}
-
+		
 		return authorized;
 	}
 
