@@ -1,22 +1,22 @@
 <HTML><HEAD><TITLE>Admin - Add new page</TITLE></HEAD>
 <body bgcolor="#FFFFFF">
-<FORM METHOD=POST ACTION="SaveMeta">
+<FORM METHOD="POST" ACTION="SaveMeta">
   <table border="1" cellspacing="0" cellpadding="2" width="450" align="center">
 	<tr valign="middle" bgcolor="#333366"> 
 	  		<td colspan="2">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Edit page info
 				 
-				<input type=HIDDEN name=doc_type value="#doc_type#">
-		<input type=HIDDEN name=doc_menu_no value="#doc_menu_no#">
-				<input type=HIDDEN name=meta_id value="#meta_id#">
+				<input type="HIDDEN" name="doc_type" value="#doc_type#">
+		<input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
+				<input type="HIDDEN" name="meta_id" value="#meta_id#">
 		#checks#</font></b></td>
 	</tr>
-	<input type=hidden name=description size=30 value="" oldvalue="#description#">
+	<input type="HIDDEN" name="description" size="30" value="" oldvalue="#description#">
 	<tr valign="middle"> 
 	  <td width="61" bgcolor="#BABABA" valign="middle"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Header<br>
 		<font size="1">&nbsp;(in link<br> menu)</font></font></font><br>
 	  </td>
 	  <td valign="middle" bgcolor="#BABABA"> <font size="2"></font> 
-		<input type=TEXT name=meta_headline size=60 maxlength="255" value="#meta_headline#">
+		<input type="TEXT" name="meta_headline" size="60" maxlength="255" value="#meta_headline#">
 	  </td>
 	</tr>
 	<tr> 
@@ -24,7 +24,7 @@
 		<br>
 		<font size="1">&nbsp;(in link<br> menu)</font></font></td>
 	  <td valign="middle" bgcolor="#BABABA"> 
-		<textarea name=meta_text cols="50" rows="3" maxlength="100">#meta_text#</textarea>
+		<textarea name="meta_text" cols="50" rows="3" maxlength="100">#meta_text#</textarea>
 	  </td>
 	<tr valign="middle"> 
 	  <td width="61" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Image</font> 
@@ -32,15 +32,15 @@
 		<font size="1" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;(in link<br> menu)</font><br>
 	  </td>
 	  <td valign="middle" bgcolor="#BABABA"> 
-		<input type=TEXT name=meta_image size=60 value="#meta_image#" maxlength="255">
+		<input type="TEXT" name="meta_image" size="60" value="#meta_image#" maxlength="255">
 	  </td>
 	</tr>
 	<tr> 
 	  <td width="61" valign="top" height="8" bgcolor="#BABABA">&nbsp;</td>
 	  <td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
 		<div align="left"> 
-		  <input type=submit value="OK" name="ok">
-		  <input type=reset value="Reset" name="reset">
+		  <input type="submit" value="OK" name="ok">
+		  <input type="reset" value="Reset" name="reset">
 					<font size="2"></font></div>
 	  </td>
 	</tr>

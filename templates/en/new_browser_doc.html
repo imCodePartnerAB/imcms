@@ -1,6 +1,6 @@
 <HTML><HEAD><TITLE>Admin - Browser-sensitive switch</TITLE>
 
-<SCRIPT language=JavaScript>
+<SCRIPT language="Javascript">
 <!--
 function openHelp(id){
 	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
@@ -10,9 +10,9 @@ function openHelp(id){
 
 </HEAD>
 <BODY  bgcolor="#FFFFFF">
-<FORM METHOD=POST ACTION="#servlet_url#SaveNewBrowserDoc">
+<FORM METHOD="POST" ACTION="#servlet_url#SaveNewBrowserDoc">
   <CENTER>
-    <table border = 1 cellspacing="0" cellpadding="2" width="430" align="center" >
+    <table border = "1" cellspacing="0" cellpadding="2" width="430" align="center" >
 	  <tr bgcolor="#333366" valign="middle"> 
 		<td colspan="3"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Browser-sensitive switch</font></b></td>
 	  </tr>
@@ -44,13 +44,13 @@ function openHelp(id){
 	  #getDocType# #DocMenuNo# 
 	  <tr bgcolor="#BABABA"> 
 		<td colspan="3" valign="middle" align="center"> 
-		  <input type=submit value="OK" name="ok">
-		  <input type=reset value="Reset" name="reset">
-		  <input type=submit value="Cancel" name="cancel">&nbsp; <a href="javascript:openHelp('46');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		  <input type="submit" value="OK" name="ok">
+		  <input type="reset" value="Reset" name="reset">
+		  <input type="submit" value="Cancel" name="cancel">&nbsp; <a href="javascript:openHelp('46');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		</td>
 	  </tr>
-	  <input type=HIDDEN name=meta_id value="#getMetaId#">
-	  <INPUT TYPE=HIDDEN NAME="new_meta_id" VALUE="#new_meta_id#">
+	  <input type="HIDDEN" name="meta_id" value="#getMetaId#">
+	  <INPUT TYPE="HIDDEN" NAME="new_meta_id" VALUE="#new_meta_id#">
 	</table>
   </CENTER>
 </FORM>

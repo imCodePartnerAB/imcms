@@ -1,142 +1,71 @@
 <html>
-
 <head>
-
 <title>Warning!</title>
-
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-
-
-<SCRIPT language=JavaScript>
-
+<SCRIPT language="Javascript">
 <!--
-
 function openHelp(id){
-
 	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
-
 }
-
 //-->
-
 </SCRIPT>
-
-
 
 </head>
 
-
-
 <body bgcolor="#FFFFFF">
-
 <form method="post" action="TemplateChange">
-
   <table width="40%" border="0" cellspacing="0">
-
 	<tr bgcolor="#333366"> 
-
 	  <td width="5%">&nbsp;</td>
-
 	  <td width="180%" colspan="2"> 
-
 		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF">Warning!</font></b></font></div>
-
 	  </td>
-
 	  <td width="5%">&nbsp;</td>
-
 	</tr>
-
 	<tr bgcolor="#bababa"> 
-
 	  <td width="5%">&nbsp;</td>
-
 	  <td width="180%" colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">You are deleting a format template currently in use on the pages listed below. All pages must have a format template. Please select a replacement format template to be used for these pages.   </font></td>
-
 	  <td width="5%">&nbsp;</td>
-
 	</tr>
-
 	<tr bgcolor="#bababa"> 
-
 	  <td width="5%">&nbsp;</td>
-
 	  <td width="45%"> 
-
 		<p> 
-
 		  <center>
-
 			<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Pages<br>
-
 			<select name="select" size="7">#docs#</select>
-
 			</font> 
-
 		  </center>
-
 		</p>
-
 	  </td>
-
 	  <td width="45%"> 
-
 		<center>
-
 		  <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Template: 
-
 		  <select name="new_template">
-
 			#templates#
-
 		  </select>
-
 		  </font> 
-
 		</center>
-
 	  </td>
-
 	  <td width="5%">&nbsp;</td>
-
 	</tr>
-
 	<tr bgcolor="#bababa"> 
-
 	  <td width="5%">&nbsp;</td>
-
 	  <td colspan="2"> <nobr> 
-
 		<input type="submit" name="template_delete" value="OK">
-
 		<input type="submit" name="template_delete_cancel" value="Cancel">
-
-		<input type="hidden" name="template" value="#template#">
-
-		<input type="hidden" name="language" value="#language#">&nbsp; <a href="javascript:openHelp('26');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open help page"></a>
-
+		<input type="HIDDEN" name="template" value="#template#">
+		<input type="HIDDEN" name="language" value="#language#">&nbsp; <a href="javascript:openHelp('26');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open help page"></a>
 		</nobr> </td>
-
 	  <td width="5%">&nbsp;</td>
-
 	</tr>
-
 	<tr bgcolor="#bababa"> 
-
 	  <td width="5%">&nbsp;</td>
-
 	  <td colspan="2">&nbsp;</td>
-
 	  <td width="5%">&nbsp;</td>
-
 	</tr>
-
   </table>
-
 </form>
-
 </body>
-
 </html>
-

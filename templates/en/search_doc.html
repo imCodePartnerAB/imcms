@@ -1,5 +1,5 @@
 <HTML><HEAD><TITLE>Search</TITLE>
-<SCRIPT language=VBScript>
+<SCRIPT language="VBScript">
 <!-- A Little Code
 Sub Document_onKeyPress()
 if (window.event.keyCode = 13) Then
@@ -9,7 +9,7 @@ End Sub
 // Which ends here -->
 </SCRIPT>
 
-<SCRIPT language=JavaScript>
+<SCRIPT language="Javascript">
 <!-- Original:  Ronnie T. Moore -->
 <!-- Web Site:  The JavaScript Source -->
 
@@ -55,7 +55,7 @@ if (window.document.captureEvents!=null)
 </SCRIPT>
 </HEAD>
 <body bgcolor="#FFFFFF" link="#333399" vlink="#333399" alink="#999999" leftmargin="15" topmargin="0" marginwidth="15" marginheight="0">
-<FORM METHOD=POST ACTION="#SERVLET_URL#SearchDocs" name="form1">
+<FORM METHOD="POST" ACTION="#SERVLET_URL#SearchDocs" name="form1">
   <table border="0" width="500" cellpadding="2" cellspacing="0">
     <tr> 
     <td><img src="@imageurl@/sok.gif" width="500" height="27" align="top"></td>
@@ -81,7 +81,7 @@ if (window.document.captureEvents!=null)
       <td> 
         <input type="radio" name="search_prep" value="or">
         <font face="Verdana, Arial, Helvetica, sans-serif" size="2">One of the words must be found on the page (OR)
-        <input type="hidden" name="start" value="#START#">
+        <input type="HIDDEN" name="start" value="#START#">
         </font></td>
     </tr>
     <tr bgcolor="#BABABA" valign="middle"> 
@@ -115,7 +115,7 @@ if (window.document.captureEvents!=null)
   Version 4 
 </FORM>
   
-<SCRIPT language=JavaScript>
+<SCRIPT language="Javascript">
 <!--
 var alreadySubmitted = false;
 document.form1.elements[0].focus();

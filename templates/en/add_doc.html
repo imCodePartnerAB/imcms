@@ -1,4 +1,4 @@
-<FORM METHOD=POST ACTION="#servlet_url#AddDoc">
+<FORM METHOD="POST" ACTION="#servlet_url#AddDoc">
 <HR width=150>
   <TABLE BORDER = 0>
 	<TR> 
@@ -7,12 +7,12 @@
 	</TR>
 	<TR> 
 	  <TD> 
-		<SELECT NAME=edit_menu SIZE=1>
+		<SELECT NAME="edit_menu" SIZE="1">
 		  #doc_types#
 		</SELECT> 
-		<INPUT TYPE=SUBMIT VALUE="OK" NAME="submit">&nbsp; <a href="javascript:openHelp('79');"><img src="@imageurl@/se/helpimages/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="Open Help"></a></NOBR>
+		<INPUT TYPE="SUBMIT" VALUE="OK" NAME="submit">&nbsp; <a href="javascript:openHelp('79');"><img src="@imageurl@/se/helpimages/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="Open Help"></a></NOBR>
 	  </TD>
-	  <SCRIPT language=JavaScript>
+	  <SCRIPT language="JavaScript">
 		<!--
 		function openHelp(id){
 			window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
@@ -20,9 +20,9 @@
 		//-->
 		</SCRIPT>
 	</TR>
-	<INPUT TYPE=HIDDEN NAME=meta_id VALUE="#getMetaId#">
-	<INPUT TYPE=HIDDEN NAME=doc_menu_no VALUE="#doc_menu_no#">
-	<INPUT TYPE=HIDDEN NAME=txt_max VALUE="9">
-	<INPUT TYPE=HIDDEN NAME=img_max VALUE="9">
+	<INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#getMetaId#">
+	<INPUT TYPE="HIDDEN" NAME="doc_menu_no" VALUE="#doc_menu_no#">
+	<INPUT TYPE="HIDDEN" NAME="txt_max" VALUE="9">
+	<INPUT TYPE="HIDDEN" NAME="img_max" VALUE="9">
   </TABLE>
 </FORM>

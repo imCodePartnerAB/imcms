@@ -1,6 +1,6 @@
 <HTML><HEAD><TITLE>Admin - Add new page</TITLE></HEAD>
 <body bgcolor="#FFFFFF">
-<FORM METHOD=POST ACTION="SaveNewMeta">
+<FORM METHOD="POST" ACTION="SaveNewMeta">
   <table border="1" cellspacing="0" cellpadding="2" width="450" align="center">
 	<tr valign="middle" bgcolor="#FFFFFF"> 
 	  <td colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">To add a new page, carry out the following two steps: Step 1 - Fill in the header and any other data to be presented at links to this page. <br>Click OK 
@@ -10,18 +10,18 @@
 	<tr valign="middle" bgcolor="#333366"> 
 	  <td colspan="2">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Add new page 
 		 
-		<input type=HIDDEN name=doc_type value="#doc_type#">
-		<input type=HIDDEN name=doc_menu_no value="#doc_menu_no#">
-		<input type=HIDDEN name=parent_meta_id value="#parent_meta_id#">
+		<input type="HIDDEN" name="doc_type" value="#doc_type#">
+		<input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
+		<input type="HIDDEN" name="parent_meta_id" value="#parent_meta_id#">
 		#checks#</font></b></td>
 	</tr>
-	<input type=hidden name=description size=30 value="" oldvalue="#description#">
+	<input type="HIDDEN" name="description" size="30" value="" oldvalue="#description#">
 	<tr valign="middle"> 
 	  <td width="61" bgcolor="#BABABA" valign="middle"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Header<br>
 		<font size="1">&nbsp;(in link menu)</font></font></font><br>
 	  </td>
 	  <td valign="middle" bgcolor="#BABABA"> <font size="2"></font> 
-		<input type=TEXT name=meta_headline size=60 maxlength="255">
+		<input type="TEXT" name="meta_headline" size="60" maxlength="255">
 	  </td>
 	</tr>
 	<tr> 
@@ -29,7 +29,7 @@
 		<br>
 		<font size="1">&nbsp;(in link menu)</font></font></td>
 	  <td valign="middle" bgcolor="#BABABA"> 
-		<textarea name=meta_text cols="50" rows="3" maxlength="100"></textarea>
+		<textarea name="meta_text" cols="50" rows="3" maxlength="100"></textarea>
 	  </td>
 	
 	<tr valign="middle"> 
@@ -38,16 +38,16 @@
 		<font size="1" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;(in link menu)</font><br>
 	  </td>
 	  <td valign="middle" bgcolor="#BABABA"> 
-		<input type=TEXT name=meta_image size=60 value="#meta_image#">
+		<input type="TEXT" name="meta_image" size="60" value="#meta_image#">
 	  </td>
 	</tr>
 	<tr> 
 	  <td width="61" valign="top" height="8" bgcolor="#BABABA">&nbsp;</td>
 	  <td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
 		<div align="left"> 
-		  <input type=submit value="OK" name="ok">
-		  <input type=reset value="Reset" name="reset">
-		  <input type=submit value="Cancel" name="cancel">
+		  <input type="submit" value="OK" name="ok">
+		  <input type="reset" value="Reset" name="reset">
+		  <input type="submit" value="Cancel" name="cancel">
 		  <font size="2"></font></div>
 	  </td>
 	</tr>

@@ -1,179 +1,90 @@
 <html>
-
 <head>
-
 <title>Add / Remove format templates</title>
-
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-
-
-<SCRIPT language=JavaScript>
-
+<SCRIPT language="Javascript">
 <!--
-
 function openHelp(id){
-
 	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
-
 }
-
 //-->
-
 </SCRIPT>
-
-
 
 </head>
 
-
-
 <body bgcolor="#FFFFFF">
-
 <form method="post" action="TemplateChange">
-
   <table width="40%" border="0" cellspacing="0" cellpadding="0">
-
 	<tr bgcolor="#333366"> 
-
 	  <td width="5%">&nbsp;</td>
-
 	  <td colspan="3"> 
-
 		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF">
-
 		  Add / Remove format templates</font></b></font></div>
-
 	  </td>
-
 	  <td width="5%">&nbsp;</td>
-
 	</tr>
-
 	<tr bgcolor="bababa"> 
-
 	  <td width="5%">&nbsp;</td>
-
 	  <td colspan="3"> 
-
 		<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Template directories:  
-
 		  <select name="templategroup">
-
 			#templategroups#
-
              
-
           </select>
-
 		  <input type="submit" name="show_assigned" value="Show templates">
-
 		  </font></p>
-
 	  </td>
-
 	  <td width="5%">&nbsp;</td>
-
 	</tr>
-
 	<tr bgcolor="bababa"> 
-
 	  <td width="5%">&nbsp;</td>
-
 	  <td width="30%" valign="center"> 
-
 		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Available templates:
 
-
 		  <br>
-
 		  <select name="unassigned" size="7" multiple>
-
 			#unassigned#
-
            
-
           </select>
-
 		  </font></div>
-
 	  </td>
-
 	  <td width="30%" valign="center" align="center"> 
-
 		<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Directory: 
-
 		  <i><b>#group#</b></i></font></p>
-
 		<p> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-
 		  <input type="submit" name="assign" value="Add--&gt;">
-
 		  </font></p>
-
 		<p> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-
 		  <input type="submit" name="deassign" value="&lt;-- Remove">
-
 		  </font></p>
-
 	  </td>
-
 	  <td width="30%" valign="center"> 
-
 		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Templates in this directory: 
-
 		  <br>
-
 		  <select name="assigned" size="7" multiple>
-
 			#assigned#
-
            
-
           </select>
-
 		  </font></div>
-
 	  </td>
-
 	  <td width="5%">&nbsp;</td>
-
 	</tr>
-
 	<tr bgcolor="bababa"> 
-
 	  <td width="5%">&nbsp;</td>
-
 	  <td colspan="3"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-
 		<input type="submit" name="cancel" value="Back">&nbsp; <a href="javascript:openHelp('10');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open help page"></a>
-
-		<input type="hidden" name="group_id" value="#group_id#">
-
-		<input type="hidden" name="language" value="#language#">
-
+		<input type="HIDDEN" name="group_id" value="#group_id#">
+		<input type="HIDDEN" name="language" value="#language#">
 		<br>*&nbsp;=&nbsp;Template Model exists </font></td>
-
 	  <td width="5%">&nbsp;</td>
-
 	</tr>
-
 	<tr bgcolor="bababa"> 
-
 	  <td width="5%">&nbsp;</td>
-
 	  <td colspan="3">&nbsp;</td>
-
 	  <td width="5%">&nbsp;</td>
-
 	</tr>
-
   </table>
-
 </form>
-
 </body>
-
 </html>
-
