@@ -467,6 +467,17 @@ SET IDENTITY_INSERT sys_data OFF
 
 --2002-07-29
 
+-- Insert new user_agent values for browser
+DECLARE @temp int
+SET @temp = (select max(browser_id) from browsers)
+INSERT INTO browsers (browser_id, name, user_agent, value) VALUES (@temp +1, 'Internet Explorer 6','%MSIE 6%',4)
+INSERT INTO browsers (browser_id, name, user_agent, value) VALUES (@temp +2, 'Windows Internet Explorer 6','%MSIE 5%win%',5)
+INSERT INTO browsers (browser_id, name, user_agent, value) VALUES (@temp +3, 'Netscape 7','Mozilla%/5;%netscape/7%',4)
+INSERT INTO browsers (browser_id, name, user_agent, value) VALUES (@temp +4, 'Windows Netscape 7','Mozilla/5%(%win%netscape/7%',5)
+
+GO
+--2002-11-20
+
 print' OBS!!!  Glöm inte att du MÅSTE köra hela sprocs.sql efter detta script vid uppgradering  OBS!!'
 
 
