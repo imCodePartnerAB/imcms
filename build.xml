@@ -42,11 +42,11 @@
 
   </target>
 
-  <target name="install" depends="dist">
+  <target name="install" depends="dist" description="Copies the WAR-package into the deployroot.">
     <copy file="${wardist}" todir="${deployroot}"/>
   </target>
 
-  <target name="clean">
+  <target name="clean" description="Deletes everything for a fresh start.">
     <delete dir="${build}"/>
     <delete file="${wardist}"/>
   </target>
@@ -174,9 +174,23 @@
 
     <copy todir="${admintemplates}/adminbuttons">
       <fileset dir="templates/${srclanguage}/adminbuttons"/>
+      <filterset>
+
+        <filter token="servleturl" value="${servleturl}"/>
+        <filter token="loginurl" value="${loginurl}"/>
+        <filter token="imageurl" value="${imageurl}"/>
+
+      </filterset>
     </copy>
     <copy todir="${admintemplates}/permissions">
       <fileset dir="templates/${srclanguage}/permissions"/>
+      <filterset>
+
+        <filter token="servleturl" value="${servleturl}"/>
+        <filter token="loginurl" value="${loginurl}"/>
+        <filter token="imageurl" value="${imageurl}"/>
+
+      </filterset>
     </copy>
     <copy todir="${admintemplates}">
       <fileset dir="templates/${srclanguage}">
@@ -187,9 +201,25 @@
 	  <include name="*.txt"/>
 	</patternset>
       </fileset>
+
+      <filterset>
+
+        <filter token="servleturl" value="${servleturl}"/>
+        <filter token="loginurl" value="${loginurl}"/>
+        <filter token="imageurl" value="${imageurl}"/>
+
+      </filterset>
+
     </copy>
     <copy todir="${texttemplates}">
       <fileset dir="templates/text"/>
+      <filterset>
+
+        <filter token="servleturl" value="${servleturl}"/>
+        <filter token="loginurl" value="${loginurl}"/>
+        <filter token="imageurl" value="${imageurl}"/>
+
+      </filterset>
     </copy>
 
   </target>
