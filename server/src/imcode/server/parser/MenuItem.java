@@ -1,20 +1,22 @@
 package imcode.server.parser ;
 
-import imcode.util.log.* ;
+
 import java.util.Properties ;
 import org.apache.oro.text.regex.* ;
+
+import org.apache.log4j.Category;
 
 /** Stores all info about a menuitem **/
 public class MenuItem extends Document implements imcode.server.IMCConstants {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
-
+	
+	private final static Category log = Category.getInstance( "server" );
+	
     private int sortKey ;
     private Menu parentMenu;
     private static Pattern HASHTAG_PATTERN  = null ;
 
-    Log log = Log.getLog("server") ;
-    
     static {
 	Perl5Compiler patComp = new Perl5Compiler() ;
 
@@ -22,8 +24,7 @@ public class MenuItem extends Document implements imcode.server.IMCConstants {
 	    HASHTAG_PATTERN = patComp.compile("#[^#\"<>\\s]+#",Perl5Compiler.READ_ONLY_MASK) ;
 	} catch (MalformedPatternException ignored) {
 	    // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
-	    Log log = Log.getLog("server") ;
-	    log.log(Log.CRITICAL, "Danger, Will Robinson!") ;
+	    log.fatal( "Danger, Will Robinson!",ignored ) ;
 	}
     }
 
