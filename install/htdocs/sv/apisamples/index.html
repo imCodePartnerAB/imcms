@@ -28,45 +28,45 @@ To see the actual code, pleas open the page in your favourite java/jsp editing e
 
 <h3>Who you are</h3>
 First, make sure that you are logged in, <a href="../login/index.html">../login/index.html</a><br>
-To see what user you are logged in as, <a href="logged_in_user.jsp">logged_in_user.jsp</a><br>
+To see what user you are logged in as, <a id="1" href="logged_in_user.jsp">logged_in_user.jsp</a><br>
 Log out (and become an non-logged in user), <a href="../servlet/LogOut">../servlet/LogOut</a>
 </p>
 
 <h3>Users</h3>
-To see what users that exists in the system, <a href="user_listing.jsp">user_listing.jsp</a><br>
+To see what users that exists in the system, <a id="2" href="user_listing.jsp">user_listing.jsp</a><br>
 
 <h3>Roles</h3>
-List all roles, <a href="role_list_all.jsp">role_list_all.jsp</a><br>
-Add, <a href="role_create_role.jsp">role_create_role.jsp</a><br>
-Delete, <a href="role_delete_role.jsp">role_delete_role.jsp</a><br>
+List all roles, <a id="3" href="role_list_all.jsp">role_list_all.jsp</a><br>
+Add, <a id="4" href="role_create_role.jsp">role_create_role.jsp</a><br>
+Delete, <a id="5" href="role_delete_role.jsp">role_delete_role.jsp</a><br>
 <br>
-List users with different roles, <a href="role_get_user_with_role.jsp">role_get_user_with_role.jsp</a><br>
+List users with different roles, <a id="6" href="role_get_user_with_role.jsp">role_get_user_with_role.jsp</a><br>
 
 <h3>Document</h3>
 The following samples is modifying document 1001.<br>
-It currently looks like this, <a href="../servlet/GetDoc?meta_id=1001">document</a><br>
+It currently looks like this, <a id="7" href="../servlet/GetDoc?meta_id=1001">document</a><br>
 <br>
-Get the information about the document, <a href="document_get_document_info.jsp">document_get_document_info.jsp</a><br>
-Change the document information, <a href="document_change_document_info.jsp">document_change_document_info.jsp</a><br>
+Get the information about the document, <a id = "8" href="document_get_document_info.jsp">document_get_document_info.jsp</a><br>
+Change the document information, <a id="8" href="document_change_document_info.jsp">document_change_document_info.jsp</a><br>
 <br>
-Show template for a document, <a href="document_show_templates.jsp">document_show_templates.jsp</a><br>
-Change template for a document, <a href="document_change_template.jsp">document_change_template.jsp</a><br>
+Show template for a document, <a id="9" href="document_show_templates.jsp">document_show_templates.jsp</a><br>
+Change template for a document, <a id="10" href="document_change_template.jsp">document_change_template.jsp</a><br>
 <br>
-Get the first document field from the document, <a href="document_get_text_from_field.jsp">document_get_text_from_field.jsp</a><br>
-Change the first and the second field, <a href="document_set_text_field.jsp">document_set_text_field.jsp</a><br>
-Clear the first and the second field, </a><a href="document_clear_text_field.jsp">document_clear_text_field.jsp</a><br>
+Get the first document field from the document, <a id="11" href="document_get_text_from_field.jsp">document_get_text_from_field.jsp</a><br>
+Change the first and the second field, <a id=12" href="document_set_text_field.jsp">document_set_text_field.jsp</a><br>
+Clear the first and the second field, </a><a id="13" href="document_clear_text_field.jsp">document_clear_text_field.jsp</a><br>
 <br>
-To create a new text dokument that is linked from the document above, <a href="document_create_new_text_document.jsp">document_create_new_text_document.jsp</a><br>
+To create a new text dokument that is linked from the document above, <a id="14" href="document_create_new_text_document.jsp">document_create_new_text_document.jsp</a><br>
 <br>
 
 <h3>Documents and permissions </h3>
 You can manipulate documents in various ways. To do so the current user has to have specific roles, that in turn has to
-have specific rights. <a href="document_permissions.jsp">document_permissions.jsp</a><br>
+have specific rights. <a id="15" href="document_permissions.jsp">document_permissions.jsp</a><br>
 There are two different levels of configurable "restricted" permissions that can be modified.
-To see what specified "Restricted One" permissions a page has, see <a href="document_permission_show_restricted_1.jsp">document_permission_show_restricted_1.jsp</a><br>
+To see what specified "Restricted One" permissions a page has, see <a id="16" href="document_permission_show_restricted_1.jsp">document_permission_show_restricted_1.jsp</a><br>
 
 This doesn't work yet:<br>
-(To change the "Restricted One" permission,<a href="document_permission_change_restricted_1.jsp">document_permission_change_restricted_1.jsp</a>)<br>
+(To change the "Restricted One" permission,<a id="17" href="document_permission_change_restricted_1.jsp">document_permission_change_restricted_1.jsp</a>)<br>
 <br>
 
 <H3>NoPermissionException and exception handling in jsp-pages</H3>

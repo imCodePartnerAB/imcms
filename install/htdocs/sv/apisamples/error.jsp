@@ -2,6 +2,11 @@
                  com.imcode.imcms.api.NoPermissionException"%>
 <%@page isErrorPage="true"  %>
 
+<head>
+<title>Error</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
 <h2>An error uccured in one of the API sample pages.</h2>
 <%
     if( exception instanceof NoPermissionException ){
@@ -17,5 +22,6 @@
         PrintWriter writer = new PrintWriter( out );
         exception.printStackTrace( writer );
     }
-
 %>
+</body>
+</html>

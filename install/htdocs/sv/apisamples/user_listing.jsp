@@ -1,5 +1,10 @@
 <%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
-
+<html>
+<head>
+<title>Delete a role named "Test role"</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
 <h2>Listing current users in the IMCMS system</h2>
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
@@ -24,3 +29,5 @@
         </p><%
     }
 %>
+</body>
+</html>

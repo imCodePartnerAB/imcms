@@ -1,6 +1,11 @@
 <%@ page import="com.imcode.imcms.api.*,
                  java.util.*" errorPage="error.jsp" %>
-
+<html>
+<head>
+<title>Delete a role named "Test role"</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
 <h1>Show document permissions</h1>
 There are three basic kinds of permissions<br>
 <ul>
@@ -35,4 +40,6 @@ This is the mapping for document <%= documentId %>:<br>
 <br>
 Notice: Only the roles that has some permissions is shown above. If a role has <%=DocumentPermissionSet.NONE%> then
 that role is not part of the result map.<br>
+</body>
+</html>
 

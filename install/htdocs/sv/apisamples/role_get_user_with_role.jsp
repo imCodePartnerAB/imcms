@@ -1,5 +1,10 @@
 <%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
-
+<html>
+<head>
+<title>Delete a role named "Test role"</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
 <H3>Getting all users with a specific role</H3>
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
@@ -27,3 +32,5 @@ Users that is administrated by an external ldap-system "LDAP" (and has logged in
 %>
 <%= java.util.Arrays.asList( ldapExternalUser ) %><br>
 <br>
+</body>
+</html>

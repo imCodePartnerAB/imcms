@@ -18,9 +18,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 /**
- * STOP! Before changing anyting in this class, make sure to run (all) the tests in class TestDatabaseService.
- * They can take a while, but it is essentialt to keep this class working with multiple databases that those tests are
- * run before and after a change, and that new tests is added as soon as a new functionality in this class is added.
+ * STOP! Before changing anyting in this class, make sure to run (all) the test in class TestDatabaseService.
+ * They can take a while, but it is essentialt to keep this class working with multiple databases that those test are
+ * run before and after a change, and that new test is added as soon as a new functionality in this class is added.
  * /Hasse
  */
 public class DatabaseService {
