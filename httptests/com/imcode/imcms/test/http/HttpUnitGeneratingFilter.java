@@ -1,4 +1,4 @@
-package imcode.util.test;
+package com.imcode.imcms.test.http;
 
 import org.apache.log4j.Logger;
 

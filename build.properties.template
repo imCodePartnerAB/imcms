@@ -64,12 +64,16 @@ webmaster-email = ${servermaster-email}
 
 webappname = imcms
 
+
 # The default language to use when build the webapp ( sv | en )
+
 defaultlanguage = en
+
 
 # The root-URI of the webapp, relative to the server root-URI (/).
 
 rooturl = /${webappname}
+
 
 # The imCMS documents is usually on the imCMS public site, http://doc.imcms.net/
 # If you want to install a local server for handling (modifing) the documents
@@ -77,14 +81,13 @@ rooturl = /${webappname}
 
 documentation-host = doc.imcms.net
 
+
 # Whether the build should be optimized or not.
-# Warning: Turning this on may remove the version control constants from the class-files.
 
 optimize = off
 
 
 # Whether to leave debug info in or not.
-# Warning: Turning this off may remove the version control constants from the class-files.
 
 debug = on
 

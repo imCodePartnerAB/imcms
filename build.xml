@@ -312,9 +312,10 @@
 
     <target name="srczipdist" depends="init,check-webappname">
         <mkdir dir="${dist}"/>
-        <delete file="${srczipdist}"/> <!-- <zip> will for some reason throw an IllegalArgumentException if the file exists.-->
+        <!-- <zip> will for some reason throw an IllegalArgumentException if the file exists.-->
+        <delete file="${srczipdist}"/>
         <zip destfile="${srczipdist}">
-            <zipfileset includesfile="${srcincludes}" dir="${basedir}" prefix="${webappname}"/>
+            <zipfileset includesfile="${srcincludes}" dir="${basedir}" prefix="imcms${versionfilesuffix}"/>
         </zip>
     </target>
 
@@ -325,7 +326,7 @@
             <targetfileset file="${srctgzdist}" />
         </dependset>
         <tar destfile="${srctgzdist}" compression="gzip">
-            <tarfileset includesfile="${srcincludes}" dir="${basedir}" prefix="${webappname}"/>
+            <tarfileset includesfile="${srcincludes}" dir="${basedir}" prefix="imcms${versionfilesuffix}"/>
         </tar>
     </target>
 
@@ -336,7 +337,7 @@
             <targetfileset file="${srctbz2dist}" />
         </dependset>
         <tar destfile="${srctbz2dist}" compression="bzip2">
-            <tarfileset includesfile="${srcincludes}" dir="${basedir}" prefix="${webappname}"/>
+            <tarfileset includesfile="${srcincludes}" dir="${basedir}" prefix="imcms${versionfilesuffix}"/>
         </tar>
     </target>
 
@@ -370,7 +371,7 @@
 	        <fileset dir="${build}"/>
 	    </copy>
         <copy todir="${webapproot}/WEB-INF/lib">
-            <fileset dir="lib/nodist"/>
+            <fileset dir="lib" includes="nodist/*" />
         </copy>
     </target>
 

@@ -16,7 +16,7 @@
     <filter>
         <filter-name>HttpUnitGeneratingFilter</filter-name>
         <description>Generates HttpUnit code for all requests</description>
-        <filter-class>imcode.util.test.HttpUnitGeneratingFilter</filter-class>
+        <filter-class>com.imcode.imcms.test.http.HttpUnitGeneratingFilter</filter-class>
     </filter>
 
     <filter-mapping>
