@@ -123,8 +123,8 @@ public class ChangeImage extends HttpServlet {
 		String[] sql = IMCServiceRMI.sqlQuery(imcserver,sqlStr) ;
 		//log ("d") ;
 		Vector vec = new Vector () ;
-		
-		String imageName = (img_preset.equals("")?sql[1]:img_preset); // selected OPTION or ""
+		log("SQL LENGTH= " + sql.length);
+		String imageName = (img_preset.equals("")&&sql.length>0?sql[1]:img_preset); // selected OPTION or ""
 		if(imageName.lastIndexOf("/") != -1)
 			imageName = imageName.substring(imageName.lastIndexOf("/") +1);
 		String imagePath = Utility.getDomainPref( "image_path",host ) + imageName;
@@ -219,6 +219,12 @@ public class ChangeImage extends HttpServlet {
 			vec.add("" + width) ;
 			vec.add("#imgHeight#") ;
 			vec.add("" + height) ;
+			
+			vec.add("#origW#"); // 0
+			vec.add("0");
+			vec.add("#origH#"); //0
+			vec.add("0");
+			
 			vec.add("#imgBorder#") ;
 			vec.add("0") ;
 			vec.add("#imgVerticalSpace#") ;

@@ -101,8 +101,8 @@ if(keepAspectRatio && req.getParameter("ok") != null) {
 	int iHeight = Integer.parseInt(image_height); // form width
 	int iWidth = Integer.parseInt(image_width); // form height
 	log("REQUESTED SIZE " + iWidth + "/" + iHeight);
-	int oldWidth = Integer.parseInt(sql[2]); // database width
-	int oldHeight = Integer.parseInt(sql[3]); // database height
+	int oldWidth = (sql.length>0)?Integer.parseInt(sql[2]):0; // database width
+	int oldHeight = (sql.length>0)?Integer.parseInt(sql[3]):0; // database height
 	
 	int oHeight = Integer.parseInt(origHeight); // image height
 	int oWidth = Integer.parseInt(origWidth); // image width
