@@ -116,15 +116,13 @@ public class MetaDataParser {
 	String checks = "" ;
 	for ( int i = 0 ; i<metatable.length ; i+=3 ) {
 	    String temp = ((String[])hash.get(metatable[i]))[0] ;
-	    if (!(metatable[i].equals("meta_headline")||metatable[i].equals("meta_text"))) {
-		String[] pd = {
-		    "&",	"&amp;",
-		    "<",	"&lt;",
-		    ">",	"&gt;",
-		    "\"",	"&quot;",
-		} ;
-		temp = Parser.parseDoc(temp,pd) ;
-	    }
+	    String[] pd = {
+		"&",	"&amp;",
+		"<",	"&lt;",
+		">",	"&gt;",
+		"\"",	"&quot;",
+	    } ;
+	    temp = Parser.parseDoc(temp,pd) ;
 	    String tag = "#"+metatable[i]+"#" ;
 	    if ( NORMAL.equals(metatable[i+2]) ) {			// This is not a checkbox or an optionbox
 		if ( htmlStr.indexOf(tag)==-1 ) {

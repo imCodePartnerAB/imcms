@@ -17,10 +17,10 @@ import org.apache.log4j.Category;
 public class SaveNewMeta extends HttpServlet {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
-	
+
 	private final static Category mainLog = Category.getInstance(IMCConstants.MAIN_LOG);
-	private final static DateFormat logdateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;	
-	
+	private final static DateFormat logdateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;
+
     /**
        init()
     */
@@ -32,7 +32,7 @@ public class SaveNewMeta extends HttpServlet {
        doPost()
     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-	String host            	= req.getHeader("Host") ;
+	String host	= req.getHeader("Host") ;
 	String imcserver	= Utility.getDomainPref("adminserver",host) ;
 	String start_url	= Utility.getDomainPref( "start_url",host ) ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
@@ -117,7 +117,7 @@ public class SaveNewMeta extends HttpServlet {
 	} else {
 	    activated_datetime = datetimeformat.format(dt) ;
 	} // end of else
-	
+
 
 	String archived_date = req.getParameter("archived_date") ;
 	String archived_time = req.getParameter("archived_time") ;
@@ -130,14 +130,9 @@ public class SaveNewMeta extends HttpServlet {
 		archived_datetime = null ;
 	    }
 	}
-		
+
 	for ( int i=0 ; i<metatable.length ; i+=2 ) {
 	    String tmp = (String)inputMap.get(metatable[i]) ;
-	    if (metatable[i].equals("meta_headline")||metatable[i].equals("meta_text"))
-		{
-		    if ( tmp != null)
-			tmp = imcode.server.HTMLConv.toHTML(tmp);
-		}
 	    if ( tmp != null) {
 		metaprops.setProperty(metatable[i],tmp) ;
 	    } else {
@@ -165,15 +160,14 @@ public class SaveNewMeta extends HttpServlet {
 
 	// So... if the user may not create this particular doc-type... he's outta here!
 	if ( !user_doc_types.contains(doc_type) ) {
-	    byte[] tempbytes ;
-	    tempbytes = AdminDoc.adminDoc(parent_int,parent_int,host,user,req,res) ;
+	    byte[] tempbytes = AdminDoc.adminDoc(parent_int,parent_int,host,user,req,res) ;
 	    if ( tempbytes != null ) {
 		out.write(tempbytes) ;
 	    }
 	    return ;
 	}
 
-		
+
 	// Lets fix the date information (date_created, modified etc)
 	metaprops.setProperty("date_modified",datetimeformat.format(dt)) ;
 	metaprops.setProperty("date_created",datetimeformat.format(dt)) ;
@@ -185,7 +179,6 @@ public class SaveNewMeta extends HttpServlet {
 	}
 
 	if( req.getParameter( "cancel" ) != null ) {
-	    log ("Pressed cancel...") ;
 	    byte[] tempbytes = AdminDoc.adminDoc(Integer.parseInt(parent_meta_id),Integer.parseInt(parent_meta_id),host,user,req,res) ;
 	    if ( tempbytes != null ) {
 		out.write(tempbytes) ;
@@ -215,11 +208,10 @@ public class SaveNewMeta extends HttpServlet {
 
 	    // Save the classifications to the db
 	    if ( classification != null ) {
-		classification = imcode.server.HTMLConv.toHTML(classification);
 		IMCServiceRMI.sqlUpdateProcedure(imcserver,"Classification_Fix "+meta_id+",'"+classification+"'") ;
 	    }
 
-	    IMCServiceRMI.sqlUpdateProcedure(imcserver,"InheritPermissions "+meta_id+","+parent_meta_id+","+doc_type) ;		
+	    IMCServiceRMI.sqlUpdateProcedure(imcserver,"InheritPermissions "+meta_id+","+parent_meta_id+","+doc_type) ;
 
 	    // Lets add the sortorder to the parents childlist
 	    sqlStr =	"declare @new_sort int\n" +
@@ -234,10 +226,10 @@ public class SaveNewMeta extends HttpServlet {
 	    sqlStr += "set date_modified = '" + metaprops.getProperty( "date_modified" ) + "'\n" ;
 	    sqlStr += "where meta_id = " + parent_meta_id ;
 	    IMCServiceRMI.sqlUpdateQuery( imcserver,sqlStr ) ;
-		
+
 		//lets log to mainLog the stuff done
 		mainLog.info(logdateFormat.format(new java.util.Date())+"Document [" +meta_id +"] of type ["+doc_type+"] created on ["+parent_meta_id+"] by user: [" +user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]");
-		 
+
 	    // Here is the stuff we have to do for each individual doctype. All general tasks
 	    // for all documenttypes is done now.
 
@@ -350,7 +342,7 @@ public class SaveNewMeta extends HttpServlet {
 		res.sendRedirect( scheme + "://" + serverName + port + servlet_url + ex_doc.getCallServlet( ) + paramStr );
 		return ;
 
-		// TEXT DOCUMENT 
+		// TEXT DOCUMENT
 	    } else if (doc_type.equals("2")) {
 		//lets get the users greatest permission_set for this dokument
 		final int perm_set = IMCServiceRMI.getUserHighestPermissionSet (imcserver,Integer.parseInt(meta_id), user.getInt("user_id"));
@@ -366,12 +358,12 @@ public class SaveNewMeta extends HttpServlet {
 			    {
 				int tempInt = Integer.parseInt(temp[3]);
 				if(tempInt >= 0)
-				    temp[0] = String.valueOf(tempInt);						
+				    temp[0] = String.valueOf(tempInt);
 			    }catch(NumberFormatException nfe)
 				{
-					
+
 				    //there wasn't a number but we dont care, we just catch the exeption and moves on.
-				}					
+				}
 		    }else if(perm_set == imcode.server.IMCConstants.DOC_PERM_SET_RESTRICTED_2)
 			{ //ok we have a restricted_2 permission lets see if we have default template fore this one
 			    //and if soo lets put it as ordinary instead of the parents
@@ -379,7 +371,7 @@ public class SaveNewMeta extends HttpServlet {
 				{
 				    int tempInt = Integer.parseInt(temp[4]);
 				    if(tempInt >= 0)
-					temp[0] = String.valueOf(tempInt);						
+					temp[0] = String.valueOf(tempInt);
 				}catch(NumberFormatException nfe)
 				    {
 					//there wasn't a number but we dont care, we just catch the exeption and moves on.
@@ -398,12 +390,10 @@ public class SaveNewMeta extends HttpServlet {
 		    String [] vp = {
 			"'",	"''"
 		    } ;
-		    String mHeadline = imcode.server.HTMLConv.toHTML(metaprops.getProperty("meta_headline")) ;
-		    String mText = imcode.server.HTMLConv.toHTML(metaprops.getProperty("meta_text")) ;
 
-		    mHeadline = Parser.parseDoc(mHeadline,vp) ;
-		    mText = Parser.parseDoc(mText,vp) ;
-		
+		    String mHeadline = Parser.parseDoc(metaprops.getProperty("meta_headline"),vp) ;
+		    String mText = Parser.parseDoc(metaprops.getProperty("meta_text"),vp) ;
+
 		    sqlStr = "insert into texts (meta_id,name,text,type) values ("+meta_id +", 1, '" + mHeadline + "', 1)" ;
 		    IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
 		    sqlStr = "insert into texts (meta_id,name,text,type) values ("+meta_id +", 2, '" + mText + "', 1)" ;
@@ -416,11 +406,12 @@ public class SaveNewMeta extends HttpServlet {
 
 		// Lets build the page
 		byte[] tempbytes = AdminDoc.adminDoc(Integer.parseInt(meta_id),Integer.parseInt(meta_id),host,user,req,res) ;
-		if ( tempbytes != null )
+		if ( tempbytes != null ) {
 		    out.write(tempbytes) ;
+		}
 		return ;
 	    } // end text document
-			
+
 	}
 	out.print(htmlStr) ;
     }

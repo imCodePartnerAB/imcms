@@ -18,10 +18,10 @@ public class SaveMeta extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 
-	
+
 	private final static Category mainLog = Category.getInstance(IMCConstants.MAIN_LOG);
-	private final static DateFormat logdateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;	
-	
+	private final static DateFormat logdateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;
+
 	/**
 	init()
 	*/
@@ -33,10 +33,10 @@ public class SaveMeta extends HttpServlet {
 	doPost()
 	*/
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
-		String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
+		String host				= req.getHeader("Host") ;
+		String imcserver			= Utility.getDomainPref("adminserver",host) ;
+		String start_url	= Utility.getDomainPref( "start_url",host ) ;
+		String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 		imcode.server.User user ;
 
@@ -52,12 +52,11 @@ public class SaveMeta extends HttpServlet {
 		int meta_id_int = Integer.parseInt(meta_id) ;
 
 		if ( !IMCServiceRMI.checkDocAdminRightsAny(imcserver,meta_id_int,user,7 ) ) {	// Checking to see if user may edit this
-			byte[] tempbytes ;
-			tempbytes = AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res) ;
-			if ( tempbytes != null ) {
-				out.write(tempbytes) ;
-			}
-			return ;
+		    byte[] tempbytes = AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res) ;
+		    if ( tempbytes != null ) {
+			out.write(tempbytes) ;
+		    }
+		    return ;
 		}
 
 		Properties metaprops = new Properties () ;
@@ -73,8 +72,11 @@ public class SaveMeta extends HttpServlet {
 
 		// Check if the user has any business in here whatsoever.
 		if ( user_set_id > 2 ) {
-			out.write(AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res)) ;
-			return ;
+		    byte[] tempbytes = AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res) ;
+		    if ( tempbytes != null ) {
+			out.write(tempbytes) ;
+		    }
+		    return ;
 		}
 		int user_perm_set = Integer.parseInt(current_permissions[1]) ;	// The users permission_set for that id
 		int currentdoc_perms = Integer.parseInt(current_permissions[2]) ;	// The docspecific permissions for this doc.
@@ -94,23 +96,23 @@ public class SaveMeta extends HttpServlet {
 			continue ;							     // skip to the next role.
 		    }
 		    int new_set_id = Integer.parseInt(new_set_id_str) ;
-		    if 	( (
+		    if	( (
 			   // May the user edit permissions at all?
-			   user_set_id == 0 				// If user has set_id == 0...
+			   user_set_id == 0				// If user has set_id == 0...
 				|| (user_perm_set & 4) != 0)	// ...or the user may edit permissions for this document
 
 			  // May the user set this particular permission-set?
 			  && user_set_id <= new_set_id
 
 			  // May the user edit the permissions for this particular role?
-			  && user_set_id <= role_set_id 	// If user potentially has a more privileged set_id than the role...
-			  &&	(user_set_id != 1	 		// If user has set_id == 1 (that is , != 0 && != 2)
-				 ||	(role_set_id != 2 			// ...he may not change set_id for a role with set_id 2..
+			  && user_set_id <= role_set_id	// If user potentially has a more privileged set_id than the role...
+			  &&	(user_set_id != 1			// If user has set_id == 1 (that is , != 0 && != 2)
+				 ||	(role_set_id != 2			// ...he may not change set_id for a role with set_id 2..
 					 && new_set_id != 2)			// ...and he may not set set_id to 2 for any role...
 				 || (currentdoc_perms&1) != 0// ...unless set_id 1 is more privileged than set_id 2 for this document.
 				 )
 			  ) {
-			
+
 				// We used to save to the db immediately. Now we do it a little bit differently to make it possible to store stuff in the session instead of the db.
 				// IMCServiceRMI.sqlUpdateProcedure(imcserver, "SetRoleDocPermissionSetId "+role_id+","+meta_id+","+new_set_id) ;
 			temp_permission_settings.setProperty(String.valueOf(role_id),String.valueOf(new_set_id)) ;
@@ -193,7 +195,7 @@ public class SaveMeta extends HttpServlet {
 		for ( int i=0 ; i<metatable.length ; i+=metatable_cols ) {
 		    inputMap.put(metatable[i],req.getParameter(metatable[i])) ;
 		}
-		
+
 		// Here's some mutilation!
 		// activated_date and activated_time need to be merged, and likewise with archived_date and archived_time
 
@@ -228,17 +230,12 @@ public class SaveMeta extends HttpServlet {
 		// All alterations of the inputdata must happen before this
 		for ( int i=0 ; i<metatable.length ; i+=metatable_cols ) {
 			String tmp = (String)inputMap.get(metatable[i]) ;
-			if ( 	user_set_id > metatable_restrictions[i]						// Check on set_id if user is allowed to set this particular property.
-				|| 	(user_set_id > 0 										// If user not has full access (0)...
+			if (	user_set_id > metatable_restrictions[i]						// Check on set_id if user is allowed to set this particular property.
+				||	(user_set_id > 0										// If user not has full access (0)...
 				&& ((user_perm_set & metatable_restrictions[i+1]) == 0) // check permission-bitvector for the users set_id.
 				)
 				) {
 				continue ;
-			}
-			if (metatable[i].equals("meta_headline")||metatable[i].equals("meta_text"))
-			{
-				if( tmp != null)
-					tmp = imcode.server.HTMLConv.toHTML(tmp);
 			}
 			if ( tmp != null) {
 				metaprops.setProperty(metatable[i],tmp) ;	// If it is found, set it.
@@ -258,7 +255,7 @@ public class SaveMeta extends HttpServlet {
 		String temp_default_template_1 = req.getParameter("default_template_set_1") == null ? "-1" : req.getParameter("default_template_set_1");
 		String temp_default_template_2 = req.getParameter("default_template_set_2") == null ? "-1" : req.getParameter("default_template_set_2");
 		String[] temp_default_templates = {temp_default_template_1, temp_default_template_2};
-		
+
 		// Set modified-date to now...
 		Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
 		metaprops.setProperty("date_modified",dateformat.format(dt)) ;
@@ -273,7 +270,7 @@ public class SaveMeta extends HttpServlet {
 		// A String[], containing default_template 1 and 2
 		// We also need a name for this temporary variable... i think i shall call it... (Drumroll, please...) "temp_perm_settings" !
 		//
-		
+
 		if ( req.getParameter("define_set_1") != null ) {	// If user want's to edit permission-set 1
 			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings,temp_default_templates}) ;
 			out.print(MetaDataParser.parsePermissionSet(meta_id_int,user,host,1,false)) ;
@@ -311,9 +308,9 @@ public class SaveMeta extends HttpServlet {
 		String template2 = "-1";
 		if (tempStr != null)
 		{
-		 	template1 = req.getParameter("default_template_set_1").equals("") ? "-1" : req.getParameter("default_template_set_1");
-		}	
-		tempStr = req.getParameter("default_template_set_2");	
+			template1 = req.getParameter("default_template_set_1").equals("") ? "-1" : req.getParameter("default_template_set_1");
+		}
+		tempStr = req.getParameter("default_template_set_2");
 		if (tempStr != null)
 		{
 			template2 = req.getParameter("default_template_set_2").equals("")? "-1":req.getParameter("default_template_set_2");
@@ -333,7 +330,7 @@ public class SaveMeta extends HttpServlet {
 				sqlStr += ", " ;
 			}
 		}
-		
+
 		for (int i=0; i<role_permissions.length; ++i) {
 			String role_id = (String)role_permissions[i][0] ;
 			String new_set_id = temp_permission_settings.getProperty(role_id) ;
@@ -342,7 +339,7 @@ public class SaveMeta extends HttpServlet {
 			}
 			IMCServiceRMI.sqlUpdateProcedure(imcserver, "SetRoleDocPermissionSetId "+role_id+","+meta_id+","+new_set_id) ;
 		}
-		
+
 		if ( sqlStr.length() > 0 ) {
 
 			sqlStr = "update meta set " +sqlStr+ " where meta_id = "+meta_id ;
@@ -351,26 +348,26 @@ public class SaveMeta extends HttpServlet {
 
 		// Save the classifications to the db
 		if ( classification != null ) {
-			classification = imcode.server.HTMLConv.toHTML(classification);
 			IMCServiceRMI.sqlUpdateProcedure(imcserver,"Classification_Fix "+meta_id+",'"+classification+"'") ;
 		}
-		
-		//ok lets save the default templates 
+
+		//ok lets save the default templates
 		//log("test sql: UpdateDefaultTemplates "+meta_id+",'"+template1+"','"+template2+"'");
 		IMCServiceRMI.sqlUpdateProcedure(imcserver, "UpdateDefaultTemplates '"+meta_id+"','"+template1+"','"+template2+"'") ;
-			
+
 
 		// Update the date_modified for all parents.
 		IMCServiceRMI.sqlUpdateProcedure(imcserver, "UpdateParentsDateModified "+meta_id) ;
 
 		// Let's split this joint!
-				byte[] temp = AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res) ;
-				if (temp != null) {
-				  out.write(temp) ;
-				}
+		byte[] tempbytes = AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res) ;
+		if ( tempbytes != null ) {
+		    out.write(tempbytes) ;
+		}
+
 		//lets log to mainlog that the user done stuff
 		mainLog.info(logdateFormat.format(new java.util.Date())+"Metadata on ["+meta_id+"] updated by user: [" +user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]");
-		 
+
 		return ;
 	}
 
@@ -397,9 +394,3 @@ public class SaveMeta extends HttpServlet {
 
 
 }
-
-
-
-
-
-

@@ -26,12 +26,12 @@ import org.apache.log4j.Category;
    Made final, since only a complete and utter moron would want to extend it.
 **/
 final public class IMCService implements IMCServiceInterface, IMCConstants {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-    
+    private final static String CVS_REV="$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
+
     private final imcode.server.InetPoolManager m_conPool ; // inet pool of connections
     private TextDocumentParser textDocParser ;
-    
+
     private File m_TemplateHome ;           // template home
     private File m_IncludePath ;
     private File m_FortunePath ;
@@ -42,40 +42,37 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private String m_serverName        = "" ;      // servername
 
     private SystemData sysData ;
-    
+
     private ExternalDocType m_ExDoc[] ;
     private String m_SessionCounterDate = "" ;
     private int m_SessionCounter = 0 ;
     private int m_NoOfTemplates  ;
-    
+
     private FileCache fileCache = new FileCache() ;
 
+    private final static DateFormat logdateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;
+    private final static Category mainLog = Category.getInstance( IMCConstants.MAIN_LOG ) ;
+    private final static Category log = Category.getInstance( "server" ) ;
 
-	private final static DateFormat logdateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;			
-	private final static Category mainLog = Category.getInstance( IMCConstants.MAIN_LOG ) ;
-	private final static Category log = Category.getInstance( "server" ) ;
+    static {
+	mainLog.info("Main log started." );
+	log.debug("Main log called for the first time. The logs name is "+IMCConstants.MAIN_LOG );
+    }
 
-	static 
-	{
-		mainLog.info("Main log started." );
-		log.debug("Main log called for the first time. The logs name is "+IMCConstants.MAIN_LOG );
-	}
-
-    
     /**
-     * <p>Contructs an IMCService object.
+     * Contructs an IMCService object.
      */
     //	public IMCService(ConnectionPool conPool,javax.swing.JTextArea output,String serverName)
     public IMCService(imcode.server.InetPoolManager conPool,Properties props) {
 	super();
 	m_conPool    = conPool ;
-	    
+
 	sysData = getSystemDataFromDb() ;
 
 	String templatePathString = props.getProperty("TemplatePath").trim() ;
 	m_TemplateHome      = imcode.util.Utility.getAbsolutePathFromString(templatePathString) ;
 	log.info("TemplatePath: " + m_TemplateHome) ;
-	    
+
 	String includePathString = props.getProperty("IncludePath").trim() ;
 	m_IncludePath       = imcode.util.Utility.getAbsolutePathFromString(includePathString) ;
 	log.info("IncludePath: " + m_IncludePath) ;
@@ -83,7 +80,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	String fortunePathString = props.getProperty("FortunePath").trim() ;
 	m_FortunePath       = imcode.util.Utility.getAbsolutePathFromString(fortunePathString) ;
 	log.info("FortunePath: " + m_IncludePath) ;
-	    
+
 	try {
 	    m_DefaultHomePage   = Integer.parseInt(props.getProperty("StartDocument").trim()) ;    //FIXME: Get from DB
 	} catch (NumberFormatException ex) {
@@ -93,21 +90,21 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	}
 
 	log.info("StartDocument: " + m_DefaultHomePage) ;
-	    
+
 	m_ServletUrl        = props.getProperty("ServletUrl").trim() ; //FIXME: Get from webserver, or get rid of if possible.
 	log.info("ServletUrl: " + m_ServletUrl) ;
-	    
+
 	// FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 	m_ImageFolder       = props.getProperty("ImageUrl").trim() ; //FIXME: Get from webserver, or get rid of if possible.
 	log.info("ImageUrl: " + m_ImageFolder) ;
-	    
+
 	String externalDocTypes  = props.getProperty("ExternalDoctypes").trim() ; //FIXME: Get rid of, if possible.
 	log.info("ExternalDoctypes: " + externalDocTypes) ;
-	    
+
 	m_Language          = props.getProperty("DefaultLanguage").trim() ; //FIXME: Get from DB
 	log.info("DefaultLanguage: " + m_Language) ;
-	    
-	    
+
+
 	StringTokenizer doc_types = new StringTokenizer(externalDocTypes,";",false) ;
 	m_ExDoc = new ExternalDocType[doc_types.countTokens()] ;
 	try {
@@ -123,8 +120,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	catch(NoSuchElementException e) {
 	    e.printStackTrace() ;
 	}
-	    
-	    
+
+
 	try {
 	    m_SessionCounter     = Integer.parseInt(this.sqlProcedureStr("GetCurrentSessionCounter")) ;
 	    m_SessionCounterDate = this.sqlProcedureStr("GetCurrentSessionCounterDate") ;
@@ -133,9 +130,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    log.fatal("Failed to get SessionCounter from db.", ex) ;
 	    throw ex ;
 	}
-	    
+
 	//m_Template = new Template[m_NoOfTemplates] ;
-	    
+
 	log.info("SessionCounter: "+m_SessionCounter) ;
 	log.info("SessionCounterDate: "+m_SessionCounterDate) ;
 	//log.log(Log.INFO, "TemplateCount: "+m_NoOfTemplates) ;
@@ -146,20 +143,20 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public int getSessionCounter() {
 	return m_SessionCounter ;
     }
-    
+
     public String getSessionCounterDate() {
 	return m_SessionCounterDate ;
     }
 
     /**
-     * <p>Get me page _id.
+     * Get me page _id.
      */
     public int getDefaultHomePage() {
 	return m_DefaultHomePage ;
     }
-    
+
     /**
-     * <p>Verify a Internet/Intranet user. User data retrived from SQL Database.
+     * Verify a Internet/Intranet user. User data retrived from SQL Database.
      */
     public imcode.server.User verifyUser(LoginUser login_user,String fieldNames[]) {
 	String sqlStr = "" ;
@@ -322,62 +319,74 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	return getMenuButtons(String.valueOf(meta_id),user) ;
     }
 
-    public void saveText(int meta_id,imcode.server.User user,int txt_no,String text,int toHTMLSpecial) {
+    /**
+       Store the given IMCText in the DB.
+       @param user    The user
+       @param meta_id The id of the page
+       @param txt_no  The id of the text in the page.
+       @param text    The text.
+    **/
+    public void saveText(imcode.server.User user,int meta_id,int txt_no,IMCText text) {
 
-	if ( toHTMLSpecial == 0)
-	    text =  imcode.server.HTMLConv.toHTMLSpecial(text) ;
-	
-	//lets make sure that we got a (' ') or ('\n') or ('\r') before ('<') and after ('>')
-	//this is important to the text-index used by the built in search-engine in sql
-	if ( toHTMLSpecial == 1) {
-		StringBuffer buff = new StringBuffer(text);
-		if ( 1 == 1) {
-			int sTagg = text.length();		
-			while (text.lastIndexOf("<",sTagg-1) != -1){
-		        sTagg = text.lastIndexOf("<", sTagg-1);
-				
-				if (sTagg >0) {
-				    if (buff.charAt(sTagg-1) != ' ' && buff.charAt(sTagg-1) != '>' 
-					&& buff.charAt(sTagg-1)!='\n'&& buff.charAt(sTagg+1)!='\r') {
-						buff.insert(sTagg,' ');
-				    }
-				}
-			}			
-			text=buff.toString();
-			sTagg = text.length();
-			while (text.lastIndexOf(">",sTagg-1) != -1){
-		        sTagg = text.lastIndexOf(">", sTagg-1);
-				if (sTagg<buff.length()-1) {
-				    if (buff.charAt(sTagg+1) != ' ' && buff.charAt(sTagg+1) != '<'
-						&& buff.charAt(sTagg+1)!='\n' && buff.charAt(sTagg+1)!='\r') {
-						buff.insert(sTagg+1,' ');
-				    }
-				}
-			}
-		}
-		text=buff.toString();
+	org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util() ;
+
+	String textstring = text.getText() ;
+
+	if ( text.getType() == IMCText.TEXT_TYPE_HTML) {
+	    /*
+	      Make sure all word-chars are kept away from the html-tags by at least one space.
+	      Without this, the sql-freetext-indexer won't do its work properly.
+	    */
+	    textstring = perl5util.substitute("s/\\b</ </g",textstring) ; // Substitute word-boundary (\b) next to '<' for " <" globally (g) in textstring
+	    textstring = perl5util.substitute("s/>\\b/> /g",textstring) ; // Substitute '>' next to word-boundary (\b) for "> " globally (g) in textstring
 	}
-	// allways convert character >= 160
-	text =  imcode.server.HTMLConv.toHTML(text) ;
-	
+
 	// update text
-	String sqlStr = "InsertText " + meta_id +","+ txt_no +","+toHTMLSpecial+",'"+text+"'";
-	
-	DBConnect dbc = new DBConnect(m_conPool,sqlStr) ;
-	dbc.getConnection() ;
-	dbc.createStatement() ;
-	dbc.executeUpdateQuery() ;
-	// close connection
-	dbc.closeConnection() ;
-	dbc = null ;
-	
+	sqlUpdateProcedure("InsertText ", new String[] { ""+meta_id, ""+txt_no, ""+text.getType(), textstring } ) ;
+
+	// update the date
+	touchDocument(meta_id) ;
+
 	this.updateLogs("Text " + txt_no +	" in  " + "[" + meta_id + "] modified by user: [" +
 			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
 
     }
 
     /**
-     * <p>Save an imageref.
+       Retrieve a text from the db.
+       @param meta_id The id of the page.
+       @param no      The id of the text in the page.
+       @return The text from the db, or null if there was none.
+    **/
+    public IMCText getText(int meta_id, int no) {
+
+	try {
+
+	    /* Ask the db for the text */
+	    String [] results = sqlProcedure("GetText ",new String[] { ""+meta_id, ""+no },false ) ;
+	    log.debug("Asked db for text "+ meta_id + ", " +no) ;
+
+	    if ( results == null || results.length == 0 ) {
+		/* There was no text. Return null. */
+		return null ;
+	    }
+
+
+	    /* Return the text */
+	    String text = results[0] ;
+	    int type = Integer.parseInt(results[1]) ;
+	    log.debug("Got text "+text+" with type "+type) ;
+	    return new IMCText(text,type) ;
+
+	} catch (NumberFormatException ex) {
+	    /* There was no text, but we shouldn't come here unless the db returned something wrong. */
+	    log.error("SProc 'GetText' returned an invalid text-type.", ex) ;
+	    return null ;
+	}
+    }
+
+    /**
+     * Save an imageref.
      */
     public void saveImage(int meta_id,User user,int img_no,imcode.server.Image image) {
 	String sqlStr = "" ;
@@ -451,7 +460,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * <p>Save template -> text_docs, sort
+     * Save template -> text_docs, sort
      */
     public void saveTextDoc(int meta_id,imcode.server.User user,imcode.server.Table doc) {
 	String sqlStr = "" ;
@@ -483,7 +492,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * <p>Delete a doc and all data related.
+     * Delete a doc and all data related.
      */
     public void deleteDocAll(int meta_id,imcode.server.User user) {
 	String sqlStr = "DocumentDelete " + meta_id ;
@@ -504,7 +513,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * <p>Add a existing doc.
+     * Add a existing doc.
      */
     public void addExistingDoc(int meta_id,User user,int existing_meta_id,int doc_menu_no) {
 	String sqlStr = "" ;
@@ -557,7 +566,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Save manual sort.
+     * Save manual sort.
      */
     public void saveManualSort(int meta_id,User user,java.util.Vector childs,
 			       java.util.Vector sort_no) {
@@ -599,7 +608,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Delete childs from a menu.
+     * Delete childs from a menu.
      */
     public void deleteChilds(int meta_id,int menu,User user,String childsThisMenu[]) {
 	String sqlStr = "" ;
@@ -648,21 +657,21 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        @param childsThisMenu The id's to copy.
     **/
     public void copyDocs( int meta_id, int doc_menu_no,  User user, String[] childsThisMenu, String copyPrefix) {
-	
+
 	if (childsThisMenu != null && childsThisMenu.length > 0) {
 	    StringBuffer childs = new StringBuffer("CopyDocs '"+childsThisMenu[0]) ;
 		StringBuffer logchilds = new StringBuffer(childsThisMenu[0]) ;
 	    for (int i=1; i<childsThisMenu.length; ++i) {
-		childs.append(",").append(childsThisMenu[i]) ;		
-		logchilds.append(", "+childsThisMenu[i]) ;	
+		childs.append(",").append(childsThisMenu[i]) ;
+		logchilds.append(", "+childsThisMenu[i]) ;
 		}
 
 	    childs.append("',"+meta_id+","+doc_menu_no+","+user.getUserId()+","+copyPrefix) ;
 	    sqlUpdateProcedure(childs.toString()) ;
 		this.updateLogs("Childs [" + logchilds.toString()+"] on ["+meta_id+"] copied by user: [" + user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
-	   
+
 	}
-	
+
     }
 
     /**
@@ -700,7 +709,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * <p>Check if browser doc.                                                                     *
+     * Check if browser doc.                                                                     *
      */
     public int isBrowserDoc(int meta_id,imcode.server.User user) {
 	String sqlStr = "" ;
@@ -751,7 +760,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Save an url document.
+     * Save an url document.
      */
     public void saveUrlDoc(int meta_id,User user,imcode.server.Table doc) {
 	String sqlStr = "" ;
@@ -782,7 +791,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Save a new url document.
+     * Save a new url document.
      */
     public void saveNewUrlDoc(int meta_id,User user,imcode.server.Table doc) {
 	String sqlStr = "" ;
@@ -820,8 +829,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>List all archived docs.
+     * List all archived docs.
      */
+    /*
     public String listArchive(int meta_id,User user) {
 	String sqlStr = "" ;
 	String htmlStr = "" ;
@@ -879,10 +889,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	return htmlStr ;
     }
-
+    */
 
     /**
-     * <p>Check if url doc.
+     * Check if url doc.
      */
     public imcode.server.Table isUrlDoc(int meta_id,User user) {
 	String sqlStr = "" ;
@@ -921,7 +931,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * <p>Save a new frameset.
+     * Save a new frameset.
      */
     public void saveNewFrameset(int meta_id,User user,imcode.server.Table doc) {
 	String sqlStr = "" ;
@@ -952,7 +962,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * <p>Save a frameset
+     * Save a frameset
      */
     public void saveFrameset(int meta_id,User user,imcode.server.Table doc) {
 	String sqlStr = "" ;
@@ -982,17 +992,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Update logs.
+     * Update logs.
      */
     public void updateLogs(String event) {
-	
-	//***********s  
-	
+
+	//***********s
+
 	mainLog.info(logdateFormat.format(new java.util.Date())+event );
 
 	//************e
 	/*
-	
+
 	String sqlStr = "" ;
 
 	java.util.Calendar cal = java.util.Calendar.getInstance() ;
@@ -1034,7 +1044,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Update track log.
+     * Update track log.
      */
     public void updateTrackLog(int from_meta_id,int to_meta_id,imcode.server.User user) {
 	/*
@@ -1084,7 +1094,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Check if frameset doc.                                                                        *
+     * Check if frameset doc.                                                                        *
      */
     public String isFramesetDoc(int meta_id,User user) {
 	String sqlStr = "" ;
@@ -1120,7 +1130,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * <p>Search docs.
+     * Search docs.
      */
     public Vector searchDocs(int meta_id,User user,String question_str,
 			     String search_type,String string_match,String search_area) {
@@ -1243,7 +1253,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Check if external doc.
+     * Check if external doc.
      */
     public ExternalDocType isExternalDoc(int meta_id,User user) {
 	String sqlStr = "" ;
@@ -1279,7 +1289,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Remove child from child-table.
+     * Remove child from child-table.
      */
     public void removeChild(int meta_id,int parent_meta_id,User user) {
 	String sqlStr = "" ;
@@ -1308,7 +1318,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Activate child to child-table.
+     * Activate child to child-table.
      */
     public void activateChild(int meta_id,imcode.server.User user) {
 
@@ -1364,8 +1374,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * <p>Send a sqlquery to the database and return a string array.
-     */
+       Send a sqlquery to the database and return a string array.
+       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+    **/
     public String[] sqlQuery(String sqlQuery) {
 
 	Vector data = new Vector() ;
@@ -1393,8 +1404,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Send a sqlquery to the database and return a string array.
-     */
+       Send a sqlquery to the database and return a string array.
+       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+    **/
     public String[] sqlQuery(String sqlQuery,String catalog) {
 
 	Vector data = new Vector() ;
@@ -1421,8 +1433,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Send a sqlquery to the database and return a string
-     */
+       Send a sqlquery to the database and return a string
+       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+    **/
     public String sqlQueryStr(String sqlQuery) {
 	Vector data = new Vector() ;
 
@@ -1442,8 +1455,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * <p>Send a sql update query to the database
-     */
+       Send a sql update query to the database
+       @deprecated Use {@link sqlUpdateProcedure(String, String[])} instead.
+    **/
     public void sqlUpdateQuery(String sqlStr) {
 	DBConnect dbc = new DBConnect(m_conPool,sqlStr) ;
 	dbc.getConnection() ;
@@ -1455,8 +1469,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Send a procedure to the database and return a string array
-     */
+       Send a procedure to the database and return a string array
+       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+    **/
     public String[] sqlProcedure(String procedure) {
 
 	Vector data = new Vector() ;
@@ -1473,20 +1488,85 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	if ( data != null ) {
 	    String result[] = new String[data.size()] ;
-	    for ( int i = 0 ; i < data.size() ; i++ )
+	    for ( int i = 0 ; i < data.size() ; i++ ) {
 		result[i] = data.elementAt(i).toString() ;
-
-
-	    data = null ;
+	    }
 	    return result ;
-	} else
-	    return null ;
+	}
+	return null ;
     }
 
+    /**
+       The preferred way of getting data from the db.
+       String.trim()'s the results.
+       @param procedure The name of the procedure
+       @param params    The parameters of the procedure
+    **/
+    public String[] sqlProcedure(String procedure, String[] params) {
+	return sqlProcedure(procedure, params, true) ;
+    }
 
     /**
-     * <p>Send a procedure to the database and return a string.
-     */
+       The preferred way of getting data from the db.
+       @param procedure The name of the procedure.
+       @param params    The parameters of the procedure.
+       @param trim      Whether to String.trim() the results.
+    **/
+    public String[] sqlProcedure(String procedure, String[] params, boolean trim) {
+	Vector data = new Vector() ;
+
+	DBConnect dbc = new DBConnect(m_conPool) ;
+	dbc.setTrim(trim) ;
+	dbc.getConnection() ;
+	if ( params.length > 0 ) {
+	    procedure += " ?" ;
+	    for (int i = 1; i < params.length; ++i) {
+		procedure += ",?" ;
+	    }
+	}
+
+	dbc.setProcedure(procedure, params) ;
+	data = (Vector)dbc.executeProcedure() ;
+	dbc.clearResultSet() ;
+	dbc.closeConnection() ;
+	dbc = null ;
+
+	if ( data != null ) {
+	    String result[] = new String[data.size()] ;
+	    for ( int i = 0 ; i < data.size() ; i++ ) {
+		result[i] = data.elementAt(i).toString() ;
+	    }
+	    return result ;
+	}
+	return null ;
+    }
+
+    /**
+       The preferred way of getting data to the db.
+       @param procedure The name of the procedure
+       @param params    The parameters of the procedure
+    **/
+    public void sqlUpdateProcedure(String procedure, String[] params) {
+	DBConnect dbc = new DBConnect(m_conPool) ;
+	dbc.getConnection() ;
+	if ( params.length > 0 ) {
+	    procedure += " ?" ;
+	    for (int i = 1; i < params.length; ++i) {
+		procedure += ",?" ;
+	    }
+	}
+
+	dbc.setProcedure(procedure, params) ;
+	dbc.executeUpdateProcedure() ;
+	dbc.clearResultSet() ;
+	dbc.closeConnection() ;
+	dbc = null ;
+    }
+
+    /**
+       Send a procedure to the database and return a string.
+       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+    **/
     public String sqlProcedureStr(String procedure) {
 	Vector data = new Vector() ;
 
@@ -1513,8 +1593,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Send a procedure to the database and return a int.
-     */
+       Send a procedure to the database and return a int.
+       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+    **/
     public int sqlProcedureInt(String procedure) {
 	Vector data = new Vector() ;
 
@@ -1537,8 +1618,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Send a update procedure to the database
-     */
+       Send a update procedure to the database
+       @deprecated Use {@link sqlUpdateProcedure(String, String[])} instead.
+    **/
     public void sqlUpdateProcedure(String procedure) {
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
@@ -1619,7 +1701,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    return "" ;
 	}
     }
-	
+
 	/**
        Parse doc replace variables with data , use template
     */
@@ -1641,7 +1723,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     	@deprecated Ugly use parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)
+	@deprecated Ugly use parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)
 		//or something else instead.
      */
     public File getExternalTemplateFolder(int meta_id) {
@@ -1667,7 +1749,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Return  templatehome.
+     * Return  templatehome.
      */
     public File getTemplateHome() {
 	return m_TemplateHome ;
@@ -1675,7 +1757,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Return  imagehome.
+     * Return  imagehome.
      */
     public String getImageHome() {
 	return m_ImageFolder ;
@@ -1683,14 +1765,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Return  language.
+     * Return  language.
      */
     public String getLanguage() {
 	return m_Language ;
     }
 
     /**
-     * <p>Increment session counter.
+     * Increment session counter.
      */
     public	int incCounter() {
 	m_SessionCounter += 1 ;
@@ -1699,7 +1781,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Get session counter.
+     * Get session counter.
      */
     public	int getCounter() {
 	return m_SessionCounter ;
@@ -1707,7 +1789,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Set session counter.
+     * Set session counter.
      */
     public	int setCounter(int value) {
 	m_SessionCounter = value ;
@@ -1717,7 +1799,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Set session counter date.
+     * Set session counter date.
      */
     public	boolean setCounterDate(String date) {
 	m_SessionCounterDate = date ;
@@ -1727,7 +1809,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * <p>Get session counter date.
+     * Get session counter date.
      */
     public	String getCounterDate() {
 	return m_SessionCounterDate ;
@@ -1796,7 +1878,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        Array[0]                 = number of field in the record
        Array[1]   - array[n]    = metadata
        Array[n+1] - array[size] = data
-    */
+       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+
+    **/
     public String[] sqlProcedureExt(String procedure) {
 
 	DBConnect dbc = new DBConnect(m_conPool) ;
@@ -1893,7 +1977,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
        Send a procedure to the database and return a Hashtable
-    */
+       @deprecated Use {@link sqlProcedure(String, String[])} instead.
+    **/
     public Hashtable sqlProcedureHash(String procedure) {
 
 	DBConnect dbc = new DBConnect(m_conPool) ;
@@ -1940,7 +2025,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
        Send a procedure to the database and return a multi string array
-    */
+    **/
     public String[][] sqlProcedureMulti(String procedure) {
 
 
@@ -2027,18 +2112,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     }
 
-
-
-
-    /*
-      /**
-	 restart server
-    */
-    /*
-      public void restartServer() {
-      ImcServer.imc_server.restartServer();
-      }
-    */
 
     /**
        get doctype
@@ -2190,10 +2263,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	/**
        Gets the users most privileged permission_set for the document.
-       @param meta_id      	The document-id
+       @param meta_id	The document-id
        @param user_id		The user_id
 	   @return the most privileged permission_set a user has for the document.
-       
+
     */
     public int getUserHighestPermissionSet (int meta_id, int user_id)
 	{
@@ -2647,7 +2720,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	File[] file_list = demoDir.listFiles(DEMOTEMPLATEFILTER) ;
 
 	String[] name_list = new String[file_list.length] ;
-		
+
 	if (file_list != null) {
 	    for(int i = 0 ; i < name_list.length ; i++) {
 		String filename = file_list[i].getName() ;
@@ -2681,7 +2754,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     *	<p>Return  language. Returns the langprefix from the db. Takes a lang id
+     *	Return  language. Returns the langprefix from the db. Takes a lang id
      as argument. Will return null if something goes wrong.
      Example: If the language id number for swedish is 1. then the call
      myObject.getLanguage("1") will return 'se'
@@ -2814,16 +2887,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String getFortune(String path) throws IOException {
 	return fileCache.getCachedFileString(new File(m_FortunePath,path)) ;
     }
-	
+
 	/**
        Return a file relative to the search_template-path.
     **/
     public String getSearchTemplate(String path) throws IOException {
 	return fileCache.getCachedFileString(new File(m_TemplateHome+"/search",path)) ;
     }
-	
+
     /**
-     	@deprecated Ugly use something else.
+       @deprecated Ugly use something else.
+       DOCME: Use what?
      */
     public File getInternalTemplateFolder(int meta_id) {
 	Vector data = new Vector() ;
@@ -2846,6 +2920,48 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	}
     }
 
+    /**
+       Set the modified datetime of a document to the given date
+       @param meta_id The id of the document
+       @param date The datetime to set
+    **/
+    public void touchDocument (int meta_id, java.util.Date date) {
+	SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
+	sqlUpdateQuery("update meta set date_modified = '"+dateformat.format(date)+"' where meta_id = "+meta_id);
+    }
 
+    /**
+       Set the modified datetime of a document to now
+       @param meta_id The id of the document
+    **/
+    public void touchDocument (int meta_id) {
+	touchDocument(meta_id, getCurrentDate()) ;
+    }
 
-} // END CLASS IMCService
+    /**
+       Retrieve the texts for a document
+       @param meta_id The id of the document.
+       @return A Map (Integer -> IMCText) with all the  texts in the document.
+    **/
+    public Map getTexts(int meta_id) {
+
+	// Now we'll get the texts from the db.
+	String[] texts = sqlProcedure("GetTexts",new String[] { String.valueOf(meta_id) },false ) ;
+	Map textMap = new HashMap() ;
+	Iterator it = Arrays.asList(texts).iterator() ;
+	while ( it.hasNext() ) {
+	    try {
+		String key = (String)it.next() ;
+		String txt_no = (String)it.next() ;
+		int txt_type = Integer.parseInt((String)it.next()) ;
+		String value = (String)it.next() ;
+		textMap.put(txt_no, new IMCText(value,txt_type)) ;
+	    } catch (NumberFormatException e) {
+		log.error("SProc 'GetTexts "+meta_id+"' returned a non-number where a number was expected.", e );
+		return null ;
+	    } // end of try-catch
+	}
+	return textMap ;
+    }
+
+}

@@ -17,7 +17,7 @@ public class ImcmsTagSubstitution implements Substitution {
     private static Pattern HTML_PREBODY_PATTERN  = null ;
     private static Pattern HTML_POSTBODY_PATTERN  = null ;
     private static Pattern IMCMS_TAG_ATTRIBUTES_PATTERN  = null ;
-	
+
 	private static Category log = Category.getInstance("server");
 
     FileCache fileCache = new FileCache() ;
@@ -115,12 +115,12 @@ public class ImcmsTagSubstitution implements Substitution {
     public String tagInclude (Properties attributes, PatternMatcher patMat) {
 	int no = 0 ;
 	String attributevalue ;
-	
+
 	//lets get the templates simplename or null if there isn't one
 	ParserParameters paramsToParse = new ParserParameters(attributes.getProperty("template"),attributes.getProperty("param"));
 //	String template_name = attributes.getProperty("template");
 
-	if (null != (attributevalue = attributes.getProperty("no"))) { 	    // If we have the attribute no="number"...
+	if (null != (attributevalue = attributes.getProperty("no"))) {	    // If we have the attribute no="number"...
 	    // Set the number of this include-tag
 	    try {
 		no = Integer.parseInt(attributevalue) ; // Then set the number wanted
@@ -214,18 +214,23 @@ public class ImcmsTagSubstitution implements Substitution {
     **/
     public String tagText (Properties attributes, PatternMatcher patMat) {
 	String mode =  attributes.getProperty("mode") ;
-	if ( ( mode != null && !"".equals(mode) ) 
+	if ( ( mode != null && !"".equals(mode) )
 	     && ( ( textMode && "read".startsWith(mode) ) // With mode="read", we don't want anything in textMode.
-		  || ( !textMode && "write".startsWith(mode) ) // With mode="write", we don't want anything it not in textMode.
-		  ) ) { 
+		  || ( !textMode && "write".startsWith(mode) ) // With mode="write", we don't want anything unless we're in textMode.
+		  ) ) {
 	    return "" ;
 	}
 	// Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
 	String noStr = attributes.getProperty("no") ;
-	String result = null != noStr ? (String)textMap.get(noStr) : (String)textMap.get(noStr = String.valueOf(implicitTextNumber++)) ;
-	if (result == null) {
+	IMCText text = null != noStr ? (IMCText)textMap.get(noStr) : (IMCText)textMap.get(noStr = String.valueOf(implicitTextNumber++)) ;
+	String result ;
+	if (text == null) {
 	    result = "" ;
+	} else {
+	    // Since this is supposed to be a html-view of the db, we'll do some html-escaping.
+	    result = htmlize(text) ;
 	}
+
 	String finalresult = result ;
 	if (textMode) {
 	    finalresult = "<img src=\""+imageUrl+"red.gif\" border=\"0\">&nbsp;"+finalresult+"<a href=\"ChangeText?meta_id="+meta_id+"&txt="+noStr+"\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
@@ -250,10 +255,10 @@ public class ImcmsTagSubstitution implements Substitution {
     **/
     public String tagImage (Properties attributes, PatternMatcher patMat) {
 	String mode =  attributes.getProperty("mode") ;
-	if ( ( mode != null && !"".equals(mode) ) 
+	if ( ( mode != null && !"".equals(mode) )
 	     && ( ( imageMode && "read".startsWith(mode) ) // With mode="read", we don't want anything in imageMode.
 		  || ( !imageMode && "write".startsWith(mode) ) // With mode="write", we don't want anything it not in imageMode.
-		  ) ) { 
+		  ) ) {
 	    return "" ;
 	}
 	// Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
@@ -291,14 +296,14 @@ public class ImcmsTagSubstitution implements Substitution {
 		java.text.SimpleDateFormat formatter;
 
 		if (format == null){
-			formatter = new java.text.SimpleDateFormat();			
+			formatter = new java.text.SimpleDateFormat();
 		}else{
 			formatter = new java.text.SimpleDateFormat(format);
 		}
-		
+
 		try{
 			return formatter.format(date);
-		}catch(IllegalArgumentException ex){			
+		}catch(IllegalArgumentException ex){
 			return "<!-- imcms:datetime failed: "+ex.getMessage()+" -->";
 		}
     }
@@ -313,6 +318,8 @@ public class ImcmsTagSubstitution implements Substitution {
 	    attributes.setProperty(attribute_matres.group(1), attribute_matres.group(3)) ;
 	}
 	String result ;
+
+	// FIXME: This is quickly growing ugly. A better solution would be a class per tag (TagHandler's if you will), with a known interface, looked up through some HashMap. JSP already fixes this with tag-libs.
 	if ("text".equals(tagname)) {
 	    result = tagText(attributes, patMat) ;
 	} else if ("image".equals(tagname)) {
@@ -327,5 +334,26 @@ public class ImcmsTagSubstitution implements Substitution {
 	    result = matres.group(0) ;
 	}
 	sb.append(result) ;
+    }
+
+    /**
+       Perform escaping necessary to htmlize an IMCText.
+    **/
+    private String htmlize (IMCText text) {
+	String result = text.getText() ;
+	if ( text.getType() == IMCText.TEXT_TYPE_PLAIN ) {
+	    String[] vp = new String[] {
+		"&", "&amp;",
+		"<", "&lt;",
+		">", "&gt;",
+		"'", "&apos;",
+		"\"","&quot;",
+		"\r\n","\n",
+		"\r", "\n",
+		"\n", "<BR>\n",
+	    } ;
+	    result = Parser.parseDoc(result,vp) ;
+	}
+	return result ;
     }
 }

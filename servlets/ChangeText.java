@@ -6,6 +6,7 @@ import java.rmi.* ;
 import java.rmi.registry.* ;
 
 import imcode.util.* ;
+import imcode.server.IMCText ;
 /**
   Edit text in a document.
   */
@@ -24,12 +25,12 @@ public class ChangeText extends HttpServlet {
 	doGet()
 	*/
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
-		String servlet_url       	= Utility.getDomainPref( "servlet_url",host ) ;
+		String host				= req.getHeader("Host") ;
+		String imcserver			= Utility.getDomainPref("adminserver",host) ;
+		String start_url	= Utility.getDomainPref( "start_url",host ) ;
+		String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
-		imcode.server.User user ; 
+		imcode.server.User user ;
 
 		res.setContentType("text/html");
 		ServletOutputStream out = res.getOutputStream();
@@ -49,59 +50,52 @@ public class ChangeText extends HttpServlet {
 			String serverName = req.getServerName();
 			int p = req.getServerPort();
 			String port = (p == 80) ? "" : ":" + p;
-			res.sendRedirect(scheme + "://" + serverName + port + start_url) ;              
+			res.sendRedirect(scheme + "://" + serverName + port + start_url) ;
 			return ;
 		}
 
 		// Check if user has write rights
 		if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,65536 ) ) {	// Checking to see if user may edit this
-			byte[] tempbytes ;
-			tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-			if ( tempbytes != null ) {
-				out.write(tempbytes) ;
-			}
-			return ;
+		    byte[] tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+		    if ( tempbytes != null) {
+			out.write(tempbytes) ;
+		    }
+		    return ;
 		}
 
-		String sqlStr = "select type from texts where meta_id = "+meta_id+" and name = "+txt_no ;
-		String type_str = IMCServiceRMI.sqlQueryStr(imcserver,sqlStr) ;
-		int text_type = 0 ;
-		try {
-		    text_type = Integer.parseInt(type_str) ;
-		} catch (NumberFormatException ignored) {
-		    // No row in db. Ignored, text_type = 0.
+		IMCText text = IMCServiceRMI.getText(imcserver,meta_id,txt_no) ;
+
+		if ( null == text) {
+		    text = new IMCText("",IMCText.TEXT_TYPE_PLAIN) ;
 		}
 
-		sqlStr = "select text from texts where meta_id = "+meta_id+" and name = "+txt_no ;
-		String temp = IMCServiceRMI.sqlQueryStr(imcserver,sqlStr) ;
-		if ( temp == null ) {
-		    temp = "" ;
-		}
-		
+		String[] tags = {
+		    "&", "&amp;",
+		    "<", "&lt;",
+		    ">", "&gt;",
+		    "\"", "&quot;",
+		    "'", "&apos;",
+		} ;
+		String text_string = Parser.parseDoc(text.getText(),tags) ;
+
 		Vector vec = new Vector() ;
-		if ( (text_type & 1) != 0 ) {
+		if ( text.getType() == IMCText.TEXT_TYPE_HTML ) {
 			vec.add("#html#") ;
 			vec.add("checked") ;
 		} else {
-			String [] tags = {"\r",	"",
-					  "\n", "",
-					  "<BR>","\r\n"
-					 } ;
-			temp = Parser.parseDoc(temp,tags) ;
 			vec.add("#!html#") ;
 			vec.add("checked") ;
 		}
 		vec.add("#type#") ;
-		vec.add(String.valueOf(text_type)) ;
+		vec.add(String.valueOf(text.getType())) ;
 		vec.add("#txt#") ;
-		vec.add(temp) ;
+		vec.add(text_string) ;
 		vec.add("#meta_id#") ;
 		vec.add(String.valueOf(meta_id)) ;
 		vec.add("#servlet_url#") ;
 		vec.add(servlet_url) ;
 		vec.add("#txt_no#") ;
 		vec.add(String.valueOf(txt_no)) ;
-		String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
-		out.print(IMCServiceRMI.parseDoc(imcserver,vec,"change_text.html",lang_prefix)) ;
+		out.print(IMCServiceRMI.parseDoc(imcserver,vec,"change_text.html",user.getLangPrefix())) ;
 	}
 }

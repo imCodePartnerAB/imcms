@@ -210,17 +210,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    String[] emp = (String[])user.get("emphasize") ;
 
-	    // Now we'll get the texts from the db.
-	    dbc.setProcedure("GetTexts",String.valueOf(meta_id)) ;
-	    Vector texts = (Vector)dbc.executeProcedure() ;
-	    dbc.clearResultSet() ;
-
-	    if ( texts == null ) {
-		dbc.closeConnection() ;			// Close connection to db.
-		log.error("parsePage: GetTexts returned null") ;
-		return ("GetTexts returned null").getBytes("8859_1") ;
-	    }
-
 	    // Get the images from the db
 	    // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
 	    //					0                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
@@ -273,23 +262,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    Perl5Substitution emphasize_substitution = new Perl5Substitution(emphasize_string) ;
 
 	    Properties tags = new Properties() ;	// A properties object to hold the results from the db...
-	    HashMap textMap = new HashMap() ;
+	    Map textMap = serverObject.getTexts(meta_id) ;
 	    HashMap imageMap = new HashMap() ;
-
-	    Iterator it = texts.iterator() ;
-	    // This is where we gather all texts from the database and put them in our maps.
-	    while ( it.hasNext() ) {
-		String key = (String)it.next() ;
-		String txt_no = (String)it.next() ;
-		String txt_type = (String)it.next() ;
-		String value = (String)it.next() ;
-		if ( value.length()>0 ) {
-		    if (emp!=null) {
-			value = emphasizeString(value,emp,emphasize_substitution,patMat) ;
-		    }
-		    textMap.put(txt_no,value) ;
-		}
-	    }
 
 	    int images_cols = dbc.getColumnCount() ;
 	    int images_rows = images.size() / images_cols ;
