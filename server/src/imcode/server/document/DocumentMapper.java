@@ -423,6 +423,8 @@ public class DocumentMapper {
             return; // TODO: More specific check needed. Throw exception ?
         }
 
+        document.setCreatedDatetime( new Date() );
+        
         int newMetaId = sqlInsertIntoMeta( document );
 
         if ( !user.isSuperAdminOrHasFullPermissionOn( document ) ) {
