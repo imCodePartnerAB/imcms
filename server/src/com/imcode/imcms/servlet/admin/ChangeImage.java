@@ -187,11 +187,11 @@ public class ChangeImage extends HttpServlet {
             vec.add( "selected" );
 
             vec.add( "#imgAltText#" );
-            vec.add( HTMLConv.toHTMLSpecial(image.getAlternateText()));
+            vec.add( image.getAlternateText());
             vec.add( "#imgLowScr#" );
             vec.add( image.getLowResolutionUrl() );
             vec.add( "#imgRefLink#" );
-            vec.add( HTMLConv.toHTMLSpecial( image.getLinkUrl() ));
+            vec.add( image.getLinkUrl() );
         } else {
 
             vec.add( "#imgName#" );
