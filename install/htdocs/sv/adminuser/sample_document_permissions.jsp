@@ -5,7 +5,7 @@
 
 DocumentMapperBean documentMapper = (DocumentMapperBean)request.getAttribute( WebAppConstants.DOCUMENT_MAPPER_ATTRIBUTE_NAME );
 int metaId = 1001;
-TextDocumentBean doc = documentMapper.getDocument(metaId);
+DocumentBean doc = documentMapper.getDocument(metaId);
 Map permissionsMap = doc.getAllRolesMappedToPermissions();
 out.print( permissionsMap );
 

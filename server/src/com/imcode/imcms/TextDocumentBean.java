@@ -5,10 +5,7 @@ import imcode.server.document.Document ;
 import imcode.server.document.DocumentMapper;
 import imcode.server.IMCText;
 
-public class TextDocumentBean {
-    private SecurityChecker securityChecker;
-    private Document document;
-    private DocumentMapper mapper;
+public class TextDocumentBean extends DocumentBean {
 
     TextDocumentBean( SecurityChecker securityChecker,  Document document, DocumentMapper mapper ) {
         this.securityChecker = securityChecker;
@@ -16,18 +13,10 @@ public class TextDocumentBean {
         this.mapper = mapper;
     }
 
-    /**
-     * @return map of rolename String -> {@link DocumentPermissionSet} constants.
-     */
-    public Map getAllRolesMappedToPermissions() throws NoPermissionException {
-        securityChecker.hasEditPermission( document );
-        return mapper.getAllRolesMappedToPermissions( document );
-    }
-
-    public TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
+    public TextDocumentBean.TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
         securityChecker.hasEditPermission( document );
         IMCText imcmsText = mapper.getTextField( document, textFieldIndexInDocument ) ;
-        TextField textField = new TextField(imcmsText) ;
+        TextDocumentBean.TextField textField = new TextDocumentBean.TextField(imcmsText) ;
         return textField;
     }
 
