@@ -58,7 +58,7 @@
 <head>
 <title><? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_information_title ?></title>
 
-<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="document.getElementsByName('<%= StringEscapeUtils.escapeJavaScript( DocumentComposer.PARAMETER__HEADLINE ) %>').item(0).focus()">

@@ -1,156 +1,193 @@
-#macro( gui_bottom )
-        </td>
-        <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td class="imcmsAdmBorder"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-    </tr>
-    <tr>
-        <td height="10" class="imcmsAdmBorder"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td class="imcmsAdmBgCont" colspan="4"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td class="imcmsAdmBorder"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-    </tr>
-    <tr class="imcmsAdmBgCont">
-        <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="24" height="1"></td>
-        <td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="24" height="1"></td>
-        <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-    </tr>
-</table>
+#macro( gui_bottom )</td>
+			<td><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td class="imcmsAdmBorder"><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+		</tr>
+		<tr>
+			<td height="10" class="imcmsAdmBorder"><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td colspan="4" class="imcmsAdmBgCont"><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td class="imcmsAdmBorder"><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+		</tr>
+		<tr class="imcmsAdmBgCont">
+			<td><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="24" height="1"></td>
+			<td colspan="2"><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="24" height="1"></td>
+			<td><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+		</tr>
+		</table>
 #end
 
-#macro( gui_bottom_noshade )
-        </td>
-        <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-    </tr>
-    <tr>
-        <td height="10" class="imcmsAdmBorder"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td class="imcmsAdmBgCont" colspan="4"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-    </tr>
-    <tr class="imcmsAdmBgCont">
-        <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="24" height="1"></td>
-        <td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="24" height="1"></td>
-        <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-    </tr>
-</table>
+#macro( gui_bottom_noshade )</td>
+			<td><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+		</tr>
+		<tr>
+			<td height="10" class="imcmsAdmBorder"><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td colspan="4" class="imcmsAdmBgCont"><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+		</tr>
+		<tr class="imcmsAdmBgCont">
+			<td><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="24" height="1"></td>
+			<td colspan="2"><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="24" height="1"></td>
+			<td><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+		</tr>
+		</table>
 #end
 
 #macro( gui_head $heading )
-<table border="0" cellspacing="0" cellpadding="0">
-    <tr>
-        <td class="imcmsAdmBgHead" colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="20"></td>
-    </tr>
-    <tr class="imcmsAdmBgHead">
-        <td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td nowrap><h1 class="imcmsAdmHeadingTop">$heading</h1></td>
-        <td align="right"><a href="http://www.imcms.net/" target="_blank"><img src="$contextPath/imcms/$language/images/admin/logo_imcms_admin.gif" width="100" height="20" alt="www.imcms.net" border="0"></a></td>
-        <td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-    </tr>
-    <tr>
-        <td class="imcmsAdmBgHead" colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="20"></td>
-    </tr>
-    <tr class="imcmsAdmBgHead">
-        <td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td colspan="2">
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td class="imcmsAdmBgHead" colspan="6"><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="20"></td>
+		</tr>
+		<tr class="imcmsAdmBgHead">
+			<td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td nowrap><span class="imcmsAdmHeadingTop">$heading</span></td>
+			<td align="right"><a
+			href="http://www.imcms.net/" target="_blank"><img
+			src="$contextPath/imcms/$language/images/admin/logo_imcms_admin.gif"
+			width="100" height="20" alt="www.imcms.net" border="0"></a></td>
+			<td colspan="2"><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+		</tr>
+		<tr>
+			<td colspan="6" class="imcmsAdmBgHead"><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="20"></td>
+		</tr>
+		<tr class="imcmsAdmBgHead">
+			<td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td colspan="2">
 #end
 
 #macro( gui_head_noshade $heading )
-<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
     <tr>
-        <td class="imcmsAdmBgHead" colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="20"></td>
+        <td class="imcmsAdmBgHead" colspan="6"><img
+				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="20"></td>
     </tr>
     <tr class="imcmsAdmBgHead">
-        <td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+        <td colspan="2"><img
+				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
         <td nowrap><span class="imcmsAdmHeadingTop">$heading</span></td>
-        <td align="right"><a href="http://www.imcms.net/" target="_blank"><img src="$contextPath/imcms/$language/images/admin/logo_imcms_admin.gif" width="100" height="20" alt="www.imcms.net" border="0"></a></td>
-        <td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+        <td align="right"><a
+				href="http://www.imcms.net/" target="_blank"><img
+				src="$contextPath/imcms/$language/images/admin/logo_imcms_admin.gif"
+				width="100" height="20" alt="www.imcms.net" border="0"></a></td>
+        <td colspan="2"><img
+				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
     </tr>
     <tr>
-        <td class="imcmsAdmBgHead" colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="20"></td>
+        <td class="imcmsAdmBgHead" colspan="6"><img
+				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="20"></td>
     </tr>
     <tr class="imcmsAdmBgHead">
-        <td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+        <td colspan="2"><img
+				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
         <td colspan="2">
 #end
 
-#macro( gui_mid )
-        </td>
-        <td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+#macro( gui_mid )</td>
+        <td colspan="2"><img
+				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
     </tr>
     <tr>
-        <td class="imcmsAdmBgHead" colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="20"></td>
+        <td class="imcmsAdmBgHead" colspan="6"><img
+				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="20"></td>
     </tr>
     <tr>
-        <td height="10" class="imcmsAdmBorder"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td class="imcmsAdmBgCont" colspan="4"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td class="imcmsAdmBorder"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+        <td height="10" class="imcmsAdmBorder"><img
+				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+        <td class="imcmsAdmBgCont" colspan="4"><img
+				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+        <td class="imcmsAdmBorder"><img
+				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
     </tr>
     <tr class="imcmsAdmBgCont">
-        <td class="imcmsAdmBorder"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+        <td class="imcmsAdmBorder"><img
+				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+        <td><img
+				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
         <td colspan="2">
 #end
 
-#macro( gui_mid_noshade )
-        </td>
-        <td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmBgHead" colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="20"></td>
-        </tr>
-        <tr>
-            <td height="10"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-            <td class="imcmsAdmBgCont" colspan="4"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-            <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-        </tr>
-        <tr class="imcmsAdmBgCont">
-            <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-            <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
-            <td colspan="2">";
+#macro( gui_mid_noshade )</td>
+			<td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif"
+			width="1" height="1"></td>
+		</tr>
+		<tr>
+			<td class="imcmsAdmBgHead" colspan="6"><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="20"></td>
+		</tr>
+		<tr>
+			<td height="10"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td class="imcmsAdmBgCont" colspan="4"><img
+			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+		</tr>
+		<tr class="imcmsAdmBgCont">
+			<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
+			<td colspan="2">
 #end
 
-#macro( gui_outer_end )
-        </td>
-        <td align="right" valign="top" background="$contextPath/imcms/$language/images/admin/imcms_admin_shadow_right.gif">
-            <img src="$contextPath/imcms/$language/images/admin/imcms_admin_shadow_right_top.gif" width="12" height="12" alt="" border="0">
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <table border="0" cellspacing="0" cellpadding="0" width="100%">
-                <tr>
-                    <td background="$contextPath/imcms/$language/images/admin/imcms_admin_shadow_bottom.gif">
-                        <img src="$contextPath/imcms/$language/images/admin/imcms_admin_shadow_bottom_left.gif" width="12" height="12" alt="" border="0">
-                    </td>
-                    <td background="$contextPath/imcms/$language/images/admin/imcms_admin_shadow_bottom.gif" align="right">
-                        <img src="$contextPath/imcms/$language/images/admin/imcms_admin_shadow_bottom_right.gif" width="12" height="12" alt="" border="0">
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
+#macro( gui_outer_end )</td>
+	<td align="right" valign="top" background="$contextPath/imcms/$language/images/admin/imcms_admin_shadow_right.gif">
+	<img src="$contextPath/imcms/$language/images/admin/imcms_admin_shadow_right_top.gif"
+	width="12" height="12" alt="" border="0"></td>
+</tr>
+<tr>
+	<td colspan="2">
+	<table border="0" cellspacing="0" cellpadding="0" width="100%">
+	<tr>
+		<td background="$contextPath/imcms/$language/images/admin/imcms_admin_shadow_bottom.gif">
+		<img src="$contextPath/imcms/$language/images/admin/imcms_admin_shadow_bottom_left.gif"
+		width="12" height="12" alt="" border="0"></td>
+		<td background="$contextPath/imcms/$language/images/admin/imcms_admin_shadow_bottom.gif" align="right">
+		<img src="$contextPath/imcms/$language/images/admin/imcms_admin_shadow_bottom_right.gif"
+		width="12" height="12" alt="" border="0"></td>
+	</tr>
+	</table></td>
+</tr>
 </table>
 #end
 
-#macro( gui_outer_end_noshade )
-        </td>
-    </tr>
+#macro( gui_outer_end_noshade )</td>
+</tr>
 </table>
 #end
 
 #macro( gui_outer_start )
 <table border="0" cellspacing="0" cellpadding="0" class="imcmsAdmTable" align="center">
-    <tr>
-        <td class="imcmsAdmTable">
+<tr>
+	<td class="imcmsAdmTable">
 #end
 
 #macro( gui_outer_start_noshade )
 <table border="0" cellspacing="0" cellpadding="0" class="imcmsAdmTable" align="center" width="100%">
-    <tr>
-        <td class="imcmsAdmTable">
+<tr>
+	<td class="imcmsAdmTable">
 #end
 
 #macro( gui_hr $wantedcolor )
@@ -163,6 +200,6 @@
 #end
 
 #macro( gui_heading $heading )
-<h2 class="imcmsAdmHeading">$heading</h2>
+<span class="imcmsAdmHeading">$heading</span><br>
 #gui_hr( 'blue' )
 #end

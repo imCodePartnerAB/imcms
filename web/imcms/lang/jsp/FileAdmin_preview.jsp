@@ -5,9 +5,11 @@
  *           SETTINGS                                                *
  ******************************************************************* */
 
+String acceptedExt = "GIF|JPE?G|PNG|BMP|AVI|MPE?G|HTML?|CSS|JS|VBS|TXT|JSP|ASP" ;
+
 String IMG_PATH   = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/" ; // path to buttons (with trailing /)
 
-    /* *******************************************************************
+/* *******************************************************************
  *           INIT                                                    *
  ******************************************************************* */
 
@@ -46,8 +48,6 @@ String filePath = file.substring(0, file.lastIndexOf("/")) ;
 String fileName = file.substring(file.lastIndexOf("/") + 1, file.length()) ;
 
 /* Is image? */
-
-String acceptedExt = "JPG|JPEG|GIF|PNG" ;
 Perl5Util re       = new Perl5Util() ;
 boolean isImage    = re.match("/\\.(" + acceptedExt + ")+$/i", file) ;
 

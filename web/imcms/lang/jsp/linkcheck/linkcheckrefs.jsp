@@ -18,7 +18,7 @@
 %><vel:velocity><html>
     <head>
         <title><? web/imcms/lang/jsp/linkcheck/linkcheckrefs.jsp/heading ?></title>
-        <link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+        <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
     </head>
     <body>
         #gui_outer_start()

@@ -5,9 +5,9 @@
 var platf     = navigator.platform;
 var ua        = navigator.userAgent;
 
-var hasDocumentLayers      = (document.layers) ? 1 : 0;
-var hasDocumentAll      = (document.all) ? 1 : 0;
-var hasGetElementById     = (document.getElementById) ? 1 : 0;
+var hasDocumentLayers = (document.layers) ? 1 : 0;
+var hasDocumentAll    = (document.all) ? 1 : 0;
+var hasGetElementById = (document.getElementById) ? 1 : 0;
 
 var isGecko   = inStr(ua,'Gecko');
 var isOpera   = inStr(ua,'Opera');

@@ -4,7 +4,7 @@
 
 <title><? templates/sv/template_upload.html/1 ?></title>
 
-<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 <SCRIPT LANGUAGE="JavaScript">
@@ -14,7 +14,7 @@ function checkForName() {
 	var sFileName = '';
 	var re0 = /.(php|html?)$/gi;
 	var re1 = /(\w+)\.(\w+)$/i;
-	var re2 = /\"/g;
+	var re2 = /\"/g; //"
 	sFileName = theFile.replace(re2, '');
 	if (re0.test(sFileName)) {
 		sFileName = sFileName.replace(re1, "$1");
@@ -40,26 +40,21 @@ function regExpTest(what,pattern) {
 
 function setSize() {
 	if(isGecko) {
-		document.getElementById("sfile").style.width = 300;
-		document.getElementById("sname").style.width = 200;
+		document.getElementById("sfile").size = 85;
+		document.getElementById("sname").size = 65;
 	} else if (hasGetElementById) {
-		document.getElementById("sfile").style.width = 400;
-		document.getElementById("sname").style.width = 200;
+		document.getElementById("sfile").style.width = 450;
+		document.getElementById("sname").style.width = 250;
 	}
 }
-
-if (hasGetElementById) {
-	window.onload = setSize;
-}
-
 //-->
 </SCRIPT>
 
 </head>
-<body bgcolor="#FFFFFF" onLoad="focusField(1,'file')">
+<body bgcolor="#FFFFFF" onLoad="focusField(1,'file'); setSize();">
 
 #gui_outer_start()
-#gui_head( "<? global/imcms_administration ?>" )
+#gui_head( "<? templates/sv/template_upload.html/1 ?>" )
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
@@ -82,13 +77,13 @@ if (hasGetElementById) {
 	<td colspan="2" class="imcmsAdmText"><? templates/sv/template_upload.html/4 ?></td>
 </tr>
 <tr>
-	<td colspan="1">
+	<td>
 	<input type="submit" class="imcmsFormBtn" name="add_group" value="<? templates/sv/template_upload.html/2008 ?>">
 	<input type="submit" class="imcmsFormBtn" name="delete_group" value="<? templates/sv/template_upload.html/2009 ?>">
 	<input type="submit" class="imcmsFormBtn" name="rename_group" value="<? templates/sv/template_upload.html/2010 ?>">
 	<input type="submit" class="imcmsFormBtn" name="assign_group" value="<? templates/sv/template_upload.html/2011 ?>"></td>
-	<td>
-    <input type="button" value="<? templates/sv/template_upload.html/2012 ?>" title="<? templates/sv/template_upload.html/2013 ?>" class="imcmsFormBtn" onClick="openHelpW(22)"></td>
+	<td align="right">
+	<input type="button" value="<? templates/sv/template_upload.html/2012 ?>" title="<? templates/sv/template_upload.html/2013 ?>" class="imcmsFormBtn" onClick="openHelpW(22)"></td>
 </tr>
 </form>
 </table>
@@ -102,14 +97,14 @@ if (hasGetElementById) {
 </tr>
 <tr>
 	<td width="20%" class="imcmsAdmText" nowrap><? templates/sv/template_upload.html/1001 ?> &nbsp;</td>
-	<td><input type="file" name="file" id="sfile" size="85"></td>
+	<td><input type="file" name="file" id="sfile" size="35"></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText" nowrap><? templates/sv/template_upload.html/1002 ?> &nbsp;</td>
 	<td>
 	<table border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td><input type="text" name="name" id="sname" size="45" maxlength="255"></td>
+		<td><input type="text" name="name" id="sname" size="30" maxlength="255"></td>
 		<td>&nbsp;</td>
 		<td nowrap>
 		<script language="JavaScript">

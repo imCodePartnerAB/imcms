@@ -13,7 +13,7 @@
 <head>
 <title><? install/htdocs/sv/jsp/docadmin/file_document.jsp/1 ?></title>
 
-<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>

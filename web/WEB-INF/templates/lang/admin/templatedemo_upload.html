@@ -4,14 +4,14 @@
 
 <title><? templates/sv/templatedemo_upload.html/1 ?></title>
 
-<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'file')">
 
 #gui_outer_start()
-#gui_head( "<? global/imcms_administration ?>" )
+#gui_head( "<? templates/sv/templatedemo_upload.html/1 ?>" )
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
@@ -33,13 +33,13 @@
 	<td colspan="2" class="imcmsAdmText"><? templates/sv/templatedemo_upload.html/4 ?></td>
 </tr>
 <tr>
-	<td colspan="1">
+	<td>
 	<input type="submit" class="imcmsFormBtn" name="add_group" value="<? templates/sv/templatedemo_upload.html/2008 ?>">
 	<input type="submit" class="imcmsFormBtn" name="delete_group" value="<? templates/sv/templatedemo_upload.html/2009 ?>">
 	<input type="submit" class="imcmsFormBtn" name="rename_group" value="<? templates/sv/templatedemo_upload.html/2010 ?>">
 	<input type="submit" class="imcmsFormBtn" name="assign_group" value="<? templates/sv/templatedemo_upload.html/2011 ?>"></td>
-	<td>
-    <input type="button" value="<? templates/sv/templatedemo_upload.html/2012 ?>" title="<? templates/sv/templatedemo_upload.html/2013 ?>" class="imcmsFormBtn" onClick="openHelpW(23)"></td>
+	<td align="right">
+	<input type="button" value="<? templates/sv/templatedemo_upload.html/2012 ?>" title="<? templates/sv/templatedemo_upload.html/2013 ?>" class="imcmsFormBtn" onClick="openHelpW(23)"></td>
 </tr>
 </form>
 </table>

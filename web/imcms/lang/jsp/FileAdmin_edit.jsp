@@ -5,10 +5,10 @@
  *           SETTINGS                                                *
  ******************************************************************* */
 
-String IMG_PATH   = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/" ; // path to buttons (with trailing /)
-
 String acceptedExt         = "HTM|HTML|VBS|JS|CSS|TXT|INC" ;
 String acceptedExtReadonly = "HTM|HTML|VBS|JS|CSS|TXT|INC|JSP|ASP" ;
+
+String IMG_PATH   = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/" ; // path to buttons (with trailing /)
 
 /* *******************************************************************
  *           INIT                                                    *
