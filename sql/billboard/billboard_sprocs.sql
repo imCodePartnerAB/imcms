@@ -114,6 +114,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetSecti
 drop procedure [dbo].[B_GetSectionName]
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetStartSubjectString]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[B_GetStartSubjectString]
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetSubjectStr]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_GetSubjectStr]
 GO
@@ -915,6 +919,27 @@ WHERE s.section_id = @section_id
 SELECT @returnVal =  ISNULL(@returnVal, 'Not found') 
 SELECT @returnVal AS 'Section_name'
 
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+CREATE PROCEDURE B_GetStartSubjectString 
+/*
+Returns the start string of the reply e-mail subject
+*/
+ @meta_id int
+AS
+/* Lets get all sections for a certain billBoard meta_id*/
+SELECT subject
+FROM B_billboard
+WHERE meta_id = @meta_id
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
