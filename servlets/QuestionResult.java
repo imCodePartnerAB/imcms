@@ -12,127 +12,96 @@ import imcode.util.*;
  * Date : 2001-09-05
  */
 
-public class QuestionResult extends HttpServlet {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-        String resultTemplate = "QuestionResult.htm";
-                
-        
-        public void doGet(HttpServletRequest req, HttpServletResponse res)
-        throws ServletException, IOException 
-        {
-                String host = req.getHeader("Host") ;
-                String imcServer = Utility.getDomainPref("userserver",host) ;
-                File fortune_path = Utility.getDomainPrefPath("fortune_path",host);
-                
-                //get answer
-                String answer = req.getParameter("answer");
-                
-                //get question
-                String question = req.getParameter("question");
-                String fileName = question;
+public class QuestionResult extends HttpServlet 
+{
+	String resultTemplate = "QuestionResult.htm";
+		
+	
+	public void doGet(HttpServletRequest req, HttpServletResponse res)
+	throws ServletException, IOException 
+	{
+		String host = req.getHeader("Host");
+		String imcServer = Utility.getDomainPref("userserver",host);
+		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
+		
+		//get answer
+		String file = req.getParameter("file");
+		String answer = req.getParameter("answer");
+		
+		//gets the filecontent 
+		String resFile = IMCServiceRMI.getFortune(imcServer,file + "current.txt");
+				
+		StringTokenizer tokens = new StringTokenizer(resFile,"#");
+		
+		String date1 = tokens.nextToken();
+		String date2 = tokens.nextToken();
 
-                String row = req.getParameter("quesrow") ;
-                try {
-                    fileName = "QuestionResult"+Integer.parseInt(row) ;
-                } catch ( NumberFormatException ignored ) {
-                    /* The question is used as filename */
-                }
+		String question = tokens.nextToken();
+		
+		int yes = Integer.parseInt( ( (tokens.nextToken() ).substring(3) ).trim() );
+		int no = Integer.parseInt( ( (tokens.nextToken() ).substring(4) ).trim() );
 
-                //gå igenom strängen tecken för tecken och byt ut allt utom '_', siffror och bokstäver till '_'.
-                for(int i = 0;i<fileName.length(); i++)
-                {
-                        char c = fileName.charAt(i);
-                        if (!Character.isJavaIdentifierPart(c))
-                        {
-                                fileName=fileName.replace(c,'_');
-                        }
-                }
-                
-                //get current answers from file
-                int yes = 0;
-                int no = 0;
+		//save the answer to the file
+		if (Integer.parseInt(answer)==1) 
+		{
+			yes = yes + 1;
+		} 
+		else 
+		{
+			no = no + 1;
+		}
+	
+		String newFileContent =date1 + "#" + date2 + "#" + question + "#ja: " + yes + "#nej: " + no + "#";
+	
+		BufferedWriter fileW = new BufferedWriter( new FileWriter(fortune_path.getCanonicalPath() + "/" + file + "current.txt" ) );
+		fileW.write(newFileContent);
+		fileW.flush();
+		fileW.close();
+		
+		//get the total number of answers
+		int total = yes+no;
+		
+		//get the %
+		double yesDiv = (yes==0) ? 0 : ((double)yes/(double)total);
+		double noDiv = (no==0) ? 0 : ((double)no/(double)total);
+		
+		NumberFormat pf = NumberFormat.getPercentInstance();
+		pf.setMaximumFractionDigits(0);
+		
+		String yesProcent = pf.format(yesDiv);
+		String noProcent = pf.format(noDiv);
+		
+		//Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
+		Vector values = new Vector();
+		values.add("#question#");
+		values.add(question);
+		values.add("#yesProcent#");
+		values.add(yesProcent);
+		values.add("#noProcent#");
+		values.add(noProcent);
+		values.add("#total#");
+		values.add(Integer.toString(total));
+		
+		
+		String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, resultTemplate , "se", "106");
+		
+		res.setContentType("text/html");
+		PrintWriter out = res.getWriter();
+		out.println(parsed);
+		
+		return ;
 
-                File file = new File(fortune_path,fileName.trim() + ".txt");
-                if (file.exists())
-                {
-                    try {
-                        BufferedReader fileR = new BufferedReader(new FileReader(file));
-                        
-                        fileR.skip(3);
-                        String y = fileR.readLine();
-                        yes = Integer.parseInt(y.trim());
-                        
-                        fileR.skip(4);
-                        String n = fileR.readLine();
-                        no = Integer.parseInt(n.trim());
-                
-                        fileR.close();
-                    } catch (IOException ignored) {
-                        // yes = 0, no = 0
-                    } catch (NumberFormatException ignored) {
-                        // yes = 0, no = 0
-                    } catch (NullPointerException ignored) {
-                        // yes = 0, no = 0
-                    } 
+	} // End doGet
 
-                }
-        
-                //save the answer to the file
-                BufferedWriter fileW = new BufferedWriter( new FileWriter(file) );
-                
-                if (Integer.parseInt(answer)==1) {yes++;} else {no++;}
-                
-                fileW.write("ja: " + yes,0,(Integer.toString(yes)).length()+4);
-                fileW.newLine();
-                fileW.write("nej: " + no,0,Integer.toString(no).length()+5);
-                fileW.newLine();
-                fileW.flush();
-                fileW.close();
-                
-                //get the total number of answers
-                int total = yes+no;
-                
-                //get the %
-                double yesDiv = (yes==0) ? 0 : ((double)yes/(double)total);
-                double noDiv = (no==0) ? 0 : ((double)no/(double)total);
-                
-                NumberFormat pf = NumberFormat.getPercentInstance();
-                pf.setMaximumFractionDigits(0);
-                
-                String yesProcent = pf.format(yesDiv);
-                String noProcent = pf.format(noDiv);
-                
-                //Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
-                Vector values = new Vector();
-                values.add("#question#");
-                values.add(question);
-                values.add("#yesProcent#");
-                values.add(yesProcent);
-                values.add("#noProcent#");
-                values.add(noProcent);
-                values.add("#total#");
-                values.add(Integer.toString(total));
-                
-                String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, resultTemplate , "se", "106");
-                
-                res.setContentType("text/html");
-                PrintWriter out = res.getWriter();
-                out.println(parsed);
-                
-                return ;
+	
 
-
-        } // End doGet
-
-        
-
-        public void doPost(HttpServletRequest req, HttpServletResponse res)
-        throws ServletException, IOException 
-        {
-                doGet(req,res);
-                return ;
-        }       
+	public void doPost(HttpServletRequest req, HttpServletResponse res)
+	throws ServletException, IOException 
+	{
+		doGet(req,res);
+		return ;
+	}
+	
 
 } // End class
 
