@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.admin;
 import com.imcode.imcms.servlet.WebComponent;
 import imcode.server.user.UserDomainObject;
 import imcode.util.HttpSessionUtils;
+import imcode.util.LocalizedMessage;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,12 +13,10 @@ import java.io.IOException;
 public class UserFinder extends WebComponent {
 
     private boolean usersAddable;
-    private String searchString;
-    private int selectButton;
     private boolean nullSelectable ;
+    private LocalizedMessage selectButtonText ;
+    private LocalizedMessage headline ;
 
-    public static final int SELECT_BUTTON__SELECT_USER = UserBrowser.SELECT_BUTTON__SELECT_USER;
-    public static final int SELECT_BUTTON__EDIT_USER = UserBrowser.SELECT_BUTTON__EDIT_USER;
     private SelectUserCommand selectUserCommand;
 
     public static UserFinder getInstance( HttpServletRequest request ) {
@@ -34,23 +33,16 @@ public class UserFinder extends WebComponent {
 
     public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( this, request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
-        UserBrowser.forwardToJsp( request, response, new UserBrowser.Page() );
+        UserBrowser.Page page = new UserBrowser.Page();
+        page.forward( request, response );
     }
 
-    public String getSearchString() {
-        return searchString;
+    public void setSelectButtonText( LocalizedMessage buttonText ) {
+        this.selectButtonText = buttonText;
     }
 
-    public void setSearchString( String searchString ) {
-        this.searchString = searchString;
-    }
-
-    public void setSelectButton( int selectButton ) {
-        this.selectButton = selectButton;
-    }
-
-    public int getSelectButton() {
-        return selectButton;
+    public LocalizedMessage getSelectButtonText() {
+        return selectButtonText;
     }
 
     public boolean isUsersAddable() {
@@ -71,6 +63,14 @@ public class UserFinder extends WebComponent {
 
     public void setSelectUserCommand( SelectUserCommand selectUserCommand ) {
         this.selectUserCommand = selectUserCommand;
+    }
+
+    public LocalizedMessage getHeadline() {
+        return headline;
+    }
+
+    public void setHeadline( LocalizedMessage headline ) {
+        this.headline = headline;
     }
 
     public static interface SelectUserCommand {

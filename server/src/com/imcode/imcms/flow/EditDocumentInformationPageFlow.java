@@ -12,6 +12,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.HttpSessionUtils;
 import imcode.util.Utility;
+import imcode.util.LocalizedMessage;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.servlet.ServletException;
@@ -55,6 +56,9 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER = "browseForMenuImage";
     public static final String PAGE__DOCUMENT_INFORMATION = "document_information";
     private boolean adminButtonsHidden;
+    private static final LocalizedMessage BUTTON_TEXT__SELECT_USER = new LocalizedMessage( "templates/sv/AdminChangeUser.htm/2007" );
+    private static final LocalizedMessage HEADLINE__SELECT_CREATOR = new LocalizedMessage( "server/src/com/imcode/imcms/flow/EditDocumentInformationPageFlow/select_creator_headline" );
+    private static final LocalizedMessage HEADLINE__SELECT_PUBLISHER = new LocalizedMessage( "server/src/com/imcode/imcms/flow/EditDocumentInformationPageFlow/select_publisher_headline" );
 
     public EditDocumentInformationPageFlow( DocumentDomainObject document, DispatchCommand returnCommand,
                                             SaveDocumentCommand saveDocumentCommand ) {
@@ -99,7 +103,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
     private void dispatchToPublisherUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
-        dispatchToUserBrowser( request, response, true, new UserFinder.SelectUserCommand() {
+        dispatchToUserBrowser( request, response, true, HEADLINE__SELECT_PUBLISHER, new UserFinder.SelectUserCommand() {
             public void selectUser( UserDomainObject selectedUser, HttpServletRequest request,
                                     HttpServletResponse response ) throws ServletException, IOException {
                 document.setPublisher( selectedUser );
@@ -111,7 +115,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
     private void dispatchToCreatorUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
-        dispatchToUserBrowser( request, response, false, new UserFinder.SelectUserCommand() {
+        dispatchToUserBrowser( request, response, false, HEADLINE__SELECT_CREATOR, new UserFinder.SelectUserCommand() {
             public void selectUser( UserDomainObject selectedUser, HttpServletRequest request,
                                     HttpServletResponse response ) throws ServletException, IOException {
                 document.setCreator( selectedUser );
@@ -122,9 +126,11 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     }
 
     private void dispatchToUserBrowser( HttpServletRequest request, HttpServletResponse response,
-                                        boolean nullSelectable, UserFinder.SelectUserCommand selectUserCommand ) throws IOException, ServletException {
+                                        boolean nullSelectable, LocalizedMessage headline,
+                                        UserFinder.SelectUserCommand selectUserCommand ) throws IOException, ServletException {
         UserFinder userFinder = UserFinder.getInstance( request );
-        userFinder.setSelectButton( UserFinder.SELECT_BUTTON__SELECT_USER );
+        userFinder.setHeadline( headline );
+        userFinder.setSelectButtonText( BUTTON_TEXT__SELECT_USER );
         userFinder.setUsersAddable( false );
         userFinder.setNullSelectable( nullSelectable );
         userFinder.setSelectUserCommand( selectUserCommand );

@@ -36,35 +36,34 @@ public class UserBrowser extends HttpServlet {
             listUsers( request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__SELECT_USER_BUTTON ) ) {
             UserDomainObject selectedUser = getSelectedUserFromRequest( request );
-            if (null == selectedUser && !userFinder.isNullSelectable()) {
+            if ( null == selectedUser && !userFinder.isNullSelectable() ) {
                 listUsers( request, response );
             } else {
-                userFinder.selectUser(selectedUser, request, response) ;
+                userFinder.selectUser( selectedUser, request, response );
             }
         } else if ( null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) ) {
-            userFinder.cancel(request, response); ;
+            userFinder.cancel( request, response );
+            ;
         } else if ( null != request.getParameter( REQUEST_PARAMETER__ADD_USER ) && userFinder.isUsersAddable() ) {
             response.sendRedirect( "AdminUserProps?ADD_USER=true" );
         }
     }
 
     private void listUsers( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        String searchString = request.getParameter( REQUEST_PARAMETER__SEARCH_STRING );
-        boolean includeInactiveUsers = null != request.getParameter( REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS );
+        Page page = createPageFromRequest( request );
+        page.forward( request, response );
+    }
+
+    private Page createPageFromRequest( HttpServletRequest request ) {
         ImcmsAuthenticatorAndUserMapper userMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper();
+        boolean includeInactiveUsers = null != request.getParameter( REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS );
+        String searchString = request.getParameter( REQUEST_PARAMETER__SEARCH_STRING );
         UserDomainObject[] users = userMapper.findUsersByNamePrefix( searchString, includeInactiveUsers );
         Page page = new Page();
         page.setSearchString( searchString );
         page.setUsers( users );
         page.setIncludeInactiveUsers( includeInactiveUsers );
-        forwardToJsp( request, response, page );
-    }
-
-    static void forwardToJsp( HttpServletRequest request, HttpServletResponse response, Page page ) throws ServletException, IOException {
-        request.setAttribute( REQUEST_ATTRIBUTE__FORM_DATA, page );
-        UserDomainObject user = Utility.getLoggedOnUser( request );
-        String userLanguage = user.getLanguageIso639_2();
-        request.getRequestDispatcher( "/imcms/" + userLanguage + JSP__USER_BROWSER ).forward( request, response );
+        return page;
     }
 
     private UserDomainObject getSelectedUserFromRequest( HttpServletRequest request ) {
@@ -80,6 +79,7 @@ public class UserBrowser extends HttpServlet {
 
     public static class Page {
 
+        UserFinder userFinder = new UserFinder() ;
         UserDomainObject[] users = new UserDomainObject[0];
         String searchString = "";
         private boolean includeInactiveUsers;
@@ -106,6 +106,13 @@ public class UserBrowser extends HttpServlet {
 
         public boolean isIncludeInactiveUsers() {
             return includeInactiveUsers;
+        }
+
+        public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+            request.setAttribute( REQUEST_ATTRIBUTE__FORM_DATA, this );
+            UserDomainObject user = Utility.getLoggedOnUser( request );
+            String userLanguage = user.getLanguageIso639_2();
+            request.getRequestDispatcher( "/imcms/" + userLanguage + JSP__USER_BROWSER ).forward( request, response );
         }
     }
 

@@ -36,7 +36,7 @@
             <input type="hidden" name="<%= UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE %>"
                                 value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE ) %>">
     <tr>
-        <td colspan="2">#gui_heading( "<? templates/sv/AdminChangeUser.htm/4/1 ?>" )</td>
+        <td colspan="2">#gui_heading( "<%= userFinder.getHeadline().toLocalizedString(request) %>" )</td>
     </tr>
     <tr>
         <td class="imcmsAdmText"><? templates/sv/AdminChangeUser.htm/10 ?></td>
@@ -92,25 +92,15 @@
             </select></td>
             <td>&nbsp;</td>
             <td>
-            <%  String selectButtonValue = "" ;
-                switch (userFinder.getSelectButton()) {
-                    case UserBrowser.SELECT_BUTTON__EDIT_USER :
-                        selectButtonValue = "<? templates/sv/AdminChangeUser.htm/2006 ?>" ;
-                        break;
-                    case UserBrowser.SELECT_BUTTON__SELECT_USER :
-                    default:
-                        selectButtonValue = "<? templates/sv/AdminChangeUser.htm/2007 ?>" ;
-                        break ;
-                }
-            %>
-            <input type="submit" class="imcmsFormBtnSmall" name="<%= UserBrowser.REQUEST_PARAMETER__SELECT_USER_BUTTON %>" value="<%= selectButtonValue %>" onClick="if(!evalEditUser()) return false;" style="width:80">
+            <input type="submit" class="imcmsFormBtnSmall"
+                name="<%= UserBrowser.REQUEST_PARAMETER__SELECT_USER_BUTTON %>"
+                value="<%= userFinder.getSelectButtonText().toLocalizedString(request) %>" onClick="if(!evalEditUser()) return false;" style="width:80">
             <%
                 UserDomainObject user = Utility.getLoggedOnUser(request);
                 if (userFinder.isUsersAddable() && (user.isSuperAdmin() || user.isUserAdmin())) { %>
                     <br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
                     <input type="submit" class="imcmsFormBtnSmall" name="<%= UserBrowser.REQUEST_PARAMETER__ADD_USER %>" value="<? templates/sv/AdminChangeUser.htm/2005 ?>" style="width:80">
             <% } %>
-
             </td>
         </tr>
         </table></td>

@@ -9,6 +9,7 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.LocalizedMessage;
 import org.apache.log4j.Logger;
 
 import javax.servlet.RequestDispatcher;
@@ -22,6 +23,8 @@ public class AdminUser extends Administrator {
 
     private final static Logger log = Logger.getLogger( AdminUser.class.getName() );
     private String CHANGE_EXTERNAL_USER_URL = "/jsp/changeexternaluser.jsp";
+    private static final LocalizedMessage BUTTON_TEXT__EDIT_USER = new LocalizedMessage( "templates/sv/AdminChangeUser.htm/2006" );
+    private static final LocalizedMessage HEADLINE__EDIT_USER = new LocalizedMessage( "templates/sv/AdminChangeUser.htm/4/1" );
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
@@ -40,7 +43,8 @@ public class AdminUser extends Administrator {
 
         UserFinder userFinder = new UserFinder();
         userFinder.setUsersAddable( true );
-        userFinder.setSelectButton( UserFinder.SELECT_BUTTON__EDIT_USER );
+        userFinder.setHeadline( HEADLINE__EDIT_USER ) ;
+        userFinder.setSelectButtonText( BUTTON_TEXT__EDIT_USER );
         userFinder.setSelectUserCommand( new UserFinder.SelectUserCommand() {
             public void selectUser( UserDomainObject selectedUser, HttpServletRequest request,
                                     HttpServletResponse response ) throws ServletException, IOException {
