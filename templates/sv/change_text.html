@@ -1,4 +1,5 @@
-<HTML><HEAD><TITLE>Admin</TITLE></HEAD><BODY  bgcolor="#FFFFFF"><H3>
+<HTML><HEAD><TITLE>Admin</TITLE>
+</HEAD><BODY  bgcolor="#FFFFFF"><H3>
   <FORM METHOD=POST ACTION="#servlet_url#SaveText" name="">
     <TABLE width="430" align="center" cellpadding="2" cellspacing="0" border="1">
       <CENTER>
@@ -32,4 +33,11 @@
       <INPUT TYPE=HIDDEN NAME=meta_id VALUE=#meta_id#>
     </TABLE>
 </FORM>
-</H3></BODY></HTML>
+</H3>
+<!-- Focuses on textfield if browser supports javascript -->
+<script language="JavaScript">
+<!--
+document.forms[0].text.focus();
+//-->
+</script>
+</BODY></HTML>
