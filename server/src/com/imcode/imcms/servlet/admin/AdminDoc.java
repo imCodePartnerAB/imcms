@@ -54,7 +54,6 @@ public class AdminDoc extends HttpServlet {
             int start_doc = imcref.getSystemData().getStartDocument();
 
             Utility.setDefaultHtmlContentType( res );
-            ServletOutputStream out = res.getOutputStream();
             int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
             int parent_meta_id;
             String parent_meta_str = req.getParameter( "parent_meta_id" );
@@ -71,7 +70,7 @@ public class AdminDoc extends HttpServlet {
             if ( tempstring != null ) {
                 byte[] tempbytes = tempstring.getBytes( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
                 res.setContentLength( tempbytes.length );
-                out.write( tempbytes );
+                res.getOutputStream().write( tempbytes );
             }
 
         }
@@ -85,7 +84,7 @@ public class AdminDoc extends HttpServlet {
     }
 
     public static String adminDoc( int meta_id, int parent_meta_id, UserDomainObject user, HttpServletRequest req,
-                                   HttpServletResponse res ) throws IOException {
+                                   HttpServletResponse res ) throws IOException, ServletException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         String htmlStr = "";

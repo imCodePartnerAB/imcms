@@ -20,7 +20,7 @@ public class GetDoc extends HttpServlet {
     private final static Logger log = Logger.getLogger( GetDoc.class.getName() );
     private final static String NO_ACTIVE_DOCUMENT_URL = "no_active_document.html";
     private final static String NO_PAGE_URL = "no_page.html";
-    private final static String NO_PERMISSION_URL = "no_permission.html";
+    private final static String NO_PERMISSION_URL = "no_permission.jsp";
 
     private static final String HTTP_HEADER_REFERRER = "Referer";// Note, intended misspelling of "Referrer", according to the HTTP spec.
 
@@ -37,7 +37,6 @@ public class GetDoc extends HttpServlet {
 
         int meta_id;
         Utility.setDefaultHtmlContentType( res );
-        ServletOutputStream out = res.getOutputStream();
 
         try {
             meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
@@ -49,12 +48,12 @@ public class GetDoc extends HttpServlet {
         if ( tempstring != null ) {
             byte[] tempbytes = tempstring.getBytes( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
             res.setContentLength( tempbytes.length );
-            out.write( tempbytes );
+            res.getOutputStream().write( tempbytes );
         }
     }
 
     public static String getDoc( int meta_id, int parent_meta_id, HttpServletRequest req, HttpServletResponse res )
-            throws IOException {
+            throws IOException, ServletException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         Vector vec = new Vector();
@@ -80,6 +79,7 @@ public class GetDoc extends HttpServlet {
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( meta_id );
         if ( null == document ) {
+            res.setStatus( HttpServletResponse.SC_NOT_FOUND );
             return imcref.getAdminTemplate( NO_PAGE_URL, user, vec );
         }
 
@@ -125,16 +125,17 @@ public class GetDoc extends HttpServlet {
         // among the templates for the default-language. Number two, we should use just one function for
         // checking permissions. Number three, since the user obviously has logged in, give him the page in his own language!
 
-        String no_permission_url = "/imcms/" + user.getLanguageIso639_2() + "/login/" + NO_PERMISSION_URL;
         if ( !documentMapper.userHasAtLeastDocumentReadPermission( user, document ) ) {
             session.setAttribute( "login.target",
                                   req.getRequestURL().append( "?" ).append( req.getQueryString() ).toString() );
-            String redirect = no_permission_url;
-            res.sendRedirect( redirect );
+            String redirect = "/imcms/" + user.getLanguageIso639_2() + "/login/" + NO_PERMISSION_URL;
+            res.setStatus( HttpServletResponse.SC_FORBIDDEN );
+            req.getRequestDispatcher( redirect ).forward( req,res );
             return null;
         }
 
         if ( !document.isPublished() && !documentMapper.userHasMoreThanReadPermissionOnDocument( user, document ) ) {
+            res.setStatus( HttpServletResponse.SC_FORBIDDEN );
             return imcref.getAdminTemplate( NO_ACTIVE_DOCUMENT_URL, user, null );
         }
 
