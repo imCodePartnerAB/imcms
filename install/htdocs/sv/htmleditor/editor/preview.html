@@ -13,7 +13,20 @@
 
 
 <SCRIPT LANGUAGE="JavaScript">
-<? sv/htmleditor/editor/preview.html/2 ?>
+<!--
+/* Write extra JS */
+if (isWordEnabled) document.writeln('<SCR'+'IPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="scripts/editor_functions_wordsupport.js"></SCR'+'IPT>');
+
+/* Write the CSS's */
+for (var i = 0; i < arrCssPaths.length; i++) {
+	if (arrCssPaths[i] != '') document.writeln('<li' + 'nk rel="STYLESHEET" type="text/css" href="' + arrCssPaths[i] + '">');
+}
+if (isWordEnabled) {
+	for (var i = 0; i < arrCssWordPaths.length; i++) {
+		if (arrCssWordPaths[i] != '') document.writeln('<li' + 'nk rel="STYLESHEET" type="text/css" href="' + arrCssWordPaths[i] + '">');
+	}
+}
+//-->
 </SCRIPT>
 
 <link rel="STYLESHEET" type="text/css" href="css/editor.css">
@@ -21,7 +34,86 @@
 <body bgcolor="#FFFFFF" style="margin: 0 0 10 0; border: 1px solid #D6D3CE;" onLoad="init(); checkWidth();" onResize="init();">
 
 <SCRIPT LANGUAGE="JavaScript">
-<? sv/htmleditor/editor/preview.html/3 ?>
+<!--
+function init() {
+	windowWidth          = document.body.offsetWidth;
+	windowHeight         = document.body.offsetHeight;
+	var theEditor        = parent.opener.document.getElementById("editorDiv");
+	var thePreview       = document.getElementById("previewDiv");
+	var theCode          = document.getElementById("theCodeDiv");
+	var theText          = document.getElementById("theTextDiv");
+	var theHTML          = theEditor.innerHTML;
+	theHTML              = fixHTML(theHTML);
+	thePreview.innerHTML = theHTML;
+	theCode.innerText    = theHTML;
+	theText.innerHTML    = theHTML;
+	
+	//thePreview.style.height = windowHeight - 55;
+	var pof = parent.opener.document.forms.editorForm;
+	var previewWidth      = pof.previewWidth.value;
+	var previewBackground = pof.previewBackground.value;
+	var previewColor      = pof.previewColor.value;
+	var previewFontSize   = pof.previewFontSize.value;
+	var previewFontFamily = pof.previewFontFamily.value;
+	
+	var origW = '';
+	if(previewWidth.indexOf('%') > 0){
+		if(previewWidth == '100%'){
+			origW = previewWidth;
+			previewWidth = '99%';
+		}
+		thePreview.style.width = previewWidth;
+	} else {
+		previewWidth = (previewWidth > windowWidth)? windowWidth : previewWidth
+		previewWidth = (previewWidth < 10)? 30 : previewWidth
+		thePreview.style.width = previewWidth;
+	}
+	thePreview.style.backgroundColor = previewBackground;
+	thePreview.style.color           = previewColor;
+	thePreview.style.fontSize        = previewFontSize;
+	thePreview.style.fontFamily      = previewFontFamily;
+	if(origW == '100%'){
+		previewWidth = '100%';
+	}
+	document.forms.previewForm.theWidth.value = previewWidth;
+}
+
+function setNewWidth(){
+	newWidth = document.forms[0].theWidth.value;
+	if(newWidth == '100%'){
+		newWidth = '99%';
+	}
+	document.getElementById("previewDiv").style.width = newWidth;
+}
+
+function copyCode(){
+	var theCode = document.getElementById("theCodeDiv");
+	theCode.focus();
+	document.execCommand("SelectAll");
+	document.execCommand("Copy");
+	document.execCommand("Unselect");
+}
+
+function copyText(){
+	var theText = document.getElementById("theTextDiv");
+	theText.focus();
+	document.execCommand("SelectAll");
+	document.execCommand("Copy");
+	document.execCommand("Unselect");
+}
+
+
+function checkWidth() {
+	var xcoord = document.location.toString();
+	if (xcoord.indexOf('?') != -1) {
+		xcoord = (xcoord.indexOf(',') != -1) ? parseInt(xcoord.split('?')[1].split(',')[0]) - 0 : 0;
+		if (xcoord > 10) {
+			document.forms.previewForm.theWidth.value = xcoord;
+			document.getElementById("previewDiv").style.width = xcoord;
+		}
+	}
+}
+//-->
 </SCRIPT>
 
 <DIV style="position:absolute; left:0; top:0" unselectable="on">

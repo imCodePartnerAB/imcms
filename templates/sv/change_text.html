@@ -51,7 +51,8 @@ function openLinkEditor() {
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'text'); checkMode();">
 
 <script>
-<? sv/change_text.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="POST" action="SaveText">
@@ -67,17 +68,17 @@ function openLinkEditor() {
 </tr>
 </table>
 <script>
-<? sv/change_text.html/3 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <tr>
-	<td colspan="2"><script><? sv/change_text.html/4 ?></script><div id="theLabel" class="imcmsAdmText"><? sv/change_text.html/5 ?></div></td>
+	<td colspan="2"><script><? sv/change_text.html/4 ?></script><div id="theLabel" class="imcmsAdmText"><i>#label#</i></div></td>
 </tr>
 <tr>
 	<td colspan="2" class="imcmsAdmForm"><script>
-<? sv/change_text.html/6 ?>
+writeFormField("TEXTAREA","text\" id=\"txtCont",125,18,"100%",null);
 </script>
-<? sv/change_text.html/7 ?></textarea></td>
+#txt#</textarea></td>
 </tr>
 <tr>
 	<td colspan="2">
@@ -114,7 +115,8 @@ function openLinkEditor() {
 </form>
 </table>
 <script>
-<? sv/change_text.html/11 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 

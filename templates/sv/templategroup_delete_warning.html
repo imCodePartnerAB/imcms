@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF">
 
 <script>
-<? sv/templategroup_delete_warning.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", "Varning");
 </script>
 <table border="0" cellpadding="0" cellspacing="0">
 <form>
@@ -23,7 +24,7 @@
 </form>
 </table>
 <script>
-<? sv/templategroup_delete_warning.html/3 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="310">
 <form method="post" action="TemplateChange">
@@ -31,10 +32,10 @@
 <input type="HIDDEN" name="group_delete_cancel" value="Avbryt">
 <tr>
 	<td align="center" class="imcmsAdmText"><? sv/templategroup_delete_warning.html/4 ?>
-<blockquote><? sv/templategroup_delete_warning.html/5 ?></blockquote></td>
+<blockquote>#templates#</blockquote></td>
 </tr>
 <tr>
-	<td><script><? sv/templategroup_delete_warning.html/6 ?></script></td>
+	<td><script>hr("100%",306,"blue");</script></td>
 </tr>
 <tr>
 	<td align="right">
@@ -45,7 +46,8 @@
 </form>
 </table>
 <script>
-<? sv/templategroup_delete_warning.html/7 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 </body>

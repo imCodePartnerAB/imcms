@@ -1,7 +1,7 @@
 <? sv/jsp/FileAdmin_edit.jsp/1001 ?>
 <html>
 <head>
-<title><? sv/jsp/FileAdmin_edit.jsp/1 ?></title>
+<title>:: imCMS ::</title>
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
@@ -35,7 +35,26 @@ A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 			&nbsp;<? sv/jsp/FileAdmin_edit.jsp/1002 ?> &nbsp; </span></td>
 
 			<td nowrap><span class="imFilename">
-<? sv/jsp/FileAdmin_edit.jsp/3 ?></span></td>
+&quot;<%
+			if (isTempl) {
+				out.print(templName) ;
+			} else {
+				String fileNameToShow = file ;
+				sTemp = fileNameToShow ;
+				if (fileNameToShow.length() > 80) {
+
+					fileNameToShow = sTemp.substring(0,40) + "<br>\n" ;
+					fileNameToShow += sTemp.substring(40,80) + "<br>\n" ;
+					fileNameToShow += sTemp.substring(80,sTemp.length()) ;
+
+				} else if (fileNameToShow.length() > 40) {
+
+					fileNameToShow = sTemp.substring(0,40) + "<br>\n" ;
+					fileNameToShow += sTemp.substring(40,sTemp.length()) ;
+
+				}
+				out.print(fileNameToShow) ;
+			} %>&quot;</span></td>
 		</tr>
 		</table></td>
 
@@ -135,7 +154,21 @@ A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 			if (isIE || (isMac && isMoz)) { %>
 	<tr>
 		<td colspan="2"<% if (isMac) { %> <? sv/jsp/FileAdmin_edit.jsp/8 ?>
-		<? sv/jsp/FileAdmin_edit.jsp/1003 ?><? sv/jsp/FileAdmin_edit.jsp/9 ?></textarea><%
+		<? sv/jsp/FileAdmin_edit.jsp/1003 ?>><%
+			} else if (isMoz) { %>
+	<tr>
+		<td colspan="2" valign="top">
+		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" wrap="soft" class="edit" style="width:98%; height:<% if (isTempl) { %>500<% } else { %>510<% } %>" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+			} else if (isMac && isNS) { %>
+	<tr>
+		<td colspan="2" align="center" class="norm">
+		<textarea name="txtField" id="txtField" cols="125" rows="<%= taRows %>" wrap="soft" class="edit" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+			} else { %>
+	<tr>
+		<td colspan="2" align="center" class="norm">
+		<textarea name="txtField" id="txtField" cols="82" rows="<%= taRows %>" wrap="soft" class="edit" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+			} %>
+<%= fileSrc %></textarea><%
 			if (isTempl && !(isMac && (isNS || isIE))) { %>
 		<div align="center"><span style="font: <% if (isNS) { %>10<% } else { %>9<% } %>px Verdana"><? sv/jsp/FileAdmin_edit.jsp/1004 ?></div><%
 			} %></td>

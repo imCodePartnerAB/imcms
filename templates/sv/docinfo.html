@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF">
 
 <script>
-<? sv/docinfo.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="BackDoc">
@@ -21,14 +22,15 @@
 </form>
 </table>
 <script>
-<? sv/docinfo.html/3 ?>
+imcmsGui("mid", null);
 </script>
-<? sv/docinfo.html/4 ?>
+#doc_type_description#
 <script>
-<? sv/docinfo.html/5 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
-<div align="center"><? sv/docinfo.html/6 ?></div>
+<div align="center">#adminMode#</div>
 
 </body>
 </html>

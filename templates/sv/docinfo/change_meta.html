@@ -118,7 +118,8 @@ function showDate(show) {
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'meta_headline'); getDefaultPubl(null);" style="margin-bottom:0">
 
 <script>
-<? sv/docinfo/change_meta.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form>
@@ -130,7 +131,7 @@ function showDate(show) {
 </form>
 </table>
 <script>
-<? sv/docinfo/change_meta.html/3 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="mainForm" method="POST" action="SaveMeta">
@@ -140,23 +141,23 @@ function showDate(show) {
 <input type="hidden" name="description" value="" oldvalue="#description#">
 <input type="hidden" name="archive" value="0">
 <tr>
-	<td><? sv/docinfo/change_meta.html/4 ?><script><? sv/docinfo/change_meta.html/5 ?></script></td>
+	<td>#checks#<script><? sv/docinfo/change_meta.html/5 ?></script></td>
 </tr>
 <tr>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="656">
 	<tr>
-		<td class="imcmsAdmText" nowrap><? sv/docinfo/change_meta.html/6 ?><sup class="imNote"><? sv/docinfo/change_meta.html/7 ?></sup></td>
+		<td class="imcmsAdmText" nowrap><? sv/docinfo/change_meta.html/6 ?><sup class="imNote">1</sup></td>
 		<td>
 <script>
-<? sv/docinfo/change_meta.html/8 ?>
+writeFormField("TEXT","meta_headline",105,255,"100%","#meta_headline#");
 </script></td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText" nowrap><? sv/docinfo/change_meta.html/9 ?></td>
 		<td class="imcmsAdmForm">
 		<textarea name="meta_text" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%">
-<? sv/docinfo/change_meta.html/10 ?></textarea></td>
+#meta_text#</textarea></td>
 	<tr>
 		<td class="imcmsAdmText" nowrap><? sv/docinfo/change_meta.html/11 ?></td>
 		<td>
@@ -164,14 +165,14 @@ function showDate(show) {
 		<tr>
 			<td>
 <script>
-<? sv/docinfo/change_meta.html/12 ?>
+writeFormField("TEXT","meta_image",85,255,450,"#meta_image#");
 </script></td>
 			<td align="right"><--input type="BUTTON" class="imcmsFormBtnSmall" name="ChooseImg" value=" Välj " onClick="openImgBrowse(); return false"--></td>
 		</tr>
 		</table></td>
 	</tr>
 	<tr>
-		<td colspan="2"><script><? sv/docinfo/change_meta.html/13 ?></script></td>
+		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? sv/docinfo/change_meta.html/14 ?></td>
@@ -196,7 +197,7 @@ function showDate(show) {
 	</table>
 	<table border="0" cellspacing="0" cellpadding="0" width="656" id="dateHide">
 	<tr>
-		<td colspan="2"><script><? sv/docinfo/change_meta.html/15 ?></script></td>
+		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? sv/docinfo/change_meta.html/16 ?></td>
@@ -204,11 +205,11 @@ function showDate(show) {
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td><script>
-<? sv/docinfo/change_meta.html/17 ?>
+writeFormField("TEXT","activated_date",11,10,65,"#activated_date#");
 </script></td>
 			<td class="imcmsAdmText">&nbsp;<? sv/docinfo/change_meta.html/1005 ?></td>
 			<td><script>
-<? sv/docinfo/change_meta.html/18 ?>
+writeFormField("TEXT","activated_time",5,5,35,"#activated_time#");
 </script></td>
 			<td class="imcmsAdmDim">&nbsp;<? sv/docinfo/change_meta.html/1006 ?></td>
 		</tr>
@@ -220,11 +221,11 @@ function showDate(show) {
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td><script>
-<? sv/docinfo/change_meta.html/20 ?>
+writeFormField("TEXT","archived_date",11,10,65,"#archived_date#");
 </script></td>
 			<td class="imcmsAdmText">&nbsp;<? sv/docinfo/change_meta.html/1007 ?></td>
 			<td><script>
-<? sv/docinfo/change_meta.html/21 ?>
+writeFormField("TEXT","archived_time",5,5,35,"#archived_time#");
 </script></td>
 			<td class="imcmsAdmDim">&nbsp;<? sv/docinfo/change_meta.html/1008 ?></td>
 		</tr>
@@ -240,13 +241,13 @@ function showDate(show) {
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td colspan="2"><script><? sv/docinfo/change_meta.html/22 ?></script></td>
+		<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 	</tr>
 	<tr>
 		<td colspan="2">
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tr>
-			<td class="imNoteComment"><sup class="imNote"><? sv/docinfo/change_meta.html/23 ?></sup>
+			<td class="imNoteComment"><sup class="imNote">1</sup>
 			<? sv/docinfo/change_meta.html/24 ?></td>
 			<td align="right">
 			<table border="0" cellpadding="0" cellspacing="0">
@@ -282,10 +283,11 @@ function showDate(show) {
 </tr>
 </table>
 <script>
-<? sv/docinfo/change_meta.html/25 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
-<div align="center"><? sv/docinfo/change_meta.html/26 ?></div>
+<div align="center">#adminMode#</div>
 
 </body>
 </html>

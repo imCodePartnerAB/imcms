@@ -60,7 +60,8 @@ if (moz) {
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'file')">
 
 <script>
-<? sv/template_upload.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
@@ -94,7 +95,7 @@ if (moz) {
 </form>
 </table>
 <script>
-<? sv/template_upload.html/5 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdd" method="post" action="TemplateAdd" enctype="multipart/form-data">
@@ -105,7 +106,7 @@ if (moz) {
 <tr>
 	<td width="20%" class="imcmsAdmText" nowrap><? sv/template_upload.html/1001 ?> &nbsp;</td>
 	<td><script>
-<? sv/template_upload.html/7 ?>
+writeFormField("FILE","file\" id=\"sfile",85,null,null,null);
 </script></td>
 </tr>
 <tr>
@@ -114,12 +115,16 @@ if (moz) {
 	<table border="0" cellpadding="0" cellspacing="0">
 	<tr>
 		<td><script>
-<? sv/template_upload.html/8 ?>
+writeFormField("TEXT","name\" id=\"sname",45,255,null,null);
 </script></td>
 		<td>&nbsp;</td>
 		<td nowrap>
 		<script language="JavaScript">
-		<? sv/template_upload.html/9 ?>
+		<!--
+		if (isMoz || isNS) {
+			document.write("<input type=\"button\" class=\"imcmsFormBtnSmall\" onClick=\"checkForName()\" value=\"&laquo\;&nbsp\;Kopiera&nbsp\;filnamnet\">");
+		}
+		//-->
 		</script></td>
 	</tr>
 	</table></td>
@@ -141,7 +146,7 @@ if (moz) {
 	<tr>
 		<td>
 		<select name="templategroup" size="5" multiple>
-		<? sv/template_upload.html/12 ?>
+		#templategroups#
 		</select></td>
 		<td>&nbsp;&nbsp;</td>
 		<td class="imcmsAdmDim"><? sv/template_upload.html/13 ?></td>
@@ -149,7 +154,7 @@ if (moz) {
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/template_upload.html/14 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
   <td colspan="2" align="right">
@@ -159,7 +164,8 @@ if (moz) {
 </form>
 </table>
 <script>
-<? sv/template_upload.html/15 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 </body>

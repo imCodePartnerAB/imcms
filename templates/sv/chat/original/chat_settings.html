@@ -1,11 +1,17 @@
 <html>
 <head>
-<title><? sv/chat/original/chat_settings.html/1 ?></title>
+<title>Chat settings page</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <link rel="STYLESHEET" type="text/css" href="@cssurl@/style_chat_ns.css">
 <script language="JavaScript">
-<? sv/chat/original/chat_settings.html/2 ?>
+<!--
+if (document.layers) {
+	document.writeln("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"@cssurl@/style_chat_ns.css\">");
+} else {
+	document.writeln("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"@cssurl@/style_chat.css\">");
+}
+//-->
 </script>
 
 </head>
@@ -25,10 +31,13 @@
 	<form method="post" action="ChatControl" name="botten" target="_parent">
 	<tr valign="top">
 		<td class="chatControlFont">
-		<? sv/chat/original/chat_settings.html/3 ?>
+		#reload#
+		#entrance#
+		#private#
+		#datetime#
 		</td>
 		<td>
-		<? sv/chat/original/chat_settings.html/4 ?>
+		#font#<br>
 		<div align="right">
 		<input class="chatButton" name="controlOK" type="submit" value="<? sv/chat/original/chat_settings.html/2001 ?>"></div></td>
 	</tr>

@@ -17,7 +17,7 @@
     <%
         for (int i = 0; i < categories.length; i++) {
             Category category = categories[i];
-            %><li><? sv/jsp/category_descriptions.jsp/2 ?></li><%
+            %><li><%= category.getName() %> - <%= category.getDescription() %></li><%
         }
     %>
     </ul>

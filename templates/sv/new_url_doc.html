@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'url_ref')">
 
 <script>
-<? sv/new_url_doc.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="BackDoc">
@@ -23,7 +24,7 @@
 </form>
 </table>
 <script>
-<? sv/new_url_doc.html/3 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <form method="POST" action="SaveNewUrlDoc">
@@ -36,11 +37,11 @@
 <tr> 
 	<td class="imcmsAdmText"><? sv/new_url_doc.html/1001 ?>&nbsp;</td>
 	<td><script>
-<? sv/new_url_doc.html/5 ?>
+writeFormField("TEXT","url_ref",62,255,null,"#url_doc_ref#");
 </script></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/new_url_doc.html/6 ?></script></td>
+	<td colspan="2"><script>hr("100%",396,"cccccc");</script></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? sv/new_url_doc.html/1002 ?><img src="@imcmsimageurllang@/admin/1x1.gif" width="1" height="22"></td>
@@ -58,13 +59,13 @@
 		<td><input type="radio" name="target" value="_other"></td>
 		<td class="imcmsAdmText" nowrap>&nbsp;<? sv/new_url_doc.html/1006 ?> &nbsp;</td>
 		<td colspan="4"><script>
-<? sv/new_url_doc.html/7 ?>
+writeFormField("TEXT","frame_name",17,50,null,"#frame_name#");
 </script></td>
 	</tr>
 	</table></td>
 </tr>
 <tr> 
-	<td colspan="2"><script><? sv/new_url_doc.html/8 ?></script></td>
+	<td colspan="2"><script>hr("100%",396,"blue");</script></td>
 </tr>
 <tr> 
 	<td colspan="2" align="right">
@@ -75,7 +76,8 @@
 </form>
 </table>
 <script>
-<? sv/new_url_doc.html/9 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 </body>

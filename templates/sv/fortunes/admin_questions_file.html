@@ -7,7 +7,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <script language="JavaScript">
-				<? sv/fortunes/admin_questions_file.html/2 ?>
+				<!--
+    function checkInput(){
+        var f = document.forms[0];
+        var date1 = f.date1.value;
+        var date2 = f.date2.value;
+        var text = f.text.value;
+        if(date1>date2){
+            alert('Fel datum!') ;
+            return false ;
+        }
+        return true ;
+    }
+//-->
 </script>
 
 </head>
@@ -20,7 +32,8 @@
     <tr bgcolor="#333366"> 
       <td width="1%">&nbsp;</td>
       <td colspan="2" idth="98%"> 
-        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? sv/fortunes/admin_questions_file.html/3 ?> </font></b></div>
+        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Administrera 
+          #file# </font></b></div>
       </td>
       <td width="1%">&nbsp;</td>
     </tr>
@@ -50,7 +63,7 @@
     <tr bgcolor="#bababa"> 
       <td width="1%" rowspan="3">&nbsp;</td>
       <td colspan="2" ><? sv/fortunes/admin_questions_file.html/5 ?> 
-	  <textarea cols="40" rows="5" name="text"><? sv/fortunes/admin_questions_file.html/6 ?></textarea>
+	  <textarea cols="40" rows="5" name="text">#text#</textarea>
       </td>
       <td width="1%">&nbsp;
 
@@ -72,7 +85,7 @@
       <td width="1%">&nbsp;</td>
       <td colspan="2" > 
         <select name="AdminFile" size="5" multiple>
-          <? sv/fortunes/admin_questions_file.html/7 ?>
+          #options#
         </select>
       </td>
       <td width="1%">&nbsp;</td>

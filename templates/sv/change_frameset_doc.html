@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'frame_set')">
 
 <script>
-<? sv/change_frameset_doc.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="BackDoc">
@@ -23,7 +24,7 @@
 </form>
 </table>
 <script>
-<? sv/change_frameset_doc.html/3 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="POST" action="SaveFrameset">
@@ -37,10 +38,10 @@
 </tr>
 <tr> 
 	<td><textarea name="frame_set" cols="57" rows="16" wrap="virtual" style="width:100%; overflow:auto">
-<? sv/change_frameset_doc.html/6 ?></textarea></td>
+#frame_set#</textarea></td>
 </tr>
 <tr>
-	<td><script><? sv/change_frameset_doc.html/7 ?></script></td>
+	<td><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr> 
 	<td align="right">
@@ -53,10 +54,11 @@
 </form>
 </table>
 <script>
-<? sv/change_frameset_doc.html/8 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
-<div align="center"><? sv/change_frameset_doc.html/9 ?></div>
+<div align="center">#adminMode#</div>
 
 </body>
 </html>

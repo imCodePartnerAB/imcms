@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'new_browsers')">
 
 <script>
-<? sv/new_browser_doc.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="BackDoc">
@@ -23,7 +24,7 @@
 </form>
 </table>
 <script>
-<? sv/new_browser_doc.html/3 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660">
 <form method="POST" action="SaveNewBrowserDoc">
@@ -35,17 +36,17 @@
 <tr> 
 	<td align="right">
 	<select name="new_browsers" size="7" multiple>
-		<? sv/new_browser_doc.html/5 ?>
+		#new_browsers#
 	</select></td>
 	<td align="center"><input type="submit" class="imcmsFormBtnSmall" name="add_browsers" value="<? sv/new_browser_doc.html/2004 ?>"></td>
-	<td><? sv/new_browser_doc.html/6 ?></td>
+	<td>#browsers#</td>
 </tr>
 <tr> 
 	<td colspan="3"><? sv/new_browser_doc.html/7 ?> </td>
 </tr>
-<? sv/new_browser_doc.html/8 ?> 
+#getDocType# #DocMenuNo# 
 <tr> 
-	<td colspan="3"><script><? sv/new_browser_doc.html/9 ?></script></td>
+	<td colspan="3"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr> 
 	<td colspan="3" align="right"> 
@@ -56,7 +57,8 @@
 </form>
 </table>
 <script>
-<? sv/new_browser_doc.html/10 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 <script language="JavaScript">

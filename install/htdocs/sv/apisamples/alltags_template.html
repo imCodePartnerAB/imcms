@@ -1,420 +1,427 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
     <head>
-	<title><? sv/apisamples/alltags_template.html/1 ?></title>
+	<title>imCMS text-taggar</title>
 	<link rel="stylesheet" href="@cssurl@/style.css">
     </head>
     <body>
-	<h1><? sv/apisamples/alltags_template.html/2 ?></h1>
-	<h2><? sv/apisamples/alltags_template.html/3 ?></h2>
+	<h1>imCMS text-taggar</h1>
+	<h2>Ladda upp den här mallen i systemet och använd den på ett text-dokument för att nedanstående exempel skall fungera.</h2>
 	<hr>
 
-<h2><? sv/apisamples/alltags_template.html/4 ?></h2>
+<h2><tt>&lt;?imcms:taggar?&gt;</tt></h2>
 <!--IMSCRIPT-->
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/5 ?></h3>
+<h3>Gemensamma attribut</h3>
 
-<p><? sv/apisamples/alltags_template.html/6 ?></p>
+<p>Alla taggar kan ha följande attribut:</p>
 <ul>
-  <li><? sv/apisamples/alltags_template.html/7 ?></li>
-  <li><? sv/apisamples/alltags_template.html/8 ?></li>
+  <li><tt>pre</tt> - Om en tagg stoppar in data, kommer det att prefixas med värdet på &quot;<tt>pre</tt>&quot;-attributet.</li>
+  <li><tt>post</tt> - Om en tagg stoppar in data, kommer det att postfixas med värdet på &quot;<tt>post</tt>&quot;-attributet.</li>
 </ul>
 <hr>
 
 
-<h3><? sv/apisamples/alltags_template.html/9 ?></h3>
-<h4><? sv/apisamples/alltags_template.html/10 ?></h4>
-<p><? sv/apisamples/alltags_template.html/11 ?>
-</p><h4><? sv/apisamples/alltags_template.html/12 ?></h4>
+<h3><tt>&lt;?imcms:datetime?&gt;</tt></h3>
+<h4>Beskrivning</h4>
+<p>Stoppar in en datumtid, ett datum och/eller tid.<br>
+</p><h4>Attribut</h4>
 
-<ul><li><? sv/apisamples/alltags_template.html/13 ?></li>
-<li><? sv/apisamples/alltags_template.html/14 ?>
+<ul><li><tt>format</tt> - Formatet på datumtiden, enligt <a href='http://java.sun.com/j2se/1.4/docs/api/java/text/SimpleDateFormat.html'>http://java.sun.com/j2se/1.4/docs/api/java/text/SimpleDateFormat.html</a></li>
+<li><tt>type</tt> - Vilken datumtid som ska stoppas in.
   <ul>
-    <li><? sv/apisamples/alltags_template.html/15 ?></li>
-    <li><? sv/apisamples/alltags_template.html/16 ?>
-    <li><? sv/apisamples/alltags_template.html/17 ?></li>
-    <li><? sv/apisamples/alltags_template.html/18 ?></li>
-    <li><? sv/apisamples/alltags_template.html/19 ?></li>
+    <li>&quot;<tt>now</tt>&quot; för &quot;nu&quot;</li>
+    <li>&quot;<tt>created</tt>&quot; för dokumentets &quot;skapat-datumtid&quot;
+    <li>&quot;<tt>modified</tt>&quot; för dokumentets &quot;modifierat-datumtid&quot;</li>
+    <li>&quot;<tt>archived</tt>&quot; för dokumentets &quot;arkiverat-datumtid&quot;</li>
+    <li>&quot;<tt>activated</tt>&quot; för dokumentets &quot;aktiverat-datumtid&quot;.</li>
   </ul>
 
-<li><? sv/apisamples/alltags_template.html/20 ?></li>
+<li><tt>lang</tt> - Vilket språk som datumtiden skall visas för. Två bokstäver enligt ISO 639:
+                <a href='http://www.ics.uci.edu/pub/ietf/http/related/iso639.txt'>http://www.ics.uci.edu/pub/ietf/http/related/iso639.txt</a></li>
 </ul>
-<h4><? sv/apisamples/alltags_template.html/21 ?></h4>
+<h4>Exempel</h4>
 <table border="1">
   <tr>
-    <th><? sv/apisamples/alltags_template.html/22 ?></th>
-    <th><? sv/apisamples/alltags_template.html/23 ?></th>
+    <th>Tagg</th>
+    <th>Resultat</th>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/24 ?></td>
+    <td><tt>&lt;?imcms:datetime format=&quot;EEEE d MMMM yyyy&quot; type=&quot;created&quot; lang=&quot;sv&quot;?&gt;</tt></td>
     <td><?imcms:datetime format="EEEE d MMMM yyyy" type="created" lang="sv"?></td>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/25 ?></td>
+    <td><tt>&lt;?imcms:datetime format=&quot;E yyyy-MM-dd HH:mm z&quot; type=&quot;now&quot; lang=&quot;en&quot;?&gt;</tt></td>
     <td><?imcms:datetime format="E yyyy-MM-dd HH:mm z" type="now" lang="en"?></td>
   </tr>
 </table>
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/26 ?></h3>
-<h4><? sv/apisamples/alltags_template.html/27 ?></h4>
-<p><? sv/apisamples/alltags_template.html/28 ?></p>
-<h4><? sv/apisamples/alltags_template.html/29 ?></h4>
+<h3><tt>&lt;?imcms:documentcategories?&gt;</tt></h3>
+<h4>Beskrivning</h4>
+<p>Skriver ut dokumentets kategorier. Om inte &quot;<tt>type</tt>&quot; anges listas alla kategorier som dokumentet har, med dokument-typen som prefix.</p>
+<h4>Attribut</h4>
 <ul>
-  <li><? sv/apisamples/alltags_template.html/30 ?></li>
-  <li><? sv/apisamples/alltags_template.html/31 ?></li>
+  <li><tt>type</tt> - Vilken typ av kategorier på dokumentet som ska listas.</li>
+  <li><tt>separator</tt> - En sträng som separerar de olika kategorierna. Om inget anges används &quot;,&quot; (ett komma).</li>
 </ul>
 
-<h4><? sv/apisamples/alltags_template.html/32 ?></h4>
+<h4>Exempel</h4>
 <table border="1">
   <tr>
-    <th><? sv/apisamples/alltags_template.html/33 ?></th>
-    <th><? sv/apisamples/alltags_template.html/34 ?></th>
+    <th>Tagg</th>
+    <th>Resultat</th>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/35 ?></td>
+    <td><tt>&lt;?imcms:documentcategories type=&quot;subject&quot;?&gt;</tt></td>
     <td><?imcms:documentcategories type="subject"?></td>
   </tr>
 </table>
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/36 ?></h3>
-<h4><? sv/apisamples/alltags_template.html/37 ?></h4>
-<p><? sv/apisamples/alltags_template.html/38 ?></p>
-<h4><? sv/apisamples/alltags_template.html/39 ?></h4>
+<h3><tt>&lt;?imcms:documentlanguage?&gt;</tt></h3>
+<h4>Beskrivning</h4>
+<p>Skriver ut språket som dokumentet är på.</p>
+<h4>Attribut</h4>
 <ul>
-  <li><? sv/apisamples/alltags_template.html/40 ?>
+  <li><tt>representation</tt> - Vilken språk-representation som skall användas.
+      Om inget anges skrivs språket ut i klartext på användarens språk. Giltiga värden är:
     <ul>
-      <li><? sv/apisamples/alltags_template.html/41 ?>
+      <li>&quot;<tt>ISO 639-2</tt>&quot; - Språket skall representeras enligt <a href='http://www.loc.gov/standards/iso639-2/englangn.html'>ISO 639-2</a>. (Tre bokstäver lång förkortning.)
     </ul>
   </li>
 </ul>
 
-<h4><? sv/apisamples/alltags_template.html/42 ?></h4>
+<h4>Exempel</h4>
 <table border="1">
   <tr>
-    <th><? sv/apisamples/alltags_template.html/43 ?></th>
-    <th><? sv/apisamples/alltags_template.html/44 ?></th>
+    <th>Tagg</th>
+    <th>Resultat</th>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/45 ?></td>
+    <td><tt>&lt;?imcms:documentlanguage?&gt;</tt></td>
     <td><?imcms:documentlanguage?></td>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/46 ?></td>
+    <td><tt>&lt;?imcms:documentlanguage representation=&quot;ISO 639-2&quot;?&gt;</tt></td>
     <td><?imcms:documentlanguage representation="ISO 639-2"?></td>
   </tr>
 </table>
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/47 ?></h3>
-<h4><? sv/apisamples/alltags_template.html/48 ?></h4>
-<p><? sv/apisamples/alltags_template.html/49 ?>
-</p><h4><? sv/apisamples/alltags_template.html/50 ?></h4>
-<ul><li><? sv/apisamples/alltags_template.html/51 ?></li>
-<li><? sv/apisamples/alltags_template.html/52 ?></li>
+<h3><tt>&lt;?imcms:image?&gt;</tt></h3>
+<h4>Beskrivning</h4>
+<p>Stoppar in en bild från databasen.<br>
+</p><h4>Attribut</h4>
+<ul><li><tt>no</tt> - Numret på bilden i sidan.</li>
+<li><tt>label</tt> - En text som förklarar vad det är meningen att man skall ha för bild, endast synlig i bildredigeringsläge.</li>
 <li>
-  <? sv/apisamples/alltags_template.html/53 ?>
+  <tt>mode</tt> - Huruvida taggen fungerar i normalläge eller bildredigeringsläge.
   <ul>
-    <li><? sv/apisamples/alltags_template.html/54 ?></li>
-    <li><? sv/apisamples/alltags_template.html/55 ?></li>
+    <li>&quot;<tt>read</tt>&quot; - Taggen fungerar bara i normalläge, och blir osynlig i bildredigeringsläge.</li>
+    <li>&quot;<tt>write</tt>&quot; - Taggen fungerar bara i bildredigeringsläge, och blir osynlig i normalläge.</li>
   </ul>
 </li>
 </ul>
-<h4><? sv/apisamples/alltags_template.html/56 ?></h4>
+<h4>Exempel</h4>
 <p>
-<? sv/apisamples/alltags_template.html/57 ?>
+Pröva även i bildredigeringsläge genom att klicka "bild" i knappraden längst ned på sidan.
 </p>
 <table border="1">
   <tr>
-    <th><? sv/apisamples/alltags_template.html/58 ?></th>
-    <th><? sv/apisamples/alltags_template.html/59 ?></th>
+    <th>Tagg</th>
+    <th>Resultat</th>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/60 ?></td>
+    <td><tt>&lt;?imcms:image no=&quot;1&quot; label=&quot;Bild 1&quot;?&gt;</tt></td>
     <td><?imcms:image no="1" label="Bild 1"?></td>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/61 ?></td>
+    <td><tt>&lt;?imcms:image no=&quot;2&quot; mode=&quot;write&quot; label=&quot;Bild 2 endast synlig i bildredigeringsläge&quot;?&gt;</tt></td>
     <td><?imcms:image no="2" mode="write" label="Bild 2 endast synlig i bildredigeringsläge"?></td>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/62 ?></td>
+    <td><tt>&lt;?imcms:image no=&quot;2&quot; mode=&quot;read&quot;?&gt;</tt></td>
     <td><?imcms:image no="2" mode="read"?></td>
   </tr>
 </table>
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/63 ?></h3>
-<h4><? sv/apisamples/alltags_template.html/64 ?></h4>
-<p><? sv/apisamples/alltags_template.html/65 ?>
-</p><h4><? sv/apisamples/alltags_template.html/66 ?></h4>
+<h3><tt>&lt;?imcms:include?&gt;</tt></h3>
+<h4>Beskrivning</h4>
+<p>Inkluderar innehållet från ett annat dokument, en fil, eller en url.
+Om varken &quot;<tt>document</tt>&quot;, &quot;<tt>file</tt>&quot;, eller &quot;<tt>url</tt>&quot; anges,
+så kan man i inkluderingsredigeringsläge mata in ett dokument-id för ett dokument som skall inkluderas, en så kallad &quot;dynamisk&quot; inkludering.
+</p><h4>Attribut</h4>
 <ul>
   <li>
-    <? sv/apisamples/alltags_template.html/67 ?>
+    <tt>no</tt> - Numret på inkluderingen i sidan. Används enbart för dynamisk inkludering.
+    Alla attribut listade nedan under &quot;<tt>document</tt>&quot; är också applicerbara på dynamisk inkludering.
   </li>
-  <li><? sv/apisamples/alltags_template.html/68 ?>
+  <li><tt>document</tt> - Meta-id för ett text-dokument som skall inkluderas. För en dokument-inkludering fungerar också följande attribut:
     <ul>
-      <li><? sv/apisamples/alltags_template.html/69 ?></li>
-      <li><? sv/apisamples/alltags_template.html/70 ?></li>
+      <li><tt>param</tt> - Om <tt>param</tt> är satt för en <tt>document</tt>-include hamnar innehållet i text-taggen <tt>&#35;param&#35;</tt>.</li>
+      <li><tt>template</tt> - Namnet på en mall som skall användas för text-dokumentet man inkluderar.</li>
     </ul>
   </li>
-  <li><? sv/apisamples/alltags_template.html/71 ?></li>
-  <li><? sv/apisamples/alltags_template.html/72 ?>
+  <li><tt>file</tt> - Inkludera innehållet från en fil under &quot;<tt>WEB-INF/includes</tt>&quot; i webappen.</li>
+  <li><tt>url</tt> - Inkludera innehållet från en URL. För en URL-inkludering fungerar också följande attribut:
     <ul>
-      <li><? sv/apisamples/alltags_template.html/73 ?>  </li>
-      <li><? sv/apisamples/alltags_template.html/74 ?></li>
-      <li><? sv/apisamples/alltags_template.html/75 ?></li>
+      <li><tt>sendcookies</tt> - Om <tt>sendcookies</tt> är satt skickas alla funna cookies (utom sessionscookien <tt>JSESSIONID</tt>) med i anropet till servern.  </li>
+      <li><tt>sendmetaid</tt> - Om <tt>sendmetaid</tt> är satt skickas det inkluderande meta-id:t till en url-inkludering i http-header &quot;X-Meta-Id&quot; i anropet till servern..</li>
+      <li><tt>sendsessionid</tt> - Om <tt>sendsessionid</tt> är satt skickas en cookie (<tt>JSESSIONID</tt>) innehållande sessions-id:t med i anropet till servern..</li>
     </ul>
   </li>
 </ul>
-<h4><? sv/apisamples/alltags_template.html/76 ?></h4>
+<h4>Exempel</h4>
 <p>
-<? sv/apisamples/alltags_template.html/77 ?>
+Pröva även i inkluderingsredigeringsläge genom att klicka "include" i knappraden längst ned på sidan.
 </p>
 <table border="1">
   <tr>
-    <th><? sv/apisamples/alltags_template.html/78 ?></th>
-    <th><? sv/apisamples/alltags_template.html/79 ?></th>
+    <th>Tagg</th>
+    <th>Resultat</th>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/80 ?></td>
+    <td><tt>&lt;?imcms:include no=&quot;1&quot;?&gt;</tt></td>
     <td><?imcms:include no="1"?></td>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/81 ?></td>
+    <td><tt>&lt;?imcms:include no=&quot;1&quot; url=&quot;http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul&quot;?&gt;</tt></td>
     <td><?imcms:include url="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"?></td>
   </tr>
 </table>
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/82 ?></h3>
-<h4><? sv/apisamples/alltags_template.html/83 ?></h4>
-<p><? sv/apisamples/alltags_template.html/84 ?>
+<h3><tt>&lt;?imcms:metaid?&gt;</tt></h3>
+<h4>Beskrivning</h4>
+<p>Stoppar in meta-id:t för dokumentet.<br>
 </p>
-<h4><? sv/apisamples/alltags_template.html/85 ?></h4>
+<h4>Exempel</h4>
 <table border="1">
   <tr>
-    <th><? sv/apisamples/alltags_template.html/86 ?></th>
-    <th><? sv/apisamples/alltags_template.html/87 ?></th>
+    <th>Tagg</th>
+    <th>Resultat</th>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/88 ?></td>
+    <td><tt>&lt;?imcms:metaid?&gt;</tt></td>
     <td><?imcms:metaid?></td>
   </tr>
 </table>
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/89 ?></h3>
-<h4><? sv/apisamples/alltags_template.html/90 ?></h4>
-<p><? sv/apisamples/alltags_template.html/91 ?>
-</p><h4><? sv/apisamples/alltags_template.html/92 ?></h4>
+<h3><tt>&lt;?imcms:section?&gt;</tt></h3>
+<h4>Beskrivning</h4>
+<p>Stoppar in namnet på sidans avdelning.<br>
+</p><h4>Exempel</h4>
 <table border="1">
   <tr>
-    <th><? sv/apisamples/alltags_template.html/93 ?></th>
-    <th><? sv/apisamples/alltags_template.html/94 ?></th>
+    <th>Tagg</th>
+    <th>Resultat</th>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/95 ?></td>
+    <td><tt>&lt;?imcms:section?&gt;</tt></td>
     <td><?imcms:section?></td>
   </tr>
 </table>
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/96 ?></h3>
-<h4><? sv/apisamples/alltags_template.html/97 ?></h4>
-<p><? sv/apisamples/alltags_template.html/98 ?>
-</p><h4><? sv/apisamples/alltags_template.html/99 ?></h4>
+<h3><tt>&lt;?imcms:text?&gt;</tt></h3>
+<h4>Beskrivning</h4>
+<p>Stoppar in en text från databasen.<br>
+</p><h4>Attribut</h4>
 <ul>
-  <li><? sv/apisamples/alltags_template.html/100 ?></li>
-  <li><? sv/apisamples/alltags_template.html/101 ?></li>
+  <li><tt>no</tt> - Numret på texten i sidan.</li>
+  <li><tt>label</tt> - En text som förklarar vad det är meningen att man skall ha för text, endast synlig i textredigeringsläge.</li>
   <li>
-    <? sv/apisamples/alltags_template.html/102 ?>
+    <tt>mode</tt> - Huruvida taggen fungerar i normalläge eller textredigeringsläge.
     <ul>
-      <li><? sv/apisamples/alltags_template.html/103 ?></li>
-      <li><? sv/apisamples/alltags_template.html/104 ?></li>
+      <li>&quot;<tt>read</tt>&quot; - Taggen fungerar bara i normalläge, och blir osynlig i textredigeringsläge.</li>
+      <li>&quot;<tt>write</tt>&quot; - Taggen fungerar bara i textredigeringsläge, och blir osynlig i normalläge.</li>
     </ul>
   </li>
   <!-- <li><tt>filter</tt> - Filter som texten går igenom</li> -->
   <!-- <li><tt>type</tt> - ...   ( typ av textfält ex  pollparameter-xxx )</li> -->
-</ul><h4><? sv/apisamples/alltags_template.html/105 ?></h4>
+</ul><h4>Exempel</h4>
 
 <p>
-<? sv/apisamples/alltags_template.html/106 ?>
+Pröva även i textredigeringsläge genom att klicka "text" i knappraden längst ned på sidan.
 </p>
 <table border="1">
   <tr>
-    <th><? sv/apisamples/alltags_template.html/107 ?></th>
-    <th><? sv/apisamples/alltags_template.html/108 ?></th>
+    <th>Tagg</th>
+    <th>Resultat</th>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/109 ?></td>
+    <td><tt>&lt;?imcms:text no=&quot;1&quot; label=&quot;Bild 1&quot;?&gt;</tt></td>
     <td><?imcms:text no="1" label="Text 1"?></td>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/110 ?></td>
+    <td><tt>&lt;?imcms:text no=&quot;2&quot; mode=&quot;write&quot; label=&quot;Text 2 endast synlig i textredigeringsläge&quot;?&gt;</tt></td>
     <td><?imcms:text no="2" mode="write" label="Text 2 endast synlig i textredigeringsläge"?></td>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/111 ?></td>
+    <td><tt>&lt;?imcms:text no=&quot;2&quot; mode=&quot;read&quot;?&gt;</tt></td>
     <td><?imcms:text no="2" mode="read"?></td>
   </tr>
 </table>
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/112 ?></h3>
+<h3><tt>&lt;?imcms:user?&gt;</tt></h3>
 
-<h4><? sv/apisamples/alltags_template.html/113 ?></h4>
-<p><? sv/apisamples/alltags_template.html/114 ?></p>
-<h4><? sv/apisamples/alltags_template.html/115 ?></h4>
+<h4>Beskrivning</h4>
+<p>Stoppar in data om en användare i systemet.</p>
+<h4>Attribut</h4>
 <ul>
   <li>
-    <? sv/apisamples/alltags_template.html/116 ?>
+    <tt>who</tt> - Vilken användare som skall hämtas data för. Om ingen av nedanstående värden anges är det den inloggade användaren (besökaren) som används.
     <ul>
-      <li><? sv/apisamples/alltags_template.html/117 ?></li>
+      <li>&quot;<tt>creator</tt>&quot; - Användaren som skapat sidan.</li>
     </ul>
   </li>
-  <li><? sv/apisamples/alltags_template.html/118 ?>
+  <li><tt>get</tt> - Vilket värde hos användaren som skall hämtas. Något av:
     <ul>
-      <li><? sv/apisamples/alltags_template.html/119 ?></li>
-      <li><? sv/apisamples/alltags_template.html/120 ?></li>
-      <li><? sv/apisamples/alltags_template.html/121 ?></li>
-      <li><? sv/apisamples/alltags_template.html/122 ?></li>
-      <li><? sv/apisamples/alltags_template.html/123 ?></li>
-      <li><? sv/apisamples/alltags_template.html/124 ?></li>
-      <li><? sv/apisamples/alltags_template.html/125 ?></li>
-      <li><? sv/apisamples/alltags_template.html/126 ?></li>
-      <li><? sv/apisamples/alltags_template.html/127 ?></li>
-      <li><? sv/apisamples/alltags_template.html/128 ?></li>
-      <li><? sv/apisamples/alltags_template.html/129 ?></li>
+      <li>&quot;<tt>name</tt>&quot;        - Förnamn Efternamn</li>
+      <li>&quot;<tt>firstname</tt>&quot;   - Förnamnet</li>
+      <li>&quot;<tt>lastname</tt>&quot;    - Efternamnet</li>
+      <li>&quot;<tt>company</tt>&quot;     - Företaget</li>
+      <li>&quot;<tt>address</tt>&quot;     - Gatuadressen</li>
+      <li>&quot;<tt>zip</tt>&quot;         - Postnumret</li>
+      <li>&quot;<tt>city</tt>&quot;        - Postorten/Staden</li>
+      <li>&quot;<tt>homephone</tt>&quot;   - Hemtelefon</li>
+      <li>&quot;<tt>workphone</tt>&quot;   - Arbetstelefon</li>
+      <li>&quot;<tt>mobilephone</tt>&quot; - Mobiltelefon</li>
+      <li>&quot;<tt>email</tt>&quot;       - E-mail-adress</li>
     </ul>
   </li>
 </ul>
-<h4><? sv/apisamples/alltags_template.html/130 ?></h4>
+<h4>Exempel</h4>
 
 <table border="1">
   <tr>
-    <th><? sv/apisamples/alltags_template.html/131 ?></th>
-    <th><? sv/apisamples/alltags_template.html/132 ?></th>
+    <th>Tagg</th>
+    <th>Resultat</th>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/133 ?></td>
+    <td><tt>&lt;?imcms:user get=&quot;firstname&quot;?&gt;</tt></td>
     <td><?imcms:user get="firstname"?></td>
   </tr>
   <tr>
-    <td><? sv/apisamples/alltags_template.html/134 ?></td>
+    <td><tt>&lt;?imcms:user who="creator" get=&quot;email&quot;?&gt;</tt></td>
     <td><?imcms:user who="creator" get="email"?></td>
   </tr>
 </table>
 <hr>
-	<h2><? sv/apisamples/alltags_template.html/135 ?></h2>
+	<h2>#imcms-taggar#</h2>
 
-<h3><? sv/apisamples/alltags_template.html/136 ?></h3>
-<p><? sv/apisamples/alltags_template.html/137 ?></p>
-
-<hr>
-
-<h3><? sv/apisamples/alltags_template.html/138 ?></h3>
-<p><? sv/apisamples/alltags_template.html/139 ?></p>
+<h3><tt>&#35;adminMode&#35;</tt></h3>
+<p>Knappraden, se exempel längst ned på sidan.</p>
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/140 ?></h3>
-<p><? sv/apisamples/alltags_template.html/141 ?></p>
-<h4><? sv/apisamples/alltags_template.html/142 ?></h4>
-<? sv/apisamples/alltags_template.html/143 ?>
+<h3><tt>&#35;changePage&#35;</tt></h3>
+<p>&quot;Ändra mall&quot;-menyn, se exempel längst ned på sidan.</p>
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/144 ?></h3>
-<p><? sv/apisamples/alltags_template.html/145 ?></p>
-<h4><? sv/apisamples/alltags_template.html/146 ?></h4>
-<? sv/apisamples/alltags_template.html/147 ?>
+<h3><tt>&#35;lastDate&#35;</tt></h3>
+<p>Tiden då sidan senast redigerades, i &quot;<tt>yyyy-MM-dd HH:mm</tt>&quot;-format.</p>
+<h4>Exempel</h4>
+#lastDate#
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/148 ?></h3>
-<p><? sv/apisamples/alltags_template.html/149 ?></p>
-<h4><? sv/apisamples/alltags_template.html/150 ?></h4>
-<? sv/apisamples/alltags_template.html/151 ?>
+<h3><tt>&#35;metaHeadline&#35;</tt></h3>
+<p>Sidans rubrik.</p>
+<h4>Exempel</h4>
+#metaHeadline#
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/152 ?></h3>
-<p><? sv/apisamples/alltags_template.html/153 ?></p>
+<h3><tt>&#35;metaImage&#35;</tt></h3>
+<p>Sidans bild.</p>
+<h4>Exempel</h4>
+#metaImage#
 
-<h4><? sv/apisamples/alltags_template.html/154 ?></h4>
-<p><? sv/apisamples/alltags_template.html/155 ?>
+<hr>
+
+<h3><tt>&#35;param&#35;</tt></h3>
+<p>Innehållet i en url-parameter <tt>param</tt> eller document-include med attributet <tt>param</tt>.</p>
+
+<h4>Exempel</h4>
+<p><tt>/servlet/GetDoc?meta_id=1001&amp;param=foo</tt><br>
+<tt>&lt;?imcms:include document=&quot;1001&quot; param=&quot;foo&quot;?&gt;</tt>
 </p>
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/156 ?></h3>
-<p><? sv/apisamples/alltags_template.html/157 ?></p>
-<h4><? sv/apisamples/alltags_template.html/158 ?></h4>
-<? sv/apisamples/alltags_template.html/159 ?>
+<h3><tt>&#35;serverMaster&#35;</tt></h3>
+<p>Namnet på servermastern.</p>
+<h4>Exempel</h4>
+#serverMaster#
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/160 ?></h3>
+<h3><tt>&#35;serverMasterEmail&#35;</tt></h3>
 
-<p><? sv/apisamples/alltags_template.html/161 ?></p>
-<h4><? sv/apisamples/alltags_template.html/162 ?></h4>
-<? sv/apisamples/alltags_template.html/163 ?>
-
-<hr>
-
-<h3><? sv/apisamples/alltags_template.html/164 ?></h3>
-<p><? sv/apisamples/alltags_template.html/165 ?></p>
-<h4><? sv/apisamples/alltags_template.html/166 ?></h4>
-<? sv/apisamples/alltags_template.html/167 ?>
+<p>Servermasterns e-mail-adress.</p>
+<h4>Exempel</h4>
+#serverMasterEmail#
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/168 ?></h3>
-<p><? sv/apisamples/alltags_template.html/169 ?></p>
-<h4><? sv/apisamples/alltags_template.html/170 ?></h4>
-<? sv/apisamples/alltags_template.html/171 ?>
-
-<hr>
-<h3><? sv/apisamples/alltags_template.html/172 ?></h3>
-<p><? sv/apisamples/alltags_template.html/173 ?></p>
-<h4><? sv/apisamples/alltags_template.html/174 ?></h4>
-<? sv/apisamples/alltags_template.html/175 ?>
+<h3><tt>&#35;session_counter&#35;</tt></h3>
+<p>Login-räknaren</p>
+<h4>Exempel</h4>
+#session_counter#
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/176 ?></h3>
+<h3><tt>&#35;session_counter_date&#35;</tt></h3>
+<p>Tiden då login-räknaren senast nollställdes, i &quot;<tt>yyyy-MM-dd</tt>&quot;-format.</p>
+<h4>Exempel</h4>
+#session_counter_date#
 
-<p><? sv/apisamples/alltags_template.html/177 ?></p>
-<h4><? sv/apisamples/alltags_template.html/178 ?></h4>
-<? sv/apisamples/alltags_template.html/179 ?>
+<hr>
+<h3><tt>&#35;sys_message&#35;</tt></h3>
+<p>System-meddelandet</p>
+<h4>Exempel</h4>
+#sys_message#
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/180 ?></h3>
-<p><? sv/apisamples/alltags_template.html/181 ?></p>
-<h4><? sv/apisamples/alltags_template.html/182 ?></h4>
-<? sv/apisamples/alltags_template.html/183 ?>
+<h3><tt>&#35;userName&#35;</tt></h3>
+
+<p>Användarens fulla namn.</p>
+<h4>Exempel</h4>
+#userName#
 
 <hr>
 
-<h3><? sv/apisamples/alltags_template.html/184 ?></h3>
-<p><? sv/apisamples/alltags_template.html/185 ?></p>
-<h4><? sv/apisamples/alltags_template.html/186 ?></h4>
-<? sv/apisamples/alltags_template.html/187 ?>
+<h3><tt>&#35;webMaster&#35;</tt></h3>
+<p>Namnet på webmastern</p>
+<h4>Exempel</h4>
+#webMaster#
 
 <hr>
-   <? sv/apisamples/alltags_template.html/188 ?>
+
+<h3><tt>&#35;webMasterEmail&#35;</tt></h3>
+<p>Webmasterns e-mail-adress.</p>
+<h4>Exempel</h4>
+#webMasterEmail#
+
+<hr>
+   #adminMode#
+   #changePage#
 <!--/IMSCRIPT-->
     </body>
 </html>

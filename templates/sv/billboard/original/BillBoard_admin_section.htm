@@ -83,7 +83,7 @@ function closeThisWindow(){
 }
 //-->
 </script>
-<title><? sv/billboard/original/BillBoard_admin_section.htm/1 ?></title>
+<title>Forum Frame</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
@@ -127,7 +127,7 @@ function closeThisWindow(){
             </td>
             <td width="49%" valign="top">
               <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/billboard/original/BillBoard_admin_section.htm/7 ?></font><br><br>
-              <select name="BEF_SECTION" size="3">		 		 <? sv/billboard/original/BillBoard_admin_section.htm/8 ?>                                                      </select>
+              <select name="BEF_SECTION" size="3">		 		 #SECTION_LIST#                                                      </select>
             </td>
           </tr>
         </table>
@@ -144,7 +144,7 @@ function closeThisWindow(){
               <input type="hidden" name="ADMIN_TYPE" value="SECTION">
               <br>
               <br>
-              <select name="SECTION_ID" size="1">          <? sv/billboard/original/BillBoard_admin_section.htm/10 ?>                                                                         </select>
+              <select name="SECTION_ID" size="1">          #SECTION_LIST#                                                                         </select>
               &nbsp;&nbsp;&nbsp; 
               <input type="submit" name="DELETE_SECTION" value="<? sv/billboard/original/BillBoard_admin_section.htm/2002 ?>" style="FONT-SIZE: 10px">
             </form>
@@ -169,7 +169,7 @@ function closeThisWindow(){
             </td>
             <td width="49%" valign="top"> 
               <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/billboard/original/BillBoard_admin_section.htm/13 ?></font><br><br>
-              <select name="SECTION_ID" size="3">		 		 <? sv/billboard/original/BillBoard_admin_section.htm/14 ?>                                                      </select>
+              <select name="SECTION_ID" size="3">		 		 #SECTION_LIST#                                                      </select>
               &nbsp; </td>
           </tr>
         </table>
@@ -183,26 +183,27 @@ function closeThisWindow(){
           <tr> 
               <td valign=top align=left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3">
                 <input type="hidden" name="ADMIN_TYPE2" value="SECTION">
-                <? sv/billboard/original/BillBoard_admin_section.htm/15 ?></font><? sv/billboard/original/BillBoard_admin_section.htm/16 ?> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-                <? sv/billboard/original/BillBoard_admin_section.htm/17 ?></font><? sv/billboard/original/BillBoard_admin_section.htm/18 ?>
+                <? sv/billboard/original/BillBoard_admin_section.htm/15 ?></font>: <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+                <? sv/billboard/original/BillBoard_admin_section.htm/17 ?></font>:<br>
+              <br>
               <select name="NBR_OF_DISCS_TO_SHOW" size="1">
-                <option value="5"><? sv/billboard/original/BillBoard_admin_section.htm/19 ?></option>
-                <option value="10"><? sv/billboard/original/BillBoard_admin_section.htm/20 ?></option>
-                <option value="20"><? sv/billboard/original/BillBoard_admin_section.htm/21 ?></option>
-                <option value="30" selected><? sv/billboard/original/BillBoard_admin_section.htm/22 ?></option>
-                <option value="40"><? sv/billboard/original/BillBoard_admin_section.htm/23 ?></option>
-                <option value="50"><? sv/billboard/original/BillBoard_admin_section.htm/24 ?></option>
-                <option value="60"><? sv/billboard/original/BillBoard_admin_section.htm/25 ?></option>
-                <option value="70"><? sv/billboard/original/BillBoard_admin_section.htm/26 ?></option>
-                <option value="80"><? sv/billboard/original/BillBoard_admin_section.htm/27 ?></option>
-                <option value="90"><? sv/billboard/original/BillBoard_admin_section.htm/28 ?></option>
-                <option value="100"><? sv/billboard/original/BillBoard_admin_section.htm/29 ?></option>
-                <option value="150"><? sv/billboard/original/BillBoard_admin_section.htm/30 ?></option>
-                <option value="200"><? sv/billboard/original/BillBoard_admin_section.htm/31 ?></option>
-                <option value="300"><? sv/billboard/original/BillBoard_admin_section.htm/32 ?></option>
-                <option value="400"><? sv/billboard/original/BillBoard_admin_section.htm/33 ?></option>
-                <option value="500"><? sv/billboard/original/BillBoard_admin_section.htm/34 ?></option>
-                <option value="600"><? sv/billboard/original/BillBoard_admin_section.htm/35 ?></option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30" selected>30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+                <option value="60">60</option>
+                <option value="70">70</option>
+                <option value="80">80</option>
+                <option value="90">90</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+                <option value="300">300</option>
+                <option value="400">400</option>
+                <option value="500">500</option>
+                <option value="600">600</option>
               </select>
               &nbsp;&nbsp;&nbsp; 
               <input type="submit" name="SHOW_DISCUSSION_NBR" value="<? sv/billboard/original/BillBoard_admin_section.htm/2004 ?>" style="FONT-SIZE: 10px" onClick="if(evalNbrOfDiscsToShow()==false) return false; return true;">
@@ -213,7 +214,7 @@ function closeThisWindow(){
                 <? sv/billboard/original/BillBoard_admin_section.htm/1001 ?> </font><br>
                 <br>
               <select name="SECTION_ID" size="3">
-				 <? sv/billboard/original/BillBoard_admin_section.htm/36 ?>                
+				 #NBR_OF_DISCS_TO_SHOW_LIST#                
 			</select>
             </td>
           </tr>
@@ -229,26 +230,27 @@ function closeThisWindow(){
           <tr> 
               <td valign=top align=left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3">
                 <input type="hidden" name="ADMIN_TYPE3" value="SECTION">
-                <? sv/billboard/original/BillBoard_admin_section.htm/37 ?></font><? sv/billboard/original/BillBoard_admin_section.htm/38 ?> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-                <? sv/billboard/original/BillBoard_admin_section.htm/39 ?></font><? sv/billboard/original/BillBoard_admin_section.htm/40 ?>
+                <? sv/billboard/original/BillBoard_admin_section.htm/37 ?></font>: <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+                <? sv/billboard/original/BillBoard_admin_section.htm/39 ?></font>:<br>
+              <br>
               <select name="NBR_OF_DAYS_TO_SHOW" size="1">
-                <option value="5"><? sv/billboard/original/BillBoard_admin_section.htm/41 ?></option>
-                <option value="10"><? sv/billboard/original/BillBoard_admin_section.htm/42 ?></option>
-                <option value="20"><? sv/billboard/original/BillBoard_admin_section.htm/43 ?></option>
-                <option value="30" selected><? sv/billboard/original/BillBoard_admin_section.htm/44 ?></option>
-                <option value="40"><? sv/billboard/original/BillBoard_admin_section.htm/45 ?></option>
-                <option value="50"><? sv/billboard/original/BillBoard_admin_section.htm/46 ?></option>
-                <option value="60"><? sv/billboard/original/BillBoard_admin_section.htm/47 ?></option>
-                <option value="70"><? sv/billboard/original/BillBoard_admin_section.htm/48 ?></option>
-                <option value="80"><? sv/billboard/original/BillBoard_admin_section.htm/49 ?></option>
-                <option value="90"><? sv/billboard/original/BillBoard_admin_section.htm/50 ?></option>
-                <option value="100"><? sv/billboard/original/BillBoard_admin_section.htm/51 ?></option>
-                <option value="150"><? sv/billboard/original/BillBoard_admin_section.htm/52 ?></option>
-                <option value="200"><? sv/billboard/original/BillBoard_admin_section.htm/53 ?></option>
-                <option value="300"><? sv/billboard/original/BillBoard_admin_section.htm/54 ?></option>
-                <option value="400"><? sv/billboard/original/BillBoard_admin_section.htm/55 ?></option>
-                <option value="500"><? sv/billboard/original/BillBoard_admin_section.htm/56 ?></option>
-                <option value="600"><? sv/billboard/original/BillBoard_admin_section.htm/57 ?></option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30" selected>30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+                <option value="60">60</option>
+                <option value="70">70</option>
+                <option value="80">80</option>
+                <option value="90">90</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+                <option value="300">300</option>
+                <option value="400">400</option>
+                <option value="500">500</option>
+                <option value="600">600</option>
               </select>
               &nbsp;&nbsp;&nbsp; 
               <input type="submit" name="SHOW_DISCUSSION_DAYS" value="<? sv/billboard/original/BillBoard_admin_section.htm/2005 ?>" style="FONT-SIZE: 10px" onClick="if(evalNbrOfDaysToShow()==false) return false; return true;">
@@ -259,7 +261,7 @@ function closeThisWindow(){
                 <? sv/billboard/original/BillBoard_admin_section.htm/1002 ?> </font><br>
                 <br>
               <select name="SECTION_ID" size="3">
-				 <? sv/billboard/original/BillBoard_admin_section.htm/58 ?>                
+				 #NBR_OF_DAYS_TO_SHOW_LIST#                
 			</select>
             </td>
           </tr>
@@ -276,7 +278,7 @@ function closeThisWindow(){
       <table width="100%" border="0" cellpadding="o" cellspacing="0">
         <tr> 
             <td width="45%"><A href="#SERVLET_URL#BillBoardHelp?helpmode=admin&amp;helparea=Section#Section" target=_BillBoardHelp><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/billboard/original/BillBoard_admin_section.htm/59 ?></font></A></td>
-            <td width="55%" nowrap><? sv/billboard/original/BillBoard_admin_section.htm/60 ?></td>
+            <td width="55%" nowrap>#SECTION_UNADMIN_LINK#</td>
         </tr>
       </table>
     </td>

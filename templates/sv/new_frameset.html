@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'frame_set')">
 
 <script>
-<? sv/new_frameset.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="POST" action="SaveNewFrameset">
@@ -26,14 +27,14 @@
 </form>
 </table>
 <script>
-<? sv/new_frameset.html/3 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="POST" action="SaveNewFrameset">
 <input type="hidden" name="meta_id" value="#getMetaId#">
 <input type="hidden" name="new_meta_id" value="#new_meta_id#">
 <tr> 
-	<td><script><? sv/new_frameset.html/4 ?></script></td>
+	<td><script>imcHeading("Ändra HTML-kod",656);</script></td>
 </tr>
 <tr>
 	<td><? sv/new_frameset.html/5 ?></td>
@@ -43,7 +44,7 @@
 </textarea></td>
 </tr>
 <tr>
-	<td><script><? sv/new_frameset.html/6 ?></script></td>
+	<td><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr> 
 	<td align="right">
@@ -54,7 +55,8 @@
 </form>
 </table>
 <script>
-<? sv/new_frameset.html/7 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 </body>

@@ -20,9 +20,17 @@
 %>
 <html>
 <body>
-<h1><? sv/apisamples/document_get_document_info.jsp/1 ?></h1>
+<h1>Document information</h1>
 <pre>
-<? sv/apisamples/document_get_document_info.jsp/2 ?>
+Headline: "<%=document.getHeadline()%>"
+Menu text: "<%=document.getMenuText()%>"
+Menu image url: "<%=document.getMenuImageURL()%>"
+Activated: <%=document.getActivatedDatetime()%>
+Archived: <%=document.getArchivedDatetime()%>
+Language: "<%=document.getLanguage()%>"
+Creator: <a href="mailto:<%=document.getCreator().getEmailAddress()%>"><%=document.getCreator().getLoginName()%></a>
+Categories: <%= categoriesBuffer %>
+Publisher:  <%= document.getPublisher() %>
 </pre>
 </body>
 </html>

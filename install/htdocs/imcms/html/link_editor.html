@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF" marginwidth="0" marginheight="0" leftmargin="0" topmargin="0" class="imcmsAdmBgCont" style="border:0; margin:0" onLoad="focusField(1,'createLinkDesc')">
 
 <script>
-<? imcms/html/link_editor.html/2 ?>
+imcmsGui("outer_start_noshade", "MAX");
+imcmsGui("head_noshade", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form>
@@ -21,7 +22,7 @@
 </form>
 </table>
 <script>
-<? imcms/html/link_editor.html/3 ?>
+imcmsGui("mid_noshade", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <form name="createLinkForm" onSubmit="createLink(); return false">
@@ -65,7 +66,7 @@
 			</select></td>
 			<td>&nbsp;</td>
 			<td class="form" align="right"><script>
-<? imcms/html/link_editor.html/20 ?>
+writeFormField("TEXT","createLinkTarget",12,50,100,"");
 </script></td>
 		</tr>
 		</table></td>
@@ -80,11 +81,11 @@
 	<tr>
 		<td class="imcmsAdmText" nowrap><? imcms/html/link_editor.html/22 ?></td>
 		<td><script>
-<? imcms/html/link_editor.html/23 ?>
+writeFormField("TEXT","createLinkCss",20,50,150,"");
 </script></td>
 	</tr>
 	<tr>
-		<td colspan="2"><script><? imcms/html/link_editor.html/24 ?></script></td>
+		<td colspan="2"><script>hr("100%",396,"blue");</script></td>
 	</tr>
 	<tr>
 		<td colspan="2" align="right">
@@ -101,7 +102,7 @@
 	</tr>
 	<tr>
 		<td colspan="2"><script>
-<? imcms/html/link_editor.html/26 ?>
+writeFormField("TEXT","theLinkCodeField",76,255,"100%","");
 </script><div id="theLinkCodeFieldDiv"></div></td>
 	</tr>
 	<tr>
@@ -113,7 +114,8 @@
 </form>
 </table>
 <script>
-<? imcms/html/link_editor.html/27 ?>
+imcmsGui("bottom_noshade", null);
+imcmsGui("outer_end_noshade", null);
 </script>
 
 <script language="javascript">

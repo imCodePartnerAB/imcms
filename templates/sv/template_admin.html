@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF">
 
 <script>
-<? sv/template_admin.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
@@ -42,7 +43,7 @@
 </tr>
 </table>
 <script>
-<? sv/template_admin.html/5 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <tr>
@@ -52,7 +53,7 @@
 	<td height="28" class="imcmsAdmText"><? sv/template_admin.html/7 ?></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/template_admin.html/8 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
 	<td align="right">
@@ -61,7 +62,8 @@
 </form>
 </table>
 <script>
-<? sv/template_admin.html/9 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 </body>

@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'file')">
 
 <script>
-<? sv/change_fileupload.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="AdminDoc">
@@ -24,7 +25,7 @@
 </form>
 </table>
 <script>
-<? sv/change_fileupload.html/3 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <form method="POST" enctype="multipart/form-data" action="SaveFileUpload">
@@ -40,7 +41,7 @@
 	<tr> 
 		<td width="20%" height="22"><? sv/change_fileupload.html/5 ?></td>
 		<td width="80%"><script>
-<? sv/change_fileupload.html/6 ?>
+writeFormField("FILE","file",45,null,null,null);
 </script></td>
 	</tr>
 	<tr> 
@@ -48,24 +49,24 @@
 		<td>
 		<select name="mime">
 			<option value=""><? sv/change_fileupload.html/8 ?></option>
-			<? sv/change_fileupload.html/9 ?>
+			#mime#
 		</select></td>
 	</tr>
 	<tr> 
 		<td height="22"><? sv/change_fileupload.html/10 ?></td>
 		<td><script>
-<? sv/change_fileupload.html/11 ?>
+writeFormField("TEXT","other",30,50,null,"#other#");
 </script></td>
 	</tr>
 	<tr> 
 		<td height="22"><? sv/change_fileupload.html/12 ?></td>
-		<td><? sv/change_fileupload.html/13 ?></td>
+		<td>&quot;#file#&quot;</td>
 		<input type="HIDDEN" name="oldname" value="#file#">
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td><script><? sv/change_fileupload.html/14 ?></script></td>
+	<td><script>hr("100%",396,"blue");</script></td>
 </tr>
 <tr> 
 	<td align="right"><input type="submit" class="imcmsFormBtn" value="<? sv/change_fileupload.html/2004 ?>" name="ok"></td>
@@ -75,10 +76,11 @@
 </form>
 </table>
 <script>
-<? sv/change_fileupload.html/15 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
-<div align="center"><? sv/change_fileupload.html/16 ?></div>
+<div align="center">#adminMode#</div>
 
 </body>
 </html>

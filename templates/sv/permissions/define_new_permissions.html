@@ -12,7 +12,8 @@
 <body bgcolor="#FFFFFF">
 
 <script>
-<? sv/permissions/define_new_permissions.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="SavePermissions">
@@ -26,15 +27,18 @@
 </tr>
 </table>
 <script>
-<? sv/permissions/define_new_permissions.html/3 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <tr> 
 	<td colspan="3"><script><? sv/permissions/define_new_permissions.html/4 ?></script></td>
 </tr>
-<? sv/permissions/define_new_permissions.html/5 ?> 
+#1#
+#2#
+#4#	
+#doc_rights# 
 <tr>
-	<td colspan="3"><script><? sv/permissions/define_new_permissions.html/6 ?></script></td>
+	<td colspan="3"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
 	<td colspan="3" align="right">
@@ -51,7 +55,8 @@
 </form>
 </table>
 <script>
-<? sv/permissions/define_new_permissions.html/7 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 </body>
 </html>

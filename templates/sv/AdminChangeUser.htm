@@ -43,7 +43,8 @@ function evalEditUser() {
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'searchstring')">
 
 <script>
-<? sv/AdminChangeUser.htm/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="AdminUser" name="abortForm">
@@ -56,7 +57,7 @@ function evalEditUser() {
 </form>
 </table>
 <script>
-<? sv/AdminChangeUser.htm/3 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0" width="400" align="center">
 <form name="user_categoriesForm" action="AdminUser" method="post">
@@ -68,14 +69,14 @@ function evalEditUser() {
 	<? sv/AdminChangeUser.htm/5 ?></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/AdminChangeUser.htm/6 ?></script></td>
+	<td colspan="2"><script>hr("100%",396,"cccccc");</script></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? sv/AdminChangeUser.htm/7 ?></td>
 	<td>
 	<select name="user_categories"  style="WIDTH: 200px">
 		<option value="All_Choice" selected><? sv/AdminChangeUser.htm/8 ?></option>
-		<? sv/AdminChangeUser.htm/9 ?>
+		#USER_TYPES#
 	</select></td>
 </tr>
 <tr>
@@ -84,7 +85,7 @@ function evalEditUser() {
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><script>
-<? sv/AdminChangeUser.htm/11 ?>
+writeFormField("TEXT","searchstring",20,20,null,"#searchstring#");
 </script></td>
 		<td class="imcmsAdmDim">&nbsp; <? sv/AdminChangeUser.htm/1001 ?></td>
 	</tr>
@@ -95,7 +96,7 @@ function evalEditUser() {
 	<td><input type="checkbox" name="active" value="0" #active#> <? sv/AdminChangeUser.htm/12 ?></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/AdminChangeUser.htm/13 ?></script></td>
+	<td colspan="2"><script>hr("100%",396,"cccccc");</script></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText">&nbsp;</td>
@@ -118,7 +119,7 @@ function evalEditUser() {
 	<tr valign="top">
 		<td>
 		<select name="user_Id" size="15" style="width:300">
-			<? sv/AdminChangeUser.htm/15 ?>
+			#USERS_MENU#
 		</select></td>
 		<td>&nbsp;</td>
 		<td>
@@ -129,7 +130,7 @@ function evalEditUser() {
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/AdminChangeUser.htm/16 ?></script></td>
+	<td colspan="2"><script>hr("100%",396,"blue");</script></td>
 </tr>
 <tr>
 	<td colspan="2" align="right"><input type="submit" class="imcmsFormBtn" name="GO_BACK" value="<? sv/AdminChangeUser.htm/2007 ?>"></td>
@@ -137,7 +138,8 @@ function evalEditUser() {
 </form>
 </table>
 <script>
-<? sv/AdminChangeUser.htm/17 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 <script language="JavaScript">

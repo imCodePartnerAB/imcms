@@ -112,7 +112,7 @@ function closeThisWindow(){
             </td>
             <td width="49%" valign="top">
               <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/conf/original/Conf_Admin_Forum.htm/7 ?></font><br><br>
-              <select name="BEF_FORUM" size="3">		 		 <? sv/conf/original/Conf_Admin_Forum.htm/8 ?>                                                      </select>
+              <select name="BEF_FORUM" size="3">		 		 #FORUM_LIST#                                                      </select>
             </td>
           </tr>
         </table>
@@ -129,7 +129,7 @@ function closeThisWindow(){
               <input type="hidden" name="ADMIN_TYPE" value="FORUM">
               <br>
               <br>
-              <select name="FORUM_ID" size="1">          <? sv/conf/original/Conf_Admin_Forum.htm/10 ?>                                                                         </select>
+              <select name="FORUM_ID" size="1">          #FORUM_LIST#                                                                         </select>
               &nbsp;&nbsp;&nbsp; 
               <input type="submit" name="DELETE_FORUM" value="<? sv/conf/original/Conf_Admin_Forum.htm/2002 ?>" style="font-size:10" onClick="if(evalDelForum()== false) return false; return true; ">
             </form>
@@ -153,7 +153,7 @@ function closeThisWindow(){
             </td>
             <td width="49%" valign="top"> 
               <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/conf/original/Conf_Admin_Forum.htm/13 ?></font><br><br>
-              <select name="FORUM_ID" size="3">		 		 <? sv/conf/original/Conf_Admin_Forum.htm/14 ?>                                                      </select>
+              <select name="FORUM_ID" size="3">		 		 #FORUM_LIST#                                                      </select>
               &nbsp; </td>
           </tr>
         </table>
@@ -167,26 +167,26 @@ function closeThisWindow(){
           <tr> 
               <td valign=Top align=Left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3">
                 <input type="hidden" name="ADMIN_TYPE2" value="FORUM">
-                <? sv/conf/original/Conf_Admin_Forum.htm/15 ?></font><? sv/conf/original/Conf_Admin_Forum.htm/16 ?> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+                <? sv/conf/original/Conf_Admin_Forum.htm/15 ?></font>: <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
                 <? sv/conf/original/Conf_Admin_Forum.htm/17 ?></font><? sv/conf/original/Conf_Admin_Forum.htm/18 ?>
               <select name="NBR_OF_DISCS_TO_SHOW" size="1">
-                <option value="5" selected><? sv/conf/original/Conf_Admin_Forum.htm/19 ?></option>
-                <option value="10"><? sv/conf/original/Conf_Admin_Forum.htm/20 ?></option>
-                <option value="20"><? sv/conf/original/Conf_Admin_Forum.htm/21 ?></option>
-                <option value="30"><? sv/conf/original/Conf_Admin_Forum.htm/22 ?></option>
-                <option value="40"><? sv/conf/original/Conf_Admin_Forum.htm/23 ?></option>
-                <option value="50"><? sv/conf/original/Conf_Admin_Forum.htm/24 ?></option>
-                <option value="60"><? sv/conf/original/Conf_Admin_Forum.htm/25 ?></option>
-                <option value="70"><? sv/conf/original/Conf_Admin_Forum.htm/26 ?></option>
-                <option value="80"><? sv/conf/original/Conf_Admin_Forum.htm/27 ?></option>
-                <option value="90"><? sv/conf/original/Conf_Admin_Forum.htm/28 ?></option>
-                <option value="100"><? sv/conf/original/Conf_Admin_Forum.htm/29 ?></option>
-                <option value="150"><? sv/conf/original/Conf_Admin_Forum.htm/30 ?></option>
-                <option value="200"><? sv/conf/original/Conf_Admin_Forum.htm/31 ?></option>
-                <option value="300"><? sv/conf/original/Conf_Admin_Forum.htm/32 ?></option>
-                <option value="400"><? sv/conf/original/Conf_Admin_Forum.htm/33 ?></option>
-                <option value="500"><? sv/conf/original/Conf_Admin_Forum.htm/34 ?></option>
-                <option value="600"><? sv/conf/original/Conf_Admin_Forum.htm/35 ?></option>
+                <option value="5" selected>5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+                <option value="60">60</option>
+                <option value="70">70</option>
+                <option value="80">80</option>
+                <option value="90">90</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+                <option value="300">300</option>
+                <option value="400">400</option>
+                <option value="500">500</option>
+                <option value="600">600</option>
               </select>
               &nbsp;&nbsp;&nbsp; 
               <input type="submit" name="SHOW_DISCUSSION_NBR" value="<? sv/conf/original/Conf_Admin_Forum.htm/2004 ?>" style="font-size:10" onClick="if(evalNbrOfDiscsToShow()==false) return false; return true;">
@@ -196,7 +196,7 @@ function closeThisWindow(){
               <td width="49%" valign="top"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/conf/original/Conf_Admin_Forum.htm/36 ?> </font><br>
                 <br>
               <select name="FORUM_ID" size="3">
-				 <? sv/conf/original/Conf_Admin_Forum.htm/37 ?>                
+				 #NBR_OF_DISCS_TO_SHOW_LIST#                
 			</select>
             </td>
           </tr>
@@ -212,7 +212,7 @@ function closeThisWindow(){
       <table width="100%" border="0" cellpadding="o" cellspacing="0">
         <tr> 
             <td width="45%"><a href="#SERVLET_URL#ConfHelp?helpmode=admin&amp;helparea=Forum#Forum" target="_ConfHelp"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/conf/original/Conf_Admin_Forum.htm/38 ?></font></a></td>
-            <td width="55%" nowrap><? sv/conf/original/Conf_Admin_Forum.htm/39 ?></td>
+            <td width="55%" nowrap>#CONF_UNADMIN_LINK#</td>
         </tr>
       </table>
     </td>

@@ -29,7 +29,8 @@ function evalPrepareAdd() {
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'password1')">
 
 <script>
-<? sv/userprefs_change.htm/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="StartDoc">
@@ -39,7 +40,7 @@ function evalPrepareAdd() {
 </form>
 </table>
 <script>
-<? sv/userprefs_change.htm/3 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="post" action="UserChangePrefs" name="UserInfo">
@@ -53,11 +54,11 @@ function evalPrepareAdd() {
 	<td colspan="2"><? sv/userprefs_change.htm/5 ?> </td>
 </tr>
 <tr> 
-	<td colspan="2"><script><? sv/userprefs_change.htm/6 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 </tr>
 <tr> 
 	<td class="imcmsAdmText"><? sv/userprefs_change.htm/7 ?></td>
-	<td><? sv/userprefs_change.htm/8 ?></td>
+	<td>#LOGIN_NAME#</td>
 </tr>
 <tr> 
 	<td class="imcmsAdmText"><? sv/userprefs_change.htm/9 ?></td>
@@ -117,7 +118,7 @@ function evalPrepareAdd() {
 	<tr>
 		<td>
 		<select name="user_phones" multiple size="1">
-			<? sv/userprefs_change.htm/22 ?>
+			#PHONES_MENU#
 		</select></td>
 		<td>&nbsp;</td>
 		<td><input type="submit" class="imcmsFormBtnSmall" name="edit_phones" value="<? sv/userprefs_change.htm/2002 ?>"></td>
@@ -129,7 +130,7 @@ function evalPrepareAdd() {
 	<td><? sv/userprefs_change.htm/23 ?> </td>
 </tr>
 <tr> 
-	<td colspan="2"><script><? sv/userprefs_change.htm/24 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
 	<td colspan="2" align="right">
@@ -146,7 +147,8 @@ function evalPrepareAdd() {
 </form>
 </table>
 <script>
-<? sv/userprefs_change.htm/25 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 </body>

@@ -121,11 +121,12 @@ function closeThisWindow(){
                 <br>
                 <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? sv/billboard/original/BillBoard_Admin_Template1.htm/13 ?></font><br>
         <br>
-<select name="TEMPLATE_ID" size="1">          <? sv/billboard/original/BillBoard_Admin_Template1.htm/14 ?>                                                         </select>
+<select name="TEMPLATE_ID" size="1">          #TEMPLATE_LIST#                                                         </select>
         <br>
         <br>
         <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/billboard/original/BillBoard_Admin_Template1.htm/15 ?></font> 
-        <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/billboard/original/BillBoard_Admin_Template1.htm/16 ?></font> 
+        <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>
+        (Metaid=#A_META_ID#)</font> 
         &nbsp;&nbsp;&nbsp;
                 <input type="submit" name="SET_TEMPLATE_LIB" value="<? sv/billboard/original/BillBoard_Admin_Template1.htm/2002 ?>" style="FONT-SIZE: 10px" onClick="if(evalNbrOfDiscssetTemplates()==false) return false; return true;">
         </form>
@@ -141,7 +142,7 @@ function closeThisWindow(){
         <br>
         <br>
         <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/billboard/original/BillBoard_Admin_Template1.htm/18 ?> </font>&nbsp;&nbsp;&nbsp; 
-        <select name="TEMPLATE_NAME">          <? sv/billboard/original/BillBoard_Admin_Template1.htm/19 ?>                                                                  </select>
+        <select name="TEMPLATE_NAME">          #TEMPLATE_LIST#                                                                  </select>
         <br>
         <br>
         <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/billboard/original/BillBoard_Admin_Template1.htm/20 ?></font> 
@@ -164,7 +165,7 @@ function closeThisWindow(){
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td width="50%"><A href="#SERVLET_URL#BillBoardHelp?helpmode=admin&amp;helparea=Section#Template" target=_ConfHelp><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/billboard/original/BillBoard_Admin_Template1.htm/23 ?></font></A></td>
-                  <td width="50%"><? sv/billboard/original/BillBoard_Admin_Template1.htm/24 ?></td>
+                  <td width="50%"><A href="#SERVLET_URL#BillBoardViewer">#SECTION_UNADMIN_LINK#</A></td>
                 </tr>
               </table>
     </td>

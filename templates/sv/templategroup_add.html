@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'name')">
 
 <script>
-<? sv/templategroup_add.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
@@ -44,7 +45,7 @@
 </form>
 </table>
 <script>
-<? sv/templategroup_add.html/5 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateChange" action="TemplateChange" method="post">
@@ -62,7 +63,7 @@
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/templategroup_add.html/7 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
 	<td colspan="2" align="right">
@@ -72,7 +73,8 @@
 </form>
 </table>
 <script>
-<? sv/templategroup_add.html/8 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 </body>

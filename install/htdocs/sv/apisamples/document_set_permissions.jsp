@@ -9,6 +9,20 @@ java.util.*" errorPage="error.jsp" %>
 
 <html>
 <body>
-<? sv/apisamples/document_set_permissions.jsp/1 ?>
+<%
+    ContentManagementSystem imcms = (ContentManagementSystem) request.getAttribute(RequestConstants.SYSTEM) ;
+    DocumentService documentService = imcms.getDocumentService() ;
+
+    TextDocument document = documentService.getTextDocument(documentId) ;
+
+    try {
+        document.setPermissionSetForRole(roleName, permissionSet) ;
+        documentService.saveChanges( document );
+        %>Done, see <a href="document_permissions.jsp">document_permissions.jsp</a>.<%
+    } catch (NoSuchRoleException nsre) {
+        %>No such role '<%= roleName %>'.<%
+    }
+
+%>
 </body>
 </html>

@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'file')">
 
 <script>
-<? sv/templatedemo_upload.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
@@ -44,7 +45,7 @@
 </form>
 </table>
 <script>
-<? sv/templatedemo_upload.html/5 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="post" action="TemplateAdd" enctype="multipart/form-data">
@@ -59,7 +60,7 @@
 	<tr>
 		<td width="20%" class="imcmsAdmText" nowrap><? sv/templatedemo_upload.html/1001 ?> &nbsp;</td>
 		<td><script>
-<? sv/templatedemo_upload.html/7 ?>
+writeFormField("FILE","file",85,null,null,null);
 </script></td>
 	</tr>
 	<tr>
@@ -69,7 +70,7 @@
 		<tr>
 			<td>
 			<select name="template">
-			<? sv/templatedemo_upload.html/8 ?>
+			#templates#
 			</select></td>
 			<td class="imcmsAdmText" nowrap>&nbsp; <? sv/templatedemo_upload.html/1003 ?></td>
 		</tr>
@@ -95,7 +96,7 @@
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/templatedemo_upload.html/10 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
 	<td colspan="2" align="right">
@@ -104,7 +105,8 @@
 </form>
 </table>
 <script>
-<? sv/templatedemo_upload.html/11 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 </body>

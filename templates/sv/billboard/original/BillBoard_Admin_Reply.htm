@@ -31,7 +31,7 @@ function confirmDeleteReply(){
   </tr>
 </table>
 <form method="post" action="#SERVLET_URL#BillBoardAdmin" target="_parent" name="DeleteReply">
-  <p><? sv/billboard/original/BillBoard_Admin_Reply.htm/3 ?>
+  <p>#REPLIES_RECORDS# <br>
   </p>
   <table width="400" border="0" cellpadding="0" cellspacing="0">
   	
@@ -51,7 +51,7 @@ function confirmDeleteReply(){
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
 			<input name="MOVE_A_BILL" type="submit" value="<? sv/billboard/original/BillBoard_Admin_Reply.htm/2003 ?>" style="FONT-SIZE: 10px"> 
 			&nbsp;<? sv/billboard/original/BillBoard_Admin_Reply.htm/1001 ?>
-			<select name="MOVE_TO_SECTION" size="1"><? sv/billboard/original/BillBoard_Admin_Reply.htm/4 ?></select>
+			<select name="MOVE_TO_SECTION" size="1">#SECTION_LIST#</select>
 			 </FONT>
 		</td>
 	</tr>
@@ -61,7 +61,7 @@ function confirmDeleteReply(){
   <tr> 
     <td width="27%">&nbsp;&nbsp;<A href="#SERVLET_URL#BillBoardHelp?helpmode=admin&amp;helparea=Reply#Reply" target=_BillBoardHelp><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/billboard/original/BillBoard_Admin_Reply.htm/5 ?></font></a> 
     </td>
-    <td width="73%"><? sv/billboard/original/BillBoard_Admin_Reply.htm/6 ?></td>
+    <td width="73%">#SECTION_UNADMIN_LINK#</td>
   </tr>
 </table>
 <p> </p>

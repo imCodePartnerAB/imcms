@@ -5,7 +5,19 @@
 <link rel="STYLESHEET" type="text/css" href="css/editor.css">
 
 <script language="JavaScript" type="text/javascript">
-<? sv/htmleditor/editor/input_table.html/1 ?>
+<!--
+function submitTableData(){
+	var f = document.forms[0];
+	if(!(f.FROWS.value > 0)){ irows = 1; } else { irows = f.FROWS.value; }
+	if(!(f.FCOLS.value > 0)){ icols = 1; } else { icols = f.FCOLS.value; }
+	if(!(f.FSPACING.value >= 0)){ ispacing = 0; } else { ispacing = f.FSPACING.value; }
+	if(!(f.FPADDING.value >= 0)){ ipadding = 0; } else { ipadding = f.FPADDING.value; }
+	if(!(f.FBORDER.value >= 0)){ iborder = 1; } else { iborder = f.FBORDER.value; }
+	if(!(f.FWIDTH.value > 0)){ iwidth = '100%'; } else { iwidth = f.FWIDTH.value; }
+	opener.createTable(irows,icols,ispacing,ipadding,iborder,iwidth);
+	window.close();
+}
+//-->
 </script>
 
 </head>
@@ -97,7 +109,46 @@
 		</form>
 		</table></div>
 <SCRIPT LANGUAGE="JavaScript">
-<? sv/htmleditor/editor/input_table.html/4 ?>
+<!--
+var mouseActiveUp = 0;
+var mouseActiveDn = 0;
+
+function FROWSUp(){
+	clearTimeout('timeDn');
+	mouseActiveDn = 0;
+	if(mouseActiveUp){
+		var iVal = document.forms[0].FROWS.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal < 30){
+			iVal += 1;
+		}
+		document.forms[0].FROWS.value = iVal;
+		var timeUp = setTimeout("FROWSUp()", 300);
+	}
+}
+
+function FROWSDn(){
+	clearTimeout('timeUp');
+	mouseActiveUp = 0;
+	if(mouseActiveDn){
+		var iVal = document.forms[0].FROWS.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal > 1){
+			iVal -= 1;
+		}
+		document.forms[0].FROWS.value = iVal;
+		var timeDn = setTimeout("FROWSDn()", 300);
+	}
+}
+//-->
 </SCRIPT>
 
 <map name="FROWS">
@@ -107,7 +158,46 @@
 		href="#" onMouseDown="mouseActiveDn = 1; FROWSDn();" onMouseUp="mouseActiveDn = 0; clearTimeout('timeUp');">
 </map>
 <SCRIPT LANGUAGE="JavaScript">
-<? sv/htmleditor/editor/input_table.html/5 ?>
+<!--
+var mouseActiveUp = 0;
+var mouseActiveDn = 0;
+
+function FCOLSUp(){
+	clearTimeout('timeDn');
+	mouseActiveDn = 0;
+	if(mouseActiveUp){
+		var iVal = document.forms[0].FCOLS.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal < 20){
+			iVal += 1;
+		}
+		document.forms[0].FCOLS.value = iVal;
+		var timeUp = setTimeout("FCOLSUp()", 300);
+	}
+}
+
+function FCOLSDn(){
+	clearTimeout('timeUp');
+	mouseActiveUp = 0;
+	if(mouseActiveDn){
+		var iVal = document.forms[0].FCOLS.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal > 1){
+			iVal -= 1;
+		}
+		document.forms[0].FCOLS.value = iVal;
+		var timeDn = setTimeout("FCOLSDn()", 300);
+	}
+}
+//-->
 </SCRIPT>
 
 <map name="FCOLS">
@@ -117,7 +207,46 @@
 		href="#" onMouseDown="mouseActiveDn = 1; FCOLSDn();" onMouseUp="mouseActiveDn = 0; clearTimeout('timeUp');">
 </map>
 <SCRIPT LANGUAGE="JavaScript">
-<? sv/htmleditor/editor/input_table.html/6 ?>
+<!--
+var mouseActiveUp = 0;
+var mouseActiveDn = 0;
+
+function FWIDTHUp(){
+	clearTimeout('timeDn');
+	mouseActiveDn = 0;
+	if(mouseActiveUp){
+		var iVal = document.forms[0].FWIDTH.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal < 2000){
+			iVal += 100;
+		}
+		document.forms[0].FWIDTH.value = iVal;
+		var timeUp = setTimeout("FWIDTHUp()", 300);
+	}
+}
+
+function FWIDTHDn(){
+	clearTimeout('timeUp');
+	mouseActiveUp = 0;
+	if(mouseActiveDn){
+		var iVal = document.forms[0].FWIDTH.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal > 0){
+			iVal -= 100;
+		}
+		document.forms[0].FWIDTH.value = iVal;
+		var timeDn = setTimeout("FWIDTHDn()", 300);
+	}
+}
+//-->
 </SCRIPT>
 
 <map name="FWIDTH">
@@ -127,7 +256,46 @@
 		href="#" onMouseDown="mouseActiveDn = 1; FWIDTHDn();" onMouseUp="mouseActiveDn = 0; clearTimeout('timeUp');">
 </map>
 <SCRIPT LANGUAGE="JavaScript">
-<? sv/htmleditor/editor/input_table.html/7 ?>
+<!--
+var mouseActiveUp = 0;
+var mouseActiveDn = 0;
+
+function FSPACINGUp(){
+	clearTimeout('timeDn');
+	mouseActiveDn = 0;
+	if(mouseActiveUp){
+		var iVal = document.forms[0].FSPACING.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal < 10){
+			iVal += 1;
+		}
+		document.forms[0].FSPACING.value = iVal;
+		var timeUp = setTimeout("FSPACINGUp()", 300);
+	}
+}
+
+function FSPACINGDn(){
+	clearTimeout('timeUp');
+	mouseActiveUp = 0;
+	if(mouseActiveDn){
+		var iVal = document.forms[0].FSPACING.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal > 0){
+			iVal -= 1;
+		}
+		document.forms[0].FSPACING.value = iVal;
+		var timeDn = setTimeout("FSPACINGDn()", 300);
+	}
+}
+//-->
 </SCRIPT>
 
 <map name="FSPACING">
@@ -137,7 +305,46 @@
 		href="#" onMouseDown="mouseActiveDn = 1; FSPACINGDn();" onMouseUp="mouseActiveDn = 0; clearTimeout('timeUp');">
 </map>
 <SCRIPT LANGUAGE="JavaScript">
-<? sv/htmleditor/editor/input_table.html/8 ?>
+<!--
+var mouseActiveUp = 0;
+var mouseActiveDn = 0;
+
+function FPADDINGUp(){
+	clearTimeout('timeDn');
+	mouseActiveDn = 0;
+	if(mouseActiveUp){
+		var iVal = document.forms[0].FPADDING.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal < 10){
+			iVal += 1;
+		}
+		document.forms[0].FPADDING.value = iVal;
+		var timeUp = setTimeout("FPADDINGUp()", 300);
+	}
+}
+
+function FPADDINGDn(){
+	clearTimeout('timeUp');
+	mouseActiveUp = 0;
+	if(mouseActiveDn){
+		var iVal = document.forms[0].FPADDING.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal > 0){
+			iVal -= 1;
+		}
+		document.forms[0].FPADDING.value = iVal;
+		var timeDn = setTimeout("FPADDINGDn()", 300);
+	}
+}
+//-->
 </SCRIPT>
 
 <map name="FPADDING">
@@ -147,7 +354,46 @@
 		href="#" onMouseDown="mouseActiveDn = 1; FPADDINGDn();" onMouseUp="mouseActiveDn = 0; clearTimeout('timeUp');">
 </map>
 <SCRIPT LANGUAGE="JavaScript">
-<? sv/htmleditor/editor/input_table.html/9 ?>
+<!--
+var mouseActiveUp = 0;
+var mouseActiveDn = 0;
+
+function FBORDERUp(){
+	clearTimeout('timeDn');
+	mouseActiveDn = 0;
+	if(mouseActiveUp){
+		var iVal = document.forms[0].FBORDER.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal < 10){
+			iVal += 1;
+		}
+		document.forms[0].FBORDER.value = iVal;
+		var timeUp = setTimeout("FBORDERUp()", 300);
+	}
+}
+
+function FBORDERDn(){
+	clearTimeout('timeUp');
+	mouseActiveUp = 0;
+	if(mouseActiveDn){
+		var iVal = document.forms[0].FBORDER.value;
+		if(iVal == ''){
+			iVal = 0;
+		} else {
+			iVal = parseInt(iVal);
+		}
+		if(iVal > 0){
+			iVal -= 1;
+		}
+		document.forms[0].FBORDER.value = iVal;
+		var timeDn = setTimeout("FBORDERDn()", 300);
+	}
+}
+//-->
 </SCRIPT>
 
 <map name="FBORDER">

@@ -19,7 +19,8 @@ Template: AdminUserResp.htm
 
 
 <script>
-<? sv/AdminUserResp.htm/3 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="AdminUserProps">
@@ -36,7 +37,7 @@ Template: AdminUserResp.htm
 </tr>
 </table>
 <script>
-<? sv/AdminUserResp.htm/4 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0" width="660" align="center">
 <tr> 
@@ -47,12 +48,12 @@ Template: AdminUserResp.htm
 	<? sv/AdminUserResp.htm/6 ?></td>
 </tr>
 <tr> 
-	<td colspan="2"><script><? sv/AdminUserResp.htm/7 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 </tr>
 <tr> 
 	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/8 ?></td>
 	<td><script>
-<? sv/AdminUserResp.htm/9 ?>
+writeFormField("TEXT","login_name",25,50,null,"#LOGIN_NAME#");
 </script></td>
 </tr>
 <tr> 
@@ -61,11 +62,11 @@ Template: AdminUserResp.htm
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><script>
-<? sv/AdminUserResp.htm/12 ?>
+writeFormField("PASSWORD","password1",16,15,null,"#PWD1#");
 </script></td>
 		<td class="imcmsAdmText" nowrap>&nbsp; <? sv/AdminUserResp.htm/1001 ?> &nbsp;</td>
 		<td><script>
-<? sv/AdminUserResp.htm/13 ?>
+writeFormField("PASSWORD","password2",16,15,null,"#PWD2#");
 </script></td>
 	</tr>
 	</table></td>
@@ -73,31 +74,31 @@ Template: AdminUserResp.htm
 <tr> 
 	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/14 ?></td>
 	<td><script>
-<? sv/AdminUserResp.htm/15 ?>
+writeFormField("TEXT","first_name",25,25,null,"#FIRST_NAME#");
 </script></td>
 </tr>
 <tr> 
 	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/16 ?></td>
 	<td><script>
-<? sv/AdminUserResp.htm/17 ?>
+writeFormField("TEXT","last_name",25,30,null,"#LAST_NAME#");
 </script></td>
 </tr>
 <tr> 
 	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/18 ?></td>
 	<td><script>
-<? sv/AdminUserResp.htm/19 ?>
+writeFormField("TEXT","title",25,30,null,"#TITLE#");
 </script></td>
 </tr>
 <tr> 
 	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/20 ?></td>
 	<td><script>
-<? sv/AdminUserResp.htm/21 ?>
+writeFormField("TEXT","company",25,30,null,"#COMPANY#");
 </script></td>
 </tr>
 <tr> 
 	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/22 ?></td>
 	<td><script>
-<? sv/AdminUserResp.htm/23 ?>
+writeFormField("TEXT","address",25,30,null,"#ADDRESS#");
 </script></td>
 </tr>
 <tr> 
@@ -106,11 +107,11 @@ Template: AdminUserResp.htm
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><script>
-<? sv/AdminUserResp.htm/25 ?>
+writeFormField("TEXT","zip",7,30,null,"#ZIP#");
 </script></td>
 		<td>&nbsp;</td>
 		<td><script>
-<? sv/AdminUserResp.htm/26 ?>
+writeFormField("TEXT","city",25,30,null,"#CITY#");
 </script></td>
 	</tr>
 	</table></td>
@@ -118,17 +119,17 @@ Template: AdminUserResp.htm
 <tr>
 	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/27 ?></td>
 	<td><script>
-<? sv/AdminUserResp.htm/28 ?>
+writeFormField("TEXT","country_council",25,30,null,"#COUNTRY_COUNCIL#");
 </script></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/29 ?></td>
 	<td><script>
-<? sv/AdminUserResp.htm/30 ?>
+writeFormField("TEXT","country",25,30,null,"#COUNTRY#");
 </script></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/AdminUserResp.htm/31 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 </tr>
 <tr> 
 	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/32 ?></td>
@@ -137,11 +138,11 @@ Template: AdminUserResp.htm
 	<tr>
 		<td>
 	  <select name="phonetype" size="1" >
-			<? sv/AdminUserResp.htm/33 ?>
+			#PHONETYPES_MENU#
 	  </select></td>
 		<td>&nbsp;</td>
 		<td><script>
-<? sv/AdminUserResp.htm/34 ?>
+writeFormField("TEXT","local_code",16,25,null,"#NUMBER#");
 </script></td>
 		<td>&nbsp;</td>
 		<td><input type="submit" class="imcmsFormBtnSmall" value="<? sv/AdminUserResp.htm/2004 ?>" name="ok_phones"></td>
@@ -155,7 +156,7 @@ Template: AdminUserResp.htm
 	<tr>
 		<td>
 		<select size="1" name="user_phones">
-		<? sv/AdminUserResp.htm/35 ?>
+		#PHONES_MENU#
 		</select></td>
 		<td>&nbsp;</td>
 		<td><input type="submit" class="imcmsFormBtnSmall" name="edit_phones" value="<? sv/AdminUserResp.htm/2005 ?>"></td>
@@ -167,12 +168,12 @@ Template: AdminUserResp.htm
 <tr>
 	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/36 ?></td>
 	<td><script>
-<? sv/AdminUserResp.htm/37 ?>
+writeFormField("TEXT","email",50,50,null,"#EMAIL#");
 </script></td>
 </tr>
-<? sv/AdminUserResp.htm/38 ?>
+#ADMIN_PART#
 <tr>
-	<td colspan="2"><script><? sv/AdminUserResp.htm/39 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
 	<td colspan="2">
@@ -195,7 +196,8 @@ Template: AdminUserResp.htm
 </form>
 </table>
 <script>
-<? sv/AdminUserResp.htm/41 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 </body>

@@ -1,2 +1,3 @@
-<? sv/shop/mailitemformat.txt/1 ?>
+#quantity# * #price# = #total_price#:
+  #desc1# #desc2# #desc3# #desc4# #desc5#
 

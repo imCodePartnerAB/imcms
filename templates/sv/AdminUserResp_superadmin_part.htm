@@ -1,5 +1,5 @@
 <tr>
-	<td colspan="2"><script><? sv/AdminUserResp_superadmin_part.htm/1 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? sv/AdminUserResp_superadmin_part.htm/2 ?></td>
@@ -23,11 +23,11 @@ if (/\d+/.test(sDate)) document.writeln(" &nbsp; Inläggningsdatum &nbsp; " + sDa
 	<td class="imcmsAdmText"><? sv/AdminUserResp_superadmin_part.htm/4 ?></td>
 	<td>
 	<select name="user_type">
-	<? sv/AdminUserResp_superadmin_part.htm/5 ?>
+	#USER_TYPES#
 	</select></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/AdminUserResp_superadmin_part.htm/6 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 </tr>
 <tr valign="top">
 	<td class="imcmsAdmText" nowrap>
@@ -37,14 +37,14 @@ if (/\d+/.test(sDate)) document.writeln(" &nbsp; Inläggningsdatum &nbsp; " + sDa
 	<tr valign="top">
 		<td>
 		<select name="roles" size="5" multiple onchange="activateUseradmin_roles(); return true;">
-		<? sv/AdminUserResp_superadmin_part.htm/7 ?>
+		#ROLES_MENU#
 		</select></td>
 		<td>&nbsp;</td>
 		<td class="imcmsAdmText" nowrap><? sv/AdminUserResp_superadmin_part.htm/8 ?></td>
 		<td>&nbsp;</td>
 		<td>
 		<select name="useradmin_roles" size="5" multiple>
-		<? sv/AdminUserResp_superadmin_part.htm/9 ?>
+		#ROLES_MENU_USERADMIN#
 		</select></td>
 	</tr>
 	<tr valign="top">

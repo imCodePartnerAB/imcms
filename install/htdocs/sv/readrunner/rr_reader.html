@@ -1,12 +1,174 @@
 <html>
 <head>
-<title><? sv/readrunner/rr_reader.html/1 ?></title>
+<title>ReadRunner Web</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 </head>
 
 <script language="JavaScript">
-<? sv/readrunner/rr_reader.html/2 ?>
+<!--
+/* *************************************
+ *           Default Settings          *
+ ************************************* */
+
+var bDefaultSaveSpeed = 1;
+var bDefaultSaveSettings = 1;
+var iDefaultTextColor = 1;
+var iDefaultWormColor = 2;
+var iDefaultSpeed = 10;
+var bDefaultPausRow = 1;
+var iDefaultPausRow = 0.2;
+var bDefaultPausStop = 1;
+var iDefaultPausStop = 0.0;
+var bDefaultPausDiv = 1;
+var iDefaultPausDiv = 0.0;
+var bDefaultPausScroll = 0;
+var iDefaultPausScroll = 0.8;
+var iDefaultOpacity = 8;
+
+/* *************************************
+ *            Get Settings             *
+ ************************************* */
+
+function buildParamsFromCookies() {
+	var sParams = '?';
+	var blnCookieName = false;
+	var blnCookieValues = false;
+	var theCookieString = unescape(document.cookie);
+	var theCookieSpeed = getCookie('RRspeed');
+	var theCookieSettings = getCookie('RRsettings');
+	sParams += 's=';
+	if (theCookieSpeed != undefined) {
+		if (theCookieSpeed.indexOf('/') != -1) {
+			sParams += (theCookieSpeed.split("/")[0] >= 0) ? theCookieSpeed.split("/")[0] : iDefaultSpeed;
+			sParams += '/';
+			sParams += (theCookieSpeed.split("/")[1] >= 0) ? theCookieSpeed.split("/")[1] : iDefaultSpeed;
+		} else {
+			sParams += iDefaultSpeed;
+			sParams += '/';
+			sParams += iDefaultSpeed;
+		}
+	} else {
+		sParams += iDefaultSpeed;
+		sParams += '/';
+		sParams += iDefaultSpeed;
+	}
+	if (theCookieSettings != undefined) {
+		if (theCookieSettings.indexOf('/') != -1) {
+			arrSettings = theCookieSettings.split("&");
+			sParams += '&tc=';
+			sParams += (arrSettings[5] >= 0) ? arrSettings[5] : iDefaultTextColor;
+			sParams += '&wc=';
+			sParams += (arrSettings[6] >= 0) ? arrSettings[6] : iDefaultWormColor;
+			sParams += '&p1=';
+			sParams += (arrSettings[0].split("/")[0] == 'true') ? 1 : 0;
+			sParams += '/';
+			sParams += (arrSettings[0].split("/")[1] >= 0) ? arrSettings[0].split("/")[1] : iDefaultPausRow;
+			sParams += '&p2=';
+			sParams += (arrSettings[1].split("/")[0] == 'true') ? 1 : 0;
+			sParams += '/';
+			sParams += (arrSettings[1].split("/")[1] >= 0) ? arrSettings[1].split("/")[1] : iDefaultPausStop;
+			sParams += '&p3=';
+			sParams += (arrSettings[2].split("/")[0] == 'true') ? 1 : 0;
+			sParams += '/';
+			sParams += (arrSettings[2].split("/")[1] >= 0) ? arrSettings[2].split("/")[1] : iDefaultPausDiv;
+			sParams += '&p4=';
+			sParams += (arrSettings[3].split("/")[0] == 'true') ? 1 : 0;
+			sParams += '/';
+			sParams += (arrSettings[3].split("/")[1] >= 0) ? arrSettings[3].split("/")[1] : iDefaultPausScroll;
+			sParams += '&ol=';
+			sParams += (arrSettings[8] >= 0) ? arrSettings[8] : iDefaultOpacity;
+		} else {
+			sParams += '&tc=' + iDefaultTextColor;
+			sParams += '&wc=' + iDefaultWormColor;
+			sParams += '&p1=' + bDefaultPausRow + '/' + iDefaultPausRow;
+			sParams += '&p2=' + bDefaultPausStop + '/' + iDefaultPausStop;
+			sParams += '&p3=' + bDefaultPausDiv + '/' + iDefaultPausDiv;
+			sParams += '&p4=' + bDefaultPausScroll + '/' + iDefaultPausScroll;
+			sParams += '&ol=' + iDefaultOpacity;
+		}
+	} else {
+		sParams += '&tc=' + iDefaultTextColor;
+		sParams += '&wc=' + iDefaultWormColor;
+		sParams += '&p1=' + bDefaultPausRow + '/' + iDefaultPausRow;
+		sParams += '&p2=' + bDefaultPausStop + '/' + iDefaultPausStop;
+		sParams += '&p3=' + bDefaultPausDiv + '/' + iDefaultPausDiv;
+		sParams += '&p4=' + bDefaultPausScroll + '/' + iDefaultPausScroll;
+		sParams += '&ol=' + iDefaultOpacity;
+	}
+	return unescape(sParams);
+}
+
+/* *************************************
+ *          Get Cookie By Name         *
+ ************************************* */
+
+function getCookie(Name) {
+	var search = Name + "=";
+	if (document.cookie.length > 0) {
+		var offset = document.cookie.indexOf(search);
+		if (offset != -1) {
+			offset += search.length;
+			end = document.cookie.indexOf(";", offset);
+			if (end == -1) {
+				end = document.cookie.length;
+			}
+			return unescape(document.cookie.substring(offset, end));
+		}
+	}
+}
+
+/* *************************************
+ *           Get URL-parameter         *
+ ************************************* */
+
+function getParam(attrib) {
+	var idx = document.URL.indexOf('?');
+	var retVal = '';
+	var params = new Array();
+	if (idx != -1) {
+		var pairs = document.URL.substring(idx+1, document.URL.length).split('&');
+		for (var i=0; i<pairs.length; i++) {
+			nameVal = pairs[i].split('=');
+			if (nameVal[0] == attrib) {
+				retVal = nameVal[1];
+			}
+		}
+		return unescape(retVal);
+	}
+}
+
+function onFrameLoad() {
+	mainframe.focus();
+}
+
+/* *************************************
+ *           Build URL                 *
+ ************************************* */
+
+var menu = getParam('menu');
+var sDoc = getParam('doc');
+
+//alert(sDoc + buildParamsFromCookies());
+
+if (menu != '1') {
+	sDoc += buildParamsFromCookies();
+	document.writeln('<frameset name="frameRow" rows="0,*" framespacing="0" frameborder="no" border="0" style="border:0" onLoad="onFrameLoad()">');
+	document.writeln('<frame name="topframe" id="topframe" src="about:blank" marginwidth="0" marginheight="0" scrolling="no" frameborder="no" noresize style="display:none">');
+	document.writeln('<frame name="main" id="mainframe" src="' + sDoc + '" marginwidth="0" marginheight="0" scrolling="auto" frameborder="no" noresize>');
+	document.writeln('<noframes>');
+	document.writeln('<body></body>');
+	document.writeln('</noframes>');
+	document.writeln('</frameset>');
+} else {
+	document.writeln('<frameset name="frameRow" rows="*" framespacing="0" frameborder="no" border="0" style="border:0">');
+	document.writeln('<frame name="topframe" id="topframe" src="rr_reader_settings.html" marginwidth="0" marginheight="0" scrolling="auto" frameborder="no" noresize>');
+	document.writeln('<noframes>');
+	document.writeln('<body></body>');
+	document.writeln('</noframes>');
+	document.writeln('</frameset>');
+}
+//-->
 </script>
 
 </html>

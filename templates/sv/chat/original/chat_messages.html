@@ -1,16 +1,22 @@
 <html>
 <head>
-<title><? sv/chat/original/chat_messages.html/1 ?></title>
+<title>chatMessages</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<? sv/chat/original/chat_messages.html/2 ?>
+#CHAT_REFRESH#
 
 <link rel="STYLESHEET" type="text/css" href="@cssurl@/style_chat_ns.css">
 <script language="JavaScript">
-<? sv/chat/original/chat_messages.html/3 ?>
+<!--
+if (document.layers) {
+	document.writeln("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"@cssurl@/style_chat_ns.css\">");
+} else {
+	document.writeln("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"@cssurl@/style_chat.css\">");
+}
+//-->
 </script>
 
 </head>
 <body>
-<div class="chatFont"><? sv/chat/original/chat_messages.html/4 ?></div>
+<div class="chatFont">#CHAT_MESSAGES#</div>
 </BODY>
 </HTML>

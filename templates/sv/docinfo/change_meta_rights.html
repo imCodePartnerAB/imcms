@@ -12,7 +12,8 @@
 <body bgcolor="#FFFFFF">
 
 <script>
-<? sv/docinfo/change_meta_rights.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form name="backForm" action="AdminDoc">
@@ -25,20 +26,20 @@
 </form>
 </table>
 <script>
-<? sv/docinfo/change_meta_rights.html/3 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="POST" action="SaveMeta">
 <input type="hidden" name="doc_type" value="#doc_type#">
 <input type="hidden" name="parent_meta_id" value="#parent_meta_id#">
 <input type="hidden" name="meta_id" value="#meta_id#">
-<input type="hidden" name="meta_headline" value="#meta_headline#"><? sv/docinfo/change_meta_rights.html/4 ?>
+<input type="hidden" name="meta_headline" value="#meta_headline#">#checks#
 <tr>
 	<td colspan="2"><script><? sv/docinfo/change_meta_rights.html/5 ?></script></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? sv/docinfo/change_meta_rights.html/1001 ?></td>
-	<td class="imcmsAdmText"><? sv/docinfo/change_meta_rights.html/6 ?></td>
+	<td class="imcmsAdmText">#roles_rights#</td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? sv/docinfo/change_meta_rights.html/7 ?></td>
@@ -50,15 +51,15 @@
 	</tr>
 	</table>
 	<select name="roles_no_rights" size="4" multiple>
-		<? sv/docinfo/change_meta_rights.html/8 ?>
+		#roles_no_rights#
 	</select></td>
 </tr>
 <tr>
 	<td colspan="2">&nbsp;<br><script><? sv/docinfo/change_meta_rights.html/9 ?></script></td>
 </tr>
-<? sv/docinfo/change_meta_rights.html/10 ?>
+#define_sets#
 <tr>
-	<td colspan="2"><script><? sv/docinfo/change_meta_rights.html/11 ?></script></td>
+	<td colspan="2"><script>hr("100%", 656, "blue");</script></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? sv/docinfo/change_meta_rights.html/12 ?></td>
@@ -77,7 +78,7 @@
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/docinfo/change_meta_rights.html/13 ?></script></td>
+	<td colspan="2"><script>hr("100%", 656, "blue");</script></td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
@@ -104,10 +105,11 @@
 </tr>
 </table>
 <script>
-<? sv/docinfo/change_meta_rights.html/14 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
-<div align="center"><? sv/docinfo/change_meta_rights.html/15 ?></div>
+<div align="center">#adminMode#</div>
 
 </body>
 </html>

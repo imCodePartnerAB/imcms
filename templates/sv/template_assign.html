@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'templategroup')">
 
 <script>
-<? sv/template_assign.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
@@ -44,7 +45,7 @@
 </form>
 </table>
 <script>
-<? sv/template_assign.html/5 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateChange" action="TemplateChange" method="post">
@@ -60,13 +61,13 @@
 		<td height="24" nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/template_assign.html/1001 ?>&nbsp;&nbsp;</font></td>
 		<td>
 		<select name="templategroup">
-		<? sv/template_assign.html/7 ?>
+		#templategroups#
 		</select></td>
 		<td>&nbsp;&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="show_assigned" value="<? sv/template_assign.html/2014 ?>"></td>
 	</tr>
 	<tr>
 		<td height="24" class="imcmsAdmText"><? sv/template_assign.html/8 ?></td>
-		<td colspan="2" class="imcmsAdmText"><? sv/template_assign.html/9 ?></td>
+		<td colspan="2" class="imcmsAdmText"><b><i>#group#</i></b></td>
 	</tr>
 	</table></td>
 </tr>
@@ -81,20 +82,20 @@
 	<tr>
 		<td align="right">
 		<select name="unassigned" size="7" style="width:100%" multiple>
-		<? sv/template_assign.html/12 ?>
+		#unassigned#
 		</select></td>
 		<td align="center">
 		&nbsp;<input type="submit" name="assign" value="<? sv/template_assign.html/2015 ?>">&nbsp;
 		&nbsp;<input type="submit" name="deassign" value="<? sv/template_assign.html/2016 ?> ">&nbsp;</td>
 		<td>
 		<select name="assigned" size="7" style="width:100%" multiple>
-		<? sv/template_assign.html/13 ?>
+		#assigned#
 		</select></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/template_assign.html/14 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? sv/template_assign.html/1002 ?></td>
@@ -104,7 +105,8 @@
 </form>
 </table>
 <script>
-<? sv/template_assign.html/15 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 </body>

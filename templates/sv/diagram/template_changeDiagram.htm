@@ -275,7 +275,49 @@ size=2><? sv/diagram/template_changeDiagram.htm/12 ?></FONT></TD>
   </FORM></CENTER>
 <H2>
 <SCRIPT language=JavaScript>
-<? sv/diagram/template_changeDiagram.htm/43 ?>
+<!--
+
+
+
+
+
+
+
+//==============================================================================> SETTINGS !
+var arraySize=100;											//TABELLSTORELEKEN
+var antalTabeller=2;										//ANTALET TABELLER
+var rader=0;												//GLOBAL RADR€KNARE
+var kolumner=0;												//GLOBAL KOLUMNR€KNARE
+createArray(antalTabeller,arraySize);
+theSettings[1][1]=document.settings.diaNbrOfRows; 			//DOLT F€LT RADER TABELL 1
+theSettings[1][2]=document.settings.diaNbrOfCols; 			//DOLT F€LT KOLUMNER TABELL 1
+theSettings[2][1]=document.settings.tabNbrOfRows; 			//DOLT F€LT RADER TABELL 2
+theSettings[2][2]=document.settings.tabNbrOfCols; 			//DOLT F€LT KOLUMNER TABELL 2
+setTableSize(1,0,0);setTableSize(2,0,0); 					//S€TT STORLEK TILL 0 (INITIERA)
+theSettings[1][0]="diagram";								//NAMN P? TABELL 1
+theSettings[2][0]="table";									//NAMN P? TABELL 2
+theSettings[1][3]=window.delRadDia; 						//ADRESS TILL DELETE-MENYS DIV-TAG-ID (RADER) TABELL 1
+theSettings[1][4]=window.delKolDia; 						//ADRESS TILL DELETE-MENYS DIV-TAG-ID (KOLUMNER) TABELL 1
+theSettings[2][3]=window.delRadTab; 						//ADRESS TILL DELETE-MENYS DIV-TAG-ID (RADER) TABELL 2
+theSettings[2][4]=window.delKolTab; 						//ADRESS TILL DELETE-MENYS DIV-TAG-ID (KOLUMNER) TABELL 2
+theSettings[1][5]=window.diagram; 							//ADRESS TILL DIV-TAG-ID (TABELLEN) TABELL 1
+theSettings[2][5]=window.table; 							//ADRESS TILL DIV-TAG-ID (TABELLEN) TABELL 2
+theSettings[1][6]="window.diagram"; 						//ADRESSEN SOM STR€NG
+theSettings[2][6]="window.table"; 							//ADRESSEN SOM STR€NG
+//==============================================================================> UPPSTART !
+if(document.settings.diagram_data.value=="") {
+	setTableSize(1,5,3);
+	} else {
+	tabDelimitedInput(1,document.settings.diagram_data.value);
+}//END IF
+if(document.settings.table_data.value=="") {
+	setTableSize(2,5,5);
+	} else {
+	tabDelimitedInput(2,document.settings.table_data.value);
+}//END IF
+arrayToHTML(1,"diagram",window.diagram);
+arrayToHTML(2,"table",window.table);
+//-->
 </SCRIPT>
 </H2></BODY></HTML>
 

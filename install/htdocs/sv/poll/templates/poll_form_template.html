@@ -8,7 +8,7 @@
 </head>
 <body bgcolor="#FFFFFF" text="#000000" >
 
-<? sv/poll/templates/poll_form_template.html/2 ?>
+#adminMode##changePage#
 
 <table border="0" cellpadding="0" cellspacing="0" width="500">
 <form name="pollForm" method="post" action="PollHandler">
@@ -22,7 +22,7 @@
 </tr>
 <tr>
 	<td><?imcms:text no="61" label="<br><? sv/poll/templates/poll_form_template.html/3 ?>
-	<?imcms:text no="60" label="<br><? sv/poll/templates/poll_form_template.html/4 ?><h3><? sv/poll/templates/poll_form_template.html/5 ?></h3><? sv/poll/templates/poll_form_template.html/1001 ?></td>
+	<?imcms:text no="60" label="<br><? sv/poll/templates/poll_form_template.html/4 ?><h3>' post='</h3><? sv/poll/templates/poll_form_template.html/1001 ?></td>
 </tr>
 <tr>
 	<td><?imcms:text no="1"
@@ -51,7 +51,7 @@
 </tr>
 <tr>
 	<td bgcolor="#d6d3ce" nowrap>&nbsp;<b>'
-	post='</b><hr><? sv/poll/templates/poll_form_template.html/6 ?><?imcms:text
+	post='</b><hr>'?><?imcms:text
 		no="401" label="<br>Svarsalternativ 1:" type="pollanswer-4-1"
 		pre='&nbsp;'
 		post='<input type="radio" value="1" name="optionAnswer4">&nbsp;&nbsp;'?><?imcms:text
@@ -101,7 +101,7 @@
 </tr>
 <tr>
 	<td bgcolor="#d6d3ce" nowrap>&nbsp;<b>'
-	post='</b><hr><? sv/poll/templates/poll_form_template.html/17 ?><?imcms:text
+	post='</b><hr>'?><?imcms:text
 		no="501" label="<br>Svarsalternativ 1:" type="pollanswer-5-1"
 		pre='&nbsp;'
 		post='<input type="radio" value="1" name="optionAnswer5">&nbsp;&nbsp;'?><?imcms:text
@@ -151,7 +151,7 @@
 </tr>
 <tr>
 	<td bgcolor="#d6d3ce" nowrap>&nbsp;<b>'
-	post='</b><hr><? sv/poll/templates/poll_form_template.html/28 ?><?imcms:text
+	post='</b><hr>'?><?imcms:text
 		no="601" label="<br>Svarsalternativ 1:" type="pollanswer-6-1"
 		pre='&nbsp;'
 		post='<input type="radio" value="1" name="optionAnswer6">&nbsp;&nbsp;'?><?imcms:text
@@ -201,7 +201,7 @@
 </tr>
 <tr>
 	<td bgcolor="#d6d3ce" nowrap>&nbsp;<b>'
-	post='</b><hr><? sv/poll/templates/poll_form_template.html/39 ?><?imcms:text
+	post='</b><hr>'?><?imcms:text
 		no="701" label="<br>Svarsalternativ 1:" type="pollanswer-7-1"
 		pre='&nbsp;'
 		post='<input type="radio" value="1" name="optionAnswer7">&nbsp;&nbsp;'?><?imcms:text
@@ -251,7 +251,7 @@
 </tr>
 <tr>
 	<td bgcolor="#d6d3ce" nowrap>&nbsp;<b>'
-	post='</b><hr><? sv/poll/templates/poll_form_template.html/50 ?><?imcms:text
+	post='</b><hr>'?><?imcms:text
 		no="801" label="<br>Flersvarsalternativ 1:" type="pollanswer-8-1"
 		pre='&nbsp;'
 		post='<input type="checkbox" value="1" name="optionAnswer8">&nbsp;&nbsp;'?><?imcms:text
@@ -301,7 +301,7 @@
 </tr>
 <tr>
 	<td bgcolor="#d6d3ce" nowrap>&nbsp;<b>'
-	post='</b><hr><? sv/poll/templates/poll_form_template.html/61 ?><?imcms:text
+	post='</b><hr>'?><?imcms:text
 		no="901" label="<br>Flersvarsalternativ 1:" type="pollanswer-9-1"
 		pre='&nbsp;'
 		post='<input type="checkbox" value="1" name="optionAnswer9">&nbsp;&nbsp;'?><?imcms:text
@@ -351,7 +351,7 @@
 </tr>
 <tr>
 	<td bgcolor="#d6d3ce" nowrap>&nbsp;<b>'
-	post='</b><hr><? sv/poll/templates/poll_form_template.html/72 ?><?imcms:text
+	post='</b><hr>'?><?imcms:text
 		no="1001" label="<br>Flersvarsalternativ 1:" type="pollanswer-10-1"
 		pre='&nbsp;'
 		post='<input type="checkbox" value="1" name="optionAnswer10">&nbsp;&nbsp;'?><?imcms:text
@@ -436,7 +436,9 @@
 	no="27" label="<br><? sv/poll/templates/poll_form_template.html/103 ?><?imcms:text
 	no="28" label="<br><? sv/poll/templates/poll_form_template.html/104 ?><?imcms:text
 	no="35" label="<br><? sv/poll/templates/poll_form_template.html/105 ?><?imcms:text
-	no="29" label="<br><? sv/poll/templates/poll_form_template.html/106 ?>
+	no="29" label="<br><br>next_URL" mode="write"?>
+
+#adminMode#
 <!--/IMSCRIPT-->
 
 </body>

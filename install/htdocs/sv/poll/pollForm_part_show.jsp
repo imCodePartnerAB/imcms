@@ -12,7 +12,24 @@ if( saveAnswers ) {
 	<? sv/poll/pollForm_part_show.jsp/3 ?>
 
 <SCRIPT language=JavaScript>
-<? sv/poll/pollForm_part_show.jsp/4 ?>
+<!--
+var window_width = 600;
+var window_height = 400;
+var sUrl = "@servleturl@/GetDoc?meta_id=<%=meta_id%>&template=<%=result_template%>";
+var sName = "resultWin";
+if(screen.height < 700){ 
+	var window_top = 0;
+ 	var window_left = (screen.width-window_width)/2;
+}else { 
+	var window_top = (screen.height-window_height)/2;
+ 	var window_left = (screen.width-window_width)/2;
+}
+function openW(){
+	popWindow = window.open(sUrl,sName,'resizable=yes,menubar=0,scrollbars=yes,width=' + window_width + ',height=' + window_height +  ',top='	+ window_top + ',left=' + window_left + '');
+	popWindow.focus();
+}
+
+//-->
 </SCRIPT>
 		 
 <% } %>

@@ -5,7 +5,13 @@
 
 <link rel="STYLESHEET" type="text/css" href="@cssurl@/style_chat_ns.css">
 <script language="JavaScript">
-<? sv/chat/original/theChat.htm/2 ?>
+<!--
+if (document.layers) {
+	document.writeln("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"@cssurl@/style_chat_ns.css\">");
+} else {
+	document.writeln("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"@cssurl@/style_chat.css\">");
+}
+//-->
 </script>
 
 </head>
@@ -29,28 +35,28 @@
 			<td>
 			<table border="0" cellspacing="0" cellpadding="3">
 			<tr>
-				<td class="chatControlFont" nowrap><? sv/chat/original/theChat.htm/3 ?></td>
+				<td class="chatControlFont" nowrap>#alias#</td>
 				<td>&nbsp;</td>
 				<td class="chatSelectBox">
 				<select class="chatSelectBox" name="msgTypes">
-					<? sv/chat/original/theChat.htm/4 ?>
+					#MSG_PREFIX#
 				</select></td>
 				<td>&nbsp;</td>
 				<td class="chatSelectBox">
 				<select class="chatSelectBox" name="recipient"> 
 					<option value="0" ><? sv/chat/original/theChat.htm/5 ?></option> 
-					<? sv/chat/original/theChat.htm/6 ?>
+					#MSG_RECIVER#
 				</select></td>
 			</tr>
 			</table></td>
 			<td align="right">
 			<table border="0" cellspacing="0" cellpadding="0">
 			<tr>
-				<td><? sv/chat/original/theChat.htm/7 ?></td>
+				<td>#CHAT_ADMIN_DISCUSSION#</td>
 				<td><img src="@imcmsimageurllang@/admin/1x1.gif" width="2" height="1"></td>
-				<td><? sv/chat/original/theChat.htm/8 ?></td>
+				<td>#CHAT_ADMIN_LINK#</td>
 				<td><img src="@imcmsimageurllang@/admin/1x1.gif" width="2" height="1"></td>
-				<td><? sv/chat/original/theChat.htm/9 ?></td>
+				<td>#SETTINGS#</td>
 				<td><img src="@imcmsimageurllang@/admin/1x1.gif" width="2" height="1"></td>
 				<td><input type="button" class="chatButtonAbort" value="<? sv/chat/original/theChat.htm/2001 ?>" name="logOut" onClick="document.forms.abortForm.submit();"></td>
 			</tr>

@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'text')">
 
 <script>
-<? sv/ImageBrowse.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form name="backForm" method="POST" action="ChangeImage">
@@ -25,7 +26,7 @@
 </form>
 </table>
 <script>
-<? sv/ImageBrowse.html/3 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="folder" action="ImageBrowse">
@@ -46,7 +47,7 @@
 	<tr>
 		<td>
 		<select name="dirlist" size="15" onDblClick="document.forms.folder.change.click();" style="width:270">
-			<? sv/ImageBrowse.html/6 ?>
+			#folders#
 		</select></td>
 	</tr>
 	</table></td>
@@ -66,7 +67,7 @@
 	<tr>
 		<td>
 		<select name="imglist" size="15" onDblClick="document.forms.imageForm.preview.click();" style="width:270">
-		<? sv/ImageBrowse.html/8 ?>
+		#options#
 		</select></td>
 	</tr>
 	</table></td>
@@ -78,14 +79,14 @@
 		<td colspan="3" class="imcmsAdmText"><? sv/ImageBrowse.html/9 ?></td>
 	</tr>
 	<tr>
-		<td align="right"><? sv/ImageBrowse.html/10 ?></td>
+		<td align="right">#previousButton#</td>
 		<td>&nbsp;</td>
-		<td><? sv/ImageBrowse.html/11 ?></td>
+		<td>#nextButton#</td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td colspan="3"><script><? sv/ImageBrowse.html/12 ?></script></td>
+	<td colspan="3"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
 	<td colspan="3" align="right">
@@ -112,10 +113,11 @@
 </tr>
 </table>
 <script>
-<? sv/ImageBrowse.html/13 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
-<div align="center" id="previewDiv"><? sv/ImageBrowse.html/14 ?></div>
+<div align="center" id="previewDiv">#img_preview#</div>
 
 <script language="JavaScript">
 <!--

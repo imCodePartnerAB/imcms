@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'existing_meta_id')">
 
 <script>
-<? sv/existing_doc.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="post" action="GetExistingDoc">
@@ -25,7 +26,7 @@
 </form>
 </table>
 <script>
-<? sv/existing_doc.html/3 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="post" action="GetExistingDoc">
@@ -66,7 +67,7 @@
 	<tr>
 		<td class="imcmsAdmText"><? sv/existing_doc.html/1002 ?>&nbsp;&nbsp;</td>
 		<td><script>
-<? sv/existing_doc.html/6 ?>
+writeFormField("TEXT","searchstring",62,255,360,"#searchstring#");
 </script></td>
 		<td>&nbsp;&nbsp;&nbsp;</td>
 		<td><input type="radio" value="and" name="search_prep" #search_prep_check_and#></td>
@@ -77,7 +78,7 @@
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/existing_doc.html/7 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 </tr>
 <tr> 
 	<td colspan="2"> 
@@ -131,13 +132,13 @@
 		<tr> 
 			<td class="imcmsAdmText"><? sv/existing_doc.html/18 ?></td>
 			<td><script>
-<? sv/existing_doc.html/19 ?>
+writeFormField("TEXT","start_date",18,16,95,"#start_date#");
 </script></td>
 		</tr>
 		<tr> 
 			<td class="imcmsAdmText"><? sv/existing_doc.html/20 ?></td>
 			<td><script>
-<? sv/existing_doc.html/21 ?>
+writeFormField("TEXT","end_date",18,16,95,"#end_date#");
 </script></td>
 		</tr>
 		<tr> 
@@ -153,7 +154,7 @@
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/existing_doc.html/24 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
 	<td colspan="2">
@@ -162,17 +163,19 @@
 		<td class="imcmsAdmText" nowrap><? sv/existing_doc.html/1005 ?> &nbsp;</td>
 		<td>
 		<select name="sortBy">
-			<? sv/existing_doc.html/25 ?>
+			#sortBy#
 		</select></td>
 		<td>&nbsp;&nbsp;</td>
 		<td><input type="submit" class="imcmsFormBtn" name="search" value="<? sv/existing_doc.html/2007 ?>"></td>
 	</tr>
-	</table><? sv/existing_doc.html/26 ?></td>
+	</table><br clear="all">
+	#searchResults#</td>
 </tr>
 </form>
 </table>
 <script>
-<? sv/existing_doc.html/27 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 </body>

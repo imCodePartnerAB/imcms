@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'template')">
 
 <script>
-<? sv/template_rename.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
@@ -44,7 +45,7 @@
 </form>
 </table>
 <script>
-<? sv/template_rename.html/5 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateChange" action="TemplateChange" method="post">
@@ -59,19 +60,19 @@
 		<td width="80" height="24" class="imcmsAdmText" nowrap><? sv/template_rename.html/1001 ?> &nbsp;</td>
 		<td>
 		<select name="template">
-		<? sv/template_rename.html/7 ?>
+		#templates#
 		</select></td>
 	</tr>
 	<tr>
 		<td height="24" class="imcmsAdmText" nowrap><? sv/template_rename.html/1002 ?> &nbsp;</td>
 		<td><script>
-<? sv/template_rename.html/8 ?>
+writeFormField("TEXT","name",30,255,null,null);
 </script></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/template_rename.html/9 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
 	<td colspan="2" align="right">
@@ -81,7 +82,8 @@
 </form>
 </table>
 <script>
-<? sv/template_rename.html/10 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 </body>

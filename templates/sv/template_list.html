@@ -11,7 +11,8 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'template')">
 
 <script>
-<? sv/template_list.html/2 ?>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
@@ -44,7 +45,7 @@
 </form>
 </table>
 <script>
-<? sv/template_list.html/5 ?>
+imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateChange" action="TemplateChange" method="post">
@@ -64,13 +65,13 @@
 	<tr>
 		<td align="right">
 		<select name="template" size="10" style="width:100%" multiple>
-		<? sv/template_list.html/9 ?>
+		#template_list#
 		</select></td>
 		<td align="center">
 		&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="list_templates_docs" value="<? sv/template_list.html/2014 ?>" alt="<? sv/template_list.html/2015 ?>" title="<? sv/template_list.html/2016 ?>" style="width:70">&nbsp;</td>
 		<td>
 		<select name="templates_doc" size="10" style="width:100%" multiple>
-		<? sv/template_list.html/10 ?>
+		#templates_docs#
 		</select></td>
 	</tr>
 	<tr>
@@ -80,7 +81,7 @@
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script><? sv/template_list.html/11 ?></script></td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
 	<td colspan="2" align="right">
@@ -89,7 +90,8 @@
 </form>
 </table>
 <script>
-<? sv/template_list.html/12 ?>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
 </script>
 
 </body>
