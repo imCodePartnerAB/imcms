@@ -2,6 +2,7 @@
 import imcode.server.ApplicationServer;
 import imcode.server.DocumentRequest;
 import imcode.server.IMCServiceInterface;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
@@ -39,7 +40,7 @@ public class AdminDoc extends HttpServlet {
             return;
         }
 
-        res.setContentType( "text/html" );
+        res.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
         ServletOutputStream out = res.getOutputStream();
         meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
         int parent_meta_id;
@@ -53,7 +54,7 @@ public class AdminDoc extends HttpServlet {
         String tempstring = AdminDoc.adminDoc( meta_id, parent_meta_id, user, req, res );
 
         if( tempstring != null ) {
-            byte[] tempbytes = tempstring.getBytes( "8859_1" );
+            byte[] tempbytes = tempstring.getBytes( WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
             res.setContentLength( tempbytes.length );
             out.write( tempbytes );
         }
