@@ -39,7 +39,7 @@ public interface IMCServiceInterface {
 	void saveText(int meta_id,imcode.server.User user,int txt_no,String text,int toHTML)
 	 ;
 
-	byte[] parsePage(int meta_id, imcode.server.User user, int flags) throws java.io.IOException ;
+	byte[] parsePage(int meta_id, imcode.server.User user, int flags,String template) throws java.io.IOException ;
 
 
 /*	// Save a doc
