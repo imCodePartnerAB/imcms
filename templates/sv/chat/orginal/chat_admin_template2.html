@@ -28,13 +28,13 @@ function closeThisWindow(){
 <table width="400" border="0" cellspacing="0" cellpadding="0">
 	<tr> 
     	<td valign=top align=left bgcolor="#ffffff" colspan="2"> 
-        <form method="post" action="#SERVLET_URL#ConfAndBillbTemplateUpload" enctype="multipart/form-data" name="AddTemplateForm">
+        <form method="post" action="ConfAndBillbTemplateUpload" enctype="multipart/form-data" name="AddTemplateForm">
           <font face="Verdana, Arial, Helvetica, sans-serif" size="2">LÄGG 
           UPP NY ( template / image) TILL BEFINTLIG MALLFIL</font> 
           <input type="hidden" name="metaId" value="#META_ID#">
 		  <input type="hidden" name="uploadType" value="#UPLOAD_TYPE#">
 		  <input type="hidden" name="folderName" value="#FOLDER_NAME#">
-          <input type="hidden" name="target" value="#SERVLET_URL#ChatCreator?ADMIN_TEMPLATES=ok&action=admin_chat&adminTemplates=ok">
+          <input type="hidden" name="target" value="ChatCreator?ADMIN_TEMPLATES=ok&action=admin_chat&adminTemplates=ok">
           <br>
           <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Hämta 
           fil som skall adderas. (OBS! Befintlig fil skrivs över)</font> 
@@ -47,11 +47,11 @@ function closeThisWindow(){
     </tr>
     <tr> 
       <td width="31%" valign="center" nowrap> 
-        <form method="get" action="#SERVLET_URL#ChatCreator" name="CancelUpload">
+        <form method="get" action="ChatCreator" name="CancelUpload">
           <input type="submit" name="cancel" value="Avbryt">
         </form>
       </td>
-      <td width="31%" valign="center" nowrap><A href="#SERVLET_URL#ChatCreator" target=_self>#SECTION_UNADMIN_LINK#</a> 
+      <td width="31%" valign="center" nowrap><A href="ChatCreator" target=_self>#SECTION_UNADMIN_LINK#</a> 
       </td>
     </tr>
   </table>

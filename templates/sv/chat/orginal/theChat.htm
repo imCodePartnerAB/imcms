@@ -4,9 +4,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
-<body bgcolor="#ffffff" text="#000000" onload="parent._ChatMsgFrame.location='#SERVLET_URL#ChatBoard';">
+<body bgcolor="#ffffff" text="#000000" onload="parent._ChatMsgFrame.location='ChatBoard';">
 
-<FORM method=post action=#SERVLET_URL#ChatControl name=huvud>
+<FORM method=post action=ChatControl name=huvud>
 	<INPUT name=nick type=hidden value=#alias#> 
 	<INPUT name=chatRoom2 type=hidden value=#chatRoom#>
 	
@@ -30,28 +30,14 @@
 	</TR>
 </FORM>
 	<TR>
-		<TD height=3 colSpan=4 >
-			<HR>
-		</td>
-	</TR>
-	<TR>
-		<TD height=8 nowrap colSpan=3>
-			<A href="#SERVLET_URL#ChatControl?settings=true">Inställningar</A>&nbsp;
-			<A href="http://www.imcode.se/chat/help.html" target=chathelp>Hjälpsida</A>
-		</TD>
-		<TD align="middle">
-			<B>Powered by <A href="http://www.imcode.se" target=_blank>imCode</A></B>
-		</TD>
-	</TR>
-
-	<TR>
 		<TD colSpan=4 height=3>
 			<HR>
 		</TD>
 	</TR>
 	<TR>
-		<td>
-			<form action="#SERVLET_URL#ChatControl" target="_self" method="post">	 			
+		<td nowrap> 	
+			
+			<form action="ChatControl" target="_self" method="post">	 			
 				<b>Byta rum:</b> 
         		<select name="newRooms">
           			#CHAT_ROOMS#          
@@ -60,12 +46,15 @@
 			</form>
 		</td>
 		<td>
-			<form action="#SERVLET_URL#ChatControl" target="_top" method="post">			
+			#SETTINGS#	
+		</td>
+		<td>
+			<form action="ChatControl" target="_top" method="post">			
         		<input type="submit" value=" Logga ut " name="logOut">
 			</form>
 		</td>
-		<td colspan="2">
-			<form action="#SERVLET_URL#ChatCreator" target="_parent" method="get">
+		<td>
+			<form action="ChatCreator" target="_parent" method="get">
 				<input type="hidden" name="action" value="admin_chat">
 				<input type="hidden" name="chatName" value="#chatName#">
         		#CHAT_ADMIN_LINK#
