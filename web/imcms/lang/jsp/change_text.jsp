@@ -1,11 +1,12 @@
 <%@ page
-	
+
 	import="imcode.server.document.textdocument.TextDomainObject,
 	        com.imcode.imcms.servlet.admin.ChangeText,
-	        org.apache.commons.lang.StringEscapeUtils"
-	
+	        org.apache.commons.lang.StringEscapeUtils,
+            org.apache.commons.lang.StringUtils"
+
 	contentType="text/html"
-	
+
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"
 %><%
 
@@ -64,7 +65,7 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 		} %>
 	</tr>
 	</table></td>
-	
+
 	<td align="right">
 	<input type="button" value="<? templates/sv/change_text.html/2004 ?>" title="<? templates/sv/change_text.html/2005 ?>" class="imcmsFormBtn" onClick="openHelpW(36)"></td>
 
@@ -76,7 +77,7 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <tr>#set( $textIndex = "<%= textEditPage.getTextIndex() %>" )#set( $documentId = "<%= textEditPage.getDocumentId() %>" )
 	<td colspan="2">#gui_heading( "<? templates/sv/change_text.html/4/1 ?><%=
-	(textEditPage != null && textEditPage.getLabel() != null && !textEditPage.getLabel().equals(""))
+	(textEditPage != null && StringUtils.isNotBlank(textEditPage.getLabel()))
 		? " &nbsp;&#150;&nbsp; <i>" + StringEscapeUtils.escapeHtml(textEditPage.getLabel()) + "</i>" : "" %>" )</td>
 </tr>
 <tr>

@@ -190,8 +190,7 @@ class TagParser {
 
     private String includeEditing( Properties attributes, int no, PatternMatcher patMat ) {
         try {
-            String label = attributes.getProperty( "label" );
-            label = label == null ? "" : label;
+            String label = getLabel( attributes );
             Integer includedDocumentId = document.getIncludedDocumentId( no );
             if ( includeMode ) {
                 HttpServletRequest request = documentRequest.getHttpServletRequest();
@@ -439,7 +438,7 @@ class TagParser {
             String[] formats = null != formatsAttribute ? formatsAttribute.split( "\\W+" ) : null ;
             request.setAttribute( "document", documentRequest.getDocument());
             request.setAttribute( "textIndex", new Integer( no ));
-            String label = attributes.getProperty( "label", "" );
+            String label = getLabel( attributes );
             request.setAttribute( "label", label);
             request.setAttribute( "content", finalresult );
             request.setAttribute( "formats", formats );
@@ -457,9 +456,13 @@ class TagParser {
         return finalresult;
     }
 
+    private String getLabel( Properties attributes ) {
+        return attributes.getProperty( "label", "" ).replaceAll( "\\s+", " " );
+    }
+
     private String[] getLabelTags( Properties attributes, int no,
                                    String finalresult ) {
-        String label = attributes.getProperty( "label", "" );
+        String label = getLabel( attributes );
         String label_urlparam = "";
         if ( !"".equals( label ) ) {
             label_urlparam = removeHtmlTagsAndUrlEncode( label );
