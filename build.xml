@@ -50,9 +50,8 @@
           depends="build"
           description="Packages a complete distribution.">
 
-    <war warfile="${wardist}"
-         basedir="build"
-         webxml="install/web.xml"/>
+    <jar jarfile="${wardist}"
+         basedir="build"/>
 
     <echo> Done packaging distribution. </echo>
 
@@ -70,6 +69,8 @@
   <target name="build"
           depends="server,servlets,templates,libraries,web,conf,dir"
 	  description="Builds everything.">
+
+    <copy file="install/web.xml" todir="${WEB-INF}"/>
 
     <echo> Done build. </echo>
 
