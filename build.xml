@@ -5,12 +5,12 @@
 <project name="imCMS" default="dist" basedir=".">
 
   <!-- Paths. Later ones are built on earlier ones. -->
-  
+
   <!-- The directory to build in. -->
   <property name="build"          value="${basedir}/build"/>
 
   <!-- Where to put generated documentation -->
-  <property name="doc"            value="${basedir}/doc"/>  
+  <property name="doc"            value="${basedir}/doc"/>
 
   <!-- The webroot. Everything put here can be seen by any visitor. -->
   <property name="webroot"        value="${build}"/>
@@ -71,36 +71,39 @@
   <property name="dist-sql" value="${webappname}.sql"/>
   <property name="sprocs-sql" value="sprocs.sql"/>
   <property name="help-sql" value="help.sql"/>
-  
+
   <!-- Where to install imCMS -->
   <property name="webapproot" value="${deployroot}/${webappname}"/>
 
 
   <!-- A handy target to have everything else depend on, just in case. -->
   <target name="init"
-          depends="check-build-properties,fail-build-properties"
-          description="Handy target for everything else to depend on.">
+	  depends="check-build-properties,fail-build-properties"
+	  description="Handy target for everything else to depend on.">
 
     <tstamp/>
 
   </target>
 
 
-  <!-- Checks that build.properties exists. -->
+  <!-- Checks that build.properties is up-to-date. -->
   <target name="check-build-properties"
-          description="Checks that ${build.properties} exists.">
+	  description="Checks that ${build.properties} is up-to-date.">
 
-    <available file="${build.properties}" property="build-properties-exists"/>
+    <uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
+      <srcfiles dir="${basedir}" includes="${build.properties}.template,build.xml"/>
+    </uptodate>
 
   </target>
 
 
-  <!-- Fail unless build.properties exists. -->
+  <!-- Fail unless build.properties is up-to-date. -->
   <target name="fail-build-properties"
-          description="Checks that ${build.properties} exists."
-	  unless="build-properties-exists">
+	  description="Checks that ${build.properties} is newer than ${build.properties}.template and build.xml."
+	  unless="build-properties-up-to-date">
 
     <fail>
+      '${build.properties}.template' and/or 'build.xml' are newer than '${build.properties}'.
       Copy '${build.properties}.template' to '${build.properties}' and edit it!
       (See INSTALL.TXT for details.)
     </fail>
@@ -109,8 +112,8 @@
 
   <!-- Checks that 'deployroot' is set. -->
   <target name="check-deployroot"
-          description="Checks that deployroot is set."
-          unless="deployroot">
+	  description="Checks that deployroot is set."
+	  unless="deployroot">
 
     <fail message="Set 'deployroot' in '${build.properties}'!"/>
 
@@ -119,23 +122,23 @@
 
   <!-- Checks that 'webappname' is set. -->
   <target name="check-webappname"
-          description="Checks that webappname is set."
-          unless="webappname">
+	  description="Checks that webappname is set."
+	  unless="webappname">
 
     <fail>
       Set "webappname" in "${build.properties}"!
     </fail>
-	  
+
   </target>
 
 
   <!-- Build the war-file -->
   <target name="dist"
-          depends="init,build,check-webappname"
-          description="Packages a complete distribution.">
+	  depends="init,build,check-webappname"
+	  description="Packages a complete distribution.">
 
     <war warfile="${wardist}"
-         basedir="build"
+	 basedir="build"
 	 excludes="${WEB-INF}/web.xml"
 	 webxml="install/web.xml"/>
 
@@ -148,7 +151,7 @@
 
   <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
   <target name="build"
-          depends="init,server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help,fortune,sql"
+	  depends="init,server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help,fortune,sql"
 	  description="Builds everything.">
 
   </target>
@@ -186,7 +189,7 @@
 
   <!-- Generate documentation -->
   <target name="doc"
-          depends="init"
+	  depends="init"
 	  description="Generates javadoc.">
     <javadoc destdir="${doc}">
       <package name="imcode.util"/>
@@ -235,16 +238,16 @@
   <!-- Builds the 'non-servlets'. -->
   <target name="server"
 	  depends="init,dir"
-          description="Builds the server and utility classes.">
+	  description="Builds the server and utility classes.">
 
     <mkdir dir="${classes}"/>
     <javac srcdir="server/src"
-           destdir="${classes}"
+	   destdir="${classes}"
 	   debug="${debug}"
 	   optimize="${optimize}"
 	   deprecation="${deprecation}">
       <classpath>
-        <pathelement path="${classes}"/>
+	<pathelement path="${classes}"/>
 	  <fileset dir="install/lib">
 	    <include name="**/*.jar"/>
 	  </fileset>
@@ -255,21 +258,21 @@
 
 
   <!-- Builds the servlets. -->
-  <target name="servlets" 
-          depends="init,server"
-          description="Builds the servlets.">
+  <target name="servlets"
+	  depends="init,server"
+	  description="Builds the servlets.">
 
     <mkdir dir="${classes}"/>
     <javac srcdir="servlets"
-           destdir="${classes}"
-           includes="*.java"
-           classpath="${classes}"
+	   destdir="${classes}"
+	   includes="*.java"
+	   classpath="${classes}"
 	   debug="${debug}"
 	   optimize="${optimize}"
 	   deprecation="${deprecation}">
 
       <classpath>
-        <pathelement path="${classes}"/>
+	<pathelement path="${classes}"/>
 	  <fileset dir="install/lib">
 	    <include name="**/*.jar"/>
 	  </fileset>
@@ -282,7 +285,7 @@
 
   <!-- Copies the libraries (jar-files) needed for building. -->
   <target name="libraries"
-          depends="init,dir"
+	  depends="init,dir"
 	  description="Copies the jar-files.">
 
     <copy todir="${lib}">
@@ -294,18 +297,18 @@
 
   <!-- Copies and filters the config-files with the correct properties. -->
   <target name="conf"
-          depends="init"
-          description="Builds the config-directory.">
+	  depends="init"
+	  description="Builds the config-directory.">
     <copy todir="${conf}">
       <fileset dir="install/conf">
-        <exclude name="policy"/>
+	<exclude name="policy"/>
       </fileset>
       <filterset>
 
-        <filter token="rooturl" value="${rooturl}"/>
-        <filter token="servleturl" value="${servleturl}"/>
-        <filter token="loginurl" value="${loginurl}"/>
-        <filter token="imageurl" value="${imageurl}"/>
+	<filter token="rooturl" value="${rooturl}"/>
+	<filter token="servleturl" value="${servleturl}"/>
+	<filter token="loginurl" value="${loginurl}"/>
+	<filter token="imageurl" value="${imageurl}"/>
 
 	<filter token="db-host" value="${db-host}"/>
 	<filter token="db-port" value="${db-port}"/>
@@ -318,7 +321,7 @@
 	<filter token="plugin-db-name" value="${plugin-db-name}"/>
 	<filter token="plugin-db-user" value="${plugin-db-user}"/>
 	<filter token="plugin-db-pass" value="${plugin-db-pass}"/>
-	
+
 	<filter token="smtp-server" value="${smtp-server}"/>
 
       </filterset>
@@ -328,43 +331,43 @@
 
   <!-- Creates the directories and copies the files that are to be public. -->
   <target name="web"
-          depends="init"
-          description="Creates the public web">
+	  depends="init"
+	  description="Creates the public web">
     <mkdir dir="${images}"/>
     <mkdir dir="${login}"/>
     <mkdir dir="${css}"/>
-    <mkdir dir="${user}"/>	
+    <mkdir dir="${user}"/>
     <copy file="templates/login/index.html" todir="${login}">
        <filterset>
-        <filter token="servleturl" value="${servleturl}"/>
-        <filter token="imageurl" value="${imageurl}"/>
+	<filter token="servleturl" value="${servleturl}"/>
+	<filter token="imageurl" value="${imageurl}"/>
       </filterset>
     </copy>
     <copy todir="${images}">
       <fileset dir="install/htdocs/images">
-        <patternset>
+	<patternset>
 	  <include name="*.gif"/>
 	</patternset>
       </fileset>
     </copy>
     <copy todir="${adminbuttons}">
       <fileset dir="install/htdocs/imcms">
-        <patternset>
+	<patternset>
 	  <include name="*.gif"/>
 	</patternset>
       </fileset>
     </copy>
     <copy todir="${webroot}">
       <fileset dir="templates">
-        <patternset>
+	<patternset>
 	  <include name="*.htm"/>
 	  <include name="*.html"/>
 	</patternset>
       </fileset>
       <filterset>
 	<filter token="servleturl" value="${servleturl}"/>
-        <filter token="loginurl" value="${loginurl}"/>
-        <filter token="imageurl" value="${imageurl}"/>
+	<filter token="loginurl" value="${loginurl}"/>
+	<filter token="imageurl" value="${imageurl}"/>
       </filterset>
     </copy>
 
@@ -373,7 +376,7 @@
 
   <!-- Copies and filters all non-plugin templates. -->
   <target name="templates"
-          depends="init,dir"
+	  depends="init,dir"
 	  description="Copies the templates.">
 
     <mkdir dir="${admintemplates}"/>
@@ -383,30 +386,30 @@
       <fileset dir="templates/${srclanguage}/adminbuttons"/>
       <filterset>
 
-        <filter token="adminbuttonsurl" value="${adminbuttonsurl}"/>
-        <filter token="loginurl" value="${loginurl}"/>
-        <filter token="imageurl" value="${imageurl}"/>
+	<filter token="adminbuttonsurl" value="${adminbuttonsurl}"/>
+	<filter token="loginurl" value="${loginurl}"/>
+	<filter token="imageurl" value="${imageurl}"/>
 
       </filterset>
     </copy>
 
     <replace dir="${admintemplates}/adminbuttons" excludes="adminbuttons.html"
-             token="&#10;" value=""/>
+	     token="&#10;" value=""/>
 
     <replace dir="${admintemplates}/adminbuttons" excludes="adminbuttons.html"
-             token="&#13;" value=""/>
+	     token="&#13;" value=""/>
 
     <copy todir="${admintemplates}/permissions">
       <fileset dir="templates/${srclanguage}/permissions"/>
       <filterset>
-        <filter token="loginurl" value="${loginurl}"/>
-        <filter token="imageurl" value="${imageurl}"/>
+	<filter token="loginurl" value="${loginurl}"/>
+	<filter token="imageurl" value="${imageurl}"/>
       </filterset>
     </copy>
 
     <copy todir="${admintemplates}">
       <fileset dir="templates/${srclanguage}">
-        <patternset>
+	<patternset>
 	  <include name="*.htm"/>
 	  <include name="*.html"/>
 	  <include name="*.ini"/>
@@ -414,16 +417,16 @@
 	</patternset>
       </fileset>
       <filterset>
-        <filter token="loginurl" value="${loginurl}"/>
-        <filter token="imageurl" value="${imageurl}"/>
+	<filter token="loginurl" value="${loginurl}"/>
+	<filter token="imageurl" value="${imageurl}"/>
       </filterset>
     </copy>
 
     <copy todir="${texttemplates}">
       <fileset dir="templates/text"/>
       <filterset>
-        <filter token="loginurl" value="${loginurl}"/>
-        <filter token="imageurl" value="${imageurl}"/>
+	<filter token="loginurl" value="${loginurl}"/>
+	<filter token="imageurl" value="${imageurl}"/>
       </filterset>
     </copy>
 
@@ -432,8 +435,8 @@
 
   <!-- Create some empty directories that will be used by imCMS. -->
   <target name="dir"
-          depends="init"
-          description="Creates some empty directories necessary for imCMS.">
+	  depends="init"
+	  description="Creates some empty directories necessary for imCMS.">
     <mkdir dir="${includes}"/>
     <mkdir dir="${fortunes}"/>
     <mkdir dir="${uploads}"/>
@@ -443,27 +446,27 @@
 
   <!-- Builds the 'conference'-plugin. -->
   <target name="conference"
-          depends="init,conference-servlets,conference-templates,conference-images"
+	  depends="init,conference-servlets,conference-templates,conference-images"
 	  description="Builds the conference."/>
 
 
   <!-- The conference-servlets. -->
-  <target name="conference-servlets" 
+  <target name="conference-servlets"
 
-          depends="init,server"
-          description="Builds the conference-servlets.">
+	  depends="init,server"
+	  description="Builds the conference-servlets.">
 
     <mkdir dir="${classes}"/>
     <javac srcdir="servlets/conf"
-           destdir="${classes}"
-           includes="*.java"
-           classpath="${classes}"
+	   destdir="${classes}"
+	   includes="*.java"
+	   classpath="${classes}"
 	   debug="${debug}"
 	   optimize="${optimize}"
 	   deprecation="${deprecation}">
 
       <classpath>
-        <pathelement path="${classes}"/>
+	<pathelement path="${classes}"/>
 	  <fileset dir="install/lib">
 	    <include name="**/*.jar"/>
 	  </fileset>
@@ -475,7 +478,7 @@
 
   <!-- The conference-templates. -->
   <target name="conference-templates"
-          depends="init"
+	  depends="init"
 	  description="Copies the conference-templates.">
     <copy todir="${conference-templates}">
       <fileset dir="templates/${srclanguage}/conf" excludes="original/images/"/>
@@ -485,7 +488,7 @@
 
   <!-- The conference-images. -->
   <target name="conference-images"
-          depends="init,conference-templates"
+	  depends="init,conference-templates"
 	  description="Copies the conference-images.">
     <copy todir="${images}/${language}/102/original">
       <fileset dir="templates/${srclanguage}/conf/original/images" includes="*"/>
@@ -495,26 +498,26 @@
 
   <!-- Builds the 'chat'-plugin. -->
   <target name="chat"
-          depends="init,chat-servlets,chat-templates"
+	  depends="init,chat-servlets,chat-templates"
 	  description="Builds the chat."/>
 
 
   <!-- The chat-servlets -->
-  <target name="chat-servlets" 
-          depends="init,server"
-          description="Builds the chat-servlets.">
+  <target name="chat-servlets"
+	  depends="init,server"
+	  description="Builds the chat-servlets.">
 
     <mkdir dir="${classes}"/>
     <javac srcdir="servlets/chat"
-           destdir="${classes}"
-           includes="*.java"
-           classpath="${classes}"
+	   destdir="${classes}"
+	   includes="*.java"
+	   classpath="${classes}"
 	   debug="${debug}"
 	   optimize="${optimize}"
 	   deprecation="${deprecation}">
 
       <classpath>
-        <pathelement path="${classes}"/>
+	<pathelement path="${classes}"/>
 	  <fileset dir="install/lib">
 	    <include name="**/*.jar"/>
 	  </fileset>
@@ -526,7 +529,7 @@
 
   <!-- The chat-templates. -->
   <target name="chat-templates"
-          depends="init"
+	  depends="init"
 	  description="Copies the chat-templates.">
     <copy todir="${chat-templates}/original">
       <fileset dir="templates/${srclanguage}/chat/orginal"/>
@@ -539,26 +542,26 @@
 
   <!-- Builds the 'billboard'-plugin. -->
   <target name="billboard"
-          depends="init,billboard-servlets,billboard-templates,billboard-images"
+	  depends="init,billboard-servlets,billboard-templates,billboard-images"
 	  description="Builds the billboard."/>
 
 
   <!-- The billboard-servlets. -->
-  <target name="billboard-servlets" 
-          depends="init,server"
-          description="Builds the billboard-servlets.">
+  <target name="billboard-servlets"
+	  depends="init,server"
+	  description="Builds the billboard-servlets.">
 
     <mkdir dir="${classes}"/>
     <javac srcdir="servlets/billBoard"
-           destdir="${classes}"
-           includes="*.java"
-           classpath="${classes}"
+	   destdir="${classes}"
+	   includes="*.java"
+	   classpath="${classes}"
 	   debug="${debug}"
 	   optimize="${optimize}"
 	   deprecation="${deprecation}">
 
       <classpath>
-        <pathelement path="${classes}"/>
+	<pathelement path="${classes}"/>
 	  <fileset dir="install/lib">
 	    <include name="**/*.jar"/>
 	  </fileset>
@@ -570,7 +573,7 @@
 
   <!-- The billboard-templates. -->
   <target name="billboard-templates"
-          depends="init"
+	  depends="init"
 	  description="Copies the billboard-templates.">
     <copy todir="${billboard-templates}/original">
       <fileset dir="templates/${srclanguage}/billBoard/ORIGINAL" excludes="images/"/>
@@ -583,7 +586,7 @@
 
   <!-- The billboard-images. -->
   <target name="billboard-images"
-          depends="init,billboard-templates"
+	  depends="init,billboard-templates"
 	  description="Copies the billboard-images.">
     <copy todir="${images}/${language}/104/original">
       <fileset dir="templates/${srclanguage}/billBoard/ORIGINAL/images" includes="*"/>
@@ -593,13 +596,13 @@
 
   <!-- Builds the 'postcard'-plugin. -->
   <target name="postcard"
-          depends="init,postcard-templates"
+	  depends="init,postcard-templates"
 	  description="Builds the postcard."/>
 
 
   <!-- The postcard-templates. -->
   <target name="postcard-templates"
-          depends="init"
+	  depends="init"
 	  description="Copies the postcard-templates.">
     <copy todir="${postcard-templates}">
       <fileset dir="templates/${srclanguage}/postcard"/>
@@ -616,7 +619,7 @@
 	depends="init,web"
 	description="Copies the help-images.">
      <copy todir="${images}/${language}/helpimages">
-       	<fileset dir="install/htdocs/imcms/helpimages" includes="*"/>
+	<fileset dir="install/htdocs/imcms/helpimages" includes="*"/>
     </copy>
   </target>
 
@@ -628,10 +631,10 @@
   <!-- The fortune-templates.-->
   <target name="fortune-templates"
 	depends="init,web"
- 	description="Copies the fortune-templates.">
+	description="Copies the fortune-templates.">
 	<copy todir="${fortune-templates}">
 	  <fileset dir="templates/${srclanguage}/fortunes"/>
 	</copy>
-  </target>	
+  </target>
 
 </project>
