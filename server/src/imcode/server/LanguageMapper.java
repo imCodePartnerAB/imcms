@@ -67,7 +67,7 @@ public class LanguageMapper {
 
     private static List getListOfLanguageKeysAndNamesInUsersLanguage( UserDomainObject user ) {
         ImcmsServices service = Imcms.getServices() ;
-        String[][] languages = service.sqlQueryMulti( "select lang_prefix, user_prefix, language from languages where user_prefix = ?", new String[]{user.getLanguageIso639_2()} );
+        String[][] languages = service.getExceptionUnhandlingDatabase().execute2dArrayQuery( "select lang_prefix, user_prefix, language from languages where user_prefix = ?", new String[] {user.getLanguageIso639_2()} );
         List languagesInOptionList = new ArrayList();
         for ( int i = 0 ; i < languages.length ; i++ ) {
             String langStr = languages[i][0];

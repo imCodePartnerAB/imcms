@@ -6,6 +6,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.user.*;
 import imcode.util.Html;
 import imcode.util.Utility;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletConfig;
@@ -65,7 +66,7 @@ public class AdminRoles extends Administrator {
                 || req.getParameter( "CANCEL_ROLE" ) != null ) {
 
             // Lets get all ROLES from DB
-            String[] rolesArr = imcref.sqlProcedure( "RoleAdminGetAll", new String[0] );
+            String[] rolesArr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "RoleAdminGetAll", new String[0] );
             Vector rolesV = new Vector( java.util.Arrays.asList( rolesArr ) );
 
 
@@ -106,7 +107,7 @@ public class AdminRoles extends Administrator {
         // *************** GENERATE THE ADMINISTRATE ROLES PAGE *****************
         if ( req.getParameter( "VIEW_ADMIN_ROLES" ) != null ) {
             // Lets get all ROLES from DB
-            String[] rolesArr = imcref.sqlProcedure( "RoleAdminGetAll", new String[0] );
+            String[] rolesArr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "RoleAdminGetAll", new String[0] );
             Vector rolesV = new Vector( java.util.Arrays.asList( rolesArr ) );
 
 
@@ -181,7 +182,7 @@ public class AdminRoles extends Administrator {
                 return;
             }
 
-            String currRoleName = imcref.sqlProcedureStr( "RoleGetName", new String[]{roleId} );
+            String currRoleName = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "RoleGetName", new String[] {roleId} );
 
             VariableManager vm = new VariableManager();
             vm.addProperty( "CURRENT_ROLE_ID", roleId );
@@ -233,7 +234,7 @@ public class AdminRoles extends Administrator {
 
             /* create output page */
             VariableManager vm = new VariableManager();
-            vm.addProperty( "CURRENT_ROLE_NAME", imcref.sqlProcedureStr( "RoleGetName", new String[]{roleIdStr} ) );
+            vm.addProperty( "CURRENT_ROLE_NAME", imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "RoleGetName", new String[] {roleIdStr} ) );
             vm.addProperty( "CURRENT_ROLE_ID", roleIdStr );
             vm.addProperty( "ROLE_PERMISSIONS", permissionComponent );
             this.sendHtml( req, res, vm, HTML_EDIT_ROLE );
@@ -256,7 +257,7 @@ public class AdminRoles extends Administrator {
             }
 
             // Lets check that the new rolename doesnt exists already in db
-            String foundRoleName = imcref.sqlProcedureStr( "RoleFindName", new String[]{(String)params.get( "ROLE_NAME" )} );
+            String foundRoleName = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "RoleFindName", new String[] {(String)params.get( "ROLE_NAME" )} );
             if ( !foundRoleName.equalsIgnoreCase( "-1" ) ) {
                 String header = "Error in AdminRoles.";
                 Properties langproperties = imcref.getLanguageProperties( user );
@@ -273,7 +274,11 @@ public class AdminRoles extends Administrator {
             // Lets add the new role into db
             RoleDomainObject role = new RoleDomainObject( params.getProperty( "ROLE_NAME" ) );
             role.addUnionOfPermissionIdsToRole(permissionValue);
-            imcref.getImcmsAuthenticatorAndUserAndRoleMapper().saveRole( role );
+            try {
+                imcref.getImcmsAuthenticatorAndUserAndRoleMapper().saveRole( role );
+            } catch ( UserAndRoleRegistryException e ) {
+                throw new UnhandledException( e );
+            }
             this.doGet( req, res );
 
             return;
@@ -294,7 +299,7 @@ public class AdminRoles extends Administrator {
             }
 
             // Lets check that the new rolename doesnt exists already in db
-            String foundRoleName = imcref.sqlProcedureStr( "RoleFindName", new String[]{params.getProperty( "ROLE_NAME" )} );
+            String foundRoleName = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "RoleFindName", new String[] {params.getProperty( "ROLE_NAME" )} );
             if ( !foundRoleName.equalsIgnoreCase( "-1" ) ) {
                 String header = "Error in AdminRoles.";
                 Properties langproperties = imcref.getLanguageProperties( user );
@@ -308,7 +313,8 @@ public class AdminRoles extends Administrator {
             // Lets add the new role into db
             String sqlQ = "RoleUpdateName";
             log.debug( "Sql: " + sqlQ );
-            imcref.sqlUpdateProcedure( sqlQ, new String[]{params.getProperty( "ROLE_ID" ), params.getProperty( "ROLE_NAME" )} );
+            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( sqlQ, new String[] {params.getProperty( "ROLE_ID" ),
+                                                                                            params.getProperty( "ROLE_NAME" )} );
             this.doGet( req, res );
 
             return;
@@ -332,13 +338,13 @@ public class AdminRoles extends Administrator {
             }
 
             // Lets get the top 50 metaid:s which will be affected if we delete the role
-            String[] affectedMetaIds = imcref.sqlProcedure( "RoleDeleteViewAffectedMetaIds", new String[]{params.getProperty( "ROLE_ID" )} );
+            String[] affectedMetaIds = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "RoleDeleteViewAffectedMetaIds", new String[] {params.getProperty( "ROLE_ID" )} );
 
             // Lets get nbr of affected  metaid:s
-            String roleCount = imcref.sqlProcedureStr( "RoleCount", new String[]{params.getProperty( "ROLE_ID" )} );
+            String roleCount = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "RoleCount", new String[] {params.getProperty( "ROLE_ID" )} );
 
             // Lets get the top 50 users:s which will be affected if we delete the role
-            String[] affectedUsers = imcref.sqlProcedure( "RoleDeleteViewAffectedUsers", new String[]{params.getProperty( "ROLE_ID" )} );
+            String[] affectedUsers = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "RoleDeleteViewAffectedUsers", new String[] {params.getProperty( "ROLE_ID" )} );
 
             // Lets get nbr of affected users
             int userCount = affectedUsers.length / 2;
@@ -399,7 +405,7 @@ public class AdminRoles extends Administrator {
                 return;
             }
 
-            imcref.sqlUpdateProcedure( "RoleDelete", new String[]{params.getProperty( "ROLE_ID" )} );
+            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "RoleDelete", new String[] {params.getProperty( "ROLE_ID" )} );
 
             this.doGet( req, res );
 
@@ -425,7 +431,8 @@ public class AdminRoles extends Administrator {
             int permissionValue = collectPermissionsState( checkedPermissions );
 
             // lets update
-            imcref.sqlUpdateProcedure( "RoleUpdatePermissions", new String[]{params.getProperty( "ROLE_ID" ), "" + permissionValue} );
+            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "RoleUpdatePermissions", new String[] {params.getProperty( "ROLE_ID" ),
+                                                                                    "" + permissionValue} );
 
             this.doGet( req, res );
         }

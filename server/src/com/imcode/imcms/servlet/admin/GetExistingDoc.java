@@ -106,7 +106,7 @@ public class GetExistingDoc extends HttpServlet {
             // we are able to determine if the sortorder is okay.
 
             // Lets fix the sortby list, first get the displaytexts from the database
-            String[][] sortOrder = imcref.sqlProcedureMulti( "SortOrder_GetExistingDocs", new String[]{langPrefix} );
+            String[][] sortOrder = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "SortOrder_GetExistingDocs", new String[]{langPrefix} );
             Map sortOrderHash = convert2Hashtable( sortOrder );
             if ( !sortOrderHash.containsKey( sortBy ) ) {
                 sortBy = "meta_id";

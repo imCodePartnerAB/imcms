@@ -15,7 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.Properties;
+import java.util.Stack;
+import java.util.Vector;
 
 public class ChatLogin extends ChatBase {
 
@@ -185,7 +187,8 @@ public class ChatLogin extends ChatBase {
             String password = lparams.getProperty( "PASSWORD" );
 
             // Validate loginparams against DB
-            String userId = imcref.sqlProcedureStr( "GetUserIdFromName", new String[]{userName, password} );
+            String userId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "GetUserIdFromName", new String[] {userName,
+                                                                                                            password} );
             //log("Användarens id var: " + userId) ;
 
             // Lets check that we found the user. Otherwise send unvailid username password

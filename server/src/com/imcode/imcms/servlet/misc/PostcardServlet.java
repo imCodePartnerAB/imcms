@@ -5,10 +5,7 @@ package com.imcode.imcms.servlet.misc;
  * @(#)PostCardServlet.java
  */
 
-import imcode.server.Imcms;
-import imcode.server.HTMLConv;
-import imcode.server.ImcmsServices;
-import imcode.server.SystemData;
+import imcode.server.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.fortune.Quote;
@@ -17,18 +14,12 @@ import org.apache.log4j.Category;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.*;
 import java.net.ProtocolException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * PARAMS in use, in doPost()
@@ -128,7 +119,8 @@ public class PostcardServlet extends HttpServlet {
         String imageNr = req.getParameter( "vykort" );
         //lets get the image url from db (we need serverObj, metaId and imageId to do it)
 
-        String imageUrl = imcref.sqlQueryStr( "select imgurl from images where meta_id = ? and name = ?", new String[]{metaId, imageNr} );
+        String imageUrl = imcref.getExceptionUnhandlingDatabase().executeStringQuery( "select imgurl from images where meta_id = ? and name = ?", new String[] {metaId,
+                                                                                                      imageNr} );
         if ( imageUrl == null ) {
             imageUrl = " ";
         } else {

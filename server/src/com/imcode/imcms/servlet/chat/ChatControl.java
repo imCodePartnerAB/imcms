@@ -5,8 +5,8 @@ import imcode.external.diverse.VariableManager;
 import imcode.server.HTMLConv;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -353,7 +353,8 @@ public class ChatControl extends ChatBase {
         if (true)//(checkboxText == null)
         {
             //we dont have them so we have to get them from db
-            arr = imcref.sqlProcedure("C_GetChatParameters", new String[]{"" + metaId});
+            arr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "C_GetChatParameters", new String[] {""
+                                                                                                                      + metaId} );
             if (arr.length != 7) {
                 return;
             }

@@ -72,9 +72,9 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         return procedure;
     }
 
-    private Procedure prepareProcedure( String procedureContents, String procedureName ) {
+    Procedure prepareProcedure( String procedureContents, String procedureName ) {
         Procedure procedure;
-        Pattern headerPattern = Pattern.compile( "CREATE\\s+PROCEDURE\\s+\\S+\\s+(.*)\\bAS\\b", Pattern.CASE_INSENSITIVE
+        Pattern headerPattern = Pattern.compile( "CREATE\\s+PROCEDURE\\s+\\S+\\s+(.*)\\bAS\\s+", Pattern.CASE_INSENSITIVE
                                                                                                   | Pattern.DOTALL );
         Matcher headerMatcher = headerPattern.matcher( procedureContents );
         if ( !headerMatcher.find() ) {
@@ -86,7 +86,7 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         Pattern parameterPattern = Pattern.compile( "@(\\w+)" );
         Map parameterNameToIndexMap = getParameterNameToIndexMapParsedFromHeader( parameterPattern, headerParameters );
         List parameterIndices = new ArrayList();
-        String bodyWithParametersReplaced = replaceVariablesInBodyAndAddIndicesToList( parameterPattern, body, parameterNameToIndexMap, parameterIndices );
+        String bodyWithParametersReplaced = replaceVariablesInBodyAndAddIndicesToList( parameterPattern, body, parameterNameToIndexMap, parameterIndices, procedureName );
         int[] parameterIndicesArray = ArrayUtils.toPrimitive( (Integer[])parameterIndices.toArray( new Integer[parameterIndices.size()] ) );
         procedure = new Procedure( bodyWithParametersReplaced, parameterIndicesArray );
         return procedure;
@@ -118,20 +118,24 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
     }
 
     private String replaceVariablesInBodyAndAddIndicesToList( Pattern parameterPattern, String body,
-                                                              Map parameterNameToIndexMap, List parameterIndices ) {
+                                                              Map parameterNameToIndexMap, List parameterIndices,
+                                                              String procedureName ) {
         Matcher bodyParametersMatcher = parameterPattern.matcher( body );
         StringBuffer bodyStringBuffer = new StringBuffer();
         while ( bodyParametersMatcher.find() ) {
             bodyParametersMatcher.appendReplacement( bodyStringBuffer, "?" );
             String parameterName = bodyParametersMatcher.group( 1 );
             Integer parameterIndex = (Integer)parameterNameToIndexMap.get( parameterName );
+            if (null == parameterIndex) {
+                throw new IllegalArgumentException( "No parameter @"+parameterName+" in parameter list of procedure "+procedureName);
+            }
             parameterIndices.add( parameterIndex );
         }
         bodyParametersMatcher.appendTail( bodyStringBuffer );
         return bodyStringBuffer.toString();
     }
 
-    private static class Procedure {
+    static class Procedure {
 
         private String sql;
         private int[] parameterIndices;

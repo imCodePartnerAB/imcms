@@ -14,7 +14,6 @@ import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.util.Utility;
@@ -25,10 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Properties;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Html template in use:
@@ -127,16 +123,16 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
         if ( ( req.getParameter( "NEXT" ) != null || req.getParameter( "NEXT.x" ) != null ) ) {
 
             // Lets get the total nbr of discs in the forum
-            String nbrOfDiscsStr = imcref.sqlProcedureStr( "B_GetNbrOfDiscs", new String[]{
-                params.getProperty( "SECTION_ID" )
-            } );
+            String nbrOfDiscsStr = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetNbrOfDiscs", new String[] {
+                                                                                                                   params.getProperty( "SECTION_ID" )
+                                                                                                           } );
             int nbrOfDiscs = 0;
 
             // Lets get the nbr of discussions to show. If it does not contain any
             // discussions, 20 will be returned by default from db
-            String showDiscsStr = imcref.sqlProcedureStr( "B_GetNbrOfDiscsToShow", new String[]{
-                params.getProperty( "SECTION_ID" )
-            } );//GetNbrOfDiscsToShow, FORUM_ID
+            String showDiscsStr = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetNbrOfDiscsToShow", new String[] {
+                                                                                                                  params.getProperty( "SECTION_ID" )
+                                                                                                          } );//GetNbrOfDiscsToShow, FORUM_ID
 
             int showDiscsCounter = Integer.parseInt( showDiscsStr );
 
@@ -164,9 +160,9 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
         if ( ( req.getParameter( "PREVIOUS" ) != null || req.getParameter( "PREVIOUS.x" ) != null ) ) {
             // Lets get the nbr of discussions to show. If it does not contain any
             // discussions, 20 will be returned by default from db
-            String showDiscsStr = imcref.sqlProcedureStr( "B_GetNbrOfDiscsToShow", new String[]{
-                params.getProperty( "SECTION_ID" )
-            } );
+            String showDiscsStr = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetNbrOfDiscsToShow", new String[] {
+                                                                                                                  params.getProperty( "SECTION_ID" )
+                                                                                                          } );
 
             int showDiscsCounter = Integer.parseInt( showDiscsStr );
 
@@ -188,7 +184,8 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
             // Lets get the forumname for the current forum
 
             String aSectionId = params.getProperty( "SECTION_ID" );
-            currSection = "" + imcref.sqlProcedureStr( "B_GetSectionName", new String[]{aSectionId} );
+            currSection = ""
+                          + imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetSectionName", new String[] {aSectionId} );
             //log("S currSection ="+currSection);
             //lets get metaId befor buildSearchDateParams destroys that info (happens if error in DATE_FORMAT)
             String metaId = params.getProperty( "META_ID" );
@@ -236,9 +233,15 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
 
                 // Ok, Lets build the search string
-                sqlAnswer = imcref.sqlProcedureMulti( "B_SearchText", new String[]{
-                    metaId, aSectionId, category, searchW, frDate, toDate + " 23:59:59"
-                } );
+                sqlAnswer = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "B_SearchText", new String[] {
+                                                                                                             metaId,
+                                                                                                             aSectionId,
+                                                                                                             category,
+                                                                                                             searchW,
+                                                                                                             frDate,
+                                                                                                     toDate
+                                                                                                     + " 23:59:59"
+                                                                                                     } );
 
             } // End if
 
@@ -349,7 +352,8 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
         // Lets get all Discussions
 
-        String[][] sqlAnswer = imcref.sqlProcedureMulti( "B_GetAllBillsToShow", new String[]{aMetaId, aSectionId} );
+        String[][] sqlAnswer = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "B_GetAllBillsToShow", new String[] {aMetaId,
+                                                                                                                aSectionId} );
 
         //lets generate the buttons that should appear
         File templateLib = this.getExternalTemplateFolder( req );
@@ -375,9 +379,9 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
             // Lets get the nbr of discussions to show. If it does not contain any
             // discussions, 20 will be returned by default from db
-            String showDiscsStr = imcref.sqlProcedureStr( "B_GetNbrOfDiscsToShow", new String[]{
-                params.getProperty( "SECTION_ID" )
-            } );
+            String showDiscsStr = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetNbrOfDiscsToShow", new String[] {
+                                                                                                                  params.getProperty( "SECTION_ID" )
+                                                                                                          } );
             //int showDiscsCounter = Integer.parseInt(showDiscsStr) ;
             showDiscsCounter = Integer.parseInt( showDiscsStr );
 
@@ -402,9 +406,9 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
         // Lets get the forumname for the current forum
         String currSection = ""
-                             + imcref.sqlProcedureStr( "B_GetSectionName", new String[]{
-                                 params.getProperty( "SECTION_ID" )
-                             } );
+                             + imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetSectionName", new String[] {
+                                                                                                               params.getProperty( "SECTION_ID" )
+                                                                                                       } );
         //log("currSection: " + currSection) ;
 
         //lets show newdiscbutton if user has more than readrights

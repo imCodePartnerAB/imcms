@@ -1,31 +1,29 @@
 package imcode.server.document;
 
-import imcode.server.db.Database;
 import imcode.server.db.DatabaseConnection;
+import imcode.server.db.ExceptionUnhandlingDatabase;
+import imcode.server.db.ExceptionUnhandlingDatabaseConnection;
 import imcode.server.db.commands.TransactionDatabaseCommand;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import org.apache.log4j.Logger;
 
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
-    private final static Logger log = Logger.getLogger( DocumentSavingVisitor.class.getName() );
-
     private DocumentDomainObject oldDocument;
 
-    public DocumentSavingVisitor( UserDomainObject user, DocumentDomainObject documentInDatabase, Database database ) {
+    public DocumentSavingVisitor( UserDomainObject user, DocumentDomainObject documentInDatabase, ExceptionUnhandlingDatabase database ) {
         super( user, database );
         this.oldDocument = documentInDatabase;
     }
 
     public void visitHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
         String sqlStr = "UPDATE frameset_docs SET frame_set = ? WHERE meta_id = ?";
-        database.sqlUpdateQuery( sqlStr, new String[]{htmlDocument.getHtml(), "" + htmlDocument.getId()} );
+        database.executeUpdateQuery( sqlStr, new String[]{htmlDocument.getHtml(), "" + htmlDocument.getId()} );
     }
 
     public void visitUrlDocument( UrlDocumentDomainObject urlDocument ) {
         String sqlStr = "UPDATE url_docs SET url_ref = ? WHERE meta_id = ?";
-        database.sqlUpdateQuery( sqlStr, new String[]{urlDocument.getUrl(), "" + urlDocument.getId()} );
+        database.executeUpdateQuery( sqlStr, new String[]{urlDocument.getUrl(), "" + urlDocument.getId()} );
     }
 
     public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
@@ -35,7 +33,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         TemplateDomainObject defaultTemplateForRestricted1 = ( (TextDocumentPermissionSetDomainObject)textDocument.getPermissionSetForRestrictedOneForNewDocuments() ).getDefaultTemplate();
         TemplateDomainObject defaultTemplateForRestricted2 = ( (TextDocumentPermissionSetDomainObject)textDocument.getPermissionSetForRestrictedTwoForNewDocuments() ).getDefaultTemplate();
 
-        database.sqlUpdateQuery( sqlStr, new String[]{
+        database.executeUpdateQuery( sqlStr, new String[]{
             "" + textDocument.getTemplate().getId(),
             "" + textDocument.getTemplateGroupId(),
             (null != defaultTemplate ? "" + defaultTemplate.getId() : null),
@@ -52,7 +50,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         if ( menusChanged ) {
             database.executeCommand( new TransactionDatabaseCommand() {
                 public Object executeInTransaction( DatabaseConnection connection ) {
-                    updateTextDocumentMenus( connection, textDocument );
+                    updateTextDocumentMenus( new ExceptionUnhandlingDatabaseConnection(connection), textDocument );
                     return null ;
                 }
             } );

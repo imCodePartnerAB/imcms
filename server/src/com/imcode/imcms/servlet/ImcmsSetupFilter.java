@@ -10,7 +10,6 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
 import javax.servlet.*;
@@ -18,8 +17,6 @@ import javax.servlet.http.*;
 import java.io.IOException;
 
 public class ImcmsSetupFilter implements Filter {
-
-    private final static Logger log = Logger.getLogger( ImcmsSetupFilter.class.getName() );
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
 
@@ -122,7 +119,7 @@ public class ImcmsSetupFilter implements Filter {
         sqlStr += "and ip_accesses.ip_end >= ?\n";
         sqlStr += "order by ip_access_id desc";
 
-        String user_data[] = imcref.sqlQuery( sqlStr, new String[]{"" + ip, "" + ip} );
+        String user_data[] = imcref.getExceptionUnhandlingDatabase().executeArrayQuery( sqlStr, new String[]{"" + ip, "" + ip} );
 
         if ( user_data.length > 0 ) {
             user = imcref.verifyUser( user_data[0], user_data[1] );

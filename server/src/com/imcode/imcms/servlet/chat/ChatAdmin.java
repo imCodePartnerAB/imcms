@@ -1,8 +1,9 @@
 package com.imcode.imcms.servlet.chat;
 
+import com.imcode.imcms.servlet.superadmin.Administrator;
 import imcode.external.diverse.VariableManager;
-import imcode.server.ImcmsServices;
 import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 import imcode.util.Utility;
@@ -13,8 +14,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Hashtable;
-
-import com.imcode.imcms.servlet.superadmin.Administrator;
 
 /**
  * Lists chats who has debates that has requared dates. (create or modified)
@@ -174,9 +173,9 @@ public class ChatAdmin extends Administrator {
             String htmlChatElement = imcref.getAdminTemplate( TEMPLATE_CONF_ELEMENT, user, null );
             String htmlForumElement = imcref.getAdminTemplate( TEMPLATE_FORUM_ELEMENT, user, null );
 
-            String[][] listOfChats = imcref.sqlProcedureMulti("ListChats", new String[0]);
+            String[][] listOfChats = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "ListChats", new String[0] );
 
-// lets create chatlist
+            // lets create chatlist
             StringBuffer chatListTag = new StringBuffer();
 
             Hashtable chatTags = new Hashtable();
@@ -186,15 +185,22 @@ public class ChatAdmin extends Administrator {
             for (int i = 0; i < listOfChats.length; i++) {
 
                 String metaId = listOfChats[i][0];
-                String[][] queryResultForum = imcref.sqlProcedureMulti("C_AdminStatistics1", new String[]{metaId, startDate, endDate, listMode});
+                String[][] queryResultForum = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "C_AdminStatistics1", new String[] {metaId,
+                                                                                                                               startDate,
+                                                                                                                               endDate,
+                                                                                                                               listMode} );
 
-//lets create forumList for this chat
+                //lets create forumList for this chat
                 StringBuffer forumList = new StringBuffer();
 
                 for (int j = 0; j < queryResultForum.length; j++) {
 
                     String forumId = queryResultForum[j][0];
-                    String[][] queryResultDebate = imcref.sqlProcedureMulti("C_AdminStatistics2", new String[]{metaId, forumId, startDate, endDate, listMode});
+                    String[][] queryResultDebate = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "C_AdminStatistics2", new String[] {metaId,
+                                                                                                                                    forumId,
+                                                                                                                                    startDate,
+                                                                                                                                    endDate,
+                                                                                                                                    listMode} );
 
                     // lets create debatelist for this forum
                     StringBuffer debateList = new StringBuffer();

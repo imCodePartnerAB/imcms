@@ -4,7 +4,9 @@ import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseConnection;
+import imcode.server.db.ExceptionUnhandlingDatabase;
 import imcode.server.db.commands.TransactionDatabaseCommand;
+import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -45,13 +47,13 @@ public class DocumentPermissionSetMapper {
     private final static int EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE;
     private final static int EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES;
 
-    private Database database;
+    private ExceptionUnhandlingDatabase database;
     private ImcmsServices services;
     public static final String TABLE_NEW_DOC_PERMISSION_SETS = "new_doc_permission_sets";
     public static final String TABLE_DOC_PERMISSION_SETS = "doc_permission_sets";
 
     public DocumentPermissionSetMapper( Database service, ImcmsServices services ) {
-        this.database = service;
+        this.database = new ExceptionUnhandlingDatabase( service );
         this.services = services;
     }
 
@@ -74,7 +76,7 @@ public class DocumentPermissionSetMapper {
                                                      boolean forNewDocuments ) {
         String table = getPermissionsTable( forNewDocuments );
         String sqlStr = "SELECT permission_id FROM " + table + " WHERE meta_id = ? AND set_id = ?";
-        String permissionBitsString = database.sqlQueryStr( sqlStr, new String[]{
+        String permissionBitsString = database.executeStringQuery( sqlStr, new String[]{
                                                                             String.valueOf( document.getId() ),
                                                                             String.valueOf( documentPermissionSet.getTypeId() )
                                                                     } );
@@ -153,7 +155,7 @@ public class DocumentPermissionSetMapper {
 
         final int permissionBits1 = permissionBits;
         database.executeCommand( new TransactionDatabaseCommand() {
-            public Object executeInTransaction( DatabaseConnection connection ) {
+            public Object executeInTransaction( DatabaseConnection connection ) throws DatabaseException {
                 sqlDeleteFromExtendedPermissionsTable( document, documentPermissionSet, forNewDocuments, connection );
                 String tableName = forNewDocuments ? TABLE_NEW_DOC_PERMISSION_SETS : TABLE_DOC_PERMISSION_SETS ;
                 connection.executeUpdate( "DELETE FROM "+tableName+"\n"
@@ -187,7 +189,7 @@ public class DocumentPermissionSetMapper {
                                                  + ",?)";
         for ( int i = 0; i < allowedTemplateGroups.length; i++ ) {
             TemplateGroupDomainObject allowedTemplateGroup = allowedTemplateGroups[i];
-            database.sqlUpdateQuery( sqlInsertAllowedTemplateGroupId, new String[]{
+            database.executeUpdateQuery( sqlInsertAllowedTemplateGroupId, new String[]{
                                                      "" + document.getId(), "" + textDocumentPermissionSet.getTypeId(),
                                                      ""
                                                      + allowedTemplateGroup.getId()
@@ -197,7 +199,7 @@ public class DocumentPermissionSetMapper {
 
     private void sqlDeleteFromExtendedPermissionsTable( DocumentDomainObject document,
                                                         DocumentPermissionSetDomainObject documentPermissionSet,
-                                                        boolean forNewDocuments, DatabaseConnection connection ) {
+                                                        boolean forNewDocuments, DatabaseConnection connection ) throws DatabaseException {
         String table = getExtendedPermissionsTable( forNewDocuments );
         String sqlDelete = "DELETE FROM " + table
                            + " WHERE meta_id = ? AND set_id = ?";
@@ -219,7 +221,7 @@ public class DocumentPermissionSetMapper {
                                                   + ",?)";
         for ( int i = 0; i < allowedDocumentTypeIds.length; i++ ) {
             int creatableDocumentTypeId = allowedDocumentTypeIds[i];
-            database.sqlUpdateQuery( sqlInsertCreatableDocumentTypeId, new String[]{
+            database.executeUpdateQuery( sqlInsertCreatableDocumentTypeId, new String[]{
                                                      "" + document.getId(), "" + textDocumentPermissionSet.getTypeId(),
                                                      ""
                                                      + creatableDocumentTypeId
@@ -267,7 +269,7 @@ public class DocumentPermissionSetMapper {
         String sqlStr = SQL_SELECT_PERMISSON_DATA__PREFIX + table
                         + " WHERE meta_id = ? AND set_id = ? AND permission_id = "
                         + ImcmsConstants.PERM_CREATE_DOCUMENT;
-        String[] documentTypeIdStrings = database.sqlQuery( sqlStr, new String[]{
+        String[] documentTypeIdStrings = database.executeArrayQuery( sqlStr, new String[]{
                                                                             "" + metaId,
                                                                             "" + documentPermissionSet.getTypeId()
                                                                     } );
@@ -286,7 +288,7 @@ public class DocumentPermissionSetMapper {
                 };
         String sproc = forNewDocuments
                         ? SQL_GET_TEMPLATE_GROUPS_WITH_NEW_PERMISSIONS : SQL_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS;
-        String[][] sprocResult = database.sqlQueryMulti( sproc, params );
+        String[][] sprocResult = database.execute2dArrayQuery( sproc, params );
         List templateGroups = new ArrayList();
         for ( int i = 0; i < sprocResult.length; i++ ) {
             int groupId = Integer.parseInt( sprocResult[i][0] );

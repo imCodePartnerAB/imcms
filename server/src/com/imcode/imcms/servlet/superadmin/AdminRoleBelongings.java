@@ -14,6 +14,8 @@ package com.imcode.imcms.servlet.superadmin;
 import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
@@ -53,7 +55,6 @@ import java.util.Properties;
  * @author Jerker Drottenmyr
  * @version 1.3 17 Oct 2000
  */
-
 public class AdminRoleBelongings extends Administrator {
 
     private final static Logger log = Logger.getLogger( AdminRoleBelongings.class.getName() );
@@ -77,7 +78,7 @@ public class AdminRoleBelongings extends Administrator {
         }
 
         // Lets get all ROLES from DB
-        String[][] queryResult = imcref.sqlProcedureMulti( "RoleAdminGetAll", new String[0] );
+        String[][] queryResult = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "RoleAdminGetAll", new String[0] );
 
         // Lets generate the html page
         String optionList = createListOfOptions( queryResult );
@@ -86,12 +87,9 @@ public class AdminRoleBelongings extends Administrator {
         vm.addProperty( "ROLES_MENU", optionList );
 
         this.sendHtml( req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING );
-        return;
     }
 
-    /**
-     * POST
-     */
+    /** POST */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         ImcmsServices imcref = Imcms.getServices();
@@ -147,9 +145,9 @@ public class AdminRoleBelongings extends Administrator {
                 curentRoleId = "0";
             }
 
-            String[][] roleQueryResult = imcref.sqlProcedureMulti( "RoleGetAllApartFromRole", new String[]{
-                curentRoleId
-            } );
+            String[][] roleQueryResult = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "RoleGetAllApartFromRole", new String[] {
+                                                                                                                          curentRoleId
+                                                                                                                  } );
 
             String roleOptionList = createListOfOptions( roleQueryResult );
             String curentRoleName = getRoleName( roleId, imcref );
@@ -311,21 +309,18 @@ public class AdminRoleBelongings extends Administrator {
      * creats list of options.
      * param options must be in order value, name
      */
-    private String createListOfOptions( String[][] options, boolean selected ) {
+    private String createListOfOptions( UserDomainObject[] users, boolean selected ) {
 
         StringBuffer optionList = new StringBuffer();
 
-        for ( int i = 0; i < options.length; i++ ) {
-
-            optionList.append( createOption( options[i][0], options[i][1], selected ) );
+        for ( int i = 0; i < users.length; i++ ) {
+            optionList.append( createOption( ""+users[i].getId(), users[i].getLastName()+", "+users[i].getFirstName(), selected ) );
         }
 
         return optionList.toString();
     }
 
-    /**
-     * creats option.
-     */
+    /** creats option. */
     private String createOption( String elementValue, String elementName, boolean selected ) {
         StringBuffer option = new StringBuffer();
 
@@ -341,11 +336,12 @@ public class AdminRoleBelongings extends Administrator {
     private void addUserToRole( String userId, String roleId, ImcmsServices imcref ) {
         // lets be certain that the update process works ( avoid error then row alredy exist )
         removeUserFromRole( userId, roleId, imcref );
-        imcref.sqlUpdateProcedure( "AddUserRole", new String[]{userId, roleId} );
+        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "AddUserRole", new String[] {userId, roleId} );
     }
 
     private void removeUserFromRole( String userId, String roleId, ImcmsServices imcref ) {
-        imcref.sqlUpdateProcedure( "RemoveUserFromRole", new String[]{userId, roleId} );
+        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "RemoveUserFromRole", new String[] {userId,
+                                                                                        roleId} );
     }
 
     private String getUserOptionListTag( String roleId, ImcmsServices imcref ) {
@@ -353,25 +349,29 @@ public class AdminRoleBelongings extends Administrator {
         String userOptionList;
 
         // lets get all user or users who has role role_id
-        if ( roleId.equals( "ALL_USERS" ) ) {
+        if ( "ALL_USERS".equals( roleId ) ) {
             userOptionList = Html.createUsersOptionList( imcref );
         } else {
-            userQueryResult = imcref.sqlProcedureMulti( "GetUsersWhoBelongsToRole", new String[]{roleId} );
-            userOptionList = createListOfOptions( userQueryResult, true );
+            ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
+            RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapper.getRoleById( Integer.parseInt( roleId ) );
+            UserDomainObject[] allUsersWithRole = imcmsAuthenticatorAndUserAndRoleMapper.getAllUsersWithRole( role );
+
+            userOptionList = createListOfOptions( allUsersWithRole, true );
         }
 
         return userOptionList;
     }
 
-    /**
-     * returns name for roll or empty if all
-     */
+    /** returns name for roll or empty if all */
     private String getRoleName( String roleId, ImcmsServices imcref ) {
 
         String roleName = "";
 
-        if ( !( roleId.equalsIgnoreCase( "ALL_USERS" ) ) ) {
-            roleName = imcref.sqlProcedureStr( "RoleGetName", new String[]{roleId} );
+        if ( !roleId.equalsIgnoreCase( "ALL_USERS" ) ) {
+            RoleDomainObject role = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getRoleById( Integer.parseInt( roleId ) );
+            if ( null != role ) {
+                roleName = role.getName();
+            }
         }
 
         return roleName;
@@ -380,6 +380,6 @@ public class AdminRoleBelongings extends Administrator {
     private void setUsersActive( String userId, String state, ImcmsServices imcref ) {
 
         String sqlD = "ChangeUserActiveStatus";
-        imcref.sqlUpdateQuery( sqlD, new String[]{userId, state} );
+        imcref.getExceptionUnhandlingDatabase().executeUpdateQuery( sqlD, new String[] {userId, state} );
     }
 }

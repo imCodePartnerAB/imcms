@@ -8,9 +8,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.UserDomainObject;
-import imcode.server.user.UserMapper;
+import imcode.server.user.*;
 import imcode.util.Html;
 import imcode.util.Utility;
 
@@ -116,7 +114,8 @@ public class ConfLogin extends Conference {
             }
 
             // Lets get all users in this conference from db
-            String[] usersArr = imcref.sqlProcedure( "A_GetAllConfUsersInList", new String[]{"" + params.getMetaId()} );
+            String[] usersArr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "A_GetAllConfUsersInList", new String[] {""
+                                                                                                                                        + params.getMetaId()} );
             Vector usersV = super.convert2Vector( usersArr );
             VariableManager vm = new VariableManager();
             String usersOption = Html.createOptionList( usersV, "" );
@@ -195,7 +194,8 @@ public class ConfLogin extends Conference {
             String password = lparams.getProperty( "PASSWORD" );
 
             // Validate loginparams against DB
-            String userId = imcref.sqlProcedureStr( "GetUserIdFromName", new String[]{userName, password} );
+            String userId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "GetUserIdFromName", new String[] {userName,
+                                                                                                            password} );
 
             // Lets check that we the found the user. Otherwise send unvailid username password
             if ( userId == null ) {
@@ -293,17 +293,6 @@ public class ConfLogin extends Conference {
             userParams = super.verifyForSql( userParams );
             String userName = userParams.getProperty( "login_name" );
 
-            // Lets check that the new username doesnt exists already in db
-            String[] userNameExists = imcref.sqlProcedure( "FindUserName", new String[]{userName} );
-
-            if ( userNameExists != null ) {
-                if ( userNameExists.length > 0 ) {
-                    String header = "ConfLogin servlet.";
-                    new ConfError( req, res, header, 56, LOGIN_ERROR_HTML, user );
-                    return;
-                }
-            }
-
             // Lets build the users information into a string and add it to db
 
             UserDomainObject newUser = new UserDomainObject();
@@ -325,16 +314,25 @@ public class ConfLogin extends Conference {
 
             // Add new user to db
             UserMapper userMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
-            userMapper.addUser( newUser, user );
+            try {
+                userMapper.addUser( newUser, user );
+            } catch ( UserAlreadyExistsException e ) {
+                String header = "ConfLogin servlet.";
+                new ConfError( req, res, header, 56, LOGIN_ERROR_HTML, user );
+                return;
+            }
 
             // Ok, Lets add the users roles into db, first get the role his in the system with
-            String[] usersRoles = imcref.sqlProcedure( "GetUserRolesIDs", new String[]{"" + user.getId()} );
+            String[] usersRoles = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetUserRolesIDs", new String[] {""
+                                                                                                                                  + user.getId()} );
 
             if ( usersRoles != null ) {
                 for ( int i = 0; i < usersRoles.length; i += 2 ) {
                     // Late change, fix so the superadminrole wont be copied to the new user
                     if ( !usersRoles[i].toString().equals( "1" ) ) {
-                        imcref.sqlUpdateProcedure( "AddUserRole", new String[]{newUser.getId()+"", usersRoles[i].toString()} );
+                        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "AddUserRole", new String[] {newUser.getId()
+                                                                                                                     + "",
+                                                                                                        usersRoles[i].toString()} );
                     }
                 }
             } else {  // nothing came back from getUserRoles
@@ -379,30 +377,32 @@ public class ConfLogin extends Conference {
                 return;
             }
 
-            String[] userInfo = imcref.sqlQuery( "SELECT user_id,\n"
-                                                 + "login_name,\n"
-                                                 + "login_password,\n"
-                                                 + "first_name,\n"
-                                                 + "last_name,\n"
-                                                 + "title,\n"
-                                                 + "company,\n"
-                                                 + "address,\n"
-                                                 + "city,\n"
-                                                 + "zip,\n"
-                                                 + "country,\n"
-                                                 + "county_council,\n"
-                                                 + "email,\n"
-                                                 + "external,\n"
-                                                 + "active,\n"
-                                                 + "create_date,\n"
-                                                 + "language\n"
-                                                 + "FROM users\n"
-                                                 + "WHERE user_id = @aUserId", new String[]{userId} );
+            String[] userInfo = imcref.getExceptionUnhandlingDatabase().executeArrayQuery( "SELECT user_id,\n"
+                                                                                           + "login_name,\n"
+                                                                                           + "login_password,\n"
+                                                                                           + "first_name,\n"
+                                                                                           + "last_name,\n"
+                                                                                           + "title,\n"
+                                                                                           + "company,\n"
+                                                                                           + "address,\n"
+                                                                                           + "city,\n"
+                                                                                           + "zip,\n"
+                                                                                           + "country,\n"
+                                                                                           + "county_council,\n"
+                                                                                           + "email,\n"
+                                                                                           + "external,\n"
+                                                                                           + "active,\n"
+                                                                                           + "create_date,\n"
+                                                                                           + "language\n"
+                                                                                           + "FROM users\n"
+                                                                                           + "WHERE user_id = @aUserId", new String[] {userId} );
 
             // Lets get the selected users userlevel
-            String level = imcref.sqlProcedureStr( "A_ConfUsersGetUserLevel", new String[]{
-                "" + params.getMetaId(), userId
-            } );
+            String level = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_ConfUsersGetUserLevel", new String[] {
+                                                                                                   ""
+                                                                                                   + params.getMetaId(),
+                                                                                                           userId
+                                                                                                   } );
             String levelStatus = "";
             if ( level.equalsIgnoreCase( "1" ) ) {
                 levelStatus = "checked";
@@ -454,9 +454,10 @@ public class ConfLogin extends Conference {
 
             // Lets add the new information into the conf user db
 
-            imcref.sqlUpdateProcedure( "A_ConfUsersSetUserLevel", new String[]{
-                "" + params.getMetaId(), userId, userLevel
-            } );
+            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "A_ConfUsersSetUserLevel", new String[] {
+                                                                                    "" + params.getMetaId(), userId,
+                                                                                            userLevel
+                                                                                    } );
 
             String url = "ConfLogin?login_type=admin_user";
             res.sendRedirect( url );

@@ -1,15 +1,17 @@
 package com.imcode.imcms.servlet.conference;
 
-import imcode.server.*;
+import imcode.external.diverse.MetaInfo;
+import imcode.external.diverse.VariableManager;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
-
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
 import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Properties;
 
 public class ConfCreator extends Conference {
 
@@ -54,7 +56,7 @@ public class ConfCreator extends Conference {
             // we have to check when we add a new conference that such an meta_id
             // doesnt already exists.
             String metaId = params.getProperty( "META_ID" );
-            String foundMetaId = imcref.sqlProcedureStr( "A_FindMetaId", new String[]{metaId} );
+            String foundMetaId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_FindMetaId", new String[] {metaId} );
             if ( !foundMetaId.equals( "1" ) ) {
                 String header = "ConfCreator servlet. ";
                 ConfError err = new ConfError( req, res, header, 90, user );
@@ -66,12 +68,15 @@ public class ConfCreator extends Conference {
             // AddNewConf @meta_id int, @confName varchar(255)
             String confName = confParams.getProperty( "CONF_NAME" );
             // String sortType = "1" ;	// Default value, unused so far
-            imcref.sqlUpdateProcedure( "A_AddNewConf", new String[]{metaId, confName} );
+            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "A_AddNewConf", new String[] {metaId,
+                                                                                            confName} );
 
             // Lets add a new forum to the conference
             final String archiveMode = "A";
             final String archiveTime = "30";
-            imcref.sqlUpdateProcedure( "A_AddNewForum", new String[]{metaId, confParams.getProperty( "FORUM_NAME" ), archiveMode, archiveTime} );
+            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "A_AddNewForum", new String[] {metaId,
+                                                                                            confParams.getProperty( "FORUM_NAME" ),
+                                                                                            archiveMode, archiveTime} );
 
             // Lets get the administrators user_id
             String user_id = "" + user.getId();

@@ -3,6 +3,7 @@ package imcode.server.db.impl;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
 import imcode.server.db.DatabaseConnection;
+import imcode.server.db.exceptions.DatabaseException;
 import junit.framework.Assert;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -21,7 +22,7 @@ public class MockDatabase implements Database {
     private List sqlCalls = new ArrayList();
     private List expectedSqlCalls = new ArrayList();
 
-    public String[] sqlProcedure( String procedure, String[] params ) {
+    public String[] executeArrayProcedure( String procedure, String[] params ) {
         String[] result = (String[])getResultForSqlCall( procedure, params );
         if (null == result) {
             return new String[0] ;
@@ -29,21 +30,21 @@ public class MockDatabase implements Database {
         return result;
     }
 
-    public int sqlUpdateProcedure( String procedure, String[] params ) {
+    public int executeUpdateProcedure( String procedure, String[] params ) {
         getResultForSqlCall( procedure, params );
         return 0;
     }
 
-    public int sqlUpdateQuery( String sqlStr, String[] params ) {
+    public int executeUpdateQuery( String sqlStr, Object[] params ) {
         getResultForSqlCall( sqlStr, params );
         return 0;
     }
 
-    public String sqlProcedureStr( String procedure, String[] params ) {
+    public String executeStringProcedure( String procedure, String[] params ) {
         return (String)getResultForSqlCall( procedure, params );
     }
 
-    public String[][] sqlProcedureMulti( String procedure, String[] params ) {
+    public String[][] execute2dArrayProcedure( String procedure, String[] params ) {
         String[][] result = (String[][])getResultForSqlCall( procedure, params );
         if (null == result) {
             result = new String[0][0];
@@ -51,7 +52,7 @@ public class MockDatabase implements Database {
         return result;
     }
 
-    public String[] sqlQuery( String sqlStr, String[] params ) {
+    public String[] executeArrayQuery( String sqlStr, String[] params ) {
         String[] result = (String[])getResultForSqlCall( sqlStr, params );
         if (null == result) {
             result = new String[0];
@@ -59,11 +60,11 @@ public class MockDatabase implements Database {
         return result;
     }
 
-    public String sqlQueryStr( String sqlStr, String[] params ) {
+    public String executeStringQuery( String sqlStr, String[] params ) {
         return (String)getResultForSqlCall( sqlStr, params );
     }
 
-    public String[][] sqlQueryMulti( String sqlstr, String[] params ) {
+    public String[][] execute2dArrayQuery( String sqlstr, String[] params ) {
         String[][] result = (String[][])getResultForSqlCall( sqlstr, params );
         if (null == result) {
             result = new String[0][0];
@@ -71,7 +72,7 @@ public class MockDatabase implements Database {
         return result;
     }
 
-    public Object executeCommand( DatabaseCommand databaseCommand ) {
+    public Object executeCommand( DatabaseCommand databaseCommand ) throws DatabaseException {
         return databaseCommand.executeOn( new MockDatabaseConnection(this) );
     }
 
@@ -105,7 +106,7 @@ public class MockDatabase implements Database {
         return sqlCalls.size();
     }
 
-    private Object getResultForSqlCall( String sql, String[] params ) {
+    private Object getResultForSqlCall( String sql, Object[] params ) {
         SqlCall sqlCall = new SqlCall( sql, params );
         sqlCalls.add( sqlCall );
         Object result = null;
@@ -127,10 +128,10 @@ public class MockDatabase implements Database {
     public static class SqlCall {
 
         private String string;
-        private String[] parameters;
+        private Object[] parameters;
         private Object result;
 
-        public SqlCall( String string, String[] parameters ) {
+        public SqlCall( String string, Object[] parameters ) {
             this.string = string;
             this.parameters = parameters;
         }
@@ -144,7 +145,7 @@ public class MockDatabase implements Database {
             return string;
         }
 
-        public String[] getParameters() {
+        public Object[] getParameters() {
             return parameters;
         }
 
@@ -371,7 +372,7 @@ public class MockDatabase implements Database {
         }
 
         public int executeUpdateProcedure( String procedure, String[] parameters ) {
-            return database.sqlUpdateProcedure( procedure, parameters );
+            return database.executeUpdateProcedure( procedure, parameters );
         }
 
         public Object executeQuery( String sqlQuery, String[] parameters,
@@ -387,8 +388,8 @@ public class MockDatabase implements Database {
             return new MockConnection() ;
         }
 
-        public int executeUpdate( String sql, String[] parameters ) {
-            return database.sqlUpdateQuery( sql, parameters );
+        public int executeUpdate( String sql, Object[] parameters ) {
+            return database.executeUpdateQuery( sql, parameters );
         }
     }
 

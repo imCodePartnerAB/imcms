@@ -6,7 +6,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 public class TestImcmsAuthenticatorAndUserAndRoleMapper extends TestCase {
 
-    public void testAddExternalUser() {
+    public void testAddExternalUser() throws UserAlreadyExistsException {
         AddUserMockDatabase database = new AddUserMockDatabase();
         ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = new ImcmsAuthenticatorAndUserAndRoleMapper( database, null );
         UserDomainObject user = new UserDomainObject();
@@ -20,13 +20,13 @@ public class TestImcmsAuthenticatorAndUserAndRoleMapper extends TestCase {
 
     private static class AddUserMockDatabase extends MockDatabase {
 
-        private String[] updateQueryParameters;
+        private Object[] updateQueryParameters;
 
-        public String sqlProcedureStr( String procedure, String[] params ) {
+        public String executeStringProcedure( String procedure, String[] params ) {
             return "3" ;
         }
 
-        public int sqlUpdateQuery( String sqlStr, String[] params ) {
+        public int executeUpdateQuery( String sqlStr, Object[] params ) {
             this.updateQueryParameters = params ;
             return 1;
         }

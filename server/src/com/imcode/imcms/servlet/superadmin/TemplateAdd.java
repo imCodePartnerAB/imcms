@@ -1,15 +1,21 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.util.*;
-import imcode.server.*;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
-import imcode.util.*;
-import imcode.server.*;
+import imcode.util.MultipartFormdataParser;
+import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Vector;
 
 public class TemplateAdd extends HttpServlet {
 
@@ -115,9 +121,7 @@ public class TemplateAdd extends HttpServlet {
                 String[] list;
                 list = imcref.getDemoTemplateIds();
                 String[] temp;
-                temp = imcref.sqlQuery(
-                        "select template_id, simple_name from templates where lang_prefix = ? order by simple_name",
-                        new String[]{lang} );
+                temp = imcref.getExceptionUnhandlingDatabase().executeArrayQuery( "select template_id, simple_name from templates where lang_prefix = ? order by simple_name", new String[] {lang} );
                 Vector vec = new Vector();
                 vec.add( "#language#" );
                 vec.add( lang );
@@ -266,14 +270,15 @@ public class TemplateAdd extends HttpServlet {
                 vec.add( lang );
                 htmlStr = imcref.getAdminTemplate( "template_upload_file_exists.html", user, vec );
             } else {
-                String t_id = imcref.sqlQueryStr( "select template_id from templates where simple_name = ?",
-                                                  new String[]{simple_name} );
+                String t_id = imcref.getExceptionUnhandlingDatabase().executeStringQuery( "select template_id from templates where simple_name = ?", new String[] {simple_name} );
                 String[] temp = mp.getParameterValues( "templategroup" );
                 if ( temp != null ) {
                     for ( int foo = 0; foo < temp.length; foo++ ) {
                         String sqlStr = "delete from templates_cref where group_id = ? and template_id = ?\n"
                                 + "insert into templates_cref (group_id, template_id) values(?,?)\n";
-                        imcref.sqlUpdateQuery( sqlStr, new String[]{temp[foo], t_id, temp[foo], t_id} );
+                        imcref.getExceptionUnhandlingDatabase().executeUpdateQuery( sqlStr, new String[] {temp[foo],
+                                                                                                    t_id, temp[foo],
+                                                                                                    t_id} );
                     }
                 }
 

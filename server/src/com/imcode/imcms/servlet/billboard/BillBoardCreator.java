@@ -1,15 +1,16 @@
 package com.imcode.imcms.servlet.billboard;
 
-import imcode.server.*;
-import imcode.server.user.UserDomainObject;
-
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
+import imcode.external.diverse.MetaInfo;
+import imcode.external.diverse.VariableManager;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Html template in use:
@@ -77,7 +78,7 @@ public class BillBoardCreator extends BillBoard {//BillBoardCreator
             // we have to check when we add a new billboard that such an meta_id
             // doesnt already exists.
             String metaId = params.getProperty( "META_ID" );
-            String foundMetaId = imcref.sqlProcedureStr( "B_FindMetaId", new String[]{metaId} );
+            String foundMetaId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_FindMetaId", new String[] {metaId} );
             if ( !foundMetaId.equals( "1" ) ) {
                 action = "";
                 String header = "BillBoardCreator servlet. ";
@@ -93,7 +94,8 @@ public class BillBoardCreator extends BillBoard {//BillBoardCreator
 
             String subject = confParams.getProperty( "SUBJECT_NAME" );
 
-            imcref.sqlUpdateProcedure( "B_AddNewBillBoard", new String[]{metaId, confName, subject} );
+            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_AddNewBillBoard", new String[] {metaId,
+                                                                                            confName, subject} );
 
             // Lets add a new section to the billBoard
             // B_AddNewSection @meta_id int, @section_name varchar(255), @archive_mode char, @archive_time int
@@ -101,7 +103,10 @@ public class BillBoardCreator extends BillBoard {//BillBoardCreator
             final String archiveMode = "A";
             final String archiveTime = "30";
             final String daysToShow = "14";
-            imcref.sqlUpdateProcedure( "B_AddNewSection", new String[]{metaId, confParams.getProperty( "SECTION_NAME" ), archiveMode, archiveTime, daysToShow} );
+            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_AddNewSection", new String[] {metaId,
+                                                                                            confParams.getProperty( "SECTION_NAME" ),
+                                                                                            archiveMode, archiveTime,
+                                                                                            daysToShow} );
 
             // Ok, Were done adding the billBoard, Lets go back to the Manager
             String loginPage = "BillBoardLogin?login_type=login";

@@ -60,7 +60,7 @@ public class SaveInclude extends HttpServlet {
                 try {
                     int included_meta_id_int = Integer.parseInt( included_meta_id );
 
-                    String[] docTypeStrArr = imcref.sqlProcedure( "GetDocType", new String[]{included_meta_id} );
+                    String[] docTypeStrArr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetDocType", new String[]{included_meta_id} );
                     int docType = Integer.parseInt( docTypeStrArr[0] );
                     if ( null == docTypeStrArr || 0 == docTypeStrArr.length
                          || DocumentTypeDomainObject.TEXT_ID != docType ) {

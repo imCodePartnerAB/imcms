@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Html template in use:
@@ -95,9 +95,10 @@ public class ConfDisc extends Conference {
 
             HttpSession session = req.getSession( false );
             if ( session != null ) {
-                String latestDiscId = imcref.sqlProcedureStr( "A_GetLastDiscussionId", new String[]{
-                    params.getProperty( "META_ID" ), aForumId
-                } );
+                String latestDiscId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetLastDiscussionId", new String[] {
+                                                                                                                      params.getProperty( "META_ID" ),
+                                                                                                                      aForumId
+                                                                                                              } );
 
                 if ( latestDiscId == null ) {
                     log( "LatestDiscID saknas, det kan saknas diskussioner i forumet:" + aForumId );
@@ -134,16 +135,16 @@ public class ConfDisc extends Conference {
 
             // Lets get the total nbr of discs in the forum
             // RmiConf rmi = new RmiConf(user) ;
-            String nbrOfDiscsStr = imcref.sqlProcedureStr( "A_GetNbrOfDiscs", new String[]{
-                params.getProperty( "FORUM_ID" )
-            } );
+            String nbrOfDiscsStr = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetNbrOfDiscs", new String[] {
+                                                                                                                   params.getProperty( "FORUM_ID" )
+                                                                                                           } );
             int nbrOfDiscs;
 
             // Lets get the nbr of discussions to show. If it does not contain any
             // discussions, 20 will be returned by default from db
-            String showDiscsStr = imcref.sqlProcedureStr( "A_GetNbrOfDiscsToShow", new String[]{
-                params.getProperty( "FORUM_ID" )
-            } );
+            String showDiscsStr = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetNbrOfDiscsToShow", new String[] {
+                                                                                                                  params.getProperty( "FORUM_ID" )
+                                                                                                          } );
             int showDiscsCounter = Integer.parseInt( showDiscsStr );
 
             try {
@@ -170,9 +171,9 @@ public class ConfDisc extends Conference {
 
             // Lets get the nbr of discussions to show. If it does not contain any
             // discussions, 20 will be returned by default from db
-            String showDiscsStr = imcref.sqlProcedureStr( "A_GetNbrOfDiscsToShow", new String[]{
-                params.getProperty( "FORUM_ID" )
-            } );
+            String showDiscsStr = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetNbrOfDiscsToShow", new String[] {
+                                                                                                                  params.getProperty( "FORUM_ID" )
+                                                                                                          } );
             int showDiscsCounter = Integer.parseInt( showDiscsStr );
 
             this.decreaseDiscIndex( req, showDiscsCounter );
@@ -193,7 +194,7 @@ public class ConfDisc extends Conference {
             // Lets get the forumname for the current forum
 
             String aForumId = params.getProperty( "FORUM_ID" );
-            currForum = imcref.sqlProcedureStr( "A_GetForumName", new String[]{aForumId} );
+            currForum = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetForumName", new String[] {aForumId} );
 
             //lets get metaId befor buildSearchDateParams destroys that info (happens if error in DATE_FORMAT)
             String metaId = params.getProperty( "META_ID" );
@@ -267,13 +268,19 @@ public class ConfDisc extends Conference {
                         }
                     }
                     sqlQ.append( ')' );
-                    sqlAnswer = imcref.sqlQueryMulti( sqlQ.toString(), (String[])sqlParameters.toArray( new String[sqlParameters.size()] ) );
+                    sqlAnswer = imcref.getExceptionUnhandlingDatabase().execute2dArrayQuery( sqlQ.toString(), (String[])sqlParameters.toArray( new String[sqlParameters.size()] ) );
                 } else {
                     // Ok, Lets build the search string
 
-                    sqlAnswer = imcref.sqlProcedureMulti( "A_SearchText", new String[]{
-                        metaId, aForumId, category, searchW, frDate, toDate + " 23:59:59"
-                    } );
+                    sqlAnswer = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "A_SearchText", new String[] {
+                                                                                                                 metaId,
+                                                                                                                 aForumId,
+                                                                                                                 category,
+                                                                                                                 searchW,
+                                                                                                                 frDate,
+                                                                                                         toDate
+                                                                                                         + " 23:59:59"
+                                                                                                         } );
                 } // End if
             } // End if
 
@@ -373,9 +380,11 @@ public class ConfDisc extends Conference {
         File aHrefHtmlFile = new File( super.getExternalTemplateFolder( req ), A_HREF_HTML );
 
         // Lets get all Discussions
-        String[][] sqlAnswer = imcref.sqlProcedureMulti( "A_GetAllDiscussions", new String[]{
-            aMetaId, aForumId, aLoginDate
-        } );
+        String[][] sqlAnswer = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "A_GetAllDiscussions", new String[] {
+                                                                                                                aMetaId,
+                                                                                                                aForumId,
+                                                                                                                aLoginDate
+                                                                                                        } );
 
         //lets generate the buttons that should appear
         File templateLib = this.getExternalTemplateFolder( req );
@@ -401,9 +410,9 @@ public class ConfDisc extends Conference {
 
             // Lets get the nbr of discussions to show. If it does not contain any
             // discussions, 20 will be returned by default from db
-            String showDiscsStr = imcref.sqlProcedureStr( "A_GetNbrOfDiscsToShow", new String[]{
-                params.getProperty( "FORUM_ID" )
-            } );
+            String showDiscsStr = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetNbrOfDiscsToShow", new String[] {
+                                                                                                                  params.getProperty( "FORUM_ID" )
+                                                                                                          } );
             showDiscsCounter = Integer.parseInt( showDiscsStr );
 
             // Lets create an array
@@ -422,7 +431,7 @@ public class ConfDisc extends Conference {
 
         }
         // Lets get the forumname for the current forum
-        String currForum = imcref.sqlProcedureStr( "A_GetForumName", new String[]{params.getProperty( "FORUM_ID" )} );
+        String currForum = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetForumName", new String[] {params.getProperty( "FORUM_ID" )} );
 
         //lets show newdiscbutton if user has more than readrights
         DocumentMapper documentMapper = imcref.getDocumentMapper();

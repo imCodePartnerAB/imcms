@@ -2,6 +2,7 @@ package imcode.server.db.commands;
 
 import imcode.server.db.DatabaseCommand;
 import imcode.server.db.DatabaseConnection;
+import imcode.server.db.exceptions.DatabaseException;
 
 public class DeleteWhereColumnEqualsDatabaseCommand implements DatabaseCommand {
 
@@ -15,7 +16,7 @@ public class DeleteWhereColumnEqualsDatabaseCommand implements DatabaseCommand {
         this.columnValue = columnValue;
     }
 
-    public Object executeOn( DatabaseConnection connection ) {
+    public Object executeOn( DatabaseConnection connection ) throws DatabaseException {
         connection.executeUpdate( "DELETE FROM " + table + " WHERE " + column
                                   + " = ?", new String[] {columnValue} );
         return null;

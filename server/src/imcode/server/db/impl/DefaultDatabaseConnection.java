@@ -1,11 +1,10 @@
 package imcode.server.db.impl;
 
 import imcode.server.db.DatabaseConnection;
-import imcode.server.db.DatabaseException;
 import imcode.server.db.ProcedureExecutor;
+import imcode.server.db.exceptions.DatabaseException;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
-import org.apache.commons.lang.UnhandledException;
 
 import java.sql.*;
 
@@ -22,15 +21,15 @@ public class DefaultDatabaseConnection implements DatabaseConnection {
         this.procedureExecutor = procedureExecutor;
     }
 
-    public int executeUpdate( String sql, String[] parameters ) {
+    public int executeUpdate( String sql, Object[] parameters ) throws DatabaseException {
         try {
             return queryRunner.update( connection,sql,parameters) ;
         } catch ( SQLException se ) {
-            throw new UnhandledException( se );
+            throw DatabaseException.fromSQLException( null, se );
         }
     }
 
-    public Number executeUpdateAndGetGeneratedKey( String sql, String[] parameters ) {
+    public Number executeUpdateAndGetGeneratedKey( String sql, String[] parameters ) throws DatabaseException {
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement( sql, Statement.RETURN_GENERATED_KEYS );
             try {
@@ -46,15 +45,15 @@ public class DefaultDatabaseConnection implements DatabaseConnection {
                 preparedStatement.close();
             }
         } catch ( SQLException se ) {
-            throw new UnhandledException( se );
+            throw DatabaseException.fromSQLException( null, se );
         }
     }
 
-    public int executeUpdateProcedure( String procedure, String[] parameters ) {
+    public int executeUpdateProcedure( String procedure, String[] parameters ) throws DatabaseException {
         try {
             return procedureExecutor.executeUpdateProcedure( connection, procedure, parameters ) ;
         } catch ( SQLException e ) {
-            throw DatabaseException.from( e );
+            throw DatabaseException.fromSQLException( null, e );
         }
     }
 
@@ -65,19 +64,19 @@ public class DefaultDatabaseConnection implements DatabaseConnection {
     }
 
     public Object executeQuery( String sqlQuery, String[] parameters,
-                                 ResultSetHandler resultSetHandler ) {
+                                 ResultSetHandler resultSetHandler ) throws DatabaseException {
         try {
             return queryRunner.query( connection, sqlQuery, parameters, resultSetHandler );
         } catch ( SQLException e ) {
-            throw DatabaseException.from( e );
+            throw DatabaseException.fromSQLException( null, e );
         }
     }
 
-    public Object executeProcedure( String procedure, String[] parameters, ResultSetHandler resultSetHandler ) {
+    public Object executeProcedure( String procedure, String[] parameters, ResultSetHandler resultSetHandler ) throws DatabaseException {
         try {
             return procedureExecutor.executeProcedure( connection, procedure, parameters, resultSetHandler ) ;
         } catch ( SQLException e ) {
-            throw DatabaseException.from( e );
+            throw DatabaseException.fromSQLException( null, e );
         }
     }
 

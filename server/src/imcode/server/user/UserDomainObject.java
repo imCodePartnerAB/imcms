@@ -9,10 +9,6 @@ public class UserDomainObject extends Hashtable {
 
     public static final int DEFAULT_USER_ID = 2;
 
-    public UserDomainObject() {
-        roles.add( RoleDomainObject.USERS );
-    }
-
     protected int id;
 
     private String loginName;
@@ -43,7 +39,13 @@ public class UserDomainObject extends Hashtable {
     private String faxPhone = "";
     private String otherPhone = "";
 
-    Set roles = new HashSet();
+    Set roles = createRolesSet();
+
+    private HashSet createRolesSet() {
+        HashSet roles = new HashSet();
+        roles.add( RoleDomainObject.USERS );
+        return roles;
+    }
 
     public Object clone() {
         UserDomainObject clone = (UserDomainObject)super.clone();
@@ -629,4 +631,7 @@ public class UserDomainObject extends Hashtable {
         return document.isVisibleInMenusForUnauthorizedUsers() || canAccess( document );
     }
 
+    public void removeAllRoles() {
+        roles = createRolesSet() ;
+    }
 }

@@ -1,22 +1,24 @@
 package imcode.server.db;
 
+import imcode.server.db.exceptions.DatabaseException;
+
 public interface Database {
 
-    String[] sqlProcedure(String procedure, String[] params) ;
+    String[] executeArrayProcedure(String procedure, String[] params) throws DatabaseException;
 
-    int sqlUpdateProcedure( String procedure, String[] params );
+    int executeUpdateProcedure( String procedure, String[] params ) throws DatabaseException;
 
-    String sqlProcedureStr( String procedure, String[] params );
+    String executeStringProcedure( String procedure, String[] params ) throws DatabaseException;
 
-    int sqlUpdateQuery(String sqlStr, String[] params);
+    String[][] execute2dArrayProcedure(String procedure, String[] params) throws DatabaseException;
 
-    String[][] sqlProcedureMulti(String procedure, String[] params);
+    int executeUpdateQuery(String sqlStr, Object[] params) throws DatabaseException;
 
-    String[] sqlQuery(String sqlStr, String[] params);
+    String[] executeArrayQuery(String sqlStr, String[] params) throws DatabaseException;
 
-    String sqlQueryStr(String sqlStr, String[] params);
+    String executeStringQuery(String sqlStr, String[] params) throws DatabaseException;
 
-    String[][] sqlQueryMulti(String sqlstr, String[] params);
+    String[][] execute2dArrayQuery(String sqlstr, String[] params) throws DatabaseException;
 
-    Object executeCommand( DatabaseCommand databaseCommand );
+    Object executeCommand( DatabaseCommand databaseCommand ) throws DatabaseException;
 }

@@ -4,7 +4,6 @@ import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.util.Utility;
@@ -18,7 +17,6 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.List;
 
 /**
  * Html template in use:
@@ -126,7 +124,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
             //log("ok PREVIEW-mode");
             String addHeader = (String)billPrevData.get( header );
             String addText = (String)billPrevData.get( text );
-            String datum = imcref.sqlProcedureStr( "B_GetTime", new String[]{} );
+            String datum = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetTime", new String[] {} );
             //log(addHeader+"\n"+addText+"\n"+datum);
             String addType = req.getParameter( "ADDTYPE" );
             String addType2 = req.getParameter( "ADDTYPE" );
@@ -172,10 +170,10 @@ public class BillBoardReply extends BillBoard {//ConfReply
             return;
         }
 
-        String[][] sqlAnswer = imcref.sqlProcedureMulti( "B_GetCurrentBill", new String[]{discId} );
+        String[][] sqlAnswer = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "B_GetCurrentBill", new String[] {discId} );
 
         // Lets get the discussion header
-        String discHeader = imcref.sqlProcedureStr( "B_GetBillHeader", new String[]{discId} );//GetDiscussionHeader
+        String discHeader = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetBillHeader", new String[] {discId} );//GetDiscussionHeader
 
         if ( discHeader == null || discId.equalsIgnoreCase( "-1" ) ) {
             discHeader = " ";

@@ -8,23 +8,17 @@ import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.log.DailyRollingFileAppender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.Priority;
+import org.apache.log4j.*;
 import org.apache.log4j.spi.LoggingEvent;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.List;
 
 /**
  * superclas for chat servlets.
@@ -83,11 +77,12 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
         ImcmsServices imcref = Imcms.getServices() ;
         //lets get the standard stuff
-        Vector msgTypes = convert2Vector( imcref.sqlProcedureMulti( "C_GetTheMsgTypesBase", new String[0] ) );
-        Vector autTypes = convert2Vector( imcref.sqlProcedureMulti( "C_GetAuthorizationTypes", new String[0] ) );
+        Vector msgTypes = convert2Vector( imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "C_GetTheMsgTypesBase", new String[0] ) );
+        Vector autTypes = convert2Vector( imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "C_GetAuthorizationTypes", new String[0] ) );
         Chat myChat = new Chat( metaId, autTypes, msgTypes );
 
-        String[] selAuto = imcref.sqlProcedure( "C_GetChatAutoTypes", new String[]{"" + metaId} );
+        String[] selAuto = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "C_GetChatAutoTypes", new String[] {""
+                                                                                                                              + metaId} );
         if ( selAuto == null ) {
             selAuto = new String[1];
             selAuto[0] = "1";
@@ -97,7 +92,8 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         }
         myChat.setSelectedAuto( selAuto );
 
-        String[][] messages = imcref.sqlProcedureMulti( "C_GetMsgTypes", new String[]{"" + metaId} );
+        String[][] messages = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "C_GetMsgTypes", new String[] {""
+                                                                                                                              + metaId} );
         if ( messages != null ) {
             if ( messages.length > 0 ) {
                 myChat.setMsgTypes( convert2Vector( messages ) );
@@ -106,7 +102,8 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
 
         //updateTime,reload,inOut,privat,publik,dateTime,font
-        String[] params = imcref.sqlProcedure( "C_GetChatParameters ", new String[]{"" + metaId} );
+        String[] params = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "C_GetChatParameters ", new String[] {""
+                                                                                                                               + metaId} );
         if ( params != null ) {
             if ( params.length == 7 ) {
                 myChat.setRefreshTime( Integer.parseInt( params[0] ) );
@@ -251,7 +248,8 @@ public class ChatBase extends HttpServlet implements ChatConstants {
      */
     //peter uses this
     protected static String getTemplateSetDirectoryName( int meta_id ) {
-        String libName = Imcms.getServices().sqlProcedureStr( "C_GetTemplateLib", new String[]{"" + meta_id} );
+        String libName = Imcms.getServices().getExceptionUnhandlingDatabase().executeStringProcedure( "C_GetTemplateLib", new String[] {""
+                                                                                                                                        + meta_id} );
         if ( libName == null ) {
             libName = "original";
         }

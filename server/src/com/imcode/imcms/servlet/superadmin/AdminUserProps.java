@@ -5,9 +5,8 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.user.UserDomainObject;
+import imcode.server.db.ExceptionUnhandlingDatabase;
+import imcode.server.user.*;
 import imcode.util.Html;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
@@ -99,10 +98,11 @@ public class AdminUserProps extends Administrator {
     }
 
     private String[] getPhoneTypes( ImcmsServices imcref, UserDomainObject user ) {
-        return imcref.sqlQuery( "SELECT  phonetype_id, typename\n"
-                                                + "FROM phonetypes, lang_prefixes\n"
-                                                + "WHERE  phonetypes.lang_id = lang_prefixes.lang_id AND lang_prefixes.lang_prefix = ?\n"
-                                                + "ORDER BY phonetype_id", new String[]{"" + user.getLanguageIso639_2()} );
+        return imcref.getExceptionUnhandlingDatabase().executeArrayQuery( "SELECT  phonetype_id, typename\n"
+                                                                          + "FROM phonetypes, lang_prefixes\n"
+                                                                          + "WHERE  phonetypes.lang_id = lang_prefixes.lang_id AND lang_prefixes.lang_prefix = ?\n"
+                                                                          + "ORDER BY phonetype_id", new String[] {""
+                                                                                                                   + user.getLanguageIso639_2()} );
     }
 
     private void showChangeUserPage( String userToChangeId, ImcmsServices imcref, Properties tmp_userInfo,
@@ -300,7 +300,7 @@ public class AdminUserProps extends Administrator {
     private String getLanguagesHtmlOptionList( UserDomainObject user, ImcmsServices imcref,
                                                UserDomainObject userToChange ) {
         // Lets get the the users language id
-        String[] langList = imcref.sqlQuery( "SELECT lang_prefix, language FROM languages WHERE user_prefix = ?", new String[]{user.getLanguageIso639_2()} );
+        String[] langList = imcref.getExceptionUnhandlingDatabase().executeArrayQuery( "SELECT lang_prefix, language FROM languages WHERE user_prefix = ?", new String[] {user.getLanguageIso639_2()} );
         Vector selectedLangV = new Vector();
         selectedLangV.add( userToChange.getLanguageIso639_2() );
         String languagesHtmlOptionList = Html.createOptionList( new Vector( Arrays.asList( langList ) ), selectedLangV );
@@ -729,7 +729,7 @@ public class AdminUserProps extends Administrator {
             }
         }
 
-        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapperAndRole = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
 
         // if we are processing data from a admin template and
         // if user isSuperadmin or
@@ -743,23 +743,25 @@ public class AdminUserProps extends Administrator {
 
             // Lets add the new users roles. but first, delete users current Roles
             // and then add the new ones
+            ExceptionUnhandlingDatabase exceptionUnhandlingDatabase = imcref.getExceptionUnhandlingDatabase();
             if ( user.isSuperAdmin() ) { // delete all userroles
-                int roleId = -1;
-                imcref.sqlUpdateProcedure( "DelUserRoles", new String[]{"" + userToChangeId, "" + roleId} );
-
+                userFromRequest.removeAllRoles() ;
             } else {  // delete only roles that the useradmin has permission to administrate
-                String[] rolesArr = imcref.sqlProcedure( "GetUseradminPermissibleRoles", new String[]{
-                    "" + user.getId()
-                } );
+                String[] rolesArr = exceptionUnhandlingDatabase.executeArrayProcedure( "GetUseradminPermissibleRoles", new String[] {
+                                                                                                           ""
+                                                                                                           + user.getId()
+                                                                                                           } );
                 for ( int i = 0; i < rolesArr.length; i += 2 ) {
-                    imcref.sqlUpdateProcedure( "DelUserRoles", new String[]{"" + userToChangeId, rolesArr[i]} );
+                    exceptionUnhandlingDatabase.executeUpdateProcedure( "DelUserRoles", new String[] {""
+                                                                                                                  + userToChangeId,
+                                                                                                    rolesArr[i]} );
                 }
             }
 
             boolean useradminRoleIsSelected = false;
             for ( int i = 0; i < roleIdsFromRequest.length; i++ ) {
                 int roleId = roleIdsFromRequest[i];
-                RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapperAndRole.getRoleById( roleId );
+                RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapper.getRoleById( roleId );
                 userFromRequest.addRole( role );
                 if ( role.equals( RoleDomainObject.USERADMIN ) ) {
                     useradminRoleIsSelected = true;
@@ -770,7 +772,8 @@ public class AdminUserProps extends Administrator {
             // and then add the new ones
             // but only if role Useradmin is selected
 
-            imcref.sqlUpdateProcedure( "DeleteUseradminPermissibleRoles", new String[]{"" + userToChangeId} );
+            exceptionUnhandlingDatabase.executeUpdateProcedure( "DeleteUseradminPermissibleRoles", new String[] {""
+                                                                                                                             + userToChangeId} );
 
             if ( useradminRoleIsSelected ) {
 
@@ -783,7 +786,7 @@ public class AdminUserProps extends Administrator {
         }
 
         userFromRequest.setId(userFromDatabase.getId()) ;
-        imcmsAuthenticatorAndUserAndRoleMapperAndRole.saveUser( userFromRequest, user );
+        imcmsAuthenticatorAndUserAndRoleMapper.saveUser( userFromRequest, user );
 
         this.goNext( req, res, session );
     }
@@ -812,9 +815,7 @@ public class AdminUserProps extends Administrator {
         String userName;
         Properties langproperties = imcref.getLanguageProperties( user );
         String msg = langproperties.getProperty( "error/servlet/AdminUserProps/username_already_exists" ) + "<br>";
-        if ( null != req.getParameter( "login_name" ) ) {
-            userFromRequest.getLoginName();
-        } else {
+        if ( null == req.getParameter( "login_name" ) ) {
             userName = req.getParameter( "email" );
             userFromRequest.setLoginName( userName );
             msg = langproperties.getProperty( "error/servlet/AdminUserProps/username_or_email_already_exists" )
@@ -822,12 +823,6 @@ public class AdminUserProps extends Administrator {
         }
 
         ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapperAndRole = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
-        if ( null != imcmsAuthenticatorAndUserAndRoleMapperAndRole.getUser( userFromRequest.getLoginName() ) ) {
-            String header = "Error in AdminUserProps. ";
-            log.debug( header + "- username already exists" );
-            new AdminError( req, res, header, msg );
-            return;
-        }
 
         if ( !adminUserProps.validateParameters( req, res, user ) ) {
             return;
@@ -847,7 +842,14 @@ public class AdminUserProps extends Administrator {
             }
         }
 
-        imcmsAuthenticatorAndUserAndRoleMapperAndRole.addUser( userFromRequest, user );
+        try {
+            imcmsAuthenticatorAndUserAndRoleMapperAndRole.addUser( userFromRequest, user );
+        } catch ( UserAlreadyExistsException e ) {
+            String header = "Error in AdminUserProps. ";
+            log.debug( header + "- username already exists" );
+            new AdminError( req, res, header, msg );
+            return;
+        }
 
         if ( useradminRoleIsSelected ) {
             // Lets get the useradmin_roles from htmlpage
@@ -866,9 +868,11 @@ public class AdminUserProps extends Administrator {
                 for ( int i = 0; i < phonesV.size(); i++ ) {
                     String[] aPhone = (String[])phonesV.elementAt( i );
 
-                    imcref.sqlUpdateProcedure( "PhoneNbrAdd", new String[]{
-                        "" + userFromRequest.getId(), aPhone[1], aPhone[3]
-                    } );
+                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "PhoneNbrAdd", new String[] {
+                                                                                            ""
+                                                                                            + userFromRequest.getId(),
+                                                                                                    aPhone[1], aPhone[3]
+                                                                                            } );
                 }
             }
             // we are processing data from a user template
@@ -1111,9 +1115,11 @@ public class AdminUserProps extends Administrator {
             int roleId = useradminRoleIds[i];
             RoleDomainObject role = imcmsAuthenticatorAndUserMapperAndRole.getRoleById( roleId );
             if ( !RoleDomainObject.SUPERADMIN.equals( role ) && !RoleDomainObject.USERADMIN.equals( role ) ) {
-                imcref.sqlUpdateProcedure( "AddUseradminPermissibleRoles", new String[]{
-                    "" + userIdToAddUserAdminRolesTo, "" + role.getId()
-                } );
+                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "AddUseradminPermissibleRoles", new String[] {
+                                                                                        ""
+                                                                                        + userIdToAddUserAdminRolesTo,
+                                                                                        "" + role.getId()
+                                                                                        } );
             }
         }
     }
@@ -1280,9 +1286,10 @@ public class AdminUserProps extends Administrator {
         Enumeration enumeration = phonesArrV.elements();
         while ( enumeration.hasMoreElements() ) {
             String[] tempPhone = (String[])enumeration.nextElement();
-            String[] typename = imcref.sqlQuery( "select typename from phonetypes, lang_prefixes\n"
-                                                     + "where phonetype_id = ? and phonetypes.lang_id = lang_prefixes.lang_id\n"
-                                                     + "AND lang_prefix = ?", new String[]{tempPhone[3], user.getLanguageIso639_2()} );
+            String[] typename = imcref.getExceptionUnhandlingDatabase().executeArrayQuery( "select typename from phonetypes, lang_prefixes\n"
+                                                                                           + "where phonetype_id = ? and phonetypes.lang_id = lang_prefixes.lang_id\n"
+                                                                                           + "AND lang_prefix = ?", new String[] {tempPhone[3],
+                                                                                                                                    user.getLanguageIso639_2()} );
             String temp = "(" + typename[0] + ") " + tempPhone[1];
 
             phonesV.addElement( tempPhone[0] );
@@ -1322,9 +1329,10 @@ public class AdminUserProps extends Administrator {
         String[] rolesArr ;
 
         if ( user.isSuperAdmin() ) {
-            rolesArr = imcref.sqlProcedure( "GetAllRoles", new String[0] );
+            rolesArr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetAllRoles", new String[0] );
         } else {
-            rolesArr = imcref.sqlProcedure( "GetUseradminPermissibleRoles", new String[]{"" + user.getId()} );
+            rolesArr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetUseradminPermissibleRoles", new String[] {""
+                                                                                                                                    + user.getId()} );
         }
         for ( int i = 0; i < rolesArr.length; i++ ) {
             rolesArr[i] = rolesArr[i].trim();
@@ -1421,16 +1429,18 @@ public class AdminUserProps extends Administrator {
                 // Lets get the information for users roles and put them in a vector
                 // if we don´t have got any roles from session we try to get them from DB
                 if ( userRoles == null ) {
-                    userRoles = imcref.sqlProcedure( "GetUserRolesIds", new String[]{"" + userToChange.getId()} );
+                    userRoles = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetUserRolesIds", new String[] {""
+                                                                                                                                + userToChange.getId()} );
                 }
 
                 if ( user.isSuperAdmin() ) {
                     // Lets get the information for usersadmin roles and put them in a vector
                     // if we don´t have got any roles from session we try to get them from DB
                     if ( useradminRoles == null ) {
-                        useradminRoles = imcref.sqlProcedure( "GetUseradminPermissibleRoles", new String[]{
-                            "" + userToChange.getId()
-                        } );
+                        useradminRoles = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetUseradminPermissibleRoles", new String[] {
+                                                                                                                ""
+                                                                                                                + userToChange.getId()
+                                                                                                                } );
                     }
                 }
 

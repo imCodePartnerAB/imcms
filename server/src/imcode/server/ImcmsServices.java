@@ -1,6 +1,7 @@
 package imcode.server ;
 
 import imcode.server.db.Database;
+import imcode.server.db.ExceptionUnhandlingDatabase;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -14,11 +15,11 @@ import org.apache.velocity.app.VelocityEngine;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyStore;
 import java.text.Collator;
 import java.util.*;
-import java.security.KeyStore;
 
-public interface ImcmsServices extends Database, Clock {
+public interface ImcmsServices extends Clock {
 
     /** Verify a Internet/Intranet user. Data from any SQL Database. **/
     UserDomainObject verifyUser(String login, String password)
@@ -178,11 +179,13 @@ public interface ImcmsServices extends Database, Clock {
 
     Config getConfig();
 
-    Database getDatabase();
+    ExceptionUnhandlingDatabase getExceptionUnhandlingDatabase();
 
     Clock getClock();
 
     File getRealContextPath();
 
     KeyStore getKeyStore();
+
+    Database getDatabase();
 }

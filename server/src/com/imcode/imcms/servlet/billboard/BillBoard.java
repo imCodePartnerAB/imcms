@@ -1,6 +1,8 @@
 package com.imcode.imcms.servlet.billboard;
 
-import imcode.external.diverse.*;
+import imcode.external.diverse.MetaInfo;
+import imcode.external.diverse.ParsedTextFile;
+import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -8,17 +10,11 @@ import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Vector;
-import java.util.List;
+import java.util.*;
 
 public class BillBoard extends HttpServlet {
 
@@ -117,7 +113,7 @@ public class BillBoard extends HttpServlet {
      * Returns the foldername where the templates are situated for a certain metaid.
      */
     private String getTemplateLibName( ImcmsServices imcref, int meta_id ) {
-        String libName = imcref.sqlProcedureStr( "B_GetTemplateLib", new String[]{"" + meta_id} );
+        String libName = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetTemplateLib", new String[]{"" + meta_id} );
         if ( libName == null ) {
             libName = "original";
         }
@@ -208,7 +204,7 @@ public class BillBoard extends HttpServlet {
 
             // Ok, we need to catch a forum_id. Lets get the first one for this meta_id.
             // if not a forumid exists, the sp will return -1
-            String aSectionId = Imcms.getServices().sqlProcedureStr( "B_GetFirstSection", new String[]{"" + params.getMetaId()} );
+            String aSectionId = Imcms.getServices().getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetFirstSection", new String[]{"" + params.getMetaId()} );
             session.setAttribute( "BillBoard.section_id", aSectionId );//Conference.forum_id
 
             // Lets get the lastdiscussionid for that forum

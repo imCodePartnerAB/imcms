@@ -1,17 +1,20 @@
 package com.imcode.imcms.servlet.conference;
 
-import imcode.server.*;
-import imcode.server.document.DocumentMapper;
+import imcode.external.diverse.MetaInfo;
+import imcode.external.diverse.VariableManager;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
-
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
 import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Properties;
 
 public class ConfAdd extends Conference {
 
@@ -60,7 +63,8 @@ public class ConfAdd extends Conference {
                 }
 
                 // Lets get the users reply level
-                String level = imcref.sqlProcedureStr("A_ConfUsersGetUserLevel", new String[]{params.getProperty("META_ID"), userId});
+                String level = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_ConfUsersGetUserLevel", new String[] {params.getProperty( "META_ID" ),
+                                                                                                               userId} );
                 if (level.equalsIgnoreCase("-1")) {
                     log("An error occured in reading the users level");
                     level = "0";
@@ -72,12 +76,15 @@ public class ConfAdd extends Conference {
                 String addText = super.verifySqlText(params.getProperty("ADD_TEXT"));
 
                 // Ok, Lets add the discussion to DB
-                imcref.sqlUpdateProcedure("A_AddNewDisc", new String[]{aForumId, userId, addHeader, addText, level});
+                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "A_AddNewDisc", new String[] {aForumId,
+                                                                                                userId, addHeader,
+                                                                                                addText, level} );
 
                 // Lets add the new discussion id to the session object
                 // Ok, Lets get the last discussion in that forum
                 if (session != null) {
-                    String latestDiscId = imcref.sqlProcedureStr("A_GetLastDiscussionId", new String[]{params.getProperty("META_ID"), aForumId});
+                    String latestDiscId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetLastDiscussionId", new String[] {params.getProperty( "META_ID" ),
+                                                                                                                          aForumId} );
                     session.setAttribute("Conference.disc_id", latestDiscId);
                 }
 
@@ -101,7 +108,8 @@ public class ConfAdd extends Conference {
                 }
 
                 // Lets get the users reply level
-                String level = imcref.sqlProcedureStr("A_ConfUsersGetUserLevel", new String[]{params.getProperty("META_ID"), userId});
+                String level = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_ConfUsersGetUserLevel", new String[] {params.getProperty( "META_ID" ),
+                                                                                                               userId} );
                 if (level.equalsIgnoreCase("-1")) {
                     log("An error occured in reading the users level");
                     level = "0";
@@ -120,7 +128,9 @@ public class ConfAdd extends Conference {
 
 
                 // Ok, Lets add the reply
-                imcref.sqlUpdateProcedure("A_AddReply", new String[]{userId, discId, addHeader, addText, level});
+                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "A_AddReply", new String[] {userId,
+                                                                                                discId, addHeader,
+                                                                                                addText, level} );
 
                 // Lets redirect to the servlet which holds in us.
                 res.sendRedirect("ConfDiscView");
@@ -165,15 +175,19 @@ public class ConfAdd extends Conference {
             VariableManager vm = new VariableManager();
 
             // Lets get the users first and last names
-            String firstName = imcref.sqlProcedureStr("A_GetConfLoginNames", new String[]{params.getProperty("META_ID"), loginUserId, "1"});
-            String lastName = imcref.sqlProcedureStr("A_GetConfLoginNames", new String[]{params.getProperty("META_ID"), loginUserId, "2"});
+            String firstName = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetConfLoginNames", new String[] {params.getProperty( "META_ID" ),
+                                                                                                               loginUserId,
+                                                                                                               "1"} );
+            String lastName = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetConfLoginNames", new String[] {params.getProperty( "META_ID" ),
+                                                                                                              loginUserId,
+                                                                                                              "2"} );
 
             vm.addProperty("FIRST_NAME", firstName);
             vm.addProperty("LAST_NAME", lastName);
             vm.addProperty("ADD_TYPE", params.getProperty("ADD_TYPE"));
 
             // Lets add the current forum name
-            String currForum = imcref.sqlProcedureStr("A_GetForumName", new String[]{params.getProperty("FORUM_ID")});
+            String currForum = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetForumName", new String[] {params.getProperty( "FORUM_ID" )} );
             vm.addProperty("CURRENT_FORUM_NAME", currForum);
 
             // Lets get the addtype and add it to the page
@@ -193,7 +207,7 @@ public class ConfAdd extends Conference {
             String discHeader = "";
             if (params.getProperty("ADD_TYPE").equalsIgnoreCase("REPLY")) {
                 String aDiscId = params.getProperty("DISC_ID");
-                String[] arr = imcref.sqlProcedure("A_GetDiscussionHeader", new String[]{aDiscId});
+                String[] arr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "A_GetDiscussionHeader", new String[] {aDiscId} );
                 if (arr != null) {
                     if (arr.length > 0) {
                         discHeader = arr[0];

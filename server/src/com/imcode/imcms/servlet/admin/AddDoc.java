@@ -85,7 +85,7 @@ public class AddDoc extends HttpServlet {
 
         UserDomainObject user = Utility.getLoggedOnUser( request );
         // Lets fix the sortby list, first get the displaytexts from the database
-        String[] sortOrder = imcref.sqlProcedure( "SortOrder_GetExistingDocs", new String[]{
+        String[] sortOrder = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "SortOrder_GetExistingDocs", new String[]{
             user.getLanguageIso639_2()
         } );
         String sortOrderStr = Html.createOptionList( Arrays.asList( sortOrder ), "" );

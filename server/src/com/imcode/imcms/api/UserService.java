@@ -1,10 +1,6 @@
 package com.imcode.imcms.api;
 
-import imcode.server.db.exceptions.IntegrityConstraintViolationSQLException;
-import imcode.server.db.exceptions.StringTruncationSQLException;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.user.UserDomainObject;
+import imcode.server.user.*;
 
 public class UserService {
 
@@ -158,9 +154,9 @@ public class UserService {
 
         try {
             getMapper().saveRole(role.getInternal()) ;
-        } catch ( IntegrityConstraintViolationSQLException icvse ) {
-            throw new RoleAlreadyExistsException("A role with the name \""+role.getName()+"\" already exists.") ;
-        } catch( StringTruncationSQLException stse ) {
+        } catch ( imcode.server.user.RoleAlreadyExistsException icvse ) {
+            throw new com.imcode.imcms.api.RoleAlreadyExistsException("A role with the name \""+role.getName()+"\" already exists.") ;
+        } catch( NameTooLongException stle ) {
             throw new SaveException( "Role name too long." );
         }
     }
@@ -192,7 +188,7 @@ public class UserService {
             } else {
                 imcmsAuthenticatorAndUserAndRoleMapper.saveUser(user.getInternal(), contentManagementSystem.getCurrentUser().getInternal() );
             }
-        } catch ( IntegrityConstraintViolationSQLException icvse ) {
+        } catch ( imcode.server.user.UserAlreadyExistsException uaee ) {
             throw new UserAlreadyExistsException( "A user with the login name \""+user.getLoginName()+"\" already exists." ) ;
         }
     }

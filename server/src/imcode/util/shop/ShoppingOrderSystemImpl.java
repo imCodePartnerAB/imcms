@@ -1,12 +1,13 @@
 package imcode.util.shop ;
 
-import java.util.* ;
-import java.text.* ;
-
-import imcode.server.* ;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
+import org.apache.log4j.Logger;
 
-import org.apache.log4j.* ;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
 
@@ -21,17 +22,18 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
     public ShoppingOrder getShoppingOrderForUserById(UserDomainObject user, int orderId) {
 	int userId = user.getId() ;
 
-	String[] dbData = imcref.sqlProcedure("Shop_GetShoppingOrderForUserById", new String[] { String.valueOf(userId), String.valueOf(orderId) }) ;
+	String[] dbData = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "Shop_GetShoppingOrderForUserById", new String[] {String.valueOf( userId ),
+                                                                                                     String.valueOf( orderId )} );
 
-	return getShoppingOrderFromDbData(dbData) ;
+        return getShoppingOrderFromDbData(dbData) ;
     }
 
     /** Retrieve a List of all ShoppingOrders for a User, sorted by datetime. **/
     public List getShoppingOrdersForUser(UserDomainObject user) {
 	int userId = user.getId() ;
-	String[][] dbData = imcref.sqlProcedureMulti("Shop_GetShoppingOrdersForUser", new String[] { String.valueOf(userId) }) ;
+	String[][] dbData = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "Shop_GetShoppingOrdersForUser", new String[] {String.valueOf( userId )} );
 
-	List theList = new ArrayList(dbData.length) ;
+        List theList = new ArrayList(dbData.length) ;
 	for (int i = 0; i < dbData.length; ++i) {
 	    theList.add(getShoppingOrderFromDbData(dbData[i])) ;
 	}
@@ -66,9 +68,9 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
     }
 
     private void addShoppingItemsToOrder(ShoppingOrder theOrder) {
-	String[][] dbData = imcref.sqlProcedureMulti("Shop_GetShoppingItemsForOrder", new String[] { String.valueOf(theOrder.getId()) }) ;
+	String[][] dbData = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "Shop_GetShoppingItemsForOrder", new String[] {String.valueOf( theOrder.getId() )} );
 
-	for (int i = 0; i < dbData.length; ++i) {
+        for ( int i = 0; i < dbData.length; ++i) {
 	    ShoppingItem item = new ShoppingItem() ;
 
 	    int itemId = Integer.parseInt(dbData[i][0]) ;
@@ -83,9 +85,9 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
     }
 
     private Map getDescriptionsForShoppingItem(int itemId) {
-	String[][] dbData = imcref.sqlProcedureMulti("Shop_GetDescriptionsForShoppingItem", new String[] { String.valueOf(itemId) }) ;
+	String[][] dbData = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "Shop_GetDescriptionsForShoppingItem", new String[] {String.valueOf( itemId )} );
 
-	Map theDescriptions = new HashMap() ;
+        Map theDescriptions = new HashMap() ;
 	for (int i = 0; i < dbData.length; ++i) {
 	    Integer descriptionNumber = Integer.valueOf(dbData[i][0]) ;
 	    String description = dbData[i][1] ;
@@ -108,16 +110,21 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
 
 	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
 
-	String orderIdStr = imcref.sqlProcedureStr("Shop_AddShoppingOrder", new String[] {""+theOrder.getUser().getId(), dateFormat.format(theOrder.getDatetime()) } ) ;
+	String orderIdStr = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "Shop_AddShoppingOrder", new String[] {""
+                                                                                                                               + theOrder.getUser().getId(),
+                                                                                                        dateFormat.format( theOrder.getDatetime() )} );
 
-	addShoppingItemsToOrderInDb(orderIdStr, theOrder, theOrder.getItems()) ;
+        addShoppingItemsToOrderInDb(orderIdStr, theOrder, theOrder.getItems()) ;
     }
 
     private void addShoppingItemsToOrderInDb(String orderIdStr, ShoppingOrder order, ShoppingItem[] items) {
 	for (int i = 0; i < items.length; ++i) {
 	    ShoppingItem item = items[i] ;
-	    String itemIdStr = imcref.sqlProcedureStr("Shop_AddShoppingItemToOrder", new String[] { orderIdStr, ""+item.getPrice(), ""+order.countItem(item) }) ;
-	    addDescriptionsToShoppingItemInDb(itemIdStr, item.getDescriptions()) ;
+	    String itemIdStr = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "Shop_AddShoppingItemToOrder", new String[] {orderIdStr,
+                                                                                                   "" + item.getPrice(),
+                                                                                                   ""
+                                                                                                   + order.countItem( item )} );
+        addDescriptionsToShoppingItemInDb(itemIdStr, item.getDescriptions()) ;
 	}
     }
 
@@ -126,7 +133,8 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
 	    Map.Entry entry = (Map.Entry)it.next() ;
 	    Integer descriptionNumber = (Integer) entry.getKey() ;
 	    String  description = (String) entry.getValue() ;
-	    imcref.sqlUpdateProcedure("Shop_AddShoppingItemDescription", new String[] { itemIdStr, ""+descriptionNumber, description } ) ;
+        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "Shop_AddShoppingItemDescription", new String[] {itemIdStr,
+                                                                                "" + descriptionNumber, description} );
 	}
     }
 }

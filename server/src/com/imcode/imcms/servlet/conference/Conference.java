@@ -1,21 +1,20 @@
 package com.imcode.imcms.servlet.conference;
 
-import imcode.external.diverse.*;
+import imcode.external.diverse.MetaInfo;
+import imcode.external.diverse.ParsedTextFile;
+import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.user.UserDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import javax.servlet.http.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Vector;
-import java.util.List;
+import java.util.*;
 
 /**
  * superclas for conference servlets.
@@ -133,7 +132,8 @@ public class Conference extends HttpServlet {
      * Returns the foldername where the templates are situated for a certain metaid.
      */
     private String getTemplateLibName( int meta_id ) {
-        String libName = Imcms.getServices().sqlProcedureStr( "A_GetTemplateLib", new String[]{"" + meta_id} );
+        String libName = Imcms.getServices().getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetTemplateLib", new String[] {""
+                                                                                                                                        + meta_id} );
         if ( libName == null ) {
             libName = "original";
         }
@@ -216,7 +216,9 @@ public class Conference extends HttpServlet {
 
         // Ok, Lets prepare the user for the conference.
         // Lets get his lastLoginDate and update it to today
-        String lastLoginDate = imcref.sqlProcedureStr( "A_GetLastLoginDate2", new String[]{metaId, ""+user.getId()} );
+        String lastLoginDate = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetLastLoginDate2", new String[] {metaId,
+                                                                                                       ""
+                                                                                                       + user.getId()} );
 
         // If lastlogindate is null, then it has to be a user who has logged in
         // to the system and the conference for the first time so lets add the user to conference db.
@@ -226,7 +228,10 @@ public class Conference extends HttpServlet {
         }
 
         // Lets update his logindate and usernames
-        imcref.sqlUpdateProcedure( "A_ConfUsersUpdate", new String[]{metaId, ""+user.getId(), ""+user.getFirstName(), ""+user.getLastName()} );
+        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "A_ConfUsersUpdate", new String[] {metaId,
+                                                                                "" + user.getId(),
+                                                                                "" + user.getFirstName(),
+                                                                                "" + user.getLastName()} );
         // Lets store some values in his session  object
         HttpSession session = req.getSession( false );
         if ( session != null ) {
@@ -239,11 +244,14 @@ public class Conference extends HttpServlet {
 
             // Ok, we need to catch a forum_id. Lets get the first one for this meta_id.
             // if not a forumid exists, the sp will return -1
-            String aForumId = imcref.sqlProcedureStr( "A_GetFirstForum", new String[]{"" + params.getMetaId()} );
+            String aForumId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetFirstForum", new String[] {""
+                                                                                                                               + params.getMetaId()} );
             session.setAttribute( "Conference.forum_id", aForumId );
 
             // Ok, Lets get the last discussion in that forum
-            String aDiscId = imcref.sqlProcedureStr( "A_GetLastDiscussionId", new String[]{"" + params.getMetaId(), aForumId} );
+            String aDiscId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetLastDiscussionId", new String[] {""
+                                                                                                                                    + params.getMetaId(),
+                                                                                                             aForumId} );
 
             // Lets get the lastdiscussionid for that forum
             // if not a aDiscId exists, then the  sp will return -1
@@ -475,8 +483,9 @@ public class Conference extends HttpServlet {
     /** verify that the user is a member of a conference
     */
     boolean userIsMemberOfConference(int metaId, int userId, ImcmsServices imcref){
-        String foundId = imcref.sqlProcedureStr( "A_MemberInConf", new String[]{
-        ""+metaId, ""+userId });
+        String foundId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_MemberInConf", new String[] {
+                                                                                                 "" + metaId,
+                                                                                                 "" + userId} );
         if((""+userId).equals(foundId)){
             return true;
         }else{
@@ -497,18 +506,24 @@ public class Conference extends HttpServlet {
                 // Lets check that the role id is still valid to use against
                 // the host system
                 if ( user.hasRoleWithPermission(RoleDomainObject.CONFERENCE_REGISTRATION_PERMISSION) ) {
-                    imcref.sqlUpdateProcedure( "AddUserRole", new String[]{user.getId()+"", aRoleId} );
+                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "AddUserRole", new String[] {user.getId()
+                                                                                                                 + "",
+                                                                                                    aRoleId} );
                 }
             }
         }
     }
 
     void addUserToOneConference(UserDomainObject user, String metaId, ImcmsServices imcref){
-        imcref.sqlUpdateProcedure( "A_ConfUsersAdd", new String[]{user.getId()+"", metaId, user.getFirstName(), user.getLastName()} );
+        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "A_ConfUsersAdd", new String[] {user.getId()
+                                                                                                        + "", metaId,
+                                                                                        user.getFirstName(),
+                                                                                        user.getLastName()} );
     }
 
     String[] getAllSelfregRolesId(String metaId, ImcmsServices imcref) {
-        String[] selfRegRolesId = imcref.sqlProcedure( "A_SelfRegRoles_GetAll2", new String[]{"" + metaId} );
+        String[] selfRegRolesId = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "A_SelfRegRoles_GetAll2", new String[] {""
+                                                                                                                                         + metaId} );
         return selfRegRolesId;
     }
 

@@ -150,7 +150,7 @@ public class GetDoc extends HttpServlet {
             if ( br_id == null ) {
                 br_id = "";
             }
-            String tmp = imcref.sqlQueryStr( "select top 1 to_meta_id\n"
+            String tmp = imcref.getExceptionUnhandlingDatabase().executeStringQuery( "select top 1 to_meta_id\n"
                                              + "from browser_docs\n"
                                              + "join browsers on browsers.browser_id = browser_docs.browser_id\n"
                                              + "where meta_id = ? and ? like user_agent order by value desc",

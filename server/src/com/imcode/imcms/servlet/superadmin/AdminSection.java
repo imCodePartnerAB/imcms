@@ -1,19 +1,18 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.server.ImcmsServices;
 import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Vector;
 import java.util.Properties;
-
-import org.apache.log4j.Logger;
+import java.util.Vector;
 
 public class AdminSection extends Administrator {
 
@@ -67,7 +66,7 @@ public class AdminSection extends Administrator {
         if (req.getParameter("add_section") != null) {
 
             String new_section_name = req.getParameter("new_section_name") == null ? "" : req.getParameter("new_section_name").trim();
-            String[][] section_arr = section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
+            String[][] section_arr = section_arr = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "SectionGetAllCount", new String[0] );
 
             //now we needs a list of the created ones in db
             Vector vec = new Vector();
@@ -87,8 +86,8 @@ public class AdminSection extends Administrator {
 
                 //ok we have a new name lets save it to db, but only if it's not exists in db
                 if(!section_exists){
-                    imcref.sqlUpdateProcedure("SectionAdd", new String[]{new_section_name});
-                    section_arr = section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
+                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "SectionAdd", new String[] {new_section_name} );
+                    section_arr = section_arr = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "SectionGetAllCount", new String[0] );
                 }
             }
 
@@ -108,11 +107,12 @@ public class AdminSection extends Administrator {
             String section_id = req.getParameter("section_list") == null ? "-1" : req.getParameter("section_list");
             if ((!new_section.equals("")) && (!section_id.equals("-1"))) {
                 //ok we have a new name lets save it to db, but only if it's not exists in db
-                imcref.sqlUpdateProcedure("SectionChangeName", new String[]{section_id, new_section});
+                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "SectionChangeName", new String[] {section_id,
+                                                                                                new_section} );
             }
 
             //now we needs a list of the created ones in db
-            String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
+            String[][] section_arr = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "SectionGetAllCount", new String[0] );
             Vector vec = new Vector();
             vec.add("#section_list#");
             vec.add(createOptionList(section_arr, user, null));
@@ -141,10 +141,11 @@ public class AdminSection extends Administrator {
             }
             if (new_sections.equals("-1")) {
                 //ok the admin wants to get rid of all the section connections
-                imcref.sqlUpdateProcedure("SectionDelete", new String[]{del_section});
+                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "SectionDelete", new String[] {del_section} );
             } else {
 //ok the admin wants to conect a nother section and then delete the one
-                imcref.sqlUpdateProcedure("SectionChangeAndDeleteCrossref", new String[]{new_sections, del_section});
+                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "SectionChangeAndDeleteCrossref", new String[] {new_sections,
+                                                                                                del_section} );
             }
         }
 
@@ -154,7 +155,7 @@ public class AdminSection extends Administrator {
             String section_id = req.getParameter("section_list") == null ? "-1" : req.getParameter("section_list");
             if (!section_id.equals("-1")) {
                 //ok we have a request for delete lets see if there is any docs connected to that section_id
-                String doc_nrs = imcref.sqlProcedureStr("SectionCount", new String[]{section_id});
+                String doc_nrs = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "SectionCount", new String[] {section_id} );
                 int doc_int = 0;
                 if (doc_nrs != null) {
                     try {
@@ -167,7 +168,7 @@ public class AdminSection extends Administrator {
 
                 if (doc_int > 0) {
                     //ok we have documents connected to that section id so lets get a page to handle that
-                    String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
+                    String[][] section_arr = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "SectionGetAllCount", new String[0] );
                     Vector vec = new Vector();
                     vec.add("#section_list#");
                     vec.add(createOptionList(section_arr, user, section_id));
@@ -179,14 +180,14 @@ public class AdminSection extends Administrator {
                     got_confirm_page = true;
                 } else {
                     //ok we can delete it right a way an carry on with it
-                    imcref.sqlUpdateProcedure("SectionDelete", new String[]{section_id});
+                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "SectionDelete", new String[] {section_id} );
                 }
             }
 
 
             if (!got_confirm_page) {
                 //now we needs a list of the created ones in db
-                String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
+                String[][] section_arr = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "SectionGetAllCount", new String[0] );
                 Vector vec = new Vector();
                 vec.add("#section_list#");
                 vec.add(createOptionList(section_arr, user, null));

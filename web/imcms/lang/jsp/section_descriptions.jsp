@@ -10,7 +10,7 @@ ImcmsServices service = Imcms.getServices() ;
 
 String sSql = "SELECT section_id, section_name FROM sections ORDER BY section_name" ;
 
-String[][] sections = service.sqlQueryMulti(sSql, new String[]{}) ;
+String[][] sections = service.execute2dArrayQuery(sSql, new String[]{}) ;
 
 %>
 <html>

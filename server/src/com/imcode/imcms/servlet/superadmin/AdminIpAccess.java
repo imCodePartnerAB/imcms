@@ -38,7 +38,7 @@ public class AdminIpAccess extends Administrator {
 
         // ********** GENERATE THE IP-ACCESS PAGE *********
         // Lets get all IP-accesses from DB
-        String[][] multi = imcref.sqlProcedureMulti( "IPAccessesGetAll", new String[0] );
+        String[][] multi = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "IPAccessesGetAll", new String[0] );
 
         // Lets build the variables for each record
         Vector tags = new Vector();
@@ -119,8 +119,9 @@ public class AdminIpAccess extends Administrator {
             params = this.validateParameters( params, req, res, imcref, user );
             if (params == null) return;
 
-            imcref.sqlUpdateProcedure( "IPAccessAdd",
-                    new String[]{params.getProperty( "USER_ID" ), params.getProperty( "IP_START" ), params.getProperty( "IP_END" )} );
+            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "IPAccessAdd", new String[] {params.getProperty( "USER_ID" ),
+                                                                                            params.getProperty( "IP_START" ),
+                                                                                            params.getProperty( "IP_END" )} );
             res.sendRedirect( "AdminIpAccess?action=start" );
             return;
         }
@@ -148,7 +149,10 @@ public class AdminIpAccess extends Administrator {
 
                     long ipEndInt = Utility.ipStringToLong( ipEnd );
 
-                    imcref.sqlUpdateProcedure( "IPAccessUpdate", new String[]{ipAccessId, ipUserId, "" + ipStartInt, "" + ipEndInt} );
+                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "IPAccessUpdate", new String[] {ipAccessId,
+                                                                                                    ipUserId,
+                                                                                            "" + ipStartInt,
+                                                                                            "" + ipEndInt} );
                 }
             }
 
@@ -198,7 +202,7 @@ public class AdminIpAccess extends Administrator {
                         String tmpId = "IP.IP_ACCESS_ID_" + deleteIds[i];
                         String[] tmpArr = (String[]) session.getAttribute( tmpId );
                         String ipAccessId = tmpArr[0];
-                        imcref.sqlUpdateProcedure( "IPAccessDelete", new String[]{ipAccessId} );
+                        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "IPAccessDelete", new String[] {ipAccessId} );
                     }
                 }
             } else {

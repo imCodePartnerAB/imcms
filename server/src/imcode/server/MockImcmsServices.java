@@ -2,6 +2,8 @@ package imcode.server;
 
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
+import imcode.server.db.ExceptionUnhandlingDatabase;
+import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -25,7 +27,7 @@ public class MockImcmsServices implements ImcmsServices {
 
     private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
 
-    private Database database ;
+    private ExceptionUnhandlingDatabase database = new ExceptionUnhandlingDatabase( new MockDatabase() );
     private KeyStore keyStore;
     private TemplateMapper templateMapper;
     private DocumentMapper documentMapper;
@@ -47,8 +49,8 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     // Send a procedure to the database and return a string array
-    public String[] sqlProcedure( String procedure, String[] params ) {
-        return database.sqlProcedure( procedure, params ) ;
+    public String[] executeArrayProcedure( String procedure, String[] params ) {
+        return database.executeArrayProcedure( procedure, params ) ;
     }
 
     // get external template folder
@@ -248,32 +250,32 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public int sqlUpdateProcedure( String procedure, String[] params ) {
-        return database.sqlUpdateProcedure( procedure, params ) ;
+    public int executeUpdateProcedure( String procedure, String[] params ) {
+        return database.executeUpdateProcedure( procedure, params ) ;
     }
 
-    public String sqlProcedureStr( String procedure, String[] params ) {
-        return database.sqlProcedureStr( procedure, params ) ;
+    public String executeStringProcedure( String procedure, String[] params ) {
+        return database.executeStringProcedure( procedure, params ) ;
     }
 
-    public int sqlUpdateQuery( String sqlStr, String[] params ) {
-        return database.sqlUpdateQuery( sqlStr, params ) ;
+    public int executeUpdateQuery( String sqlStr, Object[] params ) {
+        return database.executeUpdateQuery( sqlStr, params ) ;
     }
 
-    public String[][] sqlProcedureMulti( String procedure, String[] params ) {
-        return database.sqlProcedureMulti( procedure, params );
+    public String[][] execute2dArrayProcedure( String procedure, String[] params ) {
+        return database.execute2dArrayProcedure( procedure, params );
     }
 
-    public String[] sqlQuery( String sqlStr, String[] params ) {
-        return database.sqlQuery( sqlStr, params ) ;
+    public String[] executeArrayQuery( String sqlStr, String[] params ) {
+        return database.executeArrayQuery( sqlStr, params ) ;
     }
 
-    public String sqlQueryStr( String sqlStr, String[] params ) {
-        return database.sqlQueryStr( sqlStr, params ) ;
+    public String executeStringQuery( String sqlStr, String[] params ) {
+        return database.executeStringQuery( sqlStr, params ) ;
     }
 
-    public String[][] sqlQueryMulti( String sqlstr, String[] params ) {
-        return database.sqlQueryMulti( sqlstr, params ) ;
+    public String[][] execute2dArrayQuery( String sqlstr, String[] params ) {
+        return database.execute2dArrayQuery( sqlstr, params ) ;
     }
 
     public Object executeCommand( DatabaseCommand databaseCommand ) {
@@ -312,8 +314,8 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public Database getDatabase() {
-        return database;
+    public ExceptionUnhandlingDatabase getExceptionUnhandlingDatabase() {
+        return database ;
     }
 
     public Clock getClock() {
@@ -328,13 +330,17 @@ public class MockImcmsServices implements ImcmsServices {
         return keyStore;
     }
 
+    public Database getDatabase() {
+        return database.getWrappedDatabase() ;
+    }
+
     public void setImcmsAuthenticatorAndUserAndRoleMapper(
             ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper ) {
         this.imcmsAuthenticatorAndUserAndRoleMapper = imcmsAuthenticatorAndUserAndRoleMapper;
     }
 
     public void setDatabase( Database database ) {
-        this.database = database;
+        this.database = new ExceptionUnhandlingDatabase( database );
     }
 
     public void setKeyStore( KeyStore keyStore ) {

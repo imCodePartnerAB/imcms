@@ -2,7 +2,7 @@ package imcode.server.user;
 
 public interface UserMapper {
 
-    void addUser( UserDomainObject user, UserDomainObject currentUser );
+    void addUser( UserDomainObject user, UserDomainObject currentUser ) throws UserAlreadyExistsException;
 
     void initUserRoles( UserDomainObject user );
 

@@ -1,6 +1,7 @@
 package imcode.server.user;
 
 import imcode.server.ImcmsConstants;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
@@ -103,7 +104,11 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
             externalUser.setRoles( imcmsUser.getRoles() );
             imcmsAuthenticatorAndUserMapperAndRole.saveUser( loginName, externalUser, null );
         } else {
-            imcmsAuthenticatorAndUserMapperAndRole.addUser( externalUser, null );
+            try {
+                imcmsAuthenticatorAndUserMapperAndRole.addUser( externalUser, null );
+            } catch ( UserAlreadyExistsException shouldNotBeThrown ) {
+                throw new UnhandledException( shouldNotBeThrown );
+            }
         }
 
         return imcmsAuthenticatorAndUserMapperAndRole.getUser( loginName );

@@ -1,13 +1,13 @@
 package imcode.server.document;
 
+import imcode.server.db.ExceptionUnhandlingDatabase;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.server.db.Database;
 
 public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
-    public DocumentCreatingVisitor( UserDomainObject user, Database database ) {
-        super(user, database );
+    public DocumentCreatingVisitor( UserDomainObject user, ExceptionUnhandlingDatabase database ) {
+        super( user, database );
     }
 
     public void visitHtmlDocument( HtmlDocumentDomainObject document ) {
@@ -15,10 +15,9 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
         String sqlUrlDocsInsertStr = makeSqlInsertString( "frameset_docs", htmlDocumentColumns );
 
-        database.sqlUpdateQuery( sqlUrlDocsInsertStr, new String[]{
-            "" + document.getId(), document.getHtml()
-        } );
-
+        database.executeUpdateQuery( sqlUrlDocsInsertStr, new String[] {
+                                             "" + document.getId(), document.getHtml()
+                                             } );
     }
 
     public void visitUrlDocument( UrlDocumentDomainObject document ) {
@@ -26,10 +25,9 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
         String sqlUrlDocsInsertStr = DocumentStoringVisitor.makeSqlInsertString( "url_docs", urlDocumentColumns );
 
-        database.sqlUpdateQuery( sqlUrlDocsInsertStr, new String[]{
-            "" + document.getId(), "", "", document.getUrl(), "", ""
-        } );
-
+        database.executeUpdateQuery( sqlUrlDocsInsertStr, new String[] {
+                                             "" + document.getId(), "", "", document.getUrl(), "", ""
+                                             } );
     }
 
     public void visitTextDocument( TextDocumentDomainObject textDocument ) {
@@ -41,16 +39,17 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         int templateId = textDocumentTemplate.getId();
         int templateGroupId = textDocument.getTemplateGroupId();
         int textDocumentId = textDocument.getId();
-        database.sqlUpdateQuery( sqlTextDocsInsertStr,
-                                new String[]{
-                                    "" + textDocumentId,
-                                    "" + templateId,
-                                    "" + templateGroupId,
-                                    null != defaultTemplate ? "" + defaultTemplate.getId() : null,
-                                    null != defaultTemplateForRestricted1 ? "" + defaultTemplateForRestricted1.getId() : "-1",
-                                    null != defaultTemplateForRestricted2 ? "" + defaultTemplateForRestricted2.getId() : "-1",
-                                } );
-
+        database.executeUpdateQuery( sqlTextDocsInsertStr,
+                                     new String[] {
+                                             "" + textDocumentId,
+                                             "" + templateId,
+                                             "" + templateGroupId,
+                                             null != defaultTemplate ? "" + defaultTemplate.getId() : null,
+                                             null != defaultTemplateForRestricted1
+                                             ? "" + defaultTemplateForRestricted1.getId() : "-1",
+                                             null != defaultTemplateForRestricted2
+                                             ? "" + defaultTemplateForRestricted2.getId() : "-1",
+                                             } );
         updateTextDocumentTexts( textDocument );
         updateTextDocumentImages( textDocument );
         updateTextDocumentIncludes( textDocument );

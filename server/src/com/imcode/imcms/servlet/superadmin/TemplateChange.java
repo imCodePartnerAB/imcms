@@ -2,10 +2,7 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.TemplateDomainObject;
-import imcode.server.document.TemplateGroupDomainObject;
-import imcode.server.document.TemplateMapper;
+import imcode.server.document.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -17,9 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.imcode.imcms.servlet.superadmin.TemplateAdmin;
-import com.imcode.imcms.servlet.superadmin.TemplateAdmin;
 
 public class TemplateChange extends HttpServlet {
 
@@ -171,7 +165,7 @@ public class TemplateChange extends HttpServlet {
         int template_id = Integer.parseInt( req.getParameter( "template" ) );
         TemplateDomainObject template = templateMapper.getTemplateById( template_id ) ;
 
-        templateMapper.replaceAllUsagesOfTemplate( template, newTemplate, imcref );
+        templateMapper.replaceAllUsagesOfTemplate( template, newTemplate );
         templateMapper.deleteTemplate( template );
     }
 

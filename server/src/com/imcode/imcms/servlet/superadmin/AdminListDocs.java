@@ -1,15 +1,11 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.util.Html;
 import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.DateConstants;
-import imcode.util.Parser;
-import imcode.util.Utility;
-import imcode.util.Html;
+import imcode.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -212,11 +208,14 @@ public class AdminListDocs extends Administrator {
                 StringBuffer listOfDocs = new StringBuffer();
                 String languagePrefix = user.getLanguageIso639_2();
                 for ( int i = 0; i < docTypesToShow.length; i++ ) {
-                    String[][] queryResult = imcref.sqlProcedureMulti( "ListDocsByDate",
-                                                                       new String[]{
-                                                                           listMod, "" + docTypesToShow[i], startDate,
-                                                                           endDate, languagePrefix
-                                                                       } );
+                    String[][] queryResult = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "ListDocsByDate", new String[] {
+                                                                                                                              listMod,
+                                                                                                                      ""
+                                                                                                                      + docTypesToShow[i],
+                                                                                                                              startDate,
+                                                                                                                              endDate,
+                                                                                                                              languagePrefix
+                                                                                                                      } );
 
                     for ( int j = 0; j < queryResult.length; j++ ) {
                         tagData[1] = queryResult[j][0];

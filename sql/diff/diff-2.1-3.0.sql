@@ -22,3 +22,7 @@ DROP PROCEDURE DocumentDelete
 DROP PROCEDURE GetAllUsersInList
 
 -- 2005-03-03 Kreiger
+
+DROP PROCEDURE FindUserName
+
+-- 2005-03-21 Kreiger
