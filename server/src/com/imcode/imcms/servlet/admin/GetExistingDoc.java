@@ -14,6 +14,8 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Parser;
 import imcode.util.Utility;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
@@ -21,7 +23,6 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.RangeQuery;
 import org.apache.lucene.search.TermQuery;
-import org.apache.commons.lang.ArrayUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -47,49 +48,33 @@ public class GetExistingDoc extends HttpServlet {
         Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
-        // Lets get the meta_id for the page were adding stuff to
-        String tmpMetaIdS = req.getParameter( "meta_id_value" );
-
-        int meta_id;
-
-        try {
-            meta_id = Integer.parseInt( tmpMetaIdS );
-        } catch ( NumberFormatException exc ) {
-            log.warn( "No meta id could be found. Check the template" );
-            return;
-        }
-
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        TextDocumentDomainObject parentDocument = (TextDocumentDomainObject)documentMapper.getDocument( Integer.parseInt( req.getParameter( "meta_id_value" ) ) );
 
         // Lets get the doc_menu_number
-        int doc_menu_no;
-        try {
-            doc_menu_no = Integer.parseInt( req.getParameter( "doc_menu_no" ) );
-        } catch ( NumberFormatException ex ) {
-            log.error( "\"doc_menu_no\" not found in GetExistingDoc.", ex );
-            return;
-        }
+        int menuIndex = Integer.parseInt( req.getParameter( "doc_menu_no" ) );
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( req.getParameter( "cancel" ) != null || req.getParameter( "cancel.x" ) != null ) {
-            res.sendRedirect( "AdminDoc?meta_id=" + meta_id + "&flags="
-                                   + IMCConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + doc_menu_no );
+            res.sendRedirect( "AdminDoc?meta_id=" + parentDocument.getId() + "&flags="
+                              + IMCConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + menuIndex );
             return;
         } else if ( req.getParameter( "search" ) != null || req.getParameter( "search.x" ) != null ) {
             // SEARCH
             // Lets do a search among existing documents.
             // Lets collect the parameters and build a sql searchstring
-            final DocumentIndex reindexingIndex = imcref.getDocumentMapper().getDocumentIndex();
+            final DocumentIndex index = documentMapper.getDocumentIndex();
             BooleanQuery query = new BooleanQuery();
             String searchString = req.getParameter( "searchstring" );
             String searchPrep = req.getParameter( "search_prep" );
             try {
                 if ( "or".equalsIgnoreCase( searchPrep ) ) {
-                    addStringToQuery( reindexingIndex, searchString, query );
+                    addStringToQuery( index, searchString, query );
                 } else {
                     String[] searchStrings = searchString.split( "\\s+" );
                     for ( int i = 0; i < searchStrings.length; i++ ) {
                         String string = searchStrings[i];
-                        addStringToQuery( reindexingIndex, string, query );
+                        addStringToQuery( index, string, query );
                     }
                 }
             } catch ( org.apache.lucene.queryParser.ParseException pe ) {
@@ -140,19 +125,23 @@ public class GetExistingDoc extends HttpServlet {
             }
 
             log.debug( "Query: " + query );
-            DocumentDomainObject[] searchResultDocuments = reindexingIndex.search( query, user );
+            DocumentDomainObject[] searchResultDocuments = index.search( query, user );
 
-            Comparator searchResultsComparator = new DocumentDomainObjectComparator( sortBy );
-            Arrays.sort( searchResultDocuments, searchResultsComparator );
+            boolean onlyOneDocumentFound = 1 == searchResultDocuments.length;
+            boolean searchStringIsOnlyDigits = NumberUtils.isDigits( searchString );
 
-            createSearchResultsPage( imcref, user, langPrefix, searchResultDocuments, meta_id, doc_menu_no, req, startDate,
-                                     dateFormat, endDate, docTypes, sortBy, sortOrderV, out );
-            return;
+            if ( onlyOneDocumentFound && searchStringIsOnlyDigits ) {
+                DocumentDomainObject onlyDocumentFound = searchResultDocuments[0];
+                addDocumentToMenu( onlyDocumentFound, parentDocument, menuIndex, user, getUsersAllowedDocumentTypeIdsOnDocument( user, parentDocument ) );
+                redirectBackToMenu( res, parentDocument, menuIndex );
+            } else {
+                createSearchResultsPage( imcref, user, langPrefix, searchResultDocuments, parentDocument, menuIndex, req, startDate,
+                                         dateFormat, endDate, docTypes, sortBy, sortOrderV, out );
+            }
 
         } else {
-            // ************** Lets add a document ***********************
-            addDocument( user, req, imcref, meta_id, doc_menu_no, res );
-
+            addDocumentsFromRequestToMenu( user, req, imcref, parentDocument, menuIndex, res );
+            redirectBackToMenu( res, parentDocument, menuIndex );
         }
     }
 
@@ -186,8 +175,9 @@ public class GetExistingDoc extends HttpServlet {
 
     }
 
-    private void addDocument( UserDomainObject user, HttpServletRequest req,
-                              IMCServiceInterface imcref, int meta_id, int menuIndex, HttpServletResponse res ) throws IOException {
+    private void addDocumentsFromRequestToMenu( UserDomainObject user, HttpServletRequest req,
+                                                IMCServiceInterface imcref, TextDocumentDomainObject parentDocument,
+                                                int menuIndex, HttpServletResponse res ) throws IOException {
         user.put( "flags", new Integer( IMCConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) );
 
         // get the seleced existing docs
@@ -197,10 +187,8 @@ public class GetExistingDoc extends HttpServlet {
         }
 
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        TextDocumentDomainObject parentDocument = (TextDocumentDomainObject)documentMapper.getDocument( meta_id );
 
-        int[] allowedDocumentTypeIdsArray = ((TextDocumentPermissionSetDomainObject)documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, parentDocument )).getAllowedDocumentTypeIds() ;
-        Set allowedDocumentTypeIds = new HashSet(Arrays.asList(ArrayUtils.toObject( allowedDocumentTypeIdsArray )));
+        Set allowedDocumentTypeIds = getUsersAllowedDocumentTypeIdsOnDocument( user, parentDocument );
 
         // Lets loop through all the selected existsing meta ids and add them to the current menu
         for ( int m = 0; m < values.length; m++ ) {
@@ -208,25 +196,45 @@ public class GetExistingDoc extends HttpServlet {
 
             DocumentDomainObject existingDocument = documentMapper.getDocument( existingDocumentId );
             // Add the document in menu if user is admin for the document OR the document is shared.
-            boolean sharePermission = documentMapper.userHasPermissionToAddDocumentToAnyMenu( user, existingDocument );
-            boolean canAddToMenu = allowedDocumentTypeIds.contains( new Integer( existingDocument.getDocumentTypeId() ) ) && sharePermission;
-            if ( canAddToMenu ) {
-                parentDocument.getMenu( menuIndex ).addMenuItem( new MenuItemDomainObject( existingDocument ) );
-                documentMapper.saveDocument( parentDocument, user );
-            }
+            addDocumentToMenu( existingDocument, parentDocument, menuIndex, user, allowedDocumentTypeIds );
 
         }
+    }
 
-        res.sendRedirect( "AdminDoc?meta_id=" + meta_id + "&flags=" + IMCConstants.DISPATCH_FLAG__EDIT_MENU
+    private void redirectBackToMenu( HttpServletResponse res, TextDocumentDomainObject parentDocument, int menuIndex ) throws IOException {
+        res.sendRedirect( "AdminDoc?meta_id=" + parentDocument.getId() + "&flags=" + IMCConstants.DISPATCH_FLAG__EDIT_MENU
                           + "&editmenu="
                           + menuIndex );
     }
 
+    private Set getUsersAllowedDocumentTypeIdsOnDocument( UserDomainObject user,
+                                                          TextDocumentDomainObject parentDocument ) {
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        int[] allowedDocumentTypeIdsArray = ( (TextDocumentPermissionSetDomainObject)documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, parentDocument ) ).getAllowedDocumentTypeIds();
+        Set allowedDocumentTypeIds = new HashSet( Arrays.asList( ArrayUtils.toObject( allowedDocumentTypeIdsArray ) ) );
+        return allowedDocumentTypeIds;
+    }
+
+    private void addDocumentToMenu( DocumentDomainObject document, TextDocumentDomainObject parentDocument,
+                                    int menuIndex, UserDomainObject user, Set allowedDocumentTypeIds ) {
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        boolean sharePermission = documentMapper.userHasPermissionToAddDocumentToAnyMenu( user, document );
+        boolean canAddToMenu = allowedDocumentTypeIds.contains( new Integer( document.getDocumentTypeId() ) )
+                               && sharePermission;
+        if ( canAddToMenu ) {
+            parentDocument.getMenu( menuIndex ).addMenuItem( new MenuItemDomainObject( document ) );
+            documentMapper.saveDocument( parentDocument, user );
+        }
+    }
+
     private void createSearchResultsPage( IMCServiceInterface imcref, imcode.server.user.UserDomainObject user,
-                                          String langPrefix, DocumentDomainObject[] searchResultDocuments, int meta_id,
+                                          String langPrefix, DocumentDomainObject[] searchResultDocuments, TextDocumentDomainObject parentDocument,
                                           int doc_menu_no, HttpServletRequest req, Date startDate,
                                           DateFormat dateFormat, Date endDate, String[] docTypes, String sortBy,
                                           List sortOrderV, Writer out ) throws IOException {
+        Comparator searchResultsComparator = new DocumentDomainObjectComparator( sortBy );
+        Arrays.sort( searchResultDocuments, searchResultsComparator );
+
         StringBuffer searchResults;
         List outVector = new ArrayList();
 
@@ -249,7 +257,7 @@ public class GetExistingDoc extends HttpServlet {
 
         // Lets parse out hidden fields
         outVector.add( "#meta_id#" );
-        outVector.add( "" + meta_id );
+        outVector.add( "" + parentDocument.getId() );
         outVector.add( "#doc_menu_no#" );
         outVector.add( "" + doc_menu_no );
 
@@ -391,9 +399,9 @@ public class GetExistingDoc extends HttpServlet {
         return calendar.getTime();
     }
 
-    private void addStringToQuery( final DocumentIndex reindexingIndex, String string, BooleanQuery query )
+    private void addStringToQuery( final DocumentIndex index, String string, BooleanQuery query )
             throws org.apache.lucene.queryParser.ParseException {
-        Query textQuery = reindexingIndex.parseLucene( string );
+        Query textQuery = index.parseLucene( string );
         query.add( textQuery, true, false );
     }
 

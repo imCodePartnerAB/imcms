@@ -15,17 +15,17 @@
 </tr>
 <tr> 
 	<td colspan="2">
-	<table border="0" cellspacing="0" cellpadding="0">
-	<tr>
-		<td class="imcmsAdmText"><? templates/sv/existing_doc.html/1002 ?>&nbsp;&nbsp;</td>
-		<td><input type="text" name="searchstring" size="62" maxlength="255" style="width: 360" value="#searchstring#"></td>
-		<td>&nbsp;&nbsp;&nbsp;</td>
-		<td><input type="radio" value="and" name="search_prep" #search_prep_check_and#></td>
-		<td class="imcmsAdmText" nowrap>&nbsp;<? templates/sv/existing_doc.html/1003 ?> &nbsp;</td>
-		<td><input type="radio" value="or" name="search_prep" #search_prep_check_or#></td>
-		<td class="imcmsAdmText" nowrap>&nbsp;<? templates/sv/existing_doc.html/1004 ?></td>
-	</tr>
-	</table></td>
+        <table border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td class="imcmsAdmText"><? templates/sv/existing_doc.html/1002 ?>&nbsp;&nbsp;</td>
+                <td><input type="text" name="searchstring" size="62" maxlength="255" style="width: 360" value="#searchstring#">&nbsp;<input type="submit" class="imcmsFormBtn" name="search" value="<? templates/sv/existing_doc.html/2007 ?>"></td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td class="imcmsAdmText" nowrap><input type="radio" value="and" name="search_prep" #search_prep_check_and#>&nbsp;<? templates/sv/existing_doc.html/1003 ?>&nbsp;&nbsp;<input type="radio" value="or" name="search_prep" #search_prep_check_or#>&nbsp;<? templates/sv/existing_doc.html/1004 ?></td>
+            </tr>
+        </table>
+    </td>
 </tr>
 <tr>
 	<td colspan="2">#gui_hr( "cccccc" )</td>
