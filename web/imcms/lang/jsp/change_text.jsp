@@ -18,6 +18,7 @@ boolean imcmsModeHtml    = (textEditPage.getType() == TextDomainObject.TEXT_TYPE
 boolean imcmsModeText    = !imcmsModeHtml ;
 boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true") ;
 %>
+<%@ include file="../../htmlarea/_editor_scripts.jsp" %>
 <vel:velocity>
 <html>
 <head>
@@ -25,7 +26,6 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
-<%@ include file="../../htmlarea/_editor_scripts.jsp" %>
 
 </head>
 <body bgcolor="#FFFFFF" style="margin-bottom:0px;" onLoad="checkMode();<%=
@@ -82,6 +82,7 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 	(textEditPage != null && StringUtils.isNotBlank(textEditPage.getLabel()))
 		? " &nbsp;&#150;&nbsp; <i>" + StringEscapeUtils.escapeHtml(textEditPage.getLabel()) + "</i>" : "" %>" )</td>
 </tr>
+</vel:velocity>
 <tr>
 	<td colspan="2" class="imcmsAdmForm"><%
 	if (rows == 1) { %>
@@ -91,6 +92,7 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 <%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
 	} %></td>
 </tr>
+<vel:velocity>
 <tr>
 	<td colspan="2">
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
@@ -165,7 +167,7 @@ function setEditorSize() {
 setEditorSize() ;
 
 function checkMode() {
-	var f = document.forms[0] ;<% 
+	var f = document.forms[0] ;<%
 	//window.status = f.format_type + "" + (f.format_type.length > 0) + "" ; %>
 	if (!(f.format_type.length > 0)) {
 		f.format_type.checked = true ;
