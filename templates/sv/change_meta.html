@@ -1,56 +1,83 @@
-<HTML><HEAD><TITLE>Admin - L&auml;gga till nytt dokument</TITLE></HEAD>
+<html>
+<head>
+<title>Admin - L&auml;gga till nytt dokument</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
+}
+//-->
+</SCRIPT>
+
+</head>
 <body bgcolor="#FFFFFF">
+
 <FORM METHOD="POST" ACTION="SaveMeta">
-  <table border="1" cellspacing="0" cellpadding="2" width="450" align="center">
-	<tr valign="middle" bgcolor="#333366"> 
-	  		<td colspan="2">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&Auml;ndra 
-				dokinfo 
-				<input TYPE="HIDDEN" name="doc_type" value="#doc_type#">
-		<input TYPE="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
-				<input TYPE="HIDDEN" NAME="meta_id" value="#meta_id#">
-		#checks#</font></b></td>
-	</tr>
-	<input TYPE="HIDDEN" name="description" SIZE="30" value="" oldvalue="#description#">
-	<tr valign="middle"> 
-	  <td width="61" bgcolor="#BABABA" valign="middle"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Rubrik<br>
-		<font size="1">&nbsp;(i&nbsp;meny)</font></font></font><br>
-	  </td>
-	  <td valign="middle" bgcolor="#BABABA"> <font size="2"></font> 
-		<input TYPE="TEXT" name="meta_headline" SIZE="60" maxlength="255" value="#meta_headline#">
-	  </td>
+<input TYPE="HIDDEN" name="doc_type" value="#doc_type#">
+<input TYPE="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
+<input TYPE="HIDDEN" NAME="meta_id" value="#meta_id#">
+<input TYPE="HIDDEN" name="description" SIZE="30" value="" oldvalue="#description#">
+<table width="750" border="0" cellspacing="0" bgcolor="#bababa" align="center">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><b>&Auml;ndra dokinfo #checks#</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="3">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="2" width="100%">
+	<tr> 
+		<td width="90"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
+		&nbsp;Rubrik<br><font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
+		<td><input TYPE="TEXT" name="meta_headline" SIZE="65" maxlength="255" value="#meta_headline#" style="width:100%"></td>
 	</tr>
 	<tr> 
-	  <td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Text 
-		<br>
-		<font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
-	  <td valign="middle" bgcolor="#BABABA"> 
-		<textarea name="meta_text" cols="50" rows="3" maxlength="100">#meta_text#</textarea>
-	  </td>
-	<tr valign="middle"> 
-	  <td width="61" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Bild</font> 
-		<br>
-		<font size="1" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;(i&nbsp;meny)</font><br>
-	  </td>
-	  <td valign="middle" bgcolor="#BABABA"> 
-		<input TYPE="TEXT" name="meta_image" SIZE="60" value="#meta_image#" maxlength="255">
-	  </td>
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
+		&nbsp;Text<br><font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
+		<td><textarea name="meta_text" cols="64" rows="3" maxlength="100" wrap="virtual" style="width:100%">
+#meta_text#</textarea></td>
+	<tr> 
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+		&nbsp;Bild<br><font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
+		<td><input TYPE="TEXT" name="meta_image" SIZE="65" value="#meta_image#" maxlength="255" style="width:100%"></td>
+	</tr>
+	<tr>
+		<td colspan="2"><hr></td>
 	</tr>
 	<tr> 
-	  <td width="61" valign="top" height="8" bgcolor="#BABABA">&nbsp;</td>
-	  <td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
-		<div align="left"> 
-		  <input TYPE="SUBMIT" value="OK" name="ok">
-		  <input TYPE="RESET" value="Återställ" name="reset">
-					<font size="2"></font></div>
-	  </td>
+		<td>&nbsp;</td>
+		<td>
+		<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td><input TYPE="SUBMIT" value=" OK " name="ok"></td>
+			<td>&nbsp;</td>
+			<td><input TYPE="RESET" value="Återställ" name="reset"></td>
+			<td></form><form name="abortForm" action="GetDoc"><input type="hidden" name="meta_id" value="#meta_id#">&nbsp;</td>
+			<td><input TYPE="button" value="Avbryt" onClick="document.forms.abortForm.submit(); return false"></td>
+			<td></form>&nbsp;</td>
+			<td><a href="GetDoc?meta_id=39" target="_blank" onClick="openHelp('39'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+		</tr>
+		</table></td>
 	</tr>
-  </table>
-<table width="90%" border="0">
-	<tr> 
-	  <td> 
-				<div align="center">#adminMode#</div>
-	  </td>
-	</tr>
-  </table>
-</FORM>
-</BODY></HTML>
+	</table></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="3">&nbsp;</td>
+</tr>
+</table>
+
+<table border="0" cellpadding="0" cellspacing="0" align="center">
+<tr> 
+	<td>#adminMode#</td>
+</tr>
+</table>
+
+</body>
+</html>

@@ -1,182 +1,206 @@
-<HTML>
-<HEAD>
-<TITLE>Admin - L&auml;gga till nytt dokument</TITLE>
+<html>
+<head>
+<title>Admin - L&auml;gga till nytt dokument</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
+<script language="javascript">
 <!--
 function openHelp(id){
 	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
-</SCRIPT>
+</script>
 
-</HEAD>
+</head>
 <body bgcolor="#FFFFFF">
-<FORM METHOD="POST" ACTION="SaveMeta">
-  <table border="1" cellspacing="0" cellpadding="2" width="450" align="center">
-	<tr valign="middle" bgcolor="#333366"> 
-	  		<td colspan="2">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&Auml;ndra dokinfo 
-				<input TYPE="HIDDEN" name="doc_type" value="#doc_type#">
-		        <input TYPE="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
-				<input TYPE="HIDDEN" NAME="meta_id" value="#meta_id#">
-		#checks#</font></b></td>
-	</tr>
-	<input TYPE="HIDDEN" name="description" SIZE="30" value="" oldvalue="#description#">
-	<tr valign="middle"> 
-	  <td width="61" bgcolor="#BABABA" valign="middle"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Rubrik<br>
-		<font size="1">&nbsp;(i&nbsp;meny)</font></font></font><br>
-	  </td>
-	  <td valign="middle" bgcolor="#BABABA"> <font size="2"></font> 
-		<input TYPE="TEXT" name="meta_headline" SIZE="60" maxlength="255" value="#meta_headline#">
-	  </td>
+
+<form method="POST" action="SaveMeta">
+<input type="HIDDEN" name="doc_type" value="#doc_type#">
+<input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
+<input type="HIDDEN" name="meta_id" value="#meta_id#">
+<input type="HIDDEN" name="description" size="30" value="" oldvalue="#description#">
+<input type="HIDDEN" name="current_section_id" value="#current_section_id#">
+<table width="750" border="0" cellspacing="0" bgcolor="#bababa" align="center">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><b>&Auml;ndra dokinfo #checks#</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="3">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="2" width="100%">
+	<tr> 
+		<td width="90"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
+		&nbsp;Rubrik<br><font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
+		<td><input type="TEXT" name="meta_headline" size="67" maxlength="255" value="#meta_headline#" style="width:100%"></td>
 	</tr>
 	<tr> 
-	  <td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Text 
-		<br>
-		<font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
-	  <td valign="middle" bgcolor="#BABABA"> 
-		<textarea name="meta_text" cols="50" rows="3" maxlength="100">#meta_text#</textarea>
-	  </td>
-	<tr valign="middle">
-	  <td width="61" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Bild</font> 
-		<br>
-		<font size="1" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;(i&nbsp;meny)</font><br>
-	  </td>
-	  <td valign="middle" bgcolor="#BABABA"> 
-		<input TYPE="TEXT" name="meta_image" SIZE="60" value="#meta_image#" maxlength="255">
-	  </td>
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
+		&nbsp;Text<br><font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
+		<td><textarea name="meta_text" cols="65" rows="3" maxlength="100" wrap="virtual" style="width:100%">
+#meta_text#</textarea></td>
+	<tr> 
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+		&nbsp;Bild<br><font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
+		<td><input type="TEXT" name="meta_image" size="67" value="#meta_image#" maxlength="255" style="width:100%"></td>
+	</tr>
+	<tr>
+		<td colspan="2"><hr></td>
 	</tr>
 	<tr> 
-	  <td width="61" valign="top" height="8" bgcolor="#BABABA">&nbsp;</td>
-	  <td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
-		<div align="left"> 
-		  <input TYPE="SUBMIT" value="OK" name="ok">
-		  <input TYPE="RESET" value="Återställ" name="reset">&nbsp; <a href="GetDoc?meta_id=39" target="_blank" onClick="openHelp('39'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-					<font size="2"></font></div>
-	  </td>
-	</tr>
-  </table>
-<br>
-<br>
-<br>
-    <table border="1" cellspacing="0" cellpadding="2" width="450" align="center">
-		<tr valign="middle" bgcolor="#333366"> 
-			<td colspan="2" height="22">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Avancerat 
-				(&auml;ndra vid behov)</font></b></td>
-		</tr>
-		<tr> 
-			<td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Skapad</font></td>
-			<td valign="middle" bgcolor="#BABABA"><font size="2"><input TYPE="TEXT" name="date_created" size="11" value="#date_created#" maxlength="10" >
-			<font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;kl:</font>
-			<input TYPE="TEXT" name="created_time" size="7" maxlength="5" value="#created_time#">
-				av #owner#</font></td>
-		</tr>
+		<td>&nbsp;</td>
+		<td>
+		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
-			<td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&Auml;ndrad</font></td>
-			<td valign="middle" bgcolor="#BABABA"><font size="2"><input TYPE="TEXT" name="date_modified" size="11" value="#date_modified#" maxlength="10" >
-			<font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;kl:</font>
-			<input TYPE="TEXT" name="modified_time" size="7" maxlength="5" value="#modified_time#">
-			</font></td>
+			<td><input TYPE="SUBMIT" value=" OK " name="ok"></td>
+			<td>&nbsp;</td>
+			<td><input TYPE="RESET" value="Återställ" name="reset"></td>
+			<td>&nbsp;</td>
+			<td><input TYPE="BUTTON" value="Avbryt" name="abort" onClick="document.forms.abortForm.submit(); return false"></td>
+			<td>&nbsp;</td>
+			<td><a href="GetDoc?meta_id=39" target="_blank" onClick="openHelp('39'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
 		</tr>
-		<tr> 
-			<td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;S&ouml;kord</font></td>
-			<td valign="middle" bgcolor="#BABABA"> 
-				<input TYPE="TEXT" name="classification" size=50 value="#classification#" maxlength="200" >
-				<font size="2"> <br>
-				</font><font face="Verdana, Arial, Helvetica, sans-serif" size="1">&nbsp;S&ouml;kord 
-				skall anges separerade med kommatecken.<br> &nbsp;Ex:soppa, blomkål</font><font size="2"> 
-				</font><font size="2"> <br>
-				<input type="CHECKBOX" name="disable_search" value="1" #disable_search#>
-				<font face="Verdana, Arial, Helvetica, sans-serif">Blockera s&ouml;kning</font></font> 
-			</td>
-		</tr>
-		
+		</table></td>
+	</tr>
+	</table></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="3">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="3" bgcolor="#ffffff">&nbsp;</td>
+</tr>
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff">
+	<b>Avancerat (&auml;ndra vid behov)</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="3">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="2" width="100%">
+	<tr>
+		<td width="90"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Skapad</font></td>
+		<td><font size="2"><input type="TEXT" name="date_created" size="11" value="#date_created#" maxlength="10" >
+		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;kl:</font>
+		<input type="TEXT" name="created_time" size="7" maxlength="5" value="#created_time#"> av #owner#</font></td>
+	</tr>
+	<tr>
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&Auml;ndrad</font></td>
+		<td><font size="2"><input type="TEXT" name="date_modified" size="11" value="#date_modified#" maxlength="10" >
+		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;kl:</font>
+		<input type="TEXT" name="modified_time" size="7" maxlength="5" value="#modified_time#"></font></td>
+	</tr>
+	<tr>
+		<td colspan="2"><hr></td>
+	</tr>
 	<tr> 
-	  <td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Avdelning</font></td>
-	  <td valign="middle" bgcolor="#BABABA"> 		
-	  	<input type="Hidden" name="current_section_id" value="#current_section_id#">
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;S&ouml;kord</font></td>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+		<input type="TEXT" name="classification" size="67" value="#classification#" maxlength="200" style="width:100%">
+		<font size="1">&nbsp;S&ouml;kord skall anges separerade med kommatecken. &nbsp;Ex:soppa, blomkål<br></font>
+		<input type="CHECKBOX" name="disable_search" value="1" #disable_search#> Blockera s&ouml;kning</font></td>
+	</tr>
+	<tr>
+		<td colspan="2"><hr></td>
+	</tr>
+	<tr> 
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Avdelning</font></td>
+		<td> 		
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Nuvarande: #current_section_name# <br>
 		Byt till:&nbsp; 
-		<SELECT NAME="change_section" size="1">
+		<select name="change_section" size="1">
 			<option value="-1">Ingen avdelning</option>			  
 			#section_option_list#		
-		</SELECT>		
-		</font><br>		
-	  </td>
+		</select></font></td>
 	</tr>
-		
-		
-		<tr> 
-			<td width="88" valign="middle" bgcolor="#BABABA"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Dela 
-				ut</font></font></td>
-			<td valign="middle" bgcolor="#BABABA"><font size="2">
-				<input type="CHECKBOX" name="show_meta" value="1" #show_meta#>
-				<font size="2" face="Verdana, Arial, Helvetica, sans-serif">Visa 
-				dokumentet &auml;ven f&ouml;r obeh&ouml;riga anv&auml;ndare<br>
-				</font> 
-				<input type="CHECKBOX" name="shared" value="1" #shared#>
-				<font face="Verdana, Arial, Helvetica, sans-serif">Dela ut dokumentet 
-				f&ouml;r andra administrat&ouml;rer</font></font> </td>
-		</tr>
-		<tr valign="middle"> 
-			<td width="61" height="14" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Publicera</font></td>
-			<td width="*" valign="middle" height="14" bgcolor="#BABABA"><font size="2"> 
-				<input TYPE="TEXT" name="activated_date" size="13" value="#activated_date#" maxlength="10" >
-				<font face="Verdana, Arial, Helvetica, sans-serif"> <font size="1">(&Aring;&Aring;&Aring;&Aring;-MM-DD)</font> 
-				&nbsp;&nbsp;&nbsp;&nbsp;kl:</font> 
-				<input TYPE="TEXT" name="activated_time" size="7" maxlength="5" value="#activated_time#" >
-				<font face="Verdana, Arial, Helvetica, sans-serif" size="1">(HH:MM)</font></font></td>
-		</tr>
-		<tr valign="middle"> 
-			<td width="61" height="14" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Arkivera</font></td>
-			<td width="*" valign="middle" height="14" bgcolor="#BABABA"><font size="2"> 
-				<input TYPE="TEXT" name="archived_date" size="13" maxlength="10" value="#archived_date#" >
-				<font face="Verdana, Arial, Helvetica, sans-serif"> <font size="1">(&Aring;&Aring;&Aring;&Aring;-MM-DD)</font> 
-				&nbsp;&nbsp;&nbsp;&nbsp;kl:</font> 
-				<input TYPE="TEXT" name="archived_time" size="7" maxlength="5" value="#archived_time#">
-				<font face="Verdana, Arial, Helvetica, sans-serif" size="1">(HH:MM)<br>
-				</font> 
-				<input type="CHECKBOX" name="archive" value="1" #archive#>
-				<font face="Verdana, Arial, Helvetica, sans-serif">Arkivera nu</font></font></td>
-		</tr>
-		<tr valign="middle"> 
-			<td width="61" height=2 bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Visa 
-				i </font></td>
-			<td width="*" valign="middle" height="14" bgcolor="#BABABA"><font size="2"> 
-				<input type="radio" name="target" value="_self" #_self#>
-				</font><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Samma 
-				frame</font><font size="2"> 
-				<input type="radio" name="target" value="_blank" #_blank#>
-				<font face="Verdana, Arial, Helvetica, sans-serif">Nytt f&ouml;nster</font> 
-				<font size="2"> 
-				<input type="radio" name="target" value="_top" #_top#>
-				</font><font face="Verdana, Arial, Helvetica, sans-serif">Ers&auml;tt 
-				allt</font><font face="Verdana, Arial, Helvetica, sans-serif"></font><font size="2"> 
-				<br>
-				<input type="radio" name="target" value="_other" #_other#>
-				</font><font face="Verdana, Arial, Helvetica, sans-serif">Annan 
-				frame</font> 
-				<input TYPE="TEXT" name="frame_name" SIZE="20" value="#frame_name#" maxlength="20">
-				</font></td>
-		</tr>
-		<tr> 
-			<td width="61" valign="top" height="8" bgcolor="#BABABA">&nbsp;</td>
-			<td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
-				<div align="left"> 
-					<input TYPE="SUBMIT" value="OK" name="ok">
-					<input TYPE="RESET" value="&Aring;terst&auml;ll" name="reset">&nbsp; <a href="GetDoc?meta_id=39" target="_blank" onClick="openHelp('39'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-				</div>
-			</td>
-		</tr>
-	</table>
-  <br>
-  <table width="90%" border="0">
+	<tr>
+		<td colspan="2"><hr></td>
+	</tr>
 	<tr> 
-	  <td> 
-		<div align="center">#adminMode# </div>
-	  </td>
+		<td><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Dela ut</font></font></td>
+		<td><font size="2">
+		<input type="CHECKBOX" name="show_meta" value="1" #show_meta#>
+		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">Visa 
+		dokumentet &auml;ven f&ouml;r obeh&ouml;riga anv&auml;ndare<br></font> 
+		<input type="CHECKBOX" name="shared" value="1" #shared#>
+		<font face="Verdana, Arial, Helvetica, sans-serif">
+		Dela ut dokumentet f&ouml;r andra administrat&ouml;rer</font></font> </td>
 	</tr>
-  </table>
-</FORM>
-</BODY>
-</HTML>
+	<tr>
+		<td colspan="2"><hr></td>
+	</tr>
+	<tr> 
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Publicera</font></td>
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+		<input type="TEXT" name="activated_date" size="13" value="#activated_date#" maxlength="10" >
+		<font size="1">(&Aring;&Aring;&Aring;&Aring;-MM-DD)</font>
+		&nbsp;&nbsp;&nbsp;&nbsp;kl:
+		<input type="TEXT" name="activated_time" size="7" maxlength="5" value="#activated_time#" >
+		<font size="1">(HH:MM)</font></font></td>
+	</tr>
+	<tr> 
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Arkivera</font></td>
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+		<input type="TEXT" name="archived_date" size="13" maxlength="10" value="#archived_date#" >
+		<font size="1">(&Aring;&Aring;&Aring;&Aring;-MM-DD)</font>
+		&nbsp;&nbsp;&nbsp;&nbsp;kl:
+		<input type="TEXT" name="archived_time" size="7" maxlength="5" value="#archived_time#">
+		<font size="1">(HH:MM)</font>&nbsp; <input type="CHECKBOX" name="archive" value="1" #archive#> Arkivera nu</font></td>
+	</tr>
+	<tr>
+		<td colspan="2"><hr></td>
+	</tr>
+	<tr> 
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Visa i</font></td>
+		<td nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+		<input type="radio" name="target" style="background-color:#bababa" value="_self" #_self#> Samma frame
+		<input type="radio" name="target" style="background-color:#bababa" value="_blank" #_blank#> Nytt f&ouml;nster
+		<input type="radio" name="target" style="background-color:#bababa" value="_top" #_top#> Ers&auml;tt allt
+		<input type="radio" name="target" style="background-color:#bababa" value="_other" #_other#> Annan frame
+		<input type="TEXT" name="frame_name" size="15" value="#frame_name#" maxlength="20"></font></td>
+	</tr>
+	<tr>
+		<td colspan="2"><hr></td>
+	</tr>
+	<tr> 
+		<td><table border="0" cellspacing="0" cellpadding="0" width="90"><tr><td>&nbsp;</td></tr></table></td>
+		<td>
+		<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td><input TYPE="SUBMIT" value=" OK " name="ok"></td>
+			<td>&nbsp;</td>
+			<td><input TYPE="RESET" value="Återställ" name="reset"></td>
+			<td></form><form name="abortForm" action="GetDoc"><input type="hidden" name="meta_id" value="#meta_id#">&nbsp;</td>
+			<td><input TYPE="button" value="Avbryt" onClick="document.forms.abortForm.submit(); return false"></td>
+			<td></form>&nbsp;</td>
+			<td><a href="GetDoc?meta_id=39" target="_blank" onClick="openHelp('39'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="3">&nbsp;</td>
+</tr>
+</table>
+
+<table border="0" cellpadding="0" cellspacing="0" align="center">
+<tr> 
+	<td>#adminMode#</td>
+</tr>
+</table>
+
+
+</body>
+</html>
