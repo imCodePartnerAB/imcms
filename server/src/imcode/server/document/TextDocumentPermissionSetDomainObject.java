@@ -6,8 +6,8 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
     private boolean editTemplates;
     private boolean editIncludes;
     private boolean editImages;
-    private TemplateGroupDomainObject[] allowedTemplateGroups;
-    private int[] allowedDocumentTypeIds;
+    private TemplateGroupDomainObject[] allowedTemplateGroups = new TemplateGroupDomainObject[0];
+    private int[] allowedDocumentTypeIds = new int[0];
 
     public TextDocumentPermissionSetDomainObject( int permissionType ) {
         super( permissionType );
