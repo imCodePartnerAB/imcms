@@ -14,20 +14,8 @@ import java.util.Set;
  */
 public class TestLanguagePropertyFilesInSync extends TestCase {
 
-    public void testTemplatesLanguagePropertyFiles() throws IOException {
-        String dir = "templates";
-        compareLanguagePropertyFiles( dir, "eng", "swe" );
-        compareLanguagePropertyFiles( dir, "swe", "eng" );
-    }
-
-    public void testHtdocsLanguagePropertyFiles() throws IOException {
-        String dir = "install/htdocs";
-        compareLanguagePropertyFiles( dir, "eng", "swe" );
-        compareLanguagePropertyFiles( dir, "swe", "eng" );
-    }
-
-    public void testSqlLanguagePropertyFiles() throws IOException {
-        String dir = "sql";
+    public void testLanguagePropertyFiles() throws IOException {
+        String dir = ".";
         compareLanguagePropertyFiles( dir, "eng", "swe" );
         compareLanguagePropertyFiles( dir, "swe", "eng" );
     }

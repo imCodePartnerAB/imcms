@@ -35,7 +35,7 @@ public class TestForMissingLanguageProperties extends PropertiesBaseTestCase {
     private void testDir( File dir ) throws IOException {
         MultiMap mapOfPropertyKeysToFiles = new MultiHashMap();
 
-        Properties[] propertieses = getPropertieses( dir, propertyFilenames );
+        Properties[] propertieses = getPropertieses( new File("."), propertyFilenames );
         recurse( dir, propertieses, mapOfPropertyKeysToFiles );
 
         MultiMap filesWithMissingProperties = buildMapOfFileNamesToPropertyKeys( mapOfPropertyKeysToFiles );
