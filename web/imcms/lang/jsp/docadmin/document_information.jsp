@@ -225,7 +225,7 @@ function checkFocus() {
 			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_TIME %>" size="5" maxlength="5" style="width: 4em;"
 			value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getPublicationStartDatetime()) ) %>"></td>
 			<td>&nbsp;(<%= Utility.formatHtmlDatetime( publicationStartDatetime ) %>)&nbsp;&nbsp;</td>
-			<td><input type="button" value="&laquo;&nbsp;<? global/Now ?>" class="imcmsFormBtnSmall" style="width:40px" onClick="setNow('<%=
+			<td><input type="button" id="nowBtn0" value="&laquo;&nbsp;<? global/Now ?>" class="imcmsFormBtnSmall" style="width:40px; visibility:hidden;" onClick="setNow('<%=
 			EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_DATE %>','<%=
 			EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_TIME %>');"></td>
 		</tr>
@@ -243,7 +243,7 @@ function checkFocus() {
 			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_TIME %>" size="5" maxlength="5" style="width: 4em;"
 			value="<%= StringEscapeUtils.escapeHtml( formatTime(archivedDatetime) ) %>"></td>
 			<td>&nbsp;(<%= Utility.formatHtmlDatetime( archivedDatetime ) %>)&nbsp;&nbsp;</td>
-			<td><input type="button" value="&laquo;&nbsp;<? global/Now ?>" class="imcmsFormBtnSmall" style="width:40px" onClick="setNow('<%=
+			<td><input type="button" id="nowBtn1" value="&laquo;&nbsp;<? global/Now ?>" class="imcmsFormBtnSmall" style="width:40px; visibility:hidden;" onClick="setNow('<%=
 			EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_DATE %>','<%=
 			EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_TIME %>');"></td>
 		</tr>
@@ -261,7 +261,7 @@ function checkFocus() {
 			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_TIME %>" size="5" maxlength="5" style="width: 4em;"
 			value="<%= StringEscapeUtils.escapeHtml( formatTime(publicationEndDatetime) ) %>"></td>
 			<td>&nbsp;(<%= Utility.formatHtmlDatetime( publicationEndDatetime ) %>)&nbsp;&nbsp;</td>
-			<td><input type="button" value="&laquo;&nbsp;<? global/Now ?>" class="imcmsFormBtnSmall" style="width:40px" onClick="setNow('<%=
+			<td><input type="button" id="nowBtn2" value="&laquo;&nbsp;<? global/Now ?>" class="imcmsFormBtnSmall" style="width:40px; visibility:hidden;" onClick="setNow('<%=
 			EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_DATE %>','<%=
 			EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_TIME %>');"></td>
 		</tr>
@@ -644,6 +644,12 @@ function setCookie(sName, sValue) {
 	sCookieCont += (expire == null) ? "" : "\; expires=" + expire.toGMTString();
 	sCookieCont += "; path=" + sPath;
 	document.cookie = sCookieCont;
+}
+
+if (document.getElementById) {
+	for (var i = 0; i <= 2; i++) {
+		if (document.getElementById("nowBtn" + i)) document.getElementById("nowBtn" + i).style.visibility = "visible" ;
+	}
 }
 // -->
 </script>
