@@ -11,8 +11,8 @@ public class ParserParameters {
     private String template;	//used to store the template if not default is wanted
     private String param;		//used to store the parameter param
     private String externalParam; //used to store the param prodused from external class.
-    private boolean readrunnerUseStopChars = true ;
-    private boolean readrunnerUseSepChars = true ;
+    private boolean readrunnerUseStopChars = false ;
+    private boolean readrunnerUseSepChars = false ;
 
     public ParserParameters() {
 

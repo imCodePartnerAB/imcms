@@ -141,13 +141,13 @@ function RRsaveSettings(what) {
 			var iPausDiv = f.p3.value;
 			var bPausScroll = f.cbp4.checked;
 			var iPausScroll = f.p4.value;
-			var sSettings = bPausRow+'/'+iPausRow+',';
-				sSettings += bPausStop+'/'+iPausStop+',';
-				sSettings += bPausDiv+'/'+iPausDiv+',';
-				sSettings += bPausScroll+'/'+iPausScroll+',';
-				sSettings += iColorBg+',';
-				sSettings += iColorText+','+iColorWorm+','+bOpacity+','+iOpacityLev;
-			setCookie('RRsettings', escape(sSettings));
+			var sSettings = bPausRow+'/'+iPausRow+'&';
+				sSettings += bPausStop+'/'+iPausStop+'&';
+				sSettings += bPausDiv+'/'+iPausDiv+'&';
+				sSettings += bPausScroll+'/'+iPausScroll+'&';
+				sSettings += iColorBg+'&';
+				sSettings += iColorText+'&'+iColorWorm+'&'+bOpacity+'&'+iOpacityLev;
+			setCookie('RRsettings', sSettings);
 			//alert(sSettings);
 		}
 	}
@@ -184,7 +184,7 @@ function RRgetCookies() {
 	var blnCookieValues = false;
 	var theCookieString = unescape(document.cookie);
 	var theCookieSpeed = getCookie('RRspeed');
-	if (theCookieSpeed != undefined) {
+	if (theCookieSpeed != null) {
 		if (theCookieSpeed.indexOf('/') != -1) {
 			f.RRspeed.value = (theCookieSpeed.split("/")[0] >= 0) ? theCookieSpeed.split("/")[0] : iDefaultSpeed;
 			//f.RRspeed0.value = (theCookieSpeed.split("/")[1] >= 0) ? theCookieSpeed.split("/")[1] : iDefaultSpeed;
@@ -193,7 +193,7 @@ function RRgetCookies() {
 	var theCookieSettings = unescape(getCookie('RRsettings'));
 	if (theCookieSettings.indexOf('/') != -1) {
 		//alert(theCookieSettings);
-		arrSettings = theCookieSettings.split(",")
+		arrSettings = theCookieSettings.split("&")
 		//f.RRcolorBg.selectedIndex = (arrSettings[4] >= 0) ? arrSettings[4] : 0;
 		
 		sColorTextRadioValue = arrSettings[5];

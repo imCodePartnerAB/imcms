@@ -437,7 +437,7 @@ function RRgetCookies() {
 	}
 	var theCookieSettings = unescape(getCookie('RRsettings'));
 	if (theCookieSettings.indexOf('/') != -1) {
-		arrSettings = theCookieSettings.split(",")
+		arrSettings = theCookieSettings.split("&")
 		//f.RRcolorBg.value = (arrSettings[4] >= 0) ? arrSettings[4] : 0;
 		f.RRcolorText.value = (arrSettings[5] >= 0) ? arrRRColorText[arrSettings[5]] : arrRRColorText[0];
 		f.RRcolorWorm.value = (arrSettings[6] >= 0) ? arrRRColorWorm[arrSettings[6]] : arrRRColorWorm[0];
@@ -580,7 +580,7 @@ function RRdividersOnInCookie() { /* checks the cookie if there are "skiljetecke
 	var f = document.forms.form1;
 	var theCookieSettings = unescape(getCookie('RRsettings'));
 	if (theCookieSettings.indexOf('/') != -1) {
-		arrSettings = theCookieSettings.split(",")
+		arrSettings = theCookieSettings.split("&")
 		//var StopCheck = (arrSettings[1].split("/")[0] == 'true') ? 1 : 0;
 		//var StopVal = (arrSettings[1].split("/")[1] >= 0) ? parseFloat(arrSettings[1].split("/")[1]) : parseFloat(iDefaultPausStop);
 		var DivCheck = (arrSettings[2].split("/")[0] == 'true') ? 1 : 0;

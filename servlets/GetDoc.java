@@ -51,8 +51,7 @@ public class GetDoc extends HttpServlet {
 	strBuff.append(" #session#["+session.getId()+"]" );
 	strBuff.append(" #ipnr#["+ipNr+"]" );
 	User user = (User)session.getAttribute("logon.isDone");  // marker object
-	if ( user != null )
-	    {
+	if ( user != null ) {
 		strBuff.append(" #user#["+user.getUserId()+"]" );
 		strBuff.append(" #lastdoc#["+user.getLastMetaId()+"]" );
 	    }
@@ -299,35 +298,39 @@ public class GetDoc extends HttpServlet {
 	for (int i = 0; i < cookies.length; ++i) {
 	    Cookie aCookie = cookies[i] ;
 	    if ("RRsettings".equals(aCookie.getName())) {
-		String[] arrSettings = split(aCookie.getValue(),',') ;
+		log.debug("Found Readrunner-cookie 'RRsettings', with value '"+aCookie.getValue()+"'");
+
+		String[] arrSettings = split(aCookie.getValue(),'&') ;
 		if (arrSettings.length >= 3) {  // We want the second and third token.
-		    boolean stopCheck = "true".equals(split(arrSettings[1],'/')[0]) ;
+		    boolean stopCheck = "true".equalsIgnoreCase(split(arrSettings[1],'/')[0]) ;
 		    boolean stopVal   = !"0".equals(split(arrSettings[1],'/')[1]) ;
-		    boolean sepCheck =  "true".equals(split(arrSettings[2],'/')[0]) ;
+		    boolean sepCheck =  "true".equalsIgnoreCase(split(arrSettings[2],'/')[0]) ;
 		    boolean sepVal   =  !"0".equals(split(arrSettings[2],'/')[1]) ;
-		    if (!stopCheck || !stopVal) {
-			paramsToParser.setReadrunnerUseStopChars(false) ;
+		    if (stopCheck && stopVal) {
+			paramsToParser.setReadrunnerUseStopChars(true) ;
+			log.debug("Using stop-chars in readrunner.");
 		    }
-		    if (!sepCheck || !sepVal) {
-			paramsToParser.setReadrunnerUseSepChars(false) ;
+		    if (sepCheck && sepVal) {
+			paramsToParser.setReadrunnerUseSepChars(true) ;
+			log.debug("Using separator-chars in readrunner.");
 		    }
 		    break ;
 		}
 	    }
 	}
 
-	if (null != req.getParameter("readrunner_no_stops")) {
-	    paramsToParser.setReadrunnerUseStopChars(false) ;
+	if (null != req.getParameter("readrunner_stops")) {
+	    paramsToParser.setReadrunnerUseStopChars(true) ;
 	}
-	if (null != req.getParameter("readrunner_no_separators")) {
-	    paramsToParser.setReadrunnerUseSepChars(false) ;
+	if (null != req.getParameter("readrunner_separators")) {
+	    paramsToParser.setReadrunnerUseSepChars(true) ;
 	}
     }
 
     private static String[] split (String input, char splitChar) {
 	StringTokenizer tokenizer = new StringTokenizer(input,""+splitChar) ;
 	String[] output = new String[tokenizer.countTokens()] ;
-	for (int i = 0; tokenizer.hasMoreTokens(); ++i) {
+	for (int i = 0; i < output.length; ++i) {
 	    output[i] = tokenizer.nextToken() ;
 	}
 	return output ;
