@@ -262,22 +262,31 @@ function RRinitSpeedCalc() {
 }
 
 function RRcheckSpeed(f) {
-	cps = (f == 'RRspeed0') ? parseInt(form1.RRspeed0.value) : parseInt(form1.RRspeed.value);
-	cps = (cps < 1 || isNaN(cps)) ? 1 : cps;
-	cps = (cps > 150) ? 150 : cps;
-	dWords = RRcalcSpeed();
+	cps = form1.RRspeed.value;
+	cps = (parseInt(cps) < 1 || isNaN(cps)) ? 1 : cps;
+	cps = (parseInt(cps) > 150) ? 150 : cps;
+	//dWords = RRcalcSpeed();
 	//window.status = 'Hastighet: ' + cps + ' tkn/s  - ca. ' + dWords + ' ord/min';
 }
 
 function RRcheckSpeedVal(f) {
-	cps = (f == 'RRspeed0') ? parseInt(form1.RRspeed0.value) : parseInt(form1.RRspeed.value);
-	cps = (cps < 1 || isNaN(cps)) ? 1 : cps;
+	cps = parseInt(form1.RRspeed.value);
 	cps = (cps > 150) ? 150 : cps;
-	if (f == 'RRspeed0') {
-		form1.RRspeed0.value = cps;
+	cps = (cps < 1 || isNaN(cps)) ? '' : cps;
+	form1.RRspeed.value = cps;
+	RRcheckSpeed(f);
+}
+
+
+function RRcheckSpeedValEmpty() {
+	cps = form1.RRspeed.value;
+	if (cps == '' || isNaN(cps)) {
+		cps = 10;
 	} else {
-		form1.RRspeed.value = cps;
+		cps = (parseInt(cps) < 1) ? 1 : cps;
+		cps = (parseInt(cps) > 150) ? 150 : cps;
 	}
+	form1.RRspeed.value = cps;
 	RRcheckSpeed(f);
 }
 
