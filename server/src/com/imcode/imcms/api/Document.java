@@ -385,6 +385,25 @@ public class Document {
         return internalDocument.isVisibleInMenusForUnauthorizedUsers();
     }
 
+    public static class LifeCyclePhase {
+        public static final LifeCyclePhase NEW = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.NEW);
+        public static final LifeCyclePhase DISAPPROVED = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.DISAPPROVED);
+        public static final LifeCyclePhase PUBLISHED = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.PUBLISHED);
+        public static final LifeCyclePhase UNPUBLISHED = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.UNPUBLISHED);
+        public static final LifeCyclePhase ARCHIVED = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.ARCHIVED);
+        public static final LifeCyclePhase APPROVED = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.APPROVED);
+
+        private DocumentDomainObject.LifeCyclePhase phase ;
+
+        private LifeCyclePhase( DocumentDomainObject.LifeCyclePhase phase ) {
+            this.phase = phase;
+        }
+
+        public String toString() {
+            return phase.toString() ;
+        }
+    }
+
     public abstract static class Comparator extends ChainableReversibleNullComparator {
 
         public int compare( Object o1, Object o2 ) {

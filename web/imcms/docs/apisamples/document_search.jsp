@@ -56,7 +56,7 @@ java.util.*,
             and modified between 2004-01-01 and 2005-01-01, sorted by modified time, newest first.</h2>
         <ul>
         <%
-            query = new LuceneParsedQuery("+text1:test +modified_datetime:[2003-01-01 TO 2005-01-01]");
+            query = new LuceneParsedQuery("+text1:test +modified_datetime:[2004-01-01 TO 2005-01-01]");
             documents = documentService.search(query);
             Arrays.sort(documents, Document.Comparator.MODIFIED_DATETIME.reversed()) ;
 
@@ -123,9 +123,5 @@ java.util.*,
             } %>
         </ul>
 
-        <%
-            String categoryTypeName = "API-sample Category Type";
-            CategoryType categoryType = documentService.getCategoryType( categoryTypeName );
-        %>
     </body>
 </html>
