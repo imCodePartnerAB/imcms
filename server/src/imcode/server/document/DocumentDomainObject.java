@@ -46,6 +46,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return clone;
     }
 
+
     public static DocumentDomainObject fromDocumentTypeId( int documentTypeId ) {
         DocumentDomainObject document = null;
 
@@ -128,6 +129,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public void setId( int v ) {
         if ( 0 != attributes.id ) {
             getLazilyLoadedDocumentAttributes();
+            getLazilyLoadedDocumentCategories();
+            getLazilyLoadedRolesMappedToDocumentPermissionSetIds();
             loadAllLazilyLoadedDocumentTypeSpecificAttributes();
         }
         attributes.id = v;

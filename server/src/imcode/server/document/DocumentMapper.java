@@ -41,10 +41,10 @@ public class DocumentMapper {
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
     private static final String SPROC_INHERIT_PERMISSONS = "InheritPermissions";
 
-    protected ImcmsAuthenticatorAndUserMapper imcmsAAUM;
+    private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
 
     private Logger log = Logger.getLogger( DocumentMapper.class );
-    protected IMCServiceInterface service;
+    private IMCServiceInterface service;
     private DocumentIndex documentIndex;
     private static final int FILE_BUFFER_LENGTH = 2048;
     private static final String XOPEN_SQLSTATE__INTEGRITY_CONSTRAINT_VIOLATION = "23000";
@@ -131,7 +131,7 @@ public class DocumentMapper {
         return menuIdStr;
     }
 
-    public boolean userCanCreateDocumentOfTypeIdFromParent( UserDomainObject user, int documentTypeId,
+    private boolean userCanCreateDocumentOfTypeIdFromParent( UserDomainObject user, int documentTypeId,
                                                             DocumentDomainObject parent ) {
         if (userIsSuperAdminOrFullAdminOnDocument( user, parent )) {
             return true;
@@ -576,7 +576,7 @@ public class DocumentMapper {
         return sqlResult;
     }
 
-    public String sqlGetFromUrlDocs( IMCServiceInterface service, int metaId ) {
+    private String sqlGetFromUrlDocs( IMCServiceInterface service, int metaId ) {
         String[] sqlResult = service.sqlQuery( "SELECT url_ref FROM url_docs WHERE meta_id = ?",
                 new String[]{"" + metaId} );
         if (sqlResult.length > 0) {
@@ -619,7 +619,7 @@ public class DocumentMapper {
     /**
      * @return the sections for a document, empty array if there is none.
      */
-    public SectionDomainObject[] getSections( int meta_id ) {
+    private SectionDomainObject[] getSections( int meta_id ) {
         String[][] sectionData = service.sqlProcedureMulti( SPROC_SECTION_GET_INHERIT_ID,
                 new String[]{String.valueOf( meta_id )} );
 
@@ -683,7 +683,7 @@ public class DocumentMapper {
                 || document.isLinkableByOtherUsers();
     }
 
-    public void indexDocument( DocumentDomainObject document ) {
+    private void indexDocument( DocumentDomainObject document ) {
         try {
             documentIndex.reindexOneDocument( document );
         } catch (IOException e) {
@@ -1249,7 +1249,7 @@ public class DocumentMapper {
         }
     }
 
-    protected static void makeStringSqlUpdateClause( String columnName, String value, List sqlUpdateColumns,
+    private static void makeStringSqlUpdateClause( String columnName, String value, List sqlUpdateColumns,
                                                      List sqlUpdateValues ) {
         if (null != value) {
             sqlUpdateColumns.add( columnName + " = ?" );
@@ -1358,7 +1358,7 @@ public class DocumentMapper {
         service.sqlUpdateProcedure( SPROC_INSERT_TEXT, params );
     }
 
-    public String[] getKeywords( int meta_id ) {
+    private String[] getKeywords( int meta_id ) {
         String sqlStr;
         sqlStr =
                 "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = ?";
@@ -1556,7 +1556,7 @@ public class DocumentMapper {
     }
 
     public void saveNewDocumentAndAddToMenu( DocumentDomainObject newDocument, UserDomainObject user,
-                                             DocumentComposer.NewDocumentParentInformation newDocumentParentInformation ) throws IOException, MaxCategoryDomainObjectsOfTypeExceededException, DocumentAlreadyInMenuException {
+                                             DocumentComposer.NewDocumentParentInformation newDocumentParentInformation ) throws MaxCategoryDomainObjectsOfTypeExceededException, DocumentAlreadyInMenuException {
         saveNewDocument( newDocument, user );
         addDocumentToMenu( user, getDocument( newDocumentParentInformation.parentId ),
                 newDocumentParentInformation.parentMenuIndex,
