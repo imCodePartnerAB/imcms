@@ -7,6 +7,8 @@ import java.util.Properties;
 import java.util.HashSet;
 import java.util.Set;
 
+import imcode.util.LineReader;
+
 /**
  * @author kreiger
  */
@@ -73,7 +75,7 @@ public class TestForMissingLanguageProperties extends TestCase {
     }
 
     private void parseFile( File file, Properties[] propertieses, Set missingProperties ) throws IOException {
-        BufferedReader in = new BufferedReader( new FileReader( file ) );
+        LineReader in = new LineReader(new BufferedReader( new FileReader( file ) ) );
         for ( String line; null != ( line = in.readLine() ); ) {
             for ( int startTokenIndex = 0; -1 != ( startTokenIndex = line.indexOf( START_TOKEN, startTokenIndex ) ); ) {
                 int endTokenIndex = line.indexOf( END_TOKEN, startTokenIndex + START_TOKEN.length() );

@@ -12,6 +12,8 @@ import org.apache.tools.ant.types.FilterSet;
 import java.util.*;
 import java.io.*;
 
+import imcode.util.LineReader;
+
 /**
  * @author kreiger
  */
@@ -132,9 +134,10 @@ public class Translate extends Task {
     }
 
     private void translateStream( InputStream sourceStream, FileOutputStream destStream, FilterSetCollection filters ) throws IOException {
-        BufferedReader sourceReader = new BufferedReader( new InputStreamReader( sourceStream ) );
+        LineReader lineReader = new LineReader(new BufferedReader( new InputStreamReader( sourceStream ) ) );
         BufferedWriter destWriter = new BufferedWriter( new OutputStreamWriter( destStream ) );
-        for ( String line; null != ( line = readLine( sourceReader ) ); ) {
+
+        for ( String line; null != ( line = lineReader.readLine() ); ) {
             String translatedLine = translateLine( line );
             String translatedAndFilteredLine = filters.replaceTokens( translatedLine ) ;
             destWriter.write( translatedAndFilteredLine );
@@ -164,41 +167,6 @@ public class Translate extends Task {
             }
         }
         return translatedLine;
-    }
-
-    private char lastChar;
-
-    private synchronized String readLine( Reader reader ) throws IOException {
-        StringBuffer line = new StringBuffer();
-        int c;
-        if ( 0 != lastChar ) {
-            lastChar = 0;
-            c = lastChar;
-        } else {
-            c = reader.read();
-        }
-        boolean lastWasCR = false;
-        for ( ; -1 != c; c = reader.read() ) {
-            if ( lastWasCR ) {
-                lastWasCR = false;
-                if ( -1 != c && '\n' != c ) {
-                    lastChar = (char)c;
-                    return line.toString();
-                }
-            }
-            line.append( (char)c );
-            if ( '\r' == c ) {
-                lastWasCR = true;
-                continue;
-            } else if ( '\n' == c ) {
-                break;
-            }
-        }
-        if ( line.length() > 0 ) {
-            return line.toString();
-        } else {
-            return null;
-        }
     }
 
     private void loadBundle() {
