@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -42,6 +43,7 @@ public class LinkCheck extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( LinkCheck.class.getName() );
     public static final String REQUEST_ATTRIBUTE__LINKS_ITERATOR = "linksIterator";
+    public static final String REQUEST_PARAMETER__BROKEN_ONLY = "broken_only";
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
@@ -55,14 +57,61 @@ public class LinkCheck extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentIndex reindexingIndex = documentMapper.getDocumentIndex();
-
         addUrlDocumentLinks( links, reindexingIndex, user, request );
         addTextAndImageLinks( links, reindexingIndex, user, request );
 
         request.setAttribute( REQUEST_ATTRIBUTE__LINKS_ITERATOR, links.iterator() );
 
-        request.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2() + "/jsp/linkcheck/linkcheck.jsp" ).forward( request, response );
+        LinkCheckPage linkCheckPage = new LinkCheckPage();
+        linkCheckPage.setLinksIterator(links.iterator());
+        linkCheckPage.setDoCheckLinks( null != request.getParameter(LinkCheckPage.REQUEST_PARAMETER__START_BUTTON) );
+        linkCheckPage.setBrokenOnly( null != request.getParameter(REQUEST_PARAMETER__BROKEN_ONLY) );
+        linkCheckPage.forward(request, response, user);
+
     }
+
+    public static class LinkCheckPage implements Serializable {
+
+        public static final String REQUEST_ATTRIBUTE__PAGE = "linkpage";
+        public static final String REQUEST_PARAMETER__START_BUTTON = "start_check";
+        boolean brokenOnly;
+        boolean doCheckLinks;
+        private Iterator linksIterator;
+
+        public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
+            putInRequest( request );
+            String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/linkcheck/linkcheck.jsp";
+            request.getRequestDispatcher( forwardPath ).forward( request, response );
+        }
+
+        public void putInRequest( HttpServletRequest request ) {
+            request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
+        }
+        public boolean isDoCheckLinks() {
+            return doCheckLinks;
+        }
+
+        public void setDoCheckLinks(boolean doCheckLinks) {
+            this.doCheckLinks = doCheckLinks;
+        }
+
+        public boolean isBrokenOnly() {
+            return brokenOnly;
+        }
+
+        public void setBrokenOnly(boolean brokenOnly) {
+            this.brokenOnly = brokenOnly;
+        }
+
+        public void setLinksIterator(Iterator linksIterator) {
+            this.linksIterator = linksIterator;
+        }
+
+        public Iterator getLinksIterator() {
+            return linksIterator;
+        }
+    }
+
 
     private void addUrlDocumentLinks( List links, DocumentIndex reindexingIndex, UserDomainObject user,
                                       HttpServletRequest request ) throws IOException {

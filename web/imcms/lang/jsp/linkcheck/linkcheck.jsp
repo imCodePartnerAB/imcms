@@ -12,8 +12,23 @@
                  com.imcode.imcms.servlet.superadmin.DocumentReferences,
                  imcode.util.Html"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%
+    LinkCheck.LinkCheckPage linkCheckPage = (LinkCheck.LinkCheckPage) request.getAttribute(LinkCheck.LinkCheckPage.REQUEST_ATTRIBUTE__PAGE) ;
+    boolean doCheckLinks = linkCheckPage.isDoCheckLinks();
+
+%>
+
 <vel:velocity>
     #gui_start_of_page( "<? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading ?>" "AdminManager" "" "18" "" )
+</vel:velocity>
+<form method="GET" action="LinkCheck">
+<div><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/only_broken ?><input type="checkbox" name="<%= LinkCheck.REQUEST_PARAMETER__BROKEN_ONLY %>"  value="0"  <%= linkCheckPage.isBrokenOnly() ? "checked" : "" %> >
+    &nbsp; <input type="submit" name="<%= LinkCheck.LinkCheckPage.REQUEST_PARAMETER__START_BUTTON %>" value="Start check" class="imcmsFormBtn" style="width:100">
+
+</div>
+</form>
+<% if (doCheckLinks) { %>
+<vel:velocity>
     <table border="0" cellspacing="2" cellpadding="2">
         <tr align="left">
             <td><b><? web/imcms/lang/jsp/heading_type ?></b></td>
@@ -26,11 +41,14 @@
             <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_ok ?></b></td>
         </tr>
 </vel:velocity>
-        <% out.flush();
-            UserDomainObject user = Utility.getLoggedOnUser( request ) ;
-            Iterator linksIterator = (Iterator)request.getAttribute( LinkCheck.REQUEST_ATTRIBUTE__LINKS_ITERATOR ) ;
+        <%  UserDomainObject user = Utility.getLoggedOnUser( request ) ;
+            Iterator linksIterator = (Iterator)linkCheckPage.getLinksIterator() ;
             while ( linksIterator.hasNext() ) {
+                out.flush();
                 LinkCheck.Link link = (LinkCheck.Link)linksIterator.next();
+                if ( link.isOk() && linkCheckPage.isBrokenOnly() ) {
+                    continue;
+                }
                 DocumentDomainObject document = link.getDocument() ;
                 %><tr>
                         <% if (link instanceof LinkCheck.UrlDocumentLink) {
@@ -75,14 +93,16 @@
                     <td align="center"><img
 										src="$contextPath/imcms/$language/images/admin/btn_checked_<%= (link.isHostReachable()) ? "1" : "0" %>.gif"></td>
                     <td align="center"><img
-										src="$contextPath/imcms/$language/images/admin/btn_checked_<%= (link.isOk()) ? "1" : "0" %>.gif"></td>
+										src="$contextPath/imcms/$language/images/admin/btn_checked_<%= (link.isOk() ) ? "1" : "0" %>.gif"></td>
 										</vel:velocity>
+                    <% out.flush(); %>
                 </tr><%
-                out.flush();
             }
+    %></table><%
+         }
         %>
 <vel:velocity>
-    </table>
+
 
 #gui_end_of_page()
 </vel:velocity>
