@@ -10,7 +10,6 @@ import java.util.regex.Matcher;
 
 import java.sql.SQLException;
 import java.sql.ResultSet;
-import java.sql.Connection;
 import java.sql.Timestamp;
 
 import java.io.IOException;
@@ -35,8 +34,7 @@ public class DatabaseService {
 
     private static Logger log = Logger.getLogger( DatabaseService.class );
 
-    private ConnectionPool connectionPool;
-    private SQLProcessor sqlProcessor = new SQLProcessor();
+    private SQLProcessor sqlProcessor;
     private int databaseType;
 
     public DatabaseService( int databaseType, String hostName, int port, String databaseName, String user, String password ) {
@@ -69,40 +67,46 @@ public class DatabaseService {
 
         int maxConnectionCount = 20;
         try {
-            connectionPool = new ConnectionPoolForNonPoolingDriver( serverName, jdbcDriver, serverUrl, user, password, maxConnectionCount );
+            ConnectionPool connectionPool = new ConnectionPoolForNonPoolingDriver( serverName, jdbcDriver, serverUrl, user, password, maxConnectionCount );
+            sqlProcessor = new SQLProcessor( connectionPool );
         } catch( Exception ex ) {
             log.fatal( "Couldn't initialize connection pool: serverName :' " + serverName + "', jdbcDriver : '" + jdbcDriver + "', serverUrl : " + serverUrl + "', user : '" + user + "', password :' " + password + "'"  );
             log.fatal( ex );
         }
     }
 
-    void initializeDatabase() throws Exception {
-        Vector commands = readCommandsFromFile( DROP_TABLES );
-        executeCommands( commands );
-        log.info( "Dropped tables" );
+    void initializeDatabase() {
+        try {
+            Vector commands = readCommandsFromFile( DROP_TABLES );
+            executeCommands( commands );
+            log.info( "Dropped tables" );
 
-        commands = readCommandsFromFile( CREATE_TABLES );
-        switch( databaseType ) {
-            case SQL_SERVER :
-            case MY_SQL:
-                commands = changeTimestampToDateTimeType( commands );
-                break;
+            commands = readCommandsFromFile( CREATE_TABLES );
+            switch( databaseType ) {
+                case SQL_SERVER :
+                case MY_SQL:
+                    commands = changeTimestampToDateTimeType( commands );
+                    break;
+            }
+            executeCommands( commands );
+            log.info( "Created tables" );
+
+            commands = readCommandsFromFile( ADD_TYPE_DATA );
+            sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
+            log.info( "Added type data" );
+
+            commands = readCommandsFromFile( INSERT_NEW_DATA );
+            switch( databaseType ) {
+                case MY_SQL:
+                    commands = changeCharInCurrentTimestampCast( commands );
+                    break;
+            }
+            sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
+            log.info( "Inserted data, finished!" );
         }
-        executeCommands( commands );
-        log.info( "Created tables" );
-
-        commands = readCommandsFromFile( ADD_TYPE_DATA );
-        executeCommands( commands );
-        log.info( "Added type data" );
-
-        commands = readCommandsFromFile( INSERT_NEW_DATA );
-        switch( databaseType ) {
-            case MY_SQL:
-                commands = changeCharInCurrentTimestampCast( commands );
-                break;
-        }
-        executeCommands( commands );
-        log.info( "Inserted data, finished!" );
+         catch( IOException ex ) {
+            log.fatal("Couldn't open a file ", ex );
+         }
     }
 
     private Vector changeCharInCurrentTimestampCast( Vector commands ) {
@@ -132,12 +136,11 @@ public class DatabaseService {
         return modifiedCommands;
     }
 
-    private void executeCommands( Vector commands ) throws Exception {
-        Connection conn = connectionPool.getConnection();
+     private void executeCommands( Vector commands ) {
         for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
             String command = (String)iterator.next();
 //            System.out.println( command.length() < 25 ? command : command.substring( 0, 25 ) );
-            sqlProcessor.executeUpdate( conn, command, null );
+            sqlProcessor.executeUpdate( command, null );
         }
 
         // I tried to use batchUpdate but for the current Mimer driver that only works for SELECT, INSERT, UPDATE,
@@ -167,54 +170,6 @@ public class DatabaseService {
             }
         } while( null != aLine );
         return commands;
-    }
-
-    private abstract class ResultProcessor {
-        abstract Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException;
-    }
-
-    private ArrayList executeQuery( String sql, Object[] paramValues, ResultProcessor resultProc ) {
-        Connection conn = null;
-        ArrayList result = new ArrayList();
-        try {
-            conn = connectionPool.getConnection();
-            ResultSet rs = sqlProcessor.executeQuery( conn, sql, paramValues );
-            while( rs.next() ) {
-                Object temp = resultProc.mapOneRowFromResultsetToObject( rs );
-                if( null != temp ) {
-                    result.add( temp );
-                }
-            }
-        } catch( SQLException ex ) {
-            log.fatal( "Exception in executeQuery()", ex );
-        } finally {
-            closeConnection( conn );
-        }
-        return result;
-    }
-
-    private int executeUpdate( String sql, Object[] paramValues ) {
-        Connection conn = null;
-        int rowsModified = 0;
-        try {
-            conn = connectionPool.getConnection();
-            rowsModified = sqlProcessor.executeUpdate( conn, sql, paramValues );
-        } catch (SQLException ex ) {
-            log.fatal( "Exception in executeQuery()", ex );
-        } finally {
-            closeConnection( conn );
-        }
-        return rowsModified;
-    }
-
-    private void closeConnection( Connection conn ) {
-        try {
-            if( conn != null ) {
-                conn.close();
-            }
-        } catch( SQLException ex ) {
-            // Swallow
-        }
     }
 
     class Table_roles {
@@ -252,7 +207,7 @@ public class DatabaseService {
         String sql = "SELECT role_id, role_name FROM roles ORDER BY role_name";
         Object[] paramValues = null;
 
-        ResultProcessor resultProcessor = new ResultProcessor() {
+        SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int id = rs.getInt( "role_id" );
                 String name = rs.getString( "role_name" ).trim();
@@ -265,7 +220,7 @@ public class DatabaseService {
             }
         };
 
-        ArrayList result = executeQuery( sql, paramValues, resultProcessor );
+        ArrayList result = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
         return (Table_roles[])result.toArray( new Table_roles[result.size()] );
     }
 
@@ -380,7 +335,7 @@ public class DatabaseService {
         String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users ORDER BY last_name";
         Object[] paramValues = null;
 
-        ResultProcessor resultProcessor = new ResultProcessor() {
+        SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 Table_users result = null;
                 int userId = rs.getInt( "user_id" );
@@ -408,7 +363,7 @@ public class DatabaseService {
             }
         };
 
-        ArrayList result = executeQuery( sql, paramValues, resultProcessor );
+        ArrayList result = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
         return (Table_users[])result.toArray(new Table_users[result.size()]);
     }
 
@@ -444,7 +399,7 @@ public class DatabaseService {
             "ORDER BY simple_name";
         Object[] paramValues = new Object[]{ new Integer(groupId) };
 
-        ResultProcessor resultProcessor = new ResultProcessor() {
+        SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 ViewTemplateGroup result = null;
                 int templateId = rs.getInt("template_id");
@@ -454,7 +409,7 @@ public class DatabaseService {
             }
         };
 
-        ArrayList result = executeQuery( sql, paramValues, resultProcessor );
+        ArrayList result = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
         return (ViewTemplateGroup[])result.toArray( new ViewTemplateGroup[result.size()] );
     }
 
@@ -463,6 +418,6 @@ public class DatabaseService {
         String sql = "INSERT INTO users (user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date ) " +
             "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         Object[] paramValues = new Object[]{ new Integer( userData.userId ), userData.loginName, userData.password, userData.firstName, userData.lastName, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.emailAddress, new Integer( userData.external ), new Integer(1001), new Integer(0), new Integer(userData.langId), new Integer(userData.userType), new Integer( userData.active ), userData.createDate };
-        return executeUpdate( sql, paramValues );
+        return sqlProcessor.executeUpdate( sql, paramValues );
     }
 }

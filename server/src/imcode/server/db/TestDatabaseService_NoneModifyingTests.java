@@ -1,13 +1,17 @@
 package imcode.server.db;
 
-public class TestDatabaseService_NoneModifyingTests extends TestDatabaseService {
-    DatabaseService sqlServer;
-    DatabaseService mimer;
-    DatabaseService mySql;
+import imcode.server.test.Log4JConfiguredTestCase;
 
-    public TestDatabaseService_NoneModifyingTests() throws Exception {
+public class TestDatabaseService_NoneModifyingTests extends Log4JConfiguredTestCase {
+    static DatabaseService sqlServer;
+    static DatabaseService mimer;
+    static DatabaseService mySql;
+
+    public void setUp() {
         if( mimer == null ) {
-            initAllDatabases();
+            initMySql();
+            initSqlServer();
+            initMimer();
         }
     }
 
@@ -79,23 +83,17 @@ public class TestDatabaseService_NoneModifyingTests extends TestDatabaseService 
         assertEquals( mimerTemplatesInGroupTwo.length, mySQLTemplatesInGroupTwo.length );
     }
 
-    protected void initAllDatabases() throws Exception {
-        initMySql();
-        initSqlServer();
-        initMimer();
-    }
-
-    private void initMimer() throws Exception {
+    private void initMimer() {
         mimer = new DatabaseService( DatabaseService.MIMER, TestDatabaseService.DB_HOST, TestDatabaseService.MIMER_PORT, TestDatabaseService.MIMMER_DATABASE_NAME, TestDatabaseService.MIMMER_DATABASE_USER, TestDatabaseService.MIMMER_DATABASE_PASSWORD );
         mimer.initializeDatabase();
     }
 
-    private void initSqlServer() throws Exception {
+    private void initSqlServer() {
         sqlServer = new DatabaseService( DatabaseService.SQL_SERVER, TestDatabaseService.DB_HOST, TestDatabaseService.SQLSERVER_PORT, TestDatabaseService.SQLSERVER_DATABASE_NAME, TestDatabaseService.SQLSERVE_DATABASE_USER, TestDatabaseService.SQLSERVE_DATABASE_PASSWORD );
         sqlServer.initializeDatabase();
     }
 
-    private void initMySql() throws Exception {
+    private void initMySql() {
         mySql = new DatabaseService( DatabaseService.MY_SQL, TestDatabaseService.DB_HOST, TestDatabaseService.MYSQL_PORT, TestDatabaseService.MYSQL_DATABASE_NAME, TestDatabaseService.MYSQL_DATABASE_USER, TestDatabaseService.MYSQL_DATABASE_PASSWORD );
         mySql.initializeDatabase();
     }

@@ -2,16 +2,20 @@ package imcode.server.db;
 
 import java.sql.Timestamp;
 
+import imcode.server.test.Log4JConfiguredTestCase;
+
 /**
  * These tests is slow because we set up the database before every test
  */
-public class TestDatabaseService_ModifyingTests extends TestDatabaseService {
+public class TestDatabaseService_ModifyingTests extends Log4JConfiguredTestCase {
     DatabaseService sqlServer;
     DatabaseService mimer;
     DatabaseService mySql;
 
-    protected void setUp() throws Exception {
-        initAllDatabases();
+    protected void setUp() {
+        initMySql();
+        initSqlServer();
+        initMimer();
     }
 
     public void test_sproc_AddNewuser() {
@@ -56,23 +60,17 @@ public class TestDatabaseService_ModifyingTests extends TestDatabaseService {
         assertTrue( mySqlUsersAfter.length == mySqlUsersBefore.length + 1);
     }
 
-    protected void initAllDatabases() throws Exception {
-        initMySql();
-        initSqlServer();
-        initMimer();
-    }
-
-    private void initMimer() throws Exception {
+    private void initMimer() {
         mimer = new DatabaseService( DatabaseService.MIMER, TestDatabaseService.DB_HOST, TestDatabaseService.MIMER_PORT, TestDatabaseService.MIMMER_DATABASE_NAME, TestDatabaseService.MIMMER_DATABASE_USER, TestDatabaseService.MIMMER_DATABASE_PASSWORD );
         mimer.initializeDatabase();
     }
 
-    private void initSqlServer() throws Exception {
+    private void initSqlServer() {
         sqlServer = new DatabaseService( DatabaseService.SQL_SERVER, TestDatabaseService.DB_HOST, TestDatabaseService.SQLSERVER_PORT, TestDatabaseService.SQLSERVER_DATABASE_NAME, TestDatabaseService.SQLSERVE_DATABASE_USER, TestDatabaseService.SQLSERVE_DATABASE_PASSWORD );
         sqlServer.initializeDatabase();
     }
 
-    private void initMySql() throws Exception {
+    private void initMySql() {
         mySql = new DatabaseService( DatabaseService.MY_SQL, TestDatabaseService.DB_HOST, TestDatabaseService.MYSQL_PORT, TestDatabaseService.MYSQL_DATABASE_NAME, TestDatabaseService.MYSQL_DATABASE_USER, TestDatabaseService.MYSQL_DATABASE_PASSWORD );
         mySql.initializeDatabase();
     }
