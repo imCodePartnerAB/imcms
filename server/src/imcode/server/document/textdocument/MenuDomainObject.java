@@ -1,11 +1,12 @@
 package imcode.server.document.textdocument;
 
+import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
 
-import java.util.*;
 import java.io.Serializable;
+import java.util.*;
 
 public class MenuDomainObject implements Cloneable, Serializable {
 
@@ -58,6 +59,18 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     public int getSortOrder() {
         return sortOrder;
+    }
+
+    public MenuItemDomainObject[] getMenuItemsUserCanSee( UserDomainObject user ) {
+        List menuItemsUserCanSee = new ArrayList(menuItems.size()) ;
+        for ( Iterator iterator = menuItems.values().iterator(); iterator.hasNext(); ) {
+            MenuItemDomainObject menuItem = (MenuItemDomainObject)iterator.next();
+            if (user.canSeeDocumentInMenus( menuItem.getDocument() )) {
+                menuItemsUserCanSee.add(menuItem) ;
+            }
+        }
+        Collections.sort( menuItemsUserCanSee, getMenuItemComparatorForSortOrder( sortOrder ) );
+        return (MenuItemDomainObject[])menuItemsUserCanSee.toArray( new MenuItemDomainObject[menuItemsUserCanSee.size()] );
     }
 
     public MenuItemDomainObject[] getMenuItems() {
@@ -142,4 +155,5 @@ public class MenuDomainObject implements Cloneable, Serializable {
     public int getSize() {
         return menuItems.size();
     }
+
 }

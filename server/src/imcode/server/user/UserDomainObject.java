@@ -7,6 +7,8 @@ import java.util.*;
 
 public class UserDomainObject extends Hashtable {
 
+    public static final int DEFAULT_USER_ID = 2;
+
     public UserDomainObject() {
         roles.add( RoleDomainObject.USERS );
     }
@@ -441,7 +443,7 @@ public class UserDomainObject extends Hashtable {
     }
 
     public boolean isDefaultUser() {
-        return 2 == id;
+        return DEFAULT_USER_ID == id;
     }
 
     public boolean isSuperAdmin() {

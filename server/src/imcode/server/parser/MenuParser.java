@@ -7,6 +7,7 @@ import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.util.Html;
 import imcode.util.IdNamePair;
 import imcode.util.Utility;
@@ -56,13 +57,21 @@ class MenuParser {
 
     private List createParseTags( int menuIndex, Properties menuattributes ) {
         MenuDomainObject menu = getMenuByIndex( menuIndex );
+
+        DocumentRequest documentRequest = parserParameters.getDocumentRequest();
+        MenuItemDomainObject[] menuItems = menu.getMenuItemsUserCanSee(documentRequest.getUser() ) ;
+        ImcmsAuthenticatorAndUserAndRoleMapper userMapper = documentRequest.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+        UserDomainObject defaultUser = userMapper.getDefaultUser() ;
+        MenuItemDomainObject[] defaultUserMenuItems = menu.getMenuItemsUserCanSee( defaultUser );
         List parseTags = Arrays.asList( new String[]{
             "#menuindex#", "" + menuIndex,
+            "#menuitemcount#", ""+menuItems.length,
+            "#defaultusermenuitemcount#", ""+defaultUserMenuItems.length,
             "#label#", menuattributes.getProperty( "label" ),
             "#flags#", "" + parserParameters.getFlags(),
             "#sortOrder" + ( null != menu ? menu.getSortOrder() : MenuDomainObject.MENU_SORT_ORDER__DEFAULT ) + "#", " selected",
             "#doc_types#", createDocumentTypesOptionList(),
-            "#meta_id#", "" + parserParameters.getDocumentRequest().getDocument().getId(),
+            "#meta_id#", "" + documentRequest.getDocument().getId(),
             "#defaulttemplate#", URLEncoder.encode( StringUtils.defaultString( menuattributes.getProperty( "defaulttemplate" ) ) )
         } );
         return parseTags;

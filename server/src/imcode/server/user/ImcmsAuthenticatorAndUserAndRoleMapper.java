@@ -540,4 +540,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         }
         return (RoleDomainObject[])rolesWithPermissionList.toArray( new RoleDomainObject[rolesWithPermissionList.size()] );
     }
+
+    public UserDomainObject getDefaultUser() {
+        return getUser( UserDomainObject.DEFAULT_USER_ID ) ;
+    }
 }

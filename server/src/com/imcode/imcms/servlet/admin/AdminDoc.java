@@ -100,7 +100,7 @@ public class AdminDoc extends HttpServlet {
         }
 
         DocumentDomainObject document = imcref.getDocumentMapper().getDocument( meta_id );
-        int doc_type = document.getId();
+        int doc_type = document.getDocumentTypeId();
 
         Integer userflags = (Integer)user.remove( PARAMETER__DISPATCH_FLAGS );		// Get the flags from the user-object
         int flags = userflags == null ? 0 : userflags.intValue();	// Are there flags? Set to 0 if not.
