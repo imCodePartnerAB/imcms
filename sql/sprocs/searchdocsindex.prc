@@ -8,6 +8,7 @@ drop procedure [dbo].[SearchDocsIndex]
 GO
 
 
+
 CREATE PROCEDURE SearchDocsIndex
   @user_id INT,
   @serchString varchar (180),  -- Must be large enough to encompass an entire searchstring.
@@ -239,30 +240,19 @@ FROM
  JOIN
   #doc_types dt  ON m.doc_type = dt.doc_type
      AND activate = 1
-     AND (
-       (
-        date_created >= @created_sd
-       AND date_created <= @created_ed
-      ) OR (
-        date_modified >= @modified_sd
-       AND date_modified <= @modified_ed
-      ) OR (
-        activated_datetime >= @activated_sd
-       AND activated_datetime <= @activated_ed
-      ) OR (
-        archived_datetime >= @archived_sd
-       AND archived_datetime <= @archived_ed
-      ) OR (
-        @created_startdate = ''
-       AND @created_enddate = ''
-       AND @modified_startdate = ''
-       AND @modified_enddate = ''
-       AND @activated_startdate = ''
-       AND @activated_enddate = ''
-       AND @archived_startdate = ''
-       AND @archived_enddate = ''
-      )
-     )
+     AND ( 	(date_created >= @created_sd AND date_created <= @created_ed) 
+	 		OR 
+			(date_modified >= @modified_sd AND date_modified <= @modified_ed) 
+			OR 
+			(activated_datetime is null OR activated_datetime is null)
+			OR
+			(activated_datetime >= @activated_sd AND activated_datetime <= @activated_ed) 
+			OR 
+			(archived_datetime >= @archived_sd AND archived_datetime <= @archived_ed)
+			OR 
+			(@created_startdate = '' AND @created_enddate = '' AND @modified_startdate = '' AND @modified_enddate = '' AND
+			 @activated_startdate = '' AND @activated_enddate = '' AND @archived_startdate = '' AND @archived_enddate = '')
+     	)
 
 left  JOIN
   roles_rights rr  ON rr.meta_id = m.meta_id and m.meta_id != null

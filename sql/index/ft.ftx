@@ -1,16 +1,77 @@
-if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
-exec sp_fulltext_database N'enable' 
 
-GO
-
-
+--Ok lets start and dropp all exiting full_text_index stuff if there is any
 if exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
-exec sp_fulltext_catalog N'full_text_index', N'drop'
+begin
+  EXEC sp_fulltext_table  'classification','drop'
+  EXEC sp_fulltext_table  'meta','drop'
+  EXEC sp_fulltext_table  'texts','drop'
+  EXEC sp_fulltext_catalog 'full_text_index','drop'
+end
 
+--Enable full-text searching in the database.
+EXEC sp_fulltext_database 'enable'
+GO
+-- Create a new full-text catalog.
+EXEC sp_fulltext_catalog 'full_text_index',
+			'create'
+GO
+--Register the new tales and colums in it
+--then activate the table
+--classification-table
+EXEC sp_fulltext_table  'classification',
+			'create',
+			'full_text_index',
+			'PK_classification'
+EXEC sp_fulltext_column 'classification',
+			'code',
+			'add'
+EXEC sp_fulltext_table  'classification',
+			'activate'
+GO
+--meta-table
+EXEC sp_fulltext_table  'meta',
+			'create',
+			'full_text_index',
+			'PK_meta'
+EXEC sp_fulltext_column 'meta',
+			'meta_headline',
+			'add'
+EXEC sp_fulltext_column 'meta',
+			'meta_text',
+			'add'
+EXEC sp_fulltext_table  'meta',
+			'activate'
+GO
+--texts-table
+EXEC sp_fulltext_table  'texts',
+			'create',
+			'full_text_index',
+			'PK_texts'
+EXEC sp_fulltext_column 'texts',
+			'text',
+			'add'
+EXEC sp_fulltext_table  'texts',
+			'activate'
+GO
+--start the population
+EXEC sp_fulltext_catalog 'full_text_index',
+			 'start_full'
+while (SELECT fulltextcatalogproperty('full_text_index','populatestatus')) <> 0
+	BEGIN
+	WAITFOR DELAY '00:00:02'
+	CONTINUE
+	END
 GO
 
-if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
-exec sp_fulltext_catalog N'full_text_index', N'create' 
-
+--start the trace of changes
+--classification table
+EXEC sp_fulltext_table classification, 'Start_change_tracking'
+EXEC sp_fulltext_table classification, 'Start_background_updateindex'
+Go
+--meta-table
+EXEC sp_fulltext_table meta, 'Start_change_tracking'
+EXEC sp_fulltext_table meta, 'Start_background_updateindex'
 GO
-
+-- texts-table
+EXEC sp_fulltext_table texts, 'Start_change_tracking'
+EXEC sp_fulltext_table texts, 'Start_background_updateindex'

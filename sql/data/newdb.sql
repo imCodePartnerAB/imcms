@@ -26,7 +26,7 @@ INSERT INTO user_roles_crossref
  VALUES(2,1)
 SET IDENTITY_INSERT meta ON
 INSERT INTO meta (meta_id, description, doc_type, meta_headline, meta_text, meta_image, owner_id, permissions, shared, expand, show_meta, help_text_id, archive, status_id, lang_prefix, classification, date_created, date_modified, sort_position, menu_position, disable_search, activated_datetime, archived_datetime, target,  frame_name, activate)
- VALUES           (1001,    '',          2,        'Startsidan',  '',        '',         1,        0,           0,      1,      0,         1,            0,       1,         'se',        '',             GETDATE(),    GETDATE(),     1,             1,             0,              '2001-01-01 00:00',   '',        '_self',  '',         1)
+ VALUES           (1001,    '',          2,        'Startsidan',  '',        '',         1,        0,           0,      1,      0,         1,            0,       1,         'se',        '',             GETDATE(),    GETDATE(),     1,             1,             0,              GETDATE(),   null,        '_self',  '',         1)
 SET IDENTITY_INSERT meta OFF
 INSERT INTO templates 
  VALUES (1,'start.html', 'Start', 'se', 1,1,1)
@@ -39,6 +39,6 @@ INSERT INTO text_docs
 INSERT INTO roles_rights
  VALUES (1,1001,3)
 INSERT INTO texts
- VALUES( 1001, 1, '<h2>imCode imCMS</h2><br><a href="/login/">Logga in!</a>',1)
+ VALUES( 1001, 1, '<h2>imCode imCMS</h2><br><a href="../login/">Logga in!</a>',1)
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (1001,100,29,0,0,0,3,'','_blank','','top','','','imCMSpower.gif','http://www.imcms.net')
