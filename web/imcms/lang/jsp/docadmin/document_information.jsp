@@ -40,7 +40,7 @@
 
 %><%!
 
-    String formatDate(Date date) {
+String formatDate(Date date) {
     if (null == date) {
         return "" ;
     }
@@ -71,6 +71,13 @@ String formatTime(Date time) {
 <script language="JavaScript">
 <!--
 var selFocused = false ;
+
+function setNow(oDate,oTime) {
+	var elDate = eval("document.forms[0]." + oDate) ;
+	var elTime = eval("document.forms[0]." + oTime) ;
+	elDate.value = "<%= formatDate(new Date()) %>" ;
+	elTime.value = "<%= formatTime(new Date()) %>" ;
+}
 
 function checkFocus() {
 	if (selFocused) {
@@ -216,17 +223,15 @@ function checkFocus() {
 			} else { %>
 			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_was_published_at ?><%
 			} %></td>
-			<td>
-			<table border="0" cellspacing="0" cellpadding="0">
-			<tr>
-				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_DATE %>" size="11" maxlength="10" style="width: 7em;"
-				value="<%= StringEscapeUtils.escapeHtml( formatDate(publicationStartDatetime) ) %>"></td>
-				<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1007 ?></td>
-				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_TIME %>" size="5" maxlength="5" style="width: 4em;"
-				value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getPublicationStartDatetime()) ) %>"></td>
-				<td>&nbsp;(<%= Utility.formatHtmlDatetime( publicationStartDatetime ) %>)</td>
-			</tr>
-			</table></td>
+			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_DATE %>" size="11" maxlength="10" style="width: 7em;"
+			value="<%= StringEscapeUtils.escapeHtml( formatDate(publicationStartDatetime) ) %>"></td>
+			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1007 ?></td>
+			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_TIME %>" size="5" maxlength="5" style="width: 4em;"
+			value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getPublicationStartDatetime()) ) %>"></td>
+			<td>&nbsp;(<%= Utility.formatHtmlDatetime( publicationStartDatetime ) %>)&nbsp;&nbsp;</td>
+			<td><input type="button" value="&laquo;&nbsp;<? global/Now ?>" class="imcmsFormBtnSmall" style="width:40px" onClick="setNow('<%=
+			EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_DATE %>','<%=
+			EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_TIME %>');"></td>
 		</tr>
 		<tr>
 			<td class="imcmsAdmText"><%
@@ -236,17 +241,15 @@ function checkFocus() {
 			} else { %>
 			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_was_archived_at ?><%
 			} %></td>
-			<td>
-			<table border="0" cellspacing="0" cellpadding="0">
-			<tr>
-				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_DATE %>" size="11" maxlength="10" style="width: 7em;"
-				value="<%= StringEscapeUtils.escapeHtml( formatDate(archivedDatetime) ) %>"></td>
-				<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
-				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_TIME %>" size="5" maxlength="5" style="width: 4em;"
-				value="<%= StringEscapeUtils.escapeHtml( formatTime(archivedDatetime) ) %>"></td>
-				<td>&nbsp;(<%= Utility.formatHtmlDatetime( archivedDatetime ) %>)</td>
-			</tr>
-			</table></td>
+			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_DATE %>" size="11" maxlength="10" style="width: 7em;"
+			value="<%= StringEscapeUtils.escapeHtml( formatDate(archivedDatetime) ) %>"></td>
+			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
+			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_TIME %>" size="5" maxlength="5" style="width: 4em;"
+			value="<%= StringEscapeUtils.escapeHtml( formatTime(archivedDatetime) ) %>"></td>
+			<td>&nbsp;(<%= Utility.formatHtmlDatetime( archivedDatetime ) %>)&nbsp;&nbsp;</td>
+			<td><input type="button" value="&laquo;&nbsp;<? global/Now ?>" class="imcmsFormBtnSmall" style="width:40px" onClick="setNow('<%=
+			EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_DATE %>','<%=
+			EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_TIME %>');"></td>
 		</tr>
 		<tr>
 			<td class="imcmsAdmText" nowrap><%
@@ -256,17 +259,15 @@ function checkFocus() {
 			} else { %>
 			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_ceased_to_be_published_at ?><%
 			} %>&nbsp;</td>
-			<td>
-			<table border="0" cellspacing="0" cellpadding="0">
-			<tr>
-				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_DATE %>" size="11" maxlength="10" style="width: 7em;"
-				value="<%= StringEscapeUtils.escapeHtml( formatDate(publicationEndDatetime) ) %>"></td>
-				<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
-				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_TIME %>" size="5" maxlength="5" style="width: 4em;"
-				value="<%= StringEscapeUtils.escapeHtml( formatTime(publicationEndDatetime) ) %>"></td>
-				<td>&nbsp;(<%= Utility.formatHtmlDatetime( publicationEndDatetime ) %>)</td>
-			</tr>
-			</table></td>
+			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_DATE %>" size="11" maxlength="10" style="width: 7em;"
+			value="<%= StringEscapeUtils.escapeHtml( formatDate(publicationEndDatetime) ) %>"></td>
+			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
+			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_TIME %>" size="5" maxlength="5" style="width: 4em;"
+			value="<%= StringEscapeUtils.escapeHtml( formatTime(publicationEndDatetime) ) %>"></td>
+			<td>&nbsp;(<%= Utility.formatHtmlDatetime( publicationEndDatetime ) %>)&nbsp;&nbsp;</td>
+			<td><input type="button" value="&laquo;&nbsp;<? global/Now ?>" class="imcmsFormBtnSmall" style="width:40px" onClick="setNow('<%=
+			EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_DATE %>','<%=
+			EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_TIME %>');"></td>
 		</tr>
 		</table></td>
 	</tr>
