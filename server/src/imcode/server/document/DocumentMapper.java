@@ -486,7 +486,7 @@ public class DocumentMapper {
         return userIsSuperAdminOrHasAtLeastPermissionSetId(document, user, IMCConstants.DOC_PERM_SET_READ);
     }
 
-    public boolean hasEditPermission(DocumentDomainObject document, UserDomainObject user) {
+    public boolean hasEditPermission( UserDomainObject user, DocumentDomainObject document ) {
         return userIsSuperAdminOrHasAtLeastPermissionSetId(document, user, IMCConstants.DOC_PERM_SET_RESTRICTED_2);
     }
 
@@ -611,12 +611,12 @@ public class DocumentMapper {
      *                  <p/>
      *                  Supported text_types is:
      *                  <p/>
-     *                  pollquestion-n		      where n represent the questíon number in this internalDocument
+     *                  pollquestion-n		      where n represent the questíon number in this document
      *                  <p/>
-     *                  pollanswer-n-m		          where n represent the questíon number in this internalDocument
+     *                  pollanswer-n-m		          where n represent the questíon number in this document
      *                  and m represent the answer number in question number n
      *                  <p/>
-     *                  pollpointanswer-n-m			  where n represent the questíon number in this internalDocument
+     *                  pollpointanswer-n-m			  where n represent the questíon number in this document
      *                  and m represent the answer number in question number n
      *                  <p/>
      *                  pollparameter-popup_frequency    default(0) when > 0 show this poll as a popup on every new session that is a multiple
@@ -1153,10 +1153,10 @@ public class DocumentMapper {
     }
 
     /**
-     * Retrieve the texts for a internalDocument
+     * Retrieve the texts for a document
      *
-     * @param meta_id The id of the internalDocument.
-     * @return A Map (String -> TextDocumentTextDomainObject) with all the  texts in the internalDocument.
+     * @param meta_id The id of the document.
+     * @return A Map (String -> TextDocumentTextDomainObject) with all the  texts in the document.
      */
     public Map getTexts(int meta_id) {
 

@@ -48,7 +48,7 @@ public class PostcardServlet extends HttpServlet {
     private static Category log = Category.getInstance( PostcardServlet.class.getName() );
 
     /**
-     * Showing input internalDocument whit out error
+     * Showing input document whit out error
      */
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {

@@ -170,7 +170,7 @@ public class GetDoc extends HttpServlet {
         }
 
         Vector params = new Vector();
-        if ( !document.isActive() && !documentMapper.hasEditPermission( document, user ) ) {
+        if ( !document.isActivated() && !documentMapper.hasEditPermission( user, document ) ) {
             params.add( "#start#" );
             params.add( "StartDoc" );
             params.add( "#back#" );

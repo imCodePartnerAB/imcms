@@ -33,14 +33,14 @@ import imcode.server.user.UserDomainObject;
  * Documents in use:
  * <p/>
  * doGet()
- * password_submit.html, response internalDocument for empty input field
+ * password_submit.html, response document for empty input field
  * <p/>
  * doPost():
- * password_no_user.html, response internalDocument for user doesn´t exist
- * password_no_email.html, response internalDocument for user hasen´t a valid e-mail
- * password_no_right.html, response internalDocument for user hasnt rights to recive password by mail
- * password_sent.html, response internalDocument for password sent
- * password_submit.html, response internalDocument for empty input field
+ * password_no_user.html, response document for user doesn´t exist
+ * password_no_email.html, response document for user hasen´t a valid e-mail
+ * password_no_right.html, response document for user hasnt rights to recive password by mail
+ * password_sent.html, response document for password sent
+ * password_submit.html, response document for empty input field
  * <p/>
  * password_no_user.txt, servermaster e-mail body if user doesn´t exist
  * password_no_email.txt, servermaster e-mail body if user hasn´t a valid e-mail
@@ -76,7 +76,7 @@ public class PasswordMailReminder extends HttpServlet {
     /* filnames for errors */
     private final static String ERROR_STRING = "password_error_input.txt";
 
-    /* returning internalDocument */
+    /* returning document */
     private final static String RETURNING_DOCUMENT_NO_USER_NAME = "password_no_user.html";
     private final static String RETURNING_DOCUMENT_NO_EMAIL = "password_no_email.html";
     private final static String RETURNING_DOCUMENT_NO_RIGHT = "password_no_right.html";
@@ -86,7 +86,7 @@ public class PasswordMailReminder extends HttpServlet {
     private final static int PASSWORD_PERMISSION_ID = 1;
 
     /**
-     * showing input internalDocument whit out error
+     * showing input document whit out error
      */
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 

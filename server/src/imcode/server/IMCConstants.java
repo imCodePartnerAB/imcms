@@ -5,15 +5,15 @@ public interface IMCConstants {
     /* Documenttypes */
 
 
-    /* Permissions for restricted permission-sets 1 and 2, applicable for all internalDocument-types. */
+    /* Permissions for restricted permission-sets 1 and 2, applicable for all document-types. */
 
-    /** Permission to edit the headline, text, and image of a internalDocument. **/
+    /** Permission to edit the headline, text, and image of a document. **/
     public final static int PERM_EDIT_HEADLINE           = (1 << 0) ; // 1
 
-    /** Permission to edit all docinfo for a internalDocument. **/
+    /** Permission to edit all docinfo for a document. **/
     public final static int PERM_EDIT_DOCINFO            = (1 << 1) ; // 2
 
-    /** Permission to set permissions for a internalDocument. **/
+    /** Permission to set permissions for a document. **/
     public final static int PERM_EDIT_PERMISSIONS        = (1 << 2) ; // 4
 
     /** Permission to create child documents. **/
@@ -22,31 +22,31 @@ public interface IMCConstants {
 
     /* Permissions for restricted permission-sets 1 and 2, only applicable to text-documents. */
 
-    /** Permission to change the texts of a text-internalDocument. **/
+    /** Permission to change the texts of a text-document. **/
     public final static int PERM_DT_TEXT_EDIT_TEXTS      = (1 << 16) ; // 65536
 
-    /** Permission to change the images of a text-internalDocument. **/
+    /** Permission to change the images of a text-document. **/
     public final static int PERM_DT_TEXT_EDIT_IMAGES     = (1 << 17) ; // 131072
 
-    /** Permission to change the menus of a text-internalDocument. **/
+    /** Permission to change the menus of a text-document. **/
     public final static int PERM_DT_TEXT_EDIT_MENUS      = (1 << 18) ; // 262144
 
-    /** Permission to change the template of a text-internalDocument. **/
+    /** Permission to change the template of a text-document. **/
     public final static int PERM_DT_TEXT_CHANGE_TEMPLATE = (1 << 19) ; // 524288
 
-    /** Permission to change the includes of a text-internalDocument. **/
+    /** Permission to change the includes of a text-document. **/
     public final static int PERM_DT_TEXT_EDIT_INCLUDES   = (1 << 20) ; // 1048576
 
 
     /* Permissions for restricted permission-sets 1 and 2, only applicable to non-text-documents. */
 
-    /** Permission to edit the url of an url-internalDocument. **/
+    /** Permission to edit the url of an url-document. **/
     public final static int PERM_DT_URL_EDIT             = (1 << 16) ; // 65536
 
-    /** Permission to edit the mappings of a browser-internalDocument. **/
+    /** Permission to edit the mappings of a browser-document. **/
     public final static int PERM_DT_BROWSER_EDIT         = (1 << 16) ; // 65536
 
-    /** Permission to edit a html-internalDocument. **/
+    /** Permission to edit a html-document. **/
     public final static int PERM_DT_HTML_EDIT            = (1 << 16) ; // 65536
 
     /** Permission to change content and mime-type for a file. **/
@@ -55,7 +55,7 @@ public interface IMCConstants {
 
     /* Document-Permission-sets. */
 
-    /** Permission to change everything for a internalDocument. **/
+    /** Permission to change everything for a document. **/
     public final static int DOC_PERM_SET_FULL            = 0 ;
 
     /** Permissions as given to restricted permission-set 1. **/

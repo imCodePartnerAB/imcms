@@ -14,7 +14,7 @@ import java.io.Writer;
 import java.util.Vector;
 
 /**
- * Edit text in a internalDocument.
+ * Edit text in a document.
  */
 public class ChangeText extends HttpServlet {
 

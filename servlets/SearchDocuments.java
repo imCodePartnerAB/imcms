@@ -70,15 +70,6 @@ public class SearchDocuments extends HttpServlet {
                                       : imcref.getDocumentMapper().getSectionById(
                                               Integer.parseInt( sectionParameter ) );
 
-        String[] docTypeIdParameters = req.getParameterValues( "doc_type_id" );
-        int[] docTypeIds = null;
-        if ( null != docTypeIdParameters ) {
-            docTypeIds = new int[docTypeIdParameters.length];
-            for ( int i = 0; i < docTypeIdParameters.length; i++ ) {
-                docTypeIds[i] = Integer.parseInt( docTypeIdParameters[i] );
-            }
-        }
-
         // Lets save searchstring typed by user
         String originalSearchString = searchString;
 
@@ -126,7 +117,6 @@ public class SearchDocuments extends HttpServlet {
         } else {
 
             searchResults = searchDocuments( searchString,
-                                             docTypeIds,
                                              section,
                                              user );
             session.setAttribute( "search_hit_list", searchResults );
@@ -307,7 +297,7 @@ public class SearchDocuments extends HttpServlet {
         return;
     } // End of doPost
 
-    private DocumentDomainObject[] searchDocuments( String searchString, int[] docTypeIds,
+    private DocumentDomainObject[] searchDocuments( String searchString,
                                                     SectionDomainObject section, UserDomainObject user )
             throws IOException {
         DocumentIndex documentIndex = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentIndex();
@@ -324,11 +314,6 @@ public class SearchDocuments extends HttpServlet {
         if ( null != section ) {
             Query sectionQuery = new TermQuery( new Term( "section", section.getName().toLowerCase() ) );
             query.add( sectionQuery, true, false );
-        }
-
-        for ( int i = 0; null != docTypeIds && i < docTypeIds.length; i++ ) {
-            int docTypeId = docTypeIds[i];
-            query.add( new TermQuery( new Term( "doc_type_id", "" + docTypeId ) ), true, false );
         }
 
         return documentIndex.search( query, user );

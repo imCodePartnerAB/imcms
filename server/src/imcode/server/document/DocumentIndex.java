@@ -54,15 +54,27 @@ public class DocumentIndex {
         for ( int i = 0; i < hits.length(); ++i ) {
             int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
             DocumentDomainObject document = getDocument( getDocumentStopWatch, documentMapper, metaId );
-            if ( documentMapper.hasAtLeastDocumentReadPermission( searchingUser, document ) ) {
+            if ( userHasPermissionToFindDocument( searchingUser, document, documentMapper ) ) {
                 result.add( document );
             }
         }
-        log.debug("Search and result lookup took "+searchStopWatch.getTime()+"ms.") ;
+        log.debug( "Search and result lookup took " + searchStopWatch.getTime() + "ms." );
         logGetDocumentsStopWatch( getDocumentStopWatch, result.size() );
         indexSearcher.close();
         indexReader.close();
         return (DocumentDomainObject[])result.toArray( new DocumentDomainObject[result.size()] );
+    }
+
+    private boolean userHasPermissionToFindDocument( UserDomainObject searchingUser, DocumentDomainObject document,
+                                         final DocumentMapper documentMapper ) {
+        final boolean searchingUserHasPermissionToFindDocument;
+        if ( document.isActivated() ) {
+            searchingUserHasPermissionToFindDocument =
+            documentMapper.hasAtLeastDocumentReadPermission( searchingUser, document );
+        } else {
+            searchingUserHasPermissionToFindDocument = documentMapper.hasEditPermission( searchingUser, document );
+        }
+        return searchingUserHasPermissionToFindDocument;
     }
 
     public Query parseLucene( String queryString ) throws ParseException {
@@ -73,7 +85,7 @@ public class DocumentIndex {
     }
 
     public void indexAllDocuments() {
-        NDC.push("indexAllDocuments") ;
+        NDC.push( "indexAllDocuments" );
         try {
             IndexWriter indexWriter = new IndexWriter( dir, new WhitespaceLowerCaseAnalyzer(), true );
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -104,7 +116,7 @@ public class DocumentIndex {
         } catch ( Exception e ) {
             log.error( "Failed to index all documents", e );
         } finally {
-            NDC.pop() ;
+            NDC.pop();
         }
     }
 

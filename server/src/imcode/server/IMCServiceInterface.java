@@ -38,7 +38,7 @@ public interface IMCServiceInterface {
 	;
 
     /**
-       Delete a internalDocument
+       Delete a document
     **/
     void deleteDocAll(int meta_id,UserDomainObject user)
 	;
@@ -175,7 +175,7 @@ public interface IMCServiceInterface {
     public Object[] getDemoTemplate(int template_id)
 	throws IOException ;
 
-    // check if user can view internalDocument
+    // check if user can view document
     public boolean checkDocRights(int meta_id, UserDomainObject user)
 	;
 

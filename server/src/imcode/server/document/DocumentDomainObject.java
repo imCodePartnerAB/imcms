@@ -289,13 +289,17 @@ public class DocumentDomainObject implements IMCConstants {
         return metaId;
     }
 
-    /**
-     * Check whether this document is active.
-     * A document is active if it isn't archived, and if activatedDatetime is in the past.
-     **/
-    public boolean isActive() {
+    public boolean isActivated() {
         Date now = new Date();
-        return (activatedDatetime == null || activatedDatetime.before( now )) && !isArchived();
+        return isActivatedAtTime( now );
+    }
+
+    private boolean isActivatedAtTime( Date time ) {
+        return (activatedDatetime == null || activatedDatetime.before( time )) ;
+    }
+
+    public boolean isActivatedAndNotArchived() {
+        return isActivated() && !isArchived();
     }
 
     public boolean isArchivedAtTime( Date time ) {
@@ -329,4 +333,5 @@ public class DocumentDomainObject implements IMCConstants {
     public void setMime(String mime) {
         this.mime = mime;
     }
+
 }

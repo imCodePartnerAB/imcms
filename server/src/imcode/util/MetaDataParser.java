@@ -131,7 +131,7 @@ public class MetaDataParser {
 
         user.remove( "temp_perm_settings" );	// Forget about it, so it won't appear on a reload.
 
-        if ( temp_perm_settings != null && meta_id.equals( temp_perm_settings[0] ) ) {		// Make sure this is the right internalDocument.
+        if ( temp_perm_settings != null && meta_id.equals( temp_perm_settings[0] ) ) {		// Make sure this is the right document.
             // Copy everything from this temporary hashtable into the meta-hash.
             Enumeration temp_enum = ( (Hashtable)temp_perm_settings[1] ).keys();
             while ( temp_enum.hasMoreElements() ) {
@@ -519,7 +519,7 @@ public class MetaDataParser {
         String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet",
                                                             new String[]{meta_id, "" + user.getUserId()} );
         int user_set_id = Integer.parseInt( current_permissions[0] );
-        int currentdoc_perms = Integer.parseInt( current_permissions[2] );		// A bitvector containing the permissions for this internalDocument. (For example if Set-id 1 is more privileged than Set-id 2 (bit 0))
+        int currentdoc_perms = Integer.parseInt( current_permissions[2] );		// A bitvector containing the permissions for this document. (For example if Set-id 1 is more privileged than Set-id 2 (bit 0))
 
         StringBuffer roles_no_rights = new StringBuffer();
         for ( int i = 0; i < role_permissions.length; ++i ) {
@@ -857,7 +857,7 @@ public class MetaDataParser {
                  || ( user_set_id == 1	// or has set-id 1
                       && set_id == 2		// and is changing set-id 2
                       && user_doc_types.contains( doctypes[i] )	// and the user may use this doc-type.
-                      && ( currentdoc_perms & 1 ) != 0// and set-id 1 is more privleged than set-id 2 for this internalDocument. (Bit 0)
+                      && ( currentdoc_perms & 1 ) != 0// and set-id 1 is more privleged than set-id 2 for this document. (Bit 0)
                     ) ) {
 
                 options_doctypes +=
@@ -898,7 +898,7 @@ public class MetaDataParser {
                  || ( user_set_id == 1	// or has set-id 1
                       && set_id == 2		// and is changing set-id 2
                       && user_templategroups.contains( templategroups[i] )	// and the user may use this group.
-                      && ( currentdoc_perms & 1 ) != 0// and set-id 1 is more privleged than set-id 2 for this internalDocument. (Bit 0)
+                      && ( currentdoc_perms & 1 ) != 0// and set-id 1 is more privleged than set-id 2 for this document. (Bit 0)
                     ) ) {
                 options_templategroups +=
                 "<option value=\"524288_"

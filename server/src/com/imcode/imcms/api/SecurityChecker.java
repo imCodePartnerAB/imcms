@@ -49,7 +49,7 @@ class SecurityChecker {
     }
 
     public void hasEditPermission( int documentId ) throws NoPermissionException {
-        if( !docMapper.hasEditPermission( docMapper.getDocument( documentId ), accessingUser ) ) {
+        if( !docMapper.hasEditPermission( accessingUser, docMapper.getDocument( documentId ) ) ) {
             throw new NoPermissionException("The logged in user does not have permission to edit document " + documentId );
         };
     }

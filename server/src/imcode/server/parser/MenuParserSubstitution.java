@@ -247,7 +247,7 @@ class MenuParserSubstitution implements Substitution {
         if ( headline.length() == 0 ) {
             headline = "&nbsp;";
         } else {
-            if ( !menuItem.isActive() ) {
+            if ( !menuItem.isActivated() ) {
                 headline = "<em><i>" + headline;
                 headline += "</i></em>";
             }

@@ -167,7 +167,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
         callSprocModifyUserProcedure( updateUserPRCStr, tempUser );
         removePhoneNumbers( tempUser );
-        addPhonenNmbers( tempUser );
+        addPhoneNumbers( tempUser );
     }
 
     public synchronized void addUser( UserDomainObject newUser ) {
@@ -177,14 +177,14 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         newUser.setUserId( newIntUserId );
 
         callSprocModifyUserProcedure( updateUserPRCStr, newUser );
-        addPhonenNmbers( newUser );
+        addPhoneNumbers( newUser );
     }
 
     private void removePhoneNumbers( UserDomainObject newUser ) {
         staticSprocDelPhoneNr( service, newUser.getUserId() );
     }
 
-    private void addPhonenNmbers( UserDomainObject newUser ) {
+    private void addPhoneNumbers( UserDomainObject newUser ) {
         final int PHONE_TYPE_HOME_PHONE = 1;
         final int PHONE_TYPE_WORK_PHONE = 2;
         final int PHONE_TYPE_WORK_MOBILE = 3;

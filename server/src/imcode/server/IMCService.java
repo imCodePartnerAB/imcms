@@ -182,7 +182,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             externalAuthenticator = initExternalAuthenticator( externalAuthenticatorName, authenticatorPropertiesSubset );
             externalUserAndRoleMapper = initExternalUserAndRoleMapper( externalUserAndRoleMapperName, userAndRoleMapperPropertiesSubset );
             if ( null == externalAuthenticator || null == externalUserAndRoleMapper ) {
-                log.error( "Failed to initialize both authenticator and user-and-role-internalDocumentMapper, using default implementations." );
+                log.error( "Failed to initialize both authenticator and user-and-role-documentMapper, using default implementations." );
                 externalAuthenticator = null;
                 externalUserAndRoleMapper = null;
             }
@@ -239,7 +239,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             try {
                 externalUserAndRoleMapper = new LdapUserAndRoleMapper( userAndRoleMapperPropertiesSubset );
             } catch ( LdapUserAndRoleMapper.LdapInitException e ) {
-                log.error( "LdapUserAndRoleMapper could not be created, using default user and role internalDocumentMapper.", e );
+                log.error( "LdapUserAndRoleMapper could not be created, using default user and role documentMapper.", e );
             }
         } else {
             externalUserAndRoleMapper = (UserAndRoleMapper)createInstanceOfClass( externalUserAndRoleMapperName );
@@ -257,7 +257,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             try {
                 externalAuthenticator = new LdapUserAndRoleMapper( authenticatorPropertiesSubset );
             } catch ( LdapUserAndRoleMapper.LdapInitException e ) {
-                log.error( "LdapUserAndRoleMapper could not be created, using default user and role internalDocumentMapper.", e );
+                log.error( "LdapUserAndRoleMapper could not be created, using default user and role documentMapper.", e );
             }
         } else {
             externalAuthenticator = (Authenticator)createInstanceOfClass( externalAuthenticatorName );
@@ -477,11 +477,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     Makes copies of the documents given in the String-array, and inserts them into the given internalDocument and menu.
+     Makes copies of the documents given in the String-array, and inserts them into the given document and menu.
      If one of the documents couldn't be copied for some reason, no documents are copied, and the uncopyable
      documents are returned.
 
-     @param meta_id The internalDocument to insert into
+     @param meta_id The document to insert into
      @param doc_menu_no The menu to insert into
      @param user The user
      @param childsThisMenu The id's to copy.
@@ -927,7 +927,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      checkDocAdminRights
      */
     public boolean checkDocAdminRights( int meta_id, UserDomainObject user ) {
-        return documentMapper.hasEditPermission( documentMapper.getDocument( meta_id ), user );
+        return documentMapper.hasEditPermission( user, documentMapper.getDocument( meta_id ) );
     }
 
     /**

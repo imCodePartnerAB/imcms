@@ -22,11 +22,11 @@ public class RmiConf implements IMCConstants {
 
 
     /**
-     * Get the path to the images for an external internalDocument.
+     * Get the path to the images for an external document.
      * @param imcref The IMCServiceInterface instance.
-     * @param metaId The id for the external internalDocument.
+     * @param metaId The id for the external document.
      * @param user
-     * @return The path to the images for an external internalDocument. Example :D:\apache\
+     * @return The path to the images for an external document. Example :D:\apache\
      */
     public static File getImagePathForExternalDocument(IMCServiceInterface imcref, int metaId, UserDomainObject user) {
 

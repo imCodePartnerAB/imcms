@@ -30,7 +30,7 @@ public class ImcmsSetupFilter implements Filter {
 
         NDC.push(StringUtils.substringAfterLast(((HttpServletRequest)request).getRequestURI(), "/")) ;
         chain.doFilter( request, response );
-        NDC.pop() ;
+        NDC.setMaxDepth(0); ;
     }
 
     private void initRequestWithImcmsSystemAPI( UserDomainObject currentUser, ServletRequest request ) {

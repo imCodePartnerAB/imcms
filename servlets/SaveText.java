@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * Save text in a internalDocument.
+ * Save text in a document.
  */
 public class SaveText extends HttpServlet {
 
