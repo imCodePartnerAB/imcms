@@ -222,7 +222,7 @@ public class AdminConference extends Administrator {
             for ( int i = 0 ; i < listOfConferences.length ; i++ ) {
 
                 String metaId = listOfConferences[i][0];
-                String sprocetForum = "AdminStatistics1 " + metaId + ", '" + startDate + "', '" + endDate + "', " + listMode;
+                String sprocetForum = "A_AdminStatistics1 " + metaId + ", '" + startDate + "', '" + endDate + "', " + listMode;
                 String[][] queryResultForum = ConfManager.getStatistics( ConfPoolServer, sprocetForum );
 
                 //lets create forumList for this conference
@@ -231,7 +231,7 @@ public class AdminConference extends Administrator {
                 for ( int j = 0 ; j < queryResultForum.length ; j++ ) {
 
                     String forumId = queryResultForum[j][0];
-                    String sprocetDebate = "AdminStatistics2 " + metaId + ", " + forumId + ", '" + startDate + "', '" + endDate + "', " + listMode;
+                    String sprocetDebate = "A_AdminStatistics2 " + metaId + ", " + forumId + ", '" + startDate + "', '" + endDate + "', " + listMode;
                     String[][] queryResultDebate = ConfManager.getStatistics( ConfPoolServer, sprocetDebate );
 
                     // lets create debatelist for this forum
