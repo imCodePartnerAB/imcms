@@ -39,7 +39,7 @@ public class AdminDoc extends HttpServlet {
 			return ;
 		}
 
-		res.setContentType( "text/html; charset=UTF-8" );
+		res.setContentType( "text/html" );
 		ServletOutputStream out = res.getOutputStream( );
 		meta_id = Integer.parseInt( req.getParameter( "meta_id" ) ) ;
 		int parent_meta_id ;
@@ -55,7 +55,7 @@ public class AdminDoc extends HttpServlet {
 		String tempstring = AdminDoc.adminDoc(meta_id,parent_meta_id,host,user,req,res) ;
 
 		if (tempstring != null) {
-		    byte[] tempbytes = tempstring.getBytes("UTF-8") ;
+		    byte[] tempbytes = tempstring.getBytes("8859_1") ;
 		    res.setContentLength(tempbytes.length) ;
 		    out.write(tempbytes) ;
 		}

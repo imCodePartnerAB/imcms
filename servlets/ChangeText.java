@@ -34,7 +34,7 @@ public class ChangeText extends HttpServlet {
 
 	imcode.server.User user ;
 
-	res.setContentType("text/html; charset=UTF-8");
+	res.setContentType("text/html");
 
 	Writer out = res.getWriter();
 	int meta_id = Integer.parseInt(req.getParameter("meta_id")) ;

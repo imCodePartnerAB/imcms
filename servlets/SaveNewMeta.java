@@ -31,9 +31,7 @@ public class SaveNewMeta extends HttpServlet {
     /**
        doPost()
     */
-    public void doPost( HttpServletRequest encodedrequest, HttpServletResponse res ) throws ServletException, IOException {
-	EncodedHttpServletRequest req = new EncodedHttpServletRequest(encodedrequest) ;
-	req.setCharacterEncoding("UTF-8") ;
+    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
 	String host	= req.getHeader("Host") ;
 	String imcserver	= Utility.getDomainPref("adminserver",host) ;
@@ -48,7 +46,7 @@ public class SaveNewMeta extends HttpServlet {
 	String values[] ;
 	int txt_no = 0 ;
 
-	res.setContentType( "text/html; charset=UTF-8" );
+	res.setContentType( "text/html" );
 	Writer out = res.getWriter( );
 
 	// redirect data

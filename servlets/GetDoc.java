@@ -76,7 +76,7 @@ public class GetDoc extends HttpServlet {
 	int meta_id ;
 	int parent_meta_id ;
 
-	res.setContentType( "text/html; charset=UTF-8" );
+	res.setContentType( "text/html" );
 	ServletOutputStream out = res.getOutputStream();
 
 	try {
@@ -87,7 +87,7 @@ public class GetDoc extends HttpServlet {
 	}
 	String tempstring = getDoc(meta_id,meta_id,host,req,res) ;
 	if ( tempstring != null ) {
-	    byte[] tempbytes = tempstring.getBytes("UTF-8") ;
+	    byte[] tempbytes = tempstring.getBytes("8859_1") ;
 	    res.setContentLength(tempbytes.length) ;
 	    out.write(tempbytes) ;
 	}
