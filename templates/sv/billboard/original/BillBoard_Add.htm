@@ -3,10 +3,12 @@
 <title>ConfAdd</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     
+	
 <Script Language=JavaScript>
 <!--
 function AddLink()
         {
+		document.forms[0].ADDTEXT.focus();
           var DaLink
           DaLink = prompt('Ange webadress, tex www.dn.se','');
           if (DaLink)
@@ -23,20 +25,12 @@ function AddLink()
                 AddStr = '';
                 DisplayURL = DaLink.substr(0,I) + DaLink.substr(I+7,DaLink.length);
                 }
-              document.NewMsgForm.ADDTEXT.value = document.NewMsgForm.ADDTEXT.value + '#LINK#'  + DaLink  + '#/LINK#' ;
+              document.NewMsgForm.ADDTEXT.value = document.NewMsgForm.ADDTEXT.value + ' <L>'  + DaLink  + '</L> ' ;
+			  document.forms[0].ADDTEXT.focus();
             }
         }
 
- function DoMail()
-        {
-          var MailLink
-          MailLink = prompt('Skriv in mailadressen, tex kalle.anka@ankeborg.se','');
-          if (MailLink){
-            document.NewMsgForm.ADDTEXT.value = document.NewMsgForm.ADDTEXT.value + ' ' + '#MAIL#' + MailLink + '#/MAIL#' ;
-          }
-        }
-
-      function DoPreview()
+       function DoPreview()
         {
           parent.MsgFrame.location = 'DoPreview.asp?Rubrik=' + escape(document.NewMsgForm.ADDHEADER.value) + '&Desc=' + escape(document.NewMsgForm.ADDTEXT.value);
         }
@@ -44,17 +38,49 @@ function AddLink()
 
       function FocusField()
         {
-          parent.SubjListFrame.focus();
+          //parent.SubjListFrame.focus();
           
-               document.NewMsgForm.ADDHEADER.focus();
-          
+			   document.forms[0].elements["ADDHEADER"].focus();         
         }
+		var cancelBool = true;
+		function SetCancelBoolean(){
+			cancelBool = false;
+		}
+		
+		function ValidateFields()
+		{
+			if(cancelBool){
+				if(document.forms[0].ADDHEADER.value == ""){
+					alert("En Rubrik måste vara finnas!");
+					document.forms[0].ADDHEADER.focus();
+					cancelBool = true;
+					event.returnValue=false;
+				}else if(document.forms[0].ADDTEXT.value == ""){
+					alert("En Text måste finnas!");
+					document.forms[0].ADDTEXT.focus();
+					cancelBool = true;
+					event.returnValue=false;
+				}
+				else if(document.forms[0].ADDEPOST.value == ""){
+					alert("Din Epost Adress måste finnas!");
+					document.forms[0].ADDEPOST.focus();
+					cancelBool = true;
+					event.returnValue=false;
+				}
+				else{
+					cancelBool = true;
+					event.returnValue=true;
+				}
+			}else{
+				event.returnValue=true;
+			}
+		}
 		
 //-->
 </Script>
   </Head>
 
-<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onload="this.FocusField();">
 <table width="320" cellpadding="0" cellspacing="0" border="0">
   <tr> 
     <td width="285" valign="middle" bgcolor="#333999" height="20"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;&nbsp;<b>AVDELNING: 
@@ -65,7 +91,7 @@ function AddLink()
     <td width="285" height="3"><img src="#IMAGE_URL#1pix.gif" width=1" height="3"></td>
   </tr>
 </table>
-<form method="post" action="#SERVLET_URL#BillBoardAdd" target=_parent name="NewMsgForm">
+<form method="post" action="#SERVLET_URL#BillBoardAdd" target=_parent name="NewMsgForm" onsubmit="ValidateFields();">
   <table border=0 width="270" cellpadding="0" cellspacing="0">
   	<tr> 
       <td colspan=2 valign=Top>
@@ -88,7 +114,7 @@ function AddLink()
     <tr valign="top"> 
       <td colspan=2>&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">TEXT</font>
         <font face="Verdana, Arial, Helvetica, sans-serif" size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Infoga:&nbsp;&nbsp;<A HRef="javascript:AddLink()">l&auml;nk</A> 
-        &nbsp;<A HRef="javascript:DoMail()">mail</A></font> <BR>
+        <BR>
 &nbsp;
         <textarea wrap="Virtual" name="ADDTEXT" rows=10 cols=30></textarea>
       </td>
@@ -112,7 +138,7 @@ function AddLink()
           <input type="hidden" name="CANCEL1" value="Avbryt">
           </font> 
           <input type="image" border="0" name="ADD" src="#IMAGE_URL#billBoard_send.gif" width="52" height="18">
-          <input type="image" border="0" name="CANCEL" src="#IMAGE_URL#billBoard_cancel.gif" width="52" height="18">
+          <input type="image" border="0" name="CANCEL" src="#IMAGE_URL#billBoard_cancel.gif" width="52" height="18" onclick="SetCancelBoolean();">
           <font size=3> </font> </div>
       </td>
     </tr>

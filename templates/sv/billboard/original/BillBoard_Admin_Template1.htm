@@ -83,8 +83,12 @@ function closeThisWindow(){
                   <td width="55%" nowrap>&nbsp;</A> </td>
                 </tr>
                 <tr> 
-                  <td width="55%" nowrap><A href="#SERVLET_URL#BillBoardAdmin?ADMIN_TYPE=FORUM"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">AVDELNINGAR 
-                    </font></A></td>
+                  <td width="55%" nowrap>
+				  <A href="#SERVLET_URL#BillBoardAdmin?ADMIN_TYPE=SECTION">
+				  	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">AVDELNINGAR</font></A><br>
+				  <A href="#SERVLET_URL#AdminDoc?meta_id=#A_META_ID#&flags=4">
+				  	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">RÄTTIGHETER</font></A>					
+					</td>
                 </tr>
                 <tr>
                   <td width="55%" nowrap>&nbsp;</A></td>
@@ -100,15 +104,16 @@ function closeThisWindow(){
   </tr>
   <tr bgcolor="#ffffff"> 
     <td width="31%" valign="top" nowrap height="87"> 
-      <form name="NewTemplate" action="#SERVLET_URL#BillBoardAdmin" method="post" >
+      <form name="NewTemplate" action="#SERVLET_URL#BillBoardAdmin" method="post">
                 <font face="Verdana, Arial, Helvetica, sans-serif" size="3">REGISTRERA 
                 NYTT</font> MALLSET 
                 <input type="hidden" name="ADMIN_TYPE" value="META">
-        <br>
-        <font face="Verdana, Arial, Helvetica, sans-serif" size="2">NAMN</font> 
-        <br>
-        <input name="TEMPLATE_LIB_NAME" size="25" maxlength="50" >
-        &nbsp;&nbsp;&nbsp;<input type="submit" name="REGISTER_TEMPLATE_LIB" value="NYTT MALLSET" style="FONT-SIZE: 10px" onClick    ="if(evalNewTemplate()== false) return false; return true;">
+        		<br>
+        		<font face="Verdana, Arial, Helvetica, sans-serif" size="2">NAMN</font> 
+        		<br>
+        		<input name="TEMPLATE_LIB_NAME" size="25" maxlength="50" >
+        		&nbsp;&nbsp;&nbsp;
+				<input type="submit" name="REGISTER_TEMPLATE_LIB" value="NYTT MALLSET" style="FONT-SIZE: 10px" onClick    ="if(evalNewTemplate()== false) return false; return true;">
       </form>
 <IMG height=4 src="#IMAGE_URL#blueline.gif" width=500>
     </td>

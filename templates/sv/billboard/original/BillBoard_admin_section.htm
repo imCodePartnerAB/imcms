@@ -4,9 +4,9 @@
 <script language="JavaScript">
 <!--
 function evalConfAdminForumText(){
-	//alert("Du måste ange ett namn på det nya forumet")
-	if(document.NEW_FORUM_FORM.NEW_FORUM_NAME.value=="") {
-		alert("Du måste ange ett namn på det nya forumet")
+	//alert("Du måste ange ett namn på den nya avdelningen")
+	if(document.NEW_SECTION_FORM.NEW_SECTION_NAME.value=="") {
+		alert("Du måste ange ett namn på den nya avdelningen")
 		return false
 	} else
 		return true 
@@ -14,12 +14,12 @@ function evalConfAdminForumText(){
 }
 
 function evalDelForum(){
-	if(document.DEL_FORUM.FORUM_ID.value==""){
-		alert("Det finns ingen konferens att ta bort!")
+	if(document.DEL_SECTION.SECTION_ID.value==""){
+		alert("Det finns ingen avdelning att ta bort!")
 		return false
 	}
 	else{ 
-		if(confirm("Forumet kommer att tas bort, det kan inte återskapas." +"\n"+ " Det måste alltid finnas ett forum i konferensen! Ta bort Forum?")){			//document.DEL_FORUM.submit()
+		if(confirm("Avdelningen kommer att tas bort, det kan inte återskapas." +"\n"+ " Det måste alltid finnas en avdelning i Anslagstavlan! Ta bort Avdelningen?")){			//document.DEL_FORUM.submit()
 			return true
 		}
 		else
@@ -30,19 +30,19 @@ function evalDelForum(){
 
 function evalChangeForum(){
 	var aForumId ;
-	aForumId = document.changeNameForm.FORUM_ID.selectedIndex
+	aForumId = document.changeNameForm.SECTION_ID.selectedIndex
 	//alert("aForumID: " + document.changeNameForm.FORUM_ID.value ) 
-	if(document.changeNameForm.NEW_FORUM_NAME.value == "" ){
-		alert("Du måste ange ett nytt namn på forumet")
+	if(document.changeNameForm.NEW_SECTION_NAME.value == "" ){
+		alert("Du måste ange ett nytt namn på avdelningen")
 		return false
 	}
 	else if(aForumId == "-1" ){
 		// if(document.changeNameForm.FORUM_ID.value==""){
-			alert("Du måste ange vilket forum som skall byta namn")
+			alert("Du måste ange vilket avdelning som skall byta namn")
 			return false
 	}
 	else{
-		if(confirm("Byta namn på forumet, nytt namn: "+document.changeNameForm.NEW_FORUM_NAME.value)){
+		if(confirm("Byta namn på avdelningen, nytt namn: "+document.changeNameForm.NEW_SECTION_NAME.value)){
 			return true
 			}
 		else{
@@ -57,13 +57,27 @@ function evalNbrOfDiscsToShow(){
 	//alert("Här är värdet: " + document.NbrOfDiscsToShowForm.FORUM_ID.value) 
 
 	var aForumId ;
-	aForumId = document.NbrOfDiscsToShowForm.FORUM_ID.selectedIndex	
+	aForumId = document.NbrOfDiscsToShowForm.SECTION_ID.selectedIndex	
 	if( aForumId == "-1"){
-		alert("Du måste ange ett forum")
+		alert("Du måste ange en avdelning")
 		return false
 	}
 	else return true
 }
+function evalNbrOfDaysToShow(){
+	//alert("Här är objektet: " + document.NbrOfDiscsToShowForm.FORUM_ID) 
+	// alert("Selectedindex: " + document.NbrOfDiscsToShowForm.FORUM_ID.selectedIndex)
+	//alert("Här är värdet: " + document.NbrOfDiscsToShowForm.FORUM_ID.value) 
+
+	var aForumId ;
+	aForumId = document.NbrOfDaysToShowForm.SECTION_ID.selectedIndex	
+	if( aForumId == "-1"){
+		alert("Du måste ange en avdelning")
+		return false
+	}
+	else return true
+}
+
 function closeThisWindow(){
 	window.close()
 }
@@ -101,7 +115,7 @@ function closeThisWindow(){
   </tr>
   <tr bgcolor="#ffffff"> 
     <td valign=top> 
-      <form method="post" name="NEW_SECTION_FORM" action="#SERVLET_URL#BillBoardAdmin">
+      <form method="post" name="NEW_SECTION_FORM" action="#SERVLET_URL#BillBoardAdmin" onsubmit="if(evalConfAdminForumText()== false) return false; return true">
         <table cellspacing=0 cellpadding=0 width="100%" border="0">
           <tr> 
             <td valign=top align=left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3">LÄGG 
@@ -112,7 +126,8 @@ function closeThisWindow(){
               <br>
               <input name="NEW_SECTION_NAME" maxlength="255" size="30" >
               <br><br>
-                <input type="submit" name="ADD_SECTION" value="LÄGG TILL" style="FONT-SIZE: 10px" onClick    ="if(evalConfAdminForumText()== false) return false; return true">
+			  <input type="hidden" value="LÄGG TILL" name="ADD_SECTION">
+                <input type="submit" name="ADD_SECTION" value="LÄGG TILL" style="FONT-SIZE: 10px">
             </td>
             <td width="49%" valign="top">
               <font face="Verdana, Arial, Helvetica, sans-serif" size="2">BEFINTLIGA 
@@ -129,7 +144,7 @@ function closeThisWindow(){
       <table cellspacing=0 cellpadding=0 width="100%" border="0">
         <tr> 
             <td valign=top align=left width="0" height="0"> <IMG height=4 src="#IMAGE_URL#blueline.gif" width=500> 
-              <form method="post" action="#SERVLET_URL#BillBoardAdmin" name="DEL_SECTION">
+              <form method="post" action="#SERVLET_URL#BillBoardAdmin" name="DEL_SECTION" onSubmit="if(evalDelForum()== false) return false; return true; ">
               <font face="Verdana, Arial, Helvetica, sans-serif" size="3">RADERA 
               AVDELNING</font> 
               <input type="hidden" name="ADMIN_TYPE" value="SECTION">
@@ -137,7 +152,7 @@ function closeThisWindow(){
               <br>
               <select name="SECTION_ID" size="1">          #SECTION_LIST#                                                                         </select>
               &nbsp;&nbsp;&nbsp; 
-              <input type="submit" name="DELETE_SECTION" value="RADERA" style="FONT-SIZE: 10px" onClick     ="if(evalDelForum()== false) return false; return true; ">
+              <input type="submit" name="DELETE_SECTION" value="RADERA" style="FONT-SIZE: 10px">
             </form>
           </td>
         </tr>
@@ -146,18 +161,19 @@ function closeThisWindow(){
   </tr>
   <tr> 
       <td width="62%" valign="top" bgcolor="#ffffff" colspan="2"> <IMG height=4 src="#IMAGE_URL#blueline.gif" width=500> 
-        <form method="post" action="#SERVLET_URL#BillBoardAdmin" name="changeNameForm" >
+        <form method="post" action="#SERVLET_URL#BillBoardAdmin" name="changeNameForm" onSubmit="if(evalChangeForum()== false) return false; return true;">
           <table cellspacing=0 cellpadding=0 width="100%" border="0">
           <tr> 
               <td valign=top align=left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3">ÄNDRA 
                 NAMN PÅ AVDELNING</font> 
                 <input type="hidden" name="ADMIN_TYPE" value="SECTION">
+				<input type="hidden" value="ÄNDRA" name="CHANGE_SECTION_NAME">
               <br>
               <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> NYTT 
               NAMN</font> <br>
               <input name="NEW_SECTION_NAME" maxlength="255" size="30" >
               <br><br>
-              <input type="submit" name="CHANGE_SECTION_NAME" value="ÄNDRA" style="FONT-SIZE: 10px" onClick    ="if(evalChangeForum()== false) return false; return true;">
+              <input type="submit" name="CHANGE_SECTION_NAME" value="ÄNDRA" style="FONT-SIZE: 10px">
             </td>
             <td width="49%" valign="top"> 
               <font face="Verdana, Arial, Helvetica, sans-serif" size="2">BEFINTLIGA 
@@ -249,7 +265,7 @@ function closeThisWindow(){
                 <option value="600">600</option>
               </select>
               &nbsp;&nbsp;&nbsp; 
-              <input type="submit" name="SHOW_DISCUSSION_DAYS" value="UPPDATERA" style="FONT-SIZE: 10px" onClick   ="if(evalNbrOfDiscsToShow()==false) return false; return true;">
+              <input type="submit" name="SHOW_DISCUSSION_DAYS" value="UPPDATERA" style="FONT-SIZE: 10px" onClick   ="if(evalNbrOfDaysToShow()==false) return false; return true;">
               <br>
               <br>
             </td>

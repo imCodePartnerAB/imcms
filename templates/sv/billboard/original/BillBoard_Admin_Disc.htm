@@ -27,12 +27,22 @@ function confirmDelDiscForm(){
   <p>#NEW_A_HREF_LIST# </p>
   <br>
   <table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr> 
+      <td nowrap width="33%">&nbsp;</td>
+      <td width="34%">&nbsp;</td>
+	  <td width="33%">&nbsp;<select name="MOVE_TO_SECTION" size="1">#SECTION_LIST#  </td>
+    </tr>
     <tr> 
-      <td nowrap width="48%"> 
-        &nbsp;<input name=DELETE_DISCUSSION type=submit value="TA BORT" style=font-size:10 onClick="if(confirmDelDiscForm()==false)return false; return true;">
-      	&nbsp;<input name=ADMIN_OLD_BILLS type=submit value="VISA ARKIVERADE" style=font-size:10>
+      <td nowrap width="33%">
+	  	<input name=DELETE_DISCUSSION type=submit value="TA BORT" style=font-size:10 onClick="if(confirmDelDiscForm()==false)return false; return true;">
+	  </td> 
+	  <td width="34%">
+        &nbsp;<input name=ADMIN_OLD_BILLS type=submit value="VISA ARKIVERADE" style=font-size:10>		
 	  </td>
-      <td width="52%">&nbsp;</td>
+      <td width="33%">
+	  			<input type="hidden" name="BILLTYPES" value="NEW_ONES">
+	  	&nbsp;<input name=MOVE_BILLS type=submit value="FLYTTA" style=font-size:10>
+	  </td>
     </tr>
   </table>
 </form>
