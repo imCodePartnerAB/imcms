@@ -267,7 +267,25 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				String sqlQ = "B_DeleteBill "  + repliesId ;//
 				rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
 			}
-			res.sendRedirect(MetaInfo.getServletPath(req) + "BillBoardDiscView") ;
+			
+			//***
+			HttpSession session = req.getSession(false);
+			String aSectionId = (String) session.getValue("BillBoard.section_id");
+			String sqlStr = "B_GetLastDiscussionId " +params.getProperty("META_ID") + ", " + aSectionId;
+			//log("sqlStr= "+sqlStr);
+			String aDiscId = rmi.execSqlProcedureStr(confPoolServer, sqlStr) ;
+			//log("aDiscId = "+aDiscId);
+
+			session.putValue("BillBoard.disc_id", aDiscId) ;
+			String param="";
+			if (!aDiscId.equals("-1"))
+			{
+				param = "?DISC_ID="+aDiscId;
+				//log("param = "+param);
+			}
+			//***
+			
+			res.sendRedirect(MetaInfo.getServletPath(req) + "BillBoardDiscView"+param) ;
 			return ;
 		}
 
