@@ -5,7 +5,12 @@
 <project name="imCMS" default="dist" basedir=".">
 
     <!-- The current version of imCMS. -->
-    <property name="version"               value="$$Name$"/>
+    <property name="cvsname"               value="$$Name$"/>
+
+    <!-- versionnumber : imCMS version without sufix, only the number ( 1.7.4) -->
+    <property name="version"               value=""/>
+    <property name="versionnumber"         value=""/>
+    <property name="versionfilesuffix"     value=""/>
 
     <!-- Paths. Later ones are built on earlier ones. -->
 
@@ -95,22 +100,11 @@
     <property name="readrunnerjsurl"          value="${readrunnerurl}/javascript"/>
 
 
-    <!-- Locations for the final packages -->
-    <property name="warfile"                  value="${webappname}.war"/>
-    <property name="wardist"                  value="${dist}/${warfile}"/>
-
-    <property name="jardist"                  value="${dist}/${webappname}.jar"/>
-    <property name="jarapidist"               value="${dist}/${webappname}-api.jar"/>
-
-    <property name="srcdistfile"              value="${webappname}-src"/>
-    <property name="srczipdist"               value="${dist}/${srcdistfile}.zip"/>
-    <property name="srctgzdist"               value="${dist}/${srcdistfile}.tar.gz"/>
-    <property name="srctbz2dist"              value="${dist}/${srcdistfile}.tar.bz2"/>
-
     <property name="srcincludes"              value="${basedir}/MANIFEST.TXT"/>
 
-    <property name="dist-sql"                 value="${dist}/imcms.sql"/>
-    <property name="sprocs-sql"               value="${dist}/sprocs.sql"/>
+
+    <!-- Where to install imCMS -->
+    <property name="webapproot"               value="${deployroot}/${webappname}"/>
 
 
     <path id="libraries">
@@ -125,12 +119,6 @@
         <path refid="libraries"/>
     </path>
 
-
-    <!-- Where to install imCMS -->
-    <property name="webapproot"               value="${deployroot}/${webappname}"/>
-
-    <!-- versionnumber : imCMS version without sufix, only the number ( 1.7.4) -->
-    <property name="versionnumber"         value=""/>
 
     <!-- A handy target to have everything else depend on, just in case. -->
     <target name="init" depends="reformatproperties,global-filters" description="Handy target for everything else to depend on.">
@@ -152,21 +140,54 @@
 
     <!-- A target to use for reformat a properties   -->
     <target name="reformatproperties" >
-        <taskdef name="propertyregex" classname="net.sf.antcontrib.property.RegexTask" classpath="install/lib/ant-contrib-0.5.jar"/>
-        <propertyregex property="versionnumber"
-                 input="${version}"
-                 regexp=".Name: v(.*)-.*"
-                 override = "true"
+
+        <taskdef name="propertyregex" classname="net.sf.antcontrib.property.RegexTask" classpath="lib/ant-contrib-0.5.jar"/>
+        <propertyregex property="version"
+                 input="${cvsname}"
+                 regexp=".Name: v(.*) ."
+                 override="true"
                  replace="\1"
                  casesensitive="false" />
-       <propertyregex property="versionnumber"
-                 input="${versionnumber}"
+       <propertyregex property="version"
+                 input="${version}"
                  regexp="_"
-                 override = "true"
+                 override="true"
                  replace="."
                  global="true"
                  casesensitive="false" />
-        <echo message="${versionnumber}" />
+        <propertyregex property="version"
+                 input="${version}"
+                 regexp="(.*)-RELEASE"
+                 override="true"
+                 replace="\1"
+                 casesensitive="false" />
+        <propertyregex property="versionnumber"
+                 input="${version}"
+                 regexp="(.*)-.*"
+                 override="true"
+                 replace="\1"
+                 casesensitive="false" />
+        <propertyregex property="versionfilesuffix"
+                 input="${version}"
+                 regexp="(.+)"
+                 override="true"
+                 replace="-\1"
+                 casesensitive="false" />
+
+        <!-- Locations for the final packages -->
+        <property name="warfile"                  value="${webappname}${versionfilesuffix}.war"/>
+        <property name="wardist"                  value="${dist}/${warfile}"/>
+
+        <property name="jardist"                  value="${dist}/imcms${versionfilesuffix}.jar"/>
+        <property name="jarapidist"               value="${dist}/imcms${versionfilesuffix}-api.jar"/>
+
+        <property name="srcdistfile"              value="${webappname}${versionfilesuffix}-src"/>
+        <property name="srczipdist"               value="${dist}/${srcdistfile}.zip"/>
+        <property name="srctgzdist"               value="${dist}/${srcdistfile}.tar.gz"/>
+        <property name="srctbz2dist"              value="${dist}/${srcdistfile}.tar.bz2"/>
+
+        <property name="dist-sql"                 value="${dist}/imcms${versionfilesuffix}.sql"/>
+        <property name="sprocs-sql"               value="${dist}/imcms-sprocs${versionfilesuffix}.sql"/>
 
     </target>
 
@@ -267,7 +288,7 @@
 
     <!-- Build the war-file -->
     <target name="dist"
-            depends="init,build,check-webappname,wardist,jardist"
+            depends="init,build,doc,check-webappname,wardist,jardist"
             description="Packages a complete distribution.">
 
     	<echo>Done packaging distribution '${wardist}'.</echo>
@@ -322,7 +343,6 @@
     <target name="build"
 	    depends="init,
 		     classes,
-             doc,
 		     templates,
 		     libraries,
 		     web,conf,dir,sql,
