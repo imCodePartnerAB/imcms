@@ -9,7 +9,7 @@
 
 <title><? install/htdocs/sv/jsp/category_admin/title ?></title>
 <link rel="STYLESHEET" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
-<script src="$contextPath/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'template')">

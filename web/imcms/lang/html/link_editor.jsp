@@ -7,7 +7,7 @@
 <title><? install/htdocs/imcms/html/link_editor.jsp/1 ?></title>
 
 <link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
-<script src="$contextPath/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" marginwidth="0" marginheight="0" leftmargin="0" topmargin="0" class="imcmsAdmBgCont" style="border:0; margin:0" onLoad="focusField(1,'createLinkDesc')">
