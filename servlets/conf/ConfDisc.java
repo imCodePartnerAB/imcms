@@ -240,7 +240,7 @@ public class ConfDisc extends Conference {
                 } else {
                     // Ok, Lets build the search string
 
-                    sqlAnswer = confref.sqlProcedureMulti( "A_SearchText", new String[]{metaId, category, searchW, frDate, toDate + " 23:59:59"} );
+                    sqlAnswer = confref.sqlProcedureMulti( "A_SearchText", new String[]{metaId, aForumId, category, searchW, frDate, toDate + " 23:59:59"} );
                 } // End if
             } // End if
 
@@ -256,15 +256,16 @@ public class ConfDisc extends Conference {
             // Lets preparse all records, if any returned get an error mesage
             String allRecs = "";
             //	log("SqlAnswer: " + sqlAnswer) ;
-            if ( sqlAnswer != null && sqlAnswer.length > 0 ) {
-                //for(int i = 0 ; i < sqlAnswer.length ; i++){
-                //	log("SqlAnswer: " + i + " : " + sqlAnswer[i]) ;
-                //}
-                allRecs = preParse( req, sqlAnswer, tagsV, aHreHtmlFile, "" );
-                if ( allRecs == null ) {
-                    ConfError msgErr = new ConfError();
-                    allRecs = msgErr.getErrorMessage( req, 41 );
-                    msgErr = null;
+            if (sqlAnswer != null) {
+                if (sqlAnswer.length > 0) {
+                    allRecs = preParse( req, sqlAnswer, tagsV, aHreHtmlFile, "" );
+                    if (allRecs == null) {
+                        ConfError msgErr = new ConfError();
+                        allRecs = msgErr.getErrorMessage( req, 41 );
+                        msgErr = null;
+                    } else {
+                    }
+                } else {
                 }
             } else {
                 // log("SqlAnswer = null") ;
@@ -377,7 +378,8 @@ public class ConfDisc extends Conference {
             showDiscsCounter = Integer.parseInt( showDiscsStr );
 
             // Lets create an array
-            String[][] newArr = new String[][]{sqlAnswer[discIndexPos]};
+            String[][] newArr = sqlAnswer;
+
             allRecs = preParse( req, newArr, tagsV, aHrefHtmlFile, imagePath );
 
             //lets show previousbutton if not first set of discussions
@@ -751,7 +753,7 @@ public class ConfDisc extends Conference {
         // if "idag" is 2000-05-01, then it means at the time 00.00.
         // So thats why we add a day, so 2000-05-01 -> 2000-05-02 to cover the hole day!
         GregorianCalendar today = new GregorianCalendar();
-        today.set( Calendar.DATE, ( today.get( Calendar.DATE ) + 1 ) );
+        today.set( Calendar.DATE, (today.get( Calendar.DATE ) ) );
         int tYear = today.get( Calendar.YEAR );
         int tMonth = 1 + today.get( Calendar.MONTH );
         int tDay = today.get( Calendar.DATE );
@@ -814,15 +816,3 @@ public class ConfDisc extends Conference {
     }
 
 } // End of class
-
-
-
-
-
-
-
-
-
-
-
-    

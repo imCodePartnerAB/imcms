@@ -1,12 +1,11 @@
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SearchDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SearchDocs]
 GO
 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
 
 CREATE PROCEDURE SearchDocs
   @user_id INT,
@@ -120,7 +119,7 @@ CREATE TABLE #doc_types (
  doc_type INT 
 )
 CREATE TABLE #keywords (
-  keyword VARCHAR(30)
+  keyword VARCHAR(30) collate database_default
 )
 DECLARE @substring VARCHAR(30)
 DECLARE @index INT
@@ -155,8 +154,8 @@ SELECT @num_keywords = COUNT(keyword) from #keywords
 CREATE TABLE #keywords_matched (
  meta_id INT,
  doc_type INT,
- meta_headline VARCHAR(256),
- meta_text VARCHAR(1024),
+ meta_headline VARCHAR(256) collate database_default,
+ meta_text VARCHAR(1024) collate database_default,
  date_created DATETIME,
  date_modified DATETIME,
  date_activated DATETIME,
@@ -165,14 +164,14 @@ CREATE TABLE #keywords_matched (
  shared TINYINT,
  show_meta TINYINT,
  disable_search TINYINT,
- keyword VARCHAR(30) 
+ keyword VARCHAR(30) collate database_default  
 )
 INSERT INTO #keywords_matched
 SELECT  
   m.meta_id,
   m.doc_type,
-  m.meta_headline,
-  m.meta_text,
+  m.meta_headline collate database_default,
+  m.meta_text collate database_default,
   m.date_created,
   m.date_modified,
   activated_datetime,
@@ -181,7 +180,7 @@ SELECT
   shared,
   show_meta,
   disable_search,
-  k.keyword
+  k.keyword collate database_default
 FROM
   meta m
 JOIN
@@ -239,9 +238,9 @@ JOIN
 LEFT JOIN
   texts t   ON m.meta_id = t.meta_id
 JOIN
-  #keywords k  ON m.meta_headline  LIKE @search_start+k.keyword+'%'
-     OR m.meta_text  LIKE @search_start+k.keyword+'%'
-     OR t.text   LIKE @search_start+k.keyword+'%'
+  #keywords k  ON m.meta_headline collate database_default  LIKE @search_start+k.keyword+'%' 
+     OR m.meta_text collate database_default LIKE @search_start+k.keyword+'%'
+     OR t.text collate database_default LIKE @search_start+k.keyword+'%'
 
 
 GROUP BY
@@ -314,7 +313,6 @@ EXEC (@eval)
 DROP TABLE #keywords
 DROP TABLE #doc_types
 DROP TABLE #keywords_matched
-
 
 GO
 SET QUOTED_IDENTIFIER OFF 

@@ -1,8 +1,10 @@
 package imcode.util ;
 
-import java.util.* ;
+import org.apache.log4j.Logger;
 
-import org.apache.log4j.Category;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
 	Parses MIME multipart/* data into parts and MIME-headers.
@@ -10,7 +12,8 @@ import org.apache.log4j.Category;
 
 class MultipartParser {
 
-    private static Category log = Category.getInstance("server");
+    private final static Logger log = Logger.getLogger( "imcode.util.MultipartParser" );
+
 	private String[] bodies ;	// Contains the MIME-bodies
 	private Properties[] headers ;	//Contains the MIME-headers
 	private Hashtable[] headparams ;	//Contains a Hashtable of Properties to keep track of the parameters for each individual header.

@@ -739,9 +739,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                 return htmlStr;
             }
             String[] foo = new String[variables.size()];
-            return imcode.util.Parser.parseDoc( htmlStr, (String[])variables.toArray( foo ) );
-        } catch ( IOException ex ) {
-            log.error( ex.toString(),ex );
+            return imcode.util.Parser.parseDoc(htmlStr, (String[]) variables.toArray(foo));
+        } catch (IOException ex) {
+            log.error(ex.toString(), ex);
             return "";
         }
     }
@@ -1150,6 +1150,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             while ((read = fr.read(buffer, 0, 4096)) != -1) {
                 str.append(buffer, 0, read);
             }
+            fr.close();
         } catch (IOException e) {
             return null;
         } catch (NullPointerException e) {
@@ -1209,31 +1210,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      save demo template
      */
-    public int saveDemoTemplate( int template_id, byte[] data, String suffix ) {
+    public void saveDemoTemplate( int template_id, byte[] data, String suffix ) throws IOException {
 
-        // save template demo
+            deleteDemoTemplate(template_id);
 
-        // See if there are templete_id:s with other file-formats and delete them
-        // WARNING: Uggly Code
-        String[] suffixes = {"jpg", "jpeg", "gif", "png", "htm", "html"};
-        for ( int i = 0; i <= 5; i++ ) {
-            File file = new File( m_TemplateHome + "/text/demo/" + template_id + "." + suffixes[i] );
-            if ( file.exists() )
-                file.delete();
-            // doesn't always delete the file, made sure the right template is
-            // shown using the file-date & time in getDemoTemplate
-        }
-
-        try {
-            FileOutputStream fw = new FileOutputStream( m_TemplateHome + "/text/demo/" + template_id + "." + suffix );
-            fw.write( data );
+            FileOutputStream fw = new FileOutputStream(m_TemplateHome + "/text/demo/" + template_id + "." + suffix);
+            fw.write(data);
+            fw.flush();
             fw.close();
-        } catch ( IOException e ) {
-            return -2;
-        }
-
-        return 0;
-
     }
 
     /**
@@ -1290,14 +1274,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     // delete demotemplate
-    public void deleteDemoTemplate( int template_id ) {
+    public void deleteDemoTemplate(int template_id) throws IOException {
 
         File demoTemplateDirectory = new File( new File( m_TemplateHome, "text" ), "demo" );
         File[] demoTemplates = demoTemplateDirectory.listFiles();
         for ( int i = 0; i < demoTemplates.length; i++ ) {
             File demoTemplate = demoTemplates[i];
-            if ( demoTemplate.getName().startsWith( template_id + "." ) ) {
-                demoTemplate.delete();
+            String demoTemplateFileName = demoTemplate.getName() ;
+            if (demoTemplateFileName.startsWith(template_id+".")) {
+                if(!demoTemplate.delete()){
+                    throw new IOException("fail to deleate");
+                }
             }
         }
     }

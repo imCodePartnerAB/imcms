@@ -198,8 +198,8 @@ public interface IMCServiceInterface {
 	;
 
     // save demo template
-    public int saveDemoTemplate(int template_id,byte [] data, String suffix)
-	;
+    public void saveDemoTemplate(int template_id,byte [] data, String suffix) throws IOException
+    ;
 
     // delete templategroup
     public void deleteTemplateGroup(int group_id)
@@ -211,15 +211,15 @@ public interface IMCServiceInterface {
 
     // get server date
     public Date getCurrentDate()
-	;
+    ;
 
     // get demotemplates
     public String[] getDemoTemplateList()
-	;
+    ;
 
     // delete demotemplate
-    public void deleteDemoTemplate(int template_id)
-	;
+    public void deleteDemoTemplate(int template_id) throws IOException
+    ;
 
     public String getMenuButtons(int meta_id, UserDomainObject user)  ;
 

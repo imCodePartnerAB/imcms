@@ -1,20 +1,14 @@
 package imcode.readrunner ;
 
-import java.util.* ;
+import org.apache.log4j.Logger;
+import org.apache.oro.text.regex.*;
 
-import imcode.server.parser.* ;
-import imcode.server.* ;
-import imcode.util.* ;
-
-import org.apache.oro.text.regex.* ;
-import org.apache.log4j.Category;
+import java.util.*;
 
 
 public class ReadrunnerFilter {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
-    private static Category log = Category.getInstance("server");
+    private final static Logger log = Logger.getLogger( "imcode.readrunner.ReadrunnerFilter" );
 
     private static Pattern READRUNNER_FILTER_STOPSEP_PATTERN = null ;
     private static Pattern READRUNNER_FILTER_STOP_PATTERN = null ;

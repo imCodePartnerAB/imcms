@@ -1,15 +1,15 @@
 package imcode.server.parser ;
 
-import org.apache.oro.text.regex.* ;
-import java.util.* ;
+import org.apache.log4j.Logger;
+import org.apache.oro.text.regex.*;
 
-import org.apache.log4j.Category;
+import java.util.Properties;
 
 class HashTagSubstitution implements Substitution {
 
     private static Pattern HASHTAGNUMBER_PATTERN  = null ;
-	
-	private static Category log = Category.getInstance("server");
+
+    private final static Logger log = Logger.getLogger( "imcode.server.parser.HashTagSubstitution" );
 
     private Properties tags ;
     private Properties numberedtags ;

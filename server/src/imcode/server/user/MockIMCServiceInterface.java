@@ -387,8 +387,8 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // save demo template
-   public int saveDemoTemplate( int template_id, byte[] data, String suffix ) {
-      return 0;
+   public void saveDemoTemplate( int template_id, byte[] data, String suffix ) {
+      return ;
    }
 
    // save templategroup

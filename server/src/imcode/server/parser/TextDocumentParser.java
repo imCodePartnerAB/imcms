@@ -12,7 +12,7 @@ import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateHelper;
 import imcode.util.FileCache;
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
 
 import java.io.File;
@@ -24,7 +24,7 @@ import java.util.*;
 
 public class TextDocumentParser implements imcode.server.IMCConstants {
 
-    private static Category log = Category.getInstance( "TextDocumentParser" );
+    private final static Logger log = Logger.getLogger( "imcode.server.parser.TextDocumentParser" );
     private FileCache fileCache = new FileCache();
 
     private final static org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util(); // Internally synchronized

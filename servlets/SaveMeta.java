@@ -99,8 +99,7 @@ public class SaveMeta extends HttpServlet {
             final boolean userHasFullPermissionsForThisDocument = IMCConstants.DOC_PERM_SET_FULL == userSetId;
             final boolean userHasEditPermissionsBitSetForThisDocument = 0 != ( userPermSet & IMCConstants.PERM_EDIT_PERMISSIONS );
 
-            final boolean userMayEditPermissionsForThisDocument = userHasFullPermissionsForThisDocument
-                    || userHasEditPermissionsBitSetForThisDocument;
+            final boolean userMayEditPermissionsForThisDocument = userHasFullPermissionsForThisDocument || userHasEditPermissionsBitSetForThisDocument;
 
             if ( userMayEditPermissionsForThisDocument ) {
                 final boolean userMaySetThisParticularPermissionSet = userSetId <= newSetIdForRole;
@@ -140,8 +139,7 @@ public class SaveMeta extends HttpServlet {
         */
         // NOTE! This table matches the one below. Don't go changing one without changing the other.
         // FIXME: They should be merged into one table.
-        String[] metatable = {
-            /*  Nullable			Nullvalue */
+        String[] metatable = {/*  Nullable			Nullvalue */
             "shared", "0",
             "disable_search", "0",
             "archive", "0",
@@ -181,8 +179,7 @@ public class SaveMeta extends HttpServlet {
 
         // NOTE! This table matches the one above. Don't go changing one without changing the other.
         // FIXME: They should be merged into one table.
-        int[] metatable_restrictions = {
-            //	set_id,	permission_bitmask
+        int[] metatable_restrictions = {//	set_id,	permission_bitmask
             IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO | IMCConstants.PERM_EDIT_PERMISSIONS, //"shared",
             IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"disable_search",
             IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"archive",
@@ -309,7 +306,7 @@ public class SaveMeta extends HttpServlet {
 
         // Set modified-date to now...
         Date dt = imcref.getCurrentDate();
-        metaprops.setProperty( "date_modified", dateformat.format( dt ) );
+        metaprops.setProperty("date_modified", dateformat.format(dt) + " " + timeformat.format(dt));
 
         // It's like this... people make changes on the page, and then they forget to press "save"
         // before they press one of the "define-permission" buttons, and then their settings are lost.
@@ -357,20 +354,23 @@ public class SaveMeta extends HttpServlet {
         String tempStr = req.getParameter( "default_template_set_1" );
         String template1 = "-1";
         String template2 = "-1";
-        if ( tempStr != null ) {
-            template1 =
-                    req.getParameter( "default_template_set_1" ).equals( "" ) ? "-1" : req.getParameter( "default_template_set_1" );
+        boolean saveDefaultTemplateToDb = false;
+        if (tempStr != null) {
+            saveDefaultTemplateToDb = true;
+            template1 = req.getParameter("default_template_set_1").equals("")
+                        ? "-1" : req.getParameter("default_template_set_1");
         }
-        tempStr = req.getParameter( "default_template_set_2" );
-        if ( tempStr != null ) {
-            template2 =
-                    req.getParameter( "default_template_set_2" ).equals( "" ) ? "-1" : req.getParameter( "default_template_set_2" );
+        tempStr = req.getParameter("default_template_set_2");
+        if (tempStr != null) {
+            saveDefaultTemplateToDb = true;
+            template2 = req.getParameter("default_template_set_2").equals("")
+                        ? "-1" : req.getParameter("default_template_set_2");
         }
 
         ArrayList sqlUpdateColumns = new ArrayList();
         ArrayList sqlUpdateValues = new ArrayList();
 
-        addNullForPublisherIdToSqlStringIfInvalid( metaprops, sqlUpdateColumns) ;
+        addNullForPublisherIdToSqlStringIfInvalid( metaprops, sqlUpdateColumns );
 
         Enumeration propkeys = metaprops.propertyNames();
         while ( propkeys.hasMoreElements() ) {
@@ -424,7 +424,9 @@ public class SaveMeta extends HttpServlet {
         }
 
         //ok lets save the default templates
-        sprocUpdateDefaultTemplates( imcref, metaIdStr, template1, template2 );
+        if(saveDefaultTemplateToDb){
+            sprocUpdateDefaultTemplates( imcref, metaIdStr, template1, template2 );
+        }
 
         //if the administrator wants to change the date we does it here
         if ( createdDatetime != null ) {
@@ -460,31 +462,27 @@ public class SaveMeta extends HttpServlet {
         return;
     }
 
-    private static void addNullForPublisherIdToSqlStringIfInvalid( Properties metaprops,
-                                                             List sqlUpdateColumns ) {
-        try {
-            Integer.parseInt( metaprops.getProperty( "publisher_id" ) );
-        } catch ( NumberFormatException nfe ) {
-            metaprops.remove( "publisher_id" );
-            sqlUpdateColumns.add("publisher_id = NULL");
+    private static void addNullForPublisherIdToSqlStringIfInvalid( Properties metaprops, List sqlUpdateColumns ) {
+        String publisher_id = (String)metaprops.getProperty( "publisher_id" );
+        if ( null != publisher_id ) {
+            try {
+                Integer.parseInt( publisher_id );
+            } catch ( NumberFormatException nfe ) {
+                metaprops.remove( "publisher_id" );
+                sqlUpdateColumns.add( "publisher_id = NULL" );
+            }
         }
     }
 
-    private static Object putTemporaryPermissionSettingsInUser( UserDomainObject user, String meta_id,
-                                                                Properties metaprops, Properties temp_permission_settings, String[] temp_default_templates ) {
-        return user.put( "temp_perm_settings", new Object[]{
-            String.valueOf( meta_id ), metaprops,
-            temp_permission_settings, temp_default_templates
-        } );
+    private static Object putTemporaryPermissionSettingsInUser( UserDomainObject user, String meta_id, Properties metaprops, Properties temp_permission_settings, String[] temp_default_templates ) {
+        return user.put( "temp_perm_settings", new Object[]{String.valueOf( meta_id ), metaprops, temp_permission_settings, temp_default_templates} );
     }
 
-    public static void sprocUpdateDefaultTemplates( IMCServiceInterface imcref, String meta_id, String template1,
-                                                    String template2 ) {
+    public static void sprocUpdateDefaultTemplates( IMCServiceInterface imcref, String meta_id, String template1, String template2 ) {
         imcref.sqlUpdateProcedure( "UpdateDefaultTemplates", new String[]{meta_id, template1, template2} );
     }
 
-    public static String[] sprocGetUserPermissionSet( IMCServiceInterface imcref, UserDomainObject user,
-                                                      String meta_id ) {
+    public static String[] sprocGetUserPermissionSet( IMCServiceInterface imcref, UserDomainObject user, String meta_id ) {
         String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet", new String[]{meta_id, "" + user.getUserId()} );
         return current_permissions;
     }
@@ -494,8 +492,7 @@ public class SaveMeta extends HttpServlet {
         return role_permissions;
     }
 
-    static void setSectionInDbFromRequest( HttpServletRequest req, IMCServiceInterface imcref,
-                                           int metaId ) {
+    static void setSectionInDbFromRequest( HttpServletRequest req, IMCServiceInterface imcref, int metaId ) {
         String[] sectionIdStrings = req.getParameterValues( "change_section" );
         if ( null != sectionIdStrings ) {
             DocumentMapper.setSectionsForDocument( imcref, metaId, sectionIdStrings );

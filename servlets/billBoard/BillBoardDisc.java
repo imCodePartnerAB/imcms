@@ -374,10 +374,10 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
             showDiscsCounter = Integer.parseInt( showDiscsStr );
 
             // Lets create an array
-            String[][] newArr = new String[][]{sqlAnswer[discIndexPos]};
-
-            if ( newArr.length > 0 )
-                allRecs = preParse( newArr, tagsV, aHrefHtmlFile );
+            if (sqlAnswer.length > 0){
+                String[][] newArr =  sqlAnswer ;
+                allRecs = preParse(newArr, tagsV, aHrefHtmlFile);
+            }
 
             //lets show previousbutton if not first set of discussions
             if ( discIndexPos != 0 ) {

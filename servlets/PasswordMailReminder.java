@@ -135,7 +135,7 @@ public class PasswordMailReminder extends HttpServlet {
             // Do nothing, let mailport stay at default.
         }
 
-        int mailtimeout = 10000;
+        int mailtimeout = 60000;
         try {
             mailtimeout = Integer.parseInt(stringMailtimeout);
         } catch (NumberFormatException ignored) {

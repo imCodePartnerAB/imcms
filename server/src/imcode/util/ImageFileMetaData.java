@@ -1,10 +1,8 @@
 package imcode.util;
 
-import java.util.*;
-import java.io.*;
-import java.io.FilenameFilter;
+import org.apache.log4j.Logger;
 
-import org.apache.log4j.Category;
+import java.io.*;
 
 /**
  * @author Mårten Wallin
@@ -54,7 +52,7 @@ public class ImageFileMetaData {
     /** The type of the image i.e. GIF87a, GIF89a, JFIF * */
     private String type;
 
-    private static Category log = Category.getInstance( "server" );
+    private final static Logger log = Logger.getLogger( "imcode.util.ImageFileMetaData" );
 
     public ImageFileMetaData( File _file ) {
         file = _file;
