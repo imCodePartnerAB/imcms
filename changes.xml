@@ -1,0 +1,1474 @@
+<changesets>
+
+<changeset version="2.0.0">
+
+    <changes importance="high" for="users">
+        <change>
+            <p>
+                New url format for documents: <path>/imcms/1001</path> instead of <path>/imcms/servlet/GetDoc?meta_id=1001</path>.
+                The old format still works, but this means that relative links in pages are likely to break.
+            </p>
+            <bug id="1163"/>
+        </change>
+        <change>
+            <p>
+                To alleviate broken relative links, <path>/imcms/GetDoc?meta_id=1001</path> now works as well as <path>/imcms/servlet/GetDoc?meta_id=1001</path>.
+            </p>
+            <bug id="2727"/>
+        </change>
+    </changes>
+
+    <changes importance="high" for="administrators">
+        <change>
+            <p>
+                We're now using jTDS instead of Microsofts JDBC driver.
+                The Microsoft driver may still somewhat work,
+                but it is strongly recommended that you use jTDS instead.
+                To do this, change the following values in <path>server.properties</path>:
+            </p>
+            <ul>
+                <li>Set <config>JdbcDriver</config> to <value>net.sourceforge.jtds.jdbc.Driver</value></li>
+                <li>Set <config>JdbcUrl</config> to
+                    <value>jdbc:jtds:sqlserver://<replace>host</replace>:<replace>port</replace>/;AppName=imCMS;DatabaseName=<replace>databasename</replace></value>
+                    substituting correct values for <replace>host</replace>,
+                    <replace>port</replace>, and <replace>databasename</replace>.</li>
+            </ul>
+            <bug id="1850"/>
+        </change>
+        <change>
+            <p>
+                We require javamail 1.3 or later, but Tomcat 4.1.30 and earlier includes javamail 1.2,
+                which overrides our included implementation (GNU classpathx javamail).
+            </p>
+            <p>
+                If you're using Tomcat 4.1.30 or earlier, you can do one of three things:
+            </p>
+            <ul>
+                <li>Recommended: Upgrade Tomcat to version 4.1.31 or later.</li>
+                <li>Remove <path>mail.jar</path> and <path>activation.jar</path> from <path>tomcat/common/lib</path>.
+                    If you use any web applications that require any of them, you can put them in the <path>WEB-INF/lib</path> directory of those applications.
+                     imCMS will use its own implementation.</li>
+                <li>Replace <path>mail.jar</path> in the directory <path>tomcat/common/lib</path> with <path>mail.jar</path> from JavaMail 1.3 or later.
+                    JavaMail can be downloaded from <url>http://java.sun.com/products/javamail/downloads/</url>
+                </li>
+            </ul>
+            <p>
+                If you are using another servlet engine that includes an older implementation of javamail,
+                similar action may be required.
+            </p>
+            <bug id="2859"/>
+        </change>
+        <change>
+            <p>
+                Specifically, the new url format is
+                <path><replace>contextpath</replace><replace>prefix</replace><replace>document-id</replace></path>,
+                e.g. <path>/imcms<replace>prefix</replace>1001</path>.
+                The <replace>prefix</replace> can be set with the setting <config>DocumentPathPrefix</config> in <path>server.properties</path>.
+                The default is <value>/</value>. Comment this out to disable the new url format.
+            </p>
+            <bug id="2733"/>
+        </change>
+        <change>
+            <p>
+                The latest documents requested from the database are now cached in memory.
+                This makes imCMS much faster, but means that changes to the database won't be seen.
+                The maximum number of documents cached can be set using
+                <config>DocumentCacheMaxSize</config> in <path>server.properties</path>.
+                The default is to cache at most 100 documents.
+            </p>
+            <bug id="2083"/>
+            <bug id="2864"/>
+        </change>
+        <change>
+            <p>
+                All the class-files that used to live in <path>WEB-INF/classes</path>
+                are now packaged in one jar file in <path>WEB-INF/lib</path>.
+            </p>
+            <bug id="2746"/>
+        </change>
+        <change>
+            <p>
+                Some objects were put in sessions when editing documents, and never removed.
+                These are now removed when no longer needed. This might reduce memory usage a bit.
+            </p>
+            <bug id="2750"/>
+        </change>
+    </changes>
+
+    <changes for="users">
+        <change>
+            <p>
+                A new function called "My pages" gives you an easy overview of your documents.
+                It is accessible through the "admin" button for users
+                which have any role that has permission to access "My pages".
+            </p>
+            <bug id="2578"/>
+        </change>
+        <change>
+            <p>
+                A new better html editor (<url>http://www.dynarch.com/projects/htmlarea/</url>)
+                which also supports Mozilla browsers has been incorporated.
+            </p>
+            <bug id="2548"/>
+        </change>
+        <change>
+            <p>
+                The search page now allows much more advanced searches.
+            </p>
+            <bug id="2578"/>
+        </change>
+        <change>
+            <p>
+                File extension "dot" is now recognized as a Microsoft Word file.
+            </p>
+            <bug id="2681"/>
+        </change>
+        <change>
+            <p>
+                File extension "ppt" is now recognized as a Microsoft Powerpoint file.
+            </p>
+            <bug id="2743"/>
+        </change>
+        <change>
+            <p>
+                Updated the look of the user interface a bit, notably the adminbuttons and the template dialog.
+            </p>
+            <bug id="2796"/>
+        </change>
+        <change>
+            <p>
+                One can now on the permission page set a default template to be used for new text documents.
+            </p>
+            <bug id="2451"/>
+        </change>
+        <change>
+            <p>
+                Don't display a broken image for an empty image field.
+            </p>
+            <bug id="2567"/>
+        </change>
+        <change>
+            <p>
+                Fixed problem with previewing images with non-ASCII characters in the name in the image browser.
+            </p>
+            <bug id="2653"/>
+        </change>
+        <change>
+            <p>
+                Don't show button to upload images if lacking permission to do so.
+            </p>
+            <bug id="2734"/>
+        </change>
+        <change>
+            <p>
+                Changed certain file uploading error messages to be somewhat clearer.
+            </p>
+            <bug id="2591"/>
+        </change>
+        <change>
+            <p>
+                Fixed a problem where users were allowed to access the document "page info" without proper permissions.
+            </p>
+            <bug id="2680"/>
+        </change>
+        <change>
+            <p>
+                Set creation date to "now" for copies of documents.
+            </p>
+            <bug id="2737"/>
+        </change>
+        <change>
+            <p>
+                Fixed help message on "file edit page".
+            </p>
+            <bug id="2682"/>
+        </change>
+        <change>
+            <p>
+                The OK button on the document "page info" page was unclickable in Safari on Mac due to a javascript.
+            </p>
+            <bug id="2703"/>
+        </change>
+        <change>
+            <p>
+                Hide categories on "page info" page if none exist.
+            </p>
+            <bug id="2794"/>
+        </change>
+        <change>
+            <p>
+                Added shortcut buttons to set dates to "Now" on "page info" page.
+            </p>
+            <bug id="2794"/>
+        </change>
+        <change>
+            <p>
+                The creator and some dates were not set properly for copied documents.
+            </p>
+            <bug id="2803"/>
+        </change>
+        <change>
+            <p>
+                Removed misleading instructions on how to create documents.
+            </p>
+            <bug id="2799"/>
+        </change>
+        <change>
+            <p>
+                Fixed problem with data for browser documents not being saved on creation.
+            </p>
+            <bug id="2839"/>
+        </change>
+        <change>
+            <p>
+                Missing schemes are now automatically added to urls.
+            </p>
+            <bug id="2860"/>
+        </change>
+        <change>
+            <p>
+                The link checker now handles relative and schemeless urls.
+            </p>
+            <bug id="2861"/>
+        </change>
+        <change>
+            <p>
+                When editing menus, for each menu display two numbers.
+            </p>
+            <p>
+                One number is the number of documents a visitor to the site would see in the menu,
+                and the other number is the number of documents the current user can see when editing the menu.
+            </p>
+            <bug id="2800"/>
+        </change>
+        <change>
+            <p>
+                Allow setting the link target when editing a file document.
+            </p>
+            <bug id="2771"/>
+        </change>
+    </changes>
+    <changes for="template creators">
+        <change>
+            <p>
+                Added the file <localfile>TEMPLATE_SYNTAX.TXT</localfile> containing a basic reference to the template tags.
+            </p>
+            <bug id="2689"/>
+        </change>
+        <change>
+            <p>
+                Local includes can now be made using <tag>&lt;?imcms:include path="/relative/to/context/path"?></tag>.
+                These don't require a http-request to localhost as url-includes do,
+                are a magnitude more efficient, and don't spam the access-log.
+            </p>
+            <bug id="2684"/>
+        </change>
+        <change>
+            <p>
+                Jakarta Velocity can now be used in templates, between <tag>&lt;?imcms:velocity?> ... &lt;?/imcms:velocity?></tag> tags.
+                See the file <localfile>TEMPLATE_SYNTAX.TXT</localfile> for details.
+            </p>
+            <bug id="2668"/>
+        </change>
+        <change>
+            <p>
+                Attributes <attr>pre</attr> and <attr>post</attr>
+                can now be used on <tag>&lt;?imcms:menu?></tag>.
+            </p>
+            <bug id="2668"/>
+        </change>
+        <change>
+            <p>
+                Attributes in tags can now be html-escaped, like so: <tag>&lt;?imcms:text label="&amp;quot;quoted text&amp;quot;"?></tag>.
+            </p>
+            <bug id="2783"/>
+        </change>
+        <change>
+            <p>
+                New attribute for <tag>&lt;?imcms:menu?></tag>: <attr>defaulttemplate</attr> - specify the name of a template to use for new text documents created in this menu.
+            </p>
+            <bug id="2689"/>
+        </change>
+        <change>
+            <p>
+                New attribute for <tag>&lt;?imcms:text?></tag>: <attr>formats</attr> - specify what editor modes are available.
+            </p>
+            <bug id="2709"/>
+        </change>
+        <change>
+            <p>
+                New attribute for <tag>&lt;?imcms:text?></tag>: <attr>rows</attr> - indicate the preferred number of rows to the editor.
+            </p>
+            <bug id="2764"/>
+        </change>
+    </changes>
+
+    <changes for="administrators">
+        <change>
+            <p>
+                When something went wrong during initialization, a useless generic "NoClassDefFoundError" was given.
+            </p>
+            <bug id="2669"/>
+        </change>
+        <change>
+            <p>
+                Certain html files were not viewable in the file manager.
+            </p>
+            <bug id="2661"/>
+        </change>
+        <change>
+            <p>
+                Fixed a problem in the <path>diff-1.10.2-1.11.sql</path> database upgrade script.
+            </p>
+            <bug id="2692"/>
+        </change>
+        <change>
+            <p>
+                Fixed an error when trying to edit a user.
+            </p>
+            <bug id="2696"/>
+        </change>
+        <change>
+            <p>
+                Make sure a useradmin only can list users he can edit.
+            </p>
+            <bug id="2757"/>
+        </change>
+        <change>
+            <p>
+                Sometimes when using the file administrator, some files would be unremovable.
+                Trying to remove them will now give a rather nasty error message instead of failing silently.
+                This still needs improvement.
+            </p>
+            <bug id="2442"/>
+        </change>
+        <change>
+            <p>
+                The link checker is now multithreaded, and one can choose to list only broken links.
+                Also, one can specify a range of document ids to check.
+            </p>
+            <bug id="2587"/>
+            <bug id="2789"/>
+        </change>
+        <change>
+            <p>
+                Use a default value of <value>1440</value> (24 hours) for <config>IndexingSchedulePeriodInMinutes</config>
+                if missing from <path>server.properties</path>.
+            </p>
+            <bug id="2786"/>
+        </change>
+        <change>
+            <p>
+                Reversed sort order of "List new/updated pages".
+            </p>
+            <bug id="2842"/>
+        </change>
+        <change>
+            <p>
+                Allow to set no roles for users, leaving only the "Users"-role.
+            </p>
+            <bug id="2806"/>
+        </change>
+        <change>
+            <p>
+                Fixed a problem with mismatched filenames in the chat on case-sensitive filesystems.
+            </p>
+            <bug id="2845"/>
+        </change>
+        <change>
+            <p>
+                Empty passwords are no longer allowed for external authentication, e.g. LDAP.
+            </p>
+            <bug id="2847"/>
+        </change>
+        <change>
+            <p>
+                Updated the look of the "Edit external user" page.
+            </p>
+            <bug id="2334"/>
+        </change>
+        <change>
+            <p>
+                Fixed a problem with modified date of a document only being updated on every second save.
+            </p>
+            <bug id="2858"/>
+        </change>
+        <change>
+            <p>
+                The checksums in <path>WEB-INF/version.txt</path> are now in <path>WEB-INF/checksums.txt</path> instead,
+                and are not output by the "Version" servlet.
+            </p>
+            <bug id="2865"/>
+        </change>
+        <change>
+            <p>
+                Made a "RebuildIndex" servlet for rebuilding the index,
+                and fixed the "Restart" servlet to do a more thorough/proper restart of imCMS.
+            </p>
+            <bug id="2855"/>
+        </change>
+        <change>
+            <p>
+                Don't allow removing a template group that contains templates.
+            </p>
+            <bug id="2836"/>
+        </change>
+        <change>
+            <p>
+                Don't print password to log when failing to log in to an LDAP server.
+            </p>
+            <bug id="2828"/>
+        </change>
+        <change>
+            <p>
+                List users in order of last name and first name instead of by id.
+            </p>
+            <bug id="2821"/>
+        </change>
+    </changes>
+
+    <changes for="API-using developers">
+        <change>
+            <p>
+                Created package <package>com.imcode.util</package> with generic non-imCMS-specific utilities:
+            </p>
+            <dl>
+                <dt><class>ChainableReversibleNullComparator</class></dt><dd>Moved here from <package>com.imcode.imcms.api.util</package></dd>
+                <dt><class>ComparatorWrapper</class></dt><dd>Moved here from <package>com.imcode.imcms.api.util</package></dd>
+                <dt><class>HumanReadable</class></dt><dd>Get human readable byte sizes and time spans.</dd>
+                <dt><class>ImageSize</class></dt><dd>Get the size of an image in somewhat more efficient manner than <method><class>ImageIO</class>.read()</method>.</dd>
+                <dt><class>MultipartHttpServletRequest</class></dt><dd>Extends <class>HttpServletRequest</class> for file upload with support from Jakarta Commons-FileUpload.</dd>
+            </dl>
+            <bug id="2493"/>
+        </change>
+        <change>
+            <p>
+                Users can now change their own attributes.
+            </p>
+            <bug id="2708"/>
+        </change>
+        <change>
+            <p>
+                Added classes:
+            </p>
+            <dl>
+                <dt><class>Role</class></dt><dd>Represents a user-role.</dd>
+                <dt><class>SaveException</class></dt><dd>Thrown when something can't be saved.</dd>
+                <dt><class>AlreadyExistsException</class></dt><dd>Extends SaveException.</dd>
+                <dt><class>TextDocumentViewing</class></dt><dd>Accessible in included JSPs and velocity code. Represents one viewing of a text document.</dd>
+            </dl>
+            <bug id="2676"/>
+            <bug id="2776"/>
+        </change>
+        <change>
+            <p>
+                Changed classes:
+            </p>
+            <dl>
+                <dt><class>MaxCategoriesOfTypeExceededException</class></dt><dd>Extends <class>SaveException</class></dd>
+                <dt><class>CategoryAlreadyExistsException</class></dt><dd>Extends <class>AlreadyExistsException</class></dd>
+                <dt><class>CategoryTypeAlreadyExistsException</class></dt><dd>Extends <class>AlreadyExistsException</class></dd>
+                <dt><class>UserAlreadyExistsException</class></dt><dd>Extends <class>AlreadyExistsException</class></dd>
+                <dt><class>RoleAlreadyExistsException</class></dt><dd>Extends <class>AlreadyExistsException</class></dd>
+            </dl>
+        </change>
+        <change>
+            <p>
+                Deprecated classes:
+            </p>
+            <dl>
+                <dt><class>com.imcode.imcms.api.util.ChainableReversibleNullComparator</class></dt><dd>Moved to <package>com.imcode.util</package></dd>
+                <dt><class>com.imcode.imcms.api.util.ComparatorWrapper</class></dt><dd>Moved to com.imcode.util</dd>
+            </dl>
+        </change>
+        <change>
+            <p>
+                Added methods:
+            </p>
+            <dl>
+                <dt><method>ContentManagementSystem.fromRequest(ServletRequest)</method></dt><dd>Get the <class>ContentManagementSystem</class>.</dd>
+                <dt><method>Document.setPermissionSetIdForRole(Role,int)</method>m</dt><dd>Replaces <method>Document.setPermissionSetForRole(String,int)</method></dd>
+                <dt><method>Document.getPermissionSetIdForRole(Role)</method></dt><dd>Get the permission set id for a role</dd>
+                <dt><method>DocumentService.getSection(String)</method></dt><dd>Get a section by name.</dd>
+                <dt><method>Section.getId()</method></dt><dd>Get the id for a section.</dd>
+                <dt><method>TextDocument.Menu.getVisibleDocuments()</method></dt><dd>Returns the documents visible in the menu.</dd>
+                <dt><method>TextDocument.Menu.getVisibleMenuItems()</method></dt><dd>Returns the menuitems visible in the menu.</dd>
+                <dt><method>User.getRoles()</method></dt><dd>Get the user's roles.</dd>
+                <dt><method>User.setRoles(Role[])</method></dt><dd>Set the user's roles.</dd>
+                <dt><method>User.hasRole(Role)</method></dt><dd>Returns true if the user has the role.</dd>
+                <dt><method>User.addRole(Role)</method></dt><dd>Add a role to the user.</dd>
+                <dt><method>User.removeRole(Role)</method></dt><dd>Remove a role from the user.</dd>
+                <dt><method>UserService.createNewRole(String)</method></dt><dd>Create a new role</dd>
+                <dt><method>UserService.deleteRole(Role)</method></dt><dd>Delete a role, requires superadmin permission.</dd>
+                <dt><method>UserService.getAllRoles()</method></dt><dd>Returns all roles in the system, requires superadmin permission.</dd>
+                <dt><method>UserService.getAllUsersWithRole(Role)</method></dt><dd>Get all users with the given permission.</dd>
+                <dt><method>UserService.getRole(int)</method></dt><dd>Get a role by id, requires superadmin permission.</dd>
+                <dt><method>UserService.getRole(String)</method></dt><dd>Get a role by name, requires superadmin permission.</dd>
+                <dt><method>UserService.saveRole(Role)</method></dt><dd>Save changes to the role, requires superadmin permission.</dd>
+                <dt><method>UserService.createNewUser(String, String)</method></dt><dd>Create a new user.</dd>
+                <dt><method>UserService.saveUser(User)</method></dt><dd>Save a new or existing user, requires superadmin permission.</dd>
+                <dt><method>User.set*</method></dt><dd>Added a bunch of setters.</dd>
+                <dt><method>User.get*</method></dt><dd>Added a few missing getters.</dd>
+            </dl>
+            <bug id="2648"/>
+            <bug id="2648"/>
+            <bug id="2677"/>
+            <bug id="2827"/>
+            <bug id="2827"/>
+        </change>
+        <change>
+            <p>
+                Changed methods:
+            </p>
+            <dl>
+                <dt><method>DocumentService.saveChanges(Document)</method></dt><dd>Throws <class>SaveException</class> instead of <class>MaxCategoriesOfTypeExceededException</class>.</dd>
+                <dt><method>TextDocument.setInclude(int,TextDocument)</method></dt><dd>Now requires you to call <method>DocumentService.saveChanges()</method> afterwards.</dd>
+                <dt><method>TextDocument.Menu.getDocuments()</method></dt><dd>Returns the same documents as can be seen when editing the menu.</dd>
+                <dt><method>TextDocument.Menu.getMenuItems()</method></dt><dd>Returns the same menuitems as can be seen when editing the menu. No longer throws <class>NoPermissionException</class>.</dd>
+                <dt><method>UserService.addNewRole(String)</method></dt><dd>Returns the new role.</dd>
+            </dl>
+            <bug id="2827"/>
+            <bug id="2827"/>
+        </change>
+        <change>
+            <p>
+                Undeprecated methods:
+            </p>
+            <dl>
+                <dt><method>TextDocument.setTemplate(Template)</method></dt><dd>Use when you don't care about setting a template group.</dd>
+            </dl>
+            <bug id="2791"/>
+        </change>
+        <change>
+            <p>
+                Deprecated methods:
+            </p>
+            <dl>
+                <dt><method>Document.setPermissionSetForRole(String,int)</method></dt><dd>Use <method>Document.setPermissionSetIdForRole(Role,int)</method>.</dd>
+                <dt><method>User.getRoleNames()</method></dt><dd>Use <method>User.getRoles()</method></dd>
+                <dt><method>User.hasRole(String)</method></dt><dd>Use <method>User.hasRole(Role)</method></dd>
+                <dt><method>UserService.deleteRole(String)</method></dt><dd>Use <method>UserService.deleteRole(Role)</method></dd>
+                <dt><method>UserService.getAllUserWithRole(String)</method></dt><dd>Use <method>UserService.getAllUsersWithRole(Role)</method></dd>
+                <dt><method>UserService.getRoleNames(User)</method></dt><dd>Use <method>User.getRoles()</method></dd>
+                <dt><method>UserService.getAllRolesNames()</method></dt><dd>Use <method>UserService.getAllRoles()</method></dd>
+                <dt><method>UserService.setUserRoles(User,String[])</method></dt><dd>Use <method>User.setRoles(Role[])</method></dd>
+                <dt><method>UserService.addNewRole(String)</method></dt><dd>Use <method>UserService.createNewRole(String)</method> and <method>UserService.saveRole(Role)</method></dd>
+            </dl>
+        </change>
+        <change>
+            <p>
+                Removed methods:
+            </p>
+            <dl>
+                <dt>DocumentService.createAndSaveNewTextDocument(Document)</dt><dd>Use <method>DocumentService.createNewTextDocument()</method> and <method>DocumentService.saveChanges(Document)</method></dd>
+                <dt>DocumentService.createAndSaveNewUrlDocument(Document)</dt><dd>Use <method>DocumentService.createNewUrlDocument()</method> and <method>DocumentService.saveChanges(Document)</method></dd>
+            </dl>
+        </change>
+    </changes>
+    <changes for="developers">
+        <change>
+            <p>
+                Unit tests are now enabled in the build by default.
+            </p>
+            <bug id="2664"/>
+        </change>
+        <change>
+            <p>
+                Target "copy-web" in an addon <path>build.xml</path> is now run when running the "web"-target in the main <path>build.xml</path>.
+            </p>
+            <bug id="2674"/>
+        </change>
+        <change>
+            <p>
+                Use jsp for "edit text" page.
+            </p>
+            <bug id="2549"/>
+        </change>
+        <change>
+            <p>
+                Added a unique index on column "login_name" in table "users".
+            </p>
+            <bug id="2663"/>
+        </change>
+        <change>
+            <p>
+                Compileable with java 1.5.
+            </p>
+            <bug id="2687"/>
+        </change>
+        <change>
+            <p>
+                Updated jars to the latest versions, and made sure all have understandable names with version numbers.
+            </p>
+            <bug id="2686"/>
+        </change>
+        <change>
+            <p>
+                Getting the size of an image was very slow.
+            </p>
+            <bug id="2685"/>
+        </change>
+        <change>
+            <p>
+                The column "role_id" in the table "roles" is now an identity column, and "role_name" is varchar(60).
+            </p>
+        </change>
+        <change>
+            <p>
+                Don't update menus in database if they don't differ from the cache when saving a text-document.
+            </p>
+            <bug id="2672"/>
+        </change>
+        <change>
+            <p>
+                Fixed a problem where clones of users would share the same set of roles.
+            </p>
+            <bug id="2701"/>
+        </change>
+        <change>
+            <p>
+                Added possibility to set permissions for roles.
+            </p>
+            <bug id="2705"/>
+        </change>
+        <change>
+            <p>
+                Fixed hardcoded urls to the documentation site in the default template.
+            </p>
+            <bug id="2718"/>
+        </change>
+        <change>
+            <p>
+                Removed table "roles_permissions", no longer needed.
+            </p>
+            <bug id="2705"/>
+        </change>
+        <change>
+            <p>
+                All users are now always considered to have the "Users" role regardless of what the database says.
+            </p>
+            <bug id="2770"/>
+        </change>
+        <change>
+            <p>
+                Made an ant-target "distcheck" for verifying that the source distribution is buildable.
+            </p>
+            <bug id="2774"/>
+        </change>
+        <change>
+            <p>
+                Made it easier to build with LDAP enabled
+            </p>
+            <bug id="2818"/>
+        </change>
+        <change>
+            <p>
+                Texts are doubly indexed: With and without HTML-tags.
+            </p>
+            <bug id="2775"/>
+        </change>
+        <change>
+            <p>
+                Introduced the concept of <class>LifeCyclePhase</class> for a <class>DocumentDomainObject</class> (indexed as "phase"),
+                corresponding to what users think of as "status".
+            </p>
+            <bug id="2855"/>
+        </change>
+        <change>
+            <p>
+                A group can now be used as the to-address of e-mails.
+            </p>
+            <bug id="2798"/>
+        </change>
+    </changes>
+</changeset>
+<changeset version="1.11.1">
+    <changes for="administrators">
+        <change>
+            <p>
+                In the fix to bug 2452 in 1.11.0, we changed the way files in file documents are saved to disk, forgetting backwards-compatibility. Administrators had to remove the "_se"-suffix from all files under "WEB-INF/uploads", or the files would not be found after an upgrade. This was fixed so the "_se" suffix is recognized again, and will be automatically removed when the file document is saved. Removing the suffix from the files on upgrade is still recommended.
+            </p>
+            <bug id="2452"/>
+            <bug id="2650"/>
+        </change>
+        <change>
+            <p>
+                On a related note, don't show "WEB-INF/uploads" in "FileAdmin" by default.
+            </p>
+            <bug id="2640"/>
+        </change>
+        <change>
+            <p>
+                Made "/RD/*"-paths (as seen in the log) work again.
+            </p>
+            <bug id="2633"/>
+        </change>
+    </changes>
+</changeset>
+<changeset version="1.11.0">
+    <changes importance="high" for="administrators">
+        <change>
+            <p>
+                The "SelectMethod" in the JdbcUrl in "server.properties" MUST be set to "SelectMethod=cursor", otherwise you will get the error "Can't start a cloned connection while in manual transaction mode." when you try to save a document. This is due to the new transaction code. The default used to be "SelectMethod=direct".
+            </p>
+            <bug id="2569"/>
+        </change>
+    </changes>
+    <changes for="users">
+        <change>
+            <p>
+                Made it possible to upload several files in one filedocument.
+            </p>
+            <bug id="2452"/>
+        </change>
+        <change>
+            <p>
+                Fixed a race condition that could cause menus to be cleared when editing a text-document.
+            </p>
+            <bug id="2569"/>
+        </change>
+        <change>
+            <p>
+                File-extension "xls" on uploaded files is now recognized as a Microsoft Excel Spreadsheet.
+            </p>
+            <bug id="2534"/>
+        </change>
+        <change>
+            <p>
+                Fixed a problem with viewing uploaded PDF files with Adobe Acrobat 6.0.1.
+            </p>
+            <bug id="2511"/>
+        </change>
+        <change>
+            <p>
+                Fixed exception when trying to create an HTML-document.
+            </p>
+            <bug id="2543"/>
+        </change>
+        <change>
+            <p>
+                Changed some swedish names for different document types.
+            </p>
+            <bug id="1496"/>
+        </change>
+        <change>
+            <p>
+                Some form elements looked strange in "page info" in Internet Explorer 5.2 on Macintosh.
+            </p>
+            <bug id="2391"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug that made it hard to remove images.
+            </p>
+            <bug id="2567"/>
+        </change>
+        <change>
+            <p>
+                Show file-size on file-document-files and images.
+            </p>
+            <bug id="2520"/>
+        </change>
+        <change>
+            <p>
+                Distinguish directories in "FileAdmin" with gray background color, sort files and directories in alphabetical order, and make file-sizes more readable.
+            </p>
+            <bug id="2572"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug making it impossible to delete a text-document with more than one menu.
+            </p>
+            <bug id="2585"/>
+        </change>
+        <change>
+            <p>
+                HTML is now removed from text-fields before indexing, so a search for "foo bar" will now also find "&lt;em>foo&lt;/em> bar".
+            </p>
+            <bug id="2593"/>
+        </change>
+        <change>
+            <p>
+                Changed swedish name of text-document, "Ny sida" to "Textsida".
+            </p>
+            <bug id="1496"/>
+        </change>
+        <change>
+            <p>
+                Image-preview in old image archive was broken.
+            </p>
+            <bug id="2628"/>
+        </change>
+        <change>
+            <p>
+                Submitting the form several times (i.e. by double-clicking) when creating a new document no longer results in an error message and several documents created.
+            </p>
+            <bug id="2607"/>
+        </change>
+    </changes>
+    <changes for="template creators">
+        <change>
+            <p>
+                Put the imCMS-commercial html-comment (imcms_message.html) before the &lt;html>-tag instead of the before doctype declaration.
+            </p>
+            <bug id="2623"/>
+        </change>
+    </changes>
+    <changes for="administrators">
+        <change>
+            <p>
+                Disallow editing of user "user".
+            </p>
+            <bug id="2479"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug that made it impossible to create a category.
+            </p>
+            <bug id="2514"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug that prevented changing a category-type from multi-choice to single-choice.
+            </p>
+            <bug id="2515"/>
+        </change>
+        <change>
+            <p>
+                Database connections are now tested before use. This allows imCMS to survive database server restarts.
+            </p>
+            <bug id="2144"/>
+        </change>
+        <change>
+            <p>
+                "IndexingSchedulePeriodInMinutes" in "server.properties" now controls the time period between reindexings in minutes.
+            </p>
+            <bug id="2614"/>
+        </change>
+        <change>
+            <p>
+                Reindexing is no longer performed on startup unless needed.
+            </p>
+            <bug id="2625"/>
+        </change>
+        <change>
+            <p>
+                Added a little note about running SQL-scripts to INSTALL.TXT.
+            </p>
+            <bug id="2484"/>
+        </change>
+        <change>
+            <p>
+                The admin button is now visible for users with role "Useradmin" again.
+            </p>
+            <bug id="2629"/>
+        </change>
+    </changes>
+    <changes for="API-using developers">
+        <change>
+            <p>
+                Category now implements Comparable. Compares by name, ignoring case.
+            </p>
+        </change>
+        <change>
+            <p>
+                UserService.getUser(String) no longer requires superadmin permissions.
+            </p>
+            <bug id="2527"/>
+        </change>
+        <change>
+            <p>
+                Added classes:
+        - MailService - provides methods for sending e-mail.
+        - Mail - represents a mail to be sent with MailService. Uses javax.activation.DataSource for attachments.
+        - MailException - thrown by MailService.
+        - FileDocument - represents a filedocument
+        - FileDocument.FileDocumentFile - represents a single file in a filedocument. Implements javax.activation.DataSource.
+            </p>
+            <bug id="2490"/>
+            <bug id="2490"/>
+            <bug id="2551"/>
+            <bug id="2551"/>
+            <bug id="2551"/>
+        </change>
+        <change>
+            <p>
+                Added methods:
+        - ContentManagementSystem.getMailService() -
+        - DocumentService.createNewFileDocument() -
+        - DocumentService.getXmlDomForDocument() - returns an org.w3c.dom.Document representing a document. Currently only works with text-documents.
+        - Image.getSrc(String contextPath) - returns image-src with contextPath prepended.
+        - Image.getSrcRelativeToContextPath() - returns image-src without contextPath prepended.
+        - Image.getSize() - returns the size of the image in bytes.
+        - User.getId() - returns the user id.
+        - User.isDefaultUser() - returns true if the user is the default user ("user/user").
+        - DocumentPermissionSet.getEditMenusPermission() - returns true if this permission-set allows editing of menus.
+        - DocumentPermissionSet.setEditMenusPermission(boolean) - sets whether this permission-set allows editing of menus.
+            </p>
+            <bug id="2490"/>
+            <bug id="2491"/>
+            <bug id="2491"/>
+            <bug id="2491"/>
+            <bug id="2551"/>
+            <bug id="2551"/>
+            <bug id="2609"/>
+            <bug id="2609"/>
+            <bug id="2616"/>
+            <bug id="2616"/>
+        </change>
+        <change>
+            <p>
+                Removed methods:
+        - Image.getSrc() - use Image.getSrc(String contextPath) or Image.getSrcRelativeToContextPath()
+        - Image.getSrcUrl() - use Image.getSrc(String contextPath) or Image.getSrcRelativeToContextPath() This was necessary to completely remove imCMS dependence on a specific context path.
+            </p>
+            <bug id="2491"/>
+            <bug id="2491"/>
+        </change>
+        <change>
+            <p>
+                Removed deprecated fields:
+        - Document.Comparator.ACTIVATED_DATETIME - use Document.Comparator.PUBLICATION_START_DATETIME
+            </p>
+        </change>
+        <change>
+            <p>
+                Removed deprecated methods
+        - Document.setModifiedDateTime(Date) - use Document.setModifiedDatetime(Date)
+        - Document.getModifiedDateTime() - use Document.getModifiedDatetime()
+        - Document.getCreatedDateTime() - use Document.getCreatedDatetime()
+        - TextDocument.getMenuSortOrder() - use Menu.getSortOrder()
+        - TextDocument.setMenuSortOrder(int) - use Menu.setSortOrder(int)
+        - DocumentPermissionSet.getEditHeadlinePermission() - use DocumentPermissionSet.getEditDocumentInformationPermission()
+        - DocumentPermissionSet.setEditHeadlinePermission(boolean) - use DocumentPermissionSet.setEditDocumentInformationPermission(boolean)
+        - DocumentPermissionSet.getEditableMenuDocumentTypeNames() - removed, returning type-names is broken.
+            </p>
+            <bug id="2560"/>
+            <bug id="2560"/>
+            <bug id="2609"/>
+            <bug id="2609"/>
+            <bug id="2609"/>
+        </change>
+    </changes>
+    <changes for="developers">
+        <change>
+            <p>
+                The document-deletion procedure is now run in an transaction.
+            </p>
+            <bug id="2495"/>
+        </change>
+        <change>
+            <p>
+                It's now possible to send attachments with mails. This uses the Java Activation Framework (javax.activation) and JavaMail API implementations from the GNU classpathx project.
+            </p>
+            <bug id="2542"/>
+        </change>
+        <change>
+            <p>
+                Replaced imCMS own image-parsing routines with javax.imageio.ImageIO
+            </p>
+            <bug id="2493"/>
+        </change>
+        <change>
+            <p>
+                Started to change the database API to allow for transactions.
+            </p>
+            <bug id="2569"/>
+        </change>
+        <change>
+            <p>
+                Text document menus are now saved inside a transaction.
+            </p>
+            <bug id="2569"/>
+        </change>
+    </changes>
+</changeset>
+<changeset version="1.10.3">
+    <changes for="API-using developers">
+        <change>
+            <p>
+                Added constants for use in search-strings:
+        - TextDocument.TYPE_ID
+        - UrlDocument.TYPE_ID
+            </p>
+        </change>
+        <change>
+            <p>
+                Added methods:
+        - boolean User.isSuperAdmin()
+        - boolean User.canEdit(Document)
+        - String[] User.getRoleNames()
+        - DocumentService.createNewTextDocument(Document)
+        - DocumentService.createNewUrlDocument(Document)
+            </p>
+            <bug id="2521"/>
+            <bug id="2521"/>
+        </change>
+        <change>
+            <p>
+                Deprecated methods:
+        - DocumentService.createAndSaveNewTextDocument(Document)
+        - DocumentService.createAndSaveNewUrlDocument(Document)
+            </p>
+        </change>
+    </changes>
+    <changes for="administrators">
+        <change>
+            <p>
+                The ldap implementation should no longer be dependent on Microsoft Active Directory. Rewrote a big part of the ldap-configuration in "server.properties":
+        - "LdapUserName" is replaced by "LdapBindDn",
+        - "LdapUserObjectClass" is set to "inetOrgPerson" by default.
+        - "LdapUserIdentifyingAttribute" is replaced by "LdapUserAttribute.LoginName" which is only required if not using 'uid' in the "inetOrgPerson" objectclass. Ldap-attributes can now be arbitrarily mapped to user-properties. See the comments in "server.properties" for details.
+            </p>
+            <bug id="1981"/>
+            <bug id="2516"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug where removing a single phone number from a user had no effect.
+            </p>
+            <bug id="2471"/>
+        </change>
+        <change>
+            <p>
+                Use dos-style line-endings in the text-files in the zip file, and unix-style line-endings in the tarball.
+            </p>
+            <bug id="2485"/>
+        </change>
+    </changes>
+    <changes for="developers">
+        <change>
+            <p>
+                Instead of empty strings, use "localhost" for default database-host and "imcms" for default database-name.
+            </p>
+            <bug id="2488"/>
+        </change>
+    </changes>
+</changeset>
+<changeset version="1.10.2">
+    <changes for="API-using developers">
+        <change>
+            <p>
+                Added method Image.isEmpty() to determine whether an image is empty or not.
+            </p>
+            <bug id="2344"/>
+        </change>
+        <change>
+            <p>
+                Image.getWidth() and Image.getHeight() now return the actual size of the image as it will be displayed, instead of 0, unless the actual size couldn't be determined.
+            </p>
+            <bug id="2475"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug which caused includes to be done with the included document in adminmode.
+            </p>
+            <bug id="2449"/>
+        </change>
+        <change>
+            <p>
+                Image-tags containing filedocument-images are hidden from users without permissions to the filedocument.
+            </p>
+            <bug id="2454"/>
+        </change>
+        <change>
+            <p>
+                Fixed a mistake which prevented the imCMS-advertisement in "imcms_message.html" from being output at the beginning of every page.
+            </p>
+            <bug id="2445"/>
+        </change>
+        <change>
+            <p>
+                Allow files with extensions "jsp" and "js" to be edited in the file administrator ("FileAdmin").
+            </p>
+            <bug id="2406"/>
+        </change>
+        <change>
+            <p>
+                Build a zip file/tarball so people don't have to download more than one file.
+            </p>
+            <bug id="2460"/>
+        </change>
+        <change>
+            <p>
+                Fixed a number of problems with the conference login.
+            </p>
+            <bug id="2419"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug with the linkeditor in browsers other than Internet Explorer.
+            </p>
+            <bug id="2462"/>
+        </change>
+        <change>
+            <p>
+                Made the html-editor optional through the use of a cookie.
+            </p>
+            <bug id="2327"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug with creating external links in the html-editor.
+            </p>
+            <bug id="2418"/>
+        </change>
+        <change>
+            <p>
+                Fixed a couple of bugs related to creating new conferences and new conference-users.
+            </p>
+        </change>
+        <change>
+            <p>
+                Made listing many users somewhat quicker.
+            </p>
+            <bug id="2316"/>
+        </change>
+    </changes>
+</changeset>
+<changeset version="1.10.1">
+    <changes>
+        <change>
+            <p>
+                Fixed exception and possible menu-deletion when trying to readd an already existing document to a menu sorted by "manual" order.
+            </p>
+            <bug id="2443"/>
+        </change>
+        <change>
+            <p>
+                Included both english and swedish sql scripts in the distribution.
+            </p>
+        </change>
+    </changes>
+</changeset>
+<changeset version="1.10.0">
+    <changes for="users">
+        <change>
+            <p>
+                Filedocuments of types "png", "gif", or "jpeg" can now be used as images.
+            </p>
+            <bug id="2128"/>
+        </change>
+        <change>
+            <p>
+                Completely redid the image-selecting interface to allow for the new filedocuments-as-images paradigm.
+            </p>
+            <bug id="2128"/>
+        </change>
+        <change>
+            <p>
+                Replaced dropdown for selecting document publisher with a user-select dialog, and made the document creator settable in the same manner.
+            </p>
+            <bug id="2149"/>
+        </change>
+        <change>
+            <p>
+                Allow filedocument filenames of up to 255 characters, truncating somewhat intelligently if needed.
+            </p>
+            <bug id="2088"/>
+        </change>
+        <change>
+            <p>
+                Only show links to documents which the user has at least read permission on, or which are visible to non-authorized users.
+            </p>
+            <bug id="2387"/>
+        </change>
+        <change>
+            <p>
+                Fixed exception when adding documents to a menu sorted by "manual" order.
+            </p>
+            <bug id="2390"/>
+        </change>
+        <change>
+            <p>
+                Setting the modified time of a document is now possible, but it will still be updated the next time the document is modified.
+            </p>
+            <bug id="2367"/>
+        </change>
+    </changes>
+    <changes for="template creators">
+        <change>
+            <p>
+                The label attribute now works for the include-tag: &lt;?imcms:include label="Include label"?>
+            </p>
+            <bug id="1622"/>
+        </change>
+        <change>
+            <p>
+                The outputdescription-attribute of the documentcategories tag now takes two values, "true" or "only":
+        - "true": &lt;?imcms:documentcategories outputdescription="true"?> will output "categoryname - categorydescription"
+        - "only": &lt;?imcms:documentcategories outputdescription="only"?> will output "categorydescription"
+        - Not present: &lt;?imcms:documentcategories?> will output "categoryname".
+            </p>
+            <bug id="2151"/>
+        </change>
+    </changes>
+    <changes for="administrators">
+        <change>
+            <p>
+                The file "host.properties" is gone, and everything is put in "server.properties".
+            </p>
+            <bug id="2424"/>
+        </change>
+        <change>
+            <p>
+                Worked a little more on indexing robustness.
+            </p>
+            <bug id="2354"/>
+        </change>
+        <change>
+            <p>
+                Made the indexing work at a lower priority.
+            </p>
+            <bug id="2362"/>
+        </change>
+        <change>
+            <p>
+                Remove documents from the index when deleted.
+            </p>
+            <bug id="2365"/>
+        </change>
+        <change>
+            <p>
+                Fixed a bug in the linkchecker where some broken links would be flagged as OK.
+            </p>
+            <bug id="2336"/>
+        </change>
+        <change>
+            <p>
+                If "SessionCookieDomain" is set in "server.properties", a second JSESSIONID cookie will be set with the given domain.
+            </p>
+            <bug id="1886"/>
+        </change>
+    </changes>
+    <changes for="API-using developers">
+        <change>
+            <p>
+                Added methods TextDocument.getTextFields(), TextDocument.getImages(), and TextDocument.getIncludes()
+            </p>
+            <bug id="2344"/>
+        </change>
+        <change>
+            <p>
+                Added accessors Document.setVisibleInMenusForUnauthorizedUsers(boolean visibleInMenusForUnauthorizedUsers) and Document.isVisibleInMenusForUnauthorizedUsers()
+            </p>
+            <bug id="2351"/>
+        </change>
+        <change>
+            <p>
+                Added accessor Document.setCreator(User creator)
+            </p>
+            <bug id="2388"/>
+        </change>
+        <change>
+            <p>
+                Added method Document.getDocumentPermissionSetForUser()
+            </p>
+            <bug id="2153"/>
+        </change>
+        <change>
+            <p>
+                Added accessors TextDocument.Menu.getSortOrder() and TextDocument.Menu.setSortOrder(int sortOrder)
+            </p>
+            <bug id="2438"/>
+        </change>
+        <change>
+            <p>
+                Added method TextDocument.getMenus()
+            </p>
+            <bug id="2438"/>
+        </change>
+    </changes>
+    <changes for="developers">
+        <change>
+            <p>
+                Removed user-"categories".
+            </p>
+            <bug id="2149"/>
+        </change>
+        <change>
+            <p>
+                Refactored the code for creating and editing documents.
+            </p>
+            <bug id="2039"/>
+        </change>
+    </changes>
+</changeset>
+<changeset version="1.9.3">
+    <changes>
+        <change>
+            <p>
+                Only show links to documents which the user has at least read permission on, or which are visible to non-authorized users.
+            </p>
+            <bug id="2387"/>
+        </change>
+    </changes>
+</changeset>
+<changeset version="1.9.2">
+    <changes>
+        <change>
+            <p>
+                Fixed exception when adding documents to a menu sorted by "manual" order.
+            </p>
+            <bug id="2390"/>
+        </change>
+        <change>
+            <p>
+                Remove documents from the index when deleted.
+            </p>
+            <bug id="2365"/>
+        </change>
+    </changes>
+</changeset>
+<changeset version="1.9.1">
+    <changes>
+        <change>
+            <p>
+                Made the indexing a little more robust.
+            </p>
+        </change>
+    </changes>
+</changeset>
+<changeset version="1.9.0">
+    <changes for="users">
+        <change>
+            <p>
+                Simple/advanced view toggle for docinfo.
+            </p>
+        </change>
+        <change>
+            <p>
+                Admin-pages will now work on non-javascript-enabled browsers.
+            </p>
+        </change>
+        <change>
+            <p>
+                All admin-pages now use the new blue/white look.
+            </p>
+        </change>
+        <change>
+            <p>
+                The link checker will now also check linked images and urls in text-fields.
+            </p>
+        </change>
+        <change>
+            <p>
+                "Administer conferences" functionality moved to "List new/updated pages".
+            </p>
+        </change>
+        <change>
+            <p>
+                The session counter now counts sessions, not logins. This means that each visitor is only counted once per browser session, instead of once when entering the site and then again when logging in.
+            </p>
+        </change>
+    </changes>
+    <changes for="template creators">
+        <change>
+            <p>
+                New template tag: &lt;?imcms:contextpath?> will be replaced by the "context path" of the webapp. The context path is the root path to the webapp, usually the name of the webapp preceded by a slash, for example "/imcms". This is useful when one wants to construct an absolute URL. Example: &lt;img src="&lt;?imcms:contextpath?>/images/imCMSpower.gif" alt="Powered by imCMS">
+            </p>
+        </change>
+    </changes>
+    <changes for="administrators">
+        <change>
+            <p>
+                The webapp should now be possible to rename without having to change any templates.
+            </p>
+        </change>
+        <change>
+            <p>
+                We now return correct HTTP status codes: 404 for "Not found", and 403 for "Forbidden/Permission denied".
+            </p>
+        </change>
+        <change>
+            <p>
+                Changed database parameters to allow for different database-drivers: The parameters "Url", "Host", "Port", "DatabaseName" in imcms/WEB-INF/conf/server.properties were replaced by the single option "JdbcUrl", which for the Microsoft JDBC driver maps to the old parameters as follows: jdbc:microsoft:sqlserver://&lt;Host>:&lt;Port>;DatabaseName=&lt;DatabaseName>
+            </p>
+        </change>
+        <change>
+            <p>
+                The "MaxConnectionCount" in server.properties is ignored by the Microsoft JDBC Driver, unless one sets the driver parameter "SelectMethod" to "cursor". To do this, append ";SelectMethod=cursor" (note the semicolon) to the JdbcUrl. The default is "SelectMethod=direct", and this causes the MS JDBC driver to clone connections internally. See http://support.microsoft.com/default.aspx?scid=kb;EN-US;313220 for more information.
+            </p>
+        </change>
+        <change>
+            <p>
+                Conference, billboard, and chat should now work on case sensitive filesystems, for example on linux.
+            </p>
+        </change>
+        <change>
+            <p>
+                Reindexing of documents is now scheduled every 24 hours from startup. Reindexing is done to a new directory, "imcms/WEB-INF/index.new", which replaces the current index "imcms/WEB-INF/index" when complete.
+            </p>
+        </change>
+    </changes>
+    <changes for="API-using developers">
+        <change>
+            <p>
+                Moved the apisamples from "/apisamples/" to "/imcms/docs/apisamples/".
+            </p>
+        </change>
+        <change>
+            <p>
+                DocumentService.saveChanges(Document) is now synchronized as a poor mans transaction to prevent database conflicts.
+            </p>
+        </change>
+        <change>
+            <p>
+                Added method DocumentService.getCategoryType(int categoryTypeId)
+            </p>
+        </change>
+        <change>
+            <p>
+                Added method DocumentService.createNewCategoryType(String name, int maxChoices)
+            </p>
+        </change>
+        <change>
+            <p>
+                Added method DocumentService.createNewCategory(String name, String description, String imageUrl, CategoryType categoryType)
+            </p>
+        </change>
+        <change>
+            <p>
+                Added method TemplateService.getAllTemplateGroups()
+            </p>
+        </change>
+        <change>
+            <p>
+                Added accessors Template.getId() and TemplateGroup.getId().
+            </p>
+        </change>
+        <change>
+            <p>
+                Added convenience method DocumentService.parseLuceneSearchQuery(String) which returns a SearchQuery parsed according to Lucene syntax, see http://jakarta.apache.org/lucene/docs/queryparsersyntax.html
+            </p>
+        </change>
+    </changes>
+    <changes for="developers">
+        <change>
+            <p>
+                Cleaned up the file organization in the project.
+            </p>
+        </change>
+        <change>
+            <p>
+                Renamed all the ant-targets using more consistent names.
+            </p>
+        </change>
+        <change>
+            <p>
+                The API now has its own connection pool, so developers using the API can't accidentally starve the system of connections.
+            </p>
+        </change>
+        <change>
+            <p>
+                Jakarta Velocity (http://jakarta.apache.org/velocity/) can now be used in admintemplates and JSP-pages.
+            </p>
+        </change>
+        <change>
+            <p>
+                Searchable tokens in the index may now only consist of letters, digits, and underscores, instead of non-whitespace. This makes html index a little bit better, so that for example &lt;b>bold&lt;/b> is indexed as two words ("b" and "bold").
+            </p>
+        </change>
+    </changes>
+</changeset>
+</changesets>

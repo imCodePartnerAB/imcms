@@ -6,6 +6,7 @@ sql/**
 tools/**
 web/**
 *.TXT
+changes.*
 build.properties.template
 build.xml
 imcms_*.properties

@@ -157,7 +157,7 @@
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-       depends="init,jar,test,apidocs,libraries,web,conf,sql,versionfile,checksumsfile,addon"
+       depends="init,jar,test,apidocs,libraries,web,conf,sql,versionfile,checksumsfile,changes,addon"
        description="Builds everything."/>
 
     <target name="clean" description="Deletes everything for a fresh start.">
@@ -270,6 +270,10 @@
                 <exclude name="**/Mock*.java"/>
             </fileset>
         </javadoc>
+    </target>
+
+    <target name="changes">
+        <xslt in="changes.xml" style="tools/xsl/changes.xsl" out="changes.html"/>
     </target>
 
     <target name="checksumsfile">
