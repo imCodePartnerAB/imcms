@@ -7,6 +7,7 @@ import javax.servlet.http.Cookie ;
 
 import org.apache.oro.text.regex.* ;
 import imcode.server.* ;
+import imcode.server.db.DatabaseService;
 import imcode.server.util.DateHelper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -69,12 +70,9 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     private ReadrunnerFilter readrunnerFilter ;
 
-    private IMCServiceInterface serverObject;
-
-
     public ImcmsTagSubstitution (TextDocumentParser textdocparser, DocumentRequest documentRequest,
 				 File templatepath,
-				 List included_list, boolean includemode, int includelevel, File includepath,
+				 DatabaseService.Table_includes[] included_list, boolean includemode, int includelevel, File includepath,
 				 Map textmap, boolean textmode,
 				 Map imagemap, boolean imagemode,
 				 ParserParameters parserParameters,
@@ -82,16 +80,16 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	this.textDocParser = textdocparser ;
 	this.documentRequest = documentRequest ;
 	this.document = documentRequest.getDocument() ;
-	this.serverObject = textDocParser.getServerObject();
 
 	this.templatePath = templatepath ;
 
 	this.includeMode = includemode ;
 	this.includeLevel = includelevel ;
 	this.includePath = includepath ;
-	for (Iterator i = included_list.iterator(); i.hasNext() ;) {
-	    included_docs.put(i.next(), i.next()) ;
-	}
+    for( int i = 0; i < included_list.length; i++ ) {
+        DatabaseService.Table_includes table_includes = included_list[i];
+        included_docs.put(""+table_includes.include_id, ""+table_includes.included_meta_id ) ;
+    }
 
 	this.textMap = textmap ;
 	this.textMode = textmode ;

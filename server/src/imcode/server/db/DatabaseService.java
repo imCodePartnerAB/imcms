@@ -233,7 +233,7 @@ public abstract class DatabaseService {
         }
     }
 
-    Table_users[] sproc_GetAllUsers_OrderByLastName() {
+    public Table_users[] sproc_GetAllUsers_OrderByLastName() {
         String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip," +
             "country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date " +
             "from users ORDER BY last_name";
@@ -246,7 +246,7 @@ public abstract class DatabaseService {
     }
 
     // todo, ska man behöva stoppa in user_id här? Kan man inte bara få ett unikt?
-    int sproc_AddNewuser( Table_users userData ) {
+    public int sproc_AddNewuser( Table_users userData ) {
         String sql = "INSERT INTO users (user_id, login_name, login_password, first_name, last_name, title, " +
             "company, address, city, zip, country, county_council, email, external, last_page, archive_mode, " +
             "lang_id, user_type, active, create_date ) " + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -262,11 +262,11 @@ public abstract class DatabaseService {
 
     // todo: flytta in detta i addNewUser istället, och se till att det fungerar concurrently.
     // todo: kolla att det inte är highest+1 som förväntas.
-    int sproc_getHighestUserId() {
+    public int sproc_getHighestUserId() {
         throw new Error( "Dont use this!" );
     }
 
-    int sproc_updateUser( Table_users userData ) {
+    public int sproc_updateUser( Table_users userData ) {
         String sql = "Update users set " + "login_name = ?, " + "login_password = ?, " + "first_name = ?, " +
             "last_name = ?, " + "title = ?, " + "company = ?, " + "address =  ?, " + "city = ?, " + "zip = ?, " +
             "country = ?, " + "county_council =?, " + "email = ?, " + "user_type = ?, " + "active = ?, " +
@@ -293,7 +293,7 @@ public abstract class DatabaseService {
     /*
     Used to generate a list with all type of users. Used from AdminUserProps
     */
-    Table_user_types[] sproc_GetUserTypes( String lang_prefix ) {
+    public Table_user_types[] sproc_GetUserTypes( String lang_prefix ) {
         String sql = "SELECT DISTINCT user_type, type_name FROM user_types WHERE lang_prefix = ? ";
         Object[] paramValues = new Object[]{lang_prefix};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -309,7 +309,7 @@ public abstract class DatabaseService {
     */
     // todo: se till att detta fungerar även om fler försöker göra insert samtigit.
     // Todo: nöja mig med synchroniced på metoden? Eller se till att testa några gånger tills det går igenom?
-    int sproc_phoneNbrAdd( final int userId, final String number, final int phoneType ) {
+    public int sproc_phoneNbrAdd( final int userId, final String number, final int phoneType ) {
         final SQLTransaction transcation = sqlProcessor.startTransaction();
         transcation.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
@@ -347,7 +347,7 @@ public abstract class DatabaseService {
     // todo: ta bort från samtliga forreign key ställen (och inte bara från user_roles_crossref)? phones,
     // todo: user_flags_crossref, user_rights, useradmin_role_crossref
     // todo: Or Split into two, depending on how it is used.
-    int sproc_delUser( final int user_id ) {
+    public int sproc_delUser( final int user_id ) {
         final SQLTransaction transaction = sqlProcessor.startTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
@@ -368,7 +368,7 @@ public abstract class DatabaseService {
      * @param role_id The role of other users that this user should hav (new) permissions to administrate.
      * @return 1 if succed, otherwise 0.
      */
-    int sproc_AddUseradminPermissibleRoles( int user_id, int role_id ) {
+    public int sproc_AddUseradminPermissibleRoles( int user_id, int role_id ) {
         String sql = "INSERT INTO useradmin_role_crossref (user_id, role_id ) " +
             "VALUES ( ?, ? )";
         Object[] paramValues = new Object[]{new Integer( user_id ), new Integer( role_id )};
@@ -378,7 +378,7 @@ public abstract class DatabaseService {
     /**
      * Adds a role to a particular user
      */
-    int sproc_AddUserRole( int user_id, int role_id ) {
+    public int sproc_AddUserRole( int user_id, int role_id ) {
         // Lets check if the role already exists
         String sqlSelect = "SELECT role_id FROM user_roles_crossref WHERE user_id = ? AND role_id = ? ";
         Object[] paramValues = new Object[]{new Integer( user_id ), new Integer( role_id )};
@@ -396,7 +396,7 @@ public abstract class DatabaseService {
         }
     }
 
-    int sproc_ChangeUserActiveStatus( int user_id, boolean active ) {
+    public int sproc_ChangeUserActiveStatus( int user_id, boolean active ) {
         String sql = "UPDATE users SET active = ? WHERE user_id = ? ";
         Integer activeInteger = new Integer( active ? 1 : 0 );
         Integer userIdInteger = new Integer( user_id );
@@ -411,7 +411,7 @@ public abstract class DatabaseService {
      * @return
      */
     // todo döp om denna till, userExists eller nåt
-    boolean sproc_FindUserName( String userName ) {
+    public boolean sproc_FindUserName( String userName ) {
         String sql = "SELECT login_name FROM users WHERE LOWER(login_name) = ? ";
         Object[] paramValues = new Object[]{userName.toLowerCase()};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -424,19 +424,19 @@ public abstract class DatabaseService {
 
     // todo döp om till deleteAllPhonenumbersForUser eller nåt
     // todo klumpa ihop med delete userses?
-    int sproc_DelPhoneNr( int user_id ) {
+    public int sproc_DelPhoneNr( int user_id ) {
         String sql = "DELETE FROM phones WHERE user_id = ? ";
         Object[] paramValues = new Object[]{new Integer( user_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
-    int sproc_PhoneNbrDelete( int phone_id ) {
+    public int sproc_PhoneNbrDelete( int phone_id ) {
         String sql = "DELETE FROM phones WHERE phone_id = ? ";
         Object[] paramValues = new Object[]{new Integer( phone_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
-    int sproc_PhoneNbrUpdate( int user_id, int phone_id, String number, int phonetype_id ) {
+    public int sproc_PhoneNbrUpdate( int user_id, int phone_id, String number, int phonetype_id ) {
         String sql = "UPDATE phones SET number = ?, phonetype_id = ? " +
             "WHERE user_id = ? AND phone_id = ? ";
         Object[] paramValues = new Object[]{number, new Integer( phonetype_id ),
@@ -444,7 +444,7 @@ public abstract class DatabaseService {
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
-    String sproc_GetPhonetypeName( int phonetype_id, int lang_id ) {
+    public String sproc_GetPhonetypeName( int phonetype_id, int lang_id ) {
         String sql = "select typename from phonetypes " +
             "where phonetype_id = ? and lang_id = ? ";
         Object[] paramValues = new Object[]{new Integer( phonetype_id ), new Integer( lang_id )};
@@ -456,7 +456,7 @@ public abstract class DatabaseService {
         return (String)queryResult.get( 0 );
     }
 
-    static class Table_phonetypes {
+    public static class Table_phonetypes {
         private int phonetype_id;
         private String typename;
 
@@ -466,7 +466,7 @@ public abstract class DatabaseService {
         }
     }
 
-    Table_phonetypes[] sproc_GetPhonetypes_ORDER_BY_phonetype_id( int lang_id ) {
+    public Table_phonetypes[] sproc_GetPhonetypes_ORDER_BY_phonetype_id( int lang_id ) {
         String sql = " SELECT  phonetype_id, typename FROM phonetypes WHERE lang_id = ? ORDER BY phonetype_id";
         Object[] paramValues = new Object[]{new Integer( lang_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -477,7 +477,7 @@ public abstract class DatabaseService {
         return (Table_phonetypes[])queryResult.toArray( new Table_phonetypes[queryResult.size()] );
     }
 
-    static class Table_phone {
+    public static class Table_phone {
         private int phone_id;
         private String phoneNumber;
 
@@ -493,7 +493,7 @@ public abstract class DatabaseService {
      * @return
      */
     // todo: Warning, this method used to RTIM the phone numer result, not any longer...
-    Table_phone[] sproc_GetUserPhones( int user_id ) {
+    public Table_phone[] sproc_GetUserPhones( int user_id ) {
         String sql = "SELECT p.phone_id, p.number FROM users u , phones p " +
             "WHERE u.user_id = p.user_id AND u.user_id = ? ";
         Object[] paramValues = new Object[]{new Integer( user_id )};
@@ -538,7 +538,7 @@ public abstract class DatabaseService {
         return (JoinedTables_phones_phonetypes[])queryResult.toArray( new JoinedTables_phones_phonetypes[queryResult.size()] );
     }
 
-    int sproc_DocumentDelete( final int meta_id ) {
+    public int sproc_DocumentDelete( final int meta_id ) {
         final SQLTransaction transaction = sqlProcessor.startTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
@@ -568,7 +568,7 @@ public abstract class DatabaseService {
     }
 
     // todo: Döp om till documentExixts eller nåt...
-    boolean sproc_FindMetaId( int meta_id ) {
+    public boolean sproc_FindMetaId( int meta_id ) {
         String sql = "SELECT meta_id FROM meta WHERE meta_id = ?";
         Object[] paramValues = new Object[]{new Integer( meta_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -589,7 +589,7 @@ public abstract class DatabaseService {
      */
     // todo: Testa denna!!! Och gå igenom nogrannt!!!
     // todo: Ska inte ändringsdatumen uppdateras i denna också?
-    int sproc_AddExistingDocToMenu( int meta_id, int existing_meta_id, int doc_menu_no ) {
+    public int sproc_AddExistingDocToMenu( int meta_id, int existing_meta_id, int doc_menu_no ) {
         // test if this is the first child
         String sqlLinksCount = "select count(*) from childs where meta_id = ?  and menu_sort = ? ";
         Object[] paramValuesLinksCount = new Object[]{new Integer( meta_id ), new Integer( doc_menu_no )};
@@ -658,7 +658,7 @@ public abstract class DatabaseService {
      */
     // todo: döp om till getDocsForUser eller nåt.
     // todo: Tog bort i första raden ett DISTINCT från COUNT(DISTINCT c.meta_id) till COUNT(c.meta_id), fundera igenom om det gör något?
-    PartOfTable_document[] sproc_getDocs( int user_id, int start, int end ) {
+    public PartOfTable_document[] sproc_getDocs( int user_id, int start, int end ) {
         String sql = "SELECT DISTINCT m.meta_id, COUNT(c.meta_id) parentcount, meta_headline, doc_type FROM meta m " +
             "LEFT JOIN childs c ON c.to_meta_id = m.meta_id " +
             "LEFT JOIN roles_rights rr  ON rr.meta_id = m.meta_id AND rr.set_id < 4 " +
@@ -675,22 +675,22 @@ public abstract class DatabaseService {
         return (PartOfTable_document[])queryResult.toArray( new PartOfTable_document[queryResult.size()] );
     }
 
-    static class JoinedTables_meta_childs {
-        private int to_meta_id;
-        private int menu_sort;
-        private int manual_sort_order;
-        private int doc_type;
-        private boolean archive;
-        private String target;
-        private Timestamp date_created;
-        private Timestamp date_modified;
-        private String meta_headline;
-        private String meta_text;
-        private String meta_image;
-        private String frame_name;
-        private Timestamp activated_datetime;
-        private Timestamp archived_datetime;
-        private String filename;
+    public static class JoinedTables_meta_childs {
+        public int to_meta_id;
+        public int menu_sort;
+        public int manual_sort_order;
+        public int doc_type;
+        public boolean archive;
+        public String target;
+        public Timestamp date_created;
+        public Timestamp date_modified;
+        public String meta_headline;
+        public String meta_text;
+        public String meta_image;
+        public String frame_name;
+        public Timestamp activated_datetime;
+        public Timestamp archived_datetime;
+        public String filename;
 
         JoinedTables_meta_childs( ResultSet rs ) throws SQLException {
             to_meta_id = rs.getInt( "to_meta_id" );
@@ -718,7 +718,7 @@ public abstract class DatabaseService {
     // todo WARNING, i anropande kod måste en förändring ske!
     // todo Den bortkommenterade reden nedan beräknar om man har rätt att editera eller ej.
     // todo Se till att göra den kollen på annat sätt efteråt för varje dokument.
-    JoinedTables_meta_childs[] sproc_getChilds( int meta_id, int user_id ) {
+    public JoinedTables_meta_childs[] sproc_getChilds( int meta_id, int user_id ) {
         Integer sortOrder = getMenuSortOrder( meta_id );
         String sql =
             "select to_meta_id, c.menu_sort,manual_sort_order, doc_type," +
@@ -788,7 +788,7 @@ public abstract class DatabaseService {
     // assumed it was just roles. And only one role.
     // So a changed this to return only role_id's.
     // But I think that it should return a boolean true or fals if it is a
-    boolean sproc_CheckAdminRights( int user_id ) {
+    public boolean sproc_CheckAdminRights( int user_id ) {
         String sql = "SELECT roles.role_id FROM users " +
             "INNER JOIN user_roles_crossref ON users.user_id = user_roles_crossref.user_id " +
             "INNER JOIN roles ON user_roles_crossref.role_id = roles.role_id " +
@@ -810,7 +810,7 @@ public abstract class DatabaseService {
      */
     // todo, se till att denna inte anropas direkt utan att man anropar metoder isUserAdmin och isSuperAdmin istället.
     // med admin_role satt till 1 resp 2.
-    boolean sproc_checkUserAdminrole( int user_id, int admin_role ) {
+    public boolean sproc_checkUserAdminrole( int user_id, int admin_role ) {
         String sql = "SELECT admin_role FROM user_roles_crossref " +
             "INNER JOIN roles ON user_roles_crossref.role_id = roles.role_id " +
             "WHERE (user_roles_crossref.user_id = ? ) AND (roles.admin_role = ? )";
@@ -824,7 +824,7 @@ public abstract class DatabaseService {
     }
 
     // todo: Döp om till hasUserSharePemissionForDocument
-    boolean sproc_CheckUserDocSharePermission( int user_id, int meta_id ) {
+    public boolean sproc_CheckUserDocSharePermission( int user_id, int meta_id ) {
         String sql = "SELECT m.meta_id FROM meta m " +
             "JOIN user_roles_crossref urc ON urc.user_id = ? AND m.meta_id = ? " +
             "LEFT join roles_rights rr ON rr.meta_id = m.meta_id AND rr.role_id = urc.role_id " +
@@ -850,7 +850,7 @@ public abstract class DatabaseService {
      */
     // todo: se till att man använder de två implementations metoderna direkt i stället.
     // todo: döp om till deleteUsersRole
-    int sproc_DelUserRoles( int user_id, int role_id ) {
+    public int sproc_DelUserRoles( int user_id, int role_id ) {
         int rowCount = 0;
         if( role_id == -1 ) {
             rowCount += deleteFrom_user_roles( user_id );
@@ -872,7 +872,7 @@ public abstract class DatabaseService {
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
-    String sproc_GetFileName( int metaId ) {
+    public String sproc_GetFileName( int metaId ) {
         String sql = "SELECT filename FROM fileupload_docs WHERE meta_id = ?";
         Object[] paramValues = new Object[]{new Integer( metaId )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -883,7 +883,7 @@ public abstract class DatabaseService {
         return (String)(queryResult.size() > 0 ? queryResult.get( 0 ) : null);
     }
 
-    int sproc_GetDocType( int meta_id ) {
+    public int sproc_GetDocType( int meta_id ) {
         String sql = "SELECT doc_type FROM meta WHERE meta_id = ?";
         Object[] paramValues = new Object[]{new Integer( meta_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -894,7 +894,7 @@ public abstract class DatabaseService {
         return ((Integer)queryResult.get( 0 )).intValue();
     }
 
-    class Table_doc_types {
+    public class Table_doc_types {
         private int doc_type;
         private String type;
 
@@ -904,7 +904,7 @@ public abstract class DatabaseService {
         }
     }
 
-    Table_doc_types[] sproc_GetDocTypes( String lang_prefix ) {
+    public Table_doc_types[] sproc_GetDocTypes( String lang_prefix ) {
         String sql = "SELECT doc_type,type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type";
         Object[] paramValues = new Object[]{lang_prefix};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -993,7 +993,7 @@ public abstract class DatabaseService {
      Nice query that fetches all document types a user may create in a document,
      for easy insertion into an html-option-list, no less!
      */
-    Table_doc_types[] sproc_GetDocTypesForUser( int user_id, int meta_id, String lang_prefix ) {
+    public Table_doc_types[] sproc_GetDocTypesForUser( int user_id, int meta_id, String lang_prefix ) {
         String sql = "SELECT DISTINCT dt.doc_type, dt.type " +
             "FROM doc_types dt " +
             "JOIN user_roles_crossref urc " +
@@ -1173,7 +1173,7 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     };
 
-    static class Table_url_docs {
+    public static class Table_url_docs {
         private int meta_id;
         private String frame_name;
         private String target;
@@ -1214,7 +1214,7 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_browser_docs {
+    public static class Table_browser_docs {
         private int meta_id;
         private int to_meta_id;
         private int browser_id;
@@ -1251,7 +1251,7 @@ public abstract class DatabaseService {
         }
     }
 
-    JoinedTables_meta_browser_docs[] sproc_getBrowserDocChilds( int meta_id, int user_id ) {
+    public JoinedTables_meta_browser_docs[] sproc_getBrowserDocChilds( int meta_id, int user_id ) {
         String sql = "SELECT DISTINCT to_meta_id, meta_headline FROM browser_docs bd JOIN meta m " +
             "ON  bd.to_meta_id = m.meta_id AND bd.meta_id = ? " +
             "LEFT JOIN roles_rights rr ON rr.meta_id = m.meta_id AND rr.set_id < 4 " +
@@ -1273,7 +1273,7 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_frameset_docs {
+    public static class Table_frameset_docs {
         private int meta_id;
         private String frame_set;
 
@@ -1304,7 +1304,7 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_fileupload_docs {
+    public static class Table_fileupload_docs {
         private int meta_id;
         private String filename;
         private String mime;
@@ -1337,7 +1337,7 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    class Table_texts {
+    public class Table_texts {
         public int meta_id;
         private int name;
         private String text;
@@ -1392,7 +1392,7 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_images {
+    public static class Table_images {
         private int meta_id;
         private int width;
         private int height;
@@ -1430,7 +1430,7 @@ public abstract class DatabaseService {
 
     // todo: Varning, Denna sproc returnerar inte exakt i den ordning som den ursprungliga sproc ville ha det.
     // todo: ej heller inehåller resultatet den formaterade varianten av name: '#img'+convert(varchar(5), name)+'#'
-    Table_images[] sproc_getImages( int meta_id ) {
+    public Table_images[] sproc_getImages( int meta_id ) {
         return selectFrom_images( new Integer( meta_id ) );
     }
 
@@ -1458,10 +1458,10 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_includes {
+    public static class Table_includes {
         private int meta_id;
-        private int include_id;
-        private int included_meta_id;
+        public int include_id;
+        public int included_meta_id;
 
         Table_includes( ResultSet rs ) throws SQLException {
             meta_id = rs.getInt( "meta_id" );
@@ -1470,7 +1470,7 @@ public abstract class DatabaseService {
         }
     }
 
-    Table_includes[] sproc_GetInclues( int meta_id ) {
+    public Table_includes[] sproc_GetIncludes( int meta_id ) {
         return selectFrom_includes( new Integer( meta_id ) );
     }
 
@@ -1492,7 +1492,7 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_doc_permission_sets {
+    public static class Table_doc_permission_sets {
         private int meta_id;
         private int set_id;
         private int permission_id;
@@ -1593,7 +1593,7 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_new_doc_permission_sets_ex {
+    public static class Table_new_doc_permission_sets_ex {
         private int meta_id;
         private int set_id;
         private int permission_id;
@@ -1628,7 +1628,7 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_roles_rights {
+    public static class Table_roles_rights {
         private int role_id;
         private int meta_id;
         private int set_id;
@@ -1661,7 +1661,7 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_meta_classification {
+    public static class Table_meta_classification {
         private int meta_id;
         private int class_id;
 
@@ -1692,7 +1692,7 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_meta_section {
+    public static class Table_meta_section {
         int meta_id;
         int section_id;
 
@@ -1840,7 +1840,7 @@ public abstract class DatabaseService {
      */
     // Todo: Denna returnerade i orginalutförandet endast en del av datan som finns för rad i tabellen texts,
     // todo: ok att returnera hela på detta sätt?
-    Table_texts sproc_GetText( int meta_id, int name ) {
+    public Table_texts sproc_GetText( int meta_id, int name ) {
         Table_texts[] allTextInDocument = selectFrom_texts( new Integer( meta_id ) );
         for( int i = 0; i < allTextInDocument.length; i++ ) {
             Table_texts table_texts = allTextInDocument[i];
@@ -1851,13 +1851,13 @@ public abstract class DatabaseService {
         return null;
     }
 
-    int sproc_deleteInclude( int meta_id, int include_id ) {
+    public int sproc_deleteInclude( int meta_id, int include_id ) {
         String sql = "DELETE FROM includes WHERE meta_id = ? AND include_id = ? ";
         Object[] paramValues = new Object[]{new Integer( meta_id ), new Integer( include_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
-    Table_users sproc_GetUserType( int meta_id ) {
+    public Table_users sproc_GetUserType( int meta_id ) {
         return selectFrom_users( new Integer( meta_id ) );
     }
 
@@ -1893,11 +1893,11 @@ public abstract class DatabaseService {
 
     // todo: Denna returnerar lang_id istället för lang prefix
     // todo: anropa även sproc_GetLangPrefixFromId för denna information
-    Table_users sproc_GetUserInfo( int user_id ) {
+    public Table_users sproc_GetUserInfo( int user_id ) {
         return selectFrom_users( new Integer( user_id ) );
     }
 
-    static class Table_languages {
+    public static class Table_languages {
         private String lang_prefix;
         private String user_prefix;
         private String language;
@@ -1909,7 +1909,7 @@ public abstract class DatabaseService {
         }
     }
 
-    Table_languages[] sproc_getLanguages() {
+    public Table_languages[] sproc_getLanguages() {
         String sql = "select lang_prefix, user_prefix, language from languages order by language";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
@@ -1951,7 +1951,7 @@ public abstract class DatabaseService {
         }
     }
 
-    int sproc_GetRoleIdByRoleName( String role_name ) {
+    public int sproc_GetRoleIdByRoleName( String role_name ) {
         String sql = "SELECT role_id FROM roles WHERE role_name like ? ";
         Object[] paramValues = new Object[]{role_name};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -1972,7 +1972,7 @@ public abstract class DatabaseService {
         }
     }
 
-    JoinedTables_langprefixes_language[] sproc_GetLanguageList( String lang_prefix ) {
+    public JoinedTables_langprefixes_language[] sproc_GetLanguageList( String lang_prefix ) {
         String sql = "SELECT lp.lang_id , lang.language FROM lang_prefixes lp, languages lang " +
             "WHERE lp.lang_prefix = lang.lang_prefix AND lang.user_prefix = ? ";
         Object[] paramValues = new Object[]{lang_prefix};
@@ -1984,7 +1984,7 @@ public abstract class DatabaseService {
         return (JoinedTables_langprefixes_language[])queryResult.toArray( new JoinedTables_langprefixes_language[queryResult.size()] );
     }
 
-    static class Table_templates {
+    public static class Table_templates {
         private int template_id;
         public String simple_name;
 
@@ -2009,7 +2009,7 @@ public abstract class DatabaseService {
         }
     }
 
-    Table_templates[] sproc_getTemplates() {
+    public Table_templates[] sproc_getTemplates() {
         String sql = "select template_id, simple_name from templates";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
@@ -2019,7 +2019,7 @@ public abstract class DatabaseService {
         return (Table_templates[])queryResult.toArray( new Table_templates[queryResult.size()] );
     }
 
-    Table_templates[] sproc_GetTemplatesInGroup( int groupId ) {
+    public Table_templates[] sproc_GetTemplatesInGroup( int groupId ) {
         String sql = "SELECT t.template_id,simple_name FROM templates t " +
             "JOIN templates_cref c ON  t.template_id = c.template_id " +
             "WHERE c.group_id = ? " +
@@ -2033,7 +2033,7 @@ public abstract class DatabaseService {
         return (Table_templates[])queryResult.toArray( new Table_templates[queryResult.size()] );
     }
 
-    int sproc_GetTemplateId( String simple_name ) {
+    public int sproc_GetTemplateId( String simple_name ) {
         String sql = "SELECT template_id FROM templates WHERE simple_name = ? ";
         Object[] paramValues = new Object[]{simple_name};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -2045,7 +2045,7 @@ public abstract class DatabaseService {
         return ((Integer)queryResult.get( 0 )).intValue();
     }
 
-    String sproc_GetUserPassword( int user_id ) {
+    public String sproc_GetUserPassword( int user_id ) {
         String sql = "SELECT login_password FROM USERS WHERE user_id = ? ";
         Object[] paramValues = new Object[]{new Integer( user_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -2070,7 +2070,7 @@ public abstract class DatabaseService {
         }
     }
 
-    PartOfTable_roles[] sproc_getUserRoleIds( int user_id ) {
+    public PartOfTable_roles[] sproc_getUserRoleIds( int user_id ) {
         String sql = "SELECT roles.role_id, role_name FROM roles, user_roles_crossref WHERE roles.role_id = user_roles_crossref.role_id AND user_roles_crossref.user_id = ? ";
         Object[] paramValues = new Object[]{new Integer( user_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -2094,7 +2094,7 @@ public abstract class DatabaseService {
     }
 
     // todo: Denna returnerar inte riktigt samma som tidigare. För och Efternamn är uppdelat i olika fält.
-    PartOfTable_users[] sproc_GetUsersWhoBelongsToRole( int role_id ) {
+    public PartOfTable_users[] sproc_GetUsersWhoBelongsToRole( int role_id ) {
         String sql = "SELECT u.user_id, u.last_name, u.first_name FROM user_roles_crossref us " +
             "JOIN users u ON us.user_id = u.user_id WHERE role_id = ? ORDER BY last_name";
         Object[] paramValues = new Object[]{new Integer( role_id )};
@@ -2110,7 +2110,7 @@ public abstract class DatabaseService {
      This function is used from AdminIpAcces servlet to generate a list
      */
     // todo: Denna returnerar inte riktigt samma som tidigare. För och Efternamn är uppdelat i olika fält.
-    PartOfTable_users[] sproc_GetAllUsersInList() {
+    public PartOfTable_users[] sproc_GetAllUsersInList() {
         String sql = "SELECT user_id, last_name, first_name from users ORDER BY last_name";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
@@ -2125,7 +2125,7 @@ public abstract class DatabaseService {
         return Integer.parseInt( selectFrom_sys_data( type_id ) );
     }
 
-    int sproc_StartDocSet( int meta_id ) {
+    public int sproc_StartDocSet( int meta_id ) {
         return update_sys_data( new Integer( 0 ), new Integer( meta_id ) );
     }
 
@@ -2143,7 +2143,7 @@ public abstract class DatabaseService {
         return selectFrom_sys_data( type_id );
     }
 
-    int sproc_SetSessionCounterDate( String counterDate ) {
+    public int sproc_SetSessionCounterDate( String counterDate ) {
         return update_sys_data( new Integer( 2 ), counterDate );
     }
 
@@ -2152,7 +2152,7 @@ public abstract class DatabaseService {
         return selectFrom_sys_data( type_id );
     }
 
-    int sproc_SystemMessageSet( String newMsg ) {
+    public int sproc_SystemMessageSet( String newMsg ) {
         return update_sys_data( new Integer( 3 ), newMsg );
     }
 
@@ -2166,11 +2166,11 @@ public abstract class DatabaseService {
         return selectFrom_sys_data( type_id );
     }
 
-    int sproc_ServerMasterSet_name( String name ) {
+    public int sproc_ServerMasterSet_name( String name ) {
         return update_sys_data( new Integer( 4 ), name );
     }
 
-    int sproc_ServerMasterSet_address( String address ) {
+    public int sproc_ServerMasterSet_address( String address ) {
         return update_sys_data( new Integer( 5 ), address );
     }
 
@@ -2184,11 +2184,11 @@ public abstract class DatabaseService {
         return selectFrom_sys_data( type_id );
     }
 
-    int sproc_WebMasterSet_name( String name ) {
+    public int sproc_WebMasterSet_name( String name ) {
         return update_sys_data( new Integer( 6 ), name );
     }
 
-    int sproc_WebMasterSet_address( String address ) {
+    public int sproc_WebMasterSet_address( String address ) {
         return update_sys_data( new Integer( 7 ), address );
     }
 
@@ -2240,7 +2240,7 @@ public abstract class DatabaseService {
         }
     }
 
-    int sproc_SectionChangeAndDeleteCrossref( final int new_section_id, final int old_section_id ) {
+    public int sproc_SectionChangeAndDeleteCrossref( final int new_section_id, final int old_section_id ) {
         final SQLTransaction transaction = sqlProcessor.startTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
@@ -2255,7 +2255,7 @@ public abstract class DatabaseService {
         return transaction.getRowCount();
     }
 
-    Table_section[] sproc_SectionGetAll() {
+    public Table_section[] sproc_SectionGetAll() {
         String sql = "SELECT section_id, section_name FROM sections";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
@@ -2265,7 +2265,7 @@ public abstract class DatabaseService {
         return (Table_section[])queryResult.toArray( new Table_section[queryResult.size()] );
     }
 
-    static class Table_section_count extends Table_section {
+    public static class Table_section_count extends Table_section {
         private int doc_count;
 
         Table_section_count( ResultSet rs ) throws SQLException {
@@ -2274,7 +2274,7 @@ public abstract class DatabaseService {
         }
     }
 
-    Table_section_count[] sproc_SectionGetAllCount() {
+    public Table_section_count[] sproc_SectionGetAllCount() {
         String sql = "select s.section_id, s.section_name, count(meta_id) AS doc_count " +
             "from sections s left join meta_section ms on s.section_id = ms.section_id " +
             "group by s.section_name, s.section_id order by section_name";
@@ -2289,7 +2289,7 @@ public abstract class DatabaseService {
     /**
      * Gets the number of docs that is connected to that section_id
      */
-    int sproc_SectionCount( int section_id ) {
+    public int sproc_SectionCount( int section_id ) {
         String sql = "select count(meta_id) AS meta_id_count from meta_section where section_id= ? ";
         Object[] paramValues = new Object[]{new Integer( section_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -2300,7 +2300,7 @@ public abstract class DatabaseService {
         return ((Integer)queryResult.get( 0 )).intValue();
     }
 
-    int sproc_SectionDelete( final int section_id ) {
+    public int sproc_SectionDelete( final int section_id ) {
         final SQLTransaction transaction = sqlProcessor.startTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
@@ -2329,7 +2329,7 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    int sproc_SectionChangeName( final Table_section sectionData ) {
+    public int sproc_SectionChangeName( final Table_section sectionData ) {
         final SQLTransaction transaction = sqlProcessor.startTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
@@ -2345,7 +2345,7 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    int sproc_SectionAdd( final Table_section sectionData ) {
+    public int sproc_SectionAdd( final Table_section sectionData ) {
         final SQLTransaction transaction = sqlProcessor.startTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
@@ -2386,7 +2386,7 @@ public abstract class DatabaseService {
      * Lets insert the crossreferences but first we deleta all oldones for this meta_id
      * @return
      */
-    int sproc_SectionAddCrossref( final Table_meta_section tableData ) {
+    public int sproc_SectionAddCrossref( final Table_meta_section tableData ) {
         final SQLTransaction transaction = sqlProcessor.startTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
@@ -2397,7 +2397,7 @@ public abstract class DatabaseService {
         return transaction.getRowCount();
     }
 
-    class Table_roles {
+    public class Table_roles {
         private int role_id;
         private String role_name;
         private int permissions;
@@ -2411,7 +2411,7 @@ public abstract class DatabaseService {
         }
     }
 
-    Table_roles[] sproc_GetAllRoles_but_user() {
+    public Table_roles[] sproc_GetAllRoles_but_user() {
         String sql = "SELECT role_id, role_name, permissions, admin_role FROM roles WHERE role_name <> 'Users' ORDER BY role_name";
         Object[] paramValues = null;
 
@@ -2511,7 +2511,7 @@ public abstract class DatabaseService {
         }
     }
 
-    static class Table_templategroups {
+    public static class Table_templategroups {
         int group_id;
         String group_name;
 
@@ -2554,7 +2554,7 @@ public abstract class DatabaseService {
         return (Table_templategroups[])queryResult.toArray( new Table_templategroups[queryResult.size()] );
     }
 
-    int sproc_UpdateParentsDateModified( int meta_id ) {
+    public int sproc_UpdateParentsDateModified( int meta_id ) {
         Integer parent_meta_id = selectFrom_childs_getParentId( new Integer(meta_id) );
 
         if( null == parent_meta_id ) {
@@ -2601,7 +2601,7 @@ public abstract class DatabaseService {
      * Lets get all IPaccesses from db. Used  by the AdminIpAccesses
     */
     // todo: denna returnerar endast users som finns kvar i systemet. Gamla user_ids försvinner, ska det vara så?
-    Table_ip_accesses[] sproc_IPAccessesGetAll() {
+    public Table_ip_accesses[] sproc_IPAccessesGetAll() {
         String sql = "SELECT ip.ip_access_id, ip.user_id, usr.login_name, ip.ip_start, ip.ip_end " +
             "FROM IP_ACCESSES ip, USERS usr WHERE ip.user_id = usr.user_id";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
@@ -2620,7 +2620,7 @@ public abstract class DatabaseService {
      * @return
      */
     // todo: Borde inte ip_access_id vara en primary key, och user_id en forreign?
-    int sproc_IPAccessAdd( final int user_id, final long ip_start, final long ip_end ) {
+    public int sproc_IPAccessAdd( final int user_id, final long ip_start, final long ip_end ) {
         final SQLTransaction transaction = sqlProcessor.startTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
@@ -2637,7 +2637,7 @@ public abstract class DatabaseService {
     /**
      * Updates the IPaccess table
      */
-    int sproc_IPAccessUpdate( Table_ip_accesses tableData ) {
+    public int sproc_IPAccessUpdate( Table_ip_accesses tableData ) {
         String sql = "UPDATE ip_accesses SET user_id = ? , ip_start = ?, ip_end = ? WHERE ip_access_id = ? ";
         Object[] paramValues = new Object[]{ new Integer( tableData.user_id ), new Double(tableData.ip_start),
                                              new Long(tableData.ip_end ), new Long(tableData.ip_access_id) };
@@ -2647,7 +2647,7 @@ public abstract class DatabaseService {
     /**
      * Deletes an Ip-access for a user. Used by the AdminIpAccess servlet
     */
-    int sproc_IPAccessDelete( int ip_access_id ) {
+    public int sproc_IPAccessDelete( int ip_access_id ) {
         String sql = "DELETE FROM ip_accesses WHERE ip_access_id = ? ";
         Object[] paramValues = new Object[]{ new Integer( ip_access_id ) };
         return sqlProcessor.executeUpdate( sql, paramValues );
@@ -2668,7 +2668,7 @@ public abstract class DatabaseService {
      * the sortorder options  display text for that language.
      * Example: SortOrder_GetExistingDocs 'se'.
      */
-    JoinedTables_sort_by_display_name[] sproc_SortOrder_GetExistingDocs( String lang_prefix ) {
+    public JoinedTables_sort_by_display_name[] sproc_SortOrder_GetExistingDocs( String lang_prefix ) {
         String sql = "SELECT sType.sort_by_type , display.display_name FROM lang_prefixes lang " +
             "INNER JOIN display_name display ON display.lang_id = lang.lang_id AND lang.lang_prefix = ? " +
             "INNER JOIN sort_by sType ON sType.sort_by_id = display.sort_by_id";
@@ -2782,7 +2782,7 @@ public abstract class DatabaseService {
         }
     }
 
-    Table_polls[] sproc_Poll_GetAll() {
+    public Table_polls[] sproc_Poll_GetAll() {
         String sql = "SELECT id, name, description, meta_id, popup_freq, set_cookie, hide_result, confirmation_text, " +
             "email_recipients, result_template FROM polls";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {

@@ -300,7 +300,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_GetIncludes( DatabaseService databaseService ) {
-        assertEquals( 1, databaseService.sproc_GetInclues( DOC_TEST_FIRST_ID ).length );
+        assertEquals( 1, databaseService.sproc_GetIncludes( DOC_TEST_FIRST_ID ).length );
     }
 
     private void test_sproc_GetText( DatabaseService databaseService ) {

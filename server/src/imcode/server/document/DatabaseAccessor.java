@@ -25,7 +25,6 @@ public class DatabaseAccessor {
     private static final String SPROC_GET_TEMPLATES_IN_GROUP = "GetTemplatesInGroup";
     private static final String SPROC_GET_TEMPLATE_GROUPS_FOR_USER = "GetTemplategroupsForUser";
     private static final String SPROC_GET_FILE_NAME = "GetFileName";
-    private static final String SPROC_GET_INCLUDES = "GetIncludes";
     private static final String SPROC_INSERT_TEXT = "InsertText";
     private static final String SPROC_UPDATE_PARENTS_DATE_MODIFIED = "UpdateParentsDateModified";
     private static final String SPROC_SECTION_ADD_CROSSREF = "SectionAddCrossref";
@@ -34,9 +33,7 @@ public class DatabaseAccessor {
     private static final String SPROC_GET_PERMISSION_SET = "GetPermissionSet";
     private static final String SPROC_GET_DOC_TYPES_WITH_PERMISSIONS = "GetDocTypesWithPermissions";
     private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "getTemplateGroupsWithPermissions";
-    private static final String SPROC_TEXT_DOC_DATA = "GetTextDocData";
     private static final String SPROC_GET_TEMPLATE_ID = "GetTemplateId";
-    private static final String SPROC_GET_CHILDS = "getChilds";
     private static final String SPROC_GET_IMGS = "GetImgs";
 
     // todo make sure all the following is only used in one and only sprocMethod and nowhere else
@@ -342,13 +339,6 @@ public class DatabaseAccessor {
         imcref.sqlUpdateProcedure( SPROC_SECTION_ADD_CROSSREF + " " + meta_id + ", " + section_id );
     }
 
-    public static Vector sprocGetIncludes( DBConnect dbc, int meta_id ) {
-        dbc.setProcedure( SPROC_GET_INCLUDES, String.valueOf( meta_id ) );
-        Vector included_docs = dbc.executeProcedure();
-        dbc.clearResultSet();
-        return included_docs;
-    }
-
     public static Vector sprocGetDocTypeForUser( DBConnect dbc, UserDomainObject user, int meta_id, String lang_prefix ) {
         String sqlStr = SPROC_GET_DOC_TYPES_FOR_USER;
         String[] sqlAry2 = {String.valueOf( meta_id ), String.valueOf( user.getUserId() ), lang_prefix};
@@ -393,12 +383,6 @@ public class DatabaseAccessor {
         dbc.setProcedure( SPROC_GET_IMGS, String.valueOf( meta_id ) );
         Vector images = dbc.executeProcedure();
         return images;
-    }
-
-    public static Vector sprocGetChilds( DBConnect dbc, String meta_id_str, String user_id_str ) {
-        dbc.setProcedure( SPROC_GET_CHILDS, new String[]{meta_id_str, user_id_str} );
-        Vector childs = dbc.executeProcedure();
-        return childs;
     }
 
     public static void sqlUpdateMetaDateCreated( IMCServiceInterface imcref, String meta_id, String created_datetime ) {

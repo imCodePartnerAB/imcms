@@ -91,12 +91,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         try {
             DocumentDomainObject myDoc = documentRequest.getDocument();
             int meta_id = myDoc.getMetaId();
-            String meta_id_str = String.valueOf( meta_id );
 
             UserDomainObject user = documentRequest.getUser();
             int user_id = user.getUserId();
-            String user_id_str = String.valueOf( user_id );
-
 
             //handles the extra parameters
             String template_name = paramsToParse.getTemplate();
@@ -128,7 +125,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             }
 
             DBConnect dbc = new DBConnect( connPool );
-            Vector included_docs = DatabaseAccessor.sprocGetIncludes( dbc, meta_id );
 
             String template_id = "" + myDoc.getTemplate().getId();
             String simple_name = myDoc.getTemplate().getSimple_name();
@@ -180,7 +176,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             // Here we have the most timeconsuming part of parsing the page.
             // Selecting all the documents with permissions from the DB
-            Vector childs = DatabaseAccessor.sprocGetChilds( dbc, meta_id_str, user_id_str );
+            DatabaseService.JoinedTables_meta_childs[] childs = serverObject.getDatabaseService().sproc_getChilds( meta_id, user_id );
 
             if( childs == null ) {
                 dbc.closeConnection();
@@ -296,8 +292,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             int old_menu = -1;
             SimpleDateFormat DATETIMEFORMAT = DateHelper.DATE_TIME_FORMAT_IN_DATABASE;
 
-            Iterator childIt = childs.iterator();
-            while( childIt.hasNext() ) {
+            for( int i = 0; i < childs.length; i++ ) {
+                DatabaseService.JoinedTables_meta_childs child = childs[i];
                 // The menuitemproperties are retrieved in the following order:
                 // to_meta_id,
                 // c.menu_sort,
@@ -315,43 +311,28 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 // archived_date+archived_time
                 // 0 if admin
                 // filename
-                int childMetaId = Integer.parseInt( (String)childIt.next() );
-                int menuno = Integer.parseInt( (String)childIt.next() );              // What menu in the page the child is in.
-                if( menuno != old_menu ) {	                                     // If we come upon a new menu...
+                int childMetaId = child.to_meta_id;
+                int menuno = child.menu_sort;              // What menu in the page the child is in.
+                if( menuno != old_menu ) {	               // If we come upon a new menu...
                     old_menu = menuno;
                     currentMenu = new Menu( menuno, sort_order, menumode, imageUrl );	     // We make a new Menu,
                     menus.put( new Integer( menuno ), currentMenu );		     // and add it to the page.
                 }
                 MenuItem menuItem = new MenuItem( currentMenu );
                 menuItem.setMetaId( childMetaId );                                    // The meta-id of the child
-                menuItem.setSortKey( Integer.parseInt( (String)childIt.next() ) );      // What order the document is sorted in in the menu, using sort-order 2 (manual sort)
-                menuItem.setDocumentType( Integer.parseInt( (String)childIt.next() ) ); // The doctype of the child.
-                menuItem.setArchived( !"0".equals( childIt.next() ) );          // Child is considered archived?
-                menuItem.setTarget( (String)childIt.next() );                         // The target for this document.
-                try {
-                    menuItem.setCreatedDatetime( DATETIMEFORMAT.parse( (String)childIt.next() ) ); // The datetime the child was created.
-                } catch( java.text.ParseException ignored ) {
-                }
-                try {
-                    menuItem.setModifiedDatetime( DATETIMEFORMAT.parse( (String)childIt.next() ) ); // The datetime the child was modified.
-                } catch( java.text.ParseException ignored ) {
-                }
-                menuItem.setHeadline( (String)childIt.next() );                       // The headline of the child.
-                menuItem.setText( (String)childIt.next() );                           // The subtext for the child.
-                menuItem.setImage( (String)childIt.next() );                          // An optional imageurl for this document.
-                childIt.next();                                                     // Ignored. The target frame for this document. Replaced by 'target'.
-                try {
-                    menuItem.setActivatedDatetime( DATETIMEFORMAT.parse( (String)childIt.next() ) ); // The datetime the child will be/was activated
-                } catch( NullPointerException ignored ) {
-                } catch( ParseException ignored ) {
-                }
-                try {
-                    menuItem.setArchivedDatetime( DATETIMEFORMAT.parse( (String)childIt.next() ) ); // The datetime the child will be/was archived
-                } catch( NullPointerException ignored ) {
-                } catch( ParseException ignored ) {
-                }
-                menuItem.setEditable( "0".equals( childIt.next() ) );           // if the user may admin it.
-                menuItem.setFilename( (String)childIt.next() );                       // The filename, if it is a file-doc.
+                menuItem.setSortKey( child.manual_sort_order );    // What order the document is sorted in in the menu, using sort-order 2 (manual sort)
+                menuItem.setDocumentType( child.doc_type ); // The doctype of the child.
+                menuItem.setArchived( child.archive );          // Child is considered archived?
+                menuItem.setTarget( child.target );                         // The target for this document.
+                menuItem.setCreatedDatetime( child.date_created ); // The datetime the child was created.
+                menuItem.setModifiedDatetime( child.date_modified ); // The datetime the child was modified.
+                menuItem.setHeadline( child.meta_headline );                       // The headline of the child.
+                menuItem.setText( child.meta_text );                           // The subtext for the child.
+                menuItem.setImage( child.meta_image );                          // An optional imageurl for this document.
+                menuItem.setActivatedDatetime( child.activated_datetime ); // The datetime the child will be/was activated
+                menuItem.setArchivedDatetime( child.archived_datetime ); // The datetime the child will be/was archived
+                menuItem.setEditable( serverObject.checkDocAdminRightsAny(meta_id,user,~0));           // if the user may admin it.
+                menuItem.setFilename( child.filename );                       // The filename, if it is a file-doc.
 
                 if( (!menuItem.isActive() || menuItem.isArchived()) && !menumode ) { // if not menumode, and document is inactive or archived, don't include it.
                     continue;
@@ -543,7 +524,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             ReadrunnerFilter readrunnerFilter = new ReadrunnerFilter();
             MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( documentRequest, menus, menumode, tags );
             HashTagSubstitution hashtagsubstitution = new imcode.server.parser.HashTagSubstitution( tags, numberedtags );
-            ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, documentRequest, templatePath, included_docs, includemode, includelevel, includePath, textMap, textmode, imageMap, imagemode, paramsToParse, readrunnerFilter );
+
+            DatabaseService.Table_includes[] included_docs = serverObject.getDatabaseService().sproc_GetIncludes( meta_id );
+            ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution( this, documentRequest, templatePath, included_docs, includemode, includelevel, includePath, textMap, textmode, imageMap, imagemode, paramsToParse, readrunnerFilter );
 
             LinkedList parse = new LinkedList();
             perl5util.split( parse, "/(<!--\\/?IMSCRIPT-->)/", template );
