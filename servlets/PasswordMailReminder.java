@@ -138,10 +138,22 @@ public class PasswordMailReminder extends HttpServlet {
 		String deafultLanguagePrefix = IMCServiceRMI.getLanguage( imcserver );
 		String stringMailPort = Utility.getDomainPref( "smtp_port", host );
 		String stringMailtimeout = Utility.getDomainPref( "smtp_timeout", host );
-		int mailport = Integer.parseInt( stringMailPort );
-		int mailtimeout = Integer.parseInt( stringMailtimeout );
-			
-		
+
+		// Handling of default-values is another area where java can't hold a candle to perl.
+		int mailport = 25 ;
+		try {
+		    mailport = Integer.parseInt( stringMailPort );
+		} catch (NumberFormatException ignored) {
+		    // Do nothing, let mailport stay at default.
+		}
+
+		int mailtimeout = 10000 ;
+		try {
+		    mailtimeout = Integer.parseInt( stringMailtimeout );
+		} catch (NumberFormatException ignored) {
+		    // Do nothing, let mailtimeout stay at default.
+		}
+
 		/* user info */
 		String postedLoginName;
 		String firstName = emptyString;
@@ -199,7 +211,7 @@ public class PasswordMailReminder extends HttpServlet {
 			}
 			
 			/* send mail */
-			try {
+			//			try {
 				SMTP smtp = new SMTP( mailserver, mailport, mailtimeout );
 				
 				if ( sendMailToUser ) {
@@ -232,15 +244,17 @@ public class PasswordMailReminder extends HttpServlet {
 		
 				smtp.sendMailWait( emailFromServer, eMailServerMaster, null , serverMasterMessage );
 					
-			} catch (Exception ex) {
-				log (ex.getMessage()) ;
-				ErrorMessageGenerator errroMessage = new ErrorMessageGenerator( imcserver, eMailServerMaster, 
-				deafultLanguagePrefix,	"PasswordMailReminder", this.HTML_EMAIL_ERROR, 500 );	  
-	
-				errroMessage.sendHtml( res );
-				return ;
-			}
-			
+				/*
+				  // WTF? Somebody catching 'Exception' anywhere but on toplevel makes me feel like going medieval!
+				  } catch (Exception ex) {
+				  log (ex.getMessage()) ;
+				  ErrorMessageGenerator errroMessage = new ErrorMessageGenerator( imcserver, eMailServerMaster, 
+				  deafultLanguagePrefix,	"PasswordMailReminder", this.HTML_EMAIL_ERROR, 500 );	  
+				  
+				  errroMessage.sendHtml( res );
+				  return ;
+				  }
+				*/
 			returnString = IMCServiceRMI.parseDoc(imcserver, null, returnFileBody, deafultLanguagePrefix );
 			
 		} else {
