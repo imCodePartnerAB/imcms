@@ -74,7 +74,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     }
 
     public String parsePage (DocumentRequest documentRequest, int flags, ParserParameters paramsToParse) throws IOException{
-	return parsePage(documentRequest,flags,1,paramsToParse) ;
+	return parsePage(documentRequest,flags,5,paramsToParse) ;
     }
 
     public String parsePage (DocumentRequest documentRequest, int flags, int includelevel,ParserParameters paramsToParse) throws IOException{
