@@ -72,22 +72,21 @@ public class QuotPicEngine extends HttpServlet {
 
 	if ( type.equals("pic")){
 	    if (the_row != -1) {
-		theText = "<img src=\"" + ((Quote)lines.get(the_row)).getText() + "\">" ;
+		theText = "<img src=\"" + HTMLConv.toHTMLSpecial(((Quote)lines.get(the_row)).getText()) + "\">" ;
 	    }
 	} else if(type.equals("quot")){
 	    if (the_row != -1) {
-		theText = ((Quote)lines.get(the_row)).getText()
+		theText = HTMLConv.toHTMLSpecial(((Quote)lines.get(the_row)).getText())
 		    + "<input type=\"hidden\" name=\"quotrow\" value=\"" + the_row + "\">"
-		    + "<input type=\"hidden\" name=\"quot\" value=\"" + theText + "\">" ;
+		    + "<input type=\"hidden\" name=\"quot\" value=\"" + HTMLConv.toHTMLSpecial(((Quote)lines.get(the_row)).getText()) + "\">" ;
 	    }
 	} else {
 	    if (the_row != -1) {
-		theText = ((Poll)lines.get(the_row)).getQuestion();
+		theText = HTMLConv.toHTMLSpecial(((Poll)lines.get(the_row)).getQuestion());
 	    }
 	}
 
-	theText = HTMLConv.toHTMLSpecial(theText) ;
-
+	
 	out.write(theText) ;
 
 	out.close();
