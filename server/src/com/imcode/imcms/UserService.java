@@ -1,6 +1,7 @@
 package com.imcode.imcms;
 
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.user.UserDomainObject;
 
 public class UserService {
 
@@ -15,7 +16,7 @@ public class UserService {
     public User[] getAllUsers() throws NoPermissionException {
         securityChecker.loggedIn();
 
-        imcode.server.user.UserDomainObject[] internalUsers = internalMapper.getAllUsers();
+        UserDomainObject[] internalUsers = internalMapper.getAllUsers();
         User[] result = new User[internalUsers.length];
         for( int i = 0; i < result.length; i++ ) {
             imcode.server.user.UserDomainObject internalUser = internalUsers[i];
@@ -27,7 +28,7 @@ public class UserService {
     public User getUser( String userLoginName ) throws NoPermissionException {
         securityChecker.loggedIn();
 
-        imcode.server.user.UserDomainObject internalUser = internalMapper.getUser( userLoginName );
+        UserDomainObject internalUser = internalMapper.getUser( userLoginName );
         User result = new User( internalUser );
         return result;
     }

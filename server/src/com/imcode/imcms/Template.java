@@ -13,15 +13,21 @@ public class Template {
         return internalTemplate.getName();
     }
 
-    public int getId() {
-        return internalTemplate.getId();
+    public boolean equals( Object o ) {
+        if( this == o )
+            return true;
+        if( !(o instanceof Template) )
+            return false;
+
+        final Template template = (Template)o;
+
+        if( internalTemplate != null ? !internalTemplate.equals( template.internalTemplate ) : template.internalTemplate != null )
+            return false;
+
+        return true;
     }
 
     public int hashCode() {
-        return internalTemplate.hashCode();
-    }
-
-    public boolean equals( Object obj ) {
-        return internalTemplate.equals( obj );
+        return (internalTemplate != null ? internalTemplate.hashCode() : 0);
     }
 }

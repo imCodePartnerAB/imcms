@@ -3,7 +3,6 @@ package com.imcode.imcms;
 import imcode.server.IMCService;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetMapper;
-import imcode.server.document.TemplateMapper;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
 

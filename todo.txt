@@ -6,6 +6,7 @@ Christoffer:
 - Säkerheten och *.jsp sidor. Ska vi lägga loginfilter på alla *.jsp sidor? Eller *.*, går det?
 
 Hasse
+- Se till att ingenting i API:et är mer public än det behöver vara
 - Ordna strategi för hur domänobjekten ska hållas uppdaterade och i synch, särskillt document objektet
 - Gå igenom och kolla vad taggarna heter och hänvisa till i api:et?
 - Namnen på rättigheterna, jämför med htmls sidan, är det samma som i databasen. På engelska och svenska?

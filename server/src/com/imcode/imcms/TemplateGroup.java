@@ -10,12 +10,12 @@ public class TemplateGroup {
         internalTemplateGroup = internal;
     }
 
-    public int getId() {
-        return internalTemplateGroup.getId();
-    }
-
     public String getName() {
         return internalTemplateGroup.getName();
+    }
+
+    int getId() {
+        return internalTemplateGroup.getId();
     }
 
     public boolean equals( Object o ) {

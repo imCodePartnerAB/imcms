@@ -5,11 +5,22 @@
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
     UserService userMapper = imcmsSystem.getUserService();
     User[] users = userMapper.getAllUsers();
-    for( int i = 0; i < users.length ; i++ ){
-      out.println( "<p>" );
-      out.print( "Login: " + users[i].getLoginName() + "<br>" );
-      out.print( "Company: " + users[i].getCompany() + "<br>");
-      out.print( "Country" + users[i].getCountry() + "<br>");
-      out.println("</p>");
+    for( int i = 0; i < users.length ; i++ ){%>
+        <p>
+        User "<%= users[i].getLoginName()%>" has the following attributes:<br><%
+        out.print( "getAddress(): " + users[i].getAddress() + "<br>");
+        out.print( "getCity(): " + users[i].getCity() + "<br>");
+        out.print( "getCompany(): " + users[i].getCompany() + "<br>");
+        out.print( "getCountry(): " + users[i].getCountry() + "<br>");
+        out.print( "getCountyCouncil(): " + users[i].getCountyCouncil() + "<br>");
+        out.print( "getEmailAddress(): " + users[i].getEmailAddress() + "<br>");
+        out.print( "getFirstName(): " + users[i].getFirstName() + "<br>");
+        out.print( "getHomePhone(): " + users[i].getHomePhone() + "<br>");
+        out.print( "getLastName(): " + users[i].getLastName() + "<br>");
+        out.print( "getMobilePhone(): " + users[i].getMobilePhone() + "<br>");
+        out.print( "getMobilePhone(): " + users[i].getMobilePhone() + "<br>");
+        out.print( "getWorkPhone(): " + users[i].getWorkPhone() + "<br>");
+        out.print( "getZip(): " + users[i].getZip() + "<br>");%>
+        </p><%
     }
 %>

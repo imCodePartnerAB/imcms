@@ -7,12 +7,10 @@ import imcode.server.document.TemplateMapper;
 import imcode.server.document.TemplateGroupDomainObject;
 
 public class TemplateService {
-    private IMCService service;
     private SecurityChecker securityChecker;
     private TemplateMapper templateMapper;
 
     public TemplateService( IMCService service, SecurityChecker securityChecker ) {
-        this.service = service ;
         this.securityChecker = securityChecker;
         this.templateMapper = new TemplateMapper( service );
     }
