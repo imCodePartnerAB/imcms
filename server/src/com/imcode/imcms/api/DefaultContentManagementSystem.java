@@ -21,7 +21,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
     }
 
     public static DefaultContentManagementSystem create( ImcmsServices service, UserDomainObject accessor ) {
-        DefaultContentManagementSystem contentManagementSystem = DefaultContentManagementSystem.create( service, accessor );
+        DefaultContentManagementSystem contentManagementSystem = new DefaultContentManagementSystem( service, accessor );
         contentManagementSystem.init();
         return contentManagementSystem ;
     }
