@@ -25,19 +25,12 @@
     <property name="dist"           value="${basedir}/dist"/>
     <property name="tmp"            value="${dist}/tmp"/>
 
-
     <!-- The webroot. Everything put here can be seen by any visitor. -->
     <property name="webroot" value="${build}"/>
 
-    <property name="images" value="${webroot}/images"/>
     <property name="login"   value="${webroot}/login"/>
-    <property name="css" value="${webroot}/css"/>
-    <property name="user" value="${webroot}/user"/>
-    <property name="javascript" value="${webroot}/javascript"/>
-    <property name="jsp" value="${webroot}/jsp"/>
+
     <property name="imcms" value="${webroot}/imcms"/>
-    <property name="imcmstest" value="${imcms}/test"/>
-    <property name="imcmscss" value="${imcms}/css"/>
     <property name="docs" value="${imcms}/docs"/>
     <property name="apisamples" value="${docs}/apisamples"/>
     <property name="apidocs" value="${docs}/api"/>
@@ -47,16 +40,12 @@
 
     <property name="versionfile" value="${WEB-INF}/version.txt"/>
 
-    <property name="srcincludes" value="${basedir}/MANIFEST.TXT"/>
+    <property name="srcincludes" value="MANIFEST.TXT"/>
 
     <property name="conf" value="${WEB-INF}/conf"/>
     <property name="classes" value="${WEB-INF}/classes"/>
-    <property name="lib" value="${WEB-INF}/lib"/>
-    <property name="templates" value="${WEB-INF}/templates"/>
-    <property name="includes" value="${WEB-INF}/includes"/>
     <property name="fortunes" value="${WEB-INF}/fortunes"/>
-    <property name="uploads" value="${WEB-INF}/uploads"/>
-    <property name="logs" value="${WEB-INF}/logs"/>
+    <property name="templates" value="${WEB-INF}/templates"/>
 
     <!-- Paths for other templates -->
     <property name="texttemplates" value="${templates}/text"/>
@@ -97,13 +86,13 @@
 
 
     <target name="bindist-jar" depends="build,check-webappname">
-        <jar destfile="${jardist}" basedir="${classes}"/>
-        <jar destfile="${jarapidist}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>
+        <jar destfile="${bindist-jar}" basedir="${classes}"/>
+        <jar destfile="${bindist-api-jar}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>
     </target>
 
 
     <target name="bindist-war" depends="build,check-webappname">
-        <war warfile="${wardist}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
+        <war warfile="${bindist-war}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
     </target>
 
 
@@ -113,8 +102,8 @@
     <target name="srcdist-zip" depends="init,check-webappname">
         <mkdir dir="${dist}"/>
         <!-- <zip> will for some reason throw an IllegalArgumentException if the file exists.-->
-        <delete file="${srczipdist}"/>
-        <zip destfile="${srczipdist}">
+        <delete file="${srcdist-zip}"/>
+        <zip destfile="${srcdist-zip}">
             <zipfileset includesfile="${srcincludes}" dir="${basedir}" prefix="imcms${versionfilesuffix}"/>
         </zip>
     </target>
@@ -124,9 +113,9 @@
         <mkdir dir="${dist}"/>
         <dependset>
             <srcfileset file="${srcincludes}"/>
-            <targetfileset file="${srctgzdist}"/>
+            <targetfileset file="${srcdist-tgz}"/>
         </dependset>
-        <tar destfile="${srctgzdist}" compression="gzip">
+        <tar destfile="${srcdist-tgz}" compression="gzip">
             <tarfileset includesfile="${srcincludes}" dir="${basedir}" prefix="imcms${versionfilesuffix}"/>
         </tar>
     </target>
@@ -198,14 +187,14 @@
     </target>
 
 
-    <target name="uninstall" depends="check-deployroot,check-webappname" description="Removes the installed files from the deployroot, including the war-file.">
+    <target name="uninstall" depends="init-version-properties,check-deployroot,check-webappname" description="Removes the installed files from the deployroot, including the war-file.">
         <delete dir="${webapproot}"/>
-        <delete file="${deployroot}/${warfile}"/>
+        <delete file="${deployroot}/${warfilename}"/>
     </target>
 
 
     <target name="warinstall" depends="init,bindist-war,check-deployroot" description="Builds and installs the war-file.">
-        <copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
+        <copy file="${bindist-war}" todir="${deployroot}" overwrite="yes"/>
     </target>
 
 
@@ -285,7 +274,7 @@
     <!-- Copies the libraries (jar-files) needed for building. -->
     <target name="libraries" depends="init" description="Copies the jar-files.">
 
-        <copy todir="${lib}">
+        <copy todir="${WEB-INF}/lib">
             <fileset dir="lib" includes="*.jar"/>
         </copy>
 
@@ -359,17 +348,17 @@
         depends="init,tools,check-language-property-files"
         description="Translates and copies the webfiles.">
 
-        <mkdir dir="${images}"/>
-        <mkdir dir="${login}"/>
-        <mkdir dir="${css}"/>
-        <mkdir dir="${user}"/>
-        <mkdir dir="${javascript}"/>
-        <mkdir dir="${jsp}"/>
         <mkdir dir="${imcms}"/>
+        <mkdir dir="${login}"/>
+        <mkdir dir="${webroot}/css"/>
+        <mkdir dir="${webroot}/images"/>
+        <mkdir dir="${webroot}/javascript"/>
+        <mkdir dir="${webroot}/jsp"/>
+        <mkdir dir="${webroot}/user"/>
 
-        <mkdir dir="${includes}"/>
-        <mkdir dir="${uploads}"/>
-        <mkdir dir="${logs}"/>
+        <mkdir dir="${WEB-INF}/includes"/>
+        <mkdir dir="${WEB-INF}/logs"/>
+        <mkdir dir="${WEB-INF}/uploads"/>
 
         <copy todir="${webroot}" filtering="true">
             <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**"/>
@@ -513,16 +502,15 @@
                  casesensitive="false"/>
 
         <!-- Locations for the final packages -->
-        <property name="warfile" value="${webappname}${versionfilesuffix}.war"/>
-        <property name="wardist" value="${dist}/${warfile}"/>
+        <property name="warfilename" value="${webappname}${versionfilesuffix}.war"/>
+        <property name="bindist-war" value="${dist}/${warfilename}"/>
 
-        <property name="jardist" value="${dist}/imcms${versionfilesuffix}.jar"/>
-        <property name="jarapidist" value="${dist}/imcms${versionfilesuffix}-api.jar"/>
+        <property name="bindist-jar" value="${dist}/imcms${versionfilesuffix}.jar"/>
+        <property name="bindist-api-jar" value="${dist}/imcms${versionfilesuffix}-api.jar"/>
 
-        <property name="srcdistfile" value="imcms${versionfilesuffix}-src"/>
-        <property name="srczipdist" value="${dist}/${srcdistfile}.zip"/>
-        <property name="srctgzdist" value="${dist}/${srcdistfile}.tar.gz"/>
-        <property name="srctbz2dist" value="${dist}/${srcdistfile}.tar.bz2"/>
+        <property name="srcdist" value="imcms${versionfilesuffix}-src"/>
+        <property name="srcdist-zip" value="${dist}/${srcdist}.zip"/>
+        <property name="srcdist-tgz" value="${dist}/${srcdist}.tar.gz"/>
 
         <property name="dist-sql" value="${dist}/imcms${versionfilesuffix}.sql"/>
         <property name="sprocs-sql" value="${dist}/imcms-sprocs${versionfilesuffix}.sql"/>
