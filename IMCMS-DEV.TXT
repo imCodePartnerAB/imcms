@@ -1,0 +1,188 @@
+These are the development guidelines to be followed for imCMS.
+This will soon be rewritten in DocBook.
+
+
+Ant:
+
+    Learn how Ant works, and how to use it.
+
+    Use 'ant -projecthelp' to find out the possible ant-targets.
+    
+
+Bugzilla:
+
+    Learn how Bugzilla works, and how to use it.
+    
+    As soon as you do something,
+    make DAMNED sure there is a bug for it,
+    and do try to assign it to you.
+
+    If someone mails you important information,
+    put it in the bugzilla.
+    Don't let any information be lost.
+    
+    Use Bugzilla as a discussion forum.
+    Write down what you do.
+
+    Especially write down any controversial decisions
+    you make, and why you make them.
+
+    Ask for comments, opinions, and discussion.
+
+    Used correctly, Bugzilla has the possibility
+    to make most of the time-consuming
+    and unpleasant meetings obsolete.
+
+
+CVS:
+
+    Learn how CVS works, and how to use it.
+
+    Before checking in, do a 'cvs update',
+    and make sure to heed any warnings of conflicts!
+    Then if there were any troubles,
+    run 'ant clean install', and test your fixes.
+
+    Learn the cvs 'add', 'remove', 'update', 'commit',
+    'diff', 'status', and 'log'-commands.
+    
+
+Database-changes:
+
+    After changing anything in the database,
+    make sure the changes are scripted and put
+    in 'imCMS/1.3/sql/diff/diff.sql'.
+    Do not forget to put in the correct date.
+    This script (the 'diff'-script) is used
+    to upgrade old databases.
+    
+    After changing tables, script out all tables
+    to one file in "Ansi"-format (Ascii),
+    and replace 'imCMS/1.3/sql/tables/tables.ascii.sql'
+    with it.
+    
+    After changing sprocs, script them out to files (one each)
+    in "Ansi"-format", change the filenames to adhere
+    to the naming standard and replace
+    the corresponding files in 'imCMS/1.3/sql/sprocs'.
+
+
+Documentation (API):
+
+    Every public and protected method of
+    every java class or interface must be documented
+    with javadoc-tags.
+    
+    Every SProc must be documented with information
+    on what it does, what parameters it takes,
+    and what it returns.
+
+
+(HTML)-Dialogs/Pages:
+
+    A HTML-dialog has a title at the top,
+    and navigation buttons at the bottom.
+
+    The title should both be in the title in the html-header,
+    and in the header at the top of the html dialog.
+    
+    Make sure your dialog/page looks like other system dialogs.
+    
+    Right now this means a table with no borders,
+    a blue header row, a gray spacing row, the contents of
+    the dialog with 5% spacing cells at the sides,
+    buttons at the bottom, followed by a spacing row.
+    
+    The bottom buttons can be either of a set of three choices:
+    
+    1 One 'Back'-button, for dialogs that only display
+    information, with no possibility of changing anything.
+
+    2 One 'Save'-button, for dialogs that enables you to save,
+    without leaving the page, and possibly one 'Back'-button for leaving the page.
+    
+    3 One 'OK'-button, and one 'Cancel' button. Both leave the page, but only
+    the 'OK'-button saves.
+
+    +--------------+
+    |     title    |
+    +--------------+
+    |              | - Spacing row
+    |  abcdefghij  | - Stuff
+    |  1234567890  | - here
+    |              | - Spacing row.
+    |  OK Cancel   | - Buttons
+    |              | - Spacing row
+    +--------------+
+    
+
+Javascript and DHTML:
+
+    Only to be used when it makes a page better.
+    All pages must always work without Javascript.
+
+    An example of an acceptable javascript is one that
+    sets the focus to a certain form element.
+    It's a convenience for the user, and works without it.
+    
+
+Logging:
+
+    Learn how Log4J works, and how to use it.
+    Do not use System.out or System.err.
+
+    Also make sure not to leave any unnecessary
+    logging statements in.
+    
+
+Names
+
+    For Java-code, follow the Java Programming Guidelines.
+
+    For filenames, keep them ALL lowercase,
+    and without spaces or any other funny characters.
+
+    The proper extension for an html-file is '.html'.
+    The proper extension for anything not containing
+    html code is NOT '.html'.
+    Html-fragments should probably be kept with another
+    extension, but we'll use '.html' for the time being.
+
+    SProcs are named like Java-classes, and are stored
+    in a corresponding file with an all lower case filename.
+    Try to use a nameprefix that makes clear what component
+    the SProc belongs to.
+    The filename of file the SProc is stored in
+    is equal to the SProc-name, but all lowercase,
+    and with the extension '.prc'.
+
+    I.e. the SProce 'SearchStoredProcedure' is stored in file
+    'searchstoredprocedure.prc', and probably has
+    something to do with the search engine.
+    
+    Table-names are all lowercase, underscores allowed.
+    When we make it possible to store the tables in separate
+    files, we'll use the extension '.tab'.
+
+
+Servlets and JSP:
+
+    Servlets and JSP are views only.
+    They should never do 'real' work,
+    but only handle user input,
+    and format the results of queries and updates,
+    by delegating the formatting
+    to parser classes.
+    
+    All the 'real' work is done by non-servlet classes.
+    
+
+SQL:
+
+    Embedded SQL-code is the devils work,
+    and must be avoided.
+    
+    Seriously though, any time you find
+    SQL-code anywhere but in a Stored Procedure,
+    that SQL-code should be replaced with a call 
+    to a Stored Procedure or a View.
