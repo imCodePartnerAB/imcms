@@ -3,13 +3,13 @@ package imcode.util;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.*;
 import imcode.server.parser.AdminButtonParser;
 import imcode.server.user.UserDomainObject;
 
 import java.util.*;
+
+import org.apache.commons.lang.ArrayUtils;
 
 public class MetaDataParser {
 
@@ -431,69 +431,125 @@ public class MetaDataParser {
      */
 
     public static String parsePermissionSet( int meta_id, final UserDomainObject user, int set_id,
-                                             boolean for_new ) {
+                                             boolean forNew ) {
         final IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( meta_id ) ;
 
-        // Lets get the langprefix
-        final String lang_prefix = user.getLanguageIso639_2();
+        List tags = new ArrayList() ;
+        tags.add("document") ;
+        tags.add(document) ;
 
-        String newstr = "";
-        int doc_type = imcref.getDocType( meta_id );
-
-        if ( for_new ) {		// This is the permissions for newly created documents.
-            // Only applicable for text-docs (2)
-            // since this is the only doc-type that can create new documents.
-            // For new documents we set textdoc-permissions.too, since
-            // text-doc is the only doc-type with multiple possible permissions.
-            // Permission to create other doc-types gives permission to edit them.
-            // It would be silly to be able to create, for example, an url, and not be able to change it.
-            // FIXME: When we get more doc-types that have multiple permissions, (conference?) we need to change this,
-            // to allow for setting permissions for all those doc-types for new documents.
-            // We'll then have to output a permissionform for all the different doc-types.
-            // In case we get other doc-types in which we can create documents we also need to change this.
-
-            if ( doc_type != DocumentDomainObject.DOCTYPE_TEXT ) {
-                return "";
-            }
-            newstr = "New";
-
+        DocumentPermissionSetDomainObject documentPermissionSet = null ;
+        if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == set_id && !forNew) {
+            documentPermissionSet = document.getPermissionSetForRestrictedOne() ;
+        } else if (DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == set_id && !forNew ) {
+            documentPermissionSet = document.getPermissionSetForRestrictedTwo() ;
+        } else if (DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == set_id && forNew ) {
+            documentPermissionSet = document.getPermissionSetForRestrictedOneForNewDocuments() ;
+        } else if (DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == set_id && forNew ) {
+            documentPermissionSet = document.getPermissionSetForRestrictedTwoForNewDocuments() ;
         }
 
-        // Here i fetch the current users set-id and the document-permissions for this document (Whether set-id 1 is more privileged than set-id 2.)
-        String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet",
-                                                            new String[]{"" + meta_id, "" + user.getId()} );
-        int user_set_id = Integer.parseInt( current_permissions[0] );
-        int user_perm_set = Integer.parseInt( current_permissions[1] );
-        int currentdoc_perms = Integer.parseInt( current_permissions[2] );
+        if ( document instanceof TextDocumentDomainObject ) {
+            TextDocumentPermissionSetDomainObject currentUsersDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, document ) ;
+            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = ((TextDocumentPermissionSetDomainObject)documentPermissionSet);
+            SortedMap templateGroups = getAllowedTemplateGroupsMap( currentUsersDocumentPermissionSet, textDocumentPermissionSet );
+            tags.add("templateGroupsMap") ;
+            tags.add(templateGroups) ;
 
-        // Create an anonymous adminbuttonparser that retrieves the file from the server instead of from the disk.
-        AdminButtonParser adminButtonParser = new AdminButtonParser( user, "permissions/define_permission_" + doc_type + "_", ".html",
-                                                       user_set_id, user_perm_set ) {
-            protected StringBuffer getContent( String name ) {
-                return new StringBuffer( imcref.getAdminTemplate( name, user, null ) );
+            SortedMap documentTypesMap = getAllowedDocumentTypesMap( currentUsersDocumentPermissionSet, textDocumentPermissionSet, documentMapper, user );
+            tags.add("documentTypesMap") ;
+            tags.add(documentTypesMap) ;
+        }
+
+        tags.add("documentPermissionSet") ;
+        tags.add(documentPermissionSet) ;
+        tags.add("forNew") ;
+        tags.add(new Boolean( forNew )) ;
+
+        return imcref.getAdminTemplate( "permissions/define_permissions.html", user, tags ) ;
+    }
+
+    private static SortedMap getAllowedDocumentTypesMap(
+            TextDocumentPermissionSetDomainObject currentUsersDocumentPermissionSet,
+            TextDocumentPermissionSetDomainObject textDocumentPermissionSet, DocumentMapper documentMapper,
+            final UserDomainObject user ) {
+        int[] selectableDocumentTypeIds = currentUsersDocumentPermissionSet.getAllowedDocumentTypeIds() ;
+        int[] selectedDocumentTypeIds = textDocumentPermissionSet.getAllowedDocumentTypeIds() ;
+        IdNamePair[] documentTypes = documentMapper.getAllDocumentTypeIdsAndNamesInUsersLanguage(user) ;
+        SortedMap documentTypesMap = new TreeMap() ;
+        for ( int i = 0; i < documentTypes.length; i++ ) {
+            IdNamePair documentType = documentTypes[i];
+            int documentTypeId = documentType.getId() ;
+            if (ArrayUtils.contains(selectableDocumentTypeIds, documentTypeId)) {
+                Boolean selected = new Boolean(ArrayUtils.contains( selectedDocumentTypeIds, documentTypeId ));
+                documentTypesMap.put(documentType, selected) ;
             }
-        };
+        }
+        return documentTypesMap;
+    }
 
+    private static SortedMap getAllowedTemplateGroupsMap(
+            TextDocumentPermissionSetDomainObject currentUsersDocumentPermissionSet,
+            TextDocumentPermissionSetDomainObject textDocumentPermissionSet ) {
+        TemplateGroupDomainObject[] selectableTemplateGroups = currentUsersDocumentPermissionSet.getAllowedTemplateGroups() ;
+        List selectedTemplateGroups = Arrays.asList(textDocumentPermissionSet.getAllowedTemplateGroups()) ;
+        SortedMap templateGroups = new TreeMap() ;
+        for ( int i = 0; i < selectableTemplateGroups.length; i++ ) {
+            TemplateGroupDomainObject selectableTemplateGroup = selectableTemplateGroups[i];
+            Boolean selected = new Boolean(selectedTemplateGroups.contains(selectableTemplateGroup)) ;
+            templateGroups.put( selectableTemplateGroup, selected ) ;
+        }
+        return templateGroups;
+    }
 
-        // Fetch all permissions this permissionset consists of.
-        // Permission_id, Description, Value
-        // One row for each permission on the system.
-        // MAKE SURE the tables permissions and doc_permissions contain the permissions in use on this system!
-        // FIXME: It is time to make an Interface that will define all permission-constants, doc-types, and such.
-        // Remind me when i get a minute off some day.
-        // Update! Check out imcode.server.IMCConstants
-        String[] permissionset = imcref.sqlProcedure( "Get" + newstr + "PermissionSet",
-                                                      new String[]{"" + meta_id, "" + set_id, lang_prefix} );
+    private static String getTemplateGroupsOptionList( final IMCServiceInterface imcref, String newstr, int meta_id,
+                                                       int user_set_id, int set_id, int currentdoc_perms ) {
+        // Fetch all templategroups from the db and put them in an option-list
+        // First we get the templategroups the current user may use
+        String[] user_tg = imcref.sqlProcedure( "GetTemplateGroupsWith" + newstr + "Permissions",
+                                                new String[]{"" + meta_id, "" + user_set_id} );
 
-        final int ps_cols = 3;
-        for ( int i = 0; i < permissionset.length; i += ps_cols ) {
-            if ( !"0".equals( permissionset[i + 2] ) ) {
-                adminButtonParser.put( "check_" + permissionset[i], "checked" );
-            } else {
-                adminButtonParser.put( "check_" + permissionset[i], "" );
+        Set user_templategroups = new HashSet();
+
+        // I'll fill a HashSet with all the templategroups the current user may use,
+        // for easy retrieval.
+        for ( int i = 0; i < user_tg.length; i += 3 ) {
+            if ( !"-1".equals( user_tg[i + 2] ) ) {
+                user_templategroups.add( user_tg[i] );
             }
         }
 
+        // Now we get the templategroups the set-id we are editing may use.
+        String[] templategroups = imcref.sqlProcedure( "GetTemplateGroupsWith" + newstr + "Permissions",
+                                                       new String[]{"" + meta_id, "" + set_id} );
+        // We allocate a string to contain the option-list
+        String options_templategroups = "";
+        for ( int i = 0; i < templategroups.length; i += 3 ) {
+            // Check if the current user may set this templategroup for any set-id (May he use it himself?)
+            if ( user_set_id == 0			// If current user has full rights,
+                 || ( user_set_id == 1	// or has set-id 1
+                      && set_id == 2		// and is changing set-id 2
+                      && user_templategroups.contains( templategroups[i] )	// and the user may use this group.
+                      && ( currentdoc_perms & 1 ) != 0// and set-id 1 is more privleged than set-id 2 for this document. (Bit 0)
+                    ) ) {
+                options_templategroups +=
+                "<option value=\"524288_"
+                + templategroups[i]
+
+                + ( ( !"-1".equals( templategroups[i + 2] ) ) ? "\" selected>" : "\">" )
+                + templategroups[i
+                                 + 1]
+                + "</option>";
+            }
+        }
+        return options_templategroups;
+    }
+
+    private static String getDocTypesOptionList( final IMCServiceInterface imcref, String newstr, int meta_id,
+                                                 int user_set_id, final String lang_prefix, int set_id,
+                                                 int currentdoc_perms ) {
         // Fetch all doctypes from the db and put them in an option-list
         // First, get the doc_types the current user may use.
 
@@ -534,72 +590,7 @@ public class MetaDataParser {
                 + "</option>";
             }
         }
-        adminButtonParser.put( "doctypes", options_doctypes );
-
-        // Fetch all templategroups from the db and put them in an option-list
-        // First we get the templategroups the current user may use
-        String[] user_tg = imcref.sqlProcedure( "GetTemplateGroupsWith" + newstr + "Permissions",
-                                                new String[]{"" + meta_id, "" + user_set_id} );
-
-        Set user_templategroups = new HashSet();
-
-        // I'll fill a HashSet with all the templategroups the current user may use,
-        // for easy retrieval.
-        for ( int i = 0; i < user_tg.length; i += 3 ) {
-            if ( !"-1".equals( user_tg[i + 2] ) ) {
-                user_templategroups.add( user_tg[i] );
-            }
-        }
-
-        // Now we get the templategroups the set-id we are editing may use.
-        String[] templategroups = imcref.sqlProcedure( "GetTemplateGroupsWith" + newstr + "Permissions",
-                                                       new String[]{"" + meta_id, "" + set_id} );
-        // We allocate a string to contain the option-list
-        String options_templategroups = "";
-        for ( int i = 0; i < templategroups.length; i += 3 ) {
-            // Check if the current user may set this templategroup for any set-id (May he use it himself?)
-            if ( user_set_id == 0			// If current user has full rights,
-                 || ( user_set_id == 1	// or has set-id 1
-                      && set_id == 2		// and is changing set-id 2
-                      && user_templategroups.contains( templategroups[i] )	// and the user may use this group.
-                      && ( currentdoc_perms & 1 ) != 0// and set-id 1 is more privleged than set-id 2 for this document. (Bit 0)
-                    ) ) {
-                options_templategroups +=
-                "<option value=\"524288_"
-                + templategroups[i]
-
-                + ( ( !"-1".equals( templategroups[i + 2] ) ) ? "\" selected>" : "\">" )
-                + templategroups[i
-                                 + 1]
-                + "</option>";
-            }
-        }
-        adminButtonParser.put( "templategroups", options_templategroups );
-
-        adminButtonParser.put( "set_id", String.valueOf( set_id ) );
-
-        adminButtonParser.put( "meta_id", String.valueOf( meta_id ) );
-
-        // Put the values for all the tags inserted in vec so far in the "define_permissions_"+doc_type+".html" file
-        // That is, the doc-specific
-        StringBuffer doc_specific = new StringBuffer(
-                imcref.getAdminTemplate( "permissions/define_permissions_" + doc_type + ".html", user, null ) );
-
-        Parser.parseTags( doc_specific, '#', " <>\"\n\r\t", adminButtonParser, true, 1 );
-
-        adminButtonParser.put( "doc_rights", doc_specific.toString() );
-
-        StringBuffer complete;
-        if ( for_new ) {
-            complete =
-            new StringBuffer( imcref.getAdminTemplate( "permissions/define_new_permissions.html", user, null ) );
-        } else {
-            complete = new StringBuffer( imcref.getAdminTemplate( "permissions/define_permissions.html", user, null ) );
-        }
-
-        adminButtonParser.setPrefix( "permissions/define_permission_" );
-
-        return Parser.parseTags( complete, '#', " <>\"\n\r\t", adminButtonParser, true, 1 ).toString();
+        return options_doctypes;
     }
 
 } // End of class

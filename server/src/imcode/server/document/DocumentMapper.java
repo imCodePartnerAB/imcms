@@ -9,6 +9,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.InputStreamSource;
 import imcode.util.Utility;
+import imcode.util.IdNamePair;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -1757,11 +1758,31 @@ public class DocumentMapper {
         return statusIconTemplate;
     }
 
-    public String[][] getDocumentTypeIdsAndNamesInUsersLanguage( DocumentDomainObject document, UserDomainObject user ) {
+    public String[][] getCreatableDocumentTypeIdsAndNamesInUsersLanguage( DocumentDomainObject document, UserDomainObject user ) {
         return service.sqlProcedureMulti( SPROC_GET_DOC_TYPES_FOR_USER, new String[]{
                                                         "" + document.getId(), "" + user.getId(),
                                                         user.getLanguageIso639_2()
                                                     } );
     }
+
+    public IdNamePair[] getAllDocumentTypeIdsAndNamesInUsersLanguage( UserDomainObject user ) {
+        String[][] rows = service.sqlQueryMulti( "SELECT doc_type, type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type", new String[] { user.getLanguageIso639_2() } ) ;
+        IdNamePair[] idNamePairs = new IdNamePair[rows.length] ;
+        for ( int i = 0; i < rows.length; i++ ) {
+            String[] row = rows[i];
+            idNamePairs[i] = new IdNamePair( Integer.parseInt( row[0] ), row[1] ) ;
+        }
+        return idNamePairs ;
+    }
+
+    public int[] getAllDocumentTypeIds() {
+        String[] documentTypeIdStrings = service.sqlQuery( "SELECT DISTINCT doc_type FROM doc_types", new String[0] ) ;
+        int[] documentTypeIds = new int[documentTypeIdStrings.length] ;
+        for ( int i = 0; i < documentTypeIdStrings.length; i++ ) {
+            documentTypeIds[i] = Integer.parseInt(documentTypeIdStrings[i]);
+        }
+        return documentTypeIds ;
+    }
+
 }
 

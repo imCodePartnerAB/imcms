@@ -211,7 +211,7 @@ public class GetExistingDoc extends HttpServlet {
 
             // Fetch all doctypes from the db and put them in an option-list
             // First, get the doc_types the current user may use.
-            String[][] user_dt = documentMapper.getDocumentTypeIdsAndNamesInUsersLanguage(parentDocument,user) ;
+            String[][] user_dt = documentMapper.getCreatableDocumentTypeIdsAndNamesInUsersLanguage(parentDocument,user) ;
 
             Set user_doc_types = new HashSet();
 

@@ -80,7 +80,7 @@ class MenuParserSubstitution implements Substitution {
         DocumentDomainObject document = parserParameters.getDocumentRequest().getDocument();
 
         UserDomainObject user = parserParameters.getDocumentRequest().getUser();
-        String[][] docTypes = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper().getDocumentTypeIdsAndNamesInUsersLanguage(document ,user) ;
+        String[][] docTypes = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper().getCreatableDocumentTypeIdsAndNamesInUsersLanguage(document ,user) ;
         List docTypesList = new ArrayList( Arrays.asList( docTypes ) );
 
         String existing_doc_name = parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( "textdoc/existing_doc_name.html", parserParameters.getDocumentRequest().getUser(), null );

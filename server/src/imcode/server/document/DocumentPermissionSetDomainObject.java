@@ -1,12 +1,6 @@
-/*
- * Created by IntelliJ IDEA.
- * User: kreiger
- * Date: 2004-mar-26
- * Time: 16:33:01
- */
 package imcode.server.document;
 
-import imcode.server.IMCConstants;
+import imcode.server.ApplicationServer;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -20,8 +14,17 @@ public class DocumentPermissionSetDomainObject implements Serializable {
     public static final int TYPE_ID__READ = 3 ;
     public static final int TYPE_ID__NONE = 4 ;
 
-    public static final DocumentPermissionSetDomainObject FULL = new TextDocumentPermissionSetDomainObject( TYPE_ID__FULL ) ;
     public static final DocumentPermissionSetDomainObject READ = new TextDocumentPermissionSetDomainObject( TYPE_ID__READ ) ;
+
+    public static final DocumentPermissionSetDomainObject FULL = new TextDocumentPermissionSetDomainObject( TYPE_ID__FULL ) {
+        public TemplateGroupDomainObject[] getAllowedTemplateGroups() {
+            return ApplicationServer.getIMCServiceInterface().getTemplateMapper().getAllTemplateGroups() ;
+        }
+
+        public int[] getAllowedDocumentTypeIds() {
+            return ApplicationServer.getIMCServiceInterface().getDocumentMapper().getAllDocumentTypeIds() ;
+        }
+    };
 
     private static final String PERMISSION_SET_NAME__FULL = "Full";
     private static final String PERMISSION_SET_NAME__RESTRICTED_1 = "Restricted One";

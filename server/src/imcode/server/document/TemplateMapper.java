@@ -112,7 +112,7 @@ public class TemplateMapper {
         service.sqlUpdateQuery( "delete from templategroups where group_id = ?", new String[]{"" + grp_id} );
     }
 
-    private TemplateGroupDomainObject[] getAllTemplateGroups() {
+    public TemplateGroupDomainObject[] getAllTemplateGroups() {
         String[][] sprocResult = service.sqlProcedureMulti( SPROC_GET_TEMPLATE_GROUPS, new String[]{} );
         return createTemplateGroupsFromSqlResult( sprocResult );
     }

@@ -1,6 +1,6 @@
 package imcode.server.document;
 
-public class TemplateGroupDomainObject {
+public class TemplateGroupDomainObject implements Comparable {
     private int id;
     private String name;
 
