@@ -1,75 +1,36 @@
 <html>
-
 <head>
-
 <title>imCMS Adminstrat&ouml;rsida</title>
-
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-
-
-
 <SCRIPT language=JavaScript>
-
 <!--
-
 function openHelp(id) {
-
 	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-
 }
-
 //-->
-
 </SCRIPT>
 
-
-
 </head>
-
-
-
 <body bgcolor="#FFFFFF">
-
 <form method="post" action="AdminManager" name="AdminManager">
-
   <table width="40%" border="0" cellspacing="0">
-
 	<tr bgcolor="#333366"> 
-
       <td width="5%">&nbsp;</td>
-
       <td colspan="2"> 
-
         <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Administrat&ouml;rsmeny</font></b></div>
-
       </td>
-
       <td width="5%">&nbsp;</td>
-
     </tr>
-
     <tr bgcolor="#bababa"> 
-
       <td width="5%">&nbsp;</td>
-
       <td colspan="2"> 
-
-		<div align="left"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">V&auml;lj 
-
-		  administrationsfunktion.</font></div>
-
+		<div align="left"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">V&auml;lj administrationsfunktion.</font></div>
       </td>
-
-      <td width="5%">&nbsp;</td>
-
+	  <td width="5%">&nbsp;</td>
     </tr>
-
     <tr bgcolor="#bababa"> 
-
       <td width="5%">&nbsp;</td>
-
       <td colspan="2"> 
-
 		<select name="AdminTask">
           <option value="No_Choice" selected>-- V&auml;lj Administrat&ouml;rsfunktion --</option>
           <option value="UserStart">Anv&auml;ndare</option>
@@ -85,33 +46,22 @@ function openHelp(id) {
           <option value="ListDocs">F&ouml;r&auml;ndrade dokument</option>
           <option value="AdminConference">Konferenser</option>
           <option value="AdminFortunes">Slump/tidstyrd bild/text</option>
+		  <option value="AdminSection">Sektioner (index ord)</option>
         </select>
-
-        <input type="submit" name="submit" value="G&aring; till Adminsida">&nbsp; <a href="javascript:openHelp("28");"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-
+        <input type="submit" name="submit" value="G&aring; till Adminsida">&nbsp; <a href="javascript:openHelp('28');"><img src="/imcms/images/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
       </td>
-
       <td width="5%">&nbsp;</td>
-
     </tr>
-
     <tr bgcolor="#bababa"> 
-
       <td width="5%">&nbsp;</td>
-
       <td colspan="2">&nbsp;</td>
-
       <td width="5%">&nbsp;</td>
-
     </tr>
-
   </table>
-
   <p><a href="StartDoc">Tillbaka till startsidan</a></p>
-
   </form>
-
 </body>
-
 </html>
+
+
 

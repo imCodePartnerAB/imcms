@@ -15,8 +15,7 @@ function openHelp(id){
 <FORM METHOD="POST" ACTION="SaveMeta">
   <table border="1" cellspacing="0" cellpadding="2" width="450" align="center">
 	<tr valign="middle" bgcolor="#333366"> 
-	  		<td colspan="2">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&Auml;ndra 
-				dokinfo 
+	  		<td colspan="2">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&Auml;ndra dokinfo 
 				<input TYPE="HIDDEN" name="doc_type" value="#doc_type#">
 		<input TYPE="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
 				<input TYPE="HIDDEN" NAME="meta_id" value="#meta_id#">
@@ -52,7 +51,7 @@ function openHelp(id){
 	  <td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
 		<div align="left"> 
 		  <input TYPE="SUBMIT" value="OK" name="ok">
-		  <input TYPE="RESET" value="Återställ" name="reset">&nbsp; <a href="javascript:openHelp("39");"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		  <input TYPE="RESET" value="Återställ" name="reset">&nbsp; <a href="javascript:openHelp('39');"><img src="/imcms/images/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 					<font size="2"></font></div>
 	  </td>
 	</tr>
@@ -86,6 +85,22 @@ function openHelp(id){
 				<font face="Verdana, Arial, Helvetica, sans-serif">Blockera s&ouml;kning</font></font> 
 			</td>
 		</tr>
+		
+	<tr> 
+	  <td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Avdelning</font></td>
+	  <td valign="middle" bgcolor="#BABABA"> 		
+	  	<input type="Hidden" name="current_section_id" value="#current_section_id#">
+		<font face="Verdana, Arial, Helvetica, sans-serif" size="1">Nuvarande avdelning: #current_section_name# <br>
+		Byt till:&nbsp; 
+		<SELECT NAME="change_section" size="1">
+			<option value="-1">Ingen sektion</option>			  
+			#section_option_list#		
+		</SELECT>		
+		</font><br>		
+	  </td>
+	</tr>
+		
+		
 		<tr> 
 			<td width="88" valign="middle" bgcolor="#BABABA"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Dela 
 				ut</font></font></td>
@@ -144,7 +159,7 @@ function openHelp(id){
 			<td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
 				<div align="left"> 
 					<input TYPE="SUBMIT" value="OK" name="ok">
-					<input TYPE="RESET" value="&Aring;terst&auml;ll" name="reset">&nbsp; <a href="javascript:openHelp("39");"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+					<input TYPE="RESET" value="&Aring;terst&auml;ll" name="reset">&nbsp; <a href="javascript:openHelp('39');"><img src="/imcms/images/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 				</div>
 			</td>
 		</tr>
@@ -158,5 +173,5 @@ function openHelp(id){
 	</tr>
   </table>
 </FORM>
-</BODY></HTML>
-
+</BODY>
+</HTML>

@@ -8,6 +8,7 @@ function openHelp(id){
 }
 //-->
 </SCRIPT>
+
 </HEAD>
 <body bgcolor="#FFFFFF">
 <FORM METHOD="POST" ACTION="SaveNewMeta">
@@ -45,7 +46,6 @@ function openHelp(id){
 		<input type="CHECKBOX" name="copyMetaHeader" value="1" checked>
 		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">Kopiera text/rubrik 
 		till text 1 resp. text 2</font> </td>
-	
 	<tr valign="middle"> 
 	  <td width="61" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Bild</font> 
 		<br>
@@ -61,7 +61,8 @@ function openHelp(id){
 		<div align="left"> 
 		  <input TYPE="SUBMIT" value="OK" name="ok">
 		  <input TYPE="RESET" value="Återställ" name="reset">
-		  <input TYPE="SUBMIT" value="Avbryt" name="cancel">&nbsp; <a href="javascript:openHelp("77");"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+
+		  <input TYPE="SUBMIT" value="Avbryt" name="cancel">&nbsp; <a href="javascript:openHelp('77');"><img src="/imcms/images/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		  <font size="2"></font></div>
 	  </td>
 	</tr>
@@ -92,9 +93,26 @@ function openHelp(id){
 		<font face="Verdana, Arial, Helvetica, sans-serif">Blockera s&ouml;kning</font></font> 
 	  </td>
 	</tr>
+	
 	<tr> 
-	  <td width="88" valign="middle" bgcolor="#BABABA"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Dela 
-		ut</font></font></td>
+	  <td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Avdelning</font></td>
+	  <td valign="middle" bgcolor="#BABABA"> 		
+	  	<input type="Hidden" name="current_section_id" value="#current_section_id#">
+		<font face="Verdana, Arial, Helvetica, sans-serif" size="1">Nuvarande avdelning: #current_section_name# </font><br>
+		<font face="Verdana, Arial, Helvetica, sans-serif" size="1">Byt till:&nbsp; 
+		<SELECT NAME="change_section" size="1">
+			<option value="-1">Ingen sektion</option>		  
+			#section_option_list#		
+		</SELECT>
+		
+		</font><br>
+		
+		
+	  </td>
+	</tr>
+	
+	<tr> 
+	  <td width="88" valign="middle" bgcolor="#BABABA"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Dela ut</font></font></td>
 	  <td valign="middle" bgcolor="#BABABA"><font size="2"> 
 		<input type="CHECKBOX" name="show_meta" value="1" #show_meta#>
 		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">Visa dokumentet 
@@ -157,3 +175,4 @@ function openHelp(id){
   </table>
 </FORM>
 </BODY></HTML>
+
