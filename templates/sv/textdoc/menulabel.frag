@@ -1,0 +1,1 @@
+<a href="AdminDoc?meta_id=#meta_id#&flags=#flags#&editmenu=#menuindex#" class="imcms_label">#label#<img src="@imcmsimageurl@/admin/red.gif" border="0"></a>

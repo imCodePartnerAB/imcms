@@ -75,9 +75,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         return page;
     }
 
-    public String parsePage( ParserParameters paramsToParse, int includelevel ) throws IOException {
-        DocumentRequest documentRequest = paramsToParse.getDocumentRequest() ;
-        int flags = paramsToParse.getFlags() ;
+    public String parsePage( ParserParameters parserParameters, int includelevel ) throws IOException {
+        DocumentRequest documentRequest = parserParameters.getDocumentRequest() ;
+        int flags = parserParameters.getFlags() ;
         try {
             TextDocumentDomainObject document = (TextDocumentDomainObject)documentRequest.getDocument();
             int meta_id = document.getId();
@@ -116,7 +116,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             TemplateDomainObject documentTemplate = document.getTemplate();
             int documentTemplateId = documentTemplate.getId();
 
-            String template_name = paramsToParse.getTemplate();
+            String template_name = parserParameters.getTemplate();
             if ( template_name != null ) {
                 TemplateMapper templateMapper = service.getTemplateMapper();
                 TemplateDomainObject template = templateMapper.getTemplateByName( template_name );
@@ -136,7 +136,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
 
-            Map menus = getMenus( metaIdUserIdPair, menumode, datetimeFormatWithSeconds, lang_prefix );
+            Map menus = getMenus( metaIdUserIdPair, menumode, datetimeFormatWithSeconds, lang_prefix, parserParameters );
 
             StringBuffer templatebuffer = new StringBuffer( service.getTemplateData( documentTemplateId ) );
 
@@ -146,9 +146,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
             result.append( imcmsMessage );
 
-            Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, templatemode, paramsToParse );
+            Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, templatemode, parserParameters );
             MapSubstitution hashtagsubstitution = new imcode.server.parser.MapSubstitution( hashTags, true );
-            MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( paramsToParse, menus, menumode );
+            MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( parserParameters, menus, menumode );
             ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, documentRequest, templatePath, Arrays.asList( included_docs ), includemode, includelevel, includePath, textMap, textmode, imageMap, imagemode );
 
             LinkedList parse = new LinkedList();
@@ -379,7 +379,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     }
 
     private Map getMenus( String[] metaIdUserIdPair, boolean menumode, SimpleDateFormat datetimeFormatWithSeconds,
-                           String lang_prefix ) {
+                          String lang_prefix, ParserParameters parserParameters ) {
         /*
           OK.. we will now make a LinkedList for the entire page.
           This LinkedList, menus, will contain one item for each menu on the page.
@@ -407,7 +407,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             }
             MenuItem menuItem = createMenuItemFromSprocGetChildsRow( currentMenu, childRow, datetimeFormatWithSeconds );
 
-            if ( !menuItem.getDocument().isPublishedAndNotArchived() && !menumode ) { // if not menumode, and document is inactive or archived, don't include it.
+            Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
+            boolean editingThisMenu = menumode && null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex;
+            if ( !menuItem.getDocument().isPublishedAndNotArchived() && !editingThisMenu ) { // if not menumode, and document is inactive or archived, don't include it.
                 continue;
             }
             currentMenu.add( menuItem );	// Add the Properties for this menuitem to the current menus list.

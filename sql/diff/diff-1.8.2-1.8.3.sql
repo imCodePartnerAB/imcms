@@ -29,6 +29,16 @@ GO
 ALTER TABLE text_docs DROP COLUMN sort_order
 GO
 
+-- 2004-03-19 Kreiger
+
 DROP PROCEDURE AddExistingDocToMenu
 DROP PROCEDURE GetTextDocData
 GO
+
+-- 2004-03-22 Kreiger
+
+ALTER TABLE childs ADD CONSTRAINT PK_childs PRIMARY KEY (menu_id, to_meta_id)
+ALTER TABLE childs ADD CONSTRAINT PK_childs_meta FOREIGN KEY (to_meta_id) REFERENCES meta (meta_id)
+GO
+
+-- 2004-03-23 Kreiger

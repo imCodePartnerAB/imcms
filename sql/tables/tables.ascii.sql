@@ -30,6 +30,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_browser
 ALTER TABLE [dbo].[browser_docs] DROP CONSTRAINT FK_browser_docs_meta
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[PK_childs_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[childs] DROP CONSTRAINT PK_childs_meta
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_permission_sets_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[doc_permission_sets] DROP CONSTRAINT FK_permission_sets_meta
 GO
@@ -880,6 +884,14 @@ ALTER TABLE [dbo].[category_types] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+ALTER TABLE [dbo].[childs] WITH NOCHECK ADD 
+	CONSTRAINT [PK_childs] PRIMARY KEY  CLUSTERED 
+	(
+		[menu_id],
+		[to_meta_id]
+	)  ON [PRIMARY] 
+GO
+
 ALTER TABLE [dbo].[display_name] WITH NOCHECK ADD 
 	CONSTRAINT [PK_display_name] PRIMARY KEY  CLUSTERED 
 	(
@@ -1406,6 +1418,12 @@ ALTER TABLE [dbo].[childs] ADD
 		[menu_id]
 	) REFERENCES [dbo].[menus] (
 		[menu_id]
+	),
+	CONSTRAINT [PK_childs_meta] FOREIGN KEY 
+	(
+		[to_meta_id]
+	) REFERENCES [dbo].[meta] (
+		[meta_id]
 	)
 GO
 

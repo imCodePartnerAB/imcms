@@ -1,7 +1,7 @@
 package imcode.server.parser;
 
-import imcode.server.DocumentRequest;
 import imcode.server.IMCConstants;
+import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.oro.text.regex.*;
@@ -39,22 +39,25 @@ class MenuParserSubstitution implements Substitution {
 
     private String getMenuModePrefix( int menuIndex, String labelAttribute ) {
         Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
+        IMCServiceInterface serverObject = parserParameters.getDocumentRequest().getServerObject();
+        UserDomainObject user = parserParameters.getDocumentRequest().getUser();
+        Menu menu = getMenuByIndex( menuIndex );
+        List parseTags = Arrays.asList( new String[]{
+            "#menuindex#", "" + menuIndex,
+            "#label#", labelAttribute,
+            "#flags#", ""+parserParameters.getFlags(),
+            "#sortOrder" + ( null != menu ? menu.getSortOrder() : IMCConstants.MENU_SORT_DEFAULT ) + "#", "checked",
+            "#doc_types#", createDocumentTypesOptionList(),
+            "#meta_id#", "" + parserParameters.getDocumentRequest().getDocument().getId()
+        } );
+        String result = serverObject.getAdminTemplate( "textdoc/menulabel.frag", user, parseTags );
         if ( null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex ) {
-            Menu menu = getMenuByIndex( menuIndex );
-            List parseTags = Arrays.asList( new String[]{
-                "#doc_menu_no#", "" + menuIndex,
-                "#label#", labelAttribute,
-                "#sortOrder" + ( null != menu ? menu.getSortOrder() : IMCConstants.MENU_SORT_DEFAULT ) + "#", "checked",
-                "#doc_types#", createDocumentTypesOptionList(),
-                "#getMetaId#", "" + parserParameters.getDocumentRequest().getDocument().getId()
-            } );
 
-            return parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( "textdoc/add_doc.html", parserParameters.getDocumentRequest().getUser(), parseTags )
-                   +
-                   parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( "textdoc/sort_order.html", parserParameters.getDocumentRequest().getUser(), parseTags );
-        } else {
-            return "";
+            result += serverObject.getAdminTemplate( "textdoc/add_doc.html", user, parseTags )
+                      +
+                      serverObject.getAdminTemplate( "textdoc/sort_order.html", user, parseTags );
         }
+        return result;
     }
 
     private String getMenuModeSuffix( int menuIndex ) {
@@ -64,14 +67,15 @@ class MenuParserSubstitution implements Substitution {
         } else {
             List parseTags = Arrays.asList( new String[]{
                 "#menuindex#", "" + menuIndex,
-                "#flags#", ""+parserParameters.getDocumentRequest().getHttpServletRequest().getParameter( "flags" ),
-                "#meta_id#", ""+parserParameters.getDocumentRequest().getDocument().getId()
+                "#flags#", "" + parserParameters.getFlags(),
+                "#meta_id#", "" + parserParameters.getDocumentRequest().getDocument().getId()
             } );
             return parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( "textdoc/admin_menu.frag", parserParameters.getDocumentRequest().getUser(), parseTags );
         }
     }
 
     class DocumentTypeIdNamePair {
+
         Integer id;
         String name;
     }
@@ -382,7 +386,8 @@ class MenuParserSubstitution implements Substitution {
 
         Menu parentMenu = menuItem.getParentMenu();
         Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
-        boolean editingThisMenu = null != editingMenuIndex && editingMenuIndex.intValue() == parentMenu.getMenuIndex() && parentMenu.isMenuMode();
+        boolean editingThisMenu = null != editingMenuIndex && editingMenuIndex.intValue() == parentMenu.getMenuIndex()
+                                  && parentMenu.isMenuMode();
         if ( editingThisMenu ) {
             final int sortOrder = menuItem.getParentMenu().getSortOrder();
             if ( IMCConstants.MENU_SORT_BY_MANUAL_ORDER == sortOrder
@@ -420,7 +425,7 @@ class MenuParserSubstitution implements Substitution {
 
         tags.setProperty( "#menuitemlink#", a_href );
         tags.setProperty( "#/menuitemlink#",
-                          menuItem.getParentMenu().isMenuMode() && menuItem.isEditable()
+                          menuItem.getParentMenu().isMenuMode() && menuItem.isEditable() && editingThisMenu
                           ? "</a>"
                             + parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( "textdoc/admin_menuitem.frag", user, Arrays.asList( new String[]{
                                 "#meta_id#", ""

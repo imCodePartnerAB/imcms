@@ -9,7 +9,6 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.FileCache;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.oro.text.regex.*;
 
 import javax.servlet.http.Cookie;
@@ -24,7 +23,6 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.*;
 import imcode.server.*;
-import imcode.util.Parser;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
@@ -76,8 +74,6 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
     private boolean imageMode;
     private int implicitImageNumber = 1;
 
-    private String labelTemplate;
-
     private DocumentDomainObject document;
 
     private HashMap included_docs = new HashMap();
@@ -109,14 +105,6 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
         this.imageMap = imagemap;
         this.imageMode = imagemode;
-
-        String langPrefix = documentRequest.getUser().getLanguageIso639_2();
-        File label_template_file = new File(templatePath, langPrefix + "/admin/textdoc/label.frag");
-        try {
-            this.labelTemplate = fileCache.getCachedFileString(label_template_file);
-        } catch (IOException ex) {
-            log.error("Failed to load template '" + label_template_file + "'");
-        }
     }
 
     /**
@@ -418,7 +406,6 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         String label_urlparam = "";
         if (!"".equals(label)) {
             label_urlparam = removeHtmlTagsAndUrlEncode(label);
-            label = loadLabelTemplateAndReplaceLabelTag(label);
         }
         String[] replace_tags = new String[]{
             "#meta_id#", String.valueOf(document.getId()),
@@ -436,10 +423,6 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         label_urlparam = perl5util.substitute("s!<.+?>!!g", label);
         label_urlparam = URLEncoder.encode(label_urlparam);
         return label_urlparam;
-    }
-
-    private String loadLabelTemplateAndReplaceLabelTag( String label ) {
-        return Parser.parseDoc( labelTemplate, new String[]{"#label#", label} );
     }
 
     /**
