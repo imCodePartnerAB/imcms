@@ -74,7 +74,7 @@ public class UserChangePrefs extends Administrator {
 		//log("gick in") ;
 	    }
 	    //log(params.getProperty("password1")) ;
-	    if( UserHandler.verifyPassword(params,req,res) == false) {
+	    if( AdminUserProps.verifyPassword(params,req,res) == false) {
 		return ;
 	    }
 
@@ -93,7 +93,7 @@ public class UserChangePrefs extends Administrator {
 	    currUserInfo.setProperty("company", params.getProperty("company")) ;
 
 	    // Lets build the users information into a string and add it to db
-	    String[] procParams = UserHandler.createUserInfoString(currUserInfo) ;
+	    String[] procParams = AdminUserProps.extractUpdateUserSprocParametersFromProperties(currUserInfo) ;
 	    imcref.sqlUpdateProcedure( "UpdateUser", procParams ) ;
 
 

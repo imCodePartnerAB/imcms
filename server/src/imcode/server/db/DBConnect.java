@@ -42,7 +42,7 @@ public class DBConnect {
         try {
             con = conPool.getConnection();
         } catch( SQLException ex ) {
-            log.error( "", ex );
+            log.error( "getConnection()", ex );
         }
     }
 
@@ -51,7 +51,7 @@ public class DBConnect {
         try {
             stmt = con.createStatement();						  // Create statement
         } catch( SQLException ex ) {
-            log.error( "", ex );
+            log.error( "createStatement()", ex );
         }
     }
 
@@ -89,7 +89,7 @@ public class DBConnect {
             stmt.close();
 
         } catch( SQLException e ) {
-            log.error( "", e );
+            log.error( "executeQuery()", e );
         }
 
         return results;
@@ -104,7 +104,7 @@ public class DBConnect {
             con.setCatalog( catalog );
             result = executeQuery();
         } catch( SQLException e ) {
-            log.error( "", e );
+            log.error( "executeQuery(String)", e );
         }
         return result;
     }
@@ -118,7 +118,7 @@ public class DBConnect {
             stmt.executeUpdate( strSQLString );
             stmt.close();
         } catch( SQLException e ) {
-            log.error( "", e );
+            log.error( "executeUpdateQuery()", e );
         }
     }
 
@@ -173,7 +173,7 @@ public class DBConnect {
             res = cs.executeUpdate();
             cs.close();
         } catch( SQLException e ) {
-            log.error( "", e );
+            log.error( "executeUpdateProcedure() - "+strProcedure, e );
         }
         return res;
     }
@@ -202,7 +202,7 @@ public class DBConnect {
         try {
             con.close();
         } catch( SQLException e ) {
-            log.error( "", e );
+            log.error( "closeConnection()", e );
         }
         con = null;
     }
@@ -372,7 +372,7 @@ public class DBConnect {
                     paramstr += ", ";
                 }
             }
-            log.error( "", ex );
+            log.error( "setProcedure(String)", ex );
         }
     }
 

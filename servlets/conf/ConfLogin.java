@@ -265,7 +265,7 @@ public class ConfLogin extends Conference {
 	    }
 
 	    // Lets validate the passwords. Error message will be generated in method
-	    if( UserHandler.verifyPassword(userParams,req,res) == false) return ;
+	    if( AdminUserProps.verifyPassword(userParams,req,res) == false) return ;
 
 	    // Lets validate the phonenbr. Error message will be generated in method
       boolean result = true;
@@ -319,7 +319,7 @@ public class ConfLogin extends Conference {
 
 	    userParams.setProperty("user_id", newUserId) ;
 
-	    String[] procParams =  UserHandler.createUserInfoString(userParams) ;
+	    String[] procParams =  AdminUserProps.extractUpdateUserSprocParametersFromProperties(userParams) ;
 
       // Lets build the users information into a string and add it to db
       imcref.sqlUpdateProcedure("AddNewUser",  procParams ) ;
@@ -676,7 +676,7 @@ public class ConfLogin extends Conference {
 	// this.log("Userinfostring:" + sqlStr) ;
 	return sqlStr ;
 
-    } // End of createUserInfoString
+    } // End of extractUpdateUserSprocParametersFromProperties
 
 
 

@@ -204,7 +204,7 @@ public class ChatLogin extends ChatBase {
 	    }
 
 	    // Lets validate the passwords. Error message will be generated in method
-	    if( UserHandler.verifyPassword(newUserParams,req,res) == false) return ;
+	    if( AdminUserProps.verifyPassword(newUserParams,req,res) == false) return ;
 
 	    // Lets validate the phonenbr. Error message will be generated in method
       boolean result = true;
@@ -256,7 +256,7 @@ public class ChatLogin extends ChatBase {
 		newUserParams.setProperty("lang_id", "1") ;
 
 	    newUserParams.setProperty("user_id", newUserId) ;
-	    String[] procParams =  UserHandler.createUserInfoString(newUserParams) ;
+	    String[] procParams =  AdminUserProps.extractUpdateUserSprocParametersFromProperties(newUserParams) ;
 
       // Lets build the users information into a string and add it to db
       imcref.sqlUpdateProcedure("AddNewUser",  procParams) ;

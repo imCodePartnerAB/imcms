@@ -802,7 +802,7 @@ public class AdminUserProps extends Administrator {
 	    if( rolesV == null) return ;
 
 	    // Lets validate the password
-	    if( UserHandler.verifyPassword(params,req,res) == false)	return ;
+	    if( verifyPassword(params,req,res) == false)	return ;
 
 
 
@@ -839,7 +839,7 @@ public class AdminUserProps extends Administrator {
 
 	    // Lets build the users information into a string and add it to db
 	    params.setProperty("user_id", newUserId) ;
-	    String[] procParams = UserHandler.createUserInfoString(params) ;
+	    String[] procParams = extractUpdateUserSprocParametersFromProperties(params) ;
 	    log("AddNewUser " + Arrays.asList( procParams ).toString()) ;
 	    imcref.sqlUpdateProcedure("AddNewUser", procParams ) ;
 
@@ -1050,7 +1050,7 @@ public class AdminUserProps extends Administrator {
 		}
 
 	    // Lets validate the password
-	    if( UserHandler.verifyPassword(params,req,res) == false)	return ;
+	    if( verifyPassword(params,req,res) == false)	return ;
 
 		// Ok, Lets validate all fields
 	/*
@@ -1162,7 +1162,7 @@ public class AdminUserProps extends Administrator {
 
 
 	    // Lets build the users information into a string and add it to db
-	    String[] procParam = UserHandler.createUserInfoString(params) ;
+	    String[] procParam = extractUpdateUserSprocParametersFromProperties(params) ;
 	    log("userSQL: " + Arrays.asList( procParam )) ;
 	    imcref.sqlUpdateProcedure( "UpdateUser", procParam ) ;
 
@@ -1184,19 +1184,19 @@ public class AdminUserProps extends Administrator {
 
 			if ( isSuperadmin ){ // delete all userroles
 		    	int roleId = -1;
-				imcref.sqlUpdateProcedure("DelUserRoles " + userToChangeId + ", " + roleId ) ;
+				imcref.sqlUpdateProcedure("DelUserRoles", new String[]{ userToChangeId, ""+roleId }) ;
 
 			}else{  // delete only roles that the useradmin has permission to administrate
 				String[] rolesArr = imcref.sqlProcedure("GetUseradminPermissibleRoles " + user.getUserId() );
 				for ( int i=0; i < rolesArr.length; i+=2 ){
-					imcref.sqlUpdateProcedure("DelUserRoles " + userToChangeId + ", " + Integer.parseInt(rolesArr[i]) ) ;
+					imcref.sqlUpdateProcedure("DelUserRoles", new String[] {userToChangeId, rolesArr[i]} ) ;
 				}
 			}
-			String roleId[] = imcref.sqlProcedure ("GetRoleIdByRoleName Useradmin");
+			String roleId[] = imcref.sqlProcedure ("GetRoleIdByRoleName", new String[] { "Useradmin" });
 			boolean isSelected = false;
 			for(int i = 0; i<rolesV.size(); i++) {
 				String aRole = rolesV.elementAt(i).toString();
-				imcref.sqlUpdateProcedure("AddUserRole  " + userToChangeId + ", " + aRole) ;
+				imcref.sqlUpdateProcedure("AddUserRole", new String[] { userToChangeId, aRole } ) ;
 				if ( aRole.equals(roleId[0]) ){
 					isSelected = true; // role Useradmin is selected
 				}
@@ -1859,5 +1859,66 @@ public class AdminUserProps extends Administrator {
       }
       return result;
    } // CheckExistingUserName
+
+   /**
+    Validates the password. Password must contain at least 4 characters
+    Generates an errorpage and returns false if something goes wrong
+    */
+
+   static boolean verifyPassword( Properties prop, HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+
+      String pwd1 = prop.getProperty( "password1" );
+      String pwd2 = prop.getProperty( "password2" );
+      String header = "Verify password error";
+      String msg = "";
+
+      if( !pwd1.equals( pwd2 ) ) {
+         header = req.getServletPath();
+         AdminError2 err = new AdminError2( req, res, header, 52 );
+         //log(header + err.getErrorMsg()) ;
+         return false;
+      }
+
+      if( pwd1.length() < 4 ) {
+         header = req.getServletPath();
+         AdminError2 err = new AdminError2( req, res, header, 53 );
+         //log(header + err.getErrorMsg()) ;
+         return false;
+      }
+
+      return true;
+
+   } // End verifyPassword
+
+   /**
+    Creates a sql parameter array used to run sproc updateUser
+    **/
+   static String[] extractUpdateUserSprocParametersFromProperties( Properties props ) {
+
+      Logger log = Logger.getLogger( AdminUserProps.class );
+      log.debug( "extractUpdateUserSprocParametersFromProperties + props: " + props.toString()) ;
+
+      String[] params = {
+      props.getProperty( "user_id" ) ,
+      (props.getProperty( "login_name" )).trim() ,
+      (props.getProperty( "password1" )).trim() ,
+      (props.getProperty( "first_name" )).trim() ,
+      (props.getProperty( "last_name" )).trim() ,
+      (props.getProperty( "title" )).trim() ,
+      (props.getProperty( "company" )).trim() ,
+      (props.getProperty( "address" )).trim() ,
+      (props.getProperty( "city" )).trim() ,
+      (props.getProperty( "zip" )).trim() ,
+      (props.getProperty( "country" )).trim() ,
+      (props.getProperty( "country_council" )).trim() ,
+      (props.getProperty( "email" )).trim() ,
+      "1" , //todo
+      "1001",
+      "0",
+      props.getProperty( "lang_id" ),
+      props.getProperty( "user_type" ),
+      props.getProperty( "active" ) };
+      return params;
+   }
 
 }

@@ -1185,7 +1185,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     @deprecated Use {@link #sqlUpdateProcedure(String, String[])} instead.
     **/
    public int sqlUpdateProcedure( String procedure ) {
-      return sqlUpdateProcedure( procedure, new String[]{} );
+      DBConnect dbc = new DBConnect( m_conPool );
+      dbc.getConnection();
+      dbc.setProcedure( procedure );
+      int res = dbc.executeUpdateProcedure();
+      dbc.clearResultSet();
+      dbc.closeConnection();
+      dbc = null;
+      return res;
    }
 
 
