@@ -8,9 +8,13 @@ import java.rmi.registry.*;
 import imcode.util.* ;
 import imcode.server.* ;
 
+import org.apache.log4j.Category;
+
 public class TemplateChange extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
+	
+	private static Category log = Category.getInstance(TemplateChange.class.getName());
 	
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -424,8 +428,7 @@ public class TemplateChange extends HttpServlet {
 						break ;
 					}
 				} catch ( NumberFormatException ex ) {
-					imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
-					log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   					
+					log.debug( "Exception occured" + ex );	   					
 				}
 			}
 			temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;

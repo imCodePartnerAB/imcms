@@ -100,8 +100,10 @@ public class SavePermissions extends HttpServlet {
 						)
 					) {
 					permissions |= perm ;
+					System.out.println("permissions: "+permissions);
 				}
 			}
+			System.out.println("Set"+newstr+"DocPermissionSet "+meta_id+","+set_id+","+permissions) ;
 			IMCServiceRMI.sqlUpdateProcedure(imcserver, "Set"+newstr+"DocPermissionSet "+meta_id+","+set_id+","+permissions) ;
 
 			// Read the select-lists for the new extended permissions, and store the values in the db.

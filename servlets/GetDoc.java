@@ -37,6 +37,8 @@ import imcode.server.* ;
 import imcode.server.parser.ParserParameters;
 import imcode.util.IMCServiceRMI;
 
+import org.apache.log4j.Category;
+
 /**
   Get a document = Parse data from database.
 */
@@ -46,27 +48,32 @@ public class GetDoc extends HttpServlet {
 
 	private final static  int COOKIE_EXPIRE_TIME = 518400;
 	private final static String SERVLET_CONFIG_FILE_NAME = "servlet.cfg";
-	private final static String ACCESS_LOG = "accesslog";
 	private final static DateFormat dateFormat = new SimpleDateFormat("'#date#'[yyyy-MM-dd] '#time#'[HH:mm:ss.SSS]") ;			
-	private final static Log trackLog = Log.getLog( ACCESS_LOG ) ;
-	private final static Log log = Log.getLog( GetDoc.class.getName() ) ;
+	private static Category trackLog = Category.getInstance( IMCConstants.ACCESS_LOG ) ;
+	private static Category log = Category.getInstance( GetDoc.class.getName() ) ;
 
 	static 
 	{
-		trackLog.log( LogLevels.INFO, "Track log started." );
-		log.log( LogLevels.DEBUG, "Track log called for the first time. The logs name is "+ACCESS_LOG );
+		trackLog.info( "Track log started." );
+		log.debug("Track log called for the first time. The logs name is "+IMCConstants.ACCESS_LOG  );
 	}
 	
-	private static String createAccessLoggMessage(HttpSession session, String message)
+	private static String createAccessLoggMessage(HttpSession session, String message, String ipNr, String referer)
 	{
 		StringBuffer strBuff = new StringBuffer( dateFormat.format(new Date()) );
 		strBuff.append(" #session#["+session.getId()+"]" );
+		strBuff.append(" #ipnr#["+ipNr+"]" );
 		User user = (User)session.getValue("logon.isDone");  // marker object
 		if ( user != null )
 		{
 			strBuff.append(" #user#["+user.getUserId()+"]" );
+			strBuff.append(" #lastdoc#["+user.getLastMetaId()+"]" );
 		}
 		strBuff.append( " #document#["+message+"]");
+		if (referer != null) {
+			String str = referer.substring(referer.indexOf("meta_id=")+8);
+			strBuff.append( " #referer#["+str+"]");
+		}
 		return strBuff.toString();
 	}
 
@@ -97,8 +104,7 @@ public class GetDoc extends HttpServlet {
 			} catch ( NumberFormatException ex )
 			{
 				meta_id = start_doc ;
-				imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
-				log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   
+				log.debug("Exception occured" + ex );	   
 			}
 			
 			byte[] tempbytes = getDoc(meta_id,meta_id,host,req,res) ;
@@ -223,7 +229,7 @@ public class GetDoc extends HttpServlet {
 		}
 
 		// Log to accesslog
-		trackLog.log(Log.INFO, createAccessLoggMessage( session, meta_int.toString() ) );
+		trackLog.info(createAccessLoggMessage( session, meta_int.toString(), req.getRemoteAddr(),req.getHeader("Referer") ) );
 
 		switch( Integer.parseInt(doc_type_str) )
 		{
@@ -306,8 +312,7 @@ public class GetDoc extends HttpServlet {
 				}
 			} catch ( java.net.SocketException ex )
 			{
-				imcode.util.log.Log log = imcode.util.log.Log.getLog( "GetDoc" );
-				log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   
+				log.debug("Exception occured" + ex );	   
 			}
 			fr.close() ;
 			out.flush() ;

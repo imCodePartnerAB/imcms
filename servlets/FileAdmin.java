@@ -6,9 +6,13 @@ import javax.servlet.http.*;
 import imcode.util.* ;
 import imcode.server.* ;
 
+import org.apache.log4j.Category;
+
 public class FileAdmin extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
+	
+	private static Category log = Category.getInstance(FileAdmin.class.getName());
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -357,8 +361,10 @@ public class FileAdmin extends HttpServlet {
 			if ( files1 != null && files1.length == 1 ) {	//Has the user chosen just one file?
 				File file = new File(dir1,files1[0]) ;
 				try {
-					res.setContentType("application/octetstream;name=\""+file.getName()+"\"") ;
-					res.setHeader("Content-Disposition","attachment;filename=\""+file.getName()+"\"") ;
+					System.out.println(file.getName());
+				//	res.setContentType("application/octet-stream") ;
+					res.setContentType("application/octet-stream") ;
+					res.setHeader("Content-Disposition","attachment; filename=\""+file.getName()+"\"") ;
 					BufferedInputStream fin = new BufferedInputStream(new FileInputStream(file)) ;
 					buffer = new byte[65536] ;
 					res.setContentLength(fin.available()) ;
@@ -368,16 +374,15 @@ public class FileAdmin extends HttpServlet {
 					}
 					return ;
 				} catch ( FileNotFoundException ex ) {
-					imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
-					log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   					
+					log.debug("Exception occured" + ex );	   					
 				}
 			}
 		} else if ( mp.getParameter("download2") != null ) {
 			if ( files2 != null && files2.length == 1 ) {	//Has the user chosen just one file?
 				File file = new File(dir2,files2[0]) ;
 				try {
-					res.setContentType("application/octetstream;name=\""+file.getName()+"\"") ;
-					res.setHeader("Content-Disposition","attachment;filename=\""+file.getName()+"\"") ;
+					res.setContentType("application/octet-stream") ;
+					res.setHeader("Content-Disposition","attachment; filename=\""+file.getName()+"\"") ;
 					BufferedInputStream fin = new BufferedInputStream(new FileInputStream(file)) ;
 					buffer = new byte[65536] ;
 					res.setContentLength(fin.available()) ;

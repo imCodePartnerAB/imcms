@@ -15,12 +15,16 @@ import com.sun.image.codec.jpeg.* ;
 
 import imcode.util.* ;
 
+import org.apache.log4j.Category;
+
 /**
 	This class reads the diagram files and outputs a diagram in GIF-format
 */
 public class ShowDiagram extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
+	
+	private static Category log = Category.getInstance(ShowDiagram.class.getName());
 
 	public void init( ServletConfig config ) throws ServletException {
 
@@ -63,8 +67,7 @@ public class ShowDiagram extends HttpServlet {
 					last_success = series;
 				}
 				catch( NumberFormatException ex ) {
-					imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
-					log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   				
+					log.debug("Exception occured" + ex );	   				
 					continue;
 				}
 			}

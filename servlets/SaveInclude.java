@@ -10,10 +10,17 @@ import imcode.util.IMCServiceRMI ;
 
 import java.io.IOException ;
 import java.util.Vector ;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
+import org.apache.log4j.Category;
 
 public class SaveInclude extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
+	
+	private final static Category mainLog = Category.getInstance(IMCConstants.MAIN_LOG);
+	private final static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;	
 
     public void init (ServletConfig config) throws ServletException {
 	super.init( config ) ;
@@ -49,7 +56,9 @@ public class SaveInclude extends HttpServlet {
 	String include_id = req.getParameter("include_id") ;
 	if (included_meta_id != null && include_id != null) {
 	    if ("".equals(included_meta_id.trim())) {
-		IMCServiceRMI.sqlUpdateProcedure(imcserver,"DeleteInclude "+meta_id_str+","+include_id) ; 
+		IMCServiceRMI.sqlUpdateProcedure(imcserver,"DeleteInclude "+meta_id_str+","+include_id) ;
+		 mainLog.info(dateFormat.format(new java.util.Date())+"Include nr [" + include_id +	"] on ["+meta_id_str+"] removed by user: [" +user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]");
+		 
 	    } else {
 		try {
 		    int included_meta_id_int = Integer.parseInt(included_meta_id) ;
@@ -57,7 +66,8 @@ public class SaveInclude extends HttpServlet {
 		    // Make sure the user has permission to share the included document
 		    if (IMCServiceRMI.checkUserDocSharePermission(imcserver,user,included_meta_id_int)) {
 			IMCServiceRMI.sqlUpdateProcedure(imcserver,"SetInclude "+meta_id_str+","+include_id+","+included_meta_id) ; 
-		    } else {
+		    mainLog.info(dateFormat.format(new java.util.Date())+"Include nr [" +include_id  +	"] on ["+meta_id_str+"] changed to ["+ included_meta_id+ "]  by user: [" +user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]");
+			} else {
 			sendPermissionDenied(imcserver,out,meta_id,user) ;
 			return ;
 		    }

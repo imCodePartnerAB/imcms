@@ -2,16 +2,25 @@ import java.io.*;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import java.text.DateFormat ;
 import java.text.SimpleDateFormat ;
 import java.text.ParseException ;
 
 import imcode.util.* ;
+import imcode.server.* ;
+
+import org.apache.log4j.Category;
+
 /**
    Save new meta for a document.
 */
 public class SaveNewMeta extends HttpServlet {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
+	
+	private final static Category mainLog = Category.getInstance(IMCConstants.MAIN_LOG);
+	private final static DateFormat logdateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;	
+	
     /**
        init()
     */
@@ -225,7 +234,10 @@ public class SaveNewMeta extends HttpServlet {
 	    sqlStr += "set date_modified = '" + metaprops.getProperty( "date_modified" ) + "'\n" ;
 	    sqlStr += "where meta_id = " + parent_meta_id ;
 	    IMCServiceRMI.sqlUpdateQuery( imcserver,sqlStr ) ;
-
+		
+		//lets log to mainLog the stuff done
+		mainLog.info(logdateFormat.format(new java.util.Date())+"Document [" +meta_id +"] of type ["+doc_type+"] created on ["+parent_meta_id+"] by user: [" +user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]");
+		 
 	    // Here is the stuff we have to do for each individual doctype. All general tasks
 	    // for all documenttypes is done now.
 

@@ -164,7 +164,7 @@ public class SendMailServlet extends HttpServlet {
 			if (mailError != null){
 				res.sendRedirect("GetDoc?meta_id="+mailError);
 			}else{
-				res.sendRedirect("/imcms/servlet/StartDoc");
+				res.sendRedirect(req.getContextPath()+"/servlet/StartDoc");
 			}
 			return ;
 		}
@@ -201,7 +201,7 @@ public class SendMailServlet extends HttpServlet {
 			if (mailError != null){
 				res.sendRedirect("GetDoc?meta_id="+mailError);
 			}else{
-				res.sendRedirect("/imcms/servlet/StartDoc");
+				res.sendRedirect(req.getContextPath()+"/servlet/StartDoc");
 			}
 			return ;
 		}catch (IOException ex ){
@@ -210,7 +210,7 @@ public class SendMailServlet extends HttpServlet {
 			if (mailError != null){
 				res.sendRedirect("GetDoc?meta_id="+mailError);
 			}else{
-				res.sendRedirect("/imcms/servlet/StartDoc");
+				res.sendRedirect(req.getContextPath()+"/servlet/StartDoc");
 			}
 			return ;
 		}

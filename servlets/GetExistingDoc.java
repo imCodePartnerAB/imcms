@@ -5,8 +5,9 @@ import javax.servlet.http.*;
 
 import imcode.external.diverse.* ;
 import imcode.util.* ;
-import imcode.util.log.* ;
 import java.text.* ;
+
+import org.apache.log4j.Category;
 
 
 /**
@@ -20,7 +21,8 @@ import java.text.* ;
 public class GetExistingDoc extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
-
+	
+	private static Category log = Category.getInstance(GetExistingDoc.class.getName());
         /**
          * init()
          */
@@ -81,7 +83,7 @@ public class GetExistingDoc extends HttpServlet {
         try {
             doc_menu_no = Integer.parseInt(req.getParameter("doc_menu_no")) ;
         } catch (NumberFormatException ex) {
-            Log.getLog("errors").log(Log.ERROR, "\"doc_menu_no\" not found in GetExistingDoc.", ex) ;
+            log.error( "\"doc_menu_no\" not found in GetExistingDoc.", ex) ;
             return ;
         }
 

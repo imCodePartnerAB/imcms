@@ -12,7 +12,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.util.* ;
-import imcode.util.log.* ;
 import imcode.server.* ;
 import imcode.external.diverse.*;
 
@@ -163,7 +162,7 @@ public class PostcardServlet extends HttpServlet {
 			imageUrl = " "; 
 		}else
 		{
-			imageUrl = "/imcms/images/"+imageUrl;
+			imageUrl = req.getContextPath()+"/images/"+imageUrl;
 		}
 		//System.out.println(imageUrl);
 				
@@ -247,8 +246,8 @@ public class PostcardServlet extends HttpServlet {
 		//ok nu är det sparat så nu skickar vi skiten till servern för granskning	
 		File frameSet = new File( templateLib, POSTCARD_SET); 
 		VariableManager vm = new VariableManager();
-		vm.addProperty("postcard","/imcms/postcards/"+pcFileName);
-		vm.addProperty("bottom","/imcms/postcards/bottom.html");
+		vm.addProperty("postcard",req.getContextPath()+"/postcards/"+pcFileName);
+		vm.addProperty("bottom",req.getContextPath()+"/postcards/bottom.html");
 		HtmlGenerator htmlObj = new HtmlGenerator(templateLib, POSTCARD_SET) ;
 		
 		String frameSetHtml = htmlObj.createHtmlString(vm,req) ;
@@ -369,7 +368,7 @@ public class PostcardServlet extends HttpServlet {
 		
 		HttpSession session = req.getSession(false);
 		if(session == null)
-			res.sendRedirect("/imcms/servlet/StartDoc");
+			res.sendRedirect(req.getContextPath()+"/servlet/StartDoc");
 			
 		String[] mailNfo = (String[]) session.getAttribute("postcardMail") ;
 		

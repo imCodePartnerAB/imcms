@@ -1,10 +1,15 @@
 import java.io.*;
 import java.util.*;
+import java.text.DateFormat ;
 import java.text.SimpleDateFormat ;
 import java.text.ParseException ;
 import javax.servlet.*;
 import javax.servlet.http.*;
+
 import imcode.util.* ;
+import imcode.server.* ;
+
+import org.apache.log4j.Category;
 
 /**
   Save meta from metaform.
@@ -13,6 +18,10 @@ public class SaveMeta extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 
+	
+	private final static Category mainLog = Category.getInstance(IMCConstants.MAIN_LOG);
+	private final static DateFormat logdateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;	
+	
 	/**
 	init()
 	*/
@@ -359,6 +368,9 @@ public class SaveMeta extends HttpServlet {
 				if (temp != null) {
 				  out.write(temp) ;
 				}
+		//lets log to mainlog that the user done stuff
+		mainLog.info(logdateFormat.format(new java.util.Date())+"Metadata on ["+meta_id+"] updated by user: [" +user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]");
+		 
 		return ;
 	}
 

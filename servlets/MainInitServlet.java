@@ -9,10 +9,9 @@ import javax.servlet.http.*;
 import java.io.File ;
 
 import imcode.util.Prefs;
-import imcode.util.log.Log;
-import imcode.util.log.LogLevels;
 
-
+import org.apache.log4j.Category;
+import org.apache.log4j.PropertyConfigurator;
 /** 
  *
  * @author  Hasse Brattberg, hasse@erudio.se
@@ -20,15 +19,17 @@ import imcode.util.log.LogLevels;
 public class MainInitServlet extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
+	
+	private final static Category log = Category.getInstance(MainInitServlet.class.getName());
 
 	public void init(ServletConfig config) throws ServletException
 	{
 		try 
 		{
-			super.init(config);
 			// This is the first thin we allways must do.
 			// Other parts of the programi depending that this is done.
 			// Uggly, but can't find anoterh way for the moment/Hasse
+			super.init(config);	
 			File realPathToWebApp = new File(this.getServletContext().getRealPath("/")) ;
 			imcode.server.WebAppGlobalConstants.init( realPathToWebApp );
 			
@@ -36,10 +37,15 @@ public class MainInitServlet extends HttpServlet {
 			System.out.println( realPathToWebApp + " " + file );
 			
 			String initLogString = (new File(realPathToWebApp,file)).toString() ;
-			Log.initLog( initLogString );
-			logPlattformInfo( this.getServletContext() );
+			//PropertyConfigurator.resetConfiguration();
+			PropertyConfigurator.configure( initLogString );
 
-			Prefs.setConfigPath( this.getServletContext().getRealPath("/") + "/WEB-INF/conf/");
+			Category logger = Category.getInstance( MainInitServlet.class.getName() );
+			logger.info("Logging started" );
+			logPlattformInfo( this.getServletContext() );
+			
+			File fil = new File(this.getServletContext().getRealPath("/"), "WEB-INF/conf/");
+			Prefs.setConfigPath( fil.getCanonicalPath());
 		}
 		catch( Exception e ) 
 		{
@@ -56,14 +62,14 @@ public class MainInitServlet extends HttpServlet {
 		final String osArch = "os.arch";
 		final String osVersion = "os.version";
 
-		Log log = Log.getLog( this.getClass().getName() );
-		log.log( LogLevels.INFO, "Servlet Engine: " + application.getServerInfo() );
 		
-		log.log( LogLevels.INFO, javaVersion + ": " + System.getProperty( javaVersion ) );
-		log.log( LogLevels.INFO, javaVendor + ": " + System.getProperty( javaVendor ) );
-		log.log( LogLevels.INFO,  osName + ": " + System.getProperty( osName ) );
-		log.log( LogLevels.INFO,  osArch + ": " + System.getProperty( osArch ) );
-		log.log( LogLevels.INFO, osVersion + ": " + System.getProperty( osVersion ) );
+		log.info( "Servlet Engine: " + application.getServerInfo() );
+		
+		log.info(  javaVersion + ": " + System.getProperty( javaVersion ) );
+		log.info(  javaVendor + ": " + System.getProperty( javaVendor ) );
+		log.info(  osName + ": " + System.getProperty( osName ) );
+		log.info(  osArch + ": " + System.getProperty( osArch ) );
+		log.info(  osVersion + ": " + System.getProperty( osVersion ) );
 
 	}
 }
