@@ -29,7 +29,7 @@ public class TemplateAdmin extends HttpServlet {
     private static final String ADMIN_TEMPLATE_EDIT = "template_edit.html";
     private static final String ADMIN_TEMPLATE_RENAME = "template_rename.html";
     private static final String TEMPLATE_DELETE = "template_delete.html";
-    private static final String TEMPLATE_DEMO_UPLOAD = "templatedemo_uptemplategroup_add.htmlload.html";
+    private static final String TEMPLATE_DEMO_UPLOAD = "templatedemo_upload.html";
     private static final String TEMPLATE_UPLOAD = "template_upload.html";
     private static final String TEMPLATE_GROUP_RENAME = "templategroup_rename.html";
     private static final String TEMPLATE_ASSIGN = "template_assign.html";
