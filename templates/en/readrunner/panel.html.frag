@@ -17,7 +17,7 @@
 
 <form name="form1">
 
-<DIV ID="RRpanelDiv" style="position:absolute; left:-1000; top:-1000; width:249; height:36; clip:rect(0px 249px 36px 0px); padding:0; margin:0; z-index:10; display:block"><input type="image" name="stop" id="stop2" title="Stoppa" value="Stop" onClick="return false" disabled src="/imcms/readrunner/images/btn_panel_stopp.gif" width="57" height="13" style="visibility:hidden"><input type="image" name="start" id="start" title="Starta" value="Go!" onClick="return false" disabled src="/imcms/readrunner/images/btn_panel_start.gif" width="57" height="13" style="visibility:hidden"></DIV>
+<DIV ID="RRpanelDiv" style="position:absolute; left:-1000; top:-1000; width:249; height:36; clip:rect(0px 249px 36px 0px); padding:0; margin:0; z-index:10; display:block"><input type="image" name="stop" id="stop2" title="Stoppa" value="Stop" onClick="return false" disabled src="@readrunnerimagesurl@/btn_panel_stopp.gif" width="57" height="13" style="visibility:hidden"><input type="image" name="start" id="start" title="Starta" value="Go!" onClick="return false" disabled src="@readrunnerimagesurl@/btn_panel_start.gif" width="57" height="13" style="visibility:hidden"></DIV>
 
 <DIV ID="RRpanelStandingDiv" style="position:absolute; left:-1000; top:-1000; width:62; height:116; clip:rect(0px 62px 116px 0px); padding:0; margin:0; z-index:10; display:none"></DIV>
 
