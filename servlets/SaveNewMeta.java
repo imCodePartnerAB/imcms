@@ -289,10 +289,10 @@ public class SaveNewMeta extends HttpServlet {
     private void outputEditPageForNewBrowserRedirectDocument( int metaId, int parentMetaId,
             IMCServiceInterface imcref, String doc_type, String usersLangPrefix, Writer out ) throws IOException {
         String htmlStr;
-        String sqlStr = "insert into browser_docs (metaId, to_meta_id, browser_id) values (?,?,0)";
+        String sqlStr = "insert into browser_docs (meta_id, to_meta_id, browser_id) values (?,?,0)";
         imcref.sqlUpdateQuery( sqlStr, new String[] {""+metaId, ""+parentMetaId} );
         Vector vec = new Vector();
-        sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where metaId = ? order by value desc,name asc";
+        sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = ? order by value desc,name asc";
         Hashtable hash = imcref.sqlQueryHash( sqlStr, new String[] { "" + metaId } );
         String[] b_id = (String[])hash.get( "browser_id" );
         String[] nm = (String[])hash.get( "name" );
@@ -308,7 +308,7 @@ public class SaveNewMeta extends HttpServlet {
         }
         vec.add( "#browsers#" );
         vec.add( bs );
-        sqlStr = "select browser_id,name from browsers where browser_id not in (select browsers.browser_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where metaId = ? ) order by value desc,name asc";
+        sqlStr = "select browser_id,name from browsers where browser_id not in (select browsers.browser_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = ? ) order by value desc,name asc";
         hash = imcref.sqlQueryHash( sqlStr, new String[] {""+metaId} );
         b_id = (String[])hash.get( "browser_id" );
         nm = (String[])hash.get( "name" );
