@@ -255,7 +255,7 @@ public class DatabaseService {
         ResultProcessor resultProcessor = new ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int id = rs.getInt( "role_id" );
-                String name = rs.getString( "role_name" );
+                String name = rs.getString( "role_name" ).trim();
 
                 Table_roles result = null;
                 if( !name.equalsIgnoreCase( "users" ) ) { // all roles but user should be mapped.
@@ -376,7 +376,7 @@ public class DatabaseService {
      * @return
      */
 
-    Table_users[] sproc_getallusers() {
+    Table_users[] sprocGetAllUsers() {
         String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users ORDER BY last_name";
         Object[] paramValues = null;
 
@@ -438,7 +438,7 @@ public class DatabaseService {
         }
     }
 
-    ViewTemplateGroup sproc_getTemplatesInGroup( int groupId ) {
+    ViewTemplateGroup sprocGetTemplatesInGroup( int groupId ) {
         String sql = "SELECT t.template_id,simple_name FROM  templates t JOIN templates_cref c ON  t.template_id = c.template_id " +
             "WHERE c.group_id = ? " +
             "ORDER BY simple_name";

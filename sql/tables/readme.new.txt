@@ -13,7 +13,7 @@ Förändringar mot SQL Server orginalscriptet tables.ascii.sql
 * CREATE TABLE frameset_docs, varchar(8000) -> varchar (255)
 * CREATE TABLE texts, text varchar(8000) -> varchar (255)
 * MySQL använder samma datum/tid typer som SQL Server
-* Bytte ut CAST( CURRENT_TIME AS CHAR(80)) -> CAST( CURRENT_TIME AS CHAR) i koden.
+* Bytte ut CAST( CURRENT_TIME AS CHAR(80)) -> CAST( CURRENT_TIME AS CHAR) kodmässigt.
 
  * Default värden satta till NULL är borttagna
  * Andra default värden är inte satta (ännu, går det, finns det en standard?)

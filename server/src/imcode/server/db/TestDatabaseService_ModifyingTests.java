@@ -11,8 +11,9 @@ public class TestDatabaseService_ModifyingTests extends TestDatabaseService {
     }
 
     public void test_sproc_AddNewuser() {
-        DatabaseService.Table_users[] mimerUsersBefore = super.mimer.sproc_getallusers();
-        DatabaseService.Table_users[] sqlServerUsersBefore = super.sqlServer.sproc_getallusers();
+        DatabaseService.Table_users[] mimerUsersBefore = super.mimer.sprocGetAllUsers();
+        DatabaseService.Table_users[] sqlServerUsersBefore = super.sqlServer.sprocGetAllUsers();
+        DatabaseService.Table_users[] mySqlUsersBefore = super.mySql.sprocGetAllUsers();
 
         int nextFreeUserId = 3;
         DatabaseService.Table_users user = new DatabaseService.Table_users(
@@ -40,11 +41,14 @@ public class TestDatabaseService_ModifyingTests extends TestDatabaseService {
 
         super.mimer.sproc_AddNewuser( user );
         super.sqlServer.sproc_AddNewuser( user );
+        super.mySql.sproc_AddNewuser( user );
 
-        DatabaseService.Table_users[] mimerUsersAfter = super.mimer.sproc_getallusers();
-        DatabaseService.Table_users[] sqlServerUsersAfter = super.sqlServer.sproc_getallusers();
+        DatabaseService.Table_users[] mimerUsersAfter = super.mimer.sprocGetAllUsers();
+        DatabaseService.Table_users[] sqlServerUsersAfter = super.sqlServer.sprocGetAllUsers();
+        DatabaseService.Table_users[] mySqlUsersAfter = super.mySql.sprocGetAllUsers();
 
         assertTrue( mimerUsersAfter.length == mimerUsersBefore.length + 1);
         assertTrue( sqlServerUsersAfter.length == sqlServerUsersBefore.length + 1);
+        assertTrue( mySqlUsersAfter.length == mySqlUsersBefore.length + 1);
     }
 }

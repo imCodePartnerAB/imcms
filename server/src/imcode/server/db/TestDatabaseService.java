@@ -1,5 +1,6 @@
 package imcode.server.db;
 import imcode.server.test.Log4JConfiguredTestCase;
+import org.apache.log4j.Logger;
 
 public class TestDatabaseService extends Log4JConfiguredTestCase {
     protected static final String DB_HOST = "localhost";
@@ -19,40 +20,38 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private static String MYSQL_DATABASE_USER = "root";
     private static String MYSQL_DATABASE_PASSWORD = "";
 
-    DatabaseService sqlServer;
-    DatabaseService mimer;
-    DatabaseService mySql;
+    static DatabaseService sqlServer;
+    static DatabaseService mimer;
+    static DatabaseService mySql;
 
-    protected void initAllDatabases() throws Exception {
+    private static Logger log = Logger.getLogger( TestDatabaseService.class );
+
+    static {
+        try {
+            initAllDatabases();
+        } catch( Exception ex ) {
+            log.error( "", ex );
+        }
+    }
+
+    protected static void initAllDatabases() throws Exception {
         initMySql();
         initSqlServer();
         initMimer();
     }
 
-    private void initMimer() throws Exception {
+    private static void initMimer() throws Exception {
         mimer = new DatabaseService( DatabaseService.MIMER, TestDatabaseService.DB_HOST, TestDatabaseService.MIMER_PORT, TestDatabaseService.MIMMER_DATABASE_NAME, TestDatabaseService.MIMMER_DATABASE_USER, TestDatabaseService.MIMMER_DATABASE_PASSWORD );
         mimer.initializeDatabase();
     }
 
-    private void initSqlServer() throws Exception {
+    private static void initSqlServer() throws Exception {
         sqlServer = new DatabaseService( DatabaseService.SQL_SERVER, TestDatabaseService.DB_HOST, TestDatabaseService.SQLSERVER_PORT, TestDatabaseService.SQLSERVER_DATABASE_NAME, TestDatabaseService.SQLSERVE_DATABASE_USER, TestDatabaseService.SQLSERVE_DATABASE_PASSWORD );
         sqlServer.initializeDatabase();
     }
 
-    private void initMySql() throws Exception {
+    private static void initMySql() throws Exception {
         mySql = new DatabaseService( DatabaseService.MY_SQL, TestDatabaseService.DB_HOST, TestDatabaseService.MYSQL_PORT, TestDatabaseService.MYSQL_DATABASE_NAME, TestDatabaseService.MYSQL_DATABASE_USER, TestDatabaseService.MYSQL_DATABASE_PASSWORD );
         mySql.initializeDatabase();
-    }
-
-    public void testInitMimer() throws Exception {
-        //initMimer();
-    }
-
-    public void testInitMySql() throws Exception {
-        initMySql();
-    }
-
-    public void testInitSqlServer() throws Exception {
-        initSqlServer();
     }
 }
