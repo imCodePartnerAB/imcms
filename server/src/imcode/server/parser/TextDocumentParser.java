@@ -728,6 +728,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         }
     }
 
+    /**
+     * @deprecated Remove usage of this when removeing MenuItem instead -> MenuItemDomainObject
+     */
     static class MenuItemManualTreeSortOrderComparator implements Comparator {
 
         private final static Pattern FIRST_NUMBER_PATTERN;

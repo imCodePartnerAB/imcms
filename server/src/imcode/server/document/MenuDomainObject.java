@@ -26,7 +26,7 @@ public class MenuDomainObject {
     }
 
     public MenuItemDomainObject[] getMenuItems() throws NoPermissionException {
-        MenuItemDomainObject[] menuItemsDomainObjects = documentMapper.getDocIdsFromMenu( ownerDocument.getMetaId(), menuIndex );
+        MenuItemDomainObject[] menuItemsDomainObjects = documentMapper.getMenuItemsForDocument( ownerDocument.getMetaId(), menuIndex );
         return menuItemsDomainObjects;
     }
 

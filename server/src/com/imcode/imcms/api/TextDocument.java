@@ -166,7 +166,7 @@ public class TextDocument extends Document {
 
         public MenuItem( MenuItemDomainObject internalMenuItem ) {
             this.internalMenuItem = internalMenuItem;
-            child = new Document( internalMenuItem.getDocument(), securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper ) ;
+            child = new Document( internalMenuItem.getDocument(), securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper );
         }
 
         public Document getDocument() {
@@ -178,6 +178,9 @@ public class TextDocument extends Document {
         }
 
         public TreeKey getTreeKey() {
+            if( null == internalMenuItem.getTreeKey()) {
+                return null;
+            }
             return new TreeKey( internalMenuItem.getTreeKey() );
         }
 
@@ -188,16 +191,20 @@ public class TextDocument extends Document {
                 this.internalTreeKey = internalTreeKey;
             }
 
-            public int getTreeLevel() {
-                return internalTreeKey.getTreeLevel();
+            public int getLevel() {
+                return internalTreeKey.getLevel();
             }
 
-            public int getTreeLevelSortNumber( int level ) {
-                return internalTreeKey.getTreeLevelSortNumber( level );
+            public int getSortNumber( int level ) {
+                return internalTreeKey.getSortNumber( level );
             }
 
             public String getValue() {
                 return internalTreeKey.getValue();
+            }
+
+            public String toString() {
+                return  getValue();
             }
 
         }
@@ -207,11 +214,11 @@ public class TextDocument extends Document {
         /** Menu sorted by headline. **/
         public final static int SORT_BY_HEADLINE = IMCConstants.MENU_SORT_BY_HEADLINE;
         /** Menu sorted by 'manual' order. **/
-        public final static int SORT_BY_MANUAL_ORDER = IMCConstants.MENU_SORT_BY_MANUAL_ORDER;
+        public final static int SORT_BY_MANUAL_ORDER_DESCENDING = IMCConstants.MENU_SORT_BY_MANUAL_ORDER;
         /** Menu sorted by datetime. **/
-        public final static int SORT_BY_MODIFIED_DATETIME = IMCConstants.MENU_SORT_BY_DATETIME;
+        public final static int SORT_BY_MODIFIED_DATETIME_DESCENDING = IMCConstants.MENU_SORT_BY_DATETIME;
         /** Menu sorted by tree sort order */
-        public final static int SORT_BY_TREE_ORDER = IMCConstants.MENU_SORT_BY_MANUAL_TREE_ORDER;
+        public final static int SORT_BY_TREE_ORDER_DESCENDING = IMCConstants.MENU_SORT_BY_MANUAL_TREE_ORDER;
 
         private MenuDomainObject internalMenu;
         private SecurityChecker securityChecker;
@@ -221,15 +228,15 @@ public class TextDocument extends Document {
             this.securityChecker = securityChecker;
         }
 
-       public MenuItem[] getMenuItems() throws NoPermissionException {
-           MenuItemDomainObject[] menuItemsDomainObjects = internalMenu.getMenuItems();
-           MenuItem[] menuItems = new MenuItem[menuItemsDomainObjects.length];
-           for (int i = 0; i < menuItemsDomainObjects.length; i++) {
-               MenuItemDomainObject menuItemDomainObject = menuItemsDomainObjects[i];
-               menuItems[i] = new MenuItem(menuItemDomainObject);
-           }
-           return menuItems;
-       }
+        public MenuItem[] getMenuItems() throws NoPermissionException {
+            MenuItemDomainObject[] menuItemsDomainObjects = internalMenu.getMenuItems();
+            MenuItem[] menuItems = new MenuItem[menuItemsDomainObjects.length];
+            for (int i = 0; i < menuItemsDomainObjects.length; i++) {
+                MenuItemDomainObject menuItemDomainObject = menuItemsDomainObjects[i];
+                menuItems[i] = new MenuItem( menuItemDomainObject );
+            }
+            return menuItems;
+        }
 
         /**
          * Add a document to the menu.
@@ -267,11 +274,11 @@ public class TextDocument extends Document {
         }
 
         public Document[] getDocuments() {
-            MenuItemDomainObject[] menuItemDomainObjects = documentMapper.getDocIdsFromMenu( internalDocument.getMetaId(), internalMenu.getMenuIndex());
-            Document[] documents = new Document[ menuItemDomainObjects.length ];
+            MenuItemDomainObject[] menuItemDomainObjects = documentMapper.getMenuItemsForDocument( internalDocument.getMetaId(), internalMenu.getMenuIndex() );
+            Document[] documents = new Document[menuItemDomainObjects.length];
             for (int i = 0; i < menuItemDomainObjects.length; i++) {
                 MenuItemDomainObject menuItemDomainObject = menuItemDomainObjects[i];
-                documents[i] = new Document( menuItemDomainObject.getDocument(), securityChecker, documentService, documentMapper, documentPermissionSetMapper,  userAndRoleMapper );
+                documents[i] = new Document( menuItemDomainObject.getDocument(), securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper );
             }
             return documents;
         }

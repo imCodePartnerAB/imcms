@@ -8,6 +8,7 @@ import imcode.util.DateHelper;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.comparators.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -697,7 +698,7 @@ public class DocumentMapper {
         imcref.sqlUpdateProcedure( "DeleteInclude", new String[]{"" + including_meta_id, "" + include_id} );
     }
 
-    public MenuItemDomainObject[] getDocIdsFromMenu( int parentId, int menuIndex ) {
+    public MenuItemDomainObject[] getMenuItemsForDocument( int parentId, int menuIndex ) {
         DocumentDomainObject parent = getDocument( parentId );
         int sortOrder = getSortOrderOfDocument( parentId );
         String orderBy = getSortOrderAsSqlOrderBy( sortOrder );
@@ -712,17 +713,19 @@ public class DocumentMapper {
             DocumentDomainObject child = getDocument( to_meta_id );
             menuItems[i/4] = new MenuItemDomainObject(parent, child, menu_sort, manual_sort_order, tree_sort_index);
         }
+        Arrays.sort( menuItems, new MenuItemDomainObject.TreeKeyCoparator() );
+
         return menuItems;
     }
 
     private String getSortOrderAsSqlOrderBy( int sortOrder ) {
         String orderBy = "meta_headline";
         switch ( sortOrder ) {
-            case TextDocument.Menu.SORT_BY_MANUAL_ORDER:
+            case TextDocument.Menu.SORT_BY_MANUAL_ORDER_DESCENDING:
                 orderBy = "manual_sort_order desc";
                 break;
 
-            case TextDocument.Menu.SORT_BY_MODIFIED_DATETIME:
+            case TextDocument.Menu.SORT_BY_MODIFIED_DATETIME_DESCENDING:
                 orderBy = "date_modified desc";
                 break;
 
