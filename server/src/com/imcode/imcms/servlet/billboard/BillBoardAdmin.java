@@ -5,6 +5,7 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.Html;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

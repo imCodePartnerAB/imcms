@@ -9,7 +9,8 @@
                  imcode.server.document.UrlDocumentDomainObject,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  imcode.server.document.DocumentDomainObject,
-                 com.imcode.imcms.servlet.superadmin.DocumentReferences"%>
+                 com.imcode.imcms.servlet.superadmin.DocumentReferences,
+                 imcode.util.Html"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
     #gui_start_of_page( "<? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading ?>" "AdminManager" "" "18" "" )
@@ -66,7 +67,7 @@
                             </td>
                             <td>&nbsp;</td>
                         <% } %>
-                    <td><%= Utility.getLinkedStatusIconTemplate( document, user ) %></td>
+                    <td><%= Html.getLinkedStatusIconTemplate( document, user ) %></td>
                     <td><a href="<%= link.getUrl() %>"><%= link.getUrl() %></a></td>
 										<vel:velocity>
                     <td align="center"><img

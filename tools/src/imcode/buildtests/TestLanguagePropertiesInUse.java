@@ -1,6 +1,6 @@
 package imcode.buildtests;
 
-import imcode.util.FileFinder;
+import imcode.util.FileTreeTraverser;
 import junit.framework.TestCase;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.SystemUtils;
@@ -26,12 +26,12 @@ public class TestLanguagePropertiesInUse extends TestCase {
     }
 
     private Set getPropertyKeysInUse() {
-        FileFinder fileFinder = new FileFinder();
         StringCollectingFileFilter stringCollectingFilter = new StringCollectingFileFilter("m/<\\? (\\S+) \\?>/");
-        fileFinder.find( stringCollectingFilter, new File( "sql" ) );
-        fileFinder.find( stringCollectingFilter, new File( "web" ) );
+        FileTreeTraverser fileTreeTraverser = new FileTreeTraverser(stringCollectingFilter);
+        fileTreeTraverser.traverseDirectory( new File( "sql" ) );
+        fileTreeTraverser.traverseDirectory( new File( "web" ) );
         stringCollectingFilter.setStringPattern( "m/\"(\\S+)\"/" );
-        fileFinder.find( stringCollectingFilter, new File( "server" ) );
+        fileTreeTraverser.traverseDirectory( new File( "server" ) );
         Set propertyKeysInUse = stringCollectingFilter.getCollectedStrings();
         return propertyKeysInUse;
     }

@@ -236,7 +236,7 @@
     </target>
 
 
-    <target name="classes" depends="init">
+    <target name="classes" depends="init,tools-util">
 
         <mkdir dir="${classes}"/>
 
@@ -245,7 +245,7 @@
             <exclude name="**/Test*.java" unless="junit-available"/>
             <exclude name="**/*TestCase.java" unless="junit-available"/>
 
-            <classpath refid="libraries"/>
+            <classpath refid="tools-and-libraries"/>
 
         </javac>
 
@@ -317,6 +317,13 @@
     <!-- Build extra tools needed for building. -->
     <target name="tools" description="Builds extra tools needed for building.">
         <ant dir="tools"/>
+    </target>
+
+
+    <target name="tools-util" depends="tools">
+        <copy todir="${classes}">
+            <fileset dir="tools/build/" includes="*/util/*"/>
+        </copy>
     </target>
 
 
@@ -611,6 +618,5 @@
         <fail message="Set 'webappname' in '${build.properties}'!"/>
 
     </target>
-
 
 </project>

@@ -1,6 +1,9 @@
 <%@ page import="com.imcode.imcms.servlet.admin.ImageBrowse,
                  com.imcode.imcms.servlet.admin.ImageBrowse,
-                 org.apache.commons.lang.StringEscapeUtils"%>
+                 org.apache.commons.lang.StringEscapeUtils,
+                 com.imcode.imcms.servlet.admin.ImageBrowser,
+                 imcode.util.HttpSessionUtils,
+                 imcode.server.ApplicationServer"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
 <html>
@@ -18,30 +21,20 @@
 #gui_head("<? global/imcms_administration ?>")
 
 <%
-    ImageBrowse.FormData imageBrowseFormData;
-    imageBrowseFormData = (ImageBrowse.FormData)request.getAttribute(ImageBrowse.REQUEST_ATTRIBUTE__IMAGE_BROWSE_FORM_DATA);
+    ImageBrowse.Page imageBrowsePage = (ImageBrowse.Page)request.getAttribute(ImageBrowse.REQUEST_ATTRIBUTE__IMAGE_BROWSE_PAGE);
 %>
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="ImageBrowse">
-<% if (null != imageBrowseFormData.getCaller() ) { %><input type="HIDDEN" name="caller" value="<%=imageBrowseFormData.getCaller()%>"><% } %>
-<% if (null != imageBrowseFormData.getMetaId() ) { %><input type="HIDDEN" name="meta_id" value="<%=imageBrowseFormData.getMetaId()%>"><% } %>
-<% if (null != imageBrowseFormData.getImageNumber() ) { %><input type="HIDDEN" name="img_no" value="<%=imageBrowseFormData.getImageNumber()%>"><% } %>
-<% if (null != imageBrowseFormData.getLabel() ) { %><input type="HIDDEN" name="label" value="<%=imageBrowseFormData.getLabel()%>"><% } %>
+<input type="HIDDEN" name="<%= ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER %>" value="<%=HttpSessionUtils.getSessionAttributeNameFromRequest(request, ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER)%>">
+<% if (null != imageBrowsePage.getLabel() ) { %><input type="HIDDEN" name="<%= ImageBrowse.REQUEST_PARAMETER__LABEL %>" value="<%=imageBrowsePage.getLabel()%>"><% } %>
 <tr>
-	<td><input type="Submit" class="imcmsFormBtn" name="<%= ImageBrowse.PARAMETER_BUTTON__CANCEL %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2001 ?>"></td>
+	<td><input type="Submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2001 ?>"></td>
 	<td>&nbsp;</td>
     <td><input type="button" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2002 ?>" title="<? install/htdocs/sv/jsp/ImageBrowse.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(44)"></td>
 </tr>
 </table>
 #gui_mid()
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
-<% if (null != imageBrowseFormData.getImageNumber()) { %>
-<tr>
-	<td colspan="3">
-        #gui_heading( "<? install/htdocs/sv/jsp/ImageBrowse.html/4/1 ?> <%=imageBrowseFormData.getImageNumber()%> <? install/htdocs/sv/jsp/ImageBrowse.html/4/2 ?> <%=imageBrowseFormData.getMetaId()%>" )
-    </td>
-</tr>
-<% } %>
 <tr valign="top">
 	<td width="45%" align="right">
 	<table border="0" cellspacing="0" cellpadding="0">
@@ -50,13 +43,13 @@
 	</tr>
 	<tr>
 		<td>
-		<select name="dirlist" size="15" onDblClick="document.forms[0].change.click();" style="width:270">
-			<%=imageBrowseFormData.getFolders()%>
+		<select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_DIRECTORY %>" size="15" onDblClick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.REQUEST_PARAMETER__CHANGE_DIRECTORY_BUTTON ) %>'].click();" style="width:270">
+			<%=imageBrowsePage.getDirectoriesOptionList()%>
 		</select></td>
 	</tr>
 	</table></td>
 	<td width="10%" align="center">
-	&nbsp;<br><input type="submit" class="imcmsFormBtnSmall" name="change" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2004 ?>"></td>
+	&nbsp;<br><input type="submit" class="imcmsFormBtnSmall" name="<%= ImageBrowse.REQUEST_PARAMETER__CHANGE_DIRECTORY_BUTTON %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2004 ?>"></td>
 	<td width="45%">
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
@@ -64,24 +57,9 @@
 	</tr>
 	<tr>
 		<td>
-		<select name="imglist" size="15" onDblClick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.PARAMETER_BUTTON__PREVIEW ) %>'].click();" style="width:270">
-		<%=imageBrowseFormData.getOptions()%>
+		<select name="<%= ImageBrowse.REQUEST_PARAMETER__IMAGE_URL %>" size="15" onDblClick="document.forms[0].elements['<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.REQUEST_PARAMETER__PREVIEW_BUTTON ) %>'].click();" style="width:270">
+		<%=imageBrowsePage.getImagesOptionList()%>
 		</select></td>
-	</tr>
-	</table></td>
-</tr>
-<tr>
-	<td colspan="3" align="right">
-	<table border="0" cellspacing="0" cellpadding="0">
-	<tr>
-		<td colspan="3" class="imcmsAdmText">
-        <? install/htdocs/sv/jsp/ImageBrowse.html/9 ?> <%=imageBrowseFormData.getMaxNumber()%>&nbsp;&nbsp;&nbsp;&nbsp;
-        </td>
-	</tr>
-	<tr>
-		<td align="right"><%=imageBrowseFormData.getPreviousButton()%></td>
-		<td>&nbsp;</td>
-		<td><%=imageBrowseFormData.getNextButton()%></td>
 	</tr>
 	</table></td>
 </tr>
@@ -92,11 +70,11 @@
 	<td colspan="3" align="right">
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><input type="submit" class="imcmsFormBtn" name="<%= ImageBrowse.PARAMETER_BUTTON__OK %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2005 ?>"></td>
+		<td><input type="submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__OK_BUTTON %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2005 ?>"></td>
 		<td>&nbsp;</td>
-		<td><input type="submit" class="imcmsFormBtn" name="<%= ImageBrowse.PARAMETER_BUTTON__PREVIEW %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2006 ?>"></td>
+		<td><input type="submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__PREVIEW_BUTTON %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2006 ?>"></td>
 		<td>&nbsp;</td>
-    	<td><input type="Submit" class="imcmsFormBtn" name="<%= ImageBrowse.PARAMETER_BUTTON__CANCEL %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2007 ?>"></td>
+    	<td><input type="Submit" class="imcmsFormBtn" name="<%= ImageBrowse.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2007 ?>"></td>
 	</tr>
 	</table></td>
 </tr>
@@ -104,7 +82,9 @@
 </form>
 #gui_bottom()
 #gui_outer_end()
-<div align="center" id="previewDiv"><%=imageBrowseFormData.getImagePreview()%></div>
+<% if (null != imageBrowsePage.getImageUrl()) { %>
+<div align="center" id="previewDiv"><img src="<%= ApplicationServer.getIMCServiceInterface().getConfig().getImageUrl() %><%=imageBrowsePage.getImageUrl()%>"></div>
+<% } %>
 
 <script language="JavaScript">
 <!--

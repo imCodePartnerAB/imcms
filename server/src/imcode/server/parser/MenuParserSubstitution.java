@@ -10,6 +10,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IdNamePair;
 import imcode.util.Utility;
+import imcode.util.Html;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.iterators.FilterIterator;
 import org.apache.oro.text.regex.*;
@@ -420,7 +421,7 @@ class MenuParserSubstitution implements Substitution {
                      + a_href;
 
             ;
-            a_href = Utility.getLinkedStatusIconTemplate( menuItem.getDocument(), user ) + a_href;
+            a_href = Html.getLinkedStatusIconTemplate( menuItem.getDocument(), user ) + a_href;
         }
 
         tags.setProperty( "#menuitemlink#", a_href );

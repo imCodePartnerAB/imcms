@@ -6,6 +6,7 @@ import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.MultipartFormdataParser;
 import imcode.util.Utility;
+import imcode.util.FileUtility;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.lang.StringUtils;
@@ -60,16 +61,7 @@ public class FileAdmin extends HttpServlet {
      */
     private boolean isUnderRoot( File path, File[] roots ) throws IOException {
         for ( int i = 0; i < roots.length; i++ ) {
-            if ( isUnderRoot( path, roots[i] ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isUnderRoot( File path, File root ) throws IOException {
-        for ( File currentFile = path.getCanonicalFile(); null != currentFile; currentFile = currentFile.getParentFile() ) {
-            if ( currentFile.equals( root ) ) {
+            if ( FileUtility.directoryIsAncestorOfOrEqualTo( roots[i], path ) ) {
                 return true;
             }
         }
@@ -195,7 +187,7 @@ public class FileAdmin extends HttpServlet {
             int tokenCount = st.countTokens();
             for ( int i = 0; i < tokenCount; i++ ) {
                 String oneRoot = st.nextToken().trim();
-                File oneRootFile = Utility.getAbsolutePathFromString( oneRoot );
+                File oneRootFile = FileUtility.getFileFromWebappRelativePath( oneRoot );
                 if ( oneRootFile.isDirectory() ) {
                     rootList.add( oneRootFile );
                 }
@@ -660,24 +652,9 @@ public class FileAdmin extends HttpServlet {
         File[] relativeFileList = new File[files.length];
         for ( int i = 0; i < files.length; i++ ) {
             File file = files[i];
-            relativeFileList[i] = makeRelativeFile( relativeParentDir, file );
+            relativeFileList[i] = FileUtility.relativizeFile( relativeParentDir, file );
         }
         return relativeFileList;
-    }
-
-    private File makeRelativeFile( File relativeParentDir, File file ) {
-        LinkedList fileParents = new LinkedList();
-        File currentParent = file;
-        while ( !currentParent.equals( relativeParentDir ) ) {
-            fileParents.addFirst( currentParent.getName() );
-            currentParent = currentParent.getParentFile();
-        }
-        File relativeFile = new File( (String)fileParents.removeFirst() );
-        for ( Iterator iterator = fileParents.iterator(); iterator.hasNext(); ) {
-            relativeFile = new File( relativeFile, (String)iterator.next() );
-        }
-
-        return relativeFile;
     }
 
     /**
@@ -744,26 +721,13 @@ public class FileAdmin extends HttpServlet {
     }
 
     private String getPathRelativeTo( File file, File root ) throws IOException {
-        if ( !isUnderRoot( file, root ) ) {
+        if ( !FileUtility.directoryIsAncestorOfOrEqualTo( root, file ) ) {
             return file.getCanonicalPath();
         }
         if ( file.equals( root ) ) {
             return "";
         }
-        List files = new ArrayList();
-        for ( File currentFile = file.getCanonicalFile(); null != currentFile; currentFile = currentFile.getParentFile() ) {
-            if ( currentFile.equals( root ) ) {
-                break;
-            }
-            files.add( 0, currentFile );
-        }
-        Iterator iterator = files.iterator();
-        File relativeFile = new File( ( (File)iterator.next() ).getName() );
-        while ( iterator.hasNext() ) {
-            File currentFile = (File)iterator.next();
-            relativeFile = new File( relativeFile, currentFile.getName() );
-        }
-        return relativeFile.getPath();
+        return FileUtility.relativizeFile( root, file ).getPath() ;
     }
 
     private String createDirectoryOptionList( File[] rootlist, File directory ) throws IOException {

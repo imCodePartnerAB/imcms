@@ -10,6 +10,7 @@ import javax.servlet.http.*;
 
 import imcode.external.diverse.*;
 import imcode.util.Utility;
+import imcode.util.Html;
 
 public class ConfForum extends Conference {
 

@@ -1,7 +1,8 @@
 package com.imcode.imcms.flow;
 
+import com.imcode.imcms.servlet.WebComponent;
 import com.imcode.imcms.servlet.admin.DocumentComposer;
-import com.imcode.imcms.servlet.admin.ImageBrowse;
+import com.imcode.imcms.servlet.admin.ImageBrowser;
 import com.imcode.imcms.servlet.admin.UserFinder;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
@@ -56,7 +57,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER = "browseForMenuImage";
     private static final String PAGE__PUBLISHER_USER_BROWSER = "publisher_user_browser";
     private static final String PAGE__CREATOR_USER_BROWSER = "creator_user_browser";
-    private static final String PAGE__IMAGE_BROWSER = "image_browser";
     public static final String PAGE__DOCUMENT_INFORMATION = "document_information";
 
     public EditDocumentInformationPageFlow( DocumentDomainObject document ) {
@@ -76,23 +76,11 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             dispatchFromPublisherUserBrowser( request, response );
         } else if ( PAGE__CREATOR_USER_BROWSER.equals( page ) ) {
             dispatchFromCreatorUserBrowser( request, response );
-        } else if ( PAGE__IMAGE_BROWSER.equals( page ) ) {
-            dispatchFromImageBrowser( request, response );
         }
-    }
-
-    private void dispatchFromImageBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        if ( null != request.getParameter( ImageBrowse.PARAMETER_BUTTON__OK ) ) {
-            String imageUrl = ImageBrowse.getImageUri( request );
-            if ( null != imageUrl ) {
-                document.setMenuImage( imageUrl );
-            }
-        }
-        dispatchToFirstPage( request, response );
     }
 
     private void dispatchFromPublisherUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        UserFinder userFinder = (UserFinder) UserFinder.getInstance( request );
+        UserFinder userFinder = UserFinder.getInstance( request );
         if ( userFinder.isUserSelected() ) {
             document.setPublisher( userFinder.getSelectedUser() );
         }
@@ -100,7 +88,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     }
 
     private void dispatchFromCreatorUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        UserFinder userFinder = (UserFinder) UserFinder.getInstance( request );
+        UserFinder userFinder = UserFinder.getInstance( request );
         UserDomainObject selectedUser = userFinder.getSelectedUser();
         if ( null != selectedUser ) {
             document.setCreator( selectedUser );
@@ -120,9 +108,22 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     }
 
     private void dispatchToImageBrowser( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        String returnUrl = createReturnUrlFromPage( request, PAGE__IMAGE_BROWSER );
-        request.getRequestDispatcher( "ImageBrowse?" + ImageBrowse.PARAMETER__CALLER + "="
-                                      + java.net.URLEncoder.encode( returnUrl ) ).forward( request, response );
+        ImageBrowser imageBrowser = new ImageBrowser();
+        final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW ) ;
+        imageBrowser.setCancelCommand( new WebComponent.CancelCommand() {
+            public void cancel( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+                request.setAttribute( DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName);
+                dispatchToFirstPage( request, response );
+            }
+        } );
+        imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageCommand() {
+            public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+                document.setMenuImage( "../images/"+imageUrl );
+                request.setAttribute( DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName);
+                dispatchToFirstPage( request, response );
+            }
+        } );
+        imageBrowser.forward( request, response );
     }
 
     private void dispatchToPublisherUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
@@ -135,7 +136,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
     private void dispatchToUserBrowser( HttpServletRequest request, HttpServletResponse response, String page,
                                         boolean nullSelectable ) throws IOException, ServletException {
-        UserFinder userFinder = (UserFinder) UserFinder.getInstance( request );
+        UserFinder userFinder = UserFinder.getInstance( request );
         userFinder.setSelectButton( UserFinder.SELECT_BUTTON__SELECT_USER );
         userFinder.setUsersAddable( false );
         userFinder.setNullSelectable( nullSelectable );

@@ -270,8 +270,7 @@ public class AdminCategories extends HttpServlet {
                 + "="
                 + uniqueSessionAttributeName;
 
-        req.getRequestDispatcher( "ImageBrowse?" + ImageBrowse.PARAMETER__CALLER + "="
-                + java.net.URLEncoder.encode( returningUrl ) ).forward( req, res );
+        req.getRequestDispatcher( "ImageBrowse?" ).forward( req, res );
     }
 
     private void viewCategory( CategoryTypeDomainObject categoryTypeToEdit, CategoryDomainObject categoryToEdit, HttpServletRequest req, FormData formBean ) {

@@ -8,9 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import com.imcode.imcms.servlet.WebComponent;
-
-public class UserFinder extends WebComponent {
+public class UserFinder {
 
     private boolean userSelected;
     private UserDomainObject selectedUser;
@@ -21,6 +19,7 @@ public class UserFinder extends WebComponent {
 
     public static final int SELECT_BUTTON__SELECT_USER = UserBrowser.SELECT_BUTTON__SELECT_USER;
     public static final int SELECT_BUTTON__EDIT_USER = UserBrowser.SELECT_BUTTON__EDIT_USER;
+    private String forwardReturnUrl;
 
     public static UserFinder getInstance( HttpServletRequest request ) {
         UserFinder userFinder = (UserFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
@@ -80,4 +79,11 @@ public class UserFinder extends WebComponent {
         this.nullSelectable = nullSelectable;
     }
 
+    public String getForwardReturnUrl() {
+        return forwardReturnUrl;
+    }
+
+    public void setForwardReturnUrl( String forwardReturnUrl ) {
+        this.forwardReturnUrl = forwardReturnUrl;
+    }
 }

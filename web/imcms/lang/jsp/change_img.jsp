@@ -6,7 +6,9 @@
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  imcode.util.ImageData,
                  org.apache.commons.lang.ObjectUtils,
-                 imcode.util.Utility"%>
+                 imcode.util.Utility,
+                 imcode.util.Html,
+                 org.apache.commons.collections.Transformer"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     ChangeImage.ImageEditPage imageEditPage = (ChangeImage.ImageEditPage)request.getAttribute( ChangeImage.ImageEditPage.REQUEST_ATTRIBUTE__PAGE ) ;
@@ -121,39 +123,34 @@ function checkLinkOnBlur() {
 
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )
+<form method="POST" action="ChangeImage" enctype="multipart/form-data">
+    <input type="HIDDEN" name="<%= ChangeImage.REQUEST_PARAMETER__DOCUMENT_ID %>" value="<%= document.getId() %>">
+    <input type="HIDDEN" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_INDEX %>" value="<%= imageIndex %>">
+    <input type="hidden" name="<%= ChangeImage.REQUEST_PARAMETER__LABEL %>" value="<%= StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) %>">
 
-<table border="0" cellspacing="0" cellpadding="0">
-<tr>
-	<td>
-	<table border="0" cellspacing="0" cellpadding="0">
-	<form name="backForm" action="AdminDoc">
-	<input type="hidden" name="meta_id" value="<%= document.getId() %>">
-	<input type="hidden" name="flags" value="131072">
-	<tr>
-		<td><input type="submit" class="imcmsFormBtn" value="<? templates/sv/change_img.html/2001 ?>"></td>
-	    <td>&nbsp;</td>
-        <td><input type="button" value="<? templates/sv/change_img.html/2002 ?>" title="<? templates/sv/change_img.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(72)"></td>
+    <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td>
+        <table border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td><input type="SUBMIT" class="imcmsFormBtn" name="<%= ChangeImage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/back ?>"></td>
+            <td>&nbsp;</td>
+            <td><input type="button" value="<? templates/sv/change_img.html/2002 ?>" title="<? templates/sv/change_img.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(72)"></td>
+        </tr>
+        </table></td>
+        <td>&nbsp;</td>
+    </tr>
+    </table>
+    #gui_mid()
 
-	</tr>
-	</form>
-	</table></td>
-	<td>&nbsp;</td>
-</tr>
-</table>
-#gui_mid()
-
-<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
-    <form name="ImageUploadForm" action="ImageUpload" enctype="multipart/form-data" method="POST" onSubmit="return (checkFileName()); return false">
-        <input type="HIDDEN" name="meta_id" value="<%= document.getId() %>">
-        <input type="HIDDEN" name="img_no" value="<%= imageIndex %>">
-        <input type="hidden" name="label" value="<%= StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) %>">
+    <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
         <tr>
             <td colspan="2">#gui_heading( "<? templates/sv/change_img.html/4/1 ?>" )</td>
         </tr>
         <tr>
             <td><? templates/sv/change_img.html/5 ?></td>
             <td>
-                <input type="file" name="file" id="theFile" size="54">
+                <input type="file" name="<%= ChangeImage.REQUEST_PARAMETER__FILE %>" id="theFile" size="54">
             </td>
         </tr>
         <tr>
@@ -162,20 +159,21 @@ function checkLinkOnBlur() {
                 <table border="0" cellspacing="0" cellpadding="0" width="100%">
                 <tr>
                     <td>
-                        <select name="folder" size="1">#folders#</select>
+                        <select name="<%= ChangeImage.REQUEST_PARAMETER__DIRECTORY %>" size="1">
+                        <%= Html.createOptionList(imageEditPage.getImageDirectories(), null, new Transformer() {
+                            public Object transform( Object input ) {
+                                return new String[] { ""+input, ""+input } ;
+                            }
+                        }) %>
+                        </select>
                     </td>
                     <td align="right">
-                        <input type="submit" class="imcmsFormBtnSmall" name="ok" value="<? templates/sv/change_img.html/2005 ?>" style="width:110">
+                        <input type="submit" class="imcmsFormBtnSmall" name="<%= ChangeImage.REQUEST_PARAMETER__UPLOAD_BUTTON %>" value="<? templates/sv/change_img.html/2005 ?>" style="width:110">
                     </td>
                 </tr>
                 </table>
             </td>
         </tr>
-    </form>
-    <form method="POST" action="ChangeImage" onSubmit="return checkLinkType(); return false">
-        <input type="HIDDEN" name="meta_id" value="<%= document.getId() %>">
-        <input type="HIDDEN" name="img_no" value="<%= imageIndex %>">
-        <input type="hidden" name="label" value="<%= StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) %>">
         <tr>
             <td colspan="2">
                 &nbsp;<br>
@@ -186,7 +184,7 @@ function checkLinkOnBlur() {
         <% if (StringUtils.isNotBlank(image.getUrl())) { %>
         <tr>
             <td colspan="2" align="center">
-                <%= Utility.getImageTag( image ) %>
+                <%= Html.getImageTag( image ) %>
             </td>
         </tr>
         <% } %>
@@ -340,8 +338,8 @@ function checkLinkOnBlur() {
             <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
         </tr>
         <input type="hidden" name="low_scr" value="<%= image.getLowResolutionUrl() %>">
-    </form>
-</table>
+    </table>
+</form>
 #gui_bottom()
 #gui_outer_end()
 </body>

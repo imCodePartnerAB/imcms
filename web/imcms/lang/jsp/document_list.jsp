@@ -11,7 +11,8 @@
                  imcode.server.document.textdocument.MenuDomainObject,
                  java.util.*,
                  java.net.URLEncoder,
-                 org.apache.commons.lang.ObjectUtils"%>
+                 org.apache.commons.lang.ObjectUtils,
+                 imcode.util.Html"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <% ListDocuments.FormData formData = (ListDocuments.FormData)request.getAttribute( ListDocuments.REQUEST_ATTRIBUTE__FORM_DATA ) ;%>
 <vel:velocity>
@@ -75,7 +76,7 @@ if (null != formData.documentsIterator) { %>
 		if (documentMenuPairsContainingDocument.length > 0 ) {
 			%></a><%
 		} %></td>
-	<td align="center"><%= Utility.getLinkedStatusIconTemplate( document, user ) %></td>
+	<td align="center"><%= Html.getLinkedStatusIconTemplate( document, user ) %></td>
 	<td><%
 		if (document instanceof TextDocumentDomainObject) {
 			TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document ;

@@ -7,7 +7,7 @@
             java.text.SimpleDateFormat,
             java.text.DateFormat,
             org.apache.commons.lang.StringUtils,
-            imcode.external.diverse.Html,
+            imcode.util.Html,
             org.apache.commons.collections.iterators.TransformIterator,
             org.apache.commons.collections.Transformer,
             imcode.server.LanguageMapper,

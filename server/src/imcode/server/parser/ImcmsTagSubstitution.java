@@ -11,6 +11,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.FileCache;
 import imcode.util.Utility;
+import imcode.util.Html;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
@@ -106,7 +107,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             Integer imageIndex = (Integer)iterator.next();
             ImageDomainObject image = (ImageDomainObject)images.get( imageIndex );
 
-            imageMap.put( imageIndex, Utility.getImageTag( image ) );
+            imageMap.put( imageIndex, Html.getImageTag( image ) );
         }
         return imageMap;
     }

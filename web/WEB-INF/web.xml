@@ -364,16 +364,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.ImageArchiveServlet</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.ImageArchiveServlet</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.ImageUpload</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.ImageUpload</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.LogOut</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.LogOut</servlet-class>
     </servlet>
@@ -864,18 +854,8 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.ImageArchiveServlet</servlet-name>
-        <url-pattern>/servlet/ImageArchiveServlet</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.ImageBrowse</servlet-name>
         <url-pattern>/servlet/ImageBrowse</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.ImageUpload</servlet-name>
-        <url-pattern>/servlet/ImageUpload</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

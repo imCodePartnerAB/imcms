@@ -2,7 +2,7 @@ package com.imcode.imcms.servlet.conference;
 
 import com.imcode.imcms.servlet.superadmin.AdminError2;
 import com.imcode.imcms.servlet.superadmin.AdminUserProps;
-import imcode.external.diverse.Html;
+import imcode.util.Html;
 import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.VariableManager;
 import imcode.server.ApplicationServer;
@@ -11,6 +11,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.Html;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.external.diverse.Html;
+import imcode.util.Html;
 import imcode.external.diverse.VariableManager;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
@@ -8,6 +8,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Parser;
 import imcode.util.Utility;
+import imcode.util.Html;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 

@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
-import imcode.external.diverse.Html;
+import imcode.util.Html;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;

@@ -1201,7 +1201,7 @@ final public class IMCService implements IMCServiceInterface {
     private static class WebappRelativeFileConverter implements Converter {
 
         public Object convert( Class type, Object value ) {
-            return Utility.getAbsolutePathFromString( (String)value );
+            return FileUtility.getFileFromWebappRelativePath( (String)value );
         }
     }
 }

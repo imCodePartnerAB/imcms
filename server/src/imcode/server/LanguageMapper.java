@@ -1,7 +1,8 @@
 package imcode.server;
 
 import imcode.server.user.UserDomainObject;
-import imcode.external.diverse.Html;
+import imcode.util.Html;
+import imcode.util.Html;
 
 import java.util.*;
 

@@ -2,7 +2,7 @@
                  imcode.server.ApplicationServer,
                  imcode.server.document.SectionDomainObject,
                  org.apache.commons.lang.StringEscapeUtils,
-                 imcode.external.diverse.Html,
+                 imcode.util.Html,
                  org.apache.commons.collections.Transformer,
                  imcode.server.document.DocumentDomainObject,
                  imcode.util.Utility,
@@ -13,7 +13,8 @@
                  java.net.URLEncoder,
                  imcode.util.HttpSessionUtils,
                  com.imcode.imcms.servlet.DocumentFinder,
-                 com.imcode.imcms.servlet.SearchDocumentsPage"%>
+                 com.imcode.imcms.servlet.SearchDocumentsPage,
+                 imcode.util.Html"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage)request.getAttribute( SearchDocumentsPage.REQUEST_ATTRIBUTE__PAGE ) ;
@@ -166,7 +167,7 @@
                             <td>
                                     <%
                                         if (ApplicationServer.getIMCServiceInterface().getDocumentMapper().userHasMoreThanReadPermissionOnDocument(user, document)) {
-                                            %><%= Utility.getLinkedStatusIconTemplate(document, user) %><%
+                                            %><%= Html.getLinkedStatusIconTemplate(document, user) %><%
                                         }
                                     %>
                             </td>
@@ -189,6 +190,7 @@
                 </table>
             </td>
         </tr>
+        <% if (documentsFound.length > documentsPerPage) { %>
         <tr>
             <td colspan="2"><hr></td>
         </tr>
@@ -212,6 +214,7 @@
                     } %>
             </td>
         </tr>
+        <% } %>
         <tr>
             <td colspan="2">&nbsp;</td>
         </tr>

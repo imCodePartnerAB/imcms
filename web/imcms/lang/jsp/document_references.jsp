@@ -7,7 +7,8 @@
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
                  com.imcode.imcms.servlet.superadmin.LinkCheck,
-                 com.imcode.imcms.servlet.superadmin.DocumentReferences"%>
+                 com.imcode.imcms.servlet.superadmin.DocumentReferences,
+                 imcode.util.Html"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     if (!user.isSuperAdmin()) {
@@ -40,7 +41,7 @@
                 int menuIndex = textDocumentMenuIndexPair.getMenuIndex();
         %>
             <tr>
-                <td><%= Utility.getLinkedStatusIconTemplate( textDocument, user ) %></td>
+                <td><%= Html.getLinkedStatusIconTemplate( textDocument, user ) %></td>
                 <td>
                     <a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= textDocument.getId() %>&<%= AdminDoc.PARAMETER__DISPATCH_FLAGS %>=<%= IMCConstants.DISPATCH_FLAG__EDIT_MENU %>&editmenu=<%= menuIndex %>">
                         <%= textDocument.getId() %>: "<%= StringEscapeUtils.escapeHtml(textDocument.getHeadline()) %>"

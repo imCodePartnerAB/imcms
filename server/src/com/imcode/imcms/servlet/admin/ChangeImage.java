@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.servlet.DocumentFinder;
+import com.imcode.imcms.servlet.WebComponent;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
@@ -13,10 +14,11 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.ImageData;
-import imcode.util.ImageParser;
-import imcode.util.Utility;
+import imcode.util.*;
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
@@ -30,16 +32,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLDecoder;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.Collection;
 
 public class ChangeImage extends HttpServlet {
 
     final static String REQUEST_PARAMETER__IMAGE_URL = "imageref";
-    final static String REQUEST_PARAMETER__IMAGE_FILE_DOCUMENT_ID = "imageFileDocumentId";
     public final static String REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH = "goToImageSearch";
-
     public static final String REQUEST_PARAMETER__OK_BUTTON = "ok";
     public static final String REQUEST_PARAMETER__PREVIEW_BUTTON = "show_img";
     private static final String REQUEST_PARAMETER__IMAGE_HEIGHT = "image_height";
@@ -48,29 +46,40 @@ public class ChangeImage extends HttpServlet {
     private static final String REQUEST_PARAMETER__VERTICAL_SPACE = "v_space";
     private static final String REQUEST_PARAMETER__HORIZONTAL_SPACE = "h_space";
     private static final String REQUEST_PARAMETER__IMAGE_NAME = "image_name";
-    private static final String REQUEST_PARAMETER__IMAGE_INDEX = "img_no";
+    public static final String REQUEST_PARAMETER__IMAGE_INDEX = "img";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
     public static final String REQUEST_PARAMETER__DELETE_BUTTON = "delete";
     private static final String REQUEST_PARAMETER__IMAGE_ALIGN = "image_align";
     private static final String REQUEST_PARAMETER__IMAGE_ALT = "alt_text";
     private static final String REQUEST_PARAMETER__IMAGE_LOWSRC = "low_scr";
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER = "goToImageBrowser";
+    public static final String REQUEST_PARAMETER__UPLOAD_BUTTON = "upload";
+    public static final String REQUEST_PARAMETER__DIRECTORY = "directory";
+    public static final String REQUEST_PARAMETER__FILE = "file";
+    public static final String REQUEST_PARAMETER__DOCUMENT_ID = "documentId";
+    public static final String REQUEST_PARAMETER__LABEL = "label";
 
-    public void doPost( final HttpServletRequest request, final HttpServletResponse response ) throws ServletException, IOException {
+    private final static Logger log = Logger.getLogger( ChangeImage.class.getName() );
+
+    public void doPost( HttpServletRequest req, HttpServletResponse response ) throws ServletException, IOException {
+        MultipartHttpServletRequest request = new MultipartHttpServletRequest( req );
 
         final ImageDomainObject image = getImageFromRequest( request );
         UserDomainObject user = Utility.getLoggedOnUser( request );
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        final TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( Integer.parseInt( request.getParameter( "meta_id" ) ) );
+        final TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__DOCUMENT_ID ) ) );
         final int imageIndex = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__IMAGE_INDEX ) );
 
-        if ( !userHasImagePermissionsOnDocument( user, document ) ) {	// Checking to see if user may edit this
+        if ( !userHasImagePermissionsOnDocument( user, document ) ) {
             goBack( document, response );
             return;
         }
 
-        if ( null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) ) {
+        if ( null != request.getParameter( REQUEST_PARAMETER__UPLOAD_BUTTON ) ) {
+            saveFileFromRequest( request, user );
+            goToImageEditPage( document, imageIndex, image, request, response );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) ) {
             goBack( document, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__DELETE_BUTTON ) ) {
             image.setUrl( "" );
@@ -78,10 +87,9 @@ public class ChangeImage extends HttpServlet {
         } else if ( null != request.getParameter( REQUEST_PARAMETER__PREVIEW_BUTTON ) ) {
             goToImageEditPage( document, imageIndex, image, request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER ) ) {
-            request.setAttribute( ImageBrowse.PARAMETER__CALLER, "ChangeImage" );
-            ImageBrowse.getPage( request, response );
+            goToImageBrowser( document, imageIndex, image, request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH ) ) {
-            findImageFileDocuments( document, imageIndex, image, request, response );
+            goToImageSearch( document, imageIndex, image, request, response );
         } else {
             document.setImage( imageIndex, image );
             documentMapper.saveDocument( document, user );
@@ -92,19 +100,58 @@ public class ChangeImage extends HttpServlet {
         }
     }
 
-    private void findImageFileDocuments( final TextDocumentDomainObject document, final int imageIndex,
-                                         final ImageDomainObject image, final HttpServletRequest request,
-                                         final HttpServletResponse response ) throws IOException, ServletException {
-        DocumentFinder documentFinder = new DocumentFinder() ;
-        documentFinder.setCancelCommand(new DocumentFinder.CancelCommand() {
+    private void goToImageBrowser( final TextDocumentDomainObject document, final int imageIndex,
+                                   final ImageDomainObject image, final HttpServletRequest request,
+                                   final HttpServletResponse response ) throws IOException, ServletException {
+        ImageBrowser imageBrowser = new ImageBrowser();
+        imageBrowser.setCancelCommand( new WebComponent.CancelCommand() {
             public void cancel( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
-        }) ;
-        documentFinder.setSelectDocumentCommand(new DocumentFinder.SelectDocumentCommand() {
+        } );
+        imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageCommand() {
+            public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+                image.setUrl( imageUrl );
+                goToImageEditPage( document, imageIndex, image, request, response );
+            }
+        } );
+        imageBrowser.forward( request, response );
+    }
+
+    private void saveFileFromRequest( MultipartHttpServletRequest request, UserDomainObject user ) {
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        File imagePath = imcref.getConfig().getImagePath();
+
+        String relativeDestinationDir = request.getParameter( REQUEST_PARAMETER__DIRECTORY );
+        File destinationDir = new File( imagePath.getParentFile(), relativeDestinationDir );
+        FileItem fileItem = request.getParameterFileItem( REQUEST_PARAMETER__FILE );
+        File destinationFile = new File( destinationDir, fileItem.getName() );
+        if ( !FileUtility.directoryIsAncestorOfOrEqualTo( imagePath, destinationFile ) ) {
+            log.info( "User " + user + " was denied uploading to file " + destinationFile );
+            return;
+        }
+        if ( !destinationFile.exists() ) {
+            try {
+                fileItem.write( destinationFile );
+            } catch ( Exception e ) {
+                throw new UnhandledException( "Failed to write file. Possible permissions problem?", e );
+            }
+        }
+    }
+
+    private void goToImageSearch( final TextDocumentDomainObject document, final int imageIndex,
+                                  final ImageDomainObject image, final HttpServletRequest request,
+                                  final HttpServletResponse response ) throws IOException, ServletException {
+        DocumentFinder documentFinder = new DocumentFinder();
+        documentFinder.setCancelCommand( new DocumentFinder.CancelCommand() {
+            public void cancel( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+                goToImageEditPage( document, imageIndex, image, request, response );
+            }
+        } );
+        documentFinder.setSelectDocumentCommand( new DocumentFinder.SelectDocumentCommand() {
             public void selectDocument( DocumentDomainObject documentFound, HttpServletRequest request,
-                                          HttpServletResponse response ) throws IOException, ServletException {
-                FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)documentFound ;
+                                        HttpServletResponse response ) throws IOException, ServletException {
+                FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)documentFound;
                 if ( null != imageFileDocument ) {
                     image.setUrl( "../servlet/GetDoc?meta_id=" + imageFileDocument.getId() );
                     image.setWidth( 0 );
@@ -114,22 +161,23 @@ public class ChangeImage extends HttpServlet {
             }
         } );
         Query imageFileDocumentQuery = createImageFileDocumentQuery();
-        documentFinder.setRestrictingQuery(imageFileDocumentQuery) ;
+        documentFinder.setRestrictingQuery( imageFileDocumentQuery );
         documentFinder.forward( request, response );
     }
 
     private Query createImageFileDocumentQuery() {
         BooleanQuery imageMimeTypeQuery = new BooleanQuery();
-        imageMimeTypeQuery.add(new TermQuery( new Term( DocumentIndex.FIELD__MIME_TYPE, "image/jpeg")), false, false) ;
-        imageMimeTypeQuery.add(new TermQuery( new Term( DocumentIndex.FIELD__MIME_TYPE, "image/png")), false, false) ;
-        imageMimeTypeQuery.add(new TermQuery( new Term( DocumentIndex.FIELD__MIME_TYPE, "image/gif")), false, false) ;
+        imageMimeTypeQuery.add( new TermQuery( new Term( DocumentIndex.FIELD__MIME_TYPE, "image/jpeg" ) ), false, false );
+        imageMimeTypeQuery.add( new TermQuery( new Term( DocumentIndex.FIELD__MIME_TYPE, "image/png" ) ), false, false );
+        imageMimeTypeQuery.add( new TermQuery( new Term( DocumentIndex.FIELD__MIME_TYPE, "image/gif" ) ), false, false );
 
-        TermQuery fileDocumentQuery = new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""+DocumentDomainObject.DOCTYPE_FILE));
+        TermQuery fileDocumentQuery = new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""
+                                                                                                 + DocumentDomainObject.DOCTYPE_FILE ) );
 
-        BooleanQuery booleanQuery = new BooleanQuery() ;
-        booleanQuery.add(fileDocumentQuery, true, false);
-        booleanQuery.add(imageMimeTypeQuery, true, false) ;
-        return booleanQuery ;
+        BooleanQuery booleanQuery = new BooleanQuery();
+        booleanQuery.add( fileDocumentQuery, true, false );
+        booleanQuery.add( imageMimeTypeQuery, true, false );
+        return booleanQuery;
     }
 
     private ImageDomainObject getImageFromRequest( HttpServletRequest req ) {
@@ -205,7 +253,7 @@ public class ChangeImage extends HttpServlet {
                                     HttpServletResponse response ) throws IOException, ServletException {
 
         ImageData imageData = getImageData( image );
-        String label = getLabelParam( request );
+        String label = StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__LABEL ) );
 
         new ImageEditPage( document, imageIndex, image, imageData, label ).forward( request, response );
     }
@@ -242,103 +290,11 @@ public class ChangeImage extends HttpServlet {
     }
 
     private String getChosenImageFromImageBrowse( HttpServletRequest req ) {
-        // Check if ChangeImage is invoked by ImageBrowse, hence containing
-        // an image filename as option value.
-        String paramCancel = req.getParameter( ImageBrowse.PARAMETER_BUTTON__CANCEL );
-        String imageListParam = "";
-        if ( null == paramCancel ) {
-            imageListParam = req.getParameter( "imglist" );
-        }
-
-        return ( imageListParam == null ) ? null : URLDecoder.decode( imageListParam );
+        return req.getParameter( "imglist" );
     }
 
     private int getImageNumberParam( HttpServletRequest req ) {
-        String imgNoStr = ( req.getParameter( "img_no" ) != null )
-                          ? req.getParameter( "img_no" ) : req.getParameter( "img" );
-        int img_no = Integer.parseInt( imgNoStr );
-        return img_no;
-    }
-
-    private String getLabelParam( HttpServletRequest req ) {
-        String label = req.getParameter( "label" );
-        if ( label == null ) {
-            label = "";
-        }
-        return label;
-    }
-
-    private StringBuffer createImageFolderOptionList( List imageFolders, File image_path ) throws IOException {
-
-        // create the image folder option list
-
-        //lets get some path we need later on
-        String canon_imagePath = image_path.getCanonicalPath(); //ex: C:\Tomcat3\webapps\imcms\images
-        String root_dir_parent = image_path.getParentFile().getCanonicalPath();  //ex: C:\Tomcat3\webapps\webapps\imcms
-        String root_dir_name = canon_imagePath.substring( root_dir_parent.length() );
-        if ( root_dir_name.startsWith( File.separator ) ) {
-            root_dir_name = root_dir_name.substring( File.separator.length() );
-            //ex: root_dir_name = images
-        }
-
-        StringBuffer folderOptions = new StringBuffer( imageFolders.size() * 64 );
-
-        for ( int x = 0; x < imageFolders.size(); x++ ) {
-            File fileObj = (File)imageFolders.get( x );
-
-            //ok lets set up the folder name to show and the one to put as value
-            String optionName = fileObj.getCanonicalPath();
-            //lets remove the start of the path so we end up at the rootdir.
-            if ( optionName.startsWith( canon_imagePath ) ) {
-                optionName = optionName.substring( root_dir_parent.length() );
-                if ( optionName.startsWith( File.separator ) ) {
-                    optionName = optionName.substring( File.separator.length() );
-                }
-            } else if ( optionName.startsWith( File.separator ) ) {
-                optionName = optionName.substring( File.separator.length() );
-            }
-            //the path to put in the option value
-            String optionPath = optionName;
-            if ( optionPath.startsWith( root_dir_name ) ) {
-                optionPath = optionPath.substring( root_dir_name.length() );
-            }
-            //ok now we have to replace all parent folders with a '-' char
-            StringTokenizer token = new StringTokenizer( optionName, "\\", false );
-            StringBuffer buff = new StringBuffer( "" );
-            while ( token.countTokens() > 1 ) {
-                token.nextToken();
-                buff.append( "&nbsp;&nbsp;-" );
-            }
-            if ( token.countTokens() > 0 ) {
-                optionName = buff.toString() + token.nextToken();
-            }
-            File urlFile = new File( optionName );
-            String fileName = urlFile.getName();
-            File parentDir = urlFile.getParentFile();
-            if ( parentDir != null ) {
-                optionName = parentDir.getPath() + "/";
-            } else {
-                optionName = "";
-            }
-            //filepathfix ex: images\nisse\kalle.gif to images/nisse/kalle.gif
-            optionName = optionName.replace( File.separatorChar, '/' ) + fileName;
-
-            int i = optionName.lastIndexOf( '-' );
-            String tempPathFirst = "";
-            String tempPathLast = "";
-            if ( i > 0 ) {
-                tempPathFirst = ( optionName.substring( 0, i ) ).replace( '-', ' ' );
-                tempPathLast = ( optionName.substring( i ) );
-                optionName = tempPathFirst + tempPathLast;
-            }
-            optionName = optionName.replace( '-', '\\' );
-            folderOptions.append( "<option value=\"" + optionPath + "\""
-                                  + ">"
-                                  + optionName
-                                  + "</option>\r\n" );
-        }//end setUp option dir list
-
-        return folderOptions;
+        return Integer.parseInt( req.getParameter( REQUEST_PARAMETER__IMAGE_INDEX ) );
     }
 
     public static class ImageEditPage {
@@ -350,6 +306,7 @@ public class ChangeImage extends HttpServlet {
         private ImageDomainObject image;
         private ImageData imageFileData;
         private String label;
+        private Collection imageDirectories;
 
         public ImageEditPage( TextDocumentDomainObject document, int imageIndex, ImageDomainObject image,
                               ImageData imageFileData, String label ) {
@@ -358,6 +315,8 @@ public class ChangeImage extends HttpServlet {
             this.imageIndex = imageIndex;
             this.imageFileData = imageFileData;
             this.label = label;
+
+            this.imageDirectories = Utility.collectImageDirectories();
         }
 
         public TextDocumentDomainObject getDocument() {
@@ -385,6 +344,11 @@ public class ChangeImage extends HttpServlet {
         public String getLabel() {
             return label;
         }
+
+        public Collection getImageDirectories() {
+            return imageDirectories;
+        }
+
     }
 
 }
