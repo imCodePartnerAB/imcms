@@ -137,13 +137,14 @@ public class ChatGroup
 	*@param nrOfOldOnes The number of read messages the user want to reread
 	*@return An ListIterator of the ChatMsg:s
 	*/
-	protected ListIterator getMessages(ChatMsg lastMsg, int nrOfOldOnes)
+	protected ListIterator getMessages(ChatMsg lastMsg, int nrOfOldOnes, ChatMember member)
 	{
 		//get the number for the last read msg
 		int start = _msgBuffer.indexOf(lastMsg);
 		
 		start = start - nrOfOldOnes;		
 		if (start < 0) start = 0;
+		member.setLastMsg((ChatMsg)_msgBuffer.get(_msgBuffer.size()-1));
 		return _msgBuffer.listIterator(start);
 	}
 	

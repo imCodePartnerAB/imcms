@@ -24,7 +24,7 @@ public class ChatMember
 	private ChatMsg _lastChatMsg;
 	private String _name;
 	private ChatGroup _currentGroup; 
-	private int _noOfOldMsg = 1;
+	private int _noOfOldMsg = 35;
 
 	/**
 	*Default construktor
@@ -42,6 +42,7 @@ public class ChatMember
 	*/
 	protected void setCurrentGroup(ChatGroup group)
 	{
+		_lastChatMsg = null;
 		_currentGroup = group;
 	}
 	
@@ -104,9 +105,14 @@ public class ChatMember
 
 	}
 	
+	protected void setLastMsg(ChatMsg message)
+	{
+		_lastChatMsg = message;
+	}
+	
 	public ListIterator getMessages()
 	{
-		return _currentGroup.getMessages(_lastChatMsg, _noOfOldMsg);
+		return _currentGroup.getMessages(_lastChatMsg, _noOfOldMsg, this);
 
 	}
 	
@@ -114,7 +120,8 @@ public class ChatMember
 	{
 		if (_currentGroup != null)
 		{
-			_currentGroup.addNewMsg(msg);	
+			_currentGroup.addNewMsg(msg);
+			_lastChatMsg = msg;	
 			return true;
 		}else
 		{
