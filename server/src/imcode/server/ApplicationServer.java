@@ -14,7 +14,7 @@ import imcode.util.* ;
 
 public class ApplicationServer {
 
-    final static String VERSION = "1.3.1 (2000-02-09 14:00)" ;
+    final static String VERSION = "1.3.2 (2000-04-09 15:30)" ;
     final static String CONFIG_FILE = "ImcServer.cfg" ;
 
     final static int LOGINTERVAL = 10000 ;
@@ -123,7 +123,7 @@ public class ApplicationServer {
 	    } catch (ClassCastException ex) {
 		log.log(Log.CRITICAL, "Class "+classname+" is not a subclass of java.rmi.server.UnicastRemoteObject", ex) ;
 	    } catch (NoSuchMethodException ex) {
-		log.log(Log.CRITICAL, "Class "+classname+" does not have a compatible constructor ClassName(InetPoolManager, Properties)", ex) ;
+		log.log(Log.CRITICAL, "Class "+classname+" does not have a compatible constructor "+classname+"(InetPoolManager, Properties)", ex) ;
 	    } catch (RemoteException ex) {
 		log.log(Log.CRITICAL, "Failed to bind "+servername+" to local RMI-registry", ex) ;
 	    } catch (InstantiationException ex) {
