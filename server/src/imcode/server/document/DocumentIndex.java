@@ -7,6 +7,8 @@ import imcode.util.DateConstants;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.apache.lucene.analysis.*;
+import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -15,6 +17,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
@@ -22,6 +25,7 @@ import org.apache.lucene.search.Query;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -45,9 +49,10 @@ public class DocumentIndex {
         StopWatch searchStopWatch = new StopWatch();
         searchStopWatch.start();
         Hits hits = indexSearcher.search( query );
-        long searchTime = searchStopWatch.getTime() ;
+        long searchTime = searchStopWatch.getTime();
         List documentList = getDocumentListForHits( hits, searchingUser );
-        log.debug( "Search for " + query.toString() + ": "+searchTime+"ms. Total: " + searchStopWatch.getTime() + "ms." );
+        log.debug( "Search for " + query.toString() + ": " + searchTime + "ms. Total: " + searchStopWatch.getTime()
+                   + "ms." );
         indexSearcher.close();
         return (DocumentDomainObject[])documentList.toArray( new DocumentDomainObject[documentList.size()] );
     }
@@ -113,9 +118,9 @@ public class DocumentIndex {
     }
 
     public Query parseLucene( String queryString ) throws ParseException {
-        Query query = QueryParser.parse( queryString,
-                                          "default",
-                                          new WhitespaceLowerCaseAnalyzer() );
+        Query query = MultiFieldQueryParser.parse( queryString,
+                                         new String[] {"meta_headline", "meta_text", "text", "keyword"},
+                                         new WhitespaceLowerCaseAnalyzer() );
         return query;
     }
 
@@ -178,20 +183,18 @@ public class DocumentIndex {
         int documentId = document.getId();
         indexDocument.add( Field.Keyword( "meta_id", "" + documentId ) );
         indexDocument.add( Field.UnStored( "meta_headline", document.getHeadline() ) );
-        indexDocument.add( Field.UnStored( "default", document.getHeadline() ) );
         indexDocument.add( Field.UnStored( "meta_text", document.getMenuText() ) );
-        indexDocument.add( Field.UnStored( "default", document.getMenuText() ) );
         indexDocument.add( unStoredKeyword( "doc_type_id", "" + document.getDocumentTypeId() ) );
         SectionDomainObject[] sections = document.getSections();
         for ( int i = 0; i < sections.length; i++ ) {
             SectionDomainObject section = sections[i];
-            indexDocument.add( unStoredKeyword( "section", section.getName().toLowerCase() ) );
+            indexDocument.add( unStoredKeyword( "section", section.getName() ) );
         }
         if ( null != document.getCreatedDatetime() ) {
             try {
                 indexDocument.add( unStoredKeyword( "created_datetime", document.getCreatedDatetime() ) );
             } catch ( RuntimeException re ) {
-                log.warn( "Indexing document " + documentId, re ) ;
+                log.warn( "Indexing document " + documentId, re );
             }
         }
 
@@ -211,7 +214,6 @@ public class DocumentIndex {
             TextDocumentDomainObject.Text text = (TextDocumentDomainObject.Text)textEntry.getValue();
             indexDocument.add( Field.UnStored( "text", text.getText() ) );
             indexDocument.add( Field.UnStored( "text" + textIndexString, text.getText() ) );
-            indexDocument.add( Field.UnStored( "default", text.getText() ) );
         }
 
         CategoryDomainObject[] categories = document.getCategories();
@@ -224,7 +226,6 @@ public class DocumentIndex {
         for ( int i = 0; i < documentKeywords.length; i++ ) {
             String documentKeyword = documentKeywords[i];
             indexDocument.add( unStoredKeyword( "keyword", documentKeyword ) );
-            indexDocument.add( unStoredKeyword( "default", documentKeyword ) );
         }
 
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
@@ -244,8 +245,10 @@ public class DocumentIndex {
             try {
                 indexDocument.add( unStoredKeyword( fieldName, date ) );
             } catch ( RuntimeException re ) {
-                DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING) ;
-                log.warn( "Failed to index datetime '"+dateFormat.format(date)+"' in field '"+fieldName+"' of document " + documentId, re ) ;
+                DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING );
+                log.warn( "Failed to index datetime '" + dateFormat.format( date ) + "' in field '" + fieldName
+                          + "' of document "
+                          + documentId, re );
             }
         }
     }
@@ -257,7 +260,7 @@ public class DocumentIndex {
     }
 
     private Field unStoredKeyword( String fieldName, String fieldValue ) {
-        return new Field( fieldName, fieldValue, false, true, false );
+        return new Field( fieldName, fieldValue.toLowerCase(), false, true, false );
     }
 
     private Field unStoredKeyword( String fieldName, Date fieldValue ) {
@@ -266,11 +269,38 @@ public class DocumentIndex {
     }
 
     private Date truncateDateToMinutePrecision( Date fieldValue ) {
-        Calendar calendar = Calendar.getInstance() ;
+        Calendar calendar = Calendar.getInstance();
         calendar.setTime( fieldValue );
         calendar.set( Calendar.MILLISECOND, 0 );
         calendar.set( Calendar.SECOND, 0 );
         Date truncatedDate = calendar.getTime();
         return truncatedDate;
+    }
+
+    private class WhitespaceLowerCaseAnalyzer extends Analyzer {
+
+        public TokenStream tokenStream( String fieldName, Reader reader ) {
+
+            Tokenizer tokenizer ;
+            if ( "section".equals(fieldName) || "keyword".equals( fieldName ) ) {
+                tokenizer = new NullTokenizer( reader ) ;
+            } else {
+                tokenizer = new WhitespaceTokenizer( reader );
+            }
+
+            return new LowerCaseFilter( tokenizer ) ;
+        }
+
+        private class NullTokenizer extends CharTokenizer {
+
+            private NullTokenizer( Reader reader ) {
+                super( reader );
+            }
+
+            protected boolean isTokenChar( char c ) {
+                return true ;
+            }
+        }
+
     }
 }

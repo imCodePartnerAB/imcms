@@ -25,6 +25,8 @@ import java.io.IOException;
  */
 public class MainInitServlet extends HttpServlet {
 
+    private static final String PREF__CREATE_INDEX_ON_STARTUP = "create_index_on_startup";
+
     public void init( ServletConfig config ) throws ServletException {
         NDC.push("init") ;
         try {
@@ -46,8 +48,9 @@ public class MainInitServlet extends HttpServlet {
     }
 
     private void createIndex() throws IOException {
-        boolean createIndex = Boolean.valueOf( Utility.getDomainPref( "create_index_on_startup" )).booleanValue() ;
+        boolean createIndex = Boolean.valueOf( Utility.getDomainPref( PREF__CREATE_INDEX_ON_STARTUP )).booleanValue() ;
         if (!createIndex) {
+            Logger.getLogger( com.imcode.imcms.servlet.MainInitServlet.class.getName() ).info("Not creating index because "+PREF__CREATE_INDEX_ON_STARTUP+" is false.");
             return ;
         }
         Thread indexThread = new Thread("Startup indexing thread") {
