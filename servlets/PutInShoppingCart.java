@@ -140,7 +140,7 @@ public class PutInShoppingCart extends HttpServlet {
 	}
 
 	/* Forward the request to the given location */
-	req.getRequestDispatcher(forwardTo).forward(req,res) ;
+	res.sendRedirect(forwardTo) ;
     }
 
     /**

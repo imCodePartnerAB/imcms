@@ -9,7 +9,7 @@ import="java.util.*, java.text.*, imcode.util.shop.*"
   <body>
 
   <form action="@servleturl@/PutInShoppingCart" method="POST">
-    <input type="hidden" name="next" value="/shop/cart.jsp" />
+    <input type="hidden" name="next" value="@rooturl@/shop/cart.jsp" />
     <input type="hidden" name="priceformatgroupingseparator" value="." />
 
     <%
