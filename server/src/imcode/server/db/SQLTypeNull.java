@@ -1,6 +1,6 @@
 package imcode.server.db;
 
-public class SQLTypeNull {
+class SQLTypeNull {
     private int type;
 
     /**

@@ -1,7 +1,7 @@
 package imcode.server.db;
 import imcode.server.test.Log4JConfiguredTestCase;
 
-public interface TestDatabaseService {
+interface TestDatabaseService {
     static final String DB_HOST = "localhost";
 
     static final int SQLSERVER_PORT = 1433;

@@ -98,7 +98,7 @@ public class SQLProcessor {
         }
     }
 
-    int executeUpdate( Connection conn, String sql, Object[] statmentValues ) {
+    private int executeUpdate( Connection conn, String sql, Object[] statmentValues ) {
         PreparedStatement statement = null;
         int rowsModified = 0;
         try {

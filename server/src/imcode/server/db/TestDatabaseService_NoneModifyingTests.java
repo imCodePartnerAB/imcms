@@ -3,9 +3,9 @@ package imcode.server.db;
 import imcode.server.test.Log4JConfiguredTestCase;
 
 public class TestDatabaseService_NoneModifyingTests extends Log4JConfiguredTestCase {
-    static DatabaseService sqlServer;
-    static DatabaseService mimer;
-    static DatabaseService mySql;
+    private static DatabaseService sqlServer;
+    private static DatabaseService mimer;
+    private static DatabaseService mySql;
 
     public void setUp() {
         if( mimer == null ) {

@@ -8,9 +8,9 @@ import imcode.server.test.Log4JConfiguredTestCase;
  * These tests is slow because we set up the database before every test
  */
 public class TestDatabaseService_ModifyingTests extends Log4JConfiguredTestCase {
-    DatabaseService sqlServer;
-    DatabaseService mimer;
-    DatabaseService mySql;
+    private DatabaseService sqlServer;
+    private DatabaseService mimer;
+    private DatabaseService mySql;
 
     protected void setUp() {
         initMySql();
