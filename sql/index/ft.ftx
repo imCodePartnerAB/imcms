@@ -24,7 +24,8 @@ EXEC sp_fulltext_table  'classification',
 			'PK_classification'
 EXEC sp_fulltext_column 'classification',
 			'code',
-			'add'
+			'add',
+			0x041d
 EXEC sp_fulltext_table  'classification',
 			'activate'
 GO
@@ -35,7 +36,8 @@ EXEC sp_fulltext_table  'meta',
 			'PK_meta'
 EXEC sp_fulltext_column 'meta',
 			'meta_headline',
-			'add'
+			'add',
+			0x041d
 EXEC sp_fulltext_column 'meta',
 			'meta_text',
 			'add'
@@ -49,7 +51,8 @@ EXEC sp_fulltext_table  'texts',
 			'PK_texts'
 EXEC sp_fulltext_column 'texts',
 			'text',
-			'add'
+			'add',
+			0x041d
 EXEC sp_fulltext_table  'texts',
 			'activate'
 GO
