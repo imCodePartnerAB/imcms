@@ -52,7 +52,7 @@ Delete, <%= makeLinks("role_delete_role.jsp") %><br>
 <br>
 List users with different roles, <%= makeLinks("role_get_user_with_role.jsp") %><br>
 
-<h3>Document</h3>
+<h3>Documents</h3>
 The following samples modify document 1001.<br>
 It currently looks like this, <a href="<%= request.getContextPath() %>/servlet/GetDoc?meta_id=1001"><%= request.getContextPath() %>/servlet/GetDoc?meta_id=1001</a><br>
 <br>
@@ -82,16 +82,14 @@ Clear the first include, <%= makeLinks("document_clear_include.jsp") %><br>
 <br>
 To create different kinds of document that is linked from the document above, <%= makeLinks("document_create_documents.jsp") %><br>
 <br>
-To list files in file-documents, <%= makeLinks( "file_document_search.jsp" ) %><br>
+To list files in file-documents, <%= makeLinks("file_document_search.jsp") %><br>
 
 <h3>Categories</h3>
 List all possible document categories, <%= makeLinks("categories_show_all.jsp") %><br>
 Create a new Category type, and a category, <%= makeLinks("category_create.jsp") %><br>
-<br>
 
 <h3>Templates</h3>
 List all possible templates and template groups, <%= makeLinks("templates_show_all.jsp") %><br>
-
 
 <h3>Searching for documents</h3>
 Searching for documents, <%= makeLinks("document_search.jsp") %><br>
@@ -103,6 +101,9 @@ Set the permissions for a role on a document, <%= makeLinks("document_set_permis
 <br>
 There are two different levels of configurable "restricted" permissions that can be modified.
 To see what specified "Restricted One" permissions a page has, see <%= makeLinks("document_permission_show_restricted_1.jsp") %><br>
+
+<h3>Sending mail</h3>
+To send a file-document as attachments in a mail, <%= makeLinks("mail_send_file_document.jsp") %><br>
 
 <h3>Database connection</h3>
 Get access to the database, <%= makeLinks("database_get_connection.jsp") %><br>
