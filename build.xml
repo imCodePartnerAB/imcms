@@ -51,18 +51,6 @@
     <property name="texttemplates" value="${templates}/text"/>
     <property name="demotemplates" value="${texttemplates}/demo"/>
 
-    <!-- URIs -->
-    <property name="apiuri" value="${rooturl}/imcms/docs/apisamples"/>
-    <property name="servleturl" value="${rooturl}/servlet"/>
-    <property name="loginurl" value="${rooturl}/login"/>
-    <property name="imcmsurl"   value="${rooturl}/imcms"/>
-    <property name="imageurl" value="${rooturl}/images"/>
-    <property name="cssurl" value="${rooturl}/css"/>
-    <property name="javascripturl" value="${rooturl}/javascript"/>
-    <property name="jspurl" value="${rooturl}/jsp"/>
-    <property name="postcardsurl" value="${rooturl}/postcards"/>
-    <property name="imcmscssurl" value="${rooturl}/imcms/css"/>
-
 
     <path id="libraries">
         <fileset dir="lib">
@@ -523,18 +511,16 @@
     <target name="init-global-filters"
             depends="check-build-properties,init-version-properties">
 
-        <filter token="apiuri"              value="${apiuri}"/>
+        <filter token="apiuri"              value="${rooturl}/imcms/docs/apisamples"/>
         <filter token="defaultlanguage"     value="${defaultlanguage}"/>
         <filter token="rooturl"             value="${rooturl}"/>
-        <filter token="servleturl"          value="${servleturl}"/>
-        <filter token="loginurl"            value="${loginurl}"/>
-        <filter token="imcmsurl"            value="${imcmsurl}"/>
-        <filter token="imageurl"            value="${imageurl}"/>
-        <filter token="cssurl"              value="${cssurl}"/>
-        <filter token="postcardsurl"        value="${postcardsurl}"/>
-        <filter token="imcmscssurl"         value="${imcmscssurl}"/>
-        <filter token="javascripturl"       value="${javascripturl}"/>
-        <filter token="jspurl"              value="${jspurl}"/>
+        <filter token="servleturl"          value="${rooturl}/servlet"/>
+        <filter token="loginurl"            value="${rooturl}/login"/>
+        <filter token="imcmsurl"            value="${rooturl}/imcms"/>
+        <filter token="imageurl"            value="${rooturl}/images"/>
+        <filter token="cssurl"              value="${rooturl}/css"/>
+        <filter token="postcardsurl"        value="${rooturl}/postcards"/>
+        <filter token="imcmscssurl"         value="${rooturl}/imcms/css"/>
 
         <filter token="documentationwebappurl"    value="http://${documentation-host}/${versionnumber}"/>
         <filter token="documentationurl"          value="http://${documentation-host}/${versionnumber}/servlet"/>
