@@ -82,17 +82,16 @@ public class SQLProcessor {
         PreparedStatement statement = null;
         try {
             con = connectionPool.getConnection();
-            ResultSet rs1 = null;
+            ResultSet rs = null;
             try {
                 statement = con.prepareStatement( sql );
                 if( paramValues != null ) {
                     static_buildStatement( statement, paramValues );
                 }
-                rs1 = statement.executeQuery();
+                rs = statement.executeQuery();
             } catch( SQLException e ) {
                 static_logSQLException( sql, e );
             }
-            ResultSet rs = rs1;
             while( rs.next() ) {
                 Object temp = resultProc.mapOneRowFromResultsetToObject( rs );
                 if( null != temp ) {

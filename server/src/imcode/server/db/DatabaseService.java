@@ -563,7 +563,7 @@ public class DatabaseService {
      * @param userName
      * @return
      */
-    String sproc_FindUserName( String userName ) {
+    boolean sproc_FindUserName( String userName ) {
         String sql = "SELECT login_name FROM users WHERE LOWER(login_name) = ? ";
         Object[] paramValues = new Object[]{userName.toLowerCase()};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
@@ -571,11 +571,7 @@ public class DatabaseService {
                 return rs.getString( "login_name" );
             }
         } );
-        if( 0 == queryResult.size() ) {
-            return null;
-        } else {
-            return (String)queryResult.get( 0 );
-        }
+        return queryResult.size() == 1;
     }
 
     // todo döp om till deleteAllPhonenumbersForUser eller nåt
@@ -732,5 +728,17 @@ public class DatabaseService {
             transaction.rollback();
         };
         return rowCount;
+    }
+
+    boolean sproc_FindMetaId( int meta_id ) {
+        String sql = "SELECT meta_id FROM meta WHERE meta_id = ?";
+        Object[] paramValues = new Object[]{ new Integer( meta_id )};
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                int meta_id = rs.getInt( "meta_id" );
+                return new Integer( meta_id );
+            }
+        } );
+        return queryResult.size() == 1;
     }
 }

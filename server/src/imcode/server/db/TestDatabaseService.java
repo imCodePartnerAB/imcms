@@ -282,24 +282,31 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     public void test_sproc_FindUserName() {
-        static_test_sproc_FindUserName( sqlServer );
-        static_test_sproc_FindUserName( mySql );
-        static_test_sproc_FindUserName( mimer );
-    }
+        assertTrue( sqlServer.sproc_FindUserName( "Admin" ) );
+        assertTrue( sqlServer.sproc_FindUserName( "admin" ) );
 
-    private void static_test_sproc_FindUserName( DatabaseService dbService ) {
-        String name = "Admin";
-        String nameResult = dbService.sproc_FindUserName( name );
-        assertTrue( name.equalsIgnoreCase( nameResult ) );
-        name = "admin";
-        nameResult = dbService.sproc_FindUserName( name );
-        assertTrue( name.equalsIgnoreCase( nameResult ) );
+        assertTrue( mySql.sproc_FindUserName( "Admin" ) );
+        assertTrue( mySql.sproc_FindUserName( "admin" ) );
+
+        assertTrue( mimer.sproc_FindUserName( "Admin" ) );
+        assertTrue( mimer.sproc_FindUserName( "admin" ) );
     }
 
     public void test_sproc_DocumentDelete() {
         assertEquals( 5, sqlServer.sproc_DocumentDelete(1001) );
         assertEquals( 5, mySql.sproc_DocumentDelete(1001) );
         assertEquals( 5, mimer.sproc_DocumentDelete(1001) );
+    }
+
+    public void test_sproc_FindMetaId() {
+        assertTrue( sqlServer.sproc_FindMetaId(1001) );
+        assertFalse( sqlServer.sproc_FindMetaId(66666) );
+
+        assertTrue( mySql.sproc_FindMetaId(1001) );
+        assertFalse( mySql.sproc_FindMetaId(66666) );
+
+        assertTrue( mimer.sproc_FindMetaId(1001) );
+        assertFalse( mimer.sproc_FindMetaId(66666) );
     }
 
     // Below is helper functions to more than one test.
