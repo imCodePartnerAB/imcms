@@ -3,7 +3,7 @@
 <h2>A simple sample of using the UserMapperBean and basic operations on a UserBean  </h2>
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
-    UserAndRoleService userMapper = imcmsSystem.getUserService();
+    UserService userMapper = imcmsSystem.getUserService();
     User[] users = userMapper.getAllUsers();
     for( int i = 0; i < users.length ; i++ ){
       out.println( "<p>" );

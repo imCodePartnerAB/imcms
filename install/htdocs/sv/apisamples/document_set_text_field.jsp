@@ -8,7 +8,7 @@
     TextDocument document = (TextDocument)documentMapper.getDocument(metaId) ;
 
     int textFieldIndexInDocument = 1;
-    String newHtmlText = "<h2>Albert Einstein quotation</h2>";
+    String newHtmlText = "<h2>Quotations</h2>";
     document.setHtmlTextField( textFieldIndexInDocument, newHtmlText ) ;
 
     textFieldIndexInDocument = 2;

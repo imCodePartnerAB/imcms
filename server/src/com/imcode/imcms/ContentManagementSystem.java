@@ -7,7 +7,7 @@ import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 
 public class ContentManagementSystem  {
 
-    private UserAndRoleService userService;
+    private UserService userService;
     private DocumentService documentService;
     private User currentUser;
 
@@ -23,11 +23,11 @@ public class ContentManagementSystem  {
 
         SecurityChecker securityChecker = new SecurityChecker( documentMapper, accessor, roleNames );
 
-        userService = new UserAndRoleService( securityChecker, imcmsAAUM );
+        userService = new UserService( securityChecker, imcmsAAUM );
         documentService = new DocumentService( securityChecker, documentMapper, documentPermissionSetMapper );
     }
 
-    public UserAndRoleService getUserService(){
+    public UserService getUserService(){
         return userService;
     }
 
