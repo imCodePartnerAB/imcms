@@ -165,9 +165,9 @@ public class ChangeImage extends HttpServlet {
             }
 
             vec.add( "#imgName#" );
-            vec.add( sql[0] );
+            vec.add( HTMLConv.toHTMLSpecial(sql[0] ));
             vec.add( "#imgRef#" );
-            vec.add( imageName );
+            vec.add( HTMLConv.toHTMLSpecial(imageName));
             vec.add( "#imgWidth#" );
             vec.add( current_width != 0 ? "" + current_width : "" + width );
             vec.add( "#origW#" ); // original imageWidth
@@ -233,11 +233,11 @@ public class ChangeImage extends HttpServlet {
             vec.add( "selected" );
 
             vec.add( "#imgAltText#" );
-            vec.add( sql[10] );
+            vec.add( HTMLConv.toHTMLSpecial(sql[10]));
             vec.add( "#imgLowScr#" );
             vec.add( sql[11] );
             vec.add( "#imgRefLink#" );
-            vec.add( sql[12] );
+            vec.add( HTMLConv.toHTMLSpecial( sql[12] ));
         } else {
 
             vec.add( "#imgName#" );
