@@ -12,6 +12,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.util.* ;
+import imcode.util.fortune.Quote ;
 import imcode.server.* ;
 
 import java.net.* ;
@@ -126,23 +127,13 @@ public class PostcardServlet extends HttpServlet {
 			log.debug(dateFormat.format(new Date())+"qLine wasn't a number",nfe);
 		}
 				
-		String resFile = HTMLConv.toHTML(IMCServiceRMI.getFortune(imcserver,QUOTE_FILE));
+		List quoteList = IMCServiceRMI.getQuoteList(imcserver,QUOTE_FILE) ;
 		
 		String qTextToSend="";
-		StringTokenizer token = new StringTokenizer(resFile, "#", false);
-		int counter = 1; 
-				
-		while (token.hasMoreTokens()){
-			String tmp = token.nextToken();		
-			if (counter == ((qInt+1)*3)){
-				qTextToSend =  tmp;
-				break;
-			}
-			counter++;		
+		if (quoteList.size() > qInt && qInt >= 0) {
+		    qTextToSend = HTMLConv.toHTMLSpecial(((Quote)quoteList.get(qInt)).getText()) ;
 		}
-		
-		
-		qTextToSend = HTMLConv.toHTML(qTextToSend);		
+
 		//ok now we have the quot in the string qLine		
 		//lets get the info we need
 		String friendName 		= req.getParameter("mailText0");	

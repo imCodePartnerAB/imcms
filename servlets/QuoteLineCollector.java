@@ -4,6 +4,7 @@ import javax.servlet.http.*;
 import imcode.external.*;
 import imcode.server.*;
 import imcode.util.*;
+import imcode.util.fortune.*;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
@@ -41,7 +42,7 @@ public class QuoteLineCollector implements imcode.external.GetDocControllerInter
 		}
 
 		if (quoteList.size() > qInt && qInt >= 0) {
-		    return HTMLConv.toHTMLSpecial((String)quoteList.get(qInt)) ;
+		    return HTMLConv.toHTMLSpecial(((Quote)quoteList.get(qInt)).getText()) ;
 		}
 
 		return null;
