@@ -76,7 +76,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
     final static Pattern MENU_NO_PATTERN = patCache.getPattern("#doc_menu_no#",Perl5Compiler.READ_ONLY_MASK) ;
 
-    final static Perl5Substitution EMPHASIZE_SUBSTITUTION = new Perl5Substitution("<b><em><!--emphasized-->$1<!--/emphasized--></em></b>", Perl5Substitution.INTERPOLATE_ALL) ;
+    //final static Perl5Substitution EMPHASIZE_SUBSTITUTION = new Perl5Substitution("<b><em><!--emphasized-->$1<!--/emphasized--></em></b>", Perl5Substitution.INTERPOLATE_ALL) ;
 
     final static Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
 
@@ -404,6 +404,12 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
 	dbc.closeConnection() ;			// Close connection to db.
 
+	String emphasize_string = getCachedFileString(m_TemplateHome + lang_prefix +"/admin/emphasize.html") ;
+
+	Perl5Matcher patMat = new Perl5Matcher() ;
+
+	Perl5Substitution emphasize_substitution = new Perl5Substitution(emphasize_string) ;
+
 	Properties tags = new Properties() ;	// A properties object to hold the results from the db...
 
 	//log.log(Log.WILD, "Processing texts.", null) ;
@@ -417,7 +423,21 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		String value = (String)it.next() ;
 		if ( value.length()>0 ) {
 		    // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
-		    value = "<img src=\""+m_ImageFolder+"red.gif\" border=\"0\">&nbsp;"+value+"<a href=\""+m_ServletUrl+"ChangeText?meta_id="+meta_id+"&txt="+txt_no+"&type="+txt_type+"\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>" ;
+		    value = "<img src=\""
+			+ m_ImageFolder
+			+ "red.gif\" border=\"0\">&nbsp;"
+			+ value
+			+ "<a href=\""
+			+ m_ServletUrl
+			+ "ChangeText?meta_id="
+			+ meta_id
+			+ "&txt="
+			+ txt_no
+			+ "&type="
+			+ txt_type
+			+ "\"><img src=\""
+			+ m_ImageFolder
+			+ "txt.gif\" border=\"0\"></a>" ;
 		    tags.setProperty(key,value) ;
 		}
 	    }
@@ -428,6 +448,20 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		String txt_no = (String)it.next() ;
 		String txt_type = (String)it.next() ;
 		String value = (String)it.next() ;
+		
+		if (emp!=null) {
+		    // for each string to emphasize
+		    for (int i = 0 ; i < emp.length ; ++i) {
+			value = org.apache.oro.text.regex.Util.substitute(
+									  patMat,
+									  patCache.getPattern("("+Perl5Compiler.quotemeta(emp[i])+")",Perl5Compiler.CASE_INSENSITIVE_MASK),
+									  emphasize_substitution,
+									  value,
+									  org.apache.oro.text.regex.Util.SUBSTITUTE_ALL
+									  ) ;
+		    }
+		}
+
 		if ( value.length()>0 ) {
 		    tags.setProperty(key,value) ;
 		}
@@ -824,8 +858,6 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	//System.out.println("Loading template-files.") ;
 	//log.log(Log.WILD,"Loading template-files.",null) ;
 
-	Perl5Matcher patMat = new Perl5Matcher() ;
-
 	MapSubstitution temptagsmapsubstitution = new MapSubstitution(temptags, false) ;
 	
 	try {
@@ -926,13 +958,6 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	} // end while (pit.hasNext())
 	time = (System.currentTimeMillis()-time) ;
 	String returnresult = result.toString() ;
-		
-	if (emp!=null) {
-	    // for each string to emphasize
-	    for (int i = 0 ; i < emp.length ; ++i) {
-		returnresult = org.apache.oro.text.regex.Util.substitute(patMat,patCache.getPattern("("+Perl5Compiler.quotemeta(emp[i])+")"),EMPHASIZE_SUBSTITUTION,returnresult,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
-	    }
-	}
 	
 	log.log(Log.DEBUG, ""+meta_id+": "+(System.currentTimeMillis()-totaltime)+" Txt: "+texttime+" Img: "+imagetime+" Mnu: "+menutime+" Prs: "+time+" Mnuprs: "+menuparsetime+" OMnuprs: "+oldmenutime+" Tgs: "+tagtime) ;
 	return returnresult.getBytes("8859_1") ;
@@ -1104,13 +1129,19 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
     }
 	
+    /**
+       Fetch a file from the cache, if loaded during the latest 30 seconds.
+     */
     protected String getCachedFileString(String filename) throws IOException {
-	String temp = null ;
-	if (null == (temp = (String)(fileCache.getElement(filename)))) {
-	    temp = loadFile(filename).toString() ;
-	    fileCache.addElement(filename,temp) ;
+	Object[] file_and_date = (Object[])(fileCache.getElement(filename)) ; // Get the cached file, if any.
+	long time = System.currentTimeMillis() ;
+	if (file_and_date == null || time > ((Long)file_and_date[1]).longValue() + 30000  ) { // 30 seconds
+	    // No (new) file found?
+	    String temp = loadFile(filename).toString() ; // Load it.
+	    fileCache.addElement(filename, new Object[] {temp,new Long(time)}) ;  // Cache it.
+	    return temp ;
 	}
-	return temp ;
+	return (String)file_and_date[0] ;
     }
 
     protected class MenuParserSubstitution implements Substitution {
