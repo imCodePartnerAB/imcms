@@ -1,12 +1,50 @@
-Version 1.12.0
+Version 2.0.0
 
     Of importance to administrators:
 
-    * We're now using jTDS instead of Microsofts JDBC driver. The Microsoft driver still works,
+    * We're now using jTDS instead of Microsofts JDBC driver. The Microsoft driver may still somewhat work,
       but it is strongly recommended that you use jTDS instead. To do this,
       change the values "JdbcDriver" and "JdbcUrl" in "server.properties" to "net.sourceforge.jtds.jdbc.Driver" and
       "jdbc:jtds:sqlserver://{host}:{port}/;AppName=imCMS;DatabaseName={databasename}" respectively,
       substituting correct values for "{host}", "{port}", and "{databasename}". (Bug 1850)
+
+    * New url format for documents: "/imcms/1001" instead of "/imcms/servlet/GetDoc?meta_id=1001".
+      The old format still works, but this means that relative links in pages are likely break. (Bug 1163)
+
+    * To alleviate broken relative links, "/imcms/GetDoc?meta_id=1001"
+      now works as well as "/imcms/servlet/GetDoc?meta_id=1001". (Bug 2727)
+
+    * Specifically, the new url format is "<contextpath><prefix><document-id>".
+      The prefix can be set with the setting "DocumentPathPrefix" in "server.properties".
+      Comment this out to disable the new url format. (Bug 2733)
+
+    * The latest 100 documents requested from the database are now cached in memory.
+      This makes imCMS much faster, but means that changes to the database won't be seen. (Bug 2083)
+
+    * All the class-files that lived in "WEB-INF/classes" are now packaged in one jar file in "WEB-INF/lib". (Bug 2746)
+
+    * Some objects were put in sessions when editing documents, and never removed.
+      These are now removed when no longer needed. This might reduce memory usage a bit. (Bug 2750)
+
+    Of interest to users:
+
+    * A new function called "My pages" gives you an easy overview of your documents.
+      It is accessible through the "admin" button for users
+      which have any role that has permission to access "My pages". (Bug 2578)
+    * A new better html editor which also supports Mozilla browsers has been incorporated. (Bug 2548)
+    * The search page now allows much more advanced searches. (Bug 2578)
+    * File extension "dot" is now recognized as a Microsoft Word file. (Bug 2681)
+    * File extension "ppt" is now recognized as a Microsoft Powerpoint file. (Bug 2743)
+    * One can now on the permission page set a default template to be used for new text documents. (Bug 2451)
+    * Don't display a broken image for an empty image field. (Bug 2567)
+    * Fixed problem with previewing images with non-ASCII characters in the name in the image browser. (Bug 2653)
+    * Don't show button to upload images if lacking permission to do so. (Bug 2734)
+    * Changed certain file uploading error messages to be somewhat clearer. (Bug 2591)
+    * Fixed a problem where users were allowed to access the document "page info" without proper permissions. (Bug 2680)
+    * Set creation date to "now" for copies of documents. (Bug 2737)
+    * Fixed help message on "file edit page". (Bug 2682)
+    * The OK button on the document "page info" page was unclickable in Safari on Mac due to a javascript. (Bug 2703)
+    * Allow setting the "target" when editing file documents, just as with url documents.
 
     Of interest to template creators:
 
@@ -19,11 +57,34 @@ Version 1.12.0
     * Attributes "pre" and "post" can now be used on "<?imcms:menu?>". (Bonus from refactorings in bug 2668.)
     * Attribute "defaulttemplate" can now be used on "<?imcms:menu?>". It should contain the name of a template
       to use for new text documents.
+    * New attribute for <?imcms:menu?> tag: "defaulttemplate" - specify the name of a template to use for
+      new text documents created in this menu. (Bug 2689)
+    * Added a "TEMPLATE_SYNTAX.TXT" file containing a basic reference to the template tags. (Bug 2689)
+    * New attribute for <?imcms:text?> tag: "formats" - specify what editor modes are available.
+
+    Of interest to administrators:
+
+    * When something went wrong during initialization, a useless generic "NoClassDefFoundError" was given. (Bug 2669)
+    * Certain html files were not viewable in the file manager. (Bug 2661)
+    * Fixed a problem in the "diff-1.10.2-1.11.sql" database upgrade script. (Bug 2692)
+    * Fixed an error when trying to edit a user. (Bug 2696)
+    * Make sure a useradmin only can list users he can edit. (Bug 2757)
+    * Sometimes when using the file administrator, some files would be unremovable.
+      Trying to remove them will now give a rather nasty error message instead of failing silently.
+      This still needs improvement. (Bug 2442)
 
     Of interest to API-using developers:
 
+    * Created package com.imcode.util with generic non-imCMS-specific utilities (Bug 2493):
+        - ChainableReversibleNullComparator - Moved here from com.imcode.imcms.api.util
+        - ComparatorWrapper - Moved here from com.imcode.imcms.api.util
+        - HumanReadable - Get human readable byte sizes and time spans.
+        - ImageSize - Get the size of an image in somewhat more efficient manner than ImageIO.read().
+        - MultipartHttpServletRequest - Extends HttpServletRequest for
+          file upload with support from Jakarta Commons-FileUpload.
+    * Users can now change their own attributes. (Bug 2708)
     * Added classes:
-        - Role - Represents a user-role.
+        - Role - Represents a user-role. (Bug 2676)
         - SaveException - Thrown when something can't be saved.
         - AlreadyExistsException - Extends SaveException.
     * Changed classes:
@@ -32,7 +93,13 @@ Version 1.12.0
         - CategoryTypeAlreadyExistsException - Extends AlreadyExistsException
         - UserAlreadyExistsException - Extends AlreadyExistsException
         - RoleAlreadyExistsException - Extends AlreadyExistsException
+    * Deprecated classes:
+        - com.imcode.imcms.api.util.ChainableReversibleNullComparator - Moved to com.imcode.util
+        - com.imcode.imcms.api.util.ComparatorWrapper - Moved to com.imcode.util
     * Added methods:
+        - ContentManagementSystem.fromRequest(ServletRequest) - Get the ContentManagementSystem. (Bug 2648)
+        - DocumentService.getSection(String) - Get a section by name. (Bug 2648)
+        - Section.getId() - Get the id for a section.
         - User.getRoles() - Get the user's roles.
         - User.setRoles(Role[]) - Set the user's roles.
         - User.hasRole(Role) - Returns true if the user has the role.
@@ -45,7 +112,7 @@ Version 1.12.0
         - UserService.getRole(int) - Get a role by id, requires superadmin permission.
         - UserService.getRole(String) - Get a role by name, requires superadmin permission.
         - UserService.saveRole(Role) - Save changes to the role, requires superadmin permission.
-        - UserService.createNewUser(String, String) - Create a new user.
+        - UserService.createNewUser(String, String) - Create a new user. (Bug 2677)
         - UserService.saveUser(User) - Save a new or existing user, requires superadmin permission.
         - User.set* - Added a bunch of setters.
         - User.get* - Added a few missing getters.
@@ -66,6 +133,24 @@ Version 1.12.0
             DocumentService.saveChanges(Document)
         - DocumentService.createAndSaveNewUrlDocument(Document) - Use DocumentService.createNewUrlDocument() and
             DocumentService.saveChanges(Document)
+
+    Of interest to developers:
+
+    * Unit tests are now enabled in the build by default. (Bug 2664)
+    * Target "copy-web" in an addon "build.xml" is now run
+      when running the "web"-target in the main "build.xml". (Bug 2674)
+    * Use jsp for "edit text" page. (Bug 2549)
+    * Added a unique index on column "login_name" in table "users". (Bug 2663)
+    * Compileable with java 1.5. (Bug 2687)
+    * Updated jars to the latest versions, and made sure all have understandable names with version numbers. (Bug 2686)
+    * Getting the size of an image was very slow. (Bug 2685)
+    * The column "role_id" in the table "roles" is now an identity column, and "role_name" is varchar(60).
+    * Don't update menus in database if they don't differ from the cache when saving a text-document. (Bug 2672)
+    * Fixed a problem where clones of users would share the same set of roles. (Bug 2701)
+    * Added possibility to set permissions for roles. (Bug 2705)
+    * Fixed hardcoded urls to the documentation site in the default template. (Bug 2718)
+    * Removed table "roles_permissions", no longer needed. (Bug 2705)
+    * All users are now always considered to have the "Users" role regardless of what the database says. (Bug 2770)
 
 
 Version 1.11.1
