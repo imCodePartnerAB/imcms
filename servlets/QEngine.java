@@ -57,19 +57,19 @@ public class QEngine extends HttpServlet
 		int bIndex = 0;
 		int eIndex = 0;
 		
-		while ( resFile.indexOf((int)';',bIndex) != -1)
+		while ( resFile.indexOf((int)'#',bIndex) != -1)
 		{
-			eIndex = resFile.indexOf((int)';',bIndex);
+			eIndex = resFile.indexOf((int)'#',bIndex);
 		
 			int date1 = Integer.parseInt(resFile.substring(bIndex,eIndex));
 			bIndex = eIndex + 1;
 				
-			eIndex = resFile.indexOf((int)';',bIndex);
+			eIndex = resFile.indexOf((int)'#',bIndex);
 			int date2 = Integer.parseInt(resFile.substring(bIndex,eIndex));
 						
 			bIndex = eIndex + 1;
 		
-			eIndex = resFile.indexOf((int)';',bIndex);
+			eIndex = resFile.indexOf((int)'#',bIndex);
 					
 			if ( date1 <= date && date2 >= date)
 			{
