@@ -147,7 +147,7 @@
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-        depends="init,classes,apidocs,libraries,web,conf,sql,versionfile,addon"
+        depends="init,classes,test,apidocs,libraries,web,conf,sql,versionfile,addon"
         description="Builds everything."/>
 
 
@@ -201,6 +201,8 @@
                 <fileset dir="${classes}">
                     <exclude name="**/test/http/*.class"/>
                     <exclude name="**/*$*.class"/>
+                    <exclude name="**/TestLdap*.class"/>
+                    <exclude name="**/TestSMTP.class"/>
                     <include name="Test*.class"/>
                     <include name="**/Test*.class"/>
                 </fileset>

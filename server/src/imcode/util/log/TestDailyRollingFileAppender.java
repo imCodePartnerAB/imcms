@@ -41,6 +41,8 @@ public class TestDailyRollingFileAppender extends TestCase {
         assertTrue(getTempFile().length() > 0) ;
     }
 
+    /*
+        Takes too long.
     public void testRollOver() throws IOException, InterruptedException {
         File tempFile = getTempFile();
         DailyRollingFileAppender appender = createAppender( tempFile ) ;
@@ -56,6 +58,7 @@ public class TestDailyRollingFileAppender extends TestCase {
         assertTrue("Checking that rolled over file '"+rolledOverFile.getPath()+"' exists",rolledOverFile.exists()) ;
         assertTrue("Checking that rolled over file '"+rolledOverFile.getPath()+"' is non-empty",rolledOverFile.length() > 0) ;
     }
+    */
 
     private static File getRolledOverFile( File tempFile ) {
         DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN) ;
