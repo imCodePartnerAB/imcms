@@ -11,7 +11,7 @@ function editFile() {
 	if (f.template.selectedIndex > 0) {
 		var sTemplateUrl  = "/WEB-INF/templates/text/" + f.template.options[f.template.selectedIndex].value + ".html";
 		var sTemplateName = f.template.options[f.template.selectedIndex].text;
-		popWinOpen(800,570,"@jspurl@/FileAdmin_edit.jsp?template=1&file=" + escape(sTemplateUrl) + "&templName=" + escape(sTemplateName),"templateEdit",0);
+		popWinOpen(800,570,"@imcmsjspurl@/FileAdmin_edit.jsp?template=1&file=" + escape(sTemplateUrl) + "&templName=" + escape(sTemplateName),"templateEdit",0);
 	}
 }
 

@@ -1,63 +1,296 @@
-<HTML><HEAD><TITLE>Admin - L&auml;gga till nytt dokument</TITLE></HEAD>
-<body bgcolor="#FFFFFF">
-<FORM METHOD="POST" ACTION="SaveNewMeta">
-  <table border="1" cellspacing="0" cellpadding="2" width="450" align="center">
-	<tr valign="middle" bgcolor="#FFFFFF"> 
-	  <td colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">N&auml;r 
-		du skapar ett dokument sker det i tv&aring; steg: <br>
-		Steg 1 - fyll i rubrik och annan data som presenterar dokumentet. <br>
-		Klicka OK</font></td>
+<!--
+Template: adv_change_meta.html
+--><html>
+<head>
+<title>Dokument Information</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
+<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
+
+<script language="JavaScript">
+<!--
+var publDateDef, publTimeDef, archDateDef, archTimeDef, archCheckDef ;
+var datePast   = "2000-01-01" ;
+var timePast   = "00:00" ;
+var dateFuture = "2099-12-31" ;
+var timeFuture = "23:59" ;
+
+/* Set & get default values */
+
+function getDefaultPubl(el) {
+	var f = document.forms.mainForm ;
+	if (el != null) {
+		/* Return default value */
+		var retStr       = eval(el + "Def") ;
+		//alert(retStr);
+		return retStr ;
+	} else {
+		var archCbox = /checked/i.test("#archive#") ;
+		/* Get the default values */
+		publDateDef  = f.activated_date.value ;
+		publTimeDef  = f.activated_time.value ;
+		archDateDef  = f.archived_date.value ;
+		archTimeDef  = f.archived_time.value ;
+		archCheckDef = (archCbox) ? 1 : 0 ;
+		f.archive.value = archCheckDef ;
+	}
+	/* set default radio button */
+	if (archCheckDef) {
+		f.publish[3].checked = 1 ;
+		showDate(false) ;
+	} else if (publDateDef == "" && publTimeDef == "" && archDateDef == "" && archTimeDef == "") {
+		f.publish[0].checked = 1 ;
+		showDate(false) ;
+	} else {
+		f.publish[2].checked = 1 ;
+		showDate(true) ;
+	}
+}
+
+function setPubl() {
+	var f            = document.forms.mainForm ;
+
+	/* Initiate field-elements */
+	var elPublDate   = f.activated_date ;
+	var elPublTime   = f.activated_time ;
+	var elArchDate   = f.archived_date ;
+	var elArchTime   = f.archived_time ;
+	var elArchCheck  = f.archive ;
+
+	/* Get new values */
+	var publDate     = elPublDate.value ;
+	var publTime     = elPublTime.value ;
+	var archDate     = elArchDate.value ;
+	var archTime     = elArchTime.value ;
+	var archCheck    = (elArchCheck.checked == 1) ? 1 : 0 ;
+
+	/* Get old values */
+	var publDateOld  = getDefaultPubl("publDate") ;
+	var publTimeOld  = getDefaultPubl("publTime") ;
+	var archDateOld  = getDefaultPubl("archDate") ;
+	var archTimeOld  = getDefaultPubl("archTime") ;
+	var archCheckOld = (getDefaultPubl("archCheck")) ? 1 : 0 ;
+
+	if (f.publish[1].checked) { // No
+		elPublDate.value  = dateFuture ;
+		elPublTime.value  = timeFuture ;
+		elArchDate.value  = "" ;
+		elArchTime.value  = "" ;
+		elArchCheck.value = 0 ;
+		showDate(false) ;
+	} else if (f.publish[2].checked) { // Time
+		elPublDate.value  = publDateOld ;
+		elPublTime.value  = publTimeOld ;
+		elArchDate.value  = archDateOld ;
+		elArchTime.value  = archTimeOld ;
+		elArchCheck.value = 0 ;
+		showDate(true) ;
+	} else if (f.publish[3].checked) { // Archive
+		elPublDate.value  = "" ;
+		elPublTime.value  = "" ;
+		elArchDate.value  = datePast ;
+		elArchTime.value  = timePast ;
+		elArchCheck.value = 1 ;
+		showDate(false) ;
+	} else { // Yes
+		elPublDate.value  = datePast ;
+		elPublTime.value  = timePast ;
+		elArchDate.value  = "" ;
+		elArchTime.value  = "" ;
+		elArchCheck.value = 0 ;
+		showDate(false) ;
+	}
+}
+
+function showDate(show) {
+	if (isMoz) {
+		if (document.getElementById("dateHide")) {
+			document.getElementById("dateHide").style.display = (show) ? "block" : "none" ;
+		}
+	}
+}
+//-->
+</script>
+
+</head>
+<body bgcolor="#FFFFFF" onLoad="focusField(1,'meta_headline'); getDefaultPubl(null);">
+
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="0">
+<form>
+<tr>
+	<td><input type="BUTTON" class="imcmsFormBtn" value="Tillbaka" onClick="document.forms.abortForm.submit(); return false"></td>
+</tr>
+</form>
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+<form name="mainForm" method="POST" action="SaveNewMeta">
+<input type="hidden" name="doc_type" value="#doc_type#">
+<input type="hidden" name="doc_menu_no" value="#doc_menu_no#">
+<input type="hidden" name="parent_meta_id" value="#parent_meta_id#">
+<input type="hidden" name="description" value="" oldvalue="#description#">
+<input type="hidden" name="archive" value="0">
+<tr>
+	<td class="imcmsAdmText">När du skapar ett dokument sker det i två steg:<br><br>
+	&nbsp; &nbsp; 1. Fyll i rubrik och annan data som presenterar dokumentet (denna sida). Klicka <b>OK</b>.<br>
+	&nbsp; &nbsp; 2. Fyll i innehåll i dokumentet, t ex texter, länkinformation, uppladdning av fil etc (nästa sida). Klicka <b>OK</b>.<br>
+	&nbsp;</td>
+</tr>
+<tr>
+	<td>#checks#<script>imcHeading("Skapa dokument","656");</script></td>
+</tr>
+<tr>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0" width="656">
+	<tr>
+		<td class="imcmsAdmText" nowrap>Rubrik (i meny)<sup class="imNote">1</sup></td>
+		<td>
+<script>
+writeFormField("TEXT","meta_headline",105,255,"100%","");
+</script></td>
 	</tr>
-	<tr valign="middle" bgcolor="#333366"> 
-	  <td colspan="2">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">L&auml;gga 
-		till dokument 
-		<input TYPE="HIDDEN" name="doc_type" value="#doc_type#">
-		<input TYPE="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
-		<input TYPE="HIDDEN" name="parent_meta_id" value="#parent_meta_id#">
-		#checks#</font></b></td>
+	<tr>
+		<td class="imcmsAdmText" nowrap>Text (i meny)</td>
+		<td class="imcmsAdmForm">
+		<textarea name="meta_text" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%">
+</textarea></td>
+	<tr>
+		<td class="imcmsAdmText" nowrap>Bild (i meny)</td>
+		<td>
+		<table border="0" cellspacing="0" cellpadding="0" width="560">
+		<tr>
+			<td>
+<script>
+writeFormField("TEXT","meta_image",85,255,450,"#meta_image#");
+</script></td>
+			<td align="right"><input type="BUTTON" class="imcmsFormBtnSmall" name="ChooseImg" value=" Välj " onClick="openImgBrowse(); return false"></td>
+		</tr>
+		</table></td>
 	</tr>
-	<input TYPE="HIDDEN" name="description" SIZE="30" value="" oldvalue="#description#">
-	<tr valign="middle"> 
-	  <td width="61" bgcolor="#BABABA" valign="middle"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Rubrik<br>
-		<font size="1">&nbsp;(i&nbsp;meny)</font></font></font><br>
-	  </td>
-	  <td valign="middle" bgcolor="#BABABA"> <font size="2"></font> 
-		<input TYPE="TEXT" name="meta_headline" SIZE="60" maxlength="255">
-	  </td>
+	<tr>
+		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
-	<tr> 
-	  <td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Text 
-		<br>
-		<font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
-	  <td valign="middle" bgcolor="#BABABA"> 
-		<textarea name="meta_text" cols="50" rows="3" maxlength="100"></textarea>
-	  </td>
-	
-	<tr valign="middle"> 
-	  <td width="61" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Bild</font> 
-		<br>
-		<font size="1" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;(i&nbsp;meny)</font><br>
-	  </td>
-	  <td valign="middle" bgcolor="#BABABA"> 
-		<input TYPE="TEXT" name="meta_image" SIZE="60" value="#meta_image#">
-	  </td>
+	<tr>
+		<td class="imcmsAdmText">Publicerad</td>
+		<td>
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td><input type="radio" name="publish" value="1" onClick="setPubl()" onChange="setPubl()" checked></td>
+			<td class="imcmsAdmText">&nbsp;Ja &nbsp; &nbsp;</td>
+			<td><input type="radio" name="publish" value="2" onClick="setPubl()" onChange="setPubl()"></td>
+			<td class="imcmsAdmText">&nbsp;Nej &nbsp; &nbsp;</td>
+			<td><input type="radio" name="publish" value="3" onClick="setPubl()" onChange="setPubl()"></td>
+			<td class="imcmsAdmText">&nbsp;Tidsbestämd &nbsp; &nbsp;</td>
+			<td><input type="radio" name="publish" value="4" onClick="setPubl()" onChange="setPubl()"></td>
+			<td class="imcmsAdmText">&nbsp;Arkiverad</td>
+		</tr>
+		</table></td>
 	</tr>
-	<tr> 
-	  <td width="61" valign="top" height="8" bgcolor="#BABABA">&nbsp;</td>
-	  <td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
-		<div align="left"> 
-		  <input TYPE="SUBMIT" value="OK" name="ok">
-		  <input TYPE="RESET" value="Återställ" name="reset">
-		  <input TYPE="SUBMIT" value="Avbryt" name="cancel">
-		  <font size="2"></font></div>
-	  </td>
+	<tr>
+		<td><img src="@imcmsimageurl@/1x1.gif" width="96" height="1"></td>
+		<td><img src="@imcmsimageurl@/1x1.gif" width="556" height="1"></td>
 	</tr>
-	<tr> 
-	  <td colspan="2" valign="top" height="8" bgcolor="#FFFFFF"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		Steg 2 - fyll i inneh&aring;ll i dokumentet, t ex texter, l&auml;nkinformation, 
-		uppladdning av fil etc.<br>
-		Klicka OK</font> </td>
+	</table>
+	<table border="0" cellspacing="0" cellpadding="0" width="656" id="dateHide">
+	<tr>
+		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
-  </table>
-</FORM>
-</BODY></HTML>
+	<tr>
+		<td class="imcmsAdmText">Publicera</td>
+		<td>
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td><script>
+writeFormField("TEXT","activated_date",11,10,65,"#activated_date#");
+</script></td>
+			<td class="imcmsAdmText">&nbsp;kl:</td>
+			<td><script>
+writeFormField("TEXT","activated_time",5,5,35,"#activated_time#");
+</script></td>
+			<td class="imcmsAdmDim">&nbsp;(ÅÅÅÅ-MM-DD HH:MM)</td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmText">Arkivera</td>
+		<td>
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td><script>
+writeFormField("TEXT","archived_date",11,10,65,"");
+</script></td>
+			<td class="imcmsAdmText">&nbsp;kl:</td>
+			<td><script>
+writeFormField("TEXT","archived_time",5,5,35,"");
+</script></td>
+			<td class="imcmsAdmDim">&nbsp;(ÅÅÅÅ-MM-DD HH:MM)</td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td><img src="@imcmsimageurl@/1x1.gif" width="96" height="1"></td>
+		<td><img src="@imcmsimageurl@/1x1.gif" width="556" height="1"></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td colspan="2"><script>hr("100%",656,"blue");</script></td>
+	</tr>
+	<tr>
+		<td colspan="2">
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<tr>
+			<td class="imNoteComment"><sup class="imNote">1</sup>
+			Bör inte lämnas tom. Man ser då inte dokumentet i menyer eller när man söker.</td>
+			<td align="right">
+			<table border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td><input type="SUBMIT" class="imcmsFormBtn" value=" OK " name="ok"></td>
+				<td>&nbsp;</td>
+				<td><input type="RESET" class="imcmsFormBtn" value="Återställ" name="reset"></td>
+				<td>&nbsp;</td>
+				<td>
+				<table border="0" cellspacing="0" cellpadding="0">
+				</form>
+				<form name="abortForm" action="AdminDoc">
+				<input type="hidden" name="meta_id" value="#parent_meta_id#">
+				<input type="hidden" name="flags" value="262144">
+				<tr>
+					<td><input type="BUTTON" class="imcmsFormBtn" value="Avbryt" onClick="document.forms.abortForm.submit(); return false"></td>
+				</tr>
+				<!-- input type="CHECKBOX" name="shared" value="1" #shared# -->
+				</form>
+				</table></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td><img src="@imcmsimageurl@/1x1.gif" width="98" height="1"></td>
+		<td><img src="@imcmsimageurl@/1x1.gif" width="558" height="1"></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+</tr>
+</table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
+
+</body>
+</html>

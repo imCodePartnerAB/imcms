@@ -1,0 +1,272 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<title>Länk-editor</title>
+
+<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
+<script src="@imcmsscriptsurl@/imcms_admin.js" type="text/javascript"></script>
+
+</head>
+<body bgcolor="#FFFFFF" marginwidth="0" marginheight="0" leftmargin="0" topmargin="0" class="imcmsAdmBgCont" style="border:0; margin:0" onLoad="focusField(1,'createLinkDesc')">
+
+<script>
+imcmsGui("outer_start_noshade", "MAX");
+imcmsGui("head_noshade", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="0">
+<form>
+<tr>
+	<td><input type="button" class="imcmsFormBtn" value="Stäng" onClick="window.close(); return false"></td>
+</tr>
+</form>
+</table>
+<script>
+imcmsGui("mid_noshade", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="400">
+<form name="createLinkForm" onSubmit="createLink(); return false">
+<tr>
+	<td>
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td colspan="2"><script>imcHeading("Skapa länk",396);</script></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmText">Beskrivning:</td>
+		<td><script>
+writeFormField("TEXT","createLinkDesc",54,255,"100%","Det som syns på sidan!");
+</script></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmText">Länktyp:</td>
+		<td class="form">
+		<select class="form" name="createLinkType" onChange="changeLinkType(document.forms.createLinkForm.createLinkType.options[document.forms.createLinkForm.createLinkType.selectedIndex].value)">
+			<option value="GetDoc">Befintligt dokument</option>
+			<option value="http">Annan websida</option>
+			<option value="mailto">Mailadress</option>
+			<option value="ftp">FTP länk</option>
+			<option value="#">Länk till &quot;ankare&quot;</option>
+			<option value="NAME">Skapa &quot;ankare&quot;</option>
+		</select></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmText" nowrap>Visa länken i:&nbsp;</td>
+		<td>
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td nowrap>
+			<select name="createLinkTargetTemp" onChange="document.forms.createLinkForm.createLinkTarget.value = document.forms.createLinkForm.createLinkTargetTemp.options[document.forms.createLinkForm.createLinkTargetTemp.selectedIndex].value; document.forms.createLinkForm.createLinkTarget.focus(); document.forms.createLinkForm.createLinkTarget.select()">
+				<option value="" selected>Samma fönster (Standard)</option>
+				<option value="_blank">Nytt fönster</option>
+				<option value="_top">Hela fönstret (utan frames)</option>
+				<option value="_self">Samma frame</option>
+				<option value="_parent">Parent frameset</option>
+				<option value="Skriv namn!">Annan frame</option>
+			</select></td>
+			<td>&nbsp;</td>
+			<td class="form" align="right"><script>
+writeFormField("TEXT","createLinkTarget",12,50,100,"");
+</script></td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmText" nowrap>
+		URL, adress<br>
+		eller meta_id: &nbsp;</td>
+		<td><script>
+writeFormField("TEXT","createLinkValue",54,100,"100%","Skriv nummer!");
+</script></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmText" nowrap>Ev. CSS-class:</td>
+		<td><script>
+writeFormField("TEXT","createLinkCss",20,50,150,"");
+</script></td>
+	</tr>
+	<tr>
+		<td colspan="2"><script>hr("100%",396,"blue");</script></td>
+	</tr>
+	<tr>
+		<td colspan="2" align="right">
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td><input type="submit" value="Generera länk" class="imcmsFormBtnSmall" width="120" style="width:120"></td>
+			<td>&nbsp;</td>
+			<td><input type="reset" value="Återställ" class="imcmsFormBtnSmall" onClick="hideLinkExample(0);"></td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td colspan="2" nowrap>&nbsp;<br><script>imcHeading("Kod att kopiera och klistra in på rätt plats",396);</script></td>
+	</tr>
+	<tr>
+		<td colspan="2"><script>
+writeFormField("TEXT","theLinkCodeField",76,255,"100%","");
+</script><div id="theLinkCodeFieldDiv"></div></td>
+	</tr>
+	<tr>
+		<td><img src="@imcmsimageurl@/1x1.gif" width="105" height="1"></td>
+		<td><img src="@imcmsimageurl@/1x1.gif" width="1" height="1"></td>
+	</tr>
+	</table></td>
+</tr>
+</form>
+</table>
+<script>
+imcmsGui("bottom_noshade", null);
+imcmsGui("outer_end_noshade", null);
+</script>
+
+<script language="javascript">
+<!--
+var ie4 = (document.all) ? 1 : 0;
+var ns4 = (document.layers) ? 1 : 0;
+var ns6 = (document.getElementById) ? 1 : 0;
+var moz = (document.getElementById) ? 1 : 0;
+
+var arrTheFieldValues = new Array("Skriv nummer!", "http:/\/", "Skriv adressen!", "Skriv ankarnamn!", "Skriv ankarnamn!", "ftp:/\/");
+var defValDesc = "Det som syns på sidan!";
+
+function changeLinkType(what) {
+	var theField     = document.forms.createLinkForm.createLinkValue;
+	var theFieldDesc = document.forms.createLinkForm.createLinkDesc;
+	switch (what) {
+		case "GetDoc":
+			theField.value     = getFieldVals(0,0);
+			theFieldDesc.value = getFieldVals(0,1);
+		break
+		case "http":
+			theField.value     = getFieldVals(1,0);
+			theFieldDesc.value = getFieldVals(1,1);
+		break
+		case "mailto":
+			theField.value     = getFieldVals(2,0);
+			theFieldDesc.value = getFieldVals(2,1);
+		break
+		case "NAME":
+			theField.value     = getFieldVals(3,0);
+			theFieldDesc.value = getFieldVals(3,1);
+		break
+		case "#":
+			theField.value     = getFieldVals(4,0);
+			theFieldDesc.value = getFieldVals(4,1);
+		break
+		case "ftp":
+			theField.value     = getFieldVals(5,0);
+			theFieldDesc.value = getFieldVals(5,1);
+		break
+	}
+	theField.focus();
+	theField.select();
+}
+
+function getFieldVals(iNum,isDesc) {
+	var theField     = document.forms.createLinkForm.createLinkValue;
+	var theFieldDesc = document.forms.createLinkForm.createLinkDesc;
+	if (isDesc) {
+		if (iNum == 3 && (theFieldDesc.value == "" || theFieldDesc.value == defValDesc)) {
+			return "";
+		} else if (theFieldDesc.value == "" || theFieldDesc.value == defValDesc) {
+			return defValDesc;
+		} else {
+			return theFieldDesc.value;
+		}
+		return (iNum == 3) ? "" : defValDesc;
+	} else {
+		var doChange = false;
+		for (var i = 0; i < arrTheFieldValues.length; i++) {
+			if (theField.value == arrTheFieldValues[i]) {
+				doChange = true;
+			}
+		}
+		if (doChange || theField.value == "") {
+			return arrTheFieldValues[iNum];
+		} else {
+			return theField.value;
+		}
+	}
+}
+
+function createLink() {
+	var f  = document.forms.createLinkForm;
+	var po;
+	if (parent.opener) {
+		if (parent.opener.document.forms[0]) {
+			po = parent.opener.document.forms[0] ;
+		}
+	}
+	var linkDesc = f.createLinkDesc.value;
+	var linkType = f.createLinkType.options[f.createLinkType.selectedIndex].value;
+	var linkTarget = f.createLinkTarget.value;
+	var linkValue = f.createLinkValue.value;
+	var linkClass = f.createLinkCss.value;
+	var theLinkCode = (linkType == "NAME") ? "<A NAME=\"" : "<A HREF=\"";
+	if (linkType == "NAME") {
+		theLinkCode += linkValue + "\"";
+		theLinkCode += ">" + linkDesc + "</A>";
+	} else {
+		if (linkType == "GetDoc") {
+			theLinkCode += "GetDoc?meta_id=" + linkValue + "\"";
+		} else if (linkType == "mailto") {
+			theLinkCode += "mailto:" + linkValue + "\"";
+		} else if (linkType == "#") {
+			if (linkValue.indexOf("#") == -1) linkValue = "#" + linkValue;
+			theLinkCode += linkValue + "\"";
+		} else {
+			theLinkCode += linkValue + "\"";
+		}
+		if (linkTarget != "") {
+			theLinkCode += " TARGET=\"" + linkTarget + "\"";
+		}
+		if (linkClass != "") {
+			theLinkCode += " CLASS=\"" + linkClass + "\"";
+		}
+		theLinkCode += ">" + linkDesc + "</A>";
+	}
+	f.theLinkCodeField.value = theLinkCode;
+	/* Check for HTML-mode */
+	if (po) {
+		var poEl = (po.format_type) ? po.format_type[1] : po.type[1] ;
+		if (!(poEl.checked == 1)) {
+			if(confirm("Du måste välja HTML läge för att\nlägga in en länk i texten!\n\nVill du göra detta nu?")){
+				poEl.checked = 1;
+			}
+		}
+	}
+	f.theLinkCodeField.focus();
+	f.theLinkCodeField.select();
+	/* Make target="_blank" for preview */
+	var previewHref = theLinkCode ;
+	var str1, str2, str3 ;
+	if (previewHref.indexOf("TARGET=") != -1) {
+		str1 = previewHref.substring(0, previewHref.indexOf("TARGET=") + 8) ;
+		str2 = previewHref.substring(previewHref.indexOf("TARGET=") + 8, previewHref.length) ;
+		previewHref = str1 + "_blank" + str2.substring(str2.indexOf("\""), str2.length) ;
+	} else {
+		previewHref = previewHref.substring(0, previewHref.indexOf(">")) + " TARGET=\"_blank\"" + previewHref.substring(previewHref.indexOf(">"), previewHref.length) ;
+	}
+	if (moz) {
+		if (document.getElementById("theLinkCodeFieldDiv")) {
+			hideLinkExample(1) ;
+			document.getElementById("theLinkCodeFieldDiv").innerHTML = "&nbsp;<br><span class=\"imcmsAdmText\"><b>Länkexempel: &nbsp;</b>" + previewHref + "</span>" ;
+		}
+	}
+}
+
+function hideLinkExample(show) {
+	if (moz) {
+		if (document.getElementById("theLinkCodeFieldDiv")) {
+			document.getElementById("theLinkCodeFieldDiv").innerHTML = "" ;
+			document.getElementById("theLinkCodeFieldDiv").style.display = (show) ? "block" : "none" ;
+		}
+	}
+}
+
+hideLinkExample(0) ;
+//-->
+</script>
+
+</body>
+</html>

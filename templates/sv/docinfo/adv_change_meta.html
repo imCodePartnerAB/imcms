@@ -1,244 +1,415 @@
-<html>
+<!--
+Template: adv_change_meta.html
+--><html>
 <head>
-<title>Admin - L&auml;gga till nytt dokument</title>
+<title>Dokument Information</title>
+
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<script language="javascript">
+<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
+<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
+
+<script language="JavaScript">
 <!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
+var publDateDef, publTimeDef, archDateDef, archTimeDef, archCheckDef ;
+var datePast   = "2000-01-01" ;
+var timePast   = "00:00" ;
+var dateFuture = "2099-12-31" ;
+var timeFuture = "23:59" ;
+
+/* Set & get default values */
+
+function getDefaultPubl(el) {
+	var f = document.forms.mainForm ;
+	if (el != null) {
+		/* Return default value */
+		var retStr       = eval(el + "Def") ;
+		//alert(retStr);
+		return retStr ;
+	} else {
+		var archCbox = /checked/i.test("#archive#") ;
+		/* Get the default values */
+		publDateDef  = f.activated_date.value ;
+		publTimeDef  = f.activated_time.value ;
+		archDateDef  = f.archived_date.value ;
+		archTimeDef  = f.archived_time.value ;
+		archCheckDef = (archCbox) ? 1 : 0 ;
+		f.archive.value = archCheckDef ;
+	}
+	/* set default radio button */
+	if (archCheckDef) {
+		f.publish[3].checked = 1 ;
+		showDate(false) ;
+	} else if (publDateDef == "" && publTimeDef == "" && archDateDef == "" && archTimeDef == "") {
+		f.publish[0].checked = 1 ;
+		showDate(false) ;
+	} else {
+		f.publish[2].checked = 1 ;
+		showDate(true) ;
+	}
+}
+
+function setPubl() {
+	var f            = document.forms.mainForm ;
+
+	/* Initiate field-elements */
+	var elPublDate   = f.activated_date ;
+	var elPublTime   = f.activated_time ;
+	var elArchDate   = f.archived_date ;
+	var elArchTime   = f.archived_time ;
+	var elArchCheck  = f.archive ;
+
+	/* Get new values */
+	var publDate     = elPublDate.value ;
+	var publTime     = elPublTime.value ;
+	var archDate     = elArchDate.value ;
+	var archTime     = elArchTime.value ;
+	var archCheck    = (elArchCheck.checked == 1) ? 1 : 0 ;
+
+	/* Get old values */
+	var publDateOld  = getDefaultPubl("publDate") ;
+	var publTimeOld  = getDefaultPubl("publTime") ;
+	var archDateOld  = getDefaultPubl("archDate") ;
+	var archTimeOld  = getDefaultPubl("archTime") ;
+	var archCheckOld = (getDefaultPubl("archCheck")) ? 1 : 0 ;
+
+	if (f.publish[1].checked) { // No
+		elPublDate.value  = dateFuture ;
+		elPublTime.value  = timeFuture ;
+		elArchDate.value  = "" ;
+		elArchTime.value  = "" ;
+		elArchCheck.value = 0 ;
+		showDate(false) ;
+	} else if (f.publish[2].checked) { // Time
+		elPublDate.value  = publDateOld ;
+		elPublTime.value  = publTimeOld ;
+		elArchDate.value  = archDateOld ;
+		elArchTime.value  = archTimeOld ;
+		elArchCheck.value = 0 ;
+		showDate(true) ;
+	} else if (f.publish[3].checked) { // Archive
+		elPublDate.value  = "" ;
+		elPublTime.value  = "" ;
+		elArchDate.value  = datePast ;
+		elArchTime.value  = timePast ;
+		elArchCheck.value = 1 ;
+		showDate(false) ;
+	} else { // Yes
+		elPublDate.value  = datePast ;
+		elPublTime.value  = timePast ;
+		elArchDate.value  = "" ;
+		elArchTime.value  = "" ;
+		elArchCheck.value = 0 ;
+		showDate(false) ;
+	}
+}
+
+function showDate(show) {
+	if (isMoz) {
+		if (document.getElementById("dateHide")) {
+			document.getElementById("dateHide").style.display = (show) ? "block" : "none" ;
+		}
+	}
 }
 //-->
 </script>
 
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF" onLoad="focusField(1,'meta_headline'); getDefaultPubl(null);" style="margin-bottom:0">
 
-<form method="POST" action="SaveMeta">
-<input type="HIDDEN" name="doc_type" value="#doc_type#">
-<input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
-<input type="HIDDEN" name="meta_id" value="#meta_id#">
-<input type="HIDDEN" name="description" size="30" value="" oldvalue="#description#">
-<input type="HIDDEN" name="current_section_id" value="#current_section_id#">
-<table width="750" border="0" cellspacing="0" bgcolor="#bababa" align="center">
-<tr bgcolor="#333366">
-	<td width="5%">&nbsp;</td>
-	<td align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><b>&Auml;ndra dokinfo #checks#</b></font></td>
-	<td width="5%">&nbsp;</td>
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="0">
+<form>
+<tr>
+	<td><input type="BUTTON" class="imcmsFormBtn" value="Tillbaka" onClick="document.forms.abortForm.submit(); return false"></td>
+</tr>
+</form>
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+<form name="mainForm" method="POST" action="SaveMeta">
+<input type="hidden" name="doc_type" value="#doc_type#">
+<input type="hidden" name="doc_menu_no" value="#doc_menu_no#">
+<input type="hidden" name="meta_id" value="#meta_id#">
+<input type="hidden" name="current_section_id" value="#current_section_id#">
+<input type="hidden" name="archive" value="0">
+<input type="hidden" name="description" value="" oldvalue="#description#">
+<tr>
+	<td>#checks#<script>imcHeading("Ändra DokumentInformation för sida #meta_id#","656");</script></td>
 </tr>
 <tr>
-	<td colspan="3">&nbsp;</td>
-</tr>
-<tr>
-	<td width="5%">&nbsp;</td>
 	<td>
-	<table border="0" cellspacing="0" cellpadding="2" width="100%">
+	<table border="0" cellspacing="0" cellpadding="0" width="656">
 	<tr>
-		<td width="90"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
-		&nbsp;Rubrik<br><font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
-		<td><input type="TEXT" name="meta_headline" size="67" maxlength="255" value="#meta_headline#" style="width:100%"></td>
+		<td class="imcmsAdmText" nowrap>Rubrik (i meny)<sup class="imNote">1</sup></td>
+		<td>
+<script>
+writeFormField("TEXT","meta_headline",105,255,"100%","#meta_headline#");
+</script></td>
 	</tr>
 	<tr>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
-		&nbsp;Text<br><font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
-		<td><textarea name="meta_text" cols="65" rows="3" maxlength="100" wrap="virtual" style="width:100%">
+		<td class="imcmsAdmText" nowrap>Text (i meny)</td>
+		<td class="imcmsAdmForm">
+		<textarea name="meta_text" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%">
 #meta_text#</textarea></td>
 	<tr>
-		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
-		&nbsp;Bild<br><font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
-		<td><input type="TEXT" name="meta_image" size="67" value="#meta_image#" maxlength="255" style="width:100%"></td>
-	</tr>
-	<tr>
-		<td colspan="2"><hr></td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
+		<td class="imcmsAdmText" nowrap>Bild (i meny)</td>
 		<td>
-		<table border="0" cellpadding="0" cellspacing="0">
+		<table border="0" cellspacing="0" cellpadding="0" width="560">
 		<tr>
-			<td><input TYPE="SUBMIT" value=" OK " name="ok"></td>
-			<td>&nbsp;</td>
-			<td><input TYPE="RESET" value="Återställ" name="reset"></td>
-			<td>&nbsp;</td>
-			<td><input TYPE="BUTTON" value="Avbryt" name="abort" onClick="document.forms.abortForm.submit(); return false"></td>
-			<td>&nbsp;</td>
-			<td><a href="GetDoc?meta_id=39" target="_blank" onClick="openHelp('39'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+			<td>
+<script>
+writeFormField("TEXT","meta_image",85,255,450,"#meta_image#");
+</script></td>
+			<td align="right"><input type="BUTTON" class="imcmsFormBtnSmall" name="ChooseImg" value=" Välj " onClick="openImgBrowse(); return false"></td>
 		</tr>
 		</table></td>
 	</tr>
-	</table></td>
-	<td width="5%">&nbsp;</td>
-</tr>
-<tr>
-	<td colspan="3">&nbsp;</td>
-</tr>
-<tr>
-	<td colspan="3" bgcolor="#ffffff">&nbsp;</td>
-</tr>
-<tr bgcolor="#333366">
-	<td width="5%">&nbsp;</td>
-	<td align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff">
-	<b>Avancerat (&auml;ndra vid behov)</b></font></td>
-	<td width="5%">&nbsp;</td>
-</tr>
-<tr>
-	<td colspan="3">&nbsp;</td>
-</tr>
-<tr>
-	<td width="5%">&nbsp;</td>
-	<td>
-	<table border="0" cellspacing="0" cellpadding="2" width="100%">
 	<tr>
-		<td width="90"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Skapad</font></td>
-		<td><font size="2"><input type="TEXT" name="date_created" size="11" value="#date_created#" maxlength="10" >
-		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;kl:</font>
-		<input type="TEXT" name="created_time" size="7" maxlength="5" value="#created_time#"> av #owner#</font></td>
+		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
 	<tr>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&Auml;ndrad</font></td>
-		<td><font size="2"><input type="TEXT" name="date_modified" size="11" value="#date_modified#" maxlength="10" >
-		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;kl:</font>
-		<input type="TEXT" name="modified_time" size="7" maxlength="5" value="#modified_time#"></font></td>
-	</tr>
-	<tr>
-		<td colspan="2"><hr></td>
-	</tr>
-	<tr>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;S&ouml;kord</font></td>
-		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
-		<input type="TEXT" name="classification" size="67" value="#classification#" maxlength="200" style="width:100%">
-		<font size="1">&nbsp;S&ouml;kord skall anges separerade med kommatecken. &nbsp;Ex:soppa, blomkål<br></font>
-		<input type="CHECKBOX" name="disable_search" value="1" #disable_search#> Blockera s&ouml;kning</font></td>
-	</tr>
-	<tr>
-		<td colspan="2"><hr></td>
-	</tr>
-	<tr>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Avdelning</font></td>
+		<td class="imcmsAdmText">Publicerad</td>
 		<td>
-		<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Nuvarande: #current_section_name# <br>
-		Byt till:&nbsp;
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td><input type="radio" name="publish" value="1" onClick="setPubl()" onChange="setPubl()" checked></td>
+			<td class="imcmsAdmText">&nbsp;Ja &nbsp; &nbsp;</td>
+			<td><input type="radio" name="publish" value="2" onClick="setPubl()" onChange="setPubl()"></td>
+			<td class="imcmsAdmText">&nbsp;Nej &nbsp; &nbsp;</td>
+			<td><input type="radio" name="publish" value="3" onClick="setPubl()" onChange="setPubl()"></td>
+			<td class="imcmsAdmText">&nbsp;Tidsbestämd &nbsp; &nbsp;</td>
+			<td><input type="radio" name="publish" value="4" onClick="setPubl()" onChange="setPubl()"></td>
+			<td class="imcmsAdmText">&nbsp;Arkiverad</td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td><img src="@imcmsimageurl@/1x1.gif" width="96" height="1"></td>
+		<td><img src="@imcmsimageurl@/1x1.gif" width="556" height="1"></td>
+	</tr>
+	</table>
+	<table border="0" cellspacing="0" cellpadding="0" width="656" id="dateHide">
+	<tr>
+		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmText">Publicera</td>
+		<td>
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td><script>
+writeFormField("TEXT","activated_date",11,10,65,"#activated_date#");
+</script></td>
+			<td class="imcmsAdmText">&nbsp;kl:</td>
+			<td><script>
+writeFormField("TEXT","activated_time",5,5,35,"#activated_time#");
+</script></td>
+			<td class="imcmsAdmDim">&nbsp;(ÅÅÅÅ-MM-DD HH:MM)</td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmText">Arkivera</td>
+		<td>
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td><script>
+writeFormField("TEXT","archived_date",11,10,65,"#archived_date#");
+</script></td>
+			<td class="imcmsAdmText">&nbsp;kl:</td>
+			<td><script>
+writeFormField("TEXT","archived_time",5,5,35,"#archived_time#");
+</script></td>
+			<td class="imcmsAdmDim">&nbsp;(ÅÅÅÅ-MM-DD HH:MM)</td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td><img src="@imcmsimageurl@/1x1.gif" width="98" height="1"></td>
+		<td><img src="@imcmsimageurl@/1x1.gif" width="558" height="1"></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td>&nbsp;<br><script>imcHeading("Avancerat (ändra vid behov)","656");</script></td>
+</tr>
+<tr>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td class="imcmsAdmText">Avdelning</td>
+		<td class="imcmsAdmText">
 		<select name="change_section" size="1">
 			<option value="-1">Ingen avdelning</option>
 			#section_option_list#
-		</select></font>
-		</td>
-    </tr>
-	<tr>
-		<td colspan="2"><hr></td>
+		</select>
+		&nbsp; Nuvarande: #current_section_name#</td>
 	</tr>
-    <tr>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Spr&aring;k</font></td>
-        <td>
-		<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Nuvarande: #current_language# <br>
-		Byt till:&nbsp;
+	<tr>
+		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmText">Språk</td>
+		<td class="imcmsAdmText">
 		<select name="lang_prefix" size="1">
-		    #lang_prefix#
-		</select></font>
-		</td>
+			#lang_prefix#
+		</select>
+		&nbsp; Nuvarande: #current_language#</td>
 	</tr>
 	<tr>
-		<td colspan="2"><hr></td>
-	</tr>
-    <tr>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Kategorier</font></td>
-        <td>
-		<font face="Verdana, Arial, Helvetica, sans-serif" size="2">
-            #categories#
-		</font>
-		</td>
+		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
 	<tr>
-		<td colspan="2"><hr></td>
+		<td class="imcmsAdmText">Kategorier</td>
+		<td class="imcmsAdmText">#categories#</td>
 	</tr>
 	<tr>
-		<td><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Dela ut</font></font></td>
-		<td><font size="2">
-		<input type="CHECKBOX" name="show_meta" value="1" #show_meta#>
-		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">Visa
-		dokumentet &auml;ven f&ouml;r obeh&ouml;riga anv&auml;ndare<br></font>
-		<input type="CHECKBOX" name="shared" value="1" #shared#>
-		<font face="Verdana, Arial, Helvetica, sans-serif">
-		Dela ut dokumentet f&ouml;r andra administrat&ouml;rer</font></font> </td>
+		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
 	<tr>
-		<td colspan="2"><hr></td>
-	</tr>
-    <tr>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Ansvarig<br>&nbsp;utgivare</font></td>
-        <td>
-		<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Nuvarande: #current_publisher_name# <br>
-		Byt till:&nbsp;
-		<select name="publisher_id" size="1">
-		    #publisher_id#
-		</select></font>
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2"><hr></td>
-	</tr>
-	<tr>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Publicera</font></td>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
-		<input type="TEXT" name="activated_date" size="13" value="#activated_date#" maxlength="10" >
-		<font size="1">(&Aring;&Aring;&Aring;&Aring;-MM-DD)</font>
-		&nbsp;&nbsp;&nbsp;&nbsp;kl:
-		<input type="TEXT" name="activated_time" size="7" maxlength="5" value="#activated_time#" >
-		<font size="1">(HH:MM)</font></font></td>
-	</tr>
-	<tr>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Arkivera</font></td>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
-		<input type="TEXT" name="archived_date" size="13" maxlength="10" value="#archived_date#" >
-		<font size="1">(&Aring;&Aring;&Aring;&Aring;-MM-DD)</font>
-		&nbsp;&nbsp;&nbsp;&nbsp;kl:
-		<input type="TEXT" name="archived_time" size="7" maxlength="5" value="#archived_time#">
-		<font size="1">(HH:MM)</font>&nbsp; <input type="CHECKBOX" name="archive" value="1" #archive#> Arkivera nu</font></td>
-	</tr>
-	<tr>
-		<td colspan="2"><hr></td>
-	</tr>
-	<tr>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Visa i</font></td>
-		<td nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
-		<input type="radio" name="target" style="background-color:#bababa" value="_self" #_self#> Samma frame
-		<input type="radio" name="target" style="background-color:#bababa" value="_blank" #_blank#> Nytt f&ouml;nster
-		<input type="radio" name="target" style="background-color:#bababa" value="_top" #_top#> Ers&auml;tt allt
-		<input type="radio" name="target" style="background-color:#bababa" value="_other" #_other#> Annan frame
-		<input type="TEXT" name="frame_name" size="15" value="#frame_name#" maxlength="20"></font></td>
-	</tr>
-	<tr>
-		<td colspan="2"><hr></td>
-	</tr>
-	<tr>
-		<td><table border="0" cellspacing="0" cellpadding="0" width="90"><tr><td>&nbsp;</td></tr></table></td>
+		<td class="imcmsAdmText">Dela ut</td>
 		<td>
-		<table border="0" cellpadding="0" cellspacing="0">
+		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><input TYPE="SUBMIT" value=" OK " name="ok"></td>
-			<td>&nbsp;</td>
-			<td><input TYPE="RESET" value="Återställ" name="reset"></td>
-			<td></form><form name="abortForm" action="GetDoc"><input type="hidden" name="meta_id" value="#meta_id#">&nbsp;</td>
-			<td><input TYPE="button" value="Avbryt" onClick="document.forms.abortForm.submit(); return false"></td>
-			<td></form>&nbsp;</td>
-			<td><a href="GetDoc?meta_id=39" target="_blank" onClick="openHelp('39'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+			<td><input type="CHECKBOX" name="show_meta" value="1" #show_meta#></td>
+			<td class="imcmsAdmText">&nbsp;Visa länk även om användaren är obehörig</td>
 		</tr>
 		</table></td>
 	</tr>
+	<tr>
+		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmText">Sökord</td>
+		<td class="imcmsAdmText">
+<script>
+writeFormField("TEXT","classification",105,200,"100%","#classification#");
+</script><br>
+		<span class="imcmsAdmDim">Sökord skall anges separerade med kommatecken. &nbsp;Ex: soppa, blomkål</span><br>
+		<input type="CHECKBOX" name="disable_search" value="1" #disable_search#> Blockera sökning på detta dokument</td>
+	</tr>
+	<tr>
+		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmText">Visa i</td>
+		<td class="imcmsAdmText" nowrap>
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td><input type="radio" name="target" value="_self" #_self#></td>
+			<td class="imcmsAdmText">&nbsp;Samma frame &nbsp;</td>
+			<td><input type="radio" name="target" value="_blank" #_blank#></td>
+			<td class="imcmsAdmText">&nbsp;Nytt fönster &nbsp;</td>
+			<td><input type="radio" name="target" value="_top" #_top#></td>
+			<td class="imcmsAdmText">&nbsp;Ersätt allt &nbsp;</td>
+			<td><input type="radio" name="target" value="_other" #_other#></td>
+			<td class="imcmsAdmText">&nbsp;Annan frame:&nbsp;</td>
+			<td><script>
+writeFormField("TEXT","frame_name",20,20,null,"#frame_name#");
+</script></td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmText">Skapad</td>
+		<td>
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td><script>
+writeFormField("TEXT","date_created",11,10,65,"#date_created#");
+</script></td>
+			<td class="imcmsAdmText">&nbsp;kl:</td>
+			<td><script>
+writeFormField("TEXT","created_time",5,5,35,"#created_time#");
+</script></td>
+			<td class="imcmsAdmText">&nbsp;av #owner#</td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmText">Ändrad</td>
+		<td>
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td><script>
+writeFormField("TEXT","date_modified",11,10,65,"#date_modified#");
+</script></td>
+			<td class="imcmsAdmText">&nbsp;kl:</td>
+			<td><script>
+writeFormField("TEXT","modified_time",5,5,35,"#modified_time#");
+</script></td>
+			<td class="imcmsAdmDim">&nbsp;(ÅÅÅÅ-MM-DD HH:MM)</td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+	</tr>
+	<tr>
+		<td class="imcmsAdmText">Ansvarig utgivare</td>
+		<td class="imcmsAdmText">
+		<select name="publisher_id" size="1">
+			#publisher_id#
+		</select>
+		&nbsp; Nuvarande: #current_publisher_name#</td>
+	</tr>
+	<tr>
+		<td colspan="2"><script>hr("100%",656,"blue");</script></td>
+	</tr>
+	<tr>
+		<td colspan="2">
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<tr>
+			<td class="imNoteComment"><sup class="imNote">1</sup>
+			Bör inte lämnas tom. Man ser då inte dokumentet i menyer eller när man söker.</td>
+			<td align="right">
+			<table border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td><input type="SUBMIT" class="imcmsFormBtn" value=" OK " name="ok"></td>
+				<td>&nbsp;</td>
+				<td><input type="RESET" class="imcmsFormBtn" value="Återställ" name="reset"></td>
+				<td>&nbsp;</td>
+				<td>
+				<table border="0" cellspacing="0" cellpadding="0">
+				</form>
+				<form name="abortForm" action="GetDoc">
+				<input type="hidden" name="meta_id" value="#meta_id#">
+				<tr>
+					<td><input type="BUTTON" class="imcmsFormBtn" value="Avbryt" onClick="document.forms.abortForm.submit(); return false"></td>
+				</tr>
+				<!-- input type="CHECKBOX" name="shared" value="1" #shared# -->
+				</form>
+				</table></td>
+			</tr>
+			</table></td>
+		</tr>
+		</table></td>
+	</tr>
+	<tr>
+		<td><img src="@imcmsimageurl@/1x1.gif" width="98" height="1"></td>
+		<td><img src="@imcmsimageurl@/1x1.gif" width="558" height="1"></td>
+	</tr>
 	</table></td>
-	<td width="5%">&nbsp;</td>
 </tr>
 <tr>
-	<td colspan="3">&nbsp;</td>
+	<td>&nbsp;</td>
 </tr>
 </table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
 
-<table border="0" cellpadding="0" cellspacing="0" align="center">
-<tr>
-	<td>#adminMode#</td>
-</tr>
-</table>
-
+<div align="center">#adminMode#</div>
 
 </body>
 </html>
