@@ -13,18 +13,16 @@ import java.io.* ;
 	it will return the file in the cache.
 */
 public class FileTagReplacer extends Hashtable {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	
-	/**
+
+    /**
 		The file-prefix
 	*/
-	protected String prefix ;
+    private String prefix ;
 	
 	/**
 		The file-suffix
 	*/
-	protected String suffix ;
+    private String suffix ;
 
 	/**
 		Creates a FileTagReplacer.
@@ -41,19 +39,7 @@ public class FileTagReplacer extends Hashtable {
 		this.prefix = prefix ;
 	}
 
-	public void setSuffix (String prefix) {
-		this.suffix = suffix ;
-	}
-
-	public String getPrefix () {
-		return prefix ;
-	}
-
-	public String getSuffix () {
-		return suffix ;
-	}
-
-	/**
+    /**
 		Creates a FileTagReplacer with empty -fixes.
 	*/
 	public FileTagReplacer() {
@@ -95,7 +81,7 @@ public class FileTagReplacer extends Hashtable {
 		you should overload this.
 		@param name The (file)name/address of the content, that is, the information needed to find the content.
 	**/
-	protected StringBuffer getContent(String name) throws IOException {
+    StringBuffer getContent(String name) throws IOException {
 		File file = new File(name) ;
 		StringBuffer buffer = new StringBuffer((int)file.length()) ;
 		BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file),"8859_1")) ;

@@ -7,8 +7,19 @@ import javax.servlet.http.*;
 import imcode.util.*;
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
-
+import imcode.server.IMCServiceInterface;
+import imcode.util.Parser;
+import imcode.util.Utility;
 import org.apache.log4j.Category;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Vector;
 
 public class TemplateChange extends HttpServlet {
 
@@ -19,8 +30,6 @@ public class TemplateChange extends HttpServlet {
     }
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-
-        String host = req.getServerName() ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
@@ -31,8 +40,7 @@ public class TemplateChange extends HttpServlet {
             return;
         }
 
-        boolean isSuperadmin = sqlIsSuperAdmin( imcref, user );
-        if( !isSuperadmin ) {
+        if (!imcref.checkAdminRights(user)) {
             Utility.redirect( req, res, start_url );
             return;
         }
@@ -59,8 +67,8 @@ public class TemplateChange extends HttpServlet {
             out.write( file );
             out.flush();
             return;
-        } else if( req.getParameter( "template_delete_cancel" ) != null ) {
-            String temp[][] = imcref.sqlQueryMulti( "select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = '" + lang + "' group by t.template_id,simple_name order by simple_name" );
+        } else if (req.getParameter("template_delete_cancel") != null) {
+            String temp[][] = imcref.sqlQueryMulti("select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = ? group by t.template_id,simple_name order by simple_name", new String[]{lang});
             //String temp[] ;
             htmlStr = "";
             Vector vec;
@@ -78,10 +86,6 @@ public class TemplateChange extends HttpServlet {
             vec.add( "#language#" );
             vec.add( lang );
             if( temp.length > 0 ) {
-                //					String temps = "" ;
-                //					for (int i = 0; i < temp.length; i+=2) {
-                //						temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;
-                //					}
                 vec.add( "#templates#" );
                 vec.add( htmlStr );
                 htmlStr = imcref.parseDoc( vec, "template_delete.html", lang_prefix );
@@ -121,7 +125,7 @@ public class TemplateChange extends HttpServlet {
             String grp_id = req.getParameter( "group_id" );
             String temp_id[] = req.getParameterValues( "unassigned" );
             if( temp_id == null ) {
-                htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix, host );
+                htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix );
                 out.print( htmlStr );
                 return;
             }
@@ -129,12 +133,12 @@ public class TemplateChange extends HttpServlet {
                 String tempId = temp_id[i];
                 sqlInsertGroupIdTemplateIdIntoTemplates( imcref, grp_id, tempId );
             }
-            htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix, host );
+            htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix );
         } else if( req.getParameter( "deassign" ) != null ) {
             String grp_id = req.getParameter( "group_id" );
             String temp_id[] = req.getParameterValues( "assigned" );
             if( temp_id == null ) {
-                htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix, host );
+                htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix );
                 out.print( htmlStr );
                 return;
             }
@@ -142,10 +146,10 @@ public class TemplateChange extends HttpServlet {
                 String tempId = temp_id[i];
                 sqlDeleteTemplate( imcref, grp_id, tempId );
             }
-            htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix, host );
+            htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix );
         } else if( req.getParameter( "show_assigned" ) != null ) {
             String grp_id = req.getParameter( "templategroup" );
-            htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix, host );
+            htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix );
         } else if( req.getParameter( "template_rename" ) != null ) {
             int template_id = Integer.parseInt( req.getParameter( "template" ) );
             String name = req.getParameter( "name" );
@@ -157,7 +161,7 @@ public class TemplateChange extends HttpServlet {
             } else {
                 sqlUpdateTemplateName( imcref, template_id, name );
                 String temp[];
-                temp = imcref.sqlQuery( "select template_id, simple_name from templates where lang_prefix = '" + lang + "' order by simple_name" );
+                temp = imcref.sqlQuery("select template_id, simple_name from templates where lang_prefix = ? order by simple_name", new String[]{lang});
                 Vector vec = new Vector();
                 vec.add( "#language#" );
                 vec.add( lang );
@@ -175,8 +179,8 @@ public class TemplateChange extends HttpServlet {
             }
         } else if( req.getParameter( "template_delete_check" ) != null ) {
             int template_id = Integer.parseInt( req.getParameter( "template" ) );
-            String sqlStr = "select top 50 meta_id from text_docs where template_id = " + template_id;
-            String temp[] = imcref.sqlQuery( sqlStr );
+            String sqlStr = "select top 50 meta_id from text_docs where template_id = ?";
+            String temp[] = imcref.sqlQuery(sqlStr, new String[]{"" + template_id});
             if( temp.length > 0 ) {
                 Vector vec = new Vector();
                 vec.add( "#language#" );
@@ -189,7 +193,7 @@ public class TemplateChange extends HttpServlet {
                 vec.add( String.valueOf( template_id ) );
                 vec.add( "#docs#" );
                 vec.add( tempstr );
-                temp = imcref.sqlQuery( "select t.template_id,t.simple_name from templates t where lang_prefix = '" + lang + "' and template_id != " + template_id + " order by simple_name" );
+                temp = imcref.sqlQuery( "select t.template_id,t.simple_name from templates t where lang_prefix = ? and template_id != ? order by simple_name", new String[] {lang, ""+template_id} );
                 tempstr = "";
                 for( int i = 0; i < temp.length; i += 2 ) {
                     tempstr += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
@@ -200,7 +204,7 @@ public class TemplateChange extends HttpServlet {
                 htmlStr = imcref.parseDoc( vec, "template_delete_warning.html", lang_prefix );
             } else {
                 imcref.deleteTemplate( template_id );
-                String foo[][] = imcref.sqlQueryMulti( "select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = '" + lang + "' group by t.template_id,simple_name order by simple_name" );
+                String foo[][] = imcref.sqlQueryMulti( "select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = ? group by t.template_id,simple_name order by simple_name", new String[] {lang});
                 htmlStr = "";
                 Vector vec;
                 for( int i = 0; i < foo.length; i++ ) {
@@ -239,7 +243,7 @@ public class TemplateChange extends HttpServlet {
                 htmlStr = imcref.parseDoc( vec, "templategroup_delete_warning.html", lang_prefix );
             } else {
                 imcref.deleteTemplateGroup( grp_id );
-                temp = imcref.sqlProcedure( "getTemplategroups" );
+                temp = imcref.sqlProcedure("GetTemplategroups", new String[0]);
                 String temps = "";
                 for( int i = 0; i < temp.length; i += 2 ) {
                     temps += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
@@ -251,9 +255,9 @@ public class TemplateChange extends HttpServlet {
             }
         } else if( req.getParameter( "group_delete" ) != null ) {
             int grp_id = Integer.parseInt( req.getParameter( "templategroup" ) );
-            imcref.sqlUpdateQuery( "delete from templates_cref where group_id = " + grp_id );
+            imcref.sqlUpdateQuery("delete from templates_cref where group_id = ?", new String[]{"" + grp_id});
             imcref.deleteTemplateGroup( grp_id );
-            String temp[] = imcref.sqlProcedure( "getTemplategroups" );
+            String temp[] = imcref.sqlProcedure("GetTemplategroups", new String[0]);
             String temps = "";
             for( int i = 0; i < temp.length; i += 2 ) {
                 temps += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
@@ -264,7 +268,7 @@ public class TemplateChange extends HttpServlet {
             htmlStr = imcref.parseDoc( vec, "templategroup_delete.html", lang_prefix );
         } else if( req.getParameter( "group_delete_cancel" ) != null ) {
             String temp[];
-            temp = imcref.sqlProcedure( "getTemplategroups" );
+            temp = imcref.sqlProcedure("GetTemplategroups", new String[0]);
             String temps = "";
             for( int i = 0; i < temp.length; i += 2 ) {
                 temps += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
@@ -278,13 +282,14 @@ public class TemplateChange extends HttpServlet {
             if( name == null || name.equals( "" ) ) {
                 htmlStr = imcref.parseDoc( null, "templategroup_add_name_blank.html", lang_prefix );
             } else {
-                String sqlStr = "select group_id from templategroups where group_name = '" + name + "'";
-                if( imcref.sqlQueryStr( sqlStr ) != null ) {
+                String sqlStr = "select group_id from templategroups where group_name = ?";
+                if (imcref.sqlQueryStr(sqlStr, new String[]{name}) != null) {
                     htmlStr = imcref.parseDoc( null, "templategroup_add_exists.html", lang_prefix );
                 } else {
-                    sqlStr = "declare @new_id int\nselect @new_id = max(group_id)+1 from templategroups\ninsert into templategroups values(@new_id,'" + name + "')";
-                    imcref.sqlUpdateQuery( sqlStr );
-                    htmlStr = imcref.parseDoc( null, "templategroup_add.html", lang_prefix );
+                    imcref.sqlUpdateQuery("declare @new_id int\n" +
+                            "select @new_id = max(group_id)+1 from templategroups\n" +
+                            "insert into templategroups values(@new_id,?)", new String[]{name});
+                    htmlStr = imcref.parseDoc(null, "templategroup_add.html", lang_prefix);
                 }
             }
         } else if( req.getParameter( "group_rename" ) != null ) {
@@ -295,7 +300,7 @@ public class TemplateChange extends HttpServlet {
             } else {
                 imcref.changeTemplateGroupName( grp_id, name );
                 String temp[];
-                temp = imcref.sqlProcedure( "getTemplategroups" );
+                temp = imcref.sqlProcedure("GetTemplategroups", new String[0]);
                 String temps = "";
                 for( int i = 0; i < temp.length; i += 2 ) {
                     temps += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
@@ -307,7 +312,7 @@ public class TemplateChange extends HttpServlet {
             }
         } else if( req.getParameter( "list_templates_docs" ) != null ) {
             String template_id = req.getParameter( "template" );
-            String temp[][] = imcref.sqlQueryMulti( "select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = '" + lang + "' group by t.template_id,simple_name order by simple_name" );
+            String temp[][] = imcref.sqlQueryMulti("select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = ? group by t.template_id,simple_name order by simple_name", new String[]{lang});
             htmlStr = "";
             for( int i = 0; i < temp.length; i++ ) {
                 Vector vec = new Vector();
@@ -323,15 +328,20 @@ public class TemplateChange extends HttpServlet {
             vec2.add( "#template_list#" );
             vec2.add( htmlStr );
             if( template_id != null ) {
-                temp = imcref.sqlQueryMulti( "select td.meta_id, meta_headline from text_docs td join meta m on td.meta_id = m.meta_id where template_id = " + template_id + " order by td.meta_id" );
+                temp = imcref.sqlQueryMulti("select td.meta_id, meta_headline from text_docs td join meta m on td.meta_id = m.meta_id where template_id = ? order by td.meta_id", new String[]{template_id});
                 String htmlStr2 = "";
                 for( int i = 0; i < temp.length; i++ ) {
                     Vector vec = new Vector();
                     vec.add( "#meta_id#" );
                     vec.add( temp[i][0] );
                     vec.add( "#meta_headline#" );
-                    String[] pd = {"&", "&amp;", "<", "&lt;", ">", "&gt;", "\"", "&quot;"};
-                    if( temp[i][1].length() > 60 ) {
+                    String[] pd = {
+                        "&", "&amp;",
+                        "<", "&lt;",
+                        ">", "&gt;",
+                        "\"", "&quot;"
+                    };
+                    if (temp[i][1].length() > 60) {
                         temp[i][1] = temp[i][1].substring( 0, 57 ) + "...";
                     }
                     temp[i][1] = Parser.parseDoc( temp[i][1], pd );
@@ -350,7 +360,7 @@ public class TemplateChange extends HttpServlet {
                 Utility.redirect( req, res, "AdminDoc?meta_id=" + meta_id );
                 return;
             }
-            String temp[][] = imcref.sqlQueryMulti( "select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = '" + lang + "' group by t.template_id,simple_name order by simple_name" );
+            String temp[][] = imcref.sqlQueryMulti("select simple_name,count(meta_id),t.template_id from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = ? group by t.template_id,simple_name order by simple_name", new String[]{lang});
             htmlStr = "";
             for( int i = 0; i < temp.length; i++ ) {
                 Vector vec = new Vector();
@@ -374,53 +384,47 @@ public class TemplateChange extends HttpServlet {
     }
 
     private static String[] sqlSelectTemplatesNames( IMCServiceInterface imcref, int grp_id ) {
-        String sqlStr = "select simple_name from templates t,templates_cref c where c.template_id = t.template_id and group_id = " + grp_id + " order by simple_name";
-        String temp[] = imcref.sqlQuery( sqlStr );
+        String sqlStr = "select simple_name from templates t,templates_cref c where c.template_id = t.template_id and group_id = ? order by simple_name";
+        String temp[] = imcref.sqlQuery( sqlStr, new String[] {""+grp_id} );
         return temp;
     }
 
     private void sqlUpdateTemplateName( IMCServiceInterface imcref, int template_id, String name ) {
-        String sqlStr = "update templates set simple_name = '" + name + "' where template_id = " + template_id;
-        imcref.sqlUpdateQuery( sqlStr );
+        String sqlStr = "update templates set simple_name = ? where template_id = ?";
+        imcref.sqlUpdateQuery( sqlStr, new String[] {name, ""+template_id} );
     }
 
     private void sqlDeleteTemplate( IMCServiceInterface imcref, String grp_id, String tempId ) {
-        String sqlStr = "delete from templates_cref where group_id = " + grp_id + " and template_id = " + tempId;
-        imcref.sqlUpdateQuery( sqlStr );
+        String sqlStr = "delete from templates_cref where group_id = ? and template_id = ?";
+        imcref.sqlUpdateQuery( sqlStr, new String[] {grp_id, tempId} );
     }
 
     private void sqlInsertGroupIdTemplateIdIntoTemplates( IMCServiceInterface imcref, String grp_id, String tempId ) {
-        String sqlStr = "insert into templates_cref (group_id,template_id) values(" + grp_id + "," + tempId + ")";
-        imcref.sqlUpdateQuery( sqlStr );
+        String sqlStr = "insert into templates_cref (group_id,template_id) values(?,?)";
+        imcref.sqlUpdateQuery( sqlStr, new String[] {grp_id,tempId} );
     }
 
     private String[][] sqlSelectSimpleNameMetaIdCountTemplateId( IMCServiceInterface imcref, String lang ) {
-        String temp[][] = imcref.sqlQueryMulti( "select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = '" + lang + "' group by t.template_id,simple_name order by simple_name" );
+        String sqlStr = "select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = ? group by t.template_id,simple_name order by simple_name";
+        String temp[][] = imcref.sqlQueryMulti( sqlStr, new String[] {lang} );
         return temp;
     }
 
     private void sqlUpdateTextDocs( IMCServiceInterface imcref, int template_id, String new_temp_id ) {
-        imcref.sqlUpdateQuery( "update text_docs set template_id = " + new_temp_id + " where template_id = " + template_id );
-    }
-
-    private static boolean sqlIsSuperAdmin( IMCServiceInterface imcref, UserDomainObject user ) {
-        String sqlStr = "select role_id from users,user_roles_crossref\n";
-        sqlStr += "where users.user_id = user_roles_crossref.user_id\n";
-        sqlStr += "and user_roles_crossref.role_id = 0\n";
-        sqlStr += "and users.user_id = " + user.getUserId();
-        boolean isSuperadmin = imcref.sqlQuery( sqlStr ).length > 0;
-        return isSuperadmin;
+        String sqlStr = "update text_docs set template_id = ? where template_id = ?";
+        imcref.sqlUpdateQuery( sqlStr, new String[] {new_temp_id, ""+template_id} );
     }
 
     private static String sqlSelectTemplateNameFromTemplates( IMCServiceInterface imcref, int template_id ) {
-        String filename = imcref.sqlQueryStr( "select template_name from templates where template_id = " + template_id );
+        String sqlStr = "select template_name from templates where template_id = ?";
+        String filename = imcref.sqlQueryStr( sqlStr, new String[] {""+template_id} );
         return filename;
     }
 
-    private String parseAssignTemplates( String grp_id, String language, String lang_prefix, String host ) throws IOException {
+    private String parseAssignTemplates( String grp_id, String language, String lang_prefix ) throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String temp[];
-        temp = imcref.sqlProcedure( "getTemplategroups" );
+        temp = imcref.sqlProcedure("GetTemplategroups", new String[0]);
         String temps = "";
         for( int i = 0; i < temp.length; i += 2 ) {
             if( grp_id.equals( temp[i] ) ) {
@@ -433,7 +437,7 @@ public class TemplateChange extends HttpServlet {
         vec.add( "#templategroups#" );
         vec.add( temps );
         temps = "";
-        temp = imcref.sqlQuery( "select t.template_id,t.simple_name from templates_cref c join templates t on t.template_id = c.template_id where group_id = " + grp_id + " and lang_prefix = '" + language + "' order by t.simple_name" );
+        temp = imcref.sqlQuery("select t.template_id,t.simple_name from templates_cref c join templates t on t.template_id = c.template_id where group_id = ? and lang_prefix = ? order by t.simple_name", new String[]{grp_id, language});
         String list[];
         list = imcref.getDemoTemplateList();
         for( int i = 0; i < temp.length; i += 2 ) {
@@ -454,7 +458,7 @@ public class TemplateChange extends HttpServlet {
 
             vec.add( "#assigned#" );
             vec.add( temps );
-            temp = imcref.sqlQuery( "select t.template_id,t.simple_name from templates t where lang_prefix = '" + language + "' and t.template_id not in (select template_id from templates_cref where group_id = " + grp_id + ") order by t.simple_name" );
+            temp = imcref.sqlQuery("select t.template_id,t.simple_name from templates t where lang_prefix = ? and t.template_id not in (select template_id from templates_cref where group_id = ?) order by t.simple_name", new String[]{language, grp_id});
             temps = "";
             for( int i = 0; i < temp.length; i += 2 ) {
                 int tmp = Integer.parseInt( temp[i] );
@@ -472,7 +476,7 @@ public class TemplateChange extends HttpServlet {
             }
             vec.add( "#unassigned#" );
             vec.add( temps );
-            temps = imcref.sqlQueryStr( "select group_name from templategroups where group_id = " + grp_id );
+            temps = imcref.sqlQueryStr("select group_name from templategroups where group_id = ?", new String[]{grp_id});
             if( temps == null ) {
                 temps = "";
             }

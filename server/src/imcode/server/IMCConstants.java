@@ -1,7 +1,5 @@
 package imcode.server ;
 
-import java.text.SimpleDateFormat;
-
 public interface IMCConstants {
 
     /* Documenttypes */
@@ -88,6 +86,15 @@ public interface IMCConstants {
 
     /** The error-log, used for logging errors, exceptions, and the like. */
     public final static String ERROR_LOG		= "errorlog";
+
+    /* Menu-sort-orders. */
+    public final static int MENU_SORT_BY_HEADLINE        = 1 ;
+    public final static int MENU_SORT_BY_MANUAL_ORDER    = 2 ;
+    public final static int MENU_SORT_BY_DATETIME        = 3 ;
+    public final static int MENU_SORT_BY_MANUAL_TREE_ORDER = 4;
+
+    /** Default-dateTime-format **/
+    public final static String DATETIME_FORMAT_STD        = "yyyy-MM-dd HH:mm" ;
 
     /** Properties file for host properties **/
     public final static String HOST_PROPERTIES           = "host.properties" ;

@@ -7,16 +7,11 @@ import imcode.util.*;
 import imcode.server.*;
 
 /**
- *  A class that allows Web users to upload local files to a web server's file system.
+ * A class that allows Web users to upload local files to a web server's file system.
  */
 public class ImageUpload extends HttpServlet {
 
-    public void init( ServletConfig config ) throws ServletException {
-        super.init( config );
-    }
-
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
         File file_path = Utility.getDomainPrefPath( "image_path" );
@@ -46,13 +41,18 @@ public class ImageUpload extends HttpServlet {
             bytes_read += in.read( buffer, bytes_read, length - bytes_read );
         }
 
-
         String contentType = req.getContentType();
         MultipartFormdataParser mp = new MultipartFormdataParser( new String( buffer, "8859_1" ), contentType );
         String file = mp.getParameter( "file" );
         String filename = mp.getFilename( "file" );
+
+        String label = mp.getParameter( "label" );
+        if ( label == null ) {
+            label = "";
+        }
+
         if ( file.equals( "" ) ) {
-            res.sendRedirect( "ChangeImage?meta_id=" + mp.getParameter( "meta_id" ) + "&img_no=" + mp.getParameter( "img_no" ) );
+            res.sendRedirect( "ChangeImage?meta_id=" + mp.getParameter( "meta_id" ) + "&img_no=" + mp.getParameter( "img_no" ) + "&label=" + label );
             return;
         }
         String folder = mp.getParameter( "folder" );//ex: /se
@@ -80,11 +80,13 @@ public class ImageUpload extends HttpServlet {
             if ( fn.exists() ) {
                 Vector vec = new Vector();
                 vec.add( "#back#" );
-                vec.add( "ChangeImage?meta_id=" + meta_id + "&img_no=" + img_no );
+                vec.add( "ChangeImage?meta_id=" + meta_id + "&img_no=" + img_no + "?label=" + label );
                 vec.add( "#meta_id#" );
                 vec.add( String.valueOf( meta_id ) );
                 vec.add( "#img_no#" );
                 vec.add( String.valueOf( img_no ) );
+                vec.add( "#label#" );
+                vec.add( label );
                 String htmlStr = imcref.parseDoc( vec, "file_exists.html", user.getLangPrefix() );
                 out.println( htmlStr );
                 return;
@@ -149,6 +151,8 @@ public class ImageUpload extends HttpServlet {
         vec.add( String.valueOf( meta_id ) );
         vec.add( "#img_no#" );
         vec.add( String.valueOf( img_no ) );
+        vec.add( "#label#" );
+        vec.add( label );
 
         vec.add( "#folders#" );
         vec.add( buff.toString() );

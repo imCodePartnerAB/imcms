@@ -1,25 +1,27 @@
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 
-import imcode.util.* ;
-import imcode.server. * ;
-import imcode.external.diverse.* ;
+import imcode.server.IMCServiceInterface;
+import imcode.server.ApplicationServer;
+import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Vector;
 
 public class AdminSection extends Administrator {
 
-    public final static String ADMIN_TEMPLATE			= "sections/admin_section.html";
-    public final static String ADD_TEMPLATE			= "sections/admin_section_add.html";
-    public final static String NAME_TEMPLATE			= "sections/admin_section_name.html";
-    public final static String DELETE_TEMPLATE			= "sections/admin_section_delete.html";
-    public final static String LINE_TEMPLATE			= "sections/admin_section_line.html";
-    public final static String DELETE_CONFIRM_TEMPLATE	= "sections/admin_section_delete_confirm.html";
+    private final static String ADMIN_TEMPLATE = "sections/admin_section.html";
+    private final static String ADD_TEMPLATE = "sections/admin_section_add.html";
+    private final static String NAME_TEMPLATE = "sections/admin_section_name.html";
+    private final static String DELETE_TEMPLATE = "sections/admin_section_delete.html";
+    private final static String LINE_TEMPLATE = "sections/admin_section_line.html";
+    private final static String DELETE_CONFIRM_TEMPLATE = "sections/admin_section_delete_confirm.html";
 
-    public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+   public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	String host		   = req.getHeader("Host") ;
-	String start_url	   = imcref.getStartUrl() ;
+	    String start_url = imcref.getStartUrl() ;
 
 	res.setContentType("text/html") ;
 
@@ -49,7 +51,6 @@ public class AdminSection extends Administrator {
     }//end doGet()
 
     public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-	String host			= req.getHeader("Host") ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url	= imcref.getStartUrl() ;
 
@@ -77,13 +78,14 @@ public class AdminSection extends Administrator {
 	    String new_section = req.getParameter("new_section_name")==null ? "":req.getParameter("new_section_name").trim();
 	    if ( !new_section.equals("") ) {
 		//ok we have a new name lets save it to db, but only if it's not exists in db
-		imcref.sqlUpdateProcedure("SectionAdd "+new_section);
+		imcref.sqlUpdateProcedure("SectionAdd", new String[] { new_section });
 	    }
 
 	    //now we needs a list of the created ones in db
-	    String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount");
+            String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
 	    Vector vec = new Vector();
-	    vec.add("#section_list#"); vec.add(createOptionList(req, section_arr, lang_prefix, null));
+	    vec.add("#section_list#");
+	    vec.add(createOptionList( section_arr, lang_prefix, null));
 	    //ok lets parse the page with right template
 	    htmlToSend.append(imcref.parseDoc(vec,ADD_TEMPLATE,lang_prefix ));
 	}//end if(req.getParameter("add_section")!= null)
@@ -95,14 +97,15 @@ public class AdminSection extends Administrator {
 	    String new_section = req.getParameter("new_section_name")==null ? "":req.getParameter("new_section_name").trim();
 	    String section_id = req.getParameter("section_list")==null ? "-1":req.getParameter("section_list");
 	    if ( (!new_section.equals("")) && (!section_id.equals("-1")) ) {
-		//ok we have a new name lets save it to db, but only if it's not exists in db
-		imcref.sqlUpdateProcedure("SectionChangeName "+section_id+", '"+new_section+"'");
+		    //ok we have a new name lets save it to db, but only if it's not exists in db
+            imcref.sqlUpdateProcedure("SectionChangeName", new String[]{section_id, new_section});
 	    }
 
 	    //now we needs a list of the created ones in db
-	    String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount");
+            String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
 	    Vector vec = new Vector();
-	    vec.add("#section_list#"); vec.add(createOptionList(req, section_arr, lang_prefix, null));
+	    vec.add("#section_list#");
+	    vec.add(createOptionList( section_arr, lang_prefix, null));
 	    //ok lets parse the page with right template
 	    htmlToSend.append(imcref.parseDoc(vec,NAME_TEMPLATE,lang_prefix ));
 
@@ -128,10 +131,10 @@ public class AdminSection extends Administrator {
 	    }
 	    if (new_sections.equals("-1")) {
 		//ok the admin wants to get rid of all the section connections
-		imcref.sqlUpdateProcedure("SectionDelete "+del_section );
+                imcref.sqlUpdateProcedure("SectionDelete", new String[]{del_section});
 	    }else {
 		//ok the admin wants to conect a nother section and then delete the one
-		imcref.sqlUpdateProcedure("SectionChangeAndDeleteCrossref "+new_sections+", "+ del_section);
+                imcref.sqlUpdateProcedure("SectionChangeAndDeleteCrossref", new String[]{new_sections, del_section});
 	    }
 	}
 
@@ -141,7 +144,7 @@ public class AdminSection extends Administrator {
 	    String section_id = req.getParameter("section_list")==null ? "-1":req.getParameter("section_list");
 	    if ( !section_id.equals("-1") ) {
 		//ok we have a request for delete lets se if there is any docs connected to that section_id
-		String doc_nrs = imcref.sqlProcedureStr("SectionCount "+section_id);
+                String doc_nrs = imcref.sqlProcedureStr("SectionCount", new String[]{section_id});
 		int doc_int = 0;
 		if (doc_nrs != null) {
 		    try {
@@ -154,25 +157,29 @@ public class AdminSection extends Administrator {
 
 		if (doc_int > 0 ) {
 		    //ok we have documents connected to that section id so lets get a page to handle that
-		    String[][] section_arr = imcref.sqlProcedureMulti( "SectionGetAllCount");
+                    String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
 		    Vector vec = new Vector();
-		    vec.add("#section_list#");	vec.add(createOptionList(req, section_arr, lang_prefix,section_id));
-		    vec.add("#docs#");			vec.add(doc_nrs) ;
-		    vec.add("#delete_section#");vec.add(section_id) ;
+		    vec.add("#section_list#");
+		    vec.add(createOptionList( section_arr, lang_prefix,section_id));
+		    vec.add("#docs#");
+		    vec.add(doc_nrs) ;
+		    vec.add("#delete_section#");
+		    vec.add(section_id) ;
 		    htmlToSend.append(imcref.parseDoc(vec,DELETE_CONFIRM_TEMPLATE,lang_prefix ));
 		    got_confirm_page = true;
 		}else {
 		    //ok we can delete it right a way an carry on with it
-		    imcref.sqlUpdateProcedure("SectionDelete "+section_id );
+                    imcref.sqlUpdateProcedure("SectionDelete", new String[]{section_id});
 		}
 	    }
 
 
 	    if ( ! got_confirm_page ) {
 		//now we needs a list of the created ones in db
-		String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount");
+                String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
 		Vector vec = new Vector();
-		vec.add("#section_list#"); vec.add(createOptionList(req, section_arr, lang_prefix, null));
+		vec.add("#section_list#");
+		vec.add(createOptionList( section_arr, lang_prefix, null));
 		//ok lets parse the page with right template
 		htmlToSend.append(imcref.parseDoc(vec,DELETE_TEMPLATE,lang_prefix ));
 	    }
@@ -192,36 +199,36 @@ public class AdminSection extends Administrator {
 	res.setContentType("text/html") ;
 	ServletOutputStream out = res.getOutputStream() ;
 	out.print ( htmlToSend.toString() ) ;
-	out.flush();out.close();
+	out.flush();
+    out.close();
     }//end doPost()
 
 
     //method that creates an option list of all the sections in db
-    private String createOptionList(HttpServletRequest req, String[][] arr, String lang_prefix, String not_id) throws ServletException, IOException {
+    private String createOptionList( String[][] arr, String lang_prefix, String not_id) throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
-	StringBuffer buff = new StringBuffer("");
-	if (arr != null) {
-	    for ( int i = 0 ; i<arr.length ; i++ ) {
-		if (not_id != null) {
-		    if(not_id.equals(arr[i][0]))
-			continue;
-		}
-		Vector vec = new Vector() ;
-		vec.add("#section_id#") ;
-		vec.add(arr[i][0]) ;
-		vec.add("#section_name#") ;
-		vec.add(arr[i][1]) ;
-		vec.add("#docs#") ;
-		vec.add(arr[i][2]) ;
-		buff.append(imcref.parseDoc(vec,LINE_TEMPLATE,lang_prefix));
-	    }
-	}
-	return buff.toString();
+        StringBuffer buff = new StringBuffer("");
+        if (arr != null) {
+            for (int i = 0; i < arr.length; i++) {
+                if (not_id != null) {
+                    if (not_id.equals(arr[i][0]))
+                        continue;
+                }
+                Vector vec = new Vector();
+                vec.add("#section_id#");
+                vec.add(arr[i][0]);
+                vec.add("#section_name#");
+                vec.add(arr[i][1]);
+                vec.add("#docs#");
+                vec.add(arr[i][2]);
+                buff.append(imcref.parseDoc(vec, LINE_TEMPLATE, lang_prefix));
+            }
+        }
+        return buff.toString();
     }//end createOptionList
 
-    public void log( String str ){
-	super.log(str) ;
-	//System.out.println("AdminSection: " + str ) ;
+    public void log(String str) {
+        super.log(str);
     }
 }//end servlet

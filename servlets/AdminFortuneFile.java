@@ -305,7 +305,7 @@ public class AdminFortuneFile extends Administrator {
 
 
 
-    public boolean checkDate(String date)
+    private boolean checkDate(String date)
     {
 	boolean check = true;
 

@@ -1,23 +1,20 @@
-import java.io.*;
-import java.util.*;
-import java.text.SimpleDateFormat;
-import javax.servlet.*;
-import javax.servlet.http.*;
 
-import imcode.util.* ;
-import imcode.server.* ;
+import imcode.server.IMCServiceInterface;
+import imcode.server.ApplicationServer;
+import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Writer;
+
 /**
-  Save a framesetdocument.
-	Shows a change_meta.html which calls SaveMeta
-*/
+ * Save a framesetdocument.
+ * Shows a change_meta.html which calls SaveMeta
+ */
 public class SaveFrameset extends HttpServlet {
-
-	/**
-	init()
-	*/
-	public void init( ServletConfig config ) throws ServletException {
-		super.init( config ) ;
-	}
 
 	/**
 	doPost()
@@ -35,14 +32,7 @@ public class SaveFrameset extends HttpServlet {
 		// get meta_id
 		meta_id = Integer.parseInt( req.getParameter( "meta_id" ) ) ;
 
-		// save form data
-		imcode.server.Table doc = new imcode.server.Table( ) ;
-		String frame_set =  req.getParameter( "frame_set" ) ;
-		String[] tmpary = {
-			"'",	"''"
-		} ;
-		frame_set = Parser.parseDoc(frame_set,tmpary) ;
-		doc.addField( "frame_set",frame_set ) ;
+        String frame_set = req.getParameter("frame_set");
 
 		// Check if user logged on
 		if( (user=Utility.getLoggedOnUserOrRedirect( req,res,start_url ))==null ) {
@@ -58,19 +48,16 @@ public class SaveFrameset extends HttpServlet {
 			return ;
 		}
 
-		if( req.getParameter("ok")!=null ) {	//User pressed ok on form in change_frameset_doc.html
-			imcref.saveFrameset(meta_id,user,doc ) ;
-			SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
-			Date dt = imcref.getCurrentDate() ;
-			String sqlStr = "update meta set date_modified = '"+dateformat.format(dt)+"' where meta_id = "+meta_id ;
-			imcref.sqlUpdateQuery(sqlStr) ;
+        if (req.getParameter("ok") != null) {	//User pressed ok on form in change_frameset_doc.html
+            imcref.saveFrameset(meta_id, user, frame_set);
+            imcref.touchDocument(meta_id);
 
-			String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
-			if ( output != null ) {
-			    out.write(output) ;
-			}
-			return ;
-		}
+            String output = AdminDoc.adminDoc(meta_id, meta_id, user, req, res);
+            if (output != null) {
+                out.write(output);
+            }
+            return;
+        }
 	}
 }
 

@@ -17,12 +17,10 @@ import java.util.Hashtable;
 import java.util.Stack;
 import java.util.Vector;
 
-/**
- Get a internalDocument = Parse data from database.
- */
 public class GetDoc extends HttpServlet {
-    private static Category trackLog = Logger.getInstance( IMCConstants.ACCESS_LOG );
-    private static Category log = Logger.getInstance( GetDoc.class.getName() );
+
+    private static Category trackLog = Logger.getInstance(IMCConstants.ACCESS_LOG);
+    private static Category log = Logger.getInstance(GetDoc.class.getName());
 
     /**
      doGet()
@@ -51,7 +49,6 @@ public class GetDoc extends HttpServlet {
         }
         out.flush();
         out.close();
-
     }
 
     public static String getDoc( int meta_id, int parent_meta_id, HttpServletRequest req, HttpServletResponse res ) throws IOException {
@@ -72,13 +69,12 @@ public class GetDoc extends HttpServlet {
         if( user == null ) {
             // Check the name and password for validity
             String ip = req.getRemoteAddr();
-            String host = req.getServerName() ;
-            
-            user = StartDoc.ipAssignUser( ip, host );
+
+            user = StartDoc.ipAssignUser( ip );
 
             // Valid login.  Make a note in the session object.
             if( user == null ) {
-                session.setAttribute( "login.target", HttpUtils.getRequestURL( req ).toString() + "?" + req.getQueryString() );
+                session.setAttribute( "login.target", req.getRequestURL().append("?").append(req.getQueryString()).toString() );
                 res.sendRedirect( start_url );
                 return null;
             }
@@ -123,16 +119,10 @@ public class GetDoc extends HttpServlet {
             }
         }
         try {
-            documentRequest = new DocumentRequest( imcref, req.getRemoteAddr(), session.getId(), user, meta_id, referringDocument, req.getQueryString());
-            documentRequest.setContextPath( req.getContextPath() );
-            documentRequest.setUserAgent( req.getHeader( "User-agent" ) );
-            documentRequest.setHostName( req.getHeader( "Host" ) );
+            documentRequest = new DocumentRequest(imcref, user, meta_id, referringDocument, req);
 
             // Get all cookies from request
             Cookie[] cookies = req.getCookies();
-
-            // add all cookies to documentRequest
-            documentRequest.setCookies( cookies );
 
             // Find cookies and put in hash.
             Hashtable cookieHash = new Hashtable();
@@ -169,7 +159,7 @@ public class GetDoc extends HttpServlet {
         // checking permissions. Number three, since the user obviously has logged in, give him the page in his own language!
 
         if( !imcref.checkDocRights( meta_id, user ) ) {
-            session.setAttribute( "login.target", HttpUtils.getRequestURL( req ).toString() + "?" + req.getQueryString() );
+            session.setAttribute( "login.target", req.getRequestURL().append( "?" ).append( req.getQueryString() ).toString() );
             String redirect = no_permission_url;
             res.sendRedirect( redirect );
             return null;
@@ -203,21 +193,24 @@ public class GetDoc extends HttpServlet {
         switch( doc_type ) {
 
             case 5:	//URL-doc
-                imcode.server.Table url_doc = imcref.isUrlDoc( meta_id, user );
-                String temp = url_doc.getString( "url_ref" );
+                String url_ref = imcref.isUrlDoc(meta_id, user);
                 Perl5Util regexp = new Perl5Util();
-                if( !regexp.match("m!^\\w+:|^[/.]!", temp) ) {
-                    temp = "http://" + temp;
+                if( !regexp.match("m!^\\w+:|^[/.]!", url_ref) ) {
+                    url_ref = "http://" + url_ref;
                 }
-                res.sendRedirect( temp );
+                res.sendRedirect( url_ref );
                 // Log to accesslog
                 trackLog.info( documentRequest );
                 return null;
 
             case 6:	//browser-doc
                 String br_id = (String)session.getAttribute( "browser_id" );
-                String sqlStr = "select top 1 to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = " + meta_id + " and '" + br_id + "' like user_agent order by value desc";
-                String tmp = imcref.sqlQueryStr( sqlStr );
+                String tmp = imcref.sqlQueryStr(
+                        "select top 1 to_meta_id\n"
+                        + "from browser_docs\n"
+                        + "join browsers on browsers.browser_id = browser_docs.browser_id\n"
+                        + "where meta_id = ? and ? like user_agent order by value desc",
+                        new String[]{"" + meta_id, br_id});
                 if( tmp != null && (!"".equals( tmp )) ) {
                     meta_id = Integer.parseInt( tmp );
                 }
@@ -238,10 +231,10 @@ public class GetDoc extends HttpServlet {
                 return htmlStr;
 
             case 8:	//fileupload-doc
-                sqlStr = "select mime from fileupload_docs where meta_id = " + meta_id;
-                String mimetype = imcref.sqlQueryStr( sqlStr );
-                sqlStr = "select filename from fileupload_docs where meta_id = " + meta_id;
-                String filename = imcref.sqlQueryStr( sqlStr );
+                String sqlStr = "select mime from fileupload_docs where meta_id = ?";
+                String mimetype = imcref.sqlQueryStr(sqlStr, new String[] { ""+meta_id });
+                sqlStr = "select filename from fileupload_docs where meta_id = ?";
+                String filename = imcref.sqlQueryStr(sqlStr, new String[]{"" + meta_id});
                 BufferedInputStream fr;
                 try {
                     fr = new BufferedInputStream( new FileInputStream( new File( file_path, String.valueOf( meta_id ) + "_se" ) ) );
@@ -307,5 +300,4 @@ public class GetDoc extends HttpServlet {
                 return result;
         }
     }
-
 }

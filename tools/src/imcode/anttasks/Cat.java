@@ -7,14 +7,14 @@ import org.apache.tools.ant.types.* ;
 
 public class Cat extends Task {
 
-    protected File destFile = null ; // the destination file
-    protected String orderBy = null ;
-    protected boolean filtering = false;
-    protected boolean append = false ;
-    protected int verbosity = Project.MSG_VERBOSE;
-    protected boolean forceOverwrite = false;
+    private File destFile = null ; // the destination file
+    private String orderBy = null ;
+    private boolean filtering = false;
+    private boolean append = false ;
+    private int verbosity = Project.MSG_VERBOSE;
+    private boolean forceOverwrite = false;
 
-    protected Vector filesets = new Vector() ;
+    private Vector filesets = new Vector() ;
     private Vector filterSets = new Vector();
 
     private String ORDER_BY_PATH    = "path" ;
@@ -88,22 +88,13 @@ public class Cat extends Task {
         return filterSet;
     }
 
-    /**
-     * Get the filtersets being applied to this operation.
-     *
-     * @return a vector of FilterSet objects
-     */
-    protected Vector getFilterSets() {
-        return filterSets;
-    }
-
     public void execute() throws BuildException {
 	validateAttributes() ;
 	doFileOperations() ;
     }
 
     /** Make sure all attributes are correct. **/
-    protected void validateAttributes() {
+    private void validateAttributes() {
         if ( filesets.size() == 0 ) {
             throw new BuildException("Specify at least one fileset.");
         }
@@ -118,7 +109,7 @@ public class Cat extends Task {
     }
 
     /** Do whatever is necessary to open the destination file. **/
-    protected OutputStream openOutputStream() throws IOException {
+    private OutputStream openOutputStream() throws IOException {
 	File parent = new File(destFile.getParent()) ;
 	if (!parent.exists()) {
 	    if (!parent.mkdirs()) {
@@ -133,7 +124,7 @@ public class Cat extends Task {
     }
 
     /** Do all fileoperations. **/
-    protected void doFileOperations() {
+    private void doFileOperations() {
 	try {
 
 	    List srcFiles = handleFileSets() ;
@@ -154,7 +145,7 @@ public class Cat extends Task {
     }
 
     /** Deal with the filesets **/
-    protected List handleFileSets() {
+    private List handleFileSets() {
 	List srcFiles = new Vector() ;
 	boolean foundNewer = false ;
 
@@ -197,7 +188,7 @@ public class Cat extends Task {
     }
 
     /** Handle the filtersets. **/
-    protected FilterSetCollection handleFilterSets() {
+    private FilterSetCollection handleFilterSets() {
 	// handle filters
 	FilterSetCollection executionFilters = new FilterSetCollection();
 	if (filtering) {
@@ -210,7 +201,7 @@ public class Cat extends Task {
     }
 
     /** Cat through all files  **/
-    protected void catFiles(List srcFiles, FilterSetCollection filters) throws IOException {
+    private void catFiles(List srcFiles, FilterSetCollection filters) throws IOException {
 	OutputStream out = openOutputStream() ;
 
 	// do actual concatenation
@@ -228,7 +219,7 @@ public class Cat extends Task {
 
 
     /** Cat one file/stream **/
-    protected void catStream(InputStream in, OutputStream out, FilterSetCollection filters) throws IOException {
+    private void catStream(InputStream in, OutputStream out, FilterSetCollection filters) throws IOException {
 	if (filters != null && filters.hasFilters()) {
 
 	    BufferedReader input = new BufferedReader(new InputStreamReader(in)) ;

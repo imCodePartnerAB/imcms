@@ -1,35 +1,34 @@
 
-import java.io.*;
-import java.util.*;
-import java.text.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.util.*;
-import imcode.external.diverse.*;
-import imcode.server.*;
+import imcode.external.diverse.Html;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.util.MetaDataParser;
+import imcode.util.Parser;
+import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Vector;
 
 /**
- * Adds a new document to a menu.
- * Shows an empty metadata page, which calls SaveNewMeta
+ Adds a new document to a menu.
+ Shows an empty metadata page, which calls SaveNewMeta
  */
 public class AddDoc extends HttpServlet {
+
     private static final String DOCINFO_TEMPLATE_NAME_PREFIX = "docinfo/";
 
-    /**
-     * init()
-     */
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-    }
-
-    /**
-     * doPost()
-     */
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
@@ -92,17 +91,15 @@ public class AddDoc extends HttpServlet {
             vec.add("");
 
             // Lets fix the sortby list, first get the displaytexts from the database
-            String[] sortOrder = imcref.sqlProcedure("SortOrder_GetExistingDocs '" + lang_prefix + "'");
-            Vector sortOrderV = convert2Vector(sortOrder);
-            sortOrderV.copyInto(sortOrder);
-            String sortOrderStr = Html.createHtmlOptionList("", sortOrderV);
+            String[] sortOrder = imcref.sqlProcedure( "SortOrder_GetExistingDocs", new String[] { user.getLangPrefix() } );
+            String sortOrderStr = Html.createHtmlOptionList("", Arrays.asList(sortOrder));
             vec.add("#sortBy#");
             vec.add(sortOrderStr);
 
             // Lets set all the the documenttypes as selected in the html file
-            String[] allDocTypesArray = imcref.getDocumentTypesInList(lang_prefix);
-            for (int i = 0; i < allDocTypesArray.length; i += 2) {
-                vec.add("#checked_" + allDocTypesArray[i] + "#");
+            String[][] allDocTypesArray = imcref.getDocumentTypesInList(lang_prefix);
+            for (int i = 0; i < allDocTypesArray.length; ++i) {
+                vec.add("#checked_" + allDocTypesArray[i][0] + "#");
                 vec.add("checked");
             }
 
@@ -164,8 +161,8 @@ public class AddDoc extends HttpServlet {
         };
 
         // Lets get the meta information
-        String sqlStr = "select * from meta where meta_id = " + meta_id; // todo: change select * from meta ...
-        Hashtable hash = imcref.sqlQueryHash(sqlStr);
+        String sqlStr = "select * from meta where meta_id = ?";
+        Hashtable hash = imcref.sqlQueryHash( sqlStr, new String[] { meta_id } );
 
         // Lets get the html template file
 
@@ -252,44 +249,8 @@ public class AddDoc extends HttpServlet {
         vec.add(doc_menu_no);
         vec.add("#doc_type#");
         vec.add(doc_type);
-        //		vec.add("#owner#") ;
-        //		vec.add(user.getString("first_name")+" "+user.getString("last_name")) ;
 
-
-        //**************** section index word stuff *****************
-        //lets get the section stuff from db
-        String[] parent_section = DocumentMapper.sprocSectionGetInheritId(imcref, Integer.parseInt(meta_id));
-        //lets add the stuff that ceep track of the inherit section id and name
-        if (parent_section == null || 0 == parent_section.length) {
-            vec.add("#current_section_id#");
-            vec.add("-1");
-            vec.add("#current_section_name#");
-            vec.add(imcref.parseDoc(null, MetaDataParser.SECTION_MSG_TEMPLATE, lang_prefix));
-        } else {
-            vec.add("#current_section_id#");
-            vec.add(parent_section[0]);
-            vec.add("#current_section_name#");
-            vec.add(parent_section[1]);
-        }
-
-        //lets build the option list used when the admin whants to breake the inherit chain
-        String[] all_sections = imcref.sqlProcedure("SectionGetAll");
-        Vector onlyTemp = new Vector();
-        String option_list = "";
-        String selected = "-1";
-        if (all_sections != null) {
-            for (int i = 0; i < all_sections.length; i++) {
-                onlyTemp.add(all_sections[i]);
-            }
-            if (parent_section != null && parent_section.length > 0) {
-                selected = parent_section[0];
-            }
-
-            option_list = Html.createHtmlOptionList(selected, onlyTemp);
-        }
-        vec.add("#section_option_list#");
-        vec.add(option_list);
-        //**************** end section index word stuff *************
+        MetaDataParser.getSectionDataFromDbAndAddSectionRelatedTagsToParseList( imcref, meta_id, vec, lang_prefix );
 
         vec.add("#categories#");
         vec.add(MetaDataParser.createHtmlListBoxesOfCategoriesForEachCategoryType(imcref.getDocumentMapper(), Integer.parseInt(meta_id), imcref, user));
@@ -310,20 +271,6 @@ public class AddDoc extends HttpServlet {
                        "&", "&amp;"};
         text = Parser.parseDoc(text, pd);
         return text;
-    }
-
-    /**
-     * Convert array to vector
-     */
-
-    private static Vector convert2Vector(String[] arr) {
-        if (arr == null)
-            return new Vector();
-
-        Vector v = new Vector(arr.length);
-        for (int i = 0; i < arr.length; i++)
-            v.add(arr[i]);
-        return v;
     }
 
 }

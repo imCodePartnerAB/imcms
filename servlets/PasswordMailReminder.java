@@ -11,17 +11,14 @@
 
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.Vector;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import imcode.util.IMCServiceRMI;
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
 
@@ -85,13 +82,7 @@ public class PasswordMailReminder extends HttpServlet {
     private final static String RETURNING_DOCUMENT_SENT = "password_sent.html";
     private final static String RETURNING_DOCUMENT_INPUT = "password_submit.html";
 
-    /* */
     private final static int PASSWORD_PERMISSION_ID = 1;
-
-    public void init(ServletConfig config) throws ServletException {
-
-        super.init(config);
-    }
 
     /**
      * showing input internalDocument whit out error
@@ -120,17 +111,9 @@ public class PasswordMailReminder extends HttpServlet {
      */
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-        String emptyString = "";
-
         /* server info */
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String hostName = emptyString;
-        try {
-            hostName = InetAddress.getLocalHost().getHostName();
-        } catch (SecurityException e) {
-            log("checkConnect doesn't allow the operation");
-        }
 
         /* mailserver info */
         imcode.server.SystemData sysData = imcref.getSystemData();
@@ -159,6 +142,8 @@ public class PasswordMailReminder extends HttpServlet {
             // Do nothing, let mailtimeout stay at default.
         }
 
+        String emptyString = "";
+
         /* user info */
         String postedLoginName;
         String firstName = emptyString;
@@ -180,8 +165,8 @@ public class PasswordMailReminder extends HttpServlet {
 
         if (validLoginName) {
 
-            String sqlQ = "PermissionsGetPermission '" + postedLoginName + "', " + PasswordMailReminder.PASSWORD_PERMISSION_ID;
-            String[] queryResult = imcref.sqlProcedure(sqlQ);
+	    String sqlProcedureName = "PermissionsGetPermission";
+	    String[] queryResult = imcref.sqlProcedure( sqlProcedureName, new String[] {postedLoginName, ""+PasswordMailReminder.PASSWORD_PERMISSION_ID} ) ;
 
             if ((queryResult != null) && (queryResult.length > 0)) {
 

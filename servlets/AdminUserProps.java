@@ -1,20 +1,24 @@
 
-import java.io.*;
+import imcode.external.diverse.Html;
+import imcode.external.diverse.VariableManager;
+import imcode.readrunner.ReadrunnerUserData;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCConstants;
+import imcode.server.IMCServiceInterface;
+import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.user.UserDomainObject;
+import org.apache.log4j.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.*;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
-import imcode.util.*;
-import imcode.server.*;
-import imcode.server.user.UserDomainObject;
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
-import imcode.readrunner.*;
-
-import org.apache.log4j.*;
-
 public class AdminUserProps extends Administrator {
+
     private final static String HTML_RESPONSE = "AdminUserResp.htm";
     private final static String HTML_RESPONSE_ADMIN_PART = "AdminUserResp_admin_part.htm";
     private final static String HTML_RESPONSE_SUPERADMIN_PART = "AdminUserResp_superadmin_part.htm";
@@ -24,14 +28,14 @@ public class AdminUserProps extends Administrator {
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         // Lets validate the session
-        if( super.checkSession( req, res ) == false )
+        if( checkSession( req, res ) == false )
             return;
 
         // Get the session
         HttpSession session = req.getSession( false );
 
         // Lets get an user object
-        UserDomainObject user = super.getUserObj( req, res );
+        UserDomainObject user = getUserObj( req, res );
 
         if( user == null ) {
             String header = "Error in AdminCounter.";
@@ -59,7 +63,7 @@ public class AdminUserProps extends Administrator {
             tmp_phones = new Vector();
         }
 
-        String[] phonetypesA = imcref.sqlProcedure( "GetPhonetypes " + user.getLangId() );
+        String[] phonetypesA = imcref.sqlProcedure("GetPhonetypes", new String[]{"" + user.getLangId()});
 
         // Get a new Vector:  phonetype_id, typename
         Vector phoneTypesV = new Vector( java.util.Arrays.asList( phonetypesA ) );
@@ -81,7 +85,6 @@ public class AdminUserProps extends Administrator {
 
         // ******* GENERATE AN CHANGE_USER PAGE**********
         if( req.getParameter( "CHANGE_USER" ) != null ) {
-
             log( "Changeuser" );
 
             // lets first try to get userId from the session if we has been redirectet from authenticate
@@ -164,8 +167,7 @@ public class AdminUserProps extends Administrator {
 
         // Lets get all users phone numbers from session if we have any else we get them from db
         // return value from db= phone_id, number, user_id, phonetype_id, typename
-        Html htm = new Html();
-        String[][] phonesArr = imcref.sqlProcedureMulti( "GetUserPhoneNumbers " + userToChange.getUserId() );
+        String[][] phonesArr = imcref.sqlProcedureMulti( "GetUserPhoneNumbers", new String[] { ""+userToChange.getUserId() } );
 
         // Get a new Vector:  phone_id, number, user_id, phonetype_id, typename  ex. 10, 46 498 123456, 3, 1
         Vector phoneNumbers = getPhonesArrayVector( phonesArr );
@@ -184,7 +186,7 @@ public class AdminUserProps extends Administrator {
 
         //System.out.println("selected= " + selected);
 
-        String phones = htm.createHtmlOptionList( selected, phonesV );
+        String phones = Html.createHtmlOptionList( selected, phonesV );
 
         res.setContentType( "text/html" ); // set content type
         Writer out = res.getWriter();
@@ -247,7 +249,7 @@ public class AdminUserProps extends Administrator {
         vec.add( "" );
 
         // phonetype list
-        String phonetypes = htm.createHtmlOptionList( "1", phoneTypesV );
+        String phonetypes = Html.createHtmlOptionList( "1", phoneTypesV );
         vec.add( "#PHONETYPES_MENU#" );
         vec.add( phonetypes );
 
@@ -258,7 +260,7 @@ public class AdminUserProps extends Administrator {
         // Lets add html for admin_part in AdminUserResp
         vec.add( "#ADMIN_PART#" );
         if( superadmin || (useradmin && user.getUserId() != userToChange.getUserId()) ) {
-            vec.add( createAdminPartHtml( user, userToChange, imcref, req, res, session ) );
+            vec.add( createAdminPartHtml( user, userToChange, imcref, req, session ) );
         } else {
             vec.add( "" );
         }
@@ -272,11 +274,11 @@ public class AdminUserProps extends Administrator {
 
 
         // Lets get the the users language id
-        String[] langList = imcref.sqlProcedure( "GetLanguageList 'se'" ); // FIXME: Get the correct language for the user
+        String[] langList = imcref.sqlProcedure( "GetLanguageList", new String[] {"se"} ); // FIXME: Get the correct language for the user
         Vector selectedLangV = new Vector();
         selectedLangV.add( "" + userToChange.getLangId() );
         vec.add( "LANG_TYPES" );
-        vec.add( htm.createHtmlCode( "ID_OPTION", selectedLangV, new Vector( Arrays.asList( langList ) ) ) );
+        vec.add( Html.createHtmlCode( "ID_OPTION", selectedLangV, new Vector( Arrays.asList( langList ) ) ) );
 
 
         //store all data into the session
@@ -350,7 +352,6 @@ public class AdminUserProps extends Administrator {
         Writer out = res.getWriter();	// to write out html page
 
         //	VariableManager vm = new VariableManager() ;
-        Html htm = new Html();
 
         vec.add( "#LOGIN_NAME#" );
         vec.add( login_name );
@@ -395,27 +396,27 @@ public class AdminUserProps extends Administrator {
         vec.add( "" );
 
         // phonetype list
-        String phonetypes = htm.createHtmlOptionList( "1", phoneTypesV );
+        String phonetypes = Html.createHtmlOptionList( "1", phoneTypesV );
         vec.add( "#PHONETYPES_MENU#" );
         vec.add( phonetypes );
 
         // phoneslist
-        String phones = htm.createHtmlOptionList( "", tmp_phones );
+        String phones = Html.createHtmlOptionList( "", tmp_phones );
         vec.add( "#PHONES_MENU#" );
         vec.add( phones );
 
 
         // Lets add html for admin_part in AdminUserResp
         vec.add( "#ADMIN_PART#" );
-        vec.add( createAdminPartHtml( user, null, imcref, req, res, session ) );
+        vec.add( createAdminPartHtml( user, null, imcref, req, session ) );
 
 
         // language id: lets set swedish as default
-        String[] langList = imcref.sqlProcedure( "GetLanguageList 'se'" );
+        String[] langList = imcref.sqlProcedure( "GetLanguageList", new String[] {"se"} );
         Vector selectedLangV = new Vector();
         selectedLangV.add( "1" );
         vec.add( "#LANG_TYPES#" );
-        vec.add( htm.createHtmlCode( "ID_OPTION", selectedLangV, new Vector( Arrays.asList( langList ) ) ) );
+        vec.add( Html.createHtmlCode( "ID_OPTION", selectedLangV, new Vector( Arrays.asList( langList ) ) ) );
 
         //store all data into the session
         session.setAttribute( "Ok_phoneNumbers", tmp_phones );
@@ -431,8 +432,6 @@ public class AdminUserProps extends Administrator {
         this.log( header + msg );
         new AdminError( req, res, header, msg );
     }
-    /** End GET **/
-
 
     /**
      * POST
@@ -442,7 +441,7 @@ public class AdminUserProps extends Administrator {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         // Lets validate the session
-        if( super.checkSession( req, res ) == false )
+        if( checkSession( req, res ) == false )
             return;
 
         HttpSession session = req.getSession( false );
@@ -451,7 +450,7 @@ public class AdminUserProps extends Administrator {
             return;
 
         // Lets get an user object
-        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
+        imcode.server.user.UserDomainObject user = getUserObj( req, res );
         if( user == null ) {
             String header = "Error in AdminCounter.";
             String msg = "Couldnt create an user object." + "<BR>";
@@ -497,7 +496,7 @@ public class AdminUserProps extends Administrator {
         userInfoP = this.getParameters( req, imcref, user, userToChange );
 
         // Lets get all phonetypes from db
-        String[] phonetypesA = imcref.sqlProcedure( "GetPhonetypes " + user.getLangId() );
+        String[] phonetypesA = imcref.sqlProcedure("GetPhonetypes", new String[]{"" + user.getLangId()});
 
         // Get a new Vector:  phonetype_id, typename
         Vector phoneTypesV = new Vector( java.util.Arrays.asList( phonetypesA ) );
@@ -517,8 +516,6 @@ public class AdminUserProps extends Administrator {
         vm.addProperty( "COUNTRY", userInfoP.getProperty( "country" ) );
         vm.addProperty( "COUNTRY_COUNCIL", userInfoP.getProperty( "country_council" ) );
         vm.addProperty( "EMAIL", userInfoP.getProperty( "email" ) );
-
-        Html htm = new Html();
 
 
         //******* READRUNNER_SETTINGS BUTTON WAS PUNSCHED ***********
@@ -581,8 +578,6 @@ public class AdminUserProps extends Administrator {
             }
             return;
         }
-
-
 
         //******** OK_PHONES or DELETE_PHONES or EDIT_PHONES  WAS PRESSED ***********
         if( req.getParameter( "ok_phones" ) != null || req.getParameter( "delete_phones" ) != null || req.getParameter( "edit_phones" ) != null ) {
@@ -686,7 +681,7 @@ public class AdminUserProps extends Administrator {
             }
 
             // phonetype list
-            String phonetypes = htm.createHtmlOptionList( phonetypes_id, phoneTypesV );
+            String phonetypes = Html.createHtmlOptionList( phonetypes_id, phoneTypesV );
             vm.addProperty( "PHONETYPES_MENU", phonetypes );
 
             selectedPhoneId = req.getParameter( "user_phones" );
@@ -745,25 +740,11 @@ public class AdminUserProps extends Administrator {
             // Lets add html for admin_part in AdminUserResp
             if( isSuperadmin || (isUseradmin && !userToChangeId.equals( "" + user.getUserId() )) ) {
 
-                /*
-                   vm.addProperty("ACTIVE",  "1" );
-
-                   if ( "1".equals(userInfoP.getProperty("active") ) ){
-                          vm.addProperty("ACTIVE_FLAG", "checked" );
-                   }else{
-                      vm.addProperty("ACTIVE_FLAG", "" );
-                   }
-                */
-                vm.addProperty( "ADMIN_PART", createAdminPartHtml( user, userToChange, imcref, req, res, session ) );
+                vm.addProperty( "ADMIN_PART", createAdminPartHtml( user, userToChange, imcref, req, session ) );
 
             } else {
                 vm.addProperty( "ADMIN_PART", "" );
             }
-
-
-
-            //		String selectedId = req.getParameter("selected_id") == null ? "" : req.getParameter("selected_id");
-            //		log("selected_id= "+ selectedPhoneId);
 
             // Get a new Vector: phone_id, (typename) number    ex. { 10, (Hem) 46 498 123456 }
             Vector phonesV = this.getPhonesVector( phoneNumbers, "" + user.getLangId(), imcref );
@@ -777,18 +758,9 @@ public class AdminUserProps extends Administrator {
             phonesV = this.getPhonesVector( phoneNumbers, "" + user.getLangId(), imcref );
 
             // add phones list
-            String phones = htm.createHtmlOptionList( selectedPhoneId, phonesV );
+            String phones = Html.createHtmlOptionList( selectedPhoneId, phonesV );
             log( "phones stringen: " + phones );
             vm.addProperty( "PHONES_MENU", phones );
-
-
-            /*
-                 // Lets get the the users language id
-                 String[] langList = (String[])session.getAttribute("RESET_langList");
-                 Vector selectedLangV = (Vector)session.getAttribute("RESET_selectedLangV");
-                 selectedLangV.add(userV.get(16).toString()) ;
-                 vm.addProperty("LANG_TYPES", htm.createHtmlCode("ID_OPTION",selectedLangV, new Vector(java.util.Arrays.asList(langList)))) ;
-            */
 
             vm.addProperty( "ADMIN_TASK", adminTask );
             vm.addProperty( "CURR_USER_ID", userToChangeId );
@@ -801,8 +773,6 @@ public class AdminUserProps extends Administrator {
         }
         // end of ******** OK_PHONES or DELETE_PHONES or EDIT_PHONES  WAS PRESSED ***********
 
-
-
         // ******* SAVE NEW USER TO DB **********
         if( req.getParameter( "SAVE_USER" ) != null && adminTask.equalsIgnoreCase( "ADD_USER" ) ) {
             log( "Lets add a new user to db" );
@@ -811,14 +781,6 @@ public class AdminUserProps extends Administrator {
             if( session == null )
                 return;
 
-            /*	// Lets check if the user is an admin, otherwise throw him out.
-               if (!isAdmin ){
-                   String header = "Error in AdminUserProps." ;
-                   String msg = "The user has no admin rights."+ "<BR>" ;
-                   AdminError err = new AdminError(req,res,header,msg) ;
-                   return ;
-               }
-            */
             // Lets get the parameters from html page and validate them
             Properties params = this.getParameters( req, imcref, user, null );
 
@@ -838,8 +800,6 @@ public class AdminUserProps extends Administrator {
             // Lets validate the password
             if( verifyPassword( params, req, res ) == false )
                 return;
-
-
 
             // Lets check that the new username doesnt exists already in db
             String userName;
@@ -877,20 +837,20 @@ public class AdminUserProps extends Administrator {
             }
 
             // Lets add the new users roles
-            String roleId[] = imcref.sqlProcedure( "GetRoleIdByRoleName Useradmin" );
+            String roleId[] = imcref.sqlProcedure("GetRoleIdByRoleName", new String[]{"Useradmin"});
             boolean isSelected = false;
             for( int i = 0; i < rolesV.size(); i++ ) {
                 String aRole = rolesV.elementAt( i ).toString();
-                imcref.sqlUpdateProcedure( "AddUserRole " + newUserId + ", " + aRole );
+                imcref.sqlUpdateProcedure( "AddUserRole", new String[] { ""+newUserId, ""+aRole } );
                 if( aRole.equals( roleId[0] ) ) {
                     isSelected = true; // role Useradmin is selected
                 }
             }
 
             // always let user get the role Users
-            roleId = imcref.sqlProcedure( "GetRoleIdByRoleName Users" );
+            roleId = imcref.sqlProcedure("GetRoleIdByRoleName", new String[]{"Users"});
             if( roleId != null ) {
-                imcref.sqlUpdateProcedure( "AddUserRole " + newUserId + ", " + Integer.parseInt( roleId[0] ) );
+                imcref.sqlUpdateProcedure("AddUserRole", new String[]{newUserId, roleId[0]});
             }
 
             if( isSelected ) {  // role Useradmin is selected
@@ -901,7 +861,7 @@ public class AdminUserProps extends Administrator {
                 // Lets add the new useradmin roles.
                 for( int i = 0; i < useradminRolesV.size(); i++ ) {
                     String aRole = useradminRolesV.elementAt( i ).toString();
-                    imcref.sqlUpdateProcedure( "AddUseradminPermissibleRoles  " + newUserId + ", " + aRole );
+                    imcref.sqlUpdateProcedure("AddUseradminPermissibleRoles", new String[]{newUserId, aRole});
                 }
             }
 
@@ -913,12 +873,8 @@ public class AdminUserProps extends Administrator {
                 if( null != phonesV && phonesV.size() > 0 ) {
                     for( int i = 0; i < phonesV.size(); i++ ) {
                         String[] aPhone = (String[])phonesV.elementAt( i );
-                        String sqlStr = "phoneNbrAdd " + newUserId + ", '";//userId
-                        sqlStr += aPhone[1] + "', '" + aPhone[3] + "'";//number, phonetype_id
 
-                        log( "PhoneNrAdd: " + sqlStr );
-
-                        imcref.sqlUpdateProcedure( sqlStr );
+                        imcref.sqlUpdateProcedure("PhoneNbrAdd", new String[]{newUserId, aPhone[1], aPhone[3]});
                     }
                 }
                 // we are processing data from a user template
@@ -1006,7 +962,7 @@ public class AdminUserProps extends Administrator {
 
             // check that the changed login name don´t already exists
             if( !newLogin.equalsIgnoreCase( currentLogin ) ) {
-                String userNameExists[] = imcref.sqlProcedure( "FindUserName '" + newLogin + "'" );
+                String userNameExists[] = imcref.sqlProcedure("FindUserName", new String[]{newLogin});
                 if( userNameExists != null ) {
                     if( userNameExists.length > 0 ) {
                         String header = "Error in AdminUserProps.";
@@ -1018,8 +974,6 @@ public class AdminUserProps extends Administrator {
             }
             // update params property with login_name so DB will be updated.
             params.setProperty( "login_name", newLogin );
-
-
 
             //lets get the current password for user
             String currPwd = userToChange.getPassword();
@@ -1073,21 +1027,9 @@ public class AdminUserProps extends Administrator {
             if( verifyPassword( params, req, res ) == false )
                 return;
 
-            // Ok, Lets validate all fields
-            /*
-               Enumeration enumValues = params.elements() ;
-               Enumeration enumKeys = params.keys() ;
-               while((enumValues.hasMoreElements() && enumKeys.hasMoreElements())) {
-                   Object oKeys = (enumKeys.nextElement()) ;
-                   Object oValue = (enumValues.nextElement()) ;
-                   System.out.println("oKeys= " + oKeys.toString() + " oValue= " + oValue.toString() );
-               }
-            */
             params = this.validateParameters( params, req, res );
             if( params == null )
                 return;
-
-
 
             //Lets get phonenumbers from the session if we have a session Attribute
             Vector phonesV = (Vector)session.getAttribute( "Ok_phoneNumbers" );
@@ -1101,24 +1043,20 @@ public class AdminUserProps extends Administrator {
                 if( null != phonesV && phonesV.size() > 0 ) {
 
                     //First delete existing phone number from db
-                    imcref.sqlUpdateProcedure( "DelPhoneNr " + userToChangeId );
+                    imcref.sqlUpdateProcedure("DelPhoneNr", new String[]{userToChangeId});
 
                     // Then save all number from session into db ( phonesV : id, number, user_id, phonetype_id )
                     for( int i = 0; i < phonesV.size(); i++ ) {
                         String[] aPhone = (String[])phonesV.elementAt( i );
-                        String sqlStr = "phoneNbrAdd " + userToChangeId + ", '";//userId
-                        sqlStr += aPhone[1] + "', '" + aPhone[3] + "'";//number, phonetype_id
 
-                        log( "PhoneNrAdd: " + sqlStr );
-
-                        imcref.sqlUpdateProcedure( sqlStr );
+                        imcref.sqlUpdateProcedure("PhoneNbrAdd", new String[]{userToChangeId, aPhone[1], aPhone[3]});
                     }
                 }
 
             } else {
                 // We are processing data from a user template
                 // Get all phone numbers for user
-                String[][] phoneNbr = imcref.sqlProcedureMulti( "GetUserPhoneNumbers " + userToChangeId );
+                String[][] phoneNbr = imcref.sqlProcedureMulti("GetUserPhoneNumbers", new String[]{userToChangeId});
 
                 // Get workPhoneId and mobilePhoneId
                 String workPhoneId = "";
@@ -1139,45 +1077,33 @@ public class AdminUserProps extends Administrator {
                 // add new workphone
                 if( ("").equals( workPhoneId ) && !("").equals( workPhone ) ) {
 
-                    String sqlStr = "phoneNbrAdd " + userToChangeId + ", '"; // user_id
-                    sqlStr += workPhone + "', 2";//number, phonetype_id
-                    log( "PhoneNrAdd: " + sqlStr );
-                    imcref.sqlUpdateProcedure( sqlStr );
+                    imcref.sqlUpdateProcedure("PhoneNbrAdd", new String[]{userToChangeId, workPhone, "2"});
 
                     // uppdate a workphone
                 } else if( !("").equals( workPhoneId ) && !("").equals( workPhone ) ) {
 
-                    String sqlStr = "phoneNbrUpdate " + userToChangeId + ", " + workPhoneId + ", '"; // user_id , phone_id
-                    sqlStr += workPhone + "', 2";//number , phoneType
-                    imcref.sqlUpdateProcedure( sqlStr );
+                    imcref.sqlUpdateProcedure("PhoneNbrUpdate", new String[]{userToChangeId, workPhoneId, "2"});
 
                     // delete a workphone
                 } else if( !("").equals( workPhoneId ) && ("").equals( workPhone ) ) {
 
-                    String sqlStr = "phoneNbrDelete " + workPhoneId + "'"; // phone_id
-                    imcref.sqlUpdateProcedure( sqlStr );
+                    imcref.sqlUpdateProcedure("PhoneNbrDelete", new String[]{workPhoneId});
                 }
 
 
                 // add new mobilephone
                 if( ("").equals( mobilePhoneId ) && !("").equals( mobilePhone ) ) {
 
-                    String sqlStr = "phoneNbrAdd " + userToChangeId + ", '"; // user_id
-                    sqlStr += mobilePhone + "', 3";//number, phonetype_id
-                    log( "PhoneNrAdd: " + sqlStr );
-                    imcref.sqlUpdateProcedure( sqlStr );
+                    imcref.sqlUpdateProcedure("PhoneNbrAdd", new String[]{userToChangeId, mobilePhone, "3"});
 
                     // uppdate a mobilephone
                 } else if( !("").equals( mobilePhoneId ) && !("").equals( mobilePhone ) ) {
 
-                    String sqlStr = "phoneNbrUpdate " + userToChangeId + ", " + mobilePhoneId + ", '"; // user_id , phone_id
-                    sqlStr += mobilePhone + "', 3";//number , phoneType
-                    imcref.sqlUpdateProcedure( sqlStr );
+                    imcref.sqlUpdateProcedure("PhoneNbrUpdate", new String[]{userToChangeId, mobilePhoneId, "3"});
 
                     // delete a mobilephone
                 } else if( !("").equals( mobilePhoneId ) && ("").equals( mobilePhone ) ) {
-                    String sqlStr = "phoneNbrDelete " + mobilePhoneId + "'"; // phone_id
-                    imcref.sqlUpdateProcedure( sqlStr );
+                    imcref.sqlUpdateProcedure("PhoneNbrDelete", new String[]{mobilePhoneId});
                 }
             }
 
@@ -1187,7 +1113,6 @@ public class AdminUserProps extends Administrator {
             String[] procParam = extractUpdateUserSprocParametersFromProperties( params );
             log( "userSQL: " + Arrays.asList( procParam ) );
             imcref.sqlUpdateProcedure( "UpdateUser", procParam );
-
 
             // if we are processing data from a admin template and
             // if user isSuperadmin or
@@ -1200,25 +1125,24 @@ public class AdminUserProps extends Administrator {
                 if( rolesV == null )
                     return;
 
-
                 // Lets add the new users roles. but first, delete users current Roles
                 // and then add the new ones
 
                 if( isSuperadmin ) { // delete all userroles
                     int roleId = -1;
-                    imcref.sqlUpdateProcedure( "DelUserRoles", new String[]{userToChangeId, "" + roleId} );
+                    imcref.sqlUpdateProcedure("DelUserRoles", new String[] { userToChangeId, ""+roleId });
 
                 } else {  // delete only roles that the useradmin has permission to administrate
-                    String[] rolesArr = imcref.sqlProcedure( "GetUseradminPermissibleRoles " + user.getUserId() );
+                    String[] rolesArr = imcref.sqlProcedure("GetUseradminPermissibleRoles", new String[] { ""+user.getUserId() });
                     for( int i = 0; i < rolesArr.length; i += 2 ) {
-                        imcref.sqlUpdateProcedure( "DelUserRoles", new String[]{userToChangeId, rolesArr[i]} );
+                        imcref.sqlUpdateProcedure("DelUserRoles", new String[] { userToChangeId, rolesArr[i] });
                     }
                 }
-                String roleId[] = imcref.sqlProcedure( "GetRoleIdByRoleName", new String[]{"Useradmin"} );
+                String roleId[] = imcref.sqlProcedure("GetRoleIdByRoleName" , new String[] { "Useradmin" });
                 boolean isSelected = false;
                 for( int i = 0; i < rolesV.size(); i++ ) {
                     String aRole = rolesV.elementAt( i ).toString();
-                    imcref.sqlUpdateProcedure( "AddUserRole", new String[]{userToChangeId, aRole} );
+                    imcref.sqlUpdateProcedure("AddUserRole", new String[] { userToChangeId, aRole });
                     if( aRole.equals( roleId[0] ) ) {
                         isSelected = true; // role Useradmin is selected
                     }
@@ -1226,9 +1150,9 @@ public class AdminUserProps extends Administrator {
 
 
                 // always let user get the role Users
-                roleId = imcref.sqlProcedure( "GetRoleIdByRoleName Users" );
+                roleId = imcref.sqlProcedure("GetRoleIdByRoleName", new String[] { "Users" });
                 if( roleId != null ) {
-                    imcref.sqlUpdateProcedure( "AddUserRole " + userToChangeId + ", " + Integer.parseInt( roleId[0] ) );
+                    imcref.sqlUpdateProcedure("AddUserRole", new String[] { userToChangeId, roleId[0]});
                 }
 
 
@@ -1237,7 +1161,7 @@ public class AdminUserProps extends Administrator {
                 // and then add the new ones
                 // but only if role Useradmin is selected
 
-                imcref.sqlUpdateProcedure( "DeleteUseradminPermissibleRoles " + userToChangeId );
+                imcref.sqlUpdateProcedure("DeleteUseradminPermissibleRoles", new String[] { userToChangeId });
 
                 if( isSelected ) { // role Useradmin is selected
 
@@ -1248,7 +1172,7 @@ public class AdminUserProps extends Administrator {
 
                     for( int i = 0; i < useradminRolesV.size(); i++ ) {
                         String aRole = useradminRolesV.elementAt( i ).toString();
-                        imcref.sqlUpdateProcedure( "AddUseradminPermissibleRoles  " + userToChangeId + ", " + aRole );
+                        imcref.sqlUpdateProcedure("AddUseradminPermissibleRoles", new String[] { userToChangeId, aRole });
                     }
                 }
 
@@ -1282,11 +1206,10 @@ public class AdminUserProps extends Administrator {
         this.log( "Unidentified argument was sent!" );
         doGet( req, res );
         return;
-
     } // end HTTP POST
 
     private String addNewUser( IMCServiceInterface imcref, Properties params ) {
-        String newUserId = imcref.sqlProcedureStr( "GetHighestUserId" );
+        String newUserId = imcref.sqlProcedureStr( "GetHighestUserId", new String[0] );
 
         // Lets build the users information into a string and add it to db
         params.setProperty( "user_id", newUserId );
@@ -1299,20 +1222,12 @@ public class AdminUserProps extends Administrator {
     /**
      Removes temporary parameters from the session
      */
-    public void removeSessionParams( HttpServletRequest req ) throws ServletException, IOException {
+    private void removeSessionParams(HttpServletRequest req) {
         HttpSession session = req.getSession( false );
         if( session == null )
             return;
         try {
-
-            //session.removeAttribute("country_code");
-            //session.removeAttribute("area_code");
-            //session.removeAttribute("local_code");
-            //session.removeAttribute ("RESET_usersArr");
-            // session.removeAttribute ("RESET_userCreateDate");
             session.removeAttribute( "Ok_phoneNumbers" );
-            // session.removeAttribute ("RESET_langList");
-            // session.removeAttribute ("RESET_selectedLangV");
             session.removeAttribute( "userToChange" );
             session.removeAttribute( "tempRRUserData" );
             session.removeAttribute( "next_url" );
@@ -1320,7 +1235,6 @@ public class AdminUserProps extends Administrator {
             session.removeAttribute( "tempUserRoles" );
             session.removeAttribute( "tempUserType" );
             session.removeAttribute( "tempUseradminRoles" );
-
         } catch( IllegalStateException ise ) {
             log( "session has been invalidated so no need to remove parameters" );
         }
@@ -1331,7 +1245,6 @@ public class AdminUserProps extends Administrator {
      the browser
      */
     private void sendErrorMsg( HttpServletRequest req, HttpServletResponse res, String header, String msg ) throws ServletException, IOException {
-
         new AdminError( req, res, header, msg );
     }
 
@@ -1339,9 +1252,7 @@ public class AdminUserProps extends Administrator {
      Returns a Vector, containing the choosed roles from the html page. if Something
      failes, a error page will be generated and null will be returned.
      */
-
-    public Vector getRolesParameters( String name, HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-
+    private Vector getRolesParameters(String name, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         // Lets get the roles
         // Vector rolesV = this.getRolesParameters(req) ;
         String[] roles = (req.getParameterValues( name ) == null) ? new String[0] : (req.getParameterValues( name ));
@@ -1361,9 +1272,7 @@ public class AdminUserProps extends Administrator {
     /**
      Redirect to next Url
      */
-
-    public void goNext( HttpServletRequest req, HttpServletResponse res, HttpSession session ) throws ServletException, IOException {
-
+    private void goNext(HttpServletRequest req, HttpServletResponse res, HttpSession session) throws IOException {
         String nexturl = "AdminUser";  // default if we are processing a admin template
 
         if( null != req.getParameter( "next_url" ) ) {
@@ -1389,7 +1298,7 @@ public class AdminUserProps extends Administrator {
      Collects the parameters from the request object
      **/
 
-    public Properties getParameters( HttpServletRequest req, IMCServiceInterface imcref, UserDomainObject user, UserDomainObject userToChange ) throws ServletException, IOException {
+    private Properties getParameters( HttpServletRequest req, IMCServiceInterface imcref, UserDomainObject user, UserDomainObject userToChange ) {
 
         Properties userInfo = new Properties();
         // Lets get the parameters we know we are supposed to get from the request object
@@ -1477,7 +1386,7 @@ public class AdminUserProps extends Administrator {
      failes, a error page will be generated and null will be returned.
      */
 
-    public Properties validateParameters( Properties aPropObj, HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    private Properties validateParameters(Properties aPropObj, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         //	Properties params = this.getParameters(req) ;
         if( checkParameters( aPropObj ) == false ) {
@@ -1497,7 +1406,7 @@ public class AdminUserProps extends Administrator {
      return a new Vector with elements formated like
      ( phone_id, number, user_id, phonetype_id, typename   ex. { 10, 46 498 123456, 3, 1 } )
      */
-    public Vector getPhonesArrayVector( String[][] phoneNr ) {
+    private Vector getPhonesArrayVector(String[][] phoneNr) {
         Vector phonesArrV = new Vector();
 
         for( int i = 0; i < phoneNr.length; i++ ) {
@@ -1510,13 +1419,13 @@ public class AdminUserProps extends Administrator {
      ( phone_id, (typename) number,   ex. { 10, (Hem) 46 498 123456 } )
      input vector  ex. 10, 46 498 123456, 3, 1
      */
-    public Vector getPhonesVector( Vector phonesArrV, String lang_id, IMCServiceInterface imcref ) {
+    private Vector getPhonesVector(Vector phonesArrV, String lang_id, IMCServiceInterface imcref) {
 
         Vector phonesV = new Vector();
         Enumeration enum = phonesArrV.elements();
         while( enum.hasMoreElements() ) {
             String[] tempPhone = (String[])enum.nextElement();
-            String[] typename = imcref.sqlProcedure( "GetPhonetypeName " + tempPhone[3] + ", " + lang_id );
+            String[] typename = imcref.sqlProcedure("GetPhonetypeName", new String[] {tempPhone[3],lang_id});
             String temp = "(" + typename[0] + ") " + tempPhone[1];
 
             phonesV.addElement( tempPhone[0] );
@@ -1531,11 +1440,10 @@ public class AdminUserProps extends Administrator {
     }
 
     // Create html for admin_part in AdminUserResp
-    public String createAdminPartHtml( UserDomainObject user, UserDomainObject userToChange, IMCServiceInterface imcref, HttpServletRequest req, HttpServletResponse res, HttpSession session ) {
+    private String createAdminPartHtml( UserDomainObject user, UserDomainObject userToChange, IMCServiceInterface imcref, HttpServletRequest req, HttpSession session ) {
 
         String html_admin_part = "";
         Vector vec_admin_part = new Vector();
-        Html htm = new Html();
 
         String[] userRoles = null;
         String[] useradminRoles = null;
@@ -1564,9 +1472,9 @@ public class AdminUserProps extends Administrator {
         String[] rolesArr = {};
 
         if( isSuperadmin ) {
-            rolesArr = imcref.sqlProcedure( "GetAllRoles" );
+            rolesArr = imcref.sqlProcedure("GetAllRoles", new String[0]);
         } else {
-            rolesArr = imcref.sqlProcedure( "GetUseradminPermissibleRoles " + user.getUserId() );
+            rolesArr = imcref.sqlProcedure("GetUseradminPermissibleRoles", new String[] { ""+user.getUserId() });
         }
         Vector allRolesV = new Vector( java.util.Arrays.asList( rolesArr ) );
 
@@ -1588,7 +1496,7 @@ public class AdminUserProps extends Administrator {
 
 
         // Lets get all USERTYPES from DB
-        String[] usersArr = imcref.sqlProcedure( "GetUserTypes " + user.getLangPrefix() );
+        String[] usersArr = imcref.sqlProcedure("GetUserTypes", new String[] { user.getLangPrefix() });
         Vector userTypesV = new Vector( java.util.Arrays.asList( usersArr ) );
 
         if( userToChange == null ) {   // ADD_USER mode
@@ -1614,7 +1522,7 @@ public class AdminUserProps extends Administrator {
             log( "Size theUserRolesV: " + userRolesV.size() );
 
             // Lets create html option for user roles
-            rolesMenuStr = htm.createHtmlCode( "ID_OPTION", userRolesV, allRolesV );
+            rolesMenuStr = Html.createHtmlCode("ID_OPTION", userRolesV, allRolesV);
 
             if( isSuperadmin ) {
                 // Lets get the information for usersadmin roles and put them in a vector
@@ -1627,7 +1535,7 @@ public class AdminUserProps extends Administrator {
                 log( "Size theUsersdminRolesV: " + useradminRolesV.size() );
 
                 // Lets create html option for useradmin roles
-                rolesMenuUseradminStr = htm.createHtmlCode( "ID_OPTION", useradminRolesV, rolesV );
+                rolesMenuUseradminStr = Html.createHtmlCode("ID_OPTION", useradminRolesV, rolesV);
             }
 
 
@@ -1638,7 +1546,7 @@ public class AdminUserProps extends Administrator {
                 active = userInfo.getProperty( "active" );
             }
 
-            String user_type = htm.createHtmlOptionList( userType, userTypesV );
+            String user_type = Html.createHtmlOptionList( userType, userTypesV );
 
             vec_admin_part.add( "#ACTIVE#" );
             vec_admin_part.add( "1" );
@@ -1681,21 +1589,21 @@ public class AdminUserProps extends Administrator {
 
                 // Lets get this user usertype from DB if we don´t have got them from session.
                 if( userType == null ) {
-                    userType = imcref.sqlQueryStr( "GetUserType " + userToChange.getUserId() );
+                    userType = imcref.sqlQueryStr("GetUserType", new String[] { ""+userToChange.getUserId() });
                 }
 
 
                 // Lets get the information for users roles and put them in a vector
                 // if we don´t have got any roles from session we try to get them from DB
                 if( userRoles == null ) {
-                    userRoles = imcref.sqlProcedure( "GetUserRolesIds " + userToChange.getUserId() );
+                    userRoles = imcref.sqlProcedure("GetUserRolesIds", new String[] { ""+userToChange.getUserId() });
                 }
 
                 if( isSuperadmin ) {
                     // Lets get the information for usersadmin roles and put them in a vector
                     // if we don´t have got any roles from session we try to get them from DB
                     if( useradminRoles == null ) {
-                        useradminRoles = imcref.sqlProcedure( "GetUseradminPermissibleRoles " + userToChange.getUserId() );
+                        useradminRoles = imcref.sqlProcedure("GetUseradminPermissibleRoles", new String[] { ""+userToChange.getUserId() });
                     }
                 }
 
@@ -1704,20 +1612,20 @@ public class AdminUserProps extends Administrator {
 
 
             // Lets create html option for user types
-            String user_type = htm.createHtmlOptionList( userType, userTypesV );
+            String user_type = Html.createHtmlOptionList( userType, userTypesV );
 
             // Lets put the user roles in the vector
             userRolesV = new Vector( java.util.Arrays.asList( userRoles ) );
 
             // Lets create html option for user roles
-            rolesMenuStr = htm.createHtmlCode( "ID_OPTION", userRolesV, allRolesV );
+            rolesMenuStr = Html.createHtmlCode( "ID_OPTION", userRolesV, allRolesV );
 
             if( isSuperadmin ) {
                 // Lets put the roles that useradmin is allow to administrate in a vector
                 useradminRolesV = new Vector( java.util.Arrays.asList( useradminRoles ) );
 
                 // Lets create html option for useradmin roles
-                rolesMenuUseradminStr = htm.createHtmlCode( "ID_OPTION", useradminRolesV, rolesV );
+                rolesMenuUseradminStr = Html.createHtmlCode( "ID_OPTION", useradminRolesV, rolesV );
             }
 
             vec_admin_part.add( "#ACTIVE#" );
@@ -1759,7 +1667,7 @@ public class AdminUserProps extends Administrator {
      a error page will be generated and null will be returned.
      */
 
-    public String getCurrentUserId( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    private String getCurrentUserId(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         String userId = req.getParameter( "CURR_USER_ID" );
 
@@ -1783,7 +1691,7 @@ public class AdminUserProps extends Administrator {
         return userId;
     } // End getCurrentUserId
 
-    public String doPasswordString( String pwd ) {
+    private String doPasswordString(String pwd) {
         // Lets fix the password string
         int len = pwd.length();
         pwd = "";
@@ -1800,7 +1708,7 @@ public class AdminUserProps extends Administrator {
     private static boolean checkExistingUserName( IMCServiceInterface imcref, Properties prop ) {
         boolean result = true;
         String userName = prop.getProperty( "login_name" );
-        String userNameExists[] = imcref.sqlProcedure( "FindUserName '" + userName + "'" );
+        String userNameExists[] = imcref.sqlProcedure( "FindUserName", new String[] { userName } );
         if( userNameExists != null ) {
             if( userNameExists.length > 0 ) {
                 result = false;
@@ -1814,7 +1722,7 @@ public class AdminUserProps extends Administrator {
      Generates an errorpage and returns false if something goes wrong
      */
 
-    static boolean verifyPassword( Properties prop, HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    static boolean verifyPassword( Properties prop, HttpServletRequest req, HttpServletResponse res ) throws IOException {
 
         String pwd1 = prop.getProperty( "password1" );
         String pwd2 = prop.getProperty( "password2" );

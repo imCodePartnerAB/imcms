@@ -11,7 +11,8 @@ import java.util.Properties;
 public class ApplicationServer {
 
     private final static Logger log = Logger.getLogger( "imcode.server.ApplicationServer" );
-    private static IMCServiceInterface imcServiceInterface;
+    private static IMCServiceInterface imcServiceInterface ;
+    private static IMCPoolInterface imcPoolInterface;
 
 
     public static IMCServiceInterface getIMCServiceInterface() throws IOException {
@@ -25,6 +26,19 @@ public class ApplicationServer {
         Properties serverprops = Prefs.getProperties( "server.properties" );
         ConnectionPool connectionPool = createConnectionPool( serverprops );
         return new IMCService( connectionPool, serverprops );
+    }
+
+    public static IMCPoolInterface getIMCPoolInterface() throws IOException {
+        if ( null == imcPoolInterface ) {
+            imcPoolInterface = createIMCPoolInterface();
+        }
+        return imcPoolInterface;
+    }
+
+    private static IMCPoolInterface createIMCPoolInterface() throws IOException {
+        Properties serverprops = Prefs.getProperties( "plugin.properties" );
+        ConnectionPool connectionPool = createConnectionPool( serverprops );
+        return new IMCPool( connectionPool );
     }
 
     private static ConnectionPool createConnectionPool( Properties props ) {

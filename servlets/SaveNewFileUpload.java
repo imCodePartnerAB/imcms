@@ -1,3 +1,4 @@
+
 import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -6,10 +7,6 @@ import imcode.util.*;
 import imcode.server.*;
 
 public class SaveNewFileUpload extends HttpServlet {
-
-    public void init( ServletConfig config ) throws ServletException {
-        super.init( config );
-    }
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
@@ -25,8 +22,7 @@ public class SaveNewFileUpload extends HttpServlet {
         }
 
         res.setContentType( "text/html" );
-        res.setHeader( "Cache-Control", "no-cache; must-revalidate;" );
-        res.setHeader( "Pragma", "no-cache;" );
+        Utility.setNoCache(res);
 
         int length = req.getContentLength();
 
@@ -65,7 +61,7 @@ public class SaveNewFileUpload extends HttpServlet {
 
                     // Auto-detect mime-type from filename.
                     if ( !"".equals( filename ) ) {
-                        mime = getServletContext().getMimeType( filename );
+                        mime = getServletContext().getMimeType(filename.toLowerCase());
                     }
 
                 } else if ( mime.indexOf( '/' ) == -1 ) {
@@ -75,9 +71,9 @@ public class SaveNewFileUpload extends HttpServlet {
                     // Assume it is a file-extension,
                     // and autodetect from that.
                     if ( mime.charAt( 0 ) == '.' ) {
-                        mime = getServletContext().getMimeType( "_" + mime );
+                        mime = getServletContext().getMimeType("_" + mime.toLowerCase());
                     } else {
-                        mime = getServletContext().getMimeType( "_." + mime );
+                        mime = getServletContext().getMimeType("_." + mime.toLowerCase());
                     }
                 }
 
@@ -92,9 +88,7 @@ public class SaveNewFileUpload extends HttpServlet {
                 File fn = new File( filename );
                 filename = fn.getName();
                 fn = new File( file_path, meta_id + "_se" );
-                // FIXME: Move to SProc
-                String sqlStr = "insert into fileupload_docs (meta_id,filename,mime) values (" + meta_id + ",'" + filename + "','" + mime + "')";
-                imcref.sqlUpdateQuery( sqlStr );
+                imcref.sqlUpdateQuery("insert into fileupload_docs (meta_id,filename,mime) values (?,?,?)", new String[] {meta_id,filename,mime});
                 FileOutputStream fos = new FileOutputStream( fn );
                 fos.write( file.getBytes( "8859_1" ) );
                 fos.close();

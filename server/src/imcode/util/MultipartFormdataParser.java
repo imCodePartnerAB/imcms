@@ -1,14 +1,14 @@
 package imcode.util;
 
-import java.util.*;
+import java.util.LinkedList;
 
 /**
  Parses multipart/form-data into parts, easily gettable with it's methods.
  */
 public class MultipartFormdataParser {
 
-    MultipartParser mp;
-    String names[];
+    private MultipartParser mp ;
+	private String[] names ;
 
     /**
      Parses the multipartdata into parts.
@@ -34,14 +34,6 @@ public class MultipartFormdataParser {
         for ( int i = 0; i < mp.countParts(); i++ ) {
             names[i] = mp.getHeaderParams( i, "content-disposition" ).getProperty( "name" );
         }
-    }
-
-    /**
-     Returns the MultipartParser responsible for parsing the data.
-     @return The parser.
-     */
-    public MultipartParser getParser() {
-        return mp;
     }
 
     /**
@@ -94,21 +86,6 @@ public class MultipartFormdataParser {
             }
         }
         return filename;
-    }
-
-    /**
-     Returns an iterator over a collection of strings containing parameternames.
-     @return the iterator.
-     */
-    public Iterator getParameterNames() {
-        LinkedList list = new LinkedList();
-        for ( int i = 0; i < names.length; i++ ) {
-            if ( !list.contains( names[i] ) ) {
-                list.add( names[i] );
-            }
-        }
-        return list.iterator();
-
     }
 
 }

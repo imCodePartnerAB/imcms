@@ -290,7 +290,7 @@ public class Readrunner extends HttpServlet {
 	IMCServiceInterface imcref ;
 	int metaId ;
 
-	public IMCTextMap(IMCServiceInterface imcref, int metaId) {
+	private IMCTextMap(IMCServiceInterface imcref, int metaId) {
 	    this.imcref = imcref ;
 	    this.metaId = metaId ;
 	}

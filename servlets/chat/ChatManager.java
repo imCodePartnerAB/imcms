@@ -1,146 +1,102 @@
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import imcode.external.diverse.*;
-import imcode.util.* ;
-import imcode.server.* ;
+
+import imcode.external.chat.ChatBase;
+import imcode.external.chat.ChatError;
+import imcode.external.chat.ChatMember;
+import imcode.external.chat.ChatSystemMessage;
+import imcode.external.diverse.MetaInfo;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCPoolInterface;
+import imcode.server.IMCServiceInterface;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 //första gången vi kommer hit har vi doGet parametern  action=new
 
-public class ChatManager extends ChatBase{
+public class ChatManager extends ChatBase {
 
+    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{
+        //RequestDispatcher myDispatcher = req.getRequestDispatcher( "/servlet/StartDoc" );
 
-	log("startar doGet");
-	RequestDispatcher myDispatcher = req.getRequestDispatcher("StartDoc");
+        // Lets validate the session, e.g has the user logged in to imCms?
+        if ( super.checkSession( req, res ) == false ) return;
 
-	// Lets validate the session, e.g has the user logged in to Janus?
-	if (super.checkSession(req,res) == false)	return ;
+        // Lets get the standard parameters and validate them
+        MetaInfo.Parameters params = MetaInfo.getParameters( req );
+        //if (super.checkParameters(req, res, params) == false) return ;
 
-	// Lets get the standard parameters and validate them
-	Properties params = MetaInfo.getParameters(req) ;
-	//if (super.checkParameters(req, res, params) == false) return ;
+        // Lets get an user object
+        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
+        if ( user == null ) return;
 
-	// Lets get an user object
-	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
-	if(user == null) return ;
+        int testMetaId = params.getMetaId();
 
-	int testMetaId = Integer.parseInt( params.getProperty("META_ID") );
+        if ( !isUserAuthorized( req, res, testMetaId, user ) ) {
+            return;
+        }
 
-	if ( !isUserAuthorized( req, res, testMetaId, user ) ){
-	    return;
-	}
+        String action = req.getParameter( "action" );
 
-	String action = req.getParameter("action") ;
+        if ( action == null ) {
+            //OBS FIXA FELMEDELANDENA
+            action = "";
+            String header = "ChatManager servlet. ";
+            ChatError err = new ChatError( req, res, header, 3 );
+            log( header + err.getErrorMsg() );
+            return;
+        } else if ( action.equalsIgnoreCase( "NEW" ) ) {
+            //log("Lets add a chat");
+            HttpSession session = req.getSession( false );
+            if ( session != null ) {
+                // log("Ok nu sätter vi metavärdena");
+                setSessionAttributes( session, params );
+            }
 
-	if(action == null){
-	    //OBS FIXA FELMEDELANDENA
-	    action = "" ;
-	    String header = "ChatManager servlet. " ;
-	    ChatError err = new ChatError(req,res,header,3) ;
-	    log(header + err.getErrorMsg()) ;
-	    return ;
-	}
+            req.setAttribute( "action", "NEW" );
+            RequestDispatcher myDispatcher;
+            myDispatcher = req.getRequestDispatcher( "/servlet/ChatCreator" );
+            myDispatcher.forward( req, res );
+            return;
+        } else if ( action.equalsIgnoreCase( "VIEW" ) ) {
 
-	// ********* NEW ********
-	//it's here we end up when we creates a new chatlink
-	if(action.equalsIgnoreCase("NEW"))
-	    {
-		//log("Lets add a chat");
-		HttpSession session = req.getSession(false) ;
-		if (session != null){
-		    // log("Ok nu sätter vi metavärdena");
-		    session.setAttribute("Chat.meta_id", params.getProperty("META_ID")) ;
-		    session.setAttribute("Chat.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
-		}
+            // Lets store  the standard metavalues in his session object
+            HttpSession session = req.getSession( false );
+            if ( session != null ) {
+// lets check if user is active in an other chat, if so then log him out
+                ChatMember theChatMember = (ChatMember)session.getAttribute( "theChatMember" );
+                if ( theChatMember != null ) {
+                    ChatSystemMessage systemMessage = new ChatSystemMessage( theChatMember, ChatSystemMessage.USER_TIMEDOUT_MSG );
+                    IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+                    IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
+                    logOutMember( theChatMember, systemMessage, imcref, chatref );
+                }
+                // log("Ok nu sätter vi metavärdena");
+                setSessionAttributes( session, params );
+            }
 
-		req.setAttribute("action","NEW");
-		myDispatcher = req.getRequestDispatcher("ChatCreator");
-		myDispatcher.forward(req,res);
-		return ;
-	    }
+            req.setAttribute( "login_type", "login" );
+            RequestDispatcher myDispatcher;
+            myDispatcher = req.getRequestDispatcher( "/servlet/ChatLogin" );
+            myDispatcher.forward( req, res );
+            return;
 
-	// ********* VIEW ********
-	if(action.equalsIgnoreCase("VIEW")){
-
-	    // Lets get userparameters
-	    String metaId = params.getProperty("META_ID") ;
-	    String userId = ""+user.getUserId() ;
-
-	    // Lets store  the standard metavalues in his session object
-	    HttpSession session = req.getSession(false) ;
-	    if (session != null){
-		// log("Ok nu sätter vi metavärdena");
-		session.setAttribute("Chat.meta_id", params.getProperty("META_ID")) ;
-		session.setAttribute("Chat.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
-	    }
-
-	    req.setAttribute("login_type","login");
-	    myDispatcher = req.getRequestDispatcher("ChatLogin");
-	    myDispatcher.forward(req,res);
-	    return ;
-
-	} // End of View
-
-	// ********* CHANGE ********
-	if(action.equalsIgnoreCase("CHANGE")){
-	    req.setAttribute("metadata","meta");
-	    myDispatcher = req.getRequestDispatcher("ChangeExternalDoc2");
-	    myDispatcher.forward(req,res);
-	    return ;
-	} // End if
-
-
-
-	//************** följande metoder behöver kollas över om de fungerar eller inte *****************
-	// ********* STATISTICS OBS. NOT USED IN PROGRAM, ONLY FOR TEST ********
-	if(action.equalsIgnoreCase("STATISTICS"))
-	    {
-
-		// Lets get serverinformation
-		IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;
-
-		String metaId = req.getParameter("meta_id") ;
-		String frDate = req.getParameter("from_date") ;
-		String toDate = req.getParameter("to_date") ;
-		String mode = req.getParameter("list_mode") ;
-
-		// Lets fix the date stuff
-		if( frDate.equals("0")) frDate  = "1991-01-01 00:00" ;
-		if( toDate.equals("0")) toDate  = "2070-01-01 00:00" ;
-		if( mode == null) mode  = "1" ;
-
-		StringBuffer sql = new StringBuffer() ;
-		sql.append("C_AdminStatistics1" + " " + metaId + ", '" + frDate + "', '" );
-		sql.append(toDate + "', " + mode) ;
-
-		String[][] arr = ChatManager.getStatistics(chatref, sql.toString()) ;
-
-	    } // End if
-
+        } else if ( action.equalsIgnoreCase( "CHANGE" ) ) {
+            req.setAttribute( "metadata", "meta" );
+            RequestDispatcher myDispatcher;
+            myDispatcher = req.getRequestDispatcher( "ChangeExternalDoc2" );
+            myDispatcher.forward( req, res );
+            return;
+        } // End if
     } // End doGet
 
-
-    /**
-       Log function, will work for both servletexec and Apache
-    **/
-
-    public void log( String str)
-    {
-	super.log("ChatManager: " + str ) ;
-    }
-
-    /**
-       Statistics function. Used By AdminManager system
-    **/
-
-    public static String[][] getStatistics (IMCPoolInterface chatref, String sproc)
-	throws ServletException, IOException
-    {
-	String[][] arr = chatref.sqlProcedureMulti(sproc) ;
-	return arr ;
+    private void setSessionAttributes( HttpSession session, MetaInfo.Parameters params ) {
+        session.setAttribute( "Chat.meta_id", "" + params.getMetaId() );
+        session.setAttribute( "Chat.parent_meta_id", "" + params.getParentMetaId() );
     }
 
 } // End of class

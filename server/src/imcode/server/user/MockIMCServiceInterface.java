@@ -67,7 +67,11 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    public void addExistingDoc( int meta_id, UserDomainObject user, int existing_meta_id, int doc_menu_no ) {
    }
 
-   public void saveManualSort( int meta_id, UserDomainObject user, Vector childs, Vector sort_no ) {
+    public void saveManualSort( int meta_id, UserDomainObject user, List childs, List sort_no, int menuNumber ) {
+        // TODO
+    }
+
+    public void saveManualSort( int meta_id, UserDomainObject user, Vector childs, Vector sort_no ) {
    }
 
    public void deleteChilds( int meta_id, int menu, UserDomainObject user, String childsThisMenu[] ) {
@@ -81,12 +85,20 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         return 0;  //To change body of implemented methods use Options | File Templates.
     }
 
+    public void saveTreeSortIndex( int meta_id, UserDomainObject user, List childs, List sort_no, int menuNumber ) {
+        // TODO
+    }
+
     public ConnectionPool getConnectionPool() {
         return null;  //To change body of implemented methods use Options | File Templates.
     }
 
     public String sqlQueryStr( String sqlStr, String[] params ) {
         return null;  //To change body of implemented methods use Options | File Templates.
+    }
+
+    public Hashtable sqlQueryHash( String sqlStr, String[] params ) {
+        return null;  // TODO
     }
 
     public String[][] sqlQueryMulti( String sqlStr, String[] params ) {
@@ -105,6 +117,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         return null;
     }
 
+    public Hashtable sqlProcedureHash( String procedure, String[] params ) {
+        return null;  // TODO
+    }
+
     // archive childs
    public void archiveChilds( int meta_id, UserDomainObject user, String childsThisMenu[] ) {
    }
@@ -113,30 +129,20 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return new String[0];
    }
 
-   // save textdoc
-   public void saveTextDoc( IMCService service, UserDomainObject user, int meta_id, Table doc ) {
-   }
+    // check if url doc
+    public String isUrlDoc( int meta_id, UserDomainObject user ) {
+        return null;  // TODO
+    }
 
-   // Save a url_doc
-   public void saveUrlDoc( int meta_id, UserDomainObject user, Table doc ) {
-   }
+    // Save a new frameset
+    public void saveNewFrameset( int meta_id, UserDomainObject user, String html ) {
+        // TODO
+    }
 
-   // Save a new url_doc
-   public void saveNewUrlDoc( int meta_id, UserDomainObject user, Table doc ) {
-   }
-
-   // check if url doc
-   public Table isUrlDoc( int meta_id, UserDomainObject user ) {
-      return null;
-   }
-
-   // Save a new frameset
-   public void saveNewFrameset( int meta_id, UserDomainObject user, Table doc ) {
-   }
-
-   // Save a frameset
-   public void saveFrameset( int meta_id, UserDomainObject user, Table doc ) {
-   }
+    // Save a frameset
+    public void saveFrameset( int meta_id, UserDomainObject user, String html ) {
+        // TODO
+    }
 
    // check if url doc
    public String isFramesetDoc( int meta_id, UserDomainObject user ) {
@@ -243,12 +249,12 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return 0;
    }
 
-   // set  session counter date
-   public boolean setCounterDate( String date ) {
-      return false;
-   }
+    // set  session counter date
+    public void setCounterDate( String date ) {
+        // TODO
+    }
 
-   // set  session counter date
+    // set  session counter date
    public String getCounterDate() {
       return null;
    }
@@ -278,7 +284,17 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   // parseExternaldoc use template
+    // parseExternaldoc use template
+    public String parseExternalDoc( List variables, String external_template_name, String lang_prefix, String doc_type ) {
+        return null;  // TODO
+    }
+
+    // parseExternaldoc use template
+    public String parseExternalDoc( List variables, String external_template_name, String lang_prefix, String doc_type, String templateSet ) {
+        return null;  // TODO
+    }
+
+    // parseExternaldoc use template
    public String parseExternalDoc( Vector variables, String external_template_name, String lang_prefix, String doc_type ) {
       return null;
    }
@@ -303,7 +319,17 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   // get file-path to images
+    // Return url-path to imcmsimages.
+    public String getImcmsImageUrl() {
+        return null;  // TODO
+    }
+
+    // get file-path to imcmsimages
+    public File getImcmsImagePath() {
+        return null;  // TODO
+    }
+
+    // get file-path to images
    public File getImagePath() {
       return null;
    }
@@ -406,12 +432,12 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return new String[0];
    }
 
-   // delete demotemplate
-   public int deleteDemoTemplate( int template_id ) {
-      return 0;
-   }
+    // delete demotemplate
+    public void deleteDemoTemplate( int template_id ) {
+        // TODO
+    }
 
-   public String getMenuButtons( int meta_id, UserDomainObject user ) {
+    public String getMenuButtons( int meta_id, UserDomainObject user ) {
       return null;
    }
 
@@ -430,14 +456,14 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    public void setSystemData( SystemData sd ) {
    }
 
-   // Get the information for each selected metaid. Used by existing documents
+    public String[][] getDocumentTypesInList( String langPrefixStr ) {
+        return new String[0][];  // TODO
+    }
+
+    // Get the information for each selected metaid. Used by existing documents
    // Wow. Wonderful methodname. Indeed. Just beautiful.
    public Hashtable ExistingDocsGetMetaIdInfo( String[] meta_id ) {
       return null;
-   }
-
-   public String[] getDocumentTypesInList( String langPrefixStr ) {
-      return new String[0];
    }
 
    public Hashtable getDocumentTypesInHash( String langPrefixStr ) {
@@ -470,18 +496,18 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    public void touchDocument( int meta_id ) {
    }
 
-   public List getQuoteList( String quoteListName ) throws IOException {
-      return null;
+    public List getQuoteList( String quoteListName ) {
+        return null;  // TODO
+    }
+
+    public void setQuoteList( String quoteListName, List quoteList ) throws IOException {
    }
 
-   public void setQuoteList( String quoteListName, List quoteList ) throws IOException {
-   }
+    public List getPollList( String pollListName ) {
+        return null;  // TODO
+    }
 
-   public List getPollList( String pollListName ) throws IOException {
-      return null;
-   }
-
-   public void setPollList( String pollListName, List pollList ) throws IOException {
+    public void setPollList( String pollListName, List pollList ) throws IOException {
    }
 
    public DocumentDomainObject getDocument( int meta_id ) {

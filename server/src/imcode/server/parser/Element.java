@@ -4,8 +4,6 @@ import java.util.List ;
 import java.util.Properties ;
 
 public interface Element extends Node {
-    final static String CVS_REV = "$Revision$" ;
-    final static String CVS_DATE = "$Date$" ;
 
     /** @return The name of this element. **/
     public String getName() ;

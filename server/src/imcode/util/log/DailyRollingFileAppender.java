@@ -1,12 +1,12 @@
 package imcode.util.log ;
 
-import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.Locale;
+import java.io.*;
 
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.LoggingEvent;
@@ -53,16 +53,16 @@ public class DailyRollingFileAppender extends FileAppender {
      The next time we estimate a rollover should occur. */
     private long nextCheck = System.currentTimeMillis() - 1;
 
-    Date now = new Date();
+    private Date now = new Date();
 
-    SimpleDateFormat sdf;
+    private SimpleDateFormat sdf;
 
-    RollingCalendar rc = new RollingCalendar();
+    private RollingCalendar rc = new RollingCalendar();
 
     int checkPeriod = TOP_OF_TROUBLE;
 
     // The gmtTimeZone is used only in computeCheckPeriod() method.
-    static final TimeZone gmtTimeZone = TimeZone.getTimeZone( "GMT" );
+    private static final TimeZone gmtTimeZone = TimeZone.getTimeZone( "GMT" );
 
 
     /**
@@ -93,7 +93,7 @@ public class DailyRollingFileAppender extends FileAppender {
     }
 
     /** Returns the value of the <b>DatePattern</b> option. */
-    public String getDatePattern() {
+    private String getDatePattern() {
         return datePattern;
     }
 
@@ -114,7 +114,7 @@ public class DailyRollingFileAppender extends FileAppender {
         }
     }
 
-    void printPeriodicity( int type ) {
+    private void printPeriodicity( int type ) {
         switch ( type ) {
             case TOP_OF_MINUTE:
                 LogLog.debug( "Appender [" + name + "] to be rolled every minute." );
@@ -154,7 +154,7 @@ public class DailyRollingFileAppender extends FileAppender {
     // logic is based on comparisons relative to 1970-01-01 00:00:00
     // GMT (the epoch).
 
-    int computeCheckPeriod() {
+    private int computeCheckPeriod() {
         RollingCalendar rollingCalendar = new RollingCalendar( gmtTimeZone, Locale.ENGLISH );
         // set sate to 1970-01-01 00:00:00 GMT
         Date epoch = new Date( 0 );
@@ -178,7 +178,7 @@ public class DailyRollingFileAppender extends FileAppender {
     /**
      Rollover the current file to a new file.
      */
-    void rollOver() throws IOException {
+    private void rollOver() {
 
         /* Compute filename, but only if datePattern is specified */
         if ( getDatePattern() == null ) {
@@ -254,11 +254,7 @@ public class DailyRollingFileAppender extends FileAppender {
         if ( n >= nextCheck ) {
             now.setTime( n );
             nextCheck = rc.getNextCheckMillis( now );
-            try {
-                rollOver();
-            } catch ( IOException ioe ) {
-                LogLog.error( "rollOver() failed.", ioe );
-            }
+            rollOver();
         }
         super.subAppend( event );
     }
@@ -271,7 +267,7 @@ public class DailyRollingFileAppender extends FileAppender {
  * */
 class RollingCalendar extends GregorianCalendar {
 
-    int type = DailyRollingFileAppender.TOP_OF_TROUBLE;
+    private int type = DailyRollingFileAppender.TOP_OF_TROUBLE;
 
     RollingCalendar() {
         super();
@@ -289,7 +285,7 @@ class RollingCalendar extends GregorianCalendar {
         return getNextCheckDate( now ).getTime();
     }
 
-    public Date getNextCheckDate( Date now ) {
+    private Date getNextCheckDate( Date now ) {
         this.setTime( now );
 
         switch ( type ) {

@@ -1,7 +1,6 @@
 package imcode.server.user;
 
 import imcode.server.IMCServiceInterface;
-import imcode.server.db.DBConnect;
 import org.apache.log4j.Logger;
 
 import com.imcode.imcms.api.RoleConstants;
@@ -76,7 +75,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
             user.setLangPrefix( service.getDefaultLanguageAsIso639_1() );
          }
 
-         String[][] phoneNbr = service.sqlProcedureMulti( SPROC_GET_USER_PHONE_NUMBERS + user_data[0] );
+         String[][] phoneNbr = service.sqlProcedureMulti( SPROC_GET_USER_PHONE_NUMBERS, new String[] { user_data[0] } );
          String workPhone = "";
          String mobilePhone = "";
          String homePhone = "";
@@ -154,7 +153,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
    public synchronized void addUser( UserDomainObject newUser ) {
       String updateUserPRCStr = SPROC_ADD_NEW_USER;
-      String newUserId = service.sqlProcedureStr( SPROC_GET_HIGHEST_USER_ID );
+      String newUserId = service.sqlProcedureStr( SPROC_GET_HIGHEST_USER_ID, new String[] {} );
       int newIntUserId = Integer.parseInt( newUserId );
       newUser.setUserId( newIntUserId );
 
@@ -181,7 +180,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
    }
 
    public String[] getAllRoleNames() {
-      String[] roleNamesMinusUsers = service.sqlProcedure( SPROC_GET_ALL_ROLES );
+      String[] roleNamesMinusUsers = service.sqlProcedure( SPROC_GET_ALL_ROLES, new String[] {} );
 
       Set roleNamesSet = new HashSet() ;
       for( int i = 0; i < roleNamesMinusUsers.length; i+=2 ) {
@@ -222,7 +221,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
    // todo: change the "getAllUsers" sproc to specify its arguments.
    public UserDomainObject[] getAllUsers() {
       int noOfColumnsInSearchResult = 20;
-      String[] allUsersSqlResult = service.sqlProcedure( SPROC_GET_ALL_USERS );
+      String[] allUsersSqlResult = service.sqlProcedure( SPROC_GET_ALL_USERS, new String[] {} );
       int noOfUsers = allUsersSqlResult.length / noOfColumnsInSearchResult;
       UserDomainObject[] result = new UserDomainObject[noOfUsers];
       for( int i = 0; i < noOfUsers; i++ ) {
@@ -283,7 +282,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     public synchronized void addRole( String roleName ) {
         String[] roleId = callSprocRoleFindName( roleName );
-        boolean roleExists = -1 != Integer.parseInt( roleId[0] );
+        boolean roleExists = roleId.length > 0 && -1 != Integer.parseInt( roleId[0] );
         if( !roleExists ) {
           service.sqlUpdateProcedure( SPROC_ROLE_ADD_NEW, new String[]{roleName} );
        }
@@ -291,7 +290,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     public void deleteRole( String roleName ) {
         String[] roleId = callSprocRoleFindName( roleName );
-        boolean roleExists = -1 != Integer.parseInt( roleId[0] );
+        boolean roleExists = roleId.length > 0 && -1 != Integer.parseInt( roleId[0] );
         if( roleExists ) {
             service.sqlUpdateProcedure( SPROC_ROLE_DELETE, roleId );
         }
@@ -303,8 +302,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
      * @return roleId
      */
     private String[] callSprocRoleFindName( String roleName ) {
-        String[] params = new String[]{roleName};
-        String[] userId = service.sqlProcedure( SPROC_ROLE_FIND_NAME, params );
+        String[] userId = service.sqlProcedure( SPROC_ROLE_FIND_NAME, new String[]{roleName} );
         return userId;
     }
 
@@ -331,9 +329,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
        service.sqlUpdateProcedure( modifyUserProcedureName, params );
     }
 
-    public static Vector sprocGetUserPermissionSet( DBConnect dbc, String meta_id_str, String user_id_str ) {
-        dbc.setProcedure( "GetUserPermissionSet", new String[]{meta_id_str, user_id_str} );
-        Vector user_permission_set = (Vector)dbc.executeProcedure();
-        return user_permission_set;
+    public static String[] sprocGetUserPermissionSet( IMCServiceInterface service, String meta_id_str, String user_id_str ) {
+        return service.sqlProcedure( "GetUserPermissionSet", new String[]{meta_id_str, user_id_str} ) ;
     }
 }

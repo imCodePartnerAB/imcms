@@ -40,27 +40,17 @@ String output = Util.substitute(matcher, pattern, substitution, input) ;
 
 **/
 public class MapSubstitution implements Substitution {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
-    Map map ;
-    boolean removeNulls ;
-
-    public MapSubstitution() {
-
-    }
+    private Map map ;
+    private boolean removeNulls ;
 
     public MapSubstitution(Map map, boolean removeNulls) {
 	setMap(map,removeNulls) ;
     }
 
-    public void setMap (Map map, boolean removeNulls) {
+    private void setMap (Map map, boolean removeNulls) {
 	this.map = map ;
 	this.removeNulls = removeNulls ;
-    }
-
-    public Map getMap () {
-	return map ;
     }
 
     public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, PatternMatcherInput originalInput, PatternMatcher patMat, Pattern pat) {

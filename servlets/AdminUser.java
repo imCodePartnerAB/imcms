@@ -7,7 +7,6 @@ import java.util.*;
 import imcode.external.diverse.*;
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
-import imcode.util.*;
 
 import org.apache.log4j.*;
 
@@ -16,21 +15,16 @@ public class AdminUser extends Administrator {
    private static Category log = Logger.getInstance( AdminUser.class.getName() );
    private String CHANGE_EXTERNAL_USER_URL = "/adminuser/changeexternaluser.jsp";
 
-    /**
-    The GET method creates the html page when this side has been
-    redirected from somewhere else.
-    **/
-
    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
       // Lets validate the session
-      if( super.checkSession( req, res ) == false )
+      if( checkSession( req, res ) == false )
          return;
 
       // Lets get an user object
-      UserDomainObject user = super.getUserObj( req, res );
+      UserDomainObject user = getUserObj( req, res );
       if( user == null ) {
          String header = "Error in AdminCounter.";
          String msg = "Couldnt create an user object." + "<BR>";
@@ -55,7 +49,6 @@ public class AdminUser extends Administrator {
       }
 
       VariableManager vm = new VariableManager();
-      Html ht = new Html();
 
       // Lets get the category from the request Object.
       String category = req.getParameter( "category" );
@@ -67,43 +60,58 @@ public class AdminUser extends Administrator {
          category = "-1";
       }
 
-      String searchString = (req.getParameter( "search" ) == null) ? "_z_" : req.getParameter( "search" );
 
       String lang_prefix = user.getLangPrefix();
 
       // Lets get all USERTYPES from DB
-      String[] userTypes = imcref.sqlProcedure( "GetUserTypes " + lang_prefix );
+        String[] userTypes = imcref.sqlProcedure("GetUserTypes", new String[]{lang_prefix});
       Vector userTypesV = new Vector( java.util.Arrays.asList( userTypes ) );
-      String user_type = ht.createHtmlOptionList( category, userTypesV );
+      String user_type = Html.createHtmlOptionList( category, userTypesV );
       vm.addProperty( "USER_TYPES", user_type );
 
 
-      String show = ("null".equals( req.getParameter( "showall" ) )) ? "1" : "0";
+        // Lets get all USERS from DB with firstname or lastname or login name like the searchString
 
-      // Lets get all USERS from DB with firstname or lastname or login name like the searchString
-      // but not USER = 'user'
-      String param = category + ", " + searchString + ", " + user.getUserId() + ", " + show;
-      String[] usersArr = imcref.sqlProcedure( "GetCategoryUsers " + param );
+        // parameter to db
+        // @showAll = 1 : all users don't care about serchstring
+        // @showAll = 0 : only users like serchstring
+        // @active = 1 : only active users (where active=1)
+        // @active = 0 : all users  (where active= 0 or 1)
+
+        String searchString = req.getParameter("search");
+        int showAll = 0;
+        if (searchString == null) {
+            searchString = "";
+            showAll = 1;
+        }
+        String active = (req.getParameter("active") == null ) ? "1" : req.getParameter("active");
+        String activeChecked = ("0".equals(active)) ? "checked" : "";
+        if (req.getParameter("showUsers") != null ){
+            String[] usersArr = imcref.sqlProcedure("GetCategoryUsers", new String[]{category, searchString, ""+user.getUserId(), ""+showAll, active});
 
       Vector usersV = new Vector( java.util.Arrays.asList( usersArr ) );
-      String usersOption = ht.createHtmlOptionList( "", usersV );
+      String usersOption = Html.createHtmlOptionList( "", usersV );
       vm.addProperty( "USERS_MENU", usersOption );
+            vm.addProperty("active", activeChecked );
+            vm.addProperty("searchstring", req.getParameter("search"));
+        }else {
+            vm.addProperty("USERS_MENU", "");
+            vm.addProperty("active", activeChecked );
+            vm.addProperty("searchstring", "");
+        }
 
       //create the page
       this.sendHtml( req, res, vm, HTML_TEMPLATE );
 
    } // End doGet
 
-   /**
-    POST
-    **/
 
    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
       // Lets validate the session
-      if( super.checkSession( req, res ) == false )
+      if( checkSession( req, res ) == false )
          return;
 
       // Get the session
@@ -120,7 +128,7 @@ public class AdminUser extends Administrator {
       }
 
       // Lets get an user object
-      imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
+      imcode.server.user.UserDomainObject user = getUserObj( req, res );
       if( user == null ) {
          String header = "Error in AdminCounter.";
          String msg = "Couldnt create an user object." + "<BR>";
@@ -133,8 +141,7 @@ public class AdminUser extends Administrator {
       boolean isUseradmin = imcref.checkUserAdminrole( user.getUserId(), 2 );
 
       // check if user is a Superadmin, adminRole = 1
-      boolean isSuperadmin = imcref.checkUserAdminrole( user.getUserId(), 1 );
-
+      boolean isSuperadmin = imcref.checkAdminRights( user );
 
       // Lets check if the user is an admin, otherwise throw him out.
       if( !isSuperadmin && !isUseradmin ) {
@@ -145,10 +152,12 @@ public class AdminUser extends Administrator {
          return;
       }
 
-      if( req.getParameter( "searchstring" ) != null ) {
-         res.sendRedirect( "AdminUser?search=" + req.getParameter( "searchstring" ) + "&category=" + req.getParameter( "user_categories" ) + "&showall=" + req.getParameter( "showall" ) );
-         return;
-      }
+
+        if (req.getParameter("searchstring") != null) {
+            String active = (req.getParameter("active") == null ) ? "1" : req.getParameter("active");
+            res.sendRedirect("AdminUser?search=" + req.getParameter("searchstring").trim().replaceAll("'","''") + "&category=" + req.getParameter("user_categories") + "&active=" + active + "&showUsers=true");
+            return;
+        }
 
       if( req.getParameter( "ADD_USER" ) != null ) {
          redirectAddUser( res );
@@ -161,7 +170,6 @@ public class AdminUser extends Administrator {
             redirectChangeUser( req, res, imcref, user, isUseradmin, session, userToChangeId );
          }
          else {
-            // req.setAttribute( RequestConstants.USER_LOGIN_NAME, userToChange.getLoginName() );
             String queryString =
                "?" + java.net.URLEncoder.encode(WebAppGlobalConstants.USER_LOGIN_NAME, "UTF-8") +
                "=" + java.net.URLEncoder.encode(userToChange.getLoginName(), "UTF-8") ;
@@ -206,59 +214,44 @@ public class AdminUser extends Administrator {
    private void redirectAddUser( HttpServletResponse res ) throws IOException {
       log( "Add_User" );
 
-      VariableManager vm = new VariableManager();
-      Html htm = new Html();
-
       // Lets redirect to AdminUserProps and get the HTML page to add a new user.
       res.sendRedirect( "AdminUserProps?ADD_USER=true" );
    }
 
+    /**
+     * Returns a String, containing the userID in the request object.If something failes,
+     * a error page will be generated and null will be returned.
+     */
 
+    private String getCurrentUserId(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
 
+        String userId = req.getParameter("user_Id");
+	
+        // Get the session
+        HttpSession session = req.getSession(false);
 
-   // ************************* NEW FUNCTIONS *************
+        if (userId == null) {
+            // Lets get the userId from the Session Object.
+            userId = (String) session.getAttribute("userToChange");
 
-
-   /**
-    Returns a String, containing the userID in the request object.If something failes,
-    a error page will be generated and null will be returned.
-    */
-
-   public String getCurrentUserId( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-
-
-      String userId = req.getParameter( "user_Id" );
-
-      // Get the session
-      HttpSession session = req.getSession( false );
-
-      if( userId == null ) {
-         // Lets get the userId from the Session Object.
-         userId = (String)session.getAttribute( "userToChange" );
-
-      }
-
-      //	if (userId == null)
-      //		userId = req.getParameter("CURR_USER_ID") ;
-      //			if (userId == null || userId.startsWith("#")) {
-
-      if( userId == null ) {
-         String header = "ChangeUser error. ";
-         String msg = "No user_id was available." + "<BR>";
-         this.log( header + msg );
-         new AdminError( req, res, header, msg );
-         return null;
-      } else {
-         this.log( "AnvändarId=" + userId );
-      }
-      //System.out.println("AdminUser-getCurrentUserId() userId= " + userId);
+        }
+		
+        if (userId == null) {
+            String header = "ChangeUser error. ";
+            String msg = "No user_id was available." + "<BR>";
+            this.log(header + msg);
+            new AdminError(req, res, header, msg);
+            return null;
+        } else {
+            this.log("AnvändarId=" + userId);
+        }
 
       return userId;
    } // End getCurrentUserId
 
 
    public void log( String str ) {
-      super.log( str );
       log.debug( "AdminUser: " + str );
    }
 

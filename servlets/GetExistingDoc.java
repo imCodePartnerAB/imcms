@@ -7,11 +7,22 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.external.diverse.*;
-import imcode.util.*;
 import imcode.server.*;
 
-import org.apache.log4j.Category;
+import imcode.server.IMCServiceInterface;
+import imcode.external.diverse.Html;
+import org.apache.log4j.Logger;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.Writer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  Templates in use by this servlet:
@@ -23,26 +34,16 @@ import org.apache.log4j.Category;
 
 public class GetExistingDoc extends HttpServlet {
 
-    private static Category log = Category.getInstance( GetExistingDoc.class.getName() );
-
-    /**
-     * init()
-     */
-    public void init( ServletConfig config ) throws ServletException {
-        super.init( config );
-    }
+    private static Logger log = Logger.getLogger(GetExistingDoc.class.getName());
 
     /**
      * doPost()
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        String host = req.getHeader( "Host" );
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
         imcode.server.user.UserDomainObject user;
-        String htmlStr = "";
-        String submit_name = "";
         String values[];
         int existing_meta_id = 0;
 
@@ -101,46 +102,27 @@ public class GetExistingDoc extends HttpServlet {
             // Lets do a search among existing documents.
             // Lets collect the parameters and build a sql searchstring
 
-            String sqlString = "";
             String fromDoc = "";
             String userId = "";
             String searchString = "";
             String searchPrep = "";
             String doctype = "";
             String sortBy = "";
-            String includeDocStr = "";
 
             searchString = imcode.server.HTMLConv.toHTML( req.getParameter( "searchstring" ) );
             searchPrep = req.getParameter( "search_prep" );
 
             // Lets build a comma separetad string with the doctypes
             String docTypes[] = req.getParameterValues( "doc_type" );
-            doctype = this.createDocTypeString( docTypes );
+            doctype = createDocTypeString( docTypes );
 
             String start_date = req.getParameter( "start_date" );
             String end_date = req.getParameter( "end_date" );
-            String include_docs[] = req.getParameterValues( "include_doc" );
-            String dateString = "'" + start_date + "','" + end_date + "'";
-            String created_date = "'', ''";
-            String changed_date = "'', ''";
-            String activated_date = "'', ''";
-            String archived_date = "'', ''";
-
-            if ( include_docs == null )
-                include_docs = new String[0];
-
-            for ( int i = 0; i < include_docs.length; i++ ) {
-                if ( include_docs[i].equals( "created" ) )
-                    created_date = dateString;
-                if ( include_docs[i].equals( "changed" ) )
-                    changed_date = dateString;
-                if ( include_docs[i].equals( "activated" ) )
-                    activated_date = dateString;
-                if ( include_docs[i].equals( "archived" ) )
-                    archived_date = dateString;
+            if (end_date.trim().indexOf(":") < 0 ){
+                end_date = end_date + " 23:59";
             }
+            String include_docs[] = req.getParameterValues("include_doc");
 
-            includeDocStr = created_date + ", " + changed_date + ", " + activated_date + ", " + archived_date;
             sortBy = req.getParameter( "sortBy" );
             userId = "" + user.getUserId();
             fromDoc = "1";
@@ -150,14 +132,14 @@ public class GetExistingDoc extends HttpServlet {
 
             // Lets check that the sortby option is valid by run the method
             // "SortOrder_GetExistingDocs 'lang_prefix' wich will return
-            // an array with all the internalDocument types. By adding the key-value pair
+            // an array with all the document types. By adding the key-value pair
             // array into an hashtable and check if the sortorder exists in the hashtable.
             // we are able to determine if the sortorder is okay.
 
             // Lets fix the sortby list, first get the displaytexts from the database
-            String[] sortOrder = imcref.sqlProcedure( "SortOrder_GetExistingDocs '" + langPrefix + "'" );
+            String[][] sortOrder = imcref.sqlProcedureMulti("SortOrder_GetExistingDocs", new String[] {langPrefix});
             Vector sortOrderV = new Vector( Arrays.asList( sortOrder ) );
-            Hashtable sortOrderHash = this.convert2Hashtable( sortOrder );
+            Hashtable sortOrderHash = convert2Hashtable( sortOrder );
             if ( sortOrderHash.containsKey( sortBy ) == false ) {
                 sortBy = "meta_id";
             }
@@ -172,21 +154,68 @@ public class GetExistingDoc extends HttpServlet {
             if ( searchString.equals( "" ) )
                 searchString = "\r";
 
-            // FIXME: Maximum number of hits is 1000.
-            sqlString = "SearchDocs " + userId + ",'" + searchString + "', '" + searchPrep + "', '" + doctype + "', " + fromDoc + ", " + "1000" + ", '" + sortBy + "', " + includeDocStr + ", '1','0'";
+            String created_date_start = "";
+            String created_date_end = "";
+            String changed_date_start = "";
+            String changed_date_end = "";
+            String activated_date_start = "";
+            String activated_date_end = "";
+            String archived_date_start = "";
+            String archived_date_end = "";
 
-            String[][] sqlResults = imcref.sqlProcedureMulti( sqlString );
+            if ( include_docs == null )
+                include_docs = new String[0];
+
+            for ( int i = 0; i < include_docs.length; i++ ) {
+                if ( include_docs[i].equals( "created" ) ) {
+                    created_date_start = start_date;
+                    created_date_end = end_date;
+                }
+                if ( include_docs[i].equals( "changed" ) ) {
+                    changed_date_start = start_date;
+                    changed_date_end = end_date;
+                }
+                if ( include_docs[i].equals( "activated" ) ) {
+                    activated_date_start = start_date;
+                    activated_date_end = end_date;
+                }
+                if ( include_docs[i].equals( "archived" ) ) {
+                    archived_date_start = start_date;
+                    archived_date_end = end_date;
+                }
+            }
+
+            // FIXME: Maximum number of hits is 1000.
+            String[][] sqlResults = imcref.sqlProcedureMulti("SearchDocs", new String[] {
+                userId,
+                searchString,
+                searchPrep,
+                doctype,
+                fromDoc,
+                "1000",
+                sortBy,
+                created_date_start,
+                created_date_end,
+                changed_date_start,
+                changed_date_end,
+                activated_date_start,
+                activated_date_end,
+                archived_date_start,
+                archived_date_end,
+                "1",
+                "0"
+            } );
             Vector outVector = new Vector();
 
             // Lets get the resultpage fragment used for an result
             String oneRecHtmlSrc = imcref.parseDoc( null, "existing_doc_hit.html", langPrefix );
 
-            // Lets get all internalDocument types and put them in a hashTable
-            String[] allDocTypesArray = imcref.getDocumentTypesInList( langPrefix );
-            Hashtable allDocTypesHash = this.convert2Hashtable( allDocTypesArray );
+            // Lets get all document types and put them in a hashTable
+            String[][] allDocTypesArray = imcref.getDocumentTypesInList( langPrefix );
+            Hashtable allDocTypesHash = convert2Hashtable( allDocTypesArray );
 
             // Lets parse the searchresults
-            searchResults = this.parseSearchResults( imcref, oneRecHtmlSrc, sqlResults, allDocTypesHash );
+            searchResults = parseSearchResults( imcref, oneRecHtmlSrc, sqlResults, allDocTypesHash );
 
             // Lets get the surrounding resultpage fragment used for all the result
             // and parse all the results into this summarize html template for all the results
@@ -228,7 +257,7 @@ public class GetExistingDoc extends HttpServlet {
 
 
             if ( docTypes != null ) {
-                // Lets take care of the internalDocument types. Get those who were selected
+                // Lets take care of the document types. Get those who were selected
                 // and select those again in the page to send back to the user.
                 // First, put them in an hashtable for easy access.
                 Hashtable selectedDocTypes = new Hashtable( docTypes.length );
@@ -291,11 +320,7 @@ public class GetExistingDoc extends HttpServlet {
                     outVector.add( "" );
             }
 
-            // Lets fix the sortby list, first get the displaytexts from the database
-            // String[] sortOrder = imcref.sqlProcedure(  "SortOrder_GetExistingDocs '" + langPrefix + "'") ;
-            //Vector sortOrderV = this.convert2Vector(sortOrder) ;
-            Html htm = new Html();
-            String sortOrderStr = htm.createHtmlOptionList( sortBy, sortOrderV );
+            String sortOrderStr = Html.createHtmlOptionList( sortBy, sortOrderV );
             outVector.add( "#sortBy#" );
             outVector.add( sortOrderStr );
 
@@ -308,7 +333,7 @@ public class GetExistingDoc extends HttpServlet {
             out.write( htmlOut );
             return;
         } else {
-            // ************** Lets add a internalDocument ***********************
+            // ************** Lets add a document ***********************
             user.put( "flags", new Integer( 262144 ) );
 
             // get the seleced existing docs
@@ -323,7 +348,7 @@ public class GetExistingDoc extends HttpServlet {
 
                     // Fetch all doctypes from the db and put them in an option-list
                     // First, get the doc_types the current user may use.
-                    String[] user_dt = imcref.sqlProcedure( "GetDocTypesForUser " + meta_id + "," + user.getUserId() + ",'" + user.getLangPrefix() + "'" );
+                    String[] user_dt = imcref.sqlProcedure("GetDocTypesForUser", new String[] { ""+meta_id, ""+user.getUserId(), user.getLangPrefix() });
                     HashSet user_doc_types = new HashSet();
 
                     // I'll fill a HashSet with all the doc-types the current user may use,
@@ -332,10 +357,10 @@ public class GetExistingDoc extends HttpServlet {
                         user_doc_types.add( user_dt[i] );
                     }
 
-                    String sqlStr = "select doc_type from meta where meta_id = " + existing_meta_id;
-                    String doc_type = imcref.sqlQueryStr( sqlStr );
+                    String sqlStr = "select doc_type from meta where meta_id = ?";
+                    String doc_type = imcref.sqlQueryStr(sqlStr, new String[] {""+existing_meta_id});
 
-                    // Add the internalDocument in menu if user is admin for the internalDocument OR the internalDocument is shared.
+                    // Add the document in menu if user is admin for the document OR the document is shared.
                     boolean sharePermission = imcref.checkUserDocSharePermission( user, existing_meta_id );
                     if ( user_doc_types.contains( doc_type )
                             && sharePermission ) {
@@ -358,12 +383,9 @@ public class GetExistingDoc extends HttpServlet {
         }
     }
 
-
     /**
      * Returns the variables used to parse one row in the resultset from the
      * search page
-     *
-     *
      */
     private static Vector getSearchHitVector() {
         Vector vector = new Vector();
@@ -390,15 +412,14 @@ public class GetExistingDoc extends HttpServlet {
      * array will be the value.
      */
 
-    private static Hashtable convert2Hashtable( String[] arr ) {
+    private static Hashtable convert2Hashtable( String[][] arr ) {
 
         Hashtable h = new Hashtable();
-        for ( int i = 0; i < arr.length; i += 2 ) {
-            h.put( arr[i], arr[i + 1] );
+        for ( int i = 0; i < arr.length; i ++ ) {
+            h.put( arr[i][0], arr[i][1] );
         }
         return h;
     }
-
 
     /**
      * Local helpmehtod
@@ -418,14 +439,13 @@ public class GetExistingDoc extends HttpServlet {
         return doctype.toString();
     }
 
-
     /**
      * Local helpmehtod
      * Parses all the searchhits and returns an StringBuffer
      */
 
     private static StringBuffer parseSearchResults( IMCServiceInterface imcref, String oneRecHtmlSrc,
-                                                    String[][] sqlResults, Hashtable allDocTypesHash ) throws java.io.IOException {
+                                                    String[][] sqlResults, Hashtable allDocTypesHash ) {
         StringBuffer searchResults = new StringBuffer( 1024 );
         int docTypeIndex = 1;  // Index of where the doctype id is placed in one record array
 

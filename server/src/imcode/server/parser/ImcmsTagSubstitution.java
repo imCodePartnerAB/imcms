@@ -4,10 +4,7 @@ import imcode.server.DocumentRequest;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.LanguageMapper;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.TextDocumentTextDomainObject;
-import imcode.server.document.CategoryTypeDomainObject;
+import imcode.server.document.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateHelper;
 import imcode.util.FileCache;
@@ -15,25 +12,31 @@ import imcode.readrunner.ReadrunnerFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.iterators.TransformIterator;
-import org.apache.log4j.Category;
 import org.apache.oro.text.regex.*;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.*;
+import imcode.server.*;
+import imcode.util.Parser;
+import org.apache.log4j.Logger;
+import org.apache.oro.text.regex.*;
 
-public class ImcmsTagSubstitution implements Substitution, IMCConstants {
+
+class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     private static Pattern HTML_PREBODY_PATTERN = null;
     private static Pattern HTML_POSTBODY_PATTERN = null;
     private static Pattern IMCMS_TAG_ATTRIBUTES_PATTERN = null;
 
-    private static Category log = Category.getInstance("server");
+    private final static Logger log = Logger.getLogger( "imcode.server.parser.ImcmsTagSubstitution" );
 
     private FileCache fileCache = new FileCache();
 
@@ -85,8 +88,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     private IMCServiceInterface serverObject;
 
-
-    public ImcmsTagSubstitution(TextDocumentParser textdocparser, DocumentRequest documentRequest,
+    ImcmsTagSubstitution(TextDocumentParser textdocparser, DocumentRequest documentRequest,
                                 File templatepath,
                                 List included_list, boolean includemode, int includelevel, File includepath,
                                 Map textmap, boolean textmode,
@@ -127,20 +129,28 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
     }
 
     /**
-     Handle a <?imcms:metaid?> tag.
-
-     **/
-    public String tagMetaId() {
+     * Handle a <?imcms:metaid?> tag.
+     */
+    private String tagMetaId() {
         return "" + document.getMetaId();
     }
 
     /**
-     Handle a <?imcms:section?> tag.
+     * Handle a <?imcms:section?> tag.
+     */
+    private String tagSection(Properties attributes) {
+        return tagSections(attributes);
+    }
 
-     **/
-    public String tagSection() {
-        String section = document.getSection();
-        return section == null ? "" : section;
+    /**
+     Handle a <?imcms:section?> tag.
+    */
+    private String tagSections(Properties attributes) {
+        SectionDomainObject[] section = document.getSections();
+
+        String separator = attributes.getProperty("separator", ",");
+
+        return StringUtils.join(section, separator);
     }
 
     /**
@@ -178,12 +188,15 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
                 if (includeLevel > 0) {
                     int included_meta_id = Integer.parseInt(attributevalue);
                     // Recursively parse the wanted page.
-                    DocumentRequest includedDocumentRequest = new DocumentRequest(documentRequest.getServerObject(),
-                            documentRequest.getRemoteAddr(),
-                            documentRequest.getSessionId(),
-                            documentRequest.getUser(), included_meta_id, document, documentRequest.getQueryString());
-                    includedDocumentRequest.setUserAgent(documentRequest.getUserAgent());
-                    includedDocumentRequest.setContextPath(documentRequest.getContextPath());
+                    DocumentRequest includedDocumentRequest = null;
+                    try {
+                        includedDocumentRequest = (DocumentRequest) documentRequest.clone();
+                    } catch (CloneNotSupportedException e) {
+                        // ignored, supported
+                    }
+                    includedDocumentRequest.setDocument(
+                            serverObject.getDocument(included_meta_id));
+                    includedDocumentRequest.setReferrer(document);
                     String documentStr = textDocParser.parsePage(includedDocumentRequest, -1, includeLevel - 1, paramsToParse);
                     documentStr = org.apache.oro.text.regex.Util.substitute(patMat, HTML_PREBODY_PATTERN, NULL_SUBSTITUTION, documentStr);
                     documentStr = org.apache.oro.text.regex.Util.substitute(patMat, HTML_POSTBODY_PATTERN, NULL_SUBSTITUTION, documentStr);
@@ -200,28 +213,34 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
         } else if (null != (attributevalue = attributes.getProperty("url"))) { // If we have an attribute of the form url="url:url"
             try {
                 String urlStr = attributevalue;
-                if (-1 == urlStr.indexOf('?')) {
-                    urlStr += '?';
-                } else {
-                    urlStr += '&';
-                }
-                urlStr += documentRequest.getQueryString();
+                String commaSeparatedNamesOfParametersToSend = attributes.getProperty("sendparameters") ;
+
+                urlStr += (-1 == urlStr.indexOf( '?' ) ? "?" : "&") ;
+                Set parameterNamesToSend = createSetFromCommaSeparatedString( commaSeparatedNamesOfParametersToSend );
+                urlStr += createQueryStringFromRequest( documentRequest.getHttpServletRequest(), parameterNamesToSend );
+
                 if (urlStr.startsWith("/")) {  // lets add hostname if we got a relative path
-                    urlStr = "http://" + documentRequest.getHostName() + urlStr;
+                    urlStr = documentRequest.getHttpServletRequest().getScheme()
+                            + "://" + documentRequest.getHttpServletRequest().getServerName()
+                            + ':'
+                            + documentRequest.getHttpServletRequest().getServerPort()
+                            + urlStr;
                 }
                 URL url = new URL(urlStr);
                 String urlProtocol = url.getProtocol();
                 if ("file".equalsIgnoreCase(urlProtocol)) { // Make sure we don't have to defend against file://urls...
                     return "<!-- imcms:include url failed: file-url not allowed -->";
                 }
-                String sessionId = documentRequest.getSessionId();
+                String sessionId = documentRequest.getHttpServletRequest().getSession().getId();
                 URLConnection urlConnection = url.openConnection();
-                urlConnection.setRequestProperty("User-Agent", documentRequest.getUserAgent());
+                urlConnection.setRequestProperty("User-Agent",
+                        documentRequest.getHttpServletRequest().getHeader(
+                                "User-agent"));
                 if (null != attributes.getProperty("sendsessionid")) {
                     urlConnection.addRequestProperty("Cookie", "JSESSIONID=" + sessionId);
                 }
                 if (null != attributes.getProperty("sendcookies")) {
-                    Cookie[] requestCookies = documentRequest.getCookies();
+                    Cookie[] requestCookies = documentRequest.getHttpServletRequest().getCookies();
                     for (int i = 0; requestCookies != null && i < requestCookies.length; ++i) {
                         Cookie theCookie = requestCookies[i];
                         if (!"JSESSIONID".equals(theCookie.getName())) {
@@ -265,12 +284,14 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
                 );
             } else if (includeLevel > 0) {
                 int included_meta_id = Integer.parseInt((String) included_docs.get(String.valueOf(no)));
-                DocumentRequest includedDocumentRequest = new DocumentRequest(documentRequest.getServerObject(),
-                        documentRequest.getRemoteAddr(),
-                        documentRequest.getSessionId(),
-                        documentRequest.getUser(), included_meta_id, document, documentRequest.getQueryString());
-                includedDocumentRequest.setUserAgent(documentRequest.getUserAgent());
-                includedDocumentRequest.setContextPath(documentRequest.getContextPath());
+                DocumentRequest includedDocumentRequest = null;
+                try {
+                    includedDocumentRequest = (DocumentRequest) documentRequest.clone();
+                } catch (CloneNotSupportedException e) {
+                    // ignored, supported
+                }
+                includedDocumentRequest.setDocument(serverObject.getDocument(included_meta_id));
+                includedDocumentRequest.setReferrer(document);
                 String documentStr = textDocParser.parsePage(includedDocumentRequest, -1, includeLevel - 1, paramsToParse);
                 ;
                 documentStr = org.apache.oro.text.regex.Util.substitute(patMat, HTML_PREBODY_PATTERN, NULL_SUBSTITUTION, documentStr);
@@ -283,8 +304,37 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
             return "<!-- imcms:include failed: " + ex + " -->";
         } catch (NumberFormatException ex) {
             // There was no such include in the db.
-            return "";
+            return "<!-- imcms:include failed: " + ex + " -->";
         }
+    }
+
+    private String createQueryStringFromRequest( HttpServletRequest httpServletRequest, Set parameterNamesToSend ) {
+        List parameterNameValuePairs = new ArrayList();
+        Enumeration parameterNames = httpServletRequest.getParameterNames();
+        while ( parameterNames.hasMoreElements() ) {
+            String parameterName = (String)parameterNames.nextElement();
+            if ( null == parameterNamesToSend || parameterNamesToSend.contains( parameterName ) ) {
+                String[] parameterValues = httpServletRequest.getParameterValues( parameterName );
+                for ( int i = 0; i < parameterValues.length; i++ ) {
+                    String parameterValue = parameterValues[i];
+                    parameterNameValuePairs.add( URLEncoder.encode( parameterName ) + '=' + URLEncoder.encode( parameterValue ) );
+                }
+            }
+        }
+        return StringUtils.join( parameterNameValuePairs.iterator(), '&' );
+    }
+
+    private Set createSetFromCommaSeparatedString( String commaSeparatedNames ) {
+        if ( null == commaSeparatedNames ) {
+            return null;
+        }
+        StringTokenizer commaAndWhitespaceSeparatedTokenizer = new StringTokenizer( commaSeparatedNames, ", \t\r\n" );
+        Set names = new HashSet();
+        while ( commaAndWhitespaceSeparatedTokenizer.hasMoreTokens() ) {
+            String parameterName = commaAndWhitespaceSeparatedTokenizer.nextToken();
+            names.add( parameterName );
+        }
+        return names;
     }
 
     /**
@@ -322,7 +372,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
      pollparameter-description
 
      **/
-    public String tagText(Properties attributes, PatternMatcher patMat) {
+    private String tagText(Properties attributes, PatternMatcher patMat) {
         String mode = attributes.getProperty("mode");
         if ((mode != null && !"".equals(mode))
                 && ((textMode && "read".startsWith(mode)) // With mode="read", we don't want anything in textMode.
@@ -358,95 +408,93 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
         if (type == null) {
             type = "";
         }
-
-
         String finalresult = result;
-        if (textMode) {
-            String label = attributes.getProperty("label", "");
-            String label_urlparam = "";
-            if (!"".equals(label)) {
-                org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util();
-                label_urlparam = perl5util.substitute("s!<.+?>!!g", label);
-                label_urlparam = java.net.URLEncoder.encode(label_urlparam);
-                label = imcode.util.Parser.parseDoc(labelTemplate, new String[]{"#label#", label});
-            }
-            String[] replace_tags = new String[]{
-                "#meta_id#", String.valueOf(document.getMetaId()),
-                "#text_id#", noStr,
-                "#text#", finalresult,
-                "#label_url#", label_urlparam,
-                "#label#", label,
-                "#type#", type
-            };
+        if ( textMode ) {
+            String[] replace_tags = getLabelTags(attributes, noStr, finalresult);
             String langPrefix = documentRequest.getUser().getLangPrefix();
-            File admin_template_file = new File(templatePath, langPrefix + "/admin/textdoc/admin_text.frag");
+            File admin_template_file = new File( templatePath, langPrefix + "/admin/textdoc/admin_text.frag" );
             try {
-                finalresult = imcode.util.Parser.parseDoc(fileCache.getCachedFileString(admin_template_file), replace_tags);
-            } catch (IOException ex) {
-                log.error("Failed to load template '" + admin_template_file + "'");
+                finalresult = imcode.util.Parser.parseDoc( fileCache.getCachedFileString( admin_template_file ), replace_tags );
+            } catch ( IOException ex ) {
+                log.error( "Failed to load template '" + admin_template_file + "'" );
             }
         }
 
         return finalresult;
     }
 
-    /**
-     Handle a <?imcms:image ...?> tag
-
-     @param attributes The attributes of the image tag
-     @param patMat     A pattern matcher.
-     **/
-    public String tagImage(Properties attributes, PatternMatcher patMat) {
-        String mode = attributes.getProperty("mode");
-        if ((mode != null && !"".equals(mode))
-                && ((imageMode && "read".startsWith(mode)) // With mode="read", we don't want anything in imageMode.
-                || (!imageMode && "write".startsWith(mode))// With mode="write", we don't want anything it not in imageMode.
-                )) {
-            return "";
-        }
-        // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
-        String noStr = attributes.getProperty("no");
-        String result = null;
-        if (null != noStr) {
-            noStr = noStr.trim();
-            result = (String) imageMap.get(noStr);
-            implicitImageNumber = Integer.parseInt(noStr) + 1;
-        } else {
-            result = (String) imageMap.get(noStr = String.valueOf(implicitImageNumber++));
-        }
-        if (result == null) {
-            result = "";
-        }
+    private String[] getLabelTags(Properties attributes, String noStr,
+                                  String finalresult) {
         String label = attributes.getProperty("label", "");
         String label_urlparam = "";
         if (!"".equals(label)) {
-            org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util();
-            label_urlparam = perl5util.substitute("s!<.+?>!!g", label);
-            label_urlparam = java.net.URLEncoder.encode(label_urlparam);
-            label = imcode.util.Parser.parseDoc(labelTemplate, new String[]{"#label#", label});
+            label_urlparam = removeHtmlTagsAndUrlEncode(label);
+            label = loadLabelTemplateAndReplaceLabelTag(label);
+        }
+        String[] replace_tags = new String[]{
+            "#meta_id#", String.valueOf(document.getMetaId()),
+            "#content_id#", noStr,
+            "#content#", finalresult,
+            "#label_url#", label_urlparam,
+            "#label#", label
+        };
+        return replace_tags;
+    }
+
+    private String removeHtmlTagsAndUrlEncode(String label) {
+        String label_urlparam;
+        org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util();
+        label_urlparam = perl5util.substitute("s!<.+?>!!g", label);
+        label_urlparam = URLEncoder.encode(label_urlparam);
+        return label_urlparam;
+    }
+
+    private String loadLabelTemplateAndReplaceLabelTag( String label ) {
+        return Parser.parseDoc( labelTemplate, new String[]{"#label#", label} );
+    }
+
+    /**
+     Handle a <?imcms:image...?> tag
+
+     @param attributes The attributes of the image tag
+     **/
+    private String tagImage(Properties attributes) {
+        String mode = attributes.getProperty( "mode" );
+        if ( ( mode != null && !"".equals( mode ) )
+                && ( ( imageMode && "read".startsWith( mode ) ) // With mode="read", we don't want anything in imageMode.
+                || ( !imageMode && "write".startsWith( mode ) )// With mode="write", we don't want anything it not in imageMode.
+                ) ) {
+            return "";
+        }
+        // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
+        String noStr = attributes.getProperty( "no" );
+        String result = null;
+        if ( null != noStr ) {
+            noStr = noStr.trim();
+            result = (String)imageMap.get( noStr );
+            implicitImageNumber = Integer.parseInt( noStr ) + 1;
+        } else {
+            result = (String)imageMap.get( noStr = String.valueOf( implicitImageNumber++ ) );
+        }
+        if ( result == null ) {
+            result = "";
         }
 
         String finalresult = result;
-        if (imageMode) {
-            String[] replace_tags = new String[]{
-                "#meta_id#", String.valueOf(document.getMetaId()),
-                "#image_id#", noStr,
-                "#image#", finalresult,
-                "#label_url#", label_urlparam,
-                "#label#", label
-            };
-            File admin_template_file = null;
+        if ( imageMode ) {
+            String[] replace_tags = getLabelTags( attributes, noStr, finalresult );
             String langPrefix = documentRequest.getUser().getLangPrefix();
-            if ("".equals(result)) { // no data in the db-field.
-                admin_template_file = new File(templatePath, langPrefix + "/admin/textdoc/admin_no_image.frag");
+            File admin_template_file ;
+            if ( "".equals( result ) ) { // no data in the db-field.
+                admin_template_file = new File( templatePath, langPrefix + "/admin/textdoc/admin_no_image.frag" );
             } else {               // data in the db-field.
-                admin_template_file = new File(templatePath, langPrefix + "/admin/textdoc/admin_image.frag");
+                admin_template_file = new File( templatePath, langPrefix + "/admin/textdoc/admin_image.frag" );
             }
 
             try {
-                finalresult = imcode.util.Parser.parseDoc(fileCache.getCachedFileString(admin_template_file), replace_tags);
-            } catch (IOException ex) {
-                log.error("Failed to load template '" + admin_template_file + "'");
+                finalresult = imcode.util.Parser.parseDoc( fileCache.getCachedFileString( admin_template_file ), replace_tags );
+            } catch ( IOException ex ) {
+                log.error( "Failed to load template '" + admin_template_file + "'" );
             }
         }
 
@@ -455,32 +503,31 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     /**
      Handle a <?imcms:datetime ...?> tag
-
      @param attributes The attributes of the datetime tag.
      format attribute defines a user pattern to use when geting the date.
      type attribute defines what date to get they can bee
      now, created, modified, activated, archived
 
      **/
-    public String tagDatetime(Properties attributes) {
-        String format = attributes.getProperty("format") == null ? DateHelper.DATETIME_FORMAT_STRING : attributes.getProperty("format");
-        String type = attributes.getProperty("type");
-        String lang = attributes.getProperty("lang");
+    public String tagDatetime( Properties attributes ) {
+        String format = attributes.getProperty( "format" ) == null ? DateHelper.DATETIME_FORMAT_STRING : attributes.getProperty( "format" );
+        String type = attributes.getProperty( "type" );
+        String lang = attributes.getProperty( "lang" );
 
         Date date = null;
 
-        if (type != null) {
+        if ( type != null ) {
             type = type.toLowerCase();
-            if ("now".startsWith(type)) {
+            if ( "now".startsWith( type ) ) {
                 date = new Date();
-            } else if ("created".startsWith(type)) {
-                date = document.getCreatedDateTime();
-            } else if ("modified".startsWith(type)) {
-                date = document.getModifiedDateTime();
-            } else if ("archived".startsWith(type)) {
-                date = document.getArchivedDateTime();
-            } else if ("activated".startsWith(type)) {
-                date = document.getActivatedDateTime();
+            } else if ( "created".startsWith( type ) ) {
+                date = document.getCreatedDatetime();
+            } else if ( "modified".startsWith( type ) ) {
+                date = document.getModifiedDatetime();
+            } else if ( "archived".startsWith( type ) ) {
+                date = document.getArchivedDatetime();
+            } else if ( "activated".startsWith( type ) ) {
+                date = document.getActivatedDatetime();
             } else {
                 return "<!-- <?imcms:datetime ... type=\"" + type + "\" is empty, wrong or does not exist! -->";
             }
@@ -489,126 +536,72 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
         }
 
         java.text.SimpleDateFormat formatter;
-        if (lang == null) {
-            formatter = new java.text.SimpleDateFormat(format);
+        if ( lang == null ) {
+            formatter = new java.text.SimpleDateFormat( format );
         } else {
-            formatter = new java.text.SimpleDateFormat(format, new Locale(lang, ""));
+            formatter = new java.text.SimpleDateFormat( format, new Locale( lang, "" ) );
         }
 
         try {
-            if (null == date) {
+            if ( null == date ) {
                 return ""; // There was no date of the requested type (activated/archived?)
             } else {
-                return formatter.format(date);
+                return formatter.format( date );
             }
-        } catch (IllegalArgumentException ex) {
+        } catch ( IllegalArgumentException ex ) {
             return "<!-- imcms:datetime failed: " + ex.getMessage() + " -->";
         }
     }
 
-
     /**
      Handle a <?imcms:user who='...' get='xxxxxxx'?> tag.
-
      **/
-    public String tagUser(Properties attributes) {
+    public String tagUser( Properties attributes ) {
 
         UserDomainObject user = null;
-        String who = attributes.getProperty("who");
+        String who = attributes.getProperty( "who" );
 
-        if (null != who && "creator".equalsIgnoreCase(who)) {
+        if ( null != who && "creator".equalsIgnoreCase( who ) ) {
             user = documentRequest.getDocument().getCreator();
-        } else if (null != who && "publisher".equalsIgnoreCase(who)) {
+        } else if ( null != who && "publisher".equalsIgnoreCase( who ) ) {
             user = documentRequest.getDocument().getPublisher();
-            if (null == user) {
-                return "" ;
+            if ( null == user ) {
+                return "";
             }
         } else {
             user = documentRequest.getUser();
         }
 
         String result = "";
-        String get = attributes.getProperty("get");
+        String get = attributes.getProperty( "get" );
 
-        if (get != null && !"".equals(get)) {
-            if ("name".equalsIgnoreCase(get)) {
+        if ( get != null && !"".equals( get ) ) {
+            if ( "name".equalsIgnoreCase( get ) ) {
                 result = user.getFullName();
-            } else if ("firstname".equalsIgnoreCase(get)) {
+            } else if ( "firstname".equalsIgnoreCase( get ) ) {
                 result = user.getFirstName();
-            } else if ("lastname".equalsIgnoreCase(get)) {
+            } else if ( "lastname".equalsIgnoreCase( get ) ) {
                 result = user.getLastName();
-            } else if ("company".equalsIgnoreCase(get)) {
+            } else if ( "company".equalsIgnoreCase( get ) ) {
                 result = user.getCompany();
-            } else if ("address".equalsIgnoreCase(get)) {
+            } else if ( "address".equalsIgnoreCase( get ) ) {
                 result = user.getAddress();
-            } else if ("zip".equalsIgnoreCase(get)) {
+            } else if ( "zip".equalsIgnoreCase( get ) ) {
                 result = user.getZip();
-            } else if ("city".equalsIgnoreCase(get)) {
+            } else if ( "city".equalsIgnoreCase( get ) ) {
                 result = user.getCity();
-            } else if ("workphone".equalsIgnoreCase(get)) {
+            } else if ( "workphone".equalsIgnoreCase( get ) ) {
                 result = user.getWorkPhone();
-            } else if ("mobilephone".equalsIgnoreCase(get)) {
+            } else if ( "mobilephone".equalsIgnoreCase( get ) ) {
                 result = user.getMobilePhone();
-            } else if ("homephone".equalsIgnoreCase(get)) {
+            } else if ( "homephone".equalsIgnoreCase( get ) ) {
                 result = user.getHomePhone();
-            } else if ("email".equalsIgnoreCase(get)) {
+            } else if ( "email".equalsIgnoreCase( get ) ) {
                 result = user.getEmailAddress();
             }
         }
 
         return result;
-    }
-
-
-    public void appendSubstitution(StringBuffer sb, MatchResult matres, int sc, PatternMatcherInput originalInput, PatternMatcher patMat, Pattern pat) {
-        String tagname = matres.group(1);
-        String tagattributes = matres.group(2);
-        Properties attributes = new Properties();
-        PatternMatcherInput pminput = new PatternMatcherInput(tagattributes);
-        while (patMat.contains(pminput, IMCMS_TAG_ATTRIBUTES_PATTERN)) {
-            MatchResult attribute_matres = patMat.getMatch();
-            attributes.setProperty(attribute_matres.group(1), attribute_matres.group(3));
-        }
-        String result;
-
-        /* FIXME: This is quickly growing ugly.
-           A better solution would be a class per tag (TagHandler's if you will),
-           with a known interface, looked up through some HashMap.
-           JSP already fixes this with tag-libs. */
-        if ("text".equals(tagname)) {
-            result = tagText(attributes, patMat);
-        } else if ("image".equals(tagname)) {
-            result = tagImage(attributes, patMat);
-        } else if ("include".equals(tagname)) {
-            result = tagInclude(attributes, patMat);
-        } else if ("metaid".equals(tagname)) {
-            result = tagMetaId();
-        } else if ("datetime".equals(tagname)) {
-            result = tagDatetime(attributes);
-        } else if ("section".equals(tagname)) {
-            result = tagSection();
-        } else if ("user".equals(tagname)) {
-            result = tagUser(attributes);
-        } else if ("documentlanguage".equals(tagname)) {
-            result = tagLanguage(attributes);
-        } else if ("documentcategories".equals(tagname)) {
-            result = tagCategories(attributes) ;
-        } else {
-            result = matres.group(0);
-        }
-
-        /* If result equals something other than the empty string we have to
-           handle pre and post attributes */
-        if (!"".equals(result)) {
-            String tempAtt = null;
-            if ((tempAtt = attributes.getProperty("pre")) != null) {
-                result = tempAtt + result;
-            }
-            if ((tempAtt = attributes.getProperty("post")) != null) {
-                result = result + tempAtt;
-            }
-        }
-        sb.append(result);
     }
 
     private String tagCategories(Properties attributes) {
@@ -641,6 +634,59 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
         } else {
             return "<!-- <?imcms:language ... representation=\"" + representation + "\" is empty, wrong or does not exist! -->";
         }
+    }
+
+    public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, PatternMatcherInput originalInput, PatternMatcher patMat, Pattern pat ) {
+        String tagname = matres.group( 1 );
+        String tagattributes = matres.group( 2 );
+        Properties attributes = new Properties();
+        PatternMatcherInput pminput = new PatternMatcherInput( tagattributes );
+        while ( patMat.contains( pminput, IMCMS_TAG_ATTRIBUTES_PATTERN ) ) {
+            MatchResult attribute_matres = patMat.getMatch();
+            attributes.setProperty( attribute_matres.group( 1 ), attribute_matres.group( 3 ) );
+        }
+        String result;
+
+        /* FIXME: This is quickly growing ugly.
+        A better solution would be a class per tag (TagHandler's if you will),
+        with a known interface, looked up through some HashMap.
+        JSP already fixes this with tag-libs. */
+        if ( "text".equals( tagname ) ) {
+            result = tagText( attributes, patMat );
+        } else if ( "image".equals( tagname ) ) {
+            result = tagImage( attributes );
+        } else if ( "include".equals( tagname ) ) {
+            result = tagInclude( attributes, patMat );
+        } else if ( "metaid".equals( tagname ) ) {
+            result = tagMetaId();
+        } else if ( "datetime".equals( tagname ) ) {
+            result = tagDatetime( attributes );
+        } else if ( "section".equals( tagname ) ) {
+            result = tagSection( attributes );
+        } else if ( "sections".equals( tagname ) ) {
+            result = tagSections( attributes );
+        } else if ( "user".equals( tagname ) ) {
+            result = tagUser( attributes );
+        } else if ( "documentlanguage".equals( tagname ) ) {
+            result = tagLanguage( attributes );
+        } else if ( "documentcategories".equals( tagname ) ) {
+            result = tagCategories( attributes );
+        } else {
+            result = matres.group( 0 );
+        }
+
+        /* If result equals something other than the empty string we have to
+        handle pre and post attributes */
+        if ( !"".equals( result ) ) {
+            String tempAtt = null;
+            if ( ( tempAtt = attributes.getProperty( "pre" ) ) != null ) {
+                result = tempAtt + result;
+            }
+            if ( ( tempAtt = attributes.getProperty( "post" ) ) != null ) {
+                result = result + tempAtt;
+            }
+        }
+        sb.append( result );
     }
 
 }

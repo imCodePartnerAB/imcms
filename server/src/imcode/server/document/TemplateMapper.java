@@ -2,11 +2,9 @@ package imcode.server.document;
 
 import imcode.server.IMCService;
 import imcode.server.IMCServiceInterface;
-import imcode.server.db.DBConnect;
 import imcode.server.user.UserDomainObject;
 
-import java.util.Vector;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
 
 public class TemplateMapper {
@@ -14,115 +12,59 @@ public class TemplateMapper {
     private static final String SPROC_GET_TEMPLATES_IN_GROUP = "GetTemplatesInGroup";
     private static final String SPROC_GET_TEMPLATE_GROUPS_FOR_USER = "GetTemplategroupsForUser";
 
-    private IMCService service;
+    private IMCServiceInterface service;
 
-    public TemplateMapper( IMCService service ) {
+    public TemplateMapper( IMCServiceInterface service ) {
         this.service = service;
     }
 
-
-    // todo make sure all sproc and sql mehtods are private, start with making them not public.
-    /** @return the template for a text-internalDocument, or null if the internalDocument isn't a text-internalDocument. **/
-/*
-    public TemplateDomainObject getTemplate( int meta_id ) {
-        String[] textdoc_data = TemplateMapper.sprocGetTextDocData( service, meta_id );
-        if( textdoc_data.length < 2 ) {
-            return null;
-        }
-        return new TemplateDomainObject( Integer.parseInt( textdoc_data[0] ), textdoc_data[1] );
-    }
- */
-
-
-    public static Vector sprocGetTemplateGroupsForUser( DBConnect dbc, UserDomainObject user, int meta_id ) {
-        String sqlStr = SPROC_GET_TEMPLATE_GROUPS_FOR_USER;
-        String[] sqlAry2 = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
-        dbc.setProcedure( sqlStr, sqlAry2 );
-        Vector templategroups = dbc.executeProcedure();
-        return templategroups;
+    public static String[][] sprocGetTemplateGroupsForUser( IMCServiceInterface service, UserDomainObject user, int meta_id ) {
+        return service.sqlProcedureMulti( SPROC_GET_TEMPLATE_GROUPS_FOR_USER, new String[]{String.valueOf( meta_id ), String.valueOf( user.getUserId() )} );
     }
 
-    public static Vector sprocGetTemplatesInGroup( DBConnect dbc, int selected_group ) {
-        String sqlStr = SPROC_GET_TEMPLATES_IN_GROUP;
-        dbc.setProcedure( sqlStr, String.valueOf( selected_group ) );
-        Vector templates = dbc.executeProcedure();
-        return templates;
+    public static String[][] sprocGetTemplatesInGroup( IMCServiceInterface service, int selected_group ) {
+        return service.sqlProcedureMulti( SPROC_GET_TEMPLATES_IN_GROUP, new String[]{"" + selected_group} );
     }
-
-    /*
-    private static TemplateGroupDomainObject[] sprocGetTemplateGroupsForUser( IMCService service, int user_id, int meta_id ){
-        String[] params = new String[]{ String.valueOf(meta_id), String.valueOf(user_id)};
-        String[] sprocResult = service.sqlProcedure( SPROC_GET_TEMPLATE_GROUPS_FOR_USER, params );
-        int noOfColumnsInResult = 2;
-        TemplateGroupDomainObject[] result = new TemplateGroupDomainObject[sprocResult.length/noOfColumnsInResult];
-        for( int i = 0, k = 0 ; i < sprocResult.length; i=i + noOfColumnsInResult, k++ ) {
-            String name = sprocResult[i+1];
-            int id = Integer.parseInt(sprocResult[i]);
-            result[k] = new TemplateGroupDomainObject( id, name );
-        }
-        return result;
-    }
-    */
 
     public TemplateGroupDomainObject[] getAllTemplateGroups( UserDomainObject user, int metaId ) {
-        DBConnect dbc = new DBConnect( service.getConnectionPool() );
-        Vector sprocResult = sprocGetTemplateGroupsForUser( dbc, user, metaId );
-        Iterator iter = sprocResult.iterator();
-        int noOfColumnsInResult = 2;
-        TemplateGroupDomainObject[] result = new TemplateGroupDomainObject[sprocResult.size() / noOfColumnsInResult];
-        for ( int i = 0, k = 0; iter.hasNext(); i = i + noOfColumnsInResult, k++ ) {
-            int id = Integer.parseInt( (String)iter.next() );
-            String name = (String)iter.next();
-            result[k] = new TemplateGroupDomainObject( id, name );
+        String[][] sprocResult = sprocGetTemplateGroupsForUser( service, user, metaId );
+        TemplateGroupDomainObject[] templateGroups = new TemplateGroupDomainObject[sprocResult.length];
+        for ( int i = 0; i < sprocResult.length; i++ ) {
+            int templateGroupId = Integer.parseInt( sprocResult[i][0] );
+            String templateGroupName = sprocResult[i][1];
+            templateGroups[i] = new TemplateGroupDomainObject( templateGroupId, templateGroupName );
         }
-        return result;
+        return templateGroups;
     }
 
     public TemplateDomainObject[] getTemplates( int groupId ) {
-        DBConnect dbc = new DBConnect( service.getConnectionPool() );
-        Vector templates = sprocGetTemplatesInGroup( dbc, groupId );
-        Iterator iterator = templates.iterator();
-        int noOfColumns = 2;
-        TemplateDomainObject[] result = new TemplateDomainObject[templates.size() / noOfColumns];
-        if ( templates.size() > 0 ) {
-            for ( int k = 0; iterator.hasNext(); k++ ) {
-                String templateIdStr = (String)iterator.next();
-                String templateNameStr = (String)iterator.next();
-                result[k] = getTemplate( service, Integer.parseInt( templateIdStr ) );
-            }
+        String[][] templateData = sprocGetTemplatesInGroup( service, groupId );
+        TemplateDomainObject[] templates = new TemplateDomainObject[templateData.length];
+        for ( int i = 0; i < templateData.length; i++ ) {
+            int templateId = Integer.parseInt( templateData[i][0] );
+            templates[i] = getTemplate( service, templateId );
         }
-        return result;
+        return templates;
     }
 
-    public static List sqlSelectGroupName( DBConnect dbc, String group_id ) {
-        String sqlStr = "select group_name from templategroups where group_id = " + group_id;
-        dbc.setSQLString( sqlStr );
-        List groupnamevec = dbc.executeQuery();
-        return groupnamevec;
+    public static List sqlSelectGroupName( IMCServiceInterface service, String group_id ) {
+        return Arrays.asList( service.sqlQuery( "select group_name from templategroups where group_id = ?", new String[]{group_id} ) );
     }
 
     public static void sqlUpdateUnassignTemplateFromGroup( IMCService service, int[] group_id, int template_id ) {
-        DBConnect dbc = new DBConnect( service.getConnectionPool() );
-
         // delete current refs
         for ( int i = 0; i < group_id.length; i++ ) {
-            String sqlStr = "delete from templates_cref\n";
-            sqlStr += "where template_id = " + template_id;
-            sqlStr += "and group_id = " + group_id[i];
-            dbc.setSQLString( sqlStr );
-            dbc.executeUpdateQuery();
+            String sqlStr = "delete from templates_cref where template_id = ? and group_id = ?";
+            service.sqlUpdateQuery( sqlStr, new String[]{"" + template_id, "" + group_id[i]} );
         }
-
     }
 
     public static TemplateDomainObject getTemplate( IMCServiceInterface service, int template_id ) {
-        String sqlStr = "select template_id,template_name,simple_name from templates where template_id = " + template_id;
-        DBConnect dbc = new DBConnect( service.getConnectionPool() );
-        dbc.setSQLString( sqlStr );
-        List queryResult = dbc.executeQuery();
-        int templateId = Integer.parseInt( (String)queryResult.get( 0 ) );
-        String templateName = (String)queryResult.get( 1 );
-        String simpleName = (String)queryResult.get( 2 );
+        String sqlStr = "select template_id,template_name,simple_name from templates where template_id = ?";
+        String[] queryResult = service.sqlQuery( sqlStr, new String[]{"" + template_id} );
+        int templateId = Integer.parseInt( queryResult[0] );
+        String templateName = queryResult[1];
+        String simpleName = queryResult[2];
         TemplateDomainObject result = new TemplateDomainObject( templateId, templateName, simpleName );
         return result;
     }
@@ -132,7 +74,7 @@ public class TemplateMapper {
         String[] queryResult = service.sqlQuery( sqlStr, new String[]{templateSimpleName} );
 
         if ( 0 == queryResult.length ) {
-            return null ;
+            return null;
         }
 
         int templateId = Integer.parseInt( queryResult[0] );

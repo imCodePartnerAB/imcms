@@ -10,13 +10,6 @@ import imcode.util.* ;
 public class VerifyUser extends HttpServlet {
 
     /**
-       init()
-    */
-    public void init( ServletConfig config ) throws ServletException {
-		super.init( config ) ;
-    }
-	
-	/**
 		doGet()
 	*/
 

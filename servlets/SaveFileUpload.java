@@ -1,17 +1,20 @@
-import java.io.*;
-import java.util.*;
-import java.text.SimpleDateFormat;
-import javax.servlet.*;
-import javax.servlet.http.*;
 
-import imcode.util.*;
-import imcode.server.*;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
+import imcode.util.MultipartFormdataParser;
+import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.Writer;
 
 public class SaveFileUpload extends HttpServlet {
-
-    public void init( ServletConfig config ) throws ServletException {
-        super.init( config );
-    }
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         
@@ -59,10 +62,8 @@ public class SaveFileUpload extends HttpServlet {
         if ( mp.getParameter( "ok" ) != null ) {
             String file = mp.getParameter( "file" );
             String filename = mp.getFilename( "file" );
-
             filename = filename.substring( filename.lastIndexOf( '/' ) + 1 );
             filename = filename.substring( filename.lastIndexOf( '\\' ) + 1 );
-
             String oldname = mp.getParameter( "oldname" );
             String mime = mp.getParameter( "mime" ); // The users choice in the listbox (""==autodetect,"other"==other)
             String other = mp.getParameter( "other" );
@@ -89,7 +90,7 @@ public class SaveFileUpload extends HttpServlet {
 
                     // Auto-detect mime-type from filename.
                     if ( !"".equals( filename ) ) {
-                        mime = getServletContext().getMimeType( filename );
+                        mime = getServletContext().getMimeType(filename.toLowerCase());
                     }
 
                 } else if ( mime.indexOf( '/' ) == -1 ) {
@@ -99,9 +100,9 @@ public class SaveFileUpload extends HttpServlet {
                     // Assume it is a file-extension,
                     // and autodetect from that.
                     if ( mime.charAt( 0 ) == '.' ) {
-                        mime = getServletContext().getMimeType( "_" + mime );
+                        mime = getServletContext().getMimeType("_" + mime.toLowerCase());
                     } else {
-                        mime = getServletContext().getMimeType( "_." + mime );
+                        mime = getServletContext().getMimeType("_." + mime.toLowerCase());
                     }
                 }
 
@@ -119,13 +120,11 @@ public class SaveFileUpload extends HttpServlet {
                 fn = new File( file_path, meta_id + "_se" );
             }
 
-            String sqlStr;
             if ( file.length() > 0 ) {
-                sqlStr = "update fileupload_docs set filename = '" + filename + "', mime = '" + mime + "' where meta_id = " + meta_id;
+                imcref.sqlUpdateQuery("update fileupload_docs set filename = ?, mime = ? where meta_id = ?", new String[] {filename,mime,meta_id});
             } else {
-                sqlStr = "update fileupload_docs set mime = '" + mime + "' where meta_id = " + meta_id;
+                imcref.sqlUpdateQuery("update fileupload_docs set mime = ? where meta_id = ?", new String[]{mime, meta_id});
             }
-            imcref.sqlUpdateQuery( sqlStr );
 
             // Write the file to disk.
             if ( file.length() > 0 ) {
@@ -135,13 +134,8 @@ public class SaveFileUpload extends HttpServlet {
             }
         }
 
-        SimpleDateFormat dateformat = new SimpleDateFormat( "yyyy-MM-dd" );
-        Date dt = imcref.getCurrentDate();
-        String sqlStr = "update meta set date_modified = '" + dateformat.format( dt ) + "' where meta_id = " + meta_id;
-        imcref.sqlUpdateQuery( sqlStr );
+        imcref.touchDocument(meta_id_int);
 
-
-        //		String htmlStr = imcref.interpretTemplate(Integer.parseInt(parent),user) ;
         String output = AdminDoc.adminDoc( Integer.parseInt( meta_id ), Integer.parseInt( meta_id ), user, req, res );
         if ( output != null ) {
             out.write( output );

@@ -2,16 +2,10 @@ package imcode.util;
 
 import javax.servlet.http.*;
 import javax.servlet.http.HttpUtils;
-import javax.servlet.ServletException;
 import java.io.*;
 import java.util.*;
 
-
-import org.apache.log4j.Category;
-
 public class Utility {
-
-    private static Category log = Category.getInstance( "server" );
 
     private static final String PREFERENCES_FILENAME = "host.properties";
 
@@ -96,7 +90,7 @@ public class Utility {
         res.setHeader( "Pragma", "no-cache;" );
     }
 
-    static public imcode.server.user.UserDomainObject getLoggedOnUserOrRedirect (HttpServletRequest req, HttpServletResponse res, String start_url) throws ServletException, IOException {
+    static public imcode.server.user.UserDomainObject getLoggedOnUserOrRedirect (HttpServletRequest req, HttpServletResponse res, String start_url) throws IOException {
 
 		HttpSession session = req.getSession(true) ;
 		imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;

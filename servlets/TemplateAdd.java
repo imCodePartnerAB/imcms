@@ -1,22 +1,18 @@
+
 import java.io.*;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.rmi.*;
-import java.rmi.registry.*;
 
 import imcode.util.* ;
 import imcode.server.* ;
 import imcode.server.user.UserDomainObject;
+import imcode.util.*;
+import imcode.server.*;
 
 public class TemplateAdd extends HttpServlet {
 
-    public void init(ServletConfig config) throws ServletException {
-	super.init(config);
-    }
-
     public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-	String host				= req.getHeader("Host") ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url	= imcref.getStartUrl() ;
 
@@ -25,14 +21,8 @@ public class TemplateAdd extends HttpServlet {
 	if ( (user = Utility.getLoggedOnUserOrRedirect(req,res,start_url))==null ) {
 	    return ;
 	}
-	// Is user superadmin?
 
-	String sqlStr  = "select role_id from users,user_roles_crossref\n" ;
-	sqlStr += "where users.user_id = user_roles_crossref.user_id\n" ;
-	sqlStr += "and user_roles_crossref.role_id = 0\n" ;
-	sqlStr += "and users.user_id = " + user.getUserId() ;
-
-	if ( imcref.sqlQuery(sqlStr).length == 0 ) {
+        if (!imcref.checkAdminRights(user)) {
 	    Utility.redirect(req,res,start_url) ;
 	    return ;
 	}
@@ -45,8 +35,7 @@ public class TemplateAdd extends HttpServlet {
 	//
 	if(req.getParameter("action") != null) {
 	    byte[] htmlStr ;
-	    if(req.getParameter("action").equals("noCacheImageView"))
-		{
+            if (req.getParameter("action").equals("noCacheImageView")) {
 		    String template = req.getParameter("template");
 		    String mimeType ;
 		    Object[] suffixAndStream = imcref.getDemoTemplate(Integer.parseInt(template)) ;
@@ -73,25 +62,15 @@ public class TemplateAdd extends HttpServlet {
 		    vec.add("TemplateAdmin");
 		    vec.add("#formTarget#");
 		    vec.add("_top");
-		    //		    vec.add("#hiddenName#");
-		    //		    vec.add("add_demotemplate");
-		    //		    vec.add("#hiddenValue#");
-		    //		    vec.add("Rastapaupoulous");
 		    htmlStr = imcref.parseDoc( vec, "back_button.html",lang_prefix).getBytes("8859_1") ;
 		    out.write(htmlStr);
 		    return;
 		}
 	}
-	//***********************************************************************************************
 
     }
 
-
-
-
-
     public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-	String host				= req.getHeader("Host") ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url	= imcref.getStartUrl() ;
 
@@ -100,20 +79,11 @@ public class TemplateAdd extends HttpServlet {
 	if ( (user = Utility.getLoggedOnUserOrRedirect(req,res,start_url))==null ) {
 	    return ;
 	}
-	// Is user superadmin?
 
-	String sqlStr  = "select role_id from users,user_roles_crossref\n" ;
-	sqlStr += "where users.user_id = user_roles_crossref.user_id\n" ;
-	sqlStr += "and user_roles_crossref.role_id = 0\n" ;
-	sqlStr += "and users.user_id = " + user.getUserId() ;
-
-	if ( imcref.sqlQuery(sqlStr).length == 0 ) {
+        if (!imcref.checkAdminRights(user)) {
 	    Utility.redirect(req,res,start_url) ;
 	    return ;
 	}
-
-	//res.setContentType("text/html") ;
-
 
 	int length = req.getContentLength();
 
@@ -160,7 +130,7 @@ public class TemplateAdd extends HttpServlet {
 		String list[] ;
 		list = imcref.getDemoTemplateList() ;
 		String temp[] ;
-		temp = imcref.sqlQuery( "select template_id, simple_name from templates where lang_prefix = '"+lang+"' order by simple_name") ;
+                temp = imcref.sqlQuery("select template_id, simple_name from templates where lang_prefix = ? order by simple_name", new String[]{lang});
 		Vector vec = new Vector() ;
 		vec.add("#language#") ;
 		vec.add(lang) ;
@@ -219,10 +189,7 @@ public class TemplateAdd extends HttpServlet {
 				  + "<frame name=\"mainFrame\" src=\"" + redirect + "\">"
 				  + "</frameset>"
 				  + "<noframes><body>" + redirect + "</body></noframes></html>");
-
-			//res.sendRedirect(redirect);
 		    }
-
 
 		}
 
@@ -281,13 +248,11 @@ public class TemplateAdd extends HttpServlet {
 	       && !suffix.equals("png")
 	       && !suffix.equals("gif")
 	       && !suffix.equals("htm")
-	       && !suffix.equals("html"))
-		{
+	       && !suffix.equals("html")) {
 		    vec.add("#language#") ;
 		    vec.add(lang);
 		    htmlStr = imcref.parseDoc( vec, "templatedemo_upload_done.html", lang_prefix) ;
-		}
-	    else {
+		} else {
 		imcref.saveDemoTemplate( Integer.parseInt(template), file.getBytes("8859_1"), suffix) ;
 
 		vec.add("#language#") ;
@@ -308,15 +273,14 @@ public class TemplateAdd extends HttpServlet {
 		vec.add(lang);
 		htmlStr = imcref.parseDoc( vec, "template_upload_file_exists.html", lang_prefix) ;
 	    } else {
-		String t_id = imcref.sqlQueryStr("select template_id from templates where simple_name = '"+ simple_name+"'" ) ;
+		String t_id = imcref.sqlQueryStr("select template_id from templates where simple_name = ?", new String[] { simple_name } ) ;
 		String[] temp = mp.getParameterValues("templategroup") ;
-		sqlStr = "" ;
 		if ( temp != null ) {
 		    for ( int foo = 0 ; foo < temp.length ; foo++ ) {
-			sqlStr += "delete from templates_cref where group_id = "+temp[foo]+" and template_id = "+t_id+"\n" ;
-			sqlStr += "insert into templates_cref (group_id, template_id) values("+temp[foo]+","+t_id+")\n" ;
+                        String sqlStr = "delete from templates_cref where group_id = ? and template_id = ?\n"
+                        + "insert into templates_cref (group_id, template_id) values(?,?)\n";
+                        imcref.sqlUpdateQuery(sqlStr, new String[] {temp[foo], t_id, temp[foo], t_id});
 		    }
-		    imcref.sqlUpdateQuery(sqlStr) ;
 		}
 
 		Vector vec = new Vector() ;
@@ -328,11 +292,6 @@ public class TemplateAdd extends HttpServlet {
 	res.setContentType("text/html") ;
 	out.print(htmlStr) ;
 	return ;
-    }
-
-    public void log (String str) {
-	super.log(str);
-	System.out.println("TemplateAdd: " + str);
     }
 
 }

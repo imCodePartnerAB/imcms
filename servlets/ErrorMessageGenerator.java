@@ -17,8 +17,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import imcode.external.diverse.SettingsAccessor;
-import imcode.util.IMCServiceRMI;
-import imcode.util.Utility;
 import imcode.server.IMCServiceInterface ;
 
 /**
@@ -36,7 +34,7 @@ import imcode.server.IMCServiceInterface ;
  * @author Jerker Drottenmyr
  */
 
-public class ErrorMessageGenerator {
+class ErrorMessageGenerator {
 
     /** File name for errorCodes */
     private static final String ERROR_CODE_FILE = "ErrMsg.ini";
@@ -54,12 +52,11 @@ public class ErrorMessageGenerator {
      * @param imcref
      * @param emailServerMaster
      * @param languagePrefix
-     * @param server - rmi server name
      * @param errorHeader
      * @param errorMessage
      * @param htmlErrorTemplate documnet to pars
      */
-    public ErrorMessageGenerator( IMCServiceInterface imcref, String emailServerMaster,
+    private ErrorMessageGenerator( IMCServiceInterface imcref, String emailServerMaster,
 				  String languagePrefix, String errorHeader,
 				  String errorMessage, String htmlErrorTemplate ) {
 
@@ -77,13 +74,11 @@ public class ErrorMessageGenerator {
      * @param imcref
      * @param emailServerMaster
      * @param languagePrefix
-     * @param server - rmi server name
      * @param errorHeader
-     * @param errorMessage
-     * @param errorCode - errorCode to look upp in ErrMsg.ini
      * @param htmlErrorTemplate documnet to pars
+     * @param errorCode - errorCode to look upp in ErrMsg.ini
      */
-    public ErrorMessageGenerator( IMCServiceInterface imcref, String emailServerMaster,
+    ErrorMessageGenerator( IMCServiceInterface imcref, String emailServerMaster,
 				  String languagePrefix, String errorHeader,
 				  String htmlErrorTemplate, int errorCode) {
 
@@ -105,7 +100,7 @@ public class ErrorMessageGenerator {
     /**
      * creats error page as string object
      */
-    public String createErrorString() throws IOException {
+    private String createErrorString() {
 
 	Vector tagParsList = new Vector() ;
 

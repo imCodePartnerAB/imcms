@@ -1,15 +1,12 @@
 import java.io.* ;
-import java.awt.* ;
 import java.util.* ;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.external.diverse.* ;
 import imcode.server.* ;
-import imcode.util.* ;
 
 public class AdminError extends Administrator {
-
 
     public AdminError(HttpServletRequest req, HttpServletResponse res, String header,String msg)
 	throws ServletException, IOException {
@@ -24,12 +21,12 @@ public class AdminError extends Administrator {
 	String fileName = "AdminError.htm" ;
 
 	// Lets get an user object
-	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
+	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
 	if(user == null) {
 	    String aHeader = "Error in AdminCounter." ;
 	    String aMsg = "Couldnt create an user object."+ "<BR>" ;
 	    this.log(aHeader + aMsg) ;
-	    AdminError err = new AdminError(req,res,aHeader,aMsg) ;
+	    new AdminError(req,res,aHeader,aMsg) ;
 	    return ;
 	}
 

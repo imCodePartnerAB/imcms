@@ -1,30 +1,32 @@
-import java.io.* ;
-import java.net.* ;
-import java.util.* ;
 
-import javax.servlet.* ;
-import javax.servlet.http.* ;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
+import imcode.util.Utility;
+import org.apache.log4j.Logger;
 
-import imcode.util.* ;
-import imcode.server.* ;
-
-import org.apache.log4j.Category;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.*;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 public class UrlDocTest extends HttpServlet {
 
-    private static Category log = Category.getInstance(UrlDocTest.class.getName());
-
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config) ;
-	}
+    private static Logger log = Logger.getLogger(UrlDocTest.class.getName());
 
 	public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		String start_url        	= imcref.getStartUrl() ;
 
-		String sqlStr = "select meta_id, url_ref from url_docs order by meta_id" ;
-		Hashtable hash = imcref.sqlQueryHash(sqlStr) ;
+        Hashtable hash = imcref.sqlQueryHash("select meta_id, url_ref from url_docs order by meta_id", new String[0]);
 		String [] meta_id = (String[])hash.get("meta_id") ;
 		String [] url_ref = (String[])hash.get("url_ref") ;
 		res.setContentType("text/html") ;
@@ -35,14 +37,8 @@ public class UrlDocTest extends HttpServlet {
 		if( (user=Utility.getLoggedOnUserOrRedirect( req,res,start_url ))==null ) {
 			return ;
 		}
-		// Is user superadmin?
 
-		sqlStr  = "select role_id from users,user_roles_crossref\n" ;
-		sqlStr += "where users.user_id = user_roles_crossref.user_id\n" ;
-		sqlStr += "and user_roles_crossref.role_id = 0\n" ;
-		sqlStr += "and users.user_id = " + user.getUserId() ;
-
-		if ( imcref.sqlQuery(sqlStr).length == 0 ) {
+        if (!imcref.checkAdminRights(user)) {
 			Utility.redirect(req,res,start_url) ;
 			return ;
 		}
@@ -65,24 +61,14 @@ public class UrlDocTest extends HttpServlet {
 					}
 				}
 				url = new URL (tmp) ;
-				/*
-				conn = (HttpURLConnection) url.openConnection() ;
-				conn.setRequestMethod("HEAD") ;
-				conn.setRequestProperty("Host",url.getHost()) ;
-				conn.connect() ;
-				*/
-			//	log ("Host: "+url.getHost()) ;
 				reslt = testUrl(url) ;
 			} catch ( UnknownHostException ex ) {
-			//	log (url_ref[i]+":"+ex.getMessage()+"\r\n") ;
 				found = "red" ;
 				reached = "red" ;
 			} catch ( MalformedURLException ex ) {
-			//	log (url_ref[i]+":"+ex.getMessage()+"\r\n") ;
 				found = "red" ;
 				reached = "red" ;
 			} catch ( IOException ex ) {
-			//	log (url_ref[i]+":"+ex.getMessage()+"\r\n") ;
 				reached = "red" ;
 			}
 			if ( reached.equals("green") ) {
@@ -169,5 +155,4 @@ public class UrlDocTest extends HttpServlet {
 			return 0 ;
 		}
 	}
-
 }

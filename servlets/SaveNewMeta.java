@@ -1,40 +1,37 @@
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.text.ParseException;
-
-import imcode.util.*;
-import imcode.server.*;
+import imcode.server.ApplicationServer;
+import imcode.server.ExternalDocType;
+import imcode.server.IMCConstants;
+import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateHelper;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
+import imcode.util.Parser;
+import imcode.util.Utility;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
-import org.apache.log4j.Category;
-import com.imcode.imcms.api.Document;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Writer;
+import java.text.ParseException;
+import java.util.*;
 
 /**
- Save new meta for a internalDocument.
+ Save new meta for a document.
  */
 public class SaveNewMeta extends HttpServlet {
-    private final static Category mainLog = Category.getInstance( IMCConstants.MAIN_LOG );
-
-    /**
-     init()
-     */
-    public void init( ServletConfig config ) throws ServletException {
-        super.init( config );
-    }
-
+    private final static Logger mainLog = Logger.getLogger(IMCConstants.MAIN_LOG);
 
     /**
      doPost()
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
@@ -45,7 +42,6 @@ public class SaveNewMeta extends HttpServlet {
         /*
           From now on, we get the form data.
         */
-
         String parentMetaIdStr = req.getParameter( "parent_meta_id" );
         int parentMetaId = Integer.parseInt(parentMetaIdStr);
 
@@ -157,10 +153,35 @@ public class SaveNewMeta extends HttpServlet {
         metaprops.setProperty( "owner_id", String.valueOf( user.getUserId() ) );
 
         if( pressedOkButton( req ) ) {
-            // Lets add a new meta to the db
 
-            String metaIdStr = DocumentMapper.sqlInsertIntoMeta( imcref, doc_type, activated_datetime, archived_datetime, metaprops );
-            int metaId = Integer.parseInt(metaIdStr) ;
+            // Lets build the sql statement to add a new meta id
+            ArrayList sqlInsertColumnNames = new ArrayList() ;
+            ArrayList sqlInsertValues = new ArrayList() ;
+            sqlInsertColumnNames.add("doc_type") ;
+            sqlInsertValues.add(doc_type);
+            sqlInsertColumnNames.add("activate") ;
+            sqlInsertValues.add("0");
+            sqlInsertColumnNames.add("classification");
+            sqlInsertValues.add("");
+            sqlInsertColumnNames.add("activated_datetime");
+            sqlInsertValues.add(activated_datetime);
+            sqlInsertColumnNames.add("archived_datetime");
+            sqlInsertValues.add(archived_datetime);
+
+
+            Enumeration propkeys = metaprops.propertyNames() ;
+            while (propkeys.hasMoreElements()) {
+                String columnName = (String) propkeys.nextElement();
+                String columnValue = metaprops.getProperty(columnName);
+                sqlInsertColumnNames.add(columnName);
+                sqlInsertValues.add(columnValue);
+            }
+
+            String sqlPlaceHolders = "?"+StringUtils.repeat(",?",sqlInsertColumnNames.size()-1);
+            String sqlStr = "insert into meta (" + StringUtils.join(sqlInsertColumnNames.iterator(), ',') + ")\n" +
+                    "values (" +sqlPlaceHolders+ ")\n" +
+                    "SELECT @@IDENTITY";
+            int metaId = Integer.parseInt(imcref.sqlQueryStr(sqlStr, (String[]) sqlInsertValues.toArray(new String[sqlInsertValues.size()])));
 
             // Save the classifications to the db
             if( classification != null ) {
@@ -182,17 +203,7 @@ public class SaveNewMeta extends HttpServlet {
             //lets log to mainLog the stuff done
             mainLog.info( "Document [" + metaId + "] of type [" + doc_type + "] created on [" + parentMetaId + "] by user: [" + user.getFullName() + "]" );
 
-            //ok lets handle the the section stuff save to db and so on
-            //lets start an see if we got any request to change the inherit one
-            String section_id = req.getParameter( "change_section" );
-            if( section_id == null ) {
-                //ok it vas null so lets try and get the inherit one
-                section_id = req.getParameter( "current_section_id" );
-            }
-            //ok if we have one lets update the db
-            if( section_id != null ) {
-                DocumentMapper.sprocSectionAddCrossref( imcref, metaId, Integer.parseInt(section_id) );
-            }
+            SaveMeta.setSectionInDbFromRequest(req, imcref, metaId);
 
             // Here is the stuff we have to do for each individual doctype. All general tasks
             // for all documenttypes is done now.
@@ -231,6 +242,7 @@ public class SaveNewMeta extends HttpServlet {
         }
     }
 
+
     private void outputNewTextDocumentInAdminMode( IMCServiceInterface imcref,
             UserDomainObject user, int parentMetaId, int metaId, HttpServletRequest req,
             String doc_type, Properties metaprops, HttpServletResponse res, Writer out ) throws IOException {
@@ -251,7 +263,7 @@ public class SaveNewMeta extends HttpServlet {
         }
 
         // Lets activate the textfield
-        DocumentMapper.sqlUpdateActivateTheTextField( imcref, metaId );
+        DocumentMapper.sqlUpdateActivateTheDocument( imcref, metaId );
 
         // Lets build the page
         String htmlStr = AdminDoc.adminDoc( metaId, metaId, user, req, res );
@@ -262,11 +274,11 @@ public class SaveNewMeta extends HttpServlet {
     private void outputEditPageForNewBrowserRedirectDocument( int metaId, int parentMetaId,
             IMCServiceInterface imcref, String doc_type, String usersLangPrefix, Writer out ) throws IOException {
         String htmlStr;
-        String sqlStr = "insert into browser_docs (metaId, to_meta_id, browser_id) values (" + metaId + "," + parentMetaId + ",0)";
-        imcref.sqlUpdateQuery( sqlStr );
+        String sqlStr = "insert into browser_docs (metaId, to_meta_id, browser_id) values (?,?,0)";
+        imcref.sqlUpdateQuery( sqlStr, new String[] {""+metaId, ""+parentMetaId} );
         Vector vec = new Vector();
-        sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where metaId = " + metaId + " order by value desc,name asc";
-        Hashtable hash = imcref.sqlQueryHash( sqlStr );
+        sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where metaId = ? order by value desc,name asc";
+        Hashtable hash = imcref.sqlQueryHash( sqlStr, new String[] { "" + metaId } );
         String[] b_id = (String[])hash.get( "browser_id" );
         String[] nm = (String[])hash.get( "name" );
         String[] to = (String[])hash.get( "to_meta_id" );
@@ -281,8 +293,8 @@ public class SaveNewMeta extends HttpServlet {
         }
         vec.add( "#browsers#" );
         vec.add( bs );
-        sqlStr = "select browser_id,name from browsers where browser_id not in (select browsers.browser_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where metaId = " + metaId + " ) order by value desc,name asc";
-        hash = imcref.sqlQueryHash( sqlStr );
+        sqlStr = "select browser_id,name from browsers where browser_id not in (select browsers.browser_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where metaId = ? ) order by value desc,name asc";
+        hash = imcref.sqlQueryHash( sqlStr, new String[] {""+metaId} );
         b_id = (String[])hash.get( "browser_id" );
         nm = (String[])hash.get( "name" );
         String nb = "";
@@ -309,8 +321,8 @@ public class SaveNewMeta extends HttpServlet {
     private void outputEditPageForNewFileDocument( String usersLangPrefix, IMCServiceInterface imcref,
             int metaId, int parentMetaId, Writer out ) throws IOException {
         String htmlStr;
-        String sqlStr = "select mime,mime_name from mime_types where lang_prefix = '" + usersLangPrefix + "' and mime != 'other'";
-        String temp[] = imcref.sqlQuery( sqlStr );
+        String sqlStr = "select mime,mime_name from mime_types where lang_prefix = ? and mime != 'other'";
+        String temp[] = imcref.sqlQuery( sqlStr, new String[] { usersLangPrefix } );
         Vector vec = new Vector();
         String temps = null;
         for( int i = 0; i < temp.length; i += 2 ) {

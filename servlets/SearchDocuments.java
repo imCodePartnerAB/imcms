@@ -3,8 +3,6 @@ import java.io.*;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.rmi.*;
-import java.rmi.registry.*;
 
 import imcode.util.*;
 import imcode.external.diverse.Html;
@@ -14,9 +12,6 @@ import imcode.server.*;
  Search documents
  */
 public class SearchDocuments extends HttpServlet {
-
-    /** The sproc that gets all sections **/
-    private final static String SPROC_SECTION_GET_ALL_SECTIONS = "SectionGetAll";
 
     //the templates we uses as default they are stored in template/admin/original folder
     private final static String SEARCH_PAGE_TEMPLATE = "search_documents.html";
@@ -29,7 +24,6 @@ public class SearchDocuments extends HttpServlet {
     private final static String NAV_ACTIVE = "search_nav_active.html";
     private final static String NAV_INACTIVE = "search_nav_inactive.html";
     private final static String NAV_AHREF = "search_nav_ahref.html";
-
 
     /**
      doPost()
@@ -44,8 +38,7 @@ public class SearchDocuments extends HttpServlet {
         //we must have a user obj, even if its a user extern object, so lets get one, or get rid of the req
         if ( user == null ) {
             String ip = req.getRemoteAddr();
-            String host = req.getServerName() ;
-            user = StartDoc.ipAssignUser( ip, host );
+            user = StartDoc.ipAssignUser( ip );
             if ( user == null ) {
                 res.sendRedirect( "StartDoc" );
                 return;
@@ -58,18 +51,11 @@ public class SearchDocuments extends HttpServlet {
         String searchString = req.getParameter( "question_field" ) == null ? "" : req.getParameter( "question_field" );
         String fromDoc = req.getParameter( "fromDoc" ) == null ? "1001" : req.getParameter( "fromDoc" );
         String toDoc = req.getParameter( "toDoc" ) == null ? "-1" : req.getParameter( "toDoc" );
-        ;
-        String maxHits = req.getParameter( "maxHits" ) == null ? "1000" : req.getParameter( "maxHits" );
-        String searchPrep = req.getParameter( "search_prep" ) == null ? "and" : req.getParameter( "search_prep" );
         String sortBy = req.getParameter( "sortBy" ) == null ? "meta_headline" : req.getParameter( "sortBy" );
         String startNr = req.getParameter( "starts" ) == null ? "0" : req.getParameter( "starts" );
         String hitsAtTime = req.getParameter( "no_of_hits" ) == null ? "15" : req.getParameter( "no_of_hits" );
         String section_id = req.getParameter( "section" ) == null ? "-1" : req.getParameter( "section" );
         String prev_search = req.getParameter( "prev_search" ) == null ? "" : req.getParameter( "prev_search" );
-        //not in use for the moment but needed to setup advanced search in the future
-        //String start_date		= req.getParameter("start_date") == null? "":req.getParameter("start_date");
-        //String stop_date		= req.getParameter("stop_date") == null? "":req.getParameter("stop_date");
-        //String[] doctypesArr	= req.getParameter("doctypes");
 
         // Lets save searchstring typed by user
         String originalSearchString = searchString;
@@ -89,12 +75,12 @@ public class SearchDocuments extends HttpServlet {
         String created_start = "";
         String create_stop = formatter.format( date );
         String changed_start = "";
-        String changed_stop = "";//formatter.format(date);
-        String activated_start = "";//formatter.format(date);
+        String changed_stop = "";
+        String activated_start = "";
         String activated_stop = "";
-        String archived_start = "";//formatter.format(date);
+        String archived_start = "";
         String archived_stop = "";
-        String activate = "1"; // only activated internalDocument
+        String activate = "1";
 
         // lets set up the search string
         searchString = buildSearchString( searchString );
@@ -152,8 +138,26 @@ public class SearchDocuments extends HttpServlet {
             sqlResults = (String[][])session.getAttribute( "search_hit_list" );
             if ( sqlResults == null ) res.sendRedirect( "StartDoc" );
         } else {
-            //its a new one so lets do a new search
-            sqlResults = imcref.sqlProcedureMulti( sqlBuff.toString() );
+            String[] sqlParameters = new String[]{
+                "" + user.getUserId(),
+                searchString,
+                doctypes,
+                fromDoc,
+                toDoc,
+                sortBy,
+                created_start,
+                create_stop,
+                changed_start,
+                changed_stop,
+                activated_start,
+                activated_stop,
+                archived_start,
+                archived_stop,
+                "0",
+                section_id,
+                activate
+            };
+            sqlResults = imcref.sqlProcedureMulti("SearchDocsIndex", sqlParameters);
             session.setAttribute( "search_hit_list", sqlResults );
         }
 
@@ -179,7 +183,7 @@ public class SearchDocuments extends HttpServlet {
 
 
         //the sections list
-        String[] all_sections = imcref.sqlProcedure( SPROC_SECTION_GET_ALL_SECTIONS );
+        String[] all_sections = imcref.sqlProcedure("SectionGetAll", new String[0]);
         String section_option_list = "";
         String selected_sectionToShow = req.getParameter( "section" );
         String strSectionArry = "\'";
@@ -211,7 +215,6 @@ public class SearchDocuments extends HttpServlet {
         String oneRecHtmlSrc, resultHtmlSrc, noHitHtmlStr, returnStr;
         String show = req.getParameter( "show" );
 
-        String templateStr = null;
         String langPrefix = user.getLangPrefix();
         String templatePath = langPrefix + "/admin/search/";
 
@@ -284,7 +287,7 @@ public class SearchDocuments extends HttpServlet {
         }//end (hits > 0)
 
 
-        StringBuffer buff = SearchDocuments.parseSearchResults( imcref, oneRecHtmlSrc, sqlResults, startNrInt, noOfHit );
+        StringBuffer buff = SearchDocuments.parseSearchResults( oneRecHtmlSrc, sqlResults, startNrInt, noOfHit );
         //if there isnt any hitts lets add the no hit message
         if ( buff.length() == 0 ) {
             buff.append( noHitHtmlStr );
@@ -329,7 +332,6 @@ public class SearchDocuments extends HttpServlet {
      doGet()
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
@@ -347,7 +349,7 @@ public class SearchDocuments extends HttpServlet {
             // No logon.isDone means he hasn't logged in.
             // Save the request URL as the true target and redirect to the login page.
             session.setAttribute( "login.target",
-                                  HttpUtils.getRequestURL( req ).toString() );
+                                  req.getRequestURL().toString() );
             String scheme = req.getScheme();
             String serverName = req.getServerName();
             int p = req.getServerPort();
@@ -380,9 +382,8 @@ public class SearchDocuments extends HttpServlet {
             noofhits_option_list += "<option value=\"" + i + "\" " + ( i == Integer.parseInt( selected ) ? "selected" : "" ) + ">" + i + "</option>";
         }
 
-
         //the sections list
-        String[] all_sections = imcref.sqlProcedure( SPROC_SECTION_GET_ALL_SECTIONS );
+        String[] all_sections = imcref.sqlProcedure("SectionGetAll", new String[0]);
         String section_option_list = "";
         selected = req.getParameter( "section" );
         if ( all_sections != null ) {
@@ -414,54 +415,46 @@ public class SearchDocuments extends HttpServlet {
         return;
     } // End of doGet
 
-
-    /**
-     @Author Peter Östergren
-     */
-    private String buildSearchString( String searchString ) {
-        StringTokenizer token = new StringTokenizer( searchString, " \"+-", true );
+    private String buildSearchString(String searchString) {
+        StringTokenizer token = new StringTokenizer(searchString, " \"+-", true);
         StringBuffer buff = new StringBuffer();
-        while ( token.hasMoreTokens() ) {
+        while (token.hasMoreTokens()) {
             String str = token.nextToken();
-            if ( " ".equals( str ) ) {
+            if (" ".equals(str)) {
                 continue;
             }
-            if ( str.equals( "\"" ) ) {
-                buff.append( "\"" );
+            if (str.equals("\"")) {
+                buff.append("\"");
                 boolean found = false;
-                while ( token.hasMoreTokens() && !found ) {
+                while (token.hasMoreTokens() && !found) {
                     str = token.nextToken();
-                    if ( str.equals( "\"" ) ) {
-                        buff.append( "\"" );
+                    if (str.equals("\"")) {
+                        buff.append("\"");
                         found = true;
                     } else {
-                        buff.append( str );
+                        buff.append(str);
                     }
-                    if ( found ) buff.append( "," );
+                    if (found) buff.append(",");
                 }
-            } else if ( str.equals( "+" ) ) {
-                buff.append( "\"and\"," );
-            } else if ( str.equals( "-" ) ) {
-                buff.append( "\"not\"," );
+            } else if (str.equals("+")) {
+                buff.append("\"and\",");
+            } else if (str.equals("-")) {
+                buff.append("\"not\",");
             } else {
-                buff.append( "\"" + str + "\"," );
+                buff.append("\"" + str + "\",");
             }
         }
-        if ( buff.length() > 0 ) {
-            String lastChar = buff.substring( buff.length() - 1 );
-            if ( ( "," ).equals( lastChar ) ) {
-                buff.deleteCharAt( buff.length() - 1 );
+        if (buff.length() > 0) {
+            String lastChar = buff.substring(buff.length() - 1);
+            if ((",").equals(lastChar)) {
+                buff.deleteCharAt(buff.length() - 1);
             }
         }
         return buff.toString();
     }
 
-
-    /**
-     @Author Peter Östergren
-     */
-    private static StringBuffer parseSearchResults( IMCServiceInterface imcref, String oneRecHtmlSrc,
-                                                    String[][] sqlResults, int startValue, int numberToParse ) throws java.io.IOException {
+    private static StringBuffer parseSearchResults(String oneRecHtmlSrc,
+                                                    String[][] sqlResults, int startValue, int numberToParse ) {
         StringBuffer searchResults = new StringBuffer( "" );
         int stop = startValue + numberToParse;
         if ( stop >= sqlResults.length ) {
@@ -493,7 +486,6 @@ public class SearchDocuments extends HttpServlet {
     /**
      Returns all possible variables that might be used when parse the oneRecLine to the
      search page
-     @Author Peter Östergren
      */
     private static String[] getSearchHitTaggaArr() {
         String[] strArr = {"#meta_id#",
@@ -511,14 +503,6 @@ public class SearchDocuments extends HttpServlet {
                            "#meta_image#",
                            "#hit_nbr#"};
         return strArr;
-    }
-
-
-    /**
-     Log to log file
-     */
-    public void log( String str ) {
-        super.log( str );
     }
 
 } // End class

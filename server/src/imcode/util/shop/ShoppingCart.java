@@ -10,8 +10,6 @@ public class ShoppingCart extends TreeBag {
 
     public final static String SESSION_NAME = "imcode.ShoppingCart" ;
 
-    private static Logger log = Logger.getLogger( ShoppingCart.class.getName() ) ;
-
     public void putItem(ShoppingItem item, int quantity) {
 	removeItem(item) ;
 	add(item, quantity) ;

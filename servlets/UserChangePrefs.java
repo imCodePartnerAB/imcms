@@ -1,29 +1,28 @@
-import java.io.* ;
+
+import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.util.* ;
+import java.util.*;
 
-import imcode.external.diverse.* ;
-import imcode.server.* ;
-import imcode.util.* ;
+import imcode.external.diverse.*;
+import imcode.server.*;
 
 public class UserChangePrefs extends Administrator {
 
-    String LOGIN = "userprefs_login.htm" ;
-    String CHANGE_PREFS = "userprefs_change.htm" ;
-    String DONE = "userprefs_done.htm" ;
+    private String LOGIN = "userprefs_login.htm";
+    private String CHANGE_PREFS = "userprefs_change.htm";
+    private String DONE = "userprefs_done.htm";
 
     /**
-       POST
-    **/
+     * POST
+     */
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException {
+            throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// Lets get an user object
-	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
 	String userId = null ;
 
 	// Get the session
@@ -103,13 +102,12 @@ public class UserChangePrefs extends Administrator {
 
 
 	// ************* Verfiy username and password **************
-	if(req.getParameter("authenticate") != null) {
+        if (req.getParameter("verifyUser") != null) {
 	    String loginName = (req.getParameter("login_name")==null) ? "" : (req.getParameter("login_name")) ;
 	    String password = (req.getParameter("password")==null) ? "" : (req.getParameter("password")) ;
 
 	    // Validate loginparams against the DB
-	    String sqlQ = "GetUserIdFromName '" + loginName + "', '" + password + "'" ;
-	    userId = imcref.sqlProcedureStr( sqlQ ) ;
+            userId = imcref.sqlProcedureStr("GetUserIdFromName",new String[]{loginName,password});
 	    //	log("GetUserIdFromName ok") ;
 
 	    // Lets check that we the found the user. Otherwise send unvailid username password
@@ -121,7 +119,7 @@ public class UserChangePrefs extends Administrator {
 	    }
 
 	    // Lets check if the users password are correct
-	    String currPass = imcref.sqlProcedureStr("GetUserPassword " + userId ) ;
+            String currPass = imcref.sqlProcedureStr("GetUserPassword", new String[] { userId });
 	    if(!currPass.equals(password)) {
 		String header = req.getServletPath() ;
 		AdminError2 err = new AdminError2(req,res,header,51) ;
@@ -140,7 +138,7 @@ public class UserChangePrefs extends Administrator {
 	    // ok, redirect to myself
 	    res.sendRedirect("UserChangePrefs?changeUser=on");
 	    return ;
-	} // end authenticate
+        } // end verifyUser
 
 
 	///*********** Lets get the users information ************
@@ -164,7 +162,7 @@ public class UserChangePrefs extends Administrator {
 		// Ok, we got the user. Lets get his settings.
 		VariableManager vm = new VariableManager() ;
 
-		String[] userInfo = imcref.sqlProcedure("UserPrefsChange " + userId ) ;
+                String[] userInfo = imcref.sqlProcedure("UserPrefsChange", new String[] { userId });
 		String[] keys = {"USER_ID","LOGIN_NAME","PWD1","PWD2","FIRST_NAME",
 				 "LAST_NAME","TITLE", "COMPANY", "ADDRESS","CITY","ZIP","COUNTRY","COUNTRY_COUNCIL",
 				 "EMAIL", "LANG_ID" } ;
@@ -174,22 +172,20 @@ public class UserChangePrefs extends Administrator {
 		}
 
 		// Lets fix all users phone numbers from DB
-		String[] phonesArr = imcref.sqlProcedure("GetUserPhones " + userId) ;
+                String[] phonesArr = imcref.sqlProcedure("GetUserPhones", new String[] {userId});
 		Vector phonesV  = new Vector(java.util.Arrays.asList(phonesArr)) ;
-		Html htm = new Html() ;
-		String phones = htm.createHtmlOptionList( "", phonesV ) ;
+		String phones = Html.createHtmlOptionList( "", phonesV ) ;
 		vm.addProperty("PHONES_MENU", phones  ) ;
 		vm.addProperty("CURR_USER_ID", userId  ) ;
 
 		// Lets get the the users language id
-		String[] langList = imcref.sqlProcedure("GetLanguageList") ;
+                String[] langList = imcref.sqlProcedure("GetLanguageList", new String[0]);
 		Vector selectedLangV = new Vector() ;
 		selectedLangV.add(vm.getProperty("LANG_ID")) ;
-		vm.addProperty("LANG_TYPES", htm.createHtmlCode("ID_OPTION",selectedLangV, new Vector(java.util.Arrays.asList(langList)))) ;
+		vm.addProperty("LANG_TYPES", Html.createHtmlCode("ID_OPTION",selectedLangV, new Vector(java.util.Arrays.asList(langList)))) ;
 
 		// Lets set the user id we are working on
 		// HttpSession session = req.getSession(true) ;
-		String theUserId = null ;
 		if(session != null  ) {
 		    session.setAttribute("AdminUser.user_id", userId ) ;
 		    session.setAttribute("AdminUser.passedLogin", "1" ) ;
@@ -206,7 +202,6 @@ public class UserChangePrefs extends Administrator {
 	// ****** Default option. Ok, Generate a login page to the user
 	VariableManager vm = new VariableManager() ;
 	vm.addProperty("SERVLET_URL", "" ) ;
-	Html ht = new Html() ;
 	this.sendHtml(req,res,vm, LOGIN ) ;
 	return ;
 
@@ -216,7 +211,7 @@ public class UserChangePrefs extends Administrator {
        Collects the parameters from the request object
     **/
 
-    public Properties getParameters( HttpServletRequest req) throws ServletException, IOException {
+    private Properties getParameters(HttpServletRequest req) {
 
 	Properties userInfo = new Properties() ;
 	// Lets get the parameters we know we are supposed to get from the request object
@@ -255,35 +250,20 @@ public class UserChangePrefs extends Administrator {
     }
 
 
-    public void log( String str) {
-	super.log(str) ;
-	System.out.println("UserChangePrefs: " + str ) ;
-    }
-
-
-    /*
-      Service. Sends all requests to doPost method
-    */
-    public void service (HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException {
-	this.doPost(req,res) ;
-    }
-
-
     /**
-       Copies all properties from propertyOne to propertyTwo as long as the property is not "" or null
-    **/
-    public Properties copyProps(Properties p1, Properties p2) {
-	Enumeration enumValues = p1.elements() ;
-	Enumeration enumKeys = p1.keys() ;
-	while((enumValues.hasMoreElements() && enumKeys.hasMoreElements())) {
-	    String aKey = (String) (enumKeys.nextElement()) ;
-	    String aValue = (String) (enumValues.nextElement()) ;
-	    if( (aValue != null) && ( !aValue.equals("")) ){
-		p2.setProperty(aKey, aValue) ;
-	    }
-	}
-	return p2 ;
+     * Copies all properties from propertyOne to propertyTwo as long as the property is not "" or null
+     */
+    private Properties copyProps(Properties p1, Properties p2) {
+        Enumeration enumValues = p1.elements();
+        Enumeration enumKeys = p1.keys();
+        while ((enumValues.hasMoreElements() && enumKeys.hasMoreElements())) {
+            String aKey = (String) (enumKeys.nextElement());
+            String aValue = (String) (enumValues.nextElement());
+            if ((aValue != null) && (!aValue.equals(""))) {
+                p2.setProperty(aKey, aValue);
+            }
+        }
+        return p2;
     } // checkparameters
 
    /**
@@ -294,7 +274,7 @@ public class UserChangePrefs extends Administrator {
 
       // Get default props
       Properties p = doDefaultUser();
-      Hashtable h = imcref.sqlQueryHash( "GetUserInfo " + userId );
+      Hashtable h = imcref.sqlQueryHash( "GetUserInfo", new String[] { userId } );
       Enumeration keys = h.keys();
       while( keys.hasMoreElements() ) {
          Object key = keys.nextElement();

@@ -1,19 +1,13 @@
 package imcode.server.parser ;
 
 public class Menu extends java.util.LinkedList {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private int sortOrder ;
-    private int menuId ;
     private boolean menuMode ;
-    private String imageUrl ;
 
     public Menu (int menuId, int sortOrder, boolean menumode, String imageUrl) {
-	this.menuId = menuId ;
-	this.sortOrder = sortOrder ;
+        this.sortOrder = sortOrder ;
 	this.menuMode = menumode ;
-	this.imageUrl = imageUrl ;
     }
 
     /**
@@ -23,24 +17,6 @@ public class Menu extends java.util.LinkedList {
      */
     public int getSortOrder() {
 	return this.sortOrder;
-    }
-
-    /**
-     * Gets the value of menuId
-     *
-     * @return the value of menuId
-     */
-    public int getMenuId() {
-	return this.menuId;
-    }
-
-    /**
-     * Gets the value of imageUrl
-     *
-     * @return the value of imageUrl
-     */
-    public String getImageUrl() {
-	return this.imageUrl;
     }
 
     /**

@@ -4,9 +4,6 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.external.diverse.* ;
-import java.rmi.* ;
-import java.rmi.registry.* ;
-import imcode.util.* ;
 
 public class BillBoardHelp extends BillBoard {//ConfHelp
 
@@ -22,7 +19,7 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
 
 	// Lets get all parameters for this servlet
 	Properties params = this.getParameters(req) ;
-	if (super.checkParameters(req, res, params) == false) {
+        if (true == false) {
 	    return ;
 	}
 
@@ -47,16 +44,15 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
 	    } else if ( params.getProperty("HELP_MODE").equalsIgnoreCase("ADMIN") ) {
 
 		//lets se if user has adminrights
-		String metaId = getMetaId( req );
-		if ( metaId != null && userHasAdminRights( imcref, Integer.parseInt( metaId ), user ) ) {
+		int metaId = getMetaId( req );
+		if ( userHasAdminRights( imcref, metaId, user ) ) {
 		    file = ADMIN_TEMPLATE ;
 		    if( params.getProperty("HELP_AREA").equalsIgnoreCase("TEMPLATESPEC") ) {
 			file = ADMIN_TEMPLATE2;
 		    }
 		} else {
 		    String header = "BillBoardHelp servlet. " ;
-		    String msg = params.toString() ;
-		    BillBoardError err = new BillBoardError( req, res, header, 6 );
+		    new BillBoardError( req, res, header, 6 );
 		    return ;
 		}
 	    }
@@ -75,13 +71,12 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
        Collects all the parameters used by this servlet
     **/
 
-    public Properties getParameters( HttpServletRequest req)
-	throws ServletException, IOException {
+    private Properties getParameters( HttpServletRequest req) {
 
-	Properties params = super.getSessionParameters(req) ;
+	Properties params = MetaInfo.createPropertiesFromMetaInfoParameters(super.getBillBoardSessionParameters(req)) ;
 
 	// Lets get the EXTENDED SESSION PARAMETERS
-	super.getExtSessionParameters(req, params) ;
+	super.addExtSessionParametersToProperties(req, params) ;
 
 	// Lets get our REQUESTPARAMETERS
 	String helpInfo = (req.getParameter("helparea")==null) ? "" : (req.getParameter("helparea")) ;
@@ -106,15 +101,6 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
 	    this.doPost(req,res) ;
 	else
 	    this.doPost(req,res) ;
-    }
-
-
-    /**
-       Init
-    **/
-
-    public void init(ServletConfig config) throws ServletException {
-	super.init(config);
     }
 
     /**

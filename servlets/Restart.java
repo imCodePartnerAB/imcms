@@ -1,37 +1,37 @@
-import java.io.* ;
-import javax.servlet.* ;
-import javax.servlet.http.* ;
-import imcode.util.* ;
-import imcode.server.* ;
+
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Prefs;
+import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class Restart extends HttpServlet {
 
-    public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-		String start_url        	= imcref.getStartUrl() ;
+    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        String start_url = imcref.getStartUrl();
 
-		UserDomainObject user ;
-		if ( (user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ))==null ) {
-			return;
-		}
-		// Is user superadmin?
+        UserDomainObject user;
+        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
+            return;
+        }
+        // Is user superadmin?
 
-		String sqlStr  = "select role_id from users,user_roles_crossref\n" ;
-		sqlStr += "where users.user_id = user_roles_crossref.user_id\n" ;
-		sqlStr += "and user_roles_crossref.role_id = 0\n" ;
-		sqlStr += "and users.user_id = " + user.getUserId() ;
+        if ( !imcref.checkAdminRights( user ) ) {
+            Utility.redirect( req, res, start_url );
+            return;
+        }
 
-		if ( imcref.sqlQuery(sqlStr).length == 0 ) {
-			Utility.redirect(req,res,start_url) ;
-			return ;
-		}
-
-		log ("Restarting...") ;
-		Prefs.flush() ;
-		log ("Flushed preferencescache") ;
-		log ("Restart Complete.") ;
-		res.getOutputStream().println("Restart complete.") ;
-	}
+        log( "Restarting..." );
+        Prefs.flush();
+        log( "Flushed preferencescache" );
+        log( "Restart Complete." );
+        res.getOutputStream().println( "Restart complete." );
+    }
 }

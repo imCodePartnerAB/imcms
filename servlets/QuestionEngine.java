@@ -98,7 +98,7 @@ public class QuestionEngine extends HttpServlet
     }
 
 
-    public List getNewQuestion(IMCServiceInterface imcref,String inFile) throws ServletException, IOException
+    private List getNewQuestion(IMCServiceInterface imcref,String inFile) throws IOException
     {
 
 	List questionList = imcref.getQuoteList(inFile+".poll.txt") ;

@@ -1364,15 +1364,6 @@ GO
 
 -- 2003-10-22 Hasse
 
-print ' OBS !!!!! '
-print 'Följande åtgärder behöver genomföras efter detta script '
-print ''
-print '1. Du MÅSTE köra hela "sprocs.sql" som finns i "dist" katalogen'
-print ''
-print '2. Kopiera poll templates från mappen /poll/templates till WEB-INF/templates/text'
-print 'och byt namn på dem enligt anvisningar, se tidigare print utskrift i detta resultat:'
-GO
-
 BEGIN TRANSACTION
 ALTER TABLE dbo.childs
 	DROP CONSTRAINT FK_childs_meta1
@@ -1429,5 +1420,12 @@ drop procedure [dbo].[AddPhoneNr]
 GO
 -- 2003-11-28 Lennart
 
-print' OBS!!!  Glöm inte att du MÅSTE köra hela sprocs.sql efter detta script vid uppgradering  OBS!!'
+print ' OBS !!!!! '
+print 'Följande åtgärder behöver genomföras efter detta script '
+print ''
+print '1. Du MÅSTE köra hela "sprocs.sql" som finns i "dist" katalogen'
+print ''
+print '2. Kopiera poll templates från mappen /poll/templates till WEB-INF/templates/text'
+print 'och byt namn på dem enligt anvisningar, se tidigare print utskrift i detta resultat:'
+GO
 

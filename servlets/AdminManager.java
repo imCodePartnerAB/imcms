@@ -6,14 +6,13 @@ import javax.servlet.http.*;
 
 import imcode.external.diverse.* ;
 import imcode.server.* ;
-import imcode.util.* ;
-
 
 public class AdminManager extends Administrator {
 
-    String HTML_TEMPLATE ;
-	String HTML_ADMINTASK;
-	String HTML_USERADMINTASK;
+    private String HTML_TEMPLATE ;
+	private String HTML_ADMINTASK;
+	private String HTML_USERADMINTASK;
+
     /**
        The GET method creates the html page when this side has been
        redirected from somewhere else.
@@ -25,15 +24,15 @@ public class AdminManager extends Administrator {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// Lets validate the session
-	if (super.checkSession(req,res) == false)	return ;
+	if (checkSession(req,res) == false)	return ;
 
 	// Lets get an user object
-	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
+	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
 	if(user == null) {
 	    String header = "Error in AdminManager." ;
 	    String msg = "Couldnt create an user object."+ "<BR>" ;
 	    this.log(header + msg) ;
-	    AdminError err = new AdminError(req,res,header,msg) ;
+	    new AdminError(req,res,header,msg) ;
 	    return ;
 	}
 
@@ -43,10 +42,7 @@ public class AdminManager extends Administrator {
 	    String msg = "The user is not an administrator."+ "<BR>" ;
 	    this.log(header + msg) ;
 
-	    // Lets get the path to the admin templates folder
-	    File templateLib = getAdminTemplateFolder(imcref, user) ;
-
-	    AdminError err = new AdminError(req,res,header,msg) ;
+	    new AdminError(req,res,header,msg) ;
 	    return ;
 	}
 

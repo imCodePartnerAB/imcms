@@ -10,14 +10,7 @@ import imcode.server.* ;
 */
 public class ChangeExternalDoc2 extends HttpServlet {
 
-    /**
-	init()
-	*/
-	public void init( ServletConfig config ) throws ServletException {
-		super.init( config ) ;
-	}
-
-	public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		doPost(req,res) ;
 	}
 

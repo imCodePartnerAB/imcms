@@ -1,13 +1,10 @@
 package imcode.util ;
 
 import java.util.Map ;
-import java.util.Hashtable ;
 
 public class Parser {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
-	/**
+    /**
 		Parses a string.
 		@param doc The string.
 		@param tags The tags to replace.
@@ -70,7 +67,6 @@ public class Parser {
 	    }
 	    return sb ;
 	}
-
 
     /**
 		A nice little parsefunction which searches a StringBuffer for "taglikes" (tags), and replaces them with Strings from a Map.

@@ -9,13 +9,6 @@ import imcode.server.* ;
 public class LogOut extends HttpServlet {
 
     /**
-	 init()
-	*/
-	public void init ( ServletConfig config ) throws ServletException {
-		super.init ( config ) ;
-	}
-
-	/**
 	doGet()
 	*/
 	public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {

@@ -1,18 +1,20 @@
 package imcode.server ;
 
 public class Image implements java.io.Serializable {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	String image_ref ;
-	String image_name ;
-	int image_width, image_height, image_border ;
-	String image_align ;
-	String alt_text ;
-	String low_scr ;
-	int v_space,h_space ;
-	String target ;
-	String target_name ;
-	String image_ref_link ;
+
+    private String image_ref ;
+	private String image_name ;
+	private int image_width;
+    private int image_height;
+    private int image_border ;
+	private String image_align ;
+	private String alt_text ;
+	private String low_scr ;
+	private int v_space;
+    private int h_space ;
+	private String target ;
+	private String target_name ;
+	private String image_ref_link ;
 
 
 
@@ -20,38 +22,7 @@ public class Image implements java.io.Serializable {
 
 	}
 
-	public Image(String image_ref,
-		String image_name,
-		int image_width,
-		int image_height,
-		int image_border,
-		String image_align,
-		String alt_text,
-		String low_scr,
-		int v_space,
-		int h_space,
-		String target,
-		String target_name,
-		String image_ref_link) {
-
-
-		this.image_ref      = image_ref ;
-		this.image_name     = image_name ;
-		this.image_width    = image_width ;
-		this.image_height   = image_height ;
-		this.image_border   = image_border ;
-		this.image_align    = image_align ;
-		this.alt_text       = alt_text ;
-		this.low_scr        = low_scr ;
-		this.v_space        = v_space ;
-		this.h_space        = h_space ;
-		this.target         = target ;
-		this.target_name    = target_name ;
-		this.image_ref_link = image_ref_link ;
-	}
-
-
-	public String getImageRef() {
+    public String getImageRef() {
 		return image_ref ;
 	}
 

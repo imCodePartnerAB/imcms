@@ -1,26 +1,24 @@
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.util.*;
-import imcode.server.*;
-import imcode.server.user.UserDomainObject;
+import imcode.server.ApplicationServer;
+import imcode.server.DocumentRequest;
+import imcode.server.IMCServiceInterface;
 import imcode.server.parser.ParserParameters;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Parser;
+import imcode.util.Utility;
 
-/**
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Stack;
+import java.util.Vector;
 
- */
+
 public class AdminDoc extends HttpServlet {
-
-    /**
-     init()
-     */
-    public void init( ServletConfig config ) throws ServletException {
-        super.init( config );
-    }
-
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
@@ -112,12 +110,7 @@ public class AdminDoc extends HttpServlet {
         switch( doc_type ) {
 
             default:
-                DocumentRequest documentRequest = new DocumentRequest( imcref, req.getRemoteAddr(), req.getSession( true ).getId(), user, meta_id, null, req.getQueryString());
-                documentRequest.setUserAgent( req.getHeader( "User-agent" ) );
-                documentRequest.setContextPath( req.getContextPath() );
-                documentRequest.setCookies( req.getCookies() );
-                documentRequest.setHostName( req.getHeader( "Host" ) );
-
+                DocumentRequest documentRequest = new DocumentRequest( imcref, user, meta_id, null, req);
                 String result = imcref.parsePage( documentRequest, flags, new ParserParameters() );
                 return result;
 
@@ -139,7 +132,7 @@ public class AdminDoc extends HttpServlet {
 
             case 5:
                 Vector urlvec = new Vector();
-                String[] strary = imcref.sqlQuery( "select u.url_ref,m.target, m.frame_name from url_docs u, meta m where m.meta_id = u.meta_id and m.meta_id = " + meta_id );
+                String[] strary = imcref.sqlQuery( "select u.url_ref,m.target, m.frame_name from url_docs u, meta m where m.meta_id = u.meta_id and m.meta_id = ?", new String[] { ""+meta_id });
                 String url_ref = strary[0];
                 String target = strary[1];
                 String frame_name = "";
@@ -176,7 +169,7 @@ public class AdminDoc extends HttpServlet {
 
             case 7:
                 Vector fsetvec = new Vector();
-                String fset = imcref.sqlQueryStr( "select frame_set from frameset_docs where meta_id = " + meta_id );
+                String fset = imcref.sqlQueryStr( "select frame_set from frameset_docs where meta_id = ?", new String[] { ""+meta_id });
                 fsetvec.add( "#frame_set#" );
                 fsetvec.add( fset );
                 fsetvec.add( "#getMetaId#" );
@@ -189,8 +182,8 @@ public class AdminDoc extends HttpServlet {
 
             case 6:
                 Vector vec = new Vector();
-                String sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = " + meta_id + " order by value desc,name asc";
-                Hashtable hash = imcref.sqlQueryHash( sqlStr );
+                String sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = ? order by value desc,name asc";
+                Hashtable hash = imcref.sqlQueryHash( sqlStr, new String[] { ""+meta_id } );
                 String[] b_id = (String[])hash.get( "browser_id" );
                 String[] nm = (String[])hash.get( "name" );
                 String[] to = (String[])hash.get( "to_meta_id" );
@@ -205,8 +198,8 @@ public class AdminDoc extends HttpServlet {
                 }
                 vec.add( "#browsers#" );
                 vec.add( bs );
-                sqlStr = "select browser_id,name from browsers where browser_id not in (select browsers.browser_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = " + meta_id + " ) order by value desc,name asc";
-                hash = imcref.sqlQueryHash( sqlStr );
+                sqlStr = "select browser_id,name from browsers where browser_id not in (select browsers.browser_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = ? ) order by value desc,name asc";
+                hash = imcref.sqlQueryHash( sqlStr, new String[]{""+meta_id});
                 b_id = (String[])hash.get( "browser_id" );
                 nm = (String[])hash.get( "name" );
                 String nb = "";
@@ -229,12 +222,12 @@ public class AdminDoc extends HttpServlet {
                 break;
 
             case 8:
-                sqlStr = "select mime from fileupload_docs where meta_id = " + meta_id;
-                String mimetype = imcref.sqlQueryStr( sqlStr );
-                sqlStr = "select filename from fileupload_docs where meta_id = " + meta_id;
-                String filename = imcref.sqlQueryStr( sqlStr );
-                sqlStr = "select mime,mime_name from mime_types where lang_prefix = '" + lang_prefix + "' and mime != 'other'";
-                hash = imcref.sqlQueryHash( sqlStr );
+                sqlStr = "select mime from fileupload_docs where meta_id = ?";
+                String mimetype = imcref.sqlQueryStr( sqlStr, new String[]{""+meta_id} );
+                sqlStr = "select filename from fileupload_docs where meta_id = ?";
+                String filename = imcref.sqlQueryStr( sqlStr, new String[]{"" + meta_id} );
+                sqlStr = "select mime,mime_name from mime_types where lang_prefix = ? and mime != 'other'";
+                hash = imcref.sqlQueryHash( sqlStr, new String[]{lang_prefix} );
                 String mime[] = (String[])hash.get( "mime" );
                 String mime_name[] = (String[])hash.get( "mime_name" );
                 String optStr = "";
@@ -267,6 +260,5 @@ public class AdminDoc extends HttpServlet {
         htmlStr = imcode.util.Parser.parseDoc( htmlStr, parsetmp );
 
         return htmlStr;
-
     }
 }
