@@ -186,7 +186,7 @@ INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(7,2,'Activ
 
 
 INSERT INTO phonetypes VALUES(0, 'Annat', 1 )
-INSERT INTO phonetypes VALUES(1, 'Home', 1 )
+INSERT INTO phonetypes VALUES(1, 'Bostad', 1 )
 INSERT INTO phonetypes VALUES(2, 'Arbete', 1 )
 INSERT INTO phonetypes VALUES(3, 'Mobil', 1 )
 INSERT INTO phonetypes VALUES(4, 'Fax', 1 )

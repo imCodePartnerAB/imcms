@@ -150,7 +150,6 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         UserDomainObject imcmsUser = getUser( loginName );
         tempUser.setId( imcmsUser.getId() );
         tempUser.setLoginName( loginName );
-
         callSprocModifyUserProcedure( SPROC_UPDATE_USER, tempUser );
         removePhoneNumbers( tempUser );
         addPhoneNumbers( tempUser );
@@ -170,12 +169,26 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     }
 
     private void addPhoneNumbers( UserDomainObject newUser ) {
+        final int PHONE_TYPE_OTHER_PHONE = 0;
         final int PHONE_TYPE_HOME_PHONE = 1;
         final int PHONE_TYPE_WORK_PHONE = 2;
         final int PHONE_TYPE_WORK_MOBILE = 3;
-        staticSprocPhoneNbrAdd( service, newUser.getId(), newUser.getHomePhone(), PHONE_TYPE_HOME_PHONE );
-        staticSprocPhoneNbrAdd( service, newUser.getId(), newUser.getWorkPhone(), PHONE_TYPE_WORK_PHONE );
-        staticSprocPhoneNbrAdd( service, newUser.getId(), newUser.getMobilePhone(), PHONE_TYPE_WORK_MOBILE );
+        final int PHONE_TYPE_FAX_PHONE = 4;
+        if ( newUser.getHomePhone().length() > 0 ){
+            staticSprocPhoneNbrAdd( service, newUser.getId(), newUser.getHomePhone(), PHONE_TYPE_HOME_PHONE ) ;
+        }
+        if ( newUser.getWorkPhone().length() > 0 ){
+            staticSprocPhoneNbrAdd( service, newUser.getId(), newUser.getWorkPhone(), PHONE_TYPE_WORK_PHONE );
+        }
+        if ( newUser.getMobilePhone().length() > 0 ){
+            staticSprocPhoneNbrAdd( service, newUser.getId(), newUser.getMobilePhone(), PHONE_TYPE_WORK_MOBILE );
+        }
+        if ( newUser.getFaxPhone().length() > 0 ){
+            staticSprocPhoneNbrAdd( service, newUser.getId(), newUser.getFaxPhone(), PHONE_TYPE_FAX_PHONE );
+        }
+        if ( newUser.getOtherPhone().length() > 0 ){
+            staticSprocPhoneNbrAdd( service, newUser.getId(), newUser.getOtherPhone(), PHONE_TYPE_OTHER_PHONE );
+        }
     }
 
     public String[] getRoleNames( UserDomainObject user ) {

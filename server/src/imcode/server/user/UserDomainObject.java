@@ -54,6 +54,8 @@ public class UserDomainObject extends Hashtable {
         private String workPhone = "";
         private String mobilePhone = "";
         private String homePhone = "";
+        private String faxPhone = "";
+        private String otherPhone = "";
     }
 
     private static class LazilyLoadedUserRoles implements Serializable {
@@ -320,6 +322,34 @@ public class UserDomainObject extends Hashtable {
      */
     public void setHomePhone( String homephone ) {
         this.getLazilyLoadedUserPhoneNumbers().homePhone = homephone;
+    }
+
+    /**
+     * Get the users faxphone
+     */
+    public String getFaxPhone() {
+        return this.getLazilyLoadedUserPhoneNumbers().faxPhone;
+    }
+
+    /**
+     * Set the users faxpohne
+     */
+    public void setFaxPhone( String faxphone ) {
+        this.getLazilyLoadedUserPhoneNumbers().faxPhone = faxphone;
+    }
+
+    /**
+     * Get the users otherphone
+     */
+    public String getOtherPhone() {
+        return this.getLazilyLoadedUserPhoneNumbers().otherPhone;
+    }
+
+    /**
+     * Set the users otherpohne
+     */
+    public void setOtherPhone( String otherphone ) {
+        this.getLazilyLoadedUserPhoneNumbers().otherPhone = otherphone;
     }
 
     /**
