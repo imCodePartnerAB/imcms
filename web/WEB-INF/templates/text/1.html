@@ -52,9 +52,11 @@ LI { padding-bottom:5; }
 		<?/imcms:menu?><?imcms:include
 		
 		url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoContent" pre='<hr>' post='<hr>'?><?imcms:image
-		no='3' label='Bild' pre='<br><br>' post='<br>'?></td>
+		no='3' label='Bild' pre='<br><br>' post='<br>'?><br>
+		<?imcms:include no='1' label='Dynamisk inkludering 1'?></td>
 		
 		<td width="10">&nbsp;</td>
+
 		
 		<td width="150"><?imcms:include
 		url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoRight"?></td>

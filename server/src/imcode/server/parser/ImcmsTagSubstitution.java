@@ -288,10 +288,13 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             no = implicitIncludeNumber++; // Implicitly use the next number.
         }
         try {
+            String label = attributes.getProperty("label");
+            label = label ==  null?"":label;
             Integer includedDocumentId = document.getIncludedDocumentId( no );
             if ( includeMode ) {
                 return service.getAdminTemplate( "change_include.html", documentRequest.getUser(),
                                                  Arrays.asList( new String[]{
+                                                     "#label#", label ,
                                                      "#meta_id#", String.valueOf( document.getId() ),
                                                      "#include_id#", String.valueOf( no ),
                                                      "#include_meta_id#", includedDocumentId == null
@@ -404,7 +407,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
         String noStr = attributes.getProperty( "no" );
         int no;
-        imcode.server.document.textdocument.TextDomainObject text = null;
+        TextDomainObject text = null;
         if ( null == noStr ) {
             no = implicitTextNumber++;
             text = (TextDomainObject)textMap.get( new Integer( no ) );
