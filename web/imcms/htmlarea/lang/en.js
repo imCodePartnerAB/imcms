@@ -50,7 +50,8 @@ HTMLArea.I18N = {
 		copy:           "Copy selection",
 		paste:          "Paste from clipboard",
 		lefttoright:    "Direction left to right",
-		righttoleft:    "Direction right to left"
+		righttoleft:    "Direction right to left",
+		killword:       "Clean up Word-code"
 	},
 
 	buttons: {

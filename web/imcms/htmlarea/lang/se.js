@@ -50,7 +50,8 @@ HTMLArea.I18N = {
 		copy:           "Kopiera",
 		paste:          "Klistra in",
 		lefttoright:    "Textriktning vänster till höger",
-		righttoleft:    "Textriktning höger till vänster"
+		righttoleft:    "Textriktning höger till vänster",
+		killword:       "Rensa Word-kod"
 	},
 
 	buttons: {

@@ -278,7 +278,8 @@ HTMLArea.Config = function () {
 		copy: [ "Copy selection", "ed_copy.gif", false, cut_copy_paste ],
 		paste: [ "Paste from clipboard", "ed_paste.gif", false, cut_copy_paste ],
 		lefttoright: [ "Direction left to right", "ed_left_to_right.gif", false, function(e) {e.execCommand("lefttoright");} ],
-		righttoleft: [ "Direction right to left", "ed_right_to_left.gif", false, function(e) {e.execCommand("righttoleft");} ]
+		righttoleft: [ "Direction right to left", "ed_right_to_left.gif", false, function(e) {e.execCommand("righttoleft");} ],
+		killword: [ "Clean up Word-code", "ed_wordclean.gif", true, function(e) {e.execCommand("killword");} ]
 	};
 	/* ADDING CUSTOM BUTTONS
 	 * ---------------------
@@ -1000,7 +1001,7 @@ HTMLArea.loadStyle("htmlarea.css.jsp");
 // by Weeezl (user @ InteractiveTools forums).
 HTMLArea.prototype._wordClean = function() {
 	var D = this.getInnerHTML();
-	if (D.indexOf('class=Mso') >= 0) {
+	if (/class=\x22?Mso/gi.test(D)) {
 
 		// make one line
 		D = D.replace(/\r\n/g, ' ').
@@ -1714,7 +1715,7 @@ HTMLArea.prototype.execCommand = function(cmdID, UI, param) {
 	    case "inserttable": this._insertTable(); break;
 	    case "insertimage": this._insertImage(); break;
 	    case "about"    : this._popupDialog("about.html", null, this); break;
-	    case "showhelp" : popWinOpen(550,400,_editor_url + "reference.jsp","ha_help",1,1); break;
+	    case "showhelp" : popWinOpen(550,500,_editor_url + "reference.jsp","ha_help",1,1); break;
 
 	    case "killword": this._wordClean(); break;
 
@@ -1794,7 +1795,7 @@ HTMLArea.prototype._editorEvent = function(ev) {
 		    case 'j': cmd = "justifyfull"; break;
 		    case 'z': cmd = "undo"; break;
 		    case 'y': cmd = "redo"; break;
-		    case 'v': cmd = "paste"; break;
+		    case 'v': cmd = HTMLArea.is_ie ? "paste" : ""; break;
 
 		    case '0': cmd = "killword"; break;
 

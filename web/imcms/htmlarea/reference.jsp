@@ -15,7 +15,7 @@
 
 <style type="text/css">
   @import url(htmlarea.css);
-  body { font: 14px verdana,sans-serif; background: #fff; color: #000; }
+  body, TD { font: 12px verdana,sans-serif; background: #fff; color: #000; }
   h1, h2 { font-family:tahoma,sans-serif; }
   h1 { border-bottom: 2px solid #000; }
   h2 { border-bottom: 1px solid #aaa; }
@@ -90,19 +90,86 @@ padding: 5px; text-align: center; }
 
 <p>Editorn möjliggör följande tangentbordskombinationer:</p>
 
-<ul>
-  <li>CTRL-A -- Markera allt</li>
-  <li>CTRL-B -- Fetstil</li>
-  <li>CTRL-I -- Kursiv stil</li>
-  <li>CTRL-U -- Uderstruket</li>
-  <li>CTRL-S -- Genomstruket</li>
-  <li>CTRL-L -- Vänsterjusterat</li>
-  <li>CTRL-E -- Centrerat</li>
-  <li>CTRL-R -- Högerjusterat</li>
-  <li>CTRL-J -- Marginaljusterat</li>
-  <li>CTRL-1 .. CTRL-6 -- Rubriker (&lt;h1&gt; .. &lt;h6&gt;)</li>
-  <li>CTRL-0 (noll) -- Rensa innehåll inklistrat från Word</li>
-</ul>
+
+
+<blockquote>
+<table border="0" cellspacing="0" cellpadding="2">
+<tr>
+	<td>CTRL-A &nbsp;</td>
+	<td>Markera allt</td>
+</tr>
+<tr>
+	<td>CTRL-B &nbsp;</td>
+	<td>Fetstil</td>
+</tr>
+<tr>
+	<td>CTRL-I &nbsp;</td>
+	<td>Kursiv stil</td>
+</tr>
+<tr>
+	<td>CTRL-U &nbsp;</td>
+	<td>Understruket</td>
+</tr>
+<tr>
+	<td>CTRL-S &nbsp;</td>
+	<td>Genomstruket</td>
+</tr>
+<tr>
+	<td>CTRL-L &nbsp;</td>
+	<td>Vänsterjusterat</td>
+</tr>
+<tr>
+	<td>CTRL-E &nbsp;</td>
+	<td>Centrerat</td>
+</tr>
+<tr>
+	<td>CTRL-R &nbsp;</td>
+	<td>Högerjusterat</td>
+</tr>
+<tr>
+	<td>CTRL-J &nbsp;</td>
+	<td>Marginaljusterat</td>
+</tr><%
+	if (isMac) { %>
+<tr>
+	<td><img src="images/icon_command.gif" width="13" height="13" alt="" align="absmiddle">-X &nbsp;</td>
+	<td>Klipp ut</td>
+</tr>
+<tr>
+	<td><img src="images/icon_command.gif" width="13" height="13" alt="" align="absmiddle">-C &nbsp;</td>
+	<td>Kopiera</td>
+</tr>
+<tr>
+	<td><img src="images/icon_command.gif" width="13" height="13" alt="" align="absmiddle">-V &nbsp;</td>
+	<td>Klistra in (rensar EJ Word-kod)</td>
+</tr><%
+	} else { %>
+<tr>
+	<td>CTRL-X &nbsp;</td>
+	<td>Klipp ut</td>
+</tr>
+<tr>
+	<td>CTRL-C &nbsp;</td>
+	<td>Kopiera</td>
+</tr>
+<tr>
+	<td>CTRL-V &nbsp;</td>
+	<td>Klistra in (rensar<%= isIE ? "" : " EJ" %> Word-kod)</td>
+</tr><%
+	} %>
+<tr>
+	<td>CTRL-1 .. CTRL-6 &nbsp;</td>
+	<td>Rubriker (&lt;h1&gt; .. &lt;h6&gt;)</td>
+</tr>
+<tr>
+	<td>CTRL-0 (noll) &nbsp;</td>
+	<td>Rensa innehåll inklistrat från Word</td>
+</tr>
+</table>
+</blockquote>
+
+
+
 
 <% } else { %>
 
@@ -112,19 +179,81 @@ padding: 5px; text-align: center; }
 
 <p>The editor provides the following key combinations:</p>
 
-<ul>
-  <li>CTRL-A -- select all</li>
-  <li>CTRL-B -- bold</li>
-  <li>CTRL-I -- italic</li>
-  <li>CTRL-U -- underline</li>
-  <li>CTRL-S -- strikethrough</li>
-  <li>CTRL-L -- justify left</li>
-  <li>CTRL-E -- justify center</li>
-  <li>CTRL-R -- justify right</li>
-  <li>CTRL-J -- justify full</li>
-  <li>CTRL-1 .. CTRL-6 -- headings (&lt;h1&gt; .. &lt;h6&gt;)</li>
-  <li>CTRL-0 (zero) -- clean content pasted from Word</li>
-</ul>
+<blockquote>
+<table border="0" cellspacing="0" cellpadding="2">
+<tr>
+	<td>CTRL-A &nbsp;</td>
+	<td>select all</td>
+</tr>
+<tr>
+	<td>CTRL-B &nbsp;</td>
+	<td>bold</td>
+</tr>
+<tr>
+	<td>CTRL-I &nbsp;</td>
+	<td>italic</td>
+</tr>
+<tr>
+	<td>CTRL-U &nbsp;</td>
+	<td>underline</td>
+</tr>
+<tr>
+	<td>CTRL-S &nbsp;</td>
+	<td>strikethrough</td>
+</tr>
+<tr>
+	<td>CTRL-L &nbsp;</td>
+	<td>justify left</td>
+</tr>
+<tr>
+	<td>CTRL-E &nbsp;</td>
+	<td>justify center</td>
+</tr>
+<tr>
+	<td>CTRL-R &nbsp;</td>
+	<td>justify right</td>
+</tr>
+<tr>
+	<td>CTRL-J &nbsp;</td>
+	<td>justify full</td>
+</tr><%
+	if (isMac) { %>
+<tr>
+	<td><img src="images/icon_command.gif" width="13" height="13" alt="" align="absmiddle">-X &nbsp;</td>
+	<td>Cut</td>
+</tr>
+<tr>
+	<td><img src="images/icon_command.gif" width="13" height="13" alt="" align="absmiddle">-C &nbsp;</td>
+	<td>Copy</td>
+</tr>
+<tr>
+	<td><img src="images/icon_command.gif" width="13" height="13" alt="" align="absmiddle">-V &nbsp;</td>
+	<td>Paste (do NOT clean Word code)</td>
+</tr><%
+	} else { %>
+<tr>
+	<td>CTRL-X &nbsp;</td>
+	<td>Cut</td>
+</tr>
+<tr>
+	<td>CTRL-C &nbsp;</td>
+	<td>Copy</td>
+</tr>
+<tr>
+	<td>CTRL-V &nbsp;</td>
+	<td>Paste (<%= isIE ? "cleans" : "do NOT clean" %> Word code)</td>
+</tr><%
+	} %>
+<tr>
+	<td>CTRL-1 .. CTRL-6 &nbsp;</td>
+	<td>headings (&lt;h1&gt; .. &lt;h6&gt;)</td>
+</tr>
+<tr>
+	<td>CTRL-0 (zero) &nbsp;</td>
+	<td>clean content pasted from Word</td>
+</tr>
+</table>
+</blockquote>
 
 <% } %>
 
@@ -133,7 +262,7 @@ padding: 5px; text-align: center; }
 <hr />
 
 
-<address>
+<address style="font-size: 9px;">
 &copy; <a href="http://interactivetools.com" title="Visit our website">InteractiveTools.com</a> 2002-2004.<br />
 &copy; <a href="http://dynarch.com">dynarch.com</a> 2003-2004<br />
 HTMLArea v3.0 developed by <a href="http://dynarch.com/mishoo/">Mihai Bazon</a>.<br />
