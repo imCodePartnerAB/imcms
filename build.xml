@@ -54,7 +54,8 @@
 
 
   <!-- Locations for the final packages -->
-  <property name="wardist"         value="${dist}/${webappname}.war"/>
+  <property name="warfile"         value="${webappname}.war"/>
+  <property name="wardist"         value="${dist}/${warfile}"/>
 
   <property name="dist-sql"        value="${dist}/imcms.sql"/>
   <property name="sprocs-sql"      value="${dist}/sprocs.sql"/>
@@ -236,7 +237,7 @@
   <!-- Delete an installed webapp -->
   <target name="uninstall" depends="check-deployroot,check-webappname" description="Removes the installed files from the deployroot, including the war-file.">
     <delete dir="${webapproot}"/>
-    <delete file="${deployroot}/${wardist}"/>
+    <delete file="${deployroot}/${warfile}"/>
   </target>
 
 
