@@ -135,10 +135,15 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_Poll_GetOne( databaseService );
             test_sproc_Poll_GetQuestion( databaseService );
             test_sproc_Poll_GetAnswer( databaseService );
-            test_sporc_GetDocTypesWithPermissions( databaseService );
+            test_sproc_GetDocTypesWithPermissions( databaseService );
             test_sproc_getMenuDocChilds( databaseService );
+            test_sproc_GetTexts( databaseService ) ;
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_GetTexts(DatabaseService databaseService ) {
+        assertEquals(1, databaseService.sproc_GetTexts(DOC_TEST_FIRST_ID).length) ;
     }
 
     private void test_sproc_getMenuDocChilds( DatabaseService databaseService ) {
@@ -146,7 +151,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertEquals(0, databaseService.sproc_getMenuDocChilds( DOC_TEST_FIRST_ID, USER_TEST_ID).length );
     }
 
-    private void test_sporc_GetDocTypesWithPermissions( DatabaseService databaseService ) {
+    private void test_sproc_GetDocTypesWithPermissions( DatabaseService databaseService ) {
         DatabaseService.ExtgendedTable_doc_types[] extgendedTable_doc_typeses = databaseService.sporc_GetDocTypesWithPermissions( DOC_FIRST_PAGE_ID, 1, LANG_PREFIX_SWEDEN );
         assertEquals( 9, extgendedTable_doc_typeses.length );
     }

@@ -2041,20 +2041,16 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public Map getTexts( int meta_id ) {
 
         // Now we'll get the texts from the db.
-        String[] texts = sqlProcedure( "GetTexts", new String[]{String.valueOf( meta_id )}, false );
+        DatabaseService.Table_texts[] texts = m_databaseService.sproc_GetTexts( meta_id ) ;
+
         Map textMap = new HashMap();
         Iterator it = Arrays.asList( texts ).iterator();
         while( it.hasNext() ) {
-            try {
-                it.next(); // the key, not needed
-                String txt_no = (String)it.next();
-                int txt_type = Integer.parseInt( (String)it.next() );
-                String value = (String)it.next();
-                textMap.put( txt_no, new IMCText( value, txt_type ) );
-            } catch( NumberFormatException e ) {
-                log.error( "SProc 'GetTexts " + meta_id + "' returned a non-number where a number was expected.", e );
-                return null;
-            }
+            DatabaseService.Table_texts text = (DatabaseService.Table_texts)it.next() ;
+            int txt_no = text.name ;
+            int txt_type = text.type ;
+            String value = text.text;
+            textMap.put( ""+txt_no, new IMCText( value, txt_type ) );
         }
         return textMap;
     }

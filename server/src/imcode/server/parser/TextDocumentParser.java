@@ -186,22 +186,12 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             dbc.clearResultSet();
 
-            Vector images = DatabaseAccessor.sprocGetImgs( dbc, meta_id );
-            dbc.clearResultSet();
+            DatabaseService.Table_images[] images = DatabaseAccessor.sprocGetImgs( serverObject, meta_id );
             if( images == null ) {
                 dbc.closeConnection();
                 log.error( "parsePage: sprocGetImgs returned null" );
                 return ("sprocGetImgs returned null");
             }
-
-            DatabaseService.Table_section sectionData = DatabaseAccessor.sprocSectionGetInheritId( serverObject,  meta_id );
-            if( sectionData == null ) {
-                dbc.closeConnection();
-                log.error( "parsePage: sprocSectionGetInheritId returned null" );
-                return ("sprocSectionGetInheritId returned null");
-            }
-
-            dbc.closeConnection();
 
             File admintemplate_path = new File( templatePath, "/" + lang_prefix + "/admin/" );
 
@@ -215,24 +205,24 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             Map textMap = serverObject.getTexts( meta_id );
             HashMap imageMap = new HashMap();
 
-            Iterator imit = images.iterator();
+            Iterator imit = Arrays.asList(images).iterator();
             // This is where we gather all images from the database and put them in our maps.
             while( imit.hasNext() ) {
-                imit.next(); // String imgtag = (String)imit.next();
-                String imgnumber = (String)imit.next();
-                String imgurl = (String)imit.next();
-                String linkurl = (String)imit.next();
-                String width = (String)imit.next();
-                String height = (String)imit.next();
-                String border = (String)imit.next();
-                String vspace = (String)imit.next();
-                String hspace = (String)imit.next();
-                String image_name = (String)imit.next();
-                String align = (String)imit.next();
-                String alt = (String)imit.next();
-                String lowscr = (String)imit.next();
-                String target = (String)imit.next();
-                String target_name = (String)imit.next();
+                DatabaseService.Table_images image = (DatabaseService.Table_images)imit.next(); // String imgtag = (String)imit.next();
+                int imgnumber = image.name ;
+                String imgurl = image.imgurl;
+                String linkurl = image.linkurl;
+                int width = image.width;
+                int height = image.height;
+                int border = image.border;
+                int vspace = image.v_space;
+                int hspace = image.h_space;
+                String image_name = image.image_name;
+                String align = image.align;
+                String alt = image.alt_text;
+                String lowscr = image.low_scr;
+                String target = image.target;
+                String target_name = image.target_name;
                 StringBuffer value = new StringBuffer( 96 );
                 if( !"".equals( imgurl ) ) {
                     if( !"".equals( linkurl ) ) {
@@ -245,18 +235,18 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                     }
 
                     value.append( "<img src=\"" + imageUrl + imgurl + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
-                    if( !"0".equals( width ) ) {
+                    if( 0 != width ) {
                         value.append( " width=\"" + width + "\"" );
                     }
-                    if( !"0".equals( height ) ) {
+                    if( 0 != height ) {
                         value.append( " height=\"" + height + "\"" );
                     }
                     value.append( " border=\"" + border + "\"" );
 
-                    if( !"0".equals( vspace ) ) {
+                    if( 0 != vspace ) {
                         value.append( " vspace=\"" + vspace + "\"" );
                     }
-                    if( !"0".equals( hspace ) ) {
+                    if( 0 != hspace ) {
                         value.append( " hspace=\"" + hspace + "\"" );
                     }
                     if( !"".equals( image_name ) ) {
@@ -277,7 +267,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                         value.append( ">" );
                     }
                 }
-                imageMap.put( imgnumber, value.toString() );
+                imageMap.put( ""+imgnumber, value.toString() );
             }
 
             /*

@@ -376,13 +376,11 @@ public class DatabaseAccessor {
         return templates;
     }
 
-    public static Vector sprocGetImgs( DBConnect dbc, int meta_id ) {
+    public static DatabaseService.Table_images[] sprocGetImgs( IMCServiceInterface service, int meta_id ) {
         // Get the images from the db
         // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
         //					0                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
-        dbc.setProcedure( SPROC_GET_IMGS, String.valueOf( meta_id ) );
-        Vector images = dbc.executeProcedure();
-        return images;
+        return service.getDatabaseService().sproc_getImages(meta_id) ;
     }
 
     public static void sqlUpdateMetaDateCreated( IMCServiceInterface imcref, String meta_id, String created_datetime ) {

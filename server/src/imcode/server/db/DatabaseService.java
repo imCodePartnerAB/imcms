@@ -1384,9 +1384,9 @@ public abstract class DatabaseService {
 
     public class Table_texts {
         public int meta_id;
-        private int name;
-        private String text;
-        private int type;
+        public int name;
+        public String text;
+        public int type;
         private int counter;
 
         Table_texts( ResultSet rs ) throws SQLException {
@@ -1419,6 +1419,10 @@ public abstract class DatabaseService {
         }
     }
 
+    public Table_texts[] sproc_GetTexts( int meta_id ) {
+        return selectFrom_texts(new Integer(meta_id)) ;
+    }
+
     private Table_texts[] selectFrom_texts( Integer meta_id ) {
         String sql = "SELECT meta_id, name, text, type, counter FROM texts WHERE meta_id = ? ";
         Object[] paramValues = new Object[]{meta_id};
@@ -1439,20 +1443,20 @@ public abstract class DatabaseService {
 
     public static class Table_images {
         private int meta_id;
-        private int width;
-        private int height;
-        private int border;
-        private int v_space;
-        private int h_space;
-        private int name;
-        private String image_name;
-        private String target;
-        private String target_name;
-        private String align;
-        private String alt_text;
-        private String low_scr;
-        private String imgurl;
-        private String linkurl;
+        public int width;
+        public int height;
+        public int border;
+        public int v_space;
+        public int h_space;
+        public int name;
+        public String image_name;
+        public String target;
+        public String target_name;
+        public String align;
+        public String alt_text;
+        public String low_scr;
+        public String imgurl;
+        public String linkurl;
 
         Table_images( ResultSet rs ) throws SQLException {
             meta_id = rs.getInt( "meta_id" );
@@ -2993,4 +2997,5 @@ public abstract class DatabaseService {
         } );
         return (JoinedTables_meta_childs2[])queryResult.toArray( new JoinedTables_meta_childs2[queryResult.size()] );
     }
+
 }
