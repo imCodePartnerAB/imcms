@@ -21,8 +21,8 @@ Setting up the database:
     * Create a new empty database with collation "Finnish_Swedish_CI_AS".
       This can be done with the SQL statement
           "CREATE DATABASE [<databasename>] COLLATE Finnish_Swedish_CI_AS",
-      where <databasename> is the name you want for your database. You can use the script create_db.sql
-      and run it against the master databse of your MS SQL installation.
+      where <databasename> is the name you want for your database. See create_db.sql for
+      a simple script to use.
 
     * To set up the imCMS-database run "imcms.sql" on the empty database.
 
