@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.IMCConstants;
+import imcode.server.user.UserDomainObject;
 
 import java.util.Date;
 
@@ -21,6 +22,8 @@ public class DocumentDomainObject implements IMCConstants {
     String image;
     String target;
     String section;
+    UserDomainObject creator ;
+
     // todo: classification/Search words is missing
 
     /* Filedocs only */
@@ -317,5 +320,14 @@ public class DocumentDomainObject implements IMCConstants {
     public void setTemplateGroupId( int v ) {
         this.templateGroupId = v;
     }
+
+    public UserDomainObject getCreator() {
+        return creator;
+    }
+
+    public void setCreator( UserDomainObject creator ) {
+        this.creator = creator;
+    }
+
 
 }

@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class DocumentMapper {
+
     private Logger log = Logger.getLogger( DocumentMapper.class );
     protected IMCService service;
     protected ImcmsAuthenticatorAndUserMapper imcmsAAUM;
@@ -55,13 +56,47 @@ public class DocumentMapper {
         return service.sqlProcedureStr( SPROC_GET_FILE_NAME, params );
     }
 
-    private static String[] sprocGetDocumentInfo( IMCService service, int metaId ) {
+    private static Map sprocGetDocumentInfo( IMCService service, int metaId ) {
         String[] params = new String[]{String.valueOf( metaId )};
         String[] result = service.sqlProcedure( SPROC_GET_DOCUMENT_INFO, params );
-        return result;
+
+        if ( 0 == result.length ) {
+            return null;
+        }
+
+        Map map = new HashMap();
+
+        map.put( "meta_id", result[0] );
+        map.put( "description", result[1] );
+        map.put( "doc_type", result[2] );
+        map.put( "meta_headline", result[3] );
+        map.put( "meta_text", result[4] );
+        map.put( "meta_image", result[5] );
+        map.put( "owner_id", result[6] );
+        map.put( "permissions", result[7] );
+        map.put( "shared", result[8] );
+        map.put( "expand", result[9] );
+        map.put( "show_meta", result[10] );
+        map.put( "help_text_id", result[11] );
+        map.put( "archive", result[12] );
+        map.put( "status_id", result[13] );
+        map.put( "lang_prefix", result[14] );
+        map.put( "classification", result[15] );
+        map.put( "date_created", result[16] );
+        map.put( "date_modified", result[17] );
+        map.put( "sort_position", result[18] );
+        map.put( "menu_position", result[19] );
+        map.put( "disable_search", result[20] );
+        map.put( "target", result[21] );
+        map.put( "frame_name", result[22] );
+        map.put( "activated_datetime", result[23] );
+        map.put( "archived_datetime", result[24] );
+
+        return map;
     }
 
     public static class SectionData {
+
         public int sectionId;
         public String sectionName;
     }
@@ -80,7 +115,7 @@ public class DocumentMapper {
     private static HashSet sprocGetDocTypesForUser( IMCServiceInterface imcref, UserDomainObject user, String parent_meta_id, String lang_prefix ) {
         String[] user_dt = imcref.sqlProcedure( SPROC_GET_DOC_TYPES_FOR_USER + " " + parent_meta_id + "," + user.getUserId() + ",'" + lang_prefix + "'" );
         HashSet user_doc_types = new HashSet();
-        for( int i = 0; i < user_dt.length; i += 2 ) {
+        for ( int i = 0; i < user_dt.length; i += 2 ) {
             user_doc_types.add( user_dt[i] );
         }
         return user_doc_types;
@@ -108,7 +143,7 @@ public class DocumentMapper {
     }
 
     public static String[] sprocGetIncludes( IMCServiceInterface imcref, int meta_id ) {
-        String[] included_docs = imcref.sqlProcedure( sprocGetIncludes, new String[] { String.valueOf( meta_id ) } );
+        String[] included_docs = imcref.sqlProcedure( sprocGetIncludes, new String[]{String.valueOf( meta_id )} );
         return included_docs;
     }
 
@@ -212,90 +247,71 @@ public class DocumentMapper {
     public Map getIncludedDocuments( DocumentDomainObject textDocument ) {
         Map result = new HashMap();
         String[] includedMetaIds = sprocGetIncludes( service, textDocument.getMetaId() );
-        for ( int i = 0; i< includedMetaIds.length; i+=2 ) {
-            int include_id = Integer.parseInt(includedMetaIds[i]);
-            int included_meta_id = Integer.parseInt(includedMetaIds[i+1]);
-            result.put( new Integer(include_id), new Integer(included_meta_id));
+        for ( int i = 0; i < includedMetaIds.length; i += 2 ) {
+            int include_id = Integer.parseInt( includedMetaIds[i] );
+            int included_meta_id = Integer.parseInt( includedMetaIds[i + 1] );
+            result.put( new Integer( include_id ), new Integer( included_meta_id ) );
         }
         return result;
     }
 
     public DocumentDomainObject getDocument( int metaId ) {
         DocumentDomainObject document = null;
+        Map documentData = sprocGetDocumentInfo( service, metaId );
+        if ( documentData == null ) {
+            throw new IndexOutOfBoundsException( "No such internalDocument: " + metaId );
+        }
+        DateFormat dateform = new SimpleDateFormat( DateHelper.DATE_TIME_SECONDS_FORMAT_STRING );
+        document = new DocumentDomainObject();
+        document.setMetaId( Integer.parseInt( (String)documentData.get( "meta_id" ) ) );
+        document.setDocumentType( Integer.parseInt( (String)documentData.get( "doc_type" ) ) );
+        document.setCreator( imcmsAAUM.getUser( Integer.parseInt( (String)documentData.get( "owner_id" ) ) ) );
+        document.setHeadline( (String)documentData.get( "meta_headline" ) );
+        document.setText( (String)documentData.get( "meta_text" ) );
+        document.setImage( (String)documentData.get( "meta_image" ) );
+        document.setTarget( (String)documentData.get( "target" ) );
+        document.setArchived( "0".equals( documentData.get( "archive" ) ) ? false : true );
+        String[] section_data = sprocSectionGetInheritId( service, metaId );
+        String sectionName = null;
+        if ( section_data.length == 2 ) {
+            sectionName = section_data[1];
+        }
+        document.setSection( sectionName );
         try {
-            String[] result = sprocGetDocumentInfo( service, metaId );
-
-            //lets start and do some controlls of the resulted data
-            if( result == null || result.length < 25 ) {
-                throw new IndexOutOfBoundsException( "No such internalDocument: " + metaId );
-            }
-
-            DateFormat dateform = new SimpleDateFormat( DateHelper.DATE_TIME_SECONDS_FORMAT_STRING );
-            //ok lets set all the internalDocument stuff
-            try {
-                document = new DocumentDomainObject();
-                document.setMetaId( Integer.parseInt( result[0] ) );
-                document.setDocumentType( Integer.parseInt( result[2] ) );
-            } catch( NumberFormatException nfe ) {
-                throw new SQLException( "SQL: GetDocumentInfo " + metaId + " returned corrupt data! '" + result[0] + "' '" + result[2] + "'" );
-            }
-            document.setHeadline( result[3] );
-            document.setText( result[4] );
-            document.setImage( result[5] );
-            document.setTarget( result[21] );
-
-            // todo: this is always false? == "0" should be always false, use equals instead?
-            document.setArchived( result[12] == "0" ? false : true );
-
-            String[] section_data = sprocSectionGetInheritId( service, metaId );
-
-            String result11 = null;
-            if( section_data.length == 2 ) {
-                result11 = section_data[1];
-            }
-            String sectionName = result11;
-            document.setSection( sectionName );
-
-            try {
-                document.setCreatedDatetime( dateform.parse( result[16] ) );
-            } catch( NullPointerException npe ) {
-                document.setCreatedDatetime( null );
-            } catch( ParseException pe ) {
-                document.setCreatedDatetime( null );
-            }
-            try {
-                document.setModifiedDatetime( dateform.parse( result[17] ) );
-            } catch( NullPointerException npe ) {
-                document.setModifiedDatetime( null );
-            } catch( ParseException pe ) {
-                document.setModifiedDatetime( null );
-            }
-            try {
-                document.setActivatedDatetime( dateform.parse( result[23] ) );
-            } catch( NullPointerException npe ) {
-                document.setActivatedDatetime( null );
-            } catch( ParseException pe ) {
-                document.setActivatedDatetime( null );
-            }
-            try {
-                document.setArchivedDatetime( dateform.parse( result[24] ) );
-            } catch( NullPointerException npe ) {
-                document.setArchivedDatetime( null );
-            } catch( ParseException pe ) {
-                document.setArchivedDatetime( null );
-            }
-            if( document.getDocumentType() == DocumentDomainObject.DOCTYPE_FILE ) {
-                document.setFilename( sprocGetFilename( service, metaId ) );
-            }
-            if( document.getDocumentType() == DocumentDomainObject.DOCTYPE_TEXT ) {
-                initTextDoc( service, document );
-            }
-        } catch( SQLException ex ) {
-            log.error( ex );
-            throw new IndexOutOfBoundsException();
+            document.setCreatedDatetime( dateform.parse( (String)documentData.get( "date_created" ) ) );
+        } catch ( NullPointerException npe ) {
+            document.setCreatedDatetime( null );
+        } catch ( ParseException pe ) {
+            document.setCreatedDatetime( null );
+        }
+        try {
+            document.setModifiedDatetime( dateform.parse( (String)documentData.get( "date_modified" ) ) );
+        } catch ( NullPointerException npe ) {
+            document.setModifiedDatetime( null );
+        } catch ( ParseException pe ) {
+            document.setModifiedDatetime( null );
+        }
+        try {
+            document.setActivatedDatetime( dateform.parse( (String)documentData.get( "activated_datetime" ) ) );
+        } catch ( NullPointerException npe ) {
+            document.setActivatedDatetime( null );
+        } catch ( ParseException pe ) {
+            document.setActivatedDatetime( null );
+        }
+        try {
+            document.setArchivedDatetime( dateform.parse( (String)documentData.get( "archived_datetime" ) ) );
+        } catch ( NullPointerException npe ) {
+            document.setArchivedDatetime( null );
+        } catch ( ParseException pe ) {
+            document.setArchivedDatetime( null );
+        }
+        if ( document.getDocumentType() == DocumentDomainObject.DOCTYPE_FILE ) {
+            document.setFilename( sprocGetFilename( service, metaId ) );
+        }
+        if ( document.getDocumentType() == DocumentDomainObject.DOCTYPE_TEXT ) {
+            initTextDoc( service, document );
         }
         return document;
-
     }
 
     public boolean hasAdminPermissions( DocumentDomainObject document, UserDomainObject user ) {
@@ -304,16 +320,16 @@ public class DocumentMapper {
 
         boolean userHasSuperAdminRole = imcmsAAUM.hasSuperAdminRole( user );
 
-        if( userHasSuperAdminRole ) {
+        if ( userHasSuperAdminRole ) {
             result = true;
         } else {
 
             String[] sqlResult = sprocGetUserPermissionSet( service, document.getMetaId(), user.getUserId() );
             Vector perms = new Vector( Arrays.asList( sqlResult ) );
 
-            if( perms.size() > 0 ) {
+            if ( perms.size() > 0 ) {
                 int userPermissionSetId = Integer.parseInt( (String)perms.elementAt( 0 ) );
-                switch( userPermissionSetId ) {
+                switch ( userPermissionSetId ) {
                     case IMCConstants.DOC_PERM_SET_FULL:
                     case IMCConstants.DOC_PERM_SET_RESTRICTED_1:
                     case IMCConstants.DOC_PERM_SET_RESTRICTED_2:
@@ -336,7 +352,7 @@ public class DocumentMapper {
         try {
             String[] results = sprocGetText( meta_id, no );
 
-            if( results == null || results.length == 0 ) {
+            if ( results == null || results.length == 0 ) {
                 /* There was no text. Return null. */
                 return null;
             }
@@ -347,7 +363,7 @@ public class DocumentMapper {
 
             return new TextDocumentTextDomainObject( text, type );
 
-        } catch( NumberFormatException ex ) {
+        } catch ( NumberFormatException ex ) {
             /* There was no text, but we shouldn't come here unless the db returned something wrong. */
             log.error( "SProc 'sprocGetText()' returned an invalid text-type.", ex );
             return null;
@@ -365,9 +381,9 @@ public class DocumentMapper {
 
         service.updateLogs( "Text " + txt_no + " in  " + "[" + meta_id + "] modified by user: [" + user.getFullName() + "]" );
 
-        if( !("").equals( text_type ) ) {
+        if ( !( "" ).equals( text_type ) ) {
 
-            if( text_type.startsWith( "poll" ) ) {
+            if ( text_type.startsWith( "poll" ) ) {
                 PollHandlingSystem poll = service.getPollHandlingSystem();
                 poll.savePollparameter( text_type, meta_id, txt_no, textstring );
             }
@@ -382,24 +398,24 @@ public class DocumentMapper {
         final int perm_set = imcref.getUserHighestPermissionSet( Integer.parseInt( meta_id ), user.getUserId() );
         //ok now we have to setup the template too use
 
-        if( perm_set == IMCConstants.DOC_PERM_SET_RESTRICTED_1 ) {
+        if ( perm_set == IMCConstants.DOC_PERM_SET_RESTRICTED_1 ) {
             //ok restricted_1 permission lets see if we have a default template fore this one
             //and if so lets put it as the orinary template instead of the parents
             try {
                 int tempInt = Integer.parseInt( temp[3] );
-                if( tempInt >= 0 )
+                if ( tempInt >= 0 )
                     temp[0] = String.valueOf( tempInt );
-            } catch( NumberFormatException nfe ) {
+            } catch ( NumberFormatException nfe ) {
 
                 //there wasn't a number but we dont care, we just catch the exeption and moves on.
             }
-        } else if( perm_set == IMCConstants.DOC_PERM_SET_RESTRICTED_2 ) { //ok we have a restricted_2 permission lets see if we have default template fore this one
+        } else if ( perm_set == IMCConstants.DOC_PERM_SET_RESTRICTED_2 ) { //ok we have a restricted_2 permission lets see if we have default template fore this one
             //and if soo lets put it as ordinary instead of the parents
             try {
                 int tempInt = Integer.parseInt( temp[4] );
-                if( tempInt >= 0 )
+                if ( tempInt >= 0 )
                     temp[0] = String.valueOf( tempInt );
-            } catch( NumberFormatException nfe ) {
+            } catch ( NumberFormatException nfe ) {
                 //there wasn't a number but we dont care, we just catch the exeption and moves on.
             }
         }
@@ -413,9 +429,9 @@ public class DocumentMapper {
     public static synchronized String sqlInsertIntoMeta( IMCServiceInterface imcref, String doc_type, String activated_datetime, String archived_datetime, Properties metaprops ) {
         // Lets build the sql statement to add a new meta id
         String sqlStr = "insert into meta (doc_type,activate,classification,activated_datetime,archived_datetime";
-        String sqlStr2 = ")\nvalues (" + doc_type + ",0,''," + (null == activated_datetime ? "NULL" : "'" + activated_datetime + "'") + "," + (null == archived_datetime ? "NULL" : "'" + archived_datetime + "'");
+        String sqlStr2 = ")\nvalues (" + doc_type + ",0,''," + ( null == activated_datetime ? "NULL" : "'" + activated_datetime + "'" ) + "," + ( null == archived_datetime ? "NULL" : "'" + archived_datetime + "'" );
         Enumeration propkeys = metaprops.propertyNames();
-        while( propkeys.hasMoreElements() ) {
+        while ( propkeys.hasMoreElements() ) {
             String temp = (String)propkeys.nextElement();
             String val = metaprops.getProperty( temp );
             String[] vp = {"'", "''"};
@@ -514,7 +530,7 @@ public class DocumentMapper {
     private static int sqlGetSectionId( IMCService service, String section ) {
         String sql = "select section_id from sections where section_name = '" + section + "'";
         String[] querryResult = service.sqlQuery( sql );
-        int sectionId = Integer.parseInt(querryResult[0]);
+        int sectionId = Integer.parseInt( querryResult[0] );
         return sectionId;
     }
 
@@ -534,14 +550,14 @@ public class DocumentMapper {
 
         StringBuffer sqlStr = new StringBuffer( "update meta set " );
 
-        sqlStr.append( makeDateSQL("activated_datetime", activatedDatetime )  );
-        sqlStr.append( makeDateSQL("archived_datetime", archivedDateTime)  );
-        sqlStr.append( makeDateSQL("date_created", createdDatetime)  );
-        sqlStr.append( makeStringSQL("meta_headline", headline)  );
-        sqlStr.append( makeStringSQL("meta_image", image)  );
-        sqlStr.append( makeDateSQL("date_modified", modifiedDateTime)  );
-        sqlStr.append( makeStringSQL("target", target)  );
-        sqlStr.append( makeStringSQL("meta_text", text)  );
+        sqlStr.append( makeDateSQL( "activated_datetime", activatedDatetime ) );
+        sqlStr.append( makeDateSQL( "archived_datetime", archivedDateTime ) );
+        sqlStr.append( makeDateSQL( "date_created", createdDatetime ) );
+        sqlStr.append( makeStringSQL( "meta_headline", headline ) );
+        sqlStr.append( makeStringSQL( "meta_image", image ) );
+        sqlStr.append( makeDateSQL( "date_modified", modifiedDateTime ) );
+        sqlStr.append( makeStringSQL( "target", target ) );
+        sqlStr.append( makeStringSQL( "meta_text", text ) );
         String str = makeBooleanSQL( "archive", isArchived );
 
         sqlStr.append( str );
@@ -553,23 +569,22 @@ public class DocumentMapper {
     }
 
     private static String makeBooleanSQL( String columnName, boolean field_isArchived ) {
-        String str = columnName + " = " + (field_isArchived ? 1 : 0);
+        String str = columnName + " = " + ( field_isArchived ? 1 : 0 );
         return str;
     }
 
 
     private static String makeDateSQL( String columnName, Date date ) {
-        if( null != date ) {
+        if ( null != date ) {
             String dateStr = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( date );
             return makeStringSQL( columnName, dateStr );
-        }
-        else {
+        } else {
             return makeStringSQL( columnName, null );
         }
     }
 
     private static String makeStringSQL( String columnName, Object value ) {
-        String s = (value!=null?"'" + value + "'":"NULL");
+        String s = ( value != null ? "'" + value + "'" : "NULL" );
         String str = columnName + " = " + s + ", ";
         return str;
     }
@@ -594,14 +609,14 @@ public class DocumentMapper {
 
         // The above query returns "" of some reason instead of NULL, and I don't have time to think of why, Hasse
         // Todo: think throu how to deal with sql that is not stored procedures.
-        if( parentDataRow[23].equals( "" ) ) {
+        if ( parentDataRow[23].equals( "" ) ) {
             values += ",NULL";
         } else {
             values += ",'" + parentDataRow[23] + "'";
         }
 
         // Same reson here.
-        if( parentDataRow[24].equals( "" ) ) {
+        if ( parentDataRow[24].equals( "" ) ) {
             values += ",NULL";
         } else {
             values += ",'" + parentDataRow[24] + "'";
@@ -622,9 +637,9 @@ public class DocumentMapper {
     public static String getClassificationsAsOneString( IMCServiceInterface imcref, int meta_id ) {
         String[] classifications = sqlSelectGetClassificationStrings( imcref, meta_id );
         String classification = "";
-        if( classifications.length > 0 ) {
+        if ( classifications.length > 0 ) {
             classification += classifications[0];
-            for( int i = 1; i < classifications.length; ++i ) {
+            for ( int i = 1; i < classifications.length; ++i ) {
                 classification += "; " + classifications[i];
             }
         }
@@ -647,7 +662,7 @@ public class DocumentMapper {
         // all from the table text_doc
         String[] textdoc_data1 = service.sqlProcedure( "GetTextDocData", new String[]{String.valueOf( inout_document.getMetaId() )} );
         String[] textdoc_data = textdoc_data1;
-        if( textdoc_data.length >= 4 ) {
+        if ( textdoc_data.length >= 4 ) {
             int template_id = Integer.parseInt( textdoc_data[0] );
             //String simple_name = textdoc_data[1];
             int sort_order = Integer.parseInt( textdoc_data[2] );
@@ -659,20 +674,20 @@ public class DocumentMapper {
         }
     }
 
-    public void setInclude(int includingMetaId, int includeIndex, int includedMetaId) {
-        sprocSetInclude(service,includingMetaId,includeIndex,includedMetaId);
+    public void setInclude( int includingMetaId, int includeIndex, int includedMetaId ) {
+        sprocSetInclude( service, includingMetaId, includeIndex, includedMetaId );
     }
 
     public static void sprocSetInclude( IMCServiceInterface imcref, int including_meta_id, int include_id, int included_meta_id ) {
-        imcref.sqlUpdateProcedure("SetInclude "+including_meta_id+","+include_id+","+included_meta_id) ;
+        imcref.sqlUpdateProcedure( "SetInclude " + including_meta_id + "," + include_id + "," + included_meta_id );
     }
 
     public void removeInclusion( int includingMetaId, int includeIndex ) {
-        sprocDeleteInclude(service,includingMetaId,includeIndex);
+        sprocDeleteInclude( service, includingMetaId, includeIndex );
     }
 
     public static void sprocDeleteInclude( IMCServiceInterface imcref, int including_meta_id, int include_id ) {
-        imcref.sqlUpdateProcedure("DeleteInclude "+including_meta_id+","+include_id) ;
+        imcref.sqlUpdateProcedure( "DeleteInclude " + including_meta_id + "," + include_id );
     }
 
 }

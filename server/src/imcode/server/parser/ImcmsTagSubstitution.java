@@ -490,35 +490,45 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
 
     /**
-     Handle a <?imcms:user get='xxxxxxx'?> tag.
+     Handle a <?imcms:user who='...' get='xxxxxxx'?> tag.
 
      **/
     public String tagUser( Properties attributes ) {
 
-        String attrib = attributes.getProperty( "get" );
-        String result = "";
-        UserDomainObject user = documentRequest.getUser();
-        if ( attrib != null && !"".equals( attrib ) ) {
+        UserDomainObject user = null ;
+        String who = attributes.getProperty( "who" );
 
-            if ( attrib.equals( "firstname" ) ) {
+        if ( null != who && "creator".equalsIgnoreCase(who)) {
+            user = documentRequest.getDocument().getCreator() ;
+        } else {
+            user = documentRequest.getUser();
+        }
+
+        String result = "";
+        String get = attributes.getProperty( "get" );
+
+        if ( get != null && !"".equals( get ) ) {
+            if ( "name".equalsIgnoreCase( get ) ) {
+                result = user.getFullName();
+            } else if ( "firstname".equalsIgnoreCase( get ) ) {
                 result = user.getFirstName();
-            } else if ( attrib.equals( "lastname" ) ) {
+            } else if ( "lastname".equalsIgnoreCase( get ) ) {
                 result = user.getLastName();
-            } else if ( attrib.equals( "company" ) ) {
+            } else if ( "company".equalsIgnoreCase( get ) ) {
                 result = user.getCompany();
-            } else if ( attrib.equals( "address" ) ) {
+            } else if ( "address".equalsIgnoreCase( get ) ) {
                 result = user.getAddress();
-            } else if ( attrib.equals( "zip" ) ) {
+            } else if ( "zip".equalsIgnoreCase( get ) ) {
                 result = user.getZip();
-            } else if ( attrib.equals( "city" ) ) {
+            } else if ( "city".equalsIgnoreCase( get ) ) {
                 result = user.getCity();
-            } else if ( attrib.equals( "workphone" ) ) {
+            } else if ( "workphone".equalsIgnoreCase( get ) ) {
                 result = user.getWorkPhone();
-            } else if ( attrib.equals( "mobilephone" ) ) {
+            } else if ( "mobilephone".equalsIgnoreCase( get ) ) {
                 result = user.getMobilePhone();
-            } else if ( attrib.equals( "homephone" ) ) {
+            } else if ( "homephone".equalsIgnoreCase( get ) ) {
                 result = user.getHomePhone();
-            } else if ( attrib.equals( "email" ) ) {
+            } else if ( "email".equalsIgnoreCase( get ) ) {
                 result = user.getEmailAddress();
             }
         }
