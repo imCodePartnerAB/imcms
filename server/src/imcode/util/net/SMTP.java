@@ -1,5 +1,6 @@
 package imcode.util.net;
 
+import imcode.util.Utility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
@@ -44,8 +45,12 @@ public class SMTP {
             email.setHostName( host );
             email.setSmtpPort( port );
             email.send();
-        } catch ( MessagingException e ) {
-            throw new UnhandledException( e );
+        } catch( MessagingException e ) {
+            if (Utility.throwableContainsMessageContaining( e, "no object DCH")) {
+                throw new UnhandledException( "\"no object DCH\" Likely cause: the activation jar-file cannot see the mail jar-file. Different ClassLoaders?", e ) ;
+            } else {
+                throw new UnhandledException( e ) ;
+            }
         }
     }
 

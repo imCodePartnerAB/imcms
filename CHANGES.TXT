@@ -1,5 +1,12 @@
 Version 2.0.0
 
+    Of importance to users:
+
+    * New url format for documents: "/imcms/1001" instead of "/imcms/servlet/GetDoc?meta_id=1001".
+      The old format still works, but this means that relative links in pages are likely to break. (Bug 1163)
+    * To alleviate broken relative links, "/imcms/GetDoc?meta_id=1001"
+      now works as well as "/imcms/servlet/GetDoc?meta_id=1001". (Bug 2727)
+
     Of importance to administrators:
 
     * We're now using jTDS instead of Microsofts JDBC driver. The Microsoft driver may still somewhat work,
@@ -7,12 +14,19 @@ Version 2.0.0
       change the values "JdbcDriver" and "JdbcUrl" in "server.properties" to "net.sourceforge.jtds.jdbc.Driver" and
       "jdbc:jtds:sqlserver://{host}:{port}/;AppName=imCMS;DatabaseName={databasename}" respectively,
       substituting correct values for "{host}", "{port}", and "{databasename}". (Bug 1850)
-    * New url format for documents: "/imcms/1001" instead of "/imcms/servlet/GetDoc?meta_id=1001".
-      The old format still works, but this means that relative links in pages are likely to break. (Bug 1163)
-    * To alleviate broken relative links, "/imcms/GetDoc?meta_id=1001"
-      now works as well as "/imcms/servlet/GetDoc?meta_id=1001". (Bug 2727)
+    * We require javamail 1.3 or later, but Tomcat 4.1.30 and earlier includes javamail 1.2,
+      which overrides our included implementation (GNU classpathx javamail).
+      If you're using Tomcat 4.1.30 or earlier, you can do one of three things:
+        * Recommended: Upgrade Tomcat to version 4.1.31 or later.
+        * Remove "mail.jar" and "activation.jar" from "tomcat/common/lib". If you use any web applications that
+          require any of them, you can put them in the "WEB-INF/lib" directory of those applications.
+          imCMS will use its own implementation.
+        * Replace "mail.jar" in the directory "tomcat/common/lib" with "mail.jar" from JavaMail 1.3 or later.
+          JavaMail can be downloaded from http://java.sun.com/products/javamail/downloads/
+      If you are using another servlet engine that includes an older implementation of javamail,
+      similar action may be required. (Bug 2859)
     * Specifically, the new url format is "<contextpath><prefix><document-id>".
-      The prefix can be set with the setting "DocumentPathPrefix" in "server.properties".
+      The <prefix> can be set with the setting "DocumentPathPrefix" in "server.properties".
       Comment this out to disable the new url format. (Bug 2733)
     * The latest documents requested from the database are now cached in memory.
       This makes imCMS much faster, but means that changes to the database won't be seen.

@@ -42,6 +42,8 @@ Upgrading imCMS:
 
 * Restart tomcat.
 
+* Make sure you did everything outlined as important in CHANGES.TXT.
+
 * If you want to make sure searches work properly, and don't want to wait for the automatic (usually daily) reindexing,
   access "/servlet/RebuildIndex" as superadmin to rebuild the search index.
 

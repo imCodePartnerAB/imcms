@@ -10,6 +10,7 @@ import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.SetUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -22,6 +23,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class Utility {
+
+   private final static Logger log = Logger.getLogger( Utility.class.getName() );
 
     private final static String NO_PERMISSION_URL = "no_permission.jsp";
 
@@ -210,5 +213,18 @@ public class Utility {
         int requestUrlStartOfPath = requestUrl.indexOf( '/', requestUrlStartOfHost );
         String requestUrlWithoutPath = StringUtils.left( requestUrl, requestUrlStartOfPath );
         return requestUrlWithoutPath;
+    }
+
+    public static boolean throwableContainsMessageContaining( Throwable t, String s ) {
+        Throwable throwable = t ;
+        while (null != throwable) {
+            String message = throwable.getMessage();
+            log.debug( throwable+": "+message ) ;
+            if (null != message && -1 != message.indexOf( s )) {
+                return true ;
+            }
+            throwable = throwable.getCause() ;
+        }
+        return false ;
     }
 }

@@ -20,4 +20,11 @@ public class TestUtility extends TestCase {
         assertTrue(Utility.isValidEmail( "test@test.test") ) ;
         assertFalse( Utility.isValidEmail( "test" ) );
     }
+
+    public void testThrowableContainsMessageContaining() {
+        assertTrue(Utility.throwableContainsMessageContaining(new Throwable( "test"), "e" )) ;
+        assertTrue( Utility.throwableContainsMessageContaining( new Throwable( new Throwable( "test" ) ), "t" ) );
+        assertFalse( Utility.throwableContainsMessageContaining( new Throwable( new Throwable( "test" ) ), "p" ) );
+        assertFalse( Utility.throwableContainsMessageContaining( new Throwable( new Throwable( (String)null ) ), "t" ) );
+    }
 }
