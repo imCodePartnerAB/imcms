@@ -257,8 +257,10 @@ imcmsGui("mid", null);
 		<td><img src="@imcmsimageurl@/admin/1x1.gif" width="96" height="1"></td>
 		<td><img src="@imcmsimageurl@/admin/1x1.gif" width="556" height="1"></td>
 	</tr>
-	</table></td>
+	</table>
+</td>
 </tr>
+<tbody id="advanced">
 <tr>
 	<td>&nbsp;<br><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/21/1 ?>","656");</script></td>
 </tr>
@@ -469,18 +471,23 @@ imcmsGui("mid", null);
             %>
         </td>
 	</tr>
+	</table></td>
+</tr>
+</tbody>
 	<tr>
-		<td colspan="2"><script>hr("100%",656,"blue");</script></td>
+		<td><script>hr("100%",656,"blue");</script></td>
 	</tr>
 	<tr>
-		<td colspan="2">
-		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<td><table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tr>
 			<td class="imNoteComment"><sup class="imNote">1</sup>
 			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/46 ?></td>
 			<td align="right">
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
+                <script language="javascript">
+                    document.write('<td><input type="button" id="advanced_button" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?> >>" onClick="toggleAdvanced()"></td><td>&nbsp;</td>') ;
+                </script>
 				<td><input type="SUBMIT" class="imcmsFormBtn" value=" <? install/htdocs/sv/jsp/docadmin/document_information.jsp/2004 ?> " name="<%= DocumentComposer.PARAMETER_BUTTON__OK %>"></td>
 				<td>&nbsp;</td>
 				<td><input type="RESET" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2005 ?>" name="reset"></td>
@@ -492,11 +499,8 @@ imcmsGui("mid", null);
 		</table></td>
 	</tr>
 	<tr>
-		<td><img src="@imcmsimageurl@/admin/1x1.gif" width="98" height="1"></td>
-		<td><img src="@imcmsimageurl@/admin/1x1.gif" width="558" height="1"></td>
+		<td><script>hr("100%",656,"blue");</script></td>
 	</tr>
-	</table></td>
-</tr>
 <tr>
 	<td>&nbsp;</td>
 </tr>
@@ -514,5 +518,26 @@ imcmsGui("outer_end", null);
         }
     }
 %>
+<script language="javascript">
+    if (document.getElementById) {
+        document.getElementById('advanced').style.display = 'none' ;
+    }
+
+    function toggleAdvanced() {
+        if (!document.getElementById) {
+            return ;
+        }
+        var advancedDisplay = document.getElementById('advanced').style.display ;
+        var advancedButtonValue = '<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?> >>' ;
+        if ('none' == advancedDisplay) {
+            advancedDisplay = 'table-row-group' ;
+            advancedButtonValue = '<< <? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>' ;
+        } else {
+            advancedDisplay = 'none' ;
+        }
+        document.getElementById('advanced').style.display = advancedDisplay ;
+        document.getElementById('advanced_button').value = advancedButtonValue ;
+    }
+</script>
 </body>
 </html>
