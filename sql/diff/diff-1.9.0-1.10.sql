@@ -7,3 +7,9 @@ DROP PROCEDURE GetUserType
 DROP PROCEDURE GetUserTypes
 DROP PROCEDURE GetCategoryUsers
 DROP PROCEDURE UserPrefsChange
+
+-- 2004-06-02 Kreiger
+
+ALTER TABLE fileupload_docs ALTER COLUMN filename VARCHAR(255)
+
+-- 2004-06-14 Kreiger

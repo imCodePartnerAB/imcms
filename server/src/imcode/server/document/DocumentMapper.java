@@ -22,6 +22,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class DocumentMapper {
 
@@ -54,6 +56,7 @@ public class DocumentMapper {
     private static final String TEMPLATE__STATUS_UNPUBLISHED = "textdoc/status/unpublished.frag";
     private static final String TEMPLATE__STATUS_ARCHIVED = "textdoc/status/archived.frag";
     private static final String TEMPLATE__STATUS_APPROVED = "textdoc/status/approved.frag";
+    private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
 
     public DocumentMapper(IMCServiceInterface service, ImcmsAuthenticatorAndUserMapper imcmsAAUM) {
         this.service = service;
@@ -1617,11 +1620,36 @@ public class DocumentMapper {
     }
 
     void saveFileDocument(FileDocumentDomainObject fileDocument) {
+        String filename = fileDocument.getFilename();
+        if (filename.length() > DB_FIELD_MAX_LENGTH__FILENAME ) {
+            filename = truncateFilename(filename, DB_FIELD_MAX_LENGTH__FILENAME) ;
+        }
         String sqlStr = "UPDATE fileupload_docs SET filename = ?,mime = ? WHERE meta_id = ?";
         service.sqlUpdateQuery(sqlStr, new String[]{
-            fileDocument.getFilename(), fileDocument.getMimeType(), "" + fileDocument.getId()
+            filename, fileDocument.getMimeType(), "" + fileDocument.getId()
         });
         saveFile(fileDocument);
+    }
+
+    private String truncateFilename( String filename, int length ) {
+        String truncatedFilename = StringUtils.left( filename, length ) ;
+        String extensions = getExtensionsFromFilename( filename );
+        if ( extensions.length() > length ) {
+            return truncatedFilename ;
+        }
+        String basename = StringUtils.chomp(filename, extensions) ;
+        String truncatedBasename = StringUtils.substring( basename, 0, length-extensions.length() ) ;
+        truncatedFilename = truncatedBasename + extensions ;
+        return truncatedFilename ;
+    }
+
+    private String getExtensionsFromFilename( String filename ) {
+        String extensions = "" ;
+        Matcher matcher = Pattern.compile( "(?:\\.\\w+)+$").matcher( filename );
+        if (matcher.find()) {
+            extensions = matcher.group() ;
+        }
+        return extensions;
     }
 
     void saveBrowserDocument(BrowserDocumentDomainObject browserDocument) {

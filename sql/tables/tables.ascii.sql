@@ -302,7 +302,7 @@ GO
 
 CREATE TABLE [dbo].[fileupload_docs] (
 	[meta_id] [int] NOT NULL ,
-	[filename] [varchar] (50) NOT NULL ,
+	[filename] [varchar] (255) NOT NULL ,
 	[mime] [varchar] (50) NOT NULL 
 ) ON [PRIMARY]
 GO
