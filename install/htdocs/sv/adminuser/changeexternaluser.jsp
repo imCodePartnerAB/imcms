@@ -179,7 +179,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getEmailAddress()%>&nbsp;</font></td>
 	<td>&nbsp;</td>
 </tr>
-<tr valign="top">
+<tr>
 	<td>&nbsp;</td>
 	<td colspan="3"><hr></td>
 	<td>&nbsp;</td>
@@ -226,7 +226,9 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 	<td>&nbsp;</td>
 </tr>
 <tr>
-	<td colspan="5">&nbsp;</td>
+	<td>&nbsp;</td>
+	<td colspan="3"><hr></td>
+	<td>&nbsp;</td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
