@@ -53,6 +53,7 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
    private String userIdentifier = null;
    private HashMap userFieldLdapMappings = null;
    private String[] ldapAttributesAutoMappedToRoles;
+   private static final int USER__TYPE_AUTHENTICATED = 1;
 
    public LdapUserAndRoleMapper (Properties ldapConfig) throws LdapInitException {
       String ldapUrl = ldapConfig.getProperty("LdapUrl") ;
@@ -108,6 +109,7 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
 
          result.setLoginName( loginName );
          result.setActive( true );
+         result.setUserType( USER__TYPE_AUTHENTICATED );
       }
 
       return result;
@@ -175,6 +177,7 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
 
       value = getValueForUserField( "country", ldapAttributeValues );
       newlyFoundLdapUser.setCountry( value );
+
       return newlyFoundLdapUser;
    }
 
@@ -195,7 +198,7 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
       result.put( "mobilePhone", INETORGPERSON_MOBILE );
       result.put( "homePhone", INETORGPERSON_HOME_PHONE );
       // todo:
-      //      result.put("lang_id",);
+      // result.put("lang_id",);
 
       return result;
    }
