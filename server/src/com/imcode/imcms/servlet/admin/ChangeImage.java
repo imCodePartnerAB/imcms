@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 
 public class ChangeImage extends HttpServlet {
 
@@ -53,16 +52,13 @@ public class ChangeImage extends HttpServlet {
     private static final String REQUEST_PARAMETER__IMAGE_ALT = "alt_text";
     private static final String REQUEST_PARAMETER__IMAGE_LOWSRC = "low_scr";
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER = "goToImageBrowser";
-    public static final String REQUEST_PARAMETER__UPLOAD_BUTTON = "upload";
     public static final String REQUEST_PARAMETER__DIRECTORY = "directory";
-    public static final String REQUEST_PARAMETER__FILE = "file";
     public static final String REQUEST_PARAMETER__DOCUMENT_ID = "documentId";
     public static final String REQUEST_PARAMETER__LABEL = "label";
 
     private final static Logger log = Logger.getLogger( ChangeImage.class.getName() );
 
-    public void doPost( HttpServletRequest req, HttpServletResponse response ) throws ServletException, IOException {
-        MultipartHttpServletRequest request = new MultipartHttpServletRequest( req );
+    public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
         final ImageDomainObject image = getImageFromRequest( request );
         UserDomainObject user = Utility.getLoggedOnUser( request );
@@ -76,10 +72,7 @@ public class ChangeImage extends HttpServlet {
             return;
         }
 
-        if ( null != request.getParameter( REQUEST_PARAMETER__UPLOAD_BUTTON ) ) {
-            saveFileFromRequest( request, user );
-            goToImageEditPage( document, imageIndex, image, request, response );
-        } else if ( null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) ) {
+        if ( null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) ) {
             goBack( document, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__DELETE_BUTTON ) ) {
             image.setUrl( "" );
@@ -116,27 +109,6 @@ public class ChangeImage extends HttpServlet {
             }
         } );
         imageBrowser.forward( request, response );
-    }
-
-    private void saveFileFromRequest( MultipartHttpServletRequest request, UserDomainObject user ) {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        File imagePath = imcref.getConfig().getImagePath();
-
-        String relativeDestinationDir = request.getParameter( REQUEST_PARAMETER__DIRECTORY );
-        File destinationDir = new File( imagePath.getParentFile(), relativeDestinationDir );
-        FileItem fileItem = request.getParameterFileItem( REQUEST_PARAMETER__FILE );
-        File destinationFile = new File( destinationDir, fileItem.getName() );
-        if ( !FileUtility.directoryIsAncestorOfOrEqualTo( imagePath, destinationFile ) ) {
-            log.info( "User " + user + " was denied uploading to file " + destinationFile );
-            return;
-        }
-        if ( !destinationFile.exists() ) {
-            try {
-                fileItem.write( destinationFile );
-            } catch ( Exception e ) {
-                throw new UnhandledException( "Failed to write file. Possible permissions problem?", e );
-            }
-        }
     }
 
     private void goToImageSearch( final TextDocumentDomainObject document, final int imageIndex,
@@ -306,7 +278,6 @@ public class ChangeImage extends HttpServlet {
         private ImageDomainObject image;
         private ImageData imageFileData;
         private String label;
-        private Collection imageDirectories;
 
         public ImageEditPage( TextDocumentDomainObject document, int imageIndex, ImageDomainObject image,
                               ImageData imageFileData, String label ) {
@@ -315,8 +286,6 @@ public class ChangeImage extends HttpServlet {
             this.imageIndex = imageIndex;
             this.imageFileData = imageFileData;
             this.label = label;
-
-            this.imageDirectories = Utility.collectImageDirectories();
         }
 
         public TextDocumentDomainObject getDocument() {
@@ -343,10 +312,6 @@ public class ChangeImage extends HttpServlet {
 
         public String getLabel() {
             return label;
-        }
-
-        public Collection getImageDirectories() {
-            return imageDirectories;
         }
 
     }

@@ -123,7 +123,7 @@ function checkLinkOnBlur() {
 
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )
-<form method="POST" action="ChangeImage" enctype="multipart/form-data">
+<form method="POST" action="ChangeImage">
     <input type="HIDDEN" name="<%= ChangeImage.REQUEST_PARAMETER__DOCUMENT_ID %>" value="<%= document.getId() %>">
     <input type="HIDDEN" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_INDEX %>" value="<%= imageIndex %>">
     <input type="hidden" name="<%= ChangeImage.REQUEST_PARAMETER__LABEL %>" value="<%= StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) %>">
@@ -144,36 +144,6 @@ function checkLinkOnBlur() {
     #gui_mid()
 
     <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
-        <tr>
-            <td colspan="2">#gui_heading( "<? templates/sv/change_img.html/4/1 ?>" )</td>
-        </tr>
-        <tr>
-            <td><? templates/sv/change_img.html/5 ?></td>
-            <td>
-                <input type="file" name="<%= ChangeImage.REQUEST_PARAMETER__FILE %>" id="theFile" size="54">
-            </td>
-        </tr>
-        <tr>
-            <td><? templates/sv/change_img.html/7 ?></td>
-            <td>
-                <table border="0" cellspacing="0" cellpadding="0" width="100%">
-                <tr>
-                    <td>
-                        <select name="<%= ChangeImage.REQUEST_PARAMETER__DIRECTORY %>" size="1">
-                        <%= Html.createOptionList(imageEditPage.getImageDirectories(), null, new Transformer() {
-                            public Object transform( Object input ) {
-                                return new String[] { ""+input, ""+input } ;
-                            }
-                        }) %>
-                        </select>
-                    </td>
-                    <td align="right">
-                        <input type="submit" class="imcmsFormBtnSmall" name="<%= ChangeImage.REQUEST_PARAMETER__UPLOAD_BUTTON %>" value="<? templates/sv/change_img.html/2005 ?>" style="width:110">
-                    </td>
-                </tr>
-                </table>
-            </td>
-        </tr>
         <tr>
             <td colspan="2">
                 &nbsp;<br>
