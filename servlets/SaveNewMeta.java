@@ -342,26 +342,8 @@ public class SaveNewMeta extends HttpServlet {
 				sqlStr = "insert into text_docs (meta_id,template_id,sort_order,group_id) values ("+meta_id+","+temp[0]+","+temp[1]+","+temp[2]+")" ;
 				IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
 
-		/* This stuff is supposed to be unused when the new interface is implemented
-		// it was used to create the right amount of textfields according to the
-		// template in use. Remarked by Rickard 2000-08-25
 
-				String no_txt = IMCServiceRMI.sqlQueryStr(imcserver, "select no_of_txt from templates where template_id = "+temp[0]) ;
-				String no_img = IMCServiceRMI.sqlQueryStr(imcserver, "select no_of_img from templates where template_id = "+temp[0]) ;
-
-		for ( int i=1 ; i<(Integer.parseInt(no_txt)+1) ; i++ ) {
-					sqlStr = "insert into texts (meta_id,name,text,type) values ("+meta_id+","+i+",'',1)" ;
-					IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
-				}
-				for ( int t = 1 ; t <(Integer.parseInt(no_img)+1) ; t++ ) {
-					sqlStr  = "insert into images(meta_id,width,height,border,v_space,h_space," ;
-					sqlStr += "name,image_name,target,target_name,align,alt_text,low_scr,imgurl,linkurl)\n" ;
-					sqlStr += "values(" + meta_id + ",0,0,0,0,0,"  + t + ",'','_self','','_top','','','','')" ;
-					IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
-				}
-		*/
-
-	  // Lets check if we should coyp the metaheader and meta text into text1 and text2.
+	  // Lets check if we should copy the metaheader and meta text into text1 and text2.
 	  // There are 2 types of texts. 1= html text. 0= plain text. By
 	  // default were creating html texts.
 				String copyMetaFlag = (req.getParameter("copyMetaHeader")==null) ? "0" : (req.getParameter("copyMetaHeader")) ;
@@ -380,17 +362,6 @@ public class SaveNewMeta extends HttpServlet {
 					sqlStr = "insert into texts (meta_id,name,text,type) values ("+meta_id +", 2, '" + mText + "', 1)" ;
 					IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
 				}
-
-	  // Lets check if we should delete all permissions for the document. That means
-	  // that no one else than the owner of the document (and superadmin) will be able
-	  // to see that document. Nice feature to achive that you could create docs
-	  // without having someone else looking at the document at halftime.
-
-		//	String publishFlag = (req.getParameter("publish")==null) ? "0" : (req.getParameter("publish")) ;
-	  //  if( publishFlag.equals("0") ) {
-	  //   	sqlStr = "delete from roles_rights where meta_id = "+meta_id+"\n" ;
-			//		IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
-			//	}
 
 	  // Lets activate the textfield
 				sqlStr = "update meta set activate = 1 where meta_id = "+meta_id ;
