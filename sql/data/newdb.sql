@@ -29,7 +29,7 @@ INSERT INTO templategroups VALUES (0, 'Start')
 
 INSERT INTO templates_cref VALUES(0,1)
 
-INSERT INTO text_docs VALUES (1001, 1, 0, 1)
+INSERT INTO text_docs VALUES (1001, 1, 0, 1, -1, -1)
 
 INSERT INTO roles_rights VALUES (1,1001,3)
 
