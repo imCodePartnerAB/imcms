@@ -628,7 +628,7 @@
     <target name="check-language-property-files-in-sync" depends="init,check-junit-task-available,tools"
             unless="no-junit-task-available">
 
-        <junit haltonerror="yes" haltonfailure="yes" dir="${basedir}">
+        <junit haltonerror="yes" haltonfailure="yes">
             <classpath path="tools/build">
                 <path refid="libraries"/>
             </classpath>
@@ -644,7 +644,7 @@
     <target name="check-language-properties-in-use" depends="init,check-junit-task-available,tools"
             unless="no-junit-task-available" description="Test that there are no superfluos language properties.">
 
-        <junit haltonerror="yes" haltonfailure="yes" dir="${basedir}">
+        <junit haltonerror="yes" haltonfailure="yes">
             <classpath path="tools/build">
                 <path refid="libraries"/>
             </classpath>
