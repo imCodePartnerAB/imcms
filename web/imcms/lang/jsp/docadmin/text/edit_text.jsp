@@ -3,12 +3,15 @@
                  imcode.server.document.DocumentDomainObject,
                  imcode.util.Html,
                  imcode.server.user.UserDomainObject,
-                 imcode.util.Utility"%>
-<%
+                 imcode.util.Utility,
+                 org.apache.commons.lang.StringUtils,
+                 org.apache.commons.lang.math.NumberUtils"%><%
+
     DocumentDomainObject document = (DocumentDomainObject)request.getAttribute( "document" ) ;
     Integer textIndex = (Integer)request.getAttribute( "textIndex" ) ;
     String label = (String)request.getAttribute( "label" ) ;
     String content = (String)request.getAttribute( "content" ) ;
+    String rows = (String) request.getAttribute("rows") ;
     String[] formats = (String[])request.getAttribute( "formats" ) ;
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
 
@@ -21,6 +24,9 @@
             String format = formats[i];
             url += "&format="+URLEncoder.encode( format ) ;
         }
+    }
+    if (null != rows && NumberUtils.isDigits( rows )) {
+        url += "&rows="+rows ;
     }
 %><a href="<%= StringEscapeUtils.escapeHtml( url ) %>" class="imcms_label"><%= label %><img src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/red.gif" border="0"></a>
 <%= content %>

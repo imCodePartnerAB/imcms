@@ -440,6 +440,7 @@ class TagParser {
             request.setAttribute( "label", label);
             request.setAttribute( "content", finalresult );
             request.setAttribute( "formats", formats );
+            request.setAttribute( "rows", attributes.getProperty( "rows" ) );
 
             try {
                 finalresult = Utility.getContents( "/imcms/"+documentRequest.getUser().getLanguageIso639_2()+"/jsp/docadmin/text/edit_text.jsp", request, response ) ;
