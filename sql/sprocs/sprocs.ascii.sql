@@ -2459,7 +2459,7 @@ SELECT p.permission_id AS p_id, p.description,CAST(ISNULL((p.permission_id & dps
 FROM   doc_permission_sets dps
 RIGHT JOIN permissions p
        ON (p.permission_id & dps.permission_id) > 0
-       AND dps.meta_id = @meta_id
+       WHERE dps.meta_id = @meta_id
        AND dps.set_id = @set_id
        AND p.lang_prefix = @lang_prefix
 UNION
