@@ -1,0 +1,70 @@
+<html>
+<head>
+<title>Administrera Sektioner (Index ord)</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id) {
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
+}
+//-->
+</SCRIPT>
+</head>
+<body bgcolor="#ffffff">
+<form method="post" action="AdminSection">
+  <table width="40%" border="0" cellspacing="0">
+	<tr bgcolor="#333366">
+	  <td width="5%">&nbsp;</td>
+      <td colspan="6"> 
+        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff" size="2">Lägg till ny sektioner (index ord)</font></b>&nbsp;</div>
+      </td>
+	  <td width="5%">&nbsp;</td>
+    </tr>
+	<tr bgcolor="#bababa"> 
+      <td colspan="8">&nbsp;</td>      
+    </tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+      <td colspan="2" nowrap>Ny sektion:</td>      
+      <td colspan="2"><input name="new_section_name" size="30" 
+     ></td>
+	  <td colspan="2"><input type="submit" name="add_section" value="Lägg till"> </td>
+      <td width="5%">&nbsp;</td>
+    </tr>
+	<tr bgcolor="#bababa"> 
+      <td colspan="8"><hr size="3"></td>      
+    </tr>
+	
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+      <td colspan="3" align="right" width="200">Lista över befintliga:</td>
+	  <td colspan="3" align="left" width="200">
+	  		<select name="section_list">
+	  				#section_list#
+	  		</select>	  
+	  </td>
+	  <td width="5%">&nbsp;</td>
+    </tr>
+	
+	<tr bgcolor="#bababa"> 
+      <td colspan="8"><hr size="3"></td>      
+    </tr>
+	    
+    <tr bgcolor="#bababa">
+	  <td width="5%">&nbsp;</td> 
+      <td colspan="6"><input type="submit" name="submit" value="Tillbaka">
+	  &nbsp; <a href="javascript:openHelp('111');"><img src="../images/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+	  </td> 
+	  <td width="5%">&nbsp;</td>     
+    </tr>
+	<tr bgcolor="#bababa"> 
+      <td colspan="8">&nbsp;</td>      
+    </tr>
+  </table>
+  
+  </form>
+</body>
+</html>
+
+
+

@@ -1,0 +1,68 @@
+<html>
+<head>
+<title>Editera sektioner</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id) {
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
+}
+//-->
+</SCRIPT>
+</head>
+<body bgcolor="#FFFFFF">
+<form method="post" action="AdminSection">
+  <table width="40%" border="0" cellspacing="0">   
+	<tr bgcolor="#333366">
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2"> 
+		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"color="#FFFFFF"><b>Ändra namn på sektion!</font></b>&nbsp;</div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	
+	<tr bgcolor="#bababa">
+	  <td width="5%">&nbsp;</td> 
+	  <td width="30%" align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Välj:</font></td>
+	  <td width="60%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+		<select name="section_list">
+			#section_list#
+        </select>
+		</font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	
+	<tr bgcolor="#bababa">
+	  <td width="5%">&nbsp;</td> 
+	  <td width="30%" align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Nytt namn:</td>
+	  <td width="60%"> 
+		<input type="text" name="new_section_name">
+		</font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	
+	<tr bgcolor="#bababa">
+	  <td width="5%">&nbsp;</td> 	  
+	  <td colspan="2" align="center"> 
+		<input type="submit" name="edit_section" value="Byt namn">
+	  </td>
+	  <td width="5%">&nbsp;</td>	  
+	</tr>
+	
+	<tr bgcolor="#bababa">
+	  <td width="5%">&nbsp;</td> 	  
+	  <td colspan="2" align="left"> 
+		<input type="submit" name="submit" value="Tillbaka">
+		&nbsp; <a href="javascript:openHelp('113');"><img src="../images/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+	  </td>
+	  <td width="5%">&nbsp;</td>	  
+	</tr>
+	
+	<tr bgcolor="#bababa"> 
+	  <td colspan="4">&nbsp;</td>
+	</tr>
+  </table>
+</form>
+</body>
+</html>
+
