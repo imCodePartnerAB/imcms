@@ -301,7 +301,7 @@ public class SaveNewMeta extends HttpServlet {
         }
 
         // Lets activate the textfield
-        DocumentMapper.sqlUpdateActivateTheDocument( imcref, metaId );
+        DocumentMapper.sqlUpdateDocumentActivated( imcref, metaId, true);
 
         // Lets build the page
         String htmlStr = AdminDoc.adminDoc( metaId, metaId, user, req, res );
@@ -403,7 +403,7 @@ public class SaveNewMeta extends HttpServlet {
         return;
     }
 
-    private void redirectToExternalDocType( IMCServiceInterface imcref, int metaId,
+    public static void redirectToExternalDocType( IMCServiceInterface imcref, int metaId,
             UserDomainObject user, int parentMetaId, HttpServletResponse res ) throws IOException {
         // check if external doc
         ExternalDocType ex_doc;

@@ -53,7 +53,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
                                                DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
                                                UserDomainObject user, HttpServletRequest request,
                                                HttpServletResponse response ) throws IOException, ServletException {
-        documentInformation.forwardToCreateNewFileDocumentPage( request, response, user );
+        documentInformation.processNewFileDocumentInformation( request, response, user );
 
     }
 

@@ -287,6 +287,15 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
             case DOCTYPE_HTML:
                 document = new HtmlDocumentDomainObject();
                 break;
+            case DOCTYPE_CHAT:
+                document = new ChatDocumentDomainObject();
+                break;
+            case DOCTYPE_CONFERENCE:
+                document = new ConferenceDocumentDomainObject();
+                break;
+            case DOCTYPE_BILLBOARD:
+                document = new BilboardDocumentDomainObject();
+                break;
         }
 
         return document ;

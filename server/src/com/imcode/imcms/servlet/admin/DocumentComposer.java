@@ -68,6 +68,7 @@ public class DocumentComposer extends HttpServlet {
     public static final String ACTION__EDIT_BROWSER_DOCUMENT = "editBrowserDocument";
     public static final String ACTION__EDITED_BROWSER_DOCUMENT = "editedBrowserDocument";
 
+
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
     }
@@ -119,21 +120,21 @@ public class DocumentComposer extends HttpServlet {
             UrlDocumentDomainObject newUrlDocument = (UrlDocumentDomainObject) document;
             newUrlDocument.setUrlDocumentUrl(request.getParameter(PARAMETER__URL_DOC__URL));
             newUrlDocument.setTarget(getTargetFromRequest(request));
-            saveNewDocumentAndAddToMenuAndRemoveSessionAttributesAndRedirectToParent(newUrlDocument, newDocumentParentInformation, user, request, response);
+            processNewTextDocumentInformation(newUrlDocument, newDocumentParentInformation, user, request, response);
         } else if (ACTION__CREATE_NEW_HTML_DOCUMENT.equalsIgnoreCase(action)) {
             HtmlDocumentDomainObject newHtmlDocument = (HtmlDocumentDomainObject) document;
             newHtmlDocument.setHtmlDocumentHtml(request.getParameter(PARAMETER__HTML_DOC__HTML));
-            saveNewDocumentAndAddToMenuAndRemoveSessionAttributesAndRedirectToParent(newHtmlDocument, newDocumentParentInformation, user, request, response);
+            processNewTextDocumentInformation(newHtmlDocument, newDocumentParentInformation, user, request, response);
         } else if (ACTION__CREATE_NEW_FILE_DOCUMENT.equalsIgnoreCase(action)) {
             FileDocumentDomainObject newFileDocument = (FileDocumentDomainObject) document;
             FileItem fileItem = request.getParameterFileItem(PARAMETER__FILE_DOC__FILE);
             newFileDocument.setFileDocumentFilename(fileItem.getName());
             newFileDocument.setFileDocumentInputStream(fileItem.getInputStream());
             newFileDocument.setFileDocumentMimeType(getMimeTypeFromRequest(request));
-            saveNewDocumentAndAddToMenuAndRemoveSessionAttributesAndRedirectToParent(newFileDocument, newDocumentParentInformation, user, request, response);
+            processNewTextDocumentInformation(newFileDocument, newDocumentParentInformation, user, request, response);
         } else if (ACTION__CREATE_NEW_BROWSER_DOCUMENT.equalsIgnoreCase( action )) {
             BrowserDocumentDomainObject newBrowserDocument = (BrowserDocumentDomainObject)document;
-            saveNewDocumentAndAddToMenuAndRemoveSessionAttributesAndRedirectToParent( newBrowserDocument, newDocumentParentInformation, user, request, response );
+            processNewTextDocumentInformation( newBrowserDocument, newDocumentParentInformation, user, request, response );
         } else if (ACTION__EDITED_BROWSER_DOCUMENT.equalsIgnoreCase( action )) {
             BrowserDocumentDomainObject browserDocument = (BrowserDocumentDomainObject)document;
             try {
@@ -153,7 +154,7 @@ public class DocumentComposer extends HttpServlet {
             }
             response.sendRedirect("AdminDoc?meta_id=" + document.getId()) ;
         } else if (ACTION__EDIT_BROWSER_DOCUMENT.equalsIgnoreCase( action )) {
-            forwardToBrowserDocumentComposerPage( request, response, user);
+            processNewBrowserDocumentInformation( request, response, user);
         }
     }
 
@@ -198,11 +199,18 @@ public class DocumentComposer extends HttpServlet {
         return mimeType;
     }
 
-    public void saveNewDocumentAndAddToMenuAndRemoveSessionAttributesAndRedirectToParent(DocumentDomainObject newDocument,
+    public void processNewTextDocumentInformation(DocumentDomainObject newDocument,
                                                                                          NewDocumentParentInformation newDocumentParentInformation,
                                                                                          UserDomainObject user,
                                                                                          HttpServletRequest request,
                                                                                          HttpServletResponse response) throws IOException {
+        saveNewDocumentAndAddToMenuAndRemoveSessionAttribute(newDocument, newDocumentParentInformation, user, request);
+        response.sendRedirect("AdminDoc?meta_id=" + newDocumentParentInformation.parentId + "&flags="
+                + IMCConstants.PERM_DT_TEXT_EDIT_MENUS);
+
+    }
+
+    public static void saveNewDocumentAndAddToMenuAndRemoveSessionAttribute(DocumentDomainObject newDocument, NewDocumentParentInformation newDocumentParentInformation, UserDomainObject user, HttpServletRequest request) throws IOException {
         try {
             final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
             final DocumentMapper documentMapper = service.getDocumentMapper();
@@ -216,9 +224,6 @@ public class DocumentComposer extends HttpServlet {
         } catch (DocumentMapper.DocumentAlreadyInMenuException e) {
             throw new RuntimeException(e);
         }
-        response.sendRedirect("AdminDoc?meta_id=" + newDocumentParentInformation.parentId + "&flags="
-                + IMCConstants.PERM_DT_TEXT_EDIT_MENUS);
-
     }
 
     private void processNewDocumentInformation(NewDocumentParentInformation newDocumentParentInformation,
@@ -235,6 +240,7 @@ public class DocumentComposer extends HttpServlet {
         addObjectToSessionAndSetSessionAttributeNameInRequest("document", newDocument, request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME);
 
         request.setAttribute(REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME, getSessionAttributeNameFromRequest(request, REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME));
+
         newDocument.processNewDocumentInformation(this, newDocumentParentInformation, user, request, response);
     }
 
@@ -253,23 +259,31 @@ public class DocumentComposer extends HttpServlet {
         return newDocument;
     }
 
-    public void forwardToBrowserDocumentComposerPage( HttpServletRequest request, HttpServletResponse response,
+    public void processNewBrowserDocumentInformation( HttpServletRequest request, HttpServletResponse response,
                                                        UserDomainObject user ) throws IOException, ServletException {
         request.getRequestDispatcher( URL__BROWSER_DOCUMENT_COMPOSER ).forward( request, response );
     }
 
-    public void forwardToCreateNewFileDocumentPage(HttpServletRequest request, HttpServletResponse response,
+    public void processNewFileDocumentInformation(HttpServletRequest request, HttpServletResponse response,
                                                    UserDomainObject user) throws IOException, ServletException {
         request.getRequestDispatcher(URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2() + URL_I15D_PAGE__FILEDOC).forward(request, response);
     }
 
-    public void forwardToCreateNewHtmlDocumentPage(HttpServletRequest request, HttpServletResponse response,
+    public void processNewHtmlDocumentInformation(HttpServletRequest request, HttpServletResponse response,
                                                    UserDomainObject user) throws IOException, ServletException {
         request.getRequestDispatcher(URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2() + URL_I15D_PAGE__HTMLDOC).forward(request, response);
 
     }
 
-    public void forwardToCreateNewUrlDocumentPage(HttpServletRequest request, HttpServletResponse response,
+    public void processNewFormerExternalDocument(NewDocumentParentInformation newDocumentParentInformation, UserDomainObject user, HttpServletRequest request, HttpServletResponse response, FormerExternalDocument externalDocument ) throws IOException {
+        // todo: spara inte här och ta bort active flaggan
+        saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( externalDocument, newDocumentParentInformation, user, request );
+        final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+        DocumentMapper.sqlUpdateDocumentActivated( service, externalDocument.getId(), false );
+        SaveNewMeta.redirectToExternalDocType( service, externalDocument.getId(), user, newDocumentParentInformation.parentId, response );
+    }
+
+    public void processNewUrlDocumentInformation(HttpServletRequest request, HttpServletResponse response,
                                                   UserDomainObject user) throws ServletException, IOException {
         request.getRequestDispatcher(URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2() + URL_I15D_PAGE__URLDOC).forward(request, response);
     }
@@ -414,7 +428,7 @@ public class DocumentComposer extends HttpServlet {
         String dateStr = req.getParameter(dateParameterName);
         String timeStr = req.getParameter(timeParameterName);
 
-        Date date = null;
+        Date date;
         try {
             date = dateformat.parse(dateStr);
         } catch (ParseException pe) {
@@ -423,7 +437,7 @@ public class DocumentComposer extends HttpServlet {
             return null;
         }
 
-        Date time = null;
+        Date time;
         try {
             timeformat.setTimeZone(TimeZone.getTimeZone("GMT"));
             time = timeformat.parse(timeStr);

@@ -161,7 +161,7 @@ public class DocumentMapper {
 
         touchDocument( getDocument( parentId ) );
         DocumentMapper.copyTemplateData( service, user, String.valueOf( parentId ), String.valueOf( newMetaId ) );
-        DocumentMapper.sqlUpdateActivateTheDocument( service, newMetaId );
+        DocumentMapper.sqlUpdateDocumentActivated( service, newMetaId, true);
 
         return getDocument( newMetaId );
     }
@@ -990,8 +990,8 @@ public class DocumentMapper {
                                new String[]{meta_id, mText} );
     }
 
-    public static void sqlUpdateActivateTheDocument( IMCServiceInterface imcref, int meta_id ) {
-        imcref.sqlUpdateQuery( "update meta set activate = 1 where meta_id = ?", new String[]{"" + meta_id} );
+    public static void sqlUpdateDocumentActivated(IMCServiceInterface imcref, int meta_id, boolean activate) {
+        imcref.sqlUpdateQuery( "update meta set activate = ? where meta_id = ?", new String[]{ "" + (activate?1:0), "" + meta_id} );
     }
 
     public static void sqlUpdateMetaDateCreated( IMCServiceInterface imcref, String meta_id, String created_datetime ) {

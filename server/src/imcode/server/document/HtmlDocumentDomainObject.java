@@ -34,7 +34,7 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
                                                DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
                                                UserDomainObject user, HttpServletRequest request,
                                                HttpServletResponse response ) throws IOException, ServletException {
-        documentInformation.forwardToCreateNewHtmlDocumentPage( request, response, user );
+        documentInformation.processNewHtmlDocumentInformation( request, response, user );
 
     }
 

@@ -1,52 +1,37 @@
-/*
- * Created by IntelliJ IDEA.
- * User: kreiger
- * Date: 2004-feb-28
- * Time: 20:38:07
- */
 package imcode.server.document;
 
 import com.imcode.imcms.servlet.admin.DocumentComposer;
+import com.imcode.imcms.servlet.admin.SaveNewMeta;
 import imcode.server.user.UserDomainObject;
+import imcode.server.IMCServiceInterface;
+import imcode.server.ApplicationServer;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
 import java.io.IOException;
 
-public class UrlDocumentDomainObject extends DocumentDomainObject {
-
-    private String urlDocumentUrl;
-
-    public String getUrlDocumentUrl() {
-        return urlDocumentUrl;
-    }
-
-    public void setUrlDocumentUrl( String urlDocumentUrl ) {
-        this.urlDocumentUrl = urlDocumentUrl;
-    }
-
-    public int getDocumentTypeId() {
-        return DOCTYPE_URL;
-    }
-
+/**
+ * Created by IntelliJ IDEA.
+ * User: Hasse
+ * Date: 2004-mar-02
+ * Time: 17:41:36
+ * To change this template use File | Settings | File Templates.
+ */
+public abstract class FormerExternalDocument extends DocumentDomainObject {
     public void processNewDocumentInformation( DocumentComposer documentInformation,
                                                DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
                                                UserDomainObject user, HttpServletRequest request,
                                                HttpServletResponse response ) throws IOException, ServletException {
-        documentInformation.processNewUrlDocumentInformation( request, response, user );
+        documentInformation.processNewFormerExternalDocument(newDocumentParentInformation, user, request, response, this );
     }
 
-    public void saveDocument( DocumentMapper documentMapper ) {
-        documentMapper.saveUrlDocument(this) ;
+    public void saveDocument(DocumentMapper documentMapper) {
     }
 
     public void saveNewDocument( DocumentMapper documentMapper ) {
-        documentMapper.saveNewUrlDocument( this );
     }
 
     public void initDocumentFromDb( DocumentMapper documentMapper ) {
-        documentMapper.initUrlDocumentFromDb( this );
     }
-
 }

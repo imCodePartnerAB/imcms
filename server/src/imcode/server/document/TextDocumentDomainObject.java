@@ -71,7 +71,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
                                                DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
                                                UserDomainObject user, HttpServletRequest request,
                                                HttpServletResponse response ) throws IOException {
-            documentInformation.saveNewDocumentAndAddToMenuAndRemoveSessionAttributesAndRedirectToParent( this, newDocumentParentInformation, user, request, response );
+            documentInformation.processNewTextDocumentInformation( this, newDocumentParentInformation, user, request, response );
     }
 
     public void saveDocument( DocumentMapper documentMapper ) {
