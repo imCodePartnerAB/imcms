@@ -151,7 +151,6 @@ public class AdminListDocs extends Administrator {
 		
 		// *************** RETURN TO ADMIN ROLES *****************
 		if( request.getParameter("LISTDOC_LIST") != null) {
-System.out.println("LISTDOC_LIST");
 			boolean noErrors = true;
 			String parseTemplate = null;
 			String[] docTypesToShow = null;
