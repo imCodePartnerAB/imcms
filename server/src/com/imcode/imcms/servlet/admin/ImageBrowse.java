@@ -24,7 +24,6 @@ import java.util.StringTokenizer;
  */
 public class ImageBrowse extends HttpServlet {
 
-    // todo: make sure this is used in the jsp page.
     public static final String REQUEST_ATTRIBUTE__IMAGE_BROWSE_FORM_DATA = "imagebrowseformdata";
 
     private final static String IMG_NEXT_LIST_TEMPLATE = "Admin_Img_List_Next.html";
@@ -47,7 +46,8 @@ public class ImageBrowse extends HttpServlet {
     public static void getPage( HttpServletRequest request, HttpServletResponse response )
             throws IOException, ServletException {
         if (null != request.getParameter( PARAMETER_BUTTON__CANCEL) || null != request.getParameter( PARAMETER_BUTTON__OK )) {
-            request.getRequestDispatcher( request.getParameter( PARAMETER__CALLER )).forward( request, response );
+            String callerParam = request.getParameter( PARAMETER__CALLER );
+            request.getRequestDispatcher( callerParam ).forward( request, response );
             return ;
         }
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -286,11 +286,7 @@ public class ImageBrowse extends HttpServlet {
         if ( counter > img_numbers ) {
             counter = img_numbers;
         }
-        formData.setStartNumber( Integer.toString( counter - max + 1 ) );
-        formData.setStopNumber( Integer.toString( counter ) );
         formData.setMaxNumber( Integer.toString( img_numbers ) );
-
-        // används denna? vec.add( "#SERVLET_URL#" );
 
         request.setAttribute( REQUEST_ATTRIBUTE__IMAGE_BROWSE_FORM_DATA, formData );
 
@@ -332,8 +328,6 @@ public class ImageBrowse extends HttpServlet {
         private String options;
         private String nextButton;
         private String previousButton;
-        private String startNumber;
-        private String stopNumber;
         private String maxNumber;
 
         private String caller;
@@ -418,16 +412,8 @@ public class ImageBrowse extends HttpServlet {
             this.previousButton = previousButton;
         }
 
-        public void setStartNumber( String startNumber ) {
-            this.startNumber = startNumber;
-        }
-
         public String getMaxNumber() {
             return maxNumber;
-        }
-
-        public void setStopNumber( String stopNumber ) {
-            this.stopNumber = stopNumber;
         }
 
         public void setMaxNumber( String maxNumber ) {

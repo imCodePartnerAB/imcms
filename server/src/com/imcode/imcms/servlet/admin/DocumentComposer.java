@@ -118,6 +118,9 @@ public class DocumentComposer extends HttpServlet {
         DocumentDomainObject document = (DocumentDomainObject)getObjectFromSessionWithKeyInRequest( request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
 
         if ( null != request.getParameter( PARAMETER__GO_TO_IMAGE_BROWSE ) ) {
+
+            setDocumentAttributesFromRequestParameters( document, request );
+
             String parentInfoAttributeName = getSessionAttributeNameFromRequest( request, REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME );
             String sessionAttributeName = getSessionAttributeNameFromRequest( request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
             String originalAction = request.getParameter( PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION );
@@ -144,29 +147,35 @@ public class DocumentComposer extends HttpServlet {
 
         try {
             // TODO: Replace this rats-nest of dispatching with a bunch of Application Controllers a la Fowler,
+            // (or use the struts framework?/Hasse)
             // preferably stored in the session instead of the objects we put there now.
             // http://www.martinfowler.com/eaaCatalog/applicationController.html
 
             if ( null != request.getParameter( PARAMETER__RETURNING_FROM_IMAGE_BROWSE ) ) {
                 action = request.getParameter( PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION );
                 request.setAttribute( REQUEST_ATTR_OR_PARAM__ACTION, action );
-                String imageUrl = AdminDoc.getImageUri( request );
                 if ( null != request.getParameter( ImageBrowse.PARAMETER_BUTTON__OK ) ) {
-                    document.setMenuImage( imageUrl );
+                    String imageUrl = AdminDoc.getImageUri( request );
+                    document.setMenuImage(imageUrl);
                 }
             }
 
             if ( ACTION__CREATE_NEW_DOCUMENT.equalsIgnoreCase( action ) ) {
-                DocumentDomainObject parentDocument = documentMapper.getDocument( newDocumentParentInformation.parentId );
-                DocumentDomainObject newDocument = createDocumentOfTypeFromParent( newDocumentParentInformation.documentTypeId, parentDocument, user );
-                newDocument.setHeadline( "" );
-                newDocument.setMenuText( "" );
-                newDocument.setMenuImage( "" );
-                newDocument.setStatus( DocumentDomainObject.STATUS_NEW );
-                newDocument.setPublicationStartDatetime( new Date() );
-                newDocument.setArchivedDatetime( null );
-                newDocument.setPublicationEndDatetime( null );
+                DocumentDomainObject newDocument;
+                if( null == document ) {
+                    DocumentDomainObject parentDocument = documentMapper.getDocument( newDocumentParentInformation.parentId );
+                    newDocument = createDocumentOfTypeFromParent( newDocumentParentInformation.documentTypeId, parentDocument, user );
+                    newDocument.setHeadline( "" );
+                    newDocument.setMenuText( "" );
+                    newDocument.setMenuImage( "" );
+                    newDocument.setStatus( DocumentDomainObject.STATUS_NEW );
+                    newDocument.setPublicationStartDatetime( new Date() );
+                    newDocument.setArchivedDatetime( null );
+                    newDocument.setPublicationEndDatetime( null );
 
+                } else { // returning from image browse
+                    newDocument = document;
+                }
                 addObjectToSessionAndSetSessionAttributeNameInRequest( "newDocument", newDocument, request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
                 forwardToDocinfoPage( request, response, user );
             } else if ( null != document
