@@ -1,7 +1,7 @@
 <%@ page import="java.io.File,
                  java.util.Arrays,
-                 org.apache.commons.io.filefilter.FileFilterUtils,
-                 java.io.FileFilter"%>
+                 java.io.FileFilter,
+                 org.apache.commons.io.filefilter.*"%>
 <%@page contentType="text/html"%>
 <html>
     <head>
@@ -28,7 +28,9 @@
         <%
             for ( int i = 0; i < files.length; i++ ) {
                 File file = files[i];
-                if (servletFile.equals( file )) {
+                String filename = file.getName().toLowerCase() ;
+                boolean filenameOk = filename.endsWith( ".txt" ) || filename.endsWith( ".html" );
+                if (!filenameOk) {
                     continue;
                 }
                 %><li><a href="<%= file.getName() %>"><%= file.getName() %></a></li><%

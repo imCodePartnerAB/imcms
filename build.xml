@@ -82,25 +82,23 @@
 
     <target name="bindist-zip" depends="bindist-war">
         <mkdir dir="${dist}"/>
-        <fixcrlf srcdir="${basedir}" destdir="${tmp}"
-            includes="*.TXT" excludes="${srcincludes}"
-            eol="dos"/>
+        <mkdir dir="${tmp}/docs"/>
+        <fixcrlf srcdir="${basedir}/docs" destdir="${tmp}/docs" eol="dos"/>
         <zip destfile="${bindist-zip}">
             <fileset file="${war}"/>
             <fileset dir="${dist}" includes="imcms*.sql"/>
-            <fileset dir="${tmp}" includes="*.TXT"/>
+            <fileset dir="${tmp}/docs" includes="*.TXT,*.HTML,*.css"/>
         </zip>
     </target>
 
     <target name="bindist-tgz" depends="bindist-war">
         <mkdir dir="${dist}"/>
-        <fixcrlf srcdir="${basedir}" destdir="${tmp}"
-            includes="*.TXT" excludes="${srcincludes}"
-            eol="unix"/>
+        <mkdir dir="${tmp}/docs"/>
+        <fixcrlf srcdir="${basedir}/docs" destdir="${tmp}/docs" eol="unix"/>
         <tar destfile="${bindist-tgz}" compression="gzip">
             <tarfileset file="${war}"/>
             <tarfileset dir="${dist}" includes="imcms*.sql"/>
-            <tarfileset dir="${tmp}" includes="*.TXT"/>
+            <tarfileset dir="${tmp}/docs" includes="*.TXT,*.HTML,*.css"/>
         </tar>
     </target>
 
@@ -273,7 +271,7 @@
     </target>
 
     <target name="changes">
-        <xslt in="changes.xml" style="tools/xsl/changes.xsl" out="changes.html"/>
+        <xslt in="docs/changes.xml" style="docs/changes.xsl" out="docs/CHANGES.HTML"/>
     </target>
 
     <target name="checksumsfile">
@@ -445,7 +443,7 @@
         </copy>
 
         <copy todir="${docs}">
-            <fileset dir="${basedir}" includes="*.TXT" excludes="${srcincludes}"/>
+            <fileset dir="${basedir}/docs"/>
         </copy>
 
         <!-- Create empty files needed by fortune -->
@@ -604,7 +602,7 @@
         </uptodate>
 
         <fail unless="build-properties-up-to-date">
-            '${build.properties}.template' is newer than '${build.properties}'. (See INSTALL.TXT for details.)
+            '${build.properties}.template' is newer than '${build.properties}'. (See docs/INSTALL.TXT for details.)
             Copy '${build.properties}.template' to '${build.properties}' and edit it!
         </fail>
 

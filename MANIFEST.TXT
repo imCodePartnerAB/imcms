@@ -1,12 +1,12 @@
 .cvsignore
+docs/**
 lib/*.jar
 lib/noinstall/*.jar
 server/**
 sql/**
 tools/**
 web/**
-*.TXT
-changes.*
+MANIFEST.TXT
 build.properties.template
 build.xml
 imcms_*.properties
