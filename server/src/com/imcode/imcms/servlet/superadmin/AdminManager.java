@@ -51,6 +51,7 @@ public class AdminManager extends Administrator {
 
     public static final String PAGE_SEARCH = "search";
     private static final LocalizedMessage ERROR_MESSAGE__NO_CREATE_PERMISSION = new LocalizedMessage( "error/servlet/AdminManager/no_create_permission" );
+    private static final LocalizedMessage ERROR_MESSAGE__NO_PARENT_ID = new LocalizedMessage( "error/servlet/AdminManager/no_parent_id" );
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         this.doPost( req, res );
@@ -68,7 +69,7 @@ public class AdminManager extends Administrator {
             String url = getAdminTaskUrl( whichButton );
             if ( !user.isSuperAdmin() && !user.isUserAdmin() ) {
                 Utility.forwardToLogin( request, response );
-                return ;
+                return;
             }
 
             if ( StringUtils.isNotBlank( url ) ) {
@@ -77,31 +78,33 @@ public class AdminManager extends Administrator {
             }
         }
 
-        if (!user.canAccessAdminPages()) {
+        if ( !user.canAccessAdminPages() ) {
             Utility.forwardToLogin( request, response );
-            return ;
+            return;
         }
 
         final DocumentMapper documentMapper = service.getDocumentMapper();
         if ( Utility.parameterIsSet( request, REQUEST_PARAMETER__CREATE_NEW_DOCUMENT ) ) {
-            int parentId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID ) );
-            DocumentDomainObject parentDocument = documentMapper.getDocument( parentId );
-            String createDocumentAction = request.getParameter( REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION );
-            if ( REQUEST_PARAMETER__ACTION__COPY.equals( createDocumentAction ) ) {
-                SaveSort.copyDocument( parentDocument, user );
-                createAndShowAdminManagerPage( request, response, null );
-            } else {
-                int documentTypeId = Integer.parseInt( createDocumentAction );
+            try {
+                int parentId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID ) );
+                DocumentDomainObject parentDocument = documentMapper.getDocument( parentId );
+                String createDocumentAction = request.getParameter( REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION );
+                if ( REQUEST_PARAMETER__ACTION__COPY.equals( createDocumentAction ) ) {
+                    SaveSort.copyDocument( parentDocument, user );
+                    createAndShowAdminManagerPage( request, response, null );
+                } else {
+                    int documentTypeId = Integer.parseInt( createDocumentAction );
 
-                DocumentPageFlow.SaveDocumentCommand saveNewDocumentCommand = new SaveNewDocumentCommand();
-                DispatchCommand returnCommand = new ShowAdminManagerPageCommand();
+                    DocumentPageFlow.SaveDocumentCommand saveNewDocumentCommand = new SaveNewDocumentCommand();
+                    DispatchCommand returnCommand = new ShowAdminManagerPageCommand();
 
-                AddDoc.DocumentCreator documentCreator = new AddDoc.DocumentCreator( saveNewDocumentCommand, returnCommand, getServletContext() );
-                try {
+                    AddDoc.DocumentCreator documentCreator = new AddDoc.DocumentCreator( saveNewDocumentCommand, returnCommand, getServletContext() );
                     documentCreator.createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument, request, response );
-                } catch( SecurityException ex ) {
-                    createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__NO_CREATE_PERMISSION );
                 }
+            } catch ( NumberFormatException nfe ) {
+                createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__NO_PARENT_ID );
+            } catch ( SecurityException ex ) {
+                createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__NO_CREATE_PERMISSION );
             }
         } else {
             createAndShowAdminManagerPage( request, response, null );
@@ -220,7 +223,7 @@ public class AdminManager extends Administrator {
                 public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
                     AdminManagerSearchPage page = new AdminManagerSearchPage( this );
                     DocumentFinder documentFinder = new DocumentFinder( page );
-                    documentFinder.setDocumentComparator( getComparator( null ));
+                    documentFinder.setDocumentComparator( getComparator( null ) );
                     page.updateFromRequest( request );
                     documentFinder.addExtraSearchResultColumn( new DatesSummarySearchResultColumn() );
                     documentFinder.forward( request, response );
@@ -252,7 +255,7 @@ public class AdminManager extends Administrator {
         newDocumentsSubreport.setName( "new" );
         newDocumentsSubreport.setDocuments( documents_new );
         newDocumentsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/1" ) );
-        Date oneWeekAgo = getDateOneWeekAgo() ;
+        Date oneWeekAgo = getDateOneWeekAgo();
         String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__CREATED, oneWeekAgo, null );
         newDocumentsSubreport.setSearchQueryString( dateSearchQueryString );
         return newDocumentsSubreport;
@@ -265,7 +268,7 @@ public class AdminManager extends Administrator {
         documentsUnchangedForSixMonthsSubreport.setDocuments( documents_not_changed_in_six_month );
         documentsUnchangedForSixMonthsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/4" ) );
         documentsUnchangedForSixMonthsSubreport.setSortorder( "MODR" );
-        Date sixMonthsAgo = getDateSixMonthsAgo() ;
+        Date sixMonthsAgo = getDateSixMonthsAgo();
         String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__MODIFIED, null, sixMonthsAgo );
         documentsUnchangedForSixMonthsSubreport.setSearchQueryString( dateSearchQueryString );
         return documentsUnchangedForSixMonthsSubreport;
@@ -278,29 +281,29 @@ public class AdminManager extends Administrator {
         documentsArchivedWithinOneWeekSubreport.setDocuments( documents_archived_less_then_one_week );
         documentsArchivedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/2" ) );
         documentsArchivedWithinOneWeekSubreport.setSortorder( "ARCR" );
-        Date lastMidnight = getDateLastMidnight() ;
-        Date oneWeekAhead = getDateOneWeekAhead() ;
+        Date lastMidnight = getDateLastMidnight();
+        Date oneWeekAhead = getDateOneWeekAhead();
         String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__ARCHIVED, lastMidnight, oneWeekAhead );
-        documentsArchivedWithinOneWeekSubreport.setSearchQueryString( dateSearchQueryString ) ;
-         return documentsArchivedWithinOneWeekSubreport;
+        documentsArchivedWithinOneWeekSubreport.setSearchQueryString( dateSearchQueryString );
+        return documentsArchivedWithinOneWeekSubreport;
     }
 
     private String createDateSearchQueryString( String dateType, Date startDate, Date endDate ) {
         String result = SearchDocumentsPage.REQUEST_PARAMETER__DATE_TYPE + "="
-                        + dateType ;
-        if (null != startDate) {
+                        + dateType;
+        if ( null != startDate ) {
             result += "&"
                       + SearchDocumentsPage.REQUEST_PARAMETER__START_DATE
                       + "="
-                      + Utility.formatDate( startDate ) ;
+                      + Utility.formatDate( startDate );
         }
 
-        if (null != endDate) {
+        if ( null != endDate ) {
             result += "&"
                       + SearchDocumentsPage.REQUEST_PARAMETER__END_DATE
                       + "=" + Utility.formatDate( endDate );
         }
-        return result ;
+        return result;
     }
 
     private AdminManagerSubreport createDocumentsUnpublishedWithinOneWeekSubreport(
@@ -401,9 +404,9 @@ public class AdminManager extends Administrator {
         Calendar calendar = Calendar.getInstance();
         calendar.add( Calendar.DATE, days );
         calendar.set( Calendar.HOUR_OF_DAY, 0 );
-        calendar.set( Calendar.MINUTE, 0) ;
-        calendar.set( Calendar.SECOND, 0) ;
-        calendar.set( Calendar.MILLISECOND, 0) ;
+        calendar.set( Calendar.MINUTE, 0 );
+        calendar.set( Calendar.SECOND, 0 );
+        calendar.set( Calendar.MILLISECOND, 0 );
         return calendar.getTime();
     }
 
@@ -412,9 +415,9 @@ public class AdminManager extends Administrator {
                                                        List documents_publication_end_less_then_one_week,
                                                        List documents_not_changed_in_six_month, List modifiedDocuments,
                                                        List newDocuments ) {
-        Date lastMidnight = getDateLastMidnight() ;
+        Date lastMidnight = getDateLastMidnight();
         Date oneWeekAhead = getDateOneWeekAhead();
-        Date oneWeekAgo = getDateOneWeekAgo() ;
+        Date oneWeekAgo = getDateOneWeekAgo();
         Date sixMonthAgo = getDateSixMonthsAgo();
 
         for ( int i = 0; i < documentsFound.length; i++ ) {
@@ -442,7 +445,7 @@ public class AdminManager extends Administrator {
             }
 
             boolean createdInPastWeek = !createdDatetime.before( oneWeekAgo );
-            if (createdInPastWeek) {
+            if ( createdInPastWeek ) {
                 newDocuments.add( document );
             }
 
@@ -467,7 +470,7 @@ public class AdminManager extends Administrator {
     }
 
     private Date getDateOneWeekAgo() {
-        return getDateTruncated(-7);
+        return getDateTruncated( -7 );
     }
 
     public static ChainableReversibleNullComparator getComparator( String sortorder ) {
