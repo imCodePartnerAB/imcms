@@ -96,7 +96,7 @@ class MenuParserSubstitution implements Substitution {
                         if ( "menuloop".equals( ( (Element)menuNodeChild ).getName() ) ) { // Is it an imcms:menuloop?
                             nodeMenuLoop( (Element)menuNodeChild, result, currentMenu, menuAttributes, patMat );
                         } else {
-                            result.append( ( (Element)menuNodeChild ).toString() );  // No? Just append it (almost)verbatim.
+                            result.append( ( menuNodeChild ).toString() );  // No? Just append it (almost)verbatim.
                         }
                         break;
                 }
@@ -106,7 +106,7 @@ class MenuParserSubstitution implements Substitution {
 
     /**
      * Handle an imcms:menuloop element.
-     * 
+     *
      * @param menuLoopNode   The imcms:menuloop-element
      * @param result         The StringBuffer to which to append the result
      * @param menuItems      The current menu
@@ -173,7 +173,7 @@ class MenuParserSubstitution implements Substitution {
 
     /**
      * Handle one imcms:menuitem
-     * 
+     *
      * @param menuItemNode   The imcms:menuitem-element
      * @param result         The StringBuffer to which to append the result
      * @param menuItem       The current menuitem
@@ -240,8 +240,8 @@ class MenuParserSubstitution implements Substitution {
      */
     private Substitution getMenuItemSubstitution( MenuItem menuItem, Properties parameters, int menuItemIndex ) {
 
-        String image = menuItem.getImage();
-        image = ( image != null && image.length() > 0 ) ? ( "<img src=\"" + image + "\" border=\"0\">" ) : "";
+        String imageUrl = menuItem.getImage();
+        String imageTag = ( imageUrl != null && imageUrl.length() > 0 ) ? ( "<img src=\"" + imageUrl + "\" border=\"0\">" ) : "";
         String headline = menuItem.getHeadline();
         if ( headline.length() == 0 ) {
             headline = "&nbsp;";
@@ -263,7 +263,7 @@ class MenuParserSubstitution implements Substitution {
         tags.setProperty( "#childMetaId#", "" + menuItem.getMetaId() );
         tags.setProperty( "#childMetaHeadline#", headline );
         tags.setProperty( "#childMetaText#", menuItem.getText() );
-        tags.setProperty( "#childMetaImage#", image );
+        tags.setProperty( "#childMetaImage#", imageTag );
         tags.setProperty( "#childCreatedDate#", createdDate );
         tags.setProperty( "#childModifiedDate#", modifiedDate );
         tags.setProperty( "#menuitemindex#", "" + menuItemIndex);
@@ -271,7 +271,8 @@ class MenuParserSubstitution implements Substitution {
         tags.setProperty( "#menuitemmetaid#", "" + menuItem.getMetaId());
         tags.setProperty( "#menuitemheadline#", headline );
         tags.setProperty( "#menuitemtext#", menuItem.getText() );
-        tags.setProperty( "#menuitemimage#", image );
+        tags.setProperty( "#menuitemimage#", imageTag );
+        tags.setProperty( "#menuitemimageurl#", imageUrl );
         tags.setProperty( "#menuitemtarget#", menuItem.getTarget() );
         tags.setProperty( "#menuitemdatecreated#", createdDate );
         tags.setProperty( "#menuitemdatemodified#", modifiedDate );
