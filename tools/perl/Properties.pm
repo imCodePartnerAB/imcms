@@ -98,7 +98,7 @@ sub unescape {
         t => "\t",
     );
 
-    s{\\(u(\d{4})|.)}
+    s{\\(u([\da-fA-F]{4})|.)}
     { 
 	my $replacement = $1 ;
 	my $unicode_value = $2 ;
