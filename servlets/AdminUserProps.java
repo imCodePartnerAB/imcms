@@ -106,7 +106,7 @@ public class AdminUserProps extends Administrator {
     private void showChangeUserPage( String userToChangeId, IMCServiceInterface imcref, Properties tmp_userInfo, Vector tmp_phones, UserDomainObject user, HttpServletResponse res, HttpSession session, Vector phoneTypesV, boolean superadmin, boolean useradmin, HttpServletRequest req ) throws IOException {
         // get a user object by userToChangeId
         UserDomainObject userToChange = null;
-        if ( userToChangeId != "" ) {
+        if ( null != userToChangeId ) {
             userToChange = imcref.getUserById( Integer.parseInt( userToChangeId ) );
         }
 
@@ -271,13 +271,9 @@ public class AdminUserProps extends Administrator {
         vec.add( "#ADMIN_TASK#" );
         vec.add( adminTask );
 
-        // Lets get the the users language id
-        String userLanguage = user.getLangPrefix();
-        String[] langList = imcref.sqlProcedure( "GetLanguageList", new String[]{userLanguage} );
-        Vector selectedLangV = new Vector();
-        selectedLangV.add( "" + userToChange.getLangId() );
-        vec.add( "LANG_TYPES" );
-        vec.add( Html.createHtmlCode( "ID_OPTION", selectedLangV, new Vector( Arrays.asList( langList ) ) ) );
+        String languagesHtmlOptionList = getLanguagesHtmlOptionList( user, imcref, userToChange );
+        vec.add( "#LANG_TYPES#" );
+        vec.add( languagesHtmlOptionList );
 
 
         //store all data into the session
@@ -300,6 +296,17 @@ public class AdminUserProps extends Administrator {
 
         String outputString = imcref.parseDoc( vec, HTML_RESPONSE, user);
         out.write( outputString );
+    }
+
+    private String getLanguagesHtmlOptionList( UserDomainObject user, IMCServiceInterface imcref,
+                                               UserDomainObject userToChange ) {
+        // Lets get the the users language id
+        String userLanguage = user.getLangPrefix();
+        String[] langList = imcref.sqlProcedure( "GetLanguageList", new String[]{userLanguage} );
+        Vector selectedLangV = new Vector();
+        selectedLangV.add( "" + userToChange.getLangId() );
+        String languagesHtmlOptionList = Html.createHtmlCode( "ID_OPTION", selectedLangV, new Vector( Arrays.asList( langList ) ) );
+        return languagesHtmlOptionList;
     }
 
     private void showErrorPageUserHasNoRightsToChangeUserValues( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
@@ -404,18 +411,13 @@ public class AdminUserProps extends Administrator {
         vec.add( "#PHONES_MENU#" );
         vec.add( phones );
 
-
         // Lets add html for admin_part in AdminUserResp
         vec.add( "#ADMIN_PART#" );
         vec.add( createAdminPartHtml( user, null, imcref, req, session ) );
 
-
-        String userLanguage = user.getLangPrefix();
-        String[] langList = imcref.sqlProcedure( "GetLanguageList", new String[]{userLanguage} );
-        Vector selectedLangV = new Vector();
-        selectedLangV.add( "" + user.getLangId() );
+        String languagesHtmlOptionList = getLanguagesHtmlOptionList( user, imcref, user );
         vec.add( "#LANG_TYPES#" );
-        vec.add( Html.createHtmlCode( "ID_OPTION", selectedLangV, new Vector( Arrays.asList( langList ) ) ) );
+        vec.add( languagesHtmlOptionList );
 
         //store all data into the session
         session.setAttribute( "Ok_phoneNumbers", tmp_phones );
@@ -473,7 +475,7 @@ public class AdminUserProps extends Administrator {
 
 
         // Lets get the user which should be changed if we is not in ADD_USER mode
-        String userToChangeId = "";
+        String userToChangeId = null;
 
         // if we are processing a user template then userToChange is equal to user
         if ( req.getParameter( "userTemplate" ) != null && "SAVE_CHANGED_USER".equals( adminTask ) ) {
@@ -486,7 +488,7 @@ public class AdminUserProps extends Administrator {
 
         // get a user object by userToChangeId
         imcode.server.user.UserDomainObject userToChange = null;
-        if ( userToChangeId != "" ) {
+        if ( null != userToChangeId ) {
             userToChange = imcref.getUserById( Integer.parseInt( userToChangeId ) );
         }
 
