@@ -267,7 +267,7 @@ public class ImcmsTagSubstitution implements Substitution {
 	    result = tagImage(attributes, patMat) ;
 	} else if ("include".equals(tagname)) {
 	    result = tagInclude(attributes, patMat) ;
-	} else if ("meta-id".equals(tagname)) {
+	} else if ("metaid".equals(tagname)) {
 	    result = tagMetaId() ;
 	} else {
 	    result = matres.group(0) ;
