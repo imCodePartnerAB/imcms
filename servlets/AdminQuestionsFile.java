@@ -132,19 +132,25 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	    //hämta raden som är markerad
 	    String row = req.getParameter("AdminFile") ;
 
-	    //lägg till en eventuellt redan uppflyttad rad
-	    addLineToList(req,lines);
+	    if (row != null) 
+		{
+			//lägg till en eventuellt redan uppflyttad rad
+	    	addLineToList(req,lines);
+			int theRow = Integer.parseInt(row);
+			Poll poll = (Poll)lines.get(theRow);
+			DateRange dates = poll.getDateRange();
 
-	    if (row != null) {
-		int theRow = Integer.parseInt(row);
-		Poll poll = (Poll)lines.get(theRow);
-		DateRange dates = poll.getDateRange();
-
-		date1 = dateForm.format(dates.getStartDate());
-		date2 = dateForm.format(new Date(dates.getEndDate().getTime()-ONE_DAY));
-		text  = poll.getQuestion();
-		lines.remove(poll);
+			date1 = dateForm.format(dates.getStartDate());
+			date2 = dateForm.format(new Date(dates.getEndDate().getTime()-ONE_DAY));
+			text  = poll.getQuestion();
+			lines.remove(poll);
 	    }
+		else
+		{
+			date1 = (req.getParameter("date1")).trim();
+	    	date2 = (req.getParameter("date2")).trim();
+	    	text  = (req.getParameter("text")).trim();
+		}
 	} else if (req.getParameter("remove")!=null){
 	    // retrieve list of rows to remove
 	    String rows[] = req.getParameterValues("AdminFile") ;

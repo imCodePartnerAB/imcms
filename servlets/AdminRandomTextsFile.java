@@ -105,19 +105,25 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 	    //hämta raden som är markerad
 	    String row = req.getParameter("AdminFile") ;
 
-	    //lägg till en eventuellt redan uppflyttad rad
-	    addLineToList(req,lines);
+	    if (row != null)
+		{
+			//lägg till en eventuellt redan uppflyttad rad
+	    	addLineToList(req,lines);
+			int theRow = Integer.parseInt(row);
+			Quote quote = (Quote)lines.get(theRow);
+			DateRange dates = quote.getDateRange();
 
-	    if (row != null){
-		int theRow = Integer.parseInt(row);
-		Quote quote = (Quote)lines.get(theRow);
-		DateRange dates = quote.getDateRange();
-
-		date1 = dateForm.format(dates.getStartDate());
-		date2 = dateForm.format(new Date(dates.getEndDate().getTime() - ONE_DAY));
-		text  = quote.getText();
-		lines.remove(quote);
+			date1 = dateForm.format(dates.getStartDate());
+			date2 = dateForm.format(new Date(dates.getEndDate().getTime() - ONE_DAY));
+			text  = quote.getText();
+			lines.remove(quote);
 	    }
+		else
+		{
+			date1 = req.getParameter("date1").trim();
+	    	date2 = req.getParameter("date2").trim();
+	   		text  = req.getParameter("text").trim();
+		}
 
 	} else if (req.getParameter("remove")!=null) {
 
