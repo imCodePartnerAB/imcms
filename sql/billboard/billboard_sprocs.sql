@@ -1072,9 +1072,11 @@ SET ANSI_NULLS OFF
 GO
 
 CREATE PROCEDURE B_SearchText
-/* This procedure is the one which is used to search among the 
+/* OBS OBS category 0 and 1 searches among all bills but category 2 only search among active ones OBS OBS
+
+This procedure is the one which is used to search among the 
 headlines, text, and user
-The argument category will come as an integer. 0 = header, 1 = text
+The argument category will come as an integer. 0 = header, 1 = text, 2=text&header
 */
 	@meta_id int,
 	@section_id int,
@@ -1113,7 +1115,19 @@ BEGIN
 -- Lets check for the date
 	AND bill.create_date >@fromDate AND bill.create_date < @toDate	
 END
-
+--LETS SEARCH AMONG TEXT & HEADERS and only the aktive ones
+ELSE IF( @category = 2 )
+BEGIN
+	select Distinct bill.bill_id, bill.headline,(select count(reply_id)   from B_replies where parent_id=bill.bill_id) AS "repNr" , SUBSTRING( CONVERT(char(16), bill.create_date,20), 6, 16) AS 'create_date' 
+	FROM B_bill bill,  B_billboard_section bs, B_section
+	WHERE (bill.text LIKE RTRIM(@sWord) or bill.headline LIKE RTRIM(@sWord) )
+	AND bill.section_id = B_section.section_id
+	AND B_section.section_id = @section_id
+	AND B_section.section_id = bs.section_id
+	AND bs.billboard_id = @meta_id 	
+	--Lets only check the aktive ones
+	AND DATEDIFF(dy,bill.create_date, GETDATE()) < B_section.days_to_show
+END
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
