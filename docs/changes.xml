@@ -66,6 +66,12 @@
             </p>
             <bug id="2889"/>
         </change>
+        <change>
+            <p>
+                Fixed a bug that caused text in templates to be interpreted as velocity code when displayed for editing.
+            </p>
+            <bug id="2888"/>
+        </change>
     </changes>
 
     <changes for="API-using developers">
