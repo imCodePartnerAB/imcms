@@ -43,17 +43,23 @@ public class SaveInPage extends HttpServlet {
 
 		// get form data
 		imcode.server.Table doc = new imcode.server.Table() ;
-
+		
 		String template  = req.getParameter("template") ;
+		String groupId  = req.getParameter("group");
+	
+		//the template group admin is a ugly mess but lets try to do the best of it
+		//we save the group_id but if the group gets deleted else where it doesn't get changed
+		//in the text_docs table, but the system vill not crash it only shows an empty group string.
+		if(groupId == null) groupId= "-1"; //if there isn'n anyone lets set it to -1
+
 		if ( template != null ) {
 			doc.addField("template",template) ;
 			//    String menu_template  = req.getParameter("menu_template") ;
 			doc.addField("menu_template",template) ;
-
 			//    String text_template  = req.getParameter("text_template") ;
 			doc.addField("text_template",template) ;
+			doc.addField("group_id",groupId);
 		}
-
 		// Check if user logged on
 		if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
 			return ;
@@ -134,6 +140,7 @@ public class SaveInPage extends HttpServlet {
 				htmlStr = new String((byte[])temp[1],"8859_1") ;
 			}
 		} else if ( req.getParameter("change_group")!=null ) {
+
 			user.put("flags",new Integer(imcode.server.IMCConstants.PERM_DT_TEXT_CHANGE_TEMPLATE)) ;
 
 			String group = req.getParameter("group") ;
