@@ -59,6 +59,7 @@ public class ChatLogin extends ChatBase {
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
+		HttpSession session = req.getSession(true);
 
 		// Lets get the standard parameters and validate them
 		Properties params = super.getSessionParameters(req) ;
@@ -80,7 +81,7 @@ public class ChatLogin extends ChatBase {
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String ConfPoolServer = Utility.getDomainPref("conference_server",host) ;
-
+/*
 
 		// ******** ADD USER PAGE *********
 		// Lets generate the adduser page
@@ -120,11 +121,24 @@ public class ChatLogin extends ChatBase {
 			this.sendHtml(req,res,vm, ADMIN1_HTML) ;
 			return ;
 		}
-
+*/
 		// ********** LOGIN PAGE *********
 		// Lets build the Responsepage to the loginpage
 		VariableManager vm = new VariableManager() ;
-
+		Html htm = new Html();
+		
+	//	String login_name = (String)session.getValue("login_name");
+	//	Properties sessParam=super.getSessionParameters(req);
+	//	log("sessParam: " + sessParam);
+		
+		//lägg in rumslistan
+		Vector roomsV = ( (Vector)session.getValue("roomList")==null ) ? new Vector() : (Vector)session.getValue("roomList");
+		for(int i=0;i<roomsV.size();i++)
+		{
+			log("Rooms: " + roomsV.get(i));
+		}
+		
+		vm.addProperty("rooms", htm.createHtmlCode("ID_OPTION","", roomsV) ) ;
 		vm.addProperty("SERVLET_URL", MetaInfo.getServletPath(req)) ;
 		vm.addProperty( "#IMAGE_URL#", this.getExternalImageFolder( req ) );
 		sendHtml(req,res,vm, LOGIN_HTML) ;
@@ -169,6 +183,8 @@ public class ChatLogin extends ChatBase {
 			return;
 		}
 
+		log("inne i login post");
+		
 		// Lets get the loginType
 		String loginType = (req.getParameter("login_type")==null) ? "" : (req.getParameter("login_type")) ;
 		String tmp = req.getParameter("SAVE_USER") ;
