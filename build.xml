@@ -723,6 +723,11 @@
             </fileset>
         </imtranslate>
 
+        <copy todir="${apisamples}" description="appending .txt on all jsp files making the source browsable" >
+            <fileset dir="${apisamples}"/>
+            <mapper type="glob" from="*" to="*.txt"/>
+        </copy>
+
         <!--  imcms shop  -->
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
