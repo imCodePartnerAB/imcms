@@ -82,6 +82,14 @@
             </p>
             <bug id="2884"/>
         </change>
+        <change>
+            <p>
+                Methods <method>TextDocument.Menu.addDocument(Document)</method>
+                and <method>TextDocument.Menu.removeDocument(Document)</method> erroneously required
+                edit-permissions for the document added or removed, instead of the menu document as intended.
+            </p>
+            <bug id="2893"/>
+        </change>
     </changes>
 
 </changeset>

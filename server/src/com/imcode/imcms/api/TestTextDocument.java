@@ -1,8 +1,8 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSetDomainObject;
-import imcode.server.document.DocumentReference;
+import imcode.server.Config;
+import imcode.server.MockImcmsServices;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -20,6 +20,9 @@ public class TestTextDocument extends TestCase {
     private TextDocumentDomainObject otherTextDocumentDO;
     private RoleDomainObject readRole;
     private RoleDomainObject editRole;
+    private TextDocument textDocument;
+    private MockContentManagementSystem contentManagementSystem;
+    private TextDocument otherTextDocument;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -36,9 +39,13 @@ public class TestTextDocument extends TestCase {
         DocumentReference documentReference = new MockDocumentReference( otherTextDocumentDO );
         MenuDomainObject menuDO = textDocumentDO.getMenu( menuIndex );
         menuDO.addMenuItem( new MenuItemDomainObject( documentReference ) );
-        MockContentManagementSystem contentManagementSystem = new MockContentManagementSystem();
+        contentManagementSystem = new MockContentManagementSystem();
+        MockImcmsServices imcmsServices = new MockImcmsServices();
+        imcmsServices.setDocumentMapper( new DocumentMapper(null,null,null,null,null,null,new Config() ));
+        contentManagementSystem.setInternal( imcmsServices );
         contentManagementSystem.setCurrentUser( new User( internalUser ) );
-        TextDocument textDocument = new TextDocument( this.textDocumentDO, contentManagementSystem );
+        textDocument = new TextDocument( this.textDocumentDO, contentManagementSystem );
+        otherTextDocument = new TextDocument( otherTextDocumentDO, contentManagementSystem );
         this.menu = new TextDocument.Menu( textDocument, menuIndex );
     }
 
@@ -130,6 +137,30 @@ public class TestTextDocument extends TestCase {
     private void assertGetVisibleDoNotReturnDocuments() {
         assertFalse( menu.getVisibleDocuments().length > 0 );
         assertFalse( menu.getVisibleMenuItems().length > 0 );
+    }
+
+    public void testAddDocument() throws DocumentAlreadyInMenuException, NoPermissionException {
+        try {
+            menu.addDocument( otherTextDocument );
+            fail();
+        } catch( NoPermissionException npe ) {}
+        internalUser.addRole( readRole );
+        otherTextDocumentDO.setPermissionSetIdForRole( readRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
+        try {
+            menu.addDocument( otherTextDocument );
+            fail() ;
+        } catch( NoPermissionException npe ) {}
+        internalUser.addRole( editRole );
+        menu.addDocument( otherTextDocument );
+    }
+
+    public void testRemoveDocument() throws NoPermissionException {
+        try {
+            menu.removeDocument( otherTextDocument );
+            fail() ;
+        } catch( NoPermissionException npe ) {}
+        internalUser.addRole( editRole );
+        menu.removeDocument( otherTextDocument );
     }
 
     private static class MockDocumentReference extends DocumentReference {

@@ -3,6 +3,7 @@ package com.imcode.imcms.api;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
+import imcode.server.ImcmsServices;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
@@ -375,11 +376,13 @@ public class TextDocument extends Document {
          */
         public final static int SORT_BY_TREE_ORDER_DESCENDING = imcode.server.document.textdocument.MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER;
 
-        private TextDocumentDomainObject internalTextDocument;
-        private int menuIndex;
-        private ContentManagementSystem contentManagementSystem;
+        private final TextDocument textDocument;
+        private final TextDocumentDomainObject internalTextDocument;
+        private final int menuIndex;
+        private final ContentManagementSystem contentManagementSystem;
 
         Menu(TextDocument document, int menuIndex) {
+            this.textDocument = document ;
             this.internalTextDocument = document.getInternalTextDocument();
             this.menuIndex = menuIndex;
             this.contentManagementSystem = document.getContentManagementSystem() ;
@@ -393,9 +396,12 @@ public class TextDocument extends Document {
          * @throws DocumentAlreadyInMenuException If the owner already is in the menu.
          */
         public void addDocument(Document documentToAdd) throws NoPermissionException, DocumentAlreadyInMenuException {
-            contentManagementSystem.getSecurityChecker().hasEditPermission(documentToAdd);
+            contentManagementSystem.getSecurityChecker().hasEditPermission(textDocument);
             contentManagementSystem.getSecurityChecker().userHasPermissionToAddDocumentToAnyMenu(documentToAdd);
-            internalTextDocument.getMenu(menuIndex).addMenuItem(new MenuItemDomainObject(contentManagementSystem.getInternal().getDocumentMapper().getDocumentReference( documentToAdd.getInternal() ) ));
+            ImcmsServices internal = contentManagementSystem.getInternal();
+            DocumentMapper documentMapper = internal.getDocumentMapper();
+            DocumentReference documentReference = documentMapper.getDocumentReference( documentToAdd.getInternal() );
+            internalTextDocument.getMenu(menuIndex).addMenuItem(new MenuItemDomainObject(documentReference ));
         }
 
         /**
@@ -405,7 +411,7 @@ public class TextDocument extends Document {
          * @throws NoPermissionException If you lack permission to edit the menudocument.
          */
         public void removeDocument(Document documentToRemove) throws NoPermissionException {
-            contentManagementSystem.getSecurityChecker().hasEditPermission(documentToRemove);
+            contentManagementSystem.getSecurityChecker().hasEditPermission(textDocument);
             internalTextDocument.getMenu(menuIndex).removeMenuItemByDocumentId(documentToRemove.getId());
         }
 
