@@ -59,18 +59,18 @@ public class ConfAndBillbTemplateUpload extends HttpServlet {
 
 		//ok lets get some info
 		String metaId = mp.getParameter("metaId");
-		String externalPath;
+		File externalPath;
 		
 		//lets get the templatefolder to save the file in
 		String uploadType = mp.getParameter("uploadType");//IMAGE or TEMPLATE
 		String folderName = mp.getParameter("folderName");
 		if ( uploadType.equalsIgnoreCase("TEMPLATE"))
 		{
-			externalPath = MetaInfo.getExternalTemplateFolder(imcServer, metaId) + folderName + "/";
+			externalPath = new File(MetaInfo.getExternalTemplateFolder(imcServer, metaId) , folderName );
 		}else if(uploadType.equalsIgnoreCase("IMAGE"))
 		{
 			RmiConf rmi = new RmiConf(user);
-			externalPath = rmi.getExternalImageHomeFolder(host, imcServer, metaId) + folderName + "/" ;
+			externalPath = new File(rmi.getExternalImageHomeFolder(host, imcServer, metaId) ,folderName ) ;
 		}else
 		{
 			log("not a template or image so lets RETURN");
@@ -87,7 +87,7 @@ public class ConfAndBillbTemplateUpload extends HttpServlet {
 		File fp = new File (filename) ;
 		filename = fp.getName() ;
 		
-		fp = new File(externalPath) ;
+		fp = new File(externalPath.toString()) ;
 		if (!fp.exists() &&  !fp.isDirectory()) {
 			log("we dont allowes new directories so lets RETURN");
 			return;
@@ -107,7 +107,7 @@ public class ConfAndBillbTemplateUpload extends HttpServlet {
 
 	public void log (String str) {
 		super.log(str);
-		System.out.println("GenericUpload: " + str);
+		System.out.println("ConfAndBillbTemplateUpload: " + str);
 	}
 	
 }
