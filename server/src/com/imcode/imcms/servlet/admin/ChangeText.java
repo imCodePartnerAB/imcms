@@ -2,8 +2,10 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.Parser;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,14 +37,68 @@ public class ChangeText extends HttpServlet {
             }
             return;
         }
+        ImcmsServices imcref = Imcms.getServices();
+        int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
+        int textIndex = Integer.parseInt( req.getParameter( "txt" ) );
+        String label = null == req.getParameter( "label" ) ? "" :  req.getParameter( "label" );
+        TextDomainObject text = imcref.getText( documentId, textIndex  );
+        int type = text.getType();
 
-        forward(req, res, user);
+        String[] tags = {
+            "&", "&amp;",
+            "<", "&lt;",
+            ">", "&gt;"
+        };
+
+        String text_string = Parser.parseDoc( text.getText(), tags );
+        TextEditPage page = new TextEditPage( documentId, textIndex, text_string, label, type );
+        page.forward(req, res, user);
 
     }
 
-    public void forward(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException, ServletException {
-            String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP__CHANGE_TEXT;
-            request.getRequestDispatcher( forwardPath ).forward( request, response );
-        }
+    public static class TextEditPage {
+
+            public static final String REQUEST_ATTRIBUTE__PAGE = "page";
+            int documentId;
+            private int textIndex;
+            private String text_string;
+            private String label;
+            private int type;
+
+            public TextEditPage( int documentId, int textIndex, String text_string, String label, int type ) {
+                this.documentId = documentId;
+                this.text_string = text_string;
+                this.textIndex = textIndex;
+                this.label = label;
+                this.type = type;
+            }
+
+            public int getDocumentId() {
+                return documentId;
+            }
+
+            public String getTextString() {
+                return text_string;
+            }
+
+            public int getTextIndex() {
+                return textIndex;
+            }
+
+            public String getLabel() {
+                return label;
+            }
+
+            public int getType() {
+                return type;
+            }
+
+            public void forward(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException, ServletException {
+                request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
+                String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP__CHANGE_TEXT;
+                request.getRequestDispatcher( forwardPath ).forward( request, response );
+            }
+
+    }
 
 }
