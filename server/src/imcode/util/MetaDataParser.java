@@ -323,6 +323,9 @@ public class MetaDataParser {
 				if ( temp_role_set_id!=null ) {
 					role_set_id = Integer.parseInt(temp_role_set_id) ;
 				}
+ else {
+				    role_set_id = 4 ;
+				}
 			}
 			// If the role has no permissions for this document, we put it away in a special html-optionlist.
 			if (role_set_id == 4) {
