@@ -31,10 +31,11 @@ public class DatabaseService {
     private final static String FILE_PATH = "E:/backuppas/projekt/imcode2003/imCMS/1.3/sql/multipledatabases/";
     private static final String DROP_TABLES = "1.droptables.sql";
     private static final String CREATE_TABLES = "2.createtables.sql";
-    private static final String ADD_TYPE_DATA = "3.inserttypedata.sql";
-    private static final String INSERT_TYPE_DATA = "4.insertdefaultpagesusersandroles.sql";
+    private static final String INSERT_TYPE_DATA = "3.inserttypedata.sql";
+    private static final String INSERT_DEFAULT_DATA = "4.insertdefaultpagesusersandroles.sql";
 
     private String ADITIONAL_TEST_DATA = "5.insertaditionaltestdata.sql";
+
     private static final String SQL92_TYPE_TIMESTAMP = "TIMESTAMP";
     private static String SQLSERVER_AND_MYSQL_TIMESTAMP_TYPE = "DATETIME";
     private static final String TEXT_TYPE_MY_SQL = "TEXT";
@@ -102,10 +103,10 @@ public class DatabaseService {
             // and DELETE operations and this method is also used for create table and drop table commands. /Hasse
             // sqlProcessor.executeBatchUpdate( con, (String[])commands.toArray( new String[commands.size()] ) );
 
-            commands = readCommandsFromFile( ADD_TYPE_DATA );
+            commands = readCommandsFromFile( INSERT_TYPE_DATA );
             sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
 
-            commands = readCommandsFromFile( INSERT_TYPE_DATA );
+            commands = readCommandsFromFile( INSERT_DEFAULT_DATA );
             switch( databaseType ) {
                 case MY_SQL:
                     commands = changeCharInCurrentTimestampCast( commands );
@@ -135,25 +136,38 @@ public class DatabaseService {
         }
     }
 
+    /**
+     * MySQL dosen't have VARCHAR larger than VARCHAR(255). This method replaces the occurences found (this far) in the code
+     * with TEXT type.
+     * @param commands
+     * @return
+     */
+    // todo Denna går att göra generellare, för tillfället implementerar den enbart > 1 000 generellt
     private ArrayList changeCHAR256PlusToTextForMySQL( ArrayList commands ) {
         ArrayList modifiedCommands = new ArrayList();
         for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
             String command = (String)iterator.next();
-            // todo: detta borde gå att göra till ett generellt reg exp? för varje tal störren än 255 byt ut mot text?
-            command = command.replaceAll( "VARCHAR\\s*\\(\\s*1000\\s*\\)", TEXT_TYPE_MY_SQL); // "VARCHAR ( 1000 )" -> "TEXT"
-            command = command.replaceAll( "VARCHAR\\s*\\(\\s*15000\\s*\\)", TEXT_TYPE_MY_SQL); // "VARCHAR ( 15000 )" -> "TEXT"
-            command = command.replaceAll( "NCHAR\\s*VARYING\\s*\\(\\s*5000\\s*\\)", TEXT_TYPE_MY_SQL); // "NCHAR VARYING ( 15000 )" -> "TEXT"
+            command = command.replaceAll( "VARCHAR\\s*\\(\\s*\\d{4,}\\s*\\)", TEXT_TYPE_MY_SQL); // "VARCHAR ( 1000 )" -> "TEXT"
+            command = command.replaceAll( "NCHAR\\s*VARYING\\s*\\(\\s*\\d{4,}\\s*\\)", TEXT_TYPE_MY_SQL); // "NCHAR VARYING ( 15000 )" -> "TEXT"
             modifiedCommands.add( command );
         }
         return modifiedCommands;
     }
 
+    /**
+     * SQL Server dosen't support VARCHAR larger than VARCHAR(8000). This method replaces the occurences found (this far) in the code with
+     * with TEXT and NTEXT type..
+     * @param commands
+     * @return
+     */
+    // todo Denna går att göra generellare, för tillfället implementerar den enbart > 10 000 generellt
+    // todo samt det enskillda tillfället på 5000.
     private ArrayList changeCHAR8000PlusToTextForSQLServer( ArrayList commands ) {
         ArrayList modifiedCommands = new ArrayList();
         for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
             String command = (String)iterator.next();
             // todo: detta borde gå att göra till ett generellt reg exp? för varje tal störren än 255 byt ut mot text?
-            command = command.replaceAll( "VARCHAR\\s*\\(\\s*15000\\s*\\)", TEXT_TYPE_SQL_SERVER); // "VARCHAR ( 15000 )" -> "TEXT"
+            command = command.replaceAll( "VARCHAR\\s*\\(\\s*\\d{5,}\\s*\\)", TEXT_TYPE_SQL_SERVER); // "VARCHAR ( 15000 )" -> "TEXT"
             command = command.replaceAll( "NCHAR\\s*VARYING\\s*\\(\\s*5000\\s*\\)", TEXT_TYPE_INTERNATIONAL_SQL_SERVER); // "NCHAR VARYING ( 5000 )" -> "TEXT"
             modifiedCommands.add( command );
         }
