@@ -24,6 +24,7 @@ public class Utility {
 		if ( index != -1 ) {
 			domain = domain.substring(0,index) ;
 		}
+		domain = domain.trim() ;
 		StringTokenizer st = new StringTokenizer(Prefs.get("domains","servlet.cfg"),", ") ;
 		while ( st.hasMoreTokens() ) {
 			if (st.nextToken().equals(domain)) {
