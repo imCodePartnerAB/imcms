@@ -197,7 +197,7 @@ public class DatabaseService {
         }
     }
 
-    public Table_roles[] sprocGetAllRoles_but_user() {
+    public Table_roles[] sproc_GetAllRoles_but_user() {
         String sql = "SELECT role_id, role_name FROM roles ORDER BY role_name";
         Object[] paramValues = null;
 
@@ -237,7 +237,7 @@ public class DatabaseService {
         private int archive_mode;
         private int lang_id;
         private int user_type;
-        private int active;
+        int active;
         private Timestamp create_date;
 
         public Table_users( int user_id, String login_name, String login_password, String first_name, String last_name, String title, String company, String address, String city, String zip, String country, String county_council, String email, int external, int last_page, int archive_mode, int lang_id, int user_type, int active, Timestamp create_date ) {
@@ -325,7 +325,7 @@ public class DatabaseService {
      * @return
      */
 
-    Table_users[] sprocGetAllUsers_OrderByLastName() {
+    Table_users[] sproc_GetAllUsers_OrderByLastName() {
         String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users ORDER BY last_name";
 
         SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
@@ -386,7 +386,7 @@ public class DatabaseService {
         }
     }
 
-    ViewTemplateGroup[] sprocGetTemplatesInGroup( int groupId ) {
+    ViewTemplateGroup[] sproc_GetTemplatesInGroup( int groupId ) {
         String sql = "SELECT t.template_id,simple_name FROM  templates t JOIN templates_cref c ON  t.template_id = c.template_id " + "WHERE c.group_id = ? " + "ORDER BY simple_name";
         Object[] paramValues = new Object[]{new Integer( groupId )};
 
@@ -531,6 +531,14 @@ public class DatabaseService {
        } else {
            return 0;
        }
+    }
+
+    int sproc_ChangeUserActiveStatus( int user_id, boolean active ) {
+        String sql = "UPDATE users SET active = ? WHERE user_id = ? ";
+        Integer activeInteger = new Integer( active?1:0 );
+        Integer userIdInteger = new Integer( user_id );
+        Object[] paramValues = new Object[]{ activeInteger, userIdInteger };
+        return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
     private ArrayList sql_selectUserAndRoleFrom_user_roles_crossref( Table_user_roles_crossref userRoleTupple ) {
