@@ -2,7 +2,10 @@ package imcode.server.parser;
 
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.*;
-import imcode.server.document.*;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.CategoryTypeDomainObject;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.SectionDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -104,13 +107,11 @@ class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
             Integer imageIndex = (Integer)iterator.next();
             ImageDomainObject image = (ImageDomainObject)images.get( imageIndex );
             ImageDomainObject.ImageSource imageSource = image.getSource();
-            if ( imageSource instanceof ImageDomainObject.FileDocumentImageSource ) {
-                FileDocumentDomainObject fileDocument = ( (ImageDomainObject.FileDocumentImageSource)imageSource ).getFileDocument();
-                DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-                if ( imageMode
-                     || documentMapper.userHasAtLeastDocumentReadPermission( documentRequest.getUser(), fileDocument ) ) {
-                    imageMap.put( imageIndex, ImcmsImageUtils.getImageHtmlTag( image, documentRequest.getHttpServletRequest() ) );
-                }
+            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+            if ( !( imageSource instanceof ImageDomainObject.FileDocumentImageSource )
+                 || imageMode
+                 || documentMapper.userHasAtLeastDocumentReadPermission( documentRequest.getUser(), ( (ImageDomainObject.FileDocumentImageSource)imageSource ).getFileDocument() ) ) {
+                imageMap.put( imageIndex, ImcmsImageUtils.getImageHtmlTag( image, documentRequest.getHttpServletRequest() ) );
             }
         }
         return imageMap;
