@@ -69,10 +69,10 @@ import="java.util.*, java.text.*, imcode.util.shop.*"
       <% } %>
     </table>
     <p>
-      <? sv/shop/cart.jsp/10 ?>
+      <? sv/shop/cart.jsp/10/1 ?> <%= cart.countItems() %>
     </p>
     <p>
-      <? sv/shop/cart.jsp/11 ?>
+      <? sv/shop/cart.jsp/11/1 ?> <%= priceFormat.format(totalPrice) %>
     </p>
     <input type="submit" name="submit" value="<? sv/shop/cart.jsp/2001 ?>">
     <input type="submit" name="send" value="<? sv/shop/cart.jsp/2002 ?>">
