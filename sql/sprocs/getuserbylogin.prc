@@ -1,6 +1,6 @@
-SET QUOTED_IDENTIFIER OFF 
+SET QUOTED_IDENTIFIER OFF
 GO
-SET ANSI_NULLS ON 
+SET ANSI_NULLS ON
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserByLogin]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -16,7 +16,7 @@ CREATE PROCEDURE GetUserByLogin @login varchar(50) AS
 		@login	The login_name of the user.
 
 	Returns zero or one row with the following columns:
-	
+
 	user_id			INT			The id of the user
 	login_name		VARCHAR(50)	The login-name. Essentially the same as the in-parameter @login.
 	login_password	VARCHAR(15)	The users password.
@@ -57,13 +57,14 @@ SELECT  user_id,
 		active,
 		create_date,
 		[external]
-		
-FROM users, lang_prefixes
+
+FROM users
+LEFT JOIN lang_prefixes ON users.lang_id = lang_prefixes.lang_id
 WHERE login_name = @login
-AND users.lang_id = lang_prefixes.lang_id
+
 GO
-SET QUOTED_IDENTIFIER OFF 
+SET QUOTED_IDENTIFIER OFF
 GO
-SET ANSI_NULLS ON 
+SET ANSI_NULLS ON
 GO
 

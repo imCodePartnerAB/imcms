@@ -1,6 +1,7 @@
 package imcode.server.user;
 
 import java.util.*;
+import java.lang.reflect.Field;
 
 import org.apache.log4j.*;
 import imcode.server.IMCServiceInterface;

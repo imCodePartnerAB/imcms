@@ -6,10 +6,7 @@ import imcode.server.db.DBConnect;
 import imcode.server.parser.Document;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
-import imcode.server.user.Authenticator;
-import imcode.server.user.UserMapper;
-import imcode.server.user.User;
+import imcode.server.user.*;
 import imcode.util.FileCache;
 import imcode.util.fortune.*;
 import imcode.util.poll.PollHandlingSystem;
@@ -149,16 +146,40 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     * Verify a Internet/Intranet user. User data retrived from SQL Database.
     */
 
+   AuthenticatorAndUserMapperUsingImcmsAndOther imcmsAndLdapAuthAndMapper = null;
 
-   public imcode.server.user.User verifyUser( String login, String password ) {
+   public User verifyUser( String login, String password ) {
       User result = null;
-      Authenticator auth = new ImcmsAuthenticatorAndUserMapper( this, mainLog );
-      boolean userAuthenticates = auth.authenticate( login, password );
+
+      try {
+         initAuthenticatorAndUserMapper();
+      } catch( LdapUserMapper.LdapInitException e ) {
+         log.error( "temporärt meddelande", e );
+      }
+
+      boolean userAuthenticates = imcmsAndLdapAuthAndMapper.authenticate( login, password );
       if( userAuthenticates ) {
-         UserMapper userMapper = new ImcmsAuthenticatorAndUserMapper( this, mainLog );
-         result = userMapper.getUser( login );
+         result = imcmsAndLdapAuthAndMapper.getUser( login );
       }
       return result;
+   }
+
+   private void initAuthenticatorAndUserMapper() throws LdapUserMapper.LdapInitException {
+      String ldapServerURL = "ldap://loke:389/CN=Users,DC=imcode,DC=com";
+      String ldapAuthenticationType = "simple";
+      String ldapUserName = "imcode\\hasbra";
+      String ldapPassword = "hasbra";
+
+      LdapUserMapper ldapUserMapper = new LdapUserMapper( ldapServerURL,
+                                                          ldapAuthenticationType,
+                                                          ldapUserName,
+                                                          ldapPassword,
+                                                          this.getLanguage());
+
+      imcmsAndLdapAuthAndMapper = new AuthenticatorAndUserMapperUsingImcmsAndOther(
+         new ImcmsAuthenticatorAndUserMapper( this, log ),
+         new SmbAuthenticator(),
+         ldapUserMapper );
    }
 
    public User getUserById( int id ) {

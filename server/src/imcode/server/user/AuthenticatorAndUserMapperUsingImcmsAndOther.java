@@ -25,8 +25,8 @@ public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper,
    }
 
    public User getUser( String loginName ) {
-      imcode.server.user.User imcmsUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
-      imcode.server.user.User otherUser = otherUserMapper.getUser( loginName );
+      User imcmsUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
+      User otherUser = otherUserMapper.getUser( loginName );
       boolean imcmsUserExists = null != imcmsUser;
       boolean otherUserExists = null != otherUser;
       boolean imcmsUserIsInternal = (null != imcmsUser) && !imcmsUser.isImcmsExternal();
@@ -86,10 +86,6 @@ public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper,
    public void addUser( User newUser ) {
       // todo
       throw new UnsupportedOperationException( "Not implemented yet" );
-   }
-
-   private Logger getLogger() {
-      return Logger.getLogger( this.getClass() ) ;
    }
 
    public class UserConflictException extends RuntimeException {

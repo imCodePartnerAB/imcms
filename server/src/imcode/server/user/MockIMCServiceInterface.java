@@ -17,6 +17,7 @@ class MockIMCServiceInterface implements IMCServiceInterface {
    private int resultIndex = 0;
    public void setExpectedSQLResult( String[][] expectedSQLResult ) {
       this.expectedSQLResult = expectedSQLResult;
+      resultIndex = 0 ;
    }
 
    public User verifyUser( String login, String password ) {

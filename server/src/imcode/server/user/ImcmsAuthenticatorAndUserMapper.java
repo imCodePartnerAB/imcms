@@ -15,7 +15,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
 
    public boolean authenticate( String loginName, String password ) {
       boolean userExistsAndPasswordIsCorrect = false ;
-      imcode.server.user.User user = getUser( loginName );
+      User user = getUser( loginName );
       if (null != user) {
          String login_password_from_db = user.getPassword();
          String login_password_from_form = password;
@@ -35,16 +35,20 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
       return userExistsAndPasswordIsCorrect ;
    }
 
-   public imcode.server.user.User getUser( String loginName) {
+   public User getUser( String loginName) {
       loginName = loginName.trim();
 
-      imcode.server.user.User result = null;
+      User result = null;
       String[] user_data = service.sqlProcedure( "GetUserByLogin", new String[]{loginName} );
 
       // if resultSet > 0 a result is found
       if( user_data.length > 0 ) {
 
          result = staticExtractUserFromStringArray( user_data );
+
+         if (null == result.getLangPrefix()) {
+            result.setLangPrefix(service.getLanguage()) ;
+         }
 
          String[][] phoneNbr = service.sqlProcedureMulti( "GetUserPhoneNumbers " + user_data[0] );
          String workPhone = "";
@@ -115,8 +119,8 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
 
    public void updateUser( String loginName, User newUserData ) {
       String updateUserPRCStr = "UpdateUser";
-      imcode.server.user.User imcmsUser = getUser( loginName );
-      imcode.server.user.User tempUser = (imcode.server.user.User)newUserData.clone();
+      User imcmsUser = getUser( loginName );
+      User tempUser = (User)newUserData.clone();
       tempUser.setUserId( imcmsUser.getUserId() );
       tempUser.setLoginName( loginName );
 

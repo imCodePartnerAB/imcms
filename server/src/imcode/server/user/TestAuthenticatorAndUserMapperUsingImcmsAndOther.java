@@ -13,10 +13,19 @@ public class TestAuthenticatorAndUserMapperUsingImcmsAndOther extends UserBaseTe
    public void setUp()  throws LdapUserMapper.LdapInitException  {
       Logger logger = Logger.getLogger( this.getClass() );
       mockImcmsService = new MockIMCServiceInterface();
+      String ldapServerURL = "ldap://loke:389/CN=Users,DC=imcode,DC=com";
+      String ldapAuthenticationType = "simple";
+      String ldapUserName = "imcode\\hasbra";
+      String ldapPassword = "hasbra";
+      LdapUserMapper ldapUserMapper = new LdapUserMapper( ldapServerURL,
+                                                          ldapAuthenticationType,
+                                                          ldapUserName,
+                                                          ldapPassword,
+                                                          "se");
       imcmsAndLdapAuthAndMapper = new AuthenticatorAndUserMapperUsingImcmsAndOther(
          new ImcmsAuthenticatorAndUserMapper( mockImcmsService, logger ),
-         new LdapAuthenticator(),
-         new LdapUserMapper() );
+         new SmbAuthenticator(),
+         ldapUserMapper );
    }
 
    public void testImcmsOnlyExisting(){
@@ -26,7 +35,8 @@ public class TestAuthenticatorAndUserMapperUsingImcmsAndOther extends UserBaseTe
       boolean userAuthenticates = imcmsAndLdapAuthAndMapper.authenticate( loginName, "admin" );
       assertTrue( userAuthenticates );
 
-      imcode.server.user.User user = imcmsAndLdapAuthAndMapper.getUser(loginName) ;
+      mockImcmsService.setExpectedSQLResult( new String[][]{ SQL_RESULT_ADMIN } );
+      User user = imcmsAndLdapAuthAndMapper.getUser(loginName) ;
       assertNotNull(user) ;
       assertTrue( user.getFirstName().equalsIgnoreCase(loginName));
    }
@@ -41,14 +51,14 @@ public class TestAuthenticatorAndUserMapperUsingImcmsAndOther extends UserBaseTe
    public void testLdapOnlyExisting() {
       mockImcmsService.setExpectedSQLResult( new String[][]{{},SQL_RESULT_HASBRA} );
       String loginName = "hasbra";
-      imcode.server.user.User user = imcmsAndLdapAuthAndMapper.getUser(loginName) ;
+      User user = imcmsAndLdapAuthAndMapper.getUser(loginName) ;
       assertTrue( "hasse".equalsIgnoreCase(user.getFirstName()));
    }
 
    public void testLdapAndImcmsUpdateSynchronization() {
       mockImcmsService.setExpectedSQLResult( new String[][]{SQL_RESULT_HASBRA,SQL_RESULT_HASBRA,SQL_RESULT_HASBRA} );
       String loginName = "hasbra";
-      imcode.server.user.User user = imcmsAndLdapAuthAndMapper.getUser(loginName) ;
+      User user = imcmsAndLdapAuthAndMapper.getUser(loginName) ;
       assertTrue( "hasse".equalsIgnoreCase(user.getFirstName()));
    }
 }
