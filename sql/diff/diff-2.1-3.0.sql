@@ -26,3 +26,8 @@ DROP PROCEDURE GetAllUsersInList
 DROP PROCEDURE FindUserName
 
 -- 2005-03-21 Kreiger
+
+DROP PROCEDURE SectionDelete
+DROP PROCEDURE SectionChangeAndDeleteCrossref
+
+-- 2005-04-06 Kreiger

@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.db.commands.DeleteWhereColumnEqualsDatabaseCommand;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -140,12 +141,11 @@ public class AdminSection extends Administrator {
                 return;
             }
             if (new_sections.equals("-1")) {
-                //ok the admin wants to get rid of all the section connections
-                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "SectionDelete", new String[] {del_section} );
+                deleteSection( imcref, del_section );
             } else {
-//ok the admin wants to conect a nother section and then delete the one
-                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "SectionChangeAndDeleteCrossref", new String[] {new_sections,
-                                                                                                del_section} );
+                imcref.getExceptionUnhandlingDatabase().executeUpdateQuery( "update meta_section set section_id = ? where section_id = ?", new String[] {new_sections,
+                                                                                            del_section});
+                deleteSection( imcref, del_section );
             }
         }
 
@@ -180,7 +180,7 @@ public class AdminSection extends Administrator {
                     got_confirm_page = true;
                 } else {
                     //ok we can delete it right a way an carry on with it
-                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "SectionDelete", new String[] {section_id} );
+                    deleteSection( imcref, section_id );
                 }
             }
 
@@ -214,6 +214,10 @@ public class AdminSection extends Administrator {
         out.close();
     }//end doPost()
 
+    private void deleteSection( ImcmsServices imcref, String del_section ) {
+        imcref.getExceptionUnhandlingDatabase().executeCommand(new DeleteWhereColumnEqualsDatabaseCommand( "meta_section", "section_id", del_section) ) ;
+        imcref.getExceptionUnhandlingDatabase().executeCommand(new DeleteWhereColumnEqualsDatabaseCommand( "sections", "section_id", del_section) ) ;
+    }
 
     //method that creates an option list of all the sections in db
     private String createOptionList(String[][] arr, UserDomainObject user, String not_id) {
