@@ -66,17 +66,17 @@ public class Document {
 
     public void setHeadline( String headline ) {
         internalDocument.setHeadline( headline );
-        documentMapper.saveHeadlineAttribute( internalDocument );
+        documentMapper.sqlUpdateSaveHeadlineAttribute( internalDocument );
     }
 
     public void setMenuText( String menuText ) {
         internalDocument.setText( menuText );
-        documentMapper.saveTextAttribute( internalDocument );
+        documentMapper.sqlUpdateSaveTextAttribute( internalDocument );
     }
 
     public void setMenuImageURL( String imageUrl ) {
         internalDocument.setImage( imageUrl );
-        documentMapper.saveImageAttribute( internalDocument );
+        documentMapper.sqlUpdateSaveImageAttribute( internalDocument );
     }
 
     public int getId() {

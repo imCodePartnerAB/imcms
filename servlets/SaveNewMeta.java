@@ -172,13 +172,13 @@ public class SaveNewMeta extends HttpServlet {
 
             // Save the classifications to the db
             if( classification != null ) {
-                DocumentMapper.sprocSaveClassification( imcref, Integer.parseInt(meta_id), classification );
+                DocumentMapper.sprocUpdateSaveClassification( imcref, Integer.parseInt(meta_id), classification );
             }
 
-            DocumentMapper.sprocInheritPermissions( imcref, Integer.parseInt(meta_id), Integer.parseInt(parent_meta_id), Integer.parseInt(doc_type) );
+            DocumentMapper.sprocUpdateInheritPermissions( imcref, Integer.parseInt(meta_id), Integer.parseInt(parent_meta_id), Integer.parseInt(doc_type) );
 
             // Lets add the sortorder to the parents childlist
-            DocumentMapper.sqlAddSortorderToParentsChildList( imcref, parent_meta_id, meta_id, doc_menu_no );
+            DocumentMapper.sqlSelectAddSortorderToParentsChildList( imcref, parent_meta_id, meta_id, doc_menu_no );
             log( meta_id );
 
             // Lets update the parents created_date
@@ -200,7 +200,7 @@ public class SaveNewMeta extends HttpServlet {
             }
             //ok if we have one lets update the db
             if( section_id != null ) {
-                DocumentMapper.sprocSectionAddCrossref_allDocTypes( imcref, meta_id, section_id );
+                DocumentMapper.sprocUpdateSectionAddCrossref( imcref, Integer.parseInt(meta_id), Integer.parseInt(section_id) );
             }
 
             // Here is the stuff we have to do for each individual doctype. All general tasks
@@ -313,7 +313,7 @@ public class SaveNewMeta extends HttpServlet {
 
                 // TEXT DOCUMENT
             } else if( doc_type.equals( "2" ) ) {
-                DocumentMapper.sqlCopyTemplateData( imcref, user, parent_meta_id, meta_id );
+                DocumentMapper.copyTemplateData( imcref, user, parent_meta_id, meta_id );
 
                 // Lets check if we should copy the metaheader and meta text into text1 and text2.
                 // There are 2 types of texts. 1= html text. 0= plain text. By
@@ -330,7 +330,7 @@ public class SaveNewMeta extends HttpServlet {
                 }
 
                 // Lets activate the textfield
-                DocumentMapper.sqlActivateTheTextField( imcref, Integer.parseInt(meta_id) );
+                DocumentMapper.sqlUpdateActivateTheTextField( imcref, Integer.parseInt(meta_id) );
 
                 // Lets build the page
                 String output = AdminDoc.adminDoc( Integer.parseInt( meta_id ), Integer.parseInt( meta_id ), user, req, res );

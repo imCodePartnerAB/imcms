@@ -254,9 +254,9 @@ public class AddDoc extends HttpServlet {
 
         //**************** section index word stuff *****************
         //lets get the section stuff from db
-        String[] parent_section = imcref.sqlProcedure( "SectionGetInheritId " + meta_id );
+        String[] parent_section = DocumentMapper.sprocSectionGetInheritId( imcref, Integer.parseInt(meta_id) );
         //lets add the stuff that ceep track of the inherit section id and name
-        if( parent_section == null || parent_section.length < 2 ) {
+        if( parent_section == null ) {
             vec.add( "#current_section_id#" );
             vec.add( "-1" );
             vec.add( "#current_section_name#" );
@@ -278,7 +278,7 @@ public class AddDoc extends HttpServlet {
                 onlyTemp.add( all_sections[i] );
             }
             if( parent_section != null ) {
-                if( parent_section.length > 0 )
+                if( parent_section != null )
                     selected = parent_section[0];
             }
 
