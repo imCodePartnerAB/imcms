@@ -131,7 +131,7 @@ class MenuParser {
         }
         MenuDomainObject currentMenu = getMenuByIndex( menuIndex ); 	// Get the menu
         StringBuffer result = new StringBuffer(); // Allocate a buffer for building our return-value in.
-        NodeList menuNodes = new NodeList( menutemplate ); // Build a tree-structure of nodes in memory, which "only" needs to be traversed. (Vood)oo-magic.
+        NodeList menuNodes = new NodeList( menutemplate, parserParameters.getDocumentRequest().getHttpServletRequest() ); // Build a tree-structure of nodes in memory, which "only" needs to be traversed. (Vood)oo-magic.
         nodeMenu( new SimpleElement( "menu", menuattributes, menuNodes ), result, currentMenu, patMat, menuIndex, tagParser ); // Create an artificial root-node of this tree. An "imcms:menu"-element.
         if ( menuMode ) { // If in menuMode, make sure to include all the stuff from the proper admintemplates.
             result.append( getMenuModeSuffix( menuIndex ) );

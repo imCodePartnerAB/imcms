@@ -719,7 +719,7 @@ class TagParser {
             String entireTag = matres.group( 0 );
             String tagName = matres.group( 1 );
             String tagattributes = matres.group( 2 );
-            Properties attributes = parseAttributes( tagattributes, patMat );
+            Properties attributes = parseAttributes( tagattributes, patMat, documentRequest.getHttpServletRequest() );
 
             String tagResult = entireTag ;
 
@@ -829,13 +829,15 @@ class TagParser {
     /**
      * Take a String of attributes, as may be found inside a tag, (name="...", and so on...) and transform it into a Properties.
      */
-    public static Properties parseAttributes( String attributes_string, PatternMatcher patternMatcher ) {
+    public static Properties parseAttributes( String attributes_string, PatternMatcher patternMatcher,
+                                              HttpServletRequest request ) {
         Properties attributes = new Properties();
 
         PatternMatcherInput attributes_input = new PatternMatcherInput( attributes_string );
         while ( patternMatcher.contains( attributes_input, ATTRIBUTES_PATTERN ) ) {
             MatchResult attribute_matres = patternMatcher.getMatch();
             String escapedValue = attribute_matres.group( 3 );
+            escapedValue = escapedValue.replaceAll( "&contextpath;", request.getContextPath() ) ;
             attributes.setProperty( attribute_matres.group( 1 ), StringEscapeUtils.unescapeHtml( escapedValue ) );
         }
 

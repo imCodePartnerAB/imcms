@@ -2,6 +2,7 @@ package imcode.server.parser;
 
 import org.apache.oro.text.regex.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedList;
 
 class NodeList extends LinkedList {
@@ -21,7 +22,7 @@ class NodeList extends LinkedList {
     /**
      * Parse a String of data into nodes. *
      */
-    NodeList( String data ) {
+    NodeList( String data, HttpServletRequest request ) {
         PatternMatcher patternMatcher = new Perl5Matcher();
         PatternMatcherInput input = new PatternMatcherInput( data );
         int lastEndOffset = 0;
@@ -31,21 +32,21 @@ class NodeList extends LinkedList {
                 add( new SimpleText( data.substring( lastEndOffset, matchResult.beginOffset( 0 ) ) ) ); // ... put it in a text node.
             }
             lastEndOffset = matchResult.endOffset( 0 );
-            add( createElementNode( patternMatcher ) );
+            add( createElementNode( patternMatcher, request ) );
         }
         if ( data.length() > lastEndOffset ) { // Add whatever was left after the last element, and the whole piece if there wasn't any elements.
             add( new SimpleText( data.substring( lastEndOffset ) ) );
         }
     }
 
-    private Element createElementNode( PatternMatcher patternMatcher ) {
+    private Element createElementNode( PatternMatcher patternMatcher, HttpServletRequest request ) {
         MatchResult matchResult = patternMatcher.getMatch();
 
         String name = matchResult.group( 1 );
         String attributes_string = matchResult.group( 2 );
         String content = matchResult.group( 3 );
 
-        return new SimpleElement( name, TagParser.parseAttributes( attributes_string, patternMatcher ), new NodeList( content ) );
+        return new SimpleElement( name, TagParser.parseAttributes( attributes_string, patternMatcher, request ), new NodeList( content, request ) );
     }
 
 }
