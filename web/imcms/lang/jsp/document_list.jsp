@@ -49,8 +49,8 @@ if (null != formData.documentsIterator) { %>
 <table border="0" cellspacing="0" cellpadding="2" width="680">
 <tr>
 	<td><b><? web/imcms/lang/jsp/heading_status ?>&nbsp;</b></td>
-	<td><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
 	<td><b><? web/imcms/lang/jsp/heading_type ?></b></td>
+	<td><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
 	<td><b><? web/imcms/lang/jsp/heading_references ?></b></td>
 	<td>&nbsp; <b><? imcms/lang/jsp/document_list.jsp/heading_child_documents ?></b></td>
 </tr><%
@@ -67,11 +67,11 @@ if (null != formData.documentsIterator) { %>
 </tr>
 <tr valign="top">
 	<td align="center"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
+	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+	<%= StringEscapeUtils.escapeHtml((String)documentTypes.get(new Integer( document.getDocumentTypeId() )))%>&nbsp;</td>
 	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
 	<a name="<%= document.getId() %>" href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>"><%=
 		document.getId() %> - <%= StringEscapeUtils.escapeHtml( document.getHeadline() ) %></a></td>
-	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
-	<%= StringEscapeUtils.escapeHtml((String)documentTypes.get(new Integer( document.getDocumentTypeId() )))%>&nbsp;</td>
 	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br><%
 		if (documentMenuPairsContainingDocument.length > 0 ) {
 			String backUrl = "ListDocuments?" + ObjectUtils.defaultIfNull(request.getQueryString(),"") ;

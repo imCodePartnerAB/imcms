@@ -23,16 +23,22 @@
     <body>
         #gui_outer_start()
         #gui_head( '<? web/imcms/lang/jsp/document_references.jsp/heading ?>' )
-        <form method="GET" action="DocumentReferences">
-            <input type="hidden" name="<%= DocumentReferences.REQUEST_PARAMETER__RETURNURL %>" value="<%= request.getParameter(DocumentReferences.REQUEST_PARAMETER__RETURNURL) %>">
-            <input type="submit" class="imcmsFormBtn" name="<%= DocumentReferences.REQUEST_PARAMETER__BUTTON_RETURN %>" value="<? global/back ?>">
-        </form>
+				<table border="0" cellspacing="0" cellpadding="0">
+				<form method="GET" action="DocumentReferences">
+				<input type="hidden" name="<%= DocumentReferences.REQUEST_PARAMETER__RETURNURL %>" value="<%= request.getParameter(DocumentReferences.REQUEST_PARAMETER__RETURNURL) %>">
+				<tr>
+					<td><input type="submit" class="imcmsFormBtn" name="<%= DocumentReferences.REQUEST_PARAMETER__BUTTON_RETURN %>" value="<? global/back ?>"></td>
+				</tr>
+				</form>
+				</table>
         #gui_mid()
-        #gui_heading( '<? web/imcms/lang/jsp/document_references.jsp/explanation ?>' )
-        <table border="0">
+        <table border="0" cellspacing="0" cellpadding="2" width="400">
             <tr>
-                <th><? web/imcms/lang/jsp/heading_status ?></th>
-                <th><? web/imcms/lang/jsp/heading_adminlink ?></th>
+                <td colspan="2">#gui_heading( '<? web/imcms/lang/jsp/document_references.jsp/explanation ?>' )</td>
+            </tr>
+            <tr>
+                <td width="15%" align="center"><b><? web/imcms/lang/jsp/heading_status ?>&nbsp;</b></td>
+                <td width="85%"><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
             </tr>
         <%
             for ( int i = 0; i < documentMenuPairs.length; i++ ) {
@@ -41,7 +47,11 @@
                 int menuIndex = textDocumentMenuIndexPair.getMenuIndex();
         %>
             <tr>
-                <td><%= Html.getLinkedStatusIconTemplate( textDocument, user, request ) %></td>
+                <td colspan="2"><img
+								src="$contextPath/imcms/$language/images/admin/1x1_cccccc.gif" width="100%" height="1" vspace="4"></td>
+            </tr>
+            <tr>
+                <td align="center"><%= Html.getLinkedStatusIconTemplate( textDocument, user, request ) %></td>
                 <td>
                     <a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= textDocument.getId() %>&<%= AdminDoc.PARAMETER__DISPATCH_FLAGS %>=<%= ImcmsConstants.DISPATCH_FLAG__EDIT_MENU %>&editmenu=<%= menuIndex %>">
                         <%= textDocument.getId() %>: "<%= StringEscapeUtils.escapeHtml(textDocument.getHeadline()) %>"
