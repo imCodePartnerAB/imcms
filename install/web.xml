@@ -911,7 +911,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.GetDoc</servlet-name>
         <url-pattern>/servlet/GetDoc</url-pattern>
-        <url-pattern>/servlet/GetDoc/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -305,8 +305,16 @@
     </target>
 
 
-    <target name="copy-web-xml">
+    <target name="copy-web-xml" depends="validate-web-xml" >
         <copy todir="${WEB-INF}" file="install/web.xml"/>
+    </target>
+
+    <target name="validate-web-xml" >
+        <xmlvalidate file="install/web.xml" classpathref="libraries"  >
+                <dtd
+                    publicId="-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+                    location="javax/servlet/resources/web-app_2_3.dtd"/>
+        </xmlvalidate>
     </target>
 
 
@@ -468,7 +476,7 @@
 
 	<sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port}"
 		userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${create-sql}" />
-    
+
 	<sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port};DatabaseName=${db-name}"
 		userid="${db-user}" password="${db-pass}" delimiter="GO" delimitertype="row" onerror="abort" src="${dist-sql}" />
     </target>
