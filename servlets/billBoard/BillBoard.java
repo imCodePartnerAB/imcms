@@ -350,28 +350,23 @@ public class BillBoard extends HttpServlet { //Conference
 	{
 
 
-		try
-		{
+		
 
 			// Lets verify that the user who tries to add a new user is an SUPERADMIN
 			RmiLayer imc = new RmiLayer(user) ;
 			int currUser_id = user.getInt("user_id") ;
 			String checkAdminSql = "CheckAdminRights " + currUser_id ;
 			String[] roles = imc.execSqlProcedure(server, checkAdminSql) ;
+			boolean returnValue = false;
 
 			for(int i = 0 ; i< roles.length; i++ )
 			{
 				String aRole = roles[i] ;
 				if(aRole.equalsIgnoreCase("0") )
-					return true ;
+					returnValue = true ;
 			}
-			return false ;
-		} catch (IOException e)
-		{
-			this.log("An error occured in CheckAdminRights") ;
-			this.log(e.getMessage() ) ;
-		}
-		return false ;
+		
+		return returnValue ;
 
 	} // checkAdminRights
 
@@ -816,13 +811,18 @@ public class BillBoard extends HttpServlet { //Conference
 			log("No meta_id could be found! Error in BillBoard.class") ;
 			return "No meta_id could be found!" ;
 		}
-
+		HttpSession session = req.getSession(true);
+		imcode.server.User user = (imcode.server.User)session.getValue("logon.isDone");
+		if (user == null)
+		{
+			return null;
+		}
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String confPoolServer = Utility.getDomainPref("billboard_server",host) ;//conference_server
 
-		String extFolder = this.getExternalImageFolder(imcServer, metaId) ;
+		String extFolder = this.getExternalImageFolder(imcServer, metaId, user) ;
 		return extFolder += this.getTemplateLibName(confPoolServer, metaId) ;
 	}
 
@@ -830,9 +830,9 @@ public class BillBoard extends HttpServlet { //Conference
 	/**
 	Returns the folder where this templates are situated for a certain metaid.
 	**/
-	protected String getExternalImageFolder(String server, String meta_id) throws ServletException, IOException
+	protected String getExternalImageFolder(String server, String meta_id, imcode.server.User user) throws ServletException, IOException
 	{
-		RmiConf rmi = new RmiConf() ;
+		RmiConf rmi = new RmiConf(user) ;
 		// Ok, Lets get the language for the system
 		String imageLib = rmi.getExternalImageFolder(server, meta_id) ;
 

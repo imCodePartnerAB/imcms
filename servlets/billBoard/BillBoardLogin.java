@@ -34,7 +34,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 	public void init(ServletConfig config)
 	throws ServletException {
 		super.init(config);
-		test = new Vector();
+	//	test = new Vector();
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
