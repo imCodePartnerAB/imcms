@@ -615,8 +615,6 @@ INSERT INTO images ( meta_id , width , height , border , v_space , h_space , nam
 values (89,0,0,0,0,0,1,'','_self','','top','','','se/helpimages/Admin-roller-huvudsida.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (90,0,0,0,0,0,1,'','_self','','top','','','se/helpimages/Lagg-till-dokument.GIF','')
-INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
-values (1001,0,0,0,0,0,1,'','_self','','top','','','se/helpimages/Lagg-till-dokument.GIF','')
 
 
 
