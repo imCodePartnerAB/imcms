@@ -31,9 +31,9 @@
                 <th align="left"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_references ?></th>
                 <th align="left"><? web/imcms/lang/jsp/linkcheck/heading_status ?></th>
                 <th align="left"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_url ?></th>
-                <th align="left" width="8%"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_found ?></th>
-                <th align="left" width="8%"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_reachable ?></th>
-                <th align="left" width="8%"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_ok ?></th>
+                <th align="left" style="width: 5em;"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_found ?></th>
+                <th align="left" style="width: 5em;"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_reachable ?></th>
+                <th align="left" style="width: 5em;"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_ok ?></th>
             </tr>
 </vel:velocity>
             <% out.flush();
