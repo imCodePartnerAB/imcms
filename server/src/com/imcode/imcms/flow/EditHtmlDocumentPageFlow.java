@@ -26,8 +26,6 @@ public class EditHtmlDocumentPageFlow extends EditDocumentPageFlow {
     protected void dispatchOkFromEditPage( HttpServletRequest request, HttpServletResponse response ) throws IOException {
         HtmlDocumentDomainObject htmlDocument = (HtmlDocumentDomainObject)document;
         htmlDocument.setHtml( request.getParameter( REQUEST_PARAMETER__HTML_DOC__HTML ) );
-        UserDomainObject user = Utility.getLoggedOnUser( request );
-        Imcms.getServices().getDocumentMapper().saveDocument( htmlDocument, user );
     }
 
     protected void dispatchToFirstPage( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
