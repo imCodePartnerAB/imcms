@@ -10,10 +10,10 @@
 <form method="post" action="GetExistingDoc">
 <input type="HIDDEN" name="meta_id_value" value="#meta_id#">
 <input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
-<tr> 
+<tr>
 	<td colspan="2">#gui_heading( "<? templates/sv/existing_doc.html/5/1 ?>" )</td>
 </tr>
-<tr> 
+<tr>
 	<td colspan="2">
         <table border="0" cellspacing="0" cellpadding="0">
             <tr>
@@ -30,68 +30,68 @@
 <tr>
 	<td colspan="2">#gui_hr( "cccccc" )</td>
 </tr>
-<tr> 
-	<td colspan="2"> 
+<tr>
+	<td colspan="2">
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr valign="top">
 		<!-- left -->
-		<td width="50%"> 
+		<td width="50%">
 		<table border="0" cellspacing="0" cellpadding="1" width="100%">
-		<tr> 
+		<tr>
 			<td colspan="2" class="imcmsAdmText" height="22"><? templates/sv/existing_doc.html/8 ?></td>
 		</tr>
-		<tr> 
-			<td class="imcmsAdmText"><? templates/sv/existing_doc.html/9 ?></td>
+		<tr>
+			<td class="imcmsAdmText"><? templates/sv/existing_doc.html/9 ?>:</td>
 			<td><input type="checkbox" name="doc_type" value="2" #checked_2#></td>
 		</tr>
-		<tr> 
-			<td class="imcmsAdmText"><? templates/sv/existing_doc.html/10 ?></td>
+		<tr>
+			<td class="imcmsAdmText"><? document_type/name/url ?>:</td>
 			<td><input type="checkbox" name="doc_type" value="5" #checked_5#></td>
 		</tr>
-		<tr> 
-			<td class="imcmsAdmText"><? templates/sv/existing_doc.html/11 ?></td>
+		<tr>
+			<td class="imcmsAdmText"><? document_type/name/browser ?>:</td>
 			<td><input type="checkbox" name="doc_type" value="6" #checked_6#></td>
 		</tr>
-		<tr> 
-			<td class="imcmsAdmText"><? templates/sv/existing_doc.html/12 ?></td>
+		<tr>
+			<td class="imcmsAdmText"><? document_type/name/html ?>:</td>
 			<td><input type="checkbox" name="doc_type" value="7" #checked_7#></td>
 		</tr>
-		<tr> 
-			<td class="imcmsAdmText"><? templates/sv/existing_doc.html/13 ?></td>
+		<tr>
+			<td class="imcmsAdmText"><? document_type/name/file ?>:</td>
 			<td><input type="checkbox" name="doc_type" value="8" #checked_8#></td>
 		</tr>
 		<tr>
-			<td class="imcmsAdmText"><? templates/sv/existing_doc.html/14 ?></td>
+			<td class="imcmsAdmText"><? document_type/name/billboard ?>:</td>
 			<td><input type="checkbox" name="doc_type" value="104" #checked_104#></td>
 		</tr>
 		<tr>
-			<td class="imcmsAdmText"><? templates/sv/existing_doc.html/15 ?></td>
+			<td class="imcmsAdmText"><? document_type/name/chat ?>:</td>
 			<td><input type="checkbox" name="doc_type" value="103" #checked_103#></td>
 		</tr>
 		<tr>
-			<td class="imcmsAdmText"><? templates/sv/existing_doc.html/16 ?></td>
+			<td class="imcmsAdmText"><? document_type/name/conference ?>:</td>
 			<td><input type="checkbox" name="doc_type" value="102" #checked_102#></td>
 		</tr>
 		</table></td>
 		<!-- right -->
-		<td width="50%"> 
+		<td width="50%">
 		<table border="0" cellspacing="0" cellpadding="1" width="100%">
-		<tr> 
+		<tr>
 			<td colspan="2" class="imcmsAdmText" height="22"><? templates/sv/existing_doc.html/17 ?></td>
 		</tr>
-		<tr> 
+		<tr>
 			<td class="imcmsAdmText"><? templates/sv/existing_doc.html/18 ?></td>
 			<td><input type="text" name="start_date" size="18" maxlength="16" style="width: 95" value="#start_date#"></td>
 		</tr>
-		<tr> 
+		<tr>
 			<td class="imcmsAdmText"><? templates/sv/existing_doc.html/20 ?></td>
 			<td><input type="text" name="end_date" size="18" maxlength="16" style="width: 95" value="#end_date#"></td>
 		</tr>
-		<tr> 
+		<tr>
 			<td class="imcmsAdmText"><? templates/sv/existing_doc.html/22 ?></td>
 			<td><input type="checkbox" name="include_doc" value="created" #include_check_created#></td>
 		</tr>
-		<tr> 
+		<tr>
 			<td class="imcmsAdmText"><? templates/sv/existing_doc.html/23 ?></td>
 			<td><input type="checkbox" name="include_doc" value="changed" #include_check_changed#></td>
 		</tr>
@@ -105,7 +105,7 @@
 <tr>
 	<td colspan="2">
 	<table border="0" cellspacing="0" cellpadding="0" align="right">
-	<tr> 
+	<tr>
 		<td class="imcmsAdmText" nowrap><? templates/sv/existing_doc.html/1005 ?> &nbsp;</td>
 		<td>
 		<select name="sortBy">

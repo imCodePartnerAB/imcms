@@ -1,9 +1,9 @@
 package imcode.server.document;
 
-import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.util.LocalizedMessage;
 import org.apache.commons.collections.map.TypedMap;
 import org.apache.log4j.Logger;
 
@@ -32,6 +32,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private Attributes attributes;
     private static Logger log = Logger.getLogger( DocumentDomainObject.class );
+    public static final String DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX = "document_type/name/";
 
     protected DocumentDomainObject() {
         attributes = new Attributes();
@@ -425,6 +426,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public String getUrl( HttpServletRequest request ) {
         return request.getContextPath()+"/servlet/GetDoc?meta_id="+getId() ;
     }
+
+    public abstract LocalizedMessage getDocumentTypeName() ;
 
     public static class Attributes implements Cloneable, Serializable {
 

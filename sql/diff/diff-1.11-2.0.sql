@@ -169,3 +169,11 @@ DROP PROCEDURE GetRolesDocPermissions
 GO
 
 -- 2004-12-09 Kreiger
+
+DROP PROCEDURE RoleGetPermissionsByLanguage
+DROP PROCEDURE RoleGetPermissionsFromRole
+DROP PROCEDURE RoleCheckConferenceAllowed
+DROP PROCEDURE RoleGetConferenceAllowed
+DROP TABLE roles_permissions
+
+-- 2004-12-16 Kreiger

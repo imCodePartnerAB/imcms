@@ -4,6 +4,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.TemplateDomainObject;
+import imcode.util.LocalizedMessage;
 
 import java.util.*;
 
@@ -81,6 +82,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public void accept( DocumentVisitor documentVisitor ) {
         documentVisitor.visitTextDocument(this) ;
+    }
+
+    public LocalizedMessage getDocumentTypeName() {
+        return new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX + "text" );
     }
 
     public void removeAllImages() {

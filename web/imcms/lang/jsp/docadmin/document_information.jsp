@@ -557,7 +557,7 @@ function checkFocus() {
 </vel:velocity>
 <%
 if (!adminButtonsHidden) {
-	String adminButtons = service.getAdminButtons( request, user, document) ;
+	String adminButtons = Html.getAdminButtons( user, document, request, response ) ;
 	if (!"".equals( adminButtons )) {
 		%><center><%= adminButtons %></center><%
 	}

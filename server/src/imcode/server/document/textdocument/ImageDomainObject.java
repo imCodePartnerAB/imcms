@@ -190,7 +190,7 @@ public class ImageDomainObject implements Serializable {
         return source;
     }
 
-    public abstract static class ImageSource {
+    public abstract static class ImageSource implements Serializable {
 
         static final int IMAGE_TYPE_ID__NULL = -1;
         public static final int IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH = 0;

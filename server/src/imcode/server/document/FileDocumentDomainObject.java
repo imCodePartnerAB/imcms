@@ -2,6 +2,7 @@ package imcode.server.document;
 
 import imcode.util.InputStreamSource;
 import imcode.util.Utility;
+import imcode.util.LocalizedMessage;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.UnhandledException;
@@ -24,6 +25,10 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
     public void accept( DocumentVisitor documentVisitor ) {
         documentVisitor.visitFileDocument( this );
+    }
+
+    public LocalizedMessage getDocumentTypeName() {
+        return new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX + "file" );
     }
 
     public void addFile( String fileId, FileDocumentFile file ) {

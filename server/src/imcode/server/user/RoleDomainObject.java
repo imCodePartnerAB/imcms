@@ -1,6 +1,7 @@
 package imcode.server.user;
 
 import com.imcode.imcms.api.RoleConstants;
+import imcode.util.LocalizedMessage;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -12,12 +13,14 @@ public class RoleDomainObject implements Serializable, Comparable {
     public final static RoleDomainObject USERADMIN = new ImmutableRoleDomainObject( 1, RoleConstants.USER_ADMIN, 2 );
     public final static RoleDomainObject USERS = new ImmutableRoleDomainObject( 2, RoleConstants.USERS, 0 );
 
-    public final static RolePermissionDomainObject PASSWORD_MAIL_PERMISSION = new RolePermissionDomainObject( 1 ) ;
-    public final static RolePermissionDomainObject CONFERENCE_REGISTRATION_PERMISSION = new RolePermissionDomainObject( 2 ) ;
+    public final static RolePermissionDomainObject PASSWORD_MAIL_PERMISSION = new RolePermissionDomainObject( 1, new LocalizedMessage( "role_permission/password_by_email/description" ) ) ;
+    public final static RolePermissionDomainObject CONFERENCE_REGISTRATION_PERMISSION = new RolePermissionDomainObject( 2, new LocalizedMessage( "role_permission/conference_register/description" ) ) ;
+    public static final RolePermissionDomainObject ADMIN_PAGES_PERMISSION = new RolePermissionDomainObject( 4, new LocalizedMessage( "role_permission/admin_pages_access/desciption" ) );
 
-    private final static RoleDomainObject.RolePermissionDomainObject[] ALL_ROLE_PERMISSIONS = new RoleDomainObject.RolePermissionDomainObject[]{
+    private final static RolePermissionDomainObject[] ALL_ROLE_PERMISSIONS = new RolePermissionDomainObject[]{
         PASSWORD_MAIL_PERMISSION,
         CONFERENCE_REGISTRATION_PERMISSION,
+        ADMIN_PAGES_PERMISSION,
     };
 
     private int id;
@@ -92,7 +95,7 @@ public class RoleDomainObject implements Serializable, Comparable {
         return name.compareToIgnoreCase(((RoleDomainObject)o).name) ;
     }
 
-    public void addPermission(RoleDomainObject.RolePermissionDomainObject permission) {
+    public void addPermission(RolePermissionDomainObject permission) {
         permissions.add( permission ) ;
     }
 
@@ -110,7 +113,7 @@ public class RoleDomainObject implements Serializable, Comparable {
 
     public void addUnionOfPermissionIdsToRole( int unionOfRolePermissionIds ) {
         for ( int i = 0; i < RoleDomainObject.ALL_ROLE_PERMISSIONS.length; i++ ) {
-            RoleDomainObject.RolePermissionDomainObject permission = RoleDomainObject.ALL_ROLE_PERMISSIONS[i];
+            RolePermissionDomainObject permission = RoleDomainObject.ALL_ROLE_PERMISSIONS[i];
             if ( bitIsSet( unionOfRolePermissionIds, permission.getId() ) ) {
                 addPermission( permission );
             }
@@ -121,24 +124,8 @@ public class RoleDomainObject implements Serializable, Comparable {
         return 0 != ( unionOfRolePermissionIds & bitValue );
     }
 
-    public static class RolePermissionDomainObject implements Serializable {
-        private int id ;
-
-        RolePermissionDomainObject( int id ) {
-            this.id = id;
-        }
-
-        int getId() {
-            return id;
-        }
-
-        public int hashCode() {
-            return id ;
-        }
-
-        public boolean equals( Object obj ) {
-            return obj instanceof RolePermissionDomainObject && ((RolePermissionDomainObject)obj).id == id ;
-        }
-
+    public static RolePermissionDomainObject[] getAllRolePermissions() {
+        return ALL_ROLE_PERMISSIONS;
     }
+
 }

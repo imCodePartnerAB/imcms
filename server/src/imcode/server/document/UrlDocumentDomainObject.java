@@ -1,5 +1,7 @@
 package imcode.server.document;
 
+import imcode.util.LocalizedMessage;
+
 public class UrlDocumentDomainObject extends DocumentDomainObject {
 
     private String url = "";
@@ -18,6 +20,10 @@ public class UrlDocumentDomainObject extends DocumentDomainObject {
 
     public void accept( DocumentVisitor documentVisitor ) {
         documentVisitor.visitUrlDocument( this );
+    }
+
+    public LocalizedMessage getDocumentTypeName() {
+        return new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX + "url" );
     }
 
 }

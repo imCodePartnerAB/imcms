@@ -6,9 +6,13 @@ import imcode.server.document.*;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.UnhandledException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
 import java.util.*;
+import java.io.IOException;
 
 public class Html {
 
@@ -148,5 +152,25 @@ public class Html {
             "<input type=\"radio\" name=\""+StringEscapeUtils.escapeHtml( name )+"\" value=\""
                 + StringEscapeUtils.escapeHtml( value )+"\""+ (selected ? " checked" : "")+">" ;
 
+    }
+
+    /**
+     * Returns the menubuttonrow
+     */
+    public static String getAdminButtons( UserDomainObject user, DocumentDomainObject document, HttpServletRequest request,
+                                   HttpServletResponse response ) {
+        if ( !(user.canEdit( document ) || user.isUserAdmin() || user.canAccessAdminPages()) ) {
+            return "";
+        }
+
+        try {
+            request.setAttribute( "document", document );
+            request.setAttribute( "user", user );
+            return Utility.getContents( "/imcms/"+user.getLanguageIso639_2()+"/jsp/admin/adminbuttons.jsp",request, response ) ;
+        } catch ( ServletException e ) {
+            throw new UnhandledException( e.getCause() );
+        } catch ( IOException e ) {
+            throw new UnhandledException( e );
+        }
     }
 }

@@ -2,6 +2,7 @@ package imcode.server.document;
 
 import junit.framework.TestCase;
 import imcode.server.user.RoleDomainObject;
+import imcode.util.LocalizedMessage;
 
 public class TestDocumentDomainObject extends TestCase {
 
@@ -16,6 +17,10 @@ public class TestDocumentDomainObject extends TestCase {
 
             public void accept( DocumentVisitor documentVisitor ) {
                 // TODO
+            }
+
+            public LocalizedMessage getDocumentTypeName() {
+                return null;  // TODO
             }
         };
     }

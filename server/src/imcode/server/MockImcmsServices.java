@@ -15,6 +15,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.text.Collator;
@@ -164,10 +165,6 @@ public class MockImcmsServices implements ImcmsServices {
     // delete demotemplate
     public void deleteDemoTemplate( int template_id ) throws IOException {
         // TODO
-    }
-
-    public String getAdminButtons( HttpServletRequest request, UserDomainObject user, DocumentDomainObject document ) {
-        return null;  // TODO
     }
 
     public SystemData getSystemData() {

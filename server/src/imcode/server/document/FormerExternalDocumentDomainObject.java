@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.user.UserDomainObject;
+import imcode.util.LocalizedMessage;
 
 public abstract class FormerExternalDocumentDomainObject extends DocumentDomainObject {
 

@@ -608,4 +608,19 @@ public class UserDomainObject extends Hashtable {
     public boolean canEditDocumentInformationFor( DocumentDomainObject document ) {
         return getPermissionSetFor( document ).getEditDocumentInformation() ;
     }
+
+    public boolean canAccessAdminPages() {
+        RolePermissionDomainObject rolePermissionToAccessAdminPages = RoleDomainObject.ADMIN_PAGES_PERMISSION ;
+        return isSuperAdmin() || isUserAdmin() || hasRoleWithPermission(rolePermissionToAccessAdminPages) ;
+    }
+
+    public boolean hasRoleWithPermission( RolePermissionDomainObject rolePermission ) {
+        for ( Iterator iterator = roles.iterator(); iterator.hasNext(); ) {
+            RoleDomainObject role = (RoleDomainObject)iterator.next();
+            if (role.hasPermission( rolePermission )) {
+                return true ;
+            }
+        }
+        return false ;
+    }
 }

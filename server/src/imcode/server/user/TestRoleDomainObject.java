@@ -12,7 +12,7 @@ public class TestRoleDomainObject extends TestCase {
     }
 
     public void testPermissions() {
-        RoleDomainObject.RolePermissionDomainObject passwordMailPermission = RoleDomainObject.PASSWORD_MAIL_PERMISSION;
+        RolePermissionDomainObject passwordMailPermission = RoleDomainObject.PASSWORD_MAIL_PERMISSION;
 
         assertFalse( role.hasPermission( passwordMailPermission ) ) ;
 

@@ -1,7 +1,6 @@
 package imcode.server ;
 
 import imcode.server.db.Database;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -12,7 +11,6 @@ import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.text.Collator;
@@ -130,8 +128,6 @@ public interface ImcmsServices {
     // delete demotemplate
     void deleteDemoTemplate(int template_id) throws IOException
     ;
-
-    String getAdminButtons( HttpServletRequest request, UserDomainObject user, DocumentDomainObject document )  ;
 
     SystemData getSystemData()  ;
 

@@ -1,17 +1,23 @@
 package com.imcode.imcms.servlet.conference;
 
-import imcode.server.*;
-import imcode.server.user.UserDomainObject;
-
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
-import imcode.util.Utility;
-import imcode.util.Html;
 import com.imcode.imcms.servlet.superadmin.Administrator;
+import imcode.external.diverse.*;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
+import imcode.server.user.UserDomainObject;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.RoleDomainObject;
+import imcode.util.Html;
+import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Vector;
 
 public class ConfAdmin extends Conference {
 
@@ -369,7 +375,15 @@ public class ConfAdmin extends Conference {
             // Lets ALL avaible self_register roles from DB
             String langPrefix = user.getLanguageIso639_2();
 
-            String[] sqlAnswer2 = imcref.sqlProcedure("RoleGetConferenceAllowed", new String[]{langPrefix});
+            ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+            RoleDomainObject[] rolesWithPermission = imcmsAuthenticatorAndUserAndRoleMapper.getAllRolesWithPermission(RoleDomainObject.CONFERENCE_REGISTRATION_PERMISSION);
+            String[] sqlAnswer2 = new String[rolesWithPermission.length*2] ;
+            for ( int i = 0; i < rolesWithPermission.length; i++ ) {
+                RoleDomainObject role = rolesWithPermission[i];
+                sqlAnswer2[i*2] = ""+role.getId() ;
+                sqlAnswer2[i*2+1] = ""+role.getName() ;
+            }
+
             Vector allSelfRegV = super.convert2Vector(sqlAnswer2);
             String allSelfRegList = Html.createOptionList("", allSelfRegV);
 

@@ -6,6 +6,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.RoleDomainObject;
 import imcode.util.Utility;
 
 import javax.servlet.http.*;
@@ -518,10 +519,7 @@ public class Conference extends HttpServlet {
                 String aRoleId = selfRegRolesIds[i].toString();
                 // Lets check that the role id is still valid to use against
                 // the host system
-                String[] found = imcref.sqlProcedure( "RoleCheckConferenceAllowed", new String[]{
-                    user.getLanguageIso639_2(), aRoleId } );
-
-                if ( found != null ) {
+                if ( user.hasRoleWithPermission(RoleDomainObject.CONFERENCE_REGISTRATION_PERMISSION) ) {
                     imcref.sqlUpdateProcedure( "AddUserRole", new String[]{user.getId()+"", aRoleId} );
                 }
             }

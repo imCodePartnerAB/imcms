@@ -2,7 +2,9 @@ package imcode.server;
 
 import imcode.server.db.ConnectionPool;
 import imcode.server.db.Database;
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.TemplateMapper;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
@@ -23,7 +25,6 @@ import org.apache.log4j.NDC;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import javax.servlet.http.HttpServletRequest;
 import java.beans.PropertyDescriptor;
 import java.io.*;
 import java.text.*;
@@ -277,30 +278,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     public String parsePage( ParserParameters paramsToParse )
             throws IOException {
         return textDocParser.parsePage( paramsToParse );
-    }
-
-    /**
-     * Returns the menubuttonrow
-     */
-    public String getAdminButtons( HttpServletRequest request, UserDomainObject user, DocumentDomainObject document ) {
-        if ( !user.canEdit( document ) && !user.isUserAdmin() ) {
-            return "";
-        }
-
-        DocumentPermissionSetDomainObject documentPermissionSet = user.getPermissionSetFor( document );
-        String documentTypeName = sqlQueryStr( "select type from doc_types where doc_type = ?", new String[]{
-            "" + document.getDocumentTypeId()
-        } );
-        List parseVariables = Arrays.asList( new Object[]{
-            "user", user,
-            "document", document,
-            "documentPermissionSet", documentPermissionSet,
-            "statusicon", Html.getLinkedStatusIconTemplate( document, user, request ),
-            "pathToDocument", Utility.getAbsolutePathToDocument(request, document),
-            "documentTypeName", documentTypeName
-        } );
-
-        return getAdminTemplate( "adminbuttons/adminbuttons.html", user, parseVariables );
     }
 
     /**

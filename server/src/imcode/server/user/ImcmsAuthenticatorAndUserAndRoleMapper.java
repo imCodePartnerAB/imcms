@@ -372,9 +372,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
 
     private int getUnionOfRolePermissionIds( RoleDomainObject role ) {
         int unionOfPermissionSetIds = 0 ;
-        RoleDomainObject.RolePermissionDomainObject[] rolePermissions = role.getPermissions() ;
+        RolePermissionDomainObject[] rolePermissions = role.getPermissions() ;
         for ( int i = 0; i < rolePermissions.length; i++ ) {
-            RoleDomainObject.RolePermissionDomainObject rolePermission = rolePermissions[i];
+            RolePermissionDomainObject rolePermission = rolePermissions[i];
             unionOfPermissionSetIds |= rolePermission.getId() ;
         }
         return unionOfPermissionSetIds;
@@ -508,4 +508,15 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
                                      + "AND    phones.user_id = ?", new String[]{"" + userToChangeId} );
     }
 
+    public RoleDomainObject[] getAllRolesWithPermission( RolePermissionDomainObject rolePermission ) {
+        RoleDomainObject[] allRoles = getAllRoles() ;
+        List rolesWithPermissionList = new ArrayList( allRoles.length );
+        for ( int i = 0; i < allRoles.length; i++ ) {
+            RoleDomainObject role = allRoles[i];
+            if (role.hasPermission( rolePermission )) {
+                rolesWithPermissionList.add( role );
+            }
+        }
+        return (RoleDomainObject[])rolesWithPermissionList.toArray( new RoleDomainObject[rolesWithPermissionList.size()] );
+    }
 }

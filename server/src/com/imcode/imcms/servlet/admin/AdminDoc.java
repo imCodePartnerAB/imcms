@@ -7,6 +7,7 @@ import imcode.server.document.*;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.Html;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.servlet.ServletException;
@@ -112,7 +113,7 @@ public class AdminDoc extends HttpServlet {
                 if ( doc_type != 1 && doc_type != 2 ) {
                     List vec = new ArrayList( 4 );
                     vec.add( "#adminMode#" );
-                    vec.add( imcref.getAdminButtons( req, user, document ) );
+                    vec.add( Html.getAdminButtons( user, document, req, res ) );
                     vec.add( "#doc_type_description#" );
                     vec.add( imcref.getAdminTemplate( "adminbuttons/adminbuttons" + doc_type + "_description.html", user, null ) );
                     return imcref.getAdminTemplate( "docinfo.html", user, vec );

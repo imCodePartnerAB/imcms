@@ -3,8 +3,7 @@ package com.imcode.imcms.servlet.superadmin;
 import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.user.UserDomainObject;
-import imcode.server.user.RoleDomainObject;
+import imcode.server.user.*;
 import imcode.util.Html;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -150,15 +149,13 @@ public class AdminRoles extends Administrator {
 
             String languagePrefix = user.getLanguageIso639_2();
 
-            String[][] rolePermissions = imcref.sqlProcedureMulti( "RoleGetPermissionsByLanguage", new String[]{languagePrefix} );
-
             // lets adjust the list to fit method cal
-            String[][] permissionList = new String[rolePermissions.length][];
+            RolePermissionDomainObject[] allRolePermissions = RoleDomainObject.getAllRolePermissions();
+            String[][] permissionList = new String[allRolePermissions.length][];
 
             for ( int i = 0; i < permissionList.length; i++ ) {
-
-                permissionList[i] = new String[]{"0", rolePermissions[i][0], rolePermissions[i][1]};
-                log.debug( permissionList[i][1] );
+                RolePermissionDomainObject rolePermission = allRolePermissions[i] ;
+                permissionList[i] = new String[]{"0", ""+rolePermission.getId(), rolePermission.getDescription().toLocalizedString( req )};
             }
 
             // lets get data on permissions and values
@@ -196,8 +193,8 @@ public class AdminRoles extends Administrator {
         // *************** GENERATE THE EDIT ROLE PAGE  **********
         if ( req.getParameter( "VIEW_EDIT_ROLE" ) != null ) {
 
-            String roleId = req.getParameter( "ROLE_ID" );
-            if ( roleId == null ) {
+            String roleIdStr = req.getParameter( "ROLE_ID" );
+            if ( roleIdStr == null ) {
                 String header = "Error in AdminRoles, edit role";
                 Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/role_missing") + "<br>";
@@ -207,7 +204,7 @@ public class AdminRoles extends Administrator {
             }
 
             // dont list superadmin permissions
-            if ( roleId.equals( "0" ) ) {
+            if ( roleIdStr.equals( "0" ) ) {
                 String header = "Error in AdminRoles, edit role";
                 String msg = "" + "<BR>";
                 log.debug( "Error in checking roles: Trying to look att superadmin permissions" );
@@ -217,16 +214,27 @@ public class AdminRoles extends Administrator {
 
             String languagePrefix = user.getLanguageIso639_2();
 
-            String sqlQ = "RoleGetPermissionsFromRole";
-            String[][] permissionList = imcref.sqlProcedureMulti( sqlQ, new String[]{roleId, languagePrefix} );
+            int roleId = Integer.parseInt( roleIdStr );
+            ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+            RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapper.getRoleById( roleId );
+            RolePermissionDomainObject[] allRolePermissions = RoleDomainObject.getAllRolePermissions();
+            String[][] permissionList = new String[allRolePermissions.length][] ;
+            for ( int i = 0; i < permissionList.length; i++ ) {
+                RolePermissionDomainObject rolePermission = allRolePermissions[i] ;
+                int rolePermissionId = rolePermission.getId();
+                permissionList[i] = new String[3] ;
+                permissionList[i][0] = role.hasPermission( rolePermission ) ? ""+rolePermissionId : "0" ;
+                permissionList[i][1] = ""+rolePermissionId ;
+                permissionList[i][2] = "" + rolePermission.getDescription().toLocalizedString( req );
+            }
 
             // lets get data on permissions and values
             String permissionComponent = createPermissionComponent( req, permissionList );
 
             /* create output page */
             VariableManager vm = new VariableManager();
-            vm.addProperty( "CURRENT_ROLE_NAME", imcref.sqlProcedureStr( "RoleGetName", new String[]{roleId} ) );
-            vm.addProperty( "CURRENT_ROLE_ID", roleId );
+            vm.addProperty( "CURRENT_ROLE_NAME", imcref.sqlProcedureStr( "RoleGetName", new String[]{roleIdStr} ) );
+            vm.addProperty( "CURRENT_ROLE_ID", roleIdStr );
             vm.addProperty( "ROLE_PERMISSIONS", permissionComponent );
             this.sendHtml( req, res, vm, HTML_EDIT_ROLE );
 

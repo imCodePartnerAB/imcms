@@ -7,6 +7,7 @@ import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
+import imcode.util.Html;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -180,7 +181,7 @@ public class TextDocumentParser {
         tags.setProperty( "#externalparam#", parserParameters.getExternalParameter() );
 
         if ( parserParameters.getFlags() >= 0 ) {
-            tags.setProperty( "#adminMode#", service.getAdminButtons( parserParameters.getDocumentRequest().getHttpServletRequest(), user, document ) );
+            tags.setProperty( "#adminMode#", Html.getAdminButtons( user, document, parserParameters.getDocumentRequest().getHttpServletRequest(), parserParameters.getDocumentRequest().getHttpServletResponse() ) );
         }
 
         String changeTemplateUi = createChangeTemplateUi( templatemode, user, document );
