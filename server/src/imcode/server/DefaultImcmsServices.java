@@ -283,7 +283,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * Returns the menubuttonrow
      */
     public String getAdminButtons( HttpServletRequest request, UserDomainObject user, DocumentDomainObject document ) {
-        if ( !user.canAccess( document ) && !user.isUserAdmin() ) {
+        if ( !user.canEdit( document ) && !user.isUserAdmin() ) {
             return "";
         }
 
