@@ -47,19 +47,21 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><input type="SUBMIT" value="<? global/back ?>" name="cancel" class="imcmsFormBtn"></td><%
+		<td>
+		<input type="button" tabindex="10" value="<? global/back ?>" name="cancel" class="imcmsFormBtn"
+		 onClick="document.location = 'AdminDoc?meta_id=<%= textEditPage.getDocumentId() %>&flags=65536'"></td><%
 		if (isHtmlAreaSupported && showModeEditor) { %>
 		<td style="color:#ffffff;" nowrap><span id="editorOpenText" style="display:none">&nbsp; &nbsp; <? install/htdocs/sv/htmleditor/editor/editor.jsp/3000 ?> &nbsp;</span></td>
 		<td><span id="editorOpenBtn" style="display:none"><%
 			if (getCookie("imcms_hide_editor", request).equals("true")) { %>
-		<button id="editorOnOffBtn0" onClick="toggleEditorOnOff(0); return false"
+		<button tabindex="11" id="editorOnOffBtn0" onClick="toggleEditorOnOff(0); return false"
 			class="imcmsFormBtn" style="width:40"><? global/off ?></button>
-		<button id="editorOnOffBtn1" onClick="toggleEditorOnOff(1); return false"
+		<button tabindex="11" id="editorOnOffBtn1" onClick="toggleEditorOnOff(1); return false"
 			class="imcmsFormBtnActive" style="width:40; display:none"><? global/on ?></button><%
 			} else { %>
-		<button id="editorOnOffBtn0" onClick="toggleEditorOnOff(0); return false"
+		<button tabindex="11" id="editorOnOffBtn0" onClick="toggleEditorOnOff(0); return false"
 			class="imcmsFormBtn" style="width:40; display:none"><? global/off ?></button>
-		<button id="editorOnOffBtn1" onClick="toggleEditorOnOff(1); return false"
+		<button tabindex="11" id="editorOnOffBtn1" onClick="toggleEditorOnOff(1); return false"
 			class="imcmsFormBtnActive" style="width:40;"><? global/on ?></button><%
 			} %></span></td><%
 		} %>
@@ -67,7 +69,7 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 	</table></td>
 
 	<td align="right">
-	<input type="button" value="<? templates/sv/change_text.html/2004 ?>" title="<? templates/sv/change_text.html/2005 ?>" class="imcmsFormBtn" onClick="openHelpW(36)"></td>
+	<input type="button" tabindex="12" value="<? templates/sv/change_text.html/2004 ?>" title="<? templates/sv/change_text.html/2005 ?>" class="imcmsFormBtn" onClick="openHelpW(36)"></td>
 
 </tr>
 </table>
@@ -83,9 +85,9 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 <tr>
 	<td colspan="2" class="imcmsAdmForm"><%
 	if (rows == 1) { %>
-	<input type="text" name="text" id="txtCont" style="width:100%" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>"><%
+	<input type="text" tabindex="1" name="text" id="txtCont" style="width:100%" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>"><%
 	} else { %>
-	<textarea name="text" id="txtCont" cols="125" rows="<%= (rows > 1) ? rows : 18 %>" style="overflow: auto; width: 100%" wrap="virtual">
+	<textarea name="text" tabindex="1" id="txtCont" cols="125" rows="<%= (rows > 1) ? rows : 18 %>" style="overflow: auto; width: 100%" wrap="virtual">
 <%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
 	} %></td>
 </tr>
@@ -98,14 +100,14 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 		<tr>
 			<td class="imcmsAdmText">&nbsp;<? templates/sv/change_text.html/1001 ?>&nbsp;</td><%
 		if (showModeText) { %>
-			<td><input type="RADIO" name="format_type" id="format_type0" value="0"<%
+			<td><input type="RADIO" tabindex="5" name="format_type" id="format_type0" value="0"<%
 			%><%= (imcmsModeText) ? "" : " checked" %>></td>
 			<td class="imcmsAdmText">
 			<label for="format_type0" accesskey="T" title="Text (<%= isMac ? "Ctrl" : "Alt" %> + T)">
 			&nbsp;<u>T</u>ext&nbsp;</label>&nbsp;</td><%
 		}
 		if (showModeHtml) { %>
-			<td><input type="RADIO" name="format_type" id="format_type1" value="1"<%
+			<td><input type="RADIO" tabindex="5" name="format_type" id="format_type1" value="1"<%
 			%><%= (isHtmlAreaSupported && showModeEditor) ? " onClick=\"showHideHtmlArea(false);\"" : "" %><%
 			%><%= ((imcmsModeHtml || (imcmsModeText && !showModeText)) && (!showEditorCookie || !showModeEditor || !showModeText)) ? " checked" : "" %>></td>
 			<td class="imcmsAdmText">
@@ -113,7 +115,7 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 			&nbsp;<u>H</u>TML&nbsp;</label>&nbsp;</td><%
 		}
 		if (isHtmlAreaSupported && showModeEditor) { %>
-			<td><input type="RADIO" name="format_type" id="format_type2" style="display:none" value="1" <%
+			<td><input type="RADIO" tabindex="5" name="format_type" id="format_type2" style="display:none" value="1" <%
 			%>onClick="showHideHtmlArea(true);"<%
 			%><%= (imcmsModeHtml && showEditorCookie) ? " checked" : "" %>></td>
 			<td class="imcmsAdmText">
@@ -123,9 +125,9 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 		</tr>
 		</table></td>
 		<td align="right">
-		<input type="SUBMIT" class="imcmsFormBtn" name="ok" value="  <? templates/sv/change_text.html/2006 ?>  ">
-		<input type="RESET" class="imcmsFormBtn" value="<? templates/sv/change_text.html/2007 ?>">
-		<input type="SUBMIT" class="imcmsFormBtn" name="cancel" value=" <? templates/sv/change_text.html/2008 ?> "></td>
+		<input tabindex="2" type="SUBMIT" class="imcmsFormBtn" name="ok" value="  <? templates/sv/change_text.html/2006 ?>  ">
+		<input tabindex="3" type="RESET" class="imcmsFormBtn" value="<? templates/sv/change_text.html/2007 ?>">
+		<input tabindex="4" type="SUBMIT" class="imcmsFormBtn" name="cancel" value=" <? templates/sv/change_text.html/2008 ?> "></td>
 	</tr>
 	</table></td>
 </tr>
