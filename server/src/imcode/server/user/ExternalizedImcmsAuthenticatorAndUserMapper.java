@@ -1,27 +1,31 @@
 package imcode.server.user;
 
-import org.apache.log4j.Logger;
-
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Arrays;
+import java.util.HashSet;
 
 public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticator {
    private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
-   private Authenticator otherAuthenticator;
-   private UserMapper otherUserMapper;
+   private Authenticator externalAuthenticator;
+   private UserMapper externalUserMapper;
    private String defaultLanguage;
 
-   public ExternalizedImcmsAuthenticatorAndUserMapper( ImcmsAuthenticatorAndUserMapper imcms, Authenticator otherAuthenticator, UserMapper otherUserMapper, String defaultLanguage ) {
+   public ExternalizedImcmsAuthenticatorAndUserMapper( ImcmsAuthenticatorAndUserMapper imcms, Authenticator externalAuthenticator, UserMapper externalUserMapper, String defaultLanguage ) {
       this.imcmsAuthenticatorAndUserMapper = imcms;
-      this.otherAuthenticator = otherAuthenticator;
-      this.otherUserMapper = otherUserMapper;
+      this.externalAuthenticator = externalAuthenticator;
+      this.externalUserMapper = externalUserMapper;
       this.defaultLanguage = defaultLanguage;
+
+      synchRolesWithExternal();
+   }
+
+   private void synchRolesWithExternal() {
+      String[] externalRoleNames = externalUserMapper.getAllRoleNames();
+      imcmsAuthenticatorAndUserMapper.addRoleNames( externalRoleNames );
    }
 
    public boolean authenticate( String loginName, String password ) {
       boolean result = false;
-      boolean userExistsInOther = otherAuthenticator.authenticate( loginName, password );
+      boolean userExistsInOther = externalAuthenticator.authenticate( loginName, password );
       result = userExistsInOther;
       if( !userExistsInOther ) {
          boolean userExistsInImcms = imcmsAuthenticatorAndUserMapper.authenticate( loginName, password );
@@ -32,46 +36,46 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
 
    public User getUser( String loginName ) {
       User imcmsUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
-      User otherUser = getUserFromOtherUserMapper( loginName );
+      User externalUser = getUserFromOtherUserMapper( loginName );
       boolean imcmsUserExists = null != imcmsUser;
-      boolean otherUserExists = null != otherUser;
+      boolean externalUserExists = null != externalUser;
       boolean imcmsUserIsInternal = (null != imcmsUser) && !imcmsUser.isImcmsExternal();
 
       User result = null;
 
-      if( !imcmsUserIsInternal && !otherUserExists && !imcmsUserExists ) {
+      if( !imcmsUserIsInternal && !externalUserExists && !imcmsUserExists ) {
          result = null;
-      } else if( !imcmsUserIsInternal && !otherUserExists && imcmsUserExists ) {
+      } else if( !imcmsUserIsInternal && !externalUserExists && imcmsUserExists ) {
          deactivateExternalUserInImcms( loginName, imcmsUser );
          result = null;
-      } else if( !imcmsUserIsInternal && otherUserExists && !imcmsUserExists ) {
-         result = addExternalUserToImcms( loginName, otherUser );
-      } else if( !imcmsUserIsInternal && otherUserExists && imcmsUserExists ) {
-         result = updateExternalUserInImcms( loginName, otherUser );
-      } else if( imcmsUserIsInternal && !otherUserExists && !imcmsUserExists ) {
+      } else if( !imcmsUserIsInternal && externalUserExists && !imcmsUserExists ) {
+         result = addExternalUserToImcms( loginName, externalUser );
+      } else if( !imcmsUserIsInternal && externalUserExists && imcmsUserExists ) {
+         result = updateExternalUserInImcms( loginName, externalUser );
+      } else if( imcmsUserIsInternal && !externalUserExists && !imcmsUserExists ) {
          throw new InternalError( "Impossible condition. 'Internal' user doesn't exist in imcms." );
-      } else if( imcmsUserIsInternal && !otherUserExists && imcmsUserExists ) {
+      } else if( imcmsUserIsInternal && !externalUserExists && imcmsUserExists ) {
          result = imcmsUser;
-      } else if( imcmsUserIsInternal && otherUserExists && !imcmsUserExists ) {
+      } else if( imcmsUserIsInternal && externalUserExists && !imcmsUserExists ) {
          throw new InternalError( "Impossible condition. 'Internal' user doesn't exist in imcms." );
-      } else if( imcmsUserIsInternal && otherUserExists && imcmsUserExists ) {
+      } else if( imcmsUserIsInternal && externalUserExists && imcmsUserExists ) {
          throw new UserConflictException( "An imcmsAuthenticatorAndUserMapper-internal user was found in external directory.", null );
       }
       return result;
    }
 
    private User getUserFromOtherUserMapper( String loginName ) {
-      User otherUser = otherUserMapper.getUser( loginName );
-      if( null != otherUser && null == otherUser.getLangPrefix() ) {
-         otherUser.setLangPrefix( defaultLanguage );
+      User externalUser = externalUserMapper.getUser( loginName );
+      if( null != externalUser && null == externalUser.getLangPrefix() ) {
+         externalUser.setLangPrefix( defaultLanguage );
       }
-      return otherUser;
+      return externalUser;
    }
 
-   private User updateExternalUserInImcms( String loginName, User otherUser ) {
+   private User updateExternalUserInImcms( String loginName, User externalUser ) {
       // TODO: Update the role-assignments for the user and make sure all roles exist
-      otherUser.setImcmsExternal( true );
-      imcmsAuthenticatorAndUserMapper.updateUser( loginName, otherUser );
+      externalUser.setImcmsExternal( true );
+      imcmsAuthenticatorAndUserMapper.updateUser( loginName, externalUser );
       User updatedUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
       return updatedUser;
    }
@@ -81,11 +85,11 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
       imcmsAuthenticatorAndUserMapper.updateUser( loginName, imcmsUser );
    }
 
-   private User addExternalUserToImcms( String loginName, User otherUser ) {
+   private User addExternalUserToImcms( String loginName, User externalUser ) {
       // TODO: Add roles for the user and assign them to the user
 
-      otherUser.setImcmsExternal( true );
-      imcmsAuthenticatorAndUserMapper.addUser( otherUser );
+      externalUser.setImcmsExternal( true );
+      imcmsAuthenticatorAndUserMapper.addUser( externalUser );
       User addedUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
       return addedUser;
    }
@@ -106,13 +110,26 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
    }
 
    public String[] getRoleNames( User user ) {
-      String[] imcmsRoleNames = imcmsAuthenticatorAndUserMapper.getRoleNames(user) ;
-      String[] otherRoleNames = otherUserMapper.getRoleNames(user) ;
+      String[] imcmsRoleNames = imcmsAuthenticatorAndUserMapper.getRoleNames( user );
+      String[] externalRoleNames = externalUserMapper.getRoleNames( user );
 
-      HashSet roleNames = new HashSet(Arrays.asList(imcmsRoleNames)) ;
-      roleNames.addAll(Arrays.asList(otherRoleNames)) ;
+      String[] result = mergeAndDeleteDuplicates( imcmsRoleNames, externalRoleNames );
 
-      return (String[])roleNames.toArray( new String[ imcmsRoleNames.length + otherRoleNames.length ] ) ;
+      return result;
+   }
+
+   private String[] mergeAndDeleteDuplicates( String[] imcmsRoleNames, String[] externalRoleNames ) {
+      HashSet roleNames = new HashSet( Arrays.asList( imcmsRoleNames ) );
+      roleNames.addAll( Arrays.asList( externalRoleNames ) );
+      String[] result = (String[])roleNames.toArray( new String[imcmsRoleNames.length + externalRoleNames.length] );
+      return result;
+   }
+
+   public String[] getAllRoleNames() {
+      String[] imcmsRoleNames = imcmsAuthenticatorAndUserMapper.getAllRoleNames();
+      String[] externalRoleNames = externalUserMapper.getAllRoleNames();
+      String[] result = mergeAndDeleteDuplicates( imcmsRoleNames, externalRoleNames );
+      return result;
    }
 
    public class UserConflictException extends RuntimeException {

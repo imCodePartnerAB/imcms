@@ -1,12 +1,14 @@
 package imcode.server.user;
 
-import javax.naming.directory.*;
-import javax.naming.*;
-import java.util.Hashtable;
-import java.util.HashMap;
-import java.util.Properties;
-
 import org.apache.log4j.Logger;
+
+import javax.naming.*;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchResult;
+import java.util.HashMap;
+import java.util.Hashtable;
 
 /*
 The use of LDAP simple auth for secret data or update is NOT recommended.
@@ -58,15 +60,9 @@ public class LdapUserMapper implements UserMapper {
    private DirContext ctx = null;
    private String userIdentifier = null;
    private HashMap userFieldLdapMappings = null;
-   private String[] ldapAttributesAutoMappedToRoles;
 
-   public LdapUserMapper( String ldapServerURL,
-                          String ldapAuthenticationType,
-                          String ldapUserName,
-                          String ldapPassword,
-                          String[] ldapAttributesAutoMappedToRoles) throws LdapInitException {
+   public LdapUserMapper( String ldapServerURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword, String[] ldapAttributesAutoMappedToRoles ) throws LdapInitException {
 
-      this.ldapAttributesAutoMappedToRoles = ldapAttributesAutoMappedToRoles;
       userIdentifier = NONSTANDARD_USERID;
       userFieldLdapMappings = createLdapMappings();
 
@@ -108,12 +104,13 @@ public class LdapUserMapper implements UserMapper {
          result = createUserFromLdapSearchResult( searchResult );
 
          result.setLoginName( loginName );
-       }
+         result.setActive(true) ;
+      }
 
       return result;
    }
 
-   private User createUserFromLdapSearchResult( SearchResult searchResult) {
+   private User createUserFromLdapSearchResult( SearchResult searchResult ) {
       NamingEnumeration attribEnum = searchResult.getAttributes().getAll();
 
       HashMap ldapAttributeValues = new HashMap();
@@ -243,8 +240,12 @@ public class LdapUserMapper implements UserMapper {
 
    public String[] getRoleNames( User user ) {
       // todo Really get the roles from ldap
-      String[] result = new String[] { DEFAULT_LDAP_ROLE };
+      String[] result = new String[]{DEFAULT_LDAP_ROLE};
       return result;
+   }
+
+   public String[] getAllRoleNames() {
+      return new String[]{DEFAULT_LDAP_ROLE};
    }
 
 }

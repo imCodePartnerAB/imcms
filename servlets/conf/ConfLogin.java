@@ -646,41 +646,8 @@ public class ConfLogin extends Conference {
 	return vm ;
     }
 
-    /**
-       Creates a add new user sql string from the users information.
-    **/
-    private String createUserInfoString(Properties params, String newUserId) {
 
-	String sqlStr = "" ;
-	sqlStr += newUserId + ", " ;
-	sqlStr +=	"'" + params.getProperty("login_name") + "', "  ;
-	sqlStr += "'" + params.getProperty("password1") + "', ";
-	sqlStr +=	"'" + params.getProperty("first_name") + "', ";
-	sqlStr +=	"'" + params.getProperty("last_name") + "', ";
-	sqlStr +=	"'" + params.getProperty("title") + "', ";
-	sqlStr +=	"'" + params.getProperty("company") + "', ";
-	sqlStr +=	"'" + params.getProperty("address") + "', ";
-	sqlStr +=	"'" + params.getProperty("city") + "', ";
-	sqlStr +=	"'" + params.getProperty("zip") + "', ";
-	sqlStr +=	"'" + params.getProperty("country") + "', " ;
-	sqlStr +=	"'" + params.getProperty("country_council") + "', ";
-	sqlStr +=	"'" + params.getProperty("email") + "', ";
-
-	// Default values for external, last_page, archive_mode, lang_id
-	sqlStr +=	"0" + ", ";
-	sqlStr += "1001" + ", ";
-	sqlStr +=	"0" + ", ";
-	sqlStr +=	"1" + ", " ;     // 1 stands for sweden
-	sqlStr +=	"2" + ", " ;      // usertype. 0=special, 1=default, 2=conferenceuser
-	sqlStr += "1" ;            // 1 stands for active
-	// this.log("Userinfostring:" + sqlStr) ;
-	return sqlStr ;
-
-    } // End of extractUpdateUserSprocParametersFromProperties
-
-
-
-    /**
+   /**
        Returns a String, containing the userID in the request object.If something failes,
        a error page will be generated and null will be returned.
     */

@@ -1,14 +1,14 @@
 package imcode.server.user;
 
-import org.apache.log4j.Logger;
 import imcode.server.IMCServiceInterface;
+import org.apache.log4j.Logger;
 
 public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticator {
 
    private IMCServiceInterface service;
    private final Logger mainLog;
-   protected final static String ALWAYS_EXISTING_USERS_ROLE = "Users" ;
-   protected final static String ALWAYS_EXISTING_ADMIN_ROLE = "Superadmin" ;
+   protected final static String ALWAYS_EXISTING_USERS_ROLE = "Users";
+   protected final static String ALWAYS_EXISTING_ADMIN_ROLE = "Superadmin";
 
    public ImcmsAuthenticatorAndUserMapper( IMCServiceInterface service, Logger mainLog ) {
       this.service = service;
@@ -16,28 +16,25 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
    }
 
    public boolean authenticate( String loginName, String password ) {
-      boolean userExistsAndPasswordIsCorrect = false ;
+      boolean userExistsAndPasswordIsCorrect = false;
       User user = getUser( loginName );
-      if (null != user) {
+      if( null != user ) {
          String login_password_from_db = user.getPassword();
          String login_password_from_form = password;
 
          if( login_password_from_db.equals( login_password_from_form ) && user.isActive() ) {
-            mainLog.info( "->User " + loginName + " succesfully logged in." );
-            userExistsAndPasswordIsCorrect = true ;
+            userExistsAndPasswordIsCorrect = true;
          } else if( !user.isActive() ) {
-            mainLog.info( "->User " + (loginName) + " tried to logged in: User deleted!" );
-            userExistsAndPasswordIsCorrect  = false;
+            userExistsAndPasswordIsCorrect = false;
          } else {
-            mainLog.info( "->User " + (loginName) + " tried to logged in: Wrong password!" );
             userExistsAndPasswordIsCorrect = false;
          }
       }
 
-      return userExistsAndPasswordIsCorrect ;
+      return userExistsAndPasswordIsCorrect;
    }
 
-   public User getUser( String loginName) {
+   public User getUser( String loginName ) {
       loginName = loginName.trim();
 
       User result = null;
@@ -48,8 +45,8 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
 
          result = staticExtractUserFromStringArray( user_data );
 
-         if (null == result.getLangPrefix()) {
-            result.setLangPrefix(service.getLanguage()) ;
+         if( null == result.getLangPrefix() ) {
+            result.setLangPrefix( service.getLanguage() );
          }
 
          String[][] phoneNbr = service.sqlProcedureMulti( "GetUserPhoneNumbers " + user_data[0] );
@@ -73,9 +70,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
          result.setHomePhone( homePhone );
 
 
-
       } else {
-         mainLog.info( "->User " + (loginName) + " tried to logged in: User not found!" );
          result = null;
       }
 
@@ -104,7 +99,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
       result.setActive( 0 != Integer.parseInt( user_data[16] ) );
       result.setCreateDate( user_data[17] );
       result.setLangPrefix( user_data[14] );
-      result.setImcmsExternal( 0 != Integer.parseInt( user_data[18] ));
+      result.setImcmsExternal( 0 != Integer.parseInt( user_data[18] ) );
       return result;
    }
 
@@ -116,7 +111,6 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
       User result = getUser( user_data[1] );
       return result;
    }
-
 
 
    public void updateUser( String loginName, User newUserData ) {
@@ -132,52 +126,44 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
    public synchronized void addUser( User newUser ) {
       String updateUserPRCStr = "AddNewUser";
       String newUserId = service.sqlProcedureStr( "GetHighestUserId" );
-      int newIntUserId = Integer.parseInt(newUserId) ;
-      newUser.setUserId(newIntUserId) ;
+      int newIntUserId = Integer.parseInt( newUserId );
+      newUser.setUserId( newIntUserId );
       callModifyUserProcedure( updateUserPRCStr, newUser );
    }
 
 
    private void callModifyUserProcedure( String modifyUserProcedureName, User tempUser ) {
-      String[] params = {
-         String.valueOf(tempUser.getUserId()),
-         tempUser.getLoginName(),
-         null == tempUser.getPassword() ? "" : tempUser.getPassword(),
-         tempUser.getFirstName(),
-         tempUser.getLastName(),
-         tempUser.getTitle(),
-         tempUser.getCompany(),
-         tempUser.getAddress(),
-         tempUser.getCity(),
-         tempUser.getZip(),
-         tempUser.getCountry(),
-         tempUser.getCountyCouncil(),
-         tempUser.getEmailAddress(),
-         tempUser.isImcmsExternal()?"1":"0",
-         "1001",
-         "0",
-         String.valueOf(tempUser.getLangId()),
-         String.valueOf( tempUser.getUserType() ),
-         tempUser.isActive()?"1":"0" };
+      String[] params = {String.valueOf( tempUser.getUserId() ), tempUser.getLoginName(), null == tempUser.getPassword() ? "" : tempUser.getPassword(), tempUser.getFirstName(), tempUser.getLastName(), tempUser.getTitle(), tempUser.getCompany(), tempUser.getAddress(), tempUser.getCity(), tempUser.getZip(), tempUser.getCountry(), tempUser.getCountyCouncil(), tempUser.getEmailAddress(), tempUser.isImcmsExternal() ? "1" : "0", "1001", "0", String.valueOf( tempUser.getLangId() ), String.valueOf( tempUser.getUserType() ), tempUser.isActive() ? "1" : "0"};
       service.sqlUpdateProcedure( modifyUserProcedureName, params );
    }
 
    public String[] getRoleNames( User user ) {
-     String[] roleNames = service.sqlProcedure("GetUserRoles", new String[] { ""+user.getUserId() } ) ;
-     return roleNames ;
+      String[] roleNames = service.sqlProcedure( "GetUserRoles", new String[]{"" + user.getUserId()} );
+      return roleNames;
    }
 
-   public String[] getRoles() {
-      String[] roleNamesMinusUsers = service.sqlProcedure("GetAllRoles") ;
-      String[] roleNames = new String[roleNamesMinusUsers.length + 1] ;
-      roleNames[0] = ALWAYS_EXISTING_USERS_ROLE ;
+   public String[] getAllRoleNames() {
+      String[] roleNamesMinusUsers = service.sqlProcedure( "GetAllRoles" );
+      String[] roleNames = new String[roleNamesMinusUsers.length + 1];
+      roleNames[0] = ALWAYS_EXISTING_USERS_ROLE;
       for( int i = 0; i < roleNamesMinusUsers.length; i++ ) {
-         roleNames[i+1] = roleNamesMinusUsers[i];
+         roleNames[i + 1] = roleNamesMinusUsers[i];
       }
-      return roleNames ;
+      return roleNames;
    }
 
-   public void addRole( String roleName ) {
-      service.sqlUpdateProcedure("RoleAddNew",new String[] { roleName }) ;
+   public synchronized void addRole( String roleName ) {
+/*      String[] userId = service.sqlProcedure("RoleFindName", new String[] {roleName}) ;
+      boolean roleExists = -1 != Integer.parseInt(userId[0]) ;
+      if (!roleExists) {*/
+         service.sqlUpdateProcedure( "RoleAddNew", new String[]{roleName} );
+      //}
+   }
+
+   public void addRoleNames( String[] externalRoleNames ) {
+      for( int i = 0; i < externalRoleNames.length; i++ ) {
+         String externalRoleName = externalRoleNames[i];
+         this.addRole( externalRoleName );
+      }
    }
 }

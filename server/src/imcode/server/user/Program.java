@@ -1,10 +1,11 @@
 package imcode.server.user;
 
-import javax.naming.directory.*;
 import javax.naming.Context;
-import javax.naming.NamingException;
 import javax.naming.NamingEnumeration;
-import javax.naming.Name;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchControls;
 import java.util.Hashtable;
 
 public class Program {
@@ -22,7 +23,7 @@ public class Program {
       String name = "CN=Users, DC=imcode, DC=com";
       String filter = "samaccountname=chrham"; // See http://www.cis.ohio-state.edu/cs/Services/rfc/rfc-text/rfc2254.txt
 
-      NamingEnumeration namingEnumeration = ctx.search(name, filter, searchControls);
+      NamingEnumeration namingEnumeration = ctx.search( name, filter, searchControls );
       while( namingEnumeration.hasMoreElements() ) {
          Object o = namingEnumeration.nextElement();
          System.out.println( o.toString() );

@@ -1,20 +1,14 @@
 package imcode.server.user;
 
-import java.util.*;
-import java.lang.reflect.Field;
-
-import org.apache.log4j.*;
 import imcode.server.IMCServiceInterface;
+import org.apache.log4j.Logger;
+
+import java.util.Hashtable;
 
 public class User extends Hashtable {
 
    User() {
    }
-
-   private final static String CVS_REV = "$Revision$";
-   private final static String CVS_DATE = "$Date$";
-
-   private static Logger log = Logger.getLogger( User.class.getName() );
 
    /** Good stuff **/
    private int userId;
@@ -43,8 +37,7 @@ public class User extends Hashtable {
    private int template_group = -1;
    private String loginType;
 
-   private IMCServiceInterface serverObject;
-   private boolean imcmsExternal = false ;
+   private boolean imcmsExternal = false;
 
    /**
     get user-id
@@ -385,7 +378,7 @@ public class User extends Hashtable {
       return this.imcmsExternal;
    }
 
-   public void setImcmsExternal( boolean external ){
+   public void setImcmsExternal( boolean external ) {
       this.imcmsExternal = external;
    }
 }

@@ -158,9 +158,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       }
 
       boolean userAuthenticates = imcmsAndLdapAuthAndMapper.authenticate( login, password );
+      User user = imcmsAndLdapAuthAndMapper.getUser( login );
       if( userAuthenticates ) {
-         result = imcmsAndLdapAuthAndMapper.getUser( login );
+         result = user;
+         mainLog.info( "->User '" + (login) + "' successfully logged in." );
+      } else if( null == user ) {
+         mainLog.info( "->User '" + (login) + "' failed to log in: User not found." );
+      } else if( !user.isActive() ) {
+         mainLog.info( "->User '" + (login) + "' failed to log in: User deactivated." );
+      } else {
+         mainLog.info( "->User '" + (login) + "' failed to log in: Wrong password." );
       }
+
       return result;
    }
 

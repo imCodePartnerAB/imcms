@@ -1,23 +1,33 @@
 package imcode.server.user;
 
-import imcode.server.*;
-import imcode.server.parser.ParserParameters;
-import imcode.server.parser.Document;
+import com.mockobjects.ExpectationList;
+import com.mockobjects.MockObject;
 import imcode.readrunner.ReadrunnerUserData;
+import imcode.server.*;
+import imcode.server.parser.Document;
+import imcode.server.parser.ParserParameters;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.shop.ShoppingOrderSystem;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
-class MockIMCServiceInterface implements IMCServiceInterface {
+class MockIMCServiceInterface extends MockObject implements IMCServiceInterface {
 
-   private String[][] expectedSQLResult;
-   private int resultIndex = 0;
-   public void setExpectedSQLResult( String[][] expectedSQLResult ) {
-      this.expectedSQLResult = expectedSQLResult;
-      resultIndex = 0 ;
+   private final ExpectationList sqlProcedureCalls = new ExpectationList( "sqlProcedureCalls" );
+
+   private final ExpectationList sqlUpdateProcedureCalls = new ExpectationList( "sqlUpdateProcedureCalls" );
+
+   private ArrayList expectedSQLResults = new ArrayList();
+
+   public void addExpectedSQLProcedureCall( String sqlProcedure, String[] sqlResult ) {
+      this.sqlProcedureCalls.addExpected( sqlProcedure );
+      expectedSQLResults.add( sqlResult );
+   }
+
+   public void addExpectedSQLUpdateProcedureCall( String sqlUpdateProcedure ) {
+      this.sqlUpdateProcedureCalls.addExpected( sqlUpdateProcedure );
    }
 
    public User verifyUser( String login, String password ) {
@@ -135,12 +145,13 @@ class MockIMCServiceInterface implements IMCServiceInterface {
 
    // Send a procedure to the database and return a string array
    public String[] sqlProcedure( String procedure ) {
-      return sqlProcedure( procedure, new String[0]) ;
+      return sqlProcedure( procedure, new String[0] );
    }
 
    // Send a procedure to the database and return a string array
    public String[] sqlProcedure( String procedure, String[] params ) {
-      return expectedSQLResult[resultIndex++];
+      this.sqlProcedureCalls.addActual( procedure );
+      return (String[])expectedSQLResults.remove( 0 );
    }
 
    // Send a procedure to the database and return a string array
@@ -165,12 +176,13 @@ class MockIMCServiceInterface implements IMCServiceInterface {
 
    // Send a update procedure to the database
    public int sqlUpdateProcedure( String procedure ) {
-      return 0;
+      return sqlUpdateProcedure( procedure, new String[0] );
    }
 
    // Send a update procedure to the database
    public int sqlUpdateProcedure( String procedure, String[] params ) {
-      return 1;
+      sqlUpdateProcedureCalls.addActual( procedure );
+      return 0;
    }
 
    // Parse doc replace variables with data, uses two vectors

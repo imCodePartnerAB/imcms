@@ -1,0 +1,17 @@
+Akut
+- Testa borttagning av user (och roller?) som tas bort ur LDAP
+
+Snarast
+- Gå igenom koden och ta bort alla depricated SQL grejer
+- Gå igenom hela koden och flytta alla användning av User relaterade saker till samma ställe(n)
+- Bestäm en strategi hur bilbord, chat etc ska behandlas vid förändringar.
+
+Eventuellt
+- Testa SSL och LDAP
+
+Skulle vara bra när som helst
+- Gå igenom koden och ta bort all kod som inte används. Använd verktyg
+- Gå igenom koden och se till att trådsäkra alla anrop av typen där det sker två SQL androp efter varandra utan att det är skyddat
+- Döp om GetAllRoles, och/eller ändra på anropen till denna så att de inte förutsätter att "users" rollen ej kommer med
+- Ta bort langID ur hela applikationen
+- Ta bort hårdkodning av UserAdmin???
