@@ -120,99 +120,37 @@ public class ChangeImage extends HttpServlet {
 		
 		
 		
-		//*lets get some path we need later on
-		File file_path = image_path ;
-		String canon_path = file_path.getCanonicalPath();//ex: C:\Tomcat3\webapps\imcms\images
-		String root_dir_parent = file_path.getParent();//ex: c:\Tomcat3\webapps\imcms
-		String root_dir_name = canon_path.substring(root_dir_parent.length());
-		if (root_dir_name.startsWith(File.separator))
-		{
-			root_dir_name = root_dir_name.substring(File.separator.length());
-			//ex: root_dir_name = images
-		}		
+		//*lets get the root_dir_name that we need later on
+		String root_dir_name = image_path.getName();
+
 		//*lets get the dirlist, and add the rootdir to it
-		List imageFolders = GetImages.getImageFolders(file_path, true) ;
-		imageFolders.add(0,file_path);
-				
-		//ok we have the list, now lets setup the option list
+		List imageFolders = GetImages.getImageFolders(image_path, true) ;
+		imageFolders.add(0,image_path);
+	
+		//ok we have the list, now lets setup the option list to send to browser
 		StringBuffer folderOptions = new StringBuffer();
-		for(int i=0;i<imageFolders.size();i++)
-		{
-			File fileObj = (File) imageFolders.get(i);						
-			//ok lets set up the folder name to show and the one to put as value
-			String optionName = fileObj.getCanonicalPath();
-			//lets remove the start of the path so we end up at the rootdir. 
-			if (optionName.startsWith(canon_path))
-			{
-				optionName = optionName.substring(root_dir_parent.length()) ;
-				if (optionName.startsWith(File.separator))
-				{
-					optionName = optionName.substring(File.separator.length()) ;
-				}
-			}else if(optionName.startsWith(File.separator))
-			{
-				optionName = optionName.substring(File.separator.length()) ;
-			}			
-			//the path to put in the option value
-			String optionPath = optionName;
-			if (optionPath.startsWith(root_dir_name))
-			{
-				optionPath = optionPath.substring(root_dir_name.length());
-			}
-			System.out.println("optionPath: "+optionPath);
-			//ok now we have to replace all parent folders with a '-' char
-			StringTokenizer token = new StringTokenizer(optionName,"\\",false);
-			StringBuffer buff = new StringBuffer("");
-			if (token.countTokens() > 2)
-			{
-				//lets only allowe one dir down from imageroot
-				break;
-			}
-			while ( token.countTokens() > 1 )
-			{
-				String temp = token.nextToken();
-				buff.append("&nbsp;&nbsp;-");				
-			}			
-			if (token.countTokens() > 0)
-			{
-				optionName = buff.toString()+token.nextToken();
-			}			
-			File urlFile = new File(optionName) ;
-			String fileName = urlFile.getName() ;
-			File parentDir = urlFile.getParentFile() ;			
-			if (parentDir != null)
-			{
-				optionName = parentDir.getPath()+"/" ;
-			}
-			else
-			{
-				optionName = "" ;
-			}			
-			//filepathfix ex: images\nisse\kalle.gif to images/nisse/kalle.gif
-			optionName = optionName.replace(File.separatorChar,'/')+fileName ;			
-			StringTokenizer tokenizer = new StringTokenizer(optionName, "/", true);
-			StringBuffer filePathSb = new StringBuffer();
-			StringBuffer displayFolderName = new StringBuffer();
-			//the URLEncoder.encode() method replaces '/' whith "%2F" and the can't be red by the browser
-			//that's the reason for the while-loop. 
-			while ( tokenizer.countTokens() > 0 )
-			{
-				String temp = tokenizer.nextToken();
-				if (temp.length() > 1)
-				{	
-					filePathSb.append(java.net.URLEncoder.encode(temp));
-				}else
-				{
-					filePathSb.append(temp);
-				}
-			}	
-			optionName = optionName.replace('-','\\');//Gud strul					
-			String parsedFilePath = filePathSb.toString() ;
-			folderOptions.append("<option value=\"" + optionPath + "\">" + optionName + "</option>\r\n");	
-			session.setAttribute("imageFolderOptionList",folderOptions.toString());
-		}//end for loop
-		
-				
+		Iterator iter = imageFolders.iterator();
+		while (iter.hasNext()){
+					
+			File fileObj = (File) iter.next();
+			String optionValue, optionName;		   	
+			//OBS! we only allowe on directory down from imageRoot,
+			//so the current "directory" or the "parent" must be equal to root_dir_name
+			//lets start and see if the parent is root_dir				
+			if (  root_dir_name.equals(fileObj.getParentFile().getName()) ){
+				optionValue = "\\"+fileObj.getName();
+				optionName = "&nbsp;&nbsp;\\"+fileObj.getName();
+			}else if( root_dir_name.equals(fileObj.getName()) ){
+				optionValue = "";
+				optionName = fileObj.getName();
+			}else{
+				continue;
+			}		
+		 							
+			folderOptions.append("<option value=\"" + optionValue + "\">" + optionName + "</option>\r\n");	
+		}//end while loop		
+		session.setAttribute("imageFolderOptionList",folderOptions.toString());
+					
 		
 		String sqlStr = "select image_name,imgurl,width,height,border,v_space,h_space,target,target_name,align,alt_text,low_scr,linkurl from images where meta_id = "+meta_id+" and name = "+img_no ;
 		String[] sql = IMCServiceRMI.sqlQuery(imcserver,sqlStr) ;
