@@ -13,6 +13,26 @@ public class DocumentService {
     private DocumentPermissionSetMapper documentPermissionSetMapper;
     private UserAndRoleMapper userAndRoleMapper;
 
+    Document createDocumentOfSubtype(DocumentDomainObject doc) {
+        Document result;
+        switch( doc.getDocumentType() ) {
+            case DocumentDomainObject.DOCTYPE_TEXT:
+                result = new TextDocument( doc, securityChecker, this, documentMapper,
+                                                documentPermissionSetMapper, userAndRoleMapper );
+                break;
+            case DocumentDomainObject.DOCTYPE_URL:
+                result = new UrlDocument( doc, securityChecker, this, documentMapper,
+                                                documentPermissionSetMapper, userAndRoleMapper );
+                break;
+            default:
+                result = new Document( doc, securityChecker, this, documentMapper,
+                                                documentPermissionSetMapper, userAndRoleMapper );
+                break;
+        }
+        return result;
+    }
+
+  
     public DocumentService( SecurityChecker securityChecker, DocumentMapper documentMapper,
                             DocumentPermissionSetMapper documentPermissionSetMapper,
                             UserAndRoleMapper userAndRoleMapper ) {
@@ -31,22 +51,8 @@ public class DocumentService {
      *          If the current user dosen't have the rights to read this document.
      */
     public Document getDocument( int documentId ) throws NoPermissionException {
-        Document result;
         DocumentDomainObject doc = documentMapper.getDocument( documentId );
-        switch( doc.getDocumentType() ) {
-            case DocumentDomainObject.DOCTYPE_TEXT:
-                result = new TextDocument( doc, securityChecker, this, documentMapper,
-                                                documentPermissionSetMapper, userAndRoleMapper );
-                break;
-            case DocumentDomainObject.DOCTYPE_URL:
-                result = new UrlDocument( doc, securityChecker, this, documentMapper,
-                                                documentPermissionSetMapper, userAndRoleMapper );
-                break;
-            default:
-                result = new Document( doc, securityChecker, this, documentMapper,
-                                                documentPermissionSetMapper, userAndRoleMapper );
-                break;
-        }
+        Document result = createDocumentOfSubtype(doc);
         securityChecker.hasAtLeastDocumentReadPermission( result );
         return result;
     }
@@ -59,14 +65,8 @@ public class DocumentService {
      *          If the current user dosen't have the rights to read this document.
      */
     public TextDocument getTextDocument( int documentId ) throws NoPermissionException {
-        DocumentDomainObject doc = documentMapper.getDocument( documentId );
-        if( DocumentDomainObject.DOCTYPE_TEXT != doc.getDocumentType() ) {
-            throw new ClassCastException("The document (" + documentId + ") is not a TextDocument.");
-        }
-        TextDocument result = new TextDocument( doc, securityChecker, this, documentMapper,
-                                                documentPermissionSetMapper, userAndRoleMapper );
-        securityChecker.hasAtLeastDocumentReadPermission( result );
-        return result;
+        Document doc = getDocument( documentId );
+        return (TextDocument)doc;
     }
 
     /**
@@ -76,14 +76,8 @@ public class DocumentService {
      *          If the current user dosen't have the rights to read this document.
      */
     public UrlDocument getUrlDocument( int documentId ) throws NoPermissionException {
-        DocumentDomainObject doc = documentMapper.getDocument( documentId );
-        if( DocumentDomainObject.DOCTYPE_URL != doc.getDocumentType() ) {
-            throw new ClassCastException("The document (" + documentId + ") is not a TextDocument.");
-        }
-        UrlDocument result = new UrlDocument( doc, securityChecker, this, documentMapper,
-                                                documentPermissionSetMapper, userAndRoleMapper );
-        securityChecker.hasAtLeastDocumentReadPermission( result );
-        return result;
+        Document doc = getDocument( documentId );
+        return (UrlDocument)doc;
     }
 
     public UrlDocument createNewUrlDocument( int parentId, int parentMenuNumber )  throws NoPermissionException {
@@ -184,9 +178,7 @@ public class DocumentService {
             Document[] documents = new Document[documentDomainObjects.length];
             for ( int i = 0; i < documentDomainObjects.length; i++ ) {
                 DocumentDomainObject documentDomainObject = documentDomainObjects[i];
-                documents[i] =
-                new Document( documentDomainObject, securityChecker, this, documentMapper, documentPermissionSetMapper,
-                              userAndRoleMapper );
+                documents[i] = createDocumentOfSubtype( documentDomainObject );
             }
             return documents;
         } catch ( IOException e ) {

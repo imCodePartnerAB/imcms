@@ -55,8 +55,8 @@ public class TextDocument extends Document {
         Integer includedDocumentMetaId = (Integer) includedDocumentIds.get(new Integer(includeIndexInDocument));
         if (null != includedDocumentMetaId) {
             DocumentDomainObject includedDocument = documentMapper.getDocument(includedDocumentMetaId.intValue());
-            if (null != includedDocument && DocumentDomainObject.DOCTYPE_TEXT == includedDocument.getDocumentType()) {
-                return new TextDocument(includedDocument, securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper);
+            if (null != includedDocument ) {
+                return documentService.createDocumentOfSubtype( includedDocument );
             }
         }
         return null;
@@ -174,7 +174,7 @@ public class TextDocument extends Document {
 
         public MenuItem(MenuItemDomainObject internalMenuItem) {
             this.internalMenuItem = internalMenuItem;
-            child = new Document(internalMenuItem.getDocument(), securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper);
+            child = documentService.createDocumentOfSubtype( internalMenuItem.getDocument() );
         }
 
         public Document getDocument() {
@@ -289,7 +289,7 @@ public class TextDocument extends Document {
             Document[] documents = new Document[menuItemDomainObjects.length];
             for (int i = 0; i < menuItemDomainObjects.length; i++) {
                 MenuItemDomainObject menuItemDomainObject = menuItemDomainObjects[i];
-                documents[i] = new Document(menuItemDomainObject.getDocument(), securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper);
+                documents[i] = documentService.createDocumentOfSubtype(menuItemDomainObject.getDocument());
             }
             return documents;
         }
