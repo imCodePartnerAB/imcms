@@ -1,4 +1,7 @@
-<%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
+<%@ page import="com.imcode.imcms.api.*,
+                 java.util.SortedMap,
+                 java.util.Iterator,
+                 java.util.Map" errorPage="error.jsp" %>
 <%!
     int documentId = 1001 ;
     int imageIndex = 2 ;
@@ -24,7 +27,17 @@ Image <%= imageIndex %> in document <%= documentId %> has content:<br>
 <%} else { %>
     <%= "No image found at index " + imageIndex + " in document with id " + documentId %>
 <%}%>
+
+<br><br>
+All images used in the document:
 <%
+    SortedMap images = document.getImages();
+    for (Iterator imagesEntries = images.entrySet().iterator(); imagesEntries.hasNext();) {
+        Map.Entry entry = (Map.Entry) imagesEntries.next();
+        Integer index = (Integer) entry.getKey();
+        Image tempImage = (Image) entry.getValue();
+        %><p>Image <%=index%>'s source is :<br> <%=tempImage.getSrc()%></p><%
+    }
 %>
 </body>
 </html>

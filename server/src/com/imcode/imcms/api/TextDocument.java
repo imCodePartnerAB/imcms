@@ -8,34 +8,111 @@ import imcode.server.*;
 
 import java.util.*;
 
+import org.apache.commons.collections.*;
+import org.apache.commons.collections.functors.CloneTransformer;
+import org.apache.commons.collections.map.TransformedSortedMap;
+
 public class TextDocument extends Document {
 
     TextDocument(TextDocumentDomainObject document, IMCServiceInterface service, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper) {
         super(document, service, securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper);
     }
 
-    public TextField[] getTextFields() {
-        Map textFieldsMap = getInternalTextDocument().getTexts();
-        Set keys = textFieldsMap.keySet();
-        Iterator iter = keys.iterator();
-
-        List textFieldsList = new ArrayList();
-        while (iter.hasNext()) {
-            Integer index = (Integer) iter.next();
-            TextDomainObject tempTextField = (TextDomainObject) textFieldsMap.get( index );
-            boolean nonEmptyTextField = !"".equals(tempTextField.getText());
-            if ( nonEmptyTextField ) {
-                textFieldsList.add(new TextField(tempTextField, index.intValue() ));
+    /**
+     * @return A SortedMap that contains the textFileds index as keys, and instaces of TextFields as values. Only the
+     *         TextFields that contains any text is returned.
+     */
+    public SortedMap getTextFields() {
+        Predicate predicate = new Predicate() {
+            public boolean evaluate(Object o) {
+                Map.Entry entry = (Map.Entry) o;
+                TextDomainObject tempTextField = (TextDomainObject) entry.getValue();
+                return !"".equals(tempTextField.getText());
             }
+        };
+
+        Transformer fromDomainToAPITransformer = new Transformer() {
+            public Object transform(Object o) {
+                TextDomainObject tempTextField = (TextDomainObject) o;
+                return new TextField(tempTextField);
+            }
+        };
+
+        Map textFieldsMap = getInternalTextDocument().getTexts();
+
+        return FilterAndConvertValues(textFieldsMap, predicate, fromDomainToAPITransformer);
+
+    }
+
+    /**
+     * @return A SortedMap that contains the images index as keys, and instaces of Image as values. Only the
+     *         Image that has an url is returned.
+     */
+    public SortedMap getImages() {
+        Predicate predicate = new Predicate() {
+            public boolean evaluate(Object o) {
+                Map.Entry entry = (Map.Entry) o;
+                ImageDomainObject tempImage = (ImageDomainObject) entry.getValue();
+                return !"".equals(tempImage.getUrl());
+            }
+        };
+
+        Transformer fromDomainToAPITransformer = new Transformer() {
+            public Object transform(Object o) {
+                ImageDomainObject tempImage = (ImageDomainObject) o;
+                return new Image(tempImage);
+            }
+        };
+
+        Map imagesMap = getInternalTextDocument().getImages();
+
+        return FilterAndConvertValues(imagesMap, predicate, fromDomainToAPITransformer);
+
+    }
+
+    /**
+     * @return A SortedMap that contains the index of the include as keys, and instaces of Document as values. Only the
+     *         includes that has a document is returned.
+     */
+    public SortedMap getIncludes() {
+        Predicate predicate = new Predicate() {
+            public boolean evaluate(Object o) {
+                Map.Entry entry = (Map.Entry) o;
+                Integer tempMetaId = (Integer) entry.getValue();
+                return null != tempMetaId;
+            }
+        };
+
+        Transformer fromDomainToAPITransformer = new Transformer() {
+            public Object transform(Object o) {
+                Integer tempMetaId = (Integer) o;
+
+                return documentService.wrapDocumentDomainObject(documentMapper.getDocument(tempMetaId.intValue()));
+            }
+        };
+
+        Map includeMap = getInternalTextDocument().getIncludes();
+
+        return FilterAndConvertValues(includeMap, predicate, fromDomainToAPITransformer);
+
+    }
+
+    private SortedMap FilterAndConvertValues(Map textFieldsMap, Predicate predicate, Transformer fromDomainToAPITransformer) {
+        Collection nonEmptyTextFields = CollectionUtils.select(textFieldsMap.entrySet(), predicate);
+        final SortedMap sortedMap = TransformedSortedMap.decorate(new TreeMap(), CloneTransformer.INSTANCE, fromDomainToAPITransformer);
+
+        for (Iterator iterator = nonEmptyTextFields.iterator(); iterator.hasNext();) {
+            Map.Entry entry = (Map.Entry) iterator.next();
+            sortedMap.put(entry.getKey(), entry.getValue());
         }
-        Collections.sort( textFieldsList, new TextField.IndexComparator() );
-        return (TextField[]) textFieldsList.toArray(new TextField[textFieldsList.size()]);
+
+        return sortedMap;
     }
 
     public TextField getTextField(int textFieldIndexInDocument) throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
         TextDomainObject imcmsText = getInternalTextDocument().getText(textFieldIndexInDocument);
-        TextField textField = new TextField(imcmsText, textFieldIndexInDocument );
+        TextField textField = new TextField(imcmsText);
         return textField;
     }
 
@@ -53,8 +130,8 @@ public class TextDocument extends Document {
 
     private void setTextField(int textFieldIndexInDocument, String newText, int textType) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
-        TextDomainObject imcmsText = new TextDomainObject( newText, textType);
-        getInternalTextDocument().setText( textFieldIndexInDocument, imcmsText );
+        TextDomainObject imcmsText = new TextDomainObject(newText, textType);
+        getInternalTextDocument().setText(textFieldIndexInDocument, imcmsText);
     }
 
     /**
@@ -95,7 +172,7 @@ public class TextDocument extends Document {
         securityChecker.hasAtLeastDocumentReadPermission(this);
         ImageDomainObject imageDomainObject = getInternalTextDocument().getImage(imageIndexInDocument);
         if (null != imageDomainObject) {
-            return new Image(imageDomainObject, service);
+            return new Image(imageDomainObject);
         } else {
             return null;
         }
@@ -193,23 +270,9 @@ public class TextDocument extends Document {
 
     public static class TextField {
         private TextDomainObject imcmsText;
-        private int index;
 
-        public int getIndex() {
-            return index;
-        }
-
-        static class IndexComparator implements java.util.Comparator {
-            public int compare(Object o1, Object o2) {
-                TextField t1 = (TextField) o1;
-                TextField t2 = (TextField) o2;
-                return t1.getIndex() - t2.getIndex();
-            }
-        }
-
-        private TextField(TextDomainObject imcmsText, int index ) {
+        private TextField(TextDomainObject imcmsText) {
             this.imcmsText = imcmsText;
-            this.index = index;
         }
 
         /**

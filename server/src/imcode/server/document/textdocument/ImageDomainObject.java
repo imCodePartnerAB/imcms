@@ -9,7 +9,6 @@ package imcode.server.document.textdocument;
 import java.io.Serializable;
 
 public class ImageDomainObject implements Serializable {
-
     private String url;
     private String name;
     private int width;
@@ -118,5 +117,4 @@ public class ImageDomainObject implements Serializable {
     public void setLinkUrl( String image_ref_link ) {
         this.linkUrl = image_ref_link;
     }
-
 }

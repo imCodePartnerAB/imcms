@@ -68,7 +68,7 @@ Get the first text field from the document, <%= makeLinks("document_get_texts_fr
 Change the first and the second field, <%= makeLinks("document_set_text_field.jsp") %><br>
 Clear the first and the second field, </a><%= makeLinks("document_clear_text_field.jsp") %><br>
 <br>
-Get image no 2 from the document, <%= makeLinks("document_get_image.jsp") %><br>
+Get image no 2 from the document, <%= makeLinks("document_get_images.jsp") %><br>
 Set image no 2 in the document, use one image from the image folder, <%= makeLinks("document_set_image.jsp") %><br>
 <br>
 Get the first menu from the document, <%= makeLinks("document_get_menu.jsp") %><br>
@@ -76,7 +76,7 @@ Add a document to a menu, <%= makeLinks("document_add_to_menu.jsp") %><br>
 Remove a document from a menu, <%= makeLinks("document_remove_from_menu.jsp") %><br>
 Set the sort order of all menus in a document, <%= makeLinks("document_set_sortorder.jsp") %><br>
 <br>
-Get the first include from the document, <%= makeLinks("document_get_include.jsp") %><br>
+Get the first include from the document, <%= makeLinks("document_get_includes.jsp") %><br>
 Change the first include, <%= makeLinks("document_set_include.jsp") %><br>
 Clear the first include, <%= makeLinks("document_clear_include.jsp") %><br>
 <br>

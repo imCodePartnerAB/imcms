@@ -1,9 +1,6 @@
 <%@ page import="com.imcode.imcms.api.*,
-                 java.util.Map,
-                 java.util.Iterator,
-                 java.util.Collection,
                  imcode.server.document.textdocument.TextDomainObject,
-                 java.util.Set" errorPage="error.jsp" %>
+                 java.util.*" errorPage="error.jsp" %>
 
 <%!
     int documentId = 1001 ;
@@ -20,11 +17,13 @@ Text field <%= textFieldIndex %> in document <%= documentId %> has content:<br>
 %>
 
 <br><br>
-All the text fields content:
+All the text fields used in the document:
 <%
-    TextDocument.TextField[] texts = document.getTextFields();
-    for (int i = 0; i < texts.length; i++) {
-       TextDocument.TextField tempTextField = texts[i];
-       %><p>Text field <%=tempTextField.getIndex()%> has content:<br> <%=tempTextField.getHtmlFormattedText()%></p><%
+    SortedMap texts = document.getTextFields();
+    for (Iterator textFieldsEntries = texts.entrySet().iterator(); textFieldsEntries.hasNext();) {
+        Map.Entry entry = (Map.Entry) textFieldsEntries.next();
+        Integer index = (Integer) entry.getKey();
+        TextDocument.TextField tempTextField = (TextDocument.TextField) entry.getValue();
+        %><p>Text field <%=index%> has content:<br> <%=tempTextField.getHtmlFormattedText()%></p><%
     }
 %>

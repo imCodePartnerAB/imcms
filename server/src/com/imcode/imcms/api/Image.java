@@ -1,17 +1,15 @@
 package com.imcode.imcms.api;
 
-import imcode.server.IMCServiceInterface;
+import imcode.server.ApplicationServer;
 import imcode.server.document.textdocument.*;
 import imcode.server.document.textdocument.ImageDomainObject;
 
 public class Image {
 
-    private imcode.server.document.textdocument.ImageDomainObject internalImage;
-    private IMCServiceInterface service;
+    private ImageDomainObject internalImage;
 
-    Image( imcode.server.document.textdocument.ImageDomainObject internalImage, IMCServiceInterface service ) {
+    Image(ImageDomainObject internalImage) {
         this.internalImage = internalImage;
-        this.service = service;
     }
 
     public String getName() {    // html imagetag name
@@ -19,7 +17,13 @@ public class Image {
     }
 
     public String getSrcUrl() { // image srcurl relative webapp ( /imcms/images/theimage.gif )
-        return service.getImageUrl() + internalImage.getUrl();
+        String result = "";
+        if( !"".equals(internalImage.getUrl())){
+            result =  ApplicationServer.getIMCServiceInterface().getImageUrl() + internalImage.getUrl();
+        }
+
+
+        return result;
     }
 
     public String getSrc() { // image srcurl,  relative imageurl
@@ -88,17 +92,14 @@ public class Image {
 
     public void setVspace( int v_space ) {
         internalImage.setVerticalSpace( v_space );
-        ;
     }
 
     public void setHspace( int h_space ) {
         internalImage.setHorizontalSpace( h_space );
-        ;
     }
 
     public void setLinkTarget( String target ) {
         internalImage.setTarget( target );
-        ;
     }
 
     /** @deprecated Use {@link #setLinkTarget(java.lang.String)} **/
@@ -108,7 +109,6 @@ public class Image {
 
     public void setAlign( String align ) {
         internalImage.setAlign( align );
-        ;
     }
 
     public void setAltText( String alt_text ) {
