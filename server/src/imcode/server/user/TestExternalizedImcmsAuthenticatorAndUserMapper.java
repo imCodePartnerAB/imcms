@@ -50,7 +50,6 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
    public void testLdapOnlyExisting() {
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, new String[]{} );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE} );
 
       User user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
 
@@ -62,7 +61,6 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE} );
 
       User user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
 
@@ -82,6 +80,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
 
       assertTrue( Arrays.asList( userRoles ).contains( ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE ) );
       assertTrue( Arrays.asList( userRoles ).contains( LdapUserMapper.DEFAULT_LDAP_ROLE ) );
+      assertFalse( Arrays.asList( userRoles ).contains( null ) );
       mockImcmsService.verify();
    }
 
@@ -100,4 +99,6 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       assertTrue( Arrays.asList( roles ).contains( LdapUserMapper.DEFAULT_LDAP_ROLE ) );
       mockImcmsService.verify();
    }
+
+
 }

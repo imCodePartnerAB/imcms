@@ -10,6 +10,8 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
    protected final static String ALWAYS_EXISTING_USERS_ROLE = "Users";
    protected final static String ALWAYS_EXISTING_ADMIN_ROLE = "Superadmin";
 
+   Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserMapper.class ) ;
+
    public ImcmsAuthenticatorAndUserMapper( IMCServiceInterface service, Logger mainLog ) {
       this.service = service;
       this.mainLog = mainLog;
@@ -169,6 +171,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
 
    public void assignRoleToUser( User user, String roleName ) {
       String userIdStr = String.valueOf(user.getUserId()) ;
+      log.debug("Trying to assign role "+roleName+" to user "+user.getLoginName()) ;
       String rolesIdStr = service.sqlProcedureStr("GetRoleIdByRoleName", new String[]{roleName});
       service.sqlUpdateProcedure( "AddUserRole", new String[]{ userIdStr, rolesIdStr } ) ;
    }

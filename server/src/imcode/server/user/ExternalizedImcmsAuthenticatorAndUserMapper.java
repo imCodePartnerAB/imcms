@@ -1,5 +1,7 @@
 package imcode.server.user;
 
+import org.apache.log4j.Logger;
+
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -9,7 +11,12 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
    private UserMapper externalUserMapper;
    private String defaultLanguage;
 
-   public ExternalizedImcmsAuthenticatorAndUserMapper( ImcmsAuthenticatorAndUserMapper imcms, Authenticator externalAuthenticator, UserMapper externalUserMapper, String defaultLanguage ) {
+   Logger log = Logger.getLogger( ExternalizedImcmsAuthenticatorAndUserMapper.class ) ;
+
+   public ExternalizedImcmsAuthenticatorAndUserMapper( ImcmsAuthenticatorAndUserMapper imcms,
+                                                       Authenticator externalAuthenticator,
+                                                       UserMapper externalUserMapper,
+                                                       String defaultLanguage ) {
       this.imcmsAuthenticatorAndUserMapper = imcms;
       this.externalAuthenticator = externalAuthenticator;
       this.externalUserMapper = externalUserMapper;
@@ -86,7 +93,9 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
 
 
    private void updateRoleAssignments( User user ) {
-      String[] roleNames = getRoleNames( user );
+      imcmsAuthenticatorAndUserMapper.assignRoleToUser( user, ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE );
+
+      String[] roleNames = externalUserMapper.getRoleNames( user );
       for( int i = 0; i < roleNames.length; i++ ) {
          String roleName = roleNames[i];
          imcmsAuthenticatorAndUserMapper.assignRoleToUser( user, roleName );
@@ -118,7 +127,7 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
       String[] externalRoleNames = externalUserMapper.getRoleNames( user );
 
       String[] result = mergeAndDeleteDuplicates( imcmsRoleNames, externalRoleNames );
-
+      log.debug("Roles from imcms and external: "+Arrays.asList(result)) ;
       return result;
    }
 
