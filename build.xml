@@ -194,6 +194,7 @@
             description="Defines global filters.">
 
         <!-- Global filters -->
+        <filter token="defaultlanguage"     value="${defaultlanguage}"/>
         <filter token="rooturl"             value="${rooturl}"/>
         <filter token="servleturl"          value="${servleturl}"/>
         <filter token="loginurl"            value="${loginurl}"/>
@@ -466,7 +467,7 @@
 
     <!-- Generates the sql-scripts -->
     <target name="sql" depends="init,check-webappname,tools" description="Concatenates the SQL-scripts into one large script.">
-	<cat destfile="${dist-sql}" orderby="path" filtering="true">
+	<cat destfile="${java.io.tmpdir}/imcms${versionfilesuffix}.sql" orderby="path" filtering="true">
 	    <fileset dir="sql/tables" includes="tables.ascii.sql"/>
 	    <fileset dir="sql/sprocs"/>
 	    <fileset dir="sql/data" includes="types.sql"/>
@@ -476,8 +477,13 @@
 	<cat destfile="${sprocs-sql}" orderby="path" filtering="true">
 	    <fileset dir="sql/sprocs"/>
 	</cat>
-    </target>
 
+    <imtranslate bundle="sql/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${dist}" filtering="true">
+            <fileset dir="${java.io.tmpdir}" includes="imcms${versionfilesuffix}.sql"/>
+    </imtranslate>
+    </target>
 
     <!-- Builds the 'non-servlets'. -->
     <target name="server" depends="init,dir">
@@ -736,11 +742,13 @@
             <classpath refid="classes-and-libraries"/>
         </javac>
 
-        <copy todir="${conference-templates}" filtering="true">
+        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${conference-templates}" filtering="true">
             <fileset dir="templates/sv/conf" excludes="original/images/"/>
-        </copy>
+        </imtranslate>
 
-        <copy todir="${imcmsimages}/${defaultlanguage}/102/original">
+       <copy todir="${imcmsimages}/${defaultlanguage}/102/original">
             <fileset dir="templates/sv/conf/original/images" includes="*"/>
         </copy>
 
@@ -765,12 +773,11 @@
             <classpath refid="classes-and-libraries"/>
         </javac>
 
-        <copy todir="${chat-templates}/original" filtering="true">
-            <fileset dir="templates/sv/chat/original"/>
-        </copy>
-        <copy todir="${chat-templates}" filtering="true">
-            <fileset dir="templates/sv/chat" excludes="original/"/>
-        </copy>
+        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${chat-templates}" filtering="true">
+            <fileset dir="templates/sv/chat"/>
+        </imtranslate>
 
     </target>
 
@@ -793,12 +800,11 @@
             <classpath refid="classes-and-libraries"/>
         </javac>
 
-        <copy todir="${billboard-templates}/original" filtering="true">
-            <fileset dir="templates/sv/billboard/original" excludes="images/"/>
-        </copy>
-        <copy todir="${billboard-templates}" filtering="true">
-            <fileset dir="templates/sv/billboard" excludes="original/"/>
-        </copy>
+        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${billboard-templates}" filtering="true">
+            <fileset dir="templates/sv/billboard" excludes="images/"/>
+        </imtranslate>
 
         <copy todir="${imcmsimages}/${defaultlanguage}/104/original">
             <fileset dir="templates/sv/billboard/original/images" includes="*"/>
@@ -812,9 +818,11 @@
 	    description="Builds the postcard."
 	    if="build-postcard">
 
-        <copy todir="${postcard-templates}" filtering="true">
+        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${postcard-templates}" filtering="true">
             <fileset dir="templates/sv/postcard"/>
-        </copy>
+        </imtranslate>
 
     </target>
 
@@ -831,9 +839,11 @@
         <touch file="${fortunes}/poll.poll.txt" millis="0"/>
         <touch file="${fortunes}/quotes.txt" millis="0"/>
 
-        <copy todir="${fortune-templates}" filtering="true">
+        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${fortune-templates}" filtering="true">
             <fileset dir="templates/sv/fortunes"/>
-        </copy>
+        </imtranslate>
 
     </target>
 
@@ -841,9 +851,11 @@
     <!-- Copies the shop files. -->
     <target name="shop" depends="init" description="Copies the shop files." if="build-shop">
 
-        <copy todir="${shop}" filtering="true">
+        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${shop}" filtering="true">
             <fileset dir="install/htdocs/sv/shop" includes="*"/>
-        </copy>
+        </imtranslate>
 
     </target>
 
@@ -854,9 +866,11 @@
 	    description="Copies the html-editor files.">
         <mkdir dir="${htmleditor}"/>
 
-        <copy todir="${htmleditor}" filtering="true">
+        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${htmleditor}" filtering="true">
             <fileset dir="install/htdocs/sv/htmleditor/editor" excludes="images/*.jpg,images/*.gif"/>
-        </copy>
+        </imtranslate>
         <copy todir="${htmleditor}/images">
             <fileset dir="install/htdocs/sv/htmleditor/editor/images" includes="*.jpg,*.gif"/>
         </copy>
