@@ -122,7 +122,7 @@ public class DocumentMapper {
     public boolean userCanCreateDocumentOfTypeIdFromParent( UserDomainObject user, int documentTypeId,
                                                             DocumentDomainObject parent ) {
         if ( userIsSuperAdminOrFullAdminOnDocument( user, parent ) ) {
-            return true ;
+            return true;
         } else if ( userHasAtLeastPermissionSetIdOnDocument( user, IMCConstants.DOC_PERM_SET_RESTRICTED_2, parent ) ) {
             int userPermissionSetId = getUsersMostPrivilegedPermissionSetIdOnDocument( user, parent );
             Integer[] documentTypeIds = getDocumentTypeIdsCreatableByRestrictedPermissionSetIdOnDocument( userPermissionSetId, parent );
@@ -134,7 +134,8 @@ public class DocumentMapper {
     }
 
     private boolean userIsSuperAdminOrFullAdminOnDocument( UserDomainObject user, DocumentDomainObject parent ) {
-        return user.isSuperAdmin() || userHasAtLeastPermissionSetIdOnDocument( user, IMCConstants.DOC_PERM_SET_FULL, parent );
+        return user.isSuperAdmin()
+               || userHasAtLeastPermissionSetIdOnDocument( user, IMCConstants.DOC_PERM_SET_FULL, parent );
     }
 
     private Integer[] getDocumentTypeIdsCreatableByRestrictedPermissionSetIdOnDocument( int restrictedPermissionSetId,
@@ -438,11 +439,8 @@ public class DocumentMapper {
             String mime = sqlResult[1];
             document.setFilename( fileName );
             document.setMimeType( mime );
-            document.setInputStreamSource( new InputStreamSource() {
-                public InputStream getInputStream() throws IOException {
-                    return new FileInputStream( getUploadedFile( document ) );
-                }
-            } );
+            final File file = getUploadedFile( document );
+            document.setInputStreamSource( new FileInputStreamSource( file ) );
         }
     }
 
@@ -607,8 +605,8 @@ public class DocumentMapper {
 
     public boolean userHasPermissionToAddDocumentToMenu( UserDomainObject user, DocumentDomainObject document ) {
         return user.isSuperAdmin()
-            || userHasMoreThanReadPermissionOnDocument( user, document )
-            || document.isLinkableByOtherUsers() ;
+               || userHasMoreThanReadPermissionOnDocument( user, document )
+               || document.isLinkableByOtherUsers();
     }
 
     public void indexDocument( DocumentDomainObject document ) {
@@ -630,8 +628,8 @@ public class DocumentMapper {
     public void saveNewDocument( DocumentDomainObject document, UserDomainObject user )
             throws MaxCategoryDomainObjectsOfTypeExceededException, IOException {
 
-        if (!userHasMoreThanReadPermissionOnDocument( user, document )) {
-            return ; // TODO: More specific check needed. Throw exception ?
+        if ( !userHasMoreThanReadPermissionOnDocument( user, document ) ) {
+            return; // TODO: More specific check needed. Throw exception ?
         }
 
         int newMetaId = sqlInsertIntoMeta( document );
@@ -645,7 +643,12 @@ public class DocumentMapper {
 
     private void saveFile( FileDocumentDomainObject newFileDocument ) {
         try {
-            InputStream in = newFileDocument.getInputStreamSource().getInputStream();
+            InputStreamSource inputStreamSource = newFileDocument.getInputStreamSource();
+            boolean fileAlreadyIsOnDisk = inputStreamSource instanceof FileInputStreamSource;
+            if (fileAlreadyIsOnDisk) {
+                return ;
+            }
+            InputStream in = inputStreamSource.getInputStream();
             if ( null == in ) {
                 return;
             }
@@ -778,8 +781,8 @@ public class DocumentMapper {
 
     public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws MaxCategoryDomainObjectsOfTypeExceededException {
 
-        if (!userHasMoreThanReadPermissionOnDocument( user, document )) {
-            return ; // TODO: More specific check needed. Throw exception ?
+        if ( !userHasMoreThanReadPermissionOnDocument( user, document ) ) {
+            return; // TODO: More specific check needed. Throw exception ?
         }
 
         checkMaxDocumentCategoriesOfType( document );
@@ -1630,6 +1633,19 @@ public class DocumentMapper {
 
         DocumentAlreadyInMenuException( String message ) {
             super( message );
+        }
+    }
+
+    private static class FileInputStreamSource implements InputStreamSource, Serializable {
+
+        private final File file;
+
+        public FileInputStreamSource( File file ) {
+            this.file = file;
+        }
+
+        public InputStream getInputStream() throws IOException {
+            return new FileInputStream( file );
         }
     }
 
