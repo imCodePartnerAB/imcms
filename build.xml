@@ -143,7 +143,7 @@
             userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${create-sql}" />
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
-            userid="${db-user}" password="${db-pass}" delimiter="GO" delimitertype="row" onerror="abort" src="${dist-sql}" />
+            userid="${db-user}" password="${db-pass}" delimiter="GO" delimitertype="row" onerror="abort" src="${sql}/imcms${versionfilesuffix}-${defaultlanguage}.sql" />
 
     </target>
 
@@ -515,7 +515,6 @@
         <property name="srcdist-zip" value="${dist}/${srcdist}.zip"/>
         <property name="srcdist-tgz" value="${dist}/${srcdist}.tar.gz"/>
 
-        <property name="dist-sql" value="${sql}/imcms${versionfilesuffix}.sql"/>
         <property name="sprocs-sql" value="${sql}/imcms-sprocs${versionfilesuffix}.sql"/>
         <property name="create-sql" value="${sql}/create_db${versionfilesuffix}.sql"/>
         <property name="drop-sql" value="${sql}/drop_db${versionfilesuffix}.sql"/>
