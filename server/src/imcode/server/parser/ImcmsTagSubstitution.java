@@ -516,6 +516,11 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
         if (null != who && "creator".equalsIgnoreCase(who)) {
             user = documentRequest.getDocument().getCreator();
+        } else if (null != who && "publisher".equalsIgnoreCase(who)) {
+            user = documentRequest.getDocument().getPublisher();
+            if (null == user) {
+                return "" ;
+            }
         } else {
             user = documentRequest.getUser();
         }
