@@ -183,7 +183,7 @@ public class AdminRoleBelongings extends Administrator {
 	    log( "SQL: " + sqlQ );
 
 	    String roleOptionList = createListOfOptions( roleQueryResult );
-	    String curentRoleName = getRoleName( roleId, imcref );
+        String curentRoleName = getRoleName( roleId, imcref );
 
 	    // Lets generate the html page
 	    VariableManager vm = new VariableManager();
@@ -428,7 +428,7 @@ public class AdminRoleBelongings extends Administrator {
 	String roleName = "";
 
 	if ( !( roleId.equalsIgnoreCase( "ALL_USERS" ) ) ) {
-	    roleName = imcref.sqlProcedureStr( "RoleGetName " + roleId );
+	    roleName = imcref.sqlProcedureStr( "RoleGetName", new String[] { roleId } );
 	}
 
 	return roleName;
