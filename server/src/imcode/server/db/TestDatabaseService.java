@@ -36,13 +36,13 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void nonmodifyingTestSameResultFrom_sproc_getAllRoles() {
-        DatabaseService.Table_roles[] sqlServerRoles = sqlServer.sprocGetAllRoles();
-        DatabaseService.Table_roles[] mySQLRoles = mySql.sprocGetAllRoles();
+        DatabaseService.Table_roles[] sqlServerRoles = sqlServer.sprocGetAllRoles_but_user();
+        DatabaseService.Table_roles[] mySQLRoles = mySql.sprocGetAllRoles_but_user();
         assertEquals( 2, sqlServerRoles.length );
         assertEquals( 2, mySQLRoles.length );
 
         if( testMimer ) {
-            DatabaseService.Table_roles[] mimerRoles = mimer.sprocGetAllRoles();
+            DatabaseService.Table_roles[] mimerRoles = mimer.sprocGetAllRoles_but_user();
             assertEquals( 2, mimerRoles.length );
             static_assertEquals( mimerRoles, sqlServerRoles, mySQLRoles );
         }
@@ -162,22 +162,42 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertEquals( user, modifiedUser );
     }
 
+    public void test_sproc_delUser() {
+        int nextFreeUserId = 3;
+        DatabaseService.Table_users user = createDummyUser( nextFreeUserId );
+
+        if( testMimer ) {
+            test_sproc_delUsers( mimer, user, nextFreeUserId );
+        }
+        test_sproc_delUsers( mySql, user, nextFreeUserId );
+        test_sproc_delUsers( sqlServer, user, nextFreeUserId );
+    }
+
+    private void test_sproc_delUsers( DatabaseService dbService, DatabaseService.Table_users user, int nextFreeUserId ) {
+        DatabaseService.Table_users[] usersBefore = dbService.sprocGetAllUsers_OrderByLastName();
+        dbService.sproc_AddNewuser( user );
+        int rowsAffected = dbService.sproc_delUser( nextFreeUserId );
+        assertTrue( rowsAffected > 0 );
+        DatabaseService.Table_users[] usersAfter = dbService.sprocGetAllUsers_OrderByLastName();
+        static_assertEquals( usersBefore, usersAfter );
+    }
+
     public void test_sproc_phoneNbrAdd() {
         DatabaseService.Table_users user = createDummyUser( 3 );
+
+        sqlServer.sproc_AddNewuser( user );
+        int sqlServerRowAffected = sqlServer.sproc_phoneNbrAdd( 3, "1234567", 0 );
+        assertEquals( 1, sqlServerRowAffected );
+
+        mySql.sproc_AddNewuser( user );
+        int mySqlRowAffected = mySql.sproc_phoneNbrAdd( 3, "1234567", 0 );
+        assertEquals( 1, mySqlRowAffected );
+
         if( testMimer ) {
             mimer.sproc_AddNewuser( user );
             int mimerRowAffected = mimer.sproc_phoneNbrAdd( 3, "1234567", 0 );
             assertEquals( 1, mimerRowAffected );
         }
-
-        sqlServer.sproc_AddNewuser( user );
-        int sqlServerRowAffected = sqlServer.sproc_phoneNbrAdd( 3, "1234567", 0 );
-
-        mySql.sproc_AddNewuser( user );
-        int mySqlRowAffected = mySql.sproc_phoneNbrAdd( 3, "1234567", 0 );
-
-        assertEquals( 1, sqlServerRowAffected );
-        assertEquals( 1, mySqlRowAffected );
     }
 
     private DatabaseService.Table_users createDummyUser( int nextFreeUserId ) {

@@ -198,12 +198,7 @@ public class DatabaseService {
         }
     }
 
-    /**
-     *  Document me!
-     */
-    // todo: rename to getallroles _but_ user
-    // todo: user RoleDomainObject or create one if it dosn't exist
-    public Table_roles[] sprocGetAllRoles() {
+    public Table_roles[] sprocGetAllRoles_but_user() {
         String sql = "SELECT role_id, role_name FROM roles ORDER BY role_name";
         Object[] paramValues = null;
 
@@ -484,5 +479,18 @@ public class DatabaseService {
         }
     }
 
+    // todo: ta bort från samtliga forreign key ställen( och inte bara från user_roles_crossref);
+    // todo, phones, user_flags_crossref, user_rights, useradmin_role_crossref
+    // todo: transaktion?
+    // todo: Split into two, depending on how it is used.
+    int sproc_delUser( int user_id ) {
+        String sqlUserRoles = "DELETE FROM user_roles_crossref WHERE user_id = " + user_id;
+        Object[] paramValues = null;
+        int rowsModified =  sqlProcessor.executeUpdate( sqlUserRoles, paramValues ) ;
 
+        String sqlUsers = "DELETE FROM users WHERE user_id = " + user_id;
+        rowsModified +=  sqlProcessor.executeUpdate( sqlUsers, paramValues ) ;
+
+        return rowsModified;
+    }
 }
