@@ -85,154 +85,52 @@
 <%= tabs %>
 #gui_mid_tabs2()
 
-<% String subreport_heading = "<? web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/1 ?>";
-   int documents_found = documents_new.size();
-   LIST_TYPE = AdminManager.LIST_TYPE__list_new_not_approved; %>
+<jsp:useBean id="subreport" scope="request" class="com.imcode.imcms.servlet.beans.AdminManagerSubreportBean" />
 
-<%@include file="admin_manager_inc_subreport_header.jsp"%>
-    <!-- list new / not approved documents-->
-   <% DocumentDomainObject document;
-      boolean expand = false;
-      for (int i = 0; i < documents_new.size() && i < AdminManager.DEFAULT_DOCUMENTS_PER_LIST; i++) {
-        expand = i < 2 || expand_listMap.get(LIST_TYPE).toString().equals("expand") ? true : false;
-        document = (DocumentDomainObject) documents_new.get(i);
-   %>
-    <jsp:setProperty name="listItemBean" property="expanded" value="<%= expand %>"/>
-    <jsp:setProperty name="listItemBean" property="index" value="<%= i %>"/>
-    <jsp:setProperty name="listItemBean" property="document" value="<%= document %>"/>
+<jsp:setProperty name="subreport" property="documents" value="<%= documents_new %>" />
+<jsp:setProperty name="subreport" property="heading" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/1 ?>"/>
+<jsp:setProperty name="subreport" property="name" value="<%= AdminManager.LIST_TYPE__list_new_not_approved %>"/>
+<jsp:setProperty name="subreport" property="expanded" value="<%= expand_listMap.get(subreport.getName()).toString().equals("expand") %>"/>
+<jsp:setProperty name="subreport" property="sortorder" value="<%= current_sortorderMap.get( subreport.getName() ) %>"/>
 
-    <jsp:include page="admin_manager_inc_list_item.jsp"/>
-    <!-- / list item -->
-  <% } %>
-</table>
-</td>
-</tr>
-<% if (documents_new.size() > AdminManager.DEFAULT_DOCUMENTS_PER_LIST ) { %>
-<form method="post" name="show_new" action="AdminManager">
-<input type="hidden" name="show" value="new">
-<tr>
-	<td colspan="4" align="center"><img src="<%= IMG_PATH %>/1x1.gif" height="20" width="1"><br>
-    	<a href="javascript:document.forms.show_new.submit();"><? web/imcms/lang/jsp/admin/admin_manager.jsp/20 ?></a></td>
-</tr>
-</form>
-<%}%>
-
-<% subreport_heading = "<? web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/5 ?>";
-   documents_found = documents_changed.size();
-   LIST_TYPE = AdminManager.LIST_TYPE__list_documents_changed; %>
-
-<%@include file="admin_manager_inc_subreport_header.jsp"%>
-    <!-- list changed documents  -->
-   <%
-       for (int i = 0; i < documents_changed.size() && i < AdminManager.DEFAULT_DOCUMENTS_PER_LIST; i++) {
-        expand = i < 2 || expand_listMap.get(LIST_TYPE).toString().equals("expand") ;
-        document = (DocumentDomainObject) documents_changed.get(i);
-   %>
-    <jsp:setProperty name="listItemBean" property="expanded" value="<%= expand %>"/>
-    <jsp:setProperty name="listItemBean" property="index" value="<%= i %>"/>
-    <jsp:setProperty name="listItemBean" property="document" value="<%= document %>"/>
-
-    <jsp:include page="admin_manager_inc_list_item.jsp"/>
-    <!-- / list item -->
-  <% } %>
-</table>
-</td>
-</tr>
-<% if (documents_changed.size() > AdminManager.DEFAULT_DOCUMENTS_PER_LIST ) { %>
-<tr>
-    <td colspan="4" align="center"><img src="<%= IMG_PATH %>/1x1.gif" height="20" width="1"><br>
-        <a href="javascript: document.forms.seachForm99.submit();"><? web/imcms/lang/jsp/admin/admin_manager.jsp/19 ?></a></td>
-</tr>
-<form name="seachForm99"></form>
-<%}%>
+<jsp:include page="admin_manager_subreport.jsp"/>
 
 
-<% subreport_heading = "<? web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/3 ?>";
-   documents_found = documents_publication_end_less_then_one_week.size();
-   LIST_TYPE = AdminManager.LIST_TYPE__list_documents_publication_end_less_then_one_week; %>
-<%@include file="admin_manager_inc_subreport_header.jsp"%>
+<jsp:setProperty name="subreport" property="documents" value="<%= documents_changed %>" />
+<jsp:setProperty name="subreport" property="heading" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/5 ?>"/>
+<jsp:setProperty name="subreport" property="name" value="<%= AdminManager.LIST_TYPE__list_documents_changed %>"/>
+<jsp:setProperty name="subreport" property="expanded" value="<%= expand_listMap.get(subreport.getName()).toString().equals("expand") %>"/>
+<jsp:setProperty name="subreport" property="sortorder" value="<%= current_sortorderMap.get( subreport.getName() ) %>"/>
 
-    <!-- list item that will be unpublished-->
-   <% for (int i = 0; i < documents_publication_end_less_then_one_week.size() && i < AdminManager.DEFAULT_DOCUMENTS_PER_LIST; i++) {
-        expand = i < 2 || expand_listMap.get(LIST_TYPE).toString().equals("expand") ? true : false;
-        document = (DocumentDomainObject) documents_publication_end_less_then_one_week.get(i);
-   %>
-    <jsp:setProperty name="listItemBean" property="expanded" value="<%= expand %>"/>
-    <jsp:setProperty name="listItemBean" property="index" value="<%= i %>"/>
-    <jsp:setProperty name="listItemBean" property="document" value="<%= document %>"/>
-
-    <jsp:include page="admin_manager_inc_list_item.jsp"/>
-    <!-- / list item -->
-  <% } %>
-</table>
-</td>
-</tr>
-<% if (documents_publication_end_less_then_one_week.size() > AdminManager.DEFAULT_DOCUMENTS_PER_LIST ) { %>
-<tr>
-    <td colspan="4" align="center"><img src="<%= IMG_PATH %>/1x1.gif" height="20" width="1"><br>
-        <a href="javascript: document.forms.seachForm99.submit();"><? web/imcms/lang/jsp/admin/admin_manager.jsp/19 ?></a></td>
-</tr>
-<form name="seachForm99"></form>
-<%}%>
+<jsp:include page="admin_manager_subreport.jsp"/>
 
 
-<% subreport_heading = "<? web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/2 ?>";
-   documents_found = documents_archived_less_then_one_week.size();
-   LIST_TYPE = AdminManager.LIST_TYPE__list_documents_archived_less_then_one_week; %>
+<jsp:setProperty name="subreport" property="documents" value="<%= documents_publication_end_less_then_one_week %>" />
+<jsp:setProperty name="subreport" property="heading" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/3 ?>"/>
+<jsp:setProperty name="subreport" property="name" value="<%= AdminManager.LIST_TYPE__list_documents_publication_end_less_then_one_week %>"/>
+<jsp:setProperty name="subreport" property="expanded" value="<%= expand_listMap.get(subreport.getName()).toString().equals("expand") %>"/>
+<jsp:setProperty name="subreport" property="sortorder" value="<%= current_sortorderMap.get( subreport.getName() ) %>"/>
 
-<%@include file="admin_manager_inc_subreport_header.jsp"%>
-
-    <!-- list item that will be archived-->
-   <% for (int i = 0; i < documents_archived_less_then_one_week.size() && i < AdminManager.DEFAULT_DOCUMENTS_PER_LIST; i++) {
-        expand = i < 2 || expand_listMap.get(LIST_TYPE).toString().equals("expand") ? true : false;
-        document = (DocumentDomainObject) documents_archived_less_then_one_week.get(i);
-   %>
-    <jsp:setProperty name="listItemBean" property="expanded" value="<%= expand %>"/>
-    <jsp:setProperty name="listItemBean" property="index" value="<%= i %>"/>
-    <jsp:setProperty name="listItemBean" property="document" value="<%= document %>"/>
-
-    <jsp:include page="admin_manager_inc_list_item.jsp"/>
-    <!-- / list item -->
-  <% } %>
-</table>
-</td>
-</tr>
-<% if (documents_archived_less_then_one_week.size() > AdminManager.DEFAULT_DOCUMENTS_PER_LIST ) { %>
-<tr>
-    <td colspan="4" align="center"><img src="<%= IMG_PATH %>/1x1.gif" height="20" width="1"><br>
-        <a href="javascript: document.forms.seachForm99.submit();"><? web/imcms/lang/jsp/admin/admin_manager.jsp/19 ?></a></td>
-</tr>
-<form name="seachForm99"></form>
-<%}%>
+<jsp:include page="admin_manager_subreport.jsp"/>
 
 
-<% subreport_heading = "<? web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/4 ?>";
-   documents_found = documents_not_changed_in_six_month.size();
-   LIST_TYPE = AdminManager.LIST_TYPE__list_documents_not_changed_in_six_month; %>
-<%@include file="admin_manager_inc_subreport_header.jsp"%>
+<jsp:setProperty name="subreport" property="documents" value="<%= documents_archived_less_then_one_week %>" />
+<jsp:setProperty name="subreport" property="heading" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/2 ?>"/>
+<jsp:setProperty name="subreport" property="name" value="<%= AdminManager.LIST_TYPE__list_documents_archived_less_then_one_week %>"/>
+<jsp:setProperty name="subreport" property="expanded" value="<%= expand_listMap.get(subreport.getName()).toString().equals("expand") %>"/>
+<jsp:setProperty name="subreport" property="sortorder" value="<%= current_sortorderMap.get( subreport.getName() ) %>"/>
 
-    <!-- list item not modified in the last 6 month-->
-   <% for (int i = 0; i < documents_not_changed_in_six_month.size() && i < AdminManager.DEFAULT_DOCUMENTS_PER_LIST; i++) {
-        expand = i < 2 || expand_listMap.get(LIST_TYPE).toString().equals("expand") ? true : false;
-        document = (DocumentDomainObject) documents_not_changed_in_six_month.get(i);
-   %>
-    <jsp:setProperty name="listItemBean" property="expanded" value="<%= expand %>"/>
-    <jsp:setProperty name="listItemBean" property="index" value="<%= i %>"/>
-    <jsp:setProperty name="listItemBean" property="document" value="<%= document %>"/>
+<jsp:include page="admin_manager_subreport.jsp"/>
 
-    <jsp:include page="admin_manager_inc_list_item.jsp"/>
-    <!-- / list item -->
-  <% } %>
-</table>
-</td>
-</tr>
-<% if (documents_not_changed_in_six_month.size() > AdminManager.DEFAULT_DOCUMENTS_PER_LIST ) { %>
-<tr>
-    <td colspan="4" align="center"><img src="<%= IMG_PATH %>/1x1.gif" height="20" width="1"><br>
-        <a href="javascript: document.forms.seachForm99.submit();"><? web/imcms/lang/jsp/admin/admin_manager.jsp/19 ?></a></td>
-</tr>
-<form name="seachForm99"></form>
-<%}%>
+
+<jsp:setProperty name="subreport" property="documents" value="<%= documents_not_changed_in_six_month %>" />
+<jsp:setProperty name="subreport" property="heading" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/4 ?>"/>
+<jsp:setProperty name="subreport" property="name" value="<%= AdminManager.LIST_TYPE__list_documents_not_changed_in_six_month %>"/>
+<jsp:setProperty name="subreport" property="expanded" value="<%= expand_listMap.get(subreport.getName()).toString().equals("expand") %>"/>
+<jsp:setProperty name="subreport" property="sortorder" value="<%= current_sortorderMap.get( subreport.getName() ) %>"/>
+
+<jsp:include page="admin_manager_subreport.jsp"/>
+
 
 </table>
 

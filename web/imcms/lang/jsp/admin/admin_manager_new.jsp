@@ -84,26 +84,14 @@
 <%= tabs %>
 #gui_mid_tabs2()
 
-<% String subreport_heading = "<? web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/1 ?>";
-   LIST_TYPE = AdminManager.LIST_TYPE__list_new_not_approved ;
-   int documents_found = documents_new.size(); %>
-<%@include file="admin_manager_inc_subreport_header.jsp"%>
+<jsp:useBean id="subreport" scope="request" class="com.imcode.imcms.servlet.beans.AdminManagerSubreportBean" />
+<jsp:setProperty name="subreport" property="documents" value="<%= documents_new %>" />
+<jsp:setProperty name="subreport" property="heading" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/1 ?>"/>
+<jsp:setProperty name="subreport" property="name" value="<%= AdminManager.LIST_TYPE__list_new_not_approved %>"/>
+<jsp:setProperty name="subreport" property="expanded" value="<%= expand_listMap.get(subreport.getName()).toString().equals("expand") %>"/>
+<jsp:setProperty name="subreport" property="sortorder" value="<%= current_sortorderMap.get( subreport.getName() ) %>"/>
 
-    <!-- list item -->
-   <% DocumentDomainObject document;
-      boolean expand = false;
-      for (int i = 0; i < documents_new.size(); i++) {
-        expand = i < 2 || expand_listMap.get(LIST_TYPE).toString().equals("expand") ? true : false;
-        document = (DocumentDomainObject) documents_new.get(i);
-   %>
-    <jsp:setProperty name="listItemBean" property="expanded" value="<%= expand %>"/>
-    <jsp:setProperty name="listItemBean" property="index" value="<%= i %>"/>
-    <jsp:setProperty name="listItemBean" property="document" value="<%= document %>"/>
-    <jsp:include page="admin_manager_inc_list_item.jsp"/>
-    <!-- / list item -->
-  <% } %>
-
-</table>
+<jsp:include page="admin_manager_subreport.jsp" />
 
 </td>
 </tr>

@@ -388,43 +388,6 @@ public class AdminManager extends Administrator {
         }
     }
 
-    public static class AdminManagerSubreport {
-
-        String name;
-        String sortorder;
-        String expand_status;
-        int hits_per_page;
-        List documentsFound;
-
-        public AdminManagerSubreport( String name,
-                                      String sortorder,
-                                      String expand_status,
-                                      int hits_per_page,
-                                      List documentsFound ) {
-            this.name = name;
-            this.sortorder = sortorder;
-            this.expand_status = expand_status;
-            this.hits_per_page = hits_per_page;
-            this.documentsFound = documentsFound;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getSortorder() {
-            return sortorder;
-        }
-
-        public String getExpand_status() {
-            return expand_status;
-        }
-
-        public int getHits_per_page() {
-            return hits_per_page;
-        }
-    }
-
     private Date getDate( int days ) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime( new Date() );
