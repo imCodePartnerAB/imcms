@@ -316,7 +316,7 @@ public class TextDocument extends Document {
          */
         public void addDocument(Document documentToAdd) throws NoPermissionException, DocumentAlreadyInMenuException {
             securityChecker.hasEditPermission(documentToAdd.getId());
-            securityChecker.hasSharePermission(documentToAdd);
+            securityChecker.userHasPermissionToAddDocumentToAnyMenu(documentToAdd);
             internalTextDocument.getMenu(menuIndex).addMenuItem( new MenuItemDomainObject( documentToAdd.internalDocument ) );
         }
 

@@ -217,7 +217,7 @@ public class GetExistingDoc extends HttpServlet {
 
             DocumentDomainObject existingDocument = documentMapper.getDocument( existingDocumentId );
             // Add the document in menu if user is admin for the document OR the document is shared.
-            boolean sharePermission = documentMapper.userHasPermissionToAddDocumentToMenu( user, existingDocument );
+            boolean sharePermission = documentMapper.userHasPermissionToAddDocumentToAnyMenu( user, existingDocument );
             boolean canAddToMenu = allowedDocumentTypeIds.contains( new Integer( existingDocument.getDocumentTypeId() ) ) && sharePermission;
             if ( canAddToMenu ) {
                 parentDocument.getMenu( menuIndex ).addMenuItem( new MenuItemDomainObject( existingDocument ) );

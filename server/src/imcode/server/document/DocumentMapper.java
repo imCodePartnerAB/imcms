@@ -646,7 +646,7 @@ public class DocumentMapper {
         return userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( user, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, document );
     }
 
-    public boolean userHasPermissionToAddDocumentToMenu( UserDomainObject user, DocumentDomainObject document ) {
+    public boolean userHasPermissionToAddDocumentToAnyMenu( UserDomainObject user, DocumentDomainObject document ) {
         return user.isSuperAdmin()
                 || userHasMoreThanReadPermissionOnDocument( user, document )
                 || document.isLinkableByOtherUsers();

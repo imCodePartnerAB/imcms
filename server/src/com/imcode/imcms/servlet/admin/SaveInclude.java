@@ -70,7 +70,7 @@ public class SaveInclude extends HttpServlet {
                     DocumentMapper documentMapper = imcref.getDocumentMapper();
                     // Make sure the user has permission to share the included document
                     DocumentDomainObject includedDocument = documentMapper.getDocument( included_meta_id_int );
-                    if ( documentMapper.userHasPermissionToAddDocumentToMenu( user, includedDocument ) ) {
+                    if ( documentMapper.userHasPermissionToAddDocumentToAnyMenu( user, includedDocument ) ) {
                         DocumentMapper.sprocSetInclude( imcref, meta_id, Integer.parseInt( include_id ), included_meta_id_int );
                         mainLog.info( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id
                                       + "] on ["
