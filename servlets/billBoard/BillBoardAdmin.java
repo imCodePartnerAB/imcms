@@ -393,6 +393,9 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			String aSectionId = params.getProperty("SECTION_ID") ;
 			
 			String discIds[] = this.getDelDiscParameters(req) ;
+			if (discIds == null) {
+				discIds = new String[0];
+			}
 			
 			String moveToId = req.getParameter("MOVE_TO_SECTION") == null ? aSectionId:req.getParameter("MOVE_TO_SECTION");
 			
