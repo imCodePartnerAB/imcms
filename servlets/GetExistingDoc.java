@@ -128,6 +128,7 @@ public class GetExistingDoc extends HttpServlet {
 		}
 		if(searchString.equals(""))
 			searchString = "" + char13;
+		log("searchString: " + searchString);	
 		//------------------------------------------------------------------
         sqlString = "EXEC SearchDocs " + s9 + ",'" + searchString + "', '" + searchPrep + "', '" + s12 + "', " + s7 + ", " + s6 + ", '" + sortBy + "', " + s14 + ", '1'";
         String s19 = "";
