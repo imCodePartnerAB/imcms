@@ -2879,14 +2879,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        @param quoteListName The name of the quote-List.
        @param quoteList     The quote-List
     **/
-    public void setQuoteList(String quoteListName, List quoteList) {
-	/*
-	QuoteWriter quoteWriter = new QuoteWriter(new FileWriter(new File(m_FortunePath,pollListName))) ;
-	Iterator quotesIterator = theList.iterator() ;
+    public void setQuoteList(String quoteListName, List quoteList) throws IOException {
+	QuoteWriter quoteWriter = new QuoteWriter(new FileWriter(new File(m_FortunePath,quoteListName))) ;
+	Iterator quotesIterator = quoteList.iterator() ;
 	while (quotesIterator.hasNext()) {
-	    quoteWriter.write((Quote)quotesIterator.next()) ;
+	    quoteWriter.writeQuote((Quote)quotesIterator.next()) ;
 	}
-	*/
     }
 
 
@@ -2908,14 +2906,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        @param pollListName The name of the poll-List.
        @param pollList     The poll-List
     **/
-    public void setPollList(String pollListName, List pollList) {
-	/*
-	PollWriter pollWriter = new QuoteWriter(new FileWriter(new File(m_FortunePath,pollListName))) ;
-	Iterator pollIterator = theList.iterator() ;
+    public void setPollList(String pollListName, List pollList) throws IOException {
+	PollWriter pollWriter = new PollWriter(new FileWriter(new File(m_FortunePath,pollListName))) ;
+	Iterator pollIterator = pollList.iterator() ;
 	while (pollIterator.hasNext()) {
-	    pollWriter.write((Poll)pollIterator.next()) ;
+	    pollWriter.writePoll((Poll)pollIterator.next()) ;
 	}
-	*/
     }
 
     /**
