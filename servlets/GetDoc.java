@@ -243,7 +243,6 @@ public class GetDoc extends HttpServlet {
 			if ( tmp != null && (!"".equals(tmp)) ) {
 				meta_id = Integer.parseInt(tmp) ;
 			}
-			user.archiveOff( ) ;
 			//IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
 
 			Utility.redirect(req,res,"GetDoc?meta_id="+meta_id+"&parent_meta_id="+parent_meta_id) ;
@@ -307,7 +306,6 @@ public class GetDoc extends HttpServlet {
 			return null ;
 
 		default:
-			user.archiveOff( ) ;
 			user.setTemplateGroup(-1) ;
 			// track user
 			//			IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
