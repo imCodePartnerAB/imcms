@@ -36,12 +36,6 @@
       <load-on-startup>1</load-on-startup>
    </servlet>
 
-    <servlet>
-       <servlet-name>PressReleaseInserter</servlet-name>
-       <servlet-class>com.imcode.imcms.vetenskapsradet.PressReleaseInserter</servlet-class>
-       <load-on-startup>2</load-on-startup>
-    </servlet>
-
    <servlet>
       <servlet-name>RD</servlet-name>
       <servlet-class>ReDirecter</servlet-class>

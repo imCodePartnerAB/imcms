@@ -128,12 +128,6 @@
 
         <tstamp/>
 
-        <!--
-        <dependset>
-            <srcfileset file="${basedir}/build.xml"/>
-            <targetfileset dir="${build}"/>
-        </dependset>-->
-
         <available classname="junit.framework.Test" classpathref="libraries" property="junit-available"/>
 
     </target>
