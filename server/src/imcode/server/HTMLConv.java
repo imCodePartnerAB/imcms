@@ -6,7 +6,7 @@ public class HTMLConv {
     private final static String CVS_REV="$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
     final static String h_code[] = { "&nbsp;","&iexcl;","&cent;","&pound;","&curren;","&yen;","",
-				     "&sect;","&uml;","&copy;","&ordf;","&laquo;","&not;","",
+				     "&sect;","&uml;","&copy;","&ordf;","&laquo;","&not;","&shy;",
 				     "&reg;","&macr;","&deg;","&plusmn;","","",
 				     "&acute;","&micro;","&para;","&middot;","&cedil;","",
 				     "&ordm;","&raquo;","","","",
@@ -23,9 +23,9 @@ public class HTMLConv {
 				     "&yuml;" } ;
 
 
+
     /* Används ej:
        &brvbar;	&#166;	broken (vertical) bar	NA
-       &shy;	&#173;	soft hyphen	-
        &sup2;	&#178;	superscript two	NA
        &sup3;	&#179;	superscript three	NA
        &sup1;	&#185;	superscript one	NA
