@@ -25,7 +25,8 @@ Version 2.0.0
     * A new function called "My pages" gives you an easy overview of your documents.
       It is accessible through the "admin" button for users
       which have any role that has permission to access "My pages". (Bug 2578)
-    * A new better html editor which also supports Mozilla browsers has been incorporated. (Bug 2548)
+    * A new better html editor (http://www.dynarch.com/projects/htmlarea/)
+      which also supports Mozilla browsers has been incorporated. (Bug 2548)
     * The search page now allows much more advanced searches. (Bug 2578)
     * File extension "dot" is now recognized as a Microsoft Word file. (Bug 2681)
     * File extension "ppt" is now recognized as a Microsoft Powerpoint file. (Bug 2743)
@@ -39,6 +40,10 @@ Version 2.0.0
     * Fixed help message on "file edit page". (Bug 2682)
     * The OK button on the document "page info" page was unclickable in Safari on Mac due to a javascript. (Bug 2703)
     * Allow setting the "target" when editing file documents, just as with url documents.
+    * Hide categories on "page info" page if none exist. (Bug 2794)
+    * Added shortcut buttons to set dates to "Now" on "page info" page. (Bug 2794)
+    * The creator and some dates were not set properly for copied documents. (Bug 2803)
+    * Removed misleading instructions on how to create documents. (Bug 2799)
 
     Of interest to template creators:
 
@@ -54,6 +59,7 @@ Version 2.0.0
       new text documents created in this menu. (Bug 2689)
     * Added a "TEMPLATE_SYNTAX.TXT" file containing a basic reference to the template tags. (Bug 2689)
     * New attribute for <?imcms:text?> tag: "formats" - specify what editor modes are available.
+    * Attributes in tags can now be html-escaped, like so: <?imcms:text label="&quot;quoted text&quot;"?>. (Bug 2783)
 
     Of interest to administrators:
 
@@ -161,6 +167,7 @@ Version 2.0.0
     * All users are now always considered to have the "Users" role regardless of what the database says. (Bug 2770)
     * Made an ant-target "distcheck" for verifying that the source distribution is buildable. (Bug 2774)
     * Made it easier to build with LDAP enabled (Bug 2818)
+    * Texts are doubly indexed: With and without HTML-tags. (Bug 2775)
 
 
 Version 1.11.1
