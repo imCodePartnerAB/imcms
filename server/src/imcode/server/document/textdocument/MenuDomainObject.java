@@ -1,9 +1,3 @@
-/*
- * Created by IntelliJ IDEA.
- * User: kreiger
- * Date: 2004-maj-03
- * Time: 17:36:40
- */
 package imcode.server.document.textdocument;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -17,7 +11,7 @@ public class MenuDomainObject {
 
     private int id;
     private int sortOrder;
-    private SortedSet menuItems;
+    private Set menuItems;
 
     public final static int MENU_SORT_ORDER__BY_HEADLINE = 1;
     public final static int MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED = 2;
@@ -35,7 +29,7 @@ public class MenuDomainObject {
     public MenuDomainObject( int id, int sortOrder ) {
         this.id = id;
         this.sortOrder = sortOrder;
-        menuItems = SetUtils.predicatedSortedSet( new TreeSet( getMenuItemComparatorForSortOrder( sortOrder ) ), new Predicate() {
+        menuItems = SetUtils.predicatedSet( new HashSet(), new Predicate() {
             public boolean evaluate( Object o ) {
                 return o instanceof MenuItemDomainObject && null != ((MenuItemDomainObject)o).getSortKey() ;
             }
@@ -55,7 +49,9 @@ public class MenuDomainObject {
     }
 
     public MenuItemDomainObject[] getMenuItems() {
-        return (MenuItemDomainObject[])menuItems.toArray( new MenuItemDomainObject[menuItems.size()] );
+        MenuItemDomainObject[] menuItemsArray = (MenuItemDomainObject[])menuItems.toArray( new MenuItemDomainObject[menuItems.size()] );
+        Arrays.sort(menuItemsArray, getMenuItemComparatorForSortOrder( sortOrder )) ;
+        return menuItemsArray;
     }
 
     public void addMenuItem( MenuItemDomainObject menuItem ) {

@@ -1,4 +1,10 @@
-Version 1.10.0
+Version 1.10.1:
+
+    * Fixed exception and possible menu-deletion when readding an already existing document
+      to a menu sorted by "manual" order. (Bug 2443)  
+
+
+Version 1.10.0:
 
 = Of interest to users:
 
@@ -30,7 +36,6 @@ Version 1.10.0
     * Fixed a bug in the linkchecker where some broken links would be flagged as OK. (Bug 2336)
     * If "SessionCookieDomain" is set in "server.properties",
       a second JSESSIONID cookie will be set with the given domain. (Bug 1886)
-
 
 = Of interest to API-using developers:
 
