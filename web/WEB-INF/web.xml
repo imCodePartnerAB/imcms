@@ -1009,6 +1009,11 @@
         </session-timeout>
     </session-config>
 
+    <mime-mapping>
+        <extension>xls</extension>
+        <mime-type>application/vnd.ms-excel</mime-type>
+    </mime-mapping>
+
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
         <welcome-file>index.htm</welcome-file>

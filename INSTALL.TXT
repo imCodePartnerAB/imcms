@@ -57,6 +57,10 @@ Setting up imCMS:
       unless property "SelectMethod=cursor" is set in the JdbcUrl.
       Set "SmtpServer" to the hostname of your SMTP (outgoing mail) server.
 
+    * If you want to add a file-extension to be recognized as a mime-type by imCMS,
+      add a "<mime-mapping>" to "tomcat/webapps/imcms/WEB-INF/web.xml".
+      See http://www.iana.org/assignments/media-types/ for the mime-type registry.
+
     * Restart Tomcat to reload the settings.
 
 
