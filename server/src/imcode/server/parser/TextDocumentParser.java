@@ -72,13 +72,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		this.servletUrl = servleturl ;
 		this.serverObject = serverobject ;
     }
-	
-	/* 
-	 return a referens to IMCServerInterface used by TextDocumentParser  
-	*/
-	public IMCServiceInterface getServerObject(){
-		return this.serverObject;
-	}
+
+    /*
+       return a referens to IMCServerInterface used by TextDocumentParser  
+    */
+    public IMCServiceInterface getServerObject(){
+	return this.serverObject;
+    }
 
     public String parsePage (DocumentRequest documentRequest, int flags, ParserParameters paramsToParse) throws IOException{
 		return parsePage(documentRequest,flags,5,paramsToParse) ;
@@ -602,7 +602,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    StringBuffer result = new StringBuffer(template.length()+16384) ; // This value is the amount i expect the document to increase in size.
 
 	    ReadrunnerFilter readrunnerFilter = new ReadrunnerFilter() ;
-	    MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution(menus,menumode,tags) ;
+	    MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution(documentRequest,menus,menumode,tags) ;
 	    HashTagSubstitution hashtagsubstitution = new imcode.server.parser.HashTagSubstitution(tags,numberedtags) ;
 	    ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution(this,
 												      documentRequest,

@@ -420,13 +420,13 @@
 	<mkdir dir="${imcmsimages}"/>
 
 	<copy file="templates/login/index.html" todir="${login}" filtering="true"/>
+	
 	<copy todir="${images}">
-	    <fileset dir="install/htdocs/images">
-		<patternset>
-		    <include name="*.gif"/>
-		</patternset>
-	    </fileset>
-	    <fileset dir="install/htdocs/sv/resource"/>
+	    <fileset dir="install/htdocs/images" />
+	</copy>
+
+	<copy todir="${imcmsimages}">
+	    <fileset dir="install/htdocs/imcmsimages"/>
 	</copy>
 	<copy todir="${webroot}" filtering="true">
 	    <fileset dir="templates">
@@ -500,7 +500,7 @@
 	    depends="language-properties"
 	    description="Copies the image-browse images for one language.">
 
-	<copy todir="${images}/${language}/admin">
+	<copy todir="${imcmsimages}/${language}/admin">
 	    <fileset dir="install/htdocs/${srclanguage}/imagebrowse"/>
 	</copy>
 
@@ -698,7 +698,7 @@
 	    description="Copies the calender-images for one language."
 	    if="build-calender">
 
-	<copy todir="${images}/${language}/107">
+	<copy todir="${imcmsimages}/${language}/107">
 	    <fileset dir="templates/${srclanguage}/calender/images" includes="*"/>
 	</copy>
 
@@ -795,7 +795,7 @@
 	    description="Copies the conference-images for one language."
 	    if="build-conference">
 
-	<copy todir="${images}/${language}/102/original">
+	<copy todir="${imcmsimages}/${language}/102/original">
 	    <fileset dir="templates/${srclanguage}/conf/original/images" includes="*"/>
 	</copy>
 
@@ -963,7 +963,7 @@
 	    description="Copies the billboard-images for one language."
 	    if="build-billboard">
 
-	<copy todir="${images}/${language}/104/original">
+	<copy todir="${imcmsimages}/${language}/104/original">
 	    <fileset dir="templates/${srclanguage}/billboard/original/images" includes="*"/>
 	</copy>
 
@@ -1036,7 +1036,7 @@
 	    depends="language-properties"
 	    description="Copies the help-images for one language.">
 
-	<copy todir="${images}/${language}/helpimages">
+	<copy todir="${imcmsimages}/${language}/helpimages">
 	    <fileset dir="install/htdocs/${srclanguage}/helpimages" includes="*"/>
 	</copy>
 

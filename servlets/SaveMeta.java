@@ -20,7 +20,6 @@ public class SaveMeta extends HttpServlet {
 
 
     private final static Category mainLog = Category.getInstance(IMCConstants.MAIN_LOG);
-    private final static DateFormat logdateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;
 
     /**
        init()
@@ -200,30 +199,35 @@ public class SaveMeta extends HttpServlet {
 	// Here's some mutilation!
 	// activated_date and activated_time need to be merged, and likewise with archived_date and archived_time
 
-	SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm") ;
+	SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
+	SimpleDateFormat timeformat = new SimpleDateFormat("HH:mm") ;
 
 	String activated_date = req.getParameter("activated_date") ;
 	String activated_time = req.getParameter("activated_time") ;
 	String activated_datetime = null ;
-	if ( activated_date != null && activated_time != null ) {
-	    activated_datetime = activated_date + ' ' + activated_time ;
-	    try {
-		dateformat.parse(activated_datetime) ;
-	    } catch (ParseException ex) {
-		activated_datetime = null ;
-	    }
+	try {
+	    dateformat.parse(activated_date) ;
+	    activated_datetime = activated_date ;
+	    timeformat.parse(activated_time) ;
+	    activated_datetime += ' ' + activated_time ;
+	} catch (ParseException pe) {
+	    // activated_datetime contains as much as we want.
+	} catch (NullPointerException npe) {
+	    // activated_datetime contains as much as we want.
 	}
 
 	String archived_date = req.getParameter("archived_date") ;
 	String archived_time = req.getParameter("archived_time") ;
 	String archived_datetime = null ;
-	if ( archived_date != null && archived_time != null ) {
-	    archived_datetime = archived_date + ' ' + archived_time ;
-	    try {
-		dateformat.parse(archived_datetime) ;
-	    } catch (ParseException ex) {
-		archived_datetime = null ;
-	    }
+	try {
+	    dateformat.parse(archived_date) ;
+	    archived_datetime = archived_date ;
+	    timeformat.parse(archived_time) ;
+	    archived_datetime += ' ' + archived_time ;
+	} catch (ParseException pe) {
+	    // archived_datetime contains as much as we want.
+	} catch (NullPointerException npe) {
+	    // archived_datetime contains as much as we want.
 	}
 
 	//ok here we check if the createdate is requested to bee changed
@@ -250,7 +254,7 @@ public class SaveMeta extends HttpServlet {
 		modified_datetime = null ;
 	    }
 	}
-		
+
 	// If target is set to '_other', it means the real target is in 'frame_name'.
 	// In this case, set target to the value of frame_name.
 	String target = (String)inputMap.get("target") ;
@@ -350,8 +354,13 @@ public class SaveMeta extends HttpServlet {
 	    {
 		template2 = req.getParameter("default_template_set_2").equals("")? "-1":req.getParameter("default_template_set_2");
 	    }
-	String sqlStr = "activated_datetime = "+(null == activated_datetime ? "NULL" : "'"+activated_datetime+"'")+
-	    ",archived_datetime = "+(null == archived_datetime ? "NULL" : "'"+archived_datetime+"'") + ",";
+	String sqlStr = "" ;
+	if (null != req.getParameter("activated_date")) {
+	    sqlStr += "activated_datetime = "+(null == activated_datetime ? "NULL" : "'"+activated_datetime+"'") + "," ;
+	}
+	if (null != req.getParameter("archived_date")) {
+	    sqlStr += "archived_datetime = "+(null == archived_datetime ? "NULL" : "'"+archived_datetime+"'") + ",";
+	}
 
 	Enumeration propkeys = metaprops.propertyNames() ;
 	while ( propkeys.hasMoreElements() ) {
@@ -391,12 +400,12 @@ public class SaveMeta extends HttpServlet {
 	imcref.sqlUpdateProcedure( "UpdateDefaultTemplates '"+meta_id+"','"+template1+"','"+template2+"'") ;
 
 	//if the administrator wants to change the date we does it here
-	if (created_datetime != null) {			
+	if (created_datetime != null) {
 	    //we did got a ok date so lets save it to db
 	    sqlStr = "update meta set date_created ='"+created_datetime+ "' where meta_id = "+meta_id ;
 	    imcref.sqlUpdateQuery(sqlStr) ;
-	}		
-	if (modified_datetime != null) {			
+	}
+	if (modified_datetime != null) {
 	    //we did got a ok date so lets save it to db
 	    sqlStr = "update meta set date_modified ='"+modified_datetime+ "' where meta_id = "+meta_id ;
 	    imcref.sqlUpdateQuery(sqlStr) ;
@@ -404,7 +413,7 @@ public class SaveMeta extends HttpServlet {
 
 	// Update the date_modified for all parents.
 	imcref.sqlUpdateProcedure( "UpdateParentsDateModified "+meta_id) ;
-		
+
 	///**************** section index word stuff *****************
 	//ok lets handle the the section stuff save to db and so on
 	//lets start an see if we got any request to change the inherit one
@@ -414,8 +423,8 @@ public class SaveMeta extends HttpServlet {
 	    //ok lets update the db
 	    imcref.sqlUpdateProcedure("SectionAddCrossref " + meta_id +", " +section_id);
 	}
-	
-	
+
+
 	//**************** end section index word stuff *************
 
 	// Let's split this joint!
@@ -425,9 +434,8 @@ public class SaveMeta extends HttpServlet {
 	}
 
 	//lets log to mainlog that the user done stuff
-	mainLog.info(logdateFormat.format(new java.util.Date())+"Metadata on ["+meta_id+"] updated by user: [" + user.getFullName() + "]");
+	mainLog.info("Metadata on ["+meta_id+"] updated by user: [" + user.getFullName() + "]");
 
 	return ;
     }
-
 }
