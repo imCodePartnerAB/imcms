@@ -6,6 +6,7 @@ import imcode.server.user.UserDomainObject;
 
 import java.util.*;
 import java.io.IOException;
+import java.io.Serializable;
 
 import com.imcode.imcms.servlet.admin.DocumentComposer;
 
@@ -16,7 +17,7 @@ import javax.servlet.ServletException;
 /**
  * Stores info about a document. *
  */
-public abstract class DocumentDomainObject implements IMCConstants, Cloneable {
+public abstract class DocumentDomainObject implements IMCConstants, Cloneable, Serializable {
 
     public final static int DOCTYPE_TEXT = 2;
     public final static int DOCTYPE_URL = 5;
@@ -300,7 +301,7 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable {
 
     public abstract void initDocumentFromDb( DocumentMapper documentMapper ) ;
 
-    public static class DocumentProperties implements Cloneable {
+    public static class DocumentProperties implements Cloneable, Serializable {
 
         private Date activatedDatetime;
         private Date archivedDatetime;

@@ -15,7 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -33,10 +32,7 @@ public class ImageBrowse extends HttpServlet {
     private final static String IMG_PREVIOUS_LIST_TEMPLATE = "Admin_Img_List_Previous.html";
 
     private final static Logger log = Logger.getLogger( "ImageBrowse" );
-
-    /**
-     * doGet
-     */
+    public static final String PARAMETER__CALLER = "caller";
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws IOException {
         doGet( req, res );
@@ -69,9 +65,7 @@ public class ImageBrowse extends HttpServlet {
                              ? "" : request.getParameter( "dirlist_preset" );
         }
 
-        HttpSession session = request.getSession( false );
         if ( request.getParameter( "PREVIOUS_IMG" ) != null || request.getParameter( "NEXT_IMG" ) != null ) {
-            session.removeAttribute( "ImageBrowse.optionlist" );
             img_preset = null;
         }
 
@@ -268,7 +262,7 @@ public class ImageBrowse extends HttpServlet {
 
         ImageBrowseBean formBean = new ImageBrowseBean();
 
-        String caller = request.getParameter( "caller" );
+        String caller = request.getParameter( PARAMETER__CALLER );
         formBean.setCaller( caller );
 
         formBean.setMetaId( meta_id );
@@ -292,7 +286,6 @@ public class ImageBrowse extends HttpServlet {
 
         // används denna? vec.add( "#SERVLET_URL#" );
 
-        session.setAttribute( "ImageBrowse.optionlist", imgList );
         request.setAttribute( IMAGE_BROWSE_BEAN, formBean );
 
         try {

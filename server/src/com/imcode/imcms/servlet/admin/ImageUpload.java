@@ -28,8 +28,6 @@ public class ImageUpload extends HttpServlet {
 
         HttpSession session = req.getSession( true );
 
-        session.removeAttribute( "ImageBrowse.optionlist" );
-
         byte buffer[] = new byte[length];
         int bytes_read = 0;
         while ( bytes_read < length ) {
