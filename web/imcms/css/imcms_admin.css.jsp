@@ -180,4 +180,25 @@ TH   { font-size: 90%; }<%
 
 if (false) {
 	%></style><% // Dummy - To get the right colors in the editor
-} %>
+}
+
+/* ******************************************************************************************
+ *      Admin Manager Tab                                                                   *
+ ********************************************************************************************/
+%>
+
+SPAN.NavBtnTextAct, SPAN.NavBtnTextAct A:link, SPAN.NavBtnTextAct A:visited, SPAN.NavBtnTextAct A:hover {
+	font: bold 10px Verdana, Geneva, Helvetica, sans-serif;
+	color:#20568d;
+	text-decoration:none;
+}
+
+SPAN.NavBtnTextInact, SPAN.NavBtnTextInact A:link, SPAN.NavBtnTextInact A:visited, SPAN.NavBtnTextInact A:hover {
+	font: 10px Verdana, Geneva, Helvetica, sans-serif;
+	color:#ffffff;
+	text-decoration:none;
+}
+
+TD.NavBtnTextAct   { cursor: default; }
+TD.NavBtnTextInact { cursor: pointer; cursor: hand; }
+

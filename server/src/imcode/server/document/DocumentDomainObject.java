@@ -566,5 +566,34 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             }
         };
 
+        public final static DocumentComparator ARCHIVED_DATETIME = new DocumentDomainObject.DocumentComparator() {
+            protected int compareDocuments( DocumentDomainObject d1, DocumentDomainObject d2 ) {
+                return d1.getArchivedDatetime().compareTo( d2.getArchivedDatetime() ) ;
+            }
+        };
+
+        public final static DocumentComparator PUBLICATION_START_DATETIME = new DocumentDomainObject.DocumentComparator() {
+            protected int compareDocuments( DocumentDomainObject d1, DocumentDomainObject d2 ) {
+                return d1.getPublicationStartDatetime().compareTo( d2.getPublicationStartDatetime() ) ;
+            }
+        };
+
+        public final static DocumentComparator PUBLICATION_END_DATETIME = new DocumentDomainObject.DocumentComparator() {
+            protected int compareDocuments( DocumentDomainObject d1, DocumentDomainObject d2 ) {
+                return d1.getPublicationEndDatetime().compareTo( d2.getPublicationEndDatetime() ) ;
+            }
+        };
+
+        public final static DocumentComparator CREATED_DATETIME = new DocumentDomainObject.DocumentComparator() {
+            protected int compareDocuments( DocumentDomainObject d1, DocumentDomainObject d2 ) {
+                return d1.getCreatedDatetime().compareTo( d2.getCreatedDatetime() ) ;
+            }
+        };
+
+        public final static DocumentComparator STATUS = new DocumentDomainObject.DocumentComparator() {
+            protected int compareDocuments( DocumentDomainObject d1, DocumentDomainObject d2 ) {
+                return d1.getStatus() - d2.getStatus() ;
+            }
+        };
     }
 }
