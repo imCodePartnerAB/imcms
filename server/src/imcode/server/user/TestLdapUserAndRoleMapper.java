@@ -15,10 +15,8 @@ import java.util.Properties;
 public class TestLdapUserAndRoleMapper extends TestCase {
 
     private Properties ldapProperties = new Properties();
-    private String ldapUrl;
-    private String ldapBindDN;
-    String ldapUsername ;
-    String ldapPassword;
+    String testUserName;
+    String testPassword;
     private static final String LDAP_PROPERTIES_SYSTEM_PROPERTY = "test.ldap.properties";
     private static final String DEFAULT_LDAP_PROPERTIES_FILE = "build.properties";
     private LdapUserAndRoleMapper ldapUserAndRoleMapper;
@@ -32,12 +30,13 @@ public class TestLdapUserAndRoleMapper extends TestCase {
     LdapUserAndRoleMapper getLdapUserAndRoleMapper( String[] ldapAttributesMappedToRoles ) throws Exception {
         String propertyFileName = System.getProperty( LDAP_PROPERTIES_SYSTEM_PROPERTY, DEFAULT_LDAP_PROPERTIES_FILE );
         ldapProperties.load( new FileInputStream( propertyFileName ) );
-        ldapUrl = ldapProperties.getProperty( "ldap-url" );
-        ldapPassword = ldapProperties.getProperty( "ldap-password" );
-        ldapBindDN = ldapProperties.getProperty( "ldap-bind-dn" );
-        ldapUsername = ldapProperties.getProperty( "ldap-test-user" ) ;
-        if (StringUtils.isBlank( ldapUsername )) {
-            throw new Exception( "Set ldap-test-user in "+propertyFileName) ;
+        String ldapUrl = ldapProperties.getProperty( "ldap-url" );
+        String ldapPassword = ldapProperties.getProperty( "ldap-password" );
+        String ldapBindDN = ldapProperties.getProperty( "ldap-bind-dn" );
+        testUserName = ldapProperties.getProperty( "ldap-test-user" );
+        testPassword = ldapProperties.getProperty( "ldap-test-password" );
+        if ( StringUtils.isBlank( testUserName ) ) {
+            throw new Exception( "Set ldap-test-user in " + propertyFileName );
         }
 
         String ldapUserObjectClass = "person";
@@ -53,19 +52,19 @@ public class TestLdapUserAndRoleMapper extends TestCase {
     }
 
     public void testExistingUser() {
-        UserDomainObject user = findUser( ldapUsername );
-        assertEquals( ldapUsername, user.getLoginName() );
+        UserDomainObject user = findUser( testUserName );
+        assertEquals( testUserName, user.getLoginName() );
         assertNull( user.getPassword() );
     }
 
     private UserDomainObject findUser( String username ) {
         UserDomainObject user = ldapUserAndRoleMapper.getUser( username );
-        assertNotNull( "Search for user \""+username+"\"", user );
+        assertNotNull( "Search for user \"" + username + "\"", user );
         return user;
     }
 
     public void testAuthenticate() {
-        boolean userAuthenticates = ldapUserAndRoleMapper.authenticate( ldapUsername, ldapPassword );
+        boolean userAuthenticates = ldapUserAndRoleMapper.authenticate( testUserName, testPassword );
         assertTrue( userAuthenticates );
     }
 
@@ -80,7 +79,7 @@ public class TestLdapUserAndRoleMapper extends TestCase {
     }
 
     public void testGetRolesForUserLdapService() {
-        UserDomainObject user = findUser( ldapUsername );
+        UserDomainObject user = findUser( testUserName );
         String[] roleNames = ldapUserAndRoleMapper.getRoleNames( user );
         assertNotNull( roleNames );
         assertTrue( Arrays.asList( roleNames ).contains( LdapUserAndRoleMapper.DEFAULT_LDAP_ROLE ) );
