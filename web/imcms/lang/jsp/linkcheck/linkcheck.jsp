@@ -52,7 +52,7 @@
                                         <%= document.getId() %> - <%= document.getHeadline() %>
                                     </a>
                                 </td>
-                                <td>
+                                <td nowrap>
                                     <% if (documentMenuPairsContainingUrlDocument.length > 0) { %><a href="<%= request.getContextPath() %>/servlet/LinkCheck?<%= LinkCheck.REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID %>=<%= document.getId() %>"><% } %>
                                         <%= documentMenuPairsContainingUrlDocument.length %> <? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/parent_count_unit ?>
                                     <% if (documentMenuPairsContainingUrlDocument.length > 0) { %></a><% } %>
