@@ -162,10 +162,10 @@ public class DocumentMapper {
             } catch( ParseException pe ) {
                 document.setArchivedDatetime( null );
             }
-            if( document.getDocumentType() == IMCConstants.DOCTYPE_FILE ) {
+            if( document.getDocumentType() == DocumentDomainObject.DOCTYPE_FILE ) {
                 document.setFilename( sprocGetFilename( service, metaId ) );
             }
-            if( document.getDocumentType() == IMCConstants.DOCTYPE_TEXT ) {
+            if( document.getDocumentType() == DocumentDomainObject.DOCTYPE_TEXT ) {
                 String[] textdoc_data = sprocGetTestDocData( metaId );
 
                 if( textdoc_data.length >= 4 ) {
@@ -258,11 +258,9 @@ public class DocumentMapper {
         }
     }
 
-    public void sqlUpdateModifiedDatesOnDocumentAndItsParent( int meta_id, Date date, Date time ) {
-        String modifiedDateStr = DateHelper.DATE_FORMAT.format( date );
-        String modifiedTimeStr = DateHelper.DATE_FORMAT.format( time );
-        String modifiedTimeDateStr = modifiedDateStr + " " + modifiedTimeStr;
-        String sqlStr = "update meta set date_modified ='" + modifiedTimeDateStr + "' where meta_id = " + meta_id;
+    public void sqlUpdateModifiedDatesOnDocumentAndItsParent( int meta_id, Date dateTime ) {
+        String modifiedDateTimeStr = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( dateTime );
+        String sqlStr = "update meta set date_modified ='" + modifiedDateTimeStr + "' where meta_id = " + meta_id;
         service.sqlUpdateQuery( sqlStr );
         // Update the date_modified for all parents.
         String[] params = new String[]{String.valueOf( meta_id )};
@@ -460,53 +458,5 @@ public class DocumentMapper {
         }
         return user_doc_types;
     }
-
-    public static void extractDocument( DocumentDomainObject inout, Map documentData ) {
-        String activatedDateTimeStr = (String)documentData.get( "activated_datetime" );
-        Date activatedDateTime = DateHelper.createDateObjectFromString( activatedDateTimeStr );
-        inout.setActivatedDatetime( activatedDateTime );
-
-        String archivedDateTimeStr = (String)documentData.get( "archived_datetime" );
-        Date archivedDateTime = DateHelper.createDateObjectFromString( archivedDateTimeStr );
-        inout.setArchivedDatetime( archivedDateTime );
-
-        String createdDateTimeStr = (String)documentData.get( "date_created" );
-        Date createdDateTime = DateHelper.createDateObjectFromString( createdDateTimeStr );
-        inout.setCreatedDatetime( createdDateTime );
-
-        String docTypeStr = (String)documentData.get( "doc_type" );
-        if( docTypeStr != null ) {
-            inout.setDocumentType( Integer.parseInt( docTypeStr ) );
-        }
-
-// endast för file dokument        inout.setFilename( (String)documentData.get( "" ) );
-
-        inout.setHeadline( (String)documentData.get( "meta_headline" ) );
-        inout.setImage( (String)documentData.get( "meta_image" ) );
-
-// endast för text dokument        inout.setMenuSortOrder( Integer.parseInt( (String)documentData.get( "" ) ) );
-
-        String metaId = (String)documentData.get( "meta_id" );
-        if( metaId != null ) {
-            inout.setMetaId( Integer.parseInt( metaId ) );
-        }
-
-        String modifiedDateTimeStr = (String)documentData.get( "date_modified" );
-        Date modifedDateTime = DateHelper.createDateObjectFromString( modifiedDateTimeStr );
-        inout.setModifiedDatetime( modifedDateTime );
-
-/* annan tabell än meta
-        inout.setSection( (String)documentData.get( "" ) );
-*/
-        inout.setTarget( (String)documentData.get( "target" ) );
-
-/* annan tabell än meta
-        Template template = new Template()
-        inout.setTemplate( template );
-        inout.setTemplateGroupId( Integer.parseInt( (String)documentData.get( "" ) ) );
-*/
-        inout.setText( (String)documentData.get( "meta_text" ) );
-    }
-
 }
 

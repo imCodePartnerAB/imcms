@@ -8,5 +8,5 @@
     Document document = documentMapper.createNewTextDocument( parentId, parentMenuNumber ) ;
     document.setHeadline( "Nyligen skapat dokument" );
 %>
-Skapade dokument med id : <%= document.getId() %>
-Done.
+Skapade dokument med id "<%= document.getId() %>"  med länk från dokument med id "<%= parentId %>".<br>
+Se resultatet <a href="../servlet/GetDoc?meta_id=1001">här.</a><br>

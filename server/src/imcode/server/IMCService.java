@@ -2740,8 +2740,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return new ShoppingOrderSystemImpl( this );
     }
 
-    public void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date date, Date time ) {
-        documentMapper.sqlUpdateModifiedDatesOnDocumentAndItsParent( metaId, date, time );
+    public void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime ) {
+        documentMapper.sqlUpdateModifiedDatesOnDocumentAndItsParent( metaId, dateTime );
     }
 
 }

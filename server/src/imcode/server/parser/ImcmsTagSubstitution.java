@@ -7,6 +7,7 @@ import javax.servlet.http.Cookie ;
 
 import org.apache.oro.text.regex.* ;
 import imcode.server.* ;
+import imcode.server.util.DateHelper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.* ;
@@ -448,7 +449,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     **/
     public String tagDatetime (Properties attributes) {
-	String format =  attributes.getProperty("format") == null ? DATETIME_FORMAT_STD : attributes.getProperty("format") ;
+	String format =  attributes.getProperty("format") == null ? DateHelper.DATETIME_FORMAT_STRING : attributes.getProperty("format") ;
 	String type	  =  attributes.getProperty("type")	;
 	String lang	  =  attributes.getProperty("lang")	;
 

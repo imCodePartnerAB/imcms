@@ -520,6 +520,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-    public void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date date, Date time ) {
+    public void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime ) {
     }
 }

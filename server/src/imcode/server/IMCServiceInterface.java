@@ -393,5 +393,5 @@ public interface IMCServiceInterface {
     /** Get an interface to the shopping order system **/
     public imcode.util.shop.ShoppingOrderSystem getShoppingOrderSystem() ;
 
-    void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date date, Date time );
+    void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime );
 }

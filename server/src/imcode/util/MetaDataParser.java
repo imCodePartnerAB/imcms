@@ -5,6 +5,7 @@ import java.util.* ;
 import java.text.* ;
 
 import imcode.server.* ;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.external.diverse.* ;
 import imcode.util.* ;
@@ -451,7 +452,7 @@ public class MetaDataParser {
 		ftr.add("#sets_precedence#") ;     ftr.add(sets_precedence) ;
 		ftr.add("#set_1#") ;               ftr.add(imcref.parseDoc(null,"permissions/set_1_button.html",lang_prefix)) ;
 		ftr.add("#set_2#") ;               ftr.add(imcref.parseDoc(null,"permissions/set_2_button.html",lang_prefix)) ;
-		if (doc_type == IMCConstants.DOCTYPE_TEXT) {
+		if (doc_type == DocumentDomainObject.DOCTYPE_TEXT) {
 		    ftr.add("#new_set_1#") ;       ftr.add(imcref.parseDoc(null,"permissions/new_set_1_button.html",lang_prefix)) ;
 		    ftr.add("#new_set_2#") ;       ftr.add(imcref.parseDoc(null,"permissions/new_set_2_button.html",lang_prefix)) ;
 			//ok lets setup the default_template-option-lists for restricted 1 & 2
@@ -472,7 +473,7 @@ public class MetaDataParser {
 		ftr.add("#set_1#") ;           ftr.add("") ;
 		ftr.add("#new_set_1#") ;       ftr.add("") ;
 		ftr.add("#set_2#") ;           ftr.add(imcref.parseDoc(null,"permissions/set_2_button.html",lang_prefix)) ;
-		if (doc_type == IMCConstants.DOCTYPE_TEXT) {
+		if (doc_type == DocumentDomainObject.DOCTYPE_TEXT) {
 			default_templates = getDefaultTemplateOptionList(imcref, user, temp_default_templates, meta_id, lang_prefix, false );
 
 		    ftr.add("#new_set_2#") ;   ftr.add(imcref.parseDoc(null,"permissions/new_set_2_button.html",lang_prefix)) ;
@@ -608,7 +609,7 @@ public class MetaDataParser {
 	    // We'll then have to output a permissionform for all the different doc-types.
 	    // In case we get other doc-types in which we can create documents we also need to change this.
 
-	    if (doc_type != IMCConstants.DOCTYPE_TEXT) {
+	    if (doc_type != DocumentDomainObject.DOCTYPE_TEXT) {
 		return "" ;
 	    }
 	    newstr = "New" ;

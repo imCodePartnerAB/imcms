@@ -14,7 +14,7 @@ public class Document {
     SecurityChecker securityChecker;
     DocumentDomainObject internalDocument;
     DocumentMapper documentMapper;
-    DocumentPermissionSetMapper documentPermissionMapper;
+    private DocumentPermissionSetMapper documentPermissionMapper;
 
     public Document( SecurityChecker securityChecker, DocumentDomainObject document, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
         this.securityChecker = securityChecker;
@@ -33,7 +33,7 @@ public class Document {
         return result;
     }
 
-    private Map wrapDomainObjectsInMap( Map rolesMappedToPermissionsIds ) {
+    private static Map wrapDomainObjectsInMap( Map rolesMappedToPermissionsIds ) {
         Map result = new HashMap();
         Set keys = rolesMappedToPermissionsIds.keySet();
         Iterator keyIterator = keys.iterator();
@@ -43,12 +43,6 @@ public class Document {
             DocumentPermissionSet documentPermissionSet = new DocumentPermissionSet( documentPermissionSetDO );
             result.put( roleName, documentPermissionSet );
         }
-        return result;
-    }
-
-    public DocumentPermissionSet getPermissionSetRestrictedTwo() {
-        DocumentPermissionSetDomainObject restrictedTwo = documentPermissionMapper.getPermissionSetRestrictedTwo( internalDocument );
-        DocumentPermissionSet result = new DocumentPermissionSet( restrictedTwo );
         return result;
     }
 

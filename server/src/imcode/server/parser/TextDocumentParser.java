@@ -8,6 +8,7 @@ import org.apache.oro.text.regex.* ;
 
 import imcode.server.parser.* ;
 import imcode.server.* ;
+import imcode.server.util.DateHelper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.server.db.DBConnect;
@@ -362,7 +363,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    Menu currentMenu = null ;
 	    int old_menu = -1 ;
 	    java.util.Date now = new java.util.Date() ;
-	    SimpleDateFormat DATETIMEFORMAT = new SimpleDateFormat(DATETIME_FORMAT_STD) ;
+	    SimpleDateFormat DATETIMEFORMAT = DateHelper.DATE_TIME_FORMAT_IN_DATABASE;
 
 	    Iterator childIt = childs.iterator() ;
 	    while ( childIt.hasNext() ) {

@@ -4,6 +4,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.external.diverse.* ;
 import imcode.server.* ;
+import imcode.server.document.DocumentDomainObject;
 import imcode.util.* ;
 import imcode.util.fortune.* ;
 import java.text.*;
@@ -63,8 +64,8 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	String date1 = "";
 	String date2 = "";
 	String text  = "";
-	String errMsgDate	= imcref.parseExternalDoc( null, DATE_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
-	String errMsgTxt	= imcref.parseExternalDoc( null, TEXT_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+	String errMsgDate	= imcref.parseExternalDoc( null, DATE_ERROR , user.getLangPrefix(), DocumentDomainObject.DOCTYPE_FORTUNES+"");
+	String errMsgTxt	= imcref.parseExternalDoc( null, TEXT_ERROR , user.getLangPrefix(), DocumentDomainObject.DOCTYPE_FORTUNES+"");
 
 	if (req.getParameter("save")!=null) {
 
@@ -213,7 +214,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	values.add("#options#");
 	values.add(buff.toString());
 
-	String parsed = imcref.parseExternalDoc( values, ADMIN_TEMPLATE, user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+	String parsed = imcref.parseExternalDoc( values, ADMIN_TEMPLATE, user.getLangPrefix(), DocumentDomainObject.DOCTYPE_FORTUNES+"");
 	out.write(parsed);
 	return;
 

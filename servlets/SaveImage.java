@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.server.* ;
+import imcode.server.util.DateHelper;
 import imcode.util.* ;
 
 
@@ -403,7 +404,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 	} else {
 	    imcref.saveImage(meta_id,user,img_no,image ) ;
 
-	    SimpleDateFormat dateformat = new SimpleDateFormat(DATETIME_FORMAT_STD) ;
+	    SimpleDateFormat dateformat = DateHelper.DATE_TIME_FORMAT_IN_DATABASE ;
 	    Date dt = imcref.getCurrentDate() ;
 
 	    sqlStr = "update meta set date_modified = '"+dateformat.format(dt)+"' where meta_id = "+meta_id ;

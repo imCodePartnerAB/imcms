@@ -9,19 +9,6 @@ import java.util.Date;
 
 public class DocumentDomainObject implements IMCConstants {
 
-    /**
-     * These are taken from the databse table doc_types
-     */
-    public static final String TEXT_DOC_TYPE = "2";
-    public static final String URL_DOC_TYPE = "5";
-    public static final String BROWSER_CONTROLL_DOC_TYPE = "6";
-    public static final String HTML_DOC_TYPE = "7";
-    public static final String FILE_DOC_TYPE = "8";
-    public static final String CONFERANCE_DOC_TYPE = "102";
-    public static final String CHAT_DOC_TYPE = "103";
-    public static final String BILLBOARD_DOC_TYPE = "104";
-    public static final String CALENDAR_DOC_TYPE = "107";
-
     private int metaId;
     private int documentType;
     private boolean archived;
@@ -42,7 +29,30 @@ public class DocumentDomainObject implements IMCConstants {
     private Template template;
     private int templateGroupId;
     private int menuSortOrder;
-
+    /** Document-type for text-documents. **/
+    public final static int DOCTYPE_TEXT       = 2 ;
+    /** Document-type for url-documents. **/
+    public final static int DOCTYPE_URL        = 5 ;
+    /** Document-type for browser-documents. **/
+    public final static int DOCTYPE_BROWSER    = 6 ;
+    /** Document-type for html-documents. **/
+    public final static int DOCTYPE_HTML       = 7 ;
+    /** Document-type for files. **/
+    public final static int DOCTYPE_FILE       = 8 ;
+    /** Document-type for diagrams. **/
+    public final static int DOCTYPE_DIAGRAM    = 101 ;
+    /** Document-type for conferences. **/
+    public final static int DOCTYPE_CONFERENCE = 102 ;
+    /** Document-type for chats. **/
+    public final static int DOCTYPE_CHAT       = 103 ;
+    /** Document-type for billboards. **/
+    public final static int DOCTYPE_BILLBOARD  = 104 ;
+    /** Document-type for postcards. **/
+    public final static int DOCTYPE_POSTCARD   = 105 ;
+    /** Document-type for fortune **/
+    public final static int DOCTYPE_FORTUNES   = 106 ;
+    /** Document-type for calender **/
+    public final static int DOCTYPE_CALENDER   = 107 ;
 
     /**
      * Get the value of metaId.

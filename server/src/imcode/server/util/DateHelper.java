@@ -6,9 +6,10 @@ import java.text.SimpleDateFormat;
 
 public class DateHelper {
     /** start using theses instead in all places suitable */
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd" );
-    public static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat( "HH:mm" );
-    public static final SimpleDateFormat DATE_TIME_FORMAT_IN_DATABASE = new SimpleDateFormat( "yyyy-MM-dd HH:mm" );
+    private static final String DATE_FORMAT_STRING = "yyyy-MM-dd";
+    private static final String TIME_FORMAT_STRING = "HH:mm";
+    public final static String DATETIME_FORMAT_STRING = DATE_FORMAT_STRING + " " + TIME_FORMAT_STRING ;
+    public static final SimpleDateFormat DATE_TIME_FORMAT_IN_DATABASE = new SimpleDateFormat( DATETIME_FORMAT_STRING );
     public static final SimpleDateFormat LOG_DATE_TIME_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSS " );
 
     public static Date createDateObjectFromString( String dateStr ) {

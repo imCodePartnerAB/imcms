@@ -37,7 +37,7 @@ public class TextDocument extends Document {
             String.valueOf( textType ) );
     }
 
-    public class TextField {
+    public static class TextField {
         IMCText imcmsText ;
 
         private TextField (IMCText imcmsText) {
