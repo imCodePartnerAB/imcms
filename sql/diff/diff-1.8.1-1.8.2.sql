@@ -248,6 +248,16 @@ ALTER TABLE dbo.document_categories WITH NOCHECK ADD CONSTRAINT
 GO
 COMMIT
 BEGIN TRANSACTION
+ALTER TABLE [dbo].[document_categories] ADD CONSTRAINT
+	[FK_document_categories_categories] FOREIGN KEY
+	(
+		[category_id]
+	) REFERENCES [dbo].[categories] (
+		[category_id]
+	)
+GO
+COMMIT
+BEGIN TRANSACTION
 ALTER TABLE dbo.doc_permission_sets WITH NOCHECK ADD CONSTRAINT
 	FK_permission_sets_meta FOREIGN KEY
 	(

@@ -137,7 +137,7 @@ class DirectoryIndex implements DocumentIndex {
             try {
                 addDocumentToIndex( documentMapper.getDocument( documentIds[i] ), indexWriter );
             } catch ( Exception ex ) {
-                log.error( "Couln't index document with meta_id " + documentIds[i] + ", trying next document.", ex );
+                log.error( "Could not index document with meta_id " + documentIds[i] + ", trying next document.", ex );
             }
 
             if ( indexingLogSchedule.isTime() ) {
