@@ -289,14 +289,14 @@ public class ShowDiagram extends HttpServlet {
 			dv.setDataSource( ds );
 
 			frame.add( chart );
-			Image image = chart.snapshot( ) ;    
+			Image image = chart.snapshot() ;
 
 			// Encode the off screen image into a JPEG and send it to the client
 			res.setContentType( "image/jpeg" );
 			//			GifEncoder encoder = new GifEncoder( image, out );
-			JPEGEncodeParam jep = JPEGCodec.getDefaultJPEGEncodeParam((BufferedImage)image) ;
-			jep.setQuality(0.80F,false) ;
-			JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out,jep) ;
+			//JPEGEncodeParam jep = JPEGCodec.getDefaultJPEGEncodeParam(image) ;
+			//jep.setQuality(0.80F,false) ;
+			JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out) ;
 			//			encoder.encode( );
 			encoder.encode((BufferedImage)image) ;
 		}
