@@ -134,6 +134,7 @@ public class TemplateAdd extends HttpServlet {
 
 	if ( mp.getParameter("cancel") != null ) {
 	    Utility.redirect(req,res,"TemplateAdmin") ;
+		return;
 	}
 
 	// Plocka ut språket, så vi vet vilket vi editerar...
