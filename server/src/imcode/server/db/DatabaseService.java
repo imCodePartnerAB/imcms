@@ -17,6 +17,12 @@ import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
+/**
+ * STOP! Before changing anyting in this class, make sure to run (all) the tests in class TestDatabaseService.
+ * They can take a while, but it is essentialt to keep this class working with multiple databases that those tests are
+ * run before and after a change, and that new tests is added as soon as a new functionality in this class is added.
+ * /Hasse
+ */
 public class DatabaseService {
     final static int MIMER = 0;
     final static int SQL_SERVER = 1;
@@ -695,5 +701,36 @@ public class DatabaseService {
             }
         } );
         return (View_userAndPhone[])queryResult.toArray( new View_userAndPhone[queryResult.size()] );
+    }
+
+    int sproc_DocumentDelete( int meta_id ) {
+        SQLProcessor.SQLTransaction transaction = sqlProcessor.startTransaction();
+        int rowCount = 0;
+        try {
+            Object[] paramValues = new Object[]{ new Integer(meta_id) };
+            rowCount += transaction.executeUpdate( "delete from meta_classification where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from childs where to_meta_id = 	?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from childs where meta_id =	?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from text_docs where meta_id = 	?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from texts where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from images where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from roles_rights where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from user_rights where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from url_docs where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from browser_docs where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from fileupload_docs where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from frameset_docs where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from new_doc_permission_sets_ex where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from new_doc_permission_sets where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from doc_permission_sets_ex where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from doc_permission_sets where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from includes where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from meta_section where meta_id = ?", paramValues );
+            rowCount += transaction.executeUpdate( "delete from meta where meta_id = ?", paramValues );
+            transaction.commit();
+        } catch( SQLException e ) {
+            transaction.rollback();
+        };
+        return rowCount;
     }
 }

@@ -296,6 +296,12 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertTrue( name.equalsIgnoreCase( nameResult ) );
     }
 
+    public void test_sproc_DocumentDelete() {
+        assertEquals( 5, sqlServer.sproc_DocumentDelete(1001) );
+        assertEquals( 5, mySql.sproc_DocumentDelete(1001) );
+        assertEquals( 5, mimer.sproc_DocumentDelete(1001) );
+    }
+
     // Below is helper functions to more than one test.
 
     private static DatabaseService.Table_users static_createDummyUser( int nextFreeUserId ) {
