@@ -353,6 +353,8 @@ public class Document {
             final Document d2 = (Document)o2;
             try {
                 return compareDocuments( d1, d2 );
+            } catch ( NullPointerException npe ) {
+                throw new NullPointerException( "Tried sorting on null fields! You need to call .nullsFirst() or .nullsLast() on your Comparator.") ;
             } catch ( NoPermissionException e ) {
                 throw new RuntimeException( e );
             }
@@ -368,7 +370,7 @@ public class Document {
 
         public final static Comparator HEADLINE = new Comparator() {
             protected int compareDocuments( Document d1, Document d2 ) throws NoPermissionException {
-                return d1.getHeadline().compareTo( d2.getHeadline() );
+                return d1.getHeadline().compareToIgnoreCase( d2.getHeadline() );
             }
         };
 
