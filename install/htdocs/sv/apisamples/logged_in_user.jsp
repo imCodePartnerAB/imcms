@@ -1,6 +1,5 @@
-<%@ page import="com.imcode.imcms.ContentManagementSystem,
-                 com.imcode.imcms.RequestConstants,
-                 com.imcode.imcms.User"%>
+<%@ page import="com.imcode.imcms.*"%>
+
 <%
 ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
 User accessingUser = imcmsSystem.getCurrentUser();

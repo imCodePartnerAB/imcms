@@ -5,7 +5,9 @@ Christoffer:
 - Säkerheten och *.jsp sidor. Ska vi lägga loginfilter på alla *.jsp sidor? Eller *.*, går det?
 
 Hasse
+- Gå igenom och kolla vad taggarna heter och hänvisa till i api:et?
 - Namnen på rättigheterna, jämför med htmls sidan, är det samma som i databasen. På engelska och svenska?
+- Tänk igenom TextDocument och Document klasserna. Ska det vara arv?
 - Språkparameter i API:et där det behövs. Javas inbyggda?
 - Gå igenom så att det sker säkerhetskollar på samtliga metoder
 - Gå igenom API klasserna så att de är dokumenterade och logiska namn
@@ -20,22 +22,20 @@ Hillar, prioritera
 (?) Duplicering av APIet i Servletarna
 
 API:et (prio)
-(1,3) Include av externa system
-(1) Visa behörighet för sida
-(2) "" password
 (2) Skapa behörighet på viss sida
-(2) Skapa ny sida med valfri dokument-typ i valfri meny på valfri sida  (AdminDoc->SaveNewMeta)
-? Hillar, alla typer?
-(2) Skapa/ändra docinfo för valfri sida
+(2) Skapa/ändra docinfo för valfri sida (ej avancerat första läget)
 (2) Ange formatmall och format-grupp för valfri sida
+(2) Skapa nytt textdokument i valfri meny på valfri sida (AdminDoc->SaveNewMeta)
 (2) Ange documentnummer för valfri sida och valfri includ tag
-(?) API: förhindra tilldelning av User (döpa om? mejla Hillar och Lennart)
+(2) API: förhindra tilldelning av User (döpa om? mejla Hillar och Lennart) Går ej att fixa idag annat än att gå in i dabasen.
+(1,3) Include av externa system
 (3) Visa/tilldela vilka roller en användare som är user admin får administrera
+(3) Visa behöriga användare för viss sida
 
-(4) Hantering av extern användare, useradmin.jsp, och rollerna, useradmin
-(4) Visa behöriga användare för viss sida
-(4) Gör det möjligt att öppna upp säkerheten
+(4) Avancerad document info
 (4) Skapa ny avdelning
+(4) Hantering av extern användare, useradmin.jsp, och rollerna, useradmin
+(4) Gör det möjligt att öppna upp säkerheten
 (4) Ta bort roll från användare
 
 Snarast

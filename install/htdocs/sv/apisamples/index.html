@@ -13,14 +13,19 @@ Warning!<br>
 These links works differently depending what user you are logged in as, and what permissions that user has.<br>
 When logged out, the only link that should work is the sample of exception handling at the bottom of this document.</p>
 <p>
+
+<h3>How to use this examples</h3>
+When you click on a jsp-link below that page is going to be run, and produce a result.<br>
+To see the actual code, pleas open the page in your favorit java/jsp editing environment.<br>
+
 <h3>Who you are</h3>
-To see what user you are goto <a href="logged_in_user.jsp">logged_in_user.jsp</a><br>
-To change, just log in as a different user: <a href="../login/index.html">Logg in</a><br>
-and to try the links below as a non logged in user, log out: <a href="../servlet/LogOut">Logg out</a>
+To see what user you are logged in as, see <a href="logged_in_user.jsp">logged_in_user.jsp</a><br>
+Log in as a different user: <a href="../login/index.html">../login/index.html</a><br>
+Log out (and become an non-logged in user) : <a href="../servlet/LogOut">../servlet/LogOut</a>
 </p>
 
 <h3>Users</h3>
-<a href="user_listing.jsp">user_listing.jsp</a><br>
+To see what useras that exists in the system: <a href="user_listing.jsp">user_listing.jsp</a><br>
 <h3>Roles</h3>
 <a href="role_get_user_with_role.jsp">role_get_user_with_role.jsp</a><br>
 Add: <a href="role_create_role.jsp">role_create_role.jsp</a><br>
@@ -29,7 +34,10 @@ Delete: <a href="role_delete_role.jsp">role_delete_role.jsp</a><br>
 <h3>Document</h3>
 The following samples is modifying document 1001.<br>
 It lookes like this: <a href="../servlet/GetDoc?meta_id=1001">document</a><br>
-
+<br>
+Get the information about the document <a href="document_get_document_info.jsp">document_get_document_info.jsp</a><br>
+Change the document information <a href="document_change_document_info.jsp">document_change_document_info.jsp</a><br>
+<br>
 Get the first document field from the document, <a href="document_get_text_from_field.jsp">document_get_text_from_field.jsp</a><br>
 Change the first and the second field, <a href="document_set_text_field.jsp">document_set_text_field.jsp</a><br>
 Clear the first and the second field, </a><a href="document_clear_text_field.jsp">document_clear_text_field.jsp</a><br>

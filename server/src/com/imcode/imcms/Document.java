@@ -57,4 +57,16 @@ public class Document {
         DocumentPermissionSet result = new DocumentPermissionSet( restrictedOne );
         return result;
     }
+
+    public String getHeadline() {
+        return internalDocument.getHeadline();
+    }
+
+    public String getMenuText() {
+        return internalDocument.getText();
+    }
+
+    public String getMenuImageURL() {
+        return internalDocument.getImage();
+    }
 }

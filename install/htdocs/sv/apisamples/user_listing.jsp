@@ -1,6 +1,6 @@
 <%@ page import="com.imcode.imcms.*" %>
 
-<h2>A simple sample of using the UserMapperBean and basic operations on a UserBean  </h2>
+<h2>Listing current users in the IMCMS system</h2>
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
     UserService userMapper = imcmsSystem.getUserService();

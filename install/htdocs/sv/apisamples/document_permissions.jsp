@@ -1,4 +1,4 @@
-<%@ page import="com.imcode.imcms.*, imcode.server.*,java.util.*" %>
+<%@ page import="com.imcode.imcms.*,java.util.*" %>
 
 <h1>Show document permissions</h1>
 There are three basic kinds of permissions<br>
