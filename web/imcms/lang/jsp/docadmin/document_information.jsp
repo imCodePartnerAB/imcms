@@ -30,12 +30,12 @@
 
 %><%!
 
-    String formatDatetime(Date datetime) {
+    String formatDatetimeWithParentheses(Date datetime) {
         if (null == datetime) {
             return "" ;
         }
         DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING+"'&nbsp;'"+DateConstants.TIME_FORMAT_NO_SECONDS_STRING ) ;
-        return dateFormat.format(datetime) ;
+        return "("+dateFormat.format(datetime)+")" ;
     }
 
     String formatDate(Date date) {
@@ -186,7 +186,7 @@ imcmsGui("mid", null);
                                         value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getPublicationStartDatetime()) ) %>">
                                 </td>
                                 <td>
-                                    &nbsp;(<%= formatDatetime( publicationStartDatetime ) %>)
+                                    &nbsp;<%= formatDatetimeWithParentheses( publicationStartDatetime ) %>
                                 </td>
                             </tr>
                         </table>
@@ -215,7 +215,7 @@ imcmsGui("mid", null);
                                     value="<%= StringEscapeUtils.escapeHtml( formatTime(archivedDatetime) ) %>">
                             </td>
                             <td>
-                                &nbsp;(<%= formatDatetime( archivedDatetime ) %>)
+                                &nbsp;<%= formatDatetimeWithParentheses( archivedDatetime ) %>
                             </td>
                         </tr>
                         </table>
@@ -244,7 +244,7 @@ imcmsGui("mid", null);
                                     value="<%= StringEscapeUtils.escapeHtml( formatTime(publicationEndDatetime) ) %>">
                             </td>
                             <td>
-                                &nbsp;(<%= formatDatetime( publicationEndDatetime ) %>)
+                                &nbsp;<%= formatDatetimeWithParentheses( publicationEndDatetime ) %>
                             </td>
                         </tr>
                         </table>
