@@ -1,1 +1,0 @@
-<option value="No_Choice" selected>-- Please select a line --</option>

@@ -1,1 +1,0 @@
-"Oops! You have not selected a text."
