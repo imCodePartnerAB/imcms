@@ -502,14 +502,14 @@ public abstract class DatabaseService {
         return (Table_phone[])queryResult.toArray( new Table_phone[queryResult.size()] );
     }
 
-    static class MoreThanOneTable_PhonesAndPhoneTypes {
+    static class MoreThanOneTable_phones_phonetypes {
         private int phone_id;
         private String number;
         private int user_id;
         private int phonetype_id;
         private String typename;
 
-        MoreThanOneTable_PhonesAndPhoneTypes( int phone_id, String number, int user_id, int phonetype_id, String typename ) {
+        MoreThanOneTable_phones_phonetypes( int phone_id, String number, int user_id, int phonetype_id, String typename ) {
             this.phone_id = phone_id;
             this.number = number;
             this.user_id = user_id;
@@ -520,7 +520,7 @@ public abstract class DatabaseService {
 
     // todo: Do we realy need to return user_id?
     // todo: This should be able to be used instead of sproc_GetUserPhones, why not?
-    MoreThanOneTable_PhonesAndPhoneTypes[] sproc_GetUserPhoneNumbers( int user_id ) {
+    MoreThanOneTable_phones_phonetypes[] sproc_GetUserPhoneNumbers( int user_id ) {
         String sql = "SELECT phones.phone_id, phones.number, phones.user_id, phones.phonetype_id, phonetypes.typename " +
             "FROM phones " +
             "INNER JOIN users ON phones.user_id = users.user_id " +
@@ -534,10 +534,10 @@ public abstract class DatabaseService {
                 int user_id = rs.getInt( "user_id" );
                 int phonetype_id = rs.getInt( "phonetype_id" );
                 String typename = rs.getString( "typename" );
-                return new MoreThanOneTable_PhonesAndPhoneTypes( phone_id, number, user_id, phonetype_id, typename );
+                return new MoreThanOneTable_phones_phonetypes( phone_id, number, user_id, phonetype_id, typename );
             }
         } );
-        return (MoreThanOneTable_PhonesAndPhoneTypes[])queryResult.toArray( new MoreThanOneTable_PhonesAndPhoneTypes[queryResult.size()] );
+        return (MoreThanOneTable_phones_phonetypes[])queryResult.toArray( new MoreThanOneTable_phones_phonetypes[queryResult.size()] );
     }
 
     int sproc_DocumentDelete( int meta_id ) {
@@ -684,7 +684,7 @@ public abstract class DatabaseService {
         return (PartOfTable_document[])queryResult.toArray( new PartOfTable_document[queryResult.size()] );
     }
 
-    static class MoreThanOneTable_ChildsAndMeta {
+    static class MoreThanOneTable_meta_childs {
         private int to_meta_id;
         private int menu_sort;
         private int manual_sort_order;
@@ -701,7 +701,7 @@ public abstract class DatabaseService {
         private Timestamp archived_datetime;
         private String filename;
 
-        MoreThanOneTable_ChildsAndMeta( int to_meta_id, int menu_sort, int manual_sort_order, int doc_type, boolean archive, String target, Timestamp date_created, Timestamp date_modified, String meta_headline, String meta_text, String meta_image, String frame_name, Timestamp activated_datetime, Timestamp archived_datetime, String filename ) {
+        MoreThanOneTable_meta_childs( int to_meta_id, int menu_sort, int manual_sort_order, int doc_type, boolean archive, String target, Timestamp date_created, Timestamp date_modified, String meta_headline, String meta_text, String meta_image, String frame_name, Timestamp activated_datetime, Timestamp archived_datetime, String filename ) {
             this.to_meta_id = to_meta_id;
             this.menu_sort = menu_sort;
             this.manual_sort_order = manual_sort_order;
@@ -727,7 +727,7 @@ public abstract class DatabaseService {
     // todo WARNING, i anropande kod måste en förändring ske!
     // todo Den bortkommenterade reden nedan beräknar om man har rätt att editera eller ej.
     // todo Se till att göra den kollen på annat sätt efteråt för varje dokument.
-    MoreThanOneTable_ChildsAndMeta[] sproc_getChilds( int meta_id, int user_id ) {
+    MoreThanOneTable_meta_childs[] sproc_getChilds( int meta_id, int user_id ) {
         Integer sortOrder = getMenuSortOrder( meta_id );
         String sql =
             "select to_meta_id, c.menu_sort,manual_sort_order, doc_type," +
@@ -786,11 +786,11 @@ public abstract class DatabaseService {
                 Timestamp activated_datetime = rs.getTimestamp( "activated_datetime" );
                 Timestamp archived_datetime = rs.getTimestamp( "archived_datetime" );
                 String filename = rs.getString( "filename" );
-                return new MoreThanOneTable_ChildsAndMeta( to_meta_id, menu_sort, manual_sort_order, doc_type, archive, target, date_created, date_modified, meta_headline,
+                return new MoreThanOneTable_meta_childs( to_meta_id, menu_sort, manual_sort_order, doc_type, archive, target, date_created, date_modified, meta_headline,
                                                            meta_text, meta_image, frame_name, activated_datetime, archived_datetime, filename );
             }
         } );
-        return (MoreThanOneTable_ChildsAndMeta[])queryResult.toArray( new MoreThanOneTable_ChildsAndMeta[queryResult.size()] );
+        return (MoreThanOneTable_meta_childs[])queryResult.toArray( new MoreThanOneTable_meta_childs[queryResult.size()] );
     }
 
     private Integer getMenuSortOrder( int meta_id ) {
@@ -1280,17 +1280,17 @@ public abstract class DatabaseService {
         }
     }
 
-    static class MoreThanOneTable_MetaAndBrowserDocs {
+    static class MoreThanOneTable_meta_browser_docs {
         private int to_meta_id;
         String meta_headline;
 
-        public MoreThanOneTable_MetaAndBrowserDocs( ResultSet rs ) throws SQLException {
+        public MoreThanOneTable_meta_browser_docs( ResultSet rs ) throws SQLException {
             this.to_meta_id = rs.getInt("to_meta_id");
             this.meta_headline = rs.getString("meta_headline");
         }
     }
 
-    MoreThanOneTable_MetaAndBrowserDocs[] sproc_getBrowserDocChilds( int meta_id, int user_id ) {
+    MoreThanOneTable_meta_browser_docs[] sproc_getBrowserDocChilds( int meta_id, int user_id ) {
         String sql = "SELECT DISTINCT to_meta_id, meta_headline FROM browser_docs bd JOIN meta m " +
             "ON  bd.to_meta_id = m.meta_id AND bd.meta_id = ? " +
             "LEFT JOIN roles_rights rr ON rr.meta_id = m.meta_id AND rr.set_id < 4 " +
@@ -1299,10 +1299,10 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{ new Integer( meta_id ), new Integer( user_id ) };
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                return new MoreThanOneTable_MetaAndBrowserDocs( rs );
+                return new MoreThanOneTable_meta_browser_docs( rs );
             }
         } );
-        return (MoreThanOneTable_MetaAndBrowserDocs[])queryResult.toArray( new MoreThanOneTable_MetaAndBrowserDocs[ queryResult.size()] );
+        return (MoreThanOneTable_meta_browser_docs[])queryResult.toArray( new MoreThanOneTable_meta_browser_docs[ queryResult.size()] );
     }
 
     private int addToTable_browser_docs( SQLProcessor.SQLTransaction transaction, Table_browser_docs tableData ) throws SQLException {
@@ -1960,6 +1960,29 @@ public abstract class DatabaseService {
         return getFromTable_users( new Integer( user_id ) );
     }
 
+
+    static class Table_languages {
+        private String lang_prefix;
+        private String user_prefix;
+        private String language;
+
+        public Table_languages( ResultSet rs ) throws SQLException {
+            this.lang_prefix = rs.getString("lang_prefix");
+            this.user_prefix = rs.getString("user_prefix");
+            this.language = rs.getString("language");
+        }
+    }
+
+    Table_languages[] sproc_getLanguages() {
+        String sql = "select lang_prefix, user_prefix, language from languages order by language";
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Table_languages( rs );
+            }
+        } );
+        return (Table_languages[])queryResult.toArray( new Table_languages[ queryResult.size() ] );
+    }
+
     /** Get the users preferred language. Used by the administrator functions.
      * Begin with getting the users langId from the userobject.
      */
@@ -2003,6 +2026,28 @@ public abstract class DatabaseService {
             }
         } );
         return ((Integer)queryResult.get( 0 )).intValue();
+    }
+
+    static class MoreThanOneTable_langprefixes_language {
+        private int lang_id;
+        private String language;
+
+        public MoreThanOneTable_langprefixes_language( ResultSet rs ) throws SQLException {
+            this.lang_id = rs.getInt("lang_id");
+            this.language = rs.getString("language");
+        }
+    }
+
+    MoreThanOneTable_langprefixes_language[] sproc_GetLanguageList( String lang_prefix ) {
+        String sql = "SELECT lp.lang_id , lang.language FROM lang_prefixes lp, languages lang " +
+        "WHERE lp.lang_prefix = lang.lang_prefix AND lang.user_prefix = ? ";
+        Object[] paramValues = new Object[]{ lang_prefix };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new MoreThanOneTable_langprefixes_language( rs );
+            }
+        } );
+        return (MoreThanOneTable_langprefixes_language[])queryResult.toArray( new MoreThanOneTable_langprefixes_language[ queryResult.size() ] );
     }
 
     static class Table_templates {

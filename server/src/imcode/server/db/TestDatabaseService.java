@@ -107,8 +107,18 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_GetCurrentSessionCounter( databaseService );
             test_sproc_GetCurrentSessionCounterDate( databaseService );
             test_sproc_GetDocumentInfo( databaseService );
+            test_sproc_GetLanguageList( databaseService );
+            test_sproc_getLanguages( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_getLanguages( DatabaseService databaseService ) {
+        assertEquals( 4, databaseService.sproc_getLanguages().length );
+    }
+
+    private void test_sproc_GetLanguageList( DatabaseService databaseService ) {
+        assertEquals(2, databaseService.sproc_GetLanguageList( LANG_PREFIX_SWEDEN ).length );
     }
 
     private void test_sproc_GetDocumentInfo( DatabaseService databaseService ) {
@@ -251,7 +261,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_getChilds( DatabaseService dbService ) {
-        DatabaseService.MoreThanOneTable_ChildsAndMeta[] children = dbService.sproc_getChilds( DOC_TEST_ID_DETACHED, USER_ADMIN_ID );
+        DatabaseService.MoreThanOneTable_meta_childs[] children = dbService.sproc_getChilds( DOC_TEST_ID_DETACHED, USER_ADMIN_ID );
         assertEquals( 0, children.length );
 
         children = dbService.sproc_getChilds( DOC_TEST_FIRST_ID, USER_ADMIN_ID );
