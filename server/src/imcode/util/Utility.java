@@ -223,6 +223,12 @@ public class Utility {
         return collectingHttpServletResponse.toString();
     }
 
+    public static String formatDate( Date oneWeekAgo ) {
+        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
+        String formattedDate = dateFormat.format( oneWeekAgo );
+        return formattedDate;
+    }
+
     private static class TimeLengthSuffixPair {
         long timeLength;
         String suffix;

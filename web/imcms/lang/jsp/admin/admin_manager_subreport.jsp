@@ -73,10 +73,14 @@
             </table>
         </td>
     </tr>
-    <% if ( !subreport.isBelowMaxDocumentCount( documents.size() ) ) { %>
+    <%
+        String searchQueryString = subreport.getSearchQueryString();
+        if ( null != searchQueryString && !subreport.isBelowMaxDocumentCount( documents.size() ) ) {
+    %>
         <tr>
             <td colspan="4" align="center"><img src="<%= imagesPath %>/1x1.gif" height="20" width="1"><br>
-                <a href="javascript: document.forms.seachForm99.submit();"><? web/imcms/lang/jsp/admin/admin_manager.jsp/19 ?></a></td>
+                <a href="<%= request.getContextPath() %>/servlet/SearchDocuments?<%= searchQueryString %>"><? web/imcms/lang/jsp/admin/admin_manager.jsp/19 ?></a>
+            </td>
         </tr>
         <form name="seachForm99"></form>
     <%}%>

@@ -5,6 +5,7 @@ import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
+import com.imcode.imcms.servlet.SearchDocumentsPage;
 import com.imcode.imcms.servlet.admin.AddDoc;
 import com.imcode.imcms.servlet.admin.SaveSort;
 import com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean;
@@ -241,6 +242,9 @@ public class AdminManager extends Administrator {
         newDocumentsSubreport.setName( "new" );
         newDocumentsSubreport.setDocuments( documents_new );
         newDocumentsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/1" ) );
+        Date oneWeekAgo = getDateOneWeekAgo() ;
+        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__CREATED, oneWeekAgo, null );
+        newDocumentsSubreport.setSearchQueryString( dateSearchQueryString );
         return newDocumentsSubreport;
     }
 
@@ -251,6 +255,9 @@ public class AdminManager extends Administrator {
         documentsUnchangedForSixMonthsSubreport.setDocuments( documents_not_changed_in_six_month );
         documentsUnchangedForSixMonthsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/4" ) );
         documentsUnchangedForSixMonthsSubreport.setSortorder( "MODR" );
+        Date sixMonthsAgo = getDateSixMonthsAgo() ;
+        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__MODIFIED, null, sixMonthsAgo );
+        documentsUnchangedForSixMonthsSubreport.setSearchQueryString( dateSearchQueryString );
         return documentsUnchangedForSixMonthsSubreport;
     }
 
@@ -261,7 +268,29 @@ public class AdminManager extends Administrator {
         documentsArchivedWithinOneWeekSubreport.setDocuments( documents_archived_less_then_one_week );
         documentsArchivedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/2" ) );
         documentsArchivedWithinOneWeekSubreport.setSortorder( "ARCR" );
-        return documentsArchivedWithinOneWeekSubreport;
+        Date lastMidnight = getDateLastMidnight() ;
+        Date oneWeekAhead = getDateOneWeekAhead() ;
+        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__ARCHIVED, lastMidnight, oneWeekAhead );
+        documentsArchivedWithinOneWeekSubreport.setSearchQueryString( dateSearchQueryString ) ;
+         return documentsArchivedWithinOneWeekSubreport;
+    }
+
+    private String createDateSearchQueryString( String dateType, Date startDate, Date endDate ) {
+        String result = SearchDocumentsPage.REQUEST_PARAMETER__DATE_TYPE + "="
+                        + dateType ;
+        if (null != startDate) {
+            result += "&"
+                      + SearchDocumentsPage.REQUEST_PARAMETER__START_DATE
+                      + "="
+                      + Utility.formatDate( startDate ) ;
+        }
+
+        if (null != endDate) {
+            result += "&"
+                      + SearchDocumentsPage.REQUEST_PARAMETER__END_DATE
+                      + "=" + Utility.formatDate( endDate );
+        }
+        return result ;
     }
 
     private AdminManagerSubreport createDocumentsUnpublishedWithinOneWeekSubreport(
@@ -271,6 +300,10 @@ public class AdminManager extends Administrator {
         documentsUnpublishedWithinOneWeekSubreport.setDocuments( documents_publication_end_less_then_one_week );
         documentsUnpublishedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/3" ) );
         documentsUnpublishedWithinOneWeekSubreport.setSortorder( "PUBER" );
+        Date lastMidnight = getDateLastMidnight();
+        Date oneWeekAhead = getDateOneWeekAhead();
+        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__PUBLICATION_END, lastMidnight, oneWeekAhead );
+        documentsUnpublishedWithinOneWeekSubreport.setSearchQueryString( dateSearchQueryString );
         return documentsUnpublishedWithinOneWeekSubreport;
     }
 
@@ -359,10 +392,10 @@ public class AdminManager extends Administrator {
                                                        List documents_publication_end_less_then_one_week,
                                                        List documents_not_changed_in_six_month, List modifiedDocuments,
                                                        List newDocuments ) {
-        Date now = getDateTruncated( 0 ) ;
-        Date oneWeekAhead = getDateTruncated( +8 );
-        Date oneWeekAgo = getDateTruncated(-7) ;
-        Date sixMonthAgo = getDateTruncated( -182 );
+        Date lastMidnight = getDateLastMidnight() ;
+        Date oneWeekAhead = getDateOneWeekAhead();
+        Date oneWeekAgo = getDateOneWeekAgo() ;
+        Date sixMonthAgo = getDateSixMonthsAgo();
 
         for ( int i = 0; i < documentsFound.length; i++ ) {
             DocumentDomainObject document = documentsFound[i];
@@ -373,13 +406,13 @@ public class AdminManager extends Administrator {
             Date createdDatetime = document.getCreatedDatetime();
 
             if ( null != archivedDatetime
-                 && !archivedDatetime.before( now )
+                 && !archivedDatetime.before( lastMidnight )
                  && archivedDatetime.before( oneWeekAhead ) ) {
                 documents_archived_less_then_one_week.add( document );
             }
 
             if ( null != publicationEndDatetime
-                 && !publicationEndDatetime.before( now )
+                 && !publicationEndDatetime.before( lastMidnight )
                  && publicationEndDatetime.before( oneWeekAhead ) ) {
                 documents_publication_end_less_then_one_week.add( document );
             }
@@ -399,6 +432,22 @@ public class AdminManager extends Administrator {
             }
 
         }
+    }
+
+    private Date getDateLastMidnight() {
+        return getDateTruncated( 0 );
+    }
+
+    private Date getDateSixMonthsAgo() {
+        return getDateTruncated( -182 );
+    }
+
+    private Date getDateOneWeekAhead() {
+        return getDateTruncated( +8 );
+    }
+
+    private Date getDateOneWeekAgo() {
+        return getDateTruncated(-7);
     }
 
     public static ChainableReversibleNullComparator getComparator( String sortorder ) {

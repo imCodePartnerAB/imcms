@@ -53,8 +53,8 @@ public class SearchDocumentsPage extends OkCancelPage {
     private String queryString;
     private Set sections = new HashSet();
     private int[] statusIds;
-    private int userDocumentsRestriction;
-    private int dateTypeRestriction;
+    private String userDocumentsRestriction;
+    private String dateTypeRestriction;
     private Date startDate;
     private Date endDate;
     private String sortOrder;
@@ -68,16 +68,16 @@ public class SearchDocumentsPage extends OkCancelPage {
 
     DocumentFinder documentFinder;
 
-    public static final int USER_DOCUMENTS_RESTRICTION__NONE = 0;
-    public static final int USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER = 1;
-    public static final int USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER = 2;
-    public static final int USER_DOCUMENTS_RESTRICTION__DOCUMENTS_EDITABLE_BY_USER = 3;
+    public static final String USER_DOCUMENTS_RESTRICTION__NONE = "";
+    public static final String USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER = "created";
+    public static final String USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER = "published";
+    public static final String USER_DOCUMENTS_RESTRICTION__DOCUMENTS_EDITABLE_BY_USER = "editable";
 
-    public static final int DATE_TYPE__PUBLICATION_START = 1;
-    public static final int DATE_TYPE__PUBLICATION_END = 2;
-    public static final int DATE_TYPE__CREATED = 3;
-    public static final int DATE_TYPE__ARCHIVED = 4;
-    public static final int DATE_TYPE__MODIFIED = 5;
+    public static final String DATE_TYPE__PUBLICATION_START = "publication_start";
+    public static final String DATE_TYPE__PUBLICATION_END = "publication_end" ;
+    public static final String DATE_TYPE__CREATED = "created";
+    public static final String DATE_TYPE__ARCHIVED = "archived";
+    public static final String DATE_TYPE__MODIFIED = "modified";
 
     public SearchDocumentsPage() {
         super( null, null );
@@ -114,12 +114,12 @@ public class SearchDocumentsPage extends OkCancelPage {
 
         String userDocumentsRestrictionParameter = request.getParameter( REQUEST_PARAMETER__PERMISSION );
         if ( null != userDocumentsRestrictionParameter ) {
-            userDocumentsRestriction = Integer.parseInt( userDocumentsRestrictionParameter );
+            userDocumentsRestriction = userDocumentsRestrictionParameter;
         }
 
         String dateTypeRestrictionParameter = request.getParameter( REQUEST_PARAMETER__DATE_TYPE );
         if ( null != dateTypeRestrictionParameter ) {
-            dateTypeRestriction = Integer.parseInt( dateTypeRestrictionParameter );
+            dateTypeRestriction = dateTypeRestrictionParameter;
         }
 
         DateFormat dateFormat = createDateFormat();
@@ -193,12 +193,12 @@ public class SearchDocumentsPage extends OkCancelPage {
             newQuery.add( statusQueries, true, false );
         }
 
-        if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER == userDocumentsRestriction ) {
+        if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER.equals( userDocumentsRestriction ) ) {
             Query createdByUserQuery = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, "" + user.getId() ) );
             newQuery.add( createdByUserQuery, true, false );
         }
 
-        if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER == userDocumentsRestriction ) {
+        if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER.equals( userDocumentsRestriction ) ) {
             Query publishedByUserQuery = new TermQuery( new Term( DocumentIndex.FIELD__PUBLISHER_ID, "" + user.getId() ) );
             newQuery.add( publishedByUserQuery, true, false );
         }
@@ -208,23 +208,16 @@ public class SearchDocumentsPage extends OkCancelPage {
             Date calculatedEndDate = null == endDate ? new Date( 1000L * 365 * 24 * 60 * 60 * 1000 ) : new Date( endDate.getTime() + DateUtils.MILLIS_IN_DAY );
 
             String dateField;
-            switch ( dateTypeRestriction ) {
-                case DATE_TYPE__PUBLICATION_END:
-                    dateField = DocumentIndex.FIELD__PUBLICATION_END_DATETIME;
-                    break;
-                case DATE_TYPE__ARCHIVED:
-                    dateField = DocumentIndex.FIELD__ARCHIVED_DATETIME;
-                    break;
-                case DATE_TYPE__CREATED:
-                    dateField = DocumentIndex.FIELD__CREATED_DATETIME;
-                    break;
-                case DATE_TYPE__MODIFIED:
-                    dateField = DocumentIndex.FIELD__MODIFIED_DATETIME;
-                    break;
-                case DATE_TYPE__PUBLICATION_START:
-                default:
-                    dateField = DocumentIndex.FIELD__PUBLICATION_START_DATETIME;
-                    break;
+            if ( DATE_TYPE__PUBLICATION_END.equals( dateTypeRestriction ) ) {
+                dateField = DocumentIndex.FIELD__PUBLICATION_END_DATETIME;
+            } else if ( DATE_TYPE__ARCHIVED.equals( dateTypeRestriction ) ) {
+                dateField = DocumentIndex.FIELD__ARCHIVED_DATETIME;
+            } else if ( DATE_TYPE__CREATED.equals( dateTypeRestriction ) ) {
+                dateField = DocumentIndex.FIELD__CREATED_DATETIME;
+            } else if ( DATE_TYPE__MODIFIED.equals( dateTypeRestriction ) ) {
+                dateField = DocumentIndex.FIELD__MODIFIED_DATETIME;
+            } else {
+                dateField = DocumentIndex.FIELD__PUBLICATION_START_DATETIME;
             }
 
             Term lowerTerm = new Term( dateField, DateField.dateToString( calculatedStartDate ) );
@@ -362,7 +355,7 @@ public class SearchDocumentsPage extends OkCancelPage {
         }
     }
 
-    public int getDateTypeRestriction() {
+    public String getDateTypeRestriction() {
         return dateTypeRestriction;
     }
 
@@ -370,7 +363,7 @@ public class SearchDocumentsPage extends OkCancelPage {
         return sortOrder;
     }
 
-    public int getUserDocumentsRestriction() {
+    public String getUserDocumentsRestriction() {
         return userDocumentsRestriction;
     }
 

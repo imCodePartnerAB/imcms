@@ -65,11 +65,11 @@
 
             <td colspan="3">
                 <select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__PERMISSION %>">
-                    <% int userDocumentsRestriction = searchDocumentsPage.getUserDocumentsRestriction() ; %>
-                    <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__NONE %>" <%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__NONE == userDocumentsRestriction ? "selected" : "" %>></option>
-                    <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER %>" <%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER == userDocumentsRestriction ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option1 ?></option>
-                    <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER %>" <%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER == userDocumentsRestriction ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option2 ?></option>
-                    <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_EDITABLE_BY_USER %>" <%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_EDITABLE_BY_USER == userDocumentsRestriction ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option3 ?></option>
+                    <% String userDocumentsRestriction = searchDocumentsPage.getUserDocumentsRestriction() ; %>
+                    <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__NONE %>" <%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__NONE.equals( userDocumentsRestriction ) ? "selected" : "" %>></option>
+                    <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER %>" <%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER.equals( userDocumentsRestriction ) ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option1 ?></option>
+                    <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER %>" <%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER.equals( userDocumentsRestriction ) ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option2 ?></option>
+                    <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_EDITABLE_BY_USER %>" <%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_EDITABLE_BY_USER.equals( userDocumentsRestriction ) ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option3 ?></option>
                 </select>
             </td>
         </tr>
@@ -100,11 +100,11 @@
             <tr>
                 <td>
                 <select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__DATE_TYPE %>">
-                    <option value="<%= SearchDocumentsPage.DATE_TYPE__PUBLICATION_START %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__PUBLICATION_START ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/publication_start ?></option>
-                    <option value="<%= SearchDocumentsPage.DATE_TYPE__PUBLICATION_END %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__PUBLICATION_END ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/publication_end ?></option>
-                    <option value="<%= SearchDocumentsPage.DATE_TYPE__CREATED %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__CREATED ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/created ?></option>
-                    <option value="<%= SearchDocumentsPage.DATE_TYPE__ARCHIVED %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__ARCHIVED ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/archived ?></option>
-                    <option value="<%= SearchDocumentsPage.DATE_TYPE__MODIFIED %>" <%= searchDocumentsPage.getDateTypeRestriction() == SearchDocumentsPage.DATE_TYPE__MODIFIED ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/modified ?></option>
+                    <option value="<%= SearchDocumentsPage.DATE_TYPE__PUBLICATION_START %>" <%= SearchDocumentsPage.DATE_TYPE__PUBLICATION_START.equals(searchDocumentsPage.getDateTypeRestriction()) ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/publication_start ?></option>
+                    <option value="<%= SearchDocumentsPage.DATE_TYPE__PUBLICATION_END %>" <%= SearchDocumentsPage.DATE_TYPE__PUBLICATION_END.equals( searchDocumentsPage.getDateTypeRestriction() ) ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/publication_end ?></option>
+                    <option value="<%= SearchDocumentsPage.DATE_TYPE__CREATED %>" <%= SearchDocumentsPage.DATE_TYPE__CREATED.equals( searchDocumentsPage.getDateTypeRestriction() ) ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/created ?></option>
+                    <option value="<%= SearchDocumentsPage.DATE_TYPE__ARCHIVED %>" <%= SearchDocumentsPage.DATE_TYPE__ARCHIVED.equals( searchDocumentsPage.getDateTypeRestriction() ) ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/archived ?></option>
+                    <option value="<%= SearchDocumentsPage.DATE_TYPE__MODIFIED %>" <%= SearchDocumentsPage.DATE_TYPE__MODIFIED.equals( searchDocumentsPage.getDateTypeRestriction() ) ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/modified ?></option>
                 </select></td>
 
             </tr>

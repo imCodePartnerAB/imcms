@@ -12,6 +12,7 @@ public class AdminManagerSubreport {
     private List documents;
     private LocalizedMessage heading;
     private boolean expanded;
+    private String searchQueryString ;
     private int maxDocumentCount = AdminManager.DEFAULT_DOCUMENTS_PER_LIST ;
 
 
@@ -68,5 +69,13 @@ public class AdminManagerSubreport {
 
     public boolean isBelowMaxDocumentCount( int i ) {
         return 0 == maxDocumentCount || i < maxDocumentCount ;
+    }
+
+    public void setSearchQueryString( String searchQueryString ) {
+        this.searchQueryString = searchQueryString;
+    }
+
+    public String getSearchQueryString() {
+        return searchQueryString;
     }
 }
