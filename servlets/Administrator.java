@@ -283,14 +283,21 @@ public class Administrator extends HttpServlet {
 
 	/**
 		Convert array to vector
+		Does exactly the same as new Vector(java.util.Arrays.toList(arr)), but is less generic.
 	*/
-
-	public Vector convert2Vector(String[] arr) {
+    
+    public Vector convert2Vector(String[] arr) {
 		Vector rolesV  = new Vector() ;
   		for(int i = 0; i<arr.length; i++)
 			rolesV.add(arr[i]) ;
 		return rolesV ;
 	}
+
+    /**
+
+       Does exactly the same as new Vector(java.util.Arrays.toList(multi[row])), but is less generic.
+
+     **/
 
 	public Vector getOneRow( String[][] multi, int row) {
    		Vector v = new Vector() ;
