@@ -8,10 +8,15 @@ import java.io.IOException;
  */
 public class LineReader {
 
-    Reader reader ;
+    private Reader reader ;
+    private int linesRead = 0 ;
 
     public LineReader(Reader reader) {
         this.reader = reader ;
+    }
+
+    public int getLinesRead() {
+        return linesRead;
     }
 
     private char lastChar;
@@ -31,6 +36,7 @@ public class LineReader {
                 lastWasCR = false;
                 if ( -1 != c && '\n' != c ) {
                     lastChar = (char)c;
+                    linesRead++ ;
                     return line.toString();
                 }
             }
@@ -43,6 +49,7 @@ public class LineReader {
             }
         }
         if ( line.length() > 0 ) {
+            linesRead++ ;
             return line.toString();
         } else {
             return null;

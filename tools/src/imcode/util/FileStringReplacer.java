@@ -19,7 +19,6 @@ public class FileStringReplacer implements FileFilter {
 
     public boolean accept( File file ) {
         if ( file.isDirectory() ) {
-            System.out.println("Visiting directory "+file.getPath()) ;
             return true;
         }
         String outFileSuffix = ".out";
@@ -29,9 +28,14 @@ public class FileStringReplacer implements FileFilter {
             return false;
         }
         try {
-            translateFile( file, destFile );
-            if ( !destFile.renameTo( file ) ) {
-                throw new IOException( "Failed to rename " + destFile + " to " + file );
+            if (translateFile( file, destFile )) {
+                if ( !destFile.renameTo( file ) ) {
+                    throw new IOException( "Failed to rename " + destFile + " to " + file );
+                }
+            } else {
+                if ( !destFile.delete() ) {
+                    throw new IOException( "Failed to delete " + destFile );
+                }
             }
         } catch ( IOException ioe ) {
             System.err.println( ioe.toString() );
@@ -40,17 +44,22 @@ public class FileStringReplacer implements FileFilter {
         return true;
     }
 
-    private void translateFile( File sourceFile, File destFile ) throws IOException {
+    private boolean translateFile( File sourceFile, File destFile ) throws IOException {
         InputStream sourceStream = new FileInputStream( sourceFile );
         FileOutputStream destStream = new FileOutputStream( destFile );
         LineReader lineReader = new LineReader(new BufferedReader( new InputStreamReader( sourceStream ) ) );
         BufferedWriter destWriter = new BufferedWriter( new OutputStreamWriter( destStream ) );
+        boolean linesTranslated = false ;
         for ( String line; null != ( line = lineReader.readLine() ); ) {
             String translatedLine = translateLine( sourceFile, line );
+            if (!translatedLine.equals(line)) {
+                linesTranslated = true ;
+            }
             destWriter.write( translatedLine );
         }
         destWriter.flush();
         destWriter.close();
+        return linesTranslated ;
     }
 
     private String translateLine( File sourceFile, String line ) {

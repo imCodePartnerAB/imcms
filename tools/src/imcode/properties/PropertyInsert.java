@@ -3,11 +3,13 @@ package imcode.properties;
 import imcode.util.MultiTreeMap;
 import imcode.util.FileStringReplacer;
 import imcode.util.FileFinder;
+import imcode.util.LineReader;
 import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.util.*;
+import java.text.NumberFormat;
 
 /**
  * @author kreiger
@@ -29,8 +31,7 @@ public class PropertyInsert {
 
         BufferedReader bufferedReader = new BufferedReader( new InputStreamReader( System.in ) ) ;
         Iterator propertyKeysByValueLengthIterator = allPropertyKeysInValueLengthOrder.values().iterator();
-        boolean oneDone = false ;
-        while ( !oneDone && propertyKeysByValueLengthIterator.hasNext() ) {
+        while ( propertyKeysByValueLengthIterator.hasNext() ) {
             String propertyKey = (String)propertyKeysByValueLengthIterator.next();
 
             boolean keyHasAlreadyBeenHandledAndRemoved = !allProperties.containsKey(propertyKey);
@@ -49,7 +50,6 @@ public class PropertyInsert {
                     propertyValue = replaceStringsInPropertyValue( propertyValueIndex, propertyKey, bufferedReader, propertyValue, propertieses );
                     if ( null != previousPropertyValue && !previousPropertyValue.equals( propertyValue ) ) {
                         System.out.println( "The resulting values are not identical!" );
-                        break handleKey;
                     }
 
                     previousPropertyValue = propertyValue;
@@ -59,14 +59,14 @@ public class PropertyInsert {
                 fileFinder.find(fileStringReplacer,new File(".")) ;
             }
             allProperties.remove( propertyKey ) ;
-            oneDone = true ;
+            for ( int i = 0; i < propertieses.length; i++ ) {
+                Properties properties = propertieses[i];
+                OutputStream out = new BufferedOutputStream(new FileOutputStream(new File(args[i]))) ;
+                properties.store(out, null);
+                out.flush() ;
+                out.close() ;
+            }
         }
-
-        for ( int i = 0; i < propertieses.length; i++ ) {
-            Properties properties = propertieses[i];
-            properties.store(new FileOutputStream(new File(args[i])), null);
-        }
-
     }
 
     private String replaceStringsInPropertyValue( int propertyValueIndex, String propertyKey, BufferedReader bufferedReader,
@@ -109,7 +109,7 @@ public class PropertyInsert {
         return line;
     }
 
-    private void outputPropertiesForKey( String propertyKey, MultiHashMap allProperties ) {
+    private void outputPropertiesForKey( String propertyKey, MultiHashMap allProperties ) throws IOException {
         System.out.println( "Key: " + propertyKey );
         System.out.println( "<<<<<<<" );
         Collection propertyValues = (Collection)allProperties.get( propertyKey );
@@ -123,7 +123,12 @@ public class PropertyInsert {
                     && !previousPropertyValue.equals( propertyValue ) ) {
                 propertyValuesIdentical = false;
             }
-            System.out.println( propertyValue );
+            LineReader lineReader = new LineReader(new StringReader(propertyValue)) ;
+            for (String line ; null != (line = lineReader.readLine());) {
+                String lineNumberString = StringUtils.leftPad( ""+lineReader.getLinesRead(), 4) ;
+                System.out.print(lineNumberString+": "+line) ;
+            }
+            System.out.println() ;
             if ( iterator.hasNext() ) {
                 System.out.println( "=======" );
             }
