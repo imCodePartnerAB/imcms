@@ -100,35 +100,49 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	    res.sendRedirect("AdminQuestions") ;
 	    return;
 
-	} else if (req.getParameter("add")!=null){
+	} 
+	else if (req.getParameter("add")!=null)
+	{
 	    //hämta parametrar
 	    date1 = (req.getParameter("date1")).trim();
 	    date2 = (req.getParameter("date2")).trim();
 	    text  = (req.getParameter("text")).trim();
 
 	    boolean ok = true;
-	    if( !checkDate(date1) )	{
+	    if( !checkDate(date1) )	
+		{
 		date1=errMsgDate;
 		ok = false;
 	    }
 
-	    if( !checkDate(date2) )	{
+	    if( !checkDate(date2) )	
+		{
 		date2=errMsgDate;
 		ok = false;
 	    }
-
-	    if( text.length()<1 ){
+		
+		if( !checkDates(req,date1,date2) )	
+		{
+			date1=errMsgDate; date2=errMsgDate;
+			ok = false;
+	    }
+		
+	    if( text.length()<1 )
+		{
 		text=errMsgTxt;
 		ok = false;
 	    }
 
-	    if( ok ){
+	    if( ok )
+		{
 		addLineToList(req,lines);
 		date1 = "";
 		date2 = "";
 		text  = "";
 	    }
-	} else if (req.getParameter("edit")!=null){
+	} 
+	else if (req.getParameter("edit")!=null)
+	{
 	    //hämta raden som är markerad
 	    String row = req.getParameter("AdminFile") ;
 
@@ -249,6 +263,31 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	    }
 	return true;
     }
+	
+	private boolean checkDates(HttpServletRequest req, String date1Str, String date2Str)
+	{
+		HttpSession session = req.getSession();
+		List questionList = (List)session.getAttribute("lines");
+		
+		Iterator qIterator = questionList.iterator() ;
+		while ( qIterator.hasNext() ) 
+		{
+	    	Poll aPollQuestion = (Poll)qIterator.next() ;
+			try
+	    	{
+				if( aPollQuestion.getDateRange().contains(dateForm.parse(date1Str)) || aPollQuestion.getDateRange().contains(dateForm.parse(date2Str)) ) 
+				{
+					return false ;
+	    		}
+			}
+			catch(java.text.ParseException pe)
+			{
+				return false;
+	    	}
+		}
+		
+		return true;
+    }
 
     private List getNewQuestion(String imcserver,String whichFile) throws ServletException, IOException
     {
@@ -258,7 +297,8 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	Date date = new Date();
 	Iterator qIterator = questionList.iterator() ;
 
-	while ( qIterator.hasNext() ) {
+	while ( qIterator.hasNext() ) 
+	{
 	    Quote aPollQuestion = (Quote)qIterator.next() ;
 
 	    if (aPollQuestion.getDateRange().contains(date)) {
