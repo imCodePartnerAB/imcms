@@ -12,7 +12,7 @@ String acceptedExtPattern = "/" +
 	"|(\\.LOG+)" +
 	"/i" ;
 
-String IMG_PATH   = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ; // path to buttons (with trailing /)
+String IMG_PATH   = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/" ; // path to buttons (with trailing /)
 
 /* *******************************************************************
  *           INIT                                                    *
@@ -86,7 +86,7 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
 	theButtons = "<table border=0 bgcolor=\"#d6d3ce\" align=\"right\">\n<tr>" ;
 	if (hasGetElementById && !hasDocumentAll && !isMac) {
 		hasInlineButtons = true ;
-		theButtons += "\n	<td><a href=\"#\" onClick=\"find(); return false\"><img align=\"absmiddle\" src=\"" + IMG_PATH + "btn_find.gif\" border=\"0\" alt=\"Sök!\"></a></td>" ;
+		theButtons += "\n	<td><a href=\"javascript: find(); return false\"><img align=\"absmiddle\" src=\"" + IMG_PATH + "btn_find.gif\" border=\"0\" alt=\"Sök!\"></a></td>" ;
 	}
 	if (isMac) {
 		hasInlineButtons = true ;
@@ -105,34 +105,31 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
 }
 
 /* Get size */
-int width        = 0 ;
-int height       = 0 ;
-double iSize     = 0 ;
-String size      = "" ;
-String image_ref = "" ;
 
-if (!isStat && frame.equalsIgnoreCase("MAIN")) {
+String image_ref = fn.getCanonicalPath() ;
 
-    image_ref = fn.getCanonicalPath() ;
     BufferedImage image = ImageIO.read( new File(image_ref) );
     ImageSize imagefile = new ImageSize( image.getWidth(), image.getHeight() ) ;
-    width = imagefile.getWidth() ;
-	height = imagefile.getHeight() ;
+int width = imagefile.getWidth() ;
+int height = imagefile.getHeight() ;
 
-    try {
-        iSize = (double) fn.length() ;
-        if (iSize >= 1024) {
-            iSize = iSize / 1024 ;
-            DecimalFormat df = new DecimalFormat("#.#") ;
-            size  = (String) df.format(iSize) ;
-            size  = ", " + size.replaceAll(",", ".") + "kB" ;
-        } else {
-            size  = ", " + fn.length() + " bytes" ;
-        }
-    } catch ( NumberFormatException ex ) {
-        // ignore
-    }
+String size  = "" ;
+double iSize = 0 ;
+
+try {
+	iSize = (double) fn.length() ;
+	if (iSize >= 1024) {
+		iSize = iSize / 1024 ;
+		DecimalFormat df = new DecimalFormat("#.#") ;
+		size  = (String) df.format(iSize) ;
+		size  = ", " + size.replaceAll(",", ".") + "kB" ;
+	} else {
+		size  = ", " + fn.length() + " bytes" ;
+	}
+} catch ( NumberFormatException ex ) {
+	// ignore
 }
+
 //out.print("fn.length(): " + fn.length() + "<br><br>iSize: " + iSize + "<br><br>size: " + size) ;
 
 /* *******************************************************************************************
