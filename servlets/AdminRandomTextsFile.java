@@ -161,11 +161,37 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 			return;
 		}
 	}
+/*	
+	private String addBraketags(StringBuffer buff) {
+		String[] replacements = {
+		    "&",       "&amp;",
+		    "<",       "&lt;",
+		    ">",       "&gt;",
+		    "\r\n",    "\n",
+		    "\r",      "\n",
+		    "\n",      "<BR>",
+		} ;
 
+		// Get and prepare the text.
+		return Parser.parseDoc(buff,replacements).toString() ;
+	
+	}
+	
+	private String replaceBrakeTaggs(StringBuffer buff) {
+		String[] replacements = {
+		    "<BR>",   "\r\n",   // newline
+	    	"&lt;",   "<",
+		    "&gt;",   ">",
+		    "&amp;",  "&"
+		} ;
+		// Decode the String
+		return Parser.parseDoc(buff,replacements).toString() ;		
+	}
+*/
 	private void addLineToList(HttpServletRequest req, List lines) throws ServletException, IOException{
 		String	date1 = (req.getParameter("date1")).trim();
 		String	date2 = (req.getParameter("date2")).trim();
-		String	text = (req.getParameter("text")).trim();
+		String	text = 	(req.getParameter("text")).trim();
 
 		if( checkDate(date1) && checkDate(date2) && text.length()>1 ){
 			try {

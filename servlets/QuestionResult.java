@@ -29,7 +29,7 @@ public class QuestionResult extends HttpServlet
 		String answer = req.getParameter("answer");
 		
 		//gets the filecontent 
-		String resFile = IMCServiceRMI.getFortune(imcServer,file + "enkatcurrent.txt");
+		String resFile = IMCServiceRMI.getFortune(imcServer,file + ".current.txt");
 				
 		StringTokenizer tokens = new StringTokenizer(resFile,"#");
 		
@@ -52,7 +52,7 @@ public class QuestionResult extends HttpServlet
 	
 		String newFileContent =date1 + "#" + date2 + "#"  + question + "#ja: " + yes + "#nej: " + no + "#";
 	
-		BufferedWriter fileW = new BufferedWriter( new FileWriter(fortune_path.getCanonicalPath() + "/" + file + "enkatcurrent.txt" ) );
+		BufferedWriter fileW = new BufferedWriter( new FileWriter(fortune_path.getCanonicalPath() + "/" + file + ".current.txt" ) );
 		fileW.write(newFileContent);
 		fileW.flush();
 		fileW.close();

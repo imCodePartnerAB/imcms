@@ -68,7 +68,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 
 			addLineToList(req,lines);
 
-			IMCServiceRMI.setPollList(imcServer, whichFile+"enkat.txt", lines);
+			IMCServiceRMI.setPollList(imcServer, whichFile+".poll.txt", lines);
 
 			//tillbaks till
 			res.sendRedirect("AdminQuestions") ;

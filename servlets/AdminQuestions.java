@@ -72,8 +72,8 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 			String filename=totalFile.substring(index+1);
 			index = filename.lastIndexOf(".");
 			String name=filename.substring(0,index);
-			if ( name.endsWith("enkat") ){
-				options = options + "<option value=\""  + name.substring(0,name.lastIndexOf("enkat")) + "\" > " + name.substring(0,name.lastIndexOf("enkat")) + "</option>";
+			if ( name.endsWith(".poll") ){
+				options = options + "<option value=\""  + name.substring(0,name.lastIndexOf(".poll")) + "\" > " + name.substring(0,name.lastIndexOf(".poll")) + "</option>";
 			}	
 		}
 		
@@ -133,7 +133,7 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 			List list;
 			
 			try {
-				list = IMCServiceRMI.getPollList(imcServer, whichFile + "enkatstatistics.txt");	
+				list = IMCServiceRMI.getPollList(imcServer, whichFile + ".stat.txt");	
 				Iterator iter = list.iterator();
 				int counter = 0;
 				SimpleDateFormat dateForm = new SimpleDateFormat("yyMMdd");
@@ -180,7 +180,7 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 			StringBuffer buff = new StringBuffer();
 			buff.append(IMCServiceRMI.parseExternalDoc(imcServer, null, OPTION_LINE , user.getLangPrefix(), DOCTYPE_FORTUNES+""));
 				
-			List lines = IMCServiceRMI.getPollList(imcServer, whichFile+"enkat.txt");
+			List lines = IMCServiceRMI.getPollList(imcServer, whichFile+".poll.txt");
 			Iterator iter = lines.iterator();
 			int counter = 0;
 			SimpleDateFormat dateForm = new SimpleDateFormat("yyMMdd");
