@@ -1,7 +1,6 @@
 <html>
 <head>
 <title><? templates/sv/templatedemo_upload_template_blank.html/1 ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 
@@ -10,10 +9,8 @@
 </head>
 <body bgcolor="#FFFFFF">
 
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", "Varning");
-</script>
+#gui_outer_start()
+#gui_head( "<? templates/sv/templatedemo_upload_template_blank.html/1 ?>" )
 <table border="0" cellpadding="0" cellspacing="0">
 <form>
 <tr>
@@ -21,19 +18,17 @@ imcmsGui("head", "Varning");
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="2" width="310">
 <tr>
 	<td align="center" class="imcmsAdmText">
 	<? templates/sv/templatedemo_upload_template_blank.html/4 ?></td>
 </tr>
 </table>
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 
 </body>
 </html>

@@ -183,14 +183,14 @@ public class SearchDocuments extends HttpServlet {
             show = "original"; // default folder for search-templates
         }
 
-        String nextTextTemplate = imcref.getSearchTemplate( templatePath + show + "/" + NAV_NEXT_BUTTON );
-        String prevTextTemplate = imcref.getSearchTemplate( templatePath + show + "/" + NAV_PREV_BUTTON );
-        String activeTemplate = imcref.getSearchTemplate( templatePath + show + "/" + NAV_ACTIVE );
-        String inActiveTemplate = imcref.getSearchTemplate( templatePath + show + "/" + NAV_INACTIVE );
-        String ahrefTemplate = imcref.getSearchTemplate( templatePath + show + "/" + NAV_AHREF );
-        oneRecHtmlSrc = imcref.getSearchTemplate( templatePath + show + "/" + HIT_LINE_TEMPLATE );
-        resultHtmlSrc = imcref.getSearchTemplate( templatePath + show + "/" + HIT_PAGE_TEMPLATE );
-        noHitHtmlStr = imcref.getSearchTemplate( templatePath + show + "/" + NO_HIT_PAGE_TEMPLATE );
+        String nextTextTemplate = imcref.getTemplate( templatePath + show + "/" + NAV_NEXT_BUTTON, user, null );
+        String prevTextTemplate = imcref.getTemplate( templatePath + show + "/" + NAV_PREV_BUTTON, user, null );
+        String activeTemplate = imcref.getTemplate( templatePath + show + "/" + NAV_ACTIVE, user, null );
+        String inActiveTemplate = imcref.getTemplate( templatePath + show + "/" + NAV_INACTIVE, user, null );
+        String ahrefTemplate = imcref.getTemplate( templatePath + show + "/" + NAV_AHREF, user, null );
+        oneRecHtmlSrc = imcref.getTemplate( templatePath + show + "/" + HIT_LINE_TEMPLATE, user, null );
+        resultHtmlSrc = imcref.getTemplate( templatePath + show + "/" + HIT_PAGE_TEMPLATE, user, null );
+        noHitHtmlStr = imcref.getTemplate( templatePath + show + "/" + NO_HIT_PAGE_TEMPLATE, user, null );
         //Fix kolla att ingen mall är null om så returnera alla hitts i en lång lista
 
 
@@ -333,7 +333,7 @@ public class SearchDocuments extends HttpServlet {
         }
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String templateStr = imcref.getSearchTemplate( templatePath + show + "/" + SEARCH_PAGE_TEMPLATE );
+        String templateStr = imcref.getTemplate( templatePath + show + "/" + SEARCH_PAGE_TEMPLATE, user, null );
 
 
         //the no_of_hits list

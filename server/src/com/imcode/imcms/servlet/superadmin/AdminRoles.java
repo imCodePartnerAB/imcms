@@ -50,7 +50,7 @@ public class AdminRoles extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( imcref.checkAdminRights( user ) == false ) {
             String header = "Error in AdminRoles.";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             this.log( header + "- user is not an administrator" );
             new AdminError( req, res, header, msg );
@@ -94,7 +94,7 @@ public class AdminRoles extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( imcref.checkAdminRights( user ) == false ) {
             String header = "Error in AdminRoles.";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             this.log( header + "- user is not an administrator" );
             new AdminError( req, res, header, msg );
@@ -174,7 +174,7 @@ public class AdminRoles extends Administrator {
             String roleId = req.getParameter( "ROLE_ID" );
             if ( roleId == null ) {
                 String header = "Roles error";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_missing") + "<BR>";
                 this.log( "Error in rename roles, no role selected for rename" );
                 new AdminError( req, res, header, msg );
@@ -196,7 +196,7 @@ public class AdminRoles extends Administrator {
             String roleId = req.getParameter( "ROLE_ID" );
             if ( roleId == null ) {
                 String header = "Error in AdminRoles, edit role";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/role_missing") + "<br>";
                 this.log( header + "- select the role to be changed" );
                 new AdminError( req, res, header, msg );
@@ -237,7 +237,7 @@ public class AdminRoles extends Administrator {
             Properties params = this.getAddRoleParameters( req );
             if ( super.checkParameters( params ) == false ) {
                 String header = "Error in AdminRoles ";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/new_rolename_missing") + "<br>";
                 this.log( header + "- new rolename missing" );
                 new AdminError( req, res, header, msg );
@@ -248,7 +248,7 @@ public class AdminRoles extends Administrator {
             String foundRoleName = imcref.sqlProcedureStr( "RoleFindName", new String[]{(String)params.get( "ROLE_NAME" )} );
             if ( !foundRoleName.equalsIgnoreCase( "-1" ) ) {
                 String header = "Error in AdminRoles.";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_already_exists") + "<br>";
                 this.log( header + "- role name already exists" );
                 new AdminError( req, res, header, msg );
@@ -273,7 +273,7 @@ public class AdminRoles extends Administrator {
             Properties params = this.getRenameRoleParameters( req );
             if ( super.checkParameters( params ) == false ) {
                 String header = "Error in AdminRoles, rename role ";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/new_rolename_missing") + "<br>";
                 this.log( header + "- new role name is missing" );
                 new AdminError( req, res, header, msg );
@@ -284,7 +284,7 @@ public class AdminRoles extends Administrator {
             String foundRoleName = imcref.sqlProcedureStr( "RoleFindName", new String[]{params.getProperty( "ROLE_NAME" )} );
             if ( !foundRoleName.equalsIgnoreCase( "-1" ) ) {
                 String header = "Error in AdminRoles.";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_already_exists") + "<br>";
                 this.log( header + "- rolename already exists" );
                 new AdminError( req, res, header, msg );
@@ -311,7 +311,7 @@ public class AdminRoles extends Administrator {
             Properties params = this.getDeleteRoleParameters( req );
             if ( super.checkParameters( params ) == false ) {
                 String header = "Error in AdminRoles ";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                 this.log( header + "- no role was selected for delete" );
                 new AdminError( req, res, header, msg );
@@ -356,7 +356,7 @@ public class AdminRoles extends Administrator {
             Properties params = this.getDeleteRoleParameters( req );
             if ( super.checkParameters( params ) == false ) {
                 String header = "Error in AdminRoles, delete ";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                 this.log( header + "- no role was selected for delete" );
                 new AdminError( req, res, header, msg );
@@ -378,7 +378,7 @@ public class AdminRoles extends Administrator {
             Properties params = this.getDeleteRoleParameters( req );
             if ( super.checkParameters( params ) == false ) {
                 String header = "Error in AdminRoles, delete";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                 this.log( header +  "- no role was selected for delete" );
                 new AdminError( req, res, header, msg );
@@ -402,7 +402,7 @@ public class AdminRoles extends Administrator {
 
             if ( super.checkParameters( params ) == false ) {
                 String header = "Error in AdminRoles ";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/role_to_delete_missing") + "<br>";
                 this.log( header + "- no role was selected for delete" );
                 new AdminError( req, res, header, msg );

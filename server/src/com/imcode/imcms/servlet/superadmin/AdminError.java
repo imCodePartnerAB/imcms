@@ -31,7 +31,11 @@ public class AdminError extends Administrator {
         HtmlGenerator htmlObj = new HtmlGenerator(templateLib, fileName);
         String html = htmlObj.createHtmlString(tags, data );
         res.setContentType("text/html");
-        htmlObj.sendToBrowser( res, html);
+
+        // Lets send settings to a browser
+        PrintWriter out = res.getWriter();
+        res.setContentType("Text/html");
+        out.println(html);
         return;
     }
 

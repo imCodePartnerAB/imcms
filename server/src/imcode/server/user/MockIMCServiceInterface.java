@@ -165,13 +165,13 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
     // parseExternaldoc use template
-    public String getAdminTemplateFromDirectory( String adminTemplateName, UserDomainObject user, List variables,
+    public String getTemplateFromDirectory( String adminTemplateName, UserDomainObject user, List variables,
                                                  String directory ) {
         return null;  // TODO
     }
 
     // parseExternaldoc use template
-    public String getAdminTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, List variables,
+    public String getTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, List variables,
                                                                String directory, String subDirectory ) {
         return null;  // TODO
     }
@@ -288,7 +288,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   public String getSearchTemplate( String path ) throws IOException {
+   public String getTemplate( String path, UserDomainObject user, List variables ) throws IOException {
       return null;
    }
 
@@ -314,7 +314,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         return null;  // TODO
     }
 
-    public Properties getLangProperties(UserDomainObject user) {
+    public Properties getLanguageProperties(UserDomainObject user) {
         return null;
     }
 

@@ -82,7 +82,7 @@ public class QuestionEngine extends HttpServlet
 	values.add("#file#");
 	values.add(inFile);
 
-	String parsed = imcref.getAdminTemplateFromDirectory( questionTemplate, user, values, "106");
+	String parsed = imcref.getTemplateFromDirectory( questionTemplate, user, values, "106");
 
 	out.print(parsed);
 

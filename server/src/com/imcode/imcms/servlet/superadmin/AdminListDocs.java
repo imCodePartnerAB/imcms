@@ -108,7 +108,7 @@ public class AdminListDocs extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( request );
         if ( !imcref.checkAdminRights( user ) ) {
             String header = "Error in AdminListDocs. ";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             this.log( header + "- user is not an administrator" );
             new AdminError( request, response, header, msg );

@@ -1,5 +1,7 @@
 package imcode.server;
 
+import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.api.DefaultContentManagementSystem;
 import imcode.server.db.ConnectionPool;
 import imcode.server.db.SqlHelpers;
 import imcode.server.document.*;
@@ -18,6 +20,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 
 import java.io.*;
 import java.text.Collator;
@@ -609,51 +613,63 @@ final public class IMCService implements IMCServiceInterface {
      * Parse doc replace variables with data , use template
      */
     public String getAdminTemplate( String adminTemplateName, UserDomainObject user,
-                                    java.util.List tagsWithReplacements ) {
-        return getAdminTemplateFromDirectory( adminTemplateName, user, tagsWithReplacements, "admin" );
+                                    List tagsWithReplacements ) {
+        return getTemplateFromDirectory( adminTemplateName, user, tagsWithReplacements, "admin" );
     }
 
     /**
      * Parse doc replace variables with data , use template
      */
-    public String getAdminTemplateFromDirectory( String adminTemplateName, UserDomainObject user, List variables,
+    public String getTemplateFromDirectory( String adminTemplateName, UserDomainObject user, List variables,
                                                  String directory ) {
-        // FIXME Fugly workaround
         String langPrefix = getUserLangPrefixOrDefaultLanguage( user );
-        File file = new File( templatePath, langPrefix + "/" + directory + "/"
-                                            + adminTemplateName );
-        return getAndParseCachedFile( file, variables );
+        return getTemplate( langPrefix + "/" + directory + "/"
+                            + adminTemplateName, user, variables );
     }
 
     /**
      * Parse doc replace variables with data , use template
      */
-    public String getAdminTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, List variables,
+    public String getTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, List variables,
                                                                String directory, String subDirectory ) {
 
         String langPrefix = this.getUserLangPrefixOrDefaultLanguage( user );
 
-        File file = new File( templatePath,
-                              langPrefix + "/" + directory + "/" + subDirectory
-                              + "/"
-                              + adminTemplateName );
-        return getAndParseCachedFile( file, variables );
+        return getTemplate( langPrefix + "/" + directory + "/" + subDirectory
+                            + "/"
+                            + adminTemplateName, user, variables );
     }
 
-    private String getAndParseCachedFile( File file, List variables ) {
+    public String getTemplate( String path, UserDomainObject user, List variables ) {
         try {
-            String htmlStr = fileCache.getCachedFileString( file );
-            if ( variables == null ) {
-                return htmlStr;
+            VelocityEngine velocity = createVelocityEngine( user );
+
+            VelocityContext context = new VelocityContext();
+            context.put("lang", user.getLanguageIso639_2()) ;
+            StringWriter stringWriter = new StringWriter();
+            velocity.mergeTemplate( path, WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252, context, stringWriter );
+            String result = stringWriter.toString() ;
+            if (null != variables) {
+                result = Parser.parseDoc( result, (String[])variables.toArray( new String[variables.size()] ) );
             }
-            return Parser.parseDoc( htmlStr, (String[])variables.toArray( new String[variables.size()] ) );
-        } catch ( IOException e ) {
-            throw new RuntimeException( e ) ;
+            return result ;
+        } catch ( Exception e ) {
+            throw new RuntimeException( e );
         }
     }
 
+    private VelocityEngine createVelocityEngine( UserDomainObject user ) throws Exception {
+        VelocityEngine velocity = new VelocityEngine();
+        velocity.setProperty( VelocityEngine.FILE_RESOURCE_LOADER_PATH, templatePath.getCanonicalPath() );
+        velocity.setProperty( VelocityEngine.VM_LIBRARY, user.getLanguageIso639_2()+"/gui.vm");
+        velocity.setProperty( VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem" );
+        velocity.setProperty("runtime.log.logsystem.log4j.logger", "velocity");
+        velocity.init();
+        return velocity;
+    }
+
     /**
-     * @deprecated Ugly use {@link IMCServiceInterface#getAdminTemplateFromDirectory(String,imcode.server.user.UserDomainObject,java.util.List,String)}
+     * @deprecated Ugly use {@link IMCServiceInterface#getTemplateFromDirectory(String,imcode.server.user.UserDomainObject,java.util.List,String)}
      *             or something else instead.
      */
     public File getExternalTemplateFolder( int meta_id, UserDomainObject user ) {
@@ -1089,13 +1105,6 @@ final public class IMCService implements IMCServiceInterface {
     }
 
     /**
-     * Return a file relative to the webapps. ex ../templates/swe/admin/search/original
-     */
-    public String getSearchTemplate( String path ) throws IOException {
-        return fileCache.getCachedFileString( new File( templatePath, path ) );
-    }
-
-    /**
      * Set a user flag
      */
     public void setUserFlag( UserDomainObject user, String flagName ) {
@@ -1276,7 +1285,7 @@ final public class IMCService implements IMCServiceInterface {
         documentMapper.sqlUpdateModifiedDatesOnDocumentAndItsParent( metaId, dateTime );
     }
 
-    public Properties getLangProperties( UserDomainObject user ) {
+    public Properties getLanguageProperties( UserDomainObject user ) {
 
         if ( langproperties_eng == null ) {
             initLangProperties( "eng" );

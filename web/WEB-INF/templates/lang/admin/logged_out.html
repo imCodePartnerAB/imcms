@@ -10,10 +10,8 @@
 </head>
 <body bgcolor="#FFFFFF">
 
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", "<? templates/login/logged_out.html/2 ?>");
-</script>
+#gui_outer_start()
+#gui_head( "<? templates/login/logged_out.html/2 ?>" )
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
 	<td>
@@ -35,18 +33,16 @@ imcmsGui("head", "<? templates/login/logged_out.html/2 ?>");
 	</table></td>
 </tr>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="2" width="310">
 <tr>
 	<td align="center" class="imcmsAdmText"><? templates/login/logged_out.html/4 ?></td>
 </tr>
 </table>
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 
 <script language="JavaScript">
 <!--

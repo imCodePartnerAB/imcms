@@ -63,7 +63,7 @@ public class AdminSystemInfo extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (imcref.checkAdminRights(user) == false) {
             String header = "Error in AdminSystemInfo. ";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             this.log( header + "- user is not an administrator" );
             new AdminError(req, res, header, msg);
@@ -111,7 +111,7 @@ public class AdminSystemInfo extends Administrator {
             // Lets validate the parameters
             if (serverMaster.equalsIgnoreCase("") || serverMasterEmail.equalsIgnoreCase("")) {
                 String header = "Error in AdminSystemInfo, servermaster info.";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters") + "<br>";
                 new AdminError(req, res, header, msg);
                 return;
@@ -138,7 +138,7 @@ public class AdminSystemInfo extends Administrator {
             // Lets validate the parameters
             if (webMaster.equalsIgnoreCase("") || webMasterEmail.equalsIgnoreCase("")) {
                 String header = "Error in AdminSystemInfo, webmaster info.";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters") + "<br>";
                 new AdminError(req, res, header, msg);
                 return;

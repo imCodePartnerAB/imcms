@@ -38,7 +38,7 @@ public class AdminCounter extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (!imcref.checkAdminRights(user)) {
             String header = "Error in AdminCounter.";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator")+ "<BR>";
             this.log(header + "- user is not an administrator");
             new AdminError(req, res, header, msg);
@@ -91,7 +91,7 @@ public class AdminCounter extends Administrator {
                 Date date= dateFormat.parse(dateStr);
                 newDateStr = dateFormat.format(date);
                 if ( !newDateStr.equals(dateStr) ){
-                    Properties langproperties = imcref.getLangProperties( user );
+                    Properties langproperties = imcref.getLanguageProperties( user );
                     errormsg = langproperties.getProperty("error/servlet/AdminCounter/no_valid_date");
                     newDateStr = dateStr;
                 }else{
@@ -99,7 +99,7 @@ public class AdminCounter extends Administrator {
                 }
 
             }catch (ParseException pe){
-                   Properties langproperties = imcref.getLangProperties( user );
+                   Properties langproperties = imcref.getLanguageProperties( user );
                    errormsg = langproperties.getProperty("error/servlet/AdminCounter/no_valid_date");
                    newDateStr = dateStr;
             }

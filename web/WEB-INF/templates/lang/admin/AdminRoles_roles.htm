@@ -10,10 +10,9 @@
 </head>
 
 <body bgcolor="#FFFFFF">
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
-</script>
+#gui_outer_start()
+#gui_head( "<? global/imcms_administration ?>" )
+
 
 <table border="0" cellspacing="0" cellpadding="0">
 <form metod="post" action="AdminRoles" name="abortForm">
@@ -25,9 +24,8 @@ imcmsGui("head", null);
 </form>
 </table>
 
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 
 <table border="0" cellspacing="0" cellpadding="2" width="400" align="center">
 <form method="post" action="AdminRoles" name="UserInfo">
@@ -71,10 +69,9 @@ imcmsGui("mid", null);
 </form>
 </table>
 
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 </body>
 </html>
 

@@ -78,7 +78,7 @@ public class AdminSection extends Administrator {
                 for( int i=0; i < section_arr.length; i++){
                     if( new_section_name.equals( section_arr[i][1]) ){
                         section_exists = true;
-                        Properties langproperties = imcref.getLangProperties( user );
+                        Properties langproperties = imcref.getLanguageProperties( user );
                         errormsg = langproperties.getProperty("error/servlet/AdminSection/section_exists");
                         break;
                     }

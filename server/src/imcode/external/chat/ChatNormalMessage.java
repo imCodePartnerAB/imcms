@@ -113,6 +113,6 @@ public class ChatNormalMessage extends ChatMessage {
     }
 
     private static String parseChatTemplate( IMCServiceInterface imcref, Vector vLine, String templateName, UserDomainObject user, String libName ) {
-        return imcref.getAdminTemplateFromSubDirectoryOfDirectory( templateName, user, vLine, "103", libName ).trim();
+        return imcref.getTemplateFromSubDirectoryOfDirectory( templateName, user, vLine, "103", libName ).trim();
     }
 }//end class

@@ -71,7 +71,7 @@ public class ChatBoard extends ChatBase {
             ChatMessage message = (ChatMessage)msgIter.next();
 
             if ( lastMsgInt == message.getIdNumber() ) {
-                sendMsgString.append( imcref.getAdminTemplateFromSubDirectoryOfDirectory( HTML_HR, user, null, "103", getTemplateLibName( myChat.getChatId() ) ) );
+                sendMsgString.append( imcref.getTemplateFromSubDirectoryOfDirectory( HTML_HR, user, null, "103", getTemplateLibName( myChat.getChatId() ) ) );
                 //sendMsgString.append( "<hr>\n" );
 
 		    }

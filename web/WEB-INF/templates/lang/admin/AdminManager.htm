@@ -1,6 +1,5 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <title><? templates/sv/AdminManager.htm/1 ?></title>
 
@@ -10,10 +9,8 @@
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'AdminTask')">
 
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", "<? templates/sv/AdminManager.htm/2/1 ?>");
-</script>
+#gui_outer_start()
+#gui_head( "<? templates/sv/AdminManager.htm/2/1 ?>" )
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="StartDoc">
 <tr>
@@ -23,9 +20,8 @@ imcmsGui("head", "<? templates/sv/AdminManager.htm/2/1 ?>");
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 <form method="post" action="AdminManager" name="AdminManager">
 <table border="0" cellspacing="0" cellpadding="2" width="400" align="center">
 <tr>
@@ -43,10 +39,9 @@ imcmsGui("mid", null);
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 
 </body>
 </html>

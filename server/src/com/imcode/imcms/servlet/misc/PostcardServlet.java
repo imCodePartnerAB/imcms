@@ -150,7 +150,7 @@ public class PostcardServlet extends HttpServlet {
         vect.add( HTMLConv.toHTML( HTMLConv.toHTMLSpecial( senderMessage ) ) );
 
         //ok nu ska vi parsa skiten med ett mall skrälle
-        String html = imcref.getAdminTemplateFromDirectory( HTML_TEMPLATE, user, vect, "105" );
+        String html = imcref.getTemplateFromDirectory( HTML_TEMPLATE, user, vect, "105" );
         //lets get the name to use on the file
         String pcFileName = (String)session.getAttribute( "pcFileName" );
         if ( pcFileName == null ) {
@@ -188,7 +188,7 @@ public class PostcardServlet extends HttpServlet {
         }
 
         //ok lets save the bottom frame page, incase it has been removed
-        String bottomString = imcref.getAdminTemplateFromDirectory( POSTCARD_BOTTOM, user, new Vector(), "105" );
+        String bottomString = imcref.getTemplateFromDirectory( POSTCARD_BOTTOM, user, new Vector(), "105" );
         File imagePathFile = imcode.util.Utility.getDomainPrefPath( "image_path" );
 
         File postcardFolder = new File( imagePathFile.getParent(), POSTCARD_FOLDER );
@@ -213,7 +213,7 @@ public class PostcardServlet extends HttpServlet {
         vm.add( "#bottom#" );
         vm.add( req.getContextPath() + "/postcards/bottom.html" );
 
-        String frameSetHtml = imcref.getAdminTemplateFromDirectory( POSTCARD_SET, user, vm, "105" );
+        String frameSetHtml = imcref.getTemplateFromDirectory( POSTCARD_SET, user, vm, "105" );
 
         res.setContentType( "text/html" );
         PrintWriter out = res.getWriter();
@@ -228,7 +228,7 @@ public class PostcardServlet extends HttpServlet {
         //ok lets parse the mailSubject line
         vect.add( "#mailSubject#" );
         vect.add( senderName );
-        mailArr[2] = imcref.getAdminTemplateFromDirectory( POSTCARD_MAIL_SUBJECT, user, vect, "105" );
+        mailArr[2] = imcref.getTemplateFromDirectory( POSTCARD_MAIL_SUBJECT, user, vect, "105" );
 
         //lets parse the mailBody
         vect.add( "#mailText0#" );
@@ -240,7 +240,7 @@ public class PostcardServlet extends HttpServlet {
         vect.add( "http://" + host );
         vect.add( "#mailText3#" );
         vect.add( pcFileName );
-        mailArr[3] = imcref.getAdminTemplateFromDirectory( POSTCARD_MAIL_BODY, user, vect, "105" );
+        mailArr[3] = imcref.getTemplateFromDirectory( POSTCARD_MAIL_BODY, user, vect, "105" );
 
         session.setAttribute( "postcardMail", mailArr );
         return;
@@ -302,16 +302,16 @@ public class PostcardServlet extends HttpServlet {
             smtp.sendMailWait( mailNfo[0], mailNfo[1], mailNfo[2], mailNfo[3] );
 
         } catch ( ProtocolException ex ) {
-            out.println( imcref.getAdminTemplateFromDirectory( POSTCARD_MAIL_ERROR, user, new Vector(), "105" ) );
+            out.println( imcref.getTemplateFromDirectory( POSTCARD_MAIL_ERROR, user, new Vector(), "105" ) );
             log( "Protocol error while sending mail. " + ex.getMessage() );
             return;
         } catch ( IOException ex ) {
-            out.println( imcref.getAdminTemplateFromDirectory( POSTCARD_MAIL_ERROR, user, new Vector(), "105" ) );
+            out.println( imcref.getTemplateFromDirectory( POSTCARD_MAIL_ERROR, user, new Vector(), "105" ) );
             log( "The mailservlet probably timed out. " + ex.getMessage() );
             return;
         }
 
-        out.println( imcref.getAdminTemplateFromDirectory( POSTCARD_MAIL_SENT, user, new Vector(), "105" ) );
+        out.println( imcref.getTemplateFromDirectory( POSTCARD_MAIL_SENT, user, new Vector(), "105" ) );
         return;
     }
 

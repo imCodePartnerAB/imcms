@@ -90,10 +90,9 @@ function activateUseradmin_roles(){
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'login_name'); activateUseradmin_roles(); return true">
 
 
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
-</script>
+#gui_outer_start()
+#gui_head( "<? global/imcms_administration ?>" )
+
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="AdminUserProps">
 <input type="HIDDEN" name="CURR_USER_ID" value="#CURR_USER_ID#">
@@ -108,9 +107,8 @@ imcmsGui("head", null);
     <td><input type="button" value="<? templates/sv/AdminUserResp.htm/2002 ?>" title="<? templates/sv/AdminUserResp.htm/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(71)"></td>
 </tr>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="0" width="660" align="center">
 <tr> 
 	<td colspan="2"><script>imcHeading("<? templates/sv/AdminUserResp.htm/5/1 ?>",656);</script></td>
@@ -271,10 +269,9 @@ writeFormField("TEXT","email",50,50,null,"#EMAIL#");
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 
 </body>
 </html>

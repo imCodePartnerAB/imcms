@@ -61,8 +61,8 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
         String date1 = "";
         String date2 = "";
         String text = "";
-        String errMsgDate = imcref.getAdminTemplateFromDirectory( DATE_ERROR, user, null, DocumentDomainObject.DOCTYPE_FORTUNES + "" );
-        String errMsgTxt = imcref.getAdminTemplateFromDirectory( TEXT_ERROR, user, null, DocumentDomainObject.DOCTYPE_FORTUNES + "" );
+        String errMsgDate = imcref.getTemplateFromDirectory( DATE_ERROR, user, null, DocumentDomainObject.DOCTYPE_FORTUNES + "" );
+        String errMsgTxt = imcref.getTemplateFromDirectory( TEXT_ERROR, user, null, DocumentDomainObject.DOCTYPE_FORTUNES + "" );
 
         if ( req.getParameter( "save" ) != null ) {
 
@@ -212,7 +212,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
         values.add( "#options#" );
         values.add( buff.toString() );
 
-        String parsed = imcref.getAdminTemplateFromDirectory( ADMIN_TEMPLATE, user, values, DocumentDomainObject.DOCTYPE_FORTUNES + "" );
+        String parsed = imcref.getTemplateFromDirectory( ADMIN_TEMPLATE, user, values, DocumentDomainObject.DOCTYPE_FORTUNES + "" );
         out.write( parsed );
         return;
 

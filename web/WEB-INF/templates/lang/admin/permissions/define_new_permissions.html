@@ -11,10 +11,9 @@
 </head>
 <body bgcolor="#FFFFFF">
 
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
-</script>
+#gui_outer_start()
+#gui_head( "<? global/imcms_administration ?>" )
+
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="SavePermissions">
 <input type="hidden" name="set_id" value="#set_id#">
@@ -26,9 +25,8 @@ imcmsGui("head", null);
     <td><input type="button" value="<? templates/sv/permissions/define_new_permissions.html/2002 ?>" title="<? templates/sv/permissions/define_new_permissions.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(41)"></td>
 </tr>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <tr> 
 	<td colspan="3"><script>imcHeading("<? templates/sv/permissions/define_new_permissions.html/4/1 ?>",656);</script></td>
@@ -53,9 +51,8 @@ imcmsGui("mid", null);
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 </body>
 </html>

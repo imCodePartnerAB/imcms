@@ -28,7 +28,7 @@ public class AdminDeleteDoc extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser(req);
         if (imcref.checkAdminRights(user) == false) {
             String header = "Error in AdminCounter.";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator")+ "<br>";
             this.log(header + "- user is not an administrator");
             new AdminError(req, res, header, msg);
@@ -49,7 +49,7 @@ public class AdminDeleteDoc extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (imcref.checkAdminRights(user) == false) {
             String header = "Error in AdminCounter.";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator")+"<br>";
             this.log(header + "- user is not an administrator");
             new AdminError(req, res, header, msg);
@@ -64,7 +64,7 @@ public class AdminDeleteDoc extends Administrator {
             Properties params = this.getParameters(req);
             if (this.validateParameters(params) == false) {
                 String header = "Error in AdminDeleteDoc.";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_valid_metaid")+ "<br>";
                 this.log(header + "- no valid metaid");
                 new AdminError(req, res, header, msg);
@@ -78,7 +78,7 @@ public class AdminDeleteDoc extends Administrator {
 
             if (foundMetaId == null) {
                 String header = "Error in AdminUserProps. ";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_metaid_in_db") + "( " + metaId + " ) <br>";
                 this.log(header + "- metaid could not be found in db");
                 new AdminError(req, res, header, msg);

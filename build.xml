@@ -393,16 +393,6 @@
 
     <target name="web-lang" depends="init,tools">
 
-        <property name="poll"               value="${imcms}/${buildlanguage}/poll"/>
-        <property name="shop"	            value="${imcms}/${buildlanguage}/shop"/>
-        <property name="htmleditor"         value="${imcms}/${buildlanguage}/htmleditor"/>
-        <property name="imcmsjsp"           value="${imcms}/${buildlanguage}/jsp"/>
-        <property name="imcmslogin"         value="${imcms}/${buildlanguage}/login"/>
-        <property name="imcmshtml"          value="${imcms}/${buildlanguage}/html"/>
-        <property name="adminimages"        value="${imcms}/${buildlanguage}/images/admin"/>
-        <property name="adminbuttons"       value="${imcms}/${buildlanguage}/images/admin/adminbuttons"/>
-        <property name="imcmsscripts"       value="${imcms}/${buildlanguage}/scripts"/>
-
         <property name="imcmsimageurl"      value="${imcmsurl}/${buildlanguage}/images"/>
 
         <filter token="imcmsimageurl"       value="${imcmsimageurl}"/>

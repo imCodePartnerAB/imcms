@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import com.imcode.imcms.servlet.conference.Conference;
 
@@ -171,7 +172,10 @@ public class ConfError extends Conference {
         log( html );
         log( htmlFile );
 
-        htmlObj.sendToBrowser( res, html );
+        // Lets send settings to a browser
+        PrintWriter out = res.getWriter();
+        res.setContentType("Text/html");
+        out.println(html);
     }
 
 } // End of class

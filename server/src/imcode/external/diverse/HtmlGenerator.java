@@ -12,25 +12,12 @@ public class HtmlGenerator {
     private File HTML_TEMPLATE;
 
     public HtmlGenerator(File path, String file) {
-        this(new File(path, file));
+        HTML_TEMPLATE = new File(path, file) ;
     }
 
-
-    private HtmlGenerator(File templateFile) {
-        HTML_TEMPLATE = templateFile;
-    }
 
     public HtmlGenerator() {
         HTML_TEMPLATE = null;
-    }
-
-    public void sendToBrowser( HttpServletResponse res, String str )
-             throws IOException {
-
-        // Lets send settings to a browser
-        PrintWriter out = res.getWriter();
-        res.setContentType("Text/html");
-        out.println(str);
     }
 
     /**

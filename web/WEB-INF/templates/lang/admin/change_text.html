@@ -48,10 +48,9 @@ function openLinkEditor() {
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'text'); checkMode();">
 
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
-</script>
+#gui_outer_start()
+#gui_head( "<? global/imcms_administration ?>" )
+
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="POST" action="SaveText">
 <input type="hidden" name="meta_id"  value="#meta_id#">
@@ -65,9 +64,8 @@ imcmsGui("head", null);
     <td><input type="button" value="<? templates/sv/change_text.html/2004 ?>" title="<? templates/sv/change_text.html/2005 ?>" class="imcmsFormBtn" onClick="openHelpW(36)"></td>
 </tr>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <tr>
 	<td colspan="2"><script>imcHeading("<? templates/sv/change_text.html/4/1 ?>","656");</script><div id="theLabel" class="imcmsAdmText"><i>#label#</i></div></td>
@@ -112,10 +110,9 @@ writeFormField("TEXTAREA","text\" id=\"txtCont",125,18,"100%",null);
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 
 
 <script language="javascript">

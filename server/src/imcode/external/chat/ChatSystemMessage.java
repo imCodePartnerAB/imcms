@@ -49,7 +49,7 @@ public class ChatSystemMessage extends ChatMessage {
             vLine.add( "" );
         }
 
-        return imcref.getAdminTemplateFromSubDirectoryOfDirectory( "system_msg.html", user, vLine, "103", libName ).trim() + "<br>\n";
+        return imcref.getTemplateFromSubDirectoryOfDirectory( "system_msg.html", user, vLine, "103", libName ).trim() + "<br>\n";
     }
 
     private String getMessageString( IMCServiceInterface imcref, UserDomainObject user, String libName ) {
@@ -68,7 +68,7 @@ public class ChatSystemMessage extends ChatMessage {
                 templateName = "user_timedout_msg.html";
 
         }
-        return imcref.getAdminTemplateFromSubDirectoryOfDirectory( templateName, user, null, "103", libName ).trim();
+        return imcref.getTemplateFromSubDirectoryOfDirectory( templateName, user, null, "103", libName ).trim();
     }
 
     public String getLogMsg( IMCServiceInterface imcref, UserDomainObject user, String libName ) {

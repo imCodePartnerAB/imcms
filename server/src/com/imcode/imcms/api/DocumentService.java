@@ -15,8 +15,8 @@ public class DocumentService {
     private UserAndRoleMapper userAndRoleMapper;
     private IMCServiceInterface service;
 
-    Document createDocumentOfSubtype( DocumentDomainObject document ) {
-        Document result;
+    Document wrapDocumentDomainObject(DocumentDomainObject document) {
+        Document result ;
 
         if (document instanceof TextDocumentDomainObject) {
             result = new TextDocument( (TextDocumentDomainObject) document, service, securityChecker, this, documentMapper,
@@ -54,8 +54,8 @@ public class DocumentService {
     public Document getDocument( int documentId ) throws NoPermissionException {
         DocumentDomainObject doc = documentMapper.getDocument( documentId );
         Document result = null;
-        if (null != doc) {
-            result = createDocumentOfSubtype( doc );
+        if( null != doc ) {
+            result = wrapDocumentDomainObject(doc);
             securityChecker.hasAtLeastDocumentReadPermission( result );
         }
         return result;
@@ -264,7 +264,7 @@ public class DocumentService {
             Document[] documents = new Document[documentDomainObjects.length];
             for (int i = 0; i < documentDomainObjects.length; i++) {
                 DocumentDomainObject documentDomainObject = documentDomainObjects[i];
-                documents[i] = createDocumentOfSubtype( documentDomainObject );
+                documents[i] = wrapDocumentDomainObject( documentDomainObject );
             }
             return documents;
         } catch (IOException e) {

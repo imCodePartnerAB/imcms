@@ -111,7 +111,7 @@ public class TextDocument extends Document {
         if (null != includedDocumentId) {
             DocumentDomainObject includedDocument = documentMapper.getDocument(includedDocumentId.intValue());
             if (null != includedDocument ) {
-                return documentService.createDocumentOfSubtype( includedDocument );
+                return documentService.wrapDocumentDomainObject( includedDocument );
             }
         }
         return null;
@@ -222,7 +222,7 @@ public class TextDocument extends Document {
 
         public MenuItem(MenuItemDomainObject internalMenuItem) {
             this.internalMenuItem = internalMenuItem;
-            child = documentService.createDocumentOfSubtype( internalMenuItem.getDocument() );
+            child = documentService.wrapDocumentDomainObject( internalMenuItem.getDocument() );
         }
 
         public Document getDocument() {
@@ -342,7 +342,7 @@ public class TextDocument extends Document {
                                     && documentMapper.userHasAtLeastDocumentReadPermission( securityChecker.getCurrentLoggedInUser(), documentDomainObject ))
                                                   || documentMapper.userHasMoreThanReadPermissionOnDocument(securityChecker.getCurrentLoggedInUser(), documentDomainObject );
                 if (documentIsVisibleInMenu) {
-                    Document document = documentService.createDocumentOfSubtype(documentDomainObject);
+                    Document document = documentService.wrapDocumentDomainObject(documentDomainObject);
                     documentList.add(document);
                 }
             }

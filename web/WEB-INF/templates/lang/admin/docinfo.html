@@ -10,10 +10,9 @@
 </head>
 <body bgcolor="#FFFFFF">
 
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
-</script>
+#gui_outer_start()
+#gui_head( "<? global/imcms_administration ?>" )
+
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="BackDoc">
 <tr>
@@ -21,14 +20,12 @@ imcmsGui("head", null);
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 #doc_type_description#
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 
 <div align="center">#adminMode#</div>
 

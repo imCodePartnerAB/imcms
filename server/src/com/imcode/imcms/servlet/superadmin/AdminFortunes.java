@@ -32,7 +32,7 @@ public class AdminFortunes extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser(req);
         if (imcref.checkAdminRights(user) == false) {
             String header = "Error in AdminFortunes.";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator")+"<br>";
             this.log(header + msg);
             new AdminError(req, res, header, msg);

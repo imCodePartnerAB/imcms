@@ -41,7 +41,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (imcref.checkAdminRights(user) == false) {
             String header = "Error in AdminRandomTexts. ";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             new AdminError(req, res, header, msg);
             return;
@@ -70,7 +70,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
         values.add("#options#");
         values.add(options.toString());
 
-        out.write(imcref.getAdminTemplateFromDirectory( HTML_TEMPLATE, user, values, DocumentDomainObject.DOCTYPE_FORTUNES + ""));
+        out.write(imcref.getTemplateFromDirectory( HTML_TEMPLATE, user, values, DocumentDomainObject.DOCTYPE_FORTUNES + ""));
 
     } // End doGet
 
@@ -133,7 +133,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
             values.add(buff.toString());
 
             UserDomainObject user = Utility.getLoggedOnUser(req);
-            out.write(imcref.getAdminTemplateFromDirectory( HTML_TEMPLATE_ADMIN, user, values, DocumentDomainObject.DOCTYPE_FORTUNES + ""));
+            out.write(imcref.getTemplateFromDirectory( HTML_TEMPLATE_ADMIN, user, values, DocumentDomainObject.DOCTYPE_FORTUNES + ""));
             session.setAttribute("lines", lines);
             return;
         }

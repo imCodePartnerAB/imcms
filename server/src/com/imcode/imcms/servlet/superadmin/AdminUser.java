@@ -34,7 +34,7 @@ public class AdminUser extends Administrator {
         // Lets verify that the user is an admin, otherwise throw him out.
         if ( !isSuperadmin && !isUseradmin ) {
             String header = "Error in AdminUser.";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             this.log( header + "- user is not an administrator" );
             new AdminError( req, res, header, msg );
@@ -121,7 +121,7 @@ public class AdminUser extends Administrator {
         // Lets check if the user is an admin, otherwise throw him out.
         if ( !isSuperadmin && !isUseradmin ) {
             String header = "Error in AdminUser.";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             this.log( header + "- user is not an administrator" );
             new AdminError( req, res, header, msg );
@@ -167,7 +167,7 @@ public class AdminUser extends Administrator {
             // otherwise throw him out.
             if ( imcref.checkAdminRights( user ) == false && !useradmin && !userToChangeId.equals( "" + user.getId() ) ) {
                 String header = "Error in AdminUser, change user.";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminUser/user_have_no_permission") + "<br>";
                 this.log( header + "- user have no permission to edit user values" );
                 new AdminError( req, res, header, msg );
@@ -207,7 +207,7 @@ public class AdminUser extends Administrator {
 
         if ( userId == null ) {
             String header = "Error in AdminUser. ";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/AdminUser/user_to_change_id_missing") + "<br>";
             this.log( header + "- user to change id is missing " );
             new AdminError( req, res, header, msg );

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
@@ -167,7 +168,11 @@ public class BillBoard extends HttpServlet {
 
         HtmlGenerator htmlObj = new HtmlGenerator( templateLib, htmlFile );
         String html = htmlObj.createHtmlString( vm );
-        htmlObj.sendToBrowser( res, html );
+
+        // Lets send settings to a browser
+        PrintWriter out = res.getWriter();
+        res.setContentType("Text/html");
+        out.println(html);
 
     }
 

@@ -9,8 +9,8 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.apache.oro.text.regex.*;
 import org.apache.oro.text.perl.Perl5Util;
+import org.apache.oro.text.regex.*;
 
 import java.io.IOException;
 import java.text.Collator;
@@ -70,17 +70,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     }
 
     public String parsePage( ParserParameters parserParameters, int includelevel ) throws IOException {
-        DocumentRequest documentRequest = parserParameters.getDocumentRequest() ;
-        int flags = parserParameters.getFlags() ;
+        DocumentRequest documentRequest = parserParameters.getDocumentRequest();
+        int flags = parserParameters.getFlags();
         try {
             TextDocumentDomainObject document = (TextDocumentDomainObject)documentRequest.getDocument();
-            int meta_id = document.getId();
-            String meta_id_str = String.valueOf( meta_id );
-
             UserDomainObject user = documentRequest.getUser();
-            int user_id = user.getId();
-            String user_id_str = String.valueOf( user_id );
-
             DocumentMapper documentMapper = service.getDocumentMapper();
 
             boolean textmode = false;
@@ -117,13 +111,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 }
             }
 
-            String[] metaIdUserIdPair = {meta_id_str, user_id_str};
-
             Perl5Matcher patMat = new Perl5Matcher();
 
             SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
 
-            Map menus = getMenus( metaIdUserIdPair, menumode, datetimeFormatWithSeconds, parserParameters );
+            Map menus = getMenus( document, user, menumode, datetimeFormatWithSeconds, parserParameters );
 
             StringBuffer templatebuffer = new StringBuffer( service.getTemplateData( documentTemplateId ) );
 
@@ -134,38 +126,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             result.append( imcmsMessage );
 
             Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, templatemode, parserParameters );
-            MapSubstitution hashtagsubstitution = new imcode.server.parser.MapSubstitution( hashTags, true );
-            MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( parserParameters, menus, menumode );
-            ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, parserParameters, includemode, includelevel, textmode, imagemode );
+            MapSubstitution hashtagsubstitution = new MapSubstitution( hashTags, true );
+            MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution( parserParameters, menus, menumode );
+            ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution( this, parserParameters, includemode, includelevel, textmode, imagemode );
 
-            LinkedList parse = new LinkedList();
-            perl5util.split( parse, "/(<!--\\/?IMSCRIPT-->)/", templateContents );
-            Iterator parseIterator = parse.iterator();
-            boolean parsing = false;
-
-            // Well. Here we have it. The main parseloop.
-            // The Inner Sanctum of imCMS. Have fun.
-            while ( parseIterator.hasNext() ) {
-                // So, let's jump in and out of blocks delimited by <!--IMSCRIPT--> and <!--/IMSCRIPT-->
-                String nextbit = (String)parseIterator.next();
-                if ( nextbit.equals( "<!--/IMSCRIPT-->" ) ) { // We matched <!--/IMSCRIPT-->
-                    parsing = false;       // So, we're not parsing.
-                    continue;
-                } else if ( nextbit.equals( "<!--IMSCRIPT-->" ) ) { // We matched <!--IMSCRIPT-->
-                    parsing = true;              // So let's get to parsing.
-                    continue;
-                }
-                if ( !parsing ) {
-                    result.append( nextbit );
-                    continue;
-                }
-
-                nextbit = replaceTags( nextbit, patMat, menuparsersubstitution, imcmstagsubstitution, hashtagsubstitution );
-
-                result.append( nextbit );
-            }
-
-            String returnresult = result.toString();
+            String returnresult = replaceTags( templateContents, patMat, menuparsersubstitution, imcmstagsubstitution, hashtagsubstitution, document, user );
 
             returnresult = applyEmphasis( documentRequest, user, returnresult, patMat, result );
             return returnresult;
@@ -205,15 +170,17 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         return returnresult;
     }
 
-    private String replaceTags( String nextbit, Perl5Matcher patMat, MenuParserSubstitution menuparsersubstitution,
-                                ImcmsTagSubstitution imcmstagsubstitution, MapSubstitution hashtagsubstitution ) {
+    private String replaceTags( String template, Perl5Matcher patMat, MenuParserSubstitution menuparsersubstitution,
+                                ImcmsTagSubstitution imcmstagsubstitution, MapSubstitution hashtagsubstitution,
+                                TextDocumentDomainObject document, UserDomainObject user ) {
         // Menus.
-        nextbit = Util.substitute( patMat, MENU_PATTERN, menuparsersubstitution, nextbit, Util.SUBSTITUTE_ALL );
+        String result = Util.substitute( patMat, MENU_PATTERN, menuparsersubstitution, template, Util.SUBSTITUTE_ALL );
         // <?imcms:tags?>
-        nextbit = Util.substitute( patMat, IMCMS_TAG_PATTERN, imcmstagsubstitution, nextbit, Util.SUBSTITUTE_ALL );
+        result = Util.substitute( patMat, IMCMS_TAG_PATTERN, imcmstagsubstitution, result, Util.SUBSTITUTE_ALL );
         // #hashtags#
-        nextbit = Util.substitute( patMat, HASHTAG_PATTERN, hashtagsubstitution, nextbit, Util.SUBSTITUTE_ALL );
-        return nextbit;
+        result = Util.substitute( patMat, HASHTAG_PATTERN, hashtagsubstitution, result, Util.SUBSTITUTE_ALL );
+
+        return result;
     }
 
     private Properties getHashTags( UserDomainObject user, SimpleDateFormat datetimeFormatWithSeconds,
@@ -243,7 +210,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         tags.setProperty( "#param#", parserParameters.getParameter() );
         tags.setProperty( "#externalparam#", parserParameters.getExternalParameter() );
 
-        if (parserParameters.getFlags() >= 0) {
+        if ( parserParameters.getFlags() >= 0 ) {
             tags.setProperty( "#adminMode#", service.getAdminButtons( user, document ) );
         }
 
@@ -292,22 +259,14 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         return changeTemplateUi;
     }
 
-    private Map getMenus( String[] metaIdUserIdPair, boolean menumode, SimpleDateFormat datetimeFormatWithSeconds,
+    private Map getMenus( TextDocumentDomainObject document, UserDomainObject user, boolean menumode, SimpleDateFormat datetimeFormatWithSeconds,
                           ParserParameters parserParameters ) {
-        /*
-          OK.. we will now make a LinkedList for the entire page.
-          This LinkedList, menus, will contain one item for each menu on the page.
-          These items will also be instances of LinkedList.
-          These LinkedLists will in turn each hold one Properties for each item in each menu.
-          These Properties will hold the tags, and the corresponding data, that will go in each menuitem.
-        */
         HashMap menus = new HashMap();	// Map to contain all the menus on the page.
         Menu currentMenu = null;
         int previousMenuIndex = -1;
 
-        // Here we have the most timeconsuming part of parsing the page.
-        // Selecting all the documents with permissions from the DB
-        String[][] childs = service.sqlProcedureMulti( "GetChilds", metaIdUserIdPair );
+        String[][] childs = service.sqlProcedureMulti( "GetChilds", new String[]{"" + document.getId(), ""
+                                                                                                        + user.getId()} );
 
         for ( int i = 0; i < childs.length; ++i ) {
             String[] childRow = childs[i];
@@ -420,10 +379,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         private Collator collator;
 
         private MenuItemHeadlineComparator( String lang ) {
-            Locale locale = Locale.ENGLISH ;
+            Locale locale = Locale.ENGLISH;
             try {
                 locale = new Locale( LanguageMapper.convert639_2to639_1( lang ) );
-            } catch ( LanguageMapper.LanguageNotSupportedException ignored ) {}
+            } catch ( LanguageMapper.LanguageNotSupportedException ignored ) {
+            }
             collator = Collator.getInstance( locale );
         }
 

@@ -10,10 +10,9 @@
 </head>
 <body bgcolor="#FFFFFF">
 
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
-</script>
+#gui_outer_start()
+#gui_head( "<? global/imcms_administration ?>" )
+
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
 <input TYPE="HIDDEN" name="language" value="<? templates/default_lang ?>">
@@ -42,9 +41,8 @@ imcmsGui("head", null);
 	<td><input type="button" value="<? templates/sv/template_admin.html/2012 ?>" title="<? templates/sv/template_admin.html/2013 ?>" class="imcmsFormBtn" onClick="openHelpW(8)"></td>
 </tr>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <tr>
 	<td><script>imcHeading("<? templates/sv/template_admin.html/6/1 ?>",656);</script></td>
@@ -61,10 +59,9 @@ imcmsGui("mid", null);
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 
 </body>
 </html>

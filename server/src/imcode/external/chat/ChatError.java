@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public class ChatError extends ChatBase {
 
@@ -116,7 +117,10 @@ public class ChatError extends ChatBase {
         HtmlGenerator htmlObj = new HtmlGenerator( templateLib, htmlFile );
         String html = htmlObj.createHtmlString( vm );
 
-        htmlObj.sendToBrowser( res, html );
+        // Lets send settings to a browser
+        PrintWriter out = res.getWriter();
+        res.setContentType("Text/html");
+        out.println(html);
     }
 
 } // End of class

@@ -355,7 +355,7 @@ public class ChatCreator extends ChatBase {
 
     private String getTemplateButtonHtml(int metaId, UserDomainObject user) {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        return imcref.getAdminTemplateFromSubDirectoryOfDirectory( HTML_TEMPLATES_BUTTON, user, null, "103", getTemplateLibName( metaId));
+        return imcref.getTemplateFromSubDirectoryOfDirectory( HTML_TEMPLATES_BUTTON, user, null, "103", getTemplateLibName( metaId));
     }
 
     //peter keep

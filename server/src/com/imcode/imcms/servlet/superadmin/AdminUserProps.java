@@ -302,7 +302,7 @@ public class AdminUserProps extends Administrator {
     private void showErrorPageUserHasNoRightsToChangeUserValues( HttpServletRequest req, HttpServletResponse res,
                                                                  IMCServiceInterface imcref, UserDomainObject user ) throws IOException {
         String header = "Error in AdminUserProps. ";
-        Properties langproperties = imcref.getLangProperties( user );
+        Properties langproperties = imcref.getLanguageProperties( user );
         String msg = langproperties.getProperty( "error/servlet/AdminUser/user_have_no_permission" ) + "<br>";
         this.log( header + "- user have no permission to change user values" );
         new AdminError( req, res, header, msg );
@@ -424,7 +424,7 @@ public class AdminUserProps extends Administrator {
     private void showErrorPageUserNotAnAdministrator( HttpServletRequest req, HttpServletResponse res,
                                                       IMCServiceInterface imcref, UserDomainObject user ) throws IOException {
         String header = "Error in AdminUserProps. ";
-        Properties langproperties = imcref.getLangProperties( user );
+        Properties langproperties = imcref.getLanguageProperties( user );
         String msg = langproperties.getProperty( "error/servlet/global/no_administrator" ) + "<br>";
         this.log( header + "- user is not an administrator" );
         new AdminError( req, res, header, msg );
@@ -547,7 +547,7 @@ public class AdminUserProps extends Administrator {
             if ( imcref.checkAdminRights( user ) == false && !user.isUserAdmin()
                  && !userToChangeId.equals( "" + user.getId() ) ) {
                 String header = "Error in AdminUserProps.";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty( "error/servlet/AdminUser/user_have_no_permission" ) + "<br>";
                 this.log( header + "- user have no permission to change user values" );
                 new AdminError( req, res, header, msg );
@@ -767,7 +767,7 @@ public class AdminUserProps extends Administrator {
 
             // Lets check that the new username doesnt exists already in db
             String userName;
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty( "error/servlet/AdminUserProps/username_already_exists" ) + "<br>";
             if ( null != req.getParameter( "login_name" ) ) {
                 userName = params.getProperty( "login_name" );
@@ -886,7 +886,7 @@ public class AdminUserProps extends Administrator {
             // Lets check if the user is an admin or if he is going to change his own data, otherwise throw him out.
             if ( !isAdmin && user.getId() != Integer.parseInt( userToChangeId ) ) {
                 String header = "Error in AdminUserProps. ";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty( "error/servlet/AdminUserProps/user_has_no_admin_permission" )
                              + "<br>";
                 new AdminError( req, res, header, msg );
@@ -903,7 +903,7 @@ public class AdminUserProps extends Administrator {
                lets check that the new loginname don't already exists in db
             */
             String currentLogin = userToChange.getLoginName();
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty( "error/servlet/AdminUserProps/username_already_exists" ) + "<br>";
             String newLogin;
             if ( null != req.getParameter( "login_name" ) ) {
@@ -1237,7 +1237,7 @@ public class AdminUserProps extends Administrator {
         Vector rolesV = new Vector( java.util.Arrays.asList( roles ) );
         if ( rolesV.size() == 0 && name.equals( "roles" ) ) { // user must get at least one user role
             String header = "Error in AdminUserProps ";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty( "error/servlet/AdminUserProps/no_role_selected" ) + "<br>";
             this.log( header + "- no role selected" );
             new AdminError( req, res, header, msg );
@@ -1382,7 +1382,7 @@ public class AdminUserProps extends Administrator {
         if ( checkParameters( aPropObj ) == false ) {
 
             String header = "Error in AdminUserProps ";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty( "error/servlet/AdminUserProps/vaidate_form_parameters" ) + "<br>";
             this.log( header + "Error in checkingparameters" );
             new AdminError( req, res, header, msg );
@@ -1673,7 +1673,7 @@ public class AdminUserProps extends Administrator {
 
         if ( userId == null ) {
             String header = "Error in AdminUserProps ";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty( "error/servlet/AdminUser/user_to_change_id_missing" ) + "<br>";
             this.log( header + "- user id for user to change was missing" );
             new AdminError( req, res, header, msg );

@@ -105,7 +105,7 @@ public class AdminRoleBelongings extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( imcref.checkAdminRights( user ) == false ) {
             String header = "Error in AdminRoleBelongings.";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             this.log( header + "- user is not an administrator" );
             new AdminError( req, res, header, msg );

@@ -315,7 +315,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        final String htmlStr = imcref.getAdminTemplateFromSubDirectoryOfDirectory( template, user, vect, "103", templateSet );
+        final String htmlStr = imcref.getTemplateFromSubDirectoryOfDirectory( template, user, vect, "103", templateSet );
         out.print( htmlStr );
         out.flush();
         out.close();

@@ -72,7 +72,7 @@ public class AdminIpAccess extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( imcref.checkAdminRights( user ) == false ) {
             String header = "Error in AdminCounter.";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator")+"<br>";
             this.log( header + "- user is not an administrator" );
             new AdminError( req, res, header, msg );
@@ -174,7 +174,7 @@ public class AdminIpAccess extends Administrator {
                 }
             } else {
                 String header = "Error in AdminIpAccess, delete. ";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminIpAccess/no_session") + "<br>";
                 this.log( header + "- session could not be created");
                 new AdminError( req, res, header, msg );
@@ -207,7 +207,7 @@ public class AdminIpAccess extends Administrator {
                 }
             } else {
                 String header = "Error in AdminIpAccess, delete.";
-                Properties langproperties = imcref.getLangProperties( user );
+                Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminIpAccess/no_session") + "<br>";
                 this.log( header + "- session could not be created" );
                 new AdminError( req, res, header, msg );
@@ -260,7 +260,7 @@ public class AdminIpAccess extends Administrator {
 
         if ( checkParameters( aPropObj ) == false ) {
             String header = "Error in AdminIpAccess, checkParameters.";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/AdminIpAccess/vaidate_form_parameters") + "<br>";
             this.log( header + "- values is missing for some parameters" );
             new AdminError( req, res, header, msg );

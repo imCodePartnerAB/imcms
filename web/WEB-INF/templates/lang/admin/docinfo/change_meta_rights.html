@@ -9,10 +9,9 @@
 </head>
 <body bgcolor="#FFFFFF">
 
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
-</script>
+#gui_outer_start()
+#gui_head( "<? global/imcms_administration ?>" )
+
 <table border="0" cellspacing="0" cellpadding="0">
 <form name="backForm" action="AdminDoc">
 <input type="hidden" name="meta_id" value="#meta_id#">
@@ -23,9 +22,8 @@ imcmsGui("head", null);
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="POST" action="SaveMeta">
 <input type="hidden" name="doc_type" value="#doc_type#">
@@ -109,10 +107,9 @@ imcmsGui("mid", null);
 	</table></td>
 </tr>
 </table>
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 
 <div align="center">#adminMode#</div>
 

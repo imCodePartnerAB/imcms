@@ -166,7 +166,10 @@ public class BillBoardError extends BillBoard {
         HtmlGenerator htmlObj = new HtmlGenerator( templateLib, htmlFile );
         String html = htmlObj.createHtmlString( vm );
 
-        htmlObj.sendToBrowser( res, html );
+        // Lets send settings to a browser
+        PrintWriter out = res.getWriter();
+        res.setContentType("Text/html");
+        out.println(html);
     }
 
 } // End of class

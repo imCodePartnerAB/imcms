@@ -145,7 +145,7 @@ public class ChatControl extends ChatBase {
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
             int metaId = chat.getChatId();
-            return imcref.getAdminTemplateFromSubDirectoryOfDirectory( SETTINGS_BUTTON, user, null, "103", getTemplateLibName( metaId));
+            return imcref.getTemplateFromSubDirectoryOfDirectory( SETTINGS_BUTTON, user, null, "103", getTemplateLibName( metaId));
         } else {
             return "&nbsp;";
         }
@@ -232,7 +232,7 @@ public class ChatControl extends ChatBase {
         tags.add(myMember.getReferrerMetaId() + "");
         tags.add("#chat_meta_id#");
         tags.add(chatMetaId + "");
-        String result = imcref.getAdminTemplateFromSubDirectoryOfDirectory( leaveTemplate, myMember.getUser(), tags, "103", templateSetName);
+        String result = imcref.getTemplateFromSubDirectoryOfDirectory( leaveTemplate, myMember.getUser(), tags, "103", templateSetName);
         return result;
     }
 
@@ -356,7 +356,7 @@ public class ChatControl extends ChatBase {
                 } else {
                     tempV.add("");
                 }
-                reload.append(imcref.getAdminTemplateFromSubDirectoryOfDirectory( "checkbox_reload.html", user, tempV, "103", templetUrl.getName()));
+                reload.append(imcref.getTemplateFromSubDirectoryOfDirectory( "checkbox_reload.html", user, tempV, "103", templetUrl.getName()));
                 reload.append(createOptionCode(member.getRefreshTime() + "", ChatCreator.createUpdateTimeV()));
                 reload.append("</select> sekund <br>");
             }
@@ -371,7 +371,7 @@ public class ChatControl extends ChatBase {
                 } else {
                     tempV.add("");
                 }
-                entrance = imcref.getAdminTemplateFromSubDirectoryOfDirectory( "checkbox_entrance.html", user, tempV, "103", templetUrl.getName());
+                entrance = imcref.getTemplateFromSubDirectoryOfDirectory( "checkbox_entrance.html", user, tempV, "103", templetUrl.getName());
             }
             String privat = "";
             if (arr[3].equals("3")) {
@@ -383,7 +383,7 @@ public class ChatControl extends ChatBase {
                 } else {
                     tempV.add("");
                 }
-                privat = imcref.getAdminTemplateFromSubDirectoryOfDirectory( "checkbox_private.html", user, tempV, "103", templetUrl.getName());
+                privat = imcref.getTemplateFromSubDirectoryOfDirectory( "checkbox_private.html", user, tempV, "103", templetUrl.getName());
             }
             String datetime = "";
             if (arr[5].equals("3")) {
@@ -395,7 +395,7 @@ public class ChatControl extends ChatBase {
                 } else {
                     tempV.add("");
                 }
-                datetime = imcref.getAdminTemplateFromSubDirectoryOfDirectory( "checkbox_datetime.html", user, tempV, "103", templetUrl.getName());
+                datetime = imcref.getTemplateFromSubDirectoryOfDirectory( "checkbox_datetime.html", user, tempV, "103", templetUrl.getName());
             }
             String font = "";
             if (arr[6].equals("3")) {
@@ -409,7 +409,7 @@ public class ChatControl extends ChatBase {
                         tempV.add("");
                     }
                 }
-                font = imcref.getAdminTemplateFromSubDirectoryOfDirectory( "buttons_font.html", user, tempV, "103", templetUrl.getName());
+                font = imcref.getTemplateFromSubDirectoryOfDirectory( "buttons_font.html", user, tempV, "103", templetUrl.getName());
             }
 
             vect.add("#reload#");

@@ -62,7 +62,6 @@
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="document.getElementsByName('<%= StringEscapeUtils.escapeJavaScript( DocumentComposer.PARAMETER__HEADLINE ) %>').item(0).focus()">
-
 <script>
 imcmsGui("outer_start", null);
 imcmsGui("head", null);
@@ -92,7 +91,7 @@ imcmsGui("mid", null);
         <td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/new_document_procedure_description ?>
         &nbsp;</td>
     </tr>
-    <tr>
+    <tr>  
         <td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/create_document_heading ?>","656");</script></td>
     </tr>
     <% } else { %>

@@ -1,25 +1,26 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import java.io.*;
-import java.util.*;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
-import imcode.server.*;
+import imcode.external.diverse.VariableManager;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import com.imcode.imcms.servlet.superadmin.AdminError;
-import com.imcode.imcms.servlet.superadmin.Administrator;
-import com.imcode.imcms.servlet.superadmin.Administrator;
-import com.imcode.imcms.servlet.superadmin.AdminError;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Properties;
+import java.util.Vector;
+import java.util.Arrays;
 
 public class AdminManager extends Administrator {
 
-    private String HTML_TEMPLATE;
-    private String HTML_ADMINTASK;
-    private String HTML_USERADMINTASK;
+    private final static String HTML_TEMPLATE = "AdminManager.htm"; ;
+    private final static String HTML_ADMINTASK = "AdminManager_adminTask_element.htm" ;
+    private final static String HTML_USERADMINTASK = "AdminManager_useradminTask_element.htm";
 
     /**
      * The GET method creates the html page when this side has been
@@ -35,17 +36,13 @@ public class AdminManager extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (!user.isSuperAdmin() && !user.isUserAdmin()) {
             String header = "Error in AdminManager.";
-            Properties langproperties = imcref.getLangProperties( user );
+            Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             this.log(header + "- user is not an administrator");
 
             new AdminError(req, res, header, msg);
             return;
         }
-
-        // Lets generate the html page
-        VariableManager vm = new VariableManager();
-        vm.addProperty("STATUS", "...");
 
         // lets parse and return the html_admin_part
         Vector vec = new Vector();
@@ -57,9 +54,9 @@ public class AdminManager extends Administrator {
             html_admin_part = imcref.getAdminTemplate( HTML_USERADMINTASK, user, vec ); //if useradmin
         }
 
-        vm.addProperty("ADMIN_TASK", html_admin_part);
-
-        super.sendHtml(req, res, vm, HTML_TEMPLATE);
+        Utility.setDefaultHtmlContentType( res );
+        String page = imcref.getAdminTemplate( HTML_TEMPLATE, user, Arrays.asList(new String[]{ "#ADMIN_TASK#", html_admin_part }));
+        res.getWriter().print( page ) ;
 
     } // End doGet
 
@@ -122,29 +119,6 @@ public class AdminManager extends Administrator {
         // Ok, Lets redirect the user to the right adminservlet
         this.log("redirects + to:" + url);
         res.sendRedirect(url);
-    }
-
-    /**
-     * Init: Detects paths and filenames.
-     */
-
-    public void init(ServletConfig config) throws ServletException {
-
-        super.init(config);
-        HTML_TEMPLATE = "AdminManager.htm";
-        HTML_ADMINTASK = "AdminManager_adminTask_element.htm";
-        HTML_USERADMINTASK = "AdminManager_useradminTask_element.htm";
-        this.log("Initializing AdminManager");
-    }
-
-
-    /**
-     * Log function, will work for both servletexec and Apache
-     */
-
-    public void log(String str) {
-        super.log(str);
-        System.out.println("AdminManager: " + str);
     }
 
 } // End of class

@@ -107,8 +107,11 @@ public class Administrator extends HttpServlet {
                           VariableManager vm, String htmlFile ) throws IOException {
 
         String str = this.createHtml( req, vm, htmlFile );
-        HtmlGenerator htmlObj = new HtmlGenerator();
-        htmlObj.sendToBrowser( res, str );
+
+        // Lets send settings to a browser
+        PrintWriter out = res.getWriter();
+        res.setContentType("Text/html");
+        out.println(str);
     }
 
     /**

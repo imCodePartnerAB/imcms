@@ -80,7 +80,7 @@ public class QuestionResult extends HttpServlet {
         values.add("#total#");
         values.add("" + (int) totalAnswerCount);
 
-        String parsed = imcref.getAdminTemplateFromDirectory( RESULTTEMPLATE, user, values, "106");
+        String parsed = imcref.getTemplateFromDirectory( RESULTTEMPLATE, user, values, "106");
 
         res.setContentType("text/html");
         Writer out = res.getWriter();

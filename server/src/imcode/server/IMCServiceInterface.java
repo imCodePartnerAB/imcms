@@ -88,12 +88,12 @@ public interface IMCServiceInterface {
     public String getAdminTemplate( String adminTemplateName, UserDomainObject user, java.util.List tagsWithReplacements )  ;
 
     // parseExternaldoc use template
-    public String getAdminTemplateFromDirectory( String adminTemplateName, UserDomainObject user, java.util.List variables,
+    public String getTemplateFromDirectory( String adminTemplateName, UserDomainObject user, java.util.List variables,
                                                  String directory )
 	;
 
     // parseExternaldoc use template
-    public String getAdminTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, java.util.List variables,
+    public String getTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, java.util.List variables,
                                                                String directory, String subDirectory )
 	;
 
@@ -175,7 +175,7 @@ public interface IMCServiceInterface {
 
     public String getFortune(String path) throws IOException ;
 
-    public String getSearchTemplate(String path) throws IOException ;
+    public String getTemplate( String path, UserDomainObject user, List variables ) throws IOException ;
 
     public List getQuoteList(String quoteListName);
 
@@ -246,7 +246,7 @@ public interface IMCServiceInterface {
 
     SMTP getSMTP();
 
-    public Properties getLangProperties(UserDomainObject user);
+    public Properties getLanguageProperties(UserDomainObject user);
 
     File getFilePath();
 
