@@ -1,11 +1,8 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentPermissionSetMapper;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.user.UserDomainObject;
+import imcode.server.document.*;
 import imcode.server.user.UserAndRoleMapper;
+import imcode.server.user.UserDomainObject;
 
 public class DocumentService {
     private SecurityChecker securityChecker;
@@ -41,19 +38,31 @@ public class DocumentService {
         return result;
     }
 
-    public void saveChanges(TextDocument document) throws NoPermissionException {
+    public void saveChanges(TextDocument document) throws NoPermissionException, MaxCategoriesOfTypeExceededException {
         securityChecker.hasEditPermission(document);
-        documentMapper.saveDocument(document.getInternal());
+        try {
+            documentMapper.saveDocument(document.getInternal());
+        } catch (MaxCategoryDomainObjectsOfTypeExceededException e) {
+            throw new MaxCategoriesOfTypeExceededException(e) ;
+        }
     }
 
-    public Category getCategory(String categoryTypeName, String categoryName) {
+    public Category getCategory(CategoryType categoryType, String categoryName) {
         // Allow everyone to get a Category. No security check.
-        final CategoryDomainObject category = documentMapper.getCategory(categoryTypeName, categoryName);
+        final CategoryDomainObject category = documentMapper.getCategory(categoryType.getInternal(), categoryName);
         if (null != category) {
             return new Category(category);
         } else {
             return null ;
         }
+    }
+
+    public CategoryType getCategoryType(String categoryTypeName) {
+        final CategoryTypeDomainObject categoryType = documentMapper.getCategoryType(categoryTypeName);
+        if (null != categoryType) {
+            return new CategoryType(categoryType) ;
+        }
+        return null ;
     }
 
 }

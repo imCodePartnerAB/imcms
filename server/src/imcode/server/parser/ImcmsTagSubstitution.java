@@ -7,6 +7,7 @@ import imcode.server.LanguageMapper;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TextDocumentTextDomainObject;
+import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateHelper;
 import imcode.util.FileCache;
@@ -604,9 +605,9 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
     }
 
     private String tagCategories(Properties attributes) {
-        String type = attributes.getProperty("type") ;
+        String categoryTypeName = attributes.getProperty("type") ;
         Iterator categoriesIterator ;
-        if (null == type) {
+        if (null == categoryTypeName) {
             categoriesIterator = Arrays.asList(document.getCategories()).iterator();
         } else {
             Transformer categoryNameToStringTransformer = new Transformer() {
@@ -615,7 +616,8 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
                     return category.getName();
                 }
             };
-            final CategoryDomainObject[] categoriesOfType = document.getCategoriesOfType(type);
+            CategoryTypeDomainObject categoryType = serverObject.getDocumentMapper().getCategoryType(categoryTypeName) ;
+            final CategoryDomainObject[] categoriesOfType = document.getCategoriesOfType(categoryType);
             categoriesIterator = new TransformIterator(Arrays.asList(categoriesOfType).iterator(), categoryNameToStringTransformer);
         }
 

@@ -25,15 +25,14 @@ public class DocumentMapper {
     protected IMCServiceInterface service;
     protected ImcmsAuthenticatorAndUserMapper imcmsAAUM;
     private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
+    private static final int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
 
     public DocumentMapper(IMCService service, ImcmsAuthenticatorAndUserMapper imcmsAAUM) {
         this.service = service;
         this.imcmsAAUM = imcmsAAUM;
     }
 
-    /**
-     * Stored procedure names used in this class
-     */
+    // Stored procedure names used in this class
     // todo make sure all these is only used in one sprocMethod
     private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
     private static final String SPROC_GET_FILE_NAME = "GetFileName";
@@ -55,7 +54,9 @@ public class DocumentMapper {
         return sqlResult;
     }
 
-    /** @return the filename for a fileupload-internalDocument, or null if the internalDocument isn't a fileupload-docuemnt. **/
+    /**
+     * @return the filename for a fileupload-internalDocument, or null if the internalDocument isn't a fileupload-docuemnt. *
+     */
     private static String sprocGetFilename(IMCServiceInterface service, int meta_id) {
         String[] params = new String[]{String.valueOf(meta_id)};
         return service.sqlProcedureStr(SPROC_GET_FILE_NAME, params);
@@ -240,9 +241,10 @@ public class DocumentMapper {
     }
 
     /**
-     Set the modified datetime of a internalDocument to now
-     @param meta_id The id of the internalDocument
-     **/
+     * Set the modified datetime of a internalDocument to now
+     * 
+     * @param meta_id The id of the internalDocument
+     */
     private static void sqlUpdateTouchDocument(IMCServiceInterface service, int meta_id) {
         Date date = new Date();
         SimpleDateFormat dateformat = new SimpleDateFormat(DateHelper.DATE_TIME_SECONDS_FORMAT_STRING);
@@ -353,7 +355,7 @@ public class DocumentMapper {
 
     private void addCategoriesFromDatabaseToDocument(DocumentDomainObject document) {
         String[][] categories = service.sqlQueryMulti(
-                "SELECT categories.category_id, category_types.name, categories.name"
+                "SELECT categories.category_id, categories.name, category_types.name, category_types.max_choices"
                 + " FROM document_categories"
                 + " JOIN categories"
                 + "  ON document_categories.category_id = categories.category_id"
@@ -366,10 +368,12 @@ public class DocumentMapper {
             String[] categoryArray = categories[i];
 
             int categoryId = Integer.parseInt(categoryArray[0]);
-            String categoryTypeName = categoryArray[1];
-            String categoryName = categoryArray[2];
+            String categoryName = categoryArray[1];
+            String categoryTypeName = categoryArray[2];
+            int categoryTypeMaxChoices = Integer.parseInt(categoryArray[3]) ;
 
-            CategoryDomainObject category = new CategoryDomainObject(categoryId, categoryName, categoryTypeName);
+            CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject(categoryTypeName,categoryTypeMaxChoices) ;
+            CategoryDomainObject category = new CategoryDomainObject(categoryId, categoryName, categoryType);
             document.addCategory(category);
         }
 
@@ -539,9 +543,10 @@ public class DocumentMapper {
     /**
      * Inspired by the SaveNewMeta servlet... I went throu the code and tried to extract the nessesary parts. Hasse
      * todo: make the SaveNewMeta to use this method instead.
-     * @param parentId
-     * @param parentMenuNumber
-     * @return
+     * 
+     * @param parentId         
+     * @param parentMenuNumber 
+     * @return 
      */
     public synchronized DocumentDomainObject createNewTextDocument(UserDomainObject user, int parentId,
                                                                    int parentMenuNumber) {
@@ -573,7 +578,17 @@ public class DocumentMapper {
         return getDocument(newMetaId);
     }
 
-    public void saveDocument(DocumentDomainObject document) {
+    public void saveDocument(DocumentDomainObject document) throws MaxCategoryDomainObjectsOfTypeExceededException {
+        CategoryTypeDomainObject[] categoryTypes = getAllCategoryTypes();
+        for (int i = 0; i < categoryTypes.length; i++) {
+            CategoryTypeDomainObject categoryType = categoryTypes[i];
+            int maxChoices = categoryType.getMaxChoices();
+            CategoryDomainObject[] documentCategoriesOfType = document.getCategoriesOfType(categoryType);
+            if (UNLIMITED_MAX_CATEGORY_CHOICES != maxChoices && documentCategoriesOfType.length > maxChoices) {
+                throw new MaxCategoryDomainObjectsOfTypeExceededException("Document may have at most " + maxChoices + " categories of type '" + categoryType.getName() + "'");
+            }
+        }
+
         Date now = new Date();
         document.setModifiedDatetime(now);
 
@@ -601,7 +616,7 @@ public class DocumentMapper {
                 image, modifiedDatetime, target, text, archived, language, publisher );
         updateSection(service, document, section);
 
-        service.sqlUpdateQuery("DELETE FROM document_categories WHERE meta_id = ?", new String[] { ""+document.getMetaId()}) ;
+        service.sqlUpdateQuery("DELETE FROM document_categories WHERE meta_id = ?", new String[]{"" + document.getMetaId()});
         CategoryDomainObject[] categories = document.getCategories();
         for (int i = 0; i < categories.length; i++) {
             CategoryDomainObject category = categories[i];
@@ -626,7 +641,7 @@ public class DocumentMapper {
             service.sqlUpdateQuery(sqlStr,
                     new String[]{"" + templateId, "" + menuSortOrder, "" + templateGroupId, "" + document.getMetaId()});
         } else {
-           // TODO Handle other document types.
+            // TODO Handle other document types.
         }
 
         // todo: Mark parent as modified
@@ -889,49 +904,58 @@ public class DocumentMapper {
         imcref.sqlUpdateProcedure("SetRoleDocPermissionSetId", new String[]{"" + roleId, "" + metaId, "" + newSetId});
     }
 
-    public CategoryDomainObject getCategory(String categoryTypeName, String categoryName) {
-        String sqlQuery = "SELECT categories.category_id, category_types.name, categories.name\n" +
+    public CategoryDomainObject getCategory(CategoryTypeDomainObject categoryType, String categoryName) {
+        String sqlQuery = "SELECT categories.category_id, categories.name\n" +
                 "FROM categories\n" +
                 "JOIN category_types\n" +
                 "ON categories.category_type_id = category_types.category_type_id\n" +
                 "WHERE category_types.name = ?\n" +
                 "AND categories.name = ?";
-        String[] sqlResult = service.sqlQuery(sqlQuery, new String[]{categoryTypeName, categoryName});
+        String[] sqlResult = service.sqlQuery(sqlQuery, new String[]{categoryType.getName(), categoryName});
         if (0 != sqlResult.length) {
             final int categoryId = Integer.parseInt(sqlResult[0]);
-            final String categoryTypeNameFromDb = sqlResult[1];
-            final String categoryNameFromDb = sqlResult[2];
-            return new CategoryDomainObject(categoryId, categoryNameFromDb, categoryTypeNameFromDb);
+            final String categoryNameFromDb = sqlResult[1];
+
+            return new CategoryDomainObject(categoryId, categoryNameFromDb, categoryType);
         } else {
-            return null ;
+            return null;
         }
     }
 
-    public String[] getAllCategoryTypes() {
-        String sqlQuery = "SELECT name\n" +
-                "FROM category_types";
-        String[] sqlResult = service.sqlQuery(sqlQuery);
-        return sqlResult;
+    public CategoryTypeDomainObject[] getAllCategoryTypes() {
+        String sqlQuery = "SELECT name, max_choices\n" +
+                "FROM category_types ORDER BY name";
+        String[][] sqlResult = service.sqlQueryMulti(sqlQuery);
+
+        CategoryTypeDomainObject[] categoryTypeDomainObjects = new CategoryTypeDomainObject[sqlResult.length];
+        for (int i = 0; i < categoryTypeDomainObjects.length; i++) {
+            String typeName = sqlResult[i][0];
+            int maxChoices = Integer.parseInt(sqlResult[i][1]);
+
+            categoryTypeDomainObjects[i] = new CategoryTypeDomainObject(typeName, maxChoices);
+        }
+
+        return categoryTypeDomainObjects;
     }
 
-    public CategoryDomainObject[] getAllCategoriesOfType(String categoryType) {
-        String sqlQuery = "SELECT categories.category_id, categories.name, category_types.name\n" +
+    public CategoryDomainObject[] getAllCategoriesOfType(CategoryTypeDomainObject categoryType) {
+        String sqlQuery = "SELECT categories.category_id, categories.name\n" +
                 "FROM categories\n" +
                 "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n" +
                 "WHERE category_types.name = ?";
-        String[][] sqlResult = service.sqlQueryMulti(sqlQuery, new String[]{categoryType});
+        String[][] sqlResult = service.sqlQueryMulti(sqlQuery, new String[]{categoryType.getName()});
         CategoryDomainObject[] categoryDomainObjects = new CategoryDomainObject[sqlResult.length];
         for (int i = 0; i < sqlResult.length; i++) {
             int categoryId = Integer.parseInt(sqlResult[i][0]);
             String categoryName = sqlResult[i][1];
-            String categoryTypeName = sqlResult[i][2];
-            categoryDomainObjects[i] = new CategoryDomainObject(categoryId, categoryName, categoryTypeName);
+
+            categoryDomainObjects[i] = new CategoryDomainObject(categoryId, categoryName, categoryType);
         }
         return categoryDomainObjects;
     }
 
     public CategoryDomainObject getCategoryById(int categoryId) {
-        String sqlQuery = "SELECT categories.name, category_types.name\n" +
+        String sqlQuery = "SELECT categories.name, category_types.name, category_types.max_choices\n" +
                 "FROM categories\n" +
                 "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n" +
                 "WHERE categories.category_id = ?";
@@ -940,11 +964,15 @@ public class DocumentMapper {
 
         String categoryName = categorySqlResult[0];
         String categoryTypeName = categorySqlResult[1];
-        return new CategoryDomainObject(categoryId, categoryName, categoryTypeName);
+        int categoryTypeMaxChoices = Integer.parseInt(categorySqlResult[2]) ;
+
+        CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject(categoryTypeName,categoryTypeMaxChoices) ;
+
+        return new CategoryDomainObject(categoryId, categoryName, categoryType);
 
     }
 
-    public void getDocumentAndSetCategoriesFromFormAndSaveDocument(HttpServletRequest req, int meta_id_int) {
+    public void getDocumentAndSetCategoriesFromFormAndSaveDocument(HttpServletRequest req, int meta_id_int) throws MaxCategoryDomainObjectsOfTypeExceededException {
         DocumentMapper documentMapper = service.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument(meta_id_int);
         setDocumentCategoriesFromForm(req, document, documentMapper);
@@ -952,13 +980,30 @@ public class DocumentMapper {
     }
 
     private void setDocumentCategoriesFromForm(HttpServletRequest req, DocumentDomainObject document, DocumentMapper documentMapper) {
-        document.removeAllCategories() ;
+        document.removeAllCategories();
         String[] categoryIdStrings = req.getParameterValues("categories");
         for (int i = 0; null != categoryIdStrings && i < categoryIdStrings.length; i++) {
-            int categoryId = Integer.parseInt(categoryIdStrings[i]);
-            CategoryDomainObject categoryDomainObject = documentMapper.getCategoryById(categoryId);
-            document.addCategory(categoryDomainObject);
+            try {
+                int categoryId = Integer.parseInt(categoryIdStrings[i]);
+                CategoryDomainObject categoryDomainObject = documentMapper.getCategoryById(
+                        categoryId);
+                document.addCategory(categoryDomainObject);
+            } catch (NumberFormatException nfe) {
+                // Illegal category-id, or none selected.
+            }
         }
+    }
+
+    public CategoryTypeDomainObject getCategoryType(String categoryTypeName) {
+        String sqlStr = "SELECT category_types.name, category_types.max_choices\n"
+                        + "FROM category_types\n"
+                        + "WHERE category_types.name = ?" ;
+        String[] sqlResult = service.sqlQuery(sqlStr,new String[]{categoryTypeName}) ;
+
+        String categoryTypeNameFromDb = sqlResult[0] ;
+        int categoryTypeMaxChoices = Integer.parseInt(sqlResult[1]) ;
+
+        return new CategoryTypeDomainObject(categoryTypeNameFromDb,categoryTypeMaxChoices) ;
     }
 
 }

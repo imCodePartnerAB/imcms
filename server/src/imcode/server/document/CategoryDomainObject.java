@@ -9,10 +9,10 @@ public class CategoryDomainObject {
 
     private String name;
     private int id;
-    private String typeName;
+    private CategoryTypeDomainObject type;
 
-    CategoryDomainObject(int id, String name, String typeName) {
-        this.typeName = typeName;
+    CategoryDomainObject(int id, String name, CategoryTypeDomainObject type) {
+        this.type = type;
         this.name = name;
         this.id = id;
     }
@@ -25,12 +25,12 @@ public class CategoryDomainObject {
         return id;
     }
 
-    public String getTypeName() {
-        return typeName;
+    public CategoryTypeDomainObject getType() {
+        return type;
     }
 
     public String toString() {
-        return typeName+": "+name ;
+        return type+": "+name ;
     }
 
     public boolean equals(Object o) {

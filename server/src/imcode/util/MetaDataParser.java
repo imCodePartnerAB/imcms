@@ -8,6 +8,7 @@ import imcode.server.LanguageMapper;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.parser.AdminButtonParser;
 import imcode.server.user.*;
 import org.apache.log4j.Logger;
@@ -19,23 +20,26 @@ import java.util.*;
 
 public class MetaDataParser {
 
-    public final static String SECTION_MSG_TEMPLATE = "sections/admin_section_no_one_msg.html";
-    public final static String PUBLISHER_NONE_MSG_TEMPLATE = "docinfo/publisher_no_one_msg.html";
+    private static final Logger log = Logger.getLogger("imcode.util.MetaDataParser");
 
-    private final static Logger log = Logger.getLogger("imcode.util.MetaDataParser");
-    private static final String ADVANCED_CHANGE_DOCINFO_TEMPLATE = "docinfo/adv_change_meta.html";
-    private static final String SIMPLE_CHANGE_DOCINFO_TEMPLATE = "docinfo/change_meta.html";
-    private static final String PERMISSIONS_TABLE_HEAD_TEMPLATE = "permissions/roles_rights_table_head.html";
-    private static final String PERMISSIONS_TABLE_ROW_TEMPLATE = "permissions/roles_rights_table_row.html";
-    private static final String PERMISSIONS_TABLE_TAIL_TEMPLATE = "permissions/roles_rights_table_tail.html";
-    private static final String RESTRICTED_1_ADMINISTRATES_RESTRICTED_2_CHECKBOX_TEMPLATE = "permissions/sets_precedence.html";
-    private static final String DEFINE_RESTRICTED_1_BUTTON_TEMPLATE = "permissions/set_1_button.html";
-    private static final String DEFINE_RESTRICTED_2_BUTTON_TEMPLATE = "permissions/set_2_button.html";
-    private static final String DEFINE_NEW_RESTRICTED_1_BUTTON_TEMPLATE = "permissions/new_set_1_button.html";
-    private static final String DEFINE_NEW_RESTRICTED_2_BUTTON_TEMPLATE = "permissions/new_set_2_button.html";
-    private static final String ALL_DEFINE_RESTRICTED_BUTTONS_TEMPLATE = "permissions/define_sets.html";
-    private static final String RESTRICTED_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE = "docinfo/default_templates_1.html";
-    private static final String RESTRICTED_2_AND_MAYBE_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE = "docinfo/default_templates.html";
+    public final static String SECTION_MSG_TEMPLATE = "sections/admin_section_no_one_msg.html";
+
+    private static final String ADVANCED_CHANGE_DOCINFO_TEMPLATE                          = "docinfo/adv_change_meta.html"                                          ;
+    private static final String SIMPLE_CHANGE_DOCINFO_TEMPLATE                            = "docinfo/change_meta.html"                                              ;
+    private static final String PERMISSIONS_TABLE_HEAD_TEMPLATE                           = "permissions/roles_rights_table_head.html"                              ;
+    private static final String PERMISSIONS_TABLE_ROW_TEMPLATE                            = "permissions/roles_rights_table_row.html"                               ;
+    private static final String PERMISSIONS_TABLE_TAIL_TEMPLATE                           = "permissions/roles_rights_table_tail.html"                              ;
+    private static final String RESTRICTED_1_ADMINISTRATES_RESTRICTED_2_CHECKBOX_TEMPLATE = "permissions/sets_precedence.html"                                      ;
+    private static final String DEFINE_RESTRICTED_1_BUTTON_TEMPLATE                       = "permissions/set_1_button.html"                                         ;
+    private static final String DEFINE_RESTRICTED_2_BUTTON_TEMPLATE                       = "permissions/set_2_button.html"                                         ;
+    private static final String DEFINE_NEW_RESTRICTED_1_BUTTON_TEMPLATE                   = "permissions/new_set_1_button.html"                                     ;
+    private static final String DEFINE_NEW_RESTRICTED_2_BUTTON_TEMPLATE                   = "permissions/new_set_2_button.html"                                     ;
+    private static final String ALL_DEFINE_RESTRICTED_BUTTONS_TEMPLATE                    = "permissions/define_sets.html"                                          ;
+    private static final String RESTRICTED_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE             = "docinfo/default_templates_1.html"                                      ;
+    private static final String RESTRICTED_2_AND_MAYBE_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE = "docinfo/default_templates.html"                                        ;
+    private static final String CATEGORIES_MULTICHOICE_LIST_TEMPLATE                      = "docinfo/category_list.html"                                            ;
+    private static final String CATEGORIES_SINGLECHOICE_DROPDOWN_TEMPLATE                 = "docinfo/category_dropdown.html"                                        ;
+    private static final String PUBLISHER_NONE_MSG_TEMPLATE                               = "docinfo/publisher_no_one_msg.html"                                     ;
 
     /**
      parseMetaData collects the information for a certain meta_id from the db and
@@ -345,19 +349,31 @@ public class MetaDataParser {
     public static String createHtmlListBoxesOfCategoriesForEachCategoryType(DocumentMapper documentMapper, int documentId, IMCServiceInterface imcref, UserDomainObject user) {
         StringBuffer result = new StringBuffer();
             DocumentDomainObject document = documentMapper.getDocument(documentId);
-            String[] categoryTypes = documentMapper.getAllCategoryTypes();
+            CategoryTypeDomainObject[] categoryTypes = documentMapper.getAllCategoryTypes();
             for (int i = 0; i < categoryTypes.length; i++) {
-                String categoryType = categoryTypes[i];
+                CategoryTypeDomainObject categoryType = categoryTypes[i] ;
 
                 List tags = new ArrayList();
                 tags.add("#category_type_name#") ;
-                tags.add(categoryType);
+                tags.add(categoryType.getName());
+                tags.add("#max_choices#") ;
+                tags.add(""+categoryType.getMaxChoices()) ;
+
+                tags.add("#multiple#");
+                if (1 != categoryType.getMaxChoices()) {
+                    tags.add("multiple") ;
+                } else {
+                    tags.add("") ;
+                }
 
                 CategoryDomainObject[] categories = documentMapper.getAllCategoriesOfType(categoryType);
                 CategoryDomainObject[] documentSelectedCategories = document.getCategoriesOfType(categoryType) ;
                 HashSet documentSelectedCategoriesSet = new HashSet(Arrays.asList(documentSelectedCategories)) ;
 
                 StringBuffer categoryOptions = new StringBuffer();
+                if (1 == categoryType.getMaxChoices()) {
+                    categoryOptions.append("<option></option>") ;
+                }
                 for (int j = 0; j < categories.length; j++) {
                     CategoryDomainObject category = categories[j];
                     categoryOptions.append("<option value=\"").append(category.getId()).append("\"") ;
@@ -372,7 +388,9 @@ public class MetaDataParser {
                 tags.add("#category_options#") ;
                 tags.add(categoryOptions.toString()) ;
 
-                result.append(imcref.parseDoc(tags, "docinfo/category_list.html",user.getLangPrefix())) ;
+                final String template = 1 == categoryType.getMaxChoices() ? CATEGORIES_SINGLECHOICE_DROPDOWN_TEMPLATE : CATEGORIES_MULTICHOICE_LIST_TEMPLATE;
+                result.append(imcref.parseDoc(tags, template,user.getLangPrefix())) ;
+
             }
         return result.toString() ;
     }

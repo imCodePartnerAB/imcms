@@ -1345,7 +1345,13 @@ GO
 
 -- 2003-10-20 Kreiger
 
+ALTER TABLE [dbo].category_types ADD max_choices INT NOT NULL DEFAULT 0
+GO
+
+-- 2003-10-21 Kreiger
+
 ALTER TABLE meta ADD publisher_id INT NULL
+
 ALTER TABLE dbo.meta ADD CONSTRAINT
 	FK_meta_users FOREIGN KEY
 	(

@@ -11,6 +11,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateHelper;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 
 import org.apache.log4j.Category;
 import com.imcode.imcms.api.Document;
@@ -219,7 +220,11 @@ public class SaveNewMeta extends HttpServlet {
                     redirectToExternalDocType( imcref, metaId, user, parentMetaId, res );
             }
 
-            imcref.getDocumentMapper().getDocumentAndSetCategoriesFromFormAndSaveDocument(req, metaId);
+            try {
+                imcref.getDocumentMapper().getDocumentAndSetCategoriesFromFormAndSaveDocument(req, metaId);
+            } catch (MaxCategoryDomainObjectsOfTypeExceededException e) {
+                throw new ServletException(e);
+            }
 
         } else {
             String htmlStr = AdminDoc.adminDoc( parentMetaId, parentMetaId, user, req, res );

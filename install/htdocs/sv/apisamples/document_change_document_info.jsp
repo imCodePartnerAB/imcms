@@ -13,9 +13,9 @@
     Language english = Language.getLanguageByISO639_2( "eng" );
     document.setLanguage( english );
 
-    final String categoryTypeName = "Subject";
-    final String categoryName = "Legal";
-    Category legalSubjectCategory = documentService.getCategory(categoryTypeName, categoryName) ;
+    final CategoryType categoryType = documentService.getCategoryType("Type");
+    final String categoryName = "Image";
+    Category legalSubjectCategory = documentService.getCategory(categoryType, categoryName) ;
 
     if (null != legalSubjectCategory) {
         document.addCategory(legalSubjectCategory) ;

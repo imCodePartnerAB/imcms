@@ -3,6 +3,7 @@ import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.MetaDataParser;
 import imcode.util.Parser;
@@ -448,7 +449,11 @@ public class SaveMeta extends HttpServlet {
 
         //**************** end section index word stuff *************
 
-        imcref.getDocumentMapper().getDocumentAndSetCategoriesFromFormAndSaveDocument(req, meta_id_int);
+        try {
+            imcref.getDocumentMapper().getDocumentAndSetCategoriesFromFormAndSaveDocument(req, meta_id_int) ;
+        } catch (MaxCategoryDomainObjectsOfTypeExceededException e) {
+            throw new ServletException(e) ;
+        }
 
         // Let's split this joint!
         String output = AdminDoc.adminDoc(meta_id_int, meta_id_int, user, req, res);

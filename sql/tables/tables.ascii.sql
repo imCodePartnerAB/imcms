@@ -150,6 +150,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_fl
 ALTER TABLE [dbo].[user_flags_crossref] DROP CONSTRAINT FK_user_flags_crossref_user_flags
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_meta_users]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[meta] DROP CONSTRAINT FK_meta_users
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_phones_users]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[phones] DROP CONSTRAINT FK_phones_users
 GO
@@ -434,7 +438,8 @@ GO
 
 CREATE TABLE [dbo].[category_types] (
 	[category_type_id] [int] NOT NULL ,
-	[name] [varchar] (50) NULL 
+	[name] [varchar] (50) NULL ,
+	[max_choices] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -587,7 +592,8 @@ CREATE TABLE [dbo].[meta] (
 	[frame_name] [varchar] (20) NOT NULL ,
 	[activate] [int] NOT NULL ,
 	[activated_datetime] [datetime] NULL ,
-	[archived_datetime] [datetime] NULL 
+	[archived_datetime] [datetime] NULL ,
+	[publisher_id] [int] NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1065,6 +1071,10 @@ ALTER TABLE [dbo].[browsers] WITH NOCHECK ADD
 	(
 		[browser_id]
 	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[category_types] WITH NOCHECK ADD 
+	CONSTRAINT [DF__category___max_c__5E54FF49] DEFAULT (0) FOR [max_choices]
 GO
 
 ALTER TABLE [dbo].[childs] WITH NOCHECK ADD 
@@ -1559,6 +1569,15 @@ ALTER TABLE [dbo].[includes] ADD
 		[included_meta_id]
 	) REFERENCES [dbo].[meta] (
 		[meta_id]
+	)
+GO
+
+ALTER TABLE [dbo].[meta] ADD 
+	CONSTRAINT [FK_meta_users] FOREIGN KEY 
+	(
+		[publisher_id]
+	) REFERENCES [dbo].[users] (
+		[user_id]
 	)
 GO
 

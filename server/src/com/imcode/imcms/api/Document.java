@@ -195,8 +195,8 @@ public class Document {
         internalDocument.setPermissionSetForRole( role, permissionSet );
     }
 
-    public Category[] getCategoriesOfType( String categoryType ) {
-        CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategoriesOfType( categoryType );
+    public Category[] getCategoriesOfType( CategoryType categoryType ) {
+        CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategoriesOfType( categoryType.getInternal() );
         return getCategoryArrayFromCategoryDomainObjectArray( categoryDomainObjects );
     }
 
