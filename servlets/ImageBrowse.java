@@ -13,113 +13,130 @@ public class ImageBrowse extends HttpServlet {
 
 	
 	
-	/**
-	init
-	*/
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config) ;
+    /**
+       init
+    */
+    public void init(ServletConfig config) throws ServletException {
+	super.init(config) ;
+    }
+
+    /**
+       doGet
+    */
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	String host 				= req.getHeader("Host") ;
+	String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+
+	// Get the session
+	HttpSession session = req.getSession(true);
+
+	// Does the session indicate this user already logged in?
+	imcode.server.User user  = (imcode.server.User)session.getValue("logon.isDone");  // marker object
+
+	if (user == null) {
+	    // No logon.isDone means he hasn't logged in.
+	    // Save the request URL as the true target and redirect to the login page.
+	    String scheme = req.getScheme();
+	    String serverName = req.getServerName();
+	    int p = req.getServerPort();
+	    String port = (p == 80) ? "" : ":" + p;
+	    res.sendRedirect(scheme + "://" + serverName + port + start_url) ;              
+	    return ;
 	}
 
-	/**
-	doGet
-	*/
-	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
-		String servlet_url       	= Utility.getDomainPref( "servlet_url",host ) ;
-		
+	res.setContentType("text/html");
+	PrintWriter out = res.getWriter();
+	
+	out.print(getPage(req,res)) ;
+    }
 
-		imcode.server.User user ; 
-		String htmlStr = "" ;     
+    public static String getPage(HttpServletRequest req, HttpServletResponse res) throws IOException {
+	String host 				= req.getHeader("Host") ;
+	String imcserver 			= Utility.getDomainPref("adminserver",host) ;
+	String servlet_url       	= Utility.getDomainPref( "servlet_url",host ) ;
+	String image_url                = Utility.getDomainPref( "image_url", host ) ;
+	File file_path = new File(Utility.getDomainPref( "image_path", host ));
 
-		res.setContentType("text/html");
-		PrintWriter out = res.getWriter();
+	// Get the session
+	HttpSession session = req.getSession(false);
+	imcode.server.User user  = (imcode.server.User)session.getValue("logon.isDone");  // marker object
 
+	String meta_id = req.getParameter("meta_id");
+	String img_no = req.getParameter("img_no");
+	String img_preset = req.getParameter("imglist") ;
+	String img_tag = "" ;
+	if (img_preset == null) {
+	    img_preset = "" ;
+	} else {
+	    img_tag = "<img src='"+img_preset+"'>" ;
+	}
 
-		// Get the session
- 		HttpSession session = req.getSession(true);
+	String canon_path = file_path.getAbsolutePath() ;
+	List imgList = (List)session.getValue("ImageBrowse.optionlist") ;
+	session.removeValue("ImageBrowse.optionlist") ;
 
-		// Does the session indicate this user already logged in?
-		Object done = session.getValue("logon.isDone");  // marker object
-		user = (imcode.server.User)done ;
+	if (imgList == null) {
+	    imgList = GetImages.getImageFiles(file_path, true, true);
+	}
+			
+	StringBuffer options = new StringBuffer(imgList.size()*64) ;
+	
+	for(Iterator it=imgList.iterator();it.hasNext();) 
+	    {
+		File fileObj = (File) it.next();
 
-		if (done == null) {
-			// No logon.isDone means he hasn't logged in.
-			// Save the request URL as the true target and redirect to the login page.
-			String scheme = req.getScheme();
-			String serverName = req.getServerName();
-			int p = req.getServerPort();
-			String port = (p == 80) ? "" : ":" + p;
-			res.sendRedirect(scheme + "://" + serverName + port + start_url) ;              
-			return ;
+		try {
+		    String fileLen = "" + fileObj.length();
+		} catch (SecurityException e) {
+		    String fileLen = "Read ERROR";
 		}
-		
-		
-			String meta_id = req.getParameter("meta_id");
-			String img_no = req.getParameter("img_no");
-
-			GetImages gi = new GetImages();
-			String FILE_SEP = System.getProperty("file.separator");
-
-			File file_path = new File(Utility.getDomainPref( "image_path", host ));
-			List imgList = gi.getImageFiles("" + file_path, true, true);
-			String filePath;
-			File fileObj;
-			
-			
-			
-				String options = "";
-								
-				String whatToSelect = (req.getParameter("select")==null)?"":req.getParameter("select");
-				String selected = (whatToSelect.equals(""))?"selected":"";
-				
-				System.out.println("whatToSelect & selected " + whatToSelect + " & " + selected);
-				
-				for(Iterator it=imgList.iterator();it.hasNext();) 
-					{
-						fileObj = (File) it.next();
-						filePath = "" + fileObj;
-						// make absolute path relative
-						filePath = filePath.substring(filePath.lastIndexOf("\\images\\"));
-						try 
-						{
-							 String fileLen = "" + fileObj.length();
-						} catch (SecurityException e) 
-						{
-							String fileLen = "Read ERROR";
-						}
 						
-					
-						filePath = filePath.replace('\\','/');
-						if(filePath.equals(whatToSelect))
-							selected="selected";
-						options += "<option name='select' value='" + filePath + "' " + selected + ">[" + fileObj.length() + "] " + filePath.substring(filePath.lastIndexOf(FILE_SEP)+1) + "</option>";
-						if(selected.equals("selected"))
-							selected = "";
-					}
+		String filePath = fileObj.getAbsolutePath() ;
+		if (filePath.startsWith(canon_path)) {
+		    filePath = filePath.substring(canon_path.length()) ;
+		}
+		if (filePath.startsWith(File.separator)) {
+		    filePath = filePath.substring(File.separator.length()) ;
+		}
+
+		File urlFile = new File(image_url+filePath) ;
+		filePath = urlFile.getParentFile().getPath() ;
+
+		String fileName = java.net.URLEncoder.encode(urlFile.getName()) ;
+		filePath = filePath.replace(File.separatorChar,'/')+"/"+fileName ;
+
+		StringBuffer filePathSb = new StringBuffer(filePath) ;
+		// Replace all '+' and ' ' with '%20'
+		for (int i=0; i<filePathSb.length() ; ++i) {
+		    if (filePathSb.charAt(i)=='+' || filePathSb.charAt(i)==' ') {
+			filePathSb.replace(i,i+1,"%20") ;
+			i += 2 ;
+		    }
+		}
+		filePath = filePathSb.toString() ;
+
+		options.append("<option value=\"" + filePath + "\"" + (filePath.equals(img_preset)?" selected":"") + ">[" + fileObj.length() + "] " + filePath + "</option>\r\n");
+	    }
 				
 				
 				// TEMPLATE ImageBrowse.html
-				Vector vec = new Vector () ;
-				vec.add("#meta_id#");
-				vec.add(meta_id);
+	Vector vec = new Vector () ;
+	vec.add("#meta_id#");
+	vec.add(meta_id);
 				
-				vec.add("#img_preview#");
-				vec.add("");
+	vec.add("#img_preview#");
+	vec.add(img_tag);
 				
-				vec.add("#img_no#");
-				vec.add(img_no);
+	vec.add("#img_no#");
+	vec.add(img_no);
 				
-				vec.add("#options#");
-				vec.add(options);
-				session.putValue("optionlist",options);
-				
-				String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
-				htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"ImageBrowse.html", lang_prefix) ;
-				out.print(htmlStr) ;
+	vec.add("#options#");
+	vec.add(options.toString());
 
+	session.putValue("ImageBrowse.optionlist",imgList);
+				
+	String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+	return IMCServiceRMI.parseDoc(imcserver,vec,"ImageBrowse.html", lang_prefix) ;
 
-	}
-
+    }
 }

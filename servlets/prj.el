@@ -5,6 +5,8 @@
 
 
 
+
+
 (jde-set-project-name "/home/kreiger/imCMS/servlets/imcms-servlets")
 (jde-set-variables 
  '(jde-gen-session-bean-template (quote ("(jde-import-insert-imports-into-buffer (list \"javax.ejb.*\"
@@ -30,7 +32,7 @@ RemoteException {\"" "'>'n \"}\"'>'n '>'n" "'> \"public void unsetSessionContext
  '(jde-compile-option-verbose nil)
  '(jde-db-option-heap-size (quote ((1 . "megabytes") (16 . "megabytes"))))
  '(jde-bug-debugger-host-address "kreiger")
- '(jde-make-working-directory "/home/kreiger/imCMS/1.3/servlets/")
+ '(jde-make-working-directory "/home/kreiger/imCMS1.3/1.3/servlets/")
  '(jde-bug-breakpoint-marker-colors (quote ("red" . "yellow")))
  '(jde-javadoc-gen-use nil)
  '(jde-gen-buffer-boilerplate nil)

@@ -28,7 +28,6 @@ public class ImageUpload extends HttpServlet {
 		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
 		File file_path 				= new File(Utility.getDomainPref( "image_path", host ));
-		int uploadsize				= Integer.parseInt(Utility.getDomainPref("max_uploadsize",host)) ;
 		String image_url			= Utility.getDomainPref( "image_url",host ) ;
 		log (image_url) ;
 
@@ -46,10 +45,9 @@ public class ImageUpload extends HttpServlet {
 		ServletInputStream in = req.getInputStream() ;
 		PrintWriter out = res.getWriter() ;
 
-		if (length<1||length>uploadsize) {
-			out.println("Filen är för stor.") ;
-			return ;
-		}
+		HttpSession session = req.getSession(true) ;
+
+		session.removeValue("ImageBrowse.optionlist") ;
 
 		byte buffer[] = new byte[ length ] ;
 		int bytes_read = 0;
@@ -66,7 +64,7 @@ public class ImageUpload extends HttpServlet {
 		//submitted with Browse Images button, no ImageUpload (M Wallin)
 		if (mp.getParameter("browse_images") != null) 
 		{ // Browse Image Library
-			res.sendRedirect("/servlet/ImageBrowse");
+			Utility.redirect(req,res,"ImageBrowse");
 		}
 		
 		if ( mp.getParameter("ok") == null ) {
@@ -91,7 +89,7 @@ public class ImageUpload extends HttpServlet {
 				vec.add(String.valueOf(meta_id)) ;
 				vec.add("#img_no#") ;
 				vec.add(String.valueOf(img_no)) ;
-				String htmlStr = IMCServiceRMI.parseDoc( imcserver, vec, "file_exists.html", "se") ;                        	
+				String htmlStr = IMCServiceRMI.parseDoc( imcserver, vec, "file_exists.html", "se") ;
 				out.println(htmlStr) ;
 				return ;
 			}
@@ -99,7 +97,7 @@ public class ImageUpload extends HttpServlet {
 			fos.write(file.getBytes("8859_1")) ;
 			fos.close() ;
 		}
-		//String htmlStr = IMCServiceRMI.interpretAdminTemplate(imcserver,meta_id,user,"change_img.html",img_no,0,0,0) ;                        	
+		//String htmlStr = IMCServiceRMI.interpretAdminTemplate(imcserver,meta_id,user,"change_img.html",img_no,0,0,0) ;
 		//out.println(htmlStr) ;
 		String image_ref = image_url+fn.getName() ;
 		log (image_ref) ;
@@ -111,6 +109,10 @@ public class ImageUpload extends HttpServlet {
 		vec.add("#imgWidth#") ;
 		vec.add("0") ;
 		vec.add("#imgHeight#") ;
+		vec.add("0") ;
+		vec.add("#origW#") ;
+		vec.add("0") ;
+		vec.add("#origH#") ;
 		vec.add("0") ;
 		vec.add("#imgBorder#") ;
 		vec.add("0") ;

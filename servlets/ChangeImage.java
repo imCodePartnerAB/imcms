@@ -17,13 +17,43 @@ public class ChangeImage extends HttpServlet {
 		super.init(config) ;
 	}
 
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	String host 			= req.getHeader("Host") ;
+	String imcserver 		= Utility.getDomainPref("adminserver",host) ;
+	String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+	String image_url                = Utility.getDomainPref( "image_url",host ) ;
+	
+	if (req.getParameter("preview")==null) {
+	    doGet(req,res) ;
+	    return ;
+	}
+
+	HttpSession session = req.getSession(true);
+	imcode.server.User user = (imcode.server.User)session.getValue("logon.isDone");
+
+	if (user == null) {
+	    // No logon.isDone means he hasn't logged in.
+	    // Save the request URL as the true target and redirect to the login page.
+	    String scheme = req.getScheme();
+	    String serverName = req.getServerName();
+	    int p = req.getServerPort();
+	    String port = (p == 80) ? "" : ":" + p;
+	    res.sendRedirect(scheme + "://" + serverName + port + start_url) ;              
+	    return ;
+	}
+
+        res.getOutputStream().print(ImageBrowse.getPage(req,res)) ;
+	return ;
+    }
+
 	/**
 	  doGet()
 	*/
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
+		String host 			= req.getHeader("Host") ;
+		String imcserver 		= Utility.getDomainPref("adminserver",host) ;
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+		String image_url                = Utility.getDomainPref( "image_url",host ) ;
 
 		imcode.server.User user ; 
 		String htmlStr = "" ;     
@@ -37,6 +67,7 @@ public class ChangeImage extends HttpServlet {
 		//log (tmp);
 		img_no = Integer.parseInt(tmp) ;
 
+
 		tmp = req.getParameter("meta_id") ;
 		//log (tmp);
 		meta_id = Integer.parseInt(tmp) ;
@@ -46,44 +77,15 @@ public class ChangeImage extends HttpServlet {
 		// an image filename as option value (M. Wallin)
 		String img_preset = (req.getParameter("imglist") == null)?"":req.getParameter("imglist");
 
-		// Preview image from ImageBrowse
-		if(req.getParameter("preview") != null)  {
-				HttpSession session = req.getSession(true);
-				Object done = session.getValue("logon.isDone");
-				user = (imcode.server.User)done ;
-				String optionList = (String)(session.getValue("optionlist"));
 
-//				if (optionList == null)
-//					res.sendRedirect("/servlet/ImageBrowse");
-				
-					Vector vec = new Vector () ;
-
-					vec.add("#meta_id#");
-					vec.add("" +meta_id);
-					
-					vec.add("#img_preview#");
-					vec.add("<img src='" + img_preset + "'>");
-					
-					vec.add("#img_no#");
-					vec.add("" + img_no);
-					
-					vec.add("#options#");
-					vec.add(optionList);
-					
-					String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
-					htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"ImageBrowse.html", lang_prefix) ;
-					//log("HTMLSTR = " + htmlStr);
-					out.print(htmlStr) ;
-				
-
-				
-		} else {
-
-
+		if (img_preset.startsWith(image_url)) {
+		    img_preset = img_preset.substring(image_url.length()) ;
+		}
+		
 		/*
-		Enumeration logga = req.getParameterNames();
-		while(logga.hasMoreElements())
-			log("PARAMETER: " + logga.nextElement());
+		  Enumeration logga = req.getParameterNames();
+		  while(logga.hasMoreElements())
+		  log("PARAMETER: " + logga.nextElement());
 		*/
 		
 		// Get the session
@@ -123,11 +125,10 @@ public class ChangeImage extends HttpServlet {
 		String[] sql = IMCServiceRMI.sqlQuery(imcserver,sqlStr) ;
 		//log ("d") ;
 		Vector vec = new Vector () ;
-		log("SQL LENGTH= " + sql.length);
-		String imageName = (img_preset.equals("")&&sql.length>0?sql[1]:img_preset); // selected OPTION or ""
-		if(imageName.lastIndexOf("/") != -1)
-			imageName = imageName.substring(imageName.lastIndexOf("/") +1);
-		String imagePath = Utility.getDomainPref( "image_path",host ) + imageName;
+
+		String imageName = ("".equals(img_preset)&&sql.length>0?sql[1]:img_preset); // selected OPTION or ""
+
+		//String imagePath = Utility.getDomainPref( "image_path",host ) + imageName;
 		//****************************************************************
 			//String imagePath = image_url + imageName;
 		//ImageIcon icon = new ImageIcon(imagePath);
@@ -135,13 +136,14 @@ public class ChangeImage extends HttpServlet {
 		int height = 0 ; //icon.getIconHeight();
 		//****************************************************************
 		
+		imageName = image_url + imageName ;
 		
 		if ( sql.length > 0 ) {
-			log("sql.lenght > 0");
+		    //log("sql.lenght > 0");
 			vec.add("#imgName#") ;
 			vec.add(sql[0]) ;
 			vec.add("#imgRef#") ;
-			vec.add(Utility.getDomainPref( "image_url",host ) + imageName);
+			vec.add(imageName);
 			vec.add("#imgWidth#") ;
 			vec.add(img_preset.equals("")?sql[2]:"" + width);
 			vec.add("#origW#"); // original imageWidth
@@ -214,7 +216,7 @@ public class ChangeImage extends HttpServlet {
 			vec.add("#imgName#") ;
 			vec.add("") ;
 			vec.add("#imgRef#") ;
-			vec.add(Utility.getDomainPref( "image_url",host ) + imageName);
+			vec.add(imageName);
 			vec.add("#imgWidth#") ;
 			vec.add("" + width) ;
 			vec.add("#imgHeight#") ;
@@ -259,8 +261,6 @@ public class ChangeImage extends HttpServlet {
 		//log ("g") ;
 		//htmlStr = IMCServiceRMI.interpretAdminTemplate(imcserver,meta_id,user,"change_img.html",img_no,0,0,0) ;                        	
 		out.print(htmlStr) ;
-		}
-
 
 	}
 }

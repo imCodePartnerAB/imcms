@@ -98,72 +98,78 @@ public class SaveImage extends HttpServlet {
 		
 // ****************************** Här börjar Mårtens lilla lekstuga
 		if(keepAspectRatio && req.getParameter("ok") != null) {
+		    int iHeight = 0 ;
 		    try {
-			int iHeight = Integer.parseInt(image_height); // form width
+			iHeight = Integer.parseInt(image_height); // form width
 		    } catch ( NumberFormatException ex ) {
-			iHeight = 0 ;
+			log("Failed to parse image_height") ;
 		    }
+		    int iWidth = 0 ;
 		    try {
-			int iWidth = Integer.parseInt(image_width); // form height
+			iWidth = Integer.parseInt(image_width); // form height
 		    } catch ( NumberFormatException ex ) {
-			iWidth = 0 ;
+			log("Failed to parse image_width") ;
 		    }
 
+		    int oldHeight = 0 ;
 		    try {
-			int oldHeight = (sql.length>0)?Integer.parseInt(sql[3]):0; // database height
+			oldHeight = (sql.length>0)?Integer.parseInt(sql[3]):0; // database height
 		    } catch ( NumberFormatException ex ) {
-			oldHeight = 0 ;
+			log("Failed to parse oldHeight") ;
 		    }
+		    int oldWidth = 0 ;
 		    try {
-			int oldWidth = (sql.length>0)?Integer.parseInt(sql[2]):0; // database width
+			oldWidth = (sql.length>0)?Integer.parseInt(sql[2]):0; // database width
 		    } catch ( NumberFormatException ex ) {
-			oldWidth = 0 ;
+			log("Failed to parse oldWidth") ;
 		    }
 
 		    //log("REQUESTED SIZE " + iWidth + "/" + iHeight);
+		    int oHeight = 0 ;
 		    try {
-			int oHeight = Integer.parseInt(origHeight); // image height
+			oHeight = Integer.parseInt(origHeight); // image height
 		    } catch ( NumberFormatException ex ) {
-			oHeight = 0 ;
+			log("Failed to parse origHeight") ;
 		    }
+		    int oWidth = 0 ;
 		    try {
-			int oWidth = Integer.parseInt(origWidth); // image width
+			oWidth = Integer.parseInt(origWidth); // image width
 		    } catch ( NumberFormatException ex ) {
-			oWidth = 0 ;
+			log("Failed to parse origHeight") ;
 		    }
 
+		    
+		    double asp_rat = ((double)oWidth/(double)oHeight);
+		    
+		    int heightDiff = Math.abs(iHeight - oldHeight);
+		    int widthDiff = Math.abs(iWidth - oldWidth);
+		    
+		    // Dominant value:
+		    // 1. greatest diff, 2. greatest int, 3. width
 	
-	double asp_rat = ((double)oWidth/(double)oHeight);
-	
-	int heightDiff = Math.abs(iHeight - oldHeight);
-	int widthDiff = Math.abs(iWidth - oldWidth);
-	
-	// Dominant value:
-	// 1. greatest diff, 2. greatest int, 3. width
-	
-	if(widthDiff > heightDiff)
-		iHeight = (int)(iWidth/asp_rat);
-	else if(heightDiff > widthDiff)
-		iWidth = (int)(iHeight*asp_rat);	
-	else if(heightDiff == widthDiff)
-		{
-			if(iHeight>iWidth)
-				iWidth = (int)(iHeight*asp_rat);
-			else
-				iHeight = (int)(iWidth/asp_rat);	
+		    if(widthDiff > heightDiff) {
+			iHeight = (int)(iWidth/asp_rat);
+		    } else if (heightDiff > widthDiff) {
+			iWidth = (int)(iHeight*asp_rat);	
+		    } else if(heightDiff == widthDiff) {
+			if(iHeight>iWidth) {
+			    iWidth = (int)(iHeight*asp_rat);
+			} else {
+			    iHeight = (int)(iWidth/asp_rat);
+			}
+		    } else {
+			iHeight = (int)(iWidth*asp_rat);
+		    }
+
+		    image.setImageHeight( iHeight ) ;
+		    image.setImageWidth( iWidth ) ;
+		    image_width = "" + iWidth;
+		    image_height = "" + iHeight;
+		    //log("CALCULATED SIZE " + image_width + "/" + image_height);
+		    
 		}
-	else
-		iHeight = (int)(iWidth*asp_rat);
-
-	image.setImageHeight( iHeight ) ;
-	image.setImageWidth( iWidth ) ;
-	image_width = "" + iWidth;
-	image_height = "" + iHeight;
-	//log("CALCULATED SIZE " + image_width + "/" + image_height);
-
-}
-
-//*******************************  
+		
+		//*******************************  
 		
 
 		try {
