@@ -1,6 +1,7 @@
 package imcode.util;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.io.*;
 
@@ -95,7 +96,7 @@ public class ImageParser {
             int width = 0;
             int height = 0;
             String type = "PNG";
-            if ( t.equals( PNG_HEADER ) ) {
+            if ( ArrayUtils.isEquals( PNG_HEADER, t ) ) {
                 dis.skipBytes( 4 ); // skip the blockLength
                 byte[] u = new byte[4];
                 dis.readFully( u );
@@ -145,7 +146,7 @@ public class ImageParser {
                     case APP0: // APP0 JFIF segment marker
                         String type = readTypeFromAPP0Block( dis );
                         if ( !type.equals( "JFIF\0" ) ) {
-                            log.warn( "Trying to read jpeg with unsupported type (" + type + ")" + fileName );
+                            log.warn( "Trying to read jpeg with unsupported type \"" + type + "\": " + fileName );
                         }
                         skipRestOfAPP0Block( dis, lengthOfBlock );
                         break;

@@ -1,6 +1,5 @@
 package imcode.util;
 
-import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.RandomStringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,14 +14,14 @@ public class HttpSessionUtils {
                                                                               final String sessionAttributeNameRequestAttributeName ) {
         String sessionAttributeName = getSessionAttributeNameFromRequest( request, sessionAttributeNameRequestAttributeName );
         if (null == sessionAttributeName || null == request.getSession().getAttribute( sessionAttributeName )) {
-            sessionAttributeName = createUniqueNameForObject();
+            sessionAttributeName = createUniqueNameForObject(objectToAddToSession);
             request.getSession().setAttribute( sessionAttributeName, objectToAddToSession );
             request.setAttribute( sessionAttributeNameRequestAttributeName, sessionAttributeName );
         }
     }
 
-    public static String createUniqueNameForObject() {
-        return RandomStringUtils.randomAlphanumeric( 4 ) ;
+    public static String createUniqueNameForObject(Object object) {
+        return Integer.toHexString( object.getClass().hashCode() )+RandomStringUtils.randomAlphanumeric( 4 ) ;
     }
 
     public static Object getSessionAttributeWithNameInRequest( HttpServletRequest request,

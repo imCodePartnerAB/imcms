@@ -54,7 +54,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
                                 } );
 
         updateTextDocumentTexts( textDocument );
-        updateTextDocumentImages( textDocument, user );
+        updateTextDocumentImages( textDocument );
         updateTextDocumentIncludes( textDocument );
 
     }

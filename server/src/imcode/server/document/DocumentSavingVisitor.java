@@ -97,7 +97,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         } );
 
         updateTextDocumentTexts( textDocument );
-        updateTextDocumentImages( textDocument, user );
+        updateTextDocumentImages( textDocument );
         updateTextDocumentIncludes( textDocument );
         updateTextDocumentMenus( textDocument );
     }

@@ -104,6 +104,8 @@ public class SearchDocumentsPage {
         DocumentFinder documentFinderFromSession = (DocumentFinder)request.getSession().getAttribute( documentFinderSessionAttributeName );
         if ( null != documentFinderFromSession ) {
             documentFinder = documentFinderFromSession;
+        } else {
+            documentFinderSessionAttributeName = null ;
         }
     }
 
@@ -233,7 +235,7 @@ public class SearchDocumentsPage {
     }
 
     public void setDocumentFinder( DocumentFinder documentFinder ) {
-        documentFinderSessionAttributeName = HttpSessionUtils.createUniqueNameForObject() ;
+        documentFinderSessionAttributeName = HttpSessionUtils.createUniqueNameForObject(documentFinder) ;
         this.documentFinder = documentFinder;
     }
 

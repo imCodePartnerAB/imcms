@@ -17,4 +17,8 @@ public class ImageData {
     public int getHeight() {
         return height ;
     }
+
+    public String toString() {
+        return width+"*"+height ;
+    }
 }

@@ -78,17 +78,16 @@ public class ImageBrowse extends HttpServlet {
 
         ImageBrowserPage page = new ImageBrowserPage( selectedDirectory, selectedImage );
         if ( null != request.getParameter( REQUEST_PARAMETER__UPLOAD_BUTTON ) ) {
-            selectedImage = upload( request, selectedDirectory, page );
+            upload( request, selectedDirectory, page );
         }
 
         page.setLabel( StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__LABEL ) ) );
         page.forward(request,response) ;
     }
 
-    private static File upload( HttpServletRequest request, File selectedDirectory, ImageBrowserPage page ) {
+    private static void upload( HttpServletRequest request, File selectedDirectory, ImageBrowserPage page ) {
         File imagesRoot = ApplicationServer.getIMCServiceInterface().getConfig().getImagePath();
         FileItem fileItem = ( (MultipartHttpServletRequest)request ).getParameterFileItem( REQUEST_PARAMETER__FILE );
-        File imageFile = null ;
         if ( null != fileItem ) {
             File destinationFile = new File( selectedDirectory, fileItem.getName() );
             boolean underImagesRoot = FileUtility.directoryIsAncestorOfOrEqualTo( imagesRoot, destinationFile.getParentFile() );
@@ -100,7 +99,7 @@ public class ImageBrowse extends HttpServlet {
             } else if ( underImagesRoot ) {
                 try {
                     fileItem.write( destinationFile );
-                    imageFile = destinationFile ;
+                    page.setCurrentImage( destinationFile ) ;
                 } catch ( Exception e ) {
                     throw new UnhandledException( "Failed to write file " + destinationFile
                                                   + ". Possible permissions problem?", e );
@@ -110,7 +109,6 @@ public class ImageBrowse extends HttpServlet {
                           + destinationFile );
             }
         }
-        return imageFile;
     }
 
     public static class ImageBrowserPage {
@@ -122,36 +120,12 @@ public class ImageBrowse extends HttpServlet {
         private String imagesOptionList;
         private String imageUrl;
         private LocalizedMessage errorMessage;
+        private File currentDirectory;
+        private File currentImage;
 
         public ImageBrowserPage( File currentDirectory, File currentImage ) {
-            final File imagesRoot = ApplicationServer.getIMCServiceInterface().getConfig().getImagePath();
-            if ( null != currentImage ) {
-                imageUrl = FileUtility.relativeFileToString( FileUtility.relativizeFile( imagesRoot, currentImage ) );
-            }
-            Collection imageDirectories = Utility.collectImageDirectories();
-
-            File[] images = currentDirectory.listFiles( new ImageExtensionFilenameFilter() );
-            Arrays.sort( images );
-            List imageList = Arrays.asList( images );
-
-            File currentDirectoryRelativeToImageRootParent = FileUtility.relativizeFile( imagesRoot.getParentFile(), currentDirectory );
-            directoriesOptionList = Html.createOptionList( imageDirectories, currentDirectoryRelativeToImageRootParent, new Transformer() {
-                public Object transform( Object input ) {
-                    File file = (File)input;
-                    return new String[]{file.getPath(), FileUtility.relativeFileToString( file )};
-                }
-            } );
-            imagesOptionList = Html.createOptionList( imageList, currentImage, new Transformer() {
-                public Object transform( Object input ) {
-                    File file = (File)input;
-                    return new String[]{
-                        FileUtility.relativizeFile( imagesRoot, file ).getPath(), file.getName() + "\t["
-                                                                                  + file.length()
-                                                                                  + "]"
-                    };
-                }
-            } );
-
+            this.currentDirectory = currentDirectory ;
+            this.currentImage = currentImage;
         }
 
         public String getLabel() {
@@ -163,10 +137,39 @@ public class ImageBrowse extends HttpServlet {
         }
 
         public String getDirectoriesOptionList() {
+            final File imagesRoot = ApplicationServer.getIMCServiceInterface().getConfig().getImagePath();
+            Collection imageDirectories = Utility.collectImageDirectories();
+
+            File currentDirectoryRelativeToImageRootParent = FileUtility.relativizeFile( imagesRoot.getParentFile(), currentDirectory );
+            directoriesOptionList = Html.createOptionList( imageDirectories, currentDirectoryRelativeToImageRootParent, new Transformer() {
+                public Object transform( Object input ) {
+                    File file = (File)input;
+                    return new String[]{file.getPath(), FileUtility.relativeFileToString( file )};
+                }
+            } );
             return directoriesOptionList;
         }
 
         public String getImagesOptionList() {
+            final File imagesRoot = ApplicationServer.getIMCServiceInterface().getConfig().getImagePath();
+            if ( null != currentImage ) {
+                imageUrl = FileUtility.relativeFileToString( FileUtility.relativizeFile( imagesRoot, currentImage ) );
+            }
+
+            File[] images = currentDirectory.listFiles( new ImageExtensionFilenameFilter() );
+            Arrays.sort( images );
+            List imageList = Arrays.asList( images );
+
+            imagesOptionList = Html.createOptionList( imageList, currentImage, new Transformer() {
+                public Object transform( Object input ) {
+                    File file = (File)input;
+                    return new String[]{
+                        FileUtility.relativizeFile( imagesRoot, file ).getPath(), file.getName() + "\t["
+                                                                                  + file.length()
+                                                                                  + "]"
+                    };
+                }
+            } );
             return imagesOptionList;
         }
 
@@ -191,6 +194,10 @@ public class ImageBrowse extends HttpServlet {
 
         public LocalizedMessage getErrorMessage() {
             return errorMessage;
+        }
+
+        public void setCurrentImage( File currentImage ) {
+            this.currentImage = currentImage;
         }
     }
 }
