@@ -205,7 +205,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		templates = (Vector)dbc.executeProcedure() ;
 		dbc.clearResultSet() ;
 
-		sqlStr = "select group_name from templategroups where group_id = " + selected_group ;
+		sqlStr = "select group_name from templategroups where group_id = " + group_id ;
 		dbc.setSQLString(sqlStr);
 		groupnamevec = (Vector)dbc.executeQuery() ;
 		dbc.clearResultSet() ;
