@@ -311,7 +311,7 @@ GO
 		@notes		users notes about the appointment
 
 SET DATEFORMAT ymd -- Year, month, day
-GO
+
 */
 
 CREATE PROCEDURE D_newAppointment
