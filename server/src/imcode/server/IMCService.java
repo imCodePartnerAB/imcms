@@ -74,6 +74,8 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
     final static Pattern TD_START_PATTERN = patCache.getPattern("^(\\<td[^>]*?\\>)",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
     final static Pattern TD_STOP_PATTERN = patCache.getPattern("(\\<\\/td\\>)\\s*$",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 
+    final static Pattern MENU_NO_PATTERN = patCache.getPattern("#doc_menu_no#",Perl5Compiler.READ_ONLY_MASK) ;
+
     final static Substitution EMPHASIZE_SUBSTITUTION = new Perl5Substitution("<b><em><!--emphasized-->$1<!--/emphasized--></em></b>") ;
 
     final static Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
@@ -518,10 +520,45 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	java.util.Date now = new java.util.Date() ;
 
 	long menutime = System.currentTimeMillis() ;
-	for ( int i = 0 ; i<childs.size() ; i+=child_cols ) {
+	Iterator childIt = childs.iterator() ;
+	while ( childIt.hasNext() ) {
+	    // The menuitemproperties are retrieved in the following order:
+	    // to_meta_id,
+	    // c.menu_sort,
+	    // manual_sort_order,
+	    // doc_type,
+	    // archive,
+	    // target,
+	    // date_created,
+	    // date_modified,
+	    // meta_headline,
+	    // meta_text,
+	    // meta_image,
+	    // frame_name,
+	    // activated_date+activated_time,
+	    // archived_date+archived_time
+	    // 0 if admin
+	    // filename
+	    String child_meta_id             = (String)childIt.next() ; // The meta-id of the child
+	    String child_menu_sort           = (String)childIt.next() ; // What menu in the page the child is in.
+	    String child_manual_sort_order   = (String)childIt.next() ; // What order the document is sorted in in the menu, using sort-order 2 (manual sort)
+	    String child_doc_type            = (String)childIt.next() ; // The doctype of the child.
+	    String child_archive             = (String)childIt.next() ; // Child is considered archived?
+	    String child_target              = (String)childIt.next() ; // The target for this document.
+	    String child_date_created        = (String)childIt.next() ; // The datetime the child was created.
+	    String child_date_modified       = (String)childIt.next() ; // The datetime the child was modified.
+	    String child_meta_headline       = (String)childIt.next() ; // The headline of the child.
+	    String child_meta_text           = (String)childIt.next() ; // The subtext for the child.
+	    String child_meta_image          = (String)childIt.next() ; // An optional imageurl for this document.
+	    String child_frame_name          = (String)childIt.next() ; // An optional imageurl for this document.
+	    String child_activated_date_time = (String)childIt.next() ; // The datetime the document is activated.
+	    String child_archived_date_time  = (String)childIt.next() ; // The datetime the document is activated.
+	    String child_admin               = (String)childIt.next() ; // "0" if the user may admin it.
+	    String child_filename            = (String)childIt.next() ; // The filename, if it is a file-doc.
+
 	    // System.out.println((String)childs.get(i*child_cols+0)+" "+(String)childs.get(i*child_cols+1)+" "+(String)childs.get(i*child_cols+7)) ;
 
-	    int menuno = Integer.parseInt((String)childs.get(i+1)) ;
+	    int menuno = Integer.parseInt(child_menu_sort) ;
 	    if ( menuno != old_menu ) {	//If we come upon a new menu...
 		old_menu = menuno ;
 		currentMenu = new LinkedList() ;	// We make a new Menu,
@@ -532,12 +569,12 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    java.util.Date activate_date = null ;
 
 	    try {
-		archived_date = dateparser.parse((String)childs.get(i+12)) ;
+		archived_date = dateparser.parse(child_archived_date_time) ;
 	    } catch ( java.text.ParseException ex ) {
 	    }
 
 	    try {
-		activate_date = dateparser.parse((String)childs.get(i+11)) ;
+		activate_date = dateparser.parse(child_activated_date_time) ;
 	    } catch ( java.text.ParseException ex ) {
 	    }
 
@@ -553,7 +590,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    }
 
 	    if ( (archived_date != null && archived_date.compareTo(now) <= 0)	// If archived_date is smaller than or equal to now
-		 || "1".equals((String)childs.get(i+4)) ) {	// or archive is set
+		 || "1".equals(child_archive) ) {	// or archive is set
 		if ( !menumode ) {										// and we're not in menumode...
 		    continue ;																// ...don't include this menuitem
 		} else {
@@ -562,17 +599,19 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    }
 
 	    Properties props = new Properties () ;	// New Properties to hold the tags for this menuitem.
-	    // The menuitemproperties are retrieved in the following order:
-	    // to_meta_id,c.menu_sort,manual_sort_order,doc_type,archive,target,date_created,meta_headline,meta_text,meta_image,frame_name,activated_date+activated_time,archived_date+archived_time
-	    //	0			1			2				3			4		5	6				7			8			9			10		11								12
-	    String to_meta_id = (String)childs.get(i) ;
 
 	    String admin_start = "" ;
 	    String admin_stop = "" ;
 	    if ( menumode ) {
-		if ( "0".equals((String)childs.get(i+13)) ) {
-		    admin_stop+="<a href=\"AdminDoc?meta_id="+to_meta_id+"\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>" ;
+		if ( "0".equals(child_admin) ) {
+		    admin_stop+="&nbsp;<a href=\"AdminDoc?meta_id="+child_meta_id+"\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>" ;
 		}
+
+		if (sort_order == 2) {
+		    admin_start += "<input type=\"text\" name=\""+child_meta_id+"\" value=\""+child_manual_sort_order+"\" size=\"4\" maxlength=\"4\">" ;
+		}
+		admin_start += "<input type=\"checkbox\" name=\"archiveDelBox\" value=\""+child_meta_id+"\">" ;
+
 	    }
 
 	    String archive_start = "" ;
@@ -588,49 +627,57 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		archive_stop+="</strike>" ;
 	    }
 
-	    //			props.setProperty("#adminStart#",admin_start) ;
-	    props.setProperty("#adminStop#",admin_stop) ;
+	    //props.setProperty("#adminStart#",admin_start) ;
+	    //props.setProperty("#adminStop#",admin_stop) ;
 	    props.setProperty("#sortBox#","") ;
 	    props.setProperty("#archiveDelBox#","") ;
-	    props.setProperty("#to_meta_id#",to_meta_id) ;
-	    props.setProperty("#manual_sort_order#",(String)childs.get(i+2)) ;
-	    String childtarget = (String)childs.get(i+5) ;
-	    if ( "_other".equals(childtarget) ) {
-		childtarget = (String)childs.get(i+10) ;
+	    //props.setProperty("#to_meta_id#",to_meta_id) ;
+	    //props.setProperty("#manual_sort_order#",child_manual_sort_order) ;
+	    if ( "_other".equals(child_target) ) {
+		child_target = (String)child_frame_name ;
 	    }
-	    if ( childtarget.length() != 0 ) {
-		childtarget = " target=\""+childtarget+"\"" ;
+	    if ( child_target.length() != 0 ) {
+		child_target = " target=\""+child_target+"\"" ;
 	    }
-	    String doc_type = (String)childs.get(i+3) ;
-	    String filename = (String)childs.get(i+14) ;
 
 	    // If this doc is a file, we'll want to put in the filename
 	    // as an escaped translated path
 	    // For example: /servlet/GetDoc/filename.ext?meta_id=1234
 	    //                             ^^^^^^^^^^^^^
 
-	    if ( filename != null && "8".equals(doc_type) ) {
-		filename = "/"+java.net.URLEncoder.encode(filename) ;
+	    if ( child_filename != null && "8".equals(child_doc_type) ) {
+		child_filename = "/"+java.net.URLEncoder.encode(child_filename) ;
 	    } else {
-		filename = "" ;
+		child_filename = "" ;
 	    }
 
-	    // OK, we have the HREF-string.
-	    String href = "\"GetDoc"+filename+"?meta_id="+to_meta_id+"\""+childtarget ;
+	    if ( child_meta_headline.length() == 0 ) {
+		child_meta_headline = "&nbsp;" ;
+	    }
+
+	    child_meta_headline = archive_start+child_meta_headline+archive_stop ;
+	    if ( !"".equals(child_meta_image) ) {
+		child_meta_image = "<img src=\""+child_meta_image+"\" border=\"0\">" ;
+	    }
+
+	    String href = "\"GetDoc"+child_filename+"?meta_id="+child_meta_id+"\""+child_target ;
 	    props.setProperty("#getChildRef#",href) ;
-	    String childheadline = (String)childs.get(i+7) ;
-	    if ( childheadline.length() == 0 ) {
-		childheadline = "&nbsp;" ;
-	    }
+
+	    props.setProperty("#metaImage#",child_meta_image) ;
+	    props.setProperty("#childMetaImage#",child_meta_image) ;
+	    props.setProperty("#childMetaHeadline#",child_meta_headline) ;
+	    props.setProperty("#childMetaText#",child_meta_text) ;
+	    props.setProperty("#childCreatedDate#",child_date_created) ;
+
 	    // Put the data in the proper tags.
-	    props.setProperty("#childMetaHeadline#",archive_start+childheadline+archive_stop) ;
-	    props.setProperty("#childMetaText#",(String)childs.get(i+8)) ;
-	    String meta_image = (String)childs.get(i+9) ;
-	    if ( !"".equals(meta_image) ) {
-		props.setProperty("#metaImage#","<img src=\""+meta_image+"\" border=0>") ;
-		props.setProperty("#childMetaImage#","<img src=\""+meta_image+"\" border=0>") ;
-	    }
-	    props.setProperty("#childCreatedDate#",(String)childs.get(i+6)) ;
+	    props.setProperty("#menuitemlink#", admin_start+"<a href="+href+">") ;
+	    props.setProperty("#/menuitemlink#", "</a>"+admin_stop) ;
+	    props.setProperty("#menuitemheadline#", child_meta_headline) ;
+	    props.setProperty("#menuitemtext#", child_meta_text) ;
+	    props.setProperty("#menuitemdatecreated#", child_date_created) ;
+	    props.setProperty("#menuitemdatemodified#", child_date_modified) ;
+	    props.setProperty("#menuitemimage#", child_meta_image) ;
+
 	    currentMenu.add(props) ;	// Add the Properties for this menuitem to the current menus list.
 	}
 	menutime = System.currentTimeMillis()-menutime ;
@@ -745,9 +792,9 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    }
 			
 	    // List of files to load, and tags to parse them into
-	    toload.setProperty("#addDoc*#",m_TemplateHome + lang_prefix + "/admin/add_doc.html") ;
-	    toload.setProperty("#saveSortStart*#",m_TemplateHome + lang_prefix + "/admin/sort_order.html") ;
-	    toload.setProperty("#saveSortStop*#",m_TemplateHome + lang_prefix + "/admin/archive_del_button.html") ;
+	    toload.setProperty("addDoc",m_TemplateHome + lang_prefix + "/admin/add_doc.html") ;
+	    toload.setProperty("saveSortStart",m_TemplateHome + lang_prefix + "/admin/sort_order.html") ;
+	    toload.setProperty("saveSortStop",m_TemplateHome + lang_prefix + "/admin/archive_del_button.html") ;
 	    toload.setProperty("sort_button",m_TemplateHome + lang_prefix + "/admin/sort_button.html") ;
 
 	    // Some tags to parse in the files we'll load.
@@ -763,28 +810,9 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	//System.out.println("Loading template-files.") ;
 	//log.log(Log.WILD,"Loading template-files.",null) ;
 
-	if ( menumode ) {	//Menumode! :)
-
-	    // Make a Properties of all tags that contain numbers, and what the number is supposed to replace
-	    // in the tag's corresponding data
-	    // I.e. "tags" contains the data to replace the numbered tag, but you probably want that number
-	    // to be inserted somewhere in that data.
-	    // BTW, "*" represents the number in the tag.
-	    numberedtags.setProperty("#addDoc*#","#doc_menu_no#") ;
-	    numberedtags.setProperty("#saveSortStart*#","#doc_menu_no#") ;
-
-	    String savesortstop = tags.getProperty("#saveSortStop*#") + "</form>" ;
-	    // We must display the sortbutton, which we read into the tag "#sort_button#"
-	    savesortstop = tags.getProperty("sort_button")+savesortstop ;
-	    tags.setProperty("#saveSortStop*#",savesortstop) ;
-	} else {	// Not menumode...
-	    tags.setProperty("#saveSortStop*#",			"") ;
-	} // if (menumode)
-
 	Perl5Matcher patMat = new Perl5Matcher() ;
 
 	MapSubstitution temptagsmapsubstitution = new MapSubstitution(temptags, false) ;
-
 	
 	try {
 	    char[] charbuffer = new char[4096] ;
@@ -795,26 +823,9 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		String filetag = (String)propenum.nextElement() ;
 		String templatebufferfilename = toload.getProperty(filetag) ;
 		String templatebufferstring = getCachedFileString(templatebufferfilename) ;
-		/*
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename),"8859_1"));
-		int chars_read = 0 ;
-		while (-1 < (chars_read = br.read(charbuffer))) {
-		    templatebuffer.append(charbuffer,0,chars_read) ;
-		}
-		br.close();
-		*/
 				// Humm... Now we must replace the tags in the loaded files too.
 		templatebufferstring = org.apache.oro.text.regex.Util.substitute(patMat,HASHTAG_PATTERN,temptagsmapsubstitution,templatebufferstring,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
-		/*
-		Enumeration temptagsenum = temptags.propertyNames() ;
-		while ( temptagsenum.hasMoreElements() ) {	// While we have more tags to try to replace...
-		    int tempbufindex = 0 ;
-		    String temptag = (String)temptagsenum.nextElement() ;
-		    while ( (tempbufindex = templatebuffer.toString().indexOf(temptag,tempbufindex))!=-1) {	// Loop through the buffer...
-			templatebuffer.replace(tempbufindex,tempbufindex+temptag.length(),temptags.getProperty(temptag)) ;	// And replace tags...
-		    }
-		}
-		*/
+
 		tags.setProperty(filetag,templatebufferstring) ;
 		templatebuffer.setLength(0) ;
 	    }
@@ -825,6 +836,24 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	}
 	//log.log(Log.WILD, "Loaded and parsed other templatefiles.", null) ;
 
+	if ( menumode ) {	//Menumode! :)
+
+	    // Make a Properties of all tags that contain numbers, and what the number is supposed to replace
+	    // in the tag's corresponding data
+	    // I.e. "tags" contains the data to replace the numbered tag, but you probably want that number
+	    // to be inserted somewhere in that data.
+	    // BTW, "*" represents the number in the tag.
+	    //numberedtags.setProperty("#addDoc*#","#doc_menu_no#") ;
+	    //numberedtags.setProperty("#saveSortStart*#","#doc_menu_no#") ;
+
+	    String savesortstop = tags.getProperty("saveSortStop") ;
+	    // We must display the sortbutton, which we read into the tag "#sort_button#"
+	    savesortstop = tags.getProperty("sort_button")+savesortstop ;
+	    tags.setProperty("saveSortStop",savesortstop) ;
+	} else {	// Not menumode...
+	    tags.setProperty("saveSortStop",			"") ;
+	} // if (menumode)
+
 	// Now... let's load the template!
 	// Get templatedir and read the file.
 	StringBuffer templatebuffer = loadFile(m_TemplateHome + "text/" + template_id + ".html") ;
@@ -833,7 +862,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	String template = templatebuffer.toString() ;
 	StringBuffer result = new StringBuffer(template.length()+8192) ;
 
-	MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution(menus) ;
+	MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution(menus,menumode,tags) ;
 	HashTagSubstitution hashtagsubstitution = new HashTagSubstitution(tags,numberedtags) ;
 	LinkedList parse = new LinkedList() ;
 	perl5util.split(parse,"/<!-(-\\/?)IMSCRIPT-->/i",template) ;
@@ -870,7 +899,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		MatchResult matres = patMat.getMatch() ;
 		int [] menu_param = { Integer.parseInt(matres.group(1)), Integer.parseInt(matres.group(2)), Integer.parseInt(matres.group(3)) } ;
 		int endoffset = matres.endOffset(0) ;
-		obsoleteMenuParser(sbtemp,matres.beginOffset(0), endoffset, menu_param, menus, menumode, sort_order, patMat) ;
+		obsoleteMenuParser(sbtemp,matres.beginOffset(0), endoffset, menu_param, menus, menumode, sort_order, patMat,tags) ;
 		String newinput = sbtemp.toString() ;
 		pmin.setInput(newinput, endoffset, newinput.length()-endoffset ) ;
 	    }
@@ -924,12 +953,23 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	return tagdata ;
     }
 
+    private String getMenuModePrefix(PatternMatcher patMat, int menu_id, Properties tags) {
+	String temp = tags.getProperty("addDoc") +
+	    tags.getProperty("saveSortStart") ;
+
+	return org.apache.oro.text.regex.Util.substitute(patMat,MENU_NO_PATTERN,new StringSubstitution(""+menu_id),temp,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
+    }
+
+    private String getMenuModeSuffix(Properties tags) {
+	    return tags.getProperty("saveSortStop") ;
+    }
+
     /**
 
        Invoked when you have found a block of data that is within menu-tags.
 
     */
-    protected String menuParser (String input, PatternMatcher patMat,  Map menus, int[] implicitMenus) {
+    protected String menuParser (String input, PatternMatcher patMat,  Map menus, int[] implicitMenus, boolean menumode, Properties tags) {
 	try {
 	    MatchResult menuMatres = patMat.getMatch() ;
 	    StringBuffer result = new StringBuffer() ; // FIXME: Optimize size?
@@ -965,11 +1005,12 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    PatternMatcherInput pmin = new PatternMatcherInput(looptemplate) ;
 	    while (patMat.contains(pmin, MENUITEM_PATTERN)) {
 		MatchResult menuitemMatres = patMat.getMatch() ;
-		menuitemtemplatelist.add(menuitemMatres.group(1)) ;
+		String menuitemtemplate = menuitemMatres.group(1) ;
+		menuitemtemplatelist.add(menuitemtemplate) ;
 	    }
 
 	    if (menuitemtemplatelist.isEmpty()) { // Well, were there any menuitemtags present?
-		menuitemtemplatelist.add(looptemplate) ;  // No? Use the looptemplate. (Which will be the entire menu if the looptags are missing.)
+		menuitemtemplatelist.add(looptemplate) ; // No? Use the looptemplate. (Which will be the entire menu if the looptags are missing.)
 	    }
 
 	    if (currentMenu != null && currentMenu.size() > 0) {
@@ -1001,7 +1042,11 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		}
 		result.append(menustoptemplate) ;
 	    }
-	    return result.toString() ;
+	    String resultstring = result.toString() ;
+	    if (menumode) { // If in menumode, make sure to include all the stuff from the proper admintemplates.
+		resultstring = getMenuModePrefix(patMat,menu_id,tags)+resultstring+getMenuModeSuffix(tags) ;
+	    }
+	    return resultstring ;
 	} catch ( RuntimeException ex ) {
 	    log.log(Log.ERROR, "Error during parsing.", ex) ;
 	    return null ;
@@ -1025,6 +1070,10 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	public void setMap (Map map, boolean removeNulls) {
 	    this.map = map ;
 	    this.removeNulls = removeNulls ;
+	}
+
+	public Map getMap () {
+	    return map ;
 	}
 
 	public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, String originalInput, PatternMatcher patMat, Pattern pat) {
@@ -1054,14 +1103,18 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
     protected class MenuParserSubstitution implements Substitution {
 
 	Map menus ;
+	boolean menumode ;
+	Properties tags ;
 	int[] implicitMenus = {1} ;
 
-	public MenuParserSubstitution (Map menus) {
+	public MenuParserSubstitution (Map menus,boolean menumode, Properties tags ) {
+	    this.menumode = menumode ;
 	    this.menus = menus ;
+	    this.tags = tags ;
 	}
 
 	public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, String originalInput, PatternMatcher patMat, Pattern pat) {
-	    sb.append(menuParser(originalInput,patMat,menus,implicitMenus)) ;
+	    sb.append(menuParser(originalInput,patMat,menus,implicitMenus,menumode,tags)) ;
 	}
 
     }
@@ -1099,8 +1152,9 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
        @param menus The HashMap containing all the menus.
        @param menumode A boolean detailing whether or not we are in menu-admin-mode
        @param sort_order The magic number that tells us which sort-order we are using.
+       @param tags Don't ask... this contains the other tags to parse in the page. Used for getMenuModePrefix
      */
-    private void obsoleteMenuParser (StringBuffer sb, int sbindex, int reindex, int[] menu_param, HashMap menus, boolean menumode, int sort_order, PatternMatcher patMat) {
+    private void obsoleteMenuParser (StringBuffer sb, int sbindex, int reindex, int[] menu_param, HashMap menus, boolean menumode, int sort_order, PatternMatcher patMat, Properties tags) {
 	int menurowsindex = sbindex ;   // We'll store away the index of the start of the menu.
 	sbindex = reindex ;
 	// Now we'll read each row... so we'll need some storagespace...
@@ -1157,28 +1211,21 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TR_START_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 	if ( patMat.contains(menurowstr,TR_STOP_PATTERN) ) {
-	    trstart = patMat.getMatch().group(1) ;
+	    trstop = patMat.getMatch().group(1) ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TR_STOP_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 	if ( patMat.contains(menurowstr,TD_START_PATTERN) ) {
-	    trstart = patMat.getMatch().group(1) ;
+	    tdstart = patMat.getMatch().group(1) ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TD_START_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 	if ( patMat.contains(menurowstr,TD_STOP_PATTERN) ) {
-	    trstart = patMat.getMatch().group(1) ;
+	    tdstop = patMat.getMatch().group(1) ;
 	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TD_STOP_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
 	}
 
 	/** End of added 010212 **/
-	// If we are in menumode, we want to add the sortbox and checkbox for sorting, archiving and removing.
-	if ( menumode ) {	// Menumode! :)
-	    menurowstr = "<input type=checkbox name=\"archiveDelBox\" value=\"#to_meta_id#\">" + menurowstr ;
-	    if (sort_order == 2) {
-		menurowstr = "<input type=text name=\"#to_meta_id#\" value=\"#manual_sort_order#\" size=4 maxlength=4>" + menurowstr ;
-	    }
-	}
-	// Make sure we add tags for the html-tags for inactive and archived documents,
-	menurowstr = "#adminStart#"+menurowstr ;
+	//// Make sure we add tags for the html-tags for inactive and archived documents,
+	//menurowstr = "#adminStart#"+menurowstr ;
 	// Add #adminStop# to the end, if there is only one line.
 	// Note that if there is more than one line, we do it before
 	// all the regexing for <tr><td>
@@ -1224,6 +1271,9 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	}
 	String menubuff_str = menubuff.toString() ;
 
+	if (menumode) {
+	    menubuff_str = "<tr><td>"+getMenuModePrefix(patMat,menu_param[0],tags)+"</td></tr>"+menubuff_str+"<tr><td>"+getMenuModeSuffix(tags)+"</td></tr>" ;
+	}
 	// Yay! One menu done. Insert into the pagebuffer...
 	sb.replace( menurowsindex, sbindex,menubuff_str) ;
 	//sb.insert(sbindex,menubuff_str) ;
