@@ -43,10 +43,10 @@
 
 <table border="0" cellspacing="0" cellpadding="0">
     <tr>
-        <td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW(101)"></td>
         <% if (documentFinder.isCancelable()) { %>
             <td><input class="imcmsFormBtn" type="submit" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/back ?>"></td>
         <% } %>
+        <td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW(101)"></td>
     </tr>
 </table>
 

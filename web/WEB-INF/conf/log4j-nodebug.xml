@@ -5,72 +5,76 @@
 <!-- Start log4j configuration -->
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" threshold="debug">
 
-  <!-- Renderer for DocumentRequest -->
-  <renderer
-    renderingClass="imcode.util.log.FakeRequestRenderer"
-    renderedClass="imcode.server.DocumentRequest"/>
+    <!-- Renderer for DocumentRequest -->
+    <renderer
+        renderingClass="imcode.util.log.FakeRequestRenderer"
+        renderedClass="imcode.server.DocumentRequest"/>
 
-  <!-- The accesslog (logs usermovements) -->
-  <appender name="ACCESS" class="imcode.util.log.DailyRollingFileAppender">
-    <param name="DatePattern" value="'.'yyyy-MM-dd"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern"
-	     value="%d{ISO8601} %m%n"/>
-    </layout>
-  </appender>
+    <!-- The accesslog (logs usermovements) -->
+    <appender name="ACCESS" class="imcode.util.log.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                value="%d{ISO8601} %m%n"/>
+        </layout>
+    </appender>
 
-  <appender name="WEBAPPACCESS" class="imcode.util.log.WebAppFileAppender">
-    <param name="File" value="WEB-INF/logs/access.log"/>
-    <appender-ref ref="ACCESS"/>
-  </appender>
+    <appender name="WEBAPPACCESS" class="imcode.util.log.WebAppFileAppender">
+        <param name="File" value="WEB-INF/logs/access.log"/>
+        <appender-ref ref="ACCESS"/>
+    </appender>
 
-  <!-- The mainlog (captures edits and changes) -->
-  <appender name="MAIN" class="org.apache.log4j.FileAppender">
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %-5p %m%n"/>
-    </layout>
-  </appender>
+    <!-- The mainlog (captures edits and changes) -->
+    <appender name="MAIN" class="org.apache.log4j.FileAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %m%n"/>
+        </layout>
+    </appender>
 
-  <appender name="WEBAPPMAIN" class="imcode.util.log.WebAppFileAppender">
-    <param name="File" value="WEB-INF/logs/main.log"/>
-    <appender-ref ref="MAIN"/>
-  </appender>
+    <appender name="WEBAPPMAIN" class="imcode.util.log.WebAppFileAppender">
+        <param name="File" value="WEB-INF/logs/main.log"/>
+        <appender-ref ref="MAIN"/>
+    </appender>
 
-  <!-- The errorlog (captures everything that doesn't go to one of the above. -->
-  <appender name="ERROR" class="org.apache.log4j.FileAppender">
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
-    </layout>
-  </appender>
+    <!-- The errorlog (captures everything that doesn't go to one of the above. -->
+    <appender name="ERROR" class="org.apache.log4j.FileAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
+        </layout>
+    </appender>
 
-  <appender name="WEBAPPERROR" class="imcode.util.log.WebAppFileAppender">
-    <param name="File" value="WEB-INF/logs/error.log"/>
-    <appender-ref ref="ERROR"/>
-  </appender>
+    <appender name="WEBAPPERROR" class="imcode.util.log.WebAppFileAppender">
+        <param name="File" value="WEB-INF/logs/error.log"/>
+        <appender-ref ref="ERROR"/>
+    </appender>
 
-  <!-- Set up accesslog with priority 'info' -->
-  <category name="accesslog" additivity="false">
-    <priority value="info"/>
-    <appender-ref ref="WEBAPPACCESS"/>
-  </category>
+    <appender name="NULL" class="org.apache.log4j.varia.NullAppender"/>
 
-  <!-- Set up mainlog with priority 'info' -->
-  <category name="mainlog" additivity="false">
-    <priority value="info"/>
-    <appender-ref ref="WEBAPPMAIN"/>
-  </category>
+    <!-- Set up accesslog with priority 'info' -->
+    <category name="accesslog" additivity="false">
+        <priority value="info"/>
+        <appender-ref ref="WEBAPPACCESS"/>
+    </category>
 
-  <category name="velocity" additivity="false">
-      <priority value="warn"/>
-      <appender-ref ref="WEBAPPERROR"/>
-  </category>
+    <!-- Set up mainlog with priority 'info' -->
+    <category name="mainlog" additivity="false">
+        <priority value="info"/>
+        <appender-ref ref="WEBAPPMAIN"/>
+    </category>
 
-  <category name="org.apache" additivity="false"/>
+    <category name="velocity" additivity="false">
+        <priority value="warn"/>
+        <appender-ref ref="WEBAPPERROR"/>
+    </category>
 
-  <!-- Set up the errorlog with priority 'info' -->
-  <root>
-    <priority value="info"/>
-    <appender-ref ref="WEBAPPERROR"/>
-  </root>
+    <category name="org.apache" additivity="false">
+        <appender-ref ref="NULL"/>
+    </category>
+
+    <!-- Set up the errorlog with priority 'info' -->
+    <root>
+        <priority value="info"/>
+        <appender-ref ref="WEBAPPERROR"/>
+    </root>
 
 </log4j:configuration>
