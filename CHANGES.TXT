@@ -11,7 +11,7 @@ Version 1.12.0
     Of interest to template creators:
 
     * Local includes can now be made using <?imcms:include path="/relative/to/context/path"?>.
-      These don't require a http-request to localhost, as url-includes do, are a magnitude more efficient,
+      These don't require a http-request to localhost as url-includes do, are a magnitude more efficient,
       and don't spam the access-log. (Bug 2684)
 
     Of interest to API-using developers:
