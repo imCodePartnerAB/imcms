@@ -104,7 +104,7 @@ function checkLinkType(sHref) {
 	var fObj  = document.forms[0].createLinkType ;
 	if (/GetDoc/i.test(sHref) || (/\d{4,6}/.test(sHref) && !/^http/i.test(sHref))) {
 		fObj.selectedIndex = 0 ;
-		sHref = /\d+/.exec(sHref) ;
+		sHref = /\d{4,6}/.exec(sHref) ;
 		document.getElementById("f_href").value = sHref ;
 	} else if (/^mailto:/i.test(sHref)) {
 		fObj.selectedIndex = 2 ;
