@@ -10,7 +10,7 @@ import org.apache.oro.text.regex.* ;
 import imcode.util.* ;
 import imcode.server.* ;
 /**
-   Edit text in a document.
+   Edit text in a internalDocument.
 */
 public class ChangeText extends HttpServlet {
     private final static String CVS_REV = "$Revision$" ;

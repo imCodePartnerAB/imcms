@@ -80,7 +80,7 @@ public interface IMCPoolInterface {
 	public java.util.Hashtable sqlProcedureHash(String procedure)
 	;
 
-	// check document rights
+	// check internalDocument rights
 	public boolean checkDocAdminRights(int meta_id, imcode.server.user.User user)
 	;
 

@@ -20,7 +20,7 @@ public class RmiConf implements IMCConstants {
 
     /**
      * Checks whether an user is administrator for a meta id or not, Returns true if the user has
-     * rights to administrate the document, and and false if he is not
+     * rights to administrate the internalDocument, and and false if he is not
      */
     public static boolean checkAdminRights(IMCServiceInterface imcref, String metaId, imcode.server.user.User user)  {
 	boolean admin = false ;
@@ -32,10 +32,10 @@ public class RmiConf implements IMCConstants {
 
 
     /**
-     * Get the url-path for the images for an external document.
+     * Get the url-path for the images for an external internalDocument.
      * @param imcref The IMCServiceInterface instance.
-     * @param metaId The id for the external document.
-     * @return The url-path to the images for an external document. Ex: ../images/se/
+     * @param metaId The id for the external internalDocument.
+     * @return The url-path to the images for an external internalDocument. Ex: ../images/se/
      */
     public static String getExternalImageFolder(IMCServiceInterface imcref, String metaId ) throws IOException {
 	return imcref.getImageUrl() + '/' + imcref.getLanguage() + '/'
@@ -44,10 +44,10 @@ public class RmiConf implements IMCConstants {
 
 
     /**
-     * Get the path to the images for an external document.
+     * Get the path to the images for an external internalDocument.
      * @param imcref The IMCServiceInterface instance.
-     * @param metaId The id for the external document.
-     * @return The path to the images for an external document. Example :D:\apache\
+     * @param metaId The id for the external internalDocument.
+     * @return The path to the images for an external internalDocument. Example :D:\apache\
      */
     public static File getImagePathForExternalDocument(IMCServiceInterface imcref, int metaId ) throws IOException {
 

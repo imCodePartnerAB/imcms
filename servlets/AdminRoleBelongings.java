@@ -28,7 +28,7 @@ import imcode.server.* ;
  * Documents in use:
  *
  * doGet()
- * AdminRoleBelongings.html, start document
+ * AdminRoleBelongings.html, start internalDocument
  *
  * doPost():
  * AdminRoleBelongings_edit.html, page for administrate users to roles

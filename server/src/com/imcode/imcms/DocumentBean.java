@@ -8,14 +8,20 @@ import java.util.Map;
 
 public class DocumentBean {
     protected SecurityChecker securityChecker;
-    protected Document document;
-    protected DocumentMapper mapper;
+    protected Document internalDocument;
+    protected DocumentMapper internalDocumentMapper;
+
+    public DocumentBean( SecurityChecker securityChecker, Document document, DocumentMapper mapper ) {
+        this.securityChecker = securityChecker;
+        this.internalDocument = document;
+        this.internalDocumentMapper = mapper;
+    }
 
     /**
      * @return map of rolename String -> {@link com.imcode.imcms.DocumentPermissionSet} constants.
      */
     public Map getAllRolesMappedToPermissions() throws NoPermissionException {
-        securityChecker.hasEditPermission( document );
-        return mapper.getAllRolesMappedToPermissions( document );
+        securityChecker.hasEditPermission( internalDocument );
+        return internalDocumentMapper.getAllRolesMappedToPermissions( internalDocument );
     }
 }

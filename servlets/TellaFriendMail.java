@@ -46,7 +46,7 @@ public class TellaFriendMail extends HttpServlet {
 	}
 
 	/**
-        * Showing input document whit out error
+        * Showing input internalDocument whit out error
         */
 
 	public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {

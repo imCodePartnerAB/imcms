@@ -14,9 +14,6 @@ import imcode.readrunner.* ;
  */
 public interface IMCServiceInterface {
 
-    final static String CVS_REV = "$Revision$" ;
-    final static String CVS_DATE = "$Date$" ;
-
     /** Verify a Internet/Intranet user. Data from any SQL Database. **/
     imcode.server.user.User verifyUser(String login, String password)
 	;
@@ -49,7 +46,7 @@ public interface IMCServiceInterface {
 	;
 
     /**
-       Delete a document
+       Delete a internalDocument
     **/
     void deleteDocAll(int meta_id,imcode.server.user.User user)
 	;
@@ -90,7 +87,7 @@ public interface IMCServiceInterface {
     //;
 
     // check if url doc
-    imcode.server.Table isUrlDoc(int meta_id,User user)
+    Table isUrlDoc(int meta_id,User user)
 	;
 
     // Save a new frameset
@@ -262,7 +259,7 @@ public interface IMCServiceInterface {
     public Object[] getDemoTemplate(int template_id)
 	throws IOException ;
 
-    // check if user can view document
+    // check if user can view internalDocument
     public boolean checkDocRights(int meta_id, User user)
 	;
 
@@ -348,10 +345,6 @@ public interface IMCServiceInterface {
 
     public File getInternalTemplateFolder(int meta_id) ;
 
-    public void touchDocument(int meta_id, java.util.Date date) ;
-
-    public void touchDocument(int meta_id) ;
-
     public List getQuoteList(String quoteListName) throws IOException ;
 
     public void setQuoteList(String quoteListName, List quoteList) throws IOException ;
@@ -370,9 +363,9 @@ public interface IMCServiceInterface {
     public ReadrunnerUserData getReadrunnerUserData(User user) ;
 
     /**
-       Retrieve the texts for a document
-       @param meta_id The id of the document.
-       @return A Map (Integer -> IMCText) with all the  texts in the document.
+       Retrieve the texts for a internalDocument
+       @param meta_id The id of the internalDocument.
+       @return A Map (Integer -> IMCText) with all the  texts in the internalDocument.
     **/
     public Map getTexts(int meta_id);
 

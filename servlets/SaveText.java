@@ -1,23 +1,13 @@
 import java.io.*;
-import java.util.*;
-import java.text.SimpleDateFormat;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.util.* ;
 import imcode.server.* ;
 
-import org.apache.log4j.Category ;
-
 /**
-   Save text in a document.
+   Save text in a internalDocument.
 */
 public class SaveText extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-
-    /** A Log4J Category **/
-    private static Category log = Category.getInstance( IMCConstants.ERROR_LOG ) ;
-
     /**
        init()
     */
@@ -30,7 +20,6 @@ public class SaveText extends HttpServlet {
     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-	String host 	 = req.getHeader("Host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	String start_url = imcref.getStartUrl() ;
 
@@ -69,9 +58,6 @@ public class SaveText extends HttpServlet {
 	}
 
 	IMCText text = new IMCText(text_string,text_format) ;
-
-	// Get the session
-	HttpSession session = req.getSession( true );
 
 	user.put("flags",new Integer(imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_TEXTS)) ;
 

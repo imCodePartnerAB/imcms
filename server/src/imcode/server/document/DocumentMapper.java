@@ -1,14 +1,13 @@
 package imcode.server.document;
 
-import imcode.server.IMCConstants;
-import imcode.server.IMCServiceInterface;
-import imcode.server.IMCText;
-import imcode.server.Template;
+import imcode.server.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.User;
+import imcode.util.poll.PollHandlingSystem;
 import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,7 +17,7 @@ import java.util.Map;
 import java.util.Vector;
 
 public class DocumentMapper {
-    private IMCServiceInterface service;
+    private IMCService service;
     private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
     private Logger log = Logger.getLogger( DocumentMapper.class );
 
@@ -29,8 +28,9 @@ public class DocumentMapper {
     private static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo ";
     private static final String SPROC_GET_USER_PERMISSION_SET = "GetUserPermissionSet";
     private static final String SPROC_GET_TEXT = "GetText ";
+    private static final String SPROC_INSERT_TEXT = "InsertText ";
 
-    public DocumentMapper( IMCServiceInterface service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
+    public DocumentMapper( IMCService service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
         this.service = service;
         this.imcmsAAUM = imcmsAAUM;
     }
@@ -42,11 +42,11 @@ public class DocumentMapper {
 
             //lets start and do some controlls of the resulted data
             if( result == null || result.length < 25 ) {
-                throw new IndexOutOfBoundsException( "No such document: " + metaId );
+                throw new IndexOutOfBoundsException( "No such internalDocument: " + metaId );
             }
 
             DateFormat dateform = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
-            //ok lets set all the document stuff
+            //ok lets set all the internalDocument stuff
             try {
                 document = new Document();
                 document.setMetaId( Integer.parseInt( result[0] ) );
@@ -111,7 +111,7 @@ public class DocumentMapper {
 
     }
 
-    /** @return the section for a document, or null if there was none **/
+    /** @return the section for a internalDocument, or null if there was none **/
     private String getSection( int meta_id ) {
         String[] section_data = service.sqlProcedure( SPROC_SECTION_GET_INHERIT_ID, new String[]{String.valueOf( meta_id )} );
 
@@ -121,7 +121,7 @@ public class DocumentMapper {
         return section_data[1];
     }
 
-    /** @return the filename for a fileupload-document, or null if the document isn't a fileupload-docuemnt. **/
+    /** @return the filename for a fileupload-internalDocument, or null if the internalDocument isn't a fileupload-docuemnt. **/
     private String getFilename( int meta_id ) {
         return service.sqlProcedureStr( SPROC_GET_FILE_NAME + meta_id );
     }
@@ -200,4 +200,36 @@ public class DocumentMapper {
             return null;
         }
     }
+
+    public void saveText( IMCText text, int meta_id, int txt_no, User user, String text_type ) {
+        String textstring = text.getText();
+
+        // update text
+        String[] params = new String[]{"" + meta_id, "" + txt_no, "" + text.getType(), textstring};
+        service.sqlUpdateProcedure( SPROC_INSERT_TEXT, params );
+
+        // update the date
+        touchDocument( meta_id );
+
+        service.updateLogs( "Text " + txt_no + " in  " + "[" + meta_id + "] modified by user: [" + user.getFullName() + "]" );
+
+        if( !("").equals( text_type ) ) {
+
+            if( text_type.startsWith( "poll" ) ) {
+                PollHandlingSystem poll = service.getPollHandlingSystem();
+                poll.savePollparameter( text_type, meta_id, txt_no, textstring );
+            }
+        }
+    }
+
+    /**
+     Set the modified datetime of a internalDocument to now
+     @param meta_id The id of the internalDocument
+     **/
+    public void touchDocument( int meta_id ) {
+        Date date = new Date();
+        SimpleDateFormat dateformat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+        service.sqlUpdateQuery( "update meta set date_modified = '" + dateformat.format( date ) + "' where meta_id = " + meta_id );
+    }
+
 }

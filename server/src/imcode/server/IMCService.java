@@ -159,7 +159,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             externalAuthenticator = initExternalAuthenticator( externalAuthenticatorName, authenticatorPropertiesSubset );
             externalUserAndRoleMapper = initExternalUserAndRoleMapper( externalUserAndRoleMapperName, userAndRoleMapperPropertiesSubset );
             if( null == externalAuthenticator || null == externalUserAndRoleMapper ) {
-                log.error( "Failed to initialize both authenticator and user-and-role-mapper, using default implementations." );
+                log.error( "Failed to initialize both authenticator and user-and-role-internalDocumentMapper, using default implementations." );
                 externalAuthenticator = null;
                 externalUserAndRoleMapper = null;
             }
@@ -215,7 +215,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             try {
                 externalUserAndRoleMapper = new LdapUserAndRoleMapper( userAndRoleMapperPropertiesSubset );
             } catch( LdapUserAndRoleMapper.LdapInitException e ) {
-                log.error( "LdapUserAndRoleMapper could not be created, using default user and role mapper.", e );
+                log.error( "LdapUserAndRoleMapper could not be created, using default user and role internalDocumentMapper.", e );
             }
         } else {
             externalUserAndRoleMapper = (UserAndRoleMapper)createInstanceOfClass( externalUserAndRoleMapperName );
@@ -233,7 +233,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             try {
                 externalAuthenticator = new LdapUserAndRoleMapper( authenticatorPropertiesSubset );
             } catch( LdapUserAndRoleMapper.LdapInitException e ) {
-                log.error( "LdapUserAndRoleMapper could not be created, using default user and role mapper.", e );
+                log.error( "LdapUserAndRoleMapper could not be created, using default user and role internalDocumentMapper.", e );
             }
         } else {
             externalAuthenticator = (Authenticator)createInstanceOfClass( externalAuthenticatorName );
@@ -358,12 +358,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
      Supported text_types is:
 
-     pollquestion-n		      where n represent the questíon number in this document
+     pollquestion-n		      where n represent the questíon number in this internalDocument
 
-     pollanswer-n-m		          where n represent the questíon number in this document
+     pollanswer-n-m		          where n represent the questíon number in this internalDocument
      and m represent the answer number in question number n
 
-     pollpointanswer-n-m			  where n represent the questíon number in this document
+     pollpointanswer-n-m			  where n represent the questíon number in this internalDocument
      and m represent the answer number in question number n
 
      pollparameter-popup_frequency    default(0) when > 0 show this poll as a popup on every new session that is a multiple
@@ -385,26 +385,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
      **/
 
-    public void saveText( imcode.server.user.User user, int meta_id, int txt_no, IMCText text, String text_type ) {
-
-        String textstring = text.getText();
-
-        // update text
-        sqlUpdateProcedure( "InsertText ", new String[]{"" + meta_id, "" + txt_no, "" + text.getType(), textstring} );
-
-        // update the date
-        touchDocument( meta_id );
-
-        this.updateLogs( "Text " + txt_no + " in  " + "[" + meta_id + "] modified by user: [" + user.getFullName() + "]" );
-
-        if( !("").equals( text_type ) ) {
-
-            if( text_type.startsWith( "poll" ) ) {
-                PollHandlingSystem poll = getPollHandlingSystem();
-                poll.savePollparameter( text_type, meta_id, txt_no, textstring );
-            }
-        }
-
+    public void saveText( User user, int meta_id, int txt_no, IMCText text, String text_type ) {
+        documentMapper.saveText( text, meta_id, txt_no, user, text_type );
     }
 
     /**
@@ -525,7 +507,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         File file = new File( m_FilePath, filename );
         //System.out.println("FilePath: " + file.toString()) ;
 
-        //If meta_id is a file document we have to delete the file from file system
+        //If meta_id is a file internalDocument we have to delete the file from file system
         if( file.exists() ) {
             file.delete();
         }
@@ -557,10 +539,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         }
     }
 
-
-    /**
-     * Save manual sort.
-     */
     public void saveManualSort( int meta_id, User user, java.util.Vector childs, java.util.Vector sort_no ) {
         String sqlStr = "";
 
@@ -637,11 +615,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     Makes copies of the documents given in the String-array, and inserts them into the given document and menu.
+     Makes copies of the documents given in the String-array, and inserts them into the given internalDocument and menu.
      If one of the documents couldn't be copied for some reason, no documents are copied, and the uncopyable
      documents are returned.
 
-     @param meta_id The document to insert into
+     @param meta_id The internalDocument to insert into
      @param doc_menu_no The menu to insert into
      @param user The user
      @param childsThisMenu The id's to copy.
@@ -700,7 +678,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * Save an url document.
+     * Save an url internalDocument.
      */
     public void saveUrlDoc( int meta_id, User user, imcode.server.Table doc ) {
         String sqlStr = "";
@@ -730,7 +708,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * Save a new url document.
+     * Save a new url internalDocument.
      */
     public void saveNewUrlDoc( int meta_id, User user, imcode.server.Table doc ) {
         String sqlStr = "";
@@ -1809,8 +1787,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     Checks to see if a user has any permission of a particular set of permissions for a document.
-     @param meta_id	The document-id
+     Checks to see if a user has any permission of a particular set of permissions for a internalDocument.
+     @param meta_id	The internalDocument-id
      @param user		The user
      @param permission A bitmap containing the permissions.
      */
@@ -1829,7 +1807,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             int set_id = Integer.parseInt( (String)perms.elementAt( 0 ) );
             int set = Integer.parseInt( (String)perms.elementAt( 1 ) );
 
-            if( perms.size() > 0 && set_id == 0		// User has full permission for this document
+            if( perms.size() > 0 && set_id == 0		// User has full permission for this internalDocument
                 || (set_id < 3 && ((set & permission) > 0))	// User has at least one of the permissions given.
             ) {
                 return true;
@@ -1843,8 +1821,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     Checks to see if a user has a particular set of permissions for a document.
-     @param meta_id      The document-id
+     Checks to see if a user has a particular set of permissions for a internalDocument.
+     @param meta_id      The internalDocument-id
      @param user		    The user
      @param permission	A bitmap containing the permissions.
      */
@@ -1866,7 +1844,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             int set_id = Integer.parseInt( (String)perms.elementAt( 0 ) );
             int set = Integer.parseInt( (String)perms.elementAt( 1 ) );
 
-            if( set_id == 0		// User has full permission for this document
+            if( set_id == 0		// User has full permission for this internalDocument
                 || (set_id < 3 && ((set & permission) == permission))	// User has all the permissions given.
             ) {
                 return true;
@@ -1880,10 +1858,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     Gets the users most privileged permission_set for the document.
-     @param meta_id	The document-id
+     Gets the users most privileged permission_set for the internalDocument.
+     @param meta_id	The internalDocument-id
      @param user_id		The user_id
-     @return the most privileged permission_set a user has for the document.
+     @return the most privileged permission_set a user has for the internalDocument.
 
      */
     public int getUserHighestPermissionSet( int meta_id, int user_id ) {
@@ -1904,14 +1882,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             int set_id = Integer.parseInt( (String)perms.elementAt( 0 ) );
 
             switch( set_id ) {
-                case IMCConstants.DOC_PERM_SET_FULL:         // User has full permission for this document
-                case IMCConstants.DOC_PERM_SET_RESTRICTED_1: // User has restricted 1 permission for this document
-                case IMCConstants.DOC_PERM_SET_RESTRICTED_2: // User has restricted 2 permission for this document
-                case IMCConstants.DOC_PERM_SET_READ:         // User has only read permission for this document
+                case IMCConstants.DOC_PERM_SET_FULL:         // User has full permission for this internalDocument
+                case IMCConstants.DOC_PERM_SET_RESTRICTED_1: // User has restricted 1 permission for this internalDocument
+                case IMCConstants.DOC_PERM_SET_RESTRICTED_2: // User has restricted 2 permission for this internalDocument
+                case IMCConstants.DOC_PERM_SET_READ:         // User has only read permission for this internalDocument
                     return set_id;                          // We have a valid permission-set-id. Return it.
 
                 default:                                     // We didn't get a valid permission-set-id.
-                    return DOC_PERM_SET_NONE;               // User has no permission at all for this document
+                    return DOC_PERM_SET_NONE;               // User has no permission at all for this internalDocument
             }
 
         } catch( RuntimeException ex ) {
@@ -2273,8 +2251,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /** get server date
      */
-    public java.util.Date getCurrentDate() {
-        return new java.util.Date();
+    public Date getCurrentDate() {
+        return new Date();
     }
 
 
@@ -2576,27 +2554,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     Set the modified datetime of a document to the given date
-     @param meta_id The id of the document
-     @param date The datetime to set
-     **/
-    public void touchDocument( int meta_id, java.util.Date date ) {
-        SimpleDateFormat dateformat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
-        sqlUpdateQuery( "update meta set date_modified = '" + dateformat.format( date ) + "' where meta_id = " + meta_id );
-    }
-
-    /**
-     Set the modified datetime of a document to now
-     @param meta_id The id of the document
-     **/
-    public void touchDocument( int meta_id ) {
-        touchDocument( meta_id, getCurrentDate() );
-    }
-
-    /**
-     Retrieve the texts for a document
-     @param meta_id The id of the document.
-     @return A Map (Integer -> IMCText) with all the  texts in the document.
+     Retrieve the texts for a internalDocument
+     @param meta_id The id of the internalDocument.
+     @return A Map (Integer -> IMCText) with all the  texts in the internalDocument.
      **/
     public Map getTexts( int meta_id ) {
 
@@ -2620,16 +2580,16 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     Get the data for one document
-     @param meta_id The id fore the wanted document
-     @return a imcode.server.document.Document representation of the document, or null if there was none.
-     @throws IndexOutOfBoundsException if there was no such document.
+     Get the data for one internalDocument
+     @param meta_id The id fore the wanted internalDocument
+     @return a imcode.server.internalDocument.Document representation of the internalDocument, or null if there was none.
+     @throws IndexOutOfBoundsException if there was no such internalDocument.
      **/
     public Document getDocument( int meta_id ) throws IndexOutOfBoundsException {
         return documentMapper.getDocument( meta_id );
     }
 
-    /** @return the template for a text-document, or null if the document isn't a text-document. **/
+    /** @return the template for a text-internalDocument, or null if the internalDocument isn't a text-internalDocument. **/
     public Template getTemplate( int meta_id ) {
         String[] textdoc_data = sqlProcedure( "GetTextDocData", new String[]{String.valueOf( meta_id )} );
 

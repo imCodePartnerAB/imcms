@@ -13,7 +13,7 @@ public class SecurityChecker {
     private final static String USER_ADMIN = "Useradmin";
 
     private DocumentMapper docMapper;
-    private User accessor;
+    private User accessingUser;
     private HashSet accessorRoles;
 
     private boolean isSuperAdmin;
@@ -21,7 +21,7 @@ public class SecurityChecker {
 
     public SecurityChecker( DocumentMapper docMapper, User accessor, String[] accessorRoles ) {
         this.docMapper = docMapper;
-        this.accessor = accessor;
+        this.accessingUser = accessor;
         this.accessorRoles = new HashSet( Arrays.asList( accessorRoles ) );
 
         isSuperAdmin = this.accessorRoles.contains( SUPERADMIN_ROLE );
@@ -29,7 +29,7 @@ public class SecurityChecker {
     }
 
     public void loggedIn() throws NoPermissionException {
-        if( null == accessor ) {
+        if( null == accessingUser ) {
             throw new NoPermissionException( "User not logged in" );
         }
     }
@@ -47,7 +47,7 @@ public class SecurityChecker {
     }
 
     void isSuperAdminOrIsUserAdminOrIsSameUser( UserBean userBean ) throws NoPermissionException {
-        boolean isSameUser = userBean.getLoginName().equalsIgnoreCase( accessor.getLoginName() );
+        boolean isSameUser = userBean.getLoginName().equalsIgnoreCase( accessingUser.getLoginName() );
         if( !isSuperAdmin && !isUserAdmin && !isSameUser ) {
             throw new NoPermissionException( "User is not superadmin, useradmin nor the same user." );
         }
@@ -58,8 +58,12 @@ public class SecurityChecker {
     }
 
     public void hasEditPermission( Document document ) throws NoPermissionException  {
-        if( !docMapper.hasAdminPermissions( document, accessor ) ) {
-            throw new NoPermissionException("The logged in user does not have permission to edit document: " + document.getMetaId() );
+        if( !docMapper.hasAdminPermissions( document, accessingUser ) ) {
+            throw new NoPermissionException("The logged in user does not have permission to edit internalDocument: " + document.getMetaId() );
         };
+    }
+
+    public User getAccessingUser() {
+        return accessingUser;
     }
 }

@@ -1,19 +1,20 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.*;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.apache.log4j.Logger;
+import com.imcode.imcms.DocumentMapperBean;
+import com.imcode.imcms.SecurityChecker;
+import com.imcode.imcms.UserMapperBean;
+import com.imcode.imcms.WebAppConstants;
+import imcode.server.IMCConstants;
+import imcode.server.IMCService;
+import imcode.server.document.DocumentMapper;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.User;
-import imcode.server.IMCServiceInterface;
-import imcode.server.IMCConstants;
 import imcode.util.IMCServiceRMI;
-import imcode.server.document.*;
+import org.apache.log4j.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.servlet.*;
 import java.io.IOException;
 
 public class ImcmsSetupFilter implements Filter {
@@ -29,7 +30,7 @@ public class ImcmsSetupFilter implements Filter {
             HttpSession session = ((HttpServletRequest)request).getSession( true );
             User user = (User)session.getAttribute( USER_SESSION_ATTRIBUTE_NAME );
             if( null != user ) {
-                IMCServiceInterface service = IMCServiceRMI.getIMCServiceInterface( (HttpServletRequest)request );
+                IMCService service = (IMCService)IMCServiceRMI.getIMCServiceInterface( (HttpServletRequest)request );
                 ImcmsAuthenticatorAndUserMapper imcmsAAUM = new ImcmsAuthenticatorAndUserMapper( service );
                 DocumentMapper documentMapper = new DocumentMapper( service, imcmsAAUM );
 

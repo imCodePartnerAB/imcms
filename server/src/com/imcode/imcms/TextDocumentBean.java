@@ -1,23 +1,40 @@
 package com.imcode.imcms;
 
-import java.util.Map;
 import imcode.server.document.Document ;
 import imcode.server.document.DocumentMapper;
 import imcode.server.IMCText;
 
 public class TextDocumentBean extends DocumentBean {
 
-    TextDocumentBean( SecurityChecker securityChecker,  Document document, DocumentMapper mapper ) {
-        this.securityChecker = securityChecker;
-        this.document = document;
-        this.mapper = mapper;
+    TextDocumentBean( SecurityChecker securityChecker,  Document document, DocumentMapper documentMapper ) {
+        super( securityChecker, document, documentMapper );
     }
 
     public TextDocumentBean.TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
-        securityChecker.hasEditPermission( document );
-        IMCText imcmsText = mapper.getTextField( document, textFieldIndexInDocument ) ;
+        securityChecker.hasEditPermission( internalDocument );
+        IMCText imcmsText = internalDocumentMapper.getTextField( internalDocument, textFieldIndexInDocument ) ;
         TextDocumentBean.TextField textField = new TextDocumentBean.TextField(imcmsText) ;
         return textField;
+    }
+
+    public void setPlainTextField( int textFieldIndexInDocument, String newText )  throws NoPermissionException {
+        securityChecker.hasEditPermission( internalDocument );
+        setTextField( textFieldIndexInDocument, newText, IMCText.TEXT_TYPE_PLAIN );
+    }
+
+    public void setHtmlTextField( int textFieldIndexInDocument, String newText )  throws NoPermissionException {
+        securityChecker.hasEditPermission( internalDocument );
+        setTextField( textFieldIndexInDocument, newText, IMCText.TEXT_TYPE_HTML );
+    }
+
+    private void setTextField( int textFieldIndexInDocument, String newText, int textType ) {
+        IMCText imcmsText = new IMCText( newText, textType );
+        this.internalDocumentMapper.saveText(
+            imcmsText,
+            internalDocument.getMetaId(),
+            textFieldIndexInDocument,
+            super.securityChecker.getAccessingUser(),
+            String.valueOf( textType ) );
     }
 
     public class TextField {

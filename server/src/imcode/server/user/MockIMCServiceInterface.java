@@ -310,7 +310,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return new Object[0];
    }
 
-   // check if user can view document
+   // check if user can view internalDocument
    public boolean checkDocRights( int meta_id, User user ) {
       return false;
    }

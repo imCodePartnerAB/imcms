@@ -9,7 +9,7 @@ import imcode.util.* ;
 import imcode.server.* ;
 
 /**
-   Save document sorting (date,name,manual)
+   Save internalDocument sorting (date,name,manual)
 */
 public class SaveSort extends HttpServlet {
     private final static String CVS_REV = "$Revision$" ;

@@ -99,7 +99,7 @@ public class SaveMeta extends HttpServlet {
 	    if	( (
 		   // May the user edit permissions at all?
 		   user_set_id == 0				// If user has set_id == 0...
-		   || (user_perm_set & 4) != 0)	// ...or the user may edit permissions for this document
+		   || (user_perm_set & 4) != 0)	// ...or the user may edit permissions for this internalDocument
 
 		  // May the user set this particular permission-set?
 		  && user_set_id <= new_set_id
@@ -109,7 +109,7 @@ public class SaveMeta extends HttpServlet {
 		  &&	(user_set_id != 1			// If user has set_id == 1 (that is , != 0 && != 2)
 			 ||	(role_set_id != 2			// ...he may not change set_id for a role with set_id 2..
 				 && new_set_id != 2)			// ...and he may not set set_id to 2 for any role...
-			 || (currentdoc_perms&1) != 0// ...unless set_id 1 is more privileged than set_id 2 for this document.
+			 || (currentdoc_perms&1) != 0// ...unless set_id 1 is more privileged than set_id 2 for this internalDocument.
 			 )
 		  ) {
 

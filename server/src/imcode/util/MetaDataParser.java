@@ -103,7 +103,7 @@ public class MetaDataParser {
 
 	user.remove("temp_perm_settings") ;	// Forget about it, so it won't appear on a reload.
 
-	if (temp_perm_settings != null && meta_id.equals(temp_perm_settings[0])) {		// Make sure this is the right document.
+	if (temp_perm_settings != null && meta_id.equals(temp_perm_settings[0])) {		// Make sure this is the right internalDocument.
 	    // Copy everything from this temporary hashtable into the meta-hash.
 	    Enumeration temp_enum = ((Hashtable)temp_perm_settings[1]).keys() ;
 	    while ( temp_enum.hasMoreElements() ) {
@@ -186,9 +186,9 @@ public class MetaDataParser {
 	}
 	/*
 	try {
-			document.setCreatedDatetime(dateform.parse(result[16]));
+			internalDocument.setCreatedDatetime(dateform.parse(result[16]));
 		}catch(java.text.ParseException pe) {
-			document.setCreatedDatetime(null);
+			internalDocument.setCreatedDatetime(null);
 		}
 
 		*/
@@ -361,7 +361,7 @@ public class MetaDataParser {
 	Hashtable temp_perm_hash = null ;
 	String[] temp_default_templates = null;
 
-	if (temp_perm_settings != null && meta_id.equals(temp_perm_settings[0])) {		// Make sure this is the right document.
+	if (temp_perm_settings != null && meta_id.equals(temp_perm_settings[0])) {		// Make sure this is the right internalDocument.
 	    temp_perm_hash = (Hashtable)temp_perm_settings[2] ;
 		temp_default_templates = (String[])temp_perm_settings[3] ;
 	}
@@ -373,7 +373,7 @@ public class MetaDataParser {
 	// Now watch as i fetch the permission_set for the user...
 	String[] current_permissions = imcref.sqlProcedure("GetUserPermissionSet "+meta_id+", "+user.getUserId()) ;
 	int user_set_id = Integer.parseInt(current_permissions[0]) ;
-	int currentdoc_perms = Integer.parseInt(current_permissions[2]) ;		// A bitvector containing the permissions for this document. (For example if Set-id 1 is more privileged than Set-id 2 (bit 0))
+	int currentdoc_perms = Integer.parseInt(current_permissions[2]) ;		// A bitvector containing the permissions for this internalDocument. (For example if Set-id 1 is more privileged than Set-id 2 (bit 0))
 
 	StringBuffer roles_no_rights = new StringBuffer() ;
 	for ( int i=0 ; i<role_permissions.length  ; ++i ) {
@@ -388,7 +388,7 @@ public class MetaDataParser {
 		    role_set_id = Integer.parseInt(temp_role_set_id) ;
 		}
 	    }
-	    // If the role has no permissions for this document, we put it away in a special html-optionlist.
+	    // If the role has no permissions for this internalDocument, we put it away in a special html-optionlist.
 	    if (role_set_id == IMCConstants.DOC_PERM_SET_NONE) {
 		roles_no_rights.append("<option value=\""+role_id+"\">"+role_name+"</option>") ;
 		roles_rights.append("<input type=\"hidden\" name=\"role_"+role_id+"\" value=\"4\">") ;
@@ -546,9 +546,9 @@ public class MetaDataParser {
 
     /**
        OK. Now to explain this to myself, the next time i read this crap.
-       This works like this: This parses one set of permissions for a document into a page of checkboxes and stuff.
+       This works like this: This parses one set of permissions for a internalDocument into a page of checkboxes and stuff.
        This page is built of several templates found in the "admin/permissions" subdirectory.
-       The main template is "define_permissions.html" for the current document,
+       The main template is "define_permissions.html" for the current internalDocument,
        and "define_new_permissions.html" for new documents.
 
        This template contains the following tags:
@@ -560,7 +560,7 @@ public class MetaDataParser {
        #4#,          Template for permission to change permissions
        #doc_rights#  DOCUMENT-TYPE-SPECIFIC-RIGHTS-TEMPLATE HERE!
 
-       The document-type-specific-rights-templates are the following ones:
+       The internalDocument-type-specific-rights-templates are the following ones:
 
        define_permissions_2.html
        define_permissions_5.html
@@ -570,7 +570,7 @@ public class MetaDataParser {
        define_permissions_101.html
        define_permissions_102.html
 
-       The document-type-specific-rights-template contains additional tags in turn.
+       The internalDocument-type-specific-rights-template contains additional tags in turn.
 
        For doctype 2 (define_permissions_2.html), these tags are the following:
 
@@ -615,7 +615,7 @@ public class MetaDataParser {
 
 	}
 
-	// Here i fetch the current users set-id and the document-permissions for this document (Whether set-id 1 is more privileged than set-id 2.)
+	// Here i fetch the current users set-id and the internalDocument-permissions for this internalDocument (Whether set-id 1 is more privileged than set-id 2.)
 	String[] current_permissions = imcref.sqlProcedure("GetUserPermissionSet "+meta_id+", "+user.getUserId()) ;
 	int user_set_id = Integer.parseInt(current_permissions[0]) ;
 	int user_perm_set = Integer.parseInt(current_permissions[1]) ;
@@ -673,7 +673,7 @@ public class MetaDataParser {
 		|| (user_set_id == 1	// or has set-id 1
 		    && set_id == 2		// and is changing set-id 2
 		    && user_doc_types.contains(doctypes[i])	// and the user may use this doc-type.
-		    && (currentdoc_perms & 1) != 0		// and set-id 1 is more privleged than set-id 2 for this document. (Bit 0)
+		    && (currentdoc_perms & 1) != 0		// and set-id 1 is more privleged than set-id 2 for this internalDocument. (Bit 0)
 		    )
 		) {
 
@@ -710,7 +710,7 @@ public class MetaDataParser {
 		 || (user_set_id == 1	// or has set-id 1
 		     && set_id == 2		// and is changing set-id 2
 		     && user_templategroups.contains(templategroups[i])	// and the user may use this group.
-		     && (currentdoc_perms & 1) != 0		// and set-id 1 is more privleged than set-id 2 for this document. (Bit 0)
+		     && (currentdoc_perms & 1) != 0		// and set-id 1 is more privleged than set-id 2 for this internalDocument. (Bit 0)
 		     )
 		 ) {
 		options_templategroups += "<option value=\"524288_"+templategroups[i]

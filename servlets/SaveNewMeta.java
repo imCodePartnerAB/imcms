@@ -12,7 +12,7 @@ import imcode.server.* ;
 import org.apache.log4j.Category;
 
 /**
-   Save new meta for a document.
+   Save new meta for a internalDocument.
 */
 public class SaveNewMeta extends HttpServlet {
     private final static String CVS_REV = "$Revision$" ;
@@ -428,7 +428,7 @@ public class SaveNewMeta extends HttpServlet {
 		    out.write(output) ;
 		}
 		return ;
-	    } // end text document
+	    } // end text internalDocument
 
 	}
 	out.write(htmlStr) ;
