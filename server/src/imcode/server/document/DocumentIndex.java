@@ -137,7 +137,7 @@ public class DocumentIndex {
     public Query parseLucene( String queryString ) throws ParseException {
         Query query = MultiFieldQueryParser.parse( queryString,
                                                    new String[]{"meta_headline", "meta_text", "text", "keyword"},
-                                                   new LowerCaseLetterAnalyzer() );
+                                                   new Analyzer() );
         return query;
     }
 
@@ -162,7 +162,7 @@ public class DocumentIndex {
 
     private void openIndexWriter( final boolean createIndex ) throws IOException {
         if ( null == indexWriter ) {
-            indexWriter = new IndexWriter( dir, new LowerCaseLetterAnalyzer(), createIndex );
+            indexWriter = new IndexWriter( dir, new Analyzer(), createIndex );
         }
     }
 
@@ -225,8 +225,8 @@ public class DocumentIndex {
 
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
         if ( document instanceof TextDocumentDomainObject ) {
-            TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document ;
-            Iterator textsIterator = textDocument.getTexts().entrySet().iterator() ;
+            TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
+            Iterator textsIterator = textDocument.getTexts().entrySet().iterator();
             while ( textsIterator.hasNext() ) {
                 Map.Entry textEntry = (Map.Entry)textsIterator.next();
                 Integer textIndex = (Integer)textEntry.getKey();
@@ -235,12 +235,12 @@ public class DocumentIndex {
                 indexDocument.add( Field.UnStored( FIELD__TEXT + textIndex, text.getText() ) );
             }
 
-            Iterator imagesIterator = textDocument.getImages().values().iterator() ;
+            Iterator imagesIterator = textDocument.getImages().values().iterator();
             while ( imagesIterator.hasNext() ) {
-                TextDocumentDomainObject.Image image = (TextDocumentDomainObject.Image)imagesIterator.next() ;
+                TextDocumentDomainObject.Image image = (TextDocumentDomainObject.Image)imagesIterator.next();
                 String imageLinkUrl = image.getLinkUrl();
-                if (null != imageLinkUrl && imageLinkUrl.length() > 0) {
-                    indexDocument.add( unStoredKeyword( FIELD__IMAGE_LINK_URL, imageLinkUrl )) ;
+                if ( null != imageLinkUrl && imageLinkUrl.length() > 0 ) {
+                    indexDocument.add( unStoredKeyword( FIELD__IMAGE_LINK_URL, imageLinkUrl ) );
                 }
             }
         }
@@ -305,15 +305,17 @@ public class DocumentIndex {
         return truncatedDate;
     }
 
-    private static class LowerCaseLetterAnalyzer extends Analyzer {
+    private static class Analyzer extends org.apache.lucene.analysis.Analyzer {
 
         public TokenStream tokenStream( String fieldName, Reader reader ) {
 
+            Tokenizer tokenizer;
             if ( FIELD__SECTION.equals( fieldName ) || FIELD__KEYWORD.equals( fieldName ) ) {
-                return new LowerCaseFilter( new NullTokenizer( reader ) );
+                tokenizer = new NullTokenizer( reader );
             } else {
-                return new LowerCaseTokenizer( reader );
+                tokenizer = new LetterOrDigitTokenizer( reader );
             }
+            return new LowerCaseFilter( tokenizer );
         }
 
         private static class NullTokenizer extends CharTokenizer {
@@ -324,6 +326,17 @@ public class DocumentIndex {
 
             protected boolean isTokenChar( char c ) {
                 return true;
+            }
+        }
+
+        private static class LetterOrDigitTokenizer extends CharTokenizer {
+
+            private LetterOrDigitTokenizer( Reader reader ) {
+                super( reader );
+            }
+
+            protected boolean isTokenChar( char c ) {
+                return Character.isLetterOrDigit( c ) ;
             }
         }
 
