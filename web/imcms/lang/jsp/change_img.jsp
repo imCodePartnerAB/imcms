@@ -268,7 +268,7 @@ function checkLinkOnBlur() {<%
 			<td colspan="2" align="center"><%
 					ImageDomainObject.FileDocumentImageSource fileDocumentImageSource = (ImageDomainObject.FileDocumentImageSource)imageSource ;
 					FileDocumentDomainObject imageFileDocument = fileDocumentImageSource.getFileDocument() ; %>
-			<%= Imcms.getServices().getAdminButtons(request, user, imageFileDocument) %></td>
+			 <%= Html.getAdminButtons( Utility.getLoggedOnUser(request), imageFileDocument, request, response ) %></td>
 		</tr><%
 				}
 			} %>
