@@ -1214,9 +1214,10 @@ if(lastLoginDate == null)
 	*@param chatId - the key to identify the chat
 	*@return true if one exists
 	*/
-	public boolean checkChat(String chatId)
+	public boolean checkChat(int chatId)
 	{
-		return ChatHolder.hasAChat(chatId);
+		String id = Integer.toString(chatId);
+		return ChatHolder.hasAChat(id);
 	}
 	
 	/**
@@ -1225,11 +1226,12 @@ if(lastLoginDate == null)
 	*@param theChat - the chat object too be stored
 	*@return true if ok, if there is a key whit the key false is returned
 	*/
-	public boolean addChat(String chatId, Chat theChat)
+	public boolean addChat(int chatId, Chat theChat)
 	{
 		if ( !checkChat(chatId))
 		{
-			ChatHolder.addNewChat(chatId, theChat);
+			String id = Integer.toString(chatId);
+			ChatHolder.addNewChat(id, theChat);
 			return true;
 		}else
 		{
@@ -1241,9 +1243,10 @@ if(lastLoginDate == null)
 	*removes a chat object 
 	*@param chatId - the key of the chat to remove
 	*/
-	public void removeChat(String chatId)
+	public void removeChat(int chatId)
 	{
-		ChatHolder.removeAChat(chatId);;
+		String id = Integer.toString(chatId);
+		ChatHolder.removeAChat(id);
 	}
 	
 	/**
@@ -1251,9 +1254,10 @@ if(lastLoginDate == null)
 	*@param chatId - the key of the chat to get
 	*@return The wanted Chat or null if there isn't anyone found
 	*/
-	public Chat getChat(String chatId)
+	public Chat getChat(int chatId)
 	{
-		return ChatHolder.getAChat(chatId);
+		String id = Integer.toString(chatId);
+		return ChatHolder.getAChat(id);
 	}
 	
 } // End class

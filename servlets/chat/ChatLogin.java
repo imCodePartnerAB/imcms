@@ -156,11 +156,15 @@ public class ChatLogin extends ChatBase
 
 		log("inne i login post");
 	
-		Vector groups = new Vector();
-		Vector msgTypes = new Vector();
-		//check if the session holds a chat, else fix it
-		if (session.getValue("theChat")==null)
+		Chat tempChat;
+	
+		//check if the intended chat already exists in ChatBase if not add it
+		if ( !super.checkChat(testMetaId) )
 		{
+			//create chat
+			Vector groups = new Vector();
+			Vector msgTypes = new Vector();
+			
 			//get groups
 			Vector roomsV = (Vector)session.getValue("roomList");
 			
@@ -184,28 +188,29 @@ public class ChatLogin extends ChatBase
 			//get parameters			
 			Properties chatParams = super.getNewChatParameters(req);
 			
-			//create a new chat object and add to the session
-			Chat tempChat = new Chat(testMetaId, groups, msgTypes,params);
-			session.putValue("theChat",tempChat);
+			//create a new chat object and add to the chats and session
+			tempChat = new Chat(testMetaId, groups, msgTypes,params);
+			super.addChat(testMetaId, tempChat);
+			
 			
 		}
-		
-		
-		Chat theChat = (Chat)session.getValue("theChat");
-		log( "Chatten: " + theChat.toString() );
-		
-		Enumeration roomEnum = theChat.getAllChatGroups();
-		while( roomEnum.hasMoreElements() )
+		else
 		{
-			//String rum = ( (ChatGroup)roomEnum.nextElement() ).toString();
-			//int id = ( (ChatGroup)(roomEnum.nextElement()) ).getGroupId();
-			log("Elements: " + roomEnum.nextElement() );
+			//get chat from chatbase and add to session
+			tempChat = getChat(testMetaId);
 		}
+		
+		session.putValue("theChat",tempChat);
 		
 		//skicka med aktuell grupp
 		String currentRoomId = req.getParameter("rooms");
 		log("currentRoom: " + currentRoomId);
 		session.putValue("currentRoomId",currentRoomId);
+		
+		//get alias
+		String chatAlias = req.getParameter("userName");
+		log("chatAlias: " + chatAlias);
+		session.putValue("chatAlias",chatAlias);
 		
 		//redirect to chatViewer
 		String url = MetaInfo.getServletPath(req) ;
