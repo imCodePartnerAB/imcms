@@ -56,30 +56,33 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    
 	sysData = getSystemDataFromDb() ;
 	    
-	m_TemplateHome      = props.getProperty("TemplatePath") ;
+	m_TemplateHome      = props.getProperty("TemplatePath").trim() ;
 	log.log(Log.INFO, "TemplatePath: " + m_TemplateHome) ;
 	    
-	m_IncludePath       = props.getProperty("IncludePath") ;
+	m_IncludePath       = props.getProperty("IncludePath").trim() ;
 	log.log(Log.INFO, "IncludePath: " + m_IncludePath) ;
 	    
 	try {
-	    m_DefaultHomePage   = Integer.parseInt(props.getProperty("StartDocument")) ;    //FIXME: Get from DB
+	    m_DefaultHomePage   = Integer.parseInt(props.getProperty("StartDocument").trim()) ;    //FIXME: Get from DB
 	} catch (NumberFormatException ex) {
 	    throw new RuntimeException ("No StartDocument given in properties-file.") ;
+	} catch (NullPointerException ex) {
+	    throw new RuntimeException ("No StartDocument given in properties-file.") ;
 	}
+
 	log.log(Log.INFO, "StartDocument: " + m_DefaultHomePage) ;
 	    
-	m_ServletUrl        = props.getProperty("ServletUrl") ; //FIXME: Get from webserver, or get rid of if possible.
+	m_ServletUrl        = props.getProperty("ServletUrl").trim() ; //FIXME: Get from webserver, or get rid of if possible.
 	log.log(Log.INFO, "ServletUrl: " + m_ServletUrl) ;
 	    
 	// FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
-	m_ImageFolder       = props.getProperty("ImageUrl") ; //FIXME: Get from webserver, or get rid of if possible.
+	m_ImageFolder       = props.getProperty("ImageUrl").trim() ; //FIXME: Get from webserver, or get rid of if possible.
 	log.log(Log.INFO, "ImageUrl: " + m_ImageFolder) ;
 	    
-	String externalDocTypes  = props.getProperty("ExternalDoctypes") ; //FIXME: Get rid of, if possible.
+	String externalDocTypes  = props.getProperty("ExternalDoctypes").trim() ; //FIXME: Get rid of, if possible.
 	log.log(Log.INFO, "ExternalDoctypes: " + externalDocTypes) ;
 	    
-	m_Language          = props.getProperty("DefaultLanguage") ; //FIXME: Get from DB
+	m_Language          = props.getProperty("DefaultLanguage").trim() ; //FIXME: Get from DB
 	log.log(Log.INFO, "DefaultLanguage: " + m_Language) ;
 	    
 	    
