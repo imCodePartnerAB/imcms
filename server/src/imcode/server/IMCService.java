@@ -21,6 +21,8 @@ import imcode.server.parser.* ;
 import imcode.util.FileCache ;
 import imcode.util.fortune.* ;
 
+import imcode.readrunner.* ;
+
 import org.apache.log4j.* ;
 
 /**
@@ -1234,7 +1236,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	if ( data != null ) {
 	    String result[] = new String[data.size()] ;
 	    for ( int i = 0 ; i < data.size() ; i++ ) {
-		result[i] = data.elementAt(i).toString() ;
+		result[i] =
+		    null != data.elementAt(i)
+		    ? data.elementAt(i).toString()
+		    : null ;
 	    }
 	    return result ;
 	}
@@ -1281,7 +1286,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	if ( data != null ) {
 	    String result[] = new String[data.size()] ;
 	    for ( int i = 0 ; i < data.size() ; i++ ) {
-		result[i] = data.elementAt(i).toString() ;
+		result[i] =
+		    null != data.elementAt(i)
+		    ? data.elementAt(i).toString()
+		    : null ;
 	    }
 	    return result ;
 	}
@@ -2828,6 +2836,78 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    return null ;
 	}
 	return new Template(Integer.parseInt(textdoc_data[0]), textdoc_data[1]) ;
+    }
+
+    /**
+       Get the readrunner-user-data for a user
+       @param user The id of the user
+       @return     The readrunner-user-data for a user, or null if the user had none.
+    **/
+    public ReadrunnerUserData getReadrunnerUserData(User user) {
+	int userId = user.getUserId() ;
+	String[] dbData = sqlProcedure("GetReadrunnerUserDataForUser", new String[] {String.valueOf(userId)}) ;
+	if (0 == dbData.length) {
+	    // There was no readrunner-user-data
+	    return null ;
+	}
+
+	// Create the ReadrunnerUserData-object
+	ReadrunnerUserData rrUserData = new ReadrunnerUserData() ;
+	try {
+	    // Fill it with data from the DB
+	    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd") ;
+	    rrUserData.setUses                       ( Integer.parseInt(dbData[0]) ) ;
+	    rrUserData.setMaxUses                    ( Integer.parseInt(dbData[1]) ) ;
+	    /* rrUserData.setMaxUsesWarningThreshold    ( Integer.parseInt(dbData[2]) ) ; */
+	    if (null != dbData[3]) {
+		rrUserData.setExpiryDate                 ( dateFormat.parse(dbData[3]) ) ;
+	    } else {
+		rrUserData.setExpiryDate(null) ;
+	    }
+	    /* rrUserData.setExpiryDateWarningThreshold ( Integer.parseInt(dbData[4]) ) ; */
+	    // Return it
+	    return rrUserData ;
+	} catch (NumberFormatException nfe) {
+	    log.error("GetReadrunnerUserData returned malformed integer-data.", nfe) ;
+	    throw nfe ;
+	} catch (ParseException pe) {
+	    log.error("GetReadrunnerUserData returned malformed date-data: '"+dbData[3]+"'", pe) ;
+	    throw new RuntimeException("GetReadrunnerUserData returned malformed date-data: '"+dbData[3]+"'") ;
+	}
+    }
+
+    /**
+       Set the readrunner-user-data for a user
+       @param user       The user
+       @param rrUserData The ReadrunnerUserData-object
+    **/
+    public void setReadrunnerUserData(User user, ReadrunnerUserData rrUserData) {
+	int userId = user.getUserId() ;
+
+	String expiryDateString =
+	    null != rrUserData.getExpiryDate()
+	    ? new SimpleDateFormat("yyyy-MM-dd").format(rrUserData.getExpiryDate())
+	    : null ;
+
+	sqlUpdateProcedure("SetReadrunnerUserDataForUser",
+			   new String[] {
+			       ""+userId,
+			       ""+rrUserData.getUses(),
+			       ""+rrUserData.getMaxUses(),
+			       ""+rrUserData.getMaxUsesWarningThreshold(),
+			       expiryDateString,
+			       ""+rrUserData.getExpiryDateWarningThreshold(),
+			   }
+			   ) ;
+    }
+
+    /**
+       Increment the readrunner-uses for a user
+       @param userId     The user
+    **/
+    public void incrementReadrunnerUsesForUser(User user) {
+	int userId = user.getUserId() ;
+	sqlUpdateProcedure("IncrementReadrunnerUsesForUser", new String[] {""+userId}) ;
     }
 
 }

@@ -53,7 +53,7 @@ public class Document implements IMCConstants {
 	    setMetaId( Integer.parseInt(result[0]));
 	    setDocumentType(Integer.parseInt(result[2]));
 	} catch(NumberFormatException nfe) {
-	    throw new SQLException("SQL: GetDocumentInfo "+meta_id+" returned corrupt data! "+nfe.toString());
+	    throw new SQLException("SQL: GetDocumentInfo "+meta_id+" returned corrupt data! '"+result[0]+"' '"+result[2]+"'");
 	}
 	setHeadline(result[3]);
 	setText(result[4]);
@@ -66,22 +66,30 @@ public class Document implements IMCConstants {
 
 	try {
 	    setCreatedDatetime(dateform.parse(result[16]));
-	}catch(java.text.ParseException pe) {
+	} catch (NullPointerException npe) {
+	    setCreatedDatetime(null);
+	} catch (java.text.ParseException pe) {
 	    setCreatedDatetime(null);
 	}
 	try {
 	    setModifiedDatetime(dateform.parse(result[17]));
-	}catch(java.text.ParseException pe) {
+	} catch (NullPointerException npe) {
+	    setModifiedDatetime(null);
+	} catch (java.text.ParseException pe) {
 	    setModifiedDatetime(null);
 	}
 	try {
 	    setActivatedDatetime(dateform.parse(result[23]));
-	}catch(java.text.ParseException pe) {
+	} catch (NullPointerException npe) {
+	    setActivatedDatetime(null);
+	} catch (java.text.ParseException pe) {
 	    setActivatedDatetime(null);
 	}
 	try {
 	    setArchivedDatetime(dateform.parse(result[24]));
-	}catch(java.text.ParseException pe) {
+	} catch (NullPointerException npe) {
+	    setArchivedDatetime(null);
+	} catch (java.text.ParseException pe) {
 	    setArchivedDatetime(null);
 	}
 	if (getDocumentType()==DOCTYPE_FILE) {

@@ -1,9 +1,11 @@
 import imcode.server.parser.* ;
 import imcode.server.* ;
 import imcode.util.* ;
+import imcode.readrunner.* ;
 
 import java.io.* ;
 import java.util.* ;
+import java.text.* ;
 
 import javax.servlet.* ;
 import javax.servlet.http.* ;
@@ -48,6 +50,7 @@ public class Readrunner extends HttpServlet {
 
 	    Writer out = res.getWriter() ;
 
+	    // Stream the file
 	    BufferedReader fileReader = new BufferedReader(new FileReader(downloadFile)) ;
 	    int read = 0 ;
 	    char[] buf = new char[32768] ;
@@ -57,6 +60,34 @@ public class Readrunner extends HttpServlet {
 	    out.flush() ;
 
 	} else {
+	    ReadrunnerUserData rrUserData = imcref.getReadrunnerUserData(user) ;
+
+	    // If the max-uses value is 0, the limit is disabled.
+	    boolean uses_expired = (0 != rrUserData.getMaxUses()) && (rrUserData.getUses() >= rrUserData.getMaxUses()) ;
+
+	    // We add one day to the expiry-date since it's an inclusive range,
+	    // not an exclusive one.
+	    final int ONE_DAY = 86400000 ;
+	    // If the expiry-date is null, it is disabled.
+	    boolean date_expired = (null != rrUserData.getExpiryDate()) && (new Date().after(new Date(rrUserData.getExpiryDate().getTime()+ONE_DAY))) ;
+
+	    if (uses_expired) {
+		Writer out = res.getWriter() ;
+		ArrayList tags = new ArrayList(2) ;
+		tags.add("#max_uses#") ; tags.add(""+rrUserData.getMaxUses()) ;
+
+		out.write(imcref.parseDoc(tags,"readrunner/expired_uses.html", user.getLangPrefix())) ;
+		return ;
+	    } else if (date_expired) {
+		Writer out = res.getWriter() ;
+		ArrayList tags = new ArrayList(2) ;
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd") ;
+		tags.add("#expiry_date#") ; tags.add(dateFormat.format(rrUserData.getExpiryDate())) ;
+
+		out.write(imcref.parseDoc(tags,"readrunner/expired_date.html", user.getLangPrefix())) ;
+		return ;
+	    }
+
 	    String theText = req.getParameter("text") ;
 	    if (null == theText) {
 		theText = "" ;
@@ -69,7 +100,7 @@ public class Readrunner extends HttpServlet {
 	    String theFilteredText = readrunnerFilter.filter(theText,new Perl5Matcher(), readrunnerParameters) ;
 
 	    // Create a temporary file to write to
-	    Random rand = new Random() ;
+	    Random rand = new Random() ;  // Use a random number to make it hard to guess the filenames.
 	    File tempFile = File.createTempFile("readrunner"+rand.nextInt(),".html",readrunnerPath) ;
 
 	    // Set up replacement of a couple of #tags#
@@ -102,11 +133,13 @@ public class Readrunner extends HttpServlet {
 	    fileOut.write(theReadrunnedPage) ;
 	    fileOut.close() ;
 
+	    imcref.incrementReadrunnerUsesForUser(user) ;
+
 	    // and redirect to the temporary file
 	    res.sendRedirect(readrunnerUrl+tempFile.getName()) ;
+
 	}
     }
-
 
     public static ReadrunnerParameters getReadrunnerParameters(HttpServletRequest req) {
 	Cookie[] cookies = req.getCookies() ;

@@ -397,10 +397,12 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		childIt.next() ;                                                     // Ignored. The target frame for this document. Replaced by 'target'.
 		try {
 		    menuItem.setActivatedDatetime(DATETIMEFORMAT.parse((String)childIt.next())) ; // The datetime the child will be/was activated
-		} catch ( java.text.ParseException ignored ) {}
+		} catch ( NullPointerException ignored ) {
+		} catch ( ParseException ignored ) {}
 		try {
 		    menuItem.setArchivedDatetime(DATETIMEFORMAT.parse((String)childIt.next())) ; // The datetime the child will be/was archived
-		} catch ( java.text.ParseException ignored ) {}
+		} catch ( NullPointerException ignored ) {
+		} catch ( ParseException ignored ) {}
 		menuItem.setEditable("0".equals((String)childIt.next())) ;           // if the user may admin it.
 		menuItem.setFilename((String)childIt.next()) ;                       // The filename, if it is a file-doc.
 

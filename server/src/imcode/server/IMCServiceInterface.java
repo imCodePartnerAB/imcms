@@ -3,6 +3,7 @@ package imcode.server ;
 import java.io.* ;
 import java.util.* ;
 import imcode.server.parser.ParserParameters ;
+import imcode.readrunner.* ;
 
 /**
  * Interface for the Imcode Net Server.
@@ -348,5 +349,10 @@ public interface IMCServiceInterface {
     public Template getTemplate(int meta_id) ;
 
     public boolean checkAdminRights(imcode.server.User user) ;
+    public void setReadrunnerUserData(User user, ReadrunnerUserData rrUserData) ;
+
+    public ReadrunnerUserData getReadrunnerUserData(User user) ;
+
+    public void incrementReadrunnerUsesForUser(User user) ;
 
 }

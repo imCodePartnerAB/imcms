@@ -149,13 +149,11 @@ public class DBConnect {
 	    while ( rs.next() ) {
 		for ( int i = 1 ; i <= columnCount; i++ ) {
 		    String s = rs.getString(i) ;
-		    if (s == null) {
-			s = "" ;
-		    }
-		    if ( trimStr )
+		    if ( null != s && trimStr ) {
 			results.addElement(s.trim()) ;
-		    else
+		    } else {
 			results.addElement(s) ;
+		    }
 		}
 	    }
 
@@ -263,12 +261,9 @@ public class DBConnect {
 	try {
 	    cs = con.prepareCall(strProcedure) ;
 	    for ( int i=0 ; i<params.length ; ++i ) {
-		if (params[i] == null) {
-		    throw new NullPointerException("DBConnect.setProcedure() params["+i+"] == null") ;
-		}
 		cs.setString(i+1,params[i]) ;
 	    }
-	} catch (Exception ex) {
+	} catch (SQLException ex) {
 	    String paramstr = "" ;
 	    for ( int i=0 ; i<params.length ; ) {
 		paramstr += params[i] ;

@@ -558,7 +558,7 @@
 	  description="Copies and filters the admintemplates for one language">
 
     <mkdir dir="${admintemplates}"/>
-	<mkdir dir="${searchtemplates}"/>
+    <mkdir dir="${searchtemplates}"/>
 
     <copy todir="${admintemplates}/adminbuttons" filtering="true">
       <fileset dir="templates/${srclanguage}/adminbuttons"/>
@@ -1104,6 +1104,9 @@
 	  <copy todir="${readrunner}" filtering="true">
 	    <fileset dir="install/htdocs/sv/readrunner" excludes="*.jpg,*.gif"/>
 	  </copy>
+
+	  <copy todir="${templates}/se/admin" filtering="true"
+	        file="templates/sv/readrunner/AdminUserResp.htm"/>
 
 	  <mkdir dir="${readrunner}/preparsed"/>
   </target>
