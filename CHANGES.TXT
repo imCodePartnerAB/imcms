@@ -157,6 +157,7 @@ Version 2.0.0
     * Removed table "roles_permissions", no longer needed. (Bug 2705)
     * All users are now always considered to have the "Users" role regardless of what the database says. (Bug 2770)
     * Made an ant-target "distcheck" for verifying that the source distribution is buildable. (Bug 2774)
+    * Made it easier to build with LDAP enabled (Bug 2818)
 
 
 Version 1.11.1

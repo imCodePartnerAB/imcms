@@ -164,7 +164,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
         Authenticator externalAuthenticator = null;
         UserAndRoleRegistry externalUserAndRoleRegistry = null;
 
-        if ( null != externalAuthenticatorName && null != externalUserAndRoleMapperName ) {
+        boolean externalAuthenticatorIsSet = StringUtils.isNotBlank( externalAuthenticatorName ) ;
+        boolean externalUserAndRoleRegistryIsSet = StringUtils.isNotBlank( externalUserAndRoleMapperName ) ;
+        if ( externalAuthenticatorIsSet && externalUserAndRoleRegistryIsSet ) {
             log.info( "ExternalAuthenticator: " + externalAuthenticatorName );
             log.info( "ExternalUserAndRoleMapper: " + externalUserAndRoleMapperName );
             externalAuthenticator =
@@ -176,7 +178,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
                 externalAuthenticator = null;
                 externalUserAndRoleRegistry = null;
             }
-        } else if ( null == externalAuthenticatorName && null == externalUserAndRoleMapperName ) {
+        } else if ( !externalAuthenticatorIsSet && !externalUserAndRoleRegistryIsSet ) {
             log.info( "ExternalAuthenticator not set." );
             log.info( "ExternalUserAndRoleMapper not set." );
         } else {

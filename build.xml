@@ -568,6 +568,9 @@
         <filter token="db-pass" value="${db-pass}"/>
         <filter token="db-maxconnections" value="${db-maxconnections}"/>
 
+        <filter token="external-authenticator" value="${external-authenticator}"/>
+        <filter token="external-user-and-role-registry" value="${external-user-and-role-registry}"/>
+
         <filter token="ldap-url" value="${ldap-url}"/>
         <filter token="ldap-bind-dn" value="${ldap-bind-dn}"/>
         <filter token="ldap-password" value="${ldap-password}"/>

@@ -34,6 +34,9 @@ db-url-without-db-name = jdbc:jtds:sqlserver://${db-host}:${db-port}/;AppName=im
 db-url = ${db-url-without-db-name};DatabaseName=${db-name}
 
 
+external-authenticator =
+external-user-and-role-registry =
+
 # LDAP-authentication-parameters
 
 ldap-url = ldap://localhost:389/CN=Users,DC=example,DC=com
