@@ -581,6 +581,22 @@
     </target>
 
 
+    <target name="check-language-properties-in-use" depends="init,check-junit-task-available,tools"
+            unless="no-junit-task-available" description="Test that there are no superfluos language properties.">
+
+        <junit haltonerror="yes" haltonfailure="yes" fork="yes" dir="${basedir}">
+            <classpath path="tools/build">
+                <path refid="libraries"/>
+            </classpath>
+
+            <formatter type="brief" usefile="false"/>
+
+            <test name="imcode.buildtests.TestLanguagePropertiesInUse"/>
+        </junit>
+
+    </target>
+
+
     <target name="check-web-xml-valid">
         <xmlvalidate file="web/WEB-INF/web.xml" classpathref="libraries"  >
                 <dtd
