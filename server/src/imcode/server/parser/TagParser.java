@@ -837,7 +837,7 @@ class TagParser {
         while ( patternMatcher.contains( attributes_input, ATTRIBUTES_PATTERN ) ) {
             MatchResult attribute_matres = patternMatcher.getMatch();
             String escapedValue = attribute_matres.group( 3 );
-            escapedValue = escapedValue.replaceAll( "&contextpath;", request.getContextPath() ) ;
+            escapedValue = escapedValue.replaceAll( "\\$request\\.getContextPath\\(\\)", request.getContextPath() ) ;
             attributes.setProperty( attribute_matres.group( 1 ), StringEscapeUtils.unescapeHtml( escapedValue ) );
         }
 

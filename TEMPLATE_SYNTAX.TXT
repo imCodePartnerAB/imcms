@@ -4,8 +4,7 @@ Tags used in text templates
         * pre - Inserted before the tag content if non-empty.
         * post - Inserted after the tag content if non-empty.
 
-    All attributes allow html-entities, like "&#39;", "&lt;" or "&quot;", and also
-    a special entity "&contextpath;", which gets replaced by the current webapp path.
+    All attributes allow html-entities, like "&#39;", "&lt;" or "&quot;".
 
 
 Block-tags
