@@ -81,6 +81,7 @@
     <property file="${build.properties}"/>
 
     <!-- URIs -->
+    <property name="apiuri"                   value="${rooturl}/apisamples"/>
     <property name="servleturl"               value="${rooturl}/servlet"/>
     <property name="loginurl"                 value="${rooturl}/login"/>
     <property name="imageurl"                 value="${rooturl}/images"/>
@@ -194,6 +195,7 @@
             description="Defines global filters.">
 
         <!-- Global filters -->
+        <filter token="apiuri"              value="${apiuri}"/>   
         <filter token="defaultlanguage"     value="${defaultlanguage}"/>
         <filter token="rooturl"             value="${rooturl}"/>
         <filter token="servleturl"          value="${servleturl}"/>
@@ -644,7 +646,7 @@
                     <exclude name="*.gif"/>
                 </patternset>
             </fileset>
-            
+
         </imtranslate>
 
         <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
