@@ -1,6 +1,5 @@
 package imcode.server.document;
 
-import imcode.server.*;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.LanguageMapper;
@@ -14,7 +13,6 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.IdNamePair;
 import imcode.util.InputStreamSource;
-import imcode.util.Utility;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
@@ -25,8 +23,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DocumentMapper {
 
@@ -84,14 +82,14 @@ public class DocumentMapper {
 
     private boolean userIsSuperAdminOrFullAdminOnDocument( UserDomainObject user, DocumentDomainObject parent ) {
         return user.isSuperAdmin()
-                || userHasAtLeastPermissionSetIdOnDocument( user, DocumentPermissionSetDomainObject.TYPE_ID__FULL, parent );
+               || userHasAtLeastPermissionSetIdOnDocument( user, DocumentPermissionSetDomainObject.TYPE_ID__FULL, parent );
     }
 
     public int getUsersPermissionBitsOnDocumentIfRestricted( int user_permission_set_id,
                                                              DocumentDomainObject document ) {
         int user_permission_set = 0;
         if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == user_permission_set_id
-                || DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == user_permission_set_id ) {
+             || DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == user_permission_set_id ) {
             String sqlSelectPermissionBits = "SELECT permission_id FROM doc_permission_sets WHERE meta_id = ? AND set_id = ?";
             String permissionBitsString = service.sqlQueryStr( sqlSelectPermissionBits, new String[]{
                 "" + document.getId(), "" + user_permission_set_id
@@ -106,7 +104,7 @@ public class DocumentMapper {
     private Integer[] getDocumentTypeIdsCreatableByRestrictedPermissionSetIdOnDocument( int restrictedPermissionSetId,
                                                                                         DocumentDomainObject document ) {
         String sqlStr = "SELECT permission_data FROM doc_permission_sets_ex\n"
-                + "WHERE meta_id = ? AND set_id = ? AND permission_id = " + IMCConstants.PERM_CREATE_DOCUMENT;
+                        + "WHERE meta_id = ? AND set_id = ? AND permission_id = " + IMCConstants.PERM_CREATE_DOCUMENT;
         String[] documentTypeIdStrings = service.sqlQuery( sqlStr, new String[]{
             "" + document.getId(), "" + restrictedPermissionSetId
         } );
@@ -143,7 +141,7 @@ public class DocumentMapper {
         int mostPrivilegedPermissionSetIdFoundYet = DocumentPermissionSetDomainObject.TYPE_ID__NONE;
         for ( int i = 0; i < usersRoles.length; i++ ) {
             RoleDomainObject usersRole = usersRoles[i];
-            Integer permissionSetId = ((Integer) rolesMappedToPermissionSetIds.get( usersRole ));
+            Integer permissionSetId = ( (Integer)rolesMappedToPermissionSetIds.get( usersRole ) );
             if ( null != permissionSetId && permissionSetId.intValue() < mostPrivilegedPermissionSetIdFoundYet ) {
                 mostPrivilegedPermissionSetIdFoundYet = permissionSetId.intValue();
                 if ( DocumentPermissionSetDomainObject.TYPE_ID__FULL == mostPrivilegedPermissionSetIdFoundYet ) {
@@ -162,8 +160,8 @@ public class DocumentMapper {
         DocumentDomainObject newDocument;
         try {
             if ( DocumentDomainObject.DOCTYPE_TEXT == documentTypeId ) {
-                newDocument = (DocumentDomainObject) parent.clone();
-                TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject) newDocument;
+                newDocument = (DocumentDomainObject)parent.clone();
+                TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject)newDocument;
                 newTextDocument.removeAllTexts();
                 newTextDocument.removeAllImages();
                 newTextDocument.removeAllIncludes();
@@ -181,7 +179,7 @@ public class DocumentMapper {
                 }
             } else {
                 newDocument = DocumentDomainObject.fromDocumentTypeId( documentTypeId );
-                newDocument.setAttributes( (DocumentDomainObject.Attributes) parent.getAttributes().clone() );
+                newDocument.setAttributes( (DocumentDomainObject.Attributes)parent.getAttributes().clone() );
             }
         } catch ( CloneNotSupportedException e ) {
             throw new RuntimeException( e );
@@ -220,9 +218,9 @@ public class DocumentMapper {
 
     public CategoryDomainObject[] getAllCategoriesOfType( CategoryTypeDomainObject categoryType ) {
         String sqlQuery = "SELECT categories.category_id, categories.name, categories.description, categories.image\n"
-                + "FROM categories\n"
-                + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
-                + "WHERE categories.category_type_id = ?";
+                          + "FROM categories\n"
+                          + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
+                          + "WHERE categories.category_type_id = ?";
         String[][] sqlResult = service.sqlQueryMulti( sqlQuery, new String[]{"" + categoryType.getId()} );
         CategoryDomainObject[] categoryDomainObjects = new CategoryDomainObject[sqlResult.length];
         for ( int i = 0; i < sqlResult.length; i++ ) {
@@ -232,7 +230,7 @@ public class DocumentMapper {
             String categoryImage = sqlResult[i][3];
 
             categoryDomainObjects[i] =
-                    new CategoryDomainObject( categoryId, categoryName, categoryDescription, categoryImage, categoryType );
+            new CategoryDomainObject( categoryId, categoryName, categoryDescription, categoryImage, categoryType );
         }
         return categoryDomainObjects;
     }
@@ -277,11 +275,11 @@ public class DocumentMapper {
 
     public CategoryDomainObject getCategory( CategoryTypeDomainObject categoryType, String categoryName ) {
         String sqlQuery = "SELECT categories.category_id, categories.name, categories.description, categories.image\n"
-                + "FROM categories\n"
-                + "JOIN category_types\n"
-                + "ON categories.category_type_id = category_types.category_type_id\n"
-                + "WHERE category_types.name = ?\n"
-                + "AND categories.name = ?";
+                          + "FROM categories\n"
+                          + "JOIN category_types\n"
+                          + "ON categories.category_type_id = category_types.category_type_id\n"
+                          + "WHERE category_types.name = ?\n"
+                          + "AND categories.name = ?";
         String[] sqlResult = service.sqlQuery( sqlQuery, new String[]{categoryType.getName(), categoryName} );
         if ( 0 != sqlResult.length ) {
             final int categoryId = Integer.parseInt( sqlResult[0] );
@@ -290,7 +288,7 @@ public class DocumentMapper {
             final String categoryImge = sqlResult[3];
 
             return new CategoryDomainObject( categoryId, categoryNameFromDb, categoryDescription, categoryImge,
-                    categoryType );
+                                             categoryType );
         } else {
             return null;
         }
@@ -298,9 +296,9 @@ public class DocumentMapper {
 
     public CategoryDomainObject getCategoryById( int categoryId ) {
         String sqlQuery = "SELECT categories.name, categories.description, categories.image, category_types.category_type_id, category_types.name, category_types.max_choices\n"
-                + "FROM categories\n"
-                + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
-                + "WHERE categories.category_id = ?";
+                          + "FROM categories\n"
+                          + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
+                          + "WHERE categories.category_id = ?";
 
         String[] categorySqlResult = service.sqlQuery( sqlQuery, new String[]{"" + categoryId} );
 
@@ -313,7 +311,7 @@ public class DocumentMapper {
             int categoryTypeMaxChoices = Integer.parseInt( categorySqlResult[5] );
 
             CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject( categoryTypeId, categoryTypeName,
-                    categoryTypeMaxChoices );
+                                                                                  categoryTypeMaxChoices );
 
             return new CategoryDomainObject( categoryId, categoryName, categoryDescription, categoryImage, categoryType );
         } else {
@@ -323,8 +321,8 @@ public class DocumentMapper {
 
     public CategoryTypeDomainObject getCategoryType( String categoryTypeName ) {
         String sqlStr = "SELECT category_types.category_type_id, category_types.name, category_types.max_choices\n"
-                + "FROM category_types\n"
-                + "WHERE category_types.name = ?";
+                        + "FROM category_types\n"
+                        + "WHERE category_types.name = ?";
         String[] sqlResult = service.sqlQuery( sqlStr, new String[]{categoryTypeName} );
 
         if ( null == sqlResult || 0 == sqlResult.length ) {
@@ -428,9 +426,9 @@ public class DocumentMapper {
     public void initLazilyLoadedRolesMappedToDocumentPermissionSetIds( DocumentDomainObject document ) {
 
         String[][] sprocResult = service.sqlQueryMulti( "SELECT  r.role_id, r.role_name, r.admin_role, rr.set_id\n"
-                + "FROM  roles AS r, roles_rights AS rr\n"
-                + "WHERE rr.role_id = r.role_id AND rr.meta_id = ?",
-                new String[]{"" + document.getId()} );
+                                                        + "FROM  roles AS r, roles_rights AS rr\n"
+                                                        + "WHERE rr.role_id = r.role_id AND rr.meta_id = ?",
+                                                        new String[]{"" + document.getId()} );
 
         for ( int i = 0; i < sprocResult.length; ++i ) {
             int roleId = Integer.parseInt( sprocResult[i][0] );
@@ -447,7 +445,7 @@ public class DocumentMapper {
     public void initLazilyLoadedTextDocumentAttributes( TextDocumentDomainObject document ) {
         // all from the table text_doc
         String[] sqlResult = service.sqlQuery( "SELECT template_id, group_id, default_template_1, default_template_2 FROM text_docs WHERE meta_id = ?",
-                new String[]{String.valueOf( document.getId() )} );
+                                               new String[]{String.valueOf( document.getId() )} );
         if ( sqlResult.length >= 4 ) {
             int template_id = Integer.parseInt( sqlResult[0] );
             int group_id = Integer.parseInt( sqlResult[1] );
@@ -564,13 +562,13 @@ public class DocumentMapper {
 
     public static String[] sqlGetFromFileDocs( IMCServiceInterface service, int metaId ) {
         String[] sqlResult = service.sqlQuery( "SELECT filename, mime FROM fileupload_docs WHERE meta_id = ?",
-                new String[]{"" + metaId} );
+                                               new String[]{"" + metaId} );
         return sqlResult;
     }
 
     private String sqlGetFromUrlDocs( IMCServiceInterface service, int metaId ) {
         String[] sqlResult = service.sqlQuery( "SELECT url_ref FROM url_docs WHERE meta_id = ?",
-                new String[]{"" + metaId} );
+                                               new String[]{"" + metaId} );
         if ( sqlResult.length > 0 ) {
             return sqlResult[0];
         } else {
@@ -580,7 +578,7 @@ public class DocumentMapper {
 
     public SectionDomainObject getSectionById( int sectionId ) {
         String sectionName = service.sqlQueryStr( "SELECT section_name FROM sections WHERE section_id = ?",
-                new String[]{"" + sectionId} );
+                                                  new String[]{"" + sectionId} );
         if ( null == sectionName ) {
             return null;
         }
@@ -592,7 +590,7 @@ public class DocumentMapper {
      */
     private SectionDomainObject[] getSections( int meta_id ) {
         String[][] sectionData = service.sqlProcedureMulti( SPROC_SECTION_GET_INHERIT_ID,
-                new String[]{String.valueOf( meta_id )} );
+                                                            new String[]{String.valueOf( meta_id )} );
 
         SectionDomainObject[] sections = new SectionDomainObject[sectionData.length];
 
@@ -646,8 +644,8 @@ public class DocumentMapper {
 
     public boolean userHasPermissionToAddDocumentToAnyMenu( UserDomainObject user, DocumentDomainObject document ) {
         return user.isSuperAdmin()
-                || userHasMoreThanReadPermissionOnDocument( user, document )
-                || document.isLinkableByOtherUsers();
+               || userHasMoreThanReadPermissionOnDocument( user, document )
+               || document.isLinkableByOtherUsers();
     }
 
     public void removeInclusion( int includingMetaId, int includeIndex ) {
@@ -683,7 +681,7 @@ public class DocumentMapper {
                 in = inputStreamSource.getInputStream();
             } catch ( FileNotFoundException e ) {
                 throw new RuntimeException( "The file for filedocument " + fileDocument.getId()
-                        + " has disappeared." );
+                                            + " has disappeared." );
             }
             if ( null == in ) {
                 return;
@@ -699,7 +697,7 @@ public class DocumentMapper {
             byte[] buffer = new byte[FILE_BUFFER_LENGTH];
             final OutputStream out = new FileOutputStream( file );
             try {
-                for ( int bytesRead = 0; -1 != (bytesRead = in.read( buffer )); ) {
+                for ( int bytesRead = 0; -1 != ( bytesRead = in.read( buffer ) ); ) {
                     out.write( buffer, 0, bytesRead );
                 }
             } finally {
@@ -722,8 +720,8 @@ public class DocumentMapper {
 
         String sqlPlaceHolders = "?" + StringUtils.repeat( ",?", metaColumnNames.length - 1 );
         String sqlStr = "INSERT INTO meta (" + StringUtils.join( metaColumnNames, "," ) + ") VALUES ("
-                + sqlPlaceHolders
-                + ") SELECT @@IDENTITY";
+                        + sqlPlaceHolders
+                        + ") SELECT @@IDENTITY";
         List sqlColumnValues = new ArrayList();
         sqlColumnValues.add( document.getDocumentTypeId() + "" );
         sqlColumnValues.add( document.getHeadline() );
@@ -745,7 +743,7 @@ public class DocumentMapper {
         sqlColumnValues.add( makeSqlStringFromDate( document.getPublicationStartDatetime() ) );
         sqlColumnValues.add( makeSqlStringFromDate( document.getPublicationEndDatetime() ) );
 
-        String metaIdStr = service.sqlQueryStr( sqlStr, (String[]) sqlColumnValues.toArray( new String[sqlColumnValues.size()] ) );
+        String metaIdStr = service.sqlQueryStr( sqlStr, (String[])sqlColumnValues.toArray( new String[sqlColumnValues.size()] ) );
         final int metaId = Integer.parseInt( metaIdStr );
         return metaId;
     }
@@ -754,12 +752,12 @@ public class DocumentMapper {
         String sqlTextDocsInsertStr = "INSERT INTO text_docs (meta_id, template_id, group_id, default_template_1, default_template_2) VALUES (?,?,?,?,?)";
         TemplateDomainObject textDocumentTemplate = textDocument.getTemplate();
         service.sqlUpdateQuery( sqlTextDocsInsertStr,
-                new String[]{
-                    "" + textDocument.getId(), "" + textDocumentTemplate.getId(),
-                    "" + textDocument.getTemplateGroupId(),
-                    "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetOne(),
-                    "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo()
-                } );
+                                new String[]{
+                                    "" + textDocument.getId(), "" + textDocumentTemplate.getId(),
+                                    "" + textDocument.getTemplateGroupId(),
+                                    "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetOne(),
+                                    "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo()
+                                } );
 
         updateTextDocumentTexts( textDocument );
         updateTextDocumentImages( textDocument, user );
@@ -804,8 +802,8 @@ public class DocumentMapper {
 
         Map browserDocumentMap = document.getBrowserDocumentIdMap();
         for ( Iterator iterator = browserDocumentMap.keySet().iterator(); iterator.hasNext(); ) {
-            BrowserDocumentDomainObject.Browser browser = (BrowserDocumentDomainObject.Browser) iterator.next();
-            Integer metaIdForBrowser = (Integer) browserDocumentMap.get( browser );
+            BrowserDocumentDomainObject.Browser browser = (BrowserDocumentDomainObject.Browser)iterator.next();
+            Integer metaIdForBrowser = (Integer)browserDocumentMap.get( browser );
             service.sqlUpdateQuery( sqlBrowserDocsInsertStr, new String[]{
                 "" + document.getId(), "" + metaIdForBrowser, "" + browser.getId()
             } );
@@ -814,7 +812,7 @@ public class DocumentMapper {
 
     private String makeSqlInsertString( String tableName, String[] columnNames ) {
         return "INSERT INTO " + tableName + " (" + StringUtils.join( columnNames, "," ) + ")"
-                + "VALUES(?" + StringUtils.repeat( ",?", columnNames.length - 1 ) + ")";
+               + "VALUES(?" + StringUtils.repeat( ",?", columnNames.length - 1 ) + ")";
     }
 
     private String makeSqlStringFromBoolean( final boolean bool ) {
@@ -827,31 +825,33 @@ public class DocumentMapper {
             return; // TODO: More specific check needed. Throw exception ?
         }
 
-        checkMaxDocumentCategoriesOfType( document );
+        try {
+            checkMaxDocumentCategoriesOfType( document );
 
-        sqlUpdateMeta( document );
+            sqlUpdateMeta( document );
 
-        updateDocumentSections( document.getId(), document.getSections() );
+            updateDocumentSections( document.getId(), document.getSections() );
 
-        updateDocumentCategories( document );
+            updateDocumentCategories( document );
 
-        updateDocumentRolePermissions( document );
+            updateDocumentRolePermissions( document );
 
-        updateDocumentKeywords( document.getId(), document.getKeywords() );
+            updateDocumentKeywords( document.getId(), document.getKeywords() );
 
-        DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
-        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets( document );
+            DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
+            documentPermissionSetMapper.saveRestrictedDocumentPermissionSets( document );
 
-        document.saveDocument( this, user );
-
-        touchDocument( document );
+            document.saveDocument( this, user );
+        } finally {
+            touchDocument( document );
+        }
     }
 
     private void updateDocumentRolePermissions( DocumentDomainObject document ) {
         for ( Iterator it = document.getRolesMappedToPermissionSetIds().entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry rolePermissionTuple = (Map.Entry) it.next();
-            RoleDomainObject role = (RoleDomainObject) rolePermissionTuple.getKey();
-            int permissionSetId = ((Integer) rolePermissionTuple.getValue()).intValue();
+            Map.Entry rolePermissionTuple = (Map.Entry)it.next();
+            RoleDomainObject role = (RoleDomainObject)rolePermissionTuple.getKey();
+            int permissionSetId = ( (Integer)rolePermissionTuple.getValue() ).intValue();
             sprocSetRoleDocPermissionSetId( service, document.getId(), role.getId(), permissionSetId );
         }
         // TODO Restricted One and Two (Bug 1443)
@@ -866,9 +866,9 @@ public class DocumentMapper {
             CategoryDomainObject[] documentCategoriesOfType = document.getCategoriesOfType( categoryType );
             if ( UNLIMITED_MAX_CATEGORY_CHOICES != maxChoices && documentCategoriesOfType.length > maxChoices ) {
                 throw new MaxCategoryDomainObjectsOfTypeExceededException( "Document may have at most " + maxChoices
-                        + " categories of type '"
-                        + categoryType.getName()
-                        + "'" );
+                                                                           + " categories of type '"
+                                                                           + categoryType.getName()
+                                                                           + "'" );
             }
         }
     }
@@ -885,7 +885,7 @@ public class DocumentMapper {
     private void addCategoryToDocument( CategoryDomainObject category, DocumentDomainObject document ) {
         int categoryId = category.getId();
         service.sqlUpdateQuery( "INSERT INTO document_categories (meta_id, category_id) VALUES(?,?)",
-                new String[]{"" + document.getId(), "" + categoryId} );
+                                new String[]{"" + document.getId(), "" + categoryId} );
     }
 
     public String[] getAllDocumentsOfOneCategory( CategoryDomainObject category ) {
@@ -898,12 +898,12 @@ public class DocumentMapper {
 
     private void removeAllCategoriesFromDocument( DocumentDomainObject document ) {
         service.sqlUpdateQuery( "DELETE FROM document_categories WHERE meta_id = ?",
-                new String[]{"" + document.getId()} );
+                                new String[]{"" + document.getId()} );
     }
 
     public void deleteOneCategoryFromDocument( DocumentDomainObject document, CategoryDomainObject category ) {
         service.sqlUpdateQuery( "DELETE FROM document_categories WHERE meta_id = ? and category_id = ?",
-                new String[]{document.getId() + "", category.getId() + ""} );
+                                new String[]{document.getId() + "", category.getId() + ""} );
     }
 
     private void sqlUpdateMeta( DocumentDomainObject document ) {
@@ -920,7 +920,7 @@ public class DocumentMapper {
         makeDateSqlUpdateClause( "archived_datetime", document.getArchivedDatetime(), sqlUpdateColumns, sqlUpdateValues );
         makeDateSqlUpdateClause( "date_created", document.getCreatedDatetime(), sqlUpdateColumns, sqlUpdateValues );
         String headlineThatFitsInDB = headline.substring( 0,
-                Math.min( headline.length(), META_HEADLINE_MAX_LENGTH - 1 ) );
+                                                          Math.min( headline.length(), META_HEADLINE_MAX_LENGTH - 1 ) );
         makeStringSqlUpdateClause( "meta_headline", headlineThatFitsInDB, sqlUpdateColumns, sqlUpdateValues );
         makeStringSqlUpdateClause( "meta_image", document.getMenuImage(), sqlUpdateColumns, sqlUpdateValues );
         makeDateSqlUpdateClause( "date_modified", document.getModifiedDatetime(), sqlUpdateColumns, sqlUpdateValues );
@@ -933,12 +933,12 @@ public class DocumentMapper {
         makeBooleanSqlUpdateClause( "show_meta", document.isVisibleInMenusForUnauthorizedUsers(), sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSqlUpdateClause( "permissions", document.isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo(), sqlUpdateColumns, sqlUpdateValues );
         UserDomainObject publisher = document.getPublisher();
-        makeIntSqlUpdateClause( "publisher_id", (publisher == null ? null : new Integer( publisher.getId() )), sqlUpdateColumns,
-                sqlUpdateValues );
+        makeIntSqlUpdateClause( "publisher_id", ( publisher == null ? null : new Integer( publisher.getId() ) ), sqlUpdateColumns,
+                                sqlUpdateValues );
         UserDomainObject creator = document.getCreator();
         if ( null != creator ) {
             makeIntSqlUpdateClause( "owner_id", new Integer( creator.getId() ), sqlUpdateColumns,
-                    sqlUpdateValues );
+                                    sqlUpdateValues );
         }
         makeIntSqlUpdateClause( "status", new Integer( document.getStatus() ), sqlUpdateColumns, sqlUpdateValues );
 
@@ -946,7 +946,7 @@ public class DocumentMapper {
         sqlStr.append( " where meta_id = ?" );
         sqlUpdateValues.add( "" + document.getId() );
         service.sqlUpdateQuery( sqlStr.toString(),
-                (String[]) sqlUpdateValues.toArray( new String[sqlUpdateValues.size()] ) );
+                                (String[])sqlUpdateValues.toArray( new String[sqlUpdateValues.size()] ) );
     }
 
     /**
@@ -994,7 +994,7 @@ public class DocumentMapper {
         // update the date
         touchDocument( document );
 
-        if ( !("").equals( text_type ) ) {
+        if ( !( "" ).equals( text_type ) ) {
 
             if ( text_type.startsWith( "poll" ) ) {
                 PollHandlingSystem poll = service.getPollHandlingSystem();
@@ -1030,12 +1030,12 @@ public class DocumentMapper {
             keyword
         } ) );
         service.sqlUpdateQuery( "INSERT INTO meta_classification (meta_id, class_id) VALUES(?,?)",
-                new String[]{"" + meta_id, "" + keywordId} );
+                                new String[]{"" + meta_id, "" + keywordId} );
     }
 
     private void deleteUnusedKeywords() {
         service.sqlUpdateQuery( "DELETE FROM classification WHERE class_id NOT IN (SELECT class_id FROM meta_classification)",
-                new String[0] );
+                                new String[0] );
     }
 
     private void addKeyword( String keyword ) {
@@ -1054,7 +1054,7 @@ public class DocumentMapper {
     public static void sprocSetInclude( IMCServiceInterface imcref, int including_meta_id, int include_id,
                                         int included_meta_id ) {
         imcref.sqlUpdateProcedure( "SetInclude",
-                new String[]{"" + including_meta_id, "" + include_id, "" + included_meta_id} );
+                                   new String[]{"" + including_meta_id, "" + include_id, "" + included_meta_id} );
     }
 
     public static void sprocSetRoleDocPermissionSetId( IMCServiceInterface imcref, int metaId, int roleId,
@@ -1068,7 +1068,7 @@ public class DocumentMapper {
 
     public static void sqlUpdateDocumentActivated( IMCServiceInterface imcref, int meta_id, boolean activate ) {
         imcref.sqlUpdateQuery( "update meta set activate = ? where meta_id = ?", new String[]{
-            "" + (activate ? 1 : 0), "" + meta_id
+            "" + ( activate ? 1 : 0 ), "" + meta_id
         } );
     }
 
@@ -1081,7 +1081,7 @@ public class DocumentMapper {
     public void sqlUpdateModifiedDatesOnDocumentAndItsParent( int meta_id, Date dateTime ) {
         String modifiedDateTimeStr = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING ).format( dateTime );
         service.sqlUpdateQuery( "update meta set date_modified = ? where meta_id = ?",
-                new String[]{modifiedDateTimeStr, "" + meta_id} );
+                                new String[]{modifiedDateTimeStr, "" + meta_id} );
         // Update the date_modified for all parents.
         sprocUpdateParentsDateModified( service, meta_id );
     }
@@ -1097,13 +1097,13 @@ public class DocumentMapper {
 
     private void addCategoriesFromDatabaseToDocument( DocumentDomainObject document ) {
         String[][] categories = service.sqlQueryMulti( "SELECT categories.category_id, categories.name, categories.image, categories.description, category_types.category_type_id, category_types.name, category_types.max_choices"
-                + " FROM document_categories"
-                + " JOIN categories"
-                + "  ON document_categories.category_id = categories.category_id"
-                + " JOIN category_types"
-                + "  ON categories.category_type_id = category_types.category_type_id"
-                + " WHERE document_categories.meta_id = ?",
-                new String[]{"" + document.getId()} );
+                                                       + " FROM document_categories"
+                                                       + " JOIN categories"
+                                                       + "  ON document_categories.category_id = categories.category_id"
+                                                       + " JOIN category_types"
+                                                       + "  ON categories.category_type_id = category_types.category_type_id"
+                                                       + " WHERE document_categories.meta_id = ?",
+                                                       new String[]{"" + document.getId()} );
         for ( int i = 0; i < categories.length; i++ ) {
             String[] categoryArray = categories[i];
 
@@ -1116,9 +1116,9 @@ public class DocumentMapper {
             int categoryTypeMaxChoices = Integer.parseInt( categoryArray[6] );
 
             CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject( categoryTypeId, categoryTypeName,
-                    categoryTypeMaxChoices );
+                                                                                  categoryTypeMaxChoices );
             CategoryDomainObject category = new CategoryDomainObject( categoryId, categoryName, categoryDescription,
-                    categoryImage, categoryType );
+                                                                      categoryImage, categoryType );
             document.addCategory( category );
         }
 
@@ -1173,13 +1173,13 @@ public class DocumentMapper {
     public void removeDocumentFromMenu( UserDomainObject user, DocumentDomainObject menuDocument,
                                         int menuIndex, DocumentDomainObject toBeRemoved ) {
         String sqlStr = "delete from childs\n" + "where to_meta_id = ?\n"
-                + "and menu_id = (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
+                        + "and menu_id = (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
 
         service.sqlUpdateQuery( sqlStr,
-                new String[]{
-                    "" + toBeRemoved.getId(), "" + menuDocument.getId(), ""
-                + menuIndex
-                } );
+                                new String[]{
+                                    "" + toBeRemoved.getId(), "" + menuDocument.getId(), ""
+                                                                                         + menuIndex
+                                } );
 
         documentIndex.indexDocument( toBeRemoved );
     }
@@ -1257,7 +1257,7 @@ public class DocumentMapper {
     private String[] getKeywords( int meta_id ) {
         String sqlStr;
         sqlStr =
-                "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = ?";
+        "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = ?";
         String[] keywords = service.sqlQuery( sqlStr, new String[]{"" + meta_id} );
         return keywords;
     }
@@ -1279,14 +1279,14 @@ public class DocumentMapper {
                                                                            int leastPrivilegedPermissionSetIdWanted,
                                                                            DocumentDomainObject document ) {
         return user.isSuperAdmin()
-                || userHasAtLeastPermissionSetIdOnDocument( user, leastPrivilegedPermissionSetIdWanted, document );
+               || userHasAtLeastPermissionSetIdOnDocument( user, leastPrivilegedPermissionSetIdWanted, document );
     }
 
     private boolean userHasAtLeastPermissionSetIdOnDocument( UserDomainObject user,
                                                              int leastPrivilegedPermissionSetIdWanted,
                                                              DocumentDomainObject document ) {
         return getUsersMostPrivilegedPermissionSetIdOnDocument( user, document )
-                <= leastPrivilegedPermissionSetIdWanted;
+               <= leastPrivilegedPermissionSetIdWanted;
     }
 
     public DocumentIndex getDocumentIndex() {
@@ -1302,8 +1302,8 @@ public class DocumentMapper {
 
     private Map getDocumentImages( DocumentDomainObject document ) {
         String[][] imageRows = service.sqlQueryMulti( "select " + IMAGE_SQL_COLUMNS + " from images\n"
-                + "where meta_id = ?",
-                new String[]{"" + document.getId()} );
+                                                      + "where meta_id = ?",
+                                                      new String[]{"" + document.getId()} );
         Map imageMap = new HashMap();
         for ( int i = 0; i < imageRows.length; i++ ) {
             String[] imageRow = imageRows[i];
@@ -1316,8 +1316,8 @@ public class DocumentMapper {
 
     public ImageDomainObject getDocumentImage( int meta_id, int img_no ) {
         String[] sqlResult = service.sqlQuery( "select " + IMAGE_SQL_COLUMNS + " from images\n"
-                + "where meta_id = ? and name = ?",
-                new String[]{"" + meta_id, "" + img_no} );
+                                               + "where meta_id = ? and name = ?",
+                                               new String[]{"" + meta_id, "" + img_no} );
 
         if ( sqlResult.length > 0 ) {
             return createImageFromSqlResultRow( sqlResult );
@@ -1348,26 +1348,26 @@ public class DocumentMapper {
     public void saveDocumentImage( int meta_id, int img_no, ImageDomainObject image,
                                    UserDomainObject user ) {
         String sqlStr = "update images\n"
-                + "set imgurl  = ?, \n"
-                + "width       = ?, \n"
-                + "height      = ?, \n"
-                + "border      = ?, \n"
-                + "v_space     = ?, \n"
-                + "h_space     = ?, \n"
-                + "image_name  = ?, \n"
-                + "target      = ?, \n"
-                + "align       = ?, \n"
-                + "alt_text    = ?, \n"
-                + "low_scr     = ?, \n"
-                + "linkurl     = ?, \n"
-                + "type        = ?  \n"
-                + "where meta_id = ? \n"
-                + "and name = ? \n";
+                        + "set imgurl  = ?, \n"
+                        + "width       = ?, \n"
+                        + "height      = ?, \n"
+                        + "border      = ?, \n"
+                        + "v_space     = ?, \n"
+                        + "h_space     = ?, \n"
+                        + "image_name  = ?, \n"
+                        + "target      = ?, \n"
+                        + "align       = ?, \n"
+                        + "alt_text    = ?, \n"
+                        + "low_scr     = ?, \n"
+                        + "linkurl     = ?, \n"
+                        + "type        = ?  \n"
+                        + "where meta_id = ? \n"
+                        + "and name = ? \n";
 
         int rowUpdateCount = sqlImageUpdateQuery( sqlStr, image, meta_id, img_no );
         if ( 0 == rowUpdateCount ) {
             sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, align, alt_text, low_scr, linkurl, type, meta_id, name)"
-                    + " values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)";
+                     + " values(?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)";
 
             sqlImageUpdateQuery( sqlStr, image, meta_id, img_no );
         }
@@ -1419,7 +1419,7 @@ public class DocumentMapper {
         for ( int i = 0; i < sqlResult.length; i++ ) {
             browsers.add( createBrowserFromSqlRow( sqlResult[i] ) );
         }
-        return (BrowserDocumentDomainObject.Browser[]) browsers.toArray( new BrowserDocumentDomainObject.Browser[browsers.size()] );
+        return (BrowserDocumentDomainObject.Browser[])browsers.toArray( new BrowserDocumentDomainObject.Browser[browsers.size()] );
     }
 
     public BrowserDocumentDomainObject.Browser getBrowserById( int browserIdToGet ) {
@@ -1442,7 +1442,7 @@ public class DocumentMapper {
 
     public void saveTextDocument( TextDocumentDomainObject textDocument, UserDomainObject user ) {
         String sqlStr = "UPDATE text_docs SET template_id = ?, group_id = ?,\n"
-                + "default_template_1 = ?, default_template_2 = ? WHERE meta_id = ?";
+                        + "default_template_1 = ?, default_template_2 = ? WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{
             "" + textDocument.getTemplate().getId(),
             "" + textDocument.getTemplateGroupId(),
@@ -1465,9 +1465,9 @@ public class DocumentMapper {
     private void insertTextDocumentMenus( TextDocumentDomainObject textDocument ) {
         Map menus = textDocument.getMenus();
         for ( Iterator iterator = menus.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) iterator.next();
-            Integer menuIndex = (Integer) entry.getKey();
-            MenuDomainObject menu = (MenuDomainObject) entry.getValue();
+            Map.Entry entry = (Map.Entry)iterator.next();
+            Integer menuIndex = (Integer)entry.getKey();
+            MenuDomainObject menu = (MenuDomainObject)entry.getValue();
             sqlInsertMenu( textDocument, menuIndex.intValue(), menu );
             insertTextDocumentMenuItems( menu );
         }
@@ -1530,8 +1530,8 @@ public class DocumentMapper {
     private void insertTextDocumentIncludes( TextDocumentDomainObject textDocument ) {
         Map includes = textDocument.getIncludes();
         for ( Iterator iterator = includes.keySet().iterator(); iterator.hasNext(); ) {
-            Integer includeIndex = (Integer) iterator.next();
-            Integer includedDocumentId = (Integer) includes.get( includeIndex );
+            Integer includeIndex = (Integer)iterator.next();
+            Integer includedDocumentId = (Integer)includes.get( includeIndex );
             sqlInsertTextDocumentInclude( textDocument, includeIndex, includedDocumentId );
         }
 
@@ -1552,8 +1552,8 @@ public class DocumentMapper {
     private void insertTextDocumentImages( TextDocumentDomainObject textDocument, UserDomainObject user ) {
         Map images = textDocument.getImages();
         for ( Iterator iterator = images.keySet().iterator(); iterator.hasNext(); ) {
-            Integer imageIndex = (Integer) iterator.next();
-            ImageDomainObject image = (ImageDomainObject) images.get( imageIndex );
+            Integer imageIndex = (Integer)iterator.next();
+            ImageDomainObject image = (ImageDomainObject)images.get( imageIndex );
             saveDocumentImage( textDocument.getId(), imageIndex.intValue(), image, user );
         }
     }
@@ -1567,8 +1567,8 @@ public class DocumentMapper {
         String sqlInsertTexts = "INSERT INTO texts (meta_id, name, text, type) VALUES(?,?,?,?)";
         Map texts = textDocument.getTexts();
         for ( Iterator iterator = texts.keySet().iterator(); iterator.hasNext(); ) {
-            Integer textIndex = (Integer) iterator.next();
-            TextDomainObject text = (TextDomainObject) texts.get( textIndex );
+            Integer textIndex = (Integer)iterator.next();
+            TextDomainObject text = (TextDomainObject)texts.get( textIndex );
             service.sqlUpdateQuery( sqlInsertTexts, new String[]{
                 "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType()
             } );
@@ -1723,7 +1723,7 @@ public class DocumentMapper {
             String[] sqlRow = sqlRows[i];
             int containingDocumentId = Integer.parseInt( sqlRow[0] );
             int menuIndex = Integer.parseInt( sqlRow[1] );
-            TextDocumentDomainObject containingDocument = (TextDocumentDomainObject) getDocument( containingDocumentId );
+            TextDocumentDomainObject containingDocument = (TextDocumentDomainObject)getDocument( containingDocumentId );
             documentMenuPairs[i] = new TextDocumentMenuIndexPair( containingDocument, menuIndex );
         }
         return documentMenuPairs;

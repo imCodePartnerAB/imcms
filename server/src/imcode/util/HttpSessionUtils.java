@@ -1,5 +1,7 @@
 package imcode.util;
 
+import org.apache.commons.lang.ClassUtils;
+
 import javax.servlet.http.HttpServletRequest;
 
 public class HttpSessionUtils {
@@ -10,7 +12,7 @@ public class HttpSessionUtils {
     public static void setSessionAttributeAndSetNameInRequestAttribute( final Object objectToAddToSession,
                                                                               HttpServletRequest request,
                                                                               final String sessionAttributeNameRequestAttributeName ) {
-        final String sessionAttributeName = objectToAddToSession.getClass().getName() + "." + System.currentTimeMillis();
+        final String sessionAttributeName = ClassUtils.getShortClassName( objectToAddToSession.getClass() ) + "." + System.currentTimeMillis();
         request.getSession().setAttribute( sessionAttributeName, objectToAddToSession );
         request.setAttribute( sessionAttributeNameRequestAttributeName, sessionAttributeName );
     }

@@ -2,12 +2,15 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 import com.imcode.imcms.servlet.ImageArchive;
+import com.imcode.imcms.servlet.DocumentFinder;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -16,6 +19,9 @@ import imcode.util.ImageParser;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
 import org.apache.oro.text.perl.Perl5Util;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.index.Term;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -50,14 +56,14 @@ public class ChangeImage extends HttpServlet {
     private static final String REQUEST_PARAMETER__IMAGE_LOWSRC = "low_scr";
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER = "goToImageBrowser";
 
-    public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+    public void doPost( final HttpServletRequest request, final HttpServletResponse response ) throws ServletException, IOException {
 
-        ImageDomainObject image = getImageFromRequest( request );
+        final ImageDomainObject image = getImageFromRequest( request );
         UserDomainObject user = Utility.getLoggedOnUser( request );
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( Integer.parseInt( request.getParameter( "meta_id" ) ) );
-        int imageIndex = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__IMAGE_INDEX ) );
+        final TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( Integer.parseInt( request.getParameter( "meta_id" ) ) );
+        final int imageIndex = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__IMAGE_INDEX ) );
 
         if ( !userHasImagePermissionsOnDocument( user, document ) ) {	// Checking to see if user may edit this
             goBack( document, response );
@@ -75,15 +81,23 @@ public class ChangeImage extends HttpServlet {
             request.setAttribute( ImageBrowse.PARAMETER__CALLER, "ChangeImage" );
             ImageBrowse.getPage( request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__GOING_TO_OR_COMING_FROM_IMAGE_ARCHIVE ) ) {
-            ImageArchive imageArchive = ImageArchive.getInstance( request );
-            String label = getLabelParam( request );
-            String forwardReturnUrl = "ChangeImage?"
-                                      + "meta_id=" + Integer.parseInt( request.getParameter( "meta_id" ) ) + "&"
-                                      + "img=" + getImageNumberParam( request ) + "&"
-                                      + "label=" + label + "&" +
-                                      REQUEST_PARAMETER__GOING_TO_OR_COMING_FROM_IMAGE_ARCHIVE + "=true";
-            imageArchive.setForwardReturnUrl( forwardReturnUrl );
-            imageArchive.forward( request, response );
+            DocumentFinder documentFinder = new DocumentFinder() ;
+            documentFinder.setDocumentsSelectable( true );
+            Query imageFileDocumentQuery = new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""+DocumentDomainObject.DOCTYPE_FILE));
+            documentFinder.setRestrictingQuery(imageFileDocumentQuery) ;
+            documentFinder.setSelectDocumentCommand(new DocumentFinder.SelectDocumentCommand() {
+                public void selectDocument( DocumentDomainObject documentFound, HttpServletRequest request,
+                                              HttpServletResponse response ) throws IOException, ServletException {
+                    FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)documentFound ;
+                    if ( null != imageFileDocument ) {
+                        image.setUrl( "../servlet/GetDoc?meta_id=" + imageFileDocument.getId() );
+                        image.setWidth( 0 );
+                        image.setHeight( 0 );
+                    }
+                    goToImageEditPage( document, imageIndex, image, request, response );
+                }
+            } );
+            documentFinder.forward( request, response );
         } else {
             document.setImage( imageIndex, image );
             documentMapper.saveDocument( document, user );
@@ -149,14 +163,6 @@ public class ChangeImage extends HttpServlet {
             image.setUrl( browsedImageUrl );
             image.setWidth( 0 );
             image.setHeight( 0 );
-        } else if ( null != request.getParameter( REQUEST_PARAMETER__GOING_TO_OR_COMING_FROM_IMAGE_ARCHIVE ) ) {
-            ImageArchive imageArchive = ImageArchive.getInstance( request );
-            FileDocumentDomainObject imageFileDocument = imageArchive.getSelectedImage();
-            if ( null != imageFileDocument ) {
-                image.setUrl( "../servlet/GetDoc?meta_id=" + imageFileDocument.getId() );
-                image.setWidth( 0 );
-                image.setHeight( 0 );
-            }
         }
 
         goToImageEditPage( document, getImageNumberParam( request ), image, request, response );

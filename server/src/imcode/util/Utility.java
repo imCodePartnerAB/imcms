@@ -7,20 +7,18 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.collections.SetUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.net.URLEncoder;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.collections.set.ListOrderedSet;
-import org.apache.commons.collections.SetUtils;
 
 public class Utility {
 
@@ -170,15 +168,18 @@ public class Utility {
         return imageTag;
     }
 
+
     public static String getQueryStringExcludingParameter(HttpServletRequest request, String parameterNameToExclude) {
+        Map requestParameters = new HashMap(request.getParameterMap()) ;
+        requestParameters.remove( parameterNameToExclude ) ;
+        return createQueryStringFromMap( requestParameters );
+    }
+
+    public static String createQueryStringFromMap( Map requestParameters ) {
         Set requestParameterStrings = SetUtils.orderedSet(new HashSet()) ;
-        Map requestParameters = request.getParameterMap() ;
         for ( Iterator iterator = requestParameters.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
             String parameterName = (String)entry.getKey();
-            if (parameterName.equals( parameterNameToExclude )) {
-                continue;
-            }
             String[] parameterValues = (String[])entry.getValue();
             for ( int i = 0; i < parameterValues.length; i++ ) {
                 String parameterValue = parameterValues[i];

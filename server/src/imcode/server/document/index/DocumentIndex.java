@@ -14,7 +14,7 @@ public abstract class DocumentIndex {
     public static final String FIELD__IMAGE_LINK_URL = "image_link_url";
     public static final String FIELD__TEXT = "text";
     static final String FIELD__KEYWORD = "keyword";
-    static final String FIELD__SECTION = "section";
+    public static final String FIELD__SECTION = "section";
     static final String FIELD__ACTIVATED_DATETIME = "activated_datetime";
     static final String FIELD__ARCHIVED_DATETIME = "archived_datetime";
     static final String FIELD__CATEGORY_ID = "category_id";
