@@ -1,0 +1,34 @@
+# For the general syntax of property based configuration files see the
+# documenation of org.apache.log4j.PropertyConfigurator.
+# This file is used in the MainInitServlet.initLog() method to set up the logging
+# environment
+
+# Fixme, use the XML version instead of this file
+#
+# The root category uses the appender called A1.
+# An apender is something that handles the output.
+# The priority (level) of debuging can be any of
+# DEBUG, INFO, WARN, ERROR or FATAL 
+# Where DEBUG < INFO < WARN < ERROR < FATAL 
+# where debug means that also the other messages will be logged and
+# the INFO means that all but DEBUG messages will be logged and so forth.
+# Depending on what release (apltha, beta...) choose the appropriate level.
+log4j.rootCategory=DEBUG, A1
+# For intsallation these two lines chould be used:
+# log4j.appender.A1=imcode.util.log.WebAppFileAppender
+# log4j.appender.A1.File=WEB-INF/logs/main.log
+# When under developing this one can suffice:
+# log4j.appender.A1=org.apache.log4j.ConsoleAppender
+log4j.appender.A1=imcode.util.log.WebAppFileAppender
+log4j.appender.A1.File=WEB-INF/logs/main.log
+log4j.appender.A1.layout=org.apache.log4j.PatternLayout
+log4j.appender.A1.layout.ConversionPattern=%-4r %-5p [%t] %20c, %m%n
+
+# The access log, accesslog (the name defined in GetDoc.ACCESS_LOG)
+log4j.category.accesslog=INFO, A2
+log4j.appender.A2=imcode.util.log.WebAppFileAppender
+# Appender AccessLog writes to the file "access.log".
+log4j.appender.A2.File=WEB-INF/logs/access.log
+log4j.appender.A2.Append=false
+log4j.appender.A2.layout=org.apache.log4j.PatternLayout
+log4j.appender.A2.layout.ConversionPattern=%-5r %-5p [%t] %c{2} - %m%n
