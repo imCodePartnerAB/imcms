@@ -4,11 +4,11 @@
 --
 
 
-drop procedure [dbo].[CheckDocSharePermissionForUser]
+drop procedure [CheckDocSharePermissionForUser]
+drop procedure [CheckUserDocSharePermission]
 
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
 GO
-
 CREATE PROCEDURE CheckUserDocSharePermission @user_id INT, @meta_id INT AS
 
 SELECT m.meta_id
@@ -38,7 +38,7 @@ alter table text_docs
 add default_template_2 INT DEFAULT -1 NOT NULL
 
 -- The procedure to suport the default_templates
-
+GO
 CREATE PROCEDURE [UpdateDefaultTemplates] 
  @meta_id INT,
  @template1 int,
@@ -461,7 +461,7 @@ INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) 
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(1048576,2,'uk','Change include')
 
 -- 2001-09-28 
-
+GO
 CREATE PROCEDURE GetTemplateId
  @aTemplatename varchar(80)
  AS
