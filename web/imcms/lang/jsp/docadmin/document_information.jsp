@@ -1,4 +1,5 @@
-<%@ page contentType="text/html; charset=windows-1252" import="imcode.server.Imcms,
+<%@ page contentType="text/html; charset=windows-1252"
+    import="imcode.server.Imcms,
             org.apache.commons.lang.StringEscapeUtils,
             java.text.SimpleDateFormat,
             java.text.DateFormat,
@@ -22,7 +23,8 @@
             com.imcode.imcms.flow.EditDocumentInformationPageFlow,
             com.imcode.imcms.flow.CreateDocumentPageFlow,
             com.imcode.imcms.flow.DocumentPageFlow,
-            com.imcode.imcms.flow.PageFlow"
+            com.imcode.imcms.flow.PageFlow,
+            java.net.URLEncoder"
 
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
@@ -367,7 +369,8 @@ function checkFocus() {
 			CategoryTypeDomainObject categoryType = categoryTypes[i] ;
 			if ( !categoryType.hasImages() ) { %>
 		<div style="float: left; margin: auto 1em 1ex auto;">
-		<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
+		<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%=
+			    URLEncoder.encode(StringEscapeUtils.escapeHtml( categoryType.getName() ),"UTF-8") %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
 		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORIES %>"<% if (1 != categoryType.getMaxChoices()) { %> size="4" multiple<% } else { %> onFocus="selFocused = true;"<% } %>>
 			<%= Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType, document) %>
 		</select></div><%
@@ -377,7 +380,8 @@ function checkFocus() {
 			CategoryTypeDomainObject categoryType = categoryTypes[i] ;
 			if ( categoryType.hasImages() ) { %>
 		<div style="float: left; margin: auto 1em 1ex auto;">
-			<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>"
+			<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%=
+			    URLEncoder.encode(StringEscapeUtils.escapeHtml( categoryType.getName() ),"UTF-8") %>"
 			target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><%
 
 			boolean radioButton = categoryType.getMaxChoices() == 1;
