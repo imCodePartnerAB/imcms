@@ -5,7 +5,7 @@
   
 -- This script is autocreated by script "create_help.sql"
 -- Soures database = help
--- Server = LENNART
+-- Server = RATATOSK
 -- Create date = 2002-03-07
 -- Included help-page =  meta_id < 401
  
@@ -4679,9 +4679,9 @@ INSERT INTO texts( meta_id, name, text, type )
                 <blockquote>
                   <p align="left">Find the design template you wish to upload by using the "Browse/Search" button (the name depends
                   on the language used by your web browser).</p>
-                  <p align="left">Enter the name you wish the template should have in the system. A <img border="0" src="/imcode/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                  <p align="left">Enter the name you wish the template should have in the system. A <img border="0" src="/images/se/helpimages/Admin-4.GIF" width="13" height="14">
                   by <i> "Overwrite existing file" </i> will, if a template by that name is already in the system, erase and overwrite the template by that name which is already in the system. Do not put
-                   <img border="0" src="/imcode/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                   <img border="0" src="/images/se/helpimages/Admin-4.GIF" width="13" height="14">
                    if you are not sure you wish to delete the existing template.</p>
                   <p align="left">Mark in the list to the right
 
@@ -4888,10 +4888,10 @@ INSERT INTO texts( meta_id, name, text, type )
     <tr>
       <td>
                 <p align="left">Enter the name of the new role that is to be added. </p>
-                <p align="left">By setting a <img border="0" src="/imcode/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                <p align="left">By setting a <img border="0" src="/images/se/helpimages/Admin-4.GIF" width="13" height="14">
                 by <i>"Permission to get password by e-mail "</i> the users with this role, having no other role prohibiting this right can be sent their password by e-mail
                 (Ordering a password is done at the log-in page with the link "Forgotten your password?").</p>
-                <p align="left">By setting a <img border="0" src="/imcode/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                <p align="left">By setting a <img border="0" src="/images/se/helpimages/Admin-4.GIF" width="13" height="14">
                 by <i>"Self-register rights in conference "</i> this role has the right to be distributed to users who register themselves on a self-registery page (for example, to participat in an online conference). Which role(s) are given to self-registered
 
 
@@ -5047,7 +5047,7 @@ idth="75%">
     <tr>
       <td width="100
 
-%"><b> Key words (for searches): </b> These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+%"><b> Key words (for searches): </b> These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i> Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
     <tr>
@@ -5063,7 +5063,7 @@ g date if the page is not to be published now.</td>
   
  </tr>
     <tr>
-      <td width="100%"><b> To the archives: </b> A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      <td width="100%"><b> To the archives: </b> A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i> Archive now </i> means that the page will be archived immediately.</td>
     </tr>
     <tr>
@@ -5382,7 +5382,7 @@ INSERT INTO texts( meta_id, name, text, type )
 
 th="100
 
-%"><b> Key words (for searches): </b> These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+%"><b> Key words (for searches): </b> These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i> Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
     <tr>
@@ -5398,7 +5398,7 @@ ished now.</td>
   
  </tr>
     <tr>
-      <td width="100%"><b> To the archives: </b> A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      <td width="100%"><b> To the archives: </b> A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i> Archive now </i> means that the page will be archived immediately.</td>
     </tr>
     <tr>
@@ -5440,7 +5440,7 @@ INSERT INTO texts( meta_id, name, text, type )
       <td>
 <p align="center">This is where you choose the type of diagram you want to create.</p>
 <blockquote>
-                <p align="left">V&auml;lj diagramtyp: Click on <img border="0" src="/imcode/images/se/helpimages/Pil.GIF" width="16" height="21">
+                <p align="left">V&auml;lj diagramtyp: Click on <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
                 to mark the type of graph you wish to use to display your data. The available alternatives are shown in the lower portion of the picture. Click on
                 "Create new diagram".</p>
 </blockquote>
@@ -5503,7 +5503,7 @@ n here is not an integer that text written in this field will not be displayed.<
     <td width="100%" height="19"><b>Add column: </b>Adds a new column to the table. The new column is added on the far right of the table. </td>
   </tr>
   <tr>
-    <td width="100%" height="19"><b>Delete row: </b>This removes a row. Which row is actually removed you determine in the roll-down menu. <img border="0" src="/imcode/images/se/helpimages/Pil.GIF" width="16" height="21">,
+    <td width="100%" height="19"><b>Delete row: </b>This removes a row. Which row is actually removed you determine in the roll-down menu. <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">,
       When the roll-down menu is released the row is removed. </td>
   </tr>
   <tr>
@@ -5512,7 +5512,7 @@ n here is not an integer that text written in this field will not be displayed.<
 <t
 d 
 width="100%" height="19"><b>Delete column: </b> This is to remove a column.  Which column is removed is determined by your selection in the roll-down menu.
-      <img border="0" src="/imcode/images/se/helpimages/Pil.GIF" width="16" height="21">,
+      <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">,
       When the roll-down menu is released,the column is removed. </td>
   </tr>
   <tr>
@@ -5559,7 +5559,7 @@ INSERT INTO texts( meta_id, name, text, type )
     <td width="100%" height="19"><b>Add column: </b>Adds a new column to the table. The new column is added on the far right of the table. </td>
   </tr>
   <tr>
-    <td width="100%" height="19"><b>Delete row: </b>This removes a row. Which row is actually removed you determine in the roll-down menu. <img border="0" src="/imcode/images/se/helpimages/Pil.GIF" width="16" height="21">,
+    <td width="100%" height="19"><b>Delete row: </b>This removes a row. Which row is actually removed you determine in the roll-down menu. <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">,
       When the roll-down menu is released the row is removed. </td>
   </tr>
   <tr>
@@ -5569,7 +5569,7 @@ INSERT INTO texts( meta_id, name, text, type )
 
 
 mined by your selection in the roll-down menu.
-      <img border="0" src="/imcode/images/se/helpimages/Pil.GIF" width="16" height="21">,
+      <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">,
       When the roll-down menu is released,the column is removed. </td>
   </tr>
   <tr>
@@ -5867,8 +5867,8 @@ INSERT INTO texts( meta_id, name, text, type )
   <center>
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
-      <td><i>Expert users:</i> By putting a <img border="0" src="/imcode/images/se/helpimages/Konf-a1.GIF" width="13" height="14">
-        in the Expert checkbox, the symbol<img border="0" src="/imcode/images/se/helpimages/Konf-a2.GIF" width="12" height="16">&nbsp;
+      <td><i>Expert users:</i> By putting a <img border="0" src="/images/se/helpimages/Konf-a1.GIF" width="13" height="14">
+        in the Expert checkbox, the symbol<img border="0" src="/images/se/helpimages/Konf-a2.GIF" width="12" height="16">&nbsp;
         will be placed in front of the headers of all the contributions made by this user. This is to show that the user is a specialist in the subject matter. </td>
     </tr>
   </table>
@@ -5895,7 +5895,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <center>
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
-      <td>To delete a discussion: <img border="0" src="/imcode/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
+      <td>To delete a discussion: <img border="0" src="/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
         by the discussion you wish to remove and click on "DELETE".
         <p>To leave the administration mode: click on "End Admin".</td>
     </tr>
@@ -5926,7 +5926,7 @@ INSERT INTO texts( meta_id, name, text, type )
 
 
 
-you wish to alter the number of forums to be displayed by clicking on the list at the right. The current number of discussions allowed to be shown in this forum is displayed after the forum in parentheses. select the new number of discussions to be shown by clicking on <img border="0" src="/imcode/images/se/helpimages/Pil.GIF" width="16" height="21">
+you wish to alter the number of forums to be displayed by clicking on the list at the right. The current number of discussions allowed to be shown in this forum is displayed after the forum in parentheses. select the new number of discussions to be shown by clicking on <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
         and marking the desired number. Click then on "Update".</td>
     </tr>
   </table>
@@ -5948,7 +5948,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <center>
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
-      <td><b>Remove a contribution:</b> <img border="0" src="/imcode/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
+      <td><b>Remove a contribution:</b> <img border="0" src="/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
         Tick the checkbox(es) of the contribution(s) you wish to remove and then push the "DELETE" button. You will get a warning asking if you really wish to remove the contribution. Once you OK the removal the contribution is deleted from the discussion. NB: the first contribution of a discussion, in other words, the contribution which initiated the discussion and its header<b>CANNOT</b> be removed here. It is however possible to alter/edit the initial contribution or you can remove the entire discussion on the Discussion Administration page. Note that when you remove a discussion, all its contributions are also deleted.
         <p><b>Resave a contribution: </b>To alter an existing contribution,
         change the text as desired and tick the check
@@ -5956,7 +5956,7 @@ INSERT INTO texts( meta_id, name, text, type )
 
 
 
-box of that contribution with a tick<img border="0" src="/imcode/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
+box of that contribution with a tick<img border="0" src="/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
         . Click thereafter on "RESAVE".</p>
         <p>To return to user mode in the conference, click on "End admin".</td>
     </tr>
@@ -6068,15 +6068,15 @@ INSERT INTO texts( meta_id, name, text, type )
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
       <td>Each conference has at least one forum where various discussions can take place.
-        Select which forum you wish to view by clicking on <img border="0" src="/imcode/images/se/helpimages/Pil.GIF" width="16" height="21">
-        by the header <i>Select forum, </i> thus marking the forum and then click on "Select". Those discussions displayed in the windows큦 lefthand side are the headers of the current discussions ( more perecisely, the header of the first contribution of each discussion.  To browse through the discussions, use the buttons "earlier discussions" and "later discussions". If<img border="0" src="/imcode/images/se/helpimages/Konf-k4.GIF" width="21" height="15">&nbsp;
+        Select which forum you wish to view by clicking on <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
+        by the header <i>Select forum, </i> thus marking the forum and then click on "Select". Those discussions displayed in the windows큦 lefthand side are the headers of the current discussions ( more perecisely, the header of the first contribution of each discussion.  To browse through the discussions, use the buttons "earlier discussions" and "later discussions". If<img border="0" src="/images/se/helpimages/Konf-k4.GIF" width="21" height="15">&nbsp;
         (NEW symbol) is shown before a discussion this is either a new discussion or there is a new contribution in this dicussion since you last logged into the conference. To see the co
 
 
 
 
 ntributions made since your last visit, push on "Update".
-        <p>By clicking on the header of a discussion, all the contributions in that discussion will be displayed on the window큦 righthand side. If <img border="0" src="/imcode/images/se/helpimages/Konf-k3.GIF" width="14" height="16">
+        <p>By clicking on the header of a discussion, all the contributions in that discussion will be displayed on the window큦 righthand side. If <img border="0" src="/images/se/helpimages/Konf-k3.GIF" width="14" height="16">
         (EXPERT symbol) is shown in front of the header, the author of this contribution is registered as a specialist. After the "specialist symbol" the contribution큦 header, text, author and date created are presented.</p>
         <p>You can control how the contributions are presented in your computer by clicking on 
         <i>"ascending" </i>eller <i>"</i><i>F</i><i>descending"</i>.
@@ -6234,8 +6234,8 @@ INSERT INTO texts( meta_id, name, text, type )
                     for that which you wish to do. If you choose "Edit", the telephone no. will be displayed in the boxes and then you can edit the number.  When finised, Click on
                     "OK". </li>
                   <li>
-                    <p align="left"><i>Activated - </i>a <img border="0" src="/imcode/images/se/helpimages/Lagg-t1.GIF" width="13" height="14">
-                    actives a user so that they can log in. <img border="0" src="/imcode/images/se/helpimages/Lagg-t2.GIF" width="13" height="14">
+                    <p align="left"><i>Activated - </i>a <img border="0" src="/images/se/helpimages/Lagg-t1.GIF" width="13" height="14">
+                    actives a user so that they can log in. <img border="0" src="/images/se/helpimages/Lagg-t2.GIF" width="13" height="14">
                     can be removed so the user cannot log into the system but remains registered.</li>
                   <li>
                     <p align="left"><i>User type</i>- authenticated
@@ -6331,7 +6331,7 @@ re
  controlled here. All measurements given are in pixels.</td>
           </tr>
           <tr>
-            <td width="100%"><b>Alignment of next text: </b>Here is where you select where the text following the image should begin. NB: The design template determines if this function is enabled on this page!. Click on<b> <img border="0" src="/imcode/images/se/helpimages/Lagg-t3.GIF">
+            <td width="100%"><b>Alignment of next text: </b>Here is where you select where the text following the image should begin. NB: The design template determines if this function is enabled on this page!. Click on<b> <img border="0" src="/images/se/helpimages/Lagg-t3.GIF">
               </b>to select an alternative.
               <ul>
                 <li><i>None: </i>The placement of the text is determined by the visitor큦 browsers default setting.</li>
@@ -6382,7 +6382,7 @@ tr>
             <td width="100%"><b>Linkad to www: </b>If the image should be clickable to a web site, enter the URL web address here.</td>
           </tr>
           <tr>
-            <td width="100%"><b>Link shown in : </b>Here is where you can control how the page is displayed. Click on<b> <img border="0" src="/imcode/images/se/helpimages/Lagg-t3.GIF">
+            <td width="100%"><b>Link shown in : </b>Here is where you can control how the page is displayed. Click on<b> <img border="0" src="/images/se/helpimages/Lagg-t3.GIF">
               </b>to select an alternative.
         <ul>
           <li><i>Current window:</i> Opens the page in the window laying on top. NB: window, not frame. </li>
@@ -6493,7 +6493,7 @@ INSERT INTO texts( meta_id, name, text, type )
 
 
 
-%"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+%"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
     <tr>
@@ -6509,7 +6509,7 @@ td
   
  </tr>
     <tr>
-      <td width="100%"><b>To the archives: </b>A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      <td width="100%"><b>To the archives: </b>A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Archive now</i> means that the page will be archived immediately.</td>
     </tr>
     <tr>
@@ -6583,7 +6583,7 @@ INSERT INTO texts( meta_id, name, text, type )
 
 
 
-%"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+%"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
     <tr>
@@ -6599,7 +6599,7 @@ td
   
  </tr>
     <tr>
-      <td width="100%"><b>To the archives: </b>A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      <td width="100%"><b>To the archives: </b>A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Archive now</i> means that the page will be archived immediately.</td>
     </tr>
     <tr>
@@ -6660,7 +6660,7 @@ INSERT INTO texts( meta_id, name, text, type )
 INSERT INTO texts( meta_id, name, text, type )
        values(279,4,'<p align="center">&nbsp;</p>
         <blockquote>
-            <p align="left">By setting a <img border="0" src="/imcode/images/se/helpimages/Lank.h6.GIF" width="13" height="14">
+            <p align="left">By setting a <img border="0" src="/images/se/helpimages/Lank.h6.GIF" width="13" height="14">
             in the checkbox in front of the link, you can remove, archive or copy a link by clicking on the corresponding button. When a link is archived it will be crossed over (see picture - Page 1). Archiving can
             changed through the page큦 Admin button "Page info". To sort the links numbers are used in front of the links. The numbering made by the system is random and you may change any or all numbers to sort. The highest number will always move to the top. Click
             on "Sort" to get it to re-sort according to the numbers you entered.&nbsp;</p>
@@ -6693,7 +6693,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
       <td>
-<p align="center">Click on <img border="0" src="/imcode/images/se/helpimages/Pil.GIF" width="16" height="21">
+<p align="center">Click on <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
 to view all the types of pages/links that can be created</p>
 <div align="center">
 <table border="1" width="75%">
@@ -6771,7 +6771,7 @@ INSERT INTO texts( meta_id, name, text, type )
 
 
 
-%"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+%"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
     <tr>
@@ -6787,7 +6787,7 @@ td
   
  </tr>
     <tr>
-      <td width="100%"><b>To the archives: </b>A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      <td width="100%"><b>To the archives: </b>A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Archive now</i> means that the page will be archived immediately.</td>
     </tr>
     <tr>
@@ -6844,7 +6844,7 @@ INSERT INTO texts( meta_id, name, text, type )
 
 
 
-%"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+%"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
     <tr>
@@ -6860,7 +6860,7 @@ td
   
  </tr>
     <tr>
-      <td width="100%"><b>To the archives: </b>A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      <td width="100%"><b>To the archives: </b>A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Archive now</i> means that the page will be archived immediately.</td>
     </tr>
     <tr>
@@ -7135,7 +7135,7 @@ INSERT INTO texts( meta_id, name, text, type )
 
 
 
-%"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+%"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
     <tr>
@@ -7151,7 +7151,7 @@ td
   
  </tr>
     <tr>
-      <td width="100%"><b>To the archives: </b>A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      <td width="100%"><b>To the archives: </b>A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Archive now</i> means that the page will be archived immediately.</td>
     </tr>
     <tr>
