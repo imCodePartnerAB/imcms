@@ -270,19 +270,20 @@ public class AdminCategories extends HttpServlet {
     private void editCategoryType( CategoryTypeDomainObject categoryTypeToEdit, HttpServletRequest req,
                                    Page formBean, DocumentMapper documentMapper ) {
         formBean.setMode(PARAMETER_MODE__EDIT_CATEGORY_TYPE) ;
+        formBean.setUniqueCategoryTypeName( true );
+
         if ( req.getParameter( PARAMETER_CATEGORY_TYPE_SAVE ) != null ) {
-            String name = req.getParameter( PARAMETER__NAME ).trim();
-            if ( documentMapper.isUniqueCategoryTypeName( name ) ) {
-                formBean.setUniqueCategoryTypeName( true );
+            String newName = req.getParameter( PARAMETER__NAME ).trim();
+            if ( !newName.equals(categoryTypeToEdit.getName()) ) {
+                formBean.setUniqueCategoryTypeName( documentMapper.isUniqueCategoryTypeName( newName ) );
+            }
+            if (formBean.isUniqueCategoryTypeName()){
                 int maxChoices = Integer.parseInt( req.getParameter( "max_choices" ) );
-                categoryTypeToEdit.setName( name );
+                categoryTypeToEdit.setName( newName );
                 categoryTypeToEdit.setMaxChoices( maxChoices );
                 documentMapper.updateCategoryType( categoryTypeToEdit );
-            } else {
-                formBean.setUniqueCategoryTypeName( false );
             }
         }
-
         formBean.setCategoryTypeToEdit( categoryTypeToEdit );
     }
 
