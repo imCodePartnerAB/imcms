@@ -32,8 +32,8 @@ public class LdapUserBaseTestCase extends UserBaseTestCase {
             String ldapUserObjectClass = "person";
             String ldapUserIdentifyingAttribute = "samaccountname";
             return new LdapUserAndRoleMapper( ldapUrl, LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE,
-                                                        ldapUserObjectClass, ldapUserIdentifyingAttribute,
-                                                        ldapBindDN, ldapPassword, ldapAttributesMappedToRoles );
+                                                        ldapUserObjectClass,
+                                              ldapBindDN, ldapPassword, ldapAttributesMappedToRoles );
         } catch ( LdapUserAndRoleMapper.LdapInitException e ) {
             System.err.println( e );
             fail();

@@ -42,12 +42,10 @@ smb-domain-server =
 
 # LDAP-authentication-parameters
 
-ldap-url =
+ldap-server = localhost:389
+ldap-base =
 ldap-user =
 ldap-pass =
-ldap-user-objectclass = user
-ldap-user-identifying-attribute = sAMAccountName
-ldap-attributes-mapped-to-roles = company, co
 
 
 # The smtp-server used for sending mails.
