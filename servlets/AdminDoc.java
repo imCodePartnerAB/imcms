@@ -155,18 +155,25 @@ public class AdminDoc extends HttpServlet {
 			String url_ref = strary[0] ;
 			String target = strary[1] ;
 			String frame_name = "" ;
-			if ( "_other".equals(target) ) {
-				frame_name = strary[2] ;
-				target = frame_name ;
-				urlvec.add("#_other#") ;
-			} else if ( "_self".equals(target) ) {
-				urlvec.add("#_self#") ;
+			if ( "_self".equals(target) ) {
+			    urlvec.add("#_self#") ;
+			    urlvec.add("checked") ;
 			} else if ( "_top".equals(target) ) {
-				urlvec.add("#_top#") ;
-			} else if ( "_new".equals(target) ) {
-				urlvec.add("#_new#") ;
+			    urlvec.add("#_top#") ;
+			    urlvec.add("checked") ;
+			} else if ( "_blank".equals(target) ) {
+			    urlvec.add("#_blank#") ;
+			    urlvec.add("checked") ;
+			} else if ( "_other".equals(target) ) {
+			    frame_name = strary[2] ;
+			    target = frame_name ;
+			    urlvec.add("#_other#") ;
+			    urlvec.add("checked") ;
+			} else {
+			    urlvec.add("#_other#") ;
+			    urlvec.add("checked") ;
+                            frame_name = target ;
 			}
-			urlvec.add("checked") ;
 			urlvec.add("#frame_name#") ;
 			urlvec.add(frame_name) ;
 			urlvec.add("#url_doc_ref#") ;
