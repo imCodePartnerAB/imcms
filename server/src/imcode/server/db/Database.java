@@ -6,6 +6,7 @@ import java.sql.*;
 import java.io.*;
 import java.util.Vector;
 import java.util.Iterator;
+import java.util.ArrayList;
 
 public class Database {
     final static int MIMER = 0;
@@ -25,11 +26,11 @@ public class Database {
     public static void main( String[] args ) throws Exception {
 
         Database sqlServer = new Database( SQL_SERVER );
-//        sqlServer.initializeDatabase();
+        sqlServer.initializeDatabase();
         String resultSqlServer = sqlServer.test_sproc_getallroles();
 
         Database mimer = new Database(MIMER);
-//        mimer.initializeDatabase();
+        mimer.initializeDatabase();
         String resultMimer = mimer.test_sproc_getallroles();
 
         compare( resultSqlServer, resultMimer );
@@ -85,36 +86,62 @@ public class Database {
         }
     }
 
-    // todo: rename to getallrolesexcept users
+    /**
+	 *  Document me!
+     */
+    // todo: rename to getallroles but user
     public Role[] sproc_getallroles() {
-        String sprocMethodName = "getallroles()";
-        String select = "SELECT role_id, role_name ";
-        String from = "FROM roles ";
-        String orderBy = "ORDER BY role_name";
-        String sql = select + from + orderBy;
+        String sql = "SELECT role_id, role_name FROM roles ORDER BY role_name";
+        Object[] paramValues = null;
 
-        Vector roles = new Vector();
-        ResultSet rs = null;
-        Object[] values = null;
-
-        Connection conn = null;
-        try {
-            conn = connectionPool.getConnection();
-            rs = sqlProcessor.executeQuery( conn, sql, values );
-            while( rs.next() ) {
+        ResultProcessor resultProc = new ResultProcessor() {
+            Object mapResultSetToRole( ResultSet rs ) throws SQLException {
+                Role result = null;
                 int id = rs.getInt( "role_id" );
                 String name = rs.getString( "role_name" );
                 if( !name.equalsIgnoreCase( "users" )) {
-                    roles.add( new Role( id, name ));
+                    result =  new Role( id, name );
                 }
+                return result;
+            }
+        };
+
+        ArrayList result = executeQuery( sql, paramValues, resultProc, "sproc_getallroles()" );
+        return (Role[])result.toArray( new Role[result.size()]);
+    }
+
+    private abstract class ResultProcessor {
+        abstract Object mapResultSetToRole( ResultSet rs ) throws SQLException ;
+    }
+
+    private ArrayList executeQuery( String sql, Object[] paramValues, ResultProcessor resultProc, String sprocMethodName ) {
+        Connection conn = null;
+        ArrayList result = new ArrayList();
+        try {
+            conn = connectionPool.getConnection();
+            ResultSet rs = sqlProcessor.executeQuery( conn, sql, paramValues );
+            while( rs.next() ) {
+                Object temp = resultProc.mapResultSetToRole( rs );
+                result.add( temp );
             }
         } catch( SQLException ex ) {
             log.fatal( sprocMethodName + " could not get a connection", ex );
         } finally {
             closeConnection( conn );
         }
-        return (Role[])roles.toArray( new Role[roles.size()]);
+        return result;
     }
+
+    /*
+    UserDomainObject[] sproc_getallusers() {
+        String select = "SELECT * ";
+        String from = "FROM USERS ";
+        String orderBy = "ORDER BY last_name";
+        String sql = select + from + orderBy;
+
+
+    }
+    */
 
     private void closeConnection( Connection conn ) {
         try {
