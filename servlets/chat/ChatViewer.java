@@ -88,8 +88,9 @@ public class ChatViewer extends ChatBase {
 		if (myMember == null)
 		{
 			myMember = chat.createChatMember();
-			String memberName = (String)(session.getValue("chatAlias")== null ? "" : session.getValue("chatAlias"));
-			if (memberName.length() == 0)
+			String memberName = "Alias ";
+			memberName += (String)(session.getValue("chatAlias")== null ? "" : session.getValue("chatAlias"));
+			if (memberName.length() <= 7)
 			{
 				memberName = user.getString("login_name");
 			}
