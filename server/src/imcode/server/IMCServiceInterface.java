@@ -260,7 +260,10 @@ public interface IMCServiceInterface {
 	// parseExternaldoc use template
 	public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)
 	 ;
-
+	
+	// parseExternaldoc use template
+	public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type, String templateSet)
+	 ;
 
 	// get templatehome
 	public byte[] getTemplate(int template_id)

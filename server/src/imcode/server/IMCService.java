@@ -323,39 +323,54 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     public void saveText(int meta_id,imcode.server.User user,int txt_no,String text,int toHTMLSpecial) {
-	String sqlStr = "" ;
-	Table meta ;
-	String htmlStr = "" ;
 
-	// create a db connection an get meta data
-	sqlStr = "delete from texts where meta_id = " + meta_id
-	    +" and name = "+txt_no ;
+	if ( toHTMLSpecial == 0)
+	    text =  imcode.server.HTMLConv.toHTMLSpecial(text) ;
+	
+	//lets make sure that we got a (' ') or ('\n') or ('\r') before ('<') and after ('>')
+	//this is important to the text-index used by the built in search-engine in sql
+	if ( toHTMLSpecial == 1) {
+		StringBuffer buff = new StringBuffer(text);
+		if ( 1 == 1) {
+			int sTagg = text.length();		
+			while (text.lastIndexOf("<",sTagg-1) != -1){
+		        sTagg = text.lastIndexOf("<", sTagg-1);
+				
+				if (sTagg >0) {
+				    if (buff.charAt(sTagg-1) != ' ' && buff.charAt(sTagg-1) != '>' 
+					&& buff.charAt(sTagg-1)!='\n'&& buff.charAt(sTagg+1)!='\r') {
+						buff.insert(sTagg,' ');
+				    }
+				}
+			}			
+			text=buff.toString();
+			sTagg = text.length();
+			while (text.lastIndexOf(">",sTagg-1) != -1){
+		        sTagg = text.lastIndexOf(">", sTagg-1);
+				if (sTagg<buff.length()-1) {
+				    if (buff.charAt(sTagg+1) != ' ' && buff.charAt(sTagg+1) != '<'
+						&& buff.charAt(sTagg+1)!='\n' && buff.charAt(sTagg+1)!='\r') {
+						buff.insert(sTagg+1,' ');
+				    }
+				}
+			}
+		}
+		text=buff.toString();
+	}
+	// allways convert character >= 160
+	text =  imcode.server.HTMLConv.toHTML(text) ;
+	
+	// update text
+	String sqlStr = "InsertText " + meta_id +","+ txt_no +","+toHTMLSpecial+",'"+text+"'";
+	
 	DBConnect dbc = new DBConnect(m_conPool,sqlStr) ;
 	dbc.getConnection() ;
 	dbc.createStatement() ;
 	dbc.executeUpdateQuery() ;
-	dbc.clearResultSet() ;
-
-	// update text
-	sqlStr  = "insert into texts (text,type,meta_id,name)" ;
-
-	if ( toHTMLSpecial == 0)
-	    text =  imcode.server.HTMLConv.toHTMLSpecial(text) ;
-
-	// allways convert character >= 160
-	text =  imcode.server.HTMLConv.toHTML(text) ;
-
-	sqlStr += " values('" + text + "',"
-	    + toHTMLSpecial + ","+meta_id+","+txt_no+")"  ;
-
-	dbc.setSQLString(sqlStr) ;
-	dbc.createStatement() ;
-	dbc.executeUpdateQuery() ;
-
 	// close connection
 	dbc.closeConnection() ;
 	dbc = null ;
-
+	
 	this.updateLogs("Text " + txt_no +	" in  " + "[" + meta_id + "] modified by user: [" +
 			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
 
@@ -1604,7 +1619,26 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    return "" ;
 	}
     }
-
+	
+	/**
+       Parse doc replace variables with data , use template
+    */
+    public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type, String templateSet) {
+	try {
+	    String htmlStr = fileCache.getCachedFileString(new File(m_TemplateHome,lang_prefix+"/"+doc_type+"/"+templateSet+"/"+external_template_name)) ;
+	    if (variables == null) {
+		return htmlStr ;
+	    }
+	    String[] foo = new String[variables.size()] ;
+	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
+	} catch ( RuntimeException e ) {
+	    log.error("parseExternalDoc(Vector, String, String, String): RuntimeException", e );
+	    throw e ;
+	} catch ( IOException e ) {
+	    log.error("parseExternalDoc(Vector, String, String, String): IOException", e );
+	    return "" ;
+	}
+    }
 
     /**
      	@deprecated Ugly use parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)
