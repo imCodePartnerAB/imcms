@@ -19,7 +19,7 @@
                 The following things are required to run code with superadmin-privileges:
             </p>
             <ul>
-                <li><config>KeyStoreUrl</config> in <path>server.properties</path> must be the url of a keystore.</li>
+                <li><config>KeyStorePath</config> in <path>server.properties</path> must be the path of a keystore.</li>
                 <li>The class implementing <class>ContentManagementSystemRunnable</class> must be signed (e.g. inside a signed jar-file).</li>
                 <li>All certificates used for signing the class must be found in the keystore.</li>
             </ul>

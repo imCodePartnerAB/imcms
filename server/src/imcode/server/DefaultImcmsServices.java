@@ -27,8 +27,6 @@ import org.apache.velocity.app.VelocityEngine;
 
 import java.beans.PropertyDescriptor;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.text.*;
@@ -96,15 +94,13 @@ final public class DefaultImcmsServices implements ImcmsServices {
         } catch ( IOException e ) {
             throw new UnhandledException( e );
         }
-        String keyStoreUrlString = config.getKeyStoreUrl();
-        if ( StringUtils.isNotBlank(keyStoreUrlString) ) {
+        String keyStorePath = config.getKeyStorePath();
+        if ( StringUtils.isNotBlank( keyStorePath ) ) {
+            File keyStoreFile = FileUtility.getFileFromWebappRelativePath( keyStorePath ) ;
             try {
-                URL keyStoreUrl = new URL( keyStoreUrlString );
-                keyStore.load( keyStoreUrl.openStream(), null );
-            } catch ( MalformedURLException e ) {
-                log.error( "Malformed KeyStoreUrl: " + keyStoreUrlString );
+                keyStore.load( new FileInputStream( keyStoreFile ), null );
             } catch ( Exception e ) {
-                log.error( "Failed to load keystore from url " + keyStoreUrlString );
+                log.error( "Failed to load keystore from path " + keyStoreFile, e );
             }
         }
     }

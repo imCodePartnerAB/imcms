@@ -21,6 +21,9 @@ public class FileUtility {
      * Takes a path-string and returns a file. The path is prepended with the webapp dir if the path is relative.
      */
     public static File getFileFromWebappRelativePath( String pathString ) {
+        if ( null == pathString ) {
+            return null ;
+        }
         File path = new File( pathString );
         if ( !path.isAbsolute() ) {
             path = new File( imcode.server.WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath(), pathString );
