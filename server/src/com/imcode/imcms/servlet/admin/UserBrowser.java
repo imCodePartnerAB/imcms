@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 public class UserBrowser extends HttpServlet {
 
@@ -31,25 +30,33 @@ public class UserBrowser extends HttpServlet {
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
+        UserBrowserFacade userBrowserFacade = (UserBrowserFacade)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
         if ( null != request.getParameter( REQUEST_PARAMETER__SHOW_USERS_BUTTON ) ) {
-            String searchString = request.getParameter( REQUEST_PARAMETER__SEARCH_STRING );
-            ImcmsAuthenticatorAndUserMapper userMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper();
-            boolean includeInactiveUsers = null != request.getParameter( REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS ) ;
-            UserDomainObject[] users = userMapper.findUsersByNamePrefix(searchString, includeInactiveUsers);
-            FormData formData = new FormData();
-            formData.setSearchString( searchString );
-            formData.setUsers( users );
-            formData.setIncludeInactiveUsers(includeInactiveUsers) ;
-            forwardToJsp( request, response, formData );
+            listUsers( request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__SELECT_USER_BUTTON ) ) {
-            UserBrowserFacade userBrowserFacade = (UserBrowserFacade)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
             UserDomainObject selectedUser = getSelectedUserFromRequest( request );
-            userBrowserFacade.setSelectedUser( selectedUser );
-            String forwardReturnUrl = userBrowserFacade.getForwardReturnUrl();
-            request.getRequestDispatcher( forwardReturnUrl ).forward( request, response );
-        } else if (null != request.getParameter(REQUEST_PARAMETER__ADD_USER)) {
+            if (null == selectedUser && !userBrowserFacade.isNullSelectable()) {
+                listUsers( request, response );
+            } else {
+                userBrowserFacade.setSelectedUser( selectedUser );
+                String forwardReturnUrl = userBrowserFacade.getForwardReturnUrl();
+                request.getRequestDispatcher( forwardReturnUrl ).forward( request, response );
+            }
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__ADD_USER ) && userBrowserFacade.isUsersAddable() ) {
             response.sendRedirect( "AdminUserProps?ADD_USER=true" );
         }
+    }
+
+    private void listUsers( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+        String searchString = request.getParameter( REQUEST_PARAMETER__SEARCH_STRING );
+        boolean includeInactiveUsers = null != request.getParameter( REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS );
+        ImcmsAuthenticatorAndUserMapper userMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper();
+        UserDomainObject[] users = userMapper.findUsersByNamePrefix( searchString, includeInactiveUsers );
+        FormData formData = new FormData();
+        formData.setSearchString( searchString );
+        formData.setUsers( users );
+        formData.setIncludeInactiveUsers( includeInactiveUsers );
+        forwardToJsp( request, response, formData );
     }
 
     static void forwardToJsp( HttpServletRequest request, HttpServletResponse response, FormData formData ) throws ServletException, IOException {
@@ -62,8 +69,8 @@ public class UserBrowser extends HttpServlet {
     private UserDomainObject getSelectedUserFromRequest( HttpServletRequest request ) {
         ImcmsAuthenticatorAndUserMapper userMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper();
         String userIdStr = request.getParameter( REQUEST_PARAMETER__USER_ID );
-        if (null == userIdStr) {
-            return null ;
+        if ( null == userIdStr ) {
+            return null;
         }
         int userId = Integer.parseInt( userIdStr );
         UserDomainObject user = userMapper.getUser( userId );

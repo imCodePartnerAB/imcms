@@ -16,6 +16,8 @@ public class UserBrowserFacade {
     private String forwardReturnUrl;
     private String searchString;
     private int selectButton;
+    private boolean nullSelectable = true ;
+
     public static final int SELECT_BUTTON__SELECT_USER = UserBrowser.SELECT_BUTTON__SELECT_USER;
     public static final int SELECT_BUTTON__EDIT_USER = UserBrowser.SELECT_BUTTON__EDIT_USER;
 
@@ -75,5 +77,13 @@ public class UserBrowserFacade {
 
     public boolean isUsersAddable() {
         return usersAddable;
+    }
+
+    public boolean isNullSelectable() {
+        return nullSelectable;
+    }
+
+    public void setNullSelectable( boolean nullSelectable ) {
+        this.nullSelectable = nullSelectable;
     }
 }

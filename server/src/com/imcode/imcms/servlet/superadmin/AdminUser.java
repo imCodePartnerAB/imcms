@@ -36,10 +36,11 @@ public class AdminUser extends Administrator {
         }
 
         UserBrowserFacade userBrowserFacade = UserBrowserFacade.getInstance( req );
-        if ( userBrowserFacade.isUserSelected() ) {
+        if ( null != userBrowserFacade.getSelectedUser() ) {
             gotoChangeUser(req, res, user, userBrowserFacade.getSelectedUser() );
         } else {
             userBrowserFacade.setUsersAddable( true );
+            userBrowserFacade.setNullSelectable( false );
             userBrowserFacade.setSelectButton( UserBrowserFacade.SELECT_BUTTON__EDIT_USER );
             userBrowserFacade.setForwardReturnUrl( "AdminUser" );
             userBrowserFacade.forward( req, res );

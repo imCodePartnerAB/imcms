@@ -3,18 +3,16 @@ package com.imcode.imcms.flow;
 import com.imcode.imcms.servlet.admin.DocumentComposer;
 import com.imcode.imcms.servlet.admin.ImageBrowse;
 import com.imcode.imcms.servlet.admin.UserBrowserFacade;
-import com.imcode.imcms.flow.EditDocumentPageFlow;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.SectionDomainObject;
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.util.DateConstants;
 import imcode.util.HttpSessionUtils;
 import imcode.util.Utility;
-import imcode.util.DateConstants;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.servlet.ServletException;
@@ -103,11 +101,9 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
     private void dispatchFromCreatorUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         UserBrowserFacade userBrowserFacade = UserBrowserFacade.getInstance( request );
-        if ( userBrowserFacade.isUserSelected() ) {
-            UserDomainObject selectedUser = userBrowserFacade.getSelectedUser();
-            if (null != selectedUser) {
-                document.setCreator( selectedUser );
-            }
+        UserDomainObject selectedUser = userBrowserFacade.getSelectedUser();
+        if ( null != selectedUser ) {
+            document.setCreator( selectedUser );
         }
         dispatchToFirstPage( request, response );
     }
@@ -130,17 +126,19 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     }
 
     private void dispatchToPublisherUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        dispatchToUserBrowser( request, response, PAGE__PUBLISHER_USER_BROWSER );
+        dispatchToUserBrowser( request, response, PAGE__PUBLISHER_USER_BROWSER, true );
     }
 
     private void dispatchToCreatorUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        dispatchToUserBrowser( request, response, PAGE__CREATOR_USER_BROWSER );
+        dispatchToUserBrowser( request, response, PAGE__CREATOR_USER_BROWSER, false );
     }
 
-    private void dispatchToUserBrowser( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {
+    private void dispatchToUserBrowser( HttpServletRequest request, HttpServletResponse response, String page,
+                                        boolean nullSelectable ) throws IOException, ServletException {
         UserBrowserFacade userBrowserFacade = UserBrowserFacade.getInstance( request );
         userBrowserFacade.setSelectButton( UserBrowserFacade.SELECT_BUTTON__SELECT_USER );
         userBrowserFacade.setUsersAddable( false );
+        userBrowserFacade.setNullSelectable( nullSelectable );
         String returnUrl = createReturnUrlFromPage( request, page );
         userBrowserFacade.setForwardReturnUrl( returnUrl );
         userBrowserFacade.forward( request, response );
