@@ -322,35 +322,7 @@ public class AdminRandomTextsFile extends Administrator {
 				
 			}
 		
-			if (req.getParameter("revert")!=null)
-			{
-				whichFile = (String)session.getAttribute("file") ;
-	
-				//öppna filen med detta namnet
-				String openFile = IMCServiceRMI.getFortune(imcServer,whichFile + ".txt") ;
-				BufferedReader readFile = new BufferedReader( new StringReader( openFile ) );
-	
-				options = "<option value=\"No_Choice\" selected>-- V&auml;lj Rad --</option>";
-				Map lines = Collections.synchronizedMap(new TreeMap());
-	
-				String line = readFile.readLine();
-				int row = 0;
-				while ( line!=null && !(line.length()<=12) )
-				{
-					String fullLine = line.replace('#',' ');
-					int stop = fullLine.length();
-					if (fullLine.indexOf("<BR>") != -1 ){	stop = fullLine.indexOf("<BR>");}
-					if (fullLine.indexOf("<br>") != -1 ){	stop = fullLine.indexOf("<br>");}
 			
-					options = options + "<option value=\""  + row + "\" > " + fullLine.substring(0,stop) + "</option>";
-					lines.put( new Integer(row) , fullLine );
-					line = readFile.readLine();
-					row++;
-				}
-				
-				session.setAttribute("lines",lines);
-			}
-		
 			//Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
 			Vector values = new Vector();
 			values.add("#date1#");
