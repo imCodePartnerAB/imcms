@@ -7,13 +7,12 @@ import org.apache.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 public class HttpSessionUtils {
 
     private final static Logger log = Logger.getLogger( HttpSessionUtils.class.getName() );
 
-    private final static Map globalMap = new WeakHashMap();
+    private static int totalSessionObjectCount = 0 ;
 
     private static final String SESSION_ATTRIBUTE_NAME__SESSION_MAP = HttpSessionUtils.class.getName() + ".sessionMap";
 
@@ -36,16 +35,17 @@ public class HttpSessionUtils {
 
     private static void put( HttpServletRequest request, String sessionAttributeName,
                              final Object objectToAddToSession ) {
-        globalMap.put( objectToAddToSession, null );
         LRUMap sessionMap = getSessionMap( request );
         if (sessionMap.isFull()) {
-            log.warn( "SessionMap is full. Least recently used object will be evicted.") ;
+            log.debug( "SessionMap is full. Least recently used object will be evicted.") ;
+        } else {
+            totalSessionObjectCount++;
         }
         sessionMap.put( sessionAttributeName, objectToAddToSession );
         log.debug( "Put in session: \"" + sessionAttributeName + "\": " + objectToAddToSession.getClass() + ". Sizes: "
                    + sessionMap.size()
                    + "/"
-                   + globalMap.size() );
+                   + totalSessionObjectCount );
     }
 
     private static LRUMap getSessionMap( HttpServletRequest request ) {
@@ -84,9 +84,9 @@ public class HttpSessionUtils {
         Map sessionMap = getSessionMap( request );
         Object object = sessionMap.remove( sessionAttributeName );
         if ( null != object ) {
-            globalMap.remove( object );
+            totalSessionObjectCount-- ;
             log.debug( "Removed from session: \"" + sessionAttributeName + "\": " + object.getClass()
-                       + ". Sizes: " + sessionMap.size() + "/" + globalMap.size() );
+                       + ". Sizes: " + sessionMap.size() + "/" + totalSessionObjectCount );
         }
         return object;
     }

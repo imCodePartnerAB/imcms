@@ -8,6 +8,7 @@ import org.apache.commons.lang.UnhandledException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.io.Serializable;
 
 public class FileDocumentDomainObject extends DocumentDomainObject {
 
@@ -128,7 +129,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         }
     }
 
-    public static class FileDocumentFile implements Cloneable {
+    public static class FileDocumentFile implements Cloneable, Serializable {
 
         private String id;
         private String filename;

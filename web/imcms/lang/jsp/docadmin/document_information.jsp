@@ -1,8 +1,4 @@
-<%@ page
-    contentType="text/html;
-    charset=windows-1252"
-
-    import="imcode.server.Imcms,
+<%@ page contentType="text/html; charset=windows-1252" import="imcode.server.Imcms,
             org.apache.commons.lang.StringEscapeUtils,
             java.text.SimpleDateFormat,
             java.text.DateFormat,
@@ -569,7 +565,7 @@ function checkFocus() {
 </vel:velocity>
 <%
 if (!adminButtonsHidden) {
-	String adminButtons = service.getAdminButtons( user, document) ;
+	String adminButtons = service.getAdminButtons( request, user, document) ;
 	if (!"".equals( adminButtons )) {
 		%><center><%= adminButtons %></center><%
 	}

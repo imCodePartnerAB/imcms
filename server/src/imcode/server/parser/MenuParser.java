@@ -329,7 +329,7 @@ class MenuParser {
         String imageUrl = document.getMenuImage();
         String imageTag = imageUrl != null && imageUrl.length() > 0
                           ? "<img src=\"" + StringEscapeUtils.escapeHtml( imageUrl ) + "\" border=\"0\">" : "";
-        String headline = document.getHeadline();
+        String headline = StringEscapeUtils.escapeHtml( document.getHeadline() );
         if ( headline.length() == 0 ) {
             headline = "&nbsp;";
         } else {
@@ -356,7 +356,7 @@ class MenuParser {
         tags.setProperty( "#menuitemindex#", "" + menuItemIndex );
         tags.setProperty( "#menuitemtreesortkey#", menuItem.getTreeSortKey().toString() );
         tags.setProperty( "#menuitemmetaid#", "" + document.getId() );
-        tags.setProperty( "#menuitemheadline#", StringEscapeUtils.escapeHtml( headline ) );
+        tags.setProperty( "#menuitemheadline#", headline );
         tags.setProperty( "#menuitemtext#", StringEscapeUtils.escapeHtml( document.getMenuText() ) );
         tags.setProperty( "#menuitemimage#", imageTag );
         tags.setProperty( "#menuitemimageurl#", StringEscapeUtils.escapeHtml( imageUrl ) );

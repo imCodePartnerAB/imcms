@@ -326,7 +326,7 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
         }
 
         private boolean isValidMimeType( String mimeType ) {
-            return Pattern.compile( "^(x-[a-z-]|application|audio|image|message|model|multipart|text|video)/", Pattern.CASE_INSENSITIVE ).matcher( mimeType ).find();
+            return Pattern.compile( "^(x-[a-z-]+|application|audio|image|message|model|multipart|text|video)/", Pattern.CASE_INSENSITIVE ).matcher( mimeType ).find();
         }
 
         public LocalizedMessage getErrorMessage() {
