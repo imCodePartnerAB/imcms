@@ -8,8 +8,16 @@ import java.util.ArrayList;
 public class SQLProcessorNoTransaction {
 
     private static Logger log = Logger.getLogger( SQLProcessorNoTransaction.class );
-
     private ConnectionPool connectionPool;
+
+    /**
+     * This method should not be used in an idela world. Instead all calls to the database should be through
+     * this class or through a SQLTransaction created and received from this class.
+     * @deprecated
+     */
+    public ConnectionPool getConnectionPool() {
+        return connectionPool;
+    }
 
     public SQLProcessorNoTransaction( ConnectionPool connectionPool ) {
         this.connectionPool = connectionPool;
@@ -18,10 +26,9 @@ public class SQLProcessorNoTransaction {
     public SQLTransaction createNewTransaction( int transactionIsolationLevel, int noOfRetries ) {
         SQLTransaction result = null;
         try {
-             result = new SQLTransaction( connectionPool, transactionIsolationLevel, noOfRetries );
-        }
-        catch( SQLException ex ) {
-            static_logSQLException( "SQLExcetion in createNewTransaction()", ex );
+            result = new SQLTransaction( connectionPool, transactionIsolationLevel, noOfRetries );
+        } catch( SQLException ex ) {
+            static_logSQLException( log, "SQLExcetion in createNewTransaction()", ex );
         }
         return result;
     }
@@ -33,11 +40,11 @@ public class SQLProcessorNoTransaction {
         try {
             con = connectionPool.getConnection();
             statement = con.prepareStatement( sql );
-            setParamsIntoStatment( statement, paramValues );
+            static_setParamsIntoStatment( statement, paramValues );
             ResultSet rs = statement.executeQuery();
-            result = mapResults( rs, resultProc );
+            result = static_mapResults( rs, resultProc );
         } catch( SQLException ex ) {
-            static_logSQLException( sql, ex );
+            static_logSQLException( log, sql, ex );
         } finally {
             static_closeStatement( statement );
             static_closeConnection( con );
@@ -45,76 +52,25 @@ public class SQLProcessorNoTransaction {
         return result;
     }
 
-    public int executeUpdate( String sql, Object[] paramValues ) {
-        Connection con = null;
-        int rowsModified = 0;
-        try {
-            con = connectionPool.getConnection();
-            rowsModified = executeUpdate( con, sql, paramValues );
-        } catch (SQLException ex ) {
-            static_logSQLException( sql, ex );
-        } finally {
-            static_closeConnection( con );
-        }
-        return rowsModified;
-    }
-
     public void executeBatchUpdate( String[] sqlCommands ) {
         Connection con = null;
         try {
             con = connectionPool.getConnection();
-            static_executeBatchUpdate( con, sqlCommands );
-        } catch( SQLException  ex ) {
-            static_logSQLException( "Exception in static_executeBatchUpdate()", ex );
-        }
-        finally {
-            static_closeConnection( con );
-        }
-    }
-
-    private static void static_executeBatchUpdate( Connection con, String[] sqlCommands ) {
-        try {
             Statement statment = con.createStatement();
             for( int i = 0; i < sqlCommands.length; i++ ) {
                 String command = sqlCommands[i];
                 statment.addBatch( command );
             }
             statment.executeBatch();
-        }
-        catch( SQLException ex ) {
-            static_logSQLException( "batch update failed, ", ex );
-        }
-    }
-
-    static int executeUpdate( Connection con, String sql, Object[] statmentValues ) {
-        PreparedStatement statement = null;
-        int rowCount = 0;
-        try {
-            statement = con.prepareStatement( sql );
-            if( statmentValues != null ) {
-                for( int i = 0; i < statmentValues.length; i++ ) {
-                    Object value = statmentValues[i];
-                    if( value == null ) {
-                        throw new NullPointerException( "Can't do anyting with a null value" );
-                    } else if ( value instanceof SQLTypeNull ) {
-                        statement.setNull( i + 1, ((SQLTypeNull)value).getFieldType() );
-                    } else {
-                        statement.setObject( i + 1, value );
-                    }
-                }
-            }
-            rowCount = statement.executeUpdate();
         } catch( SQLException ex ) {
-            static_logSQLException( sql, ex );
+            static_logSQLException( log, "Exception in static_executeBatchUpdate()", ex );
+        } finally {
+            static_closeConnection( con );
         }
-        finally {
-            static_closeStatement( statement );
-        }
-        return rowCount;
     }
 
-    static void static_logSQLException( String sql, SQLException ex ) {
-        log.error( "Couldn't execute the command '" + sql + "'" , ex );
+    static void static_logSQLException( Logger log, String sql, SQLException ex ) {
+        log.error( "Couldn't execute the command '" + sql + "'", ex );
     }
 
     static void static_closeStatement( Statement stmnt ) {
@@ -137,11 +93,7 @@ public class SQLProcessorNoTransaction {
         }
     }
 
-    public ConnectionPool getConnectionPool() {
-        return connectionPool;
-    }
-
-    static ArrayList mapResults( ResultSet rs, ResultProcessor resultProcessor ) throws SQLException {
+    static ArrayList static_mapResults( ResultSet rs, ResultProcessor resultProcessor ) throws SQLException {
         ArrayList result = new ArrayList();
         while( rs.next() ) {
             Object temp = resultProcessor.mapOneRow( rs );
@@ -150,13 +102,13 @@ public class SQLProcessorNoTransaction {
         return result;
     }
 
-    static void setParamsIntoStatment( PreparedStatement statement, Object[] paramValues ) throws SQLException {
+    static void static_setParamsIntoStatment( PreparedStatement statement, Object[] paramValues ) throws SQLException {
         if( paramValues != null ) {
             for( int i = 0; i < paramValues.length; i++ ) {
                 Object value = paramValues[i];
                 if( value == null ) {
                     throw new NullPointerException( "Can't do anyting with a null value" );
-                } else if ( value instanceof SQLTypeNull ) {
+                } else if( value instanceof SQLTypeNull ) {
                     statement.setNull( i + 1, ((SQLTypeNull)value).getFieldType() );
                 } else {
                     statement.setObject( i + 1, value );
@@ -164,4 +116,5 @@ public class SQLProcessorNoTransaction {
             }
         }
     }
+
 }

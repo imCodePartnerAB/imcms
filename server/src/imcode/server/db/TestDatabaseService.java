@@ -74,7 +74,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         };
     }
 
-    private void createAditionalTestData() throws IOException {
+    private void createAditionalTestData() {
         for( int i = 0; i < databaseServices.length; i++ ) {
             DatabaseService databaseService = databaseServices[i];
             databaseService.createTestData( DatabaseTestInitializer.FILE_PATH );
@@ -176,7 +176,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         }
     }
 
-    // todo, add testdata.
+    // todo, add testdata and fix more assertions
     private void test_sproc_GetReadrunnerUserDataForUser( DatabaseService databaseService ) {
         assertNotNull( databaseService.sproc_GetReadrunnerUserDataForUser( USER_TEST_ID ) );
     }

@@ -26,11 +26,11 @@ class MimerDatabaseService extends DatabaseService {
         super.initConnectionPoolAndSQLProcessor( serverName, jdbcDriver, serverUrl, user, password, maxConnectionCount );
 
         // This is only needed to be done the first time
-        // sqlProcessor.executeUpdate("CREATE DATABANK " + databaseName , null);
+        // noTransactionSqlProcessor.executeUpdate("CREATE DATABANK " + databaseName , null);
     }
 
     void backup( final String fullPathToBackupFile ) {
-        final SQLTransaction transaction = sqlProcessor.createNewTransaction( Connection.TRANSACTION_SERIALIZABLE, 1 );
+        final SQLTransaction transaction = noTransactionSqlProcessor.createNewTransaction( Connection.TRANSACTION_SERIALIZABLE, 1 );
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
                 transaction.executeUpdate( "START BACKUP", null );
@@ -43,12 +43,12 @@ class MimerDatabaseService extends DatabaseService {
     /*
     Not working, but I'm tired, whaiting a few days before deciding on if this is needed.
     void restore( String fullPathToDatabaseFile, String fullPathToBackupFile )  throws IOException {
-        SQLProcessor.SQLTransaction transaction = sqlProcessor.createNewTransaction();
-        sqlProcessor.executeUpdate( "SET DATABASE OFFLINE", null );
+        SQLProcessor.SQLTransaction transaction = noTransactionSqlProcessor.createNewTransaction();
+        noTransactionSqlProcessor.executeUpdate( "SET DATABASE OFFLINE", null );
         copyFile( fullPathToDatabaseFile, fullPathToBackupFile );
-        sqlProcessor.executeUpdate( "ALTER DATABANK test RESTORE USING '" + fullPathToDatabaseFile + "'", null );
+        noTransactionSqlProcessor.executeUpdate( "ALTER DATABANK test RESTORE USING '" + fullPathToDatabaseFile + "'", null );
         transaction.commit();
-        sqlProcessor.executeUpdate( "SET DATABASE ONLINE RESET LOG", null );
+        noTransactionSqlProcessor.executeUpdate( "SET DATABASE ONLINE RESET LOG", null );
     }
 
     private void copyFile( String to, String from ) throws IOException {

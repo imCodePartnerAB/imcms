@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class SQLTransaction {
 
-    public class TransactionException extends RuntimeException {
+    public static class TransactionException extends RuntimeException {
         public TransactionException( String message, Throwable ex ) {
             super( message, ex );
         }
@@ -18,32 +18,25 @@ public class SQLTransaction {
 
     private ConnectionPool connectionPool;
     private int transactionIsolationLevel;
-    private int noOfRetries;
+    private int maxNoRetries;
     private Connection currentConnection;
-
     private int rowCount = 0;
-    private Object transactionResult;
+    private static Logger log = Logger.getLogger( SQLTransaction.class );
 
-    private static Logger logger = Logger.getLogger( SQLTransaction.class );
-
-    public SQLTransaction( ConnectionPool connectionPool, int transactionIsolationLevel, int noOfRetries ) throws SQLException {
+    public SQLTransaction( ConnectionPool connectionPool, int transactionIsolationLevel, int maxNoRetries ) throws SQLException {
         this.connectionPool = connectionPool;
         this.transactionIsolationLevel = transactionIsolationLevel;
-        this.noOfRetries = noOfRetries;
+        this.maxNoRetries = maxNoRetries;
     }
 
     public void executeAndCommit( TransactionContent transactionContent ) {
-        executeAndCommit( noOfRetries, transactionContent );
-    }
-
-    private void executeAndCommit( int maxNoOfTries, TransactionContent transactionContent ) {
         Throwable latestException = null;
         boolean succeded = false;
         int tryNo = 0;
-        while( !succeded && tryNo < maxNoOfTries ) {
+        while( !succeded && tryNo < maxNoRetries ) {
             tryNo++;
             if( tryNo > 1 ) {
-                logger.info( "Failure in executeAndCommit, trying again, try no: " + tryNo );
+                log.info( "Failure in executeAndCommit, trying again, try no: " + tryNo );
             }
             try {
                 this.currentConnection = connectionPool.getConnection();
@@ -56,12 +49,12 @@ public class SQLTransaction {
                 succeded = true;
             } catch( SQLException ex ) {
                 latestException = ex;
-                SQLProcessorNoTransaction.static_logSQLException( "Exception when executing transactionContent! Rolls back the transaction ", ex );
+                SQLProcessorNoTransaction.static_logSQLException( log, "Exception when executing transactionContent! Rolls back the transaction ", ex );
                 try {
                     currentConnection.rollback();
                 } catch( SQLException ex2 ) {
                     // Swallow.
-                    SQLProcessorNoTransaction.static_logSQLException( "Exception when rollback", ex );
+                    SQLProcessorNoTransaction.static_logSQLException( log, "Exception when rollback", ex );
                 }
             } finally {
                 SQLProcessorNoTransaction.static_closeConnection( currentConnection );
@@ -72,10 +65,31 @@ public class SQLTransaction {
         }
     }
 
-    public int executeUpdate( String sql, Object[] params ) {
-        int rowCount = SQLProcessorNoTransaction.executeUpdate( currentConnection, sql, params );
+    public void executeUpdate( String sql, Object[] params ) {
+        PreparedStatement statement = null;
+        int rowCount = 0;
+        try {
+            statement = currentConnection.prepareStatement( sql );
+            if( params != null ) {
+                for( int i = 0; i < params.length; i++ ) {
+                    Object value = params[i];
+                    if( value == null ) {
+                        throw new NullPointerException( "Can't do anyting with a null value" );
+                    } else if ( value instanceof SQLTypeNull ) {
+                        statement.setNull( i + 1, ((SQLTypeNull)value).getFieldType() );
+                    } else {
+                        statement.setObject( i + 1, value );
+                    }
+                }
+            }
+            rowCount = statement.executeUpdate();
+        } catch( SQLException ex ) {
+            SQLProcessorNoTransaction.static_logSQLException( log, sql, ex );
+        }
+        finally {
+            SQLProcessorNoTransaction.static_closeStatement( statement );
+        }
         this.rowCount += rowCount;
-        return rowCount;
     }
 
     public ArrayList executeQuery( String sql, Object[] paramValues, ResultProcessor resultProcessor ) throws SQLException {
@@ -84,9 +98,9 @@ public class SQLTransaction {
         ResultSet rs;
         try {
             statement = currentConnection.prepareStatement( sql );
-            SQLProcessorNoTransaction.setParamsIntoStatment( statement, paramValues );
+            SQLProcessorNoTransaction.static_setParamsIntoStatment( statement, paramValues );
             rs = statement.executeQuery();
-            result = SQLProcessorNoTransaction.mapResults( rs, resultProcessor );
+            result = SQLProcessorNoTransaction.static_mapResults( rs, resultProcessor );
         } finally {
             SQLProcessorNoTransaction.static_closeStatement( statement );
         }
@@ -97,11 +111,4 @@ public class SQLTransaction {
         return rowCount;
     }
 
-    public void setTransactionResult( Object value ) {
-        transactionResult = value;
-    }
-
-    public Object getTransactionResult() {
-        return transactionResult;
-    }
 }
