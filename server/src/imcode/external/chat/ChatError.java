@@ -6,6 +6,7 @@ import imcode.external.diverse.VariableManager;
 import imcode.external.chat.ChatBase;
 import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
+import imcode.server.user.UserDomainObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -102,14 +103,9 @@ public class ChatError extends ChatBase {
     private void sendErrorHtml( HttpServletRequest req, HttpServletResponse res,
                                   VariableManager vm, String htmlFile ) throws IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        
         // Lets get the TemplateFolder  and the foldername used for this certain metaid
-        String lang_prefix = imcref.getDefaultLanguageAsIso639_2();
-        if (this.getUserObj(req,res) != null){
-            lang_prefix = this.getUserObj(req,res).getLangPrefix();
-        }
-        File templateLib = this.getExternalTemplateFolder( req, lang_prefix);
+        UserDomainObject user = this.getUserObj(req,res) ;
+        File templateLib = this.getExternalTemplateFolder( req, user );
 
         // Lets get the path to the imagefolder.
         String imagePath = this.getExternalImageFolder( req, res );

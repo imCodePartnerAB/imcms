@@ -45,7 +45,7 @@ public class UrlDocTest extends HttpServlet {
 
 		String lang_prefix = user.getLangPrefix() ;
 
-		out.print(imcref.parseDoc(null,"UrlDocTestHead.html",lang_prefix)) ;
+		out.print(imcref.parseDoc(null,"UrlDocTestHead.html", user)) ;
 		out.flush() ;
 		for ( int i = 0; meta_id != null && i<meta_id.length ; i++ ) {
 			String found = "green", reached = "green", ok = "red" ;
@@ -111,10 +111,10 @@ public class UrlDocTest extends HttpServlet {
 			vec.add(reached) ;
 			vec.add("#ok#") ;
 			vec.add(ok) ;
-			out.print(imcref.parseDoc(vec,"UrlDocTestRow.html",lang_prefix)) ;
+			out.print(imcref.parseDoc(vec,"UrlDocTestRow.html", user)) ;
 			out.flush() ;
 		}
-		out.print(imcref.parseDoc(null,"UrlDocTestTail.html",lang_prefix)) ;
+		out.print(imcref.parseDoc(null,"UrlDocTestTail.html", user)) ;
 	}
 
 	private String testUrl (URL url) throws IOException {

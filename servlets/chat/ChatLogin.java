@@ -121,7 +121,7 @@ public class ChatLogin extends ChatBase {
             tags.add( "#ALIAS#" );
             tags.add( req.getParameter( "alias" ) );
             String libName = getTemplateLibName( chatref, myChat.getChatId() );
-            error_msg = imcref.parseExternalDoc( tags, "alias_error_msg.html", user.getLangPrefix(), "103", libName );
+            error_msg = imcref.parseExternalDoc( tags, "alias_error_msg.html", user, "103", libName );
         }
         //get the users username
         String userName = user.getLoginName();

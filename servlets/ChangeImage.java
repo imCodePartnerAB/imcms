@@ -287,7 +287,7 @@ public class ChangeImage extends HttpServlet {
 
         String lang_prefix = user.getLangPrefix();
 
-        htmlStr = imcref.parseDoc( vec, "change_img.html", lang_prefix );
+        htmlStr = imcref.parseDoc( vec, "change_img.html", user);
 
         out.print( htmlStr );
 

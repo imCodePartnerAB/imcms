@@ -112,6 +112,6 @@ public class ChatNormalMessage extends ChatMessage {
     }
 
     private static String parseChatTemplate( IMCServiceInterface imcref, Vector vLine, String templateName, UserDomainObject user, String libName ) {
-        return imcref.parseExternalDoc( vLine, templateName, user.getLangPrefix(), "103", libName ).trim();
+        return imcref.parseExternalDoc( vLine, templateName, user, "103", libName ).trim();
     }
 }//end class

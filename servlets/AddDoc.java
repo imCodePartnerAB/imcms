@@ -121,7 +121,7 @@ public class AddDoc extends HttpServlet {
                 }
             }
             // Lets parse the html page which consists of the add an existing doc
-            out.write(imcref.parseDoc(vec, "existing_doc.html", lang_prefix));
+            out.write(imcref.parseDoc(vec, "existing_doc.html", user));
             return;
 
         } else if (item_selected.equals("5")) {
@@ -175,14 +175,14 @@ public class AddDoc extends HttpServlet {
         }
 
         if (item_selected.equals("2")) {
-            htmlStr = imcref.parseDoc(null, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta_text.html", lang_prefix);
+            htmlStr = imcref.parseDoc(null, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta_text.html", user);
         } else {
-            htmlStr = imcref.parseDoc(null, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta.html", lang_prefix);
+            htmlStr = imcref.parseDoc(null, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta.html", user);
         }
 
         Vector vec = new Vector();
         MetaDataParser.addLanguageRelatedTagsForDocInfoPageToParseList(vec, hash, imcref, user);
-        MetaDataParser.addPublisherRelatedTagsForDocInfoPageToParseList(vec, hash, imcref, lang_prefix);
+        MetaDataParser.addPublisherRelatedTagsForDocInfoPageToParseList(vec, hash, imcref, user);
 
         StringBuffer checks = new StringBuffer();
         for (int i = 0; i < metatable.length; i += 2) {
@@ -250,16 +250,16 @@ public class AddDoc extends HttpServlet {
         vec.add("#doc_type#");
         vec.add(doc_type);
 
-        MetaDataParser.getSectionDataFromDbAndAddSectionRelatedTagsToParseList( imcref, meta_id, vec, lang_prefix );
+        MetaDataParser.getSectionDataFromDbAndAddSectionRelatedTagsToParseList( imcref, meta_id, vec, user);
 
         vec.add("#categories#");
         vec.add(MetaDataParser.createHtmlListBoxesOfCategoriesForEachCategoryType(imcref.getDocumentMapper(), Integer.parseInt(meta_id), imcref, user));
 
         // Lets parse the information and send it to the browser
         if (item_selected.equals("2")) {
-            out.write(imcref.parseDoc(vec, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta_text.html", lang_prefix));
+            out.write(imcref.parseDoc(vec, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta_text.html", user));
         } else {
-            out.write(imcref.parseDoc(vec, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta.html", lang_prefix));
+            out.write(imcref.parseDoc(vec, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta.html", user));
         }
 
     }

@@ -48,7 +48,7 @@ public class ChatSystemMessage extends ChatMessage {
             vLine.add( "" );
         }
 
-        return imcref.parseExternalDoc( vLine, "system_msg.html", user.getLangPrefix(), "103", libName ).trim() + "<br>\n";
+        return imcref.parseExternalDoc( vLine, "system_msg.html", user, "103", libName ).trim() + "<br>\n";
     }
 
     private String getMessageString( IMCServiceInterface imcref, UserDomainObject user, String libName ) {
@@ -67,7 +67,7 @@ public class ChatSystemMessage extends ChatMessage {
                 templateName = "user_timedout_msg.html";
 
         }
-        return imcref.parseExternalDoc( null, templateName, user.getLangPrefix(), "103", libName ).trim();
+        return imcref.parseExternalDoc( null, templateName, user, "103", libName ).trim();
     }
 
     public String getLogMsg( IMCServiceInterface imcref, UserDomainObject user, String libName ) {

@@ -150,7 +150,7 @@ public class AdminRoleBelongings extends Administrator {
             if ( roleId == null ) {
 
                 // no role choisen
-                sendErrorMessage( imcref, eMailServerMaster, languagePrefix, errorHeader, 100, res );
+                sendErrorMessage( imcref, eMailServerMaster, user, errorHeader, 100, res );
 
                 return;
             }
@@ -191,7 +191,7 @@ public class AdminRoleBelongings extends Administrator {
             if ( roleId == null ) {
 
                 // no role choisen
-                sendErrorMessage( imcref, eMailServerMaster, languagePrefix, errorHeader, 100, res );
+                sendErrorMessage( imcref, eMailServerMaster, user, errorHeader, 100, res );
 
                 return;
             }
@@ -218,7 +218,7 @@ public class AdminRoleBelongings extends Administrator {
             if ( curentRoleId == null || userIds == null ) {
 
                 // no role choisen or/and no users
-                sendErrorMessage( imcref, eMailServerMaster, languagePrefix, errorHeader, 101, res );
+                sendErrorMessage( imcref, eMailServerMaster, user, errorHeader, 101, res );
                 return;
             }
 
@@ -237,7 +237,7 @@ public class AdminRoleBelongings extends Administrator {
             if ( roleId == null || userIds == null ) {
 
                 // no role choisen or/and no users
-                sendErrorMessage( imcref, eMailServerMaster, languagePrefix, errorHeader, 102, res );
+                sendErrorMessage( imcref, eMailServerMaster, user, errorHeader, 102, res );
                 return;
             }
 
@@ -257,7 +257,7 @@ public class AdminRoleBelongings extends Administrator {
 
             if ( roleId == null || userIds == null || curentRoleId == null ) {
                 // no role choisen or/and no users
-                sendErrorMessage( imcref, eMailServerMaster, languagePrefix, errorHeader, 102, res );
+                sendErrorMessage( imcref, eMailServerMaster, user, errorHeader, 102, res );
 
                 return;
             }
@@ -278,7 +278,7 @@ public class AdminRoleBelongings extends Administrator {
 
             if ( userIds == null ) {
                 // no user choisen
-                sendErrorMessage( imcref, eMailServerMaster, languagePrefix, errorHeader, 101, res );
+                sendErrorMessage( imcref, eMailServerMaster, user, errorHeader, 101, res );
                 return;
             }
 
@@ -295,7 +295,7 @@ public class AdminRoleBelongings extends Administrator {
 
             if ( userIds == null ) {
                 // no user choisen
-                sendErrorMessage( imcref, eMailServerMaster, languagePrefix, errorHeader, 101, res );
+                sendErrorMessage( imcref, eMailServerMaster, user, errorHeader, 101, res );
                 return;
             }
 

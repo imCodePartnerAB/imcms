@@ -144,7 +144,7 @@ public class MetaDataParser {
         }
 
         // Lets get the template file
-        String htmlStr = imcref.parseDoc(null, htmlFile, lang_prefix);
+        String htmlStr = imcref.parseDoc(null, htmlFile, user);
 
         // Lets fill the info from db into the vector vec
 
@@ -320,11 +320,11 @@ public class MetaDataParser {
             vec.add("?");
         }
 
-        getSectionDataFromDbAndAddSectionRelatedTagsToParseList(imcref, meta_id, vec, lang_prefix);
+        getSectionDataFromDbAndAddSectionRelatedTagsToParseList(imcref, meta_id, vec, user);
 
         addLanguageRelatedTagsForDocInfoPageToParseList(vec, hash, imcref, user);
 
-        addPublisherRelatedTagsForDocInfoPageToParseList(vec, hash, imcref, lang_prefix );
+        addPublisherRelatedTagsForDocInfoPageToParseList(vec, hash, imcref, user);
 
         vec.add("#categories#");
         vec.add(createHtmlListBoxesOfCategoriesForEachCategoryType(imcref.getDocumentMapper(), Integer.parseInt(meta_id),imcref,user));
@@ -334,7 +334,7 @@ public class MetaDataParser {
         SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
         vec.add(dateformat.format(new Date()));
 
-        return imcref.parseDoc(vec, htmlFile, lang_prefix);
+        return imcref.parseDoc(vec, htmlFile, user);
 
     } // end of parseMetaData
 
@@ -381,13 +381,13 @@ public class MetaDataParser {
                 tags.add(categoryOptions.toString()) ;
 
                 final String template = 1 == categoryType.getMaxChoices() ? CATEGORIES_SINGLECHOICE_DROPDOWN_TEMPLATE : CATEGORIES_MULTICHOICE_LIST_TEMPLATE;
-                result.append(imcref.parseDoc(tags, template,user.getLangPrefix())) ;
+                result.append(imcref.parseDoc(tags, template, user)) ;
 
             }
         return result.toString() ;
     }
 
-    public static void addPublisherRelatedTagsForDocInfoPageToParseList( Vector vec, Hashtable hash, IMCServiceInterface imcref, String lang_prefix ) {
+    public static void addPublisherRelatedTagsForDocInfoPageToParseList(Vector vec, Hashtable hash, IMCServiceInterface imcref, UserDomainObject user) {
         ImcmsAuthenticatorAndUserMapper userAndRoleMapper = imcref.getUserAndRoleMapper();
 
         String publisherIdStr = ((String[])hash.get("publisher_id"))[0];
@@ -400,7 +400,7 @@ public class MetaDataParser {
         if( null != publisher ) {
             vec.add( publisher.getLastName() + ", " + publisher.getFirstName() );
         } else {
-            vec.add(imcref.parseDoc(null, PUBLISHER_NONE_MSG_TEMPLATE, lang_prefix));
+            vec.add(imcref.parseDoc(null, PUBLISHER_NONE_MSG_TEMPLATE, user));
         }
 
         UserDomainObject[] users = userAndRoleMapper.getUsers( false, false );
@@ -408,9 +408,9 @@ public class MetaDataParser {
         usersInOptionList.add("");
         usersInOptionList.add("");
         for (int i = 0; i < users.length; i++) {
-            UserDomainObject user = users[i];
-            usersInOptionList.add( "" + user.getUserId() );
-            usersInOptionList.add( user.getLastName() + ", " + user.getFirstName() );
+            UserDomainObject oneUserForList = users[i];
+            usersInOptionList.add( "" + oneUserForList.getUserId() );
+            usersInOptionList.add( oneUserForList.getLastName() + ", " + oneUserForList.getFirstName() );
         }
 
         String optionList;
@@ -440,8 +440,7 @@ public class MetaDataParser {
         vec.add(LanguageMapper.getCurrentLanguageNameInUsersLanguage(imcref, user, documentLanguage));
     }
 
-    public static void getSectionDataFromDbAndAddSectionRelatedTagsToParseList(
-            IMCServiceInterface imcref, String meta_id, Vector vec, String lang_prefix) {
+    public static void getSectionDataFromDbAndAddSectionRelatedTagsToParseList(IMCServiceInterface imcref, String meta_id, Vector vec, UserDomainObject user) {
         //**************** section index word stuff *****************
         //lets get the section stuff from db
         String[][] documentSections = imcref.sqlProcedureMulti("SectionGetInheritId", new String[] { meta_id });
@@ -451,7 +450,7 @@ public class MetaDataParser {
         vec.add("#current_section_name#");
         StringBuffer documentSectionNames = new StringBuffer() ;
         if (0 == documentSections.length) {
-            vec.add(imcref.parseDoc(null, SECTION_MSG_TEMPLATE, lang_prefix));
+            vec.add(imcref.parseDoc(null, SECTION_MSG_TEMPLATE, user));
         } else {
             for (int i = 0; i < documentSections.length; i++) {
                 if (0 != i) {
@@ -491,7 +490,7 @@ public class MetaDataParser {
 
         // Lets get the roles_rights_table_header template file
         StringBuffer roles_rights = new StringBuffer(
-                imcref.parseDoc(null, PERMISSIONS_TABLE_HEAD_TEMPLATE, lang_prefix));
+                imcref.parseDoc(null, PERMISSIONS_TABLE_HEAD_TEMPLATE, user));
 
         // Get the info from the user object.
         // "temp_perm_settings" is an array containing a stringified meta-id, a hashtable of meta-info (column=value),
@@ -576,13 +575,13 @@ public class MetaDataParser {
                     vec2.add((j == role_set_id) ? "*" : "O");
                 }
             }
-            roles_rights.append(imcref.parseDoc(vec2, PERMISSIONS_TABLE_ROW_TEMPLATE, lang_prefix));
+            roles_rights.append(imcref.parseDoc(vec2, PERMISSIONS_TABLE_ROW_TEMPLATE, user));
 
         }
         vec.add("#roles_no_rights#");
         vec.add(roles_no_rights.toString());
 
-        roles_rights.append(imcref.parseDoc(null, PERMISSIONS_TABLE_TAIL_TEMPLATE, lang_prefix));
+        roles_rights.append(imcref.parseDoc(null, PERMISSIONS_TABLE_TAIL_TEMPLATE, user));
         vec.add("#roles_rights#");
         vec.add(roles_rights.toString());
 
@@ -602,22 +601,22 @@ public class MetaDataParser {
                     perm_vec.add("#permissions#");
                     perm_vec.add("checked");
                 }
-                String sets_precedence = imcref.parseDoc(perm_vec, RESTRICTED_1_ADMINISTRATES_RESTRICTED_2_CHECKBOX_TEMPLATE, lang_prefix);
+                String sets_precedence = imcref.parseDoc(perm_vec, RESTRICTED_1_ADMINISTRATES_RESTRICTED_2_CHECKBOX_TEMPLATE, user);
                 ftr.add("#sets_precedence#");
                 ftr.add(sets_precedence);
                 ftr.add("#set_1#");
-                ftr.add(imcref.parseDoc(null, DEFINE_RESTRICTED_1_BUTTON_TEMPLATE, lang_prefix));
+                ftr.add(imcref.parseDoc(null, DEFINE_RESTRICTED_1_BUTTON_TEMPLATE, user));
                 ftr.add("#set_2#");
-                ftr.add(imcref.parseDoc(null, DEFINE_RESTRICTED_2_BUTTON_TEMPLATE, lang_prefix));
+                ftr.add(imcref.parseDoc(null, DEFINE_RESTRICTED_2_BUTTON_TEMPLATE, user));
                 if (doc_type == DocumentDomainObject.DOCTYPE_TEXT) {
                     ftr.add("#new_set_1#");
-                    ftr.add(imcref.parseDoc(null, DEFINE_NEW_RESTRICTED_1_BUTTON_TEMPLATE, lang_prefix));
+                    ftr.add(imcref.parseDoc(null, DEFINE_NEW_RESTRICTED_1_BUTTON_TEMPLATE, user));
                     ftr.add("#new_set_2#");
-                    ftr.add(imcref.parseDoc(null, DEFINE_NEW_RESTRICTED_2_BUTTON_TEMPLATE, lang_prefix));
+                    ftr.add(imcref.parseDoc(null, DEFINE_NEW_RESTRICTED_2_BUTTON_TEMPLATE, user));
                     //ok lets setup the default_template-option-lists for restricted 1 & 2
 
                     default_templates =
-                            getDefaultTemplateOptionList(imcref, temp_default_templates, meta_id, lang_prefix, true);
+                            getDefaultTemplateOptionList(imcref, temp_default_templates, meta_id, user, true);
                     ftr.add("#default_templates#");
                     ftr.add(default_templates);
                 } else {
@@ -629,7 +628,7 @@ public class MetaDataParser {
                     ftr.add("");
                 }
                 vec.add("#define_sets#");
-                vec.add(imcref.parseDoc(ftr, ALL_DEFINE_RESTRICTED_BUTTONS_TEMPLATE, lang_prefix));
+                vec.add(imcref.parseDoc(ftr, ALL_DEFINE_RESTRICTED_BUTTONS_TEMPLATE, user));
 
             } else if ((currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2) != 0) {
 
@@ -640,13 +639,13 @@ public class MetaDataParser {
                 ftr.add("#new_set_1#");
                 ftr.add("");
                 ftr.add("#set_2#");
-                ftr.add(imcref.parseDoc(null, "permissions/set_2_button.html", lang_prefix));
+                ftr.add(imcref.parseDoc(null, "permissions/set_2_button.html", user));
                 if (doc_type == DocumentDomainObject.DOCTYPE_TEXT) {
                     default_templates =
-                            getDefaultTemplateOptionList(imcref, temp_default_templates, meta_id, lang_prefix, false);
+                            getDefaultTemplateOptionList(imcref, temp_default_templates, meta_id, user, false);
 
                     ftr.add("#new_set_2#");
-                    ftr.add(imcref.parseDoc(null, "permissions/new_set_2_button.html", lang_prefix));
+                    ftr.add(imcref.parseDoc(null, "permissions/new_set_2_button.html", user));
                 } else {
                     ftr.add("#new_set_2#");
                     ftr.add("");
@@ -654,7 +653,7 @@ public class MetaDataParser {
                 ftr.add("#default_templates#");
                 ftr.add(default_templates);
                 vec.add("#define_sets#");
-                vec.add(imcref.parseDoc(ftr, "permissions/define_sets.html", lang_prefix));
+                vec.add(imcref.parseDoc(ftr, "permissions/define_sets.html", user));
             } else {
                 vec.add("#define_sets#");
                 vec.add("");
@@ -668,8 +667,8 @@ public class MetaDataParser {
     } // End of getRolesFromDb
 
     private static String getDefaultTemplateOptionList(IMCServiceInterface imcref,
-                                                                    String[] def_templates, String meta_id, String lang_prefix,
-                                                                    boolean canEditRestricted1DefaultTemplate) {
+                                                       String[] def_templates, String meta_id,
+                                                       UserDomainObject user, boolean canEditRestricted1DefaultTemplate) {
         String returnValue = "";
         //ok lets setup the default_template-option-lists for restricted 1 & 2
         String[][] templates = imcref.sqlProcedureMulti("GetTemplates", new String[0]);
@@ -697,7 +696,7 @@ public class MetaDataParser {
             Vector tempV = new Vector();
             tempV.add("#templ_option_list#");
             tempV.add(tempStr);
-            options_templates_1 = imcref.parseDoc(tempV, RESTRICTED_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE, lang_prefix);
+            options_templates_1 = imcref.parseDoc(tempV, RESTRICTED_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE, user);
         }
         String options_templates_2 = "";
         for (int i = 0; i < templates.length; i++) {
@@ -715,7 +714,7 @@ public class MetaDataParser {
             vect.add(options_templates_1);
             vect.add("#def_templ_2#");
             vect.add(options_templates_2);
-            returnValue = imcref.parseDoc(vect, RESTRICTED_2_AND_MAYBE_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE, lang_prefix);
+            returnValue = imcref.parseDoc(vect, RESTRICTED_2_AND_MAYBE_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE, user);
         }
         return returnValue;
     }// end getDefaultTemplateOptionList(...)
@@ -764,7 +763,7 @@ public class MetaDataParser {
 
      */
 
-    public static String parsePermissionSet(int meta_id, UserDomainObject user, int set_id,
+    public static String parsePermissionSet(int meta_id, final UserDomainObject user, int set_id,
                                             boolean for_new) throws IOException {
         final IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -802,8 +801,8 @@ public class MetaDataParser {
         // Create an anonymous adminbuttonparser that retrieves the file from the server instead of from the disk.
         AdminButtonParser vec = new AdminButtonParser("permissions/define_permission_" + doc_type + "_", ".html",
                 user_set_id, user_perm_set) {
-            protected StringBuffer getContent(String name) throws IOException {
-                return new StringBuffer(imcref.parseDoc(null, name, lang_prefix));
+            protected StringBuffer getContent(String name) {
+                return new StringBuffer(imcref.parseDoc(null, name, user));
             }
         };
 
@@ -914,7 +913,7 @@ public class MetaDataParser {
         // Put the values for all the tags inserted in vec so far in the "define_permissions_"+doc_type+".html" file
         // That is, the doc-specific
         StringBuffer doc_specific = new StringBuffer(
-                imcref.parseDoc(null, "permissions/define_permissions_" + doc_type + ".html", lang_prefix));
+                imcref.parseDoc(null, "permissions/define_permissions_" + doc_type + ".html", user));
 
         Parser.parseTags(doc_specific, '#', " <>\"\n\r\t", vec, true, 1);
 
@@ -923,9 +922,9 @@ public class MetaDataParser {
         StringBuffer complete;
         if (for_new) {
             complete =
-                    new StringBuffer(imcref.parseDoc(null, "permissions/define_new_permissions.html", lang_prefix));
+                    new StringBuffer(imcref.parseDoc(null, "permissions/define_new_permissions.html", user));
         } else {
-            complete = new StringBuffer(imcref.parseDoc(null, "permissions/define_permissions.html", lang_prefix));
+            complete = new StringBuffer(imcref.parseDoc(null, "permissions/define_permissions.html", user));
         }
 
         vec.setPrefix("permissions/define_permission_");

@@ -3,6 +3,7 @@ import imcode.external.diverse.VariableManager;
 import imcode.server.IMCPoolInterface;
 import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 import imcode.util.Utility;
 
@@ -63,9 +64,6 @@ public class AdminConference extends Administrator {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
         String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
 
-        // lets get ready for errors
-        String defaultLanguagePrefix = imcref.getDefaultLanguageAsIso639_2( );
-
         // Lets validate the session
         if ( checkSession( request, response ) == false ) {
             return;
@@ -74,18 +72,17 @@ public class AdminConference extends Administrator {
         // Lets get an user object
         imcode.server.user.UserDomainObject user = getUserObj( request, response ) ;
         if(user == null) {
-            sendErrorMessage( imcref, eMailServerMaster, defaultLanguagePrefix , ERROR_HEADER, 1, response );
+            sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 1, response );
             return ;
         }
 
         // Lets verify that the user who tries to add a new user is an admin
         if (imcref.checkAdminRights(user) == false) {
-            sendErrorMessage( imcref, eMailServerMaster, defaultLanguagePrefix , ERROR_HEADER, 2, response );
+            sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 2, response );
             return ;
         }
 
         /* User has right lets do the request */
-        String languagePrefix = user.getLangPrefix();
         VariableManager vm = new VariableManager();
 
         /* lets get which request to do */
@@ -95,7 +92,7 @@ public class AdminConference extends Administrator {
 
             // generate list off conferences
         } else if ( request.getParameter( "VEIW_CONF_LIST" ) != null ) {
-            listConferences( request, response, languagePrefix );
+            listConferences( request, response, user);
 
             // go to AdminManager
         } else if ( request.getParameter( "CANCEL" ) != null ) {
@@ -132,7 +129,7 @@ public class AdminConference extends Administrator {
     /*
      *
      */
-    private void listConferences( HttpServletRequest request, HttpServletResponse response, String languagePrefix ) throws IOException {
+    private void listConferences(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
         String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
@@ -191,8 +188,8 @@ public class AdminConference extends Administrator {
             IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface();
 
             //lets get htmltemplate for conferencerow
-            String htmlConferenceElement = imcref.parseDoc( null, TEMPLATE_CONF_ELEMENT, languagePrefix );
-            String htmlForumElement = imcref.parseDoc( null, TEMPLATE_FORUM_ELEMENT, languagePrefix );
+            String htmlConferenceElement = imcref.parseDoc( null, TEMPLATE_CONF_ELEMENT, user);
+            String htmlForumElement = imcref.parseDoc( null, TEMPLATE_FORUM_ELEMENT, user);
 
             String[][] listOfConferences = imcref.sqlProcedureMulti( "ListConferences", new String[0] );
 
@@ -247,7 +244,7 @@ public class AdminConference extends Administrator {
             this.sendHtml( request, response, vm, TEMPLATE_LIST );
 
         } else {
-            sendErrorMessage( imcref, eMailServerMaster, languagePrefix, ERROR_HEADER, 10, response );
+            sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 10, response );
         }
     }
 }

@@ -7,6 +7,7 @@ import java.util.*;
 import org.apache.oro.text.regex.*;
 import imcode.util.*;
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 import java.text.SimpleDateFormat;
 import java.net.URLEncoder;
@@ -295,11 +296,11 @@ class MenuParserSubstitution implements Substitution {
         menuItemAHref.add("#target#");
         menuItemAHref.add(menuItem.getTarget());
 
+        UserDomainObject user = documentRequest.getUser() ;
+
         String a_href = documentRequest.getServerObject().parseDoc(
                 menuItemAHref,
-                "textdoc/menuitem_a_href.frag",
-                documentRequest.getUser().getLangPrefix()
-        );
+                "textdoc/menuitem_a_href.frag", user);
 
         tags.setProperty( "#menuitemlinkonly#", a_href );
         tags.setProperty( "#/menuitemlinkonly#", "</a>" );
@@ -326,10 +327,7 @@ class MenuParserSubstitution implements Substitution {
 
                 a_href = documentRequest.getServerObject().parseDoc(
                         menuItemSortKeyTags,
-                        sortKeyTemplate,
-                        documentRequest.getUser().getLangPrefix()
-
-                ) + a_href;
+                        sortKeyTemplate, user) + a_href;
             }
 
             List menuItemCheckboxTags = new ArrayList(2);
@@ -338,9 +336,7 @@ class MenuParserSubstitution implements Substitution {
 
             a_href = documentRequest.getServerObject().parseDoc(
                     menuItemCheckboxTags,
-                    "textdoc/admin_menuitem_checkbox.frag",
-                    documentRequest.getUser().getLangPrefix()
-            ) + a_href;
+                    "textdoc/admin_menuitem_checkbox.frag", user) + a_href;
         }
 
         tags.setProperty( "#menuitemlink#", a_href );
@@ -350,8 +346,7 @@ class MenuParserSubstitution implements Substitution {
                 + documentRequest.getServerObject().parseDoc(
                         Arrays.asList(new String[]{"#meta_id#", ""
                 + menuItem.getMetaId()}),
-                        "textdoc/admin_menuitem.frag",
-                        documentRequest.getUser().getLangPrefix())
+                        "textdoc/admin_menuitem.frag", user)
                 : "</a>");
 
 

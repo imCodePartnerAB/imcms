@@ -119,9 +119,9 @@ public class ChatControl extends ChatBase {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	if(userHasAdminRights( imcref, meta_Id, user )){
-	    chatAdminLink = createAdminButton(req, ADMIN_BUTTON,metaId,chatName, user.getLangPrefix());
+	    chatAdminLink = createAdminButton(req, ADMIN_BUTTON,metaId,chatName, user);
 	    //lets set up the kick out button OBS fixa detta
-	    adminButtonKickOut = createAdminButton(req, ADMIN_GET_RID_OF_A_SESSION,metaId,"", user.getLangPrefix());
+	    adminButtonKickOut = createAdminButton(req, ADMIN_GET_RID_OF_A_SESSION,metaId,"", user);
 	}
 
 	//lets set up the page to send
@@ -140,20 +140,20 @@ public class ChatControl extends ChatBase {
         tags.add( "#CHAT_ADMIN_DISCUSSION#" );
         tags.add( adminButtonKickOut );
         tags.add( "#SETTINGS#" );
-        tags.add( settingsButton( myChat, user.getLangPrefix()) );
+        tags.add( settingsButton( myChat, user) );
 
 	this.sendHtml(req,res,tags, HTML_TEMPLATE, null) ;
 	return;
     } //**** end doGet ***** end doGet ***** end doGet ******
 
 
-    private String settingsButton(imcode.external.chat.Chat chat, String lang_prefix)throws IOException {
+    private String settingsButton(imcode.external.chat.Chat chat, UserDomainObject user)throws IOException {
 	if (chat.settingsPage() ) {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
         IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
 
 	    int metaId = chat.getChatId();
-	    return imcref.parseExternalDoc(null, SETTINGS_BUTTON , lang_prefix, "103", getTemplateLibName(chatref,metaId));
+	    return imcref.parseExternalDoc(null, SETTINGS_BUTTON , user, "103", getTemplateLibName(chatref,metaId));
 	}else {
 	    return "&nbsp;";
 	}
@@ -246,7 +246,7 @@ public class ChatControl extends ChatBase {
         tags.add(myMember.getReferrerMetaId()+"");
         tags.add("#chat_meta_id#");
         tags.add(chatMetaId+"");
-        String result = imcref.parseExternalDoc(tags, leaveTemplate, myMember.getUser().getLangPrefix(),"103",templateSetName);
+        String result = imcref.parseExternalDoc(tags, leaveTemplate, myMember.getUser(), "103",templateSetName);
         return result;
     }
 
@@ -349,7 +349,7 @@ public class ChatControl extends ChatBase {
                                                   String metaId, imcode.server.user.UserDomainObject user, ChatMember member)
             throws IOException {
 	Vector vect = new Vector();
-	File templetUrl =	super.getExternalTemplateFolder(req, user.getLangPrefix());
+	File templetUrl =	super.getExternalTemplateFolder(req, user);
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
         IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
 	String[] arr;
@@ -371,7 +371,7 @@ public class ChatControl extends ChatBase {
 		    }else {
 			tempV.add("");
                 }
-                reload.append(imcref.parseExternalDoc( tempV, "checkbox_reload.html", user.getLangPrefix(), "103", templetUrl.getName() ) );
+                reload.append(imcref.parseExternalDoc( tempV, "checkbox_reload.html", user, "103", templetUrl.getName() ) );
                 reload.append(createOptionCode( member.getRefreshTime() + "", ChatCreator.createUpdateTimeV() ) );
                 reload.append("</select> sekund <br>");
 		    }
@@ -386,7 +386,7 @@ public class ChatControl extends ChatBase {
 		    }else {
 			tempV.add("");
 		    }
-		    entrance = imcref.parseExternalDoc(tempV, "checkbox_entrance.html" , user.getLangPrefix(), "103", templetUrl.getName());
+		    entrance = imcref.parseExternalDoc(tempV, "checkbox_entrance.html" , user, "103", templetUrl.getName());
 		}
 		String privat = "";
 		if(arr[3].equals("3")){
@@ -398,7 +398,7 @@ public class ChatControl extends ChatBase {
 		    }else {
 			tempV.add("");
 		    }
-                privat = imcref.parseExternalDoc( tempV, "checkbox_private.html", user.getLangPrefix(), "103", templetUrl.getName() );
+                privat = imcref.parseExternalDoc( tempV, "checkbox_private.html", user, "103", templetUrl.getName() );
 		}
 		String datetime = "";
 		if(arr[5].equals("3")){
@@ -410,7 +410,7 @@ public class ChatControl extends ChatBase {
 		    }else {
 			tempV.add("");
 		    }
-		    datetime = imcref.parseExternalDoc(tempV, "checkbox_datetime.html" , user.getLangPrefix(), "103", templetUrl.getName());
+		    datetime = imcref.parseExternalDoc(tempV, "checkbox_datetime.html" , user, "103", templetUrl.getName());
 		}
 		String font = "";
 		if(arr[6].equals("3")){
@@ -424,7 +424,7 @@ public class ChatControl extends ChatBase {
 			    tempV.add("");
 			}
 		    }
-		    font = imcref.parseExternalDoc(tempV, "buttons_font.html" , user.getLangPrefix(), "103", templetUrl.getName());
+		    font = imcref.parseExternalDoc(tempV, "buttons_font.html" , user, "103", templetUrl.getName());
 		}
 
             vect.add( "#reload#" );
@@ -443,14 +443,14 @@ public class ChatControl extends ChatBase {
     }//end createSettingsPage
 
 
-    private synchronized String createAdminButton(HttpServletRequest req, String template, String chatId, String name, String lang_preffix)
+    private synchronized String createAdminButton(HttpServletRequest req, String template, String chatId, String name, UserDomainObject user)
             throws IOException {
         VariableManager vm = new VariableManager();
         vm.addProperty( "chatId", chatId );
         vm.addProperty( "chatName", name );
 
         //lets create adminbuttonhtml
-        File templateLib = super.getExternalTemplateFolder( req, lang_preffix);
+        File templateLib = super.getExternalTemplateFolder( req, user);
         HtmlGenerator htmlObj = new HtmlGenerator( templateLib, template );
         return htmlObj.createHtmlString( vm, req );
     }

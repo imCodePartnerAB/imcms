@@ -306,10 +306,10 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         // Does the session indicate this user already logged in?
         Object done = session.getAttribute( "logon.isDone" );  // marker object
         imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done;
-        
+
         // Lets get serverinformation
         int metaId = getMetaId( req );
-        return imcref.getExternalTemplateFolder(  metaId, imcref.getLangPrefix(user));
+        return imcref.getExternalTemplateFolder(  metaId, user);
     }
 
     /**
@@ -317,13 +317,13 @@ public class ChatBase extends HttpServlet implements ChatConstants {
      * This method will call its helper method getTemplateLibName to get the
      * name of the folder which contains the templates for a certain meta id
      */
-    protected File getExternalTemplateFolder(HttpServletRequest req, String lang_prefix) throws IOException {
+    protected File getExternalTemplateFolder(HttpServletRequest req, UserDomainObject user) throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
 
         int metaId = getMetaId( req );
         // Lets get serverinformation
-        return new File( imcref.getExternalTemplateFolder( metaId, lang_prefix), getTemplateLibName( chatref, metaId ) );
+        return new File( imcref.getExternalTemplateFolder( metaId, user ), getTemplateLibName( chatref, metaId ) );
     }
 
     /**
@@ -380,7 +380,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        final String htmlStr = imcref.parseExternalDoc( vect, template, lang_prefix, "103", templateSet );
+        final String htmlStr = imcref.parseExternalDoc( vect, template, user, "103", templateSet );
         out.print( htmlStr );
         out.flush();
         out.close();

@@ -148,7 +148,7 @@ public class SaveNewBrowserDoc extends HttpServlet {
             vec.add( "#getMetaId#" );
             vec.add( String.valueOf( parent_meta_id ) );
             String lang_prefix = user.getLangPrefix();
-            htmlStr = imcref.parseDoc( vec, "new_browser_doc.html", lang_prefix );
+            htmlStr = imcref.parseDoc( vec, "new_browser_doc.html", user);
         }
 
         out.write( htmlStr );

@@ -3,6 +3,7 @@ import imcode.external.diverse.VariableManager;
 import imcode.server.IMCPoolInterface;
 import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 import imcode.util.Utility;
 
@@ -62,9 +63,6 @@ public class ChatAdmin extends Administrator {
 
 	String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
 
-	// lets get ready for errors
-	String defaultLanguagePrefix = imcref.getDefaultLanguageAsIso639_2();
-
 	// Lets validate the session
 	if ( checkSession( request, response ) == false ) {
 	    return ;
@@ -73,18 +71,17 @@ public class ChatAdmin extends Administrator {
 	// Lets get an user object
 	imcode.server.user.UserDomainObject user = getUserObj( request, response ) ;
 	if(user == null) {
-	    sendErrorMessage( imcref, eMailServerMaster, defaultLanguagePrefix , ERROR_HEADER, 1, response );
+	    sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 1, response );
 	    return ;
 	}
 
 	// Lets verify that the user who tries to add a new user is an admin
 	if (imcref.checkAdminRights(user) == false) {
-	    sendErrorMessage( imcref, eMailServerMaster, defaultLanguagePrefix , ERROR_HEADER, 2, response );
+	    sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 2, response );
 	    return ;
 	}
 
 	/* User has right lets do the request */
-	String languagePrefix = user.getLangPrefix() ;
 	VariableManager vm = new VariableManager();
 
 	/* lets get which request to do */
@@ -93,7 +90,7 @@ public class ChatAdmin extends Administrator {
 	    sendHtml( request, response, vm, TEMPLATE_LIST_TOOL );
             // generate list of chats
 	} else if ( request.getParameter( "VEIW_CHAT_LIST" ) != null ) {
-	    listChats( request, response, languagePrefix );
+	    listChats( request, response, user);
 	    // go to AdminManager
 	} else if ( request.getParameter( "CANCEL" ) != null ) {
 	    Utility.redirect( request, response, "AdminManager" );
@@ -126,7 +123,7 @@ public class ChatAdmin extends Administrator {
     /*
      *
      */
-    private void listChats( HttpServletRequest request, HttpServletResponse response, String languagePrefix ) throws IOException {
+    private void listChats(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface() ;
 
@@ -184,8 +181,8 @@ public class ChatAdmin extends Administrator {
 	if ( noErrors ) {
 
             //lets get htmltemplate for chatrow
-	    String htmlChatElement = imcref.parseDoc( null, TEMPLATE_CONF_ELEMENT, languagePrefix );
-	    String htmlForumElement = imcref.parseDoc( null, TEMPLATE_FORUM_ELEMENT, languagePrefix );
+	    String htmlChatElement = imcref.parseDoc( null, TEMPLATE_CONF_ELEMENT, user);
+	    String htmlForumElement = imcref.parseDoc( null, TEMPLATE_FORUM_ELEMENT, user);
 
             String[][] listOfChats = imcref.sqlProcedureMulti("ListChats", new String[0]);
 
@@ -237,7 +234,7 @@ public class ChatAdmin extends Administrator {
 	    this.sendHtml( request, response, vm, TEMPLATE_LIST );
 
 	} else {
-	    sendErrorMessage( imcref, eMailServerMaster, languagePrefix, ERROR_HEADER, 10, response );
+	    sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 10, response );
 	}
     }
 

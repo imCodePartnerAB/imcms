@@ -131,7 +131,7 @@ public class SaveBrowserDoc extends HttpServlet {
             vec.add( imcref.getMenuButtons( meta_id, user ) );
             String lang_prefix = user.getLangPrefix();
 
-            htmlStr = imcref.parseDoc( vec, "change_browser_doc.html", lang_prefix );
+            htmlStr = imcref.parseDoc( vec, "change_browser_doc.html", user);
         }
         out.write( htmlStr );
     }

@@ -161,7 +161,7 @@ public class Conference extends HttpServlet {
         Object done = session.getAttribute( "logon.isDone" );  // marker object
         imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done;
 
-        return imcref.getExternalTemplateFolder( metaId, imcref.getLangPrefix(user));
+        return imcref.getExternalTemplateFolder( metaId, user);
     }
 
     /**
@@ -186,7 +186,7 @@ public class Conference extends HttpServlet {
 
         int metaId = this.getMetaId( req );
 
-        File extFolder = imcref.getExternalTemplateFolder( metaId, imcref.getLangPrefix(user) );
+        File extFolder = imcref.getExternalTemplateFolder( metaId, user);
         return new File( extFolder, this.getTemplateLibName( confref, metaId ) );
     }
 

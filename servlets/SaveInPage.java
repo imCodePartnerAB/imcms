@@ -70,7 +70,7 @@ public class SaveInPage extends HttpServlet {
                 Vector vec = new Vector();
                 vec.add( "#meta_id#" );
                 vec.add( String.valueOf( meta_id ) );
-                String htmlStr = imcref.parseDoc( vec, "inPage_admin_no_template.html", lang_prefix );
+                String htmlStr = imcref.parseDoc( vec, "inPage_admin_no_template.html", user);
                 out.write( htmlStr );
                 return;
             }
@@ -92,7 +92,7 @@ public class SaveInPage extends HttpServlet {
                 vec.add( "#meta_id#" );
                 vec.add( String.valueOf( meta_id ) );
                 res.setContentType( "text/html" );
-                String htmlStr = imcref.parseDoc( vec, "inPage_admin_no_template.html", lang_prefix );
+                String htmlStr = imcref.parseDoc( vec, "inPage_admin_no_template.html", user);
                 Writer out = res.getWriter();
                 out.write( htmlStr );
                 return;
@@ -110,7 +110,7 @@ public class SaveInPage extends HttpServlet {
                 return;
             } else {
                 res.setContentType( "text/html" );
-                String htmlStr = imcref.parseDoc( null, "no_demotemplate.html", lang_prefix );
+                String htmlStr = imcref.parseDoc( null, "no_demotemplate.html", user);
                 Writer out = res.getWriter();
                 out.write( htmlStr );
                 return;

@@ -18,7 +18,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
@@ -95,7 +94,6 @@ public class PasswordMailReminder extends HttpServlet {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-
         res.setContentType("text/html");
         ServletOutputStream out = res.getOutputStream();
 
@@ -104,7 +102,7 @@ public class PasswordMailReminder extends HttpServlet {
         parsVector.add("#errorininput#");
         parsVector.add("");
 
-        String returnString = imcref.parseDoc(parsVector, PasswordMailReminder.RETURNING_DOCUMENT_INPUT, imcref.getDefaultLanguageAsIso639_2());
+        String returnString = imcref.parseDoc(parsVector, PasswordMailReminder.RETURNING_DOCUMENT_INPUT, null);
         out.print(returnString);
     }
 
@@ -123,7 +121,6 @@ public class PasswordMailReminder extends HttpServlet {
         String emailFromServer = sysData.getServerMasterAddress();
 
         String mailFrom = eMailServerMaster;
-        String deafultLanguagePrefix = imcref.getDefaultLanguageAsIso639_2();
 
         String mailserver = Utility.getDomainPref("smtp_server");
         String stringMailPort = Utility.getDomainPref("smtp_port");
@@ -167,9 +164,9 @@ public class PasswordMailReminder extends HttpServlet {
 
         if (validLoginName) {
 
-	    String sqlProcedureName = "PermissionsGetPermission";
-	    String[] queryResult = imcref.sqlProcedure( sqlProcedureName, new String[] {postedLoginName, ""+PasswordMailReminder.PASSWORD_PERMISSION_ID} ) ;
-
+            String sqlProcedureName = "PermissionsGetPermission";
+            String[] queryResult = imcref.sqlProcedure(sqlProcedureName, new String[]{postedLoginName, "" + PasswordMailReminder.PASSWORD_PERMISSION_ID});
+            UserDomainObject user = imcref.getUserAndRoleMapper().getUser(postedLoginName);
             if ((queryResult != null) && (queryResult.length > 0)) {
 
                 firstName = queryResult[1];
@@ -216,9 +213,8 @@ public class PasswordMailReminder extends HttpServlet {
                 parsVector.add("#password#");
                 parsVector.add(password);
 
-                String userLanguagePrefix = queryResult[5];
                 String userMessage = imcref.parseDoc(parsVector,
-                        PasswordMailReminder.USER_MAIL_BODY, userLanguagePrefix);
+                        PasswordMailReminder.USER_MAIL_BODY, user);
 
                 smtp.sendMailWait(mailFrom, userEmail, null, userMessage);
 
@@ -235,21 +231,18 @@ public class PasswordMailReminder extends HttpServlet {
             parsVector.add(host);
 
 
-            String serverMasterMessage = imcref.parseDoc(parsVector, serverMasterMailBody,
-                    deafultLanguagePrefix);
+            String serverMasterMessage = imcref.parseDoc(parsVector, serverMasterMailBody, user);
 
             smtp.sendMailWait(emailFromServer, eMailServerMaster, null, serverMasterMessage);
 
-            returnString = imcref.parseDoc(null, returnFileBody, deafultLanguagePrefix);
+            returnString = imcref.parseDoc(null, returnFileBody, user);
 
         } else {
-            String errorString = imcref.parseDoc(null, PasswordMailReminder.ERROR_STRING,
-                    deafultLanguagePrefix);
+            String errorString = imcref.parseDoc(null, PasswordMailReminder.ERROR_STRING, null);
 
             errorParsVector.add("#errorininput#");
             errorParsVector.add(errorString);
-            returnString = imcref.parseDoc(errorParsVector, PasswordMailReminder.RETURNING_DOCUMENT_INPUT,
-                    deafultLanguagePrefix);
+            returnString = imcref.parseDoc(errorParsVector, PasswordMailReminder.RETURNING_DOCUMENT_INPUT, null);
         }
 
         res.setContentType("text/html");

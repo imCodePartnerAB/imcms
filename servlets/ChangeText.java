@@ -106,7 +106,7 @@ public class ChangeText extends HttpServlet {
         vec.add( String.valueOf( txt_no ) );
         vec.add( "#txt_type#" );
         vec.add( text_type );
-        String outputString = imcref.parseDoc( vec, "change_text.html", user.getLangPrefix() );
+        String outputString = imcref.parseDoc( vec, "change_text.html", user);
         out.write( outputString );
     }
 

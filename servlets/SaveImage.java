@@ -360,7 +360,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
             vec.add( "#folders#" );
             vec.add( dirList );
             String lang_prefix = user.getLangPrefix();
-            htmlStr = imcref.parseDoc( vec, "change_img.html", lang_prefix );
+            htmlStr = imcref.parseDoc( vec, "change_img.html", user);
             out.write( htmlStr );
             return;
         } else if ( req.getParameter( "delete" ) != null ) {
@@ -402,7 +402,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
             vec.add( dirList );
 
             String lang_prefix = user.getLangPrefix();
-            htmlStr = imcref.parseDoc( vec, "change_img.html", lang_prefix );
+            htmlStr = imcref.parseDoc( vec, "change_img.html", user);
             out.write( htmlStr );
             return;
         } else {

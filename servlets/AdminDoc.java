@@ -87,8 +87,8 @@ public class AdminDoc extends HttpServlet {
                     vec.add( "#adminMode#" );
                     vec.add( imcref.getMenuButtons( meta_id, user ) );
                     vec.add( "#doc_type_description#" );
-                    vec.add( imcref.parseDoc( null, "adminbuttons/adminbuttons" + doc_type + "_description.html", lang_prefix ) );
-                    return imcref.parseDoc( vec, "docinfo.html", lang_prefix );
+                    vec.add( imcref.parseDoc( null, "adminbuttons/adminbuttons" + doc_type + "_description.html", user) );
+                    return imcref.parseDoc( vec, "docinfo.html", user);
                 }
             }
         }
@@ -164,7 +164,7 @@ public class AdminDoc extends HttpServlet {
                 urlvec.add( "#getParentMetaId#" );
                 urlvec.add( String.valueOf( parent_meta_id ) );
 
-                htmlStr = imcref.parseDoc( urlvec, "change_url_doc.html", lang_prefix );
+                htmlStr = imcref.parseDoc( urlvec, "change_url_doc.html", user);
                 break;
 
             case 7:
@@ -176,7 +176,7 @@ public class AdminDoc extends HttpServlet {
                 fsetvec.add( String.valueOf( meta_id ) );
                 fsetvec.add( "#getParentMetaId#" );
                 fsetvec.add( String.valueOf( parent_meta_id ) );
-                htmlStr = imcref.parseDoc( fsetvec, "change_frameset_doc.html", lang_prefix );
+                htmlStr = imcref.parseDoc( fsetvec, "change_frameset_doc.html", user);
 
                 break;
 
@@ -218,7 +218,7 @@ public class AdminDoc extends HttpServlet {
                 vec.add( "" );
                 vec.add( "#getParentMetaId#" );
                 vec.add( String.valueOf( parent_meta_id ) );
-                htmlStr = imcref.parseDoc( vec, "change_browser_doc.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "change_browser_doc.html", user);
                 break;
 
             case 8:
@@ -253,7 +253,7 @@ public class AdminDoc extends HttpServlet {
                 d.add( String.valueOf( meta_id ) );
                 d.add( "#parent_meta_id#" );
                 d.add( String.valueOf( parent_meta_id ) );
-                htmlStr = imcref.parseDoc( d, "change_fileupload.html", lang_prefix );
+                htmlStr = imcref.parseDoc( d, "change_fileupload.html", user);
                 break;
         }
         String[] parsetmp = {"#adminMode#", imcref.getMenuButtons( meta_id, user )};

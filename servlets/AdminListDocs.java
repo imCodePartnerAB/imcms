@@ -229,7 +229,7 @@ public class AdminListDocs extends Administrator {
             if ( noErrors ) {
 
                 //lets get htmltemplate for tablerow
-                String htmlListElement = imcref.parseDoc( null, TEMPLATE_LISTDOC_LIST_ELEMENT, languagePrefix );
+                String htmlListElement = imcref.parseDoc( null, TEMPLATE_LISTDOC_LIST_ELEMENT, user);
 
                 String[] tagData = {
                     "#META_ID#", null,
@@ -270,7 +270,7 @@ public class AdminListDocs extends Administrator {
                 this.sendHtml( request, response, vm, parseTemplate );
 
             } else {
-                sendErrorMessage( imcref, eMailServerMaster, languagePrefix, ERROR_HEADER, 10, response );
+                sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 10, response );
             }
         }
     }

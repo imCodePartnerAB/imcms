@@ -429,7 +429,7 @@ public class FileAdmin extends HttpServlet {
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
         String lang_prefix = user.getLangPrefix();
-        out.print( imcref.parseDoc( vec, "FileAdminMoveOverwriteWarning.html", lang_prefix ) );
+        out.print( imcref.parseDoc( vec, "FileAdminMoveOverwriteWarning.html", user) );
     }
 
     private void ouputCopyOverwriteWarning( StringBuffer option_list, File sourceDir, File destDir,
@@ -451,7 +451,7 @@ public class FileAdmin extends HttpServlet {
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
         String lang_prefix = user.getLangPrefix();
-        out.print( imcref.parseDoc( vec, "FileAdminCopyOverwriteWarning.html", lang_prefix ) );
+        out.print( imcref.parseDoc( vec, "FileAdminCopyOverwriteWarning.html", user) );
     }
 
     private void outputFileExistedAndTheOriginalWasRenamedNotice( File dir1, File dir2, String newFilename,
@@ -467,7 +467,7 @@ public class FileAdmin extends HttpServlet {
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
         String lang_prefix = user.getLangPrefix();
-        out.print( imcref.parseDoc( vec, "FileAdminFileExisted.html", lang_prefix ) );
+        out.print( imcref.parseDoc( vec, "FileAdminFileExisted.html", user) );
     }
 
     private void outputBlankFileError( File dir1, File dir2, HttpServletResponse res, UserDomainObject user,
@@ -480,7 +480,7 @@ public class FileAdmin extends HttpServlet {
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
         String lang_prefix = user.getLangPrefix();
-        out.print( imcref.parseDoc( vec, "FileAdminFileBlank.html", lang_prefix ) );
+        out.print( imcref.parseDoc( vec, "FileAdminFileBlank.html", user) );
     }
 
     private void outputDeleteWarning( File[] filelist, File dir1, File dir2, File sourceDir, HttpServletResponse res,
@@ -509,7 +509,7 @@ public class FileAdmin extends HttpServlet {
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
         String lang_prefix = user.getLangPrefix();
-        out.print( imcref.parseDoc( vec, "FileAdminDeleteWarning.html", lang_prefix ) );
+        out.print( imcref.parseDoc( vec, "FileAdminDeleteWarning.html", user) );
         return;
     }
 
@@ -523,7 +523,7 @@ public class FileAdmin extends HttpServlet {
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
         String lang_prefix = user.getLangPrefix();
-        out.print( imcref.parseDoc( vec, "FileAdminNameBlank.html", lang_prefix ) );
+        out.print( imcref.parseDoc( vec, "FileAdminNameBlank.html", user) );
         return;
     }
 
@@ -739,7 +739,7 @@ public class FileAdmin extends HttpServlet {
         }
 
         String lang_prefix = user.getLangPrefix();
-        return imcref.parseDoc( vec, "FileAdmin.html", lang_prefix );
+        return imcref.parseDoc( vec, "FileAdmin.html", user);
     }
 
     private String createDirectoryOptionList( File[] rootlist, File directory, DirectoryFilter dirfilt,

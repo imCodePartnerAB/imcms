@@ -1,6 +1,7 @@
 
 import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -41,10 +42,9 @@ public class AdminSection extends Administrator {
 
 	//lets see if one button was punched or if we shal get the start page for section admin
 
-	String lang_prefix = user.getLangPrefix() ;
 	//ok so far lets load the admin page
 	ServletOutputStream out = res.getOutputStream() ;
-	out.print ( imcref.parseDoc(null,ADMIN_TEMPLATE,lang_prefix ) ) ;
+	out.print ( imcref.parseDoc(null,ADMIN_TEMPLATE, user) ) ;
 	out.flush();out.close();
 	return;
 
@@ -70,8 +70,6 @@ public class AdminSection extends Administrator {
 
 	StringBuffer htmlToSend = new StringBuffer();
 
-	String lang_prefix = user.getLangPrefix() ;
-
 	//**** lets handle the add_section-case ****
 	if (req.getParameter("add_section")!= null) {
 	    //lets start and see if we need to save anything to the db
@@ -85,9 +83,9 @@ public class AdminSection extends Administrator {
             String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
 	    Vector vec = new Vector();
 	    vec.add("#section_list#");
-	    vec.add(createOptionList( section_arr, lang_prefix, null));
+	    vec.add(createOptionList( section_arr, user, null));
 	    //ok lets parse the page with right template
-	    htmlToSend.append(imcref.parseDoc(vec,ADD_TEMPLATE,lang_prefix ));
+	    htmlToSend.append(imcref.parseDoc(vec,ADD_TEMPLATE, user));
 	}//end if(req.getParameter("add_section")!= null)
 	//**** end add_section-case ****
 
@@ -105,9 +103,9 @@ public class AdminSection extends Administrator {
             String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
 	    Vector vec = new Vector();
 	    vec.add("#section_list#");
-	    vec.add(createOptionList( section_arr, lang_prefix, null));
+	    vec.add(createOptionList( section_arr, user, null));
 	    //ok lets parse the page with right template
-	    htmlToSend.append(imcref.parseDoc(vec,NAME_TEMPLATE,lang_prefix ));
+	    htmlToSend.append(imcref.parseDoc(vec,NAME_TEMPLATE, user));
 
 	}//end if (req.getParameter("edit_section")!= null)
 	//**** lend edit_section-case ****
@@ -160,12 +158,12 @@ public class AdminSection extends Administrator {
                     String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
 		    Vector vec = new Vector();
 		    vec.add("#section_list#");
-		    vec.add(createOptionList( section_arr, lang_prefix,section_id));
+		    vec.add(createOptionList( section_arr, user, section_id));
 		    vec.add("#docs#");
 		    vec.add(doc_nrs) ;
 		    vec.add("#delete_section#");
 		    vec.add(section_id) ;
-		    htmlToSend.append(imcref.parseDoc(vec,DELETE_CONFIRM_TEMPLATE,lang_prefix ));
+		    htmlToSend.append(imcref.parseDoc(vec,DELETE_CONFIRM_TEMPLATE, user));
 		    got_confirm_page = true;
 		}else {
 		    //ok we can delete it right a way an carry on with it
@@ -179,9 +177,9 @@ public class AdminSection extends Administrator {
                 String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
 		Vector vec = new Vector();
 		vec.add("#section_list#");
-		vec.add(createOptionList( section_arr, lang_prefix, null));
+		vec.add(createOptionList( section_arr, user, null));
 		//ok lets parse the page with right template
-		htmlToSend.append(imcref.parseDoc(vec,DELETE_TEMPLATE,lang_prefix ));
+		htmlToSend.append(imcref.parseDoc(vec,DELETE_TEMPLATE, user));
 	    }
 
 	}//end if (req.getParameter("edit_section")!= null)
@@ -205,7 +203,7 @@ public class AdminSection extends Administrator {
 
 
     //method that creates an option list of all the sections in db
-    private String createOptionList( String[][] arr, String lang_prefix, String not_id) throws IOException {
+    private String createOptionList(String[][] arr, UserDomainObject user, String not_id) throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
         StringBuffer buff = new StringBuffer("");
@@ -222,7 +220,7 @@ public class AdminSection extends Administrator {
                 vec.add(arr[i][1]);
                 vec.add("#docs#");
                 vec.add(arr[i][2]);
-                buff.append(imcref.parseDoc(vec, LINE_TEMPLATE, lang_prefix));
+                buff.append(imcref.parseDoc(vec, LINE_TEMPLATE, user));
             }
         }
         return buff.toString();

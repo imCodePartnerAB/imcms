@@ -87,7 +87,7 @@ public class ImageUpload extends HttpServlet {
                 vec.add( String.valueOf( img_no ) );
                 vec.add( "#label#" );
                 vec.add( label );
-                String htmlStr = imcref.parseDoc( vec, "file_exists.html", user.getLangPrefix() );
+                String htmlStr = imcref.parseDoc( vec, "file_exists.html", user);
                 out.println( htmlStr );
                 return;
             }
@@ -158,7 +158,7 @@ public class ImageUpload extends HttpServlet {
         vec.add( buff.toString() );
 
         String lang_prefix = user.getLangPrefix();
-        String htmlStr = imcref.parseDoc( vec, "change_img.html", lang_prefix );
+        String htmlStr = imcref.parseDoc( vec, "change_img.html", user);
         out.print( htmlStr );
 
         return;

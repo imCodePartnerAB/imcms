@@ -149,7 +149,7 @@ public class GetDoc extends HttpServlet {
 
             doc_type = documentRequest.getDocument().getDocumentType();
         } catch( IndexOutOfBoundsException ex ) {
-            return imcref.parseDoc( vec, "no_page.html", user.getLangPrefix() );
+            return imcref.parseDoc( vec, "no_page.html", user);
         }
 
         // FIXME: One of the places that need fixing. Number one, we should put the no-permission-page
@@ -237,7 +237,7 @@ public class GetDoc extends HttpServlet {
                 try {
                     fr = new BufferedInputStream( new FileInputStream( new File( file_path, String.valueOf( meta_id ) + "_se" ) ) );
                 } catch( IOException ex ) {
-                    htmlStr = imcref.parseDoc( vec, "no_page.html", user.getLangPrefix() );
+                    htmlStr = imcref.parseDoc( vec, "no_page.html", user);
                     return htmlStr;
                 }
                 int len = fr.available();

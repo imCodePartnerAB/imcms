@@ -176,7 +176,7 @@ public class BillBoard extends HttpServlet { //Conference
 
 
         int metaId = this.getMetaId( req );
-        return imcref.getExternalTemplateFolder( metaId, imcref.getLangPrefix(user));
+        return imcref.getExternalTemplateFolder( metaId, user);
     }
 
     /**
@@ -195,22 +195,7 @@ public class BillBoard extends HttpServlet { //Conference
         HttpSession session = req.getSession( true );
         UserDomainObject user = (UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
 
-        String lang_prefix = imcref.getDefaultLanguageAsIso639_2();
-        if( user != null){
-            lang_prefix = user.getLangPrefix();
-        }
-        return new File( this.getExternalTemplateFolder( imcref, metaId, lang_prefix), this.getTemplateLibName( billref, metaId ) );
-    }
-
-    /**
-     * Gives the folder where All the html templates for a language are located.
-     * This method will call its helper method getTemplateLibName to get the
-     * name of the folder which contains the templates for a certain meta id
-     */
-
-    private File getExternalTemplateFolder(IMCServiceInterface imcref, int metaId, String lang_prefix) {
-
-        return imcref.getExternalTemplateFolder( metaId, lang_prefix);
+        return new File( imcref.getExternalTemplateFolder( metaId, user ), this.getTemplateLibName( billref, metaId ) );
     }
 
     /**

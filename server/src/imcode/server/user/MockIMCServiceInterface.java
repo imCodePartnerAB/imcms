@@ -229,7 +229,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // get external template folder
-   public File getExternalTemplateFolder(int meta_id, String lang_prefix) {
+   public File getExternalTemplateFolder(int meta_id, UserDomainObject user) {
       return null;
    }
 
@@ -279,17 +279,17 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // parsedoc use template
-   public String parseDoc( List variables, String admin_template_name, String lang_prefix ) {
+   public String parseDoc(List variables, String admin_template_name, UserDomainObject user) {
       return null;
    }
 
     // parseExternaldoc use template
-    public String parseExternalDoc( List variables, String external_template_name, String lang_prefix, String doc_type ) {
+    public String parseExternalDoc(List variables, String external_template_name, UserDomainObject user, String doc_type) {
         return null;  // TODO
     }
 
     // parseExternaldoc use template
-    public String parseExternalDoc( List variables, String external_template_name, String lang_prefix, String doc_type, String templateSet ) {
+    public String parseExternalDoc(List variables, String external_template_name, UserDomainObject user, String doc_type, String templateSet) {
         return null;  // TODO
     }
 
@@ -343,7 +343,12 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   // get doctype
+    // get language prefix for user
+    public String getUserLangPrefixOrDefaultLanguage(UserDomainObject user) {
+        return null;
+    }
+
+    // get doctype
    public int getDocType( int meta_id ) {
       return 0;
    }

@@ -99,7 +99,7 @@ public class SaveInclude extends HttpServlet {
         Vector vec = new Vector( 2 );
         vec.add( "#meta_id#" );
         vec.add( String.valueOf( meta_id ) );
-        String htmlStr = imcref.parseDoc( vec, "include_permission_denied.html", user.getLangPrefix() );
+        String htmlStr = imcref.parseDoc( vec, "include_permission_denied.html", user);
         out.write( htmlStr );
     }
 
@@ -107,7 +107,7 @@ public class SaveInclude extends HttpServlet {
         Vector vec = new Vector( 2 );
         vec.add( "#meta_id#" );
         vec.add( String.valueOf( meta_id ) );
-        String htmlStr = imcref.parseDoc( vec, "include_bad_id.html", user.getLangPrefix() );
+        String htmlStr = imcref.parseDoc( vec, "include_bad_id.html", user);
         out.write( htmlStr );
     }
 

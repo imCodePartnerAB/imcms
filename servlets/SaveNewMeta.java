@@ -219,16 +219,16 @@ public class SaveNewMeta extends HttpServlet {
 
             switch (docTypeInt) {
                 case DocumentDomainObject.DOCTYPE_BROWSER:
-                    outputEditPageForNewBrowserRedirectDocument( metaId, parentMetaId, imcref, doc_type, usersLangPrefix, out );
+                    outputEditPageForNewBrowserRedirectDocument( metaId, parentMetaId, imcref, doc_type, user, out );
                     break ;
                 case DocumentDomainObject.DOCTYPE_FILE:
-                    outputEditPageForNewFileDocument( usersLangPrefix, imcref, metaId, parentMetaId, out );
+                    outputEditPageForNewFileDocument(user, imcref, metaId, parentMetaId, out );
                     break;
                 case DocumentDomainObject.DOCTYPE_URL:
-                    outputEditPageForNewUrlDocument( metaId, parentMetaId, imcref, usersLangPrefix, out );
+                    outputEditPageForNewUrlDocument( metaId, parentMetaId, imcref, user, out );
                     break;
                 case DocumentDomainObject.DOCTYPE_HTML:
-                    outputEditPageForNewHtmlDocument( metaId, parentMetaId, imcref, usersLangPrefix, out );
+                    outputEditPageForNewHtmlDocument( metaId, parentMetaId, imcref, user, out );
                     break;
                 case DocumentDomainObject.DOCTYPE_TEXT:
                     outputNewTextDocumentInAdminMode( imcref, user, parentMetaId, metaId, req, doc_type, metaprops, res, out );
@@ -290,8 +290,8 @@ public class SaveNewMeta extends HttpServlet {
         return;
     }
 
-    private void outputEditPageForNewBrowserRedirectDocument( int metaId, int parentMetaId,
-            IMCServiceInterface imcref, String doc_type, String usersLangPrefix, Writer out ) throws IOException {
+    private void outputEditPageForNewBrowserRedirectDocument(int metaId, int parentMetaId,
+                                                             IMCServiceInterface imcref, String doc_type, UserDomainObject user, Writer out) throws IOException {
         String htmlStr;
         String sqlStr = "insert into browser_docs (meta_id, to_meta_id, browser_id) values (?,?,0)";
         imcref.sqlUpdateQuery( sqlStr, new String[] {""+metaId, ""+parentMetaId} );
@@ -332,16 +332,16 @@ public class SaveNewMeta extends HttpServlet {
         vec.add( "" );
         vec.add( "#getMetaId#" );
         vec.add( String.valueOf( parentMetaId ) );
-        htmlStr = imcref.parseDoc( vec, "new_browser_doc.html", usersLangPrefix );
+        htmlStr = imcref.parseDoc( vec, "new_browser_doc.html", user);
         out.write(htmlStr) ;
         return ;
     }
 
-    private void outputEditPageForNewFileDocument( String usersLangPrefix, IMCServiceInterface imcref,
-            int metaId, int parentMetaId, Writer out ) throws IOException {
+    private void outputEditPageForNewFileDocument(UserDomainObject user, IMCServiceInterface imcref,
+                                                  int metaId, int parentMetaId, Writer out) throws IOException {
         String htmlStr;
         String sqlStr = "select mime,mime_name from mime_types where lang_prefix = ? and mime != 'other'";
-        String temp[] = imcref.sqlQuery( sqlStr, new String[] { usersLangPrefix } );
+        String temp[] = imcref.sqlQuery( sqlStr, new String[] { user.getLangPrefix() } );
         Vector vec = new Vector();
         String temps = null;
         for( int i = 0; i < temp.length; i += 2 ) {
@@ -353,33 +353,33 @@ public class SaveNewMeta extends HttpServlet {
         vec.add( String.valueOf( metaId ) );
         vec.add( "#getMetaId#" );
         vec.add( String.valueOf( parentMetaId ) );
-        htmlStr = imcref.parseDoc( vec, "new_fileupload.html", usersLangPrefix );
+        htmlStr = imcref.parseDoc( vec, "new_fileupload.html", user);
         out.write( htmlStr );
         return;
     }
 
-    private void outputEditPageForNewUrlDocument( int metaId, int parentMetaId, IMCServiceInterface imcref,
-            String usersLangPrefix, Writer out ) throws IOException {
+    private void outputEditPageForNewUrlDocument(int metaId, int parentMetaId, IMCServiceInterface imcref,
+                                                 UserDomainObject user, Writer out) throws IOException {
         String htmlStr;
         Vector vec = new Vector();
         vec.add( "#new_meta_id#" );
         vec.add( String.valueOf( metaId ) );
         vec.add( "#getMetaId#" );
         vec.add( String.valueOf( parentMetaId ) );
-        htmlStr = imcref.parseDoc( vec, "new_url_doc.html", usersLangPrefix );
+        htmlStr = imcref.parseDoc( vec, "new_url_doc.html", user);
         out.write( htmlStr );
         return;
     }
 
-    private void outputEditPageForNewHtmlDocument( int metaId, int parentMetaId,
-            IMCServiceInterface imcref, String usersLangPrefix, Writer out ) throws IOException {
+    private void outputEditPageForNewHtmlDocument(int metaId, int parentMetaId,
+                                                  IMCServiceInterface imcref, UserDomainObject user, Writer out) throws IOException {
         String htmlStr;
         Vector vec = new Vector();
         vec.add( "#new_meta_id#" );
         vec.add( String.valueOf( metaId ) );
         vec.add( "#getMetaId#" );
         vec.add( String.valueOf( parentMetaId ) );
-        htmlStr = imcref.parseDoc( vec, "new_frameset.html", usersLangPrefix );
+        htmlStr = imcref.parseDoc( vec, "new_frameset.html", user);
         out.write( htmlStr );
         return;
     }

@@ -310,7 +310,7 @@ public class ImageBrowse extends HttpServlet {
         session.setAttribute( "ImageBrowse.optionlist", imgList );
 
         String lang_prefix = user.getLangPrefix();
-        return imcref.parseDoc( vec, "ImageBrowse.html", lang_prefix );
+        return imcref.parseDoc( vec, "ImageBrowse.html", user);
     }
 
     /**

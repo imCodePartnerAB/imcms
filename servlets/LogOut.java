@@ -30,7 +30,7 @@ public class LogOut extends HttpServlet {
 		vec.add(start_url) ;
 		vec.add("#login#") ;
 		vec.add(login_url) ;
-		String htmlStr = imcref.parseDoc(vec,"logged_out.html",user.getLangPrefix()) ;
+		String htmlStr = imcref.parseDoc(vec,"logged_out.html", user) ;
 		session.invalidate() ;
 		out.print(htmlStr) ;
 	}

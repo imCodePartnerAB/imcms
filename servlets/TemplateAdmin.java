@@ -42,7 +42,7 @@ public class TemplateAdmin extends HttpServlet {
 		vec.add("#languages#") ;
 		vec.add(temps);
 		String lang_prefix = user.getLangPrefix() ;
-		String htmlStr = imcref.parseDoc( vec, "template_admin.html",lang_prefix) ;
+		String htmlStr = imcref.parseDoc( vec, "template_admin.html", user) ;
 		out.println( htmlStr ) ;
 
 	}
@@ -83,7 +83,7 @@ public class TemplateAdmin extends HttpServlet {
 			vec.add(temps);
 			vec.add("#language#") ;
 			vec.add(lang) ;
-			htmlStr = imcref.parseDoc( vec, "template_upload.html",lang_prefix) ;
+			htmlStr = imcref.parseDoc( vec, "template_upload.html", user) ;
 		} else if ( req.getParameter("add_demotemplate") != null ) {
 			String list[] ;
 			list = imcref.getDemoTemplateList() ;
@@ -106,9 +106,9 @@ public class TemplateAdmin extends HttpServlet {
 				}
 				vec.add("#templates#") ;
 				vec.add(temps);
-				htmlStr = imcref.parseDoc( vec, "templatedemo_upload.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "templatedemo_upload.html", user) ;
 			} else {
-				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html", user) ;
 			}
 		} else if ( req.getParameter("delete_template") != null ) {
             String temp[][] = imcref.sqlQueryMulti("select simple_name,count(meta_id),t.template_id from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = ? group by t.template_id,simple_name order by simple_name", new String[]{lang});
@@ -123,7 +123,7 @@ public class TemplateAdmin extends HttpServlet {
 				vec.add(temp[i][1]) ;
 				vec.add("#template_id#") ;
 				vec.add(temp[i][2]) ;
-				htmlStr += imcref.parseDoc(vec,"template_list_row.html",lang_prefix) ;
+				htmlStr += imcref.parseDoc(vec,"template_list_row.html", user) ;
 			}
 			vec = new Vector() ;
 			vec.add("#language#") ;
@@ -131,9 +131,9 @@ public class TemplateAdmin extends HttpServlet {
 			if ( temp.length > 0 ) {
 				vec.add("#templates#") ;
 				vec.add(htmlStr);
-				htmlStr = imcref.parseDoc( vec, "template_delete.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_delete.html", user) ;
 			} else {
-				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html", user) ;
 			}
 		} else if ( req.getParameter("rename_template") != null ) {
 			String temp[] ;
@@ -148,9 +148,9 @@ public class TemplateAdmin extends HttpServlet {
 				}
 				vec.add("#templates#") ;
 				vec.add(temps);
-				htmlStr = imcref.parseDoc( vec, "template_rename.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_rename.html", user) ;
 			} else {
-				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html", user) ;
 			}
 		} else if ( req.getParameter("get_template") != null ) {
 			String temp[] ;
@@ -165,9 +165,9 @@ public class TemplateAdmin extends HttpServlet {
 				}
 				vec.add("#templates#") ;
 				vec.add(temps);
-				htmlStr = imcref.parseDoc( vec, "template_get.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_get.html", user) ;
 			} else {
-				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html", user) ;
 			}
         } else if ( req.getParameter("edit_template") != null ) {
 			String temp[] ;
@@ -182,12 +182,12 @@ public class TemplateAdmin extends HttpServlet {
 				}
 				vec.add("#templates#") ;
 				vec.add(temps);
-				htmlStr = imcref.parseDoc( vec, "template_edit.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_edit.html", user) ;
 			} else {
-				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html", user) ;
 			}
 		} else if ( req.getParameter("add_group") != null ) {
-			htmlStr = imcref.parseDoc( null, "templategroup_add.html",lang_prefix) ;
+			htmlStr = imcref.parseDoc( null, "templategroup_add.html", user) ;
 		} else if ( req.getParameter("delete_group") != null ) {
 			String temp[] ;
             temp = imcref.sqlProcedure("GetTemplategroups", new String[0]);
@@ -198,7 +198,7 @@ public class TemplateAdmin extends HttpServlet {
 			Vector vec = new Vector() ;
 			vec.add("#templategroups#") ;
 			vec.add(temps);
-			htmlStr = imcref.parseDoc( vec, "templategroup_delete.html",lang_prefix) ;
+			htmlStr = imcref.parseDoc( vec, "templategroup_delete.html", user) ;
 		} else if ( req.getParameter("rename_group") != null ) {
 			String temp[] ;
             temp = imcref.sqlProcedure("GetTemplategroups", new String[0]);
@@ -209,7 +209,7 @@ public class TemplateAdmin extends HttpServlet {
 			Vector vec = new Vector() ;
 			vec.add("#templategroups#") ;
 			vec.add(temps);
-			htmlStr = imcref.parseDoc( vec, "templategroup_rename.html",lang_prefix) ;
+			htmlStr = imcref.parseDoc( vec, "templategroup_rename.html", user) ;
 		} else if ( req.getParameter("assign_group") != null ) {
 			String temp[] ;
             temp = imcref.sqlQuery("select template_id from templates where lang_prefix = ?", new String[]{lang});
@@ -232,9 +232,9 @@ public class TemplateAdmin extends HttpServlet {
 				vec.add("");
 				vec.add("#group_id#") ;
 				vec.add("");
-				htmlStr = imcref.parseDoc( vec, "template_assign.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_assign.html", user) ;
 			} else {
-				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html", user) ;
 			}
 		} else if ( req.getParameter("show_templates") != null ) {
             String temp[][] = imcref.sqlQueryMulti("select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = ? group by t.template_id,simple_name order by simple_name", new String[]{lang});
@@ -247,14 +247,14 @@ public class TemplateAdmin extends HttpServlet {
 				vec.add(temp[i][1]) ;
 				vec.add("#template_id#") ;
 				vec.add(temp[i][2]) ;
-				htmlStr += imcref.parseDoc(vec,"template_list_row.html",lang_prefix) ;
+				htmlStr += imcref.parseDoc(vec,"template_list_row.html", user) ;
 			}
 			Vector vec = new Vector() ;
 			vec.add("#template_list#") ;
 			vec.add(htmlStr) ;
 			vec.add("#language#") ;
 			vec.add(lang) ;
-			htmlStr = imcref.parseDoc(vec,"template_list.html",lang_prefix) ;
+			htmlStr = imcref.parseDoc(vec,"template_list.html", user) ;
 		}
 		out.print(htmlStr) ;
 	}

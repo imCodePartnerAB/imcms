@@ -3,6 +3,7 @@ package imcode.external.diverse;
 import java.io.*;
 
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 public class RmiConf implements IMCConstants {
 
@@ -24,13 +25,14 @@ public class RmiConf implements IMCConstants {
      * Get the path to the images for an external internalDocument.
      * @param imcref The IMCServiceInterface instance.
      * @param metaId The id for the external internalDocument.
-     * @param lang_prefix
+     * @param user
      * @return The path to the images for an external internalDocument. Example :D:\apache\
      */
-    public static File getImagePathForExternalDocument(IMCServiceInterface imcref, int metaId, String lang_prefix) {
+    public static File getImagePathForExternalDocument(IMCServiceInterface imcref, int metaId, UserDomainObject user) {
 
+        String langPrefix = imcref.getUserLangPrefixOrDefaultLanguage(user) ;
         File imageFolder = imcref.getImcmsPath();
-        imageFolder = new File( imageFolder, lang_prefix );
+        imageFolder = new File( imageFolder, langPrefix );
         imageFolder = new File( imageFolder, "images/" + imcref.getDocType( metaId ) );
 
         return imageFolder;

@@ -14,6 +14,7 @@ import javax.servlet.http.*;
 
 import imcode.external.diverse.*;
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 import org.apache.log4j.*;
 
@@ -171,14 +172,15 @@ public class Administrator extends HttpServlet {
     /**
      * send error message
      *
+     * @param user
      * @param errorCode         is the code to loock upp in ErrMsg.ini file
      */
     void sendErrorMessage(IMCServiceInterface imcref, String eMailServerMaster,
-                                    String languagePrefix, String errorHeader,
-                                    int errorCode, HttpServletResponse response) throws IOException {
+                          UserDomainObject user, String errorHeader,
+                          int errorCode, HttpServletResponse response) throws IOException {
 
         ErrorMessageGenerator errorMessage = new ErrorMessageGenerator( imcref, eMailServerMaster,
-                                                                        languagePrefix, errorHeader, TEMPLATE_ERROR, errorCode );
+                user, errorHeader, TEMPLATE_ERROR, errorCode );
 
         errorMessage.sendHtml( response );
     }

@@ -63,9 +63,9 @@ public class ConfAndBillbTemplateUpload extends HttpServlet {
         String uploadType = mp.getParameter( "uploadType" );//IMAGE or TEMPLATE
         String folderName = mp.getParameter( "folderName" );
         if ( uploadType.equalsIgnoreCase( "TEMPLATE" ) ) {
-            externalPath = new File( imcref.getExternalTemplateFolder( Integer.parseInt( metaId ), user.getLangPrefix()), folderName );
+            externalPath = new File( imcref.getExternalTemplateFolder( Integer.parseInt( metaId ), user), folderName );
         } else if ( uploadType.equalsIgnoreCase( "IMAGE" ) ) {
-            externalPath = new File( RmiConf.getImagePathForExternalDocument( imcref, Integer.parseInt( metaId ), user.getLangPrefix()), folderName );
+            externalPath = new File( RmiConf.getImagePathForExternalDocument( imcref, Integer.parseInt( metaId ), user), folderName );
         } else {
             return;
         }

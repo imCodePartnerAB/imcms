@@ -42,7 +42,7 @@ public class TemplateAdd extends HttpServlet {
                 byte[] temp = (byte[])suffixAndStream[1];
 
                 if ( temp == null || temp.length == 0 ) {
-                    htmlStr = imcref.parseDoc( null, "no_demotemplate.html", lang_prefix ).getBytes( "8859_1" );
+                    htmlStr = imcref.parseDoc( null, "no_demotemplate.html", user).getBytes( "8859_1" );
                     mimeType = "text/html";
                 } else {
                     mimeType = getServletContext().getMimeType( template + "." + (String)suffixAndStream[0] );
@@ -62,7 +62,7 @@ public class TemplateAdd extends HttpServlet {
                 vec.add( "TemplateAdmin" );
                 vec.add( "#formTarget#" );
                 vec.add( "_top" );
-                htmlStr = imcref.parseDoc( vec, "back_button.html", lang_prefix ).getBytes( "8859_1" );
+                htmlStr = imcref.parseDoc( vec, "back_button.html", user).getBytes( "8859_1" );
                 out.write( htmlStr );
                 return;
             }
@@ -119,7 +119,7 @@ public class TemplateAdd extends HttpServlet {
                 Vector vec = new Vector();
                 vec.add( "#language#" );
                 vec.add( lang );
-                String htmlStr = imcref.parseDoc( vec, "templatedemo_upload_template_blank.html", lang_prefix );
+                String htmlStr = imcref.parseDoc( vec, "templatedemo_upload_template_blank.html", user);
                 res.setContentType( "text/html" );
                 out.print( htmlStr );
                 return;
@@ -150,9 +150,9 @@ public class TemplateAdd extends HttpServlet {
                     }
                     vec.add( "#templates#" );
                     vec.add( temps );
-                    htmlStr = imcref.parseDoc( vec, "templatedemo_upload.html", lang_prefix );
+                    htmlStr = imcref.parseDoc( vec, "templatedemo_upload.html", user);
                 } else {
-                    htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html", lang_prefix );
+                    htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html", user);
                 }
                 res.setContentType( "text/html" );
                 out.print( htmlStr );
@@ -164,14 +164,14 @@ public class TemplateAdd extends HttpServlet {
                 String htmlStr;
                 res.setContentType( "text/html" );
                 if ( suffixAndStream == null ) {
-                    htmlStr = imcref.parseDoc( null, "no_demotemplate.html", lang_prefix );
+                    htmlStr = imcref.parseDoc( null, "no_demotemplate.html", user);
                     out.print( htmlStr );
                     return;
 
                 } else {
                     byte[] temp = (byte[])suffixAndStream[1];
                     if ( temp == null ) {
-                        htmlStr = imcref.parseDoc( null, "no_demotemplate.html", lang_prefix );
+                        htmlStr = imcref.parseDoc( null, "no_demotemplate.html", user);
                         out.print( htmlStr );
                         return;
                     } else {
@@ -205,7 +205,7 @@ public class TemplateAdd extends HttpServlet {
                 Vector vec = new Vector();
                 vec.add( "#language#" );
                 vec.add( lang );
-                String htmlStr = imcref.parseDoc( vec, "template_upload_name_blank.html", lang_prefix );
+                String htmlStr = imcref.parseDoc( vec, "template_upload_name_blank.html", user);
                 res.setContentType( "text/html" );
                 out.print( htmlStr );
                 return;
@@ -219,9 +219,9 @@ public class TemplateAdd extends HttpServlet {
             vec.add( lang );
             String htmlStr = null;
             if ( demo ) {
-                htmlStr = imcref.parseDoc( vec, "templatedemo_upload_file_blank.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "templatedemo_upload_file_blank.html", user);
             } else {
-                htmlStr = imcref.parseDoc( vec, "template_upload_file_blank.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "template_upload_file_blank.html", user);
 
             }
             res.setContentType( "text/html" );
@@ -253,7 +253,7 @@ public class TemplateAdd extends HttpServlet {
                     "gif" ) && !suffix.equals( "htm" ) && !suffix.equals( "html" ) ) {
                 vec.add( "#language#" );
                 vec.add( lang );
-                htmlStr = imcref.parseDoc( vec, "templatedemo_upload_done.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "templatedemo_upload_done.html", user);
             } else {
 
                 vec.add( "#language#" );
@@ -261,9 +261,9 @@ public class TemplateAdd extends HttpServlet {
 
                 try {
                     imcref.saveDemoTemplate( Integer.parseInt( template ), file.getBytes( "8859_1" ), suffix );
-                    htmlStr = imcref.parseDoc( vec, "templatedemo_upload_done.html", lang_prefix );
+                    htmlStr = imcref.parseDoc( vec, "templatedemo_upload_done.html", user);
                 } catch ( IOException ex ) {
-                    htmlStr = imcref.parseDoc( vec, "templatedemo_upload_error.html", lang_prefix );
+                    htmlStr = imcref.parseDoc( vec, "templatedemo_upload_error.html", user);
                 }
             }
         } else {
@@ -273,12 +273,12 @@ public class TemplateAdd extends HttpServlet {
                 Vector vec = new Vector();
                 vec.add( "#language#" );
                 vec.add( lang );
-                htmlStr = imcref.parseDoc( vec, "template_upload_error.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "template_upload_error.html", user);
             } else if ( result == -1 ) {
                 Vector vec = new Vector();
                 vec.add( "#language#" );
                 vec.add( lang );
-                htmlStr = imcref.parseDoc( vec, "template_upload_file_exists.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "template_upload_file_exists.html", user);
             } else {
                 String t_id = imcref.sqlQueryStr( "select template_id from templates where simple_name = ?",
                                                   new String[]{simple_name} );
@@ -294,7 +294,7 @@ public class TemplateAdd extends HttpServlet {
                 Vector vec = new Vector();
                 vec.add( "#language#" );
                 vec.add( lang );
-                htmlStr = imcref.parseDoc( vec, "template_upload_done.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "template_upload_done.html", user);
             }
         }
         res.setContentType( "text/html" );

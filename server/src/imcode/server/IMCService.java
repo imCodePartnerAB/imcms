@@ -729,11 +729,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      Parse doc replace variables with data , use template
      */
-    public String parseDoc( java.util.List variables, String admin_template_name, String lang_prefix ) {
+    public String parseDoc(java.util.List variables, String admin_template_name, UserDomainObject user) {
         // FIXME Fugly workaround
-
+        String langPrefix = getUserLangPrefixOrDefaultLanguage(user) ;
         try {
-            String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/admin/" + admin_template_name ) );
+            String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, langPrefix + "/admin/" + admin_template_name ) );
             if ( variables == null ) {
                 return htmlStr;
             }
@@ -748,11 +748,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      Parse doc replace variables with data , use template
      */
-    public String parseExternalDoc(java.util.List variables, String external_template_name, String lang_prefix, String doc_type) {
+    public String parseExternalDoc(java.util.List variables, String external_template_name, UserDomainObject user, String doc_type) {
         // FIXME Fugly workaround
-
+        String langPrefix = getUserLangPrefixOrDefaultLanguage(user) ;
         try {
-            String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/" + doc_type + "/" + external_template_name ) );
+            String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, langPrefix + "/" + doc_type + "/" + external_template_name ) );
             if ( variables == null ) {
                 return htmlStr;
             }
@@ -770,11 +770,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      Parse doc replace variables with data , use template
      */
-    public String parseExternalDoc(java.util.List variables, String external_template_name, String lang_prefix, String doc_type, String templateSet) {
-        // FIXME Fugly workaround
+    public String parseExternalDoc(java.util.List variables, String external_template_name, UserDomainObject user, String doc_type, String templateSet) {
 
+        String langPrefix = this.getUserLangPrefixOrDefaultLanguage(user) ;
+        
         try {
-            String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/" + doc_type + "/" + templateSet + "/" + external_template_name ) );
+            String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, langPrefix + "/" + doc_type + "/" + templateSet + "/" + external_template_name ) );
             if ( variables == null ) {
                 return htmlStr;
             }
@@ -790,12 +791,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * @deprecated Ugly use {@link #parseExternalDoc(java.util.List variables, String external_template_name, String lang_prefix, String doc_type)}
+     * @deprecated Ugly use {@link IMCServiceInterface#parseExternalDoc(java.util.List,String,UserDomainObject,String)}
      *             or something else instead.
      */
-    public File getExternalTemplateFolder(int meta_id, String lang_prefix) {
+    public File getExternalTemplateFolder(int meta_id, UserDomainObject user) {
         int docType = getDocType(meta_id) ;
-        return new File(m_TemplateHome, lang_prefix + "/" + docType + "/");
+        String langPrefix = getUserLangPrefixOrDefaultLanguage(user) ;
+        return new File(m_TemplateHome, langPrefix + "/" + docType + "/");
     }
 
     /**
@@ -859,7 +861,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     // get language prefix for user
-    public String getLangPrefix( UserDomainObject user ) {
+    public String getUserLangPrefixOrDefaultLanguage( UserDomainObject user ) {
         String lang_prefix = this.getDefaultLanguageAsIso639_2();
         if ( user != null){
             return user.getLangPrefix();

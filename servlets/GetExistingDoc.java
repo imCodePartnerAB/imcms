@@ -194,7 +194,7 @@ public class GetExistingDoc extends HttpServlet {
             Vector outVector = new Vector();
 
             // Lets get the resultpage fragment used for an result
-            String oneRecHtmlSrc = imcref.parseDoc( null, "existing_doc_hit.html", langPrefix );
+            String oneRecHtmlSrc = imcref.parseDoc( null, "existing_doc_hit.html", user);
 
             // Lets get all document types and put them in a hashTable
             String[][] allDocTypesArray = imcref.getDocumentTypesInList( langPrefix );
@@ -208,7 +208,7 @@ public class GetExistingDoc extends HttpServlet {
             Vector tmpV = new Vector();
             tmpV.add( "#searchResults#" );
             tmpV.add( searchResults.toString() );
-            searchResults.replace( 0, searchResults.length(), imcref.parseDoc( tmpV, "existing_doc_res.html", langPrefix ) );
+            searchResults.replace( 0, searchResults.length(), imcref.parseDoc( tmpV, "existing_doc_res.html", user) );
 
             // Lets parse out hidden fields
             outVector.add( "#meta_id#" );
@@ -323,7 +323,7 @@ public class GetExistingDoc extends HttpServlet {
 
             // Send page to browser
             // htmlOut = imcref.parseDoc( htmlOut, outVector);
-            String htmlOut = imcref.parseDoc( outVector, "existing_doc.html", langPrefix );
+            String htmlOut = imcref.parseDoc( outVector, "existing_doc.html", user);
             out.write( htmlOut );
             return;
         } else {

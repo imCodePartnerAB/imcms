@@ -80,7 +80,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 	values.add("#options#");
 	values.add(options.toString());
 
-	out.write(imcref.parseExternalDoc(values, HTML_TEMPLATE , user.getLangPrefix(), DocumentDomainObject.DOCTYPE_FORTUNES+""));
+	out.write(imcref.parseExternalDoc(values, HTML_TEMPLATE , user, DocumentDomainObject.DOCTYPE_FORTUNES+""));
 
     } // End doGet
 
@@ -119,7 +119,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 	session.setAttribute("file",whichFile);
 
 	if (req.getParameter("edit")!=null)	{
-	    String options = imcref.parseExternalDoc(null, OPTION_LINE , user.getLangPrefix(), DocumentDomainObject.DOCTYPE_FORTUNES+"");
+	    String options = imcref.parseExternalDoc(null, OPTION_LINE , user, DocumentDomainObject.DOCTYPE_FORTUNES+"");
 
 	    StringBuffer buff = new StringBuffer();
 	    List lines = imcref.getQuoteList(whichFile+".txt");
@@ -150,7 +150,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 	    values.add("#options#");
 	    values.add(buff.toString());
 
-	    out.write(imcref.parseExternalDoc(values, HTML_TEMPLATE_ADMIN , user.getLangPrefix(), DocumentDomainObject.DOCTYPE_FORTUNES+""));
+	    out.write(imcref.parseExternalDoc(values, HTML_TEMPLATE_ADMIN , user, DocumentDomainObject.DOCTYPE_FORTUNES+""));
 	    session.setAttribute("lines",lines);
 	    return;
 	}

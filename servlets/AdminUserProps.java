@@ -298,7 +298,7 @@ public class AdminUserProps extends Administrator {
             log( "session has been invalidated so no need to remove parameters" );
         }
 
-        String outputString = imcref.parseDoc( vec, HTML_RESPONSE, user.getLangPrefix() );
+        String outputString = imcref.parseDoc( vec, HTML_RESPONSE, user);
         out.write( outputString );
     }
 
@@ -421,7 +421,7 @@ public class AdminUserProps extends Administrator {
         session.setAttribute( "Ok_phoneNumbers", tmp_phones );
 
         // Lets create the HTML page
-        String outputString = imcref.parseDoc( vec, HTML_RESPONSE, user.getLangPrefix() );
+        String outputString = imcref.parseDoc( vec, HTML_RESPONSE, user);
         out.write( outputString );
     }
 
@@ -1616,9 +1616,9 @@ public class AdminUserProps extends Administrator {
 
         // lets parse and return the html_admin_part
         if ( isSuperadmin ) {
-            html_admin_part = imcref.parseDoc( vec_admin_part, HTML_RESPONSE_SUPERADMIN_PART, user.getLangPrefix() );
+            html_admin_part = imcref.parseDoc( vec_admin_part, HTML_RESPONSE_SUPERADMIN_PART, user);
         } else {
-            html_admin_part = imcref.parseDoc( vec_admin_part, HTML_RESPONSE_ADMIN_PART, user.getLangPrefix() );
+            html_admin_part = imcref.parseDoc( vec_admin_part, HTML_RESPONSE_ADMIN_PART, user);
         }
         return html_admin_part;
 

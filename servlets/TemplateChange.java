@@ -49,7 +49,6 @@ public class TemplateChange extends HttpServlet {
 
         ServletOutputStream out = res.getOutputStream();
         String htmlStr = null;
-        String lang_prefix = user.getLangPrefix();
         String lang = req.getParameter( "language" );
         if( req.getParameter( "cancel" ) != null ) {
             Utility.redirect( req, res, "TemplateAdmin" );
@@ -80,7 +79,7 @@ public class TemplateChange extends HttpServlet {
                 vec.add( temp[i][1] );
                 vec.add( "#template_id#" );
                 vec.add( temp[i][2] );
-                htmlStr += imcref.parseDoc( vec, "template_list_row.html", lang_prefix );
+                htmlStr += imcref.parseDoc( vec, "template_list_row.html", user);
             }
             vec = new Vector();
             vec.add( "#language#" );
@@ -88,9 +87,9 @@ public class TemplateChange extends HttpServlet {
             if( temp.length > 0 ) {
                 vec.add( "#templates#" );
                 vec.add( htmlStr );
-                htmlStr = imcref.parseDoc( vec, "template_delete.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "template_delete.html", user);
             } else {
-                htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html", user);
             }
         } else if( req.getParameter( "template_delete" ) != null ) {
             String new_temp_id = req.getParameter( "new_template" );
@@ -110,7 +109,7 @@ public class TemplateChange extends HttpServlet {
                 vec.add( temp[i][1] );
                 vec.add( "#template_id#" );
                 vec.add( temp[i][2] );
-                htmlStr += imcref.parseDoc( vec, "template_list_row.html", lang_prefix );
+                htmlStr += imcref.parseDoc( vec, "template_list_row.html", user);
             }
             vec = new Vector();
             vec.add( "#language#" );
@@ -120,12 +119,12 @@ public class TemplateChange extends HttpServlet {
                 vec.add( htmlStr );
             }
             /**/
-            htmlStr = imcref.parseDoc( vec, "template_delete.html", lang_prefix );
+            htmlStr = imcref.parseDoc( vec, "template_delete.html", user);
         } else if( req.getParameter( "assign" ) != null ) {
             String grp_id = req.getParameter( "group_id" );
             String temp_id[] = req.getParameterValues( "unassigned" );
             if( temp_id == null ) {
-                htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix );
+                htmlStr = parseAssignTemplates( grp_id, lang, user);
                 out.print( htmlStr );
                 return;
             }
@@ -133,12 +132,12 @@ public class TemplateChange extends HttpServlet {
                 String tempId = temp_id[i];
                 sqlInsertGroupIdTemplateIdIntoTemplates( imcref, grp_id, tempId );
             }
-            htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix );
+            htmlStr = parseAssignTemplates( grp_id, lang, user);
         } else if( req.getParameter( "deassign" ) != null ) {
             String grp_id = req.getParameter( "group_id" );
             String temp_id[] = req.getParameterValues( "assigned" );
             if( temp_id == null ) {
-                htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix );
+                htmlStr = parseAssignTemplates( grp_id, lang, user);
                 out.print( htmlStr );
                 return;
             }
@@ -146,10 +145,10 @@ public class TemplateChange extends HttpServlet {
                 String tempId = temp_id[i];
                 sqlDeleteTemplate( imcref, grp_id, tempId );
             }
-            htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix );
+            htmlStr = parseAssignTemplates( grp_id, lang, user);
         } else if( req.getParameter( "show_assigned" ) != null ) {
             String grp_id = req.getParameter( "templategroup" );
-            htmlStr = parseAssignTemplates( grp_id, lang, lang_prefix );
+            htmlStr = parseAssignTemplates( grp_id, lang, user);
         } else if( req.getParameter( "template_rename" ) != null ) {
             int template_id = Integer.parseInt( req.getParameter( "template" ) );
             String name = req.getParameter( "name" );
@@ -157,7 +156,7 @@ public class TemplateChange extends HttpServlet {
                 Vector vec = new Vector();
                 vec.add( "#language#" );
                 vec.add( lang );
-                htmlStr = imcref.parseDoc( vec, "template_rename_name_blank.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "template_rename_name_blank.html", user);
             } else {
                 sqlUpdateTemplateName( imcref, template_id, name );
                 String temp[];
@@ -172,9 +171,9 @@ public class TemplateChange extends HttpServlet {
                     }
                     vec.add( "#templates#" );
                     vec.add( temps );
-                    htmlStr = imcref.parseDoc( vec, "template_rename.html", lang_prefix );
+                    htmlStr = imcref.parseDoc( vec, "template_rename.html", user);
                 } else {
-                    htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html", lang_prefix );
+                    htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html", user);
                 }
             }
         } else if( req.getParameter( "template_delete_check" ) != null ) {
@@ -201,7 +200,7 @@ public class TemplateChange extends HttpServlet {
                 vec.add( "#templates#" );
                 vec.add( tempstr );
 
-                htmlStr = imcref.parseDoc( vec, "template_delete_warning.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "template_delete_warning.html", user);
             } else {
                 imcref.deleteTemplate( template_id );
                 String foo[][] = imcref.sqlQueryMulti( "select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = ? group by t.template_id,simple_name order by simple_name", new String[] {lang});
@@ -215,7 +214,7 @@ public class TemplateChange extends HttpServlet {
                     vec.add( foo[i][1] );
                     vec.add( "#template_id#" );
                     vec.add( foo[i][2] );
-                    htmlStr += imcref.parseDoc( vec, "template_list_row.html", lang_prefix );
+                    htmlStr += imcref.parseDoc( vec, "template_list_row.html", user);
                 }
                 vec = new Vector();
                 vec.add( "#language#" );
@@ -225,7 +224,7 @@ public class TemplateChange extends HttpServlet {
                     vec.add( htmlStr );
                 }
                 /**/
-                htmlStr = imcref.parseDoc( vec, "template_delete.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "template_delete.html", user);
             }
         } else if( req.getParameter( "group_delete_check" ) != null ) {
             int grp_id = Integer.parseInt( req.getParameter( "templategroup" ) );
@@ -240,7 +239,7 @@ public class TemplateChange extends HttpServlet {
                 vec.add( temps );
                 vec.add( "#templategroup#" );
                 vec.add( String.valueOf( grp_id ) );
-                htmlStr = imcref.parseDoc( vec, "templategroup_delete_warning.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "templategroup_delete_warning.html", user);
             } else {
                 imcref.deleteTemplateGroup( grp_id );
                 temp = imcref.sqlProcedure("GetTemplategroups", new String[0]);
@@ -251,7 +250,7 @@ public class TemplateChange extends HttpServlet {
                 Vector vec = new Vector();
                 vec.add( "#templategroups#" );
                 vec.add( temps );
-                htmlStr = imcref.parseDoc( vec, "templategroup_delete.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "templategroup_delete.html", user);
             }
         } else if( req.getParameter( "group_delete" ) != null ) {
             int grp_id = Integer.parseInt( req.getParameter( "templategroup" ) );
@@ -265,7 +264,7 @@ public class TemplateChange extends HttpServlet {
             Vector vec = new Vector();
             vec.add( "#templategroups#" );
             vec.add( temps );
-            htmlStr = imcref.parseDoc( vec, "templategroup_delete.html", lang_prefix );
+            htmlStr = imcref.parseDoc( vec, "templategroup_delete.html", user);
         } else if( req.getParameter( "group_delete_cancel" ) != null ) {
             String temp[];
             temp = imcref.sqlProcedure("GetTemplategroups", new String[0]);
@@ -276,27 +275,27 @@ public class TemplateChange extends HttpServlet {
             Vector vec = new Vector();
             vec.add( "#templategroups#" );
             vec.add( temps );
-            htmlStr = imcref.parseDoc( vec, "templategroup_delete.html", lang_prefix );
+            htmlStr = imcref.parseDoc( vec, "templategroup_delete.html", user);
         } else if( req.getParameter( "group_add" ) != null ) {
             String name = req.getParameter( "name" );
             if( name == null || name.equals( "" ) ) {
-                htmlStr = imcref.parseDoc( null, "templategroup_add_name_blank.html", lang_prefix );
+                htmlStr = imcref.parseDoc( null, "templategroup_add_name_blank.html", user);
             } else {
                 String sqlStr = "select group_id from templategroups where group_name = ?";
                 if (imcref.sqlQueryStr(sqlStr, new String[]{name}) != null) {
-                    htmlStr = imcref.parseDoc( null, "templategroup_add_exists.html", lang_prefix );
+                    htmlStr = imcref.parseDoc( null, "templategroup_add_exists.html", user);
                 } else {
                     imcref.sqlUpdateQuery("declare @new_id int\n" +
                             "select @new_id = max(group_id)+1 from templategroups\n" +
                             "insert into templategroups values(@new_id,?)", new String[]{name});
-                    htmlStr = imcref.parseDoc(null, "templategroup_add.html", lang_prefix);
+                    htmlStr = imcref.parseDoc(null, "templategroup_add.html", user);
                 }
             }
         } else if( req.getParameter( "group_rename" ) != null ) {
             int grp_id = Integer.parseInt( req.getParameter( "templategroup" ) );
             String name = req.getParameter( "name" );
             if( name == null || name.equals( "" ) ) {
-                htmlStr = imcref.parseDoc( null, "templategroup_rename_name_blank.html", lang_prefix );
+                htmlStr = imcref.parseDoc( null, "templategroup_rename_name_blank.html", user);
             } else {
                 imcref.changeTemplateGroupName( grp_id, name );
                 String temp[];
@@ -308,7 +307,7 @@ public class TemplateChange extends HttpServlet {
                 Vector vec = new Vector();
                 vec.add( "#templategroups#" );
                 vec.add( temps );
-                htmlStr = imcref.parseDoc( vec, "templategroup_rename.html", lang_prefix );
+                htmlStr = imcref.parseDoc( vec, "templategroup_rename.html", user);
             }
         } else if( req.getParameter( "list_templates_docs" ) != null ) {
             String template_id = req.getParameter( "template" );
@@ -322,7 +321,7 @@ public class TemplateChange extends HttpServlet {
                 vec.add( temp[i][1] );
                 vec.add( "#template_id#" );
                 vec.add( temp[i][2] );
-                htmlStr += imcref.parseDoc( vec, "template_list_row.html", lang_prefix );
+                htmlStr += imcref.parseDoc( vec, "template_list_row.html", user);
             }
             Vector vec2 = new Vector();
             vec2.add( "#template_list#" );
@@ -346,14 +345,14 @@ public class TemplateChange extends HttpServlet {
                     }
                     temp[i][1] = Parser.parseDoc( temp[i][1], pd );
                     vec.add( temp[i][1] );
-                    htmlStr2 += imcref.parseDoc( vec, "templates_docs_row.html", lang_prefix );
+                    htmlStr2 += imcref.parseDoc( vec, "templates_docs_row.html", user);
                 }
                 vec2.add( "#templates_docs#" );
                 vec2.add( htmlStr2 );
             }
             vec2.add( "#language#" );
             vec2.add( lang );
-            htmlStr = imcref.parseDoc( vec2, "template_list.html", lang_prefix );
+            htmlStr = imcref.parseDoc( vec2, "template_list.html", user);
         } else if( req.getParameter( "show_doc" ) != null ) {
             String meta_id = req.getParameter( "templates_doc" );
             if( meta_id != null ) {
@@ -370,14 +369,14 @@ public class TemplateChange extends HttpServlet {
                 vec.add( temp[i][1] );
                 vec.add( "#template_id#" );
                 vec.add( temp[i][2] );
-                htmlStr += imcref.parseDoc( vec, "template_list_row.html", lang_prefix );
+                htmlStr += imcref.parseDoc( vec, "template_list_row.html", user);
             }
             Vector vec = new Vector();
             vec.add( "#template_list#" );
             vec.add( htmlStr );
             vec.add( "#language#" );
             vec.add( lang );
-            htmlStr = imcref.parseDoc( vec, "template_list.html", lang_prefix );
+            htmlStr = imcref.parseDoc( vec, "template_list.html", user);
         }
 
         out.print( htmlStr );
@@ -421,7 +420,7 @@ public class TemplateChange extends HttpServlet {
         return filename;
     }
 
-    private String parseAssignTemplates( String grp_id, String language, String lang_prefix ) throws IOException {
+    private String parseAssignTemplates(String grp_id, String language, UserDomainObject user) throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String temp[];
         temp = imcref.sqlProcedure("GetTemplategroups", new String[0]);
@@ -487,7 +486,7 @@ public class TemplateChange extends HttpServlet {
         }
         vec.add( "#language#" );
         vec.add( language );
-        return imcref.parseDoc( vec, "template_assign.html", lang_prefix );
+        return imcref.parseDoc( vec, "template_assign.html", user);
     }
 
     public void log( String str ) {

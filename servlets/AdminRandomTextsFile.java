@@ -60,8 +60,8 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
         String date2 = "";
         String text = "";
 
-        String errMsgDate = imcref.parseExternalDoc( null, DATE_ERROR, user.getLangPrefix(), DocumentDomainObject.DOCTYPE_FORTUNES + "" );
-        String errMsgTxt = imcref.parseExternalDoc( null, TEXT_ERROR, user.getLangPrefix(), DocumentDomainObject.DOCTYPE_FORTUNES + "" );
+        String errMsgDate = imcref.parseExternalDoc( null, DATE_ERROR, user, DocumentDomainObject.DOCTYPE_FORTUNES + "" );
+        String errMsgTxt = imcref.parseExternalDoc( null, TEXT_ERROR, user, DocumentDomainObject.DOCTYPE_FORTUNES + "" );
 
         if ( req.getParameter( "save" ) != null ) {
             addLineToList( req, lines );
@@ -173,7 +173,7 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
         values.add( "#options#" );
         values.add( buff.toString() );
 
-        String parsed = imcref.parseExternalDoc( values, HTML_TEMPLATE, user.getLangPrefix(), DocumentDomainObject.DOCTYPE_FORTUNES + "" );
+        String parsed = imcref.parseExternalDoc( values, HTML_TEMPLATE, user, DocumentDomainObject.DOCTYPE_FORTUNES + "" );
         out.print( parsed );
         return;
     }

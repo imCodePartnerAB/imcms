@@ -86,7 +86,7 @@ public class QuestionEngine extends HttpServlet
 	values.add("#file#");
 	values.add(inFile);
 
-	String parsed = imcref.parseExternalDoc( values, questionTemplate, imcref.getLangPrefix(user), "106");
+	String parsed = imcref.parseExternalDoc( values, questionTemplate, user, "106");
 
 	out.print(parsed);
 

@@ -103,7 +103,7 @@ public interface IMCServiceInterface {
 	;
 
     // get external template folder
-    File getExternalTemplateFolder(int meta_id, String lang_prefix)
+    File getExternalTemplateFolder(int meta_id, UserDomainObject user)
 	;
 
     // increment session counter
@@ -122,15 +122,14 @@ public interface IMCServiceInterface {
     String getCounterDate()  ;
 
     // parsedoc use template
-    public String  parseDoc(java.util.List variables,String admin_template_name,
-			    String lang_prefix)  ;
+    public String  parseDoc(java.util.List variables, String admin_template_name, UserDomainObject user)  ;
 
     // parseExternaldoc use template
-    public String parseExternalDoc(java.util.List variables, String external_template_name, String lang_prefix, String doc_type)
+    public String parseExternalDoc(java.util.List variables, String external_template_name, UserDomainObject user, String doc_type)
 	;
 
     // parseExternaldoc use template
-    public String parseExternalDoc(java.util.List variables, String external_template_name, String lang_prefix, String doc_type, String templateSet)
+    public String parseExternalDoc(java.util.List variables, String external_template_name, UserDomainObject user, String doc_type, String templateSet)
 	;
 
     // get templatehome
@@ -161,7 +160,7 @@ public interface IMCServiceInterface {
 	;
 
     // get language prefix for user
-    public String getLangPrefix( UserDomainObject user )
+    public String getUserLangPrefixOrDefaultLanguage( UserDomainObject user )
     ;
 
     // get doctype

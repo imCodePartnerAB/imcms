@@ -145,10 +145,10 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             int metaId = getMetaId( req );
             FileManager fileObj = new FileManager();
 
-            File templateSrc = new File( imcref.getExternalTemplateFolder( metaId, user.getLangPrefix()), "original" );
-            File imageSrc = new File( RmiConf.getImagePathForExternalDocument( imcref, metaId, user.getLangPrefix()), "original" );
-            File templateTarget = new File( imcref.getExternalTemplateFolder( metaId, user.getLangPrefix()), newLibName );
-            File imageTarget = new File( RmiConf.getImagePathForExternalDocument( imcref, metaId, user.getLangPrefix()), newLibName );
+            File templateSrc = new File( imcref.getExternalTemplateFolder( metaId, user), "original" );
+            File imageSrc = new File( RmiConf.getImagePathForExternalDocument( imcref, metaId, user), "original" );
+            File templateTarget = new File( imcref.getExternalTemplateFolder( metaId, user), newLibName );
+            File imageTarget = new File( RmiConf.getImagePathForExternalDocument( imcref, metaId, user), newLibName );
 
             fileObj.copyDirectory( templateSrc, templateTarget );
             fileObj.copyDirectory( imageSrc, imageTarget );
