@@ -22,9 +22,9 @@ webapproot = ${deployroot}/${webappname}
 
 # Database parameters
 
-db-host =
+db-host = localhost
 db-port = 1433
-db-name =
+db-name = imcms
 db-user =
 db-pass =
 db-maxconnections = 20
@@ -87,7 +87,7 @@ documentation-host = doc.imcms.net
 
 # Whether the build should be optimized or not.
 
-optimize = off
+optimize = on
 
 
 # Whether to leave debug info in or not.
