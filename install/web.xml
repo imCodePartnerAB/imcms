@@ -587,6 +587,7 @@
         <servlet-name>com.imcode.imcms.servlet.billboard.AdminBillBoard</servlet-name>
         <url-pattern>/servlet/AdminBillBoard</url-pattern>
     </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminCategories</servlet-name>
         <url-pattern>/servlet/AdminCategories</url-pattern>
