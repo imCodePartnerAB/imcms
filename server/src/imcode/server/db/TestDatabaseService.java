@@ -106,8 +106,15 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_getBrowserDocChilds( databaseService );
             test_sproc_GetCurrentSessionCounter( databaseService );
             test_sproc_GetCurrentSessionCounterDate( databaseService );
+            test_sproc_GetDocumentInfo( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_GetDocumentInfo( DatabaseService databaseService ) {
+        DatabaseService.Table_meta firstPage =  databaseService.sproc_GetDocumentInfo( DOC_ID_FIRST_PAGE );
+        assertNotNull( firstPage );
+        assertEquals( DOC_ID_FIRST_PAGE, firstPage.meta_id );
     }
 
     private void test_sproc_GetCurrentSessionCounterDate( DatabaseService databaseService ) {

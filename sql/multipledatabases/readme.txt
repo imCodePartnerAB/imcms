@@ -33,7 +33,6 @@ existingdocsgetselectedmetaids.prc
 getcategoryusers.prc
 getdoctypeswithnewpermissions.prc
 getdoctypeswithpermissions.prc
-getdocumentinfo.prc
 getlangprefix.prc
 getlangprefixfromid.prc
 getlanguagelist.prc

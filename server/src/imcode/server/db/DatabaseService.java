@@ -1056,7 +1056,7 @@ public abstract class DatabaseService {
     }
 
     static class Table_meta {
-        private int meta_id;
+        int meta_id;
         private String description;
         private int doc_type;
         private String meta_headline;
@@ -1083,34 +1083,39 @@ public abstract class DatabaseService {
         private Timestamp activated_datetime;
         private Timestamp archived_datetime;
 
-        Table_meta( int meta_id, String description, int doc_type, String meta_headline, String meta_text, String meta_image, int owner_id, int permissions, int shared, int expand, int show_meta, int help_text_id, int archive, int status_id, String lang_prefix, String classification, Timestamp date_created, Timestamp date_modified, int sort_position, int menu_position, int disable_search, String target, String frame_name, int activate, Timestamp activated_datetim, Timestamp archived_datetime ) {
-            this.meta_id = meta_id;
-            this.description = description;
-            this.doc_type = doc_type;
-            this.meta_headline = meta_headline;
-            this.meta_text = meta_text;
-            this.meta_image = meta_image;
-            this.owner_id = owner_id;
-            this.permissions = permissions;
-            this.shared = shared;
-            this.expand = expand;
-            this.show_meta = show_meta;
-            this.help_text_id = help_text_id;
-            this.archive = archive;
-            this.status_id = status_id;
-            this.lang_prefix = lang_prefix;
-            this.classification = classification;
-            this.date_created = date_created;
-            this.date_modified = date_modified;
-            this.sort_position = sort_position;
-            this.menu_position = menu_position;
-            this.disable_search = disable_search;
-            this.target = target;
-            this.frame_name = frame_name;
-            this.activate = activate;
-            this.activated_datetime = activated_datetim;
-            this.archived_datetime = archived_datetime;
+        Table_meta( ResultSet rs ) throws SQLException {
+            meta_id = rs.getInt( "meta_id" );
+            description = rs.getString( "description" );
+            doc_type = rs.getInt( "doc_type" );
+            meta_headline = rs.getString( "meta_headline" );
+            meta_text = rs.getString( "meta_text" );
+            meta_image = rs.getString( "meta_image" );
+            owner_id = rs.getInt( "owner_id" );
+            permissions = rs.getInt( "permissions" );
+            shared = rs.getInt( "shared" );
+            expand = rs.getInt( "expand" );
+            show_meta = rs.getInt( "show_meta" );
+            help_text_id = rs.getInt( "help_text_id" );
+            archive = rs.getInt( "archive" );
+            status_id = rs.getInt( "status_id" );
+            lang_prefix = rs.getString( "lang_prefix" );
+            classification = rs.getString( "classification" );
+            date_created = rs.getTimestamp( "date_created" );
+            date_modified = rs.getTimestamp( "date_modified" );
+            sort_position = rs.getInt( "sort_position" );
+            menu_position = rs.getInt( "menu_position" );
+            disable_search = rs.getInt( "disable_search" );
+            target = rs.getString( "target" );
+            frame_name = rs.getString( "frame_name" );
+            activate = rs.getInt( "activate" );
+            activated_datetime = rs.getTimestamp( "activated_datetime" );
+            archived_datetime = rs.getTimestamp( "archived_datetime" );
         }
+    }
+
+    Table_meta sproc_GetDocumentInfo( int meta_id ) {
+        Table_meta result = getFomTable_meta( new Integer( meta_id ));
+        return result;
     }
 
     private Table_meta getFomTable_meta( Integer meta_id ) {
@@ -1122,36 +1127,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                String description = rs.getString( "description" );
-                int doc_type = rs.getInt( "doc_type" );
-                String meta_headline = rs.getString( "meta_headline" );
-                String meta_text = rs.getString( "meta_text" );
-                String meta_image = rs.getString( "meta_image" );
-                int owner_id = rs.getInt( "owner_id" );
-                int permissions = rs.getInt( "permissions" );
-                int shared = rs.getInt( "shared" );
-                int expand = rs.getInt( "expand" );
-                int show_meta = rs.getInt( "show_meta" );
-                int help_text_id = rs.getInt( "help_text_id" );
-                int archive = rs.getInt( "archive" );
-                int status_id = rs.getInt( "status_id" );
-                String lang_prefix = rs.getString( "lang_prefix" );
-                String classification = rs.getString( "classification" );
-                Timestamp date_created = rs.getTimestamp( "date_created" );
-                Timestamp date_modified = rs.getTimestamp( "date_modified" );
-                int sort_position = rs.getInt( "sort_position" );
-                int menu_position = rs.getInt( "menu_position" );
-                int disable_search = rs.getInt( "disable_search" );
-                String target = rs.getString( "target" );
-                String frame_name = rs.getString( "frame_name" );
-                int activate = rs.getInt( "activate" );
-                Timestamp activated_datetime = rs.getTimestamp( "activated_datetime" );
-                Timestamp archived_datetime = rs.getTimestamp( "archived_datetime" );
-                return new Table_meta( meta_id, description, doc_type, meta_headline, meta_text, meta_image, owner_id,
-                                       permissions, shared, expand, show_meta, help_text_id, archive, status_id,
-                                       lang_prefix, classification, date_created, date_modified, sort_position,
-                                       menu_position, disable_search, target, frame_name, activate, activated_datetime, archived_datetime );
+                return new Table_meta( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
