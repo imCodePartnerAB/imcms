@@ -409,8 +409,10 @@ public class MetaDataParser {
         usersInOptionList.add("");
         for (int i = 0; i < users.length; i++) {
             UserDomainObject user = users[i];
-            usersInOptionList.add( "" + user.getUserId() );
-            usersInOptionList.add( user.getLastName() + ", " + user.getFirstName() );
+            if (user.isActive()){
+                usersInOptionList.add( "" + user.getUserId() );
+                usersInOptionList.add( user.getLastName() + ", " + user.getFirstName() );
+            }
         }
 
         String optionList;
