@@ -34,6 +34,9 @@ public class DatabaseAccessor {
     private static final String SPROC_GET_DOC_TYPES_WITH_PERMISSIONS = "GetDocTypesWithPermissions";
     private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "getTemplateGroupsWithPermissions";
     private static final String SPROC_TEXT_DOC_DATA = "GetTextDocData";
+    private static final String SPROC_GET_TEMPLATE_ID = "GetTemplateId";
+    private static final String SPROC_GET_CHILDS = "getChilds";
+    private static final String SPROC_GET_IMGS = "GetImgs";
 
     // todo make sure all the following is only used in one and only sprocMethod and nowhere else
     // these are found to be used elseware in
@@ -366,6 +369,45 @@ public class DatabaseAccessor {
         imcref.sqlUpdateProcedure( SPROC_UPDATE_PARENTS_DATE_MODIFIED + " " + meta_id );
     }
 
+    public static Vector sprocGetTemplateId( DBConnect dbc, String template_name ) {
+        dbc.setProcedure( SPROC_GET_TEMPLATE_ID + " " + template_name );
+        Vector vectT = dbc.executeProcedure();
+        return vectT;
+    }
+
+
+    public static Vector sprocGetTemplateGroupsForUser( DBConnect dbc, UserDomainObject user, int meta_id ) {
+        String sqlStr = SPROC_GET_TEMPLATE_GROUPS_FOR_USER;
+        String[] sqlAry2 = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
+        dbc.setProcedure( sqlStr, sqlAry2 );
+        Vector templategroups = dbc.executeProcedure();
+        dbc.clearResultSet();
+        return templategroups;
+    }
+
+    public static Vector sprocGetTemplatesInGroup( DBConnect dbc, int selected_group ) {
+        String sqlStr = SPROC_GET_TEMPLATES_IN_GROUP;
+        dbc.setProcedure( sqlStr, String.valueOf( selected_group ) );
+        Vector templates = dbc.executeProcedure();
+        dbc.clearResultSet();
+        return templates;
+    }
+
+    public static Vector sprocGetImgs( DBConnect dbc, int meta_id ) {
+        // Get the images from the db
+        // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
+        //					0                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
+        dbc.setProcedure( SPROC_GET_IMGS, String.valueOf( meta_id ) );
+        Vector images = dbc.executeProcedure();
+        return images;
+    }
+
+    public static Vector sprocGetChilds( DBConnect dbc, String meta_id_str, String user_id_str ) {
+        dbc.setProcedure( SPROC_GET_CHILDS, new String[]{meta_id_str, user_id_str} );
+        Vector childs = dbc.executeProcedure();
+        return childs;
+    }
+
     public static void sqlUpdateMetaDateCreated( IMCServiceInterface imcref, String meta_id, String created_datetime ) {
         String sqlStr;
         sqlStr = "update meta set date_created ='" + created_datetime + "' where meta_id = " + meta_id;
@@ -427,24 +469,6 @@ public class DatabaseAccessor {
         sqlStr += " where meta_id = " + meta_id;
         service.sqlUpdateQuery( sqlStr );
     }
-
-    public static Vector sprocGetTemplateGroupsForUser( DBConnect dbc, UserDomainObject user, int meta_id ) {
-        String sqlStr = SPROC_GET_TEMPLATE_GROUPS_FOR_USER;
-        String[] sqlAry2 = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
-        dbc.setProcedure( sqlStr, sqlAry2 );
-        Vector templategroups = dbc.executeProcedure();
-        dbc.clearResultSet();
-        return templategroups;
-    }
-
-    public static Vector sprocGetTemplatesInGroup( DBConnect dbc, int selected_group ) {
-        String sqlStr = SPROC_GET_TEMPLATES_IN_GROUP;
-        dbc.setProcedure( sqlStr, String.valueOf( selected_group ) );
-        Vector templates = dbc.executeProcedure();
-        dbc.clearResultSet();
-        return templates;
-    }
-
     public static Vector sqlSelectGroupName( DBConnect dbc, String group_id ) {
         String sqlStr = "select group_name from templategroups where group_id = " + group_id;
         dbc.setSQLString( sqlStr );
@@ -452,4 +476,5 @@ public class DatabaseAccessor {
         dbc.clearResultSet();
         return groupnamevec;
     }
+
 }

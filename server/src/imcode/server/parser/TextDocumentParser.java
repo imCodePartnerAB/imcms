@@ -11,7 +11,6 @@ import imcode.server.*;
 import imcode.server.util.DateHelper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.DocumentMapper;
 import imcode.server.document.DatabaseAccessor;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
@@ -109,13 +108,12 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             Vector user_permission_set = ImcmsAuthenticatorAndUserMapper.sprocGetUserPermissionSet( dbc, meta_id_str, user_id_str );
             if( user_permission_set == null ) {
                 dbc.closeConnection();
-                log.error( "parsePage: GetUserPermissionset returned null" );
-                return ("GetUserPermissionset returned null");
+                log.error( "parsePage: sprocGetUserPermissionSet returned null" );
+                return ("sprocGetUserPermissionSet returned null");
             }
 
             int user_set_id = Integer.parseInt( (String)user_permission_set.elementAt( 0 ) );
             int user_perm_set = Integer.parseInt( (String)user_permission_set.elementAt( 1 ) );
-            int currentdoc_perms = Integer.parseInt( (String)user_permission_set.elementAt( 2 ) );
 
             boolean textmode = false;
             boolean imagemode = false;
@@ -141,8 +139,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             if( template_name != null ) {
                 //lets validate that the template exists before we changes the original one
-                dbc.setProcedure( "GetTemplateId " + template_name );
-                Vector vectT = (Vector)dbc.executeProcedure();
+                Vector vectT = DatabaseAccessor.sprocGetTemplateId( dbc, template_name );
                 if( vectT.size() > 0 ) {
                     try {
                         int temp_template = Integer.parseInt( (String)vectT.get( 0 ) );
@@ -159,7 +156,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             String lang_prefix = user.getLangPrefix();	// Find language
 
             Vector doc_types_vec = null;
-            String sqlStr = null;
             if( menumode ) {
                 // I'll retrieve a list of all doc-types the user may create.
                 doc_types_vec = DatabaseAccessor.sprocGetDocTypeForUser( dbc, user, meta_id, lang_prefix );
@@ -186,53 +182,37 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             // Here we have the most timeconsuming part of parsing the page.
             // Selecting all the documents with permissions from the DB
-            sqlStr = "getChilds";
-            dbc.setProcedure( sqlStr, new String[]{meta_id_str, user_id_str} );
-            Vector childs = (Vector)dbc.executeProcedure();
+            Vector childs = DatabaseAccessor.sprocGetChilds( dbc, meta_id_str, user_id_str );
 
             if( childs == null ) {
                 dbc.closeConnection();
-                log.error( "parsePage: GetChilds returned null" );
-                return ("GetChilds returned null");
+                log.error( "parsePage: sprocGetChilds returned null" );
+                return ("sprocGetChilds returned null");
             }
 
-            int child_cols = dbc.getColumnCount();
-            int child_rows = childs.size() / child_cols;
             dbc.clearResultSet();
 
-            // Get the images from the db
-            // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
-            //					0                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
-            dbc.setProcedure( "GetImgs", String.valueOf( meta_id ) );
-            Vector images = (Vector)dbc.executeProcedure();
+            Vector images = DatabaseAccessor.sprocGetImgs( dbc, meta_id );
             dbc.clearResultSet();
             if( images == null ) {
                 dbc.closeConnection();
-                log.error( "parsePage: GetImgs returned null" );
-                return ("GetImgs returned null");
+                log.error( "parsePage: sprocGetImgs returned null" );
+                return ("sprocGetImgs returned null");
             }
 
-            dbc.setProcedure( "SectionGetInheritId", String.valueOf( meta_id ) );
-            Vector section_data = (Vector)dbc.executeProcedure();
-            dbc.clearResultSet();
-
-            String section_name = null;
-            if( section_data == null ) {
+            String[] sectionData = DatabaseAccessor.sprocSectionGetInheritId( serverObject,  meta_id );
+            if( sectionData == null ) {
                 dbc.closeConnection();
-                log.error( "parsePage: SectionGetInheritId returned null" );
-                return ("SectionGetInheritId returned null");
-            } else if( section_data.size() < 2 ) {
-                section_name = "";
-            } else {
-                section_name = (String)section_data.get( 1 );
+                log.error( "parsePage: sprocSectionGetInheritId returned null" );
+                return ("sprocSectionGetInheritId returned null");
             }
+
             dbc.closeConnection();
 
             File admintemplate_path = new File( templatePath, "/" + lang_prefix + "/admin/" );
 
             String emphasize_string = fileCache.getCachedFileString( new File( admintemplate_path, "textdoc/emphasize.html" ) );
 
-            Perl5Compiler patComp = new Perl5Compiler();
             Perl5Matcher patMat = new Perl5Matcher();
 
             Perl5Substitution emphasize_substitution = new Perl5Substitution( emphasize_string );
@@ -241,13 +221,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             Map textMap = serverObject.getTexts( meta_id );
             HashMap imageMap = new HashMap();
 
-            int images_cols = dbc.getColumnCount();
-            int images_rows = images.size() / images_cols;
-            dbc.clearResultSet();
             Iterator imit = images.iterator();
             // This is where we gather all images from the database and put them in our maps.
             while( imit.hasNext() ) {
-                String imgtag = (String)imit.next();
+                imit.next(); // String imgtag = (String)imit.next();
                 String imgnumber = (String)imit.next();
                 String imgurl = (String)imit.next();
                 String linkurl = (String)imit.next();
@@ -319,7 +296,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             HashMap menus = new HashMap();	// Map to contain all the menus on the page.
             Menu currentMenu = null;
             int old_menu = -1;
-            java.util.Date now = new java.util.Date();
             SimpleDateFormat DATETIMEFORMAT = DateHelper.DATE_TIME_FORMAT_IN_DATABASE;
 
             Iterator childIt = childs.iterator();
@@ -352,7 +328,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 menuItem.setMetaId( childMetaId );                                    // The meta-id of the child
                 menuItem.setSortKey( Integer.parseInt( (String)childIt.next() ) );      // What order the internalDocument is sorted in in the menu, using sort-order 2 (manual sort)
                 menuItem.setDocumentType( Integer.parseInt( (String)childIt.next() ) ); // The doctype of the child.
-                menuItem.setArchived( !"0".equals( (String)childIt.next() ) );          // Child is considered archived?
+                menuItem.setArchived( !"0".equals( childIt.next() ) );          // Child is considered archived?
                 menuItem.setTarget( (String)childIt.next() );                         // The target for this internalDocument.
                 try {
                     menuItem.setCreatedDatetime( DATETIMEFORMAT.parse( (String)childIt.next() ) ); // The datetime the child was created.
@@ -376,7 +352,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 } catch( NullPointerException ignored ) {
                 } catch( ParseException ignored ) {
                 }
-                menuItem.setEditable( "0".equals( (String)childIt.next() ) );           // if the user may admin it.
+                menuItem.setEditable( "0".equals( childIt.next() ) );           // if the user may admin it.
                 menuItem.setFilename( (String)childIt.next() );                       // The filename, if it is a file-doc.
 
                 if( (!menuItem.isActive() || menuItem.isArchived()) && !menumode ) { // if not menumode, and internalDocument is inactive or archived, don't include it.

@@ -1,3 +1,8 @@
+Klasser att testa efter flytt av sprocs:
+
+- Category vs Logger, vad ska användas?
+
+
 Hasse
 - Se till att ingenting i API:et är mer public än det behöver vara
 - Gå igenom API klasserna så att de är dokumenterade och logiska namn
