@@ -1286,8 +1286,9 @@ public class AdminUserProps extends Administrator {
             }
         }
 
+        // Only validate roles if request contains a parameter "roles", when user is edit his own properties it don't.     
         String[] rolesParameterValues = req.getParameterValues( REQUEST_PARAMETER__ROLES );
-        if ( null == rolesParameterValues || 0 == rolesParameterValues.length ) {
+        if ( null != rolesParameterValues && 0 == rolesParameterValues.length ) {
             return false;
         }
 
