@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleUpdateName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[RoleUpdateName]
-;
-
-
 CREATE PROCEDURE RoleUpdateName
 /*
 Updates the name on a role in the db
@@ -21,8 +11,3 @@ WHERE role_id = @role_id
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

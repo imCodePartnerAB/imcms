@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleGetName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[RoleGetName]
-;
-
-
 CREATE PROCEDURE RoleGetName
  @roleId int
 AS
@@ -25,8 +15,3 @@ SELECT @returnStr AS 'Rolename'
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

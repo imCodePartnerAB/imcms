@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserRolesIds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[GetUserRolesIds]
-;
-
-
 CREATE PROCEDURE GetUserRolesIds
 /* Returns the roles id:s for a user 
 */
@@ -20,8 +10,3 @@ CREATE PROCEDURE GetUserRolesIds
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

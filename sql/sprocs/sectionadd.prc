@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS OFF 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SectionAdd]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[SectionAdd]
-;
-
-
 CREATE PROCEDURE SectionAdd 
   @section_word varchar(200)
 AS
@@ -27,8 +17,3 @@ IF ( @foundCode = 0 ) BEGIN
  VALUES (  @section_word )
 END
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

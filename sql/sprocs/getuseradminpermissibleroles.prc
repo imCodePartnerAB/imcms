@@ -1,12 +1,3 @@
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUseradminPermissibleRoles]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[GetUseradminPermissibleRoles]
-;
-
-SET QUOTED_IDENTIFIER ON 
-;
-SET ANSI_NULLS ON 
-;
-
 CREATE  PROCEDURE GetUseradminPermissibleRoles
 /*
  get all roles a Useradmin have administration rights on user with that roles
@@ -23,8 +14,3 @@ CREATE  PROCEDURE GetUseradminPermissibleRoles
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

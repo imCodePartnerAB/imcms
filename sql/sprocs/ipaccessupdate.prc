@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER ON 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[IPAccessUpdate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[IPAccessUpdate]
-;
-
-
 CREATE PROCEDURE IPAccessUpdate
 /*
 Updates the IPaccess table
@@ -25,8 +15,3 @@ WHERE ip_access_id = @IpAccessId
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

@@ -1,14 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetDocTypesWithNewPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[GetDocTypesWithNewPermissions]
-;
-
-
---
 -- Procedure Create
 -- dbo.GetDocTypesWithNewPermissions
 --
@@ -32,8 +21,3 @@ ORDER BY CAST(ISNULL(dpse.permission_data,-1)+1  AS BIT) DESC,doc_type
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

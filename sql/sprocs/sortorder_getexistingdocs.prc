@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF
-;
-SET ANSI_NULLS OFF
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SortOrder_GetExistingDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[SortOrder_GetExistingDocs]
-;
-
-
 CREATE PROCEDURE SortOrder_GetExistingDocs
 	@langPrefixString char(3)
 AS
@@ -25,8 +15,3 @@ INNER JOIN sort_by sType
 
 
 ;
-SET QUOTED_IDENTIFIER OFF
-;
-SET ANSI_NULLS ON
-;
-

@@ -342,13 +342,6 @@
 
         <mkdir dir="${tmp}"/>
 
-        <cat destfile="${sprocs-sql}" orderby="path" filtering="true">
-            <fileset file="sql/conf/conf_sprocs.sql"/>
-            <fileset file="sql/billboard/billboard_sprocs.sql"/>
-            <fileset file="sql/chat/chat_sprocs.sql"/>
-            <fileset dir="sql/sprocs" includes="*.prc"/>
-        </cat>
-
         <cat destfile="${tmp}/imcms.sql" orderby="path" filtering="true">
             <fileset file="${tmp}/ddl.sql"/>
             <fileset file="sql/data/types.sql"/>
@@ -360,21 +353,16 @@
 
         <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="libraries"/>
 
-        <if>
-            <equals arg1="${db-target}" arg2="mssql"/>
-            <then>
-                <concat append="true" destfile="${tmp}/imcms.sql">
-                    <fileset file="${sprocs-sql}"/>
-                </concat>
-            </then>
-        </if>
-
         <copy file="sql/delete_db.sql" tofile="${drop-sql}" filtering="true"/>
 
         <copy file="sql/create_db.sql" tofile="${create-sql}" filtering="true"/>
 
         <copy todir="${sql-diff}">
             <fileset dir="sql/diff" includes="diff-*.sql"/>
+        </copy>
+
+        <copy todir="${sql-sprocs}">
+            <fileset dir="sql/sprocs" includes="*.prc"/>
         </copy>
 
         <antcall target="sql-lang">

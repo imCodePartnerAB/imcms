@@ -1,16 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS OFF 
-;
-
-/****** Object:  Stored Procedure dbo.DocumentDelete    Script Date: 2002-10-18 12:05:21 ******/
-if exists (select * from sysobjects where id = object_id('dbo.DocumentDelete') and sysstat & 0xf = 4)
-	drop procedure dbo.DocumentDelete
-;
-
-
-
-
 CREATE PROCEDURE DocumentDelete
 	@meta_id int
 AS
@@ -53,8 +40,3 @@ BEGIN
 END
 
 ;
-SET QUOTED_IDENTIFIER OFF
-;
-SET ANSI_NULLS ON 
-;
-

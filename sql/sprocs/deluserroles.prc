@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[DelUserRoles]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[DelUserRoles]
-;
-
-
 CREATE PROCEDURE DelUserRoles
   @userToChangeId int,
   @roleId int
@@ -31,8 +21,3 @@ ELSE IF @roleId > 0 BEGIN
 END
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

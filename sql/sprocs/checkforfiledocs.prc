@@ -1,15 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-/****** Object:  Stored Procedure dbo.CheckForFileDocs    Script Date: 2002-09-24 12:08:20 ******/
-if exists (select * from sysobjects where id = object_id('dbo.CheckForFileDocs') and sysstat & 0xf = 4)
-	drop procedure dbo.CheckForFileDocs
-;
-
-
-
 CREATE     PROCEDURE CheckForFileDocs @documents_string VARCHAR(200) AS
 /**
 	This procedure takes a list of document-ids (meta_ids)
@@ -43,12 +31,3 @@ WHERE doc_type = 8
 ORDER BY meta.meta_headline
 
 drop table #documents;
-
-
-;
-
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

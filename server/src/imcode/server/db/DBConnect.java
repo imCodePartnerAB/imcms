@@ -1,11 +1,18 @@
 package imcode.server.db;
 
+import imcode.util.FileUtility;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
-import org.apache.commons.lang.NullArgumentException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class DBConnect {
 
@@ -13,9 +20,7 @@ class DBConnect {
     private ResultSet resultSet = null;
     private ResultSetMetaData resultSetMetaData = null;
     private PreparedStatement preparedStatement;
-    private CallableStatement callableStatement = null;
     private String sqlQueryString = "";
-    private String sqlProcedure = "";
     private String[] columnLabels;
     private int columnCount;
 
@@ -83,46 +88,6 @@ class DBConnect {
         }
     }
 
-    private List executeProcedure() {
-
-        List results = new ArrayList();
-        try {
-            resultSet = callableStatement.executeQuery();
-            resultSetMetaData = resultSet.getMetaData();
-            columnCount = resultSetMetaData.getColumnCount();
-
-            columnLabels = new String[columnCount];
-            for ( int i = 0; i < columnCount; ) {
-                columnLabels[i] = resultSetMetaData.getColumnLabel( ++i );
-            }
-            while ( resultSet.next() ) {
-                for ( int i = 1; i <= columnCount; i++ ) {
-                    String s = resultSet.getString( i );
-                    results.add( s );
-                }
-            }
-        } catch ( SQLException ex ) {
-            log.error( "Error in executeProcedure()", ex );
-            throw getException( null, ex );
-        } finally {
-            closeConnection();
-        }
-        return results;
-    }
-
-    private int executeUpdateProcedure() {
-        int res = 0;
-        try {
-            res = callableStatement.executeUpdate();
-        } catch ( SQLException ex ) {
-            log.error( "Error in executeUpdateProcedure()", ex );
-            throw getException( null, ex );
-        } finally {
-            closeConnection();
-        }
-        return res;
-    }
-
     String[] getColumnLabels() {
         return columnLabels;
     }
@@ -139,9 +104,6 @@ class DBConnect {
             if ( null != preparedStatement ) {
                 preparedStatement.close();
             }
-            if ( null != callableStatement ) {
-                callableStatement.close();
-            }
             connection.close();
         } catch ( SQLException ex ) {
             log.error( "Failed to close connection.", ex );
@@ -149,17 +111,42 @@ class DBConnect {
         connection = null;
     }
 
-    private void prepareProcedureStatementAndSetParameters( String procedure, String[] params ) {
-        if ( null == procedure ) {
-            throw new NullArgumentException( procedure );
-        }
-        sqlProcedure = "{call " + procedure + "}";
+    private void prepareProcedureStatementAndSetParameters( String wantedProcedure, String[] params ) {
+        File procedureFile = FileUtility.getFileFromWebappRelativePath("WEB-INF/sql/sprocs/"+wantedProcedure.toLowerCase()+".prc" ) ;
         try {
-            callableStatement = connection.prepareCall( sqlProcedure );
-            setParameters( callableStatement, params );
-        } catch ( SQLException ex ) {
-            log.error( "Error in prepareProcedureStatementAndSetParameters()", ex );
-            throw getException( procedure, ex );
+            String procedureSql = IOUtils.toString( new FileInputStream(procedureFile)) ;
+            Pattern headerPattern = Pattern.compile( "CREATE\\s+PROCEDURE\\s+(\\w+)\\s+(.*)\\bAS\\b", Pattern.CASE_INSENSITIVE|Pattern.DOTALL) ;
+            Matcher headerMatcher = headerPattern.matcher( procedureSql );
+            if (!headerMatcher.find()) {
+                throw new RuntimeException( "Failed to parse procedure "+wantedProcedure+": "+procedureSql);
+            }
+            String procedureName = headerMatcher.group( 1 );
+            String parametersSQL = headerMatcher.group( 2 );
+            String body = procedureSql.substring( headerMatcher.end() ) ;
+            Pattern parameterPattern = Pattern.compile( "@(\\w+)") ;
+            Matcher parametersMatcher = parameterPattern.matcher( parametersSQL );
+            Map parameterMap = new HashMap();
+            int headerParametersFound = 0 ;
+            while (parametersMatcher.find()) {
+                String parameterName = parametersMatcher.group( 1 );
+                parameterMap.put(parameterName, params[headerParametersFound++]) ;
+            }
+            List parameters = new ArrayList();
+            Matcher bodyParametersMatcher = parameterPattern.matcher( body ) ;
+            StringBuffer bodyStringBuffer = new StringBuffer();
+            while (bodyParametersMatcher.find()) {
+                bodyParametersMatcher.appendReplacement( bodyStringBuffer, "?" ) ;
+                String parameterName = bodyParametersMatcher.group( 1 );
+                String parameterValue = (String)parameterMap.get( parameterName ) ;
+                parameters.add(parameterValue) ;
+            }
+            bodyParametersMatcher.appendTail( bodyStringBuffer ) ;
+            String bodyWithParametersReplaced = bodyStringBuffer.toString();
+            String[] replacedParametersArray = (String[])parameters.toArray( new String[parameters.size()] );
+            log.debug( "Procedure "+procedureName+" called with parameters\n"+ ArrayUtils.toString( replacedParametersArray ) +" and body\n"+bodyWithParametersReplaced);
+            setSQLString( bodyWithParametersReplaced, replacedParametersArray);
+        } catch ( IOException e ) {
+            throw new UnhandledException( e );
         }
     }
 
@@ -170,28 +157,13 @@ class DBConnect {
     }
 
     int executeUpdateProcedure( String procedure, String[] params ) {
-        procedure = addQuestionMarksToProcedureCall( procedure, params );
         prepareProcedureStatementAndSetParameters( procedure, params );
-        return executeUpdateProcedure();
+        return executeUpdateQuery();
     }
 
     List executeProcedure( String procedure, String[] params ) {
-        procedure = addQuestionMarksToProcedureCall( procedure, params );
         prepareProcedureStatementAndSetParameters( procedure, params );
-        return executeProcedure();
-    }
-
-    private static String addQuestionMarksToProcedureCall( String procedure, String[] params ) {
-        StringBuffer procedureBuffer = new StringBuffer( procedure );
-        procedureBuffer.append( "(" );
-        if ( params.length > 0 ) {
-            procedureBuffer.append( "?" );
-            for ( int i = 1; i < params.length; ++i ) {
-                procedureBuffer.append( ", ?" );
-            }
-        }
-        procedureBuffer.append( ")" );
-        return procedureBuffer.toString();
+        return executeQuery();
     }
 
     void setSQLString( String sqlStr, String[] params ) {

@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[getDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[getDocs]
-;
-
-
 CREATE PROCEDURE getDocs @user_id int, @start int, @end int AS
 -- Lists documents user is allowed to see.
 SELECT DISTINCT m.meta_id,
@@ -35,8 +25,3 @@ ORDER BY  m.meta_id
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

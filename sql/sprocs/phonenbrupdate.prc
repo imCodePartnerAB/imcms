@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[PhoneNbrUpdate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[PhoneNbrUpdate]
-;
-
-
 CREATE PROCEDURE PhoneNbrUpdate 
 /*
 This function updates a phone number in db. Used by AdminUserProps
@@ -24,8 +14,3 @@ AND phones.phone_id = @phone_id
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

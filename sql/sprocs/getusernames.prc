@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserNames]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[GetUserNames]
-;
-
-
 CREATE PROCEDURE GetUserNames
 /* 
 This procedure is used to retrieve a users full name (first name + last name
@@ -31,8 +21,3 @@ SELECT @returnVal AS 'UserName'
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

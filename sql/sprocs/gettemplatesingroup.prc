@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[getTemplatesInGroup]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[getTemplatesInGroup]
-;
-
-
 CREATE PROCEDURE getTemplatesInGroup @grp_id INT AS
 /**
 	DOCME: Document me!
@@ -22,8 +12,3 @@ ORDER BY simple_name
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

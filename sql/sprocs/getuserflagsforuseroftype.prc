@@ -1,12 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS OFF 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserFlagsForUserOfType]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[GetUserFlagsForUserOfType]
-;
-
 CREATE PROCEDURE GetUserFlagsForUserOfType @user_id INT, @type INT AS
 
 /**
@@ -23,8 +14,3 @@ WHERE	user_flags.user_flag_id = user_flags_crossref.user_flag_id
 AND		user_flags_crossref.user_id = @user_id
 AND		user_flags.type = @type
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

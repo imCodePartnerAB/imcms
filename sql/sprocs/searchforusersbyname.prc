@@ -1,12 +1,3 @@
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SearchForUsersByName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[SearchForUsersByName]
-;
-
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
 CREATE PROCEDURE SearchForUsersByName
 
  /*
@@ -94,8 +85,3 @@ SELECT @searchString = replace(@searchString, '*', '%' )
       END	
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleDeleteViewAffectedMetaIds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[RoleDeleteViewAffectedMetaIds]
-;
-
-
 CREATE PROCEDURE RoleDeleteViewAffectedMetaIds
  @aRoleId int
 AS
@@ -24,8 +14,3 @@ WHERE role_id = @aRoleId
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

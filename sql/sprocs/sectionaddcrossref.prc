@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS OFF 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SectionAddCrossref]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[SectionAddCrossref]
-;
-
-
 CREATE PROCEDURE SectionAddCrossref 
  @meta_id int,
  @section_id int
@@ -23,8 +13,3 @@ IF (@section_id > 0)  BEGIN /* if we have a valid section */
 END
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

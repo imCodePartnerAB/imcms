@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[UpdateParentsDateModified]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[UpdateParentsDateModified]
-;
-
-
 CREATE PROCEDURE [UpdateParentsDateModified] @meta_id INT AS
 /**
 	DOCME: Document me!
@@ -22,8 +12,3 @@ WHERE c.to_meta_id = @meta_id
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

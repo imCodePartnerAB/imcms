@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[WebMasterSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[WebMasterSet]
-;
-
-
 CREATE PROCEDURE WebMasterSet 
 @wmname VARCHAR(80), 
 @wmaddress VARCHAR(80)  AS
@@ -20,8 +10,3 @@ UPDATE sys_data SET value = @wmaddress WHERE type_id = 7
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

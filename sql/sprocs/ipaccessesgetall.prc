@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[IPAccessesGetAll]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[IPAccessesGetAll]
-;
-
-
 CREATE PROCEDURE IPAccessesGetAll AS
 /*
 Lets get all IPaccesses from db. Used  by the AdminIpAccesses
@@ -18,8 +8,3 @@ WHERE ip.user_id = usr.user_id
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

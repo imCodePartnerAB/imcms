@@ -1,22 +1,3 @@
-SET QUOTED_IDENTIFIER ON 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[Poll_GetAnswer]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[Poll_GetAnswer]
-;
-
-
-
-/*
-=============================================
-Procedure Poll_GetAnswer
-Get one answer option for a question    
-=============================================
-*/
-
-
 CREATE  PROCEDURE dbo.Poll_GetAnswer
 	@question_id int,
 	@option_no int 
@@ -29,8 +10,3 @@ AS
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

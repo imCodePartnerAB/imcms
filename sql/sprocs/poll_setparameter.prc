@@ -1,22 +1,3 @@
-SET QUOTED_IDENTIFIER ON 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[Poll_SetParameter]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[Poll_SetParameter]
-;
-
-
-
-/*
-=============================================
-Procedure Poll_SetParameter
-Update a poll parameter
-=============================================
-*/
-
-
 CREATE  PROCEDURE dbo.Poll_SetParameter
 	@poll_id int, 
 	@param_name varchar(25),
@@ -30,8 +11,3 @@ AS
 	EXEC (@eval)
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

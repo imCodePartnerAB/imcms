@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER ON 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[CheckUserDocSharePermission]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[CheckUserDocSharePermission]
-;
-
-
 CREATE PROCEDURE CheckUserDocSharePermission @user_id INT, @meta_id INT AS
 /**
     DOCME: Document me!
@@ -29,8 +19,3 @@ GROUP BY m.meta_id
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

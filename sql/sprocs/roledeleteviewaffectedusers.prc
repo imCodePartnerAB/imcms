@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleDeleteViewAffectedUsers]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[RoleDeleteViewAffectedUsers]
-;
-
-
 CREATE PROCEDURE RoleDeleteViewAffectedUsers
  @aRoleId int
 AS
@@ -24,8 +14,3 @@ ORDER BY (RTRIM(last_name) + ', ' + RTRIM(first_name))
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

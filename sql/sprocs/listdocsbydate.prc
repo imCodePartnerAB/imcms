@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[ListDocsByDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[ListDocsByDate]
-;
-
-
 CREATE PROCEDURE ListDocsByDate @listMod int,  @doc_type int, @startDate varchar(10), @endDate varchar(20), @lang_prefix varchar(3) AS
 /*
  lists doctyps where activate = 1
@@ -111,8 +101,3 @@ end
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

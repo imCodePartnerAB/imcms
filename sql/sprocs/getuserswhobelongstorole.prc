@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUsersWhoBelongsToRole]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[GetUsersWhoBelongsToRole]
-;
-
-
 CREATE PROCEDURE GetUsersWhoBelongsToRole @role_id int AS
 /*
  * select user who belongs to role role_id
@@ -21,8 +11,3 @@ order by  last_name
 
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

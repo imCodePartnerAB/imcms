@@ -1,13 +1,3 @@
-SET QUOTED_IDENTIFIER ON 
-;
-SET ANSI_NULLS ON 
-;
-
-/****** Object:  Stored Procedure StartDocSet    Script Date: 2002-09-25 14:10:32 ******/
-if exists (select * from sysobjects where id = object_id('dbo.StartDocSet') and sysstat & 0xf = 4)
-	drop procedure dbo.StartDocSet
-;
-
 CREATE PROCEDURE StartDocSet @meta_id INT AS
 /**
 	Changes the start document
@@ -26,9 +16,3 @@ END
 
 
 ;
-
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-

@@ -1,21 +1,3 @@
-SET QUOTED_IDENTIFIER ON 
-;
-SET ANSI_NULLS ON 
-;
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[Poll_IncreaseAnswerOption]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[Poll_IncreaseAnswerOption]
-;
-
-
-
-/*
-=============================================
-Procedure Poll_IncreaseAnswerOption
-Increase a poll answer option with 1 
-=============================================
-*/
-
 CREATE  PROCEDURE dbo.Poll_IncreaseAnswerOption
 	@question_id int,
 	@option_no int
@@ -27,8 +9,3 @@ AS
 		option_number = @option_no
 
 ;
-SET QUOTED_IDENTIFIER OFF 
-;
-SET ANSI_NULLS ON 
-;
-
