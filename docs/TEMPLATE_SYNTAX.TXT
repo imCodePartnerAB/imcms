@@ -5,6 +5,9 @@ Tags used in text templates
         * post - Inserted after the tag content if non-empty.
 
     All attributes allow html-entities, like "&#39;", "&lt;" or "&quot;".
+    Also, all attributes allow velocity code, exactly as for the <?imcms:velocity?>-tag,
+    for example:
+        pre="$request.getContextPath()"
 
 
 Block-tags

@@ -59,6 +59,16 @@
         </change>
     </changes>
 
+    <changes for="template creators">
+        <change>
+            <p>
+                Allow velocity code in all tag attributes.
+                See <localfile>TEMPLATE_SYNTAX.TXT</localfile> for details.
+            </p>
+            <bug id="2785"/>
+        </change>
+    </changes>
+
     <changes for="administrators">
         <change>
             <p>
