@@ -83,7 +83,7 @@ public class ChangeImage extends HttpServlet {
         } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON ) ) {
             goToImageBrowser( document, imageIndex, image, request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON ) ) {
-            goToImageSearch( document, imageIndex, image, request, response );
+            goToImageSearch( documentMapper, document, imageIndex, image, request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON ) ) {
             goToImageAdder( documentMapper, document, user, image, imageIndex, request, response );
         } else {
@@ -114,7 +114,7 @@ public class ChangeImage extends HttpServlet {
                     fileDocument.setHeadline( file.getFilename() );
                     fileDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
                     documentMapper.saveNewDocument( document, user );
-                    image.setSourceAndClearSize( new ImageDomainObject.FileDocumentImageSource( fileDocument ) );
+                    image.setSourceAndClearSize( new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( fileDocument.getId() ) ) );
                 }
             }
         };
@@ -145,7 +145,7 @@ public class ChangeImage extends HttpServlet {
         imageBrowser.forward( request, response );
     }
 
-    private void goToImageSearch( final TextDocumentDomainObject document, final int imageIndex,
+    private void goToImageSearch( final DocumentMapper documentMapper, final TextDocumentDomainObject document, final int imageIndex,
                                   final ImageDomainObject image, final HttpServletRequest request,
                                   final HttpServletResponse response ) throws IOException, ServletException {
         DocumentFinder documentFinder = new DocumentFinder();
@@ -160,7 +160,7 @@ public class ChangeImage extends HttpServlet {
                                         HttpServletResponse response ) throws IOException, ServletException {
                 FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)documentFound;
                 if ( null != imageFileDocument ) {
-                    image.setSourceAndClearSize( new ImageDomainObject.FileDocumentImageSource( imageFileDocument ) );
+                    image.setSourceAndClearSize( new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( imageFileDocument.getId() ) ) );
                 }
                 goToImageEditPage( document, imageIndex, image, request, response );
             }

@@ -3,6 +3,7 @@ package imcode.util;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.document.textdocument.ImageDomainObject;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -73,9 +74,10 @@ public class ImcmsImageUtils {
         ImageDomainObject.ImageSource imageSource = null;
 
         try {
-            DocumentDomainObject document = Imcms.getServices().getDocumentMapper().getDocument( Integer.parseInt( imageUrl ) );
+            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+            DocumentDomainObject document = documentMapper.getDocument( Integer.parseInt( imageUrl ) );
             if ( document instanceof FileDocumentDomainObject ) {
-                imageSource = new ImageDomainObject.FileDocumentImageSource( (FileDocumentDomainObject)document );
+                imageSource = new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( document.getId() ) );
             }
         } catch ( NumberFormatException nfe ) {
             imageSource = new ImageDomainObject.ImagesPathRelativePathImageSource( imageUrl );

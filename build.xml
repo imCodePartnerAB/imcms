@@ -184,9 +184,6 @@
         <copy todir="${webapproot}">
             <fileset dir="${build}"/>
         </copy>
-        <copy todir="${webapproot}/WEB-INF/lib" flatten="true">
-            <fileset dir="lib" includes="nodist/*"/>
-        </copy>
     </target>
 
 
@@ -270,7 +267,9 @@
 
         <mkdir dir="${classes}"/>
 
-        <javac srcdir="server/src" destdir="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
+        <javac srcdir="server/src" destdir="${classes}"
+               debug="${debug}" optimize="${optimize}" deprecation="${deprecation}"
+               source="1.4" target="1.4">
 
             <exclude name="**/Test*.java" unless="junit-available"/>
             <exclude name="**/*TestCase.java" unless="junit-available"/>

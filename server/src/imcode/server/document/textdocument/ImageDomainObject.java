@@ -1,19 +1,17 @@
 package imcode.server.document.textdocument;
 
-import imcode.util.InputStreamSource;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.util.FileInputStreamSource;
-import imcode.util.ImageSize;
-import imcode.util.InputStreamSource;
+import imcode.server.document.DocumentReference;
+import imcode.server.document.DocumentDomainObject;
+import imcode.util.*;
 import org.apache.commons.lang.StringUtils;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Date;
 
 public class ImageDomainObject implements Serializable {
 
@@ -52,15 +50,13 @@ public class ImageDomainObject implements Serializable {
     }
 
     public ImageSize getRealImageSize() {
-        if ( null == source ) {
-            return new ImageSize( 0, 0 );
+        ImageSize imageSize = new ImageSize( 0, 0 );
+        if ( null != source ) {
+            try {
+                imageSize = source.getImageSize();
+            } catch ( IOException ignored ) {}
         }
-        try {
-            BufferedImage image = ImageIO.read( source.getInputStreamSource().getInputStream() ) ;
-            return new ImageSize( image.getWidth(), image.getHeight() );
-        } catch ( IOException e ) {
-            return new ImageSize( 0, 0 );
-        }
+        return imageSize ;
     }
 
     public int getWidth() {
@@ -194,51 +190,77 @@ public class ImageDomainObject implements Serializable {
         return source;
     }
 
-    public static interface ImageSource {
+    public abstract static class ImageSource {
 
-        int IMAGE_TYPE_ID__NULL = -1;
-        int IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH = 0;
-        int IMAGE_TYPE_ID__FILE_DOCUMENT = 1;
+        static final int IMAGE_TYPE_ID__NULL = -1;
+        public static final int IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH = 0;
+        public static final int IMAGE_TYPE_ID__FILE_DOCUMENT = 1;
 
-        InputStreamSource getInputStreamSource();
+        private ImageSize cachedImageSize ;
+        private Date cachedImageSizeTime;
 
-        String getUrlPathRelativeToContextPath();
+        abstract InputStreamSource getInputStreamSource();
 
-        String toStorageString();
+        abstract String getUrlPathRelativeToContextPath();
 
-        int getTypeId();
+        public abstract String toStorageString();
+
+        public abstract int getTypeId();
+
+        public abstract Date getModifiedDatetime();
+
+        ImageSize getImageSize() throws IOException {
+            Date modifiedDatetime = getModifiedDatetime();
+            if (cachedImageSizeTime == null || modifiedDatetime.after( cachedImageSizeTime )) {
+                cachedImageSize = getNonCachedImageSize();
+                cachedImageSizeTime = modifiedDatetime ;
+            }
+            return cachedImageSize ;
+        }
+
+        ImageSize getNonCachedImageSize() throws IOException {
+            return Utility.getImageSize( getInputStreamSource().getInputStream() );
+        }
     }
 
-    public static class FileDocumentImageSource implements ImageSource {
+    public static class FileDocumentImageSource extends ImageSource {
 
-        private FileDocumentDomainObject fileDocument;
+        private DocumentReference fileDocumentReference;
 
-        public FileDocumentImageSource( FileDocumentDomainObject fileDocument ) {
-            this.fileDocument = fileDocument;
+        public FileDocumentImageSource( DocumentReference fileDocumentReference ) {
+            this.fileDocumentReference = fileDocumentReference;
+            DocumentDomainObject document = fileDocumentReference.getDocument();
+            if (!(document instanceof FileDocumentDomainObject)) {
+                throw new IllegalArgumentException( "Not a file document: "+document.getId()) ;
+            }
         }
 
         public InputStreamSource getInputStreamSource() {
-            return fileDocument.getDefaultFile().getInputStreamSource();
+            return getFileDocument().getDefaultFile().getInputStreamSource();
+        }
+
+        public FileDocumentDomainObject getFileDocument() {
+            return (FileDocumentDomainObject)fileDocumentReference.getDocument();
         }
 
         public String getUrlPathRelativeToContextPath() {
-            return "/servlet/GetDoc?meta_id=" + fileDocument.getId();
+            return "/servlet/GetDoc?meta_id=" + getFileDocument().getId();
         }
 
         public String toStorageString() {
-            return "" + fileDocument.getId();
+            return "" + getFileDocument().getId();
         }
 
         public int getTypeId() {
             return ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT;
         }
 
-        public FileDocumentDomainObject getFileDocument() {
-            return fileDocument;
+        public Date getModifiedDatetime() {
+            return getFileDocument().getModifiedDatetime() ;
         }
     }
 
-    public static class ImagesPathRelativePathImageSource implements ImageSource {
+    public static class ImagesPathRelativePathImageSource extends ImageSource {
 
         private String relativePath;
 
@@ -247,10 +269,14 @@ public class ImageDomainObject implements Serializable {
         }
 
         public InputStreamSource getInputStreamSource() {
+            return new FileInputStreamSource( getFile() );
+        }
+
+        private File getFile() {
             ImcmsServices service = Imcms.getServices();
             File imageDirectory = service.getConfig().getImagePath();
             File imageFile = new File( imageDirectory, relativePath );
-            return new FileInputStreamSource( imageFile );
+            return imageFile;
         }
 
         public String getUrlPathRelativeToContextPath() {
@@ -265,9 +291,13 @@ public class ImageDomainObject implements Serializable {
         public int getTypeId() {
             return ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH;
         }
+
+        public Date getModifiedDatetime() {
+            return new Date(getFile().lastModified()) ;
+        }
     }
 
-    public class NullImageSource implements ImageSource {
+    public class NullImageSource extends ImageSource {
 
         public InputStreamSource getInputStreamSource() {
             return null;
@@ -283,6 +313,10 @@ public class ImageDomainObject implements Serializable {
 
         public int getTypeId() {
             return ImageSource.IMAGE_TYPE_ID__NULL;
+        }
+
+        public Date getModifiedDatetime() {
+            return null ;
         }
     }
 }

@@ -346,7 +346,7 @@ public class DocumentMapper {
     public DocumentDomainObject getDocument( int metaId ) {
         NDC.push( "getDocument" );
 
-        DocumentDomainObject document = null;
+        DocumentDomainObject document ;
         try {
             document = (DocumentDomainObject)( (DocumentDomainObject)documentCache.get( new Integer( metaId ) ) ).clone();
         } catch ( CloneNotSupportedException e ) {
@@ -1055,7 +1055,7 @@ public class DocumentMapper {
         if ( ImageDomainObject.ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {
             try {
                 int fileDocumentId = Integer.parseInt( imageSource );
-                image.setSource( new ImageDomainObject.FileDocumentImageSource( (FileDocumentDomainObject)getDocument( fileDocumentId ) ) );
+                image.setSource( new ImageDomainObject.FileDocumentImageSource( getDocumentReference( fileDocumentId ) ) );
             } catch ( NumberFormatException nfe ) {
                 log.warn( "Non-numeric document-id \"" + imageSource + "\" for image in database." );
             } catch ( ClassCastException cce ) {
