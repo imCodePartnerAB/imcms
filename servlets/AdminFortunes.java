@@ -198,7 +198,9 @@ public class AdminFortunes extends Administrator {
 		while ( line!=null && !(line.length()<=12) )
 		{
 			String fullLine = line.replace('#',' ');
-			options = options + "<option value=\""  + row + "\" > " + fullLine + "</option>";
+			int stop = fullLine.indexOf("<BR>") == -1 ? fullLine.length() : fullLine.indexOf("<BR>");
+			
+			options = options + "<option value=\""  + row + "\" > " + fullLine.substring(0,stop) + "</option>";
 			lines.put( new Integer(row) , fullLine );
 			line = readFile.readLine();
 			row++;
