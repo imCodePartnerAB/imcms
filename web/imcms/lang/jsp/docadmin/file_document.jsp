@@ -42,7 +42,7 @@
     DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
     FileDocumentDomainObject document = (FileDocumentDomainObject)httpFlow.getDocument() ;
     FileDocumentDomainObject.FileDocumentFile selectedFile = editPage.getSelectedFile() ;
-    boolean creatingNewDocument = httpFlow instanceof CreateDocumentPageFlow ;
+    boolean creatingNewDocument = 0==document.getId();
     EditFileDocumentPageFlow.MimeTypeRestriction mimeTypeRestriction = editPage.getPageMimeTypeRestriction() ;
 
     String selectedFileId = editPage.getSelectedFileId();

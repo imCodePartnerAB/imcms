@@ -342,15 +342,19 @@ public class ChangeImage extends HttpServlet {
             UserDomainObject user = Utility.getLoggedOnUser( request );
             FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)document;
             ImageSize imageSize ;
+            String fileSize;
             try {
                 BufferedImage image = ImageIO.read( imageFileDocument.getDefaultFile().getInputStreamSource().getInputStream() ) ;
                 imageSize = new ImageSize( image.getWidth(), image.getHeight() );
+                fileSize = imageFileDocument.getDefaultFile().getInputStreamSource().getSize()+"";
             } catch ( IOException ioe ) {
                 imageSize = new ImageSize( 0, 0 );
+                fileSize = "0";
             }
             List values = Arrays.asList( new Object[]{
                 "imageUrl", "GetDoc?meta_id=" + document.getId(),
                 "imageSize", imageSize,
+                "fileSize", fileSize,
             } );
             return Imcms.getServices().getAdminTemplate( "images/thumbnail.frag", user, values );
         }
