@@ -7,10 +7,17 @@ public class DeUmlaut
 {
 
     public static void main(String[] argv){
-	String login    = "sa";				// use your login here
-	String password = "";				// use your password here
-	String database = "" ;
-	String server   = "" ;
+	
+	if (argv.length != 4)
+	{
+		System.out.println("Function needs 4 arguments: login, password, databas, server");
+		return;
+	}
+	
+	String login    = argv[0];				// use your login here
+	String password = argv[1];				// use your password here
+	String database = argv[2];
+	String server   = argv[3];
 
 	try {
 
