@@ -6,6 +6,7 @@ import com.imcode.imcms.servlet.DocumentFinder;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentComparator;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
@@ -152,7 +153,7 @@ public class AdminManager extends Administrator {
             }
             sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_new_not_approved_current_sortorder ), LIST_TYPE__list_new_not_approved, "MOD" );
             current_sortorderMap.put( LIST_TYPE__list_new_not_approved, sortorder );
-            Collections.sort( documents_new, getChainableReversibleNullComparator( sortorder ) );
+            Collections.sort( documents_new, getComparator( sortorder ) );
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_new_not_approved, REQUEST_PARAMETER__list_new_not_approved_current_expand );
 
             // documents_new_not_approved = new AdminManagerSubreport(LIST_TYPE__list_new_not_approved, "", "", DEFAULT_DOCUMENTS_PER_LIST, documents_new  );
@@ -191,7 +192,7 @@ public class AdminManager extends Administrator {
             }
             sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_new_not_approved_current_sortorder ), LIST_TYPE__list_new_not_approved, "MOD" );
             current_sortorderMap.put( LIST_TYPE__list_new_not_approved, sortorder );
-            Collections.sort( documents_new, getChainableReversibleNullComparator( sortorder ) );
+            Collections.sort( documents_new, getComparator( sortorder ) );
 
             sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_changed_current_sortorder ), LIST_TYPE__list_documents_changed, "MOD" );
             current_sortorderMap.put( LIST_TYPE__list_documents_changed, sortorder );
@@ -437,7 +438,7 @@ public class AdminManager extends Administrator {
                  && documentsFound[i].getArchivedDatetime().after( now )
                  && documentsFound[i].getArchivedDatetime().before( oneWeekAhead ) ) {
                 documents_archived_less_then_one_week.add( documentsFound[i] );
-                Collections.sort( documents_archived_less_then_one_week, getChainableReversibleNullComparator( sortorderMap.get( LIST_TYPE__list_documents_archived_less_then_one_week ).toString() ) );
+                Collections.sort( documents_archived_less_then_one_week, getComparator( sortorderMap.get( LIST_TYPE__list_documents_archived_less_then_one_week ).toString() ) );
             }
 
             if ( null != documents_publication_end_less_then_one_week
@@ -445,19 +446,19 @@ public class AdminManager extends Administrator {
                  && documentsFound[i].getPublicationEndDatetime().after( now )
                  && documentsFound[i].getPublicationEndDatetime().before( oneWeekAhead ) ) {
                 documents_publication_end_less_then_one_week.add( documentsFound[i] );
-                Collections.sort( documents_publication_end_less_then_one_week, getChainableReversibleNullComparator( sortorderMap.get( LIST_TYPE__list_documents_publication_end_less_then_one_week ).toString() ) );
+                Collections.sort( documents_publication_end_less_then_one_week, getComparator( sortorderMap.get( LIST_TYPE__list_documents_publication_end_less_then_one_week ).toString() ) );
             }
 
             if ( null != documents_not_changed_in_six_month && null != documentsFound[i].getModifiedDatetime()
                  && documentsFound[i].getModifiedDatetime().before( sixMonthAgo ) ) {
                 documents_not_changed_in_six_month.add( documentsFound[i] );
-                Collections.sort( documents_not_changed_in_six_month, getChainableReversibleNullComparator( sortorderMap.get( LIST_TYPE__list_documents_not_changed_in_six_month ).toString() ) );
+                Collections.sort( documents_not_changed_in_six_month, getComparator( sortorderMap.get( LIST_TYPE__list_documents_not_changed_in_six_month ).toString() ) );
             }
 
             if ( null != documents_changed && null != documentsFound[i].getModifiedDatetime()
                  && documentsFound[i].getModifiedDatetime().after( documentsFound[i].getCreatedDatetime() ) ) {
                 documents_changed.add( documentsFound[i] );
-                Collections.sort( documents_changed, getChainableReversibleNullComparator( sortorderMap.get( LIST_TYPE__list_documents_changed ).toString() ) );
+                Collections.sort( documents_changed, getComparator( sortorderMap.get( LIST_TYPE__list_documents_changed ).toString() ) );
             }
         }
     }
@@ -469,31 +470,31 @@ public class AdminManager extends Administrator {
         documents_new.addAll( Arrays.asList( index.search( booleanQuery, loggedOnUser ) ) );
     }
 
-    private ChainableReversibleNullComparator getChainableReversibleNullComparator( String sortorder ) {
+    public static ChainableReversibleNullComparator getComparator( String sortorder ) {
 
-        ChainableReversibleNullComparator comparator = DocumentDomainObject.DocumentComparator.MODIFIED_DATETIME.reversed();
+        ChainableReversibleNullComparator comparator = DocumentComparator.MODIFIED_DATETIME.reversed();
         if ( "MODR".equals( sortorder ) ) {
-            comparator = DocumentDomainObject.DocumentComparator.MODIFIED_DATETIME;
+            comparator = DocumentComparator.MODIFIED_DATETIME;
         } else if ( "PUBS".equals( sortorder ) ) {
-            comparator = DocumentDomainObject.DocumentComparator.PUBLICATION_START_DATETIME.reversed();
+            comparator = DocumentComparator.PUBLICATION_START_DATETIME.reversed();
         } else if ( "PUBSR".equals( sortorder ) ) {
-            comparator = DocumentDomainObject.DocumentComparator.PUBLICATION_START_DATETIME;
+            comparator = DocumentComparator.PUBLICATION_START_DATETIME;
         } else if ( "PUBE".equals( sortorder ) ) {
-            comparator = DocumentDomainObject.DocumentComparator.PUBLICATION_END_DATETIME.reversed().nullsLast();
+            comparator = DocumentComparator.PUBLICATION_END_DATETIME.reversed().nullsLast();
         } else if ( "PUBER".equals( sortorder ) ) {
-            comparator = DocumentDomainObject.DocumentComparator.PUBLICATION_END_DATETIME.nullsLast();
+            comparator = DocumentComparator.PUBLICATION_END_DATETIME.nullsLast();
         } else if ( "ARC".equals( sortorder ) ) {
-            comparator = DocumentDomainObject.DocumentComparator.ARCHIVED_DATETIME.reversed().nullsLast();
+            comparator = DocumentComparator.ARCHIVED_DATETIME.reversed().nullsLast();
         } else if ( "ARCR".equals( sortorder ) ) {
-            comparator = DocumentDomainObject.DocumentComparator.ARCHIVED_DATETIME.nullsLast();
+            comparator = DocumentComparator.ARCHIVED_DATETIME.nullsLast();
         } else if ( "HEADL".equals( sortorder ) ) {
-            comparator = DocumentDomainObject.DocumentComparator.HEADLINE;
+            comparator = DocumentComparator.HEADLINE;
         } else if ( "HEADLR".equals( sortorder ) ) {
-            comparator = DocumentDomainObject.DocumentComparator.HEADLINE.reversed();
+            comparator = DocumentComparator.HEADLINE.reversed();
         } else if ( "ID".equals( sortorder ) ) {
-            comparator = DocumentDomainObject.DocumentComparator.ID;
+            comparator = DocumentComparator.ID;
         } else if ( "IDR".equals( sortorder ) ) {
-            comparator = DocumentDomainObject.DocumentComparator.ID.reversed();
+            comparator = DocumentComparator.ID.reversed();
         }
         return comparator;
     }

@@ -2,12 +2,13 @@ package imcode.server.document.textdocument;
 
 import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentComparator;
 
 public abstract class MenuItemComparator extends ChainableReversibleNullComparator {
 
-    static final MenuItemComparator ID = new DocumentComparator( DocumentDomainObject.DocumentComparator.ID );
-    static final MenuItemComparator HEADLINE = new DocumentComparator( DocumentDomainObject.DocumentComparator.HEADLINE );
-    static final MenuItemComparator MODIFIED_DATETIME = new DocumentComparator( DocumentDomainObject.DocumentComparator.MODIFIED_DATETIME );
+    static final MenuItemComparator ID = new MenuItemDocumentComparator( DocumentComparator.ID );
+    static final MenuItemComparator HEADLINE = new MenuItemDocumentComparator( DocumentComparator.HEADLINE );
+    static final MenuItemComparator MODIFIED_DATETIME = new MenuItemDocumentComparator( DocumentComparator.MODIFIED_DATETIME );
     static final MenuItemComparator SORT_KEY = new SortKeyComparator();
     static final MenuItemComparator TREE_SORT_KEY = new TreeSortKeyComparator();
 
@@ -31,11 +32,11 @@ public abstract class MenuItemComparator extends ChainableReversibleNullComparat
         }
     }
 
-    private static class DocumentComparator extends MenuItemComparator {
+    private static class MenuItemDocumentComparator extends MenuItemComparator {
 
-        private DocumentDomainObject.DocumentComparator documentComparator;
+        private DocumentComparator documentComparator;
 
-        private DocumentComparator( DocumentDomainObject.DocumentComparator documentComparator ) {
+        private MenuItemDocumentComparator( DocumentComparator documentComparator ) {
             this.documentComparator = documentComparator;
         }
 

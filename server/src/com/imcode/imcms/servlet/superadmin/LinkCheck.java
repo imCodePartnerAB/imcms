@@ -68,7 +68,7 @@ public class LinkCheck extends HttpServlet {
                                       HttpServletRequest request ) throws IOException {
         DocumentDomainObject[] urlDocuments = reindexingIndex.search( new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""
                                                                                                                                + DocumentDomainObject.DOCTYPE_URL ) ), user );
-        Arrays.sort( urlDocuments, DocumentDomainObject.DocumentComparator.ID );
+        Arrays.sort( urlDocuments, DocumentComparator.ID );
 
         for ( int i = 0; i < urlDocuments.length; i++ ) {
             UrlDocumentDomainObject urlDocument = (UrlDocumentDomainObject)urlDocuments[i];

@@ -68,10 +68,12 @@
                         <tr valign="top" <% if (0 != (i - firstDocumentIndex) % 2) { %> bgcolor="#FFFFFF"<% } %>>
                             <td>
                                     <%
-                                        if (user.canEdit(document)) {
-                                            %><a href="PageDispatcher?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%= Html.getLinkedStatusIconTemplate(document, user, request ) %></a><%
-                                        } else {
-                                            %>&nbsp;<%
+                                        if (user.canEditDocumentInformationFor(document)) {
+                                            %><a href="PageDispatcher?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%
+                                        }
+                                        %><%= Html.getStatusIconTemplate(document, user) %></a><%
+                                        if (user.canEditDocumentInformationFor(document)) {
+                                            %></a><%
                                         }
                                     %>
                             </td>

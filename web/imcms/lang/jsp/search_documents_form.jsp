@@ -107,7 +107,7 @@
         <td height="24"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/7 ?></td>
         <td>
         <% SORTORDER_OPTION_SELECTED = "MOD" ; %>
-        <select name="new_sortorder">
+        <select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__SORT_ORDER %>">
             <%@ include file="admin/admin_manager_inc_sortorder_select_option.jsp" %>
         </select></td>
 

@@ -17,8 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class DocumentFinder extends WebComponent {
 
@@ -27,6 +26,7 @@ public class DocumentFinder extends WebComponent {
     private QueryParser queryParser = new DefaultQueryParser();
     private Set extraSearchResultColumns = SetUtils.orderedSet( new HashSet() ) ;
     private SearchDocumentsPage page ;
+    private Comparator documentComparator ;
 
     public DocumentFinder() {
         this(new SearchDocumentsPage());
@@ -58,7 +58,9 @@ public class DocumentFinder extends WebComponent {
         }
         if ( booleanQuery.getClauses().length > 0 ) {
             DocumentDomainObject[] documentsFound = index.search( booleanQuery, Utility.getLoggedOnUser( request ) );
-
+            if (null != documentComparator) {
+                Arrays.sort(documentsFound, documentComparator) ;
+            }
             page.setDocumentsFound( documentsFound );
         }
         page.forward( request, response );
@@ -94,6 +96,10 @@ public class DocumentFinder extends WebComponent {
 
     public SearchResultColumn[] getExtraSearchResultColumns() {
         return (SearchResultColumn[])extraSearchResultColumns.toArray( new SearchResultColumn[extraSearchResultColumns.size()] );
+    }
+
+    public void setDocumentComparator( Comparator documentComparator ) {
+        this.documentComparator = documentComparator;
     }
 
     public interface SelectDocumentCommand {

@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.flow.*;
+import com.imcode.imcms.servlet.superadmin.AdminManager;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
@@ -27,9 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SearchDocumentsPage extends OkCancelPage {
 
@@ -46,6 +45,7 @@ public class SearchDocumentsPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__DATE_TYPE = "date_type";
     public static final String REQUEST_PARAMETER__START_DATE = "start_date";
     public static final String REQUEST_PARAMETER__END_DATE = "end_date";
+    public static final String REQUEST_PARAMETER__SORT_ORDER = "sort_order";
 
     private static final int DEFAULT_DOCUMENTS_PER_PAGE = 10;
     private final static Logger log = Logger.getLogger( SearchDocumentsPage.class.getName() );
@@ -130,6 +130,12 @@ public class SearchDocumentsPage extends OkCancelPage {
             try {
                 endDate = dateFormat.parse( endDateParameter );
             } catch ( java.text.ParseException ignored ) {}
+        }
+
+        String sortOrder = request.getParameter( REQUEST_PARAMETER__SORT_ORDER ) ;
+        if (null != sortOrder) {
+            Comparator documentComparator = AdminManager.getComparator(sortOrder) ;
+            documentFinder.setDocumentComparator(documentComparator) ;
         }
 
         setDocumentsPerPage( NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__DOCUMENTS_PER_PAGE ), DEFAULT_DOCUMENTS_PER_PAGE ) );

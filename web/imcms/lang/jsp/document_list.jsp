@@ -12,7 +12,8 @@
                  java.util.*,
                  java.net.URLEncoder,
                  org.apache.commons.lang.ObjectUtils,
-                 imcode.util.Html"%>
+                 imcode.util.Html,
+                 imcode.server.document.DocumentComparator"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <% ListDocuments.FormData formData = (ListDocuments.FormData)request.getAttribute( ListDocuments.REQUEST_ATTRIBUTE__FORM_DATA ) ;%>
 <vel:velocity>
@@ -83,7 +84,7 @@ if (null != formData.documentsIterator) { %>
 			List childDocuments = new ArrayList(textDocument.getChildDocuments());
 			if (!childDocuments.isEmpty()) { %>
 	<table border="0" cellpadding="2" cellspacing="0"><%
-				Collections.sort(childDocuments, DocumentDomainObject.DocumentComparator.ID) ;
+				Collections.sort(childDocuments, DocumentComparator.ID) ;
 				for ( Iterator iterator = childDocuments.iterator(); iterator.hasNext(); ) {
 					DocumentDomainObject childDocument = (DocumentDomainObject)iterator.next(); %>
   <tr valign="top">
