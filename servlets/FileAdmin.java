@@ -1,11 +1,11 @@
 
-import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 import imcode.util.MultipartFormdataParser;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -14,19 +14,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 
 public class FileAdmin extends HttpServlet {
 
-    private static Category log = Category.getInstance( FileAdmin.class.getName() );
+    private final static Logger log = Logger.getLogger( "FileAdmin" );
+    private static final int BUFFER_SIZE = 65536;
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         String host = req.getHeader( "Host" );
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String rootpaths = Utility.getDomainPref( "fileadmin_rootpaths" );
         String start_url = imcref.getStartUrl();
 
         // Check if user logged on
@@ -45,22 +42,20 @@ public class FileAdmin extends HttpServlet {
         File dir1 = null;
         File dir2 = null;
 
-        if ( rootpaths != null ) {
-            StringTokenizer st = new StringTokenizer( rootpaths, ":;" );
-
-            switch ( st.countTokens() ) {
-                default:
-                    dir1 = Utility.getAbsolutePathFromString( st.nextToken() );
-                    dir2 = Utility.getAbsolutePathFromString( st.nextToken() );
-                    break;
-                case 1:
-                    dir1 = Utility.getAbsolutePathFromString( st.nextToken() );
-                    dir2 = dir1;
-                case 0:
-            }
+        File[] roots = getRoots();
+        switch ( roots.length ) {
+            default:
+                dir1 = roots[0];
+                dir2 = roots[1];
+                break;
+            case 1:
+                dir1 = roots[0];
+                dir2 = dir1;
+                break;
+            case 0:
         }
 
-        outputFileAdmin( res, user, host, dir1, dir2 );
+        outputFileAdmin( res, user, dir1, dir2 );
     }
 
     /**
@@ -78,7 +73,6 @@ public class FileAdmin extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         String host = req.getHeader( "Host" );
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String rootpaths = Utility.getDomainPref( "fileadmin_rootpaths");
         String start_url = imcref.getStartUrl();
 
         UserDomainObject user;
@@ -100,15 +94,8 @@ public class FileAdmin extends HttpServlet {
             return;
         }
 
-        File[] roots = null;
-        if ( rootpaths != null ) {
-            StringTokenizer st = new StringTokenizer( rootpaths, ":;" );
-            roots = new File[st.countTokens()];
-            for ( int i = 0; i < roots.length; i++ ) {
-                String oneRoot = st.nextToken().trim();
-                roots[i] = Utility.getAbsolutePathFromString( oneRoot );
-            }
-        }
+        File[] roots = getRoots();
+
         File dir1 = new File( mp.getParameter( "dir1" ) );
         if ( !isUnderRoot( dir1, roots ) ) {
             doGet( req, res );
@@ -188,11 +175,30 @@ public class FileAdmin extends HttpServlet {
         }
 
         if ( !outputHasBeenHandled ) {
-            outputFileAdmin( res, user, host, dir1, dir2 );
+            outputFileAdmin( res, user, dir1, dir2 );
         }
     }
 
-    private boolean move( String[] files, File sourceDir, File destDir, File dir1, File dir2, HttpServletResponse res, UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+    private File[] getRoots() throws IOException {
+        String rootpaths = Utility.getDomainPref( "fileadmin_rootpaths" );
+        List rootList = new ArrayList();
+        if ( rootpaths != null ) {
+            StringTokenizer st = new StringTokenizer( rootpaths, ":;" );
+            int tokenCount = st.countTokens();
+            for ( int i = 0; i < tokenCount; i++ ) {
+                String oneRoot = st.nextToken().trim();
+                File oneRootFile = Utility.getAbsolutePathFromString( oneRoot );
+                if ( oneRootFile.isDirectory() ) {
+                    rootList.add( oneRootFile );
+                }
+            }
+        }
+        File[] roots = (File[])rootList.toArray( new File[rootList.size()] );
+        return roots;
+    }
+
+    private boolean move( String[] files, File sourceDir, File destDir, File dir1, File dir2, HttpServletResponse res,
+                          UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
         boolean handledOutput = false;
         if ( files != null && !sourceDir.equals( destDir ) ) {
             File[] sourceFileTree = makeFileTreeList( makeAbsoluteFileList( sourceDir, files ), false );
@@ -203,7 +209,9 @@ public class FileAdmin extends HttpServlet {
                 File destFile = new File( destDir, relativeSourceFileTree[i].getPath() );
                 fileList.append( relativeSourceFileTree[i] ).append( File.pathSeparator );
                 if ( destFile.exists() ) {
-                    String optionString = destFile.getCanonicalPath() + ( destFile.isDirectory() ? File.separator : " [" + destFile.length() + "]" );
+                    String optionString = destFile.getCanonicalPath() + ( destFile.isDirectory()
+                                                                          ? File.separator
+                                                                          : " [" + destFile.length() + "]" );
                     optionList.append( "<option>" ).append( optionString ).append( "</option>" );
                 }
             }
@@ -217,7 +225,7 @@ public class FileAdmin extends HttpServlet {
                     if ( sourceFileTree[i].isFile() ) {
                         FileInputStream fin = new FileInputStream( sourceFileTree[i] );
                         FileOutputStream fout = new FileOutputStream( destFiles[i] );
-                        byte[] buffer = new byte[65536];
+                        byte[] buffer = new byte[BUFFER_SIZE];
                         for ( int bytes_read; ( bytes_read = fin.read( buffer ) ) != -1; ) {
                             fout.write( buffer, 0, bytes_read );
                         }
@@ -233,7 +241,8 @@ public class FileAdmin extends HttpServlet {
         return handledOutput;
     }
 
-    private boolean copy( String[] files, File sourceDir, File destDir, File dir1, File dir2, HttpServletResponse res, UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+    private boolean copy( String[] files, File sourceDir, File destDir, File dir1, File dir2, HttpServletResponse res,
+                          UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
         boolean handledOutput = false;
         if ( files != null && !sourceDir.equals( destDir ) ) {
             File[] sourceFileTree = makeFileTreeList( makeAbsoluteFileList( sourceDir, files ), true );
@@ -244,7 +253,9 @@ public class FileAdmin extends HttpServlet {
                 File destFile = new File( destDir, relativeSourceFileTree[i].getPath() );
                 fileList.append( relativeSourceFileTree[i] ).append( File.pathSeparator );
                 if ( destFile.exists() ) {
-                    String optionString = destFile.getCanonicalPath() + ( destFile.isDirectory() ? File.separator : " [" + destFile.length() + "]" );
+                    String optionString = destFile.getCanonicalPath() + ( destFile.isDirectory()
+                                                                          ? File.separator
+                                                                          : " [" + destFile.length() + ']' );
                     optionList.append( "<option>" ).append( optionString ).append( "</option>" );
                 }
             }
@@ -260,7 +271,7 @@ public class FileAdmin extends HttpServlet {
                     }
                     FileInputStream fin = new FileInputStream( sourceFileTree[i] );
                     FileOutputStream fout = new FileOutputStream( destFileTree[i] );
-                    byte[] buffer = new byte[65536];
+                    byte[] buffer = new byte[BUFFER_SIZE];
                     for ( int bytes_read; ( bytes_read = fin.read( buffer ) ) != -1; ) {
                         fout.write( buffer, 0, bytes_read );
                     }
@@ -270,7 +281,8 @@ public class FileAdmin extends HttpServlet {
         return handledOutput;
     }
 
-    private boolean rename( String[] files, String name, File dir, File dir1, File dir2, HttpServletResponse res, UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+    private boolean rename( String[] files, String name, File dir, File dir1, File dir2, HttpServletResponse res,
+                            UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
         boolean handledOutput = false;
         if ( files != null && files.length == 1 ) {	//Has the user chosen just one file?
             if ( name != null && name.length() > 0 ) {
@@ -293,9 +305,9 @@ public class FileAdmin extends HttpServlet {
             File file = new File( dir, files[0] );
             try {
                 res.setContentType( "application/octet-stream" );
-                res.setHeader( "Content-Disposition", "attachment; filename=\"" + file.getName() + "\"" );
+                res.setHeader( "Content-Disposition", "attachment; filename=\"" + file.getName() + '\"' );
                 BufferedInputStream fin = new BufferedInputStream( new FileInputStream( file ) );
-                byte[] buffer = new byte[65536];
+                byte[] buffer = new byte[BUFFER_SIZE];
                 res.setContentLength( fin.available() );
                 ServletOutputStream out = res.getOutputStream();
                 for ( int bytes_read; ( bytes_read = fin.read( buffer ) ) != -1; ) {
@@ -310,7 +322,8 @@ public class FileAdmin extends HttpServlet {
         return handledOutput;
     }
 
-    private boolean delete( File dir, String[] files, File dir1, File dir2, HttpServletResponse res, UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+    private boolean delete( File dir, String[] files, File dir1, File dir2, HttpServletResponse res,
+                            UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
         boolean handledOutput = false;
         File[] farray = makeFileTreeList( makeAbsoluteFileList( dir, files ), false );
         File[] filelist = makeRelativeFileList( dir, farray );
@@ -321,7 +334,8 @@ public class FileAdmin extends HttpServlet {
         return handledOutput;
     }
 
-    private boolean makeDirectory( String name, File dir, File dir1, File dir2, HttpServletResponse res, UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+    private boolean makeDirectory( String name, File dir, File dir1, File dir2, HttpServletResponse res,
+                                   UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
         boolean handledOutput = false;
         if ( name != null && name.length() > 0 ) {
             File newname = new File( dir, name );
@@ -335,7 +349,8 @@ public class FileAdmin extends HttpServlet {
         return handledOutput;
     }
 
-    private boolean upload( MultipartFormdataParser mp, File destDir, File dir1, File dir2, HttpServletResponse res, UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+    private boolean upload( MultipartFormdataParser mp, File destDir, File dir1, File dir2, HttpServletResponse res,
+                            UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
         boolean handledOutput = false;
         String fileContents = mp.getParameter( "file" );
         if ( fileContents == null || fileContents.length() < 1 ) {
@@ -375,7 +390,8 @@ public class FileAdmin extends HttpServlet {
         return mp;
     }
 
-    private void outputFileAdmin( HttpServletResponse res, UserDomainObject user, String host, File dir1, File dir2 ) throws IOException {
+    private void outputFileAdmin( HttpServletResponse res, UserDomainObject user, File dir1, File dir2 )
+            throws IOException {
         res.setContentType( "text/html" );
         res.getOutputStream().print( parseFileAdmin( user, dir1, dir2 ) );
     }
@@ -394,8 +410,10 @@ public class FileAdmin extends HttpServlet {
         return file;
     }
 
-    private void outputMoveOverwriteWarning( StringBuffer option_list, File sourceDir, File destDir, StringBuffer file_list, File dir1, File dir2, HttpServletResponse res, UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
-        Vector vec = new Vector();
+    private void outputMoveOverwriteWarning( StringBuffer option_list, File sourceDir, File destDir,
+                                             StringBuffer file_list, File dir1, File dir2, HttpServletResponse res,
+                                             UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+        List vec = new ArrayList();
         vec.add( "#filelist#" );
         vec.add( option_list );
         vec.add( "#source#" );
@@ -414,8 +432,10 @@ public class FileAdmin extends HttpServlet {
         out.print( imcref.parseDoc( vec, "FileAdminMoveOverwriteWarning.html", lang_prefix ) );
     }
 
-    private void ouputCopyOverwriteWarning( StringBuffer option_list, File sourceDir, File destDir, StringBuffer file_list, File dir1, File dir2, HttpServletResponse res, UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
-        Vector vec = new Vector();
+    private void ouputCopyOverwriteWarning( StringBuffer option_list, File sourceDir, File destDir,
+                                            StringBuffer file_list, File dir1, File dir2, HttpServletResponse res,
+                                            UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+        List vec = new ArrayList();
         vec.add( "#filelist#" );
         vec.add( option_list );
         vec.add( "#source#" );
@@ -434,8 +454,10 @@ public class FileAdmin extends HttpServlet {
         out.print( imcref.parseDoc( vec, "FileAdminCopyOverwriteWarning.html", lang_prefix ) );
     }
 
-    private void outputFileExistedAndTheOriginalWasRenamedNotice( File dir1, File dir2, String newFilename, HttpServletResponse res, UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
-        Vector vec = new Vector();
+    private void outputFileExistedAndTheOriginalWasRenamedNotice( File dir1, File dir2, String newFilename,
+                                                                  HttpServletResponse res, UserDomainObject user,
+                                                                  IMCServiceInterface imcref ) throws IOException {
+        List vec = new ArrayList();
         vec.add( "#dir1#" );
         vec.add( dir1.getCanonicalPath() );
         vec.add( "#dir2#" );
@@ -448,8 +470,9 @@ public class FileAdmin extends HttpServlet {
         out.print( imcref.parseDoc( vec, "FileAdminFileExisted.html", lang_prefix ) );
     }
 
-    private void outputBlankFileError( File dir1, File dir2, HttpServletResponse res, UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
-        Vector vec = new Vector();
+    private void outputBlankFileError( File dir1, File dir2, HttpServletResponse res, UserDomainObject user,
+                                       IMCServiceInterface imcref ) throws IOException {
+        List vec = new ArrayList();
         vec.add( "#dir1#" );
         vec.add( dir1.getCanonicalPath() );
         vec.add( "#dir2#" );
@@ -460,16 +483,19 @@ public class FileAdmin extends HttpServlet {
         out.print( imcref.parseDoc( vec, "FileAdminFileBlank.html", lang_prefix ) );
     }
 
-    private void outputDeleteWarning( File[] filelist, File dir1, File dir2, File sourceDir, HttpServletResponse res, UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
+    private void outputDeleteWarning( File[] filelist, File dir1, File dir2, File sourceDir, HttpServletResponse res,
+                                      UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
         StringBuffer files = new StringBuffer();
         StringBuffer optionlist = new StringBuffer();
         for ( int i = 0; i < filelist.length; i++ ) {
             File foo = new File( sourceDir, filelist[i].getPath() );
-            String bar = foo.getCanonicalPath() + ( foo.isDirectory() ? File.separator : " [" + foo.length() + "]" );
+            String bar = foo.getCanonicalPath() + ( foo.isDirectory()
+                                                    ? File.separator
+                                                    : " [" + foo.length() + "]" );
             optionlist.append( "<option>" ).append( bar ).append( "</option>" );
             files.append( filelist[i] ).append( File.pathSeparator );
         }
-        Vector vec = new Vector();
+        List vec = new ArrayList();
         vec.add( "#filelist#" );
         vec.add( optionlist.toString() );
         vec.add( "#files#" );
@@ -487,8 +513,9 @@ public class FileAdmin extends HttpServlet {
         return;
     }
 
-    private void outputBlankFilenameError( File dir1, File dir2, HttpServletResponse res, UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
-        Vector vec = new Vector();
+    private void outputBlankFilenameError( File dir1, File dir2, HttpServletResponse res, UserDomainObject user,
+                                           IMCServiceInterface imcref ) throws IOException {
+        List vec = new ArrayList();
         vec.add( "#dir1#" );
         vec.add( dir1.getCanonicalPath() );
         vec.add( "#dir2#" );
@@ -519,7 +546,7 @@ public class FileAdmin extends HttpServlet {
                     if ( source.isFile() ) {
                         FileInputStream fin = new FileInputStream( source );
                         FileOutputStream fout = new FileOutputStream( dest );
-                        buffer = new byte[65536];
+                        buffer = new byte[BUFFER_SIZE];
                         while ( ( bytes_read = fin.read( buffer ) ) != -1 ) {
                             fout.write( buffer, 0, bytes_read );
                         }
@@ -555,7 +582,7 @@ public class FileAdmin extends HttpServlet {
                     }
                     FileInputStream fin = new FileInputStream( source );
                     FileOutputStream fout = new FileOutputStream( dest );
-                    buffer = new byte[65536];
+                    buffer = new byte[BUFFER_SIZE];
                     while ( ( bytes_read = fin.read( buffer ) ) != -1 ) {
                         fout.write( buffer, 0, bytes_read );
                     }
@@ -681,39 +708,15 @@ public class FileAdmin extends HttpServlet {
 
     private String parseFileAdmin( UserDomainObject user, File fd1, File fd2 ) throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String rootpaths = Utility.getDomainPref( "fileadmin_rootpaths" );
 
-        Vector vec = new Vector();
-        File[] rootlist = null;
-        if ( rootpaths != null ) {
-            StringTokenizer st = new StringTokenizer( rootpaths, ":;" );
-            rootlist = new File[st.countTokens()];
-            for ( int i = 0; i < rootlist.length && st.hasMoreTokens(); i++ ) {
-                String oneRoot = st.nextToken().trim();
-                rootlist[i] = Utility.getAbsolutePathFromString( oneRoot );
-            }
-        }
+        File[] rootlist = getRoots();
+        List vec = new ArrayList();
         DirectoryFilter dirfilt = new DirectoryFilter();
         NotDirectoryFilter notdirfilt = new NotDirectoryFilter();
         if ( fd1 != null ) {
             vec.add( "#dir1#" );
             vec.add( fd1.getCanonicalPath() );
-            String optionlist = "";
-            for ( int i = 0; i < rootlist.length; i++ ) {
-                String foo = rootlist[i].getCanonicalPath() + File.separator;
-                optionlist += "<option value=\"" + foo + "\">" + foo + "</option>";
-            }
-            optionlist += "<option value=\"..\">.." + File.separator + "</option>";
-            File[] filelist = fd1.listFiles( dirfilt );
-            for ( int i = 0; i < filelist.length; i++ ) {
-                String foo = filelist[i].getName() + File.separator;
-                optionlist += "<option value=\"" + foo + "\">" + foo + "</option>";
-            }
-            filelist = fd1.listFiles( notdirfilt );
-            for ( int i = 0; i < filelist.length; i++ ) {
-                String foo = filelist[i].getName() + " [" + filelist[i].length() + "]";
-                optionlist += "<option value=\"" + filelist[i].getName() + "\">" + foo + "</option>";
-            }
+            String optionlist = createDirectoryOptionList( rootlist, fd1, dirfilt, notdirfilt );
             vec.add( "#files1#" );
             vec.add( optionlist );
         } else {
@@ -725,22 +728,7 @@ public class FileAdmin extends HttpServlet {
         if ( fd2 != null ) {
             vec.add( "#dir2#" );
             vec.add( fd2.getCanonicalPath() );
-            String optionlist = "";
-            for ( int i = 0; i < rootlist.length; i++ ) {
-                String foo = rootlist[i].getCanonicalPath() + File.separator;
-                optionlist += "<option value=\"" + foo + "\">" + foo + "</option>";
-            }
-            optionlist += "<option value=\"..\">.." + File.separator + "</option>";
-            File[] filelist = fd2.listFiles( dirfilt );
-            for ( int i = 0; filelist != null && i < filelist.length; i++ ) {
-                String foo = filelist[i].getName() + File.separator;
-                optionlist += "<option value=\"" + foo + "\">" + foo + "</option>";
-            }
-            filelist = fd2.listFiles( notdirfilt );
-            for ( int i = 0; filelist != null && i < filelist.length; i++ ) {
-                String foo = filelist[i].getName() + " [" + filelist[i].length() + "]";
-                optionlist += "<option value=\"" + filelist[i].getName() + "\">" + foo + "</option>";
-            }
+            String optionlist = createDirectoryOptionList( rootlist, fd2, dirfilt, notdirfilt );
             vec.add( "#files2#" );
             vec.add( optionlist );
         } else {
@@ -752,6 +740,29 @@ public class FileAdmin extends HttpServlet {
 
         String lang_prefix = user.getLangPrefix();
         return imcref.parseDoc( vec, "FileAdmin.html", lang_prefix );
+    }
+
+    private String createDirectoryOptionList( File[] rootlist, File directory, DirectoryFilter dirfilt,
+                                              NotDirectoryFilter notdirfilt ) throws IOException {
+        StringBuffer optionlist = new StringBuffer();
+        for ( int i = 0; i < rootlist.length; i++ ) {
+            String root = rootlist[i].getCanonicalPath() + File.separator;
+            optionlist.append( "<option value=\"" ).append( root ).append( "\">" ).append( root ).append( "</option>" );
+        }
+        optionlist.append( "<option value=\"..\">.." ).append( File.separator ).append( "</option>" );
+        File[] dirlist = directory.listFiles( dirfilt );
+        for ( int i = 0; null != dirlist && i < dirlist.length; i++ ) {
+            String directoryName = dirlist[i].getName() + File.separator;
+            optionlist.append( "<option value=\"" ).append( directoryName ).append( "\">" ).append( directoryName )
+                    .append( "</option>" );
+        }
+        File[] filelist = directory.listFiles( notdirfilt );
+        for ( int i = 0; null != filelist && i < filelist.length; i++ ) {
+            String fileNameAndSize = filelist[i].getName() + " [" + filelist[i].length() + "]";
+            optionlist.append( "<option value=\"" ).append( filelist[i].getName() ).append( "\">" ).append(
+                    fileNameAndSize ).append( "</option>" );
+        }
+        return optionlist.toString();
     }
 
     private class DirectoryFilter implements FileFilter {
