@@ -54,6 +54,7 @@ public class GetImages implements FilenameFilter, Comparator
 	public boolean accept(File file, String string) {
 		//String path = new String(file.toString() + File.separatorChar + string);
 		boolean b_1 = new File(file,string).isDirectory();
+		string = string.toLowerCase() ;
 		boolean b_2 = string.endsWith(".jpg");
 		boolean b_3 = string.endsWith(".jpeg");
 		boolean b_4 = string.endsWith(".gif");
