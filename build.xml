@@ -299,14 +299,18 @@
 		     classes,
 		     libraries,
 		     web,conf,dir,sql,
+             copy.web.xml, copy.version.file,
              build-addon"
-	    description="Builds everything.">
+	    description="Builds everything."/>
 
-        <copy todir="${WEB-INF}" file="install/web.xml"/>
-
-        <!-- Write version.txt -->
+    
+    <target name="copy.version.file">
         <echo message="${version}" file="${WEB-INF}/version.txt"/>
+    </target>
 
+
+    <target name="copy.web.xml">
+        <copy todir="${WEB-INF}" file="install/web.xml"/>
     </target>
 
 
