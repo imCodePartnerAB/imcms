@@ -126,7 +126,8 @@ public class TextDocument extends Document {
         public void addDocument(Document document) throws NoPermissionException {
             securityChecker.hasEditPermission(getInternal().getMetaId());
             securityChecker.hasSharePermission(document) ;
-            
+
+            documentMapper.addDocumentToMenu(getId(),menuIndex,document.getId()) ;
 
         }
     }

@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Imcms public API samples</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<%!
+    private String makeLink(String path) {
+        return "<a href=\""+path+"\">"+path+"</a>" ;
+    }
+%>
+<body>
+<H1>Imcms public API samples</H1>
+
+<h2> Documentation </h2>
+The documentation consists of this page and the jsp-pages that this page links to.
+For documentation on the different classes that is used in the jsp-pages, <br>
+see the <a href="docs/">java doc</a> for details.
+
+<h3>Warning!</h3>
+The following links works differently depending on the user's permissions on the corresponding admin-pages. That is, what
+user you are logged in as, and what administrative permissions that user has.<br>
+That means that even though you don't specify a user in most of the API:s method, usually the current logged in user
+is passed as an invisible parameter.<br>
+If you're not logged in as any user, you get a NullpointerException when trying any of the following jsp-pages.
+When logged out, the only link that should work is the sample of exception handling at the bottom of this document.</p>
+<p>
+
+<h3>How to use this examples</h3>
+When you click on a jsp-link below that page is going to be run, and produce a result.<br>
+To see the actual code, pleas open the page in your favourite java/jsp editing environment.<br>
+
+<h3>Who you are</h3>
+First, make sure that you are logged in, <%= makeLink("../login/index.html") %><br>
+To see what user you are logged in as, <%= makeLink("logged_in_user.jsp") %><br>
+Log out (and become an non-logged in user), <%= makeLink("../servlet/LogOut") %>
+</p>
+
+<h3>Users</h3>
+To see what users that exists in the system, <%= makeLink("user_listing.jsp") %><br>
+
+<h3>Roles</h3>
+List all roles, <%= makeLink("role_list_all.jsp") %><br>
+Add, <%= makeLink("role_create_role.jsp") %><br>
+Delete, <%= makeLink("role_delete_role.jsp") %><br>
+<br>
+List users with different roles, <%= makeLink("role_get_user_with_role.jsp") %><br>
+
+<h3>Document</h3>
+The following samples modify document 1001.<br>
+It currently looks like this, <a href="../servlet/GetDoc?meta_id=1001">document</a><br>
+<br>
+Get the information about the document, <%= makeLink("document_get_document_info.jsp") %><br>
+Change the document information, <%= makeLink("document_change_document_info.jsp") %><br>
+<br>
+Show template for a document, <%= makeLink("document_show_templates.jsp") %><br>
+Change template for a document, <%= makeLink("document_change_template.jsp") %><br>
+Set template for a document to "Start", <%= makeLink("document_change_template_by_name.jsp") %><br>
+<br>
+Get the first text field from the document, <%= makeLink("document_get_text_from_field.jsp") %><br>
+Change the first and the second field, <%= makeLink("document_set_text_field.jsp") %><br>
+Clear the first and the second field, </a><%= makeLink("document_clear_text_field.jsp") %><br>
+<br>
+Get the first menu from the document, <%= makeLink("document_get_menu.jsp") %><br>
+Add a document to a menu, <%= makeLink("document_add_to_menu.jsp") %><br>
+<br>
+Get the first include from the document, <%= makeLink("document_get_include.jsp") %><br>
+Change the first include, <%= makeLink("document_set_include.jsp") %><br>
+Clear the first include, <%= makeLink("document_clear_include.jsp") %><br>
+<br>
+To create a new text dokument that is linked from the document above, <%= makeLink("document_create_new_text_document.jsp") %><br>
+<br>
+
+<h3>Documents and permissions </h3>
+You can manipulate documents in various ways. To do so the current user has to have specific roles, that in turn has to
+have specific rights. <%= makeLink("document_permissions.jsp") %><br>
+There are two different levels of configurable "restricted" permissions that can be modified.
+To see what specified "Restricted One" permissions a page has, see <%= makeLink("document_permission_show_restricted_1.jsp") %><br>
+
+This doesn't work yet:<br>
+(To change the "Restricted One" permission,<%= makeLink("document_permission_change_restricted_1.jsp") %>)<br>
+<br>
+
+<H3>NoPermissionException and exception handling in jsp-pages</H3>
+<P>
+If the user that is accessing the page doesn't have the right permissions a NoPermissionException is thrown from the methods.
+There are two normal ways to handle this. <BR>
+1. In the jsp pages page-tag set the errorpage attribute and let that page handle the response to the user<BR>
+2. Use try/catch in an normal Java way.<BR>
+In this sample page, the first choice is made; see restrictedoperations.jsp and error.jsp files for details.
+</body>
+</html>
+
+

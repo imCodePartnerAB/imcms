@@ -10,6 +10,10 @@
     int menuIndexInDocument = 1;
     TextDocument.Menu menu = document.getMenu(menuIndexInDocument) ;
 
-    menu.addDocument(document) ;
+    int documentToBeAddedId = 1001 ;
+    TextDocument documentToBeAdded = documentService.getTextDocument(documentToBeAddedId) ;
+
+    menu.addDocument(documentToBeAdded) ;
 
 %>
+Done. See <a href="../servlet/GetDoc?meta_id=<%= documentId %>">document <%= documentId %></a>.

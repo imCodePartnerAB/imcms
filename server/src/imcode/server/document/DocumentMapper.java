@@ -15,6 +15,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.imcode.imcms.api.Document;
+
 public class DocumentMapper {
 
     private Logger log = Logger.getLogger( DocumentMapper.class );
@@ -718,6 +720,10 @@ public class DocumentMapper {
 
     public boolean hasSharePermission( UserDomainObject user, int documentId ) {
         return service.checkUserDocSharePermission(user,documentId) ;
+    }
+
+    public void addDocumentToMenu( int menuDocumentId, int menuIndex, int toBeAddedId ) {
+        service.sqlUpdateProcedure("AddExistingDocToMenu", new String[] {""+menuDocumentId,""+toBeAddedId,""+menuIndex} ) ;
     }
 
 
