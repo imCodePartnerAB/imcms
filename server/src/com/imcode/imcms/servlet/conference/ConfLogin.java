@@ -49,6 +49,8 @@ public class ConfLogin extends Conference {
     private String ADMIN1_HTML = "conf_admin_user.htm";
     private String ADMIN2_HTML = "conf_admin_user_resp.htm";
     private String ADD_USER_OK_HTML = "conf_login_add_ok.htm";
+    private String USER_SELFREG_FRAG = "conf_new_user_selfreg_frag.htm";
+
 
     /**
      * <pre>
@@ -127,6 +129,15 @@ public class ConfLogin extends Conference {
 
         vm.addProperty( "SERVLET_URL", "" );
         vm.addProperty( "#IMAGE_URL#", this.getExternalImageFolder( req ) );
+
+        // Don't show link to new user registration if no selfreg roles is set for this conference.
+        String userSelfRegHtmlfrag = getTemplate(USER_SELFREG_FRAG, user, null);
+        if( getAllSelfregRolesId(testMetaId+"", imcref) != null && getAllSelfregRolesId(testMetaId+"", imcref).length > 0  ){
+            vm.addProperty( "USER-SELFREG", userSelfRegHtmlfrag);
+        }else{
+            vm.addProperty( "USER-SELFREG", "");
+        }
+
         sendHtml( req, res, vm, LOGIN_HTML );
         return;
     } // End doGet

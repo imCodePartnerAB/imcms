@@ -510,7 +510,8 @@ public class Conference extends HttpServlet {
 
         // Ok, lets get the roles the user will get when he is selfregistering  and
         // add those roles to the user
-        String[] selfRegRolesIds = imcref.sqlProcedure( "A_SelfRegRoles_GetAll2", new String[]{"" + metaId} );
+
+        String[] selfRegRolesIds = getAllSelfregRolesId(metaId+"", imcref);
 
         if ( selfRegRolesIds != null ) {
             for ( int i = 0; i < selfRegRolesIds.length; i += 2 ) {
@@ -530,4 +531,10 @@ public class Conference extends HttpServlet {
     void addUserToOneConference(UserDomainObject user, String metaId, IMCServiceInterface imcref){
         imcref.sqlUpdateProcedure( "A_ConfUsersAdd", new String[]{user.getId()+"", metaId, user.getFirstName(), user.getLastName()} );
     }
+
+    String[] getAllSelfregRolesId(String metaId, IMCServiceInterface imcref) {
+        String[] selfRegRolesId = imcref.sqlProcedure( "A_SelfRegRoles_GetAll2", new String[]{"" + metaId} );
+        return selfRegRolesId;
+    }
+
 } // End class
