@@ -486,7 +486,7 @@ public class RmiConf {
 
     public static String getImageHomeFolder(String host ) throws IOException {
 
-	    return imcode.util.Utility.getDomainPref("image_path",host) ;
+	    return imcode.util.Utility.getDomainPrefPath("image_path",host).toString() ;
     } // end getImageFolder
 
 /**
@@ -496,10 +496,10 @@ public class RmiConf {
 
     public static String getExternalImageHomeFolder(String host, String imcServer, String metaId ) throws IOException {
 
-	String imageFolder = getImageHomeFolder(host) ;
-	imageFolder += getLanguage(imcServer, metaId) + "/";
-	imageFolder += getDocType(imcServer, metaId) + "/" ;
-	return imageFolder ;
+	File imageFolder = new File(getImageHomeFolder(host)) ;
+	imageFolder = new File(imageFolder, getLanguage(imcServer, metaId)) ;
+	imageFolder = new File(imageFolder, getDocType(imcServer, metaId)) ;
+	return imageFolder.toString() ;
     } // end getExternalImageHomeFolder
 
 
