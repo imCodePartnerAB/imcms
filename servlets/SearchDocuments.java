@@ -138,6 +138,7 @@ public class SearchDocuments extends HttpServlet {
 		sqlBuff.append(",'"+created_start+"'");		//@archived_startdate DATETIME,
 		sqlBuff.append(",'"+archived_stop+"'");		//@archived_enddate DATETIME,
 		sqlBuff.append(",'0'");						//@only_addable TINYINT
+		sqlBuff.append(",'1'"); 					//@starts_with TINYINT
   	
   		System.out.println("SQL: " + sqlBuff.toString()) ;
 		String[][] sqlResults = IMCServiceRMI.sqlProcedureMulti(imcserver, sqlBuff.toString());

@@ -205,7 +205,7 @@ public class GetExistingDoc extends HttpServlet {
                 searchString = "\r";
 
             // FIXME: Maximum number of hits is 1000.
-            sqlString = "SearchDocs " + userId + ",'" + searchString + "', '" + searchPrep + "', '" + doctype + "', " + fromDoc + ", " + "1000" + ", '" + sortBy + "', " + includeDocStr + ", '1'";
+            sqlString = "SearchDocs " + userId + ",'" + searchString + "', '" + searchPrep + "', '" + doctype + "', " + fromDoc + ", " + "1000" + ", '" + sortBy + "', " + includeDocStr + ", '1','0'";
             System.out.println("SQL: " + sqlString) ;
             String[][] sqlResults = IMCServiceRMI.sqlProcedureMulti(imcserver, sqlString);
             Vector outVector = new Vector();
