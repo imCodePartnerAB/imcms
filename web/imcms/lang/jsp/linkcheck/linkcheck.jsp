@@ -14,15 +14,15 @@
 <vel:velocity>
     #gui_start_of_page( "<? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading ?>" "AdminManager" "" "18" "" )
     <table border="0" cellspacing="2" cellpadding="2">
-        <tr>
-            <th align="left"><? web/imcms/lang/jsp/heading_type ?></th>
-            <th align="left"><? web/imcms/lang/jsp/heading_adminlink ?></th>
-            <th align="left"><? web/imcms/lang/jsp/heading_references ?></th>
-            <th align="left"><? web/imcms/lang/jsp/heading_status ?></th>
-            <th align="left"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_url ?></th>
-            <th align="left" style="width: 5em;"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_found ?></th>
-            <th align="left" style="width: 5em;"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_reachable ?></th>
-            <th align="left" style="width: 5em;"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_ok ?></th>
+        <tr align="left">
+            <td><b><? web/imcms/lang/jsp/heading_type ?></b></td>
+            <td><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
+            <td><b><? web/imcms/lang/jsp/heading_references ?></b></td>
+            <td><b><? web/imcms/lang/jsp/heading_status ?></b></td>
+            <td><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_url ?></b></td>
+            <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_found ?></b></td>
+            <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_reachable ?></b></td>
+            <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_ok ?></b></td>
         </tr>
 </vel:velocity>
         <% out.flush();
@@ -68,9 +68,12 @@
                         <% } %>
                     <td><%= Utility.getLinkedStatusIconTemplate( document, user ) %></td>
                     <td><a href="<%= link.getUrl() %>"><%= link.getUrl() %></a></td>
-                    <td bgcolor="<% if (link.isHostFound()) { %>green<% } else { %>red<% } %>">&nbsp;</td>
-                    <td bgcolor="<% if (link.isHostReachable()) { %>green<% } else { %>red<% } %>">&nbsp;</td>
-                    <td bgcolor="<% if (link.isOk()) { %>green<% } else { %>red<% } %>">&nbsp;</td>
+                    <td align="center"><img
+										src="$contextPath/imcms/$language/images/admin/btn_checked_<%= (link.isHostFound()) ? "1" : "0" %>.gif"></td>
+                    <td align="center"><img
+										src="$contextPath/imcms/$language/images/admin/btn_checked_<%= (link.isHostReachable()) ? "1" : "0" %>.gif"></td>
+                    <td align="center"><img
+										rc="$contextPath/imcms/$language/images/admin/btn_checked_<%= (link.isOk()) ? "1" : "0" %>.gif"></td>
                 </tr><%
                 out.flush();
             }
