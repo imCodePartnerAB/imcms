@@ -174,7 +174,7 @@ public class LinkCheck extends HttpServlet {
     private void addUrlDocumentLinks( List links, DocumentIndex reindexingIndex, UserDomainObject user,
                                       HttpServletRequest request, IntRange range ) {
         TermQuery urlDocumentsQuery = new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""
-                                                                                     + DocumentDomainObject.DOCTYPE_URL.getId() ) );
+                                                                                     + DocumentDomainObject.DOCTYPE_ID_URL ) );
         DocumentDomainObject[] urlDocuments = reindexingIndex.search( urlDocumentsQuery, user );
 
         for ( int i = 0; i < urlDocuments.length; i++ ) {

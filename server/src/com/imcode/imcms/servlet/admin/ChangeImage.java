@@ -180,7 +180,7 @@ public class ChangeImage extends HttpServlet {
         }
 
         TermQuery fileDocumentQuery = new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""
-                                                                                                 + DocumentDomainObject.DOCTYPE_FILE ) );
+                                                                                                 + DocumentDomainObject.DOCTYPE_ID_FILE ) );
 
         BooleanQuery booleanQuery = new BooleanQuery();
         booleanQuery.add( fileDocumentQuery, true, false );

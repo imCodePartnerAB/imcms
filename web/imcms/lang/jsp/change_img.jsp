@@ -281,7 +281,7 @@ function checkLinkOnBlur() {<%
 			<table>
 			<tr><%
 				if (!fromEditor) {
-					if (user.canCreateDocumentOfTypeIdFromParent( DocumentDomainObject.DOCTYPE_FILE.getId(), document )) { %>
+					if (user.canCreateDocumentOfTypeIdFromParent( DocumentDomainObject.DOCTYPE_ID_FILE, document )) { %>
 				<td><input type="submit" <%
 							%>name="<%= ChangeImage.REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON %>" <%
 							%>class="imcmsFormBtnSmall" style="width:200px" <%
