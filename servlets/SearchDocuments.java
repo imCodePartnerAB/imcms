@@ -99,8 +99,7 @@ public class SearchDocuments extends HttpServlet {
 	}
 
 	// Lets get the langprefix
-	String langPrefix = "SE"; //IMCServiceRMI.getLanguage(imcserver, user) ;
-
+	String langPrefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
 	// Lets run the question
 
 	String sqlStr = buildSqlStr(question_field, search_type, search_prep, string_match, search_area) ;
@@ -247,8 +246,8 @@ public class SearchDocuments extends HttpServlet {
 	// Lets get the html file we use as template
 
 	Properties props = this.getSummaryProps(servlet_url) ;
-
-	htmlStr = IMCServiceRMI.parseDoc(imcserver,convert(props),"search_documents.html","se");
+	String langPrefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+	htmlStr = IMCServiceRMI.parseDoc(imcserver,convert(props),"search_documents.html",langPrefix);
 	out.print( htmlStr ) ;
 	return ;
     } // End of doGet
