@@ -6,6 +6,7 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.util.DateConstants;
+import imcode.util.Utility;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
@@ -92,21 +93,12 @@ class IndexDocumentFactory {
         }
     }
 
-    private static Date truncateDateToMinutePrecision( Date fieldValue ) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime( fieldValue );
-        calendar.set( Calendar.MILLISECOND, 0 );
-        calendar.set( Calendar.SECOND, 0 );
-        Date truncatedDate = calendar.getTime();
-        return truncatedDate;
-    }
-
     private static Field unStoredKeyword( String fieldName, String fieldValue ) {
         return new Field( fieldName, fieldValue.toLowerCase(), false, true, false );
     }
 
     private static Field unStoredKeyword( String fieldName, Date fieldValue ) {
-        Date truncatedDate = truncateDateToMinutePrecision( fieldValue );
+        Date truncatedDate = Utility.truncateDateToMinutePrecision( fieldValue );
         return new Field( fieldName, DateField.dateToString( truncatedDate ), false, true, false );
     }
 

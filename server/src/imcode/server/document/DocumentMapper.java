@@ -533,8 +533,10 @@ public class DocumentMapper {
         checkMaxDocumentCategoriesOfType( document );
 
         try {
-            boolean modifiedDatetimeChanged = !document.getLastModifiedDatetime().equals( document.getModifiedDatetime() );
-            if ( !modifiedDatetimeChanged ) {
+            Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision( document.getLastModifiedDatetime() );
+            Date modifiedDatetime = Utility.truncateDateToMinutePrecision( document.getModifiedDatetime() );
+            boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals( modifiedDatetime );
+            if ( modifiedDatetimeUnchanged ) {
                 document.setModifiedDatetime( this.clock.getCurrentDate() );
             }
 

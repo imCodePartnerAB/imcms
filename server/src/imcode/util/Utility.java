@@ -194,4 +194,13 @@ public class Utility {
         }
         return parameterValues ;
     }
+
+    public static Date truncateDateToMinutePrecision( Date fieldValue ) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime( fieldValue );
+        calendar.set( Calendar.MILLISECOND, 0 );
+        calendar.set( Calendar.SECOND, 0 );
+        Date truncatedDate = calendar.getTime();
+        return truncatedDate;
+    }
 }
