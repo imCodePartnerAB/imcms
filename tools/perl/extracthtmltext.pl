@@ -8,8 +8,6 @@ use File::Find ;
 
 undef $/ ;
 
-open TAGFILE, '>', ".tags" or die "Failed to open tags file: $!\n" ;
-
 sub tag {
     my ($filename, $tagindex) = @_ ;
 
@@ -21,10 +19,6 @@ sub output_tag {
     return unless $chunk ;
     return if $chunk =~ m!^<[^<>]+>$! ;
 
-    $chunk =~ s/^\s*// ;
-    $chunk =~ s/\s*$// ;
-    $chunk =~ s/\s+/ /;
-    $chunk =~ s!\\!\\\\!g ;
     $chunk =~ s!\n!\\n!g ;
 
     my $tag = tag($filename,$tagindex) ;
@@ -41,7 +35,8 @@ sub wanted {
 
     $File::Find::prune = 1 if $_ eq 'CVS' ;
     return if -d ;
-    return if /\.(?:out|tags)$/ ;
+    return if -B ;
+    return if /\.(?:out|tags|css|js|vbs)$/ ;
     
     my $filename = $_ ;
     my $filepath = $File::Find::name ;
@@ -57,24 +52,21 @@ sub wanted {
 					    default => '" ", text'
 					) || die $! ;
 
-    open OUTFILE, '>', "$filename.out" or die "Failed to open file $filename.new: $!\n" ;
+    my $outfilename = "$filename.out" ;
+    open OUTFILE, '>', $outfilename or die "Failed to open file $outfilename: $!\n" ;
 
     my $tagindex = 0 ;
     my $textchunk = '' ;
-    my $inside_script_element = 0 ;
     while (my $token = $htmlparser->get_token) {
 	my $tagname = $token->[0] ;
-	if ('script' eq lc $tagname) {
-	    $inside_script_element = $token->[2] eq 'S' ;
-	}
-	if ($token and is_text($tagname) and !$inside_script_element) {
+	if ($token and is_text($tagname)) {
 	    $textchunk .= $token->[1] ;
 	    next ;
 	}
 	if ($textchunk =~ /\S/ and $textchunk !~ /^\s*(?:<[^>]+>)+\s*$/ and $textchunk !~ /\s*&nbsp;\s*/) {
 	    $tagindex++ ;
 	    
-	    print OUTFILE '<?',tag($filepath,$tagindex),'?>' ;
+	    print OUTFILE '{',tag($filepath,$tagindex),'}' ;
 	    output_tag(*TAGFILE, $filepath, $tagindex, $textchunk) ;
 	} elsif ($textchunk) {
 	    print OUTFILE $textchunk ;
@@ -84,9 +76,14 @@ sub wanted {
     }
 
     close OUTFILE ;
+    rename $outfilename, $filename ;
 }
 
 @ARGV = '.' unless @ARGV ;
-find( { wanted => \&wanted }, @ARGV) ;
 
-close TAGFILE ;
+foreach my $directory (@ARGV) {
+    chdir $directory or die $! ;
+    open TAGFILE, '>', "imcms_sv.properties" or die "Failed to open tags file: $!\n" ;
+    find( { wanted => \&wanted }, '.') ;
+    close TAGFILE ;
+}
