@@ -180,7 +180,247 @@ A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 <%
 if (isTempl && !(isMac && (isNS || isIE))) { %>
 <script language="JavaScript">
-<? sv/jsp/FileAdmin_edit.jsp/10 ?>
+<!--
+function imScriptCount(imType) {
+	var hits,arr1,arr2;
+	var retStr = "<? sv/jsp/FileAdmin_edit.jsp/10/8 ?>\nииииииииииииииииииииииииииииииииииииииииии\n";
+	if (isNS) retStr += "<? sv/jsp/FileAdmin_edit.jsp/10/9 ?>\nииииииииииииииииииииииииииииииииииииииииии\n";
+	var head_1_a = ":: ";
+	var head_1_b = " ::";
+	var head_2_a = "        - ";
+	var head_2_b = " -";
+	var re1 = /<\?imcms\:text[^\?]*?\?>/gi;
+	var re2 = /<\?imcms\:image[^\?]*?\?>/gi;
+	var re3 = /<\?imcms\:menu\s+[^\?]*?\?>/gi;
+	var re4 = /<\?imcms\:include[^\?]*?\?>/gi;
+	var re5 = /#[A-Z0-9_-]+?#/gi;
+	var re6 = /<\?imcms\:datetime[^\?]*?\?>/gi;
+	var re7 = /(<\?imcms\:[^\?]*?\?>)|(<\!--\/?IMSCRIPT-->)/gi;
+	var re72 = /imcms\:(text|image|menu|include|datetime)/gi; // not used - inline
+
+	var cont = document.forms.editForm.txtField.value;
+	switch (imType) {
+		case 'text':
+			if (re1.test(cont)) {
+				hits = cont.match(re1);
+				//hits = hits.sort();
+				retStr += head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/10 ?>" + head_1_b + "\n\n";
+				if (hits.length > 1) {
+					retStr += head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
+					hits    = fixImCmsTags(hits, "codeOrder");
+					retStr += hits.join("\n");
+					retStr += "\n\n" + head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/12 ?>" + head_2_b + "\n\n";
+				}
+				hits    = fixImCmsTags(hits, "numOrder");
+				retStr += hits.join("\n");
+			} else {
+				retStr = head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/1 ?>" + head_1_b;
+			}
+			alert(retStr);
+		break;
+		case 'image':
+			if (re2.test(cont)) {
+				hits = cont.match(re2);
+				//hits = hits.sort();
+				retStr += head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/13 ?>" + head_1_b + "\n\n";
+				if (hits.length > 1) {
+					retStr += head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
+					hits    = fixImCmsTags(hits, "codeOrder");
+					retStr += hits.join("\n");
+					retStr += "\n\n" + head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/12 ?>" + head_2_b + "\n\n";
+				}
+				hits    = fixImCmsTags(hits, "numOrder");
+				retStr += hits.join("\n");
+			} else {
+				retStr = head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/2 ?>" + head_1_b;
+			}
+			alert(retStr);
+		break;
+		case 'menu':
+			if (re3.test(cont)) {
+				hits = cont.match(re3);
+				//hits = hits.sort();
+				retStr += head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/14 ?>" + head_1_b + "\n\n";
+				if (hits.length > 1) {
+					retStr += head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/11 ?>:\n\n";
+					hits    = fixImCmsTags(hits, "codeOrder");
+					retStr += hits.join("\n");
+					retStr += "\n\n" + head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/12 ?>" + head_2_b + "\n\n";
+				}
+				hits    = fixImCmsTags(hits, "numOrder");
+				retStr += hits.join("\n");
+			} else {
+				retStr = head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/3 ?>" + head_1_b;
+			}
+			alert(retStr);
+		break;
+		case 'include':
+			if (re4.test(cont)) {
+				hits = cont.match(re4);
+				//hits = hits.sort();
+				retStr += head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/15 ?>" + head_1_b + "\n\n";
+				if (hits.length > 1) {
+					retStr += head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
+				}
+				hits    = fixImCmsTags(hits, "codeOrder");
+				retStr += hits.join("\n");
+			} else {
+				retStr = head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/4 ?>" + head_1_b;
+			}
+			alert(retStr);
+		break;
+		case 'bradgard':
+			if (re5.test(cont)) {
+				hits = cont.match(re5);
+				retStr += head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/16 ?>" + head_1_b + "\n\n";
+				if (hits.length > 1) {
+					retStr += head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
+				}
+				hits    = fixImCmsTags(hits, "codeOrder");
+				retStr += hits.join("\n");
+			} else {
+				retStr = head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/5 ?>" + head_1_b;
+			}
+			alert(retStr);
+		break;
+		case 'date':
+			if (re6.test(cont)) {
+				hits = cont.match(re6);
+				retStr += head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/17 ?>" + head_1_b + "\n\n";
+				if (hits.length > 1) {
+					retStr += head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
+				}
+				hits    = fixImCmsTags(hits, "codeOrder");
+				retStr += hits.join("\n");
+			} else {
+				retStr = head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/6 ?>" + head_1_b;
+			}
+			alert(retStr);
+		break;
+		case 'other':
+			if (re7.test(cont)) {
+				hits = cont.match(re7);
+				retStr += head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/18 ?>" + head_1_b + "\n\n";
+				if (hits.length > 1) {
+					retStr += head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
+				}
+				var arrTemp = new Array();
+				var iCount = 0;
+				for (var i = 0; i < hits.length; i++) {
+					hits[i] = hits[i].replace(/\s+/g, " ");
+					re      = new RegExp(":(text|image|menu|include|datetime)[\\s\\?]", "g");
+					if (!re.test(hits[i])) {
+						arrTemp[iCount] = hits[i];
+						iCount++;
+					}
+				}
+				arrTemp = fixImCmsTags(arrTemp, "codeOrder");
+				retStr += arrTemp.join("\n");
+			} else {
+				retStr = head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/7 ?>" + head_1_b;
+			}
+			alert(retStr);
+		break;
+	}
+}
+
+function fixImCmsTags(theArray, theType) {
+	var theArr = theArray;
+	var sCount = "";
+	var re1_pa = /\s+/g;
+	var re1_to = " ";
+
+	var sTemp;
+
+	/* In original order */
+	if (theType == "codeOrder") {
+		for (var i = 0; i < theArr.length; i++) {
+			/* replace linebreaks */
+			theArr[i] = theArr[i].replace(re1_pa, re1_to);
+			/* replace long parameters in tag */
+			theArr[i] = replaceLongParams(theArr[i]);
+			/* add "counter" to the left */
+			sCount = (i < 9) ? "0" + (i+1) : i+1 ;
+			theArr[i] = sCount + " : " + theArr[i];
+		}
+	}
+
+	/* In numerical order */
+
+	if (theType == "numOrder") {
+		theArr = theArray;
+		/* get highest number */
+		var lenMax  = 0;
+		var lenTemp = 0;
+		var re4_pa1 = new RegExp(".+\\s+no=([\\\"'])([^\\2]*?)\\1.+", "gi");
+		for (var i = 0; i < theArr.length; i++) {
+			sTemp = theArr[i].replace(re4_pa1, "$2");
+			lenTemp = sTemp.length;
+			if (lenTemp > lenMax) lenMax = lenTemp;
+		}
+
+		var re4_pa1 = new RegExp(".+\\s+no=([\\\"'])([^\\2]*?)\\1.+", "gi");
+		for (var i = 0; i < theArr.length; i++) {
+			/* get the number */
+			sTemp = theArr[i].replace(re4_pa1, "$2");
+			//sTemp = (parseInt(sTemp) < 10) ? "0" + sTemp : sTemp ;
+			theArr[i] = getZeros(sTemp, lenMax) + theArr[i];
+		}
+		theArr = theArr.sort();
+		for (var i = 0; i < theArr.length; i++) {
+			theArr[i] = theArr[i].replace(/^[^<]+/g, "");
+		}
+
+	}
+
+	/* return it */
+
+	return theArr;
+}
+
+function getZeros(theString, len) {
+	var zeros = "";
+	var lenStr = theString.length;
+	for (var i = 0; i < (len-lenStr); i++) {
+		zeros += "0";
+	}
+	theString = zeros + theString;
+	return theString;
+}
+
+function replaceLongParams(theString) {
+	var sTemp;
+	var re2_pa1 = new RegExp(".+\\s+pre=([\\\"'])([^\\2]*?)\\1.+", "gi");
+	var re2_pa2 = new RegExp("\\s+(pre=)([\"'])([^\\2]*?)(\\2)", "gi");
+	var re2_to = " $1$2[TOO_LONG]$2";
+	var re3_pa1 = new RegExp(".+\\s+post=([\\\"'])([^\\2]*?)\\1.+", "gi");
+	var re3_pa2 = new RegExp("\\s+(post=)([\\\"'])([^\\2]*?)(\\2)", "gi");
+	var re3_to = " $1$2[TOO_LONG]$2";
+	var re4_pa1 = new RegExp(".+\\s+label=([\\\"'])([^\\2]*?)\\1.+", "gi");
+	var re4_pa2 = new RegExp("\\s+(label=)([\\\"'])([^\\2]*?)(\\2)", "gi");
+	var re4_to = " $1$2[TOO_LONG]$2";
+
+	/* read PRE */
+	sTemp = theString.replace(re2_pa1, "$2");
+	/* replace long PRE's */
+	if (sTemp != null) {
+		if (sTemp.length > 20) theString = theString.replace(re2_pa2, re2_to);
+	}
+	/* read POST */
+	sTemp = theString.replace(re3_pa1, "$2");
+	/* replace long POST's */
+	if (sTemp != null) {
+		if (sTemp.length > 20) theString = theString.replace(re3_pa2, re3_to);
+	}
+	/* read LABEL */
+	sTemp = theString.replace(re4_pa1, "$2");
+	/* replace long LABEL's */
+	if (sTemp != null) {
+		if (sTemp.length > 20) theString = theString.replace(re4_pa2, re4_to);
+	}
+	return theString;
+}
+//-->
 </script><%
 } %>
 
