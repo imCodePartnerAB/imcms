@@ -21,10 +21,10 @@ public class MainInitServlet extends HttpServlet {
             final File realPathToWebApp = new File( this.getServletContext().getRealPath( "/" ) );
             imcode.server.WebAppGlobalConstants.init( realPathToWebApp );
 
-            File confPath = new File( realPathToWebApp, "WEB-INF/conf" );
-            Prefs.setConfigPath( confPath );
+            File configPath = new File( realPathToWebApp, "WEB-INF/conf" );
+            Prefs.setConfigPath( configPath );
 
-            configureLogging( confPath );
+            configureLogging( realPathToWebApp, configPath );
 
             kickstartImcms();
         } catch ( Exception e ) {
@@ -37,8 +37,10 @@ public class MainInitServlet extends HttpServlet {
         Imcms.getServices() ;
     }
 
-    private void configureLogging( File confPath ) {
-        DOMConfigurator.configure( new File( confPath, "log4j.xml" ).toString() );
+    private void configureLogging( File root, File configPath ) {
+        System.setProperty( "com.imcode.imcms.path", root.toString() ) ;
+        File configFile = new File( configPath, "log4j.xml" );
+        DOMConfigurator.configureAndWatch( configFile.toString() );
         Logger log = Logger.getLogger( MainInitServlet.class );
         log.info( "Logging started" );
         logPlatformInfo( this.getServletContext(), log );

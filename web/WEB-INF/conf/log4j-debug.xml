@@ -12,6 +12,7 @@
 
     <!-- The accesslog (logs usermovements) -->
     <appender name="ACCESS" class="imcode.util.log.DailyRollingFileAppender">
+        <param name="File" value="${com.imcode.imcms.path}/WEB-INF/logs/access.log"/>
         <param name="DatePattern" value="'.'yyyy-MM-dd"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern"
@@ -19,41 +20,28 @@
         </layout>
     </appender>
 
-    <appender name="WEBAPPACCESS" class="imcode.util.log.WebAppFileAppender">
-        <param name="File" value="WEB-INF/logs/access.log"/>
-        <appender-ref ref="ACCESS"/>
-    </appender>
-
     <!-- The mainlog (captures edits and changes) -->
     <appender name="MAIN" class="org.apache.log4j.FileAppender">
+        <param name="File" value="${com.imcode.imcms.path}/WEB-INF/logs/main.log"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{ISO8601} %-5p %m%n"/>
         </layout>
     </appender>
 
-    <appender name="WEBAPPMAIN" class="imcode.util.log.WebAppFileAppender">
-        <param name="File" value="WEB-INF/logs/main.log"/>
-        <appender-ref ref="MAIN"/>
-    </appender>
-
     <!-- The errorlog (captures everything that doesn't go to one of the above. -->
     <appender name="ERROR" class="org.apache.log4j.FileAppender">
+        <param name="File" value="${com.imcode.imcms.path}/WEB-INF/logs/error.log"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{ISO8601} %-5p %c %x - %m%n"/>
         </layout>
     </appender>
 
-    <appender name="WEBAPPERROR" class="imcode.util.log.WebAppFileAppender">
-        <param name="File" value="WEB-INF/logs/error.log"/>
-        <appender-ref ref="ERROR"/>
-    </appender>
-
-    <!-- Uncomment if you have a log4j server listening to logevents -->
+    <!-- Comment unless you have a log4j server listening to logevents -->
     <appender name="SOCKET" class="org.apache.log4j.net.SocketAppender">
         <param name="Port" value="4445"/>
         <param name="RemoteHost" value="localhost"/>
         <param name="LocationInfo" value="true"/>
-        <param name="ReconnectionDelay" value="60000"/>
+        <param name="ReconnectionDelay" value="10000"/>
     </appender>
 
     <!-- Write HttpUnit code for requests to logfile
@@ -77,26 +65,26 @@
     <!-- Set up accesslog with priority 'debug' -->
     <category name="com.imcode.imcms.log.access" additivity="false">
         <priority value="debug"/>
-        <appender-ref ref="WEBAPPACCESS"/>
+        <appender-ref ref="ACCESS"/>
         <appender-ref ref="SOCKET"/>
     </category>
 
     <!-- Set up mainlog with priority 'debug' -->
     <category name="com.imcode.imcms.log.main" additivity="false">
         <priority value="debug"/>
-        <appender-ref ref="WEBAPPMAIN"/>
+        <appender-ref ref="MAIN"/>
         <appender-ref ref="SOCKET"/>
     </category>
 
     <category name="org.apache" additivity="false">
-        <priority value="warn"/>
-        <appender-ref ref="WEBAPPERROR"/>
+        <priority value="error"/>
+        <appender-ref ref="ERROR"/>
     </category>
 
     <!-- Set up the errorlog with priority 'debug' -->
     <root>
         <priority value="debug"/>
-        <appender-ref ref="WEBAPPERROR"/>
+        <appender-ref ref="ERROR"/>
         <appender-ref ref="SOCKET"/>
     </root>
 
