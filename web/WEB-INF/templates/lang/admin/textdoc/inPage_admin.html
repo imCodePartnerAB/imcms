@@ -4,7 +4,9 @@
 
 #changePageDiv { padding: 0px 0px 10px 0px; }
 #changePageTable { border: 2px outset; background-color:#f5f5f7; }
-#changePageTd1 { padding: 4px 2px; font: 10px Verdana,Geneva,sans-serif; color:#ffffff; background-color:#20568D; }
+#changePageTdTop { padding: 2px; background-color:#20568D; }
+#changePageTd1 { font: 10px Verdana,Geneva,sans-serif; color:#ffffff; }
+#changePageTd2 {  }
 .changePageSelect { font: 10px Verdana,Geneva,sans-serif; color:#000000; }
 .changePageHeading { font: bold 11px Verdana,Geneva,sans-serif; color:#ccccee; }
 /*.changePageButton {
@@ -28,6 +30,9 @@
 	cursor:hand;
 	cursor:pointer;
 }
+A.imLinkHelp:link, A.imLinkHelp:visited, A.imLinkHelp:active, A.imLinkHelp:hover {
+	font: bold 15px Arial, Tahoma,Verdana,sans-serif; color:#eeee00; text-decoration:none;
+}
 B { font-weight: bold; }
 -->
 </style>
@@ -48,8 +53,13 @@ function resetTarget() {
 <form name="changePageForm" method="POST" action="SaveInPage">
 <input type="HIDDEN" name="meta_id" value="#getMetaId#">
 <tr>
-	<td colspan="9" id="changePageTd1" nowrap>
-	&nbsp;<span class="changePageHeading"><? templates/sv/textdoc/inPage_admin.html/1001 ?>&nbsp;</span> <? templates/sv/textdoc/inPage_admin.html/1002 ?></td>
+	<td colspan="9" id="changePageTdTop">
+	<table border="0" cellspacing="0" cellpadding="0" width="100%">
+	<tr>
+		<td id="changePageTd1">&nbsp;<span class="changePageHeading"><? templates/sv/textdoc/inPage_admin.html/1001 ?>&nbsp;</span> <? templates/sv/textdoc/inPage_admin.html/1002 ?></td>
+		<td id="changePageTd2" align="right"><a href="@documentationurl@/GetDoc?meta_id=87" target="_blank" class="imLinkHelp" title="<? templates/sv/textdoc/inPage_admin.html/2004 ?>">&nbsp;&nbsp;&nbsp;?&nbsp;</a></td>
+	</tr>
+	</table></td>
 </tr>
 <tr>
 	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt=""></td>
@@ -75,7 +85,7 @@ function resetTarget() {
 	
 	<td><input type="submit" name="update" value="  <? templates/sv/textdoc/inPage_admin.html/2003 ?>  " onClick="resetTarget()" class="changePageButton"></td>
 	
-	<td><a href="@documentationurl@/GetDoc?meta_id=87" target="_blank"><img src="$contextPath/imcms/$language/images/admin/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="<? templates/sv/textdoc/inPage_admin.html/2004 ?>" hspace="2"></a></td>
+	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1" alt=""></td>
 </tr>
 </form>
 </table></div>
