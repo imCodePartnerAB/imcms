@@ -118,16 +118,21 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
    }
 
    public void testNullExternalAuthenticator() {
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
-      ExternalizedImcmsAuthenticatorAndUserMapper authAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper(imcmsAuthenticatorAndUserMapper,null,ldapUserMapper,"se") ;
-      authAndMapper.authenticate(LOGIN_NAME_ADMIN,LOGIN_NAME_ADMIN) ;
+      try {
+         ExternalizedImcmsAuthenticatorAndUserMapper authAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper(imcmsAuthenticatorAndUserMapper,null,ldapUserMapper,"se") ;
+         fail();
+      } catch ( IllegalArgumentException ex ) {
+         //OK
+      }
    }
 
    public void testNullExternalUserMapper() {
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
-      ExternalizedImcmsAuthenticatorAndUserMapper authAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper(imcmsAuthenticatorAndUserMapper,new SmbAuthenticator("loke", "imcode"),null,"se") ;
-      authAndMapper.getUser( LOGIN_NAME_ADMIN ) ;
-      authAndMapper.synchRolesWithExternal();
+      try {
+         ExternalizedImcmsAuthenticatorAndUserMapper authAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper(imcmsAuthenticatorAndUserMapper,new SmbAuthenticator("loke", "imcode"),null,"se") ;
+         fail();
+      } catch ( IllegalArgumentException ex ) {
+         //OK
+      }
    }
 
    public void testNullAuthenticatorAndNullUserMapper() {
@@ -138,4 +143,4 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       authAndMapper.getUser( LOGIN_NAME_ADMIN ) ;
       authAndMapper.synchRolesWithExternal();
    }
-}
+ }

@@ -16,7 +16,11 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
    public ExternalizedImcmsAuthenticatorAndUserMapper( ImcmsAuthenticatorAndUserMapper imcms,
                                                        Authenticator externalAuthenticator,
                                                        UserAndRoleMapper externalUserMapper,
-                                                       String defaultLanguage ) {
+                                                       String defaultLanguage ) throws IllegalArgumentException {
+      if( (null == externalAuthenticator) != (null == externalUserMapper) ) {
+         throw new IllegalArgumentException("External authenticator and external usermapper should both be either set or not set.");
+      }
+
       this.imcmsAuthenticatorAndUserMapper = imcms;
       this.externalAuthenticator = externalAuthenticator;
       this.externalUserMapper = externalUserMapper;
