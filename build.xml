@@ -80,7 +80,18 @@
     <target name="dist" depends="bindist,srcdist" description="Build all binary and source distributions." />
 
 
-    <target name="bindist" depends="bindist-war,bindist-jar" description="Build all binary distributions." />
+    <target name="bindist" depends="bindist-war,bindist-jar" description="Build all binary distributions.">
+        <zip destfile="${bindist-zip}">
+            <fileset file="${bindist-war}"/>
+            <fileset dir="${dist}" includes="imcms*.sql"/>
+            <fileset dir="${basedir}" includes="*.TXT" excludes="${srcincludes}"/>
+        </zip>
+        <tar destfile="${bindist-tgz}" compression="gzip">
+            <tarfileset file="${bindist-war}"/>
+            <tarfileset dir="${dist}" includes="imcms*.sql"/>
+            <tarfileset dir="${basedir}" includes="*.TXT" excludes="${srcincludes}"/>
+        </tar>
+    </target>
 
 
     <target name="bindist-jar" depends="build,check-webappname">
@@ -333,6 +344,7 @@
             <fileset file="${tmp}/imcms.sql"/>
         </imtranslate>
 
+        <copy file="${sql}/imcms.sql" tofile="${dist}/imcms${versionfilesuffix}-${buildlanguage}.sql"/>
         <move file="${sql}/imcms.sql" tofile="${sql}/imcms${versionfilesuffix}-${buildlanguage}.sql"/>
 
     </target>
@@ -510,6 +522,9 @@
 
         <property name="bindist-jar" value="${dist}/imcms${versionfilesuffix}.jar"/>
         <property name="bindist-api-jar" value="${dist}/imcms${versionfilesuffix}-api.jar"/>
+
+        <property name="bindist-zip" value="${dist}/imcms${versionfilesuffix}.zip"/>
+        <property name="bindist-tgz" value="${dist}/imcms${versionfilesuffix}.tar.gz"/>
 
         <property name="srcdist" value="imcms${versionfilesuffix}-src"/>
         <property name="srcdist-zip" value="${dist}/${srcdist}.zip"/>
