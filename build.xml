@@ -23,10 +23,8 @@
     <!-- The directory to build in. -->
     <property name="build"          value="${basedir}/build"/>
     <property name="dist"           value="${basedir}/dist"/>
-    <property name="sql-temp-dir"   value="${basedir}/sqltemp"/>
+    <property name="tmp"            value="${dist}/tmp"/>
 
-    <!-- Where to put generated documentation -->
-    <property name="doc" value="${basedir}/doc"/>
 
     <!-- The webroot. Everything put here can be seen by any visitor. -->
     <property name="webroot" value="${build}"/>
@@ -40,12 +38,16 @@
     <property name="imcms" value="${webroot}/imcms"/>
     <property name="imcmstest" value="${imcms}/test"/>
     <property name="imcmscss" value="${imcms}/css"/>
-    <property name="apisamples" value="${webroot}/apisamples"/>
+    <property name="docs" value="${imcms}/docs"/>
+    <property name="apisamples" value="${docs}/apisamples"/>
+    <property name="apidocs" value="${docs}/api"/>
 
     <!-- 'WEB-INF' - Everything put here is private to the webapp -->
     <property name="WEB-INF" value="${webroot}/WEB-INF"/>
 
     <property name="versionfile" value="${WEB-INF}/version.txt"/>
+
+    <property name="srcincludes" value="${basedir}/MANIFEST.TXT"/>
 
     <property name="conf" value="${WEB-INF}/conf"/>
     <property name="classes" value="${WEB-INF}/classes"/>
@@ -60,9 +62,8 @@
     <property name="texttemplates" value="${templates}/text"/>
     <property name="demotemplates" value="${texttemplates}/demo"/>
 
-
     <!-- URIs -->
-    <property name="apiuri" value="${rooturl}/apisamples"/>
+    <property name="apiuri" value="${rooturl}/imcms/docs/apisamples"/>
     <property name="servleturl" value="${rooturl}/servlet"/>
     <property name="loginurl" value="${rooturl}/login"/>
     <property name="imcmsurl"   value="${rooturl}/imcms"/>
@@ -72,7 +73,6 @@
     <property name="jspurl" value="${rooturl}/jsp"/>
     <property name="postcardsurl" value="${rooturl}/postcards"/>
     <property name="imcmscssurl" value="${rooturl}/imcms/css"/>
-    <property name="srcincludes" value="${basedir}/MANIFEST.TXT"/>
 
 
     <path id="libraries">
@@ -91,7 +91,6 @@
     <!-- A handy target to have everything else depend on, just in case. -->
     <target name="init" depends="reformatproperties,global-filters" description="Handy target for everything else to depend on.">
 
-        <!-- Record the build to a log-file. -->
         <record name="${basedir}/build.log"/>
 
         <tstamp/>
@@ -99,7 +98,6 @@
         <available classname="junit.framework.Test" classpathref="libraries" property="junit-available"/>
     </target>
 
-    <!-- A target to use for reformat a properties   -->
     <target name="reformatproperties">
 
         <taskdef name="propertyregex" classname="net.sf.antcontrib.property.RegexTask" classpathref="libraries"/>
@@ -155,12 +153,10 @@
     </target>
 
 
-    <!-- Defines global filters. -->
     <target name="global-filters"
             depends="check-build-properties,reformatproperties"
             description="Defines global filters.">
 
-        <!-- Global filters -->
         <filter token="apiuri"              value="${apiuri}"/>
         <filter token="defaultlanguage"     value="${defaultlanguage}"/>
         <filter token="rooturl"             value="${rooturl}"/>
@@ -206,7 +202,7 @@
 
     </target>
 
-    <!-- Checks that build.properties is up-to-date. -->
+
     <target name="check-build-properties" description="Checks that ${build.properties} is up-to-date." unless="build-properties-up-to-date">
 
         <uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
@@ -221,7 +217,6 @@
     </target>
 
 
-    <!-- Checks that 'deployroot' is set. -->
     <target name="check-deployroot" description="Checks that deployroot is set." unless="deployroot">
 
         <fail message="Set 'deployroot' in '${build.properties}'!"/>
@@ -229,7 +224,6 @@
     </target>
 
 
-    <!-- Checks that 'webappname' is set. -->
     <target name="check-webappname" description="Checks that webappname is set." unless="webappname">
 
         <fail message="Set 'webappname' in '${build.properties}'!"/>
@@ -237,7 +231,6 @@
     </target>
 
 
-    <!-- Build the war-file -->
     <target name="dist"
         depends="init,build,check-webappname,wardist,jardist"
         description="Packages a complete distribution.">
@@ -247,18 +240,22 @@
 
     </target>
 
+
     <target name="wardist" depends="init,build,check-webappname" description="Creates a war-file.">
 
         <war warfile="${wardist}" basedir="${build}" webxml="${WEB-INF}/web.xml"/>
 
     </target>
 
+
     <target name="jardist" depends="init,build,check-webappname" description="Creates jar-files.">
         <jar destfile="${jardist}" basedir="${classes}"/>
         <jar destfile="${jarapidist}" basedir="${classes}" includes="com/imcode/imcms/api/**"/>
     </target>
 
+
     <target name="srcdist" depends="srczipdist,srctgzdist" description="Packages all source distributions."/>
+
 
     <target name="srczipdist" depends="init,check-webappname">
         <mkdir dir="${dist}"/>
@@ -268,6 +265,7 @@
             <zipfileset includesfile="${srcincludes}" dir="${basedir}" prefix="imcms${versionfilesuffix}"/>
         </zip>
     </target>
+
 
     <target name="srctgzdist" depends="init,check-webappname">
         <mkdir dir="${dist}"/>
@@ -280,6 +278,7 @@
         </tar>
     </target>
 
+
     <target name="srctbz2dist" depends="init,check-webappname">
         <mkdir dir="${dist}"/>
         <dependset>
@@ -291,15 +290,15 @@
         </tar>
     </target>
 
+
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-	    depends="init,
-		     classes,javadoc,
-		     libraries,
-		     web,conf,dir,sql,
+        depends="init,
+             classes,javadoc,libraries,
+             web,conf,empty-dirs,sql,
              web-xml, version-file,
              build-addon"
-	    description="Builds everything."/>
+        description="Builds everything."/>
 
 
     <target name="version-file">
@@ -329,13 +328,12 @@
     </target>
 
 
-    <!-- Install the war-file -->
     <target name="install-war" depends="init,dist,check-deployroot,check-webappname" description="Copies the WAR-package into the deployroot.">
         <copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
     </target>
 
 
-    <target name="nobuild-install" depends="init,check-deployroot" description="Install files already built, without running 'build' first.">
+    <target name="install" depends="init,check-deployroot" description="Install files already built, without running 'build' first.">
         <copy todir="${webapproot}">
             <fileset dir="${build}"/>
         </copy>
@@ -344,34 +342,20 @@
         </copy>
     </target>
 
-    <!-- Install the webapp, bypassing the war-file -->
-    <target name="install"
-        depends="init,build,nobuild-install"
-        description="Copies the webapp directly into the webapp-directory in the deployroot."/>
 
-    <!-- Delete everything built by the 'build'-target. -->
     <target name="clean" description="Deletes everything for a fresh start.">
 
         <delete dir="${build}"/>
+        <delete dir="${tmp}"/>
         <delete dir="${dist}"/>
-        <delete dir="${sql-temp-dir}"/>
         <ant dir="tools" target="clean"/>
 
     </target>
 
-    <target name="clean-build" depends="init,clean,build" description="Runs targets clean and build."/>
-
-    <target name="clean-install" depends="init,clean,install" description="Runs targets clean and install."/>
-
-    <!-- Delete an installed webapp -->
     <target name="uninstall" depends="check-deployroot,check-webappname" description="Removes the installed files from the deployroot, including the war-file.">
         <delete dir="${webapproot}"/>
         <delete file="${deployroot}/${warfile}"/>
     </target>
-
-
-    <target name="install-tomcat-deploy" depends="install, tomcat-deploy"
-        description="Install and deploy in running instance of tomcat"/>
 
 
     <target name="tomcat-deploy" description="Deploy in running instance of tomcat">
@@ -390,11 +374,6 @@
             path="/${webappname}"/>
     </target>
 
-
-    <target name="install-tomcat-reload" depends="install, tomcat-reload"
-        description="install and reload the web app in tomcat"/>
-
-
     <target name="tomcat-reload" description="reloads the web app in tomcat">
         <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" classpathref="libraries"/>
          <reload url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
@@ -402,7 +381,19 @@
     </target>
 
 
-    <!-- Run JUnit-tests -->
+    <target name="build-install" depends="build,install" description="Copies the webapp directly into the webapp-directory in the deployroot."/>
+
+    <target name="build-install-tomcat-deploy" depends="build-install, tomcat-deploy" description="Build, install, and deploy in running instance of tomcat"/>
+
+    <target name="build-install-tomcat-reload" depends="build, install, tomcat-reload" description="Build, install, and reload the web app in tomcat"/>
+
+    <target name="clean-build" depends="clean,build" description="Runs targets clean and build."/>
+
+    <target name="clean-build-install" depends="clean,build-install" description="Runs targets clean, build, and install."/>
+
+    <target name="clean-build-install-tomcat-reload" depends="clean-build-install, tomcat-reload" description="Build, install, and reload the web app in tomcat"/>
+
+
     <target name="test" depends="classes,junit-task-available" description="Runs JUnit-tests.">
 
         <junit haltonfailure="yes" haltonerror="yes">
@@ -425,10 +416,9 @@
     <target name="classes" depends="init,server" description="Builds all classes."/>
 
 
-    <!-- Generate documentation -->
     <target name="javadoc" description="Generates javadoc.">
         <javadoc packagenames="imcode.imcms.api.*"
-            sourcepath="server/src/" destdir="${apisamples}/docs" windowtitle="Imcms API" classpathref="libraries" >
+            sourcepath="server/src/" destdir="${apidocs}" windowtitle="Imcms API" classpathref="libraries" >
             <packageset dir="server/src/" defaultexcludes="yes">
                 <include name="com/imcode/imcms/api/**"/>
             </packageset>
@@ -438,10 +428,10 @@
 
     <!-- Build extra tools needed for building. -->
     <target name="tools" description="Builds extra tools needed for building.">
-    	<ant dir="tools"/>
-    	<taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
-    	<taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
-    	<taskdef name="checksumfiles" classname="imcode.anttasks.ChecksumFiles">
+        <ant dir="tools"/>
+        <taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
+        <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
+        <taskdef name="checksumfiles" classname="imcode.anttasks.ChecksumFiles">
             <classpath>
                 <pathelement path="tools/build"/>
                 <path refid="libraries"/>
@@ -484,25 +474,25 @@
 
     <target name="createdb" depends="init,sql">
 
-	<sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port}"
-		userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="continue" src="${drop-sql}" />
+        <sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port}"
+            userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="continue" src="${drop-sql}" />
 
-	<sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port}"
-		userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${create-sql}" />
+        <sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port}"
+            userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${create-sql}" />
 
-	<sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port};DatabaseName=${db-name}"
-		userid="${db-user}" password="${db-pass}" delimiter="GO" delimitertype="row" onerror="abort" src="${dist-sql}" />
+        <sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port};DatabaseName=${db-name}"
+            userid="${db-user}" password="${db-pass}" delimiter="GO" delimitertype="row" onerror="abort" src="${dist-sql}" />
+
     </target>
 
 
-    <!-- Generates the sql-scripts -->
     <target name="sql" depends="init,check-webappname,tools" description="Concatenates the SQL-scripts into one large script.">
 
-        <mkdir dir="${sql-temp-dir}" />
+        <mkdir dir="${tmp}" />
 
-        <cat destfile="${sql-temp-dir}/imcms${versionfilesuffix}.sql" orderby="path" filtering="true">
+        <cat destfile="${tmp}/imcms${versionfilesuffix}.sql" orderby="path" filtering="true">
             <fileset file="sql/tables/tables.ascii.sql"/>
-            <fileset  dir="sql/sprocs"/>
+            <fileset  dir="sql/sprocs" includes="*.prc" />
 
             <fileset file="sql/conf/conf_sprocs.sql"/>
 
@@ -530,12 +520,12 @@
         <imtranslate bundle="imcms" bundlelanguage="${defaultlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${dist}" filtering="true">
-            <fileset file="${sql-temp-dir}/imcms${versionfilesuffix}.sql"/>
+            <fileset file="${tmp}/imcms${versionfilesuffix}.sql"/>
         </imtranslate>
     </target>
 
-    <!-- Builds the 'non-servlets'. -->
-    <target name="server" depends="init,dir">
+
+    <target name="server" depends="init,empty-dirs">
 
         <mkdir dir="${classes}"/>
 
@@ -552,7 +542,7 @@
 
 
     <!-- Copies the libraries (jar-files) needed for building. -->
-    <target name="libraries" depends="init,dir" description="Copies the jar-files.">
+    <target name="libraries" depends="init,empty-dirs" description="Copies the jar-files.">
 
         <copy todir="${lib}">
             <fileset dir="lib" includes="*.jar"/>
@@ -579,7 +569,7 @@
     <!-- Creates the directories and copies the files that are to be public. -->
     <target name="web"
         depends="init,tools,language-property-files"
-        description="Creates the public web">
+        description="Translates and copies the webfiles.">
 
         <mkdir dir="${images}"/>
         <mkdir dir="${login}"/>
@@ -593,11 +583,11 @@
             <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**"/>
         </copy>
 
-        <antcall target="web-copy">
+        <antcall target="web-lang">
             <param name="buildlanguage" value="swe"/>
         </antcall>
 
-        <antcall target="web-copy">
+        <antcall target="web-lang">
             <param name="buildlanguage" value="eng"/>
         </antcall>
 
@@ -622,9 +612,9 @@
         <touch file="${fortunes}/quotes.txt" millis="0"/>
 
     </target>
-    <!-- end target web -->
 
-    <target name="web-copy"
+
+    <target name="web-lang"
             depends="init,tools"
             description="copy and translate files for the public web">
 
@@ -666,11 +656,10 @@
         </copy>
 
     </target>
-    <!-- end target web-copy -->
 
 
     <!-- Create some empty directories that will be used by imCMS. -->
-    <target name="dir"
+    <target name="empty-dirs"
 	    depends="init"
 	    description="Creates some empty directories necessary for imCMS.">
 
@@ -680,8 +669,8 @@
     </target>
 
 
-    <target name="templates-web-nobuild-install"
-            depends="init,web,nobuild-install"
-            description="Run targets 'templates', 'web', and 'nobuild-install'" />
+    <target name="web-install"
+            depends="init,web,install"
+            description="Run targets 'web', and 'nobuild-install'" />
 
 </project>

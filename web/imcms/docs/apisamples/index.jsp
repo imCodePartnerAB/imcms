@@ -13,8 +13,7 @@
 <body>
 <h1>imCMS - API documentation </h1>
 <p>
-imCMS comes with an API for usage in Servlets and jsp-pages. To view the documentation (javadoc) on the different
-classes see <a href="docs/">java doc</a>.<br>
+imCMS comes with an API for usage in servlets and jsp-pages, see <a href="../api/">the javadocs</a>.<br>
 Also, linked from this document are differens examples on how to use the api. Follow the links below.
 
 <h3>Example pages</h3>
