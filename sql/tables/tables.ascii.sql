@@ -1388,6 +1388,9 @@ ALTER TABLE [dbo].[users] WITH NOCHECK ADD
 	)  ON [PRIMARY]
 GO
 
+CREATE UNIQUE NONCLUSTERED INDEX [IX_users_login_name] ON [dbo].[users]([login_name]) ON [PRIMARY]
+GO
+
  CREATE  INDEX [IX_browsers] ON [dbo].[browsers]([value]) ON [PRIMARY]
 GO
 
