@@ -17,6 +17,8 @@ import java.util.*;
 
 import com.imcode.imcms.api.TextDocument;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class DocumentMapper {
 
     private Logger log = Logger.getLogger(DocumentMapper.class);
@@ -930,6 +932,23 @@ public class DocumentMapper {
         String categoryTypeName = categorySqlResult[1];
         return new CategoryDomainObject(categoryId, categoryName, categoryTypeName);
 
+    }
+
+    public void getDocumentAndSetCategoriesFromFormAndSaveDocument(HttpServletRequest req, int meta_id_int) {
+        DocumentMapper documentMapper = service.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument(meta_id_int);
+        setDocumentCategoriesFromForm(req, document, documentMapper);
+        documentMapper.saveDocument(document);
+    }
+
+    private void setDocumentCategoriesFromForm(HttpServletRequest req, DocumentDomainObject document, DocumentMapper documentMapper) {
+        document.removeAllCategories() ;
+        String[] categoryIdStrings = req.getParameterValues("categories");
+        for (int i = 0; null != categoryIdStrings && i < categoryIdStrings.length; i++) {
+            int categoryId = Integer.parseInt(categoryIdStrings[i]);
+            CategoryDomainObject categoryDomainObject = documentMapper.getCategoryById(categoryId);
+            document.addCategory(categoryDomainObject);
+        }
     }
 
 }

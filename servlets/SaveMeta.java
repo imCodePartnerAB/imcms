@@ -454,16 +454,7 @@ public class SaveMeta extends HttpServlet {
 
         //**************** end section index word stuff *************
 
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument(meta_id_int);
-        document.removeAllCategories() ;
-        String[] categoryIdStrings = req.getParameterValues("categories");
-        for (int i = 0; null != categoryIdStrings && i < categoryIdStrings.length; i++) {
-            int categoryId = Integer.parseInt(categoryIdStrings[i]);
-            CategoryDomainObject categoryDomainObject = documentMapper.getCategoryById(categoryId);
-            document.addCategory(categoryDomainObject);
-        }
-        documentMapper.saveDocument(document);
+        imcref.getDocumentMapper().getDocumentAndSetCategoriesFromFormAndSaveDocument(req, meta_id_int);
 
         // Let's split this joint!
         String output = AdminDoc.adminDoc(meta_id_int, meta_id_int, user, req, res);

@@ -304,7 +304,8 @@ public class AddDoc extends HttpServlet {
         vec.add( option_list );
         //**************** end section index word stuff *************
 
-
+        vec.add("#categories#");
+        vec.add(MetaDataParser.createHtmlListBoxesOfCategoriesForEachCategoryType(imcref.getDocumentMapper(), Integer.parseInt(meta_id), imcref, user));
 
         // Lets parse the information and send it to the browser
         if( item_selected.equals( "2" ) ) {

@@ -216,6 +216,9 @@ public class SaveNewMeta extends HttpServlet {
                 default:
                     redirectToExternalDocType( imcref, metaId, user, parentMetaId, res );
             }
+
+            imcref.getDocumentMapper().getDocumentAndSetCategoriesFromFormAndSaveDocument(req, metaId);
+
         } else {
             String htmlStr = AdminDoc.adminDoc( parentMetaId, parentMetaId, user, req, res );
             out.write( htmlStr );

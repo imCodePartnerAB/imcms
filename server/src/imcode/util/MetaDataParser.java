@@ -339,7 +339,7 @@ public class MetaDataParser {
 
     } // end of parseMetaData
 
-    private static String createHtmlListBoxesOfCategoriesForEachCategoryType(DocumentMapper documentMapper, int documentId, IMCServiceInterface imcref, UserDomainObject user) {
+    public static String createHtmlListBoxesOfCategoriesForEachCategoryType(DocumentMapper documentMapper, int documentId, IMCServiceInterface imcref, UserDomainObject user) {
         StringBuffer result = new StringBuffer();
             DocumentDomainObject document = documentMapper.getDocument(documentId);
             String[] categoryTypes = documentMapper.getAllCategoryTypes();
