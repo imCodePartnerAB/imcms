@@ -55,7 +55,7 @@
                             <tr>
                                 <td><%= adminManagerPage.getHtmlAdminPart() %></td>
                                 <td>&nbsp; &nbsp;</td>
-                                <td><input type="submit" class="imcmsFormBtnSmall" style="height:20"  name="submit" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/2 ?>"></td>
+                                <td><input type="submit" class="imcmsFormBtnSmall" name="submit" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/2 ?>"></td>
                             </tr>
                         <% }else { %>
                             <tr><td colspan="3">&nbsp;</td></tr>

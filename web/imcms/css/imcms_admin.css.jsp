@@ -125,7 +125,6 @@ if (isNS) { %>
 	border-color: <%= BORDER_COLOR_NORMAL %>;
 	cursor:hand;
 	cursor:pointer;
-	height:24;
 	padding: 2 8; }
 
 .imcmsFormBtnActive {
@@ -136,7 +135,6 @@ if (isNS) { %>
 	border-color: <%= BORDER_COLOR_NORMAL_ACT %>;
 	cursor:hand;
 	cursor:pointer;
-	height:24;
 	padding: 3 8 1 8; }
 
 .imcmsFormBtnDisabled {
@@ -147,7 +145,6 @@ if (isNS) { %>
 	border-color: <%= BORDER_COLOR_DISABLED %>;
 	cursor:hand;
 	cursor:pointer;
-	height:24;
 	padding: 2 8; }
 
 <% /* Small */ %>
@@ -160,7 +157,6 @@ if (isNS) { %>
 	border-color: <%= BORDER_COLOR_NORMAL %>;
 	cursor:hand;
 	cursor:pointer;
-	height:18;
 	padding: 0 2; }
 
 .imcmsFormBtnSmallDisabled {
@@ -171,7 +167,6 @@ if (isNS) { %>
 	border-color: <%= BORDER_COLOR_DISABLED %>;
 	cursor:hand;
 	cursor:pointer;
-	height:18;
 	padding: 0 2; }<%
 }
 
