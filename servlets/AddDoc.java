@@ -74,16 +74,12 @@ public class AddDoc extends HttpServlet {
 
 		// Lets detect the doctype were gonna add
 		if ( item_selected.equals ( "2" ) ) {
-//			htmlStr = IMCServiceRMI.interpretAdminTemplate ( imcserver, meta_id,user,"new_meta.html",2,0,0,doc_menu_no ) ;
 			doc_type = "2" ;
 		} else if ( item_selected.equals ( "8" ) ) {
-//			htmlStr = IMCServiceRMI.interpretAdminTemplate ( imcserver, meta_id,user,"new_meta.html",8,0,0,doc_menu_no ) ;
 			doc_type = "8" ;
 		} else if ( item_selected.equals ( "6" ) ) {
-//			htmlStr = IMCServiceRMI.interpretAdminTemplate ( imcserver, meta_id,user,"new_meta.html",6,0,0,doc_menu_no ) ;
 			doc_type = "6" ;
 		} else if ( item_selected.equals ( "7" ) ) {
-//			htmlStr = IMCServiceRMI.interpretAdminTemplate ( imcserver, meta_id,user,"new_meta.html",7,0,0,doc_menu_no ) ;
 			doc_type = "7" ;
 		} else if ( item_selected.equals ( "0" ) ) { // its an existing document
 			Vector vec = new Vector () ;
@@ -103,11 +99,9 @@ public class AddDoc extends HttpServlet {
 			return ;
 
 		} else if ( item_selected.equals ( "5" ) ) {
-//			htmlStr = IMCServiceRMI.interpretAdminTemplate ( imcserver, meta_id,user,"new_meta.html",5,0,0,doc_menu_no ) ;
 			doc_type = "5" ;
 		} else {
 			doc_type = item_selected ;
-		//	htmlStr = IMCServiceRMI.interpretAdminTemplate ( imcserver, meta_id,user,"new_meta.html",doc_type,0,0,doc_menu_no ) ;
 		}
 
 
