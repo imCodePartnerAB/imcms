@@ -42,7 +42,7 @@ imcmsGui("mid", null);
 <input type="HIDDEN" name="caller" value="<%=imageBrowseFormBean.getCaller()%>">
 <input type="HIDDEN" name="meta_id" value="<%=imageBrowseFormBean.getMetaId()%>">
 <input type="HIDDEN" name="img_no" value="<%=imageBrowseFormBean.getImageNumber()%>">
-<INPUT TYPE="HIDDEN" NAME="label" VALUE=<%=imageBrowseFormBean.getLabel()%>
+<INPUT TYPE="HIDDEN" NAME="label" VALUE="<%=imageBrowseFormBean.getLabel()%>">
 <input type="HIDDEN" name="imglist" value="<%=imageBrowseFormBean.getImageList()%>">
 <input type="HIDDEN" name="dirlist_preset" value="<%=imageBrowseFormBean.getDirListPreset()%>">
 <tr>
