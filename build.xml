@@ -311,12 +311,12 @@
     </target>
 
 
-    <target name="web-xml" depends="validate-web-xml" >
-        <copy todir="${WEB-INF}" file="install/web.xml"/>
+    <target name="web-xml" depends="validate-web-xml">
+        <copy todir="${WEB-INF}" file="web/WEB-INF/web.xml"/>
     </target>
 
-    <target name="validate-web-xml" >
-        <xmlvalidate file="install/web.xml" classpathref="libraries"  >
+    <target name="validate-web-xml">
+        <xmlvalidate file="web/WEB-INF/web.xml" classpathref="libraries"  >
                 <dtd
                     publicId="-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
                     location="javax/servlet/resources/web-app_2_3.dtd"/>
@@ -591,16 +591,17 @@
         <mkdir dir="${jsp}"/>
         <mkdir dir="${imcms}"/>
 
+        <copy todir="${webroot}" filtering="true">
+            <fileset dir="web" excludes="imcms/lang/**"/>
+        </copy>
+
         <antcall target="web-copy">
             <param name="buildlanguage" value="swe"/>
-            <param name="srclanguage" value="sv"/>
-        </antcall>
-        <antcall target="web-copy">
-            <param name="buildlanguage" value="eng"/>
-            <param name="srclanguage" value="en"/>
         </antcall>
 
-        <copy todir="${imcms}" file="install/htdocs/internalerrorpage.jsp"/>
+        <antcall target="web-copy">
+            <param name="buildlanguage" value="eng"/>
+        </antcall>
 
         <!-- copy translated login templates for defaultlanguage to directory /login-->
         <copy todir="${login}">
@@ -645,165 +646,21 @@
         <filter token="shopurl"             value="${imcmsurl}/${buildlanguage}/shop"/>
         <filter token="pollurl"             value="${imcmsurl}/${buildlanguage}/poll"/>
 
-        <!-- imcms login  -->
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${imcmslogin}" filtering="true">
-            <fileset dir="templates/login"/>
+            todir="${imcms}/${buildlanguage}" filtering="true">
+            <fileset dir="web/imcms/lang" excludes="**/*.png,**/*.jpg,**/*.gif" />
         </imtranslate>
 
-        <!-- images -->
-        <copy todir="${images}">
-            <fileset dir="install/htdocs/images"/>
+        <copy todir="${imcms}/${buildlanguage}" filtering="false">
+            <fileset dir="web/imcms/lang" includes="**/*.png,**/*.jpg,**/*.gif" />
         </copy>
-
-        <!-- css -->
-        <copy todir="${css}">
-            <fileset dir="install/htdocs/css"/>
-        </copy>
-
-        <!-- test -->
-        <copy todir="${imcmstest}">
-            <fileset dir="install/htdocs/imcms/test"/>
-        </copy>
-
-        <!-- html -->
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-                     starttoken="&lt;? " endtoken=" ?&gt;"
-                     todir="${imcmshtml}" filtering="true">
-            <fileset dir="install/htdocs/imcms/html"/>
-        </imtranslate>
-
-        <!-- imcms admin images -->
-        <copy todir="${adminimages}">
-            <fileset dir="install/htdocs/imcms/images"/>
-            <fileset dir="install/htdocs/${srclanguage}/images"/>
-            <fileset dir="install/htdocs/${srclanguage}/fileadmin">
-                <patternset>
-                    <include name="*.gif"/>
-                    <include name="*.jpg"/>
-                </patternset>
-            </fileset>
-        </copy>
-
-        <!-- images for adminibuttons -->
-        <copy todir="${adminbuttons}">
-            <fileset dir="install/htdocs/${srclanguage}/adminbuttons">
-            <patternset>
-                <include name="*.gif"/>
-            </patternset>
-            </fileset>
-        </copy>
-
-        <!-- images for fileadmin  -->
-        <copy todir="${adminimages}" >
-            <fileset dir="install/htdocs/${srclanguage}/fileadmin">
-                <patternset>
-                    <include name="*.gif"/>
-                </patternset>
-            </fileset>
-        </copy>
-
-        <!-- imcms/css -->
-        <copy todir="${imcmscss}" filtering="true">
-            <fileset dir="install/htdocs/imcms/css"/>
-        </copy>
-
-         <!-- imcms/language/scripts -->
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-            starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${imcmsscripts}" filtering="true">
-            <fileset dir="install/htdocs/imcms/scripts" includes="*"/>
-        </imtranslate>
-
-         <!-- templates in webroot  -->
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-            starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${webroot}" filtering="true">
-            <fileset dir="templates">
-                <patternset>
-                    <include name="*.htm"/>
-                    <include name="*.html"/>
-                    <include name="*.jsp"/>
-                </patternset>
-            </fileset>
-        </imtranslate>
-
-        <!-- directories in webroot - no language dependece -->
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-            starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${webroot}" filtering="true">
-            <fileset dir="install/htdocs/sv">
-            <include name="adminuser/**"/>
-            <include name="apisamples/**"/>
-            <exclude name="**/*.gif"/>
-            <exclude name="**/*.jpg"/>
-            </fileset>
-        </imtranslate>
 
         <copy todir="${apisamples}" description="appending .txt on all jsp files making the source browsable" >
             <fileset dir="${apisamples}">
                 <include name="*.jsp"/>
             </fileset>
             <mapper type="glob" from="*" to="*.txt"/>
-        </copy>
-
-        <!--  imcms shop  -->
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-                     starttoken="&lt;? " endtoken=" ?&gt;"
-                     todir="${shop}" filtering="true">
-            <fileset dir="install/htdocs/sv/shop" includes="*"/>
-        </imtranslate>
-
-         <!-- imcms poll  -->
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-                     starttoken="&lt;? " endtoken=" ?&gt;"
-                     todir="${poll}" filtering="true">
-            <fileset dir="install/htdocs/sv/poll">
-                <exclude name="**/*.gif"/>
-                <exclude name="**/*.jpg"/>
-            </fileset>
-        </imtranslate>
-
-         <!-- imcms poll images -->
-        <copy todir="${poll}/images" >
-            <fileset dir="install/htdocs/sv/poll/images">
-                <patternset>
-                    <include name="*.gif"/>
-                    <include name="*.jpg"/>
-                </patternset>
-            </fileset>
-        </copy>
-
-
-         <!-- fortune templates -->
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-                     starttoken="&lt;? " endtoken=" ?&gt;"
-                     todir="${templates}/${buildlanguage}/106" filtering="true">
-            <fileset dir="templates/sv/fortunes"/>
-        </imtranslate>
-
-        <!-- fortune images -->
-        <copy todir="${imcms}/${defaultlanguage}/images/106">
-            <fileset dir="install/htdocs/${srclanguage}/fortunes/images" includes="*.gif"/>
-        </copy>
-
-
-        <!-- imcms jsp files -->
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-                     starttoken="&lt;? " endtoken=" ?&gt;"
-                     todir="${imcmsjsp}" filtering="true">
-            <fileset dir="install/htdocs/sv/jsp"/>
-        </imtranslate>
-
-        <!-- imcms html-editor files. -->
-        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
-                     starttoken="&lt;? " endtoken=" ?&gt;"
-                     todir="${htmleditor}" filtering="true">
-            <fileset dir="install/htdocs/sv/htmleditor/editor" excludes="images/*.jpg,images/*.gif"/>
-        </imtranslate>
-        <copy todir="${htmleditor}/images">
-            <fileset dir="install/htdocs/sv/htmleditor/editor/images" includes="*.jpg,*.gif"/>
         </copy>
 
 
@@ -855,10 +712,6 @@
             todir="${conference-templates}" filtering="true">
             <fileset dir="templates/sv/conf" excludes="original/images/"/>
         </imtranslate>
-
-        <copy todir="${imcms}/${buildlanguage}/images/102/original">
-            <fileset dir="install/htdocs/${srclanguage}/conference/original/images" includes="*"/>
-        </copy>
         <!-- end conference -->
 
     <!-- Copy and translate the chat files . -->
@@ -877,10 +730,6 @@
             todir="${billboard-templates}" filtering="true">
             <fileset dir="templates/sv/billboard" excludes="original/images/"/>
         </imtranslate>
-
-        <copy todir="${imcms}/${buildlanguage}/images/104/original">
-            <fileset dir="install/htdocs/${srclanguage}/billboard/original/images" includes="*"/>
-        </copy>
         <!-- end billboard -->
 
         <!-- Copy and translates the files for the postcard. -->
@@ -890,10 +739,6 @@
                     todir="${postcard-templates}" filtering="true">
            <fileset dir="templates/sv/postcard"/>
         </imtranslate>
-
-        <copy todir="${imcms}/${buildlanguage}/images/105">
-           <fileset dir="install/htdocs/${srclanguage}/postcard/images" includes="*.gif"/>
-        </copy>
         <!-- end postcard -->
 
        <!-- Copy and translates the files for the fortune. -->
@@ -903,10 +748,6 @@
                     todir="${fortune-templates}" filtering="true">
            <fileset dir="templates/sv/fortunes"/>
        </imtranslate>
-
-       <copy todir="${imcms}/${defaultlanguage}/images/106">
-           <fileset dir="install/htdocs/${srclanguage}/fortunes/images" includes="*.gif"/>
-       </copy>
 
     </target>
     <!-- end target web-copy -->
