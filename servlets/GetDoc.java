@@ -256,7 +256,7 @@ public class GetDoc extends HttpServlet {
 	    ServletOutputStream out = res.getOutputStream() ;
 	    res.setContentLength( len ) ;
 	    res.setContentType( mimetype ) ;
-	    String content_disposition = "inline; filename="+filename ;
+	    String content_disposition = (null != req.getParameter("download") ? "attachment" : "inline") + "; filename=\""+filename+"\"" ;
 	    res.setHeader( "Content-Disposition", content_disposition ) ;
 	    try {
 		int bytes_read = 0 ;
