@@ -121,6 +121,8 @@ Version 2.0.0
         - DocumentService.saveChanges(Document) - Throws SaveException instead of MaxCategoriesOfTypeExceededException.
         - TextDocument.setInclude(int,TextDocument) - Now requires you to call DocumentService.saveChanges() afterwards.
         - UserService.addNewRole(String) - Returns the new role.
+    * Undeprecated methods:
+        - TextDocument.setTemplate(Template) - Use when you don't care about setting a template group. (Bug 2791)
     * Deprecated methods:
         - Document.setPermissionSetForRole(String,int) - Use Document.setPermissionSetIdForRole(Role,int).
         - User.getRoleNames() - Use User.getRoles()

@@ -140,7 +140,7 @@ public class TextDocument extends Document {
     }
 
     /**
-     * @deprecated Use {@link #setImage(int, Image)} instead. Will be removed in 3.0. 
+     * @deprecated Use {@link #setImage(int, Image)} instead. Will be removed in 3.0.
      **/
     public void setImage(int imageIndexInDocument, String image_src, String image_name,
                          int width, int heigth, int border, int v_space, int h_space, String align,
@@ -193,24 +193,14 @@ public class TextDocument extends Document {
 
     public void setTemplate(TemplateGroup templateGroup, Template template) throws NoPermissionException {
         getSecurityChecker().hasEditPermission(this);
-        setTemplateInternal(template);
-        getInternalTextDocument().setTemplateGroupId(templateGroup.getId());
+        getInternalTextDocument().setTemplate(template.getInternal());
+        if (null != templateGroup) {
+            getInternalTextDocument().setTemplateGroupId(templateGroup.getId());
+        }
     }
 
-    /**
-     * @param template
-     * @throws NoPermissionException
-     * @deprecated
-     */
     public void setTemplate(Template template) throws NoPermissionException {
-        getSecurityChecker().hasEditPermission(this);
-        // todo: check if the template is alowed to be set on this internalTextDocument
-        setTemplateInternal(template);
-    }
-
-    private void setTemplateInternal(Template newTemplate) {
-        TemplateDomainObject internalTemplate = newTemplate.getInternal();
-        getInternalTextDocument().setTemplate(internalTemplate);
+        setTemplate(null, template);
     }
 
     public Document getInclude(int includeIndexInDocument) throws NoPermissionException {
