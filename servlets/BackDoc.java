@@ -36,6 +36,7 @@ public class BackDoc extends HttpServlet {
 	if ( (user=Check.userLoggedOn(req,res,start_url))==null ) {
 	    return ;
 	}
+	String top = req.getParameter("top"); 
 	Stack history = (Stack)user.get("history") ;
 
 	int tmp_meta_id = 0 ;
@@ -43,22 +44,30 @@ public class BackDoc extends HttpServlet {
 	int meta_id = 0 ;
 
 	if ( !history.empty() ) {
-	    tmp_meta_id = ((Integer)history.peek()).intValue() ;			// Get the top value
-	    doc_type = imcref.getDocType(tmp_meta_id ) ;	// Get the doc_type
-	    if ( doc_type == 1 || doc_type == 2 ) {			// If we are on a text_doc,
-		meta_id = ((Integer)history.pop()).intValue() ;			// Get the top value. If there are no more text_docs, we need to stay here.
+	
+		if ( top == null ){ 
+			// pop the first value from the history stack and true it away 
+			// because that is the current meta_id 
+	    	tmp_meta_id = ((Integer)history.peek()).intValue() ;			// Get the top value
+	    	doc_type = imcref.getDocType(tmp_meta_id ) ;	// Get the doc_type
+
+	    	if ( doc_type == 1 || doc_type == 2 ) {			// If we are on a text_doc,
+				meta_id = ((Integer)history.pop()).intValue() ;			// Get the top value. If there are no more text_docs, we need to stay here.
+	    	}
 	    }
 
 	    while ( !history.empty() ) {
-		tmp_meta_id = ((Integer)history.pop()).intValue() ;			// Get the top value
-		doc_type = imcref.getDocType(tmp_meta_id ) ;	// Get the doc_type
-		if ( doc_type == 1 || doc_type == 2 ) {
-		    meta_id = tmp_meta_id ;
-		    break ;
-		}
+			tmp_meta_id = ((Integer)history.pop()).intValue() ;			// Get the top value
+			doc_type = imcref.getDocType(tmp_meta_id ) ;	// Get the doc_type
+
+			if ( doc_type == 1 || doc_type == 2 ) {
+		    	meta_id = tmp_meta_id ;
+		    	break ;
+			}
 	    }
 	    if ( meta_id != 0 ) {
-		history.push(new Integer(meta_id)) ;
+	//	history.push(new Integer(meta_id)) ;
+		user.put("history",history) ;
 		String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 		if ( output != null ) {
 		    out.write(output) ;

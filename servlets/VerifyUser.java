@@ -66,14 +66,33 @@ public class VerifyUser extends HttpServlet {
 		// Get session 
 		HttpSession session = req.getSession( true );
 
+		// if we don't have got any user from IMCService lets check out next url for redirect 
 		if( user == null ) {
-		    if ( req.getParameter("next_meta") != null ){
+		
+			String nexturl = access_denied_url; // default
+			
+		    // lets set session next_meta if we have got any from request, we will use it later when 
+			// login is successfull 
+			if ( req.getParameter("next_meta") != null ){
 				session.setAttribute( "next_meta", req.getParameter("next_meta") );
 			}
-			res.sendRedirect(access_denied_url) ;
+			
+			// or lets set session next_url if we have got any from request, we will use it later when 
+			// login is successfull 
+			else if ( req.getParameter("next_url") != null ){
+				session.setAttribute( "next_url", req.getParameter("next_url") );
+			}
+			
+			// lets get different access_denied url instead of the default url
+			if ( req.getParameter("access_denied_url") != null ){
+				nexturl = req.getParameter("access_denied_url");
+			}
+			res.sendRedirect(nexturl) ;
 		    return ;
-		} else {
-				
+			
+					
+		} else { // we have a valid user
+		
 		    // Valid login.  Make a note in the session object.
 		    session.setAttribute( "logon.isDone", user );  // just a marker object
 		    session.setAttribute("browser_id",value) ;
@@ -82,58 +101,67 @@ public class VerifyUser extends HttpServlet {
 
 		   	user.setLoginType("verify") ;
 			
-			
+			// Lets now find out nexturl to redirect the user
 			String nexturl = "StartDoc";  // default value
+
+			// if user have pushed button "Ändra" from login page 
+			if (req.getParameter("Ändra")!=null){
 			
-			if (req.getParameter("Logga in")!=null){
-				String target="";
-				// if we have got a next_meta lets redirect to that meta_id
-				if ( session.getAttribute( "next_meta" ) !=null ){
-					target = "GetDoc?meta_id=" +(String)session.getAttribute( "next_meta" );
-					session.removeAttribute("next_meta") ;
-					res.sendRedirect(target);
-					return;
+				//if next_url was passed
+				if ( req.getParameter("next_url") !=null ){
+					nexturl = req.getParameter("next_url") ;
 				}
-				else {
-					// Try redirecting the client to the page he first tried to access
-					target = (String) session.getAttribute("login.target");
-		    		if (target != null) {
-						session.removeAttribute("login.target") ;
-						res.sendRedirect(target);
-						return ;
-		    		}
-		    	}
+				//or if next_meta was passed
+				else if ( req.getParameter("next_meta") !=null ){ 
+					nexturl = "GetDoc?meta_id=" + req.getParameter("next_meta") ;
+				}
 				
-			}else if (req.getParameter("Ändra")!=null){
-				// if user has been pushed button "change" from login page 
 				session.setAttribute("userToChange", ""+user.getUserId() );
-				session.setAttribute("next_url", "StartDoc");
-				
+				session.setAttribute("next_url", nexturl);
+					
 				res.sendRedirect("AdminUserProps?CHANGE_USER=true");
 				return;
-					
-			
-			}else if ( req.getParameter("next_url") !=null ){
-				//if user was redirected here from an user template and next_meta was passed
-				nexturl = req.getParameter("next_url") ;
-				res.sendRedirect(nexturl);
-				return;
-				
-			}
-			else if ( req.getParameter("next_meta") !=null ){
-				//if user was redirected here from an user template and next_url was passed
-				nexturl = "GetDoc?meta_id=" + req.getParameter("next_meta") ;
-				res.sendRedirect(nexturl);
-				return;
-			}	
-				
-						
-
-			// Couldn't redirect to the target.  Redirect to the site's home page.
-		    res.sendRedirect( scheme + "://" + serverName + port + servlet_url + "StartDoc" );
-
-		} 
 		
-    } /** end of doPost()  */                
-}
+			
+			} else {
+	
+				// lets check if we have got a next_meta by session 
+				if ( session.getAttribute( "next_meta" ) !=null ){
+					nexturl = "GetDoc?meta_id=" +(String)session.getAttribute("next_meta");
+					session.removeAttribute("next_meta") ;
+				}	
+				
+				// or if we have got next_url by session 	
+				else if ( session.getAttribute( "next_url" ) !=null ){
+					nexturl = (String)session.getAttribute("next_url");
+					session.removeAttribute("next_url") ;
+				}
+				// or if we have got next_url from request object
+				else if ( req.getParameter("next_url") !=null ){
+					nexturl = req.getParameter("next_url") ;
+				}
+				//or if we have got next_meta from request object
+				else if ( req.getParameter("next_meta") !=null ){ 
+					nexturl = "GetDoc?meta_id=" + req.getParameter("next_meta") ;
+				} 
+				
+				// or try redirecting the client to the page he first tried to access
+				else if ( session.getAttribute( "login.target" ) !=null ){
+					nexturl = (String) session.getAttribute("login.target");
+		    		session.removeAttribute("login.target") ;
+				
+				
+				// Couldn't redirect to the target.  Redirect to the site's home page.
+			    } else {
+					nexturl = scheme + "://" + serverName + port + servlet_url + "StartDoc";
+				}
+		    					
+				res.sendRedirect(nexturl);
+				return;
+				
+			} // end else
+		} // end else		
+		
+    } // end doPost()                 
+} // end class
 
