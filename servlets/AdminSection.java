@@ -166,7 +166,7 @@ public class AdminSection extends Administrator {
 						got_confirm_page = true;
 					}else {
 						//ok we can delete it right a way an carry on with it
-						IMCServiceRMI.sqlUpdateProcedure(imcserver, "delete_section "+section_id );					 
+						IMCServiceRMI.sqlUpdateProcedure(imcserver, "SectionDelete "+section_id );					 
 					}
 				}
 			
