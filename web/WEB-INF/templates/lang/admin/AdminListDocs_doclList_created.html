@@ -20,7 +20,7 @@
 </table>
 #gui_mid()
 
-<table border="0" cellspacing="0" cellpadding="0" width="400">
+<table border="0" cellspacing="0" cellpadding="2" width="400">
 <tr>
 	<td colspan="3"><? templates/sv/AdminListDocs_doclList_created.html/2 ?></td>
 </tr>
@@ -34,9 +34,11 @@
 </tr>
 </table>
 
-#gui_hr( 'blue' )
 
 <table border="0" cellspacing="0" cellpadding="2" width="680">
+<tr>
+	<td colspan="4">#gui_hr( 'blue' )</td>
+</tr>
 <tr>
 	<td width="10%"><b><? templates/sv/AdminListDocs_doclList_created.html/1001 ?></b></td>
 	<td width="50%"><b><? templates/sv/AdminListDocs_doclList_created.html/7 ?></b></td>
@@ -44,6 +46,15 @@
 	<td width="20%" nowrap><b><? templates/sv/AdminListDocs_doclList_created.html/9 ?></b></td>
 </tr>
 #LIST_DOCUMENT#
+<tr>
+	<td colspan="4">#gui_hr( 'blue' )</td>
+</tr>
+<form>
+<tr>
+	<td colspan="4" align="right">
+	<input type="button" class="imcmsFormBtn" value="<? global/cancel ?>" onClick="history.go(-1);"></td>
+</tr>
+</form>
 </table>
 #gui_bottom()
 #gui_outer_end()
