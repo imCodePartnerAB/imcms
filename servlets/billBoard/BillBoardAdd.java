@@ -38,11 +38,15 @@ public class BillBoardAdd extends BillBoard
 
 	String HTML_TEMPLATE ;
 	String SERVLET_NAME ;  // The name on this servlet
+	private final static String sectionId = "sectionId";
+	private final static String header = "header";
+	private final static String text = "text";
+	private final static String email = "email";
 
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-		//log("START BillBoardAdd doPost");
+		log("START BillBoardAdd doPost");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
@@ -72,7 +76,7 @@ public class BillBoardAdd extends BillBoard
 		// Lets detect which addtype we have
 		String addType = "" ;
 		addType = req.getParameter("ADDTYPE") ;
-		
+		log("addType="+addType);
 
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
@@ -86,26 +90,37 @@ public class BillBoardAdd extends BillBoard
 			// ********* CANCEL ********
 			if( req.getParameter("CANCEL") != null || req.getParameter("CANCEL.x") != null )
 			{
-				// if(req.getParameter("CANCEL") != null ) {
-				// Lets redirect to the servlet which holds in us.
-				res.sendRedirect(MetaInfo.getServletPath(req)  + "BillBoardDiscView") ;//ConfDiscView
+				if (req.getParameter("DISCPREV") != null)
+				{//ok we want back to add mode with the olddata in the BILLBOARD_DISC frame
+					String addTypStr = "&ADDTYPE="+req.getParameter("ADDTYPE");
+					res.sendRedirect(MetaInfo.getServletPath(req)  + "BillBoardDiscView?DISCPREV=ok"+addTypStr) ;
+				}else
+				{
+					// Lets redirect to the servlet which holds in us.
+					res.sendRedirect(MetaInfo.getServletPath(req)  + "BillBoardDiscView") ;
+				}
+			
 				return ;
 			}
-
-			// ********* ADD DISCUSSION ********
-			if(addType.equalsIgnoreCase("DISCUSSION") && ( req.getParameter("ADD") != null || req.getParameter("ADD.x") != null ) )
+			
+			// ********* PREVIEW BILL ***********
+			if ( req.getParameter("PREVIEW") != null || req.getParameter("PREVIEW.x") != null )
 			{
-				//log("Nu är vi i AddDiscussion") ;
-
-				// Lets add a new discussion to the database
+				log("Nu är vi i PREVIEW metoden") ;
+				//lets collect everything we might need later on, and store it in the session.
+		
 				String aSectionId = params.getProperty("SECTION_ID") ;
 				//	String userId = userParams.getProperty("USER_ID") ;
-				RmiConf rmi = new RmiConf(user) ;
+				
 				String userId = "" ;
 				HttpSession session = req.getSession(false) ;
 				if (session != null)
 				{
 					userId = (String) session.getValue("BillBoard.user_id") ;//Conference.user_id
+				}else
+				{
+					//lets get rid of the user
+					res.sendRedirect(MetaInfo.getServletPath(req)  + "StartDoc") ;
 				}
 				
 				//String addHeader = super.verifySqlText(params.getProperty("ADD_HEADER")) ;
@@ -142,6 +157,108 @@ public class BillBoardAdd extends BillBoard
 					return ;
 				}
 
+				// Ok, Lets store the stuff in a Hashtable, that we put in the session
+				//fore later use
+				if (session != null)
+				{ 
+					log("ok lets collect the data and store it in the session");
+					Hashtable billPrevData = new Hashtable();
+				 	billPrevData.put(sectionId, aSectionId);	
+					billPrevData.put(header,addHeader);	
+					billPrevData.put(text , addText);	
+					billPrevData.put(email , addEpost);	
+					session.setAttribute("billPrevData",billPrevData);
+				}else
+				{
+					//lets get rid of the user
+					res.sendRedirect(MetaInfo.getServletPath(req)  + "StartDoc") ;
+				}
+				
+				//lets get the ADD_TYPE
+				String addTypeStr = "&ADDTYPE="+req.getParameter("ADDTYPE");
+				// Lets redirect to the servlet which holds in us.
+				res.sendRedirect(MetaInfo.getServletPath(req)  + "BillBoardDiscView?PREVIEWMODE=OK"+addTypeStr) ;
+				log("PREVIEW is done in BillBoardAdd");
+				return ;
+				
+			}//end PREVIEW
+
+			// ********* ADD DISCUSSION ********
+			if(addType.equalsIgnoreCase("DISCUSSION") && ( req.getParameter("ADD") != null || req.getParameter("ADD.x") != null ) )
+			{
+				log("Nu är vi i AddDiscussion") ;
+				// Lets add a new discussion to the database
+				
+				//	String userId = userParams.getProperty("USER_ID") ;
+				RmiConf rmi = new RmiConf(user) ;
+				String userId = "" ;
+				HttpSession session = req.getSession(false) ;
+				if (session != null)
+				{
+					userId = (String) session.getValue("BillBoard.user_id") ;//Conference.user_id
+				}else
+				{
+					//lets get rid of the user
+					res.sendRedirect(MetaInfo.getServletPath(req)  + "StartDoc") ;//ConfDiscView
+					return ;
+				}
+				
+				//the strings we need to save the bill
+				String aSectionId;
+				String addHeader;
+				String addText;
+				String addEpost;
+				
+				//här ska jag hämta ut prevdatan från sessionen och göra en stor if else sats
+				Hashtable billPrevData = (Hashtable) session.getAttribute("billPrevData");
+				if (billPrevData != null)
+				{//ok we have to save a previewed one
+					session.removeAttribute("billPrevData");
+					aSectionId = (String) billPrevData.get(sectionId );	
+					addHeader = (String) billPrevData.get(header );	
+					addText = (String) billPrevData.get(text  );	
+					addEpost = (String) billPrevData.get(email );	
+				}else
+				{//the old syntax were we dont preview the bill
+					aSectionId = params.getProperty("SECTION_ID") ;
+				
+					//String addHeader = super.verifySqlText(params.getProperty("ADD_HEADER")) ;
+					addHeader = (params.getProperty("ADD_HEADER")).trim();
+					addText = (params.getProperty("ADD_TEXT")).trim();
+					addEpost =(params.getProperty("ADD_EPOST")).trim();
+					if (addHeader.equals("")||addText.equals("") ||addEpost.equals(""))
+					{
+						//BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, int errorCode)
+						log("some fields was empty");	
+						BillBoardError err = new BillBoardError(req,res,51);
+						return;	
+					}
+				
+					addText = super.verifySqlText(textMailLinkFix(addText));
+					addHeader = super.verifySqlText(HTMLConv.toHTMLSpecial(addHeader));
+					//addText = super.verifySqlText(HTMLConv.toHTMLSpecial(addText));
+					addEpost = super.verifySqlText(HTMLConv.toHTMLSpecial(addEpost));
+				
+					if (!validateEmail( addEpost ))
+					{
+						log("invalid epostadress");
+						String header = SERVLET_NAME + " servlet. " ;
+						BillBoardError err = new BillBoardError(req,res,header,76) ;
+						return ;			
+					}
+				
+					// Lets check the data size
+					if(addText.length() > 32000)
+					{
+						String header = SERVLET_NAME + " servlet. " ;
+						String msg = params.toString() ;
+						BillBoardError err = new BillBoardError(req,res,header,75) ;
+						return ;
+					}
+				}
+				
+				
+				
 				// Ok, Lets add the discussion to DB  
 				String sqlQuest = "B_AddNewBill " + aSectionId + ", " + userId + ", " ;
 				sqlQuest += sqlPDelim(addHeader);
@@ -172,7 +289,7 @@ public class BillBoardAdd extends BillBoard
 			if(addType.equalsIgnoreCase("REPLY") && ( req.getParameter("ADD") != null || req.getParameter("ADD.x") != null ) )
 			{
 				// if(req.getParameter("ADD") != null && addType.equalsIgnoreCase("REPLY")) {
-				//log("Nu är vi i AddReply") ;
+				log("Nu är vi i AddReply") ;
 
 				RmiConf rmi = new RmiConf(user) ;
 				
@@ -184,34 +301,49 @@ public class BillBoardAdd extends BillBoard
 				{
 					userId = (String) session.getValue("BillBoard.user_id") ;//Conference.user_id
 				}
+				
+				String addHeader;
+				String addText;
+				String addEpost;
+				
+				Hashtable billPrevData = (Hashtable) session.getAttribute("billPrevData");
+				if (billPrevData != null)
+				{//ok we have to save a previewed one
+					session.removeAttribute("billPrevData");
+				//	aSectionId = (String) billPrevData.get(sectionId );	
+					addHeader = (String) billPrevData.get(header );	
+					addText = (String) billPrevData.get(text  );	
+					addEpost = (String) billPrevData.get(email );	
+				}else
+				{//the old syntax were we dont preview the bill
+					// Lets verify the textfields
+					//String addHeader = super.verifySqlText(params.getProperty("ADD_HEADER")) ;
+					//String addText = super.verifySqlText(params.getProperty("ADD_TEXT")) ;
+					addHeader = (params.getProperty("ADD_HEADER")).trim();
+					addText = (params.getProperty("ADD_TEXT")).trim();
+					addEpost =(params.getProperty("ADD_EPOST")).trim();
+					if (addHeader.equals("")||addText.equals("") ||addEpost.equals(""))
+					{
+						//BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, int errorCode)	
+						BillBoardError err = new BillBoardError(req,res,51);
+						return;	
+					}
 
+					addHeader = super.verifySqlText(HTMLConv.toHTMLSpecial(addHeader));
 				
-				// Lets verify the textfields
-				//String addHeader = super.verifySqlText(params.getProperty("ADD_HEADER")) ;
-				//String addText = super.verifySqlText(params.getProperty("ADD_TEXT")) ;
-				String addHeader = (params.getProperty("ADD_HEADER")).trim();
-				String addText = (params.getProperty("ADD_TEXT")).trim();
-				String addEpost =(params.getProperty("ADD_EPOST")).trim();
-				if (addHeader.equals("")||addText.equals("") ||addEpost.equals(""))
-				{
-					//BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, int errorCode)	
-					BillBoardError err = new BillBoardError(req,res,51);
-					return;	
+					addText = super.verifySqlText(textMailLinkFix(addText));
+					addEpost = super.verifySqlText(HTMLConv.toHTMLSpecial(addEpost));
+				
+					// Lets check the data size
+					if(addText.length() > 32000)
+					{
+						String header = SERVLET_NAME + " servlet. " ;
+						String msg = params.toString() ;
+						BillBoardError err = new BillBoardError(req,res,header,74) ;
+						return ;
+					}
 				}
-
-				addHeader = super.verifySqlText(HTMLConv.toHTMLSpecial(addHeader));
 				
-				addText = super.verifySqlText(textMailLinkFix(addText));
-				addEpost = super.verifySqlText(HTMLConv.toHTMLSpecial(addEpost));
-				
-				// Lets check the data size
-				if(addText.length() > 32000)
-				{
-					String header = SERVLET_NAME + " servlet. " ;
-					String msg = params.toString() ;
-					BillBoardError err = new BillBoardError(req,res,header,74) ;
-					return ;
-				}
 				
 				//ok now we have to send the mail to right email adr that we vill get from the db
 				String toEmail = rmi.execSqlProcedureStr(confPoolServer, "B_GetEmail " + discId);
@@ -220,6 +352,9 @@ public class BillBoardAdd extends BillBoard
 					log("OBS! No fn email found!");
 					return;
 				}							
+				
+				
+				
 				String sqlQuest = "B_GetSubjectStr " + discId+", "+params.getProperty("META_ID")+", "+params.getProperty("SECTION_ID");
 				String subjectStr = rmi.execSqlProcedureStr(confPoolServer, sqlQuest);	
 				try
@@ -331,7 +466,23 @@ public class BillBoardAdd extends BillBoard
 				
 				HTML_TEMPLATE = "BillBoard_Add.htm" ;
 			}
-
+			
+			//ok here we have to see if the input fields shall be empty or not.
+			Hashtable billPrevData = (Hashtable) session.getAttribute("billPrevData");			
+			if (billPrevData == null)
+			{
+				vm.addProperty(header,"");
+				vm.addProperty(text,"");
+				vm.addProperty(email,"");
+				
+			}else
+			{ //ok we have them, so lets put use them
+				log("prewiew dfsdf");
+				session.removeAttribute("billPrevData");
+				vm.addProperty(header,(String)billPrevData.get(header));
+				vm.addProperty(text, (String)billPrevData.get(text));
+				vm.addProperty(email, (String)billPrevData.get(email));
+			}
 			
 			this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
 			//	log("ConfAdd OK") ;
@@ -436,7 +587,7 @@ public class BillBoardAdd extends BillBoard
 		
 		SMTP smtp = new SMTP( mailserver, mailport, mailtimeout );					
 
-		smtp.sendMailWait( fromEmail, toEmail ,header ,replyHeader+"\n"+text+"\n\n"+fromEmail );				
+		smtp.sendMailWait( fromEmail, toEmail ,header ,replyHeader+"\n"+text );				
 	}
 
 

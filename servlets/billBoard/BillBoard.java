@@ -746,7 +746,8 @@ public class BillBoard extends HttpServlet { //Conference
 
 			// Lets get the lastdiscussionid for that forum
 			// if not a aDiscId exists, then the  sp will return -1
-			session.putValue("BillBoard.disc_id", aDiscId) ;
+			session.putValue("BillBoard.disc_id", "-1") ;
+			//session.putValue("BillBoard.disc_id", aDiscId) ;
 			
 			
 

@@ -956,7 +956,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		if (adminWhat.equalsIgnoreCase("REPLY") ) {
 			HTML_TEMPLATE ="BillBoard_admin_reply.htm" ;//Conf_admin_reply.htm
 			String adminReplyList = "BillBoard_admin_reply_list.htm" ;//Conf_admin_reply_list.htm
-			//log("OK, Administrera replies") ;
+			log("OK, Administrera replies") ;
 
 			//Lets get the users userId
 			//Properties userParams = super.getUserParameters(user) ;

@@ -53,9 +53,17 @@ public class BillBoardReply extends BillBoard {//ConfReply
 	private final static String NEW_COMMENT_TEMPLATE =  "BillBoard_Reply_New_Comment.htm";//Conf_Reply_New_Comment.htm
 	private final static String ADMIN_LINK_TEMPLATE = "BillBoard_Reply_Admin_Link.htm";//Conf_Reply_Admin_Link.htm
 	private final static String HTML_TEMPLATE_MAIL_SENT = "BillBoard_Reply_Mail_Sent.htm";
-	String HTML_TEMPLATE ;
-	String RECS_HTML;
-
+	private final static String HTML_PREVUE_TEMPLATE = "Billboard_forhandsgranska.html";
+	private final static String HTML_TEMPLATE = "BillBoard_Reply.htm";
+	private final static String RECS_HTML = "BillBoard_reply_list.htm";
+	private final static String RECS_PREV_HTML = "BillBoard_Reply_List_prev.htm";
+	private final static String HTML_TEMPLATE_START = "BillBoard_Reply_Welcome.htm";
+	
+	private final static String sectionId = "sectionId";
+	private final static String header = "header";
+	private final static String text = "text";
+	private final static String email = "email";
+	
 	/**
 		DoPost
 	**/
@@ -138,7 +146,9 @@ public class BillBoardReply extends BillBoard {//ConfReply
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
-
+		
+		HttpSession session = req.getSession(false) ;
+		
 		// Lets get the parameters and validate them
 		Properties params = this.getParameters(req) ;
 		if (checkParameters(req, res, params) == false) return ;
@@ -150,6 +160,54 @@ public class BillBoardReply extends BillBoard {//ConfReply
 		if ( !isUserAuthorized( req, res, user ) ) {
 			return;
 		}
+		
+		// Lets get serverinformation
+		String host = req.getHeader("Host") ;
+		String imcServer = Utility.getDomainPref("userserver",host) ;
+		String confPoolServer = Utility.getDomainPref("billboard_server",host) ;
+        //log("ConfPoolServer: " + confPoolServer) ;
+		
+		// Lets get path to the imagefolder. http://dev.imcode.com/images/102/ConfDiscNew.gif
+		String imagePath = super.getExternalImageFolder(req) + "BillBoardExpert.gif" ;//
+		// log("ImagePath: " + imagePath) ;
+
+		
+		// Lets get the part of an html page, wich will be parsed for every a Href reference
+		String templateLib = super.getExternalTemplateFolder(req) ;
+		String aSnippetFile = templateLib + RECS_PREV_HTML ;
+		RmiConf rmi = new RmiConf(user) ;
+		
+		//ok here we se if we have a prevue to handle
+		Hashtable billPrevData = (Hashtable) session.getAttribute("billPrevData");
+		log("PREVIEWMODE: "+req.getParameter("PREVIEWMODE"));
+		if (billPrevData != null && req.getParameter("PREVIEWMODE")!=null)
+		{ //ok PREVIEW-mode
+			log("ok PREVIEW-mode");
+			String addHeader = (String)billPrevData.get(header );
+			String addText = (String)billPrevData.get(text );
+			String datum = rmi.execSqlProcedureStr(confPoolServer, "B_GetTime" ) ;
+			log(addHeader+"\n"+addText+"\n"+datum);
+			String addType = req.getParameter("ADDTYPE");
+			String addType2 = req.getParameter("ADDTYPE");
+			log("aaaaaaaaa: "+addType);
+			//lets simulate the original sql answer
+			String[] tempArr = {"7","bill_id","headline","text","repNr","","","","",addHeader,addText,"",datum,addType,addType2};
+			log("aSnippetFile: "+aSnippetFile);
+			Vector tags = buildTagsV();
+			tags.add("#ADD_TYPE#");
+			tags.add("#ADD_TYPE2#");
+			String currRec1 = preParse(req, tempArr, tags, aSnippetFile, imagePath) ;
+		//	log(currRec1);
+			VariableManager vm1 = new VariableManager() ;
+			//vm1.addProperty("NEW_REPLIE", commentButton ) ;//ska bort
+			vm1.addProperty("REPLIE_RECORD", currRec1  ) ;
+			vm1.addProperty( "CURRENT_BILL_HEADER", billPrevData.get(header) ) ;
+			vm1.addProperty( "ADMIN_LINK_HTML", "" );//måste byta template
+
+			this.sendHtml(req,res,vm1, HTML_TEMPLATE) ;
+			return;
+		}//end PREVIEW-mode
+		
 		int aMetaId = Integer.parseInt( params.getProperty("META_ID") );
 		// Lets get the users userId
 		Properties userParams = super.getUserParameters(user) ;
@@ -158,17 +216,18 @@ public class BillBoardReply extends BillBoard {//ConfReply
 		String discId = params.getProperty("DISC_ID") ;
 
 		// Lets update the sessions DISC_ID
-		HttpSession session = req.getSession(false) ;
+		
 		if(session != null  ) {
 			session.putValue("BillBoard.disc_id", discId) ;
 			userId = (String) session.getValue("BillBoard.user_id") ;
 		}
 
-		// Lets get serverinformation
-		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String confPoolServer = Utility.getDomainPref("billboard_server",host) ;
-                //log("ConfPoolServer: " + confPoolServer) ;
+		if (discId.equals("-1"))
+		{ //ok lets get the start page
+			VariableManager vm = new VariableManager() ;
+			this.sendHtml(req,res,vm, HTML_TEMPLATE_START) ;
+			return;
+		}
 				
 		if (req.getParameter("MAIL_SENT") != null)
 		{
@@ -178,12 +237,11 @@ public class BillBoardReply extends BillBoard {//ConfReply
 			return;
 		}
 
-		RmiConf rmi = new RmiConf(user) ;
+		
         String sqlQ = "B_GetCurrentBill " + discId ;//GetAllRepliesInDisc
         //log("SQLQ: " + sqlQ ) ;
 		String sqlAnswer[] = rmi.execSqlProcedureExt(confPoolServer, sqlQ) ;
-		
-		   //log("sqlAnswer: " + sqlAnswer) ;
+		//log("sqlAnswer: " + sqlAnswer) ;
 		// Lets get the discussion header
 		String discHeader = rmi.execSqlProcedureStr(confPoolServer, "B_GetBillHeader " + discId ) ;//GetDiscussionHeader
 
@@ -195,41 +253,14 @@ public class BillBoardReply extends BillBoard {//ConfReply
 		int intMetaId = Integer.parseInt( metaId );
 
 
-		// SYNTAX: id  headline  text replies date
-		// Lets build our variable list
-		Vector tagsV = new Vector() ;
-		tagsV.add("#REPLY_BILL_ID#");
-		tagsV.add("#REPLY_HEADER#") ;
-		tagsV.add("#REPLY_TEXT#") ;
-		tagsV.add("#C_REPLIES#"); 		
-		tagsV.add("#REPLY_DATE#") ;
-		
-
-		// Lets get path to the imagefolder. http://dev.imcode.com/images/102/ConfDiscNew.gif
-		String imagePath = super.getExternalImageFolder(req) + "BillBoardExpert.gif" ;//
-		// log("ImagePath: " + imagePath) ;
-
-		// Lets get the part of the expert html
-		//		String templateLib = super.getExternalTemplateFolder(req) ;
-		//		String expertHtm = templateLib + "CONF_EXPERT.HTM" ;
-
-		// Lets get the part of an html page, wich will be parsed for every a Href reference
-		String templateLib = super.getExternalTemplateFolder(req) ;
-		String aSnippetFile = templateLib + RECS_HTML ;
-		//	log("SnippetFile: " + aSnippetFile) ;
-
-
-
-		// Lets get the current time from the sql server
-		//String sqlTimeStr = rmi.execSqlProcedureStr(confPoolServer, "GetTime") ;
-
 		// String dateString = formatter.format(sqlTime);
 		// Lets update the discussion list
 		//this.updateDiscFlagList(req,discId,sqlTimeStr) ;
 
 		// Lets preparse all records
+		aSnippetFile = templateLib + RECS_HTML ;
 		String currentRec = " " ;
-		if (sqlAnswer != null) currentRec = preParse(req, sqlAnswer, tagsV, aSnippetFile, imagePath) ;
+		if (sqlAnswer != null) currentRec = preParse(req, sqlAnswer, buildTagsV(), aSnippetFile, imagePath) ;
 
 		// Lets build the Responsepage
 
@@ -267,7 +298,19 @@ public class BillBoardReply extends BillBoard {//ConfReply
 		// 	log("Get är klar") ;
 		return ;
 	}
-
+		
+	private Vector buildTagsV()
+	{
+		// SYNTAX: id  headline  text replies date
+		// Lets build our variable list
+		Vector tagsV = new Vector() ;
+		tagsV.add("#REPLY_BILL_ID#");
+		tagsV.add("#REPLY_HEADER#") ;
+		tagsV.add("#REPLY_TEXT#") ;
+		tagsV.add("#C_REPLIES#"); 		
+		tagsV.add("#REPLY_DATE#") ;
+		return tagsV;
+	}
 
 	/**
 	Takes the discussion id from the request object and moves ít to
@@ -482,8 +525,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 
 		public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		RECS_HTML = "BillBoard_reply_list.htm" ;//Conf_reply_list.htm
-		HTML_TEMPLATE = "BillBoard_Reply.htm" ;//Conf_Reply.htm
+		
 	}
 
 	/**

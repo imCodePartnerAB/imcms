@@ -78,22 +78,42 @@ public class BillBoardDiscView extends BillBoard {//ConfDiscView
 
 		// Lets get the url to the servlets directory
 		String servletHome = MetaInfo.getServletPath(req) ;
-
+		
+		// Lets build the Responsepage
+		VariableManager vm = new VariableManager() ;
+		
+		
 		// Lets get all parameters in a string which we'll send to every
 		// servlet in the frameset
 		MetaInfo metaInfo = new MetaInfo() ;
 		String paramStr = metaInfo.passMeta(params) ;
 		String extParam="";
+		//now we have an ugly ugly ugly part, I'm gonna rewrite it some time but untill then its ugly
 		if (req.getParameter("MAIL_SENT") != null)
 		{
 			extParam = "&MAIL_SENT=OK";
 		}
+		
+		if (req.getParameter("ADDTYPE")!= null)
+		{
+			paramStr += "&ADDTYPE="+req.getParameter("ADDTYPE");
+		}
 
-
-		// Lets build the Responsepage
-		VariableManager vm = new VariableManager() ;
-		vm.addProperty("BILLBOARD_DISC", servletHome + "BillBoardDisc?" + paramStr ) ;//CONF_DISC, ConfDisc
-		vm.addProperty("BILLBOARD_REPLY", servletHome + "BillBoardReply?" + paramStr+extParam) ;//CONF_REPLY, ConfReply
+		if (req.getParameter("PREVIEWMODE")!=null)
+		{
+			extParam += "&PREVIEWMODE=OK";
+		}
+		if (req.getParameter("DISCPREV")!=null)
+		{
+			vm.addProperty("BILLBOARD_DISC", servletHome + "BillBoardAdd?ADD=ok" + paramStr) ;
+		}else
+		{
+			vm.addProperty("BILLBOARD_DISC", servletHome + "BillBoardDisc?" + paramStr) ;
+		
+		}
+		
+		
+		vm.addProperty("BILLBOARD_REPLY", servletHome + "BillBoardReply?" + paramStr+extParam) ;
 
 
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;

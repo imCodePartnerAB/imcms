@@ -110,37 +110,39 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			// Lets get the forum_id and set our session object before updating
 			Properties reqParams = this.getRequestParameters(req) ;
 			String aSectionId = reqParams.getProperty("SECTION_ID") ;//
-			//log("aSectionId:"+aSectionId);
+			log("aSectionId:"+aSectionId);
 			String discIndex = params.getProperty("DISC_INDEX") ;
-			//log("discIndex: "+discIndex);		
+			log("discIndex: "+discIndex);		
 			String changeForum = req.getParameter("CHANGE_SECTION");//CHANGE_FORUM
-			//log("changeSection: "+changeForum);
+			log("changeSection: "+changeForum);
 
 			//	RmiConf rmi = new RmiConf(user) ;
 			HttpSession session = req.getSession(false) ;
 			if(session != null)
 			{
-				String latestDiscId = rmi.execSqlProcedureStr(confPoolServer, "B_GetLastDiscussionId " +
-					params.getProperty("META_ID") + ", " + aSectionId) ;//GetLastDiscussionId
+			//	String latestDiscId = rmi.execSqlProcedureStr(confPoolServer, "B_GetLastDiscussionId " +
+			//		params.getProperty("META_ID") + ", " + aSectionId) ;//GetLastDiscussionId
 
-				if(latestDiscId == null)
-				{
-					log("LatestDiscID saknas, det kan saknas diskussioner i forumet:" + aSectionId) ;
-					latestDiscId  = "-1" ;
-				}
-				if(discIndex == null)
-				{
-					log("DiscIndex var null:" + discIndex) ;
-					discIndex  = "0" ;
-				}
-				else
-				{
+			//	if(latestDiscId == null)
+			//	{
+			//		log("LatestDiscID saknas, det kan saknas diskussioner i forumet:" + aSectionId) ;
+			//		latestDiscId  = "-1" ;
+			//	}
+			//	if(discIndex == null)
+			//	{
+			//		log("DiscIndex var null:" + discIndex) ;
+			//		discIndex  = "0" ;
+			//	}
+			//	else
+			//	{
 					//lets set disc index to 0 then changing forum
-					if ( changeForum != null )
-					{
-						discIndex  = "0";
-					}
-				}
+			//		if ( changeForum != null )
+			//		{
+			//			discIndex  = "0";
+			//		}
+			//	}
+				String latestDiscId = "-1";
+				discIndex = "0";
 				session.putValue("BillBoard.disc_id", latestDiscId) ;//
 				session.putValue("BillBoard.section_id", aSectionId) ;//
 				session.putValue("BillBoard.disc_index", discIndex) ;//
@@ -157,6 +159,15 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		// ********* ADD DISCUSSIONS ********
 		if (req.getParameter("ADD") != null)
 		{
+			//lets clean up ev old stuff in the session
+			if (req.getParameter("ADDNEW") != null)
+			{
+				HttpSession session = req.getSession(false) ;
+				if(session != null)
+				{
+					session.removeAttribute("billPrevData");
+				}
+			}
 			 //log("Nu redirectar vi till BillBoardAdd") ;
 			String where = MetaInfo.getServletPath(req) ;
 			res.sendRedirect(where + "BillBoardAdd?ADDTYPE=Discussion") ;
@@ -297,16 +308,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
 
 				// IF WE ARE LOOKING FOR USERS ACTIVITY
-				if(params.getProperty("CATEGORY").equals("2"))
-				{
-					log("skall aldrig inträffa vad jag vet");
-					//String sqlQ = this.buildSearchUserSql(params) ;
-					//log("SQL: " + sqlQ) ;
-					//RmiConf rmi = new RmiConf(user) ;
-					//sqlAnswer = rmi.execSqlQueryExt(confPoolServer, sqlQ) ;
-				}
-				else
-				{
+			
 					//log("ok lets search!!!!!!!!!!!!!!");
 					// Ok, Lets build the search string
 					//RmiConf rmi = new RmiConf(user) ;
@@ -315,8 +317,8 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 					sqlQ += "'" + frDate  + "', '" + toDate + " 23:59:59" + "'" ;
 					
 					sqlAnswer = rmi.execSqlProcedureExt(confPoolServer, sqlQ) ;
-					//log("SQL SVARET:" + sqlAnswer) ;
-				} // End if
+					
+				
 			} // End if
 
 			//log("Ok, we have done a search!") ;
