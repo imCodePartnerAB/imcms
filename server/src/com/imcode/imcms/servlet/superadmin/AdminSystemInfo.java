@@ -103,7 +103,7 @@ public class AdminSystemInfo extends Administrator {
             String serverMasterEmail = (req.getParameter("SERVER_MASTER_EMAIL") == null) ? "" : (req.getParameter("SERVER_MASTER_EMAIL"));
 
             // Lets validate the parameters
-            if (serverMaster.equalsIgnoreCase("") || !isValidEmail( serverMasterEmail )) {
+            if (serverMaster.equalsIgnoreCase("") || !Utility.isValidEmail( serverMasterEmail )) {
                 String header = "Error in AdminSystemInfo, servermaster info.";
                 Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters") + "<br>";
@@ -130,7 +130,7 @@ public class AdminSystemInfo extends Administrator {
             String webMasterEmail = (req.getParameter("WEB_MASTER_EMAIL") == null) ? "" : (req.getParameter("WEB_MASTER_EMAIL"));
 
             // Lets validate the parameters
-            if (webMaster.equalsIgnoreCase("") || !isValidEmail( webMasterEmail )) {
+            if (webMaster.equalsIgnoreCase("") || !Utility.isValidEmail( webMasterEmail )) {
                 String header = "Error in AdminSystemInfo, webmaster info.";
                 Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters") + "<br>";
@@ -154,9 +154,5 @@ public class AdminSystemInfo extends Administrator {
         }
 
     } // end HTTP POST
-
-    private boolean isValidEmail( String email ) {
-        return Pattern.compile( "\\w+@\\w+" ).matcher( email ).find();
-    }
 
 }

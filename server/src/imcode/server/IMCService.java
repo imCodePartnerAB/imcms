@@ -566,7 +566,7 @@ final public class IMCService implements IMCServiceInterface {
      */
     public String getTemplateFromDirectory( String adminTemplateName, UserDomainObject user, List variables,
                                             String directory ) {
-        String langPrefix = getUserLangPrefixOrDefaultLanguage( user );
+        String langPrefix = user.getLanguageIso639_2() ;
         return getTemplate( langPrefix + "/" + directory + "/"
                             + adminTemplateName, user, variables );
     }

@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 public class Utility {
 
@@ -125,6 +126,10 @@ public class Utility {
                ApplicationServer.getIMCServiceInterface().getDocumentMapper().getStatusIconTemplate( document, user ) +
                "</a>";
 
+    }
+
+    public static boolean isValidEmail( String email ) {
+        return Pattern.compile( "\\w+@\\w+" ).matcher( email ).find();
     }
 
 }
