@@ -75,7 +75,7 @@
         <td colspan="2">
         <table border="0" cellspacing="0" cellpadding="0" width="100%">
         <tr valign="top">
-            <td>
+            <td width="80%">
             <select name="<%= UserBrowser.REQUEST_PARAMETER__USER_ID %>" size="15" style="width: 100%;">
                 <%
                     UserDomainObject[] users = userBrowserPage.getUsers();
@@ -88,7 +88,7 @@
             <input type="submit" class="imcmsFormBtnSmall"
                 name="<%= UserBrowser.REQUEST_PARAMETER__SELECT_USER_BUTTON %>"
                 value="<%= userFinder.getSelectButtonText().toLocalizedString(request) %>"
-                onClick="if(!evalEditUser()) return false;" style="width:10em">
+                style="width:10em">
             <%
                 UserDomainObject user = Utility.getLoggedOnUser(request);
                 if (userFinder.isUsersAddable() && (user.isSuperAdmin() || user.isUserAdmin())) { %>
