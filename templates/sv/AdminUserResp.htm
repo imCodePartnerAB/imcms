@@ -7,43 +7,43 @@
 <!--
 
 function evalPrepareAdd() {
-// Lets check that those fields which are mandatory
-var valFieldsOk
-valFielsOk = true
+	// Lets check that those fields which are mandatory
+	var valFieldsOk
+	valFielsOk = true
 
-if( document.UserInfo.login_name.value == "" ) valFieldsOk = false
-//if( document.UserInfo.password1.value == "" ) valFieldsOk = false
-//if( document.UserInfo.password2.value == "" ) valFieldsOk = false
-if( document.UserInfo.first_name.value == "" ) valFieldsOk = false
-if( document.UserInfo.last_name.value == "" ) valFieldsOk = false
+	if( document.UserInfo.login_name.value == "" ) valFieldsOk = false
+	//if( document.UserInfo.password1.value == "" ) valFieldsOk = false
+	//if( document.UserInfo.password2.value == "" ) valFieldsOk = false
+	if( document.UserInfo.first_name.value == "" ) valFieldsOk = false
+	if( document.UserInfo.last_name.value == "" ) valFieldsOk = false
+	
+	if(valFieldsOk == "") {
+		var msg = "Du har inte fyllt i ett obligatoriskt fält! Fyll i alla obligatoriska fält"
+		alert(msg)
+		return false
+	}
 
-if(valFieldsOk == "") {
-var msg = "Du har inte fyllt i ett obligatoriskt fält! Fyll i alla obligatoriska fält"
-alert(msg)
-return false
-}
 
+	var userType
+	userType = document.UserInfo.user_type.selectedIndex
+	
+	// Lets check if the user has make a choice
+	if(userType == "-1") {
+		var msg = "Du har inte valt användartyp! Välj en användartyp "
+		alert(msg)
+		return false
+	}
 
-var userType
-userType = document.UserInfo.user_type.selectedIndex
-
-// Lets check if the user has make a choice
-if(userType == "-1") {
-var msg = "Du har inte valt användartyp! Välj en användartyp "
-alert(msg)
-return false
-}
-
-var userRole
-userRole = document.UserInfo.roles.selectedIndex
-if(userRole == "-1") {
-var msg = "Du har inte valt roll för användaren! Välj vilken/vilka roller "
-msg += "användaren skall ha."
-alert(msg)
-return false
-}
-
-return true
+	var userRole
+	userRole = document.UserInfo.roles.selectedIndex
+	if(userRole == "-1") {
+		var msg = "Du har inte valt roll för användaren! Välj vilken/vilka roller "
+		msg += "användaren skall ha."
+		alert(msg)
+		return false
+	}
+	
+	return true
 }
 
 //-->
@@ -52,277 +52,277 @@ return true
 
 <body bgcolor="#ffffff">
 <form method="post" action="http://ratatosk.imcode.com/servlet/AdminUserProps" name="UserInfo">
-<input type="hidden" name="CURR_USER_ID" value="#CURR_USER_ID#">
-<input type="hidden" name="adminTask" value="#ADMIN_TASK#">
-<input type="hidden" name="phone_id" value="#PHONE_ID#">
-<table width="502" border="0" cellspacing="0" height="671">
-<tr bgcolor="#333366">
-<td width="10" height="21">&nbsp;</td>
-<td colspan="3" height="21" width="457">
-<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff" size="2">Lägg
-till /redigera användare</font></b></div>
-</td>
-<td width="23" height="21">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="34">&nbsp;</td>
-<td colspan="3" height="34" width="457"><font size="2"> <font face="Verdana, Arial, Helvetica, sans-serif">Observera
-att samtliga fält måste vara ifyllda för att en användare
-skall kunna skapas! </font></font></td>
-<td width="23" height="34">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="25">&nbsp;</td>
-<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Användarnamn</font></td>
-<td width="14" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
-<td width="298" height="25"> <font size="2">
-<input name="login_name" size="25" value="#LOGIN_NAME#">
-</font></td>
-<td width="23" height="25">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="25">&nbsp;</td>
-<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Lösenord:</font></td>
-<td width="14" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
-<td width="298" height="25"> <font size="2">
-<input type="password" name="password1" size="25" value="#PWD1#">
-</font></td>
-<td width="23" height="25">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="25">&nbsp;</td>
-<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Verifiera
-lösenord:</font></td>
-<td width="14" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
-<td width="298" height="25"> <font size="2">
-<input type="password" name="password2" size="25" value="#PWD2#">
-</font></td>
-<td width="23" height="25">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="25">&nbsp;</td>
-<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Förnamn:</font></td>
-<td width="14" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
-<td width="298" height="25"> <font size="2">
-<input name="first_name" size="25" value="#FIRST_NAME#">
-</font></td>
-<td width="23" height="25">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="25">&nbsp;</td>
-<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Efternamn:</font></td>
-<td width="14" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
-<td width="298" height="25"> <font size="2">
-<input name="last_name" size="25" value="#LAST_NAME#">
-</font></td>
-<td width="23" height="25">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="25">&nbsp;</td>
-<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Titel:</font></td>
-<td width="14" height="25">&nbsp;</td>
-<td width="298" height="25"><font size="2">
-<input name="title" size="25" value="#TITLE#">
-</font></td>
-<td width="23" height="25">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="25">&nbsp;</td>
-<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Arbetsplats:</font></td>
-<td width="14" height="25">&nbsp;</td>
-<td width="298" height="25"><font size="2">
-<input name="company" size="25" value="#COMPANY#">
-</font></td>
-<td width="23" height="25">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="25">&nbsp;</td>
-<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Gatuadress:</font></td>
-<td width="14" height="25"><font size="2">&nbsp;</font></td>
-<td width="298" height="25"> <font size="2">
-<input name="address" size="25" value="#ADDRESS#">
-</font></td>
-<td width="23" height="25">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="25">&nbsp;</td>
-<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Postnummer:</font></td>
-<td width="14" height="25"><font size="2">&nbsp;</font></td>
-<td width="298" height="25"> <font size="2">
-<input name="zip" size="25" value="#ZIP#">
-</font></td>
-<td width="23" height="25">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="25"></td>
-<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Postnummer
-ort:</font></td>
-<td width="14" height="25"><font size="2">&nbsp;</font></td>
-<td width="298" height="25"> <font size="2">
-<input name="city" size="25" value="#CITY#"></font></td>
-<td width="23" height="25">
-<p>&nbsp;</p>
-</td>
-</tr>
-<tr>
-<td width="10" bgcolor="#bababa" height="21">&nbsp;</td>
-<td width="137" bgcolor="#bababa" height="21"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Telefonnummer:</font></td>
-<td width="14" bgcolor="#bababa" height="21">&nbsp;</td>
-<td width="298" bgcolor="#bababa" height="21">landskod / riktnr / abonnentnr</td>
-<td width="23" bgcolor="#bababa" height="21">&nbsp;</td>
-</tr>
-<tr>
-<td width="10" bgcolor="#bababa" height="27">&nbsp;</td>
-<td width="137" bgcolor="#bababa" height="27">&nbsp;</td>
-<td width="14" bgcolor="#bababa" height="27">&nbsp;</td>
-<td width="298" bgcolor="#bababa" height="27">
-<input name="country_code" size="4" value="#COUNTRY_CODE#"><input name="area_code" size="5" value="#AREA_CODE#"><input name="local_code" size="9" value="#NUMBER#">
-<input type="submit" value="OK" name="ok_phones"></td>
-<td width="23" bgcolor="#bababa" height="27">&nbsp;</td>
-</tr>
-<tr>
-<td width="10" bgcolor="#bababa" height="27">&nbsp;</td>
-<td width="137" bgcolor="#bababa" height="27">&nbsp;</td>
-<td width="14" bgcolor="#bababa" height="27">&nbsp;</td>
-<td width="298" bgcolor="#bababa" height="27"><font face="Verdana, Arial, Helvetica, sans-serif">
-<select size="1" name="user_phones"> #PHONES_MENU#
-</select>
-</font>
-</td>
-<td width="23" bgcolor="#bababa" height="27">&nbsp;</td>
-</tr>
-<tr>
-<td width="10" bgcolor="#bababa" height="27">&nbsp;</td>
-<td width="137" bgcolor="#bababa" height="27">&nbsp;</td>
-<td width="14" bgcolor="#bababa" height="27">&nbsp;</td>
-<td width="298" bgcolor="#bababa" height="27"><font size="2"><input type="submit" name="edit_phones" value="Ändra"><input type="submit" value="Ta bort" name="delete_phones"></font></td>
-<td width="23" bgcolor="#bababa" height="27">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="25">&nbsp;</td>
-<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Län:</font></td>
-<td width="14" height="25"><font size="2">&nbsp;</font></td>
-<td width="298" height="25"> <font size="2">
-<input name="country_council" size="25" value="#COUNTRY_COUNCIL#">
-</font></td>
-<td width="23" height="25">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="23">&nbsp;</td>
-<td width="137" height="23"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Land:</font></td>
-<td width="14" height="23"><font size="2">&nbsp;</font></td>
-<td width="298" height="23"> <font size="2">
-<input name="country" size="25" value="#COUNTRY#">
-</font></td>
-<td width="23" height="23">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="25">&nbsp;</td>
-<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Email:</font></td>
-<td width="14" height="25"><font size="2">&nbsp;</font></td>
-<td width="298" height="25"> <font size="2">
-<input name="email" size="25" value="#EMAIL#">
-</font></td>
-<td width="23" height="25">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="40">&nbsp;</td>
-<td width="137" height="40"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Språk:</font></td>
-<td width="14" height="40">&nbsp;</td>
-<td width="298" height="40"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">
-<select name="lang_id" size="2">
-	#LANG_TYPES#
-</select>
-</font></font></td>
-<td width="23" height="40">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="21">&nbsp;</td>
-<td width="137" height="21"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Aktiverad:</font></td>
-<td width="14" height="21"><font size="2">&nbsp;</font></td>
-<td width="298" height="21"> <font size="2">
-<input type="checkbox" name="active" value="#ACTIVE#" #ACTIVE_FLAG#>
-</font></td>
-<td width="23" height="21">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="21">&nbsp;</td>
-<td width="137" height="21"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Inläggningsdatum:</font></td>
-<td width="14" height="21"><font size="2">&nbsp;</font></td>
-<td width="298" height="21"> <font size="2"> <font face="Verdana, Arial, Helvetica, sans-serif">#USER_CREATE_DATE#</font></font></td>
-<td width="23" height="21">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="25"></td>
-<td width="137" height="25" valign="top"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Användartyp:
-</font></td>
-<td width="14" height="25" valign="bottom"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">*</font></td>
-<td width="298" height="25" valign="bottom"><font face="Verdana, Arial, Helvetica, sans-serif"><select name="user_type">
-           #USER_TYPES#
-             
-</select>
-
-</font>
-</td>
-<td width="23" height="25"></td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="103">&nbsp;</td>
-<td width="137" height="103" valign="top"></td>
-<td width="14" height="103" valign="top"></td>
-<td width="298" height="103">
-<font face="Verdana, Arial, Helvetica, sans-serif"><font size=2>
- <b>Anonyma anv&auml;ndare</b>: Anv&auml;ndare som inte loggar in sig i systemet.<br>
- <b>Autentiserade användare</b>: Användare som loggar in i systemet
-med hjälp av sitt användarnamn och lösenord. <br>
-<b>Konferensanvändare</b>:
-Användare som lägger in sig själva i systemet.
-</font></font>
-</td>
-<td width="23" height="103">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="1" valign="middle">&nbsp;</td>
-<td width="137" height="1" valign="middle"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Roller:
-</font></td>
-<td width="14" height="1" valign="bottom"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
-<td width="298" height="1" rowspan="2" valign="bottom"> <font size="2">
-<select name="roles" multiple size="5">
-          #ROLES_MENU#
-        </select>
-</font></td>
-<td width="23" height="1" rowspan="2">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="48"></td>
-<td width="137" height="48" valign="top"></td>
-<td width="14" height="48" valign="bottom"></td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="21" valign="middle">&nbsp;</td>
-<td width="449" height="21" colspan="3" valign="middle"><font size="2">&nbsp;</font><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*
-Innebär att fältet är obligatoriskt </font>
-  <p>&nbsp;</p>
- </td>
-<td width="23" height="21">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="27">&nbsp;</td>
-<td colspan="3" height="27" width="457">
-<p>
-<input type="submit" name="SAVE_USER" value="Spara" onClick="if(evalPrepareAdd()==false)return false; return true;">
-<input type="submit" name="RESET_FORM" value="Återställ">
-<input type="submit" name="GO_BACK" value="Avbryt">
-</p>
-</td>
-<td width="23" height="27">&nbsp;</td>
-</tr>
-<tr bgcolor="#bababa">
-<td width="10" height="21">&nbsp;</td>
-<td colspan="3" height="21" width="457">&nbsp;</td>
-<td width="23" height="21">&nbsp;</td>
-</tr>
-</table>
+	<input type="hidden" name="CURR_USER_ID" value="#CURR_USER_ID#">
+	<input type="hidden" name="adminTask" value="#ADMIN_TASK#">
+	<input type="hidden" name="phone_id" value="#PHONE_ID#">
+	<table width="502" border="1" cellspacing="0" height="671">
+		<tr bgcolor="#333366">
+			<td width="10" height="21">&nbsp;</td>
+			<td colspan="3" height="21" width="457">
+				<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff" size="2">Lägg
+					till /redigera användare</font></b></div>
+			</td>
+			<td width="23" height="21">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="34">&nbsp;</td>
+			<td colspan="3" height="34" width="457"><font size="2"> <font face="Verdana, Arial, Helvetica, sans-serif">Observera
+			att samtliga fält måste vara ifyllda för att en användare
+			skall kunna skapas! </font></font></td>
+			<td width="23" height="34">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="25">&nbsp;</td>
+			<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Användarnamn</font></td>
+			<td width="14" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
+			<td width="298" height="25"> <font size="2">
+			<input name="login_name" size="25" value="#LOGIN_NAME#">
+			</font></td>
+			<td width="23" height="25">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="25">&nbsp;</td>
+			<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Lösenord:</font></td>
+			<td width="14" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
+			<td width="298" height="25"> <font size="2">
+			<input type="password" name="password1" size="25" value="#PWD1#">
+			</font></td>
+			<td width="23" height="25">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="25">&nbsp;</td>
+			<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Verifiera
+			lösenord:</font></td>
+			<td width="14" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
+			<td width="298" height="25"> <font size="2">
+			<input type="password" name="password2" size="25" value="#PWD2#">
+			</font></td>
+			<td width="23" height="25">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="25">&nbsp;</td>
+			<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Förnamn:</font></td>
+			<td width="14" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
+			<td width="298" height="25"> <font size="2">
+			<input name="first_name" size="25" value="#FIRST_NAME#">
+			</font></td>
+			<td width="23" height="25">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="25">&nbsp;</td>
+			<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Efternamn:</font></td>
+			<td width="14" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
+			<td width="298" height="25"> <font size="2">
+			<input name="last_name" size="25" value="#LAST_NAME#">
+			</font></td>
+			<td width="23" height="25">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="25">&nbsp;</td>
+			<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Titel:</font></td>
+			<td width="14" height="25">&nbsp;</td>
+			<td width="298" height="25"><font size="2">
+			<input name="title" size="25" value="#TITLE#">
+			</font></td>
+			<td width="23" height="25">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="25">&nbsp;</td>
+			<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Arbetsplats:</font></td>
+			<td width="14" height="25">&nbsp;</td>
+			<td width="298" height="25"><font size="2">
+			<input name="company" size="25" value="#COMPANY#">
+			</font></td>
+			<td width="23" height="25">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="25">&nbsp;</td>
+			<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Gatuadress:</font></td>
+			<td width="14" height="25"><font size="2">&nbsp;</font></td>
+			<td width="298" height="25"> <font size="2">
+			<input name="address" size="25" value="#ADDRESS#">
+			</font></td>
+			<td width="23" height="25">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="25">&nbsp;</td>
+			<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Postnummer:</font></td>
+			<td width="14" height="25"><font size="2">&nbsp;</font></td>
+			<td width="298" height="25"> <font size="2">
+			<input name="zip" size="25" value="#ZIP#">
+			</font></td>
+			<td width="23" height="25">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="25">&nbsp;</td>
+			<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Postnummer
+			ort:</font></td>
+			<td width="14" height="25"><font size="2">&nbsp;</font></td>
+			<td width="298" height="25"> <font size="2">
+			<input name="city" size="25" value="#CITY#"></font></td>
+			<td width="23" height="25">
+			<p>&nbsp;</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="10" bgcolor="#bababa" height="21">&nbsp;</td>
+			<td width="137" bgcolor="#bababa" height="21"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Telefonnummer:</font></td>
+			<td width="14" bgcolor="#bababa" height="21">&nbsp;</td>
+			<td width="298" bgcolor="#bababa" height="21">landskod / riktnr / abonnentnr</td>
+			<td width="23" bgcolor="#bababa" height="21">&nbsp;</td>
+		</tr>
+		<tr>
+			<td width="10" bgcolor="#bababa" height="27">&nbsp;</td>
+			<td width="137" bgcolor="#bababa" height="27">&nbsp;</td>
+			<td width="14" bgcolor="#bababa" height="27">&nbsp;</td>
+			<td width="298" bgcolor="#bababa" height="27">
+			<input name="country_code" size="4" value="#COUNTRY_CODE#"><input name="area_code" size="5" value="#AREA_CODE#"><input name="local_code" size="9" value="#NUMBER#">
+			<input type="submit" value="OK" name="ok_phones"></td>
+			<td width="23" bgcolor="#bababa" height="27">&nbsp;</td>
+		</tr>
+		<tr>
+			<td width="10" bgcolor="#bababa" height="27">&nbsp;</td>
+			<td width="137" bgcolor="#bababa" height="27">&nbsp;</td>
+			<td width="14" bgcolor="#bababa" height="27">&nbsp;</td>
+			<td width="298" bgcolor="#bababa" height="27"><font face="Verdana, Arial, Helvetica, sans-serif">
+			<select size="1" name="user_phones"> #PHONES_MENU#
+			</select>
+			</font>
+			</td>
+			<td width="23" bgcolor="#bababa" height="27">&nbsp;</td>
+		</tr>
+		<tr>
+			<td width="10" bgcolor="#bababa" height="27">&nbsp;</td>
+			<td width="137" bgcolor="#bababa" height="27">&nbsp;</td>
+			<td width="14" bgcolor="#bababa" height="27">&nbsp;</td>
+			<td width="298" bgcolor="#bababa" height="27"><font size="2"><input type="submit" name="edit_phones" value="Ändra"><input type="submit" value="Ta bort" name="delete_phones"></font></td>
+			<td width="23" bgcolor="#bababa" height="27">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="25">&nbsp;</td>
+			<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Län:</font></td>
+			<td width="14" height="25"><font size="2">&nbsp;</font></td>
+			<td width="298" height="25"> <font size="2">
+			<input name="country_council" size="25" value="#COUNTRY_COUNCIL#">
+			</font></td>
+			<td width="23" height="25">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="23">&nbsp;</td>
+			<td width="137" height="23"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Land:</font></td>
+			<td width="14" height="23"><font size="2">&nbsp;</font></td>
+			<td width="298" height="23"> <font size="2">
+			<input name="country" size="25" value="#COUNTRY#">
+			</font></td>
+			<td width="23" height="23">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="25">&nbsp;</td>
+			<td width="137" height="25"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Email:</font></td>
+			<td width="14" height="25"><font size="2">&nbsp;</font></td>
+			<td width="298" height="25"> <font size="2">
+			<input name="email" size="25" value="#EMAIL#">
+			</font></td>
+			<td width="23" height="25">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="40">&nbsp;</td>
+			<td width="137" height="40"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Språk:</font></td>
+			<td width="14" height="40">&nbsp;</td>
+			<td width="298" height="40"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">
+			<select name="lang_id" size="2">
+				#LANG_TYPES#
+			</select>
+			</font></font></td>
+			<td width="23" height="40">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="21">&nbsp;</td>
+			<td width="137" height="21"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Aktiverad:</font></td>
+			<td width="14" height="21"><font size="2">&nbsp;</font></td>
+			<td width="298" height="21"> <font size="2">
+			<input type="checkbox" name="active" value="#ACTIVE#" #ACTIVE_FLAG#>
+			</font></td>
+		<td width="23" height="21">&nbsp;</td>
+		</tr>
+			<tr bgcolor="#bababa">
+			<td width="10" height="21">&nbsp;</td>
+			<td width="137" height="21"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Inläggningsdatum:</font></td>
+			<td width="14" height="21"><font size="2">&nbsp;</font></td>
+			<td width="298" height="21"> <font size="2"> <font face="Verdana, Arial, Helvetica, sans-serif">#USER_CREATE_DATE#</font></font></td>
+			<td width="23" height="21">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="25">&nbsp;</td>
+			<td width="137" height="25" valign="top"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Användartyp:
+			</font></td>
+			<td width="14" height="25" valign="bottom"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">*</font></td>
+			<td width="298" height="25" valign="bottom"><font face="Verdana, Arial, Helvetica, sans-serif"><select name="user_type">
+			           #USER_TYPES#
+			             
+			</select>
+			
+			</font>
+			</td>
+			<td width="23" height="25">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="103">&nbsp;</td>
+			<td width="137" height="103" valign="top">&nbsp;</td>
+			<td width="14" height="103" valign="top">&nbsp;</td>
+			<td width="298" height="103">
+			<font face="Verdana, Arial, Helvetica, sans-serif"><font size=2>
+			 <b>Anonyma anv&auml;ndare</b>: Anv&auml;ndare som inte loggar in sig i systemet.<br>
+			 <b>Autentiserade användare</b>: Användare som loggar in i systemet
+			med hjälp av sitt användarnamn och lösenord. <br>
+			<b>Konferensanvändare</b>:
+			Användare som lägger in sig själva i systemet.
+			</font></font>
+			</td>
+			<td width="23" height="103">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="1" valign="middle">&nbsp;</td>
+			<td width="137" height="1" valign="middle"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Roller:
+			</font></td>
+			<td width="14" height="1" valign="bottom"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
+			<td width="298" height="1" rowspan="2" valign="bottom"> <font size="2">
+			<select name="roles" multiple size="5">
+			          #ROLES_MENU#
+			        </select>
+			</font></td>
+			<td width="23" height="1" rowspan="2">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="48">&nbsp;</td>
+			<td width="137" height="48" valign="top">&nbsp;</td>
+			<td width="14" height="48" valign="bottom">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="21" valign="middle">&nbsp;</td>
+			<td width="449" height="21" colspan="3" valign="middle"><font size="2">&nbsp;</font><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*
+			Innebär att fältet är obligatoriskt </font>
+			  <p>&nbsp;</p>
+			 </td>
+			<td width="23" height="21">&nbsp;</td>
+		</tr>
+		<tr bgcolor="#bababa">
+			<td width="10" height="27">&nbsp;</td>
+			<td colspan="3" height="27" width="457">
+			<p>
+			<input type="submit" name="SAVE_USER" value="Spara" onClick="if(evalPrepareAdd()==false)return false; return true;">
+			<input type="submit" name="RESET_FORM" value="Återställ">
+			<input type="submit" name="GO_BACK" value="Avbryt">
+			</p>
+			</td>
+		<td width="23" height="27">&nbsp;</td>
+		</tr>
+			<tr bgcolor="#bababa">
+			<td width="10" height="21">&nbsp;</td>
+			<td colspan="3" height="21" width="457">&nbsp;</td>
+			<td width="23" height="21">&nbsp;</td>
+		</tr>
+	</table>
 </form>
 <p> </p>
 </body>
