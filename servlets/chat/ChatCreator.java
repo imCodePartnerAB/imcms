@@ -311,11 +311,12 @@ public class ChatCreator extends ChatBase
 			while (e.hasMoreElements())
 			{
 				String temp = (String)e.nextElement();
-				log( "testParams " + temp + "Value" + chatParams.getProperty( temp) );
+				log( "testParams: " + temp + " Value: " + chatParams.getProperty( temp) );
 			} 
 
 
 			Chat theChat = new Chat( Integer.parseInt(metaId), theRooms, msgTypesV, chatParams );
+			
 			session.putValue("theChat", theChat);
 
 			session.getValue("theChat");
@@ -469,24 +470,136 @@ public class ChatCreator extends ChatBase
 			vm.addProperty("msgTypes", htm.createHtmlCode("ID_OPTION","", msgTypeV) ) ;
 			
 			//get parameters
-			Properties chatP = theChat.getChatParameters();
-			log("here");
+			Properties chatP = super.getNewChatParameters(req);
+			
 			vm.addProperty("chatName",(String)chatP.getProperty("chatName") );
-				vm.addProperty("updateTime",chatP.getProperty("updateTime") );
-				Vector buttonValues = new Vector();buttonValues.add("1");buttonValues.add("2");buttonValues.add("3");
-				vm.addProperty("reload", htm.createRadioButton("reload",buttonValues,chatP.getProperty("reload") ) );
-				vm.addProperty("inOut", htm.createRadioButton("inOut",buttonValues,chatP.getProperty("inOut") ) );
-				vm.addProperty("private", htm.createRadioButton("private",buttonValues,chatP.getProperty("privat") ) );
-				vm.addProperty("public", htm.createRadioButton("public",buttonValues,chatP.getProperty("publik") ) );
-				vm.addProperty("dateTime", htm.createRadioButton("dateTime",buttonValues,chatP.getProperty("dateTime") ) );
-				vm.addProperty("font", htm.createRadioButton("font",buttonValues,chatP.getProperty("font") ) );
+			vm.addProperty("updateTime",chatP.getProperty("updateTime") );
+			Vector buttonValues = new Vector();buttonValues.add("1");buttonValues.add("2");buttonValues.add("3");
+			vm.addProperty("reload", htm.createRadioButton("reload",buttonValues,chatP.getProperty("reload") ) );
+			vm.addProperty("inOut", htm.createRadioButton("inOut",buttonValues,chatP.getProperty("inOut") ) );
+			vm.addProperty("private", htm.createRadioButton("private",buttonValues,chatP.getProperty("privat") ) );
+			vm.addProperty("public", htm.createRadioButton("public",buttonValues,chatP.getProperty("publik") ) );
+			vm.addProperty("dateTime", htm.createRadioButton("dateTime",buttonValues,chatP.getProperty("dateTime") ) );
+			vm.addProperty("font", htm.createRadioButton("font",buttonValues,chatP.getProperty("font") ) );
 	    	
 			sendHtml(req,res,vm, ADMIN_TEMPLATE) ;
 			
+			if (req.getParameter("okChat") != null )
+			{
 			//spara värden till databas 
-			//uppdatera db enligt templistorna
-			//kolla om rummen i db finns i temprum, iså fall ta bort dem
-			//Finns de inte så lägg till dem
+			
+			//rum
+			//ta bort alla rum tillhörande den här chatten
+			String delete = "DeleteConnections " + metaId;
+			rmi.execSqlUpdateProcedure(chatPoolServer , delete );
+			 	
+			//lägga in alla nya
+			//hämta alla befintliga rum
+			String[] allRooms = rmi.execSqlProcedure(chatPoolServer, "GetAllRooms ");
+			//gå igenom alla, jämför med roomsV och lägg in de som inte finns
+			
+			for(int j=1;j<groupsV.size();j+=2)
+			{
+				String tempId;
+				boolean found = false;
+				
+				for(int i=0;i<allRooms.length;i++)
+				{
+					if ( ((String)allRooms[i]).equalsIgnoreCase( (String)groupsV.get(j) ) )
+					{
+						found = true;
+					}
+				}
+				
+				if (!found)
+				{
+					//add room
+					tempId = rmi.execSqlProcedureStr(chatPoolServer, "GetMaxRoomId");
+				
+					String newRsql = "AddNewRoom "  + tempId + ", " + groupsV.get(j);
+					log("AddNewRoom sql:" + newRsql ) ;
+					
+					
+					rmi.execSqlUpdateProcedure(chatPoolServer, newRsql) ;
+				}  
+				
+				String roomId = rmi.execSqlProcedureStr( chatPoolServer,"GetRoomId " + (String)groupsV.get(j) );
+				log("roomId: " + roomId);
+				log("AddNewChatRoom " + " '"+ metaId + "' , '" + roomId + "' ");
+				rmi.execSqlUpdateProcedure(chatPoolServer,"AddNewChatRoom " + " '"+ metaId + "' , '" + roomId + "' ") ;
+				groupsV.add(j-1,roomId);
+			}
+			
+			//msgTypes
+			//lägga in alla nya
+			//hämta alla befintliga rum
+			String[] allTypes = rmi.execSqlProcedure(chatPoolServer, "GetAllTypes ");
+			//gå igenom alla, jämför med roomsV och lägg in de som inte finns
+			for(int j=1;j<msgTypeV.size();j+=2)
+			{
+				boolean found = false;
+				String tempId;
+				
+				for(int i=0;i<allTypes.length;i++)
+				{
+					if ( ((String)allTypes[i]).equalsIgnoreCase( (String)msgTypeV.get(j) ) )
+					{
+					found = true;
+					}
+				}
+				
+				if (!found)
+				{
+					//add room
+				    tempId = rmi.execSqlProcedureStr(chatPoolServer, "GetMaxMsgTypeId ");
+				
+					String newRsql = "AddNewMsgType " +  " '" +tempId + "', " + msgTypeV.get(j);
+					log("AddNewMsgType sql:" + newRsql ) ;
+					rmi.execSqlUpdateProcedure(chatPoolServer, newRsql) ;
+				} 
+				
+				String typeId = rmi.execSqlProcedureStr( chatPoolServer,"GetMsgTypeId " + (String)msgTypeV.get(j) );
+				rmi.execSqlUpdateProcedure(chatPoolServer,"AddNewChatMsg " + typeId + " , " + metaId ) ;
+ 
+			}			
+					
+			//uppdatera databasen med chatP
+				String update = "UpdateChatParameters " + metaId;
+				update=update + chatP.getProperty("updateTime");
+				update=update + chatP.getProperty("reload");
+				update=update + chatP.getProperty("inOut");
+				update=update + chatP.getProperty("privat");
+				update=update + chatP.getProperty("publik");
+				update=update + chatP.getProperty("dateTime");
+				update=update + chatP.getProperty("font");
+			
+				rmi.execSqlUpdateProcedure(chatPoolServer, update );
+				
+				//lägg in chatten i sessionen
+				Vector groups = new Vector();
+				for(int i= 0; i < groupsV.size();i+=2)
+				{
+					log("grrrr2 " + groupsV.get(i));
+					String value = (String)groupsV.get(i+1);
+					String id = (String)groupsV.get(i);
+					Integer temp = new Integer(id);
+					int idT = temp.intValue();	
+					log("id: " + id + " 3 Value: " + value);
+					ChatGroup tempGroup= new ChatGroup( idT,value );
+					groups.add(tempGroup);
+				}
+				
+				Chat newChat = new Chat( Integer.parseInt(metaId), groups, msgTypeV, chatP );
+			
+				session.putValue("theChat", newChat);
+				
+				//redirect to chatViewer
+				String url = MetaInfo.getServletPath(req) ;
+				url += "ChatViewer" ;
+				res.sendRedirect(url) ;
+				
+				return;
+			}
 			
 			return ;
 
@@ -649,7 +762,7 @@ public class ChatCreator extends ChatBase
 			vm.addProperty("msgTypes", htm.createHtmlCode("ID_OPTION","", msgTypesV) ) ;
 			
 		
-			Properties chatP = theChat.getChatParameters();
+	Properties chatP = theChat.getChatParameters();
 			Enumeration propE = chatP.propertyNames();
 			while (propE.hasMoreElements())
 			{
