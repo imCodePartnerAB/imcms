@@ -239,8 +239,7 @@ public class ConfAdmin extends Conference {
 				return ;
 			}
 			// Ok, lets update the conference with this new templateset.
-			String updateSql = "A_SetTemplateLib " + params.getProperty("META_ID") ;
-			updateSql += ", '" + newLibName + "'" ;
+			String updateSql = "A_SetTemplateLib " + params.getProperty("META_ID") + ", " + templateId ;
 			rmi.execSqlUpdateProcedure(confPoolServer, updateSql) ;
 
 			res.sendRedirect(MetaInfo.getServletPath(req) + "ConfAdmin?ADMIN_TYPE=META") ;
