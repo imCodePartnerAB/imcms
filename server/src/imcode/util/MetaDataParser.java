@@ -322,8 +322,7 @@ public class MetaDataParser {
 				String temp_role_set_id = (String)temp_perm_hash.get(role_id) ;
 				if ( temp_role_set_id!=null ) {
 					role_set_id = Integer.parseInt(temp_role_set_id) ;
-				}
- else {
+				} else {
 				    role_set_id = 4 ;
 				}
 			}
@@ -404,6 +403,37 @@ public class MetaDataParser {
 		}
 	} // End of getRolesFromDb
 
+    /**
+		OK. Now to explain this to myself, the next time i read this crap.
+		This works like this: This parses one set of permissions for a document into a page of checkboxes and stuff.
+		This page is built of several templates found in the "admin/permissions" subdirectory.
+		The main template is "define_permissions.html" for the current document,
+		and "define_new_permissions.html" for new documents.
+		This template contains the following tags:
+		#meta_id#, If you don't know what this is, then go away,
+		#set_id#,  The permission-set-id.
+		#1#,       Template for permission to change the headline
+		#2#,       Template for permission to change the docinfo
+		#4#,       Template for permission to change permissions
+
+		#doc_rights#  DOCUMENT-TYPE-SPECIFIC-RIGHTS-TEMPLATE HERE!
+
+		The document-type-specific-rights-template contains additional tags in turn.
+		
+		For doctype 2 (define_permissions_2.html), these tags are the following:
+
+		#65536#,   Template for permission to change texts
+		#131072#,  Template for permission to change texts
+		#262144#,  Template for permission to change texts
+		#524288#   Template for permission to change texts
+
+		Of these permissiontemplates (#1# to #524288#) each contains
+		a tag like #check_2# (define_permission_2.html) or #check_65536# (define_permission_2_65536.html (editpermission for doc_type 2))
+
+		So, what happens in this template is that the templates are read in the reverse order, 
+		
+     */
+
 	public static String parsePermissionSet (int meta_id, User user, String host, int set_id, boolean for_new) throws IOException {
 		final String imcserver = Utility.getDomainPref("adminserver",host) ;
 
@@ -446,11 +476,13 @@ public class MetaDataParser {
 			}
 		} ;
 
+
 		// Fetch all permissions this permissionset consists of.
-		// Permission_id, Description, Value, Extra data.
-		// If there is no extra data, it will contain -1.
-		// If there is more than one row of extra data, the same permission
-		// will occur on several rows after one another.
+		// Permission_id, Description, Value
+		// One row for each permission on the system.
+		// MAKE SURE the tables permissions and doc_permissions contain the permissions in use on this system!
+		// FIXME: It is time to make an Interface that will define all permission-constants, doc-types, and such.
+		// Remind me when i get a minute off some day.
 		String[] permissionset = IMCServiceRMI.sqlProcedure(imcserver,"Get"+newstr+"PermissionSet "+meta_id+","+set_id+","+lang_prefix) ;
 		final int ps_cols = 3 ;
 		for ( int i=0 ; i<permissionset.length ; i += ps_cols ) {
@@ -536,6 +568,8 @@ public class MetaDataParser {
 
 		vec.put("meta_id", String.valueOf(meta_id)) ;
 
+		// Put the values for all the tags inserted in vec so far in the "define_permissions_"+doc_type+".html" file
+		// That is, the doc-specific
 		StringBuffer doc_specific = new StringBuffer(IMCServiceRMI.parseDoc(imcserver,null,"permissions/define_permissions_"+doc_type+".html",lang_prefix)) ;
 
 		Parser.parseTags(doc_specific, '#', " <>\"\n\r\t",(Map)vec,true,1) ;
