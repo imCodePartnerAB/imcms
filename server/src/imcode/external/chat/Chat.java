@@ -1,8 +1,15 @@
 
+
+
+
+
+
+
+
 package imcode.external.chat;
 
 import java.util.*;
-
+import imcode.external.diverse.*;
 /**
 *A Chat can contain zero or many ChatGroups.
 *A Chat can contain zero or many ChatMembers.
@@ -13,10 +20,10 @@ public class Chat
 {
 	private int _chatId;
 	private String _name;
-	private Hashtable _chatMembers;
+//	private Hashtable _chatMembers;
 	private Hashtable _chatMsgTypes;
 	private Hashtable _chatGroups;
-	private Counter _memberCounter;
+//	private Counter _memberCounter;
 	private Counter _roomCounter;
 	private	int _updateTime = 30;
 	private	int _reload = 2;
@@ -26,15 +33,14 @@ public class Chat
 	private	int _dateTime = 2;
 	private	int _font = 2;
 
-
 	/**
 	*Default constructor.
 	*/
 	public Chat()
 	{
-		_memberCounter = new Counter();
+	//	_memberCounter = new Counter();
 		_roomCounter = new Counter();
-		_chatMembers = new Hashtable();
+	//	_chatMembers = new Hashtable();
 		_chatGroups = new Hashtable();	
 	}
 
@@ -42,9 +48,9 @@ public class Chat
 	{
 		_chatId=id;
 		_name=name;
-		_memberCounter = new Counter();
+	//	_memberCounter = new Counter();
 		_roomCounter = new Counter();
-		_chatMembers = new Hashtable();
+	//	_chatMembers = new Hashtable();
 		_chatGroups = new Hashtable();
 		
 		for(int i=0;i<groups.size();i+=2)
@@ -61,11 +67,13 @@ public class Chat
 	public Chat(int id, Vector groups, Vector msgTypes, Properties params)
 	{
 		_chatId=id;
-		_memberCounter = new Counter();
+	//	_memberCounter = new Counter();
 		_roomCounter = new Counter();
-		_chatMembers = new Hashtable();
+	//	_chatMembers = new Hashtable();
 		_chatGroups = new Hashtable();
 		_chatMsgTypes = new Hashtable();
+		
+		
 		
 		for(int i=0;i<groups.size();i+=2)
 		{
@@ -106,7 +114,7 @@ public class Chat
 	*the is initially not a member of any ChatGroup;
 	*@return The Created ChatMember
 	*/
-	public ChatMember createChatMember()
+/*	public ChatMember createChatMember()
 	{
 		_memberCounter.increment();
 		int memberNumber = _memberCounter.getValue();
@@ -120,7 +128,7 @@ public class Chat
 	*@param memberNumber The membernumber of the ChatMember you want to remove
 	*If no ChatMember exists with the supplied memberNumber, no action is taken.
 	*/
-	public void removeChatMember(int memberNumber)
+/*	public void removeChatMember(int memberNumber)
 	{
 		String memberNumberString = String.valueOf(memberNumber);
 		_chatMembers.remove(memberNumberString);
@@ -187,6 +195,35 @@ public class Chat
 	{
 		return "ChatId: " + _chatId + " ChatName: " + _name;
 	}
+	
+	public Properties getChatParameters()
+	{
+		Properties params = new Properties();
+		
+		params.setProperty("updateTime" , Integer.toString(_updateTime) );
+		params.setProperty("reload" , Integer.toString(_reload) );
+		params.setProperty("inOut" , Integer.toString(_inOut) );
+		params.setProperty("privat" , Integer.toString(_privat) );
+		params.setProperty("publik" , Integer.toString(_publik) );
+		params.setProperty("dateTime" ,Integer.toString(_dateTime) );
+		params.setProperty("font" ,Integer.toString( _font) );
+		
+		return params;
+	}
+	
+	public Vector getMsgTypes()
+ 	{
+  		Vector temp = new Vector();
+  		Enumeration enum = _chatMsgTypes.keys();
+  		while (enum.hasMoreElements())
+  		{
+   			String key = (String) enum.nextElement();
+
+   			temp.addElement(key);
+   			temp.addElement(_chatMsgTypes.get(key));
+  		}
+  		return temp;
+ 	}
 
 
 }
