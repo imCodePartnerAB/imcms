@@ -28,6 +28,31 @@ arrForm13Descriptions = new Array('100%','90%','80%','70%','60%','50%','40%','30
 
 
 
+/* ***** START onLoad ***** */
+
+function setDefaultVis() {
+	var vis = 0;
+	arrSubLayVis = new Array('0','1','1','1'); // what sublayers should be visible by default?
+	for (var i = 0; i < arrSubLayVis.length; i++) {
+		vis = (arrSubLayVis[i] == '1') ? '3' : '0';
+		showHideLay('s' + (i+1),vis);
+		document.getElementById(arrSubDivs[i] + 'Div').style.display = (vis == '3') ? 'block' : 'none';
+	}
+}
+
+function preloadImages() {
+	btnEye = new Array(3);
+	for (i=0; i<=2; i++) {
+		btnEye[i] = new Image();
+	}
+	btnEye[0].src = 'images/btn_eye_0.gif';
+	btnEye[1].src = 'images/btn_eye_1.gif';
+	btnEye[2].src = 'images/btn_eye_2.gif';
+}
+
+/* ***** END onLoad ***** */
+
+
 function showHideLay(lay,vis) {
 	var el = '';
 	if (ie) {
@@ -241,31 +266,6 @@ function hideAllLays() {
 		moveLay(arrDivs[i] + 'Div','','',0);
 	}
 }
-
-
-/* ***** START onLoad ***** */
-
-function setDefaultVis() {
-	var vis = 0;
-	arrSubLayVis = new Array('0','0','0','0'); // what sublayers should be visible by default?
-	for (var i = 0; i < arrSubLayVis.length; i++) {
-		vis = (arrSubLayVis[i] == '1') ? '3' : '0';
-		showHideLay('s' + (i+1),vis);
-		document.getElementById(arrSubDivs[i] + 'Div').style.display = (vis == '3') ? 'block' : 'none';
-	}
-}
-
-function preloadImages() {
-	btnEye = new Array(3);
-	for (i=0; i<=2; i++) {
-		btnEye[i] = new Image();
-	}
-	btnEye[0].src = 'images/btn_eye_0.gif';
-	btnEye[1].src = 'images/btn_eye_1.gif';
-	btnEye[2].src = 'images/btn_eye_2.gif';
-}
-
-/* ***** END onLoad ***** */
 
 
 function eyeOver() {
