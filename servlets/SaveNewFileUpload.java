@@ -19,7 +19,6 @@ public class SaveNewFileUpload extends HttpServlet {
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
 		String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
 		File file_path 				= new File(Utility.getDomainPref( "file_path", host ));
-		int uploadsize 				= Integer.parseInt(Utility.getDomainPref( "max_uploadsize",host )) ;
 
 		imcode.server.User user ; 
 
@@ -37,10 +36,6 @@ public class SaveNewFileUpload extends HttpServlet {
 		ServletInputStream in = req.getInputStream() ;
 		ServletOutputStream out = res.getOutputStream() ;
 
-		if (length<1||length>uploadsize) {
-			return ;
-		}
-		
 		byte buffer[] = new byte[ length ] ;	
 		int bytes_read = 0;
 		while ( bytes_read < length ) {

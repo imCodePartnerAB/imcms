@@ -19,7 +19,6 @@ public class SaveFileUpload extends HttpServlet {
 		String imcserver 			= imcode.util.Utility.getDomainPref("adminserver",host) ;
 		String start_url        	= imcode.util.Utility.getDomainPref( "start_url",host ) ;
 		File file_path 				= new File(imcode.util.Utility.getDomainPref( "file_path", host ));
-		//int uploadsize 				= Integer.parseInt(Utility.getDomainPref( "max_uploadsize",host )) ;
 
 		imcode.server.User user ;
 
@@ -35,10 +34,6 @@ public class SaveFileUpload extends HttpServlet {
 
 		ServletInputStream in = req.getInputStream() ;
 		ServletOutputStream out = res.getOutputStream() ;
-
-		//if (length<1||length>uploadsize) {
-		//return ;
-		//}
 
 		byte buffer[] = new byte[ length ] ;
 		int bytes_read = 0;

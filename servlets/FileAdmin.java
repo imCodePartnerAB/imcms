@@ -17,7 +17,6 @@ public class FileAdmin extends HttpServlet {
 		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
 		String rootpaths			= Utility.getDomainPref( "fileadmin_rootpaths",host ) ;
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
-		int uploadsize				= Integer.parseInt(Utility.getDomainPref("max_uploadsize",host)) ;	
 
 		// Check if user logged on
 		User user ;

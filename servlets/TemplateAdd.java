@@ -94,7 +94,6 @@ public class TemplateAdd extends HttpServlet {
 	String host 				= req.getHeader("Host") ;
 	String imcserver 			= Utility.getDomainPref("adminserver",host) ;
 	String start_url        	= Utility.getDomainPref( "start_url",host ) ;
-	int uploadsize				= Integer.parseInt(Utility.getDomainPref("max_uploadsize",host)) ;
 		
 	// Check if user logged on
 	User user ;
@@ -120,14 +119,6 @@ public class TemplateAdd extends HttpServlet {
 
 	String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
 	PrintWriter out = res.getWriter() ;
-
-	if (length<1||length>uploadsize) {
-	    Vector vec = new Vector() ;
-	    vec.add("#uploadsize#") ;
-	    vec.add(String.valueOf(uploadsize));
-	    out.print(IMCServiceRMI.parseDoc(imcserver, vec, "template_upload_size.html",lang_prefix)) ;
-	    return ;
-	}
 
 	ServletInputStream in = req.getInputStream() ;
 	byte buffer[] = new byte[ length ] ;
