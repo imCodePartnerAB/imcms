@@ -34,11 +34,11 @@ public class ChangeImage extends HttpServlet {
 		PrintWriter out = res.getWriter();
 
 		String tmp = (req.getParameter("img_no") != null)?req.getParameter("img_no"):req.getParameter("img") ;
-		log (tmp);
+		//log (tmp);
 		img_no = Integer.parseInt(tmp) ;
 
 		tmp = req.getParameter("meta_id") ;
-		log (tmp);
+		//log (tmp);
 		meta_id = Integer.parseInt(tmp) ;
 
 
@@ -92,7 +92,7 @@ public class ChangeImage extends HttpServlet {
 		// Does the session indicate this user already logged in?
 		Object done = session.getValue("logon.isDone");  // marker object
 		user = (imcode.server.User)done ;
-		log ("a") ;
+		//log ("a") ;
 
 
 		if (done == null) {
@@ -105,7 +105,7 @@ public class ChangeImage extends HttpServlet {
 			res.sendRedirect(scheme + "://" + serverName + port + start_url) ;              
 			return ;
 		}
-		log ("b") ;
+		//log ("b") ;
 		// Check if user has write rights
 		if ( !IMCServiceRMI.checkDocAdminRights(imcserver, meta_id, user) ) {
 			log("User "+user.getInt("user_id")+" was denied access to meta_id "+meta_id+" and was sent to "+start_url) ;			
@@ -116,12 +116,12 @@ public class ChangeImage extends HttpServlet {
 			res.sendRedirect( scheme + "://" + serverName + port + start_url ) ;
 			return ;
 		}
-		log ("c") ;
+		//log ("c") ;
 	
 		
 		String sqlStr = "select image_name,imgurl,width,height,border,v_space,h_space,target,target_name,align,alt_text,low_scr,linkurl from images where meta_id = "+meta_id+" and name = "+img_no ;
 		String[] sql = IMCServiceRMI.sqlQuery(imcserver,sqlStr) ;
-		log ("d") ;
+		//log ("d") ;
 		Vector vec = new Vector () ;
 		
 		String imageName = (img_preset.equals("")?sql[1]:img_preset); // selected OPTION or ""
@@ -246,11 +246,11 @@ public class ChangeImage extends HttpServlet {
 		vec.add(String.valueOf(meta_id)) ;
 		vec.add("#img_no#") ;
 		vec.add(String.valueOf(img_no)) ;
-		log ("e") ;
+		//log ("e") ;
 		String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
-		log ("f") ;		
+		//log ("f") ;		
 		htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"change_img.html", lang_prefix) ;
-		log ("g") ;
+		//log ("g") ;
 		//htmlStr = IMCServiceRMI.interpretAdminTemplate(imcserver,meta_id,user,"change_img.html",img_no,0,0,0) ;                        	
 		out.print(htmlStr) ;
 		}
