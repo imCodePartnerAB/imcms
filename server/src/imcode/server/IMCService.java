@@ -730,9 +730,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public String parseDoc( java.util.List variables, String admin_template_name, String lang_prefix ) {
         // FIXME Fugly workaround
-        if ("sv".equals(lang_prefix)) {
-            lang_prefix = "se";
-        }
+
         try {
             String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/admin/" + admin_template_name ) );
             if ( variables == null ) {
@@ -751,9 +749,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public String parseExternalDoc(java.util.List variables, String external_template_name, String lang_prefix, String doc_type) {
         // FIXME Fugly workaround
-        if ("sv".equals(lang_prefix)) {
-            lang_prefix = "se";
-        }
+
         try {
             String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/" + doc_type + "/" + external_template_name ) );
             if ( variables == null ) {
@@ -775,9 +771,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public String parseExternalDoc(java.util.List variables, String external_template_name, String lang_prefix, String doc_type, String templateSet) {
         // FIXME Fugly workaround
-        if ("sv".equals(lang_prefix)) {
-            lang_prefix = "se";
-        }
+
         try {
             String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/" + doc_type + "/" + templateSet + "/" + external_template_name ) );
             if ( variables == null ) {
@@ -1349,7 +1343,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     Return a file relative to the webapps. ex ../templates/se/admin/search/original
+     Return a file relative to the webapps. ex ../templates/swe/admin/search/original
      **/
     public String getSearchTemplate( String path ) throws IOException {
         return fileCache.getCachedFileString( new File( m_TemplateHome, path ) );
