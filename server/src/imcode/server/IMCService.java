@@ -710,6 +710,10 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	tags.setProperty("#serverMaster#",			m_ServerMaster) ;
 	tags.setProperty("#serverMasterEmail#",		m_ServerMasterEmail) ;
 
+	tags.setProperty("#addDoc*#","") ;
+	tags.setProperty("#saveSortStart*#","") ;
+	tags.setProperty("#saveSortStop*#","") ;
+
 	if ( imagemode ) {	// imagemode
 	    tags.setProperty("#img*#",				"<a href=\"ChangeImage?meta_id="+meta_id+"&img=#img_no#\"><img src=\""+m_ImageFolder+"bild.gif\" border=\"0\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>") ;
 	    numberedtags.setProperty("#img*#","#img_no#") ;
