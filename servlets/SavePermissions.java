@@ -19,7 +19,10 @@ public class SavePermissions extends HttpServlet {
 	/**
 	doPost()
 	*/
-	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+	public void doPost( HttpServletRequest encodedrequest, HttpServletResponse res ) throws ServletException, IOException {
+	EncodedHttpServletRequest req = new EncodedHttpServletRequest(encodedrequest) ;
+	req.setCharacterEncoding("UTF-8") ;
+	
 		String host 				= req.getHeader("Host") ;
 		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
@@ -35,7 +38,7 @@ public class SavePermissions extends HttpServlet {
 		int meta_id = Integer.parseInt(req.getParameter("meta_id")) ;
 		int set_id  = Integer.parseInt(req.getParameter("set_id")) ;
 
-		res.setContentType( "text/html" );
+		res.setContentType( "text/html; charset=UTF-8" );
 		Writer out = res.getWriter();
 
 		if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,4 ) ) {	// Checking to see if user may edit this
