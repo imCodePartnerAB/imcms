@@ -44,6 +44,8 @@ public class AdminDoc extends HttpServlet {
             forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_HTML_DOCUMENT );
         } else if ( document instanceof UrlDocumentDomainObject && IMCConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT == flags ) {
             forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_URL_DOCUMENT );
+        } else if ( document instanceof FileDocumentDomainObject && IMCConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags ) {
+            forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_FILE_DOCUMENT );
         } else {
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 

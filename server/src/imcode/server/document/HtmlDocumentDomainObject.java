@@ -46,8 +46,8 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
         documentMapper.saveNewHtmlDocument( this );
     }
 
-    public void initDocumentFromDb( DocumentMapper documentMapper ) {
-        documentMapper.initHtmlDocumentFromDb(this) ;
+    public void initDocument( DocumentMapper documentMapper ) {
+        documentMapper.initHtmlDocument(this) ;
     }
 
 }

@@ -42,12 +42,12 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
         documentMapper.saveBrowserDocument( this ) ;
     }
 
-    public void saveNewDocument( DocumentMapper documentMapper ) throws IOException {
+    public void saveNewDocument( DocumentMapper documentMapper ) {
         documentMapper.saveNewBrowserDocument( this );
     }
 
-    public void initDocumentFromDb( DocumentMapper documentMapper ) {
-        documentMapper.initBrowserDocumentFromDb( this );
+    public void initDocument( DocumentMapper documentMapper ) {
+        documentMapper.initBrowserDocument( this );
     }
 
     public void setBrowserDocumentId( Browser browser, int documentId ) {

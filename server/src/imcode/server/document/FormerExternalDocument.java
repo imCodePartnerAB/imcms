@@ -31,6 +31,6 @@ public abstract class FormerExternalDocument extends DocumentDomainObject {
     public void saveNewDocument( DocumentMapper documentMapper ) {
     }
 
-    public void initDocumentFromDb( DocumentMapper documentMapper ) {
+    public void initDocument( DocumentMapper documentMapper ) {
     }
 }

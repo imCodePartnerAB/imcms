@@ -2,7 +2,12 @@
                                          imcode.server.document.DocumentMapper,
                                          imcode.util.Utility,
                                          org.apache.commons.lang.StringEscapeUtils,
-                                         imcode.server.ApplicationServer"%>
+                                         imcode.server.ApplicationServer,
+                                         imcode.server.document.FileDocumentDomainObject,
+                                         org.apache.commons.lang.ObjectUtils"%>
+<%
+    FileDocumentDomainObject document = (FileDocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) ;
+%>
 <html>
 <head>
 <title><? install/htdocs/sv/jsp/docadmin/file_document.jsp/1 ?></title>
@@ -61,24 +66,33 @@ imcmsGui("mid", null);
 <tr>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="396">
-	<tr>
+
+    <tr>
 		<td width="20%" height="22"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/5 ?></td>
 		<td width="80%">
-            <input type="file" name="<%= DocumentComposer.PARAMETER__FILE_DOC__FILE %>" size="45"/>
+            <% if (!creatingNewDocument) { %>
+                <%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getFilename(), "" ) ) %><br>
+            <% } %>
+            <input type="file" name="<%= DocumentComposer.PARAMETER__FILE_DOC__FILE %>" size="45">
         </td>
 	</tr>
 	<tr>
 		<td height="22"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/7 ?></td>
 		<td>
 		<select name="<%= DocumentComposer.PARAMETER__FILE_DOC__MIME_TYPE %>">
-			<option value=""><? install/htdocs/sv/jsp/docadmin/file_document.jsp/autodetect_or_fill_in_below ?></option>
+			<option value=""<% if ("".equals(ObjectUtils.defaultIfNull( document.getMimeType(), "")) ) { %> selected<% } %>>
+                <? install/htdocs/sv/jsp/docadmin/file_document.jsp/autodetect_or_fill_in_below ?>
+            </option>
 			<%
                 final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
                 String[][] mimeTypes = documentMapper.getAllMimeTypesWithDescriptions(Utility.getLoggedOnUser( request ));
+                boolean documentMimeTypeFoundInDropDown = false ;
                 for ( int i = 0; i < mimeTypes.length; i++ ) {
                     String mimeType = mimeTypes[i][0];
                     String mimeTypeDescriptionInUsersLanguage = mimeTypes[i][1] ;
-                    %><option value="<%= mimeType %>"><%= StringEscapeUtils.escapeHtml( mimeTypeDescriptionInUsersLanguage ) %></option><%
+                    %><option value="<%= mimeType %>"<% if (mimeType.equals( document.getMimeType() )) { %> selected<% documentMimeTypeFoundInDropDown = true ; } %>>
+                        <%= StringEscapeUtils.escapeHtml( mimeTypeDescriptionInUsersLanguage ) %>
+                    </option><%
                 }
             %>
 		</select></td>
@@ -86,7 +100,7 @@ imcmsGui("mid", null);
 	<tr>
 		<td height="22"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/10 ?></td>
 		<td>
-            <input type="text" name="mimetype" size="30" maxlength="50" value="">
+            <input type="text" name="mimetype" size="30" maxlength="50" value="<% if (!documentMimeTypeFoundInDropDown) { %><%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getMimeType(), "" ) ) %><% } %>">
         </td>
 	</tr>
 	</table></td>

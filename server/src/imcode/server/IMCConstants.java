@@ -99,10 +99,11 @@ public interface IMCConstants {
     /** Properties file for host properties **/
     public final static String HOST_PROPERTIES           = "host.properties" ;
 
-    int PASSWORD_MINIMUM_LENGTH = 4;
+    final static int PASSWORD_MINIMUM_LENGTH = 4;
 
-    int DISPATCH_FLAG__DOCINFO_PAGE = PERM_EDIT_HEADLINE;
-    int DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT = PERM_DT_BROWSER_EDIT;
-    int DISPATCH_FLAG__EDIT_HTML_DOCUMENT = PERM_DT_HTML_EDIT;
-    int DISPATCH_FLAG__EDIT_URL_DOCUMENT = PERM_DT_URL_EDIT;
+    final static int DISPATCH_FLAG__DOCINFO_PAGE = PERM_EDIT_HEADLINE;
+    final static int DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT = PERM_DT_BROWSER_EDIT;
+    final static int DISPATCH_FLAG__EDIT_HTML_DOCUMENT = PERM_DT_HTML_EDIT;
+    final static int DISPATCH_FLAG__EDIT_URL_DOCUMENT = PERM_DT_URL_EDIT;
+    final static int DISPATCH_FLAG__EDIT_FILE_DOCUMENT = PERM_DT_FILE_EDIT;
 }

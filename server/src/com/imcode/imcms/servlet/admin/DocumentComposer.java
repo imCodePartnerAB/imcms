@@ -15,6 +15,7 @@ import imcode.server.document.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
+import imcode.util.InputStreamSource;
 import imcode.util.MultipartHttpServletRequest;
 import imcode.util.Utility;
 import org.apache.commons.fileupload.FileItem;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -93,6 +95,7 @@ public class DocumentComposer extends HttpServlet {
 
     public static final String ACTION__EDIT_DOCUMENT_INFORMATION = "editDocumentInformation";
     public static final String ACTION__EDIT_BROWSER_DOCUMENT = "editBrowserDocument";
+    public static final String ACTION__EDIT_FILE_DOCUMENT = "editFileDocument";
     public static final String ACTION__EDIT_HTML_DOCUMENT = "editHtmlDocument";
     public static final String ACTION__EDIT_URL_DOCUMENT = "editUrlDocument";
     public static final String ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION = "processEditedDocumentInformation";
@@ -138,7 +141,11 @@ public class DocumentComposer extends HttpServlet {
 
         UserDomainObject user = Utility.getLoggedOnUser( request );
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+
         try {
+            // TODO: Replace this rats-nest of dispatching with a bunch of Application Controllers a la Fowler,
+            // preferably stored in the session instead of the objects we put there now.
+            // http://www.martinfowler.com/eaaCatalog/applicationController.html
 
             if ( null != request.getParameter( PARAMETER__RETURNING_FROM_IMAGE_BROWSE ) ) {
                 action = request.getParameter( PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION );
@@ -191,10 +198,10 @@ public class DocumentComposer extends HttpServlet {
             } else if ( ACTION__CREATE_NEW_FILE_DOCUMENT.equalsIgnoreCase( action ) ) {
                 if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
                     FileDocumentDomainObject newFileDocument = (FileDocumentDomainObject)document;
-                    FileItem fileItem = request.getParameterFileItem( PARAMETER__FILE_DOC__FILE );
-                    newFileDocument.setFileDocumentFilename( fileItem.getName() );
-                    newFileDocument.setFileDocumentInputStream( fileItem.getInputStream() );
-                    newFileDocument.setFileDocumentMimeType( getMimeTypeFromRequest( request ) );
+                    final FileItem fileItem = request.getParameterFileItem( PARAMETER__FILE_DOC__FILE );
+                    newFileDocument.setFilename( fileItem.getName() );
+                    newFileDocument.setInputStreamSource( new FileItemInputStreamSource( fileItem ) );
+                    newFileDocument.setMimeType( getMimeTypeFromRequest( request ) );
                     saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newFileDocument, newDocumentParentInformation, user, request );
                 }
                 redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
@@ -208,6 +215,23 @@ public class DocumentComposer extends HttpServlet {
                 forwardToBrowserDocumentComposer( request, response );
             } else if ( ACTION__PROCESS_EDITED_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
                 documentMapper.saveDocument( document );
+                redirectToDocument( response, document );
+            } else if ( ACTION__EDIT_FILE_DOCUMENT.equalsIgnoreCase( action ) ) {
+                forwardToFileDocumentPage( request, response, user );
+            } else if ( ACTION__PROCESS_EDITED_FILE_DOCUMENT.equalsIgnoreCase( action ) ) {
+                if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+                    FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
+                    final FileItem fileItem = request.getParameterFileItem( PARAMETER__FILE_DOC__FILE );
+                    String fileName = fileItem.getName();
+                    if ( !"".equals( fileName ) ) {
+                        fileDocument.setFilename( fileName );
+                        if ( 0 != fileItem.getSize() ) {
+                            fileDocument.setInputStreamSource( new FileItemInputStreamSource( fileItem ) );
+                        }
+                    }
+                    fileDocument.setMimeType( getMimeTypeFromRequest( request ) );
+                    documentMapper.saveDocument( fileDocument );
+                }
                 redirectToDocument( response, document );
             } else if ( ACTION__EDIT_HTML_DOCUMENT.equalsIgnoreCase( action ) ) {
                 forwardToHtmlDocumentPage( request, response, user );
@@ -340,11 +364,11 @@ public class DocumentComposer extends HttpServlet {
 
     public void processNewFileDocumentInformation( HttpServletRequest request, HttpServletResponse response,
                                                    UserDomainObject user ) throws IOException, ServletException {
-        forwardToFileDocumentPage( request, user, response );
+        forwardToFileDocumentPage( request, response, user );
     }
 
-    private void forwardToFileDocumentPage( HttpServletRequest request, UserDomainObject user,
-                                            HttpServletResponse response ) throws ServletException, IOException {
+    private void forwardToFileDocumentPage( HttpServletRequest request, HttpServletResponse response,
+                                            UserDomainObject user ) throws ServletException, IOException {
         request.getRequestDispatcher( URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2() + URL_I15D_PAGE__FILEDOC ).forward( request, response );
     }
 
@@ -591,6 +615,19 @@ public class DocumentComposer extends HttpServlet {
             documentTypeId = Integer.parseInt( request.getParameter( DOCUMENT_TYPE_PARAMETER_NAME ) );
         }
 
+    }
+
+    private static class FileItemInputStreamSource implements InputStreamSource {
+
+        private final FileItem fileItem;
+
+        public FileItemInputStreamSource( FileItem fileItem ) {
+            this.fileItem = fileItem;
+        }
+
+        public InputStream getInputStream() throws IOException {
+            return fileItem.getInputStream();
+        }
     }
 
 }

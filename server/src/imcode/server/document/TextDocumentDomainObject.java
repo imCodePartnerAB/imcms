@@ -87,8 +87,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         documentMapper.saveNewTextDocument( this );
     }
 
-    public void initDocumentFromDb( DocumentMapper documentMapper ) {
-        documentMapper.initTextDocumentFromDb( this );
+    public void initDocument( DocumentMapper documentMapper ) {
+        documentMapper.initTextDocument( this );
     }
 
     public void setText( int textFieldIndex, TextDocumentDomainObject.Text text ) {

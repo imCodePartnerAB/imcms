@@ -157,18 +157,18 @@ public class DocumentMapper {
     }
 
     public synchronized TextDocumentDomainObject createNewTextDocument( UserDomainObject user, int parentId,
-                                                                    int documentType, int parentMenuNumber ) {
+                                                                        int documentType, int parentMenuNumber ) {
         int newMetaId = createNewMeta( parentId, parentMenuNumber, documentType, user );
 
         touchDocument( getDocument( parentId ) );
         DocumentMapper.copyTemplateData( service, user, String.valueOf( parentId ), String.valueOf( newMetaId ) );
         DocumentMapper.sqlUpdateDocumentActivated( service, newMetaId, true );
 
-        return (TextDocumentDomainObject) getDocument( newMetaId );
+        return (TextDocumentDomainObject)getDocument( newMetaId );
     }
 
     public UrlDocumentDomainObject createNewUrlDocument( UserDomainObject user, int parentId, int parentMenuNumber,
-                                                      int documentType, String urlRef, String target ) {
+                                                         int documentType, String urlRef, String target ) {
         int newMetaId = createNewMeta( parentId, parentMenuNumber, documentType, user );
 
         DocumentDomainObject document = getDocument( newMetaId );
@@ -334,7 +334,7 @@ public class DocumentMapper {
         DocumentDomainObject document = getDocumentFromDb( metaId );
 
         if ( null != document ) {
-            document.initDocumentFromDb( this );
+            document.initDocument( this );
 
             addCategoriesFromDatabaseToDocument( document );
 
@@ -358,7 +358,7 @@ public class DocumentMapper {
         return document;
     }
 
-    void initTextDocumentFromDb( TextDocumentDomainObject document ) {
+    void initTextDocument( TextDocumentDomainObject document ) {
         // all from the table text_doc
         String[] sqlResult = service.sqlQuery( "SELECT template_id, group_id, sort_order, default_template_1, default_template_2 FROM text_docs WHERE meta_id = ?",
                                                new String[]{String.valueOf( document.getId() )} );
@@ -377,32 +377,32 @@ public class DocumentMapper {
             document.setDefaultTemplateIdForRestrictedPermissionSetTwo( defaultTemplateIdForRestrictedPermissionSetTwo );
         }
 
-        String sqlSelectTexts = "SELECT name, text, type FROM texts WHERE meta_id = ?" ;
-        String[][] sqlTextsResult = service.sqlQueryMulti( sqlSelectTexts, new String[] {""+document.getId()} ) ;
+        String sqlSelectTexts = "SELECT name, text, type FROM texts WHERE meta_id = ?";
+        String[][] sqlTextsResult = service.sqlQueryMulti( sqlSelectTexts, new String[]{"" + document.getId()} );
         for ( int i = 0; i < sqlTextsResult.length; i++ ) {
             String[] sqlTextsRow = sqlTextsResult[i];
-            int textIndex = Integer.parseInt(sqlTextsRow[0]) ;
-            String text = sqlTextsRow[1] ;
-            int textType = Integer.parseInt(sqlTextsRow[2]) ;
-            document.setText( textIndex, new TextDocumentDomainObject.Text( text, textType ));
+            int textIndex = Integer.parseInt( sqlTextsRow[0] );
+            String text = sqlTextsRow[1];
+            int textType = Integer.parseInt( sqlTextsRow[2] );
+            document.setText( textIndex, new TextDocumentDomainObject.Text( text, textType ) );
         }
     }
 
-    void initUrlDocumentFromDb( UrlDocumentDomainObject document ) {
+    void initUrlDocument( UrlDocumentDomainObject document ) {
         document.setUrlDocumentUrl( sqlGetFromUrlDocs( service, document.getId() ) );
     }
 
-    void initFileDocumentFromDb( FileDocumentDomainObject document ) {
+    void initFileDocument( FileDocumentDomainObject document ) {
         String[] sqlResult = sqlGetFromFileDocs( service, document.getId() );
         if ( null != sqlResult && sqlResult.length == 2 ) {
             String fileName = sqlResult[0];
             String mime = sqlResult[1];
-            document.setFileDocumentFilename( fileName );
-            document.setFileDocumentMimeType( mime );
+            document.setFilename( fileName );
+            document.setMimeType( mime );
         }
     }
 
-    public void initBrowserDocumentFromDb( BrowserDocumentDomainObject document ) {
+    public void initBrowserDocument( BrowserDocumentDomainObject document ) {
         String sqlStr = "SELECT to_meta_id, browser_id FROM browser_docs WHERE meta_id = ?";
         String[][] sqlResult = service.sqlQueryMulti( sqlStr, new String[]{"" + document.getId()} );
         for ( int i = 0; i < sqlResult.length; i++ ) {
@@ -414,7 +414,7 @@ public class DocumentMapper {
         }
     }
 
-    public void initHtmlDocumentFromDb( HtmlDocumentDomainObject htmlDocument ) {
+    public void initHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
         String sqlStr = "SELECT frame_set FROM frameset_docs WHERE meta_id = ?";
         String html = service.sqlQueryStr( sqlStr, new String[]{"" + htmlDocument.getId()} );
         htmlDocument.setHtmlDocumentHtml( html );
@@ -537,10 +537,10 @@ public class DocumentMapper {
     }
 
     public boolean hasPermissionToSearchDocument( UserDomainObject searchingUser, DocumentDomainObject document ) {
-        boolean searchingUserHasPermissionToFindDocument = false ;
+        boolean searchingUserHasPermissionToFindDocument = false;
         if ( document.isSearchDisabled() ) {
-            if (searchingUser.hasRole( RoleDomainObject.SUPERADMIN )) {
-                searchingUserHasPermissionToFindDocument = true ;
+            if ( searchingUser.hasRole( RoleDomainObject.SUPERADMIN ) ) {
+                searchingUserHasPermissionToFindDocument = true;
             }
         } else {
             if ( document.isPublished() ) {
@@ -592,19 +592,28 @@ public class DocumentMapper {
         saveDocument( document );
     }
 
-    private void saveFile( FileDocumentDomainObject newFileDocument ) throws IOException {
-        File filePath = Utility.getDomainPrefPath( PREFERENCE__FILE_PATH );
-        File file = new File( filePath, "" + newFileDocument.getId() );
-        byte[] buffer = new byte[FILE_BUFFER_LENGTH];
-        final InputStream in = newFileDocument.getFileDocumentInputStream();
-        final OutputStream out = new FileOutputStream( file );
+    private void saveFile( FileDocumentDomainObject newFileDocument ) {
         try {
-            for ( int bytesRead = 0; -1 != ( bytesRead = in.read( buffer ) ); ) {
-                out.write( buffer, 0, bytesRead );
+            InputStream in = newFileDocument.getInputStream();
+            if ( null == in ) {
+                return;
             }
-        } finally {
-            out.close();
-            in.close();
+            File filePath = null;
+            filePath = Utility.getDomainPrefPath( PREFERENCE__FILE_PATH );
+
+            File file = new File( filePath, "" + newFileDocument.getId() );
+            byte[] buffer = new byte[FILE_BUFFER_LENGTH];
+            final OutputStream out = new FileOutputStream( file );
+            try {
+                for ( int bytesRead = 0; -1 != ( bytesRead = in.read( buffer ) ); ) {
+                    out.write( buffer, 0, bytesRead );
+                }
+            } finally {
+                out.close();
+                in.close();
+            }
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
         }
     }
 
@@ -681,13 +690,13 @@ public class DocumentMapper {
         } );
     }
 
-    void saveNewFileDocument( FileDocumentDomainObject document ) throws IOException {
+    void saveNewFileDocument( FileDocumentDomainObject document ) {
         String[] fileDocumentColumns = {"meta_id", "filename", "mime"};
 
         String sqlFileDocsInsertStr = makeSqlInsertString( "fileupload_docs", fileDocumentColumns );
 
         service.sqlUpdateQuery( sqlFileDocsInsertStr, new String[]{
-            "" + document.getId(), document.getFileDocumentFilename(), document.getFileDocumentMimeType()
+            "" + document.getId(), document.getFilename(), document.getMimeType()
         } );
         saveFile( document );
     }
@@ -918,9 +927,9 @@ public class DocumentMapper {
 
     public void updateDocumentKeywords( int meta_id, String separatedKeywords ) {
         Perl5Util perl5util = new Perl5Util();
-        List keywords = new ArrayList() ;
-        perl5util.split(keywords, "/\\W+/", separatedKeywords ) ;
-        updateDocumentKeywords( meta_id, (String[])keywords.toArray( new String[keywords.size()]) );
+        List keywords = new ArrayList();
+        perl5util.split( keywords, "/\\W+/", separatedKeywords );
+        updateDocumentKeywords( meta_id, (String[])keywords.toArray( new String[keywords.size()] ) );
     }
 
     private void updateDocumentKeywords( int meta_id, String[] keywords ) {
@@ -1549,18 +1558,20 @@ public class DocumentMapper {
     }
 
     private void insertTextDocumentTexts( TextDocumentDomainObject textDocument ) {
-        String sqlInsertTexts = "INSERT INTO texts (meta_id, name, text, type) VALUES(?,?,?,?)" ;
-        Map texts = textDocument.getTexts() ;
+        String sqlInsertTexts = "INSERT INTO texts (meta_id, name, text, type) VALUES(?,?,?,?)";
+        Map texts = textDocument.getTexts();
         for ( Iterator iterator = texts.keySet().iterator(); iterator.hasNext(); ) {
             Integer textIndex = (Integer)iterator.next();
-            TextDocumentDomainObject.Text text = (TextDocumentDomainObject.Text)texts.get(textIndex) ;
-            service.sqlUpdateQuery( sqlInsertTexts, new String[] {""+textDocument.getId(), ""+textIndex, text.getText(), ""+text.getType()}) ;
+            TextDocumentDomainObject.Text text = (TextDocumentDomainObject.Text)texts.get( textIndex );
+            service.sqlUpdateQuery( sqlInsertTexts, new String[]{
+                "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType()
+            } );
         }
     }
 
     private void deleteTextDocumentTexts( TextDocumentDomainObject textDocument ) {
-        String sqlDeleteTexts = "DELETE FROM texts WHERE meta_id = ?" ;
-        service.sqlUpdateQuery( sqlDeleteTexts, new String[] {""+textDocument.getId()}) ;
+        String sqlDeleteTexts = "DELETE FROM texts WHERE meta_id = ?";
+        service.sqlUpdateQuery( sqlDeleteTexts, new String[]{"" + textDocument.getId()} );
     }
 
     void saveUrlDocument( UrlDocumentDomainObject urlDocument ) {
@@ -1571,8 +1582,9 @@ public class DocumentMapper {
     void saveFileDocument( FileDocumentDomainObject fileDocument ) {
         String sqlStr = "UPDATE fileupload_docs SET filename = ?,mime = ? WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{
-            fileDocument.getFileDocumentFilename(), fileDocument.getFileDocumentMimeType(), "" + fileDocument.getId()
+            fileDocument.getFilename(), fileDocument.getMimeType(), "" + fileDocument.getId()
         } );
+        saveFile( fileDocument );
     }
 
     void saveBrowserDocument( BrowserDocumentDomainObject browserDocument ) {

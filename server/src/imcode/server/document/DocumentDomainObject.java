@@ -286,7 +286,7 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
         return getDocumentProperties().hashCode();
     }
 
-    public abstract void initDocumentFromDb( DocumentMapper documentMapper );
+    public abstract void initDocument( DocumentMapper documentMapper );
 
     public boolean isActivatedAtTime( Date time ) {
         DocumentProperties documentProperties = getDocumentProperties();
@@ -321,7 +321,7 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
 
     public abstract void saveDocument( DocumentMapper documentMapper );
 
-    public abstract void saveNewDocument( DocumentMapper documentMapper ) throws IOException;
+    public abstract void saveNewDocument( DocumentMapper documentMapper ) ;
 
     public void setPermissionSetForRole( RoleDomainObject role, int permissionSetId ) {
         getDocumentProperties().setPermissionSetForRole( role, permissionSetId );

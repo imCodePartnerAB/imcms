@@ -16,8 +16,8 @@
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
                  imcode.server.document.*,
-                 com.imcode.imcms.servlet.admin.DocumentComposer"%>
-<%
+                 com.imcode.imcms.servlet.admin.DocumentComposer"%><%
+
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
     final DocumentMapper documentMapper = service.getDocumentMapper();
@@ -26,8 +26,9 @@
     final boolean editingExistingDocument = DocumentComposer.ACTION__EDIT_DOCUMENT_INFORMATION.equalsIgnoreCase( (String)request.getAttribute( DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION  )) ;
     DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = (DocumentComposer.NewDocumentParentInformation)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
     boolean creatingNewDocument = !editingExistingDocument;
-%>
-<%!
+
+%><%!
+
     String formatDate(Date date) {
         if (null == date) {
             return "" ;
@@ -43,9 +44,7 @@
         DateFormat dateFormat = new SimpleDateFormat( DateConstants.TIME_FORMAT_NO_SECONDS_STRING ) ;
         return dateFormat.format(time) ;
     }
-%>
-
-<html>
+%><html>
 <head>
 <title><? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_information_title ?></title>
 
@@ -53,7 +52,7 @@
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
 
 </head>
-<body bgcolor="#FFFFFF" onLoad="focusField(1,'meta_headline'); getDefaultPubl(null);">
+<body bgcolor="#FFFFFF" onLoad="document.getElementsByName('<%= StringEscapeUtils.escapeJavaScript( DocumentComposer.PARAMETER__HEADLINE ) %>').item(0).focus()">
 
 <script>
 imcmsGui("outer_start", null);

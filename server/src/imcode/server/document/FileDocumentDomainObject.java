@@ -8,6 +8,7 @@ package imcode.server.document;
 
 import com.imcode.imcms.servlet.admin.DocumentComposer;
 import imcode.server.user.UserDomainObject;
+import imcode.util.InputStreamSource;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,32 +18,35 @@ import java.io.InputStream;
 
 public class FileDocumentDomainObject extends DocumentDomainObject {
 
-    private String fileDocumentFilename;
-    private String fileDocumentMimeType;
-    private InputStream fileDocumentInputStream;
+    private String filename;
+    private String mimeType;
+    private InputStreamSource inputStreamSource;
 
-    public String getFileDocumentFilename() {
-        return fileDocumentFilename;
+    public String getFilename() {
+        return filename;
     }
 
-    public void setFileDocumentFilename( String v ) {
-        this.fileDocumentFilename = v;
+    public void setFilename( String v ) {
+        this.filename = v;
     }
 
-    public String getFileDocumentMimeType() {
-        return fileDocumentMimeType;
+    public String getMimeType() {
+        return mimeType;
     }
 
-    public void setFileDocumentMimeType( String fileDocumentMimeType ) {
-        this.fileDocumentMimeType = fileDocumentMimeType;
+    public void setMimeType( String mimeType ) {
+        this.mimeType = mimeType;
     }
 
-    public void setFileDocumentInputStream( InputStream fileDocumentInputStream ) {
-        this.fileDocumentInputStream = fileDocumentInputStream;
+    public void setInputStreamSource( InputStreamSource inputStreamSource ) {
+        this.inputStreamSource = inputStreamSource;
     }
 
-    public InputStream getFileDocumentInputStream() {
-        return fileDocumentInputStream;
+    public InputStream getInputStream() throws IOException {
+        if (null == inputStreamSource) {
+            return null ;
+        }
+        return inputStreamSource.getInputStream();
     }
 
     public int getDocumentTypeId() {
@@ -61,12 +65,12 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         documentMapper.saveFileDocument( this ) ;
     }
 
-    public void saveNewDocument( DocumentMapper documentMapper ) throws IOException {
+    public void saveNewDocument( DocumentMapper documentMapper ) {
         documentMapper.saveNewFileDocument(this);
     }
 
-    public void initDocumentFromDb( DocumentMapper documentMapper ) {
-        documentMapper.initFileDocumentFromDb(this);
+    public void initDocument( DocumentMapper documentMapper ) {
+        documentMapper.initFileDocument(this);
     }
 
 }

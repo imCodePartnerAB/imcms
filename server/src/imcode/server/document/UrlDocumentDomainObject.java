@@ -45,8 +45,8 @@ public class UrlDocumentDomainObject extends DocumentDomainObject {
         documentMapper.saveNewUrlDocument( this );
     }
 
-    public void initDocumentFromDb( DocumentMapper documentMapper ) {
-        documentMapper.initUrlDocumentFromDb( this );
+    public void initDocument( DocumentMapper documentMapper ) {
+        documentMapper.initUrlDocument( this );
     }
 
 }
