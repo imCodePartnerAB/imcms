@@ -336,7 +336,7 @@ public class DocumentIndex {
             }
 
             protected boolean isTokenChar( char c ) {
-                return Character.isLetterOrDigit( c ) ;
+                return '_' == c || Character.isLetterOrDigit( c ) ;
             }
         }
 
