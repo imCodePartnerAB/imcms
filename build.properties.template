@@ -116,7 +116,6 @@ log4j-config = log4j-nodebug.xml
 build-billboard
 build-chat
 build-conference
-build-fortune
 build-postcard
 build-readrunner
 build-shop

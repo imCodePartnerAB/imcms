@@ -844,8 +844,7 @@
     <!-- Copies the files for the 'fortune'-plugin. -->
     <target name="fortune"
 	    depends="init,tools"
-	    description="Copies the files for the 'fortune'-plugin."
-	    if="build-fortune">
+	    description="Copies the files for the 'fortune'-plugin.">
 
         <mkdir dir="${fortunes}"/>
 
