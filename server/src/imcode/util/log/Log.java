@@ -12,7 +12,10 @@ import java.io.IOException ;
 
 /**
    A logging class.
- */
+   Distributes log-events to log-listeners.
+   
+   @author kreiger@imcode.com
+**/
 public class Log implements LogLevels {
 
     /**
@@ -178,9 +181,6 @@ public class Log implements LogLevels {
 	getLog(log).log(level, msg, obj) ;
     }
 
-    /**
-       A shutdownhook, used for flushing all logs before exiting the VM.
-     */
 }
 
 
