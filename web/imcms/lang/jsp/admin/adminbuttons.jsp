@@ -22,7 +22,7 @@
 /* adminMode */
 
 #adminPanelDiv      { padding: 15px 0px 10px 0px; }
- .adminPanelTable    { border: 2px outset; background-color:#f5f5f7; }
+ .adminPanelTable    { border-right: 1px solid #000000; border-bottom: 1px solid #000000; background-color:#f5f5f7; }
   .adminPanelTd1      { padding:2px; background-color:#20568D; }
     #adminPanelTd1_1  { }
       .adminPanelLogo  { font: bold 11px Verdana,Geneva,sans-serif; color:#ddddff; letter-spacing:-1px; }
