@@ -268,13 +268,16 @@ public class SaveMeta extends HttpServlet {
 		//ok lets start and get the default templates
 		String tempStr = req.getParameter("default_template_set_1");
 		String template1 = "-1";
+		String template2 = "-1";
 		if (tempStr != null)
 		{
 		 	template1 = req.getParameter("default_template_set_1").equals("") ? "-1" : req.getParameter("default_template_set_1");
-			
-		}		
-		String template2 = req.getParameter("default_template_set_2").equals("")? "-1":req.getParameter("default_template_set_2");
-		
+		}	
+		tempStr = req.getParameter("default_template_set_2");	
+		if (tempStr != null)
+		{
+			template2 = req.getParameter("default_template_set_2").equals("")? "-1":req.getParameter("default_template_set_2");
+		}
 		String sqlStr = "" ;
 
 		Enumeration propkeys = metaprops.propertyNames() ;
