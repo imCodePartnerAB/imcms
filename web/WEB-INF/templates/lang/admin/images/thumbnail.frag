@@ -14,4 +14,4 @@
     #end
 #end
 <a href="$imageUrl"><img src="$imageUrl" alt="<? web/WEB-INF/templates/lang/admin/images/thumbnail.frag/alt ?>" border="0" width="$width" height="$height"></a>
-#if( $imageSize.Width > 0 && $imageSize.Height > 0 )<br>${imageSize.Width}x${imageSize.Height}&nbsp;[$fileSize]#end
+#if( $imageSize.Width > 0 && $imageSize.Height > 0 )<br>${imageSize.Width}x${imageSize.Height}<br>$fileSize#end

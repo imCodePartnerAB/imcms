@@ -5,39 +5,27 @@ import com.imcode.imcms.servlet.DocumentFinder;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.*;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.ImageSize;
-import imcode.util.ImcmsImageUtils;
-import imcode.util.LocalizedMessage;
-import imcode.util.Utility;
+import imcode.util.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.search.*;
 
-import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.io.InputStream;
+import java.util.*;
 
 public class ChangeImage extends HttpServlet {
 
@@ -341,20 +329,24 @@ public class ChangeImage extends HttpServlet {
         public String render( DocumentDomainObject document, HttpServletRequest request ) {
             UserDomainObject user = Utility.getLoggedOnUser( request );
             FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)document;
-            ImageSize imageSize ;
-            String fileSize;
+            ImageSize imageSize = new ImageSize( 0, 0 );
+            long fileSize ;
+            InputStreamSource inputStreamSource = imageFileDocument.getDefaultFile().getInputStreamSource();
             try {
-                BufferedImage image = ImageIO.read( imageFileDocument.getDefaultFile().getInputStreamSource().getInputStream() ) ;
-                imageSize = new ImageSize( image.getWidth(), image.getHeight() );
-                fileSize = imageFileDocument.getDefaultFile().getInputStreamSource().getSize()+"";
+                InputStream inputStream = inputStreamSource.getInputStream();
+                fileSize = inputStreamSource.getSize();
+                try {
+                    imageSize = Utility.getImageSize( inputStream );
+                } catch ( IOException ignored ) {
+                }
             } catch ( IOException ioe ) {
-                imageSize = new ImageSize( 0, 0 );
-                fileSize = "0";
+                throw new UnhandledException( ioe );
             }
+
             List values = Arrays.asList( new Object[]{
                 "imageUrl", "GetDoc?meta_id=" + document.getId(),
                 "imageSize", imageSize,
-                "fileSize", fileSize,
+                "fileSize", Utility.getHumanReadableSize( fileSize, "&nbsp;" ),
             } );
             return Imcms.getServices().getAdminTemplate( "images/thumbnail.frag", user, values );
         }

@@ -7,14 +7,20 @@ import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.SetUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 public class Utility {
 
@@ -90,24 +96,25 @@ public class Utility {
         }
     }
 
-    public static String getQueryStringExcludingParameter(HttpServletRequest request, String parameterNameToExclude) {
-        Map requestParameters = new HashMap(request.getParameterMap()) ;
-        requestParameters.remove( parameterNameToExclude ) ;
+    public static String getQueryStringExcludingParameter( HttpServletRequest request, String parameterNameToExclude ) {
+        Map requestParameters = new HashMap( request.getParameterMap() );
+        requestParameters.remove( parameterNameToExclude );
         return createQueryStringFromParameterMap( requestParameters );
     }
 
     public static String createQueryStringFromParameterMap( Map requestParameters ) {
-        Set requestParameterStrings = SetUtils.orderedSet(new HashSet()) ;
+        Set requestParameterStrings = SetUtils.orderedSet( new HashSet() );
         for ( Iterator iterator = requestParameters.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
             String parameterName = (String)entry.getKey();
             String[] parameterValues = (String[])entry.getValue();
             for ( int i = 0; i < parameterValues.length; i++ ) {
                 String parameterValue = parameterValues[i];
-                requestParameterStrings.add( URLEncoder.encode( parameterName ) + "=" + URLEncoder.encode( parameterValue )) ;
+                requestParameterStrings.add( URLEncoder.encode( parameterName ) + "="
+                                             + URLEncoder.encode( parameterValue ) );
             }
         }
-        return StringUtils.join( requestParameterStrings.iterator(), "&" ) ;
+        return StringUtils.join( requestParameterStrings.iterator(), "&" );
     }
 
     public static Collection collectImageDirectories() {
@@ -120,5 +127,36 @@ public class Utility {
         SortedSet sortedSet = new TreeSet( comparator );
         sortedSet.addAll( set );
         return sortedSet.iterator().next();
+    }
+
+    public static ImageSize getImageSize( InputStream inputStream ) throws IOException {
+        ImageInputStream imageInputStream = ImageIO.createImageInputStream( inputStream );
+        Iterator imageReadersIterator = ImageIO.getImageReaders( imageInputStream );
+        if ( !imageReadersIterator.hasNext() ) {
+            throw new IOException( "Can't read image format." ) ;
+        }
+        ImageReader imageReader = (ImageReader)imageReadersIterator.next();
+        imageReader.setInput( imageInputStream, true, true );
+        int width = imageReader.getWidth( 0 );
+        int height = imageReader.getHeight( 0 );
+        imageReader.dispose();
+        return new ImageSize( width, height );
+    }
+
+    public static String getHumanReadableSize(long size, String separator) {
+        double displaySize = size ;
+        DecimalFormat df = new DecimalFormat( "#.#" );
+        DecimalFormatSymbols decimalFormatSymbols = df.getDecimalFormatSymbols();
+        decimalFormatSymbols.setDecimalSeparator( '.' );
+        df.setDecimalFormatSymbols( decimalFormatSymbols );
+        String sizeSuffix = "B";
+        if ( displaySize >= ( 1024 * 1024 ) ) {
+            displaySize /= ( 1024 * 1024 );
+            sizeSuffix = "MB";
+        } else if ( displaySize >= 1024 ) {
+            displaySize /= 1024;
+            sizeSuffix = "kB";
+        }
+        return df.format(displaySize)+separator+sizeSuffix ;
     }
 }
