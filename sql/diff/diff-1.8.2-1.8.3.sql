@@ -1,3 +1,5 @@
+-- Diff from 1_8_2-RELEASE up to 1_8_3-RELEASE
+
 CREATE TABLE menus (
     menu_id INT PRIMARY KEY IDENTITY,
     meta_id INT REFERENCES meta ( meta_id ),
@@ -71,3 +73,112 @@ ALTER TABLE roles ALTER COLUMN role_name VARCHAR(30) NOT NULL
 UPDATE roles SET role_name = RTRIM(role_name)
 
 -- 2004-04-06 Kreiger
+
+
+BEGIN TRANSACTION
+EXECUTE MSSQL_DropConstraintLike 'category_types', 'DF__category___max_c__%'
+GO
+CREATE TABLE dbo.Tmp_category_types
+	(
+	category_type_id int NOT NULL IDENTITY (1, 1),
+	name varchar(50) NOT NULL,
+	max_choices int NOT NULL
+	)  ON [PRIMARY]
+GO
+ALTER TABLE dbo.Tmp_category_types ADD CONSTRAINT
+	DF__category___max_choices DEFAULT (0) FOR max_choices
+GO
+SET IDENTITY_INSERT dbo.Tmp_category_types ON
+GO
+IF EXISTS(SELECT * FROM dbo.category_types)
+	 EXEC('INSERT INTO dbo.Tmp_category_types (category_type_id, name, max_choices)
+		SELECT category_type_id, name, max_choices FROM dbo.category_types TABLOCKX')
+GO
+SET IDENTITY_INSERT dbo.Tmp_category_types OFF
+GO
+EXECUTE MSSQL_DropConstraintLike 'categories', 'FK__categorie__categ__%'
+GO
+DROP TABLE dbo.category_types
+GO
+EXECUTE sp_rename N'dbo.Tmp_category_types', N'category_types', 'OBJECT'
+GO
+ALTER TABLE dbo.category_types ADD CONSTRAINT
+	PK__category_types__68D28DBC PRIMARY KEY CLUSTERED
+	(
+	category_type_id
+	) ON [PRIMARY]
+
+GO
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.categories WITH NOCHECK ADD CONSTRAINT
+	FK__categorie__categ__6BAEFA67 FOREIGN KEY
+	(
+	category_type_id
+	) REFERENCES dbo.category_types
+	(
+	category_type_id
+	)
+GO
+COMMIT
+
+BEGIN TRANSACTION
+EXECUTE MSSQL_DropConstraintLike 'categories', 'FK__categorie__categ__%'
+GO
+COMMIT
+BEGIN TRANSACTION
+EXECUTE MSSQL_DropConstraintLike 'categories', 'DF__categorie__image__%'
+GO
+CREATE TABLE dbo.Tmp_categories
+	(
+	category_id int NOT NULL IDENTITY (1, 1),
+	category_type_id int NOT NULL,
+	name varchar(50) NOT NULL,
+	description varchar(500) NULL,
+	image varchar(255) NOT NULL
+	)  ON [PRIMARY]
+GO
+ALTER TABLE dbo.Tmp_categories ADD CONSTRAINT
+	DF__categorie__image__74444068 DEFAULT ('') FOR image
+GO
+SET IDENTITY_INSERT dbo.Tmp_categories ON
+GO
+IF EXISTS(SELECT * FROM dbo.categories)
+	 EXEC('INSERT INTO dbo.Tmp_categories (category_id, category_type_id, name, description, image)
+		SELECT category_id, category_type_id, name, description, image FROM dbo.categories TABLOCKX')
+GO
+SET IDENTITY_INSERT dbo.Tmp_categories OFF
+GO
+DROP TABLE dbo.categories
+GO
+EXECUTE sp_rename N'dbo.Tmp_categories', N'categories', 'OBJECT'
+GO
+ALTER TABLE dbo.categories ADD CONSTRAINT
+	PK__categories__69C6B1F5 PRIMARY KEY CLUSTERED
+	(
+	category_id
+	) ON [PRIMARY]
+
+GO
+ALTER TABLE dbo.categories WITH NOCHECK ADD CONSTRAINT
+	FK__categorie__categ__6BAEFA67 FOREIGN KEY
+	(
+	category_type_id
+	) REFERENCES dbo.category_types
+	(
+	category_type_id
+	)
+GO
+COMMIT
+
+
+-- 2004-04-07 Lennart Å
+-- 1_8_3-RELEASE
+
+print ' OBS !!!!! '
+print 'Följande åtgärder behöver genomföras efter detta script '
+print ''
+print '1. Du MÅSTE köra hela "sprocs.sql" som finns i "dist" katalogen'
+print ''
+
+GO

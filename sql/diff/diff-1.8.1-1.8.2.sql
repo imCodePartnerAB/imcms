@@ -1,3 +1,5 @@
+-- Diff from 1_8_1-RELEASE up to 1_8_2-RELEASE
+
 CREATE PROCEDURE MSSQL_DropConstraintLike @table VARCHAR(255), @like VARCHAR(255) AS
 
 DECLARE @constraint VARCHAR(255)
@@ -426,4 +428,11 @@ DROP PROCEDURE SearchDocs
 DROP PROCEDURE SearchDocsIndex
 
 -- 2004-03-05 Kreiger
+-- 1_8_2-RELEASE
 
+print ' OBS !!!!! '
+print 'Följande åtgärder behöver genomföras efter detta script '
+print ''
+print '1. Du MÅSTE köra hela "sprocs.sql" som finns i "dist" katalogen'
+print ''
+GO
