@@ -1,18 +1,18 @@
 package imcode.anttasks;
 
-import org.apache.tools.ant.Task;
+import imcode.util.LineReader;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.util.FileUtils;
+import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.types.FilterSet;
+import org.apache.tools.ant.types.FilterSetCollection;
+import org.apache.tools.ant.util.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
 import java.io.*;
-
-import imcode.util.LineReader;
+import java.util.*;
 
 /**
  * @author kreiger
@@ -30,12 +30,13 @@ public class Translate extends Task {
 
     private int verbosity = Project.MSG_VERBOSE;
 
-    private boolean filtering ;
+    private boolean filtering;
     private List filterSets = new ArrayList();
 
     private FileUtils fileUtils = FileUtils.newFileUtils();
     private Properties bundleProperties = new Properties();
     private long bundleFileLastModified;
+    private File bundleFile;
 
     public void addFileSet( FileSet fileSet ) {
         fileSets.add( fileSet );
@@ -89,10 +90,10 @@ public class Translate extends Task {
         validateAttributes();
         loadBundle();
         FilterSetCollection filters = getFilterSetCollection();
-        translateFiles(filters);
+        translateFiles( filters );
     }
 
-    private void translateFiles(FilterSetCollection filters) {
+    private void translateFiles( FilterSetCollection filters ) {
         for ( Iterator it = fileSets.iterator(); it.hasNext(); ) {
             FileSet fileSet = (FileSet)it.next();
             DirectoryScanner directoryScanner = fileSet.getDirectoryScanner( getProject() );
@@ -112,7 +113,7 @@ public class Translate extends Task {
                 File sourceFile = fileUtils.resolveFile( directoryScanner.getBasedir(), sourcePath );
                 long destFileLastModified = destFile.lastModified();
                 boolean needsWork = destFileLastModified < sourceFile.lastModified()
-                        || destFileLastModified < bundleFileLastModified;
+                                    || destFileLastModified < bundleFileLastModified;
                 if ( needsWork ) {
                     log( "Translating file " + sourceFile + " to file " + destFile, verbosity );
                     translateFile( sourceFile, destFile, filters );
@@ -129,48 +130,67 @@ public class Translate extends Task {
             FileOutputStream destStream = new FileOutputStream( destFile );
             translateStream( sourceStream, destStream, filters );
         } catch ( IOException e ) {
+            destFile.delete();
             throw new BuildException( e );
+        } catch ( PropertiesNotFoundException e ) {
+            destFile.delete();
+            String[] missingPropertyKeys = e.getPropertyKeys();
+            String missingPropertyKeysString = StringUtils.join(missingPropertyKeys, ", ") ;
+            String message = sourceFile+":0: "+(missingPropertyKeys.length > 1 ? "Keys " : "Key ")+missingPropertyKeysString+" not found in " + bundleFile;
+            throw new BuildException( message );
         }
     }
 
-    private void translateStream( InputStream sourceStream, FileOutputStream destStream, FilterSetCollection filters ) throws IOException {
-        LineReader lineReader = new LineReader(new BufferedReader( new InputStreamReader( sourceStream ) ) );
+    private void translateStream( InputStream sourceStream, FileOutputStream destStream, FilterSetCollection filters ) throws IOException, PropertiesNotFoundException {
+        LineReader lineReader = new LineReader( new BufferedReader( new InputStreamReader( sourceStream ) ) );
         BufferedWriter destWriter = new BufferedWriter( new OutputStreamWriter( destStream ) );
-
+        List propertiesNotFound = new ArrayList();
         for ( String line; null != ( line = lineReader.readLine() ); ) {
-            String translatedLine = translateLine( line );
-            String translatedAndFilteredLine = filters.replaceTokens( translatedLine ) ;
-            destWriter.write( translatedAndFilteredLine );
+            try {
+                String translatedLine = translateLine( line );
+                String translatedAndFilteredLine = filters.replaceTokens( translatedLine );
+                destWriter.write( translatedAndFilteredLine );
+            } catch ( PropertiesNotFoundException e ) {
+                propertiesNotFound.addAll( Arrays.asList(e.getPropertyKeys()) );
+            }
         }
         destWriter.flush();
         destWriter.close();
+        if ( !propertiesNotFound.isEmpty() ) {
+            throw new PropertiesNotFoundException( (String[])propertiesNotFound.toArray( new String[propertiesNotFound.size()] ) );
+        }
     }
 
-    private String translateLine( String line ) {
-        String translatedLine = line ;
-        for ( int startTokenIndex = 0; -1 != ( startTokenIndex = translatedLine.indexOf( startToken, startTokenIndex ) ); ) {
+    private String translateLine( String line ) throws PropertiesNotFoundException {
+        String translatedLine = line;
+        List propertiesNotFound = new ArrayList();
+        for ( int startTokenIndex = 0; -1
+                                       != ( startTokenIndex = translatedLine.indexOf( startToken, startTokenIndex ) ); ) {
             int endTokenIndex = translatedLine.indexOf( endToken, startTokenIndex + startToken.length() );
             if ( -1 != endTokenIndex ) {
                 String bundleKey = translatedLine.substring( startTokenIndex + startToken.length(), endTokenIndex );
                 String bundleValue = bundleProperties.getProperty( bundleKey );
-                if ( null != bundleValue ) {
-                    log("Replacing key "+bundleKey+ " with value "+bundleValue, Project.MSG_DEBUG) ;
-                    translatedLine = translatedLine.substring( 0, startTokenIndex ) + bundleValue
-                            + translatedLine.substring( endTokenIndex + endToken.length() );
-                    startTokenIndex += bundleValue.length();
+                if ( null == bundleValue ) {
+                    bundleValue = bundleKey;
+                    propertiesNotFound.add( bundleKey );
                 } else {
-                    log("Found key "+bundleKey+" with no corresponding value.", Project.MSG_DEBUG) ;
-                    startTokenIndex += startToken.length();
+                    log( "Replacing key " + bundleKey + " with value " + bundleValue, Project.MSG_DEBUG );
+                    translatedLine = translatedLine.substring( 0, startTokenIndex ) + bundleValue
+                                     + translatedLine.substring( endTokenIndex + endToken.length() );
                 }
+                startTokenIndex += bundleValue.length();
             } else {
                 break;
             }
+        }
+        if (!propertiesNotFound.isEmpty()) {
+            throw new PropertiesNotFoundException( (String[])propertiesNotFound.toArray( new String[propertiesNotFound.size()] ) );
         }
         return translatedLine;
     }
 
     private void loadBundle() {
-        File bundleFile = new File( bundle.getPath() + '_' + bundleLanguage + ".properties" );
+        bundleFile = new File( bundle.getPath() + '_' + bundleLanguage + ".properties" );
         bundleFileLastModified = bundleFile.lastModified();
         try {
             bundleProperties.load( new FileInputStream( bundleFile ) );
@@ -211,5 +231,19 @@ public class Translate extends Task {
             executionFilters.addFilterSet( (FilterSet)filterEnum.next() );
         }
         return executionFilters;
+    }
+
+    private static class PropertiesNotFoundException extends Exception {
+
+        private String[] propertyKeys;
+
+        public PropertiesNotFoundException( String[] propertyKeys ) {
+            this.propertyKeys = propertyKeys;
+        }
+
+        public String[] getPropertyKeys() {
+            return propertyKeys;
+        }
+
     }
 }
