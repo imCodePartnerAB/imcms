@@ -155,3 +155,41 @@ deallocate posCursor
 GO
 -- 2002-01-28
 
+
+-- update because off spelling mistake in A_selfreg_roles
+GO
+ALTER PROCEDURE A_SelfRegRoles_AddNew
+
+	@theMetaId int , 
+	@new_role_id int ,
+	@role_name char(25)
+/*
+-- Lets add a new role which a member will have when he is selfregistereing.
+*/
+AS
+-- Lets check if the role already exists in our selfreg role list
+DECLARE @foundRole int
+SELECT @foundRole = 0
+SELECT @foundRole = sr.selfreg_id
+FROM 	A_selfreg_roles sr , A_conf_selfreg_crossref ref, A_conference c
+WHERE sr.role_id = @new_role_id
+	AND sr.selfreg_id = ref.selfreg_id
+	AND ref.meta_id = c.meta_id
+	AND c.meta_id = @theMetaId
+-- PRINT @foundRole
+IF ( @foundRole = 0  ) BEGIN	
+	PRINT 'Rollen fanns inte'
+	-- Lets start to add the classification
+	INSERT INTO A_selfreg_roles( role_id , role_name ) 
+	VALUES ( @new_role_id , @role_name )
+	SELECT @foundRole = @@identity
+	-- Lets insert the new crossreferences to the new role
+	INSERT INTO A_conf_selfreg_crossref (meta_id,selfreg_id)
+	VALUES (  @theMetaId , @foundRole )
+END ELSE BEGIN	
+	PRINT 'Rollen fanns - gör ingenting'
+END
+GO
+
+-- 2002-02-07
+

@@ -2432,7 +2432,7 @@ WHERE sr.role_id = @new_role_id
 IF ( @foundRole = 0  ) BEGIN	
 	 PRINT 'Rollen fanns inte'
 	-- Lets start to add the classification
-	INSERT INTO selfreg_roles( role_id , role_name ) 
+	INSERT INTO A_selfreg_roles( role_id , role_name ) 
 	VALUES ( @new_role_id , @role_name )
 	SELECT @foundRole = @@identity
 
