@@ -67,7 +67,9 @@ public class ParserParameters implements Cloneable {
     }
 
     public Object clone() throws CloneNotSupportedException {
-        return super.clone() ;
+        ParserParameters clone = (ParserParameters)super.clone();
+        clone.documentRequest = (DocumentRequest)documentRequest.clone() ;
+        return clone ;
     }
 
     public boolean isMenuMode() {
