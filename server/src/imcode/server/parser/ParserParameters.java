@@ -1,8 +1,10 @@
 package imcode.server.parser ;
 
-import org.apache.oro.text.regex.* ;
-import java.util.* ;
+import imcode.util.* ;
 
+import org.apache.oro.text.regex.* ;
+
+import java.util.* ;
 
 public class ParserParameters {
     private final static String CVS_REV = "$Revision$" ;
@@ -11,8 +13,8 @@ public class ParserParameters {
     private String template;	//used to store the template if not default is wanted
     private String param;		//used to store the parameter param
     private String externalParam; //used to store the param prodused from external class.
-    private boolean readrunnerUseStopChars = false ;
-    private boolean readrunnerUseSepChars = false ;
+
+    private ReadrunnerParameters readrunnerParameters ;
 
     public ParserParameters() {
 
@@ -31,12 +33,8 @@ public class ParserParameters {
 	this.externalParam = externalparam;
     }
 
-    public void setReadrunnerUseStopChars(boolean v) {
-	this.readrunnerUseStopChars = v ;
-    }
-
-    public void setReadrunnerUseSepChars(boolean v) {
-	this.readrunnerUseSepChars = v ;
+    public void setReadrunnerParameters(ReadrunnerParameters readrunnerParameters) {
+	this.readrunnerParameters = readrunnerParameters ;
     }
 
     // get methods
@@ -52,11 +50,8 @@ public class ParserParameters {
 	return	this.externalParam == null ? "":this.externalParam;
     }
 
-    public boolean getReadrunnerUseStopChars() {
-	return readrunnerUseStopChars ;
+    public ReadrunnerParameters getReadrunnerParameters() {
+	return this.readrunnerParameters ;
     }
 
-    public boolean getReadrunnerUseSepChars() {
-	return readrunnerUseSepChars ;
-    }
 }

@@ -19,7 +19,6 @@
   <!-- The webroot. Everything put here can be seen by any visitor. -->
   <property name="webroot"        value="${build}"/>
 
-  
   <property name="imcmsimages"          value="${webroot}/imcmsimages"/>
   <property name="images"               value="${webroot}/images"/>
   <property name="login"                value="${webroot}/login"/>
@@ -277,7 +276,7 @@
 
   <!-- Run JUnit-tests -->
   <target name="test"
-          depends="server"
+	  depends="server"
 	  description="Runs JUnit-tests.">
 
     <java classname="junit.swingui.TestRunner" fork="yes">
@@ -1047,8 +1046,8 @@
 
   <!-- Copies the files for the 'fortune'-plugin. -->
   <target name="fortune"
-          depends="init,fortune-templates"
-          description="Copies the files for the 'fortune'-plugin."
+	  depends="init,fortune-templates"
+	  description="Copies the files for the 'fortune'-plugin."
 	  if="build-fortune">
 
     <mkdir dir="${fortunes}"/>
@@ -1093,7 +1092,7 @@
 
   <!-- Copies the files for readrunner -->
   <target name="readrunner"
-          depends="init,global-filters"
+	  depends="init,global-filters"
 	  description="Copies the files for readrunner."
 	  if="build-readrunner">
 
@@ -1106,6 +1105,7 @@
 	    <fileset dir="install/htdocs/sv/readrunner" excludes="*.jpg,*.gif"/>
 	  </copy>
 
+	  <mkdir dir="${readrunner}/preparsed"/>
   </target>
 
 

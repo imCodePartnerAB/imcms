@@ -1,0 +1,194 @@
+<!--
+/*
+ * Copyright (c) 2001 ReadRunner(tm). All Rights Reserved.
+ * You may not reverse engineer, decompile, or disassemble this product
+ * You may not redistribute this software, code or design without the written consent of the copyright owner.
+ * Coding by imCode AB www.imcode.com
+ */
+-->
+<html>
+<head>
+<title> - ReadRunner(TM)
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+
+<script language="javascript">
+<!--
+var RRlayers = #quotecount# ;
+//-->
+</script>
+
+<script language="javascript">
+<!--
+var server = 'http://gandalf/imcms/';
+
+if (top.location == self.location) {
+	top.location = server + 'readrunner/rr_reader.html?menu=0&doc=' + document.location;
+}
+
+document.write('<ba'+'se href="' + server + '">');
+
+
+var infoWin = window.open(server + 'readrunner/rr_reader_popup-mess.html','infoWin',
+'resizable=no,scrollbars=0,status=0,menu=0,width=500,height=200,left=' + (screen.width-500)/2 + ',top=' + (screen.height-200)/2 + '');
+checkInfoWin();
+//infoWin.focus();
+
+function checkInfoWin() {
+	if (infoWin) {
+		try {
+			infoWin.focus();
+		} catch(e) {}
+	}
+}
+
+function checkLocal() {
+	document.getElementById("save").style.visibility = (/file:/.test(document.location.toString())) ? 'hidden' : 'visible';
+}
+
+function debugRR(code) {
+	var slay = document.getElementById("RRbufferDiv");
+	slay.innerText = code.replace(/<BR>/gi, '<br>\n');
+	slay.style.display = 'block';
+	slay.style.textAlign = 'left';
+	slay.style.backgroundColor = '#f0f033';
+	slay.style.top = 2000;
+	slay.style.left = 0;
+	slay.style.font = '11px "Courier New"';
+	slay.style.width = '100%';
+	slay.style.padding = 20;
+	slay.style.marginBottom = 50;
+}
+//-->
+</script>
+
+<script language="JavaScript" src="readrunner/javascript/rr_reader.js"></script>
+<script language="JavaScript" src="readrunner/javascript/rr_reader_nav.js"></script>
+
+<link rel="STYLESHEET" type="text/css" href="readrunner/css/readrunner_reader.css">
+
+</head>
+<body id="bfBody" style="margin: 50 0 10 0; border-top:0px; border-left: 1px solid threedshadow; text-align:center; background-color:#d6d3ce"
+      onload="checkLocal(); initBtns(); RRinit();"
+      onkeydown="redirectMouseClick(this);"
+      onResize="RRonResize();" onFocus="checkInfoWin()"
+      onContextMenu="return false;">
+
+<div id="RRpanelTopLineDiv" style="position:absolute; left:0; top:-1; width:100%; height:1px; background-color:threedshadow; z-index:1000"></div>
+
+<div id="RRpanelDiv" style="position:absolute; left:-1000; top:-1000; z-index:1001; display:block">
+	<div id="RRpanelLeftLineDiv" style="position:absolute; left:-1; top:0; width:2; height:28;">
+	<img src="readrunner/images/line_left.gif" width="6" height="28" alt="" border="0"></div>
+	<div id="rrTopTextLay">
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td nowrap class="rrTopText">Hastighet: <span class="rrTopText" id="rrSpeedLay"></span> tkn/s &#150; <span class="rrTopText" id="rrSpeedWordsLay"></span> ord/min &nbsp; &nbsp;</td>
+		<td><button id="save" class="btnNorm" onClick="clickBtn('save')"
+					onMouseOver="overBtn('save')" onMouseOut="outBtn('save')"
+					onMouseDown="downBtn('save')" onMouseUp="overBtn('save')" title="Spara denna fil till din hårddisk"><img id="saveImage" 
+					src="readrunner/images/btn_save.gif" width="14" height="14" alt="" 
+					border="0" align="absmiddle"><span id="saveCont" class="btnDim" style="padding-left:10px">Spara</span></button></td>
+	</tr>
+	</table></div>
+	
+	<div id="RRpanelBtnDiv" style="position:absolute; top:2" align="right">
+	<table border="0" cellpadding="0" cellspacing="0">
+	<form name="form1">
+	<tr>
+		<td><SCRIPT LANGUAGE="JavaScript">
+<!--
+var actFile = document.location.toString().split("?")[0];
+document.write('<a id="menulink" href="' + server + 'readrunner/rr_reader.html?menu=1&doc=' + actFile + '" target="_top"></a>');
+//-->
+</SCRIPT><button id="menu" class="btnNorm" onClick="document.all.menulink.click(); this.blur()"
+				onMouseOver="overBtn('menu')" onMouseOut="outBtn('menu')"
+				onMouseDown="downBtn('menu')" onMouseUp="overBtn('menu')"><img id="menuImage" 
+				src="readrunner/images/btn_settings.gif" width="29" height="16" alt="" 
+				border="0" align="absmiddle"><span id="menuCont" class="btnDim">Meny</span></button></td>
+		<td><button id="reset" class="btnNorm" onClick="clickBtn('reset')"
+				onMouseOver="overBtn('reset')" onMouseOut="outBtn('reset')"
+				onMouseDown="downBtn('reset')" onMouseUp="overBtn('reset')"><img id="resetImage" 
+				src="readrunner/images/btn_refresh.gif" width="28" height="16" alt="" 
+				border="0" align="absmiddle"><span id="resetCont" class="btnDim">Börja&nbsp;om</span></button></td>
+		<td><button id="stop" class="btnNorm" onClick="clickBtn('stop')"
+				onMouseOver="overBtn('stop')" onMouseOut="outBtn('stop')"
+				onMouseDown="downBtn('stop')" onMouseUp="overBtn('stop')"><img id="stopImage" 
+				src="readrunner/images/btn_stop.gif" width="29" height="16" alt="" 
+				border="0" align="absmiddle"><span id="stopCont" class="btnDim">Stoppa</span></button></td>
+		<td><button id="start" class="btnNorm" onClick="clickBtn('start')"
+				onMouseOver="overBtn('start')" onMouseOut="outBtn('start')"
+				onMouseDown="downBtn('start')" onMouseUp="overBtn('start')"><img id="startImage" 
+				src="readrunner/images/btn_play.gif" width="28" height="16" alt="" 
+				border="0" align="absmiddle"><span id="startCont" class="btnDim">Starta</span></button></td>
+	</tr>
+	<input type="hidden" name="MetaId" value="">
+	<input type="hidden" name="blnSaveSpeed" value="0">
+	<input type="hidden" name="blnSaveSettings" value="0">
+	<input type="hidden" name="colorWormField" value="">
+	<input type="hidden" name="colorWormMaskField" value="">
+	<input type="hidden" name="blnHidePanel" value="0">
+	<input type="hidden" name="blnPattern" value="0">
+	<input type="hidden" name="blnOpacity" value="1">
+	<input type="hidden" name="RRopacityLevel" value="0.750">
+	<input type="hidden" name="RRcolorBg" value="255,255,255">
+	<input type="hidden" name="RRcolorText" value="0,0,0">
+	<input type="hidden" name="RRcolorWorm" value="153,204,153">
+	<input type="checkbox" name="cbp1" value="1" style="position:absolute; top:-1000" checked>
+	<input type="hidden" name="p1" value="1.0">
+	<input type="checkbox" name="cbp2" value="1" style="position:absolute; top:-1000" checked>
+	<input type="hidden" name="p2" value="0.5">
+	<input type="checkbox" name="cbp3" value="1" style="position:absolute; top:-1000" checked>
+	<input type="hidden" name="p3" value="0.5">
+	<input type="checkbox" name="cbp4" value="1" style="position:absolute; top:-1000">
+	<input type="hidden" name="p4" value="0">
+	<input type="hidden" name="RRspeed0" value="10">
+	<input type="hidden" name="RRspeed" value="10">
+	</form>
+	</table></div>
+</div>
+
+
+
+
+<!-- * Click sensor div * -->
+<DIV ID="RRbodyDiv" style="position:absolute; left:0; top:0; width:100%; height:100%; z-index:2" onMouseDown="redirectMouseClick(this);"></DIV>
+
+
+<!-- * Wait div * -->
+<DIV ID="RRwaitDiv" style="position:absolute; left:0; top:190; width:100%; height:200; z-index:1000; filter:alpha(Opacity=60); display:none">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" height="200">
+<tr>
+	<td align="center"><img src="readrunner/images/1x1.gif" width="1" height="50"><br>
+	<table border="0" cellpadding="0" cellspacing="0" width="400" style="border: 3px groove #c00000">
+	<tr>
+		<td align="center" height="200" style="font: bold 56px/66px Verdana; background-color:#f0f0f0; color:#c00000">&nbsp;&nbsp;Vänta...</td>
+	</tr>
+	</table></td>
+</tr>
+</table></DIV>
+
+<div id="paperShadowDiv">
+<!-- * The Content * -->
+<div id="RRcontentDiv" style="position:relative; text-align:left; background-color:#ffffff; width:700; height:100%; padding: 50 85 50 130;" onMouseDown="redirectMouseClick(this);">
+#text100#
+#readrunnertext#
+#text101#
+</div>
+<!-- End Content -->
+</div>
+
+<form name="rrdownl" method="POST" action="servlet/Readrunner" target="topframe">
+
+<input type="hidden" name="text" value="#text#">
+<input type="hidden" name="meta_id" value="#meta_id#">
+<input type="hidden" name="download" value="1">
+</form>
+
+
+
+<!-- * Buffer * -->
+<div id="RRbufferDiv" style="position:absolute; left:-5000; top:-5000; display:none; z-index:10000"></div>
+
+</body>
+</html>

@@ -6,6 +6,7 @@ import java.text.* ;
 
 import org.apache.oro.text.regex.* ;
 
+import imcode.server.parser.* ;
 import imcode.server.* ;
 import imcode.util.* ;
 
@@ -592,14 +593,17 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    String template = templatebuffer.toString() ;
 	    StringBuffer result = new StringBuffer(template.length()+16384) ; // This value is the amount i expect the document to increase in size.
 
-	    imcode.server.parser.MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution(menus,menumode,tags) ;
-	    imcode.server.parser.HashTagSubstitution hashtagsubstitution = new imcode.server.parser.HashTagSubstitution(tags,numberedtags) ;
-	    imcode.server.parser.ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution(this,documentRequest,
-															   templatePath,
-															   included_docs,includemode,includelevel,includePath,
-															   textMap,textmode,
-															   imageMap,imagemode,
-															   paramsToParse) ;
+	    ReadrunnerFilter readrunnerFilter = new ReadrunnerFilter() ;
+	    MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution(menus,menumode,tags) ;
+	    HashTagSubstitution hashtagsubstitution = new imcode.server.parser.HashTagSubstitution(tags,numberedtags) ;
+	    ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution(this,
+												      documentRequest,
+												      templatePath,
+												      included_docs,includemode,includelevel,includePath,
+												      textMap,textmode,
+												      imageMap,imagemode,
+												      paramsToParse,
+												      readrunnerFilter) ;
 
 	    LinkedList parse = new LinkedList() ;
 	    perl5util.split(parse,"/(<!--\\/?IMSCRIPT-->)/",template) ;
@@ -640,7 +644,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    } // end while (pit.hasNext()) // End of the main parseloop
 
 	    // Get the number of <q>tags</q> inserted by the readrunner filter.
-	    int readrunnerQuoteSubstitutionCount = imcmstagsubstitution.getReadrunnerQuoteSubstitutionCount() ;
+	    int readrunnerQuoteSubstitutionCount = readrunnerFilter.getReadrunnerQuoteSubstitutionCount() ;
 	    String returnresult = result.toString() ;
 
 	    if (readrunnerQuoteSubstitutionCount > 0) {

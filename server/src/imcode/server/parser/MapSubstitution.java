@@ -13,7 +13,7 @@ This allows you to use a HashMap or some other Map for
 the substitutions.
 
 Example:
-
+<code>
 // Create the matcher needed for the substitution
 Perl5Matcher  matcher  = new Perl5Matcher()  ;
 
@@ -35,13 +35,14 @@ String input = "foo bar baz quux" ;
 // Do the substitution
 String output = Util.substitute(matcher, pattern, substitution, input) ;
 
-'output' will now contain "bar bar quux quux".
+// 'output' will now contain "bar bar quux quux".
+</code>
 
 **/
 public class MapSubstitution implements Substitution {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
-    
+
     Map map ;
     boolean removeNulls ;
 

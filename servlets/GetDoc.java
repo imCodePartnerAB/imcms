@@ -273,7 +273,7 @@ public class GetDoc extends HttpServlet {
 	    paramsToParser.setParameter(req.getParameter("param")) ;
 	    paramsToParser.setExternalParameter(externalparam) ;
 
-	    setReadrunnerParameters(req, paramsToParser) ;
+	    paramsToParser.setReadrunnerParameters(Readrunner.getReadrunnerParameters(req)) ;
 
 	    user.setLastMetaId( meta_id ) ;
 	    String result = imcref.parsePage( documentRequest,0,paramsToParser ) ;
@@ -283,48 +283,4 @@ public class GetDoc extends HttpServlet {
 	}
     }
 
-    private static void setReadrunnerParameters(HttpServletRequest req, ParserParameters paramsToParser) {
-	Cookie[] cookies = req.getCookies() ;
-
-	// Find a readrunner-cookie and extract readrunner-info from it.
-	for (int i = 0; cookies != null && i < cookies.length; ++i) {
-	    Cookie aCookie = cookies[i] ;
-	    if ("RRsettings".equals(aCookie.getName())) {
-		log.debug("Found Readrunner-cookie 'RRsettings', with value '"+aCookie.getValue()+"'");
-
-		String[] arrSettings = split(aCookie.getValue(),'&') ;
-		if (arrSettings.length >= 3) {  // We want the second and third token.
-		    boolean stopCheck = "true".equalsIgnoreCase(split(arrSettings[1],'/')[0]) ;
-		    boolean stopVal   = !"0".equals(split(arrSettings[1],'/')[1]) ;
-		    boolean sepCheck =  "true".equalsIgnoreCase(split(arrSettings[2],'/')[0]) ;
-		    boolean sepVal   =  !"0".equals(split(arrSettings[2],'/')[1]) ;
-		    if (stopCheck && stopVal) {
-			paramsToParser.setReadrunnerUseStopChars(true) ;
-			log.debug("Using stop-chars in readrunner.");
-		    }
-		    if (sepCheck && sepVal) {
-			paramsToParser.setReadrunnerUseSepChars(true) ;
-			log.debug("Using separator-chars in readrunner.");
-		    }
-		    break ;
-		}
-	    }
-	}
-
-	if (null != req.getParameter("readrunner_stops")) {
-	    paramsToParser.setReadrunnerUseStopChars(true) ;
-	}
-	if (null != req.getParameter("readrunner_separators")) {
-	    paramsToParser.setReadrunnerUseSepChars(true) ;
-	}
-    }
-
-    private static String[] split (String input, char splitChar) {
-	StringTokenizer tokenizer = new StringTokenizer(input,""+splitChar) ;
-	String[] output = new String[tokenizer.countTokens()] ;
-	for (int i = 0; i < output.length; ++i) {
-	    output[i] = tokenizer.nextToken() ;
-	}
-	return output ;
-    }
 }

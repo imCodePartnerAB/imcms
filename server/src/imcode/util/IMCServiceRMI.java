@@ -10,7 +10,6 @@ import imcode.server.* ;
 import imcode.server.User ;
 import imcode.server.Table ;
 import imcode.server.ExternalDocType ;
-import imcode.server.LoginUser ;
 import imcode.server.Image ;
 import imcode.server.SystemData ;
 

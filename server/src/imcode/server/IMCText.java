@@ -1,5 +1,7 @@
 package imcode.server ;
 
+import imcode.util.* ;
+
 import org.apache.log4j.* ;
 
 /**
@@ -80,6 +82,23 @@ public class IMCText {
     **/
     public String toString() {
 	return getText() ;
+    }
+
+    public String toHtmlString() {
+	String result = getText() ;
+	if ( getType() == TEXT_TYPE_PLAIN ) {
+	    String[] vp = new String[] {
+		"&",   "&amp;",
+		"<",   "&lt;",
+		">",   "&gt;",
+		"\"",  "&quot;",
+		"\r\n","\n",
+		"\r",  "\n",
+		"\n",  "<BR>\n",
+	    } ;
+	    result = Parser.parseDoc(result,vp) ;
+	}
+	return result ;
     }
 
 }
