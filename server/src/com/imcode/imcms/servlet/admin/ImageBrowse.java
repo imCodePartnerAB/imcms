@@ -25,6 +25,7 @@ import java.util.StringTokenizer;
 public class ImageBrowse extends HttpServlet {
 
     public static final String REQUEST_ATTRIBUTE__IMAGE_BROWSE_FORM_DATA = "imagebrowseformdata";
+    private static final String JSP_TEMPLATE_IMAGE_BROWSE = "ImageBrowse.jsp";
 
     private final static String IMG_NEXT_LIST_TEMPLATE = "Admin_Img_List_Next.html";
     private final static String IMG_PREVIOUS_LIST_TEMPLATE = "Admin_Img_List_Previous.html";
@@ -291,7 +292,7 @@ public class ImageBrowse extends HttpServlet {
         request.setAttribute( REQUEST_ATTRIBUTE__IMAGE_BROWSE_FORM_DATA, formData );
 
         try {
-            String forwardPath = "/imcms/swe/jsp/ImageBrowse.jsp";
+            String forwardPath = "/imcms/"+ user.getLanguageIso639_2() + "/jsp/" + JSP_TEMPLATE_IMAGE_BROWSE;
             RequestDispatcher rd = request.getRequestDispatcher( forwardPath );
             rd.forward( request, response );
         } catch ( ServletException ex ) {
