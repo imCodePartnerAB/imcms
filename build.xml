@@ -154,7 +154,13 @@
         <filter token="servleturl" value="${servleturl}"/>
       </filterset>
     </copy>
-
+    <copy todir="${images}">
+      <fileset dir="install/htdocs/images">
+        <patternset>
+	  <include name="*.gif"/>
+	</patternset>
+      </fileset>
+    </copy>
     <copy todir="${adminbuttons}">
       <fileset dir="install/htdocs/imcms">
         <patternset>
@@ -192,6 +198,7 @@
 
       </filterset>
     </copy>
+
     <copy todir="${admintemplates}/permissions">
       <fileset dir="templates/${srclanguage}/permissions"/>
       <filterset>
@@ -202,6 +209,7 @@
 
       </filterset>
     </copy>
+
     <copy todir="${admintemplates}">
       <fileset dir="templates/${srclanguage}">
         <patternset>
@@ -211,24 +219,19 @@
 	  <include name="*.txt"/>
 	</patternset>
       </fileset>
-
       <filterset>
-
         <filter token="servleturl" value="${servleturl}"/>
         <filter token="loginurl" value="${loginurl}"/>
         <filter token="imageurl" value="${imageurl}"/>
-
       </filterset>
-
     </copy>
+
     <copy todir="${texttemplates}">
       <fileset dir="templates/text"/>
       <filterset>
-
         <filter token="servleturl" value="${servleturl}"/>
         <filter token="loginurl" value="${loginurl}"/>
         <filter token="imageurl" value="${imageurl}"/>
-
       </filterset>
     </copy>
 
