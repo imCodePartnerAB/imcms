@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
@@ -33,6 +34,8 @@ public class SaveMeta extends HttpServlet {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
+        req.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
+        
         if ( null != req.getParameter( "ImageBrowse" ) ) {
             RequestDispatcher rd = req.getRequestDispatcher( "ImageBrowse" );
             rd.forward( req, res );
