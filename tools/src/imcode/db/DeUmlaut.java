@@ -51,10 +51,9 @@ public class DeUmlaut
 		}
 
 		if (!text.equals(fixedText)) {
-		    //System.out.println(meta_id+" "+name);
-		    //rs.updateString(4,fixedText) ;
-		    System.out.print(fixedText) ;
-		    //rs.updateRow() ;
+		    System.out.println(meta_id+" "+name);
+		    rs.updateString(4,fixedText) ;
+		    rs.updateRow() ;
 		}
 	    }
 
