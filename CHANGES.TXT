@@ -7,22 +7,16 @@ Version 2.0.0
       change the values "JdbcDriver" and "JdbcUrl" in "server.properties" to "net.sourceforge.jtds.jdbc.Driver" and
       "jdbc:jtds:sqlserver://{host}:{port}/;AppName=imCMS;DatabaseName={databasename}" respectively,
       substituting correct values for "{host}", "{port}", and "{databasename}". (Bug 1850)
-
     * New url format for documents: "/imcms/1001" instead of "/imcms/servlet/GetDoc?meta_id=1001".
-      The old format still works, but this means that relative links in pages are likely break. (Bug 1163)
-
+      The old format still works, but this means that relative links in pages are likely to break. (Bug 1163)
     * To alleviate broken relative links, "/imcms/GetDoc?meta_id=1001"
       now works as well as "/imcms/servlet/GetDoc?meta_id=1001". (Bug 2727)
-
     * Specifically, the new url format is "<contextpath><prefix><document-id>".
       The prefix can be set with the setting "DocumentPathPrefix" in "server.properties".
       Comment this out to disable the new url format. (Bug 2733)
-
     * The latest 100 documents requested from the database are now cached in memory.
       This makes imCMS much faster, but means that changes to the database won't be seen. (Bug 2083)
-
     * All the class-files that lived in "WEB-INF/classes" are now packaged in one jar file in "WEB-INF/lib". (Bug 2746)
-
     * Some objects were put in sessions when editing documents, and never removed.
       These are now removed when no longer needed. This might reduce memory usage a bit. (Bug 2750)
 
