@@ -367,7 +367,11 @@ public class DocumentMapper {
             return null;
         }
     }
-
+/**
+ * @deprecated Use getCategoryById instead?
+ * @param categoryId
+ * @return
+ */
     public CategoryDomainObject getCategory( int categoryId ) {
         String sqlQuery = "SELECT categories.name, categories.description, category_types.name, categories.image \n" +
                           "FROM categories\n" + "JOIN category_types\n"
@@ -423,6 +427,49 @@ public class DocumentMapper {
             int categoryTypeMaxChoices = Integer.parseInt( sqlResult[2] );
             return new CategoryTypeDomainObject( categoryTypeId, categoryTypeNameFromDb, categoryTypeMaxChoices );
         }
+    }
+
+    public CategoryTypeDomainObject getCategoryTypeById( int categoryTypeId ) {
+        String sqlStr = "select name, max_choices  from category_types where category_type_id = ? ";
+        String[] sqlResult = service.sqlQuery( sqlStr, new String[]{""+categoryTypeId} );
+
+        if ( null == sqlResult || 0 == sqlResult.length ) {
+            return null;
+        } else {
+            String categoryTypeNameFromDb = sqlResult[0];
+            int categoryTypeMaxChoices = Integer.parseInt( sqlResult[1] );
+            return new CategoryTypeDomainObject( categoryTypeId, categoryTypeNameFromDb, categoryTypeMaxChoices );
+        }
+    }
+
+    public void deleteCategoryTypeFromDb(CategoryTypeDomainObject categoryType){
+        String sqlstr = "delete from category_types where category_type_id = ?" ;
+        service.sqlUpdateQuery(sqlstr, new String[] {categoryType.getId()+""});
+    }
+
+    public void addCategoryTypeToDb(String name, int max_choices){
+        String sqlstr = "insert into category_types (name, max_choices) values(?,?)";
+        service.sqlUpdateQuery(sqlstr, new String[] {name,  max_choices+""});
+    }
+
+    public void updateCategoryType(CategoryTypeDomainObject categoryType) {
+        String sqlstr = "update category_types set name= ?, max_choices= ?  where category_type_id = ? ";
+        service.sqlUpdateQuery(sqlstr, new String[] {categoryType.getName(), categoryType.getMaxChoices()+"", categoryType.getId()+""} );
+    }
+
+    public void addCategoryToDb(CategoryTypeDomainObject categoryType, String name, String description, String image) {
+        String sqlstr = "insert into categories  (category_type_id, name, description, image) values(?,?,?,?)";
+        service.sqlUpdateQuery(sqlstr, new String[] {categoryType.getId()+"", name, description, image });
+    }
+    
+    public void updateCategory(CategoryDomainObject category){
+        String sqlstr = "update categories set category_type_id = ?, name= ?, description = ?, image = ?  where category_id = ? ";
+        service.sqlUpdateQuery(sqlstr, new String[] {category.getType().getId()+"", category.getName(), category.getDescription(), category.getImage(), category.getId()+"" } );
+    }
+
+    public void deleteCategoryFromDb(CategoryDomainObject category) {
+        String sqlstr = "delete from categories where category_id = ?";
+        service.sqlUpdateQuery(sqlstr, new String[] {category.getId()+""});
     }
 
     public String getKeywordsAsOneString( int meta_id ) {
@@ -906,9 +953,22 @@ public class DocumentMapper {
                                 new String[]{"" + document.getId(), "" + categoryId} );
     }
 
+    public String[] getAllDocumentsOfOneCategory(CategoryDomainObject category) {
+
+        String sqlstr = "select meta_id from document_categories where category_id = ? ";
+        String[] res = service.sqlQuery(sqlstr, new String[] {category.getId()+""});
+
+        return res;
+    }
+
     private void removeAllCategoriesFromDocument( DocumentDomainObject document ) {
         service.sqlUpdateQuery( "DELETE FROM document_categories WHERE meta_id = ?",
                                 new String[]{"" + document.getId()} );
+    }
+
+    public void deleteOneCategoryFromDocument( DocumentDomainObject document, CategoryDomainObject category) {
+        service.sqlUpdateQuery("DELETE FROM document_categories WHERE meta_id = ? and category_id = ?",
+                                new String[] {document.getId()+"", category.getId()+""} );
     }
 
     private void sqlUpdateMeta( DocumentDomainObject document ) {

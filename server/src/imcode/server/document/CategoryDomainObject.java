@@ -1,4 +1,4 @@
-package imcode.server.document;
+package imcode.server.document; 
 
 import java.io.Serializable;
 
@@ -61,7 +61,22 @@ public class CategoryDomainObject implements Comparable, Serializable {
     }
 
     public int compareTo( Object o ) {
-        return name.compareToIgnoreCase( ((CategoryDomainObject)o).name ) ;
+        return name.compareToIgnoreCase( ( (CategoryDomainObject) o ).name ) ;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public void setType(CategoryTypeDomainObject type) {
+        this.type = type;
+    }
 }

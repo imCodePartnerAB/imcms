@@ -589,7 +589,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminCategories</servlet-name>
-        <url-pattern>/servlet/com.imcode.imcms.servlet.superadmin.AdminCategories</url-pattern>
+        <url-pattern>/servlet/AdminCategories</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

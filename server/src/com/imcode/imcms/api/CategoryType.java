@@ -18,7 +18,7 @@ public class CategoryType {
 
     public String toString() {
         return internalCategoryType.toString() ;
-    }
+    }  
 
     public String getName() {
         return internalCategoryType.getName() ;

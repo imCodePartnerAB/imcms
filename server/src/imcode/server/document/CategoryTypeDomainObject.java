@@ -27,6 +27,14 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setMaxChoices(int maxChoices) {
+        this.maxChoices = maxChoices;
+    }
+
     public int getMaxChoices() {
         return maxChoices;
     }
