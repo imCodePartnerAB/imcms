@@ -31,13 +31,11 @@ imcmsGui("head", null);
 	<td>&nbsp;</td>
     <td><input type="button" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/2002 ?>" title="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(74)"></td>
 </tr>
-</form>
 </table>
 <script>
 imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="400">
-<form method="POST" enctype="multipart/form-data" action="DocumentComposer">
 <%
     DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = (DocumentComposer.NewDocumentParentInformation)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
     boolean creatingNewDocument = null != newDocumentParentInformation;
