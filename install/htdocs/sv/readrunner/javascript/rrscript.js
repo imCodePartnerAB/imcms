@@ -69,7 +69,7 @@ function enableMouseClick(){
 }
 function RRinit() {
 	if (document.URL.indexOf('flags') == -1 || document.URL.indexOf('SaveText') == -1) {
-		if (document.URL.indexOf('readrunner_no_') == -1) { // if there are no parameters - check if there should be...
+		/*if (document.URL.indexOf('readrunner_no_') == -1) { // if there are no parameters - check if there should be...
 			var doNotParseStop = RRcheckCookieForPauses()[0];
 			var doNotParseDiv = RRcheckCookieForPauses()[1];
 			var theURL = document.URL;
@@ -77,7 +77,7 @@ function RRinit() {
 			if (doNotParseDiv) theURL += '&readrunner_no_separators=1';
 			if (doNotParseStop || doNotParseDiv) document.location = theURL;
 			//alert('StopAv: ' + doNotParseStop + ' / DivAv: ' + doNotParseDiv + '\n\nURL: ' + theURL);
-		}
+		}*/
 		var itemX,itemY
 		preloadImages();
 		
@@ -453,7 +453,7 @@ function RRgetCookies() {
 		f.RRopacityLevel.value = (arrSettings[8] >= 0) ? arrRROpacityLevels[arrSettings[8]] : arrRROpacityLevels[0];
 	}
 }
-
+/*
 function RRcheckCookieForPauses() {
 	var retStop = 0;
 	var retDiv = 0;
@@ -470,7 +470,7 @@ function RRcheckCookieForPauses() {
 	}
 	arrRet = new Array(retStop,retDiv)
 	return arrRet;
-}
+}*/
 
 
 /* ************* Get Cookie By Name ************* */
