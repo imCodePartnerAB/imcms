@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Vector;
+import java.util.Properties;
 
 import com.imcode.imcms.servlet.superadmin.Administrator;
 import com.imcode.imcms.servlet.superadmin.Administrator;
@@ -63,16 +64,37 @@ public class AdminSection extends Administrator {
 
         //**** lets handle the add_section-case ****
         if (req.getParameter("add_section") != null) {
-            //lets start and see if we need to save anything to the db
-            String new_section = req.getParameter("new_section_name") == null ? "" : req.getParameter("new_section_name").trim();
-            if (!new_section.equals("")) {
-                //ok we have a new name lets save it to db, but only if it's not exists in db
-                imcref.sqlUpdateProcedure("SectionAdd", new String[]{new_section});
-            }
+
+            String new_section_name = req.getParameter("new_section_name") == null ? "" : req.getParameter("new_section_name").trim();
+            String[][] section_arr = section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
 
             //now we needs a list of the created ones in db
-            String[][] section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
             Vector vec = new Vector();
+            String errormsg = "";
+
+            //lets start and see if we need to save anything to the db
+            if (!new_section_name.equals("")) {
+                boolean section_exists = false;
+                for( int i=0; i < section_arr.length; i++){
+                    if( new_section_name.equals( section_arr[i][1]) ){
+                        section_exists = true;
+                        Properties langproperties = imcref.getLangProperties( user );
+                        errormsg = langproperties.getProperty("error/servlet/AdminSection/section_exists");
+                        break;
+                    }
+                }
+
+                //ok we have a new name lets save it to db, but only if it's not exists in db
+                if(!section_exists){
+                    imcref.sqlUpdateProcedure("SectionAdd", new String[]{new_section_name});
+                    section_arr = section_arr = imcref.sqlProcedureMulti("SectionGetAllCount", new String[0]);
+                }
+            }
+
+            vec.add("#errormsg#");
+            vec.add( errormsg );
+            vec.add("#new_section_name#");
+            vec.add(new_section_name);
             vec.add("#section_list#");
             vec.add(createOptionList(section_arr, user, null));
             //ok lets parse the page with right template
