@@ -45,7 +45,7 @@
 		    </td>
 		    <td>
 	                <div id="three" style="visibility:hidden"> 
-	        	    <input type="button" name="rensa" value="Rensa" onClick="document.forms[0].text.value=''">
+	        	    <input type="button" name="rensa" value="Rensa" onClick="document.forms[0].text.value=''"><a href="javascript:openHelp('36');">&nbsp;<img src="@imageurl@/se/helpimages/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 	                </div>
 		    </td>
 		</tr>
@@ -58,6 +58,13 @@
     <INPUT TYPE="HIDDEN" NAME="txt_no" VALUE="#txt_no#">
 </FORM>
 </H3>
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
 <!-- Focuses on textfield if browser supports javascript -->
 <script language="JavaScript">
 <!--

@@ -1,5 +1,7 @@
 <HTML>
+
 <HEAD>
+
 <TITLE>Admin - L&auml;gga till nytt dokument</TITLE>
 
 <SCRIPT language=JavaScript>
@@ -43,8 +45,8 @@ function openHelp(id){
 		<font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
 	  <td valign="middle" bgcolor="#BABABA"> 
 		<textarea name=meta_text cols="50" rows="3" maxlength="100"></textarea>
-	  </td>
-	
+	  </td>	
+
 	<tr valign="middle"> 
 	  <td width="61" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Bild</font> 
 		<br>
@@ -85,7 +87,7 @@ function openHelp(id){
 		<input type=TEXT name=classification size=50 value="#classification#" >
 		<font size="2"> <br>
 		</font><font face="Verdana, Arial, Helvetica, sans-serif" size="1">&nbsp;S&ouml;kord 
-		skall anges semikolonavskiljda. Ex:A02BC02; A03FA02</font><font size="2"> 
+		skall anges komma sepparerade. Ex:A02BC02, A03FA02</font><font size="2"> 
 		</font><font size="2"> <br>
 		<input type=CHECKBOX name=disable_search value="1" #disable_search#>
 		<font face="Verdana, Arial, Helvetica, sans-serif">Blockera s&ouml;kning</font></font> 
@@ -149,10 +151,11 @@ function openHelp(id){
 		<div align="left"> 
 		  <input type=submit value="OK" name="ok">
 		  <input type=reset value="&Aring;terst&auml;ll" name="reset">
-		  <input type=submit value="Avbryt" name="cancel">
+		  <input type=submit value="Avbryt" name="cancel">&nbsp; <a href="javascript:openHelp('90');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		</div>
 	  </td>
 	</tr>
   </table>
 </FORM>
 </BODY></HTML>
+
