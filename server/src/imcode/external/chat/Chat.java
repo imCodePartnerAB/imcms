@@ -1,15 +1,8 @@
-
-
-
-
-
-
-
-
 package imcode.external.chat;
 
 import java.util.*;
 import imcode.external.diverse.*;
+
 /**
 *A Chat can contain zero or many ChatGroups.
 *A Chat can contain zero or many ChatMembers.
@@ -20,11 +13,12 @@ public class Chat
 {
 	private int _chatId;
 	private String _name;
-//	private Hashtable _chatMembers;
+	private Hashtable _chatMembers;
 	private Hashtable _chatMsgTypes;
 	private Hashtable _chatGroups;
-//	private Counter _memberCounter;
+	private Counter _memberCounter;
 	private Counter _roomCounter;
+	private int _permission; 
 	private	int _updateTime = 30;
 	private	int _reload = 2;
 	private int _inOut = 2;
@@ -38,9 +32,9 @@ public class Chat
 	*/
 	public Chat()
 	{
-	//	_memberCounter = new Counter();
+		_memberCounter = new Counter();
 		_roomCounter = new Counter();
-	//	_chatMembers = new Hashtable();
+		_chatMembers = new Hashtable();
 		_chatGroups = new Hashtable();	
 	}
 
@@ -48,9 +42,9 @@ public class Chat
 	{
 		_chatId=id;
 		_name=name;
-	//	_memberCounter = new Counter();
+		_memberCounter = new Counter();
 		_roomCounter = new Counter();
-	//	_chatMembers = new Hashtable();
+		_chatMembers = new Hashtable();
 		_chatGroups = new Hashtable();
 		
 		for(int i=0;i<groups.size();i+=2)
@@ -67,24 +61,16 @@ public class Chat
 	public Chat(int id, Vector groups, Vector msgTypes, Properties params)
 	{
 		_chatId=id;
-	//	_memberCounter = new Counter();
+		_memberCounter = new Counter();
 		_roomCounter = new Counter();
-	//	_chatMembers = new Hashtable();
+		_chatMembers = new Hashtable();
 		_chatGroups = new Hashtable();
 		_chatMsgTypes = new Hashtable();
 		
 		
 		
-		for(int i=0;i<groups.size();i+=2)
+		for(int i=0;i<groups.size();i++)
 		{
-		/*	String temp = (String)groups.get(i+1);
-			
-			//create group
-			ChatGroup tempGroup = new ChatGroup( Integer.parseInt( temp  ) , temp );
-			_roomCounter.increment();
-			//add group to grouplist
-			_chatGroups.put( (Integer)groups.get(i) ,tempGroup );*/
-			
 			ChatGroup temp = (ChatGroup)groups.get(i);
 			int groupId = temp.getGroupId();
 			Integer grId = new Integer(groupId);
@@ -98,6 +84,7 @@ public class Chat
 		}
 		
 		_name =  params.getProperty("chatName");
+		_permission = Integer.parseInt(params.getProperty("permission","3"));
 		_updateTime = Integer.parseInt( params.getProperty("updateTime" , "30" ) );
 		_reload = Integer.parseInt( params.getProperty("reload" , "2" ) );
 	    _inOut = Integer.parseInt( params.getProperty("inOut" , "2" ) );
@@ -109,12 +96,21 @@ public class Chat
 	}
 	
 
+	public String getChatName()
+	{
+		return _name;
+	}
+	
+	public  int getChatId()
+	{
+		return _chatId;
+	}
 	/**
 	*Creates and "register" a new ChatMember in this chat
 	*the is initially not a member of any ChatGroup;
 	*@return The Created ChatMember
 	*/
-/*	public ChatMember createChatMember()
+	public ChatMember createChatMember()
 	{
 		_memberCounter.increment();
 		int memberNumber = _memberCounter.getValue();
@@ -128,7 +124,7 @@ public class Chat
 	*@param memberNumber The membernumber of the ChatMember you want to remove
 	*If no ChatMember exists with the supplied memberNumber, no action is taken.
 	*/
-/*	public void removeChatMember(int memberNumber)
+	public void removeChatMember(int memberNumber)
 	{
 		String memberNumberString = String.valueOf(memberNumber);
 		_chatMembers.remove(memberNumberString);
@@ -151,13 +147,11 @@ public class Chat
 	*the ChatGroup is initially not a member of any chatRoom;
 	*@return The Created ChatGroup
 	*/
-/*	public ChatGroup createNewChatGroup()
+	public void createNewChatGroup(int groupNr, String groupName)
 	{
 		_roomCounter.increment();
-	//	int groupNumber = _roomCounter.getValue();
-		ChatGroup newGroup = new ChatGroup(groupNumber);
-		_chatGroups.put(String.valueOf(groupNumber), newGroup);
-		return newGroup;
+		ChatGroup newGroup = new ChatGroup(groupNr,groupName);
+		_chatGroups.put( new Integer(groupNr),newGroup );
 	}
 
 	/**
@@ -191,6 +185,7 @@ public class Chat
 		return (ChatGroup) _chatGroups.get(groupNumberString);	
 	}
 	
+	//toString
 	public String toString()
 	{
 		return "ChatId: " + _chatId + " ChatName: " + _name;
@@ -217,13 +212,20 @@ public class Chat
   		Enumeration enum = _chatMsgTypes.keys();
   		while (enum.hasMoreElements())
   		{
-   			String key = (String) enum.nextElement();
+   			
+			String key = (String) enum.nextElement();
 
    			temp.addElement(key);
-   			temp.addElement(_chatMsgTypes.get(key));
+   			temp.addElement( _chatMsgTypes.get(key) );
   		}
   		return temp;
  	}
+	
+	public void addMsgType(int msgTypeId, String newType)
+	{
+		_chatMsgTypes.put(Integer.toString(msgTypeId),newType);
+		//	_chatMsgTypes.put(msgTypes.get(i),msgTypes.get(i+1));
+	}
 
 
 }
