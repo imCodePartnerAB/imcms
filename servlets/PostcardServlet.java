@@ -121,7 +121,7 @@ public class PostcardServlet extends HttpServlet {
 			qInt = 1;
 		}
 				
-		String resFile = IMCServiceRMI.getInclude(imcserver,QUOTE_FILE);
+		String resFile = IMCServiceRMI.getFortune(imcserver,QUOTE_FILE);
 		
 		StringTokenizer token = new StringTokenizer(resFile, "#", false);
 		int counter = 0; 
