@@ -64,7 +64,6 @@ public class AdminDoc extends HttpServlet {
 
         IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
         String host = req.getHeader( "host" );
-        String servlet_url = Utility.getDomainPref( "servlet_url", host );
 
         String htmlStr = "";
         String lang_prefix = user.getLangPrefix();
@@ -121,7 +120,7 @@ public class AdminDoc extends HttpServlet {
                 documentRequest.setContextPath( req.getContextPath() );
                 documentRequest.setCookies( req.getCookies() );
                 documentRequest.setHostName( req.getHeader( "Host" ) );
-                
+
                 String result = imcref.parsePage( documentRequest, flags, new ParserParameters() );
                 return result;
 
@@ -174,8 +173,6 @@ public class AdminDoc extends HttpServlet {
                 urlvec.add( String.valueOf( meta_id ) );
                 urlvec.add( "#getParentMetaId#" );
                 urlvec.add( String.valueOf( parent_meta_id ) );
-                urlvec.add( "#servlet_url#" );
-                urlvec.add( servlet_url );
 
                 htmlStr = imcref.parseDoc( urlvec, "change_url_doc.html", lang_prefix );
                 break;
@@ -189,8 +186,6 @@ public class AdminDoc extends HttpServlet {
                 fsetvec.add( String.valueOf( meta_id ) );
                 fsetvec.add( "#getParentMetaId#" );
                 fsetvec.add( String.valueOf( parent_meta_id ) );
-                fsetvec.add( "#servlet_url#" );
-                fsetvec.add( servlet_url );
                 htmlStr = imcref.parseDoc( fsetvec, "change_frameset_doc.html", lang_prefix );
 
                 break;
@@ -233,8 +228,6 @@ public class AdminDoc extends HttpServlet {
                 vec.add( "" );
                 vec.add( "#getParentMetaId#" );
                 vec.add( String.valueOf( parent_meta_id ) );
-                vec.add( "#servlet_url#" );
-                vec.add( servlet_url );
                 htmlStr = imcref.parseDoc( vec, "change_browser_doc.html", lang_prefix );
                 break;
 
@@ -270,8 +263,6 @@ public class AdminDoc extends HttpServlet {
                 d.add( String.valueOf( meta_id ) );
                 d.add( "#parent_meta_id#" );
                 d.add( String.valueOf( parent_meta_id ) );
-                d.add( "#servlet_url#" );
-                d.add( servlet_url );
                 htmlStr = imcref.parseDoc( d, "change_fileupload.html", lang_prefix );
                 break;
         }

@@ -34,7 +34,6 @@ public class SaveNewMeta extends HttpServlet {
         String host = req.getHeader( "Host" );
         IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
         String start_url = imcref.getStartUrl();
-        String servlet_url = Utility.getDomainPref( "servlet_url", host );
 
         String htmlStr = "";
 
@@ -248,8 +247,6 @@ public class SaveNewMeta extends HttpServlet {
                 vec.add( "" );
                 vec.add( "#getMetaId#" );
                 vec.add( String.valueOf( parent_meta_id ) );
-                vec.add( "#servlet_url#" );
-                vec.add( servlet_url );
                 htmlStr = imcref.parseDoc( vec, "new_browser_doc.html", lang_prefix );
 
                 // FILE UP LOAD
@@ -267,8 +264,6 @@ public class SaveNewMeta extends HttpServlet {
                 vec.add( String.valueOf( meta_id ) );
                 vec.add( "#getMetaId#" );
                 vec.add( String.valueOf( parent_meta_id ) );
-                vec.add( "#servlet_url#" );
-                vec.add( servlet_url );
                 htmlStr = imcref.parseDoc( vec, "new_fileupload.html", lang_prefix );
                 //				htmlStr = imcref.interpretAdminTemplate( meta_id,user,"new_fileupload.html",8,new_meta_id,0,doc_menu_no );
                 out.write( htmlStr );
@@ -281,8 +276,6 @@ public class SaveNewMeta extends HttpServlet {
                 vec.add( String.valueOf( meta_id ) );
                 vec.add( "#getMetaId#" );
                 vec.add( String.valueOf( parent_meta_id ) );
-                vec.add( "#servlet_url#" );
-                vec.add( servlet_url );
                 htmlStr = imcref.parseDoc( vec, "new_url_doc.html", lang_prefix );
                 out.write( htmlStr );
                 return;
@@ -294,8 +287,6 @@ public class SaveNewMeta extends HttpServlet {
                 vec.add( String.valueOf( meta_id ) );
                 vec.add( "#getMetaId#" );
                 vec.add( String.valueOf( parent_meta_id ) );
-                vec.add( "#servlet_url#" );
-                vec.add( servlet_url );
                 htmlStr = imcref.parseDoc( vec, "new_frameset.html", lang_prefix );
                 out.write( htmlStr );
                 return;
@@ -308,7 +299,7 @@ public class SaveNewMeta extends HttpServlet {
                 String paramStr = "?meta_id=" + meta_id + "&";
                 paramStr += "parent_meta_id=" + parent_meta_id + "&";
                 paramStr += "cookie_id=" + "1A" + "&action=new";
-                res.sendRedirect( scheme + "://" + serverName + port + servlet_url + ex_doc.getCallServlet() + paramStr );
+                res.sendRedirect( ex_doc.getCallServlet() + paramStr );
                 return;
 
                 // TEXT DOCUMENT

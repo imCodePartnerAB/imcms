@@ -11,13 +11,12 @@ public class ReDirecter extends HttpServlet {
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
 	String host = req.getHeader("host");
-	String servlet_url	= Utility.getDomainPref( "servlet_url",host );
 	String[] pathElements = split(req.getPathInfo(),'/',false);
 
 	if (pathElements.length > METAID_OFFSET) {
-	    res.sendRedirect(servlet_url + "GetDoc?meta_id=" + pathElements[METAID_OFFSET]);
+	    res.sendRedirect("GetDoc?meta_id=" + pathElements[METAID_OFFSET]);
 	} else {
-	    res.sendRedirect(servlet_url + "StartDoc");
+	    res.sendRedirect("StartDoc");
 	}
     }
 

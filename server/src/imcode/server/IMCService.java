@@ -42,7 +42,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private File m_FortunePath;
     private File m_FilePath;
     private String m_StartUrl;			   // start url
-    private String m_ServletUrl;			   // servlet url
     private String m_ImageUrl;            // image folder
     private String m_Language = "";      // language
     private static final int DEFAULT_STARTDOCUMENT = 1001;
@@ -101,9 +100,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         m_StartUrl = props.getProperty( "StartUrl" ).trim(); //FIXME: Get from webserver, or get rid of if possible.
         log.info( "StartUrl: " + m_StartUrl );
 
-        m_ServletUrl = props.getProperty( "ServletUrl" ).trim(); //FIXME: Get from webserver, or get rid of if possible.
-        log.info( "ServletUrl: " + m_ServletUrl );
-
         // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
         m_ImageUrl = props.getProperty( "ImageUrl" ).trim(); //FIXME: Get from webserver, or get rid of if possible.
         log.info( "ImageUrl: " + m_ImageUrl );
@@ -140,7 +136,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         log.info( "SessionCounter: " + m_SessionCounter );
         log.info( "SessionCounterDate: " + m_SessionCounterDate );
 
-        textDocParser = new TextDocumentParser( this, m_conPool, m_TemplateHome, m_IncludePath, m_ImageUrl, m_ServletUrl );
+        textDocParser = new TextDocumentParser( this, m_conPool, m_TemplateHome, m_IncludePath, m_ImageUrl );
 
     }
 

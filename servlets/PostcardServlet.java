@@ -91,7 +91,6 @@ public class PostcardServlet extends HttpServlet {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	String start_url			= imcref.getStartUrl() ;
 	String no_permission_url	= Utility.getDomainPref( "no_permission_url",host ) ;
-	String servlet_url			= Utility.getDomainPref( "servlet_url",host ) ;
 	File image_folder_path      = Utility.getDomainPrefPath( "image_path", host );
 	SystemData sysData			= imcref.getSystemData();
 

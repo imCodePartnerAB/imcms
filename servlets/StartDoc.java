@@ -23,7 +23,6 @@ public class StartDoc extends HttpServlet {
 	String host = req.getHeader("host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 	String start_url	= imcref.getStartUrl() ;
-	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 	long time = System.currentTimeMillis() ;
 	imcode.server.user.UserDomainObject user ;

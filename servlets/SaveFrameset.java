@@ -11,8 +11,6 @@ import imcode.server.* ;
 	Shows a change_meta.html which calls SaveMeta
 */
 public class SaveFrameset extends HttpServlet {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	init()
@@ -25,30 +23,17 @@ public class SaveFrameset extends HttpServlet {
 	doPost()
 	*/
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
 		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 		String start_url        	= imcref.getStartUrl() ;
-		String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
 
 		imcode.server.user.UserDomainObject user ;
-		String htmlStr = "" ;
-		String submit_name = "" ;
-		String values[] ;
 		int meta_id ;
-		int parent_meta_id ;
 
 		res.setContentType( "text/html" );
 		Writer out = res.getWriter( );
 
 		// get meta_id
 		meta_id = Integer.parseInt( req.getParameter( "meta_id" ) ) ;
-
-		// get new_meta_id
-		String tempStr = req.getParameter( "parent_meta_id" ) ;
-		if( tempStr != null )
-			parent_meta_id = Integer.parseInt( tempStr ) ;
-		else
-			parent_meta_id = meta_id ;
 
 		// save form data
 		imcode.server.Table doc = new imcode.server.Table( ) ;

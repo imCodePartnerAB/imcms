@@ -65,14 +65,12 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     private File templatePath;
     private File includePath;
     private String imageUrl;
-    private String servletUrl;
 
-    public TextDocumentParser( IMCServiceInterface serverobject, ConnectionPool connpool, File templatepath, File includepath, String imageurl, String servleturl ) {
+    public TextDocumentParser( IMCServiceInterface serverobject, ConnectionPool connpool, File templatepath, File includepath, String imageurl ) {
         this.connPool = connpool;
         this.templatePath = templatepath;
         this.includePath = includepath;
         this.imageUrl = imageurl;
-        this.servletUrl = servleturl;
         this.serverObject = serverobject;
     }
 
@@ -399,7 +397,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             }
             tags.setProperty( "#metaImage#", meta_image );
             tags.setProperty( "#sys_message#", serverObject.getSystemData().getSystemMessage() );
-            tags.setProperty( "#servlet_url#", servletUrl );
             tags.setProperty( "#webMaster#", serverObject.getSystemData().getWebMaster() );
             tags.setProperty( "#webMasterEmail#", serverObject.getSystemData().getWebMasterAddress() );
             tags.setProperty( "#serverMaster#", serverObject.getSystemData().getServerMaster() );
@@ -464,8 +461,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 // Put templateadmintemplate in list of files to load.
                 toload.setProperty( "#changePage#", (new File( admintemplate_path, "textdoc/inPage_admin.html" )).getPath() );
             }  // if (templatemode)
-
-            temptags.setProperty( "#servlet_url#", servletUrl );
 
             if( menumode ) {
 

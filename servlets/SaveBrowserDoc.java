@@ -28,7 +28,6 @@ public class SaveBrowserDoc extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host 				= req.getHeader("Host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
-	String servlet_url        	= imcode.util.Utility.getDomainPref( "servlet_url",host ) ;
 	String start_url        	= imcref.getStartUrl() ;
 
 	imcode.server.user.UserDomainObject user ;
@@ -144,8 +143,6 @@ public class SaveBrowserDoc extends HttpServlet {
 	    vec.add("<INPUT TYPE=\"hidden\" NAME=\"doc_type\" VALUE=\"6\">") ;
 	    vec.add("#getParentMetaId#") ;
 	    vec.add(String.valueOf(parent_meta_id)) ;
-	    vec.add("#servlet_url#") ;
-	    vec.add(servlet_url) ;
 	    vec.add("#adminMode#") ;
 	    vec.add(imcref.getMenuButtons(meta_id,user)) ;
 	    String lang_prefix = user.getLangPrefix() ;

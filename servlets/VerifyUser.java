@@ -33,7 +33,6 @@ public class VerifyUser extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
 		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
-		String servlet_url       	= Utility.getDomainPref( "servlet_url",host ) ;
 		String access_denied_url   	= Utility.getDomainPref( "access_denied_url",host ) ;
 
 		imcode.server.user.UserDomainObject user ;
@@ -142,7 +141,7 @@ public class VerifyUser extends HttpServlet {
 				
 				// Couldn't redirect to the target.  Redirect to the site's home page.
 			    } else {
-					nexturl = scheme + "://" + serverName + port + servlet_url + "StartDoc";
+					nexturl = "StartDoc";
 				}
 		    					
 				res.sendRedirect(nexturl);

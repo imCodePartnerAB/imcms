@@ -57,7 +57,6 @@ public class ImageBrowse extends HttpServlet {
     public static String getPage(HttpServletRequest req, HttpServletResponse res) throws ServletException,IOException {
 	String host				= req.getHeader("Host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
-	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 	String image_url                = imcref.getImageUrl() ;
 	File file_path                  = Utility.getDomainPrefPath( "image_path", host );
 

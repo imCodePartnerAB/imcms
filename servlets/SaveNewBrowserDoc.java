@@ -25,15 +25,9 @@ public class SaveNewBrowserDoc extends HttpServlet {
 	String host				= req.getHeader("Host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	String start_url	= imcref.getStartUrl() ;
-	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 	imcode.server.user.UserDomainObject user ;
 	String htmlStr = "" ;
-	String submit_name = "" ;
-	String search_string = "" ;
-	String text = "" ;
-	String values[] ;
-	int txt_no = 0 ;
 
 	res.setContentType("text/html");
 	Writer out = res.getWriter();
@@ -165,8 +159,6 @@ public class SaveNewBrowserDoc extends HttpServlet {
 	    vec.add("") ;
 	    vec.add("#getMetaId#") ;
 	    vec.add(String.valueOf(parent_meta_id)) ;
-	    vec.add("#servlet_url#") ;
-	    vec.add(servlet_url) ;
 	    String lang_prefix = user.getLangPrefix() ;
 
 	    htmlStr = imcref.parseDoc( vec, "new_browser_doc.html", lang_prefix) ;

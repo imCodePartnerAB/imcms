@@ -18,7 +18,6 @@ public class SavePermissions extends HttpServlet {
         String host = req.getHeader( "Host" );
         IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
         String start_url = imcref.getStartUrl();
-        String servlet_url = Utility.getDomainPref( "servlet_url", host );
 
         imcode.server.user.UserDomainObject user;
 
