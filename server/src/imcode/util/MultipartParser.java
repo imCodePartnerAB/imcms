@@ -21,6 +21,8 @@ public class MultipartParser {
 		try {
 			parse (new String(data,"8859_1"),contenttype) ;
 		} catch ( java.io.UnsupportedEncodingException ex ) {
+			imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
+			log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   		
 		}
 	}
 	/**

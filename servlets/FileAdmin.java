@@ -366,7 +366,8 @@ public class FileAdmin extends HttpServlet {
 					}
 					return ;
 				} catch ( FileNotFoundException ex ) {
-					
+					imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
+					log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   					
 				}
 			}
 		} else if ( mp.getParameter("download2") != null ) {

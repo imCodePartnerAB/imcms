@@ -82,7 +82,8 @@ public class InetPoolManager {
 	try {
 	    pds.setLoginTimeout(Integer.parseInt( props.getProperty("LoginTimeout") ) );
 	} catch (NumberFormatException ex) {
-	    
+		imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
+		log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   
 	}
 
 	log.log(Log.INFO, "LoginTimeout: "+pds.getLoginTimeout()) ;

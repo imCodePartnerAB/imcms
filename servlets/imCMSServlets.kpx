@@ -355,8 +355,8 @@
 <file>
 <dirty>"0"</dirty>
 <relativepath>"FileAdmin.java"</relativepath>
-<editor open="0">
-<selection start="0" end="0">
+<editor open="1">
+<selection start="14936" end="14936">
 </selection>
 <window x="0" y="0" width="0" height="0">
 </window>
@@ -826,8 +826,8 @@
 <file>
 <dirty>"0"</dirty>
 <relativepath>"..\server\src\imcode\util\log\Log.java"</relativepath>
-<editor open="1">
-<selection start="2739" end="2739">
+<editor open="0">
+<selection start="0" end="0">
 </selection>
 <window x="0" y="0" width="0" height="0">
 </window>
@@ -840,8 +840,8 @@
 <file>
 <dirty>"0"</dirty>
 <relativepath>"..\server\src\imcode\util\log\LogLevels.java"</relativepath>
-<editor open="1">
-<selection start="133" end="133">
+<editor open="0">
+<selection start="0" end="0">
 </selection>
 <window x="1886218506" y="544502383" width="0" height="0">
 </window>
@@ -854,8 +854,8 @@
 <file>
 <dirty>"0"</dirty>
 <relativepath>"..\server\src\imcode\util\log\WebAppFileAppender.java"</relativepath>
-<editor open="1">
-<selection start="317" end="317">
+<editor open="0">
+<selection start="0" end="0">
 </selection>
 <window x="0" y="0" width="0" height="0">
 </window>
@@ -1081,7 +1081,7 @@
 <file>
 <dirty>"0"</dirty>
 <relativepath>"SaveFrameset.java"</relativepath>
-<editor open="0">
+<editor open="1">
 <selection start="0" end="0">
 </selection>
 <window x="0" y="0" width="0" height="0">
@@ -1095,8 +1095,8 @@
 <file>
 <dirty>"0"</dirty>
 <relativepath>"SaveImage.java"</relativepath>
-<editor open="0">
-<selection start="0" end="0">
+<editor open="1">
+<selection start="3240" end="3245">
 </selection>
 <window x="0" y="0" width="0" height="0">
 </window>
@@ -1179,8 +1179,8 @@
 <file>
 <dirty>"0"</dirty>
 <relativepath>"SaveNewFrameset.java"</relativepath>
-<editor open="0">
-<selection start="0" end="0">
+<editor open="1">
+<selection start="357" end="466">
 </selection>
 <window x="0" y="0" width="0" height="0">
 </window>
@@ -1291,8 +1291,8 @@
 <file>
 <dirty>"0"</dirty>
 <relativepath>"ShowDiagram.java"</relativepath>
-<editor open="0">
-<selection start="0" end="0">
+<editor open="1">
+<selection start="486" end="486">
 </selection>
 <window x="0" y="0" width="0" height="0">
 </window>

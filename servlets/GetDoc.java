@@ -98,6 +98,8 @@ public class GetDoc extends HttpServlet {
 			} catch ( NumberFormatException ex )
 			{
 				meta_id = start_doc ;
+				imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
+				log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   
 			}
 
 			byte[] tempbytes = getDoc(meta_id,meta_id,host,req,res) ;
@@ -305,7 +307,8 @@ public class GetDoc extends HttpServlet {
 				}
 			} catch ( java.net.SocketException ex )
 			{
-
+				imcode.util.log.Log log = imcode.util.log.Log.getLog( "GetDoc" );
+				log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   
 			}
 			fr.close() ;
 			out.flush() ;

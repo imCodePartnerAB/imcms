@@ -96,8 +96,9 @@ public class MetaInfo extends HttpServlet {
 	// will return the path to the default folder (where Janus templates are located)
 	try {
 	    metaId = Integer.parseInt(meta_id) ;
-	} catch(NumberFormatException  e) {
-	    System.out.println("No MetaId could be found. Lets use -1 instead" ) ;
+	} catch(NumberFormatException  ex) {
+		imcode.util.log.Log log = imcode.util.log.Log.getLog( "MetaInfo" );
+		log.log( imcode.util.log.LogLevels.DEBUG, "No MetaId could be found in getExternalTemplateFolder(). Lets use -1 instead" + ex.getMessage() );	   
 	    metaId = -1 ;
 	}
 	return RmiLayer.getExternalTemplateFolder(server, metaId) ;

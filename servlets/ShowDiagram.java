@@ -60,7 +60,9 @@ public class ShowDiagram extends HttpServlet {
 					Double.parseDouble( line );
 					last_success = series;
 				}
-				catch( NumberFormatException e ) {
+				catch( NumberFormatException ex ) {
+					imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
+					log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   				
 					continue;
 				}
 			}

@@ -45,6 +45,8 @@ public class DBConnect {
 	} catch (SQLException ex) {
 	    // We already logged in conPool.getConnection
 	    //log.log(Log.WARNING, "Failed to get connection.", ex) ;
+	    imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
+	    log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   		
 	}
     }
     

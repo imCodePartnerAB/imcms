@@ -422,7 +422,8 @@ public class TemplateChange extends HttpServlet {
 						break ;
 					}
 				} catch ( NumberFormatException ex ) {
-					
+					imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
+					log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   					
 				}
 			}
 			temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;

@@ -28,7 +28,7 @@ public class FileManager{
             }
             
         } catch (NullPointerException e) {
-            log("The file couldnt be deleted " + e.getMessage()) ;
+            log( "The file couldnt be deleted " + e.getMessage()) ;
         }
         catch (Exception e) {
             log("The file couldnt be deleted " + e.getMessage()) ;

@@ -117,11 +117,7 @@ public class Preference {
 
 		// Got a value; convert to an integer
 		if (value != null) {
-			try {
-				n = Integer.parseInt(value);
-			}
-			catch (Exception ex) {
-			}
+			n = Integer.parseInt(value);
 		}
 		return n;
 	}

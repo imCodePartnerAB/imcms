@@ -157,8 +157,12 @@ public class UrlDocTest extends HttpServlet {
 			st.nextToken() ;
 			return Integer.parseInt(st.nextToken()) ;
 		} catch ( NumberFormatException ex ) {
+			imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
+			log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   
 			return 0 ;
 		} catch ( NullPointerException ex ) {
+			imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
+			log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   
 			return 0 ;
 		}
 	}

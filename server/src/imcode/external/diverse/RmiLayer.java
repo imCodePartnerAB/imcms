@@ -190,7 +190,9 @@ public class RmiLayer {
         int aMeta_id ;
         try {
             aMeta_id = Integer.parseInt("meta_id") ;
-        } catch(NumberFormatException e) {
+        } catch(NumberFormatException ex) {
+	        imcode.util.log.Log log = imcode.util.log.Log.getLog( "RmiLayer" );
+	        log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   
             return "" ;
         }
 
