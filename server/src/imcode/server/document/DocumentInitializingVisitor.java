@@ -26,15 +26,16 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         for ( int i = 0; i < sqlResult.length; i++ ) {
             String[] sqlRow = sqlResult[i];
 
-            String variantName = sqlRow[0];
-            FileDocumentDomainObject.FileVariant fileVariant = new FileDocumentDomainObject.FileVariant();
-            fileVariant.setFilename( sqlRow[1] );
-            fileVariant.setMimeType( sqlRow[2] );
-            fileVariant.setCreatedAsImage( 0 != Integer.parseInt( sqlRow[3] ) );
-            fileVariant.setInputStreamSource( new FileInputStreamSource( DocumentStoringVisitor.getFileForFileDocument( document.getId(), variantName ) ) );
-            document.addFileVariant( variantName, fileVariant );
-            if ( 0 != Integer.parseInt( sqlRow[4] ) ) {
-                document.setDefaultFileVariantName( variantName );
+            String fileId = sqlRow[0];
+            FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
+            file.setFilename( sqlRow[1] );
+            file.setMimeType( sqlRow[2] );
+            file.setCreatedAsImage( 0 != Integer.parseInt( sqlRow[3] ) );
+            file.setInputStreamSource( new FileInputStreamSource( DocumentStoringVisitor.getFileForFileDocument( document.getId(), fileId ) ) );
+            document.addFile( fileId, file );
+            boolean isDefaultFile = 0 != Integer.parseInt( sqlRow[4] );
+            if ( isDefaultFile ) {
+                document.setDefaultFileId( fileId );
             }
         }
     }

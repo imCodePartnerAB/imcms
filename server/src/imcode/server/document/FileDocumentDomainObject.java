@@ -9,9 +9,9 @@ import java.util.*;
 
 public class FileDocumentDomainObject extends DocumentDomainObject {
 
-    private Map fileVariants = createFileVariantsMap();
+    private Map files = createFilesMap();
 
-    private String defaultFileVariantName ;
+    private String defaultFileId ;
 
     protected void loadAllLazilyLoadedDocumentTypeSpecificAttributes() {
         // nothing lazily loaded
@@ -25,92 +25,92 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         documentVisitor.visitFileDocument( this );
     }
 
-    public void addFileVariant( String fileVariantName, FileVariant fileVariant ) {
-        if ( null == fileVariantName ) {
-            throw new NullArgumentException( "fileVariantName" );
+    public void addFile( String fileId, FileDocumentFile fileDocumentFile ) {
+        if ( null == fileId ) {
+            throw new NullArgumentException( "fileId" );
         }
-        if ( !fileVariants.containsKey( defaultFileVariantName ) ) {
-            defaultFileVariantName = fileVariantName;
+        if ( !files.containsKey( defaultFileId ) ) {
+            defaultFileId = fileId;
         }
-        fileVariants.put( fileVariantName, fileVariant );
+        files.put( fileId, fileDocumentFile );
     }
 
-    public Map getFileVariants() {
-        Map map = createFileVariantsMap();
-        map.putAll( fileVariants ) ;
+    public Map getFiles() {
+        Map map = createFilesMap();
+        map.putAll( files ) ;
         return map;
     }
 
-    private Map createFileVariantsMap() {
+    private Map createFilesMap() {
         return MapUtils.orderedMap( new HashMap() );
     }
 
-    public FileVariant getFileVariant( String fileVariantName ) {
-        return (FileVariant)fileVariants.get( fileVariantName );
+    public FileDocumentFile getFile( String fileId ) {
+        return (FileDocumentFile)files.get( fileId );
     }
 
-    public FileVariant removeFileVariant( String fileVariantName ) {
-        FileVariant fileVariant = (FileVariant)fileVariants.remove( fileVariantName );
-        selectDefaultFileVariantName( fileVariantName );
-        return fileVariant;
+    public FileDocumentFile removeFile( String fileId ) {
+        FileDocumentFile fileDocumentFile = (FileDocumentFile)files.remove( fileId );
+        selectDefaultFileName( fileId );
+        return fileDocumentFile;
     }
 
-    private void selectDefaultFileVariantName( String fileVariantName ) {
-        if (fileVariants.isEmpty()) {
-            defaultFileVariantName = null ;
-        } else if ( defaultFileVariantName.equals( fileVariantName ) ) {
-            defaultFileVariantName = (String)Utility.firstElementOfSetByOrderOf( fileVariants.keySet(), String.CASE_INSENSITIVE_ORDER ) ;
+    private void selectDefaultFileName( String fileId ) {
+        if (files.isEmpty()) {
+            defaultFileId = null ;
+        } else if ( defaultFileId.equals( fileId ) ) {
+            defaultFileId = (String)Utility.firstElementOfSetByOrderOf( files.keySet(), String.CASE_INSENSITIVE_ORDER ) ;
         }
     }
 
-    public void setDefaultFileVariantName( String defaultFileVariantName ) {
-        if ( !fileVariants.containsKey( defaultFileVariantName ) ) {
-            throw new IllegalArgumentException( "Cannot set defaultFileVariantName to non-existant key "
-                                                + defaultFileVariantName );
+    public void setDefaultFileId( String defaultFileId ) {
+        if ( !files.containsKey( defaultFileId ) ) {
+            throw new IllegalArgumentException( "Cannot set defaultFileId to non-existant key "
+                                                + defaultFileId );
         }
-        this.defaultFileVariantName = defaultFileVariantName;
+        this.defaultFileId = defaultFileId;
     }
 
-    public String getDefaultFileVariantName() {
-        return defaultFileVariantName;
+    public String getDefaultFileId() {
+        return defaultFileId;
     }
 
-    public FileVariant getFileVariantOrDefault( String fileVariantName ) {
-        FileVariant fileVariant = getFileVariant( fileVariantName );
-        if ( null == fileVariant ) {
-            fileVariant = getDefaultFileVariant();
+    public FileDocumentFile getFileOrDefault( String fileId ) {
+        FileDocumentFile fileDocumentFile = getFile( fileId );
+        if ( null == fileDocumentFile ) {
+            fileDocumentFile = getDefaultFile();
         }
-        return fileVariant;
+        return fileDocumentFile;
     }
 
-    public FileVariant getDefaultFileVariant() {
-        return (FileVariant)fileVariants.get( defaultFileVariantName );
+    public FileDocumentFile getDefaultFile() {
+        return (FileDocumentFile)files.get( defaultFileId );
 
     }
 
-    public void renameFileVariant( String oldFileVariantName, String newFileVariantName ) {
-        if ( null == oldFileVariantName ) {
-            throw new NullArgumentException( "oldFileVariantName" );
+    public void changeFileId( String oldFileId, String newFileId ) {
+        if ( null == oldFileId ) {
+            throw new NullArgumentException( "oldFileId" );
         }
-        if ( null == newFileVariantName ) {
-            throw new NullArgumentException( "newFileVariantName" );
+        if ( null == newFileId ) {
+            throw new NullArgumentException( "newFileId" );
         }
-        if (!fileVariants.containsKey( oldFileVariantName )) {
-            throw new IllegalStateException( "There is no fileVariant with the name " + oldFileVariantName );
+        if (!files.containsKey( oldFileId )) {
+            throw new IllegalStateException( "There is no file with the id " + oldFileId );
         }
-        if (oldFileVariantName.equals( newFileVariantName )) {
+        if (oldFileId.equals( newFileId )) {
             return ;
         }
-        if (fileVariants.containsKey( newFileVariantName )) {
-            throw new IllegalStateException( "There already is a fileVariant with the name "+newFileVariantName ) ;
+        if (files.containsKey( newFileId )) {
+            throw new IllegalStateException( "There already is a file with the id "+newFileId ) ;
         }
-        fileVariants.put(newFileVariantName, fileVariants.remove( oldFileVariantName )) ;
-        if (defaultFileVariantName.equals( oldFileVariantName )) {
-            defaultFileVariantName = newFileVariantName ;
+        files.put(newFileId, files.remove( oldFileId )) ;
+        if (defaultFileId.equals( oldFileId )) {
+            defaultFileId = newFileId ;
         }
     }
 
-    public static class FileVariant {
+    public static class FileDocumentFile {
 
         private String filename;
         private String mimeType;

@@ -6,6 +6,8 @@ import java.io.Serializable;
 
 public interface InputStreamSource extends Serializable {
 
-    public InputStream getInputStream() throws IOException;
+    InputStream getInputStream() throws IOException;
+
+    long getSize() throws IOException ;
 
 }

@@ -1,19 +1,18 @@
 package imcode.server.document.textdocument;
 
-import imcode.util.ImcmsImageUtils;
-import imcode.util.ImageSize;
-import imcode.util.ImageParser;
-import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
-import imcode.server.document.DocumentMapper;
+import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
+import imcode.util.ImageParser;
+import imcode.util.ImageSize;
+import imcode.util.ImcmsImageUtils;
+import org.apache.commons.lang.StringUtils;
 
-import java.io.Serializable;
 import java.io.File;
 import java.io.IOException;
-
-import org.apache.commons.lang.StringUtils;
+import java.io.Serializable;
 
 public class ImageDomainObject implements Serializable {
 
@@ -68,8 +67,8 @@ public class ImageDomainObject implements Serializable {
             if ( null != imageFileDocumentId ) {
                 DocumentDomainObject document = documentMapper.getDocument( imageFileDocumentId.intValue() );
                 if ( document instanceof FileDocumentDomainObject ) {
-                    String variantName = ImcmsImageUtils.getVariantNameFromImageUrl( imageUrl );
-                    imageSize = ImcmsImageUtils.getImageSizeFromFileDocument( (FileDocumentDomainObject)document, variantName );
+                    String fileId = ImcmsImageUtils.getFileIdFromImageUrl( imageUrl );
+                    imageSize = ImcmsImageUtils.getImageSizeFromFileDocument( (FileDocumentDomainObject)document, fileId );
                 }
             } else if ( imageFile.isFile() ) {
                 try {

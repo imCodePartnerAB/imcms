@@ -32,10 +32,10 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         this.user = user;
     }
 
-    protected void saveFileDocumentFile( int fileDocumentId, FileDocumentDomainObject.FileVariant fileVariant,
-                                       String variantName ) {
+    protected void saveFileDocumentFile( int fileDocumentId, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
+                                       String fileId ) {
         try {
-            InputStreamSource inputStreamSource = fileVariant.getInputStreamSource();
+            InputStreamSource inputStreamSource = fileDocumentFile.getInputStreamSource();
             InputStream in;
             try {
                 in = inputStreamSource.getInputStream();
@@ -47,7 +47,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 return ;
             }
 
-            File file = getFileForFileDocument( fileDocumentId, variantName );
+            File file = getFileForFileDocument( fileDocumentId, fileId );
             boolean sameFileOnDisk = inputStreamSource instanceof FileInputStreamSource && file.exists();
             if ( sameFileOnDisk ) {
                 return ;
@@ -67,11 +67,11 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     }
 
-    public static File getFileForFileDocument( int fileDocumentId, String variantName ) {
+    public static File getFileForFileDocument( int fileDocumentId, String fileId ) {
         File filePath = ApplicationServer.getIMCServiceInterface().getConfig().getFilePath();
         String filename = "" + fileDocumentId ;
-        if (StringUtils.isNotBlank( variantName )) {
-            filename += "."+FileUtility.escapeFilename(variantName) ;
+        if (StringUtils.isNotBlank( fileId )) {
+            filename += "."+FileUtility.escapeFilename(fileId) ;
         }
         File file = new File( filePath, filename );
         return file;
@@ -282,24 +282,24 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
-        Map fileDocumentFiles = fileDocument.getFileVariants();
+        Map fileDocumentFiles = fileDocument.getFiles();
 
         String sqlDelete = "DELETE FROM fileupload_docs WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlDelete, new String[]{ ""+fileDocument.getId() } ) ;
 
         for ( Iterator iterator = fileDocumentFiles.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
-            String variantName = (String)entry.getKey();
-            FileDocumentDomainObject.FileVariant fileVariant = (FileDocumentDomainObject.FileVariant)entry.getValue();
+            String fileId = (String)entry.getKey();
+            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = (FileDocumentDomainObject.FileDocumentFile)entry.getValue();
 
-            String filename = fileVariant.getFilename();
+            String filename = fileDocumentFile.getFilename();
             if ( filename.length() > DB_FIELD_MAX_LENGTH__FILENAME ) {
                 filename = truncateFilename( filename, DB_FIELD_MAX_LENGTH__FILENAME );
             }
             String sqlInsert = "INSERT INTO fileupload_docs (meta_id, variant_name, filename, mime, created_as_image, default_variant) VALUES(?,?,?,?,?,?)";
-            boolean isDefaultVariant = variantName.equals( fileDocument.getDefaultFileVariantName());
-            service.sqlUpdateQuery( sqlInsert, new String[]{""+ fileDocument.getId(), variantName, filename, fileVariant.getMimeType(), fileVariant.isCreatedAsImage() ? "1" : "0", isDefaultVariant ? "1" : "0"} );
-            saveFileDocumentFile( fileDocument.getId(), fileVariant, variantName );
+            boolean isDefaultFile = fileId.equals( fileDocument.getDefaultFileId());
+            service.sqlUpdateQuery( sqlInsert, new String[]{""+ fileDocument.getId(), fileId, filename, fileDocumentFile.getMimeType(), fileDocumentFile.isCreatedAsImage() ? "1" : "0", isDefaultFile ? "1" : "0"} );
+            saveFileDocumentFile( fileDocument.getId(), fileDocumentFile, fileId );
         }
         deleteOtherFileDocumentFiles( fileDocument ) ;
     }
@@ -312,8 +312,8 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 Perl5Util perl5Util = new Perl5Util();
                 if (perl5Util.match( "/(\\d+)(?:\\.(.*))?/", filename)) {
                     String idStr = perl5Util.group(1);
-                    String variantName = FileUtility.unescapeFilename( StringUtils.defaultString( perl5Util.group( 2 ) ) ) ;
-                    if (fileDocument.getId() == Integer.parseInt( idStr ) && null == fileDocument.getFileVariant( variantName ) ) {
+                    String fileId = FileUtility.unescapeFilename( StringUtils.defaultString( perl5Util.group( 2 ) ) ) ;
+                    if (fileDocument.getId() == Integer.parseInt( idStr ) && null == fileDocument.getFile( fileId ) ) {
                         file.delete();
                     }
                 }

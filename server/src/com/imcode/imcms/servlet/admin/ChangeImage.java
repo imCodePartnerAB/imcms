@@ -114,12 +114,12 @@ public class ChangeImage extends HttpServlet {
         DocumentPageFlow.SaveDocumentCommand saveNewImageFileDocument = new CreateDocumentPageFlow.SaveDocumentCommand() {
             public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
                 FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
-                Map fileVariants = fileDocument.getFileVariants();
-                for ( Iterator iterator = fileVariants.values().iterator(); iterator.hasNext(); ) {
-                    FileDocumentDomainObject.FileVariant fileVariant = (FileDocumentDomainObject.FileVariant)iterator.next();
+                Map files = fileDocument.getFiles();
+                for ( Iterator iterator = files.values().iterator(); iterator.hasNext(); ) {
+                    FileDocumentDomainObject.FileDocumentFile file = (FileDocumentDomainObject.FileDocumentFile)iterator.next();
 
-                    if ( ArrayUtils.contains( IMAGE_MIME_TYPES, fileVariant.getMimeType() ) ) {
-                        fileDocument.setHeadline( fileVariant.getFilename() );
+                    if ( ArrayUtils.contains( IMAGE_MIME_TYPES, file.getMimeType() ) ) {
+                        fileDocument.setHeadline( file.getFilename() );
                         fileDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
                         documentMapper.saveNewDocument( document, user );
                         image.setUrlAndClearSize( "../servlet/GetDoc?meta_id=" + document.getId() );

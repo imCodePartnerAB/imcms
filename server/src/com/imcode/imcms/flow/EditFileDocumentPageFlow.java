@@ -26,26 +26,28 @@ import java.util.regex.Pattern;
 
 public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 
-    private static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
-    private static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
     public static final String REQUEST_PARAMETER__FILE_DOC__FILE = "file";
     public static final String REQUEST_PARAMETER__FILE_DOC__MIME_TYPE = "mimetype";
-    public static final String REQUEST_PARAMETER__EDIT_VARIANT_BUTTON_PREFIX = "select_variant_";
-    public static final String REQUEST_PARAMETER__DEFAULT_VARIANT = "default_variant";
-    public static final String REQUEST_PARAMETER__DELETE_VARIANT_BUTTON_PREFIX = "delete_variant_";
-    public static final String REQUEST_PARAMETER__FILE_DOC__VARIANT_NAME = "variant_name";
-    public static final String REQUEST_PARAMETER__FILE_DOC__SELECTED_VARIANT_NAME = "old_variant_name";
+    public static final String REQUEST_PARAMETER__SELECT_FILE_BUTTON_PREFIX = "select_file_";
+    public static final String REQUEST_PARAMETER__DEFAULT_FILE = "default_file";
+    public static final String REQUEST_PARAMETER__DELETE_FILE_BUTTON_PREFIX = "delete_file_";
+    public static final String REQUEST_PARAMETER__FILE_DOC__FILE_ID = "file_id";
+    public static final String REQUEST_PARAMETER__FILE_DOC__SELECTED_FILE_ID = "selected_file_id";
     public static final String REQUEST_PARAMETER__SAVE_FILE_BUTTON = "save_file_button";
     public static final String REQUEST_PARAMETER__NEW_FILE_BUTTON = "new_file_button";
+    public static final String REQUEST_PARAMETER__FILE_DOC__NEW_FILE_ID_PREFIX = "new_file_id_";
 
     private static final String URL_I15D_PAGE__FILEDOC = "/jsp/docadmin/file_document.jsp";
 
-    private MimeTypeRestriction mimeTypeRestriction = new ValidMimeTypeRestriction();
-    private ServletContext servletContext;
+    private static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
+    private static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
+
     private static final LocalizedMessage ERROR_MESSAGE__UNABLE_TO_AUTODETECT_MIMETYPE = new LocalizedMessage( "server/src/com/imcode/imcms/flow/EditFileDocumentPageFlow/unable_to_autodetect_mimetype" );
     private static final LocalizedMessage ERROR_MESSAGE__NO_FILE_UPLOADED = new LocalizedMessage( "server/src/com/imcode/imcms/flow/EditFileDocumentPageFlow/no_file_uploaded" );
-    public static final String REQUEST_PARAMETER__FILE_DOC__NEW_VARIANT_NAME_PREFIX = "new_variant_name_";
-    private FileDocumentDomainObject.FileVariant unfinishedNewFile;
+
+    private MimeTypeRestriction mimeTypeRestriction = new ValidMimeTypeRestriction();
+    private ServletContext servletContext;
+    private FileDocumentDomainObject.FileDocumentFile unfinishedNewFile;
 
     public EditFileDocumentPageFlow( FileDocumentDomainObject document, ServletContext servletContext,
                                      DispatchCommand returnCommand,
@@ -61,27 +63,27 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
     protected void dispatchOkFromEditPage( HttpServletRequest r, HttpServletResponse response ) throws IOException, ServletException {
         MultipartHttpServletRequest request = (MultipartHttpServletRequest)r;
 
-        setSelectedFileVariantFromRequestAndDispatchIfError( request, response );
+        setSelectedFileFromRequestAndDispatchIfError( request, response );
 
     }
 
-    private String setSelectedFileVariantFromRequestAndDispatchIfError( MultipartHttpServletRequest request,
+    private void setSelectedFileFromRequestAndDispatchIfError( MultipartHttpServletRequest request,
                                                                         HttpServletResponse response ) throws IOException, ServletException {
         final FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
-        String defaultFileVariantName = request.getParameter( REQUEST_PARAMETER__DEFAULT_VARIANT );
-        if ( null != defaultFileVariantName ) {
-            fileDocument.setDefaultFileVariantName( defaultFileVariantName );
+        String defaultFileId = request.getParameter( REQUEST_PARAMETER__DEFAULT_FILE );
+        if ( null != defaultFileId ) {
+            fileDocument.setDefaultFileId( defaultFileId );
         }
 
-        String selectedFileVariantName = renameFileVariants( request, fileDocument );
+        String selectedFileId = changeFileIds( request, fileDocument );
 
-        FileDocumentDomainObject.FileVariant fileVariant = fileDocument.getFileVariant( selectedFileVariantName );
-        boolean isNewFile = null == fileVariant;
+        FileDocumentDomainObject.FileDocumentFile file = fileDocument.getFile( selectedFileId );
+        boolean isNewFile = null == file;
         if ( isNewFile ) {
             if ( null == unfinishedNewFile ) {
-                unfinishedNewFile = new FileDocumentDomainObject.FileVariant();
+                unfinishedNewFile = new FileDocumentDomainObject.FileDocumentFile();
             }
-            fileVariant = this.unfinishedNewFile ;
+            file = this.unfinishedNewFile ;
         } else {
             unfinishedNewFile = null ;
         }
@@ -93,86 +95,84 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
             if ( fileUploaded ) {
                 String fileItemName = fileItem.getName();
                 if ( StringUtils.isNotBlank( fileItemName ) ) {
-                    fileVariant.setFilename( fileItemName );
+                    file.setFilename( fileItemName );
                 }
-                fileVariant.setInputStreamSource( new FileItemInputStreamSource( fileItem ) );
+                file.setInputStreamSource( new FileItemInputStreamSource( fileItem ) );
             }
 
-            String mimeType = getMimeTypeFromRequestAndFilename( request, fileVariant.getFilename() );
+            String mimeType = getMimeTypeFromRequestAndFilename( request, file.getFilename() );
             LocalizedMessage errorMessage = null;
-            if ( null == fileVariant.getInputStreamSource() ) {
+            if ( null == file.getInputStreamSource() ) {
                 errorMessage = ERROR_MESSAGE__NO_FILE_UPLOADED;
             } else if ( StringUtils.isBlank( mimeType ) ) {
                 errorMessage = ERROR_MESSAGE__UNABLE_TO_AUTODETECT_MIMETYPE;
-                setFileDocumentMimeTypeIfAllowed( fileVariant, MIME_TYPE__UNKNOWN_DEFAULT );
+                setFileDocumentMimeTypeIfAllowed( file, MIME_TYPE__UNKNOWN_DEFAULT );
             } else if ( !mimeTypeRestriction.allows( mimeType ) ) {
                 errorMessage = mimeTypeRestriction.getErrorMessage();
-                String mimeTypeForFilename = getMimeTypeForFilename( fileVariant.getFilename() );
-                setFileDocumentMimeTypeIfAllowed( fileVariant, mimeTypeForFilename );
+                String mimeTypeForFilename = getMimeTypeForFilename( file.getFilename() );
+                setFileDocumentMimeTypeIfAllowed( file, mimeTypeForFilename );
             } else {
-                fileVariant.setMimeType( mimeType );
+                file.setMimeType( mimeType );
                 if ( isNewFile ) {
-                    String newFileVariantName = findUniqueName( new UniqueFileVariantNamePredicate( fileDocument ), new CounterNameFactory(fileDocument.getFileVariants().size()+1) );
-                    fileDocument.addFileVariant( newFileVariantName, fileVariant );
-                    selectedFileVariantName = null ;
+                    String newFileId = (String)findUnique( new UniqueFileIdPredicate( fileDocument ), new CounterStringFactory(fileDocument.getFiles().size()+1) );
+                    fileDocument.addFile( newFileId, file );
                     unfinishedNewFile = null ;
                 }
             }
 
             if ( null != errorMessage ) {
-                FileDocumentEditPage fileDocumentEditPage = createFileDocumentEditPage( selectedFileVariantName );
+                FileDocumentEditPage fileDocumentEditPage = createFileDocumentEditPage( selectedFileId );
                 fileDocumentEditPage.setErrorMessage( errorMessage );
                 fileDocumentEditPage.forward( request, response );
             }
         }
-        return selectedFileVariantName;
     }
 
-    private String renameFileVariants( MultipartHttpServletRequest request,
+    private String changeFileIds( MultipartHttpServletRequest request,
                                        final FileDocumentDomainObject fileDocument ) {
-        String selectedFileVariantName = request.getParameter( REQUEST_PARAMETER__FILE_DOC__SELECTED_VARIANT_NAME );
+        String selectedFileId = request.getParameter( REQUEST_PARAMETER__FILE_DOC__SELECTED_FILE_ID );
 
-        Map fileVariants = fileDocument.getFileVariants();
-        for ( Iterator iterator = IteratorUtils.unmodifiableIterator( fileVariants.keySet().iterator() ); iterator.hasNext(); ) {
-            String fileVariantName = (String)iterator.next();
-            String newFileVariantName = request.getParameter( REQUEST_PARAMETER__FILE_DOC__NEW_VARIANT_NAME_PREFIX
-                                                              + fileVariantName );
-            if (  StringUtils.isNotBlank( newFileVariantName )
-                 && !selectedFileVariantName.equals( newFileVariantName )
-                 && null == fileDocument.getFileVariant( newFileVariantName ) ) {
-                fileDocument.renameFileVariant( fileVariantName, newFileVariantName );
-                if ( fileVariantName.equals( selectedFileVariantName ) ) {
-                    selectedFileVariantName = newFileVariantName;
+        Map fileDocumentFiles = fileDocument.getFiles();
+        for ( Iterator iterator = IteratorUtils.unmodifiableIterator( fileDocumentFiles.keySet().iterator() ); iterator.hasNext(); ) {
+            String fileId = (String)iterator.next();
+            String newFileId = request.getParameter( REQUEST_PARAMETER__FILE_DOC__NEW_FILE_ID_PREFIX
+                                                              + fileId );
+            if (  StringUtils.isNotBlank( newFileId )
+                 && !selectedFileId.equals( newFileId )
+                 && null == fileDocument.getFile( newFileId ) ) {
+                fileDocument.changeFileId( fileId, newFileId );
+                if ( fileId.equals( selectedFileId ) ) {
+                    selectedFileId = newFileId;
                 }
             }
         }
-        return selectedFileVariantName;
+        return selectedFileId;
     }
 
-    private String findUniqueName( Predicate uniqueNamePredicate, Factory nameFactory ) {
-        String uniqueName;
+    private Object findUnique( Predicate uniquePredicate, Factory factory ) {
+        Object unique;
         do {
-            uniqueName = (String)nameFactory.create();
-        } while ( !uniqueNamePredicate.evaluate( uniqueName ) );
-        return uniqueName;
+            unique = factory.create();
+        } while ( !uniquePredicate.evaluate( unique ) );
+        return unique;
     }
 
-    private void setFileDocumentMimeTypeIfAllowed( FileDocumentDomainObject.FileVariant fileVariant,
+    private void setFileDocumentMimeTypeIfAllowed( FileDocumentDomainObject.FileDocumentFile file,
                                                    String mimeTypeForFilename ) {
         if ( mimeTypeRestriction.allows( mimeTypeForFilename ) ) {
-            fileVariant.setMimeType( mimeTypeForFilename );
+            file.setMimeType( mimeTypeForFilename );
         }
     }
 
-    private FileDocumentEditPage createFileDocumentEditPage( String fileVariantName ) {
-        FileDocumentDomainObject.FileVariant fileVariant = ( (FileDocumentDomainObject)document ).getFileVariant( fileVariantName );
-        if ( null == fileVariant ) {
+    private FileDocumentEditPage createFileDocumentEditPage( String fileId ) {
+        FileDocumentDomainObject.FileDocumentFile file = ( (FileDocumentDomainObject)document ).getFile( fileId );
+        if ( null == file ) {
             if ( null == unfinishedNewFile ) {
-                unfinishedNewFile = new FileDocumentDomainObject.FileVariant();
+                unfinishedNewFile = new FileDocumentDomainObject.FileDocumentFile();
             }
-            fileVariant = unfinishedNewFile;
+            file = unfinishedNewFile;
         }
-        return new FileDocumentEditPage( mimeTypeRestriction, fileVariantName, fileVariant );
+        return new FileDocumentEditPage( mimeTypeRestriction, fileId, file );
     }
 
     protected void dispatchToFirstPage( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
@@ -183,30 +183,30 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
         MultipartHttpServletRequest request = (MultipartHttpServletRequest)r;
         FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
 
-        String selectedFileVariantName = setSelectedFileVariantFromRequestAndDispatchIfError( request, response );
+        setSelectedFileFromRequestAndDispatchIfError( request, response );
+        String selectedFileId = null ;
 
         if ( !response.isCommitted() ) {
-            Map fileVariants = fileDocument.getFileVariants();
-            for ( Iterator iterator = fileVariants.entrySet().iterator() ; iterator.hasNext(); ) {
+            Map files = fileDocument.getFiles();
+            for ( Iterator iterator = files.entrySet().iterator() ; iterator.hasNext(); ) {
                 Map.Entry entry = (Map.Entry)iterator.next();
-                String fileVariantName = (String)entry.getKey();
-                FileDocumentDomainObject.FileVariant fileVariant = (FileDocumentDomainObject.FileVariant)entry.getValue();
+                String fileId = (String)entry.getKey();
+                FileDocumentDomainObject.FileDocumentFile fileDocumentFile = (FileDocumentDomainObject.FileDocumentFile)entry.getValue();
 
                 if ( null
-                     != request.getParameter( REQUEST_PARAMETER__EDIT_VARIANT_BUTTON_PREFIX + fileVariantName ) ) {
-                    selectedFileVariantName = fileVariantName;
+                     != request.getParameter( REQUEST_PARAMETER__SELECT_FILE_BUTTON_PREFIX + fileId ) ) {
+                    selectedFileId = fileId;
                 }
                 if ( null
-                     != request.getParameter( REQUEST_PARAMETER__DELETE_VARIANT_BUTTON_PREFIX + fileVariantName )
-                     || null == fileVariant.getInputStreamSource() ) {
-                    unfinishedNewFile = fileDocument.removeFileVariant( fileVariantName );
+                     != request.getParameter( REQUEST_PARAMETER__DELETE_FILE_BUTTON_PREFIX + fileId )
+                     || null == fileDocumentFile.getInputStreamSource() ) {
+                    unfinishedNewFile = fileDocument.removeFile( fileId );
                 }
             }
             if ( null != request.getParameter( REQUEST_PARAMETER__NEW_FILE_BUTTON ) ) {
-                selectedFileVariantName = null;
                 unfinishedNewFile = null ;
             }
-            createFileDocumentEditPage( selectedFileVariantName ).forward( request, response );
+            createFileDocumentEditPage( selectedFileId ).forward( request, response );
         }
     }
 
@@ -260,6 +260,10 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
         public InputStream getInputStream() throws IOException {
             return fileItem.getInputStream();
         }
+
+        public long getSize() throws IOException {
+            return fileItem.getSize() ;
+        }
     }
 
     public static class FileDocumentEditPage {
@@ -268,14 +272,14 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 
         private LocalizedMessage errorMessage;
         private MimeTypeRestriction pageMimeTypeRestriction;
-        private String fileVariantName;
-        private FileDocumentDomainObject.FileVariant fileVariant;
+        private String selectedFileId;
+        private FileDocumentDomainObject.FileDocumentFile selectedFile;
 
-        public FileDocumentEditPage( MimeTypeRestriction allowedMimeTypes, String fileVariantName,
-                                     FileDocumentDomainObject.FileVariant fileVariant ) {
+        public FileDocumentEditPage( MimeTypeRestriction allowedMimeTypes, String fileId,
+                                     FileDocumentDomainObject.FileDocumentFile file ) {
             this.pageMimeTypeRestriction = allowedMimeTypes;
-            this.fileVariantName = fileVariantName;
-            this.fileVariant = fileVariant;
+            this.selectedFileId = fileId;
+            this.selectedFile = file;
         }
 
         public MimeTypeRestriction getPageMimeTypeRestriction() {
@@ -300,12 +304,12 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
             return errorMessage;
         }
 
-        public FileDocumentDomainObject.FileVariant getFileVariant() {
-            return fileVariant;
+        public FileDocumentDomainObject.FileDocumentFile getSelectedFile() {
+            return selectedFile;
         }
 
-        public String getFileVariantName() {
-            return fileVariantName;
+        public String getSelectedFileId() {
+            return selectedFileId;
         }
     }
 
@@ -353,24 +357,24 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 
     }
 
-    private static class UniqueFileVariantNamePredicate implements Predicate {
+    private static class UniqueFileIdPredicate implements Predicate {
 
         private final FileDocumentDomainObject fileDocument;
 
-        UniqueFileVariantNamePredicate( FileDocumentDomainObject fileDocument ) {
+        UniqueFileIdPredicate( FileDocumentDomainObject fileDocument ) {
             this.fileDocument = fileDocument;
         }
 
         public boolean evaluate( Object object ) {
-            return null == fileDocument.getFileVariant( (String)object );
+            return null == fileDocument.getFile( (String)object );
         }
     }
 
-    private static class CounterNameFactory implements Factory {
+    private static class CounterStringFactory implements Factory {
 
         int counter = 1;
 
-        CounterNameFactory( int counterStartValue ) {
+        CounterStringFactory( int counterStartValue ) {
             counter = counterStartValue ;
         }
 

@@ -41,13 +41,13 @@
 
     DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
     FileDocumentDomainObject document = (FileDocumentDomainObject)httpFlow.getDocument() ;
-    FileDocumentDomainObject.FileVariant fileVariant = editPage.getFileVariant() ;
+    FileDocumentDomainObject.FileDocumentFile selectedFile = editPage.getSelectedFile() ;
     boolean creatingNewDocument = httpFlow instanceof CreateDocumentPageFlow ;
     EditFileDocumentPageFlow.MimeTypeRestriction mimeTypeRestriction = editPage.getPageMimeTypeRestriction() ;
 
-    String selectedFileVariantName = editPage.getFileVariantName();
-    Map fileVariants = document.getFileVariants();
-    boolean allowChoiceOfDefault = fileVariants.size() > 1;
+    String selectedFileId = editPage.getSelectedFileId();
+    Map files = document.getFiles();
+    boolean allowChoiceOfDefault = files.size() > 1;
 %>
 <input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
     value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
@@ -71,18 +71,18 @@
     <tr>
 		<td width="20%" height="22"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/filename_label ?></td>
 		<td width="80%">
-            <% if (StringUtils.isNotBlank(fileVariant.getFilename())) { %>
-                <%= StringEscapeUtils.escapeHtml( StringUtils.defaultString( fileVariant.getFilename()) ) %><br>
+            <% if (StringUtils.isNotBlank(selectedFile.getFilename())) { %>
+                <%= StringEscapeUtils.escapeHtml( StringUtils.defaultString( selectedFile.getFilename()) ) %><br>
             <% } %>
             <input type="file" name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__FILE %>" size="45">
-            <input type="hidden" name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__SELECTED_VARIANT_NAME %>" value="<%= StringEscapeUtils.escapeHtml( StringUtils.defaultString( selectedFileVariantName ) )%>">
+            <input type="hidden" name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__SELECTED_FILE_ID %>" value="<%= StringEscapeUtils.escapeHtml( StringUtils.defaultString( selectedFileId ) )%>">
         </td>
 	</tr>
 	<tr>
 		<td height="22"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/mime_type_label ?></td>
 		<td>
 		<select id="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__MIME_TYPE %>" name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__MIME_TYPE %>">
-			<option value=""<% if (StringUtils.isBlank( fileVariant.getMimeType() ) ) { %> selected<% } %>>
+			<option value=""<% if (StringUtils.isBlank( selectedFile.getMimeType() ) ) { %> selected<% } %>>
                 <? install/htdocs/sv/jsp/docadmin/file_document.jsp/autodetect_or_fill_in_below ?>
             </option>
 			<%
@@ -96,7 +96,7 @@
                     }
                     String mimeTypeDescriptionInUsersLanguage = mimeTypes[i][1] ;
                     boolean selected = false ;
-                    if (mimeType.equals( fileVariant.getMimeType() )) {
+                    if (mimeType.equals( selectedFile.getMimeType() )) {
                         selected = true ;
                         documentMimeTypeFoundInDropDown = true ;
                     }
@@ -112,7 +112,7 @@
 		<td>
             <input type="text" size="30" maxlength="50"
                 name="mimetype"
-                value="<% if (!documentMimeTypeFoundInDropDown) { %><%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( fileVariant.getMimeType(), "" ) ) %><% } %>"
+                value="<% if (!documentMimeTypeFoundInDropDown) { %><%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( selectedFile.getMimeType(), "" ) ) %><% } %>"
                 onkeypress="if (document.getElementById) document.getElementById('<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__MIME_TYPE %>').selectedIndex = 0;">
         </td>
 	</tr>
@@ -122,7 +122,7 @@
         </td>
 	</tr>
     <%
-        if (!fileVariants.isEmpty()) { %>
+        if (!files.isEmpty()) { %>
     <tr>
     	<td colspan="2">#gui_hr( "blue" )</td>
     </tr>
@@ -143,33 +143,33 @@
                 <th>&nbsp;</th>
             </tr>
             <%
-            Set fileVariantNames = fileVariants.keySet();
-            for ( Iterator iterator = fileVariantNames.iterator(); iterator.hasNext(); ) {
-                String fileVariantName = (String)iterator.next();
-                String escapedFileVariantName = StringEscapeUtils.escapeHtml(fileVariantName) ;
-                boolean isSelectedFileVariantName = fileVariantName.equals(selectedFileVariantName) ;
-                boolean isDefaultFileVariantName = fileVariantName.equals(document.getDefaultFileVariantName());
-                FileDocumentDomainObject.FileVariant aFileVariant = (FileDocumentDomainObject.FileVariant)fileVariants.get(fileVariantName) ;
-                    %><tr<% if (isSelectedFileVariantName) { %> bgcolor="#DDDDDD"<% } %>>
+            Set fileIds = files.keySet();
+            for ( Iterator iterator = fileIds.iterator(); iterator.hasNext(); ) {
+                String fileId = (String)iterator.next();
+                String escapedFileId = StringEscapeUtils.escapeHtml(fileId) ;
+                boolean isSelectedFileId = fileId.equals(selectedFileId) ;
+                boolean isDefaultFileId = fileId.equals(document.getDefaultFileId());
+                FileDocumentDomainObject.FileDocumentFile file = (FileDocumentDomainObject.FileDocumentFile)files.get(fileId) ;
+                    %><tr<% if (isSelectedFileId) { %> bgcolor="#DDDDFF"<% } %>>
                         <td><input type="text" size="10" maxlength="50"
-                                name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__NEW_VARIANT_NAME_PREFIX + escapedFileVariantName %>"
-                                value="<%= escapedFileVariantName %>"></td>
-                        <td><%= StringEscapeUtils.escapeHtml(aFileVariant.getFilename()) %></td>
-                        <td><%= StringEscapeUtils.escapeHtml(aFileVariant.getMimeType()) %></td>
+                                name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__NEW_FILE_ID_PREFIX + escapedFileId %>"
+                                value="<%= escapedFileId %>"></td>
+                        <td><%= StringEscapeUtils.escapeHtml(file.getFilename()) %></td>
+                        <td><%= StringEscapeUtils.escapeHtml(file.getMimeType()) %></td>
                         <% if (!creatingNewDocument) { %>
-                        <td><%= StringEscapeUtils.escapeHtml(request.getContextPath()) %>/servlet/GetDoc?meta_id=<%= document.getId() %>&<%= GetDoc.REQUEST_PARAMETER__FILE_VARIANT_NAME %>=<%= escapedFileVariantName %></td>
+                        <td><%= StringEscapeUtils.escapeHtml(request.getContextPath()) %>/servlet/GetDoc?meta_id=<%= document.getId() %>&<%= GetDoc.REQUEST_PARAMETER__FILE_ID %>=<%= escapedFileId %></td>
                         <% } %>
                         <% if (allowChoiceOfDefault) { %>
                         <td align="center"><input type="radio"
-                                name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__DEFAULT_VARIANT %>"
-                                value="<%= escapedFileVariantName %>" <% if (isDefaultFileVariantName) {%>checked<% } %>></td>
+                                name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__DEFAULT_FILE %>"
+                                value="<%= escapedFileId %>" <% if (isDefaultFileId) {%>checked<% } %>></td>
                         <% } %>
                         <td><input type="submit" class="imcmsFormBtnSmall"
-                                name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__EDIT_VARIANT_BUTTON_PREFIX +escapedFileVariantName%>"
-                                value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/select_variant_for_edit_button ?>"></td>
+                                name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__SELECT_FILE_BUTTON_PREFIX +escapedFileId%>"
+                                value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/select_file_button ?>"></td>
                         <td><input type="submit" class="imcmsFormBtnSmall"
-                                name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__DELETE_VARIANT_BUTTON_PREFIX +escapedFileVariantName%>"
-                                value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/delete_variant_button ?>"></td>
+                                name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__DELETE_FILE_BUTTON_PREFIX +escapedFileId%>"
+                                value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/delete_file_button ?>"></td>
                     </tr><%
                 }
             %>
@@ -177,7 +177,7 @@
         </td>
 	</tr>
     <tr>
-	    <td colspan="2" align="right"><input type="submit" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/new_variant_button ?>" name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__NEW_FILE_BUTTON %>"></td>
+	    <td colspan="2" align="right"><input type="submit" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/new_file_button ?>" name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__NEW_FILE_BUTTON %>"></td>
     </tr>
     <% } %>
 	</table></td>
@@ -187,7 +187,7 @@
 </tr>
 <tr>
 	<td align="right">
-    <% if (!fileVariants.isEmpty()) { %>
+    <% if (!files.isEmpty()) { %>
     <input type="submit" class="imcmsFormBtn" value="<? global/OK ?>" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>">
     <% } %>
 	<input type="submit" class="imcmsFormBtn" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/cancel ?>"></td>

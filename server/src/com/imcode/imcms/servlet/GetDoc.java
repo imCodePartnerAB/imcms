@@ -23,7 +23,7 @@ public class GetDoc extends HttpServlet {
     private final static String NO_PERMISSION_URL = "no_permission.jsp";
 
     private static final String HTTP_HEADER_REFERRER = "Referer";// Note, intended misspelling of "Referrer", according to the HTTP spec.
-    public static final String REQUEST_PARAMETER__FILE_VARIANT_NAME = "file_id";
+    public static final String REQUEST_PARAMETER__FILE_ID = "file_id";
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws IOException, ServletException {
         doGet( req, res );
@@ -188,14 +188,14 @@ public class GetDoc extends HttpServlet {
             trackLog.info( documentRequest );
             return htmlStr;
         } else if ( document instanceof FileDocumentDomainObject ) {
-            String fileVariantName = req.getParameter(REQUEST_PARAMETER__FILE_VARIANT_NAME);
+            String fileId = req.getParameter(REQUEST_PARAMETER__FILE_ID);
             FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
-            FileDocumentDomainObject.FileVariant fileVariant = fileDocument.getFileVariantOrDefault(fileVariantName) ;
-            String filename = fileVariant.getFilename();
-            String mimetype = fileVariant.getMimeType();
+            FileDocumentDomainObject.FileDocumentFile file = fileDocument.getFileOrDefault(fileId) ;
+            String filename = file.getFilename();
+            String mimetype = file.getMimeType();
             InputStream fr;
             try {
-                fr = new BufferedInputStream( fileVariant.getInputStreamSource().getInputStream() );
+                fr = new BufferedInputStream( file.getInputStreamSource().getInputStream() );
             } catch ( IOException ex ) {
                 return imcref.getAdminTemplate( NO_PAGE_URL, user, vec );
             }

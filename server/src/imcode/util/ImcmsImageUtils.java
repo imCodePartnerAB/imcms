@@ -1,5 +1,6 @@
 package imcode.util;
 
+import com.imcode.imcms.servlet.GetDoc;
 import imcode.server.ApplicationServer;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
@@ -21,22 +22,22 @@ public class ImcmsImageUtils {
         return documentId;
     }
 
-    public static String getVariantNameFromImageUrl( String imageUrl ) {
-        String variantName = "" ;
+    public static String getFileIdFromImageUrl( String imageUrl ) {
+        String fileId = "" ;
         Perl5Util perl5util = new Perl5Util();
-        if ( perl5util.match( "/GetDoc\\?.*\\bvariant=([^&]+)/", imageUrl )) {
-            variantName = perl5util.group( 1 ) ;
+        if ( perl5util.match( "/GetDoc\\?.*\\b"+GetDoc.REQUEST_PARAMETER__FILE_ID+"=([^&]+)/", imageUrl )) {
+            fileId = perl5util.group( 1 ) ;
         }
-        return variantName;
+        return fileId;
     }
 
     public static ImageSize getImageSizeFromFileDocument( FileDocumentDomainObject imageFileDocument,
-                                                          String variantName ) {
+                                                          String fileId ) {
         ImageSize imageSize;
         try {
-            FileDocumentDomainObject.FileVariant fileVariant = imageFileDocument.getFileVariantOrDefault( variantName );
-            InputStream imageFileDocumentInputStream = fileVariant.getInputStreamSource().getInputStream();
-            imageSize = new ImageParser().parseImageStream( imageFileDocumentInputStream, fileVariant.getFilename() );
+            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = imageFileDocument.getFileOrDefault( fileId );
+            InputStream imageFileDocumentInputStream = fileDocumentFile.getInputStreamSource().getInputStream();
+            imageSize = new ImageParser().parseImageStream( imageFileDocumentInputStream, fileDocumentFile.getFilename() );
         } catch ( IllegalArgumentException iae ) {
             imageSize = new ImageSize( 0, 0 );
         } catch ( IOException ioe ) {
