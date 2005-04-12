@@ -102,14 +102,14 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 		<tr>
 			<td class="imcmsAdmText">&nbsp;<? templates/sv/change_text.html/1001 ?>&nbsp;</td><%
 		if (showModeText) { %>
-			<td><input type="RADIO" tabindex="5" name="format_type" id="format_type0" value="0"<%
+			<td><input type="RADIO" tabindex="6" name="format_type" id="format_type0" value="0"<%
 			%><%= (imcmsModeText) ? "" : " checked" %>></td>
 			<td class="imcmsAdmText">
 			<label for="format_type0" accesskey="T" title="Text (<%= isMac ? "Ctrl" : "Alt" %> + T)">
 			&nbsp;<u>T</u>ext&nbsp;</label>&nbsp;</td><%
 		}
 		if (showModeHtml) { %>
-			<td><input type="RADIO" tabindex="5" name="format_type" id="format_type1" value="1"<%
+			<td><input type="RADIO" tabindex="6" name="format_type" id="format_type1" value="1"<%
 			%><%= (isHtmlAreaSupported && showModeEditor) ? " onClick=\"showHideHtmlArea(false);\"" : "" %><%
 			%><%= ((imcmsModeHtml || (imcmsModeText && !showModeText)) && (!showEditorCookie || !showModeEditor || !showModeText)) ? " checked" : "" %>></td>
 			<td class="imcmsAdmText">
@@ -117,7 +117,7 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 			&nbsp;<u>H</u>TML&nbsp;</label>&nbsp;</td><%
 		}
 		if (isHtmlAreaSupported && showModeEditor) { %>
-			<td><input type="RADIO" tabindex="5" name="format_type" id="format_type2" style="display:none" value="1" <%
+			<td><input type="RADIO" tabindex="6" name="format_type" id="format_type2" style="display:none" value="1" <%
 			%>onClick="showHideHtmlArea(true);"<%
 			%><%= (imcmsModeHtml && showEditorCookie) ? " checked" : "" %>></td>
 			<td class="imcmsAdmText">
@@ -128,8 +128,9 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 		</table></td>
 		<td align="right">
 		<input tabindex="2" type="SUBMIT" class="imcmsFormBtn" name="ok" value="  <? templates/sv/change_text.html/2006 ?>  ">
-		<input tabindex="3" type="RESET" class="imcmsFormBtn" value="<? templates/sv/change_text.html/2007 ?>">
-		<input tabindex="4" type="SUBMIT" class="imcmsFormBtn" name="cancel" value=" <? templates/sv/change_text.html/2008 ?> "></td>
+		<input tabindex="3" type="SUBMIT" class="imcmsFormBtn" name="save" value="  <? templates/sv/change_text.html/save ?>  ">
+		<input tabindex="4" type="RESET" class="imcmsFormBtn" value="<? templates/sv/change_text.html/2007 ?>">
+		<input tabindex="5" type="SUBMIT" class="imcmsFormBtn" name="cancel" value=" <? templates/sv/change_text.html/2008 ?> "></td>
 	</tr>
 	</table></td>
 </tr>

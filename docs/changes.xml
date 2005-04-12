@@ -1,14 +1,49 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <changesets>
 
+<changeset version="2.2.0">
+
+    <changes for="users">
+        <change>
+            <p>
+                Added "Save" and "Save and close" buttons to text editor.
+            </p>
+            <bug id="2937"/>
+        </change>
+    </changes>
+
+    <changes for="API-using developers">
+         <change>
+            <p>
+                When including other documents,
+                the <class>TextDocumentViewing</class> in the request was replaced,
+                so that subsequent <class>TextDocumentViewings</class>
+                in the including document came from the included document.
+            </p>
+            <bug id="3062"/>
+         </change>
+    </changes>
+
+</changeset>
+
+
 <changeset version="2.1.1">
+
+    <changes for="users">
+        <change>
+            <p>
+                Fixed a problem where a user would lose all his roles when editing himself.
+            </p>
+            <bug id="2925"/>
+        </change>
+    </changes>
 
     <changes for="API-using developers">
         <change>
             <p>
                 There was a mistake made with the
                 <method>ContentManagementSystem.runAsSuperadmin(ContentManagementSystemRunnable)</method>
-                so it actually did not work at all.
+                method so it actually did not work at all.
             </p>
             <bug id="2901"/>
         </change>
