@@ -31,3 +31,12 @@ DROP PROCEDURE SectionDelete
 DROP PROCEDURE SectionChangeAndDeleteCrossref
 
 -- 2005-04-06 Kreiger
+
+DROP PROCEDURE RoleFindName
+DROP PROCEDURE RoleGetName
+DROP PROCEDURE RoleUpdateName
+DROP PROCEDURE RoleDelete
+DROP PROCEDURE RoleDeleteViewAffectedMetaIds
+DROP PROCEDURE RoleDeleteViewAffectedUsers
+
+-- 2005-04-13 Kreiger

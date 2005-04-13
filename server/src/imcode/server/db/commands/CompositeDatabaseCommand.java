@@ -6,7 +6,7 @@ import imcode.server.db.exceptions.DatabaseException;
 
 import java.util.*;
 
-public class CompositeDatabaseCommand implements DatabaseCommand {
+public class CompositeDatabaseCommand extends TransactionDatabaseCommand {
 
     private final List databaseCommands = new ArrayList();
 
@@ -20,7 +20,7 @@ public class CompositeDatabaseCommand implements DatabaseCommand {
         this.databaseCommands.addAll( Arrays.asList( databaseCommands ) );
     }
 
-    public Object executeOn( DatabaseConnection connection ) throws DatabaseException {
+    public Object executeInTransaction( DatabaseConnection connection ) throws DatabaseException {
         for ( Iterator iterator = databaseCommands.iterator(); iterator.hasNext(); ) {
             DatabaseCommand databaseCommand = (DatabaseCommand)iterator.next();
             databaseCommand.executeOn( connection );

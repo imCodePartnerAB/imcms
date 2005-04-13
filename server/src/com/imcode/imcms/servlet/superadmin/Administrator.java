@@ -15,6 +15,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.lang.UnhandledException;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -23,10 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Properties;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Parent servlet for administration.
@@ -140,10 +138,10 @@ public class Administrator extends HttpServlet {
             }
 
         } catch (Exception e) {
-            errorMessage = "An error occured while reading the errorCode file";
+            throw new UnhandledException( e ) ;
         }
 
-        Utility.setDefaultHtmlContentType( response );;
+        Utility.setDefaultHtmlContentType( response );
         ServletOutputStream out = response.getOutputStream();
 
         Vector tagParsList = new Vector();

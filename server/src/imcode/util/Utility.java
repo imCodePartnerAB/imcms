@@ -18,13 +18,13 @@ import javax.servlet.http.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.cert.Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.cert.Certificate;
 
 public class Utility {
 
@@ -141,9 +141,13 @@ public class Utility {
         if (null == parameterValues) {
             return new int[0] ;
         }
-        int[] parameterInts = new int[parameterValues.length] ;
-        for ( int i = 0; i < parameterValues.length; i++ ) {
-            parameterInts[i] = Integer.parseInt(parameterValues[i]);
+        return convertStringArrayToIntArray( parameterValues );
+    }
+
+    public static int[] convertStringArrayToIntArray( String[] strings ) {
+        int[] parameterInts = new int[strings.length] ;
+        for ( int i = 0; i < strings.length; i++ ) {
+            parameterInts[i] = Integer.parseInt(strings[i]);
         }
         return parameterInts;
     }

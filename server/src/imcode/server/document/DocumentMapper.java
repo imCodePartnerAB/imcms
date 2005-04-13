@@ -4,7 +4,9 @@ import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import imcode.server.*;
 import imcode.server.db.*;
-import imcode.server.db.commands.*;
+import imcode.server.db.commands.CompositeDatabaseCommand;
+import imcode.server.db.commands.DeleteWhereColumnEqualsDatabaseCommand;
+import imcode.server.db.commands.UpdateDatabaseCommand;
 import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
@@ -1014,7 +1016,7 @@ public class DocumentMapper {
     private DatabaseCommand createDeleteDocumentCommand( final DocumentDomainObject document ) {
         final String metaIdStr = "" + document.getId();
         final String metaIdColumn = "meta_id";
-        CompositeDatabaseCommand composite = new CompositeDatabaseCommand( new DatabaseCommand[] {
+        DatabaseCommand composite = new CompositeDatabaseCommand( new DatabaseCommand[] {
             new DeleteWhereColumnEqualsDatabaseCommand( "document_categories", metaIdColumn, metaIdStr ),
             new DeleteWhereColumnEqualsDatabaseCommand( "meta_classification", metaIdColumn, metaIdStr ),
             new DeleteWhereColumnEqualsDatabaseCommand( "childs", "to_meta_id", metaIdStr ),
@@ -1038,7 +1040,7 @@ public class DocumentMapper {
             new DeleteWhereColumnEqualsDatabaseCommand( "meta_section", metaIdColumn, metaIdStr ),
             new DeleteWhereColumnEqualsDatabaseCommand( "meta", metaIdColumn, metaIdStr ),
         } ) ;
-        return new TransactionWrappingDatabaseCommand(composite);
+        return composite;
     }
 
     public Map getAllDocumentTypeIdsAndNamesInUsersLanguage( UserDomainObject user ) {
@@ -1154,6 +1156,21 @@ public class DocumentMapper {
         } else {
             updateCategory( category );
         }
+    }
+
+    public List getDocumentsWithPermissionsForRole( RoleDomainObject role ) {
+        String sqlStr = "SELECT meta_id FROM roles_rights WHERE role_id = ? ORDER BY meta_id";
+        String[] documentIdStrings = database.executeArrayQuery( sqlStr, new String[] {""+role.getId()} ) ;
+        final int[] documentIds = Utility.convertStringArrayToIntArray( documentIdStrings ) ;
+        return new AbstractList() {
+            public Object get( int index ) {
+                return getDocument(documentIds[index]) ;
+            }
+
+            public int size() {
+                return documentIds.length ;
+            }
+        };
     }
 
     public static class TextDocumentMenuIndexPair {

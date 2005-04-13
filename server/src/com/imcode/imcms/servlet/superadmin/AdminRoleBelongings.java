@@ -380,6 +380,6 @@ public class AdminRoleBelongings extends Administrator {
     private void setUsersActive( String userId, String state, ImcmsServices imcref ) {
 
         String sqlD = "ChangeUserActiveStatus";
-        imcref.getExceptionUnhandlingDatabase().executeUpdateQuery( sqlD, new String[] {userId, state} );
+        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( sqlD, new String[] {userId, state} );
     }
 }

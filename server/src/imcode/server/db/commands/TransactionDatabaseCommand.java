@@ -8,6 +8,9 @@ import org.apache.commons.lang.UnhandledException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+    An abstract DatabaseCommand that can be overridden to run something in an transaction. 
+**/
 public abstract class TransactionDatabaseCommand implements DatabaseCommand {
 
     public Object executeOn( DatabaseConnection dc ) throws DatabaseException {

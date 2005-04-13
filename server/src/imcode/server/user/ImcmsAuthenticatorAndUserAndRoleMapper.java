@@ -3,7 +3,10 @@ package imcode.server.user;
 import com.imcode.imcms.api.RoleConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
+import imcode.server.db.DatabaseCommand;
 import imcode.server.db.DatabaseConnection;
+import imcode.server.db.commands.CompositeDatabaseCommand;
+import imcode.server.db.commands.DeleteWhereColumnEqualsDatabaseCommand;
 import imcode.server.db.commands.TransactionDatabaseCommand;
 import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.db.exceptions.IntegrityConstraintViolationException;
@@ -20,7 +23,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     public static final String SPROC_GET_HIGHEST_USER_ID = "GetHighestUserId";
 
     private static final String SPROC_ADD_USER_ROLE = "AddUserRole";
-    private static final String SPROC_ROLE_DELETE = "RoleDelete";
     private static final String SPROC_GET_ALL_ROLES = "GetAllRoles";
     private static final String SPROC_GET_USER_ROLES = "GetUserRoles";
     private static final String SPROC_GET_USERS_WHO_BELONGS_TO_ROLE = "GetUsersWhoBelongsToRole";
@@ -450,7 +452,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         try {
             final int unionOfPermissionSetIds = getUnionOfRolePermissionIds( role );
             final int newRoleId;
-            newRoleId = ( (Integer)database.executeCommand( new TransactionDatabaseCommand() {
+            newRoleId = ( (Number)database.executeCommand( new TransactionDatabaseCommand() {
                               public Object executeInTransaction( DatabaseConnection connection ) throws DatabaseException {
                                   return connection.executeUpdateAndGetGeneratedKey( SQL_INSERT_INTO_ROLES, new String[] {role.getName(),
                                                                                              ""
@@ -483,7 +485,12 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
             return;
         }
         try {
-            database.executeUpdateProcedure( SPROC_ROLE_DELETE, new String[] {"" + role.getId()} );
+            DatabaseCommand databaseCommand = new CompositeDatabaseCommand( new DatabaseCommand[] {
+                new DeleteWhereColumnEqualsDatabaseCommand( "roles_rights", "role_id", ""+role.getId()),
+                new DeleteWhereColumnEqualsDatabaseCommand( "user_roles_crossref", "role_id", ""+role.getId()),
+                new DeleteWhereColumnEqualsDatabaseCommand( "roles", "role_id", ""+role.getId()),
+            } );
+            database.executeCommand( databaseCommand ) ;
         } catch ( DatabaseException e ) {
             throw new UnhandledException( e );
         }

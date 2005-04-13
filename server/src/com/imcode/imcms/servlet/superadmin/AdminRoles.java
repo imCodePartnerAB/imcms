@@ -3,9 +3,12 @@ package com.imcode.imcms.servlet.superadmin;
 import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.db.ExceptionUnhandlingDatabase;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.*;
 import imcode.util.Html;
 import imcode.util.Utility;
+import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
@@ -14,9 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Comments. This servlet will need the following stored procedures in the db
@@ -94,7 +95,10 @@ public class AdminRoles extends Administrator {
 
         // Lets check if the user is an admin, otherwise throw him out.
         ImcmsServices imcref = Imcms.getServices();
+        ExceptionUnhandlingDatabase database = imcref.getExceptionUnhandlingDatabase();
+        ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         UserDomainObject user = Utility.getLoggedOnUser( req );
+
         if ( user.isSuperAdmin() == false ) {
             String header = "Error in AdminRoles.";
             Properties langproperties = imcref.getLanguageProperties( user );
@@ -107,7 +111,7 @@ public class AdminRoles extends Administrator {
         // *************** GENERATE THE ADMINISTRATE ROLES PAGE *****************
         if ( req.getParameter( "VIEW_ADMIN_ROLES" ) != null ) {
             // Lets get all ROLES from DB
-            String[] rolesArr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "RoleAdminGetAll", new String[0] );
+            String[] rolesArr = database.executeArrayProcedure( "RoleAdminGetAll", new String[0] );
             Vector rolesV = new Vector( java.util.Arrays.asList( rolesArr ) );
 
 
@@ -119,36 +123,19 @@ public class AdminRoles extends Administrator {
             this.sendHtml( req, res, vm, HTML_ADMIN_ROLES );
 
             return;
-        }
-
-        // *************** GENERATE THE ADMIN ROLEBELONGIN PAGE *****************
-        if ( req.getParameter( "VIEW_ADMIN_ROLE_BELONGINGS" ) != null ) {
+        } else if ( req.getParameter( "VIEW_ADMIN_ROLE_BELONGINGS" ) != null ) {
             res.sendRedirect( "AdminRoleBelongings" );
             return;
-        }
-
-        // *************** RETURN TO ADMINMANAGER *****************
-        if ( req.getParameter( "CANCEL" ) != null ) {
+        } else if ( req.getParameter( "CANCEL" ) != null ) {
             res.sendRedirect( "AdminManager" );
             return;
-        }
-
-        // *************** RETURN TO ADMINROLE *****************
-        if ( req.getParameter( "CANCEL_ROLE" ) != null ) {
+        } else if ( req.getParameter( "CANCEL_ROLE" ) != null ) {
             this.doGet( req, res );
             return;
-        }
-
-        // *************** RETURN TO ADMINROLE *****************
-        if ( req.getParameter( "CANCEL_ROLE_ADMIN" ) != null ) {
+        } else if ( req.getParameter( "CANCEL_ROLE_ADMIN" ) != null ) {
             this.doGet( req, res );
             return;
-        }
-
-        // *************** GENERATE THE ADD NEW ROLE PAGE  **********
-        if ( req.getParameter( "VIEW_ADD_NEW_ROLE" ) != null ) {
-
-            String languagePrefix = user.getLanguageIso639_2();
+        } else if ( req.getParameter( "VIEW_ADD_NEW_ROLE" ) != null ) {
 
             // lets adjust the list to fit method cal
             RolePermissionDomainObject[] allRolePermissions = RoleDomainObject.getAllRolePermissions();
@@ -168,12 +155,9 @@ public class AdminRoles extends Administrator {
             this.sendHtml( req, res, vm, HTML_ADD_ROLE );
 
             return;
-        }
-
-        // *************** GENERATE THE RENAME ROLE PAGE  **********
-        if ( req.getParameter( "VIEW_RENAME_ROLE" ) != null ) {
-            String roleId = req.getParameter( "ROLE_ID" );
-            if ( roleId == null ) {
+        } else if ( req.getParameter( "VIEW_RENAME_ROLE" ) != null ) {
+            String roleIdStr = req.getParameter( "ROLE_ID" );
+            if ( roleIdStr == null ) {
                 String header = "Roles error";
                 Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_missing") + "<BR>";
@@ -181,18 +165,15 @@ public class AdminRoles extends Administrator {
                 new AdminError( req, res, header, msg );
                 return;
             }
-
-            String currRoleName = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "RoleGetName", new String[] {roleId} );
+            int roleId = Integer.parseInt( roleIdStr ) ;
+            RoleDomainObject role = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getRoleById(roleId );
 
             VariableManager vm = new VariableManager();
-            vm.addProperty( "CURRENT_ROLE_ID", roleId );
-            vm.addProperty( "CURRENT_ROLE_NAME", "" + currRoleName );
+            vm.addProperty( "CURRENT_ROLE_ID", roleIdStr );
+            vm.addProperty( "CURRENT_ROLE_NAME", "" + role.getName() );
             this.sendHtml( req, res, vm, HTML_RENAME_ROLE );
             return;
-        }
-
-        // *************** GENERATE THE EDIT ROLE PAGE  **********
-        if ( req.getParameter( "VIEW_EDIT_ROLE" ) != null ) {
+        } else if ( req.getParameter( "VIEW_EDIT_ROLE" ) != null ) {
 
             String roleIdStr = req.getParameter( "ROLE_ID" );
             if ( roleIdStr == null ) {
@@ -213,11 +194,8 @@ public class AdminRoles extends Administrator {
                 return;
             }
 
-            String languagePrefix = user.getLanguageIso639_2();
-
             int roleId = Integer.parseInt( roleIdStr );
-            ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
-            RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapper.getRoleById( roleId );
+            RoleDomainObject role = userAndRoleMapper.getRoleById( roleId );
             RolePermissionDomainObject[] allRolePermissions = RoleDomainObject.getAllRolePermissions();
             String[][] permissionList = new String[allRolePermissions.length][] ;
             for ( int i = 0; i < permissionList.length; i++ ) {
@@ -234,16 +212,13 @@ public class AdminRoles extends Administrator {
 
             /* create output page */
             VariableManager vm = new VariableManager();
-            vm.addProperty( "CURRENT_ROLE_NAME", imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "RoleGetName", new String[] {roleIdStr} ) );
+            vm.addProperty( "CURRENT_ROLE_NAME", role.getName() );
             vm.addProperty( "CURRENT_ROLE_ID", roleIdStr );
             vm.addProperty( "ROLE_PERMISSIONS", permissionComponent );
             this.sendHtml( req, res, vm, HTML_EDIT_ROLE );
 
             return;
-        }
-
-        // *************** ADD NEW ROLE TO DB  **********
-        if ( req.getParameter( "ADD_NEW_ROLE" ) != null ) {
+        } else if ( req.getParameter( "ADD_NEW_ROLE" ) != null ) {
 
             // Lets get the parameters from html page and validate them
             Properties params = this.getAddRoleParameters( req );
@@ -257,8 +232,8 @@ public class AdminRoles extends Administrator {
             }
 
             // Lets check that the new rolename doesnt exists already in db
-            String foundRoleName = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "RoleFindName", new String[] {(String)params.get( "ROLE_NAME" )} );
-            if ( !foundRoleName.equalsIgnoreCase( "-1" ) ) {
+            String roleName = params.getProperty( "ROLE_NAME" );
+            if ( roleExists( userAndRoleMapper, roleName ) ) {
                 String header = "Error in AdminRoles.";
                 Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_already_exists") + "<br>";
@@ -272,20 +247,17 @@ public class AdminRoles extends Administrator {
             int permissionValue = collectPermissionsState( checkedPermissions );
 
             // Lets add the new role into db
-            RoleDomainObject role = new RoleDomainObject( params.getProperty( "ROLE_NAME" ) );
+            RoleDomainObject role = new RoleDomainObject( roleName );
             role.addUnionOfPermissionIdsToRole(permissionValue);
             try {
-                imcref.getImcmsAuthenticatorAndUserAndRoleMapper().saveRole( role );
+                userAndRoleMapper.saveRole( role );
             } catch ( UserAndRoleRegistryException e ) {
                 throw new UnhandledException( e );
             }
             this.doGet( req, res );
 
             return;
-        }
-
-        // *************** RENAME A ROLE IN THE DB  **********
-        if ( req.getParameter( "RENAME_ROLE" ) != null ) {
+        } else if ( req.getParameter( "RENAME_ROLE" ) != null ) {
 
             // Lets get the parameters from html page and validate them
             Properties params = this.getRenameRoleParameters( req );
@@ -298,23 +270,23 @@ public class AdminRoles extends Administrator {
                 return;
             }
 
-            // Lets check that the new rolename doesnt exists already in db
-            String foundRoleName = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "RoleFindName", new String[] {params.getProperty( "ROLE_NAME" )} );
-            if ( !foundRoleName.equalsIgnoreCase( "-1" ) ) {
+            String roleName = params.getProperty( "ROLE_NAME" );
+            String roleIdStr = params.getProperty( "ROLE_ID" );
+            int roleId = Integer.parseInt( roleIdStr ) ;
+            RoleDomainObject role = userAndRoleMapper.getRoleById( roleId ) ;
+            role.setName( roleName );
+            try {
+                userAndRoleMapper.saveRole( role );
+            } catch ( NameTooLongException e ) {
+                throw new UnhandledException( e );
+            } catch ( RoleAlreadyExistsException e ) {
                 String header = "Error in AdminRoles.";
                 Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminRoles/rolename_already_exists") + "<br>";
                 log.debug( header + "- rolename already exists" );
                 new AdminError( req, res, header, msg );
-
                 return;
             }
-
-            // Lets add the new role into db
-            String sqlQ = "RoleUpdateName";
-            log.debug( "Sql: " + sqlQ );
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( sqlQ, new String[] {params.getProperty( "ROLE_ID" ),
-                                                                                            params.getProperty( "ROLE_NAME" )} );
             this.doGet( req, res );
 
             return;
@@ -337,28 +309,40 @@ public class AdminRoles extends Administrator {
                 return;
             }
 
-            // Lets get the top 50 metaid:s which will be affected if we delete the role
-            String[] affectedMetaIds = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "RoleDeleteViewAffectedMetaIds", new String[] {params.getProperty( "ROLE_ID" )} );
+            String roleIdStr = params.getProperty( "ROLE_ID" );
+            int roleId = Integer.parseInt( roleIdStr ) ;
+            RoleDomainObject role = userAndRoleMapper.getRoleById( roleId ) ;
+            List affectedDocuments = imcref.getDocumentMapper().getDocumentsWithPermissionsForRole(role) ;
+            int affectedDocumentsCount = affectedDocuments.size() ;
+            if (affectedDocuments.size() > 50) {
+                affectedDocuments = affectedDocuments.subList( 0, 50 ) ;
+            }
 
-            // Lets get nbr of affected  metaid:s
-            String roleCount = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "RoleCount", new String[] {params.getProperty( "ROLE_ID" )} );
+            List affectedUsers = Arrays.asList(userAndRoleMapper.getAllUsersWithRole( role )) ;
+            if (affectedUsers.size() > 50) {
+                affectedUsers = affectedUsers.subList( 0, 50 ) ;
+            }
 
-            // Lets get the top 50 users:s which will be affected if we delete the role
-            String[] affectedUsers = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "RoleDeleteViewAffectedUsers", new String[] {params.getProperty( "ROLE_ID" )} );
-
-            // Lets get nbr of affected users
-            int userCount = affectedUsers.length / 2;
-
-            if ( affectedUsers.length != 0 || affectedMetaIds.length != 0 ) {
+            if ( !affectedUsers.isEmpty() || !affectedDocuments.isEmpty() ) {
 
                 // Lets generate the affected users & metaid warning html page
-                String opt = Html.createOptionList( new Vector( Arrays.asList( affectedMetaIds ) ), "" );
-                String users = Html.createOptionList( new Vector( Arrays.asList( affectedUsers ) ), "" );
+                String opt = Html.createOptionList( affectedDocuments, null, new Transformer() {
+                            public Object transform( Object input ) {
+                                DocumentDomainObject d = (DocumentDomainObject)input ;
+                                return new String[] {""+d.getId(), ""+d.getId()} ;
+                            }
+                });
+                String users = Html.createOptionList( affectedUsers , null, new Transformer() {
+                            public Object transform( Object input ) {
+                                UserDomainObject user = (UserDomainObject)input ;
+                                return new String[] {""+user.getId(), user.getLastName()+", "+user.getFirstName()+ " ("+user.getLoginName()+")"} ;
+                            }
+                        } );
                 VariableManager vm = new VariableManager();
                 vm.addProperty( "META_ID_LIST", opt );
                 vm.addProperty( "USER_ID_LIST", users );
-                vm.addProperty( "USER_COUNT", "" + userCount );
-                vm.addProperty( "ROLE_COUNT", roleCount );
+                vm.addProperty( "USER_COUNT", "" + affectedUsers.size() );
+                vm.addProperty( "ROLE_COUNT", ""+affectedDocumentsCount );
                 vm.addProperty( "CURRENT_ROLE_ID", params.get( "ROLE_ID" ) );
                 this.sendHtml( req, res, vm, HTML_DELETE_ROLE_1 );
                 return;
@@ -405,7 +389,10 @@ public class AdminRoles extends Administrator {
                 return;
             }
 
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "RoleDelete", new String[] {params.getProperty( "ROLE_ID" )} );
+            String roleIdStr = params.getProperty( "ROLE_ID" );
+            int roleId = Integer.parseInt( roleIdStr ) ;
+            RoleDomainObject role = userAndRoleMapper.getRoleById( roleId ) ;
+            userAndRoleMapper.deleteRole( role );
 
             this.doGet( req, res );
 
@@ -431,13 +418,19 @@ public class AdminRoles extends Administrator {
             int permissionValue = collectPermissionsState( checkedPermissions );
 
             // lets update
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "RoleUpdatePermissions", new String[] {params.getProperty( "ROLE_ID" ),
+            database.executeUpdateProcedure( "RoleUpdatePermissions", new String[] {params.getProperty( "ROLE_ID" ),
                                                                                     "" + permissionValue} );
 
             this.doGet( req, res );
         }
 
     } // end HTTP POST
+
+    private boolean roleExists( ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper, String roleName ) {
+        RoleDomainObject role = userAndRoleMapper.getRoleByName( roleName ) ;
+        boolean roleExists = null != role;
+        return roleExists;
+    }
 
     /**
      * Collects the parameters from the request object
