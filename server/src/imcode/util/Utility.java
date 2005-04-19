@@ -8,6 +8,9 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.SetUtils;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.iterators.ObjectArrayIterator;
+import org.apache.commons.collections.iterators.TransformIterator;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -256,5 +259,50 @@ public class Utility {
             }
         }
         return true ;
+    }
+
+    public static Map getMapViewOfObjectPairArray(final Object[][] array) {
+        return new ArrayMap(array, new ObjectPairToMapEntryTransformer() );
+    }
+
+    private static class ObjectPairToMapEntryTransformer implements Transformer {
+        public Object transform(Object input) {
+            final Object[] pair = (Object[])input ;
+            return new Map.Entry() {
+                public Object getKey() {
+                    return pair[0] ;
+                }
+
+                public Object getValue() {
+                    return pair[1] ;
+                }
+
+                public Object setValue(Object value) {
+                    throw new UnsupportedOperationException() ;
+                }
+            } ;
+        }
+    }
+
+    private static class ArrayMap extends AbstractMap {
+
+        private final Object[] array;
+        private Transformer transformer;
+
+        ArrayMap(Object[] array, Transformer transformer) {
+            this.array = array;
+            this.transformer = transformer;
+        }
+
+        public Set entrySet() {
+            return new AbstractSet() {
+                public int size() {
+                    return array.length ;
+                }
+                public Iterator iterator() {
+                    return new TransformIterator( new ObjectArrayIterator( array ), transformer );
+                }
+            };
+        }
     }
 }

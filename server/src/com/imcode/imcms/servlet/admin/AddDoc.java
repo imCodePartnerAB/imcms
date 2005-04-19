@@ -7,9 +7,8 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.DateConstants;
-import imcode.util.Html;
-import imcode.util.Utility;
+import imcode.util.*;
+import org.apache.commons.collections.Transformer;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -18,8 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.Map;
 import java.util.Vector;
 
 public class AddDoc extends HttpServlet {
@@ -83,12 +82,13 @@ public class AddDoc extends HttpServlet {
 
         ImcmsServices imcref = Imcms.getServices();
 
-        UserDomainObject user = Utility.getLoggedOnUser( request );
-        // Lets fix the sortby list, first get the displaytexts from the database
-        String[] sortOrder = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "SortOrder_GetExistingDocs", new String[]{
-            user.getLanguageIso639_2()
-        } );
-        String sortOrderStr = Html.createOptionList( Arrays.asList( sortOrder ), "" );
+        final UserDomainObject user = Utility.getLoggedOnUser( request );
+        String sortOrderStr = Html.createOptionList( GetExistingDoc.SORT_ORDERS_MAP.entrySet(), null, new Transformer() {
+            public Object transform(Object input) {
+                Map.Entry entry = (Map.Entry)input ;
+                return new String[] {(String)entry.getKey(), ((LocalizedMessage)entry.getValue()).toLocalizedString( user )} ;
+            }
+        });
         vec.add( "#sortBy#" );
         vec.add( sortOrderStr );
 

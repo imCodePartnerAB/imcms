@@ -36,6 +36,19 @@ public class GetExistingDoc extends HttpServlet {
     private static final String SEARCH_RESULTS = "existing_doc_res.html";
     private static final String ADMIN_TEMPLATE_EXISTING_DOC = "existing_doc.html";
 
+    private static final String SORT_BY_LANGUAGE_KEY_PREFIX = "templates/sv/existing_doc.html/sort_by/" ;
+
+    private static final Object[][] SORT_ORDERS_ARRAY = new Object[][]{
+        {"meta_headline", new LocalizedMessage( SORT_BY_LANGUAGE_KEY_PREFIX+"headline") },
+        {"meta_id", new LocalizedMessage( SORT_BY_LANGUAGE_KEY_PREFIX+"id") },
+        {"doc_type", new LocalizedMessage( SORT_BY_LANGUAGE_KEY_PREFIX+"type") },
+        {"date_modified", new LocalizedMessage( SORT_BY_LANGUAGE_KEY_PREFIX+"modified_datetime") },
+        {"date_created", new LocalizedMessage( SORT_BY_LANGUAGE_KEY_PREFIX+"created_datetime") },
+        {"archived_datetime", new LocalizedMessage( SORT_BY_LANGUAGE_KEY_PREFIX+"archived_datetime") },
+        {"publication_start_datetime", new LocalizedMessage( SORT_BY_LANGUAGE_KEY_PREFIX+"published_datetime") },
+    };
+    static final Map SORT_ORDERS_MAP = Utility.getMapViewOfObjectPairArray( SORT_ORDERS_ARRAY) ;
+
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         ImcmsServices imcref = Imcms.getServices();
 
@@ -106,16 +119,15 @@ public class GetExistingDoc extends HttpServlet {
             // we are able to determine if the sortorder is okay.
 
             // Lets fix the sortby list, first get the displaytexts from the database
-            String[][] sortOrder = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "SortOrder_GetExistingDocs", new String[]{langPrefix} );
-            Map sortOrderHash = convert2Hashtable( sortOrder );
-            if ( !sortOrderHash.containsKey( sortBy ) ) {
+            Set sortOrderSet = SORT_ORDERS_MAP.keySet() ;
+            if ( !sortOrderSet.contains( sortBy ) ) {
                 sortBy = "meta_id";
             }
 
             List sortOrderV = new ArrayList();
-            for ( int i = 0; i < sortOrder.length; i++ ) {
-                sortOrderV.add( sortOrder[i][0] );
-                sortOrderV.add( sortOrder[i][1] );
+            for ( int i = 0; i < SORT_ORDERS_ARRAY.length; i++ ) {
+                sortOrderV.add( SORT_ORDERS_ARRAY[i][0] );
+                sortOrderV.add( ((LocalizedMessage)SORT_ORDERS_ARRAY[i][1]).toLocalizedString( user ) );
             }
 
             log.debug( "Query: " + query );
@@ -237,7 +249,7 @@ public class GetExistingDoc extends HttpServlet {
 
         // Lets get all document types and put them in a hashTable
         String[][] allDocTypesArray = imcref.getAllDocumentTypes( langPrefix );
-        Map allDocTypesHash = convert2Hashtable( allDocTypesArray );
+        Map allDocTypesHash = convertToSet( allDocTypesArray );
 
         // Lets parse the searchresults
         searchResults = parseSearchResults( oneRecHtmlSrc, searchResultDocuments, allDocTypesHash );
@@ -406,7 +418,7 @@ public class GetExistingDoc extends HttpServlet {
      * array will be the value.
      */
 
-    private static Hashtable convert2Hashtable( String[][] arr ) {
+    private static Hashtable convertToSet( String[][] arr ) {
 
         Hashtable h = new Hashtable();
         for ( int i = 0; i < arr.length; i++ ) {

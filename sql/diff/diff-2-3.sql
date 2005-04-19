@@ -40,3 +40,10 @@ DROP PROCEDURE RoleDeleteViewAffectedMetaIds
 DROP PROCEDURE RoleDeleteViewAffectedUsers
 
 -- 2005-04-13 Kreiger
+
+DROP PROCEDURE SortOrder_GetExistingDocs
+DROP TABLE display_name
+DROP TABLE sort_by
+
+-- 2005-04-19 Kreiger
+
