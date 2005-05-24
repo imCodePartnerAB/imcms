@@ -7,6 +7,7 @@ import imcode.server.db.handlers.FlatStringArrayResultSetHandler;
 import imcode.server.db.handlers.MultiStringArrayResultSetHandler;
 import imcode.server.db.handlers.SingleStringResultSetHandler;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,6 +16,7 @@ public class DefaultDatabase implements Database {
 
     QueryRunner queryRunner;
     ProcedureExecutor procedureExecutor;
+    Logger log = Logger.getLogger(DefaultDatabase.class);
 
     public DefaultDatabase( QueryRunner queryRunner, ProcedureExecutor procedureExecutor ) {
         this.queryRunner = queryRunner;

@@ -5,6 +5,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseConnection;
 import imcode.server.db.ExceptionUnhandlingDatabase;
+import imcode.server.db.ConvenienceDatabaseConnection;
 import imcode.server.db.commands.TransactionDatabaseCommand;
 import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -47,7 +48,7 @@ public class DocumentPermissionSetMapper {
     private final static int EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE;
     private final static int EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES;
 
-    private ExceptionUnhandlingDatabase database;
+    private Database database;
     private ImcmsServices services;
     public static final String TABLE_NEW_DOC_PERMISSION_SETS = "new_doc_permission_sets";
     public static final String TABLE_DOC_PERMISSION_SETS = "doc_permission_sets";
@@ -57,26 +58,26 @@ public class DocumentPermissionSetMapper {
         this.services = services;
     }
 
-    public DocumentPermissionSetDomainObject getRestrictedPermissionSet( DocumentDomainObject document,
-                                                                         int permissionTypeId,
-                                                                         boolean forNewDocuments ) {
+    public DocumentPermissionSetDomainObject getRestrictedPermissionSet(ConvenienceDatabaseConnection connection, DocumentDomainObject document,
+                                                                        int permissionTypeId,
+                                                                        boolean forNewDocuments) {
         DocumentPermissionSetDomainObject documentPermissionSet;
         if ( document instanceof TextDocumentDomainObject ) {
             documentPermissionSet = new TextDocumentPermissionSetDomainObject( permissionTypeId );
         } else {
             documentPermissionSet = new DocumentPermissionSetDomainObject( permissionTypeId );
         }
-        setDocumentPermissionSetBitsFromDb( document, documentPermissionSet, forNewDocuments );
+        setDocumentPermissionSetBitsFromDb( connection,document, documentPermissionSet, forNewDocuments );
 
         return documentPermissionSet;
     }
 
-    private void setDocumentPermissionSetBitsFromDb( DocumentDomainObject document,
-                                                     DocumentPermissionSetDomainObject documentPermissionSet,
-                                                     boolean forNewDocuments ) {
+    private void setDocumentPermissionSetBitsFromDb(ConvenienceDatabaseConnection connection, DocumentDomainObject document,
+                                                    DocumentPermissionSetDomainObject documentPermissionSet,
+                                                    boolean forNewDocuments) {
         String table = getPermissionsTable( forNewDocuments );
         String sqlStr = "SELECT permission_id FROM " + table + " WHERE meta_id = ? AND set_id = ?";
-        String permissionBitsString = database.executeStringQuery( sqlStr, new String[]{
+        String permissionBitsString = connection.executeStringQuery( sqlStr, new String[]{
                                                                             String.valueOf( document.getId() ),
                                                                             String.valueOf( documentPermissionSet.getTypeId() )
                                                                     } );
@@ -95,22 +96,20 @@ public class DocumentPermissionSetMapper {
         return table;
     }
 
-    public DocumentPermissionSetDomainObject getPermissionSetRestrictedOne( DocumentDomainObject document ) {
-        return getRestrictedPermissionSet( document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, false );
+    public DocumentPermissionSetDomainObject getPermissionSetRestrictedOne(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {
+        return getRestrictedPermissionSet( connection, document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, false );
     }
 
-    public DocumentPermissionSetDomainObject getPermissionSetRestrictedTwo( DocumentDomainObject document ) {
-        return getRestrictedPermissionSet( document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, false );
+    public DocumentPermissionSetDomainObject getPermissionSetRestrictedTwo(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {
+        return getRestrictedPermissionSet(connection, document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, false );
     }
 
-    public DocumentPermissionSetDomainObject getPermissionSetRestrictedOneForNewDocuments(
-            DocumentDomainObject document ) {
-        return getRestrictedPermissionSet( document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, true );
+    public DocumentPermissionSetDomainObject getPermissionSetRestrictedOneForNewDocuments(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {
+        return getRestrictedPermissionSet(connection, document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, true );
     }
 
-    public DocumentPermissionSetDomainObject getPermissionSetRestrictedTwoForNewDocuments(
-            DocumentDomainObject document ) {
-        return getRestrictedPermissionSet( document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, true );
+    public DocumentPermissionSetDomainObject getPermissionSetRestrictedTwoForNewDocuments(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {
+        return getRestrictedPermissionSet(connection, document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, true );
     }
 
     public void saveRestrictedDocumentPermissionSets( DocumentDomainObject document, UserDomainObject user,

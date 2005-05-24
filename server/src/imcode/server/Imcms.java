@@ -98,10 +98,6 @@ public class Imcms {
                                                String user, String password,
                                                int maxConnectionCount ) {
         try {
-            final File logFile = new File(WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath(), "WEB-INF/logs/jtds.log");
-            final PrintWriter logWriter = new PrintWriter(new BufferedWriter(new FileWriter(logFile)));
-            DriverManager.setLogWriter(logWriter);
-
             BasicDataSource basicDataSource = new BasicDataSource();
             basicDataSource.setDriverClassName( jdbcDriver );
             basicDataSource.setUsername( user );

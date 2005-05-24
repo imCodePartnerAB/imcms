@@ -1,8 +1,9 @@
 package imcode.server.document;
 
 import imcode.server.Imcms;
-import imcode.server.db.ExceptionUnhandlingDatabase;
-import imcode.server.db.ExceptionUnhandlingDatabaseConnection;
+import imcode.server.ImcmsServices;
+import imcode.server.db.Database;
+import imcode.server.db.DatabaseConnection;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FileInputStreamSource;
@@ -22,13 +23,13 @@ import java.util.regex.Pattern;
 
 public class DocumentStoringVisitor extends DocumentVisitor {
 
-    protected ExceptionUnhandlingDatabase database ;
+    protected Database database ;
     protected UserDomainObject user;
 
     private static final int FILE_BUFFER_LENGTH = 2048;
     private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
 
-    public DocumentStoringVisitor( UserDomainObject user, ExceptionUnhandlingDatabase database ) {
+    public DocumentStoringVisitor( UserDomainObject user, Database database ) {
         this.database = database ;
         this.user = user;
     }
@@ -85,18 +86,18 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 + "VALUES(?" + StringUtils.repeat(",?", columnNames.length - 1) + ")";
     }
 
-    void updateTextDocumentMenus( ExceptionUnhandlingDatabaseConnection connection, TextDocumentDomainObject textDocument ) {
+    void updateTextDocumentMenus(DatabaseConnection connection, TextDocumentDomainObject textDocument, ImcmsServices services) {
         Map menuMap = textDocument.getMenus();
         for (Iterator iterator = menuMap.entrySet().iterator(); iterator.hasNext();) {
             Map.Entry entry = (Map.Entry) iterator.next();
             Integer menuIndex = (Integer) entry.getKey();
             MenuDomainObject menu = (MenuDomainObject) entry.getValue();
-            updateTextDocumentMenu(connection, textDocument, menuIndex, menu);
+            updateTextDocumentMenu(connection, textDocument, menuIndex, menu, services);
         }
         deleteUnusedMenus(connection, textDocument);
     }
 
-    private void deleteUnusedMenus( ExceptionUnhandlingDatabaseConnection connection, TextDocumentDomainObject textDocument ) {
+    private void deleteUnusedMenus( DatabaseConnection connection, TextDocumentDomainObject textDocument ) {
         Collection menus = textDocument.getMenus().values();
         if (!menus.isEmpty()) {
             Collection menuIds = CollectionUtils.collect(menus, new Transformer() {
@@ -115,26 +116,26 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         }
     }
 
-    private void updateTextDocumentMenu( ExceptionUnhandlingDatabaseConnection connection, TextDocumentDomainObject textDocument, Integer menuIndex,
-                                         MenuDomainObject menu ) {
+    private void updateTextDocumentMenu(DatabaseConnection connection, TextDocumentDomainObject textDocument, Integer menuIndex,
+                                        MenuDomainObject menu, ImcmsServices services) {
         deleteTextDocumentMenu(connection, textDocument, menuIndex);
-        insertTextDocumentMenu(connection, textDocument, menuIndex, menu);
+        insertTextDocumentMenu(connection, textDocument, menuIndex, menu, services);
     }
 
-    private void insertTextDocumentMenu( ExceptionUnhandlingDatabaseConnection connection, TextDocumentDomainObject textDocument, Integer menuIndex,
-                                         MenuDomainObject menu ) {
+    private void insertTextDocumentMenu(DatabaseConnection connection, TextDocumentDomainObject textDocument, Integer menuIndex,
+                                        MenuDomainObject menu, ImcmsServices services) {
         sqlInsertMenu(connection, textDocument, menuIndex.intValue(), menu);
-        insertTextDocumentMenuItems(connection, menu);
+        insertTextDocumentMenuItems(connection, menu, services);
     }
 
-    private void deleteTextDocumentMenu( ExceptionUnhandlingDatabaseConnection connection, TextDocumentDomainObject textDocument,
+    private void deleteTextDocumentMenu( DatabaseConnection connection, TextDocumentDomainObject textDocument,
                                          Integer menuIndex ) {
         deleteTextDocumentMenuItems(connection, textDocument, menuIndex);
         String sqlDeleteMenu = "DELETE FROM menus WHERE meta_id = ? AND menu_index = ?";
         connection.executeUpdate( sqlDeleteMenu, new String[]{"" + textDocument.getId(), "" + menuIndex} );
     }
 
-    private void deleteTextDocumentMenuItems( ExceptionUnhandlingDatabaseConnection connection, TextDocumentDomainObject textDocument,
+    private void deleteTextDocumentMenuItems( DatabaseConnection connection, TextDocumentDomainObject textDocument,
                                               Integer menuIndex ) {
         String sqlDeleteMenuItems = "DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
         connection.executeUpdate( sqlDeleteMenuItems, new String[]{"" + textDocument.getId(),
@@ -195,32 +196,31 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         database.executeUpdateQuery(sqlDeleteTexts, new String[]{"" + textDocument.getId()});
     }
 
-    private void insertTextDocumentMenuItems( ExceptionUnhandlingDatabaseConnection connection, MenuDomainObject menu ) {
-        MenuItemDomainObject[] menuItems = menu.getMenuItems();
+    private void insertTextDocumentMenuItems(DatabaseConnection connection, MenuDomainObject menu, ImcmsServices services) {
+        MenuItemDomainObject[] menuItems = menu.getMenuItemsUnsorted(new ConnectionDocumentGetter(connection, services));
         for (int i = 0; i < menuItems.length; i++) {
             MenuItemDomainObject menuItem = menuItems[i];
             sqlInsertMenuItem(connection, menu, menuItem);
         }
     }
 
-    private void sqlInsertMenuItem( ExceptionUnhandlingDatabaseConnection connection, MenuDomainObject menu, MenuItemDomainObject menuItem ) {
+    private void sqlInsertMenuItem( DatabaseConnection connection, MenuDomainObject menu, MenuItemDomainObject menuItem ) {
         String sqlInsertMenuItem = "INSERT INTO childs (menu_id, to_meta_id, manual_sort_order, tree_sort_index) VALUES(?,?,?,?)";
         String[] parameters = new String[]{
                     "" + menu.getId(),
-                    "" + menuItem.getDocument().getId(),
+                    "" + menuItem.getDocumentReference().intValue(),
                     "" + menuItem.getSortKey().intValue(),
                     "" + menuItem.getTreeSortKey()
                 };
         connection.executeUpdate( sqlInsertMenuItem, parameters);
     }
 
-    private void sqlInsertMenu( ExceptionUnhandlingDatabaseConnection connection, TextDocumentDomainObject textDocument, int menuIndex,
+    private void sqlInsertMenu( DatabaseConnection connection, TextDocumentDomainObject textDocument, int menuIndex,
                                 MenuDomainObject menu ) {
         String sqlInsertMenu = "INSERT INTO menus (meta_id, menu_index, sort_order) VALUES(?,?,?)";
         String[] parameters = new String[]{
                     "" + textDocument.getId(), "" + menuIndex, "" + menu.getSortOrder()
                 };
-
         int menuId = connection.executeUpdateAndGetGeneratedKey( sqlInsertMenu, parameters ).intValue();
         menu.setId( menuId );
     }

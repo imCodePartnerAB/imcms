@@ -1,7 +1,6 @@
 package imcode.server;
 
 import imcode.server.db.Database;
-import imcode.server.db.ExceptionUnhandlingDatabase;
 import imcode.server.document.*;
 import imcode.server.document.index.AutorebuildingDirectoryIndex;
 import imcode.server.document.index.DocumentIndex;
@@ -35,7 +34,7 @@ import java.util.*;
 
 final public class DefaultImcmsServices implements ImcmsServices {
 
-    private final ExceptionUnhandlingDatabase database;
+    private final Database database;
     private TextDocumentParser textDocParser;
     private Config config;
 
@@ -71,7 +70,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * Contructs an DefaultImcmsServices object.
      */
     public DefaultImcmsServices( Database database, Properties props ) {
-        this.database = new ExceptionUnhandlingDatabase( database );
+        this.database = database;
         initConfig( props );
         initKeyStore();
         initSysData();
@@ -182,7 +181,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private void initDocumentMapper() {
         File indexDirectory = new File( getRealContextPath(), "WEB-INF/index" );
         DocumentIndex documentIndex = new AutorebuildingDirectoryIndex( indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes() );
-        documentMapper = new DocumentMapper( this, this.getDatabase(), this.getImcmsAuthenticatorAndUserAndRoleMapper(), new DocumentPermissionSetMapper( database.getWrappedDatabase(), this ), documentIndex, this.getClock(), this.getConfig() );
+        documentMapper = new DocumentMapper( this, this.getDatabase(), this.getImcmsAuthenticatorAndUserAndRoleMapper(), new DocumentPermissionSetMapper( database, this ), documentIndex, this.getClock(), this.getConfig() );
     }
 
     private void initTemplateMapper() {
@@ -462,7 +461,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return config;
     }
 
-    public imcode.server.db.ExceptionUnhandlingDatabase getExceptionUnhandlingDatabase() {
+    public imcode.server.db.Database getExceptionUnhandlingDatabase() {
         return database;
     }
 
@@ -998,7 +997,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public Database getDatabase() {
-        return database.getWrappedDatabase();
+        return database;
     }
 
     private static class WebappRelativeFileConverter implements Converter {

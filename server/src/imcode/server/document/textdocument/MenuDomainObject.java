@@ -1,10 +1,12 @@
 package imcode.server.document.textdocument;
 
 import imcode.server.user.UserDomainObject;
+import imcode.server.document.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.*;
@@ -23,6 +25,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     public final static int DEFAULT_SORT_KEY = 500;
     private static final int DEFAULT_SORT_KEY_INCREMENT = 10;
+    Logger log = Logger.getLogger(MenuDomainObject.class);
 
     public MenuDomainObject() {
         this( 0, MENU_SORT_ORDER__DEFAULT );
@@ -91,16 +94,21 @@ public class MenuDomainObject implements Cloneable, Serializable {
     }
 
     public MenuItemDomainObject[] getMenuItems() {
+        MenuItemDomainObject[] menuItemsArray = getMenuItemsUnsorted(new MenuDomainObject.DocumentReferenceDocumentGetter());
+        Arrays.sort( menuItemsArray, getMenuItemComparatorForSortOrder( sortOrder ) );
+        return menuItemsArray;
+    }
+
+    public MenuItemDomainObject[] getMenuItemsUnsorted(DocumentGetter documentGetter) {
         HashMap menuItemsClone = (HashMap)menuItems.clone() ;
         List menuItemsList = new ArrayList( menuItemsClone.size() ) ;
         for ( Iterator iterator = menuItemsClone.values().iterator(); iterator.hasNext(); ) {
             MenuItemDomainObject menuItem = (MenuItemDomainObject)iterator.next() ;
-            if (null != menuItem.getDocument()) {
+            if (null != documentGetter.getDocument(menuItem.getDocumentReference())) {
                 menuItemsList.add(menuItem) ;
             }
         }
         MenuItemDomainObject[] menuItemsArray = (MenuItemDomainObject[])menuItemsList.toArray( new MenuItemDomainObject[menuItemsList.size()] );
-        Arrays.sort( menuItemsArray, getMenuItemComparatorForSortOrder( sortOrder ) );
         return menuItemsArray;
     }
 
@@ -116,7 +124,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
             menuItem.setSortKey( sortKey );
         }
 
-        menuItems.put( new Integer(menuItem.getDocumentReference().getDocumentId()), menuItem );
+        menuItems.put( new Integer(menuItem.getDocumentReference().intValue()), menuItem );
     }
 
     private Integer getMaxSortKey() {
@@ -181,4 +189,13 @@ public class MenuDomainObject implements Cloneable, Serializable {
         return menuItems.size();
     }
 
+    public class DocumentReferenceDocumentGetter implements DocumentGetter {
+        public DocumentDomainObject getDocument(DocumentId documentId) {
+            if (documentId instanceof DocumentReference) {
+                return ((DocumentReference)documentId).getDocument() ;
+            } else {
+                throw new UnsupportedOperationException("Only accepts document-references.");
+            }
+        }
+    }
 }

@@ -3,7 +3,7 @@ package com.imcode.imcms.servlet.superadmin;
 import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.db.ExceptionUnhandlingDatabase;
+import imcode.server.db.Database;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.*;
 import imcode.util.Html;
@@ -95,7 +95,7 @@ public class AdminRoles extends Administrator {
 
         // Lets check if the user is an admin, otherwise throw him out.
         ImcmsServices imcref = Imcms.getServices();
-        ExceptionUnhandlingDatabase database = imcref.getExceptionUnhandlingDatabase();
+        Database database = imcref.getExceptionUnhandlingDatabase();
         ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         UserDomainObject user = Utility.getLoggedOnUser( req );
 

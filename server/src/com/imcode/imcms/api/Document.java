@@ -54,11 +54,10 @@ public class Document {
                     result.put( role.getName(), DocumentPermissionSetDomainObject.FULL );
                     break;
                 case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1:
+                    result.put( role.getName(), internalDocument.getPermissionSetForRestrictedOne()) ;
+                    break;
                 case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2:
-                    result.put( role.getName(),
-                                getDocumentPermissionSetMapper().getRestrictedPermissionSet( internalDocument,
-                                                                                                permissionType,
-                                                                                                false ) );
+                    result.put( role.getName(), internalDocument.getPermissionSetForRestrictedTwo()) ;
                     break;
                 case DocumentPermissionSetDomainObject.TYPE_ID__READ:
                     result.put( role.getName(), DocumentPermissionSetDomainObject.READ );
@@ -119,14 +118,14 @@ public class Document {
 
     public DocumentPermissionSet getPermissionSetRestrictedOne() throws NoPermissionException {
         getSecurityChecker().hasEditPermission( this );
-        DocumentPermissionSetDomainObject restrictedOne = getDocumentPermissionSetMapper().getPermissionSetRestrictedOne( internalDocument );
+        DocumentPermissionSetDomainObject restrictedOne = internalDocument.getPermissionSetForRestrictedOne() ;
         DocumentPermissionSet result = new DocumentPermissionSet( restrictedOne );
         return result;
     }
 
     public DocumentPermissionSet getPermissionSetRestrictedTwo() throws NoPermissionException {
         getSecurityChecker().hasEditPermission( this );
-        DocumentPermissionSetDomainObject restrictedTwo = getDocumentPermissionSetMapper().getPermissionSetRestrictedTwo( internalDocument );
+        DocumentPermissionSetDomainObject restrictedTwo = internalDocument.getPermissionSetForRestrictedTwo() ;
         DocumentPermissionSet result = new DocumentPermissionSet( restrictedTwo );
         return result;
     }

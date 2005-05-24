@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
 
-public class DatabaseException extends Exception {
+public class DatabaseException extends RuntimeException {
 
     private final static Logger log = Logger.getLogger( DatabaseException.class.getName() );
 

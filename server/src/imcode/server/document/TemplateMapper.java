@@ -2,6 +2,7 @@ package imcode.server.document;
 
 import imcode.server.ImcmsServices;
 import imcode.server.db.ExceptionUnhandlingDatabase;
+import imcode.server.db.Database;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.ArrayUtils;
 
@@ -14,7 +15,7 @@ public class TemplateMapper {
     private static final String SPROC_GET_TEMPLATE_GROUPS_FOR_USER = "GetTemplategroupsForUser";
     private static final String SPROC_GET_TEMPLATE_GROUPS = "GetTemplateGroups";
 
-    private ExceptionUnhandlingDatabase database;
+    private Database database;
     private ImcmsServices services;
 
     public TemplateMapper( ImcmsServices service ) {
@@ -230,7 +231,7 @@ public class TemplateMapper {
         }
     }
 
-    private static String[][] sprocGetTemplateGroupsForUser( ExceptionUnhandlingDatabase service, UserDomainObject user,
+    private static String[][] sprocGetTemplateGroupsForUser( Database service, UserDomainObject user,
                                                             int meta_id ) {
         return service.execute2dArrayProcedure( SPROC_GET_TEMPLATE_GROUPS_FOR_USER,
                                           new String[]{String.valueOf( meta_id ), String.valueOf( user.getId() )} );

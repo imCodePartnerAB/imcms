@@ -1,12 +1,12 @@
 package imcode.server.document;
 
-import imcode.server.db.ExceptionUnhandlingDatabase;
+import imcode.server.db.Database;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
-    public DocumentCreatingVisitor( UserDomainObject user, ExceptionUnhandlingDatabase database ) {
+    public DocumentCreatingVisitor( UserDomainObject user, Database database ) {
         super( user, database );
     }
 

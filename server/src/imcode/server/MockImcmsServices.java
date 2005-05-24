@@ -2,7 +2,6 @@ package imcode.server;
 
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
-import imcode.server.db.ExceptionUnhandlingDatabase;
 import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
@@ -27,7 +26,7 @@ public class MockImcmsServices implements ImcmsServices {
 
     private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
 
-    private ExceptionUnhandlingDatabase database = new ExceptionUnhandlingDatabase( new MockDatabase() );
+    private Database database = new MockDatabase();
     private KeyStore keyStore;
     private TemplateMapper templateMapper;
     private DocumentMapper documentMapper;
@@ -314,7 +313,7 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public ExceptionUnhandlingDatabase getExceptionUnhandlingDatabase() {
+    public Database getExceptionUnhandlingDatabase() {
         return database ;
     }
 
@@ -331,7 +330,7 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public Database getDatabase() {
-        return database.getWrappedDatabase() ;
+        return database;
     }
 
     public void setImcmsAuthenticatorAndUserAndRoleMapper(
@@ -340,7 +339,7 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public void setDatabase( Database database ) {
-        this.database = new ExceptionUnhandlingDatabase( database );
+        this.database = database;
     }
 
     public void setKeyStore( KeyStore keyStore ) {

@@ -4,14 +4,18 @@ import imcode.server.db.DatabaseCommand;
 import imcode.server.db.DatabaseConnection;
 import imcode.server.db.exceptions.DatabaseException;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.ResultSet;
 
 /**
     An abstract DatabaseCommand that can be overridden to run something in an transaction. 
 **/
 public abstract class TransactionDatabaseCommand implements DatabaseCommand {
+
+    Logger log = Logger.getLogger(TransactionDatabaseCommand.class) ;
 
     public Object executeOn( DatabaseConnection dc ) throws DatabaseException {
         try {
@@ -22,6 +26,7 @@ public abstract class TransactionDatabaseCommand implements DatabaseCommand {
                 connection.commit();
                 return result;
             } catch ( Throwable t ) {
+                log.debug("Rolling back transaction.", t) ;
                 connection.rollback();
                 if (t instanceof RuntimeException) {
                     throw (RuntimeException)t ;

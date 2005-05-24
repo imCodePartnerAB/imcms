@@ -5,7 +5,6 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
-import imcode.server.db.ExceptionUnhandlingDatabase;
 import imcode.server.user.*;
 import imcode.util.Html;
 import imcode.util.Utility;
@@ -743,7 +742,7 @@ public class AdminUserProps extends Administrator {
 
             // Lets add the new users roles. but first, delete users current Roles
             // and then add the new ones
-            ExceptionUnhandlingDatabase exceptionUnhandlingDatabase = imcref.getExceptionUnhandlingDatabase();
+            Database exceptionUnhandlingDatabase = imcref.getExceptionUnhandlingDatabase();
             if ( user.isSuperAdmin() ) { // delete all userroles
                 userFromRequest.removeAllRoles() ;
             } else {  // delete only roles that the useradmin has permission to administrate

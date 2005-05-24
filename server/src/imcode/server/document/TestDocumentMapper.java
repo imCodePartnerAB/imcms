@@ -42,12 +42,14 @@ public class TestDocumentMapper extends TestCase {
 
         };
         MockImcmsServices services = new MockImcmsServices() ;
+        services.setImcmsAuthenticatorAndUserAndRoleMapper(userRegistry);
         services.setTemplateMapper(new TemplateMapper(new MockImcmsServices() ) {
             public TemplateDomainObject getTemplateById( int template_id ) {
                 return null ;
             }
         }) ;
         documentMapper = new DocumentMapper( services, database, userRegistry, new DocumentPermissionSetMapper( database, services ), new TestDocumentMapper.MockDocumentIndex(), null, new Config() );
+        services.setDocumentMapper(documentMapper);
     }
 
     public void testNotSerializable() {

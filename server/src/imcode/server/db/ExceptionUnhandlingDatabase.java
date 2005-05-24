@@ -3,7 +3,7 @@ package imcode.server.db;
 import imcode.server.db.exceptions.DatabaseException;
 import org.apache.commons.lang.UnhandledException;
 
-public class ExceptionUnhandlingDatabase {
+public class ExceptionUnhandlingDatabase implements Database {
 
     Database wrappedDatabase ;
 

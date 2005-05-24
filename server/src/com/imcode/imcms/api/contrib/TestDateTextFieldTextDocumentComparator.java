@@ -8,6 +8,8 @@ import imcode.server.user.UserDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentReference;
+import imcode.server.document.DocumentId;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 
 public class TestDateTextFieldTextDocumentComparator extends TestCase {
@@ -26,9 +28,9 @@ public class TestDateTextFieldTextDocumentComparator extends TestCase {
         contentManagementSystem.setCurrentInternalUser( internalUser );
         MockImcmsServices imcmsServices = new MockImcmsServices();
         imcmsServices.setDocumentMapper( new DocumentMapper( imcmsServices, null, null, null, null, null, new Config() ) {
-            public DocumentDomainObject getDocument( int metaId ) {
+            public DocumentDomainObject getDocument( DocumentId metaId ) {
                 TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
-                textDocument.setId( metaId );
+                textDocument.setId( metaId.intValue() );
                 return textDocument;
             }
         });

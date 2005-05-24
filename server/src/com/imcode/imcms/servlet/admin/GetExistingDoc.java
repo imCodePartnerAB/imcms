@@ -10,6 +10,7 @@ import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 import org.apache.commons.lang.ArrayUtils;
@@ -228,7 +229,8 @@ public class GetExistingDoc extends HttpServlet {
         boolean canAddToMenu = allowedDocumentTypeIds.contains( new Integer( document.getDocumentTypeId() ) )
                                && sharePermission;
         if ( canAddToMenu ) {
-            parentDocument.getMenu( menuIndex ).addMenuItem( new MenuItemDomainObject( documentMapper.getDocumentReference( document ) ) );
+            final MenuDomainObject parentMenu = parentDocument.getMenu( menuIndex );
+            parentMenu.addMenuItem( new MenuItemDomainObject( documentMapper.getDocumentReference( document ) ) );
             documentMapper.saveDocument( parentDocument, user );
         }
     }

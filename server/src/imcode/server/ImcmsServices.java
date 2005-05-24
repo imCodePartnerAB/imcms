@@ -1,7 +1,6 @@
 package imcode.server ;
 
 import imcode.server.db.Database;
-import imcode.server.db.ExceptionUnhandlingDatabase;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -179,7 +178,7 @@ public interface ImcmsServices extends Clock {
 
     Config getConfig();
 
-    ExceptionUnhandlingDatabase getExceptionUnhandlingDatabase();
+    Database getExceptionUnhandlingDatabase();
 
     Clock getClock();
 
