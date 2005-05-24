@@ -10,10 +10,11 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
 import javax.sql.DataSource;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.sql.DriverManager;
 import java.util.Properties;
 
 public class Imcms {
@@ -97,6 +98,10 @@ public class Imcms {
                                                String user, String password,
                                                int maxConnectionCount ) {
         try {
+            final File logFile = new File(WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath(), "WEB-INF/logs/jtds.log");
+            final PrintWriter logWriter = new PrintWriter(new BufferedWriter(new FileWriter(logFile)));
+            DriverManager.setLogWriter(logWriter);
+
             BasicDataSource basicDataSource = new BasicDataSource();
             basicDataSource.setDriverClassName( jdbcDriver );
             basicDataSource.setUsername( user );

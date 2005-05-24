@@ -23,7 +23,6 @@ webapproot = ${deployroot}/${webappname}
 # Database parameters
 
 db-host = localhost
-db-port = 1433
 db-name = imcms
 db-user =
 db-pass =
@@ -31,12 +30,14 @@ db-maxconnections = 20
 
 # For MSSQL
 db-target = mssql
+db-port = 1433
 db-driver = net.sourceforge.jtds.jdbc.Driver
 db-url-without-db-name = jdbc:jtds:sqlserver://${db-host}:${db-port}/;AppName=imCMS
 db-url = ${db-url-without-db-name};DatabaseName=${db-name}
 
 # For MySQL
 #db-target = mysql
+#db-port = 3306
 #db-driver = com.mysql.jdbc.Driver
 #db-url-without-db-name = jdbc:mysql://${db-host}:${db-port}/
 #db-url = ${db-url-without-db-name}${db-name}
