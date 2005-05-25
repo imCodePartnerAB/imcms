@@ -148,33 +148,6 @@ INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(15,'MS Wor
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(16,'MS Excel-document','application/vnd.ms-excel','eng');
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(17,'MS Powerpoint-document','application/vnd.ms-powerpoint','eng');
 
--- mssql SET IDENTITY_INSERT sort_by ON
-INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (1, 'meta_headline');
-INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (2, 'meta_id');
-INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (3, 'doc_type');
-INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (4, 'date_modified');
-INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (5, 'date_created');
-INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (6, 'date_archived');
-INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (7, 'date_activated');
-INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (8, 'meta_text');
-INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (9, 'archive');
--- mssql SET IDENTITY_INSERT sort_by OFF
-
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(1,1,'Rubrik');
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(1,2,'Meta headline');
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(2,1,'Meta ID');
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(2,2,'Meta ID');
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(3,1,'Sidans typ');
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(3,2,'Page type');
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(4,1,'Ändrat datum');
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(4,2,'Date modified');
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(5,1,'Skapat datum');
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(5,2,'Date created');
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(6,1,'Arkiverat datum');
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(6,2,'Archived date');
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(7,1,'Aktiverat datum');
-INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(7,2,'Activated date');
-
 INSERT INTO phonetypes VALUES(0, 'Annat', 1 );
 INSERT INTO phonetypes VALUES(1, 'Bostad', 1 );
 INSERT INTO phonetypes VALUES(2, 'Arbete', 1 );
