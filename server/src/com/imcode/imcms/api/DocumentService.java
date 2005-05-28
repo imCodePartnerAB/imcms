@@ -163,7 +163,8 @@ public class DocumentService {
     public CategoryType createNewCategoryType( String name, int maxChoices ) throws NoPermissionException, CategoryTypeAlreadyExistsException {
         getSecurityChecker().isSuperAdmin();
         if ( getDocumentMapper().isUniqueCategoryTypeName( name ) ) {
-            CategoryTypeDomainObject newCategoryTypeDO = getDocumentMapper().addCategoryTypeToDb( name, maxChoices );
+            CategoryTypeDomainObject newCategoryTypeDO = new CategoryTypeDomainObject( 0, name, maxChoices, false );
+            newCategoryTypeDO = getDocumentMapper().addCategoryTypeToDb( newCategoryTypeDO );
             return new CategoryType( newCategoryTypeDO );
         } else {
             throw new CategoryTypeAlreadyExistsException( "A category with name " + name + " already exists." );

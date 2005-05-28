@@ -1,14 +1,15 @@
 package imcode.server.parser;
 
 import imcode.server.DocumentRequest;
+import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.IdNamePair;
 import imcode.util.Utility;
@@ -169,13 +170,13 @@ class MenuParser {
                 Node menuNodeChild = (Node)menuNodeChildrenIterator.next();
                 switch ( menuNodeChild.getNodeType() ) { // Check the type of the child-node.
                     case Node.TEXT_NODE: // A text-node
-                        result.append( tagParser.replaceTags( patMat,( (Text)menuNodeChild ).getContent() ) ); // Append the contents to our result.
+                        result.append( tagParser.replaceTags( patMat,( (Text)menuNodeChild ).getContent(), false) ); // Append the contents to our result.
                         break;
                     case Node.ELEMENT_NODE: // An element-node
                         if ( "menuloop".equals( ( (Element)menuNodeChild ).getName() ) ) { // Is it an imcms:menuloop?
                             nodeMenuLoop( (Element)menuNodeChild, result, currentMenu, menuAttributes, patMat, menuIndex, tagParser );
                         } else {
-                            result.append( tagParser.replaceTags( patMat, menuNodeChild.toString() ) );  // No? Just append it (almost)verbatim.
+                            result.append( tagParser.replaceTags( patMat, menuNodeChild.toString(), false) );  // No? Just append it (almost)verbatim.
                         }
                         break;
                 }
@@ -249,7 +250,7 @@ class MenuParser {
                 Node menuLoopChild = (Node)menuLoopChildrenIterator.next();
                 switch ( menuLoopChild.getNodeType() ) { // Check the type of the child-node.
                     case Node.TEXT_NODE: // A text-node
-                        result.append( tagParser.replaceTags( patMat, ( (Text)menuLoopChild ).getContent() ) ); // Append the contents to our result.
+                        result.append( tagParser.replaceTags( patMat, ( (Text)menuLoopChild ).getContent(), false) ); // Append the contents to our result.
                         break;
                     case Node.ELEMENT_NODE: // An element-node
                         if ( "menuitem".equals( ( (Element)menuLoopChild ).getName() ) ) { // Is it an imcms:menuitem?
@@ -260,7 +261,7 @@ class MenuParser {
                                           menuAttributes, patMat, menuItemIndex, menu, menuIndex, tagParser ); // Parse one menuitem.
                             menuItemIndex += menuItemIndexStep;
                         } else {
-                            result.append( tagParser.replaceTags( patMat, menuLoopChild.toString() ) );  // No? Just append the elements verbatim into the result.
+                            result.append( tagParser.replaceTags( patMat, menuLoopChild.toString(), false) );  // No? Just append the elements verbatim into the result.
                         }
                         break;
                 }
@@ -316,7 +317,7 @@ class MenuParser {
 
     private void parseMenuItem( StringBuffer result, String template, Substitution substitution,
                                 PatternMatcher patMat, TagParser tagParser ) {
-        String tagsReplaced = tagParser.replaceTags( patMat, template ) ;
+        String tagsReplaced = tagParser.replaceTags( patMat, template, false) ;
         result.append( org.apache.oro.text.regex.Util.substitute( patMat, TextDocumentParser.HASHTAG_PATTERN, substitution,
                                                                   tagsReplaced,
                                                                   org.apache.oro.text.regex.Util.SUBSTITUTE_ALL ) );
@@ -340,9 +341,13 @@ class MenuParser {
                                                   Properties parameters, int menuItemIndex, int menuIndex ) {
 
         DocumentDomainObject document = menuItem.getDocument();
+        DocumentRequest documentRequest = parserParameters.getDocumentRequest();
+        String contextPath = documentRequest.getHttpServletRequest().getContextPath();
         String imageUrl = document.getMenuImage();
+        final String imagesRoot = contextPath + Imcms.getServices().getConfig().getImageUrl();
+
         String imageTag = imageUrl != null && imageUrl.length() > 0
-                          ? "<img src=\"" + StringEscapeUtils.escapeHtml( imageUrl ) + "\" border=\"0\">" : "";
+                          ? "<img src=\"" + imagesRoot + StringEscapeUtils.escapeHtml( imageUrl ) + "\" border=\"0\">" : "";
         String headline = document.getHeadline() ;
         if ( StringUtils.isBlank( headline ) ) {
             headline = "&nbsp;";
@@ -378,7 +383,7 @@ class MenuParser {
         tags.setProperty( "#menuitemdatecreated#", createdDate );
         tags.setProperty( "#menuitemdatemodified#", modifiedDate );
 
-        DocumentRequest documentRequest = parserParameters.getDocumentRequest();
+
 
         String template = parameters.getProperty( "template" );
         String href = Utility.getAbsolutePathToDocument( documentRequest.getHttpServletRequest(), document );

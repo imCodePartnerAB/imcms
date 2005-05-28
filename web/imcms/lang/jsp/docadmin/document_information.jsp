@@ -372,7 +372,7 @@ function checkFocus() {
 		<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%=
 			    URLEncoder.encode(StringEscapeUtils.escapeHtml( categoryType.getName() ),"UTF-8") %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
 		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORIES %>"<% if (1 != categoryType.getMaxChoices()) { %> size="4" multiple<% } else { %> onFocus="selFocused = true;"<% } %>>
-			<%= Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType, document) %>
+			<%= Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType, document, request) %>
 		</select></div><%
 			}
 		}

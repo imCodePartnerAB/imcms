@@ -12,11 +12,13 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
     private int id;
     private String name ;
     private int maxChoices ;
+    private boolean inherited;
 
-    public CategoryTypeDomainObject(int id, String name, int maxChoices) {
+    public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited) {
         this.id = id;
         this.name = name;
-        this.maxChoices = maxChoices;  // 0=singel choice, 1=multi choice
+        this.maxChoices = maxChoices;  // 0=single choice, 1=multi choice
+        this.inherited = inherited;
     }
 
     public int getId() {
@@ -37,6 +39,14 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
 
     public int getMaxChoices() {
         return maxChoices;
+    }
+
+    public boolean isInherited() {
+        return inherited;
+    }
+
+    public void setInherited( boolean inherited ) {
+        this.inherited = inherited;
     }
 
     public boolean equals(Object o) {

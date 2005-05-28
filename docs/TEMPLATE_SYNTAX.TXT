@@ -96,6 +96,7 @@ Single tags
                 * sendcookies - Send all other cookies to the server.
                 * sendmetaid - Send the id of the current document in the http header "X-Meta-Id".
             * file - The name of a file in the "/WEB-INF/includes" directory.
+                This file can contain other tags.
 
 
     <?imcms:datetime?>

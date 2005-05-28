@@ -3,10 +3,8 @@ package imcode.server.document.index;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
@@ -14,174 +12,114 @@ import org.apache.lucene.search.Query;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class AutorebuildingDirectoryIndex implements DocumentIndex {
 
-    private int indexingSchedulePeriodInMilliseconds ;
+    private final static Logger log = Logger.getLogger(AutorebuildingDirectoryIndex.class.getName());
 
-    private final static Logger log = Logger.getLogger( AutorebuildingDirectoryIndex.class.getName() );
+    private final DirectoryIndex index;
+    private final File indexDirectory;
+    private final int indexingSchedulePeriodInMilliseconds;
 
-    private DirectoryIndex index;
-    private Set documentsToAddToNewIndex = Collections.synchronizedSet( new HashSet() );
-    private Set documentsToRemoveFromNewIndex = Collections.synchronizedSet( new HashSet() );
-    private final Object newIndexBuildingLock = new Object();
-    private boolean buildingNewIndex;
+    private IndexBuildingThread indexBuildingThread ;
 
     static {
         // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow queries?
-        BooleanQuery.setMaxClauseCount( Integer.MAX_VALUE );
+        BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
     }
 
-    public AutorebuildingDirectoryIndex( File indexDirectory, int indexingSchedulePeriodInMinutes ) {
+    public AutorebuildingDirectoryIndex(File indexDirectory, int indexingSchedulePeriodInMinutes) {
+        this.indexDirectory = indexDirectory ;
         this.indexingSchedulePeriodInMilliseconds = indexingSchedulePeriodInMinutes * DateUtils.MILLIS_IN_MINUTE ;
-        this.index = new DirectoryIndex( indexDirectory );
-        Timer scheduledIndexBuildingTimer = new Timer( true );
+        this.index = new DirectoryIndex(indexDirectory);
+        Timer scheduledIndexBuildingTimer = new Timer(true);
         long scheduledIndexDelay = 0 ;
-        if ( IndexReader.indexExists( indexDirectory ) ) {
+        if ( IndexReader.indexExists(indexDirectory) ) {
             try {
                 long indexModifiedTime = IndexReader.lastModified(indexDirectory);
                 long time = System.currentTimeMillis();
-                long nextTime = indexModifiedTime+indexingSchedulePeriodInMilliseconds;
+                long nextTime = indexModifiedTime + indexingSchedulePeriodInMilliseconds;
                 if (nextTime > time) {
-                    log.info( "First indexing scheduled at " + formatDatetime( new Date( nextTime ) ) );
+                    log.info("First indexing scheduled at " + formatDatetime(new Date(nextTime)));
                     scheduledIndexDelay = nextTime - time;
                 }
             } catch ( IOException e ) {
                 log.warn("Failed to get last modified time of index.", e) ;
             }
         }
-        scheduledIndexBuildingTimer.scheduleAtFixedRate( new ScheduledIndexingTimerTask(), scheduledIndexDelay, indexingSchedulePeriodInMilliseconds );
+        scheduledIndexBuildingTimer.scheduleAtFixedRate(new ScheduledIndexingTimerTask(), scheduledIndexDelay, indexingSchedulePeriodInMilliseconds);
     }
 
-    private String formatDatetime( Date nextExecutionTime ) {
-        return new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING ).format( nextExecutionTime );
+    private String formatDatetime(Date nextExecutionTime) {
+        return new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING).format(nextExecutionTime);
     }
 
-    public synchronized void indexDocument( DocumentDomainObject document ) {
-        if ( buildingNewIndex ) {
-            documentsToAddToNewIndex.add( document );
+    public void indexDocument(DocumentDomainObject document) {
+        log.debug( "Adding document.") ;
+        if (null != indexBuildingThread) {
+            indexBuildingThread.addDocument(document) ;
         }
         try {
-            index.indexDocument( document );
+            index.indexDocument(document);
         } catch ( IndexException e ) {
-            log.error( "Failed to index document " + document.getId() + ". Reindexing..." );
-            buildNewIndexInBackground();
+            rebuildBecauseOfError("Failed to add document " + document.getId() + " to index.", e);
         }
     }
 
-    public synchronized void removeDocument( DocumentDomainObject document ) {
-        if ( buildingNewIndex ) {
-            documentsToRemoveFromNewIndex.add( document );
+    public void removeDocument(DocumentDomainObject document) {
+        log.debug( "Removing document.") ;
+        if (null != indexBuildingThread) {
+            indexBuildingThread.removeDocument(document) ;
         }
         try {
-            index.removeDocument( document );
+            index.removeDocument(document);
         } catch ( IndexException e ) {
-            log.error( "Failed to remove document " + document.getId() + " from index. Reindexing..." );
-            buildNewIndexInBackground();
+            rebuildBecauseOfError("Failed to remove document " + document.getId() + " from index.", e);
         }
     }
 
-    public synchronized DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IndexException {
+    public DocumentDomainObject[] search(Query query,
+                                         UserDomainObject searchingUser) throws IndexException {
         try {
-            DocumentDomainObject[] documents = index.search( query, searchingUser );
+            DocumentDomainObject[] documents = index.search(query, searchingUser);
             if (index.isInconsistent()) {
-                buildNewIndexInBackground();
+                rebuildBecauseOfError("Index is inconsistent.", null);
             }
             return documents;
         } catch ( IndexException ex ) {
-            log.warn( "Search failed", ex );
-            buildNewIndexInBackground();
-            throw ex;
+            rebuildBecauseOfError("Search failed.", ex);
+            return new DocumentDomainObject[0];
         }
+    }
+
+    private void rebuildBecauseOfError(String message, IndexException ex) {
+        log.error(message + " Rebuilding index...", ex);
+        rebuild();
     }
 
     public void rebuild() {
-        buildNewIndexInBackground();
+        rebuildInBackground();
     }
 
-    private void buildNewIndexInBackground() {
-        Thread indexBuildingThread = new Thread( "Background indexing thread" ) {
-            public void run() {
-                buildNewIndex();
-            }
-        };
-        int callersPriority = Thread.currentThread().getPriority();
-        int newPriority = Math.max( callersPriority - 1, Thread.MIN_PRIORITY );
-        indexBuildingThread.setPriority( newPriority );
-
-        indexBuildingThread.setDaemon( true );
-        indexBuildingThread.start();
-    }
-
-    private void buildNewIndex() {
-        NDC.push("buildNewIndex");
+    private void rebuildInBackground() {
+        if (null == indexBuildingThread || !indexBuildingThread.isAlive()) {
+            indexBuildingThread = new IndexBuildingThread(indexDirectory);
+        }
         try {
-            File indexDirectoryFile = this.index.getDirectory();
-            File parentFile = indexDirectoryFile.getParentFile();
-            String name = indexDirectoryFile.getName();
-            buildNewIndex( parentFile, name );
-        } catch ( IOException e ) {
-            log.fatal( "Failed to index all documents.", e );
-        } finally {
-            NDC.pop();
-        }
-    }
-
-    private void buildNewIndex( File parentFile, String name ) throws IOException {
-        if ( buildingNewIndex ) {
+            indexBuildingThread.start();
+        } catch ( IllegalThreadStateException itse ) {
             log.debug("Ignoring request to build new index. Already in progress.") ;
-            return;
         }
-        synchronized ( newIndexBuildingLock ) {
-            buildingNewIndex = true;
-            File newIndexDirectoryFile = new File( parentFile, name + ".new" );
-            DirectoryIndex newIndexDirectory = new DirectoryIndex( newIndexDirectoryFile );
-            newIndexDirectory.indexAllDocuments();
-            replaceIndexWithNewIndex( newIndexDirectory );
-            buildingNewIndex = false;
-        }
-        considerDocumentsForNewIndex();
-    }
-
-    private synchronized void considerDocumentsForNewIndex() throws IndexException {
-        for ( Iterator iterator = documentsToAddToNewIndex.iterator(); iterator.hasNext(); ) {
-            DocumentDomainObject document = (DocumentDomainObject)iterator.next();
-            index.indexDocument( document );
-            iterator.remove();
-        }
-        for ( Iterator iterator = documentsToRemoveFromNewIndex.iterator(); iterator.hasNext(); ) {
-            DocumentDomainObject document = (DocumentDomainObject)iterator.next();
-            index.removeDocument( document );
-            iterator.remove();
-        }
-    }
-
-    private synchronized void replaceIndexWithNewIndex( DirectoryIndex newIndex ) throws IOException {
-        File indexDirectory = index.getDirectory();
-        File oldIndex = new File( indexDirectory.getParentFile(), indexDirectory.getName()
-                                                                  + ".old" );
-        if ( oldIndex.exists() ) {
-            FileUtils.forceDelete( oldIndex );
-        }
-        if ( indexDirectory.exists() && !indexDirectory.renameTo( oldIndex ) ) {
-            log.error( "Failed to rename \"" + indexDirectory + "\" to \"" + oldIndex + "\"." );
-        }
-        File newIndexDirectory = newIndex.getDirectory();
-        if ( !newIndexDirectory.renameTo( indexDirectory ) ) {
-            throw new IOException( "Failed to rename \"" + newIndexDirectory + "\" to \""
-                                   + indexDirectory
-                                   + "\"." );
-        }
-        FileUtils.deleteDirectory( oldIndex );
     }
 
     private class ScheduledIndexingTimerTask extends TimerTask {
-
         public void run() {
-            Date nextExecutionTime = new Date( this.scheduledExecutionTime() + indexingSchedulePeriodInMilliseconds );
-            log.info( "Starting scheduled indexing. Next indexing at " + formatDatetime( nextExecutionTime ) );
-            buildNewIndexInBackground();
+            Date nextExecutionTime = new Date(this.scheduledExecutionTime() + indexingSchedulePeriodInMilliseconds);
+            log.info("Starting scheduled index rebuild. Next rebuild at " + formatDatetime(nextExecutionTime));
+            rebuild();
         }
     }
 

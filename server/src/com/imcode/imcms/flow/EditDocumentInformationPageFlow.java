@@ -93,7 +93,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         } );
         imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
             public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                document.setMenuImage( "../images/" + imageUrl );
+                document.setMenuImage( imageUrl );
                 request.setAttribute( REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
                 dispatchToFirstPage( request, response );
             }

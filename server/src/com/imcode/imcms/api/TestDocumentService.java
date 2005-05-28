@@ -1,12 +1,12 @@
 package com.imcode.imcms.api;
 
-import junit.framework.TestCase;
-import imcode.server.MockImcmsServices;
 import imcode.server.Config;
-import imcode.server.user.UserDomainObject;
-import imcode.server.user.RoleDomainObject;
+import imcode.server.MockImcmsServices;
 import imcode.server.db.MockDatabase;
 import imcode.server.document.DocumentMapper;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
+import junit.framework.TestCase;
 
 public class TestDocumentService extends TestCase {
 
@@ -27,9 +27,10 @@ public class TestDocumentService extends TestCase {
     }
 
     public void testSaveCategory() throws CategoryAlreadyExistsException, NoPermissionException {
-        String[][] allCategoryTypesResult = new String[][] { { "1", "test", "0" } };
-        database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "SELECT category_type_id"), allCategoryTypesResult );
+        String[][] allCategoryTypesResult = new String[][] { { "1", "test", "0", "0" } };
+        database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "SELECT category_types.category_type_id"), allCategoryTypesResult );
         CategoryType categoryType = documentService.getAllCategoryTypes()[0] ;
+        assertEquals( false, categoryType.isInherited()) ;
         String categoryName = "name";
         Category category = new Category( categoryName, categoryType );
         category.setDescription( "description" );
