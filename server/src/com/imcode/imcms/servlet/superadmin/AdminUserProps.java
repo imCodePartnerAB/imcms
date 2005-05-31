@@ -8,6 +8,7 @@ import imcode.server.db.Database;
 import imcode.server.user.*;
 import imcode.util.Html;
 import imcode.util.Utility;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -114,20 +115,20 @@ public class AdminUserProps extends Administrator {
             userToChange = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUser( Integer.parseInt( userToChangeId ) );
         }
 
-        String login_name ;
-        String password1 ;
-        String new_pwd1 = "" ;   //hidden fildes
+        String login_name;
+        String password1;
+        String new_pwd1 = "";   //hidden fildes
         String new_pwd2 = "";   //hidden fildes
-        String first_name ;
-        String last_name ;
-        String title  ;
-        String company ;
-        String address ;
-        String city ;
-        String zip ;
-        String country ;
-        String country_council ;
-        String email ;
+        String first_name;
+        String last_name;
+        String title;
+        String company;
+        String address;
+        String city;
+        String zip;
+        String country;
+        String country_council;
+        String email;
 
         //Lets set values from session if we have any
         if ( tmp_userInfo != null ) {
@@ -167,7 +168,7 @@ public class AdminUserProps extends Administrator {
 
         // Lets get all users phone numbers from session if we have any else we get them from db
         // return value from db= phone_id, number, user_id, phonetype_id, typename
-        String[][] phonesArr = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUserPhoneNumbers( userToChange.getId() ) ;
+        String[][] phonesArr = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUserPhoneNumbers( userToChange.getId() );
 
         // Get a new Vector:  phone_id, number, user_id, phonetype_id, typename  ex. 10, 46 498 123456, 3, 1
         Vector phoneNumbers = getPhonesArrayVector( phonesArr );
@@ -205,9 +206,9 @@ public class AdminUserProps extends Administrator {
         vec.add( "#PWD2#" );
         vec.add( doPasswordString( password1 ) );
         vec.add( "#NEW_PWD1#" );
-        vec.add( new_pwd1 ); 	//hidden fildes
+        vec.add( new_pwd1 );    //hidden fildes
         vec.add( "#NEW_PWD2#" );
-        vec.add( new_pwd2 ); 	//hidden fildes
+        vec.add( new_pwd2 );    //hidden fildes
 
         vec.add( "#FIRST_NAME#" );
         vec.add( first_name );
@@ -307,7 +308,8 @@ public class AdminUserProps extends Administrator {
     }
 
     private void showErrorPageUserHasNoRightsToChangeUserValues( HttpServletRequest req, HttpServletResponse res,
-                                                                 ImcmsServices imcref, UserDomainObject user ) throws IOException {
+                                                                 ImcmsServices imcref,
+                                                                 UserDomainObject user ) throws IOException {
         String header = "Error in AdminUserProps. ";
         Properties langproperties = imcref.getLanguageProperties( user );
         String msg = langproperties.getProperty( "error/servlet/AdminUser/user_have_no_permission" ) + "<br>";
@@ -354,9 +356,9 @@ public class AdminUserProps extends Administrator {
             email = tmp_userInfo.getProperty( "email" );
         }
 
-        Vector vec = new Vector();		// hold tags and values to parse html page
+        Vector vec = new Vector();        // hold tags and values to parse html page
         Utility.setDefaultHtmlContentType( res ); // set content type
-        Writer out = res.getWriter();	// to write out html page
+        Writer out = res.getWriter();    // to write out html page
 
         //	VariableManager vm = new VariableManager() ;
 
@@ -481,7 +483,7 @@ public class AdminUserProps extends Administrator {
         String password2 = req.getParameter( REQUEST_PARAMETER__PASSWORD2 );
 
         // Lets get all phonetypes from db
-        String[] phonetypesA = getPhoneTypes( imcref, user ) ;
+        String[] phonetypesA = getPhoneTypes( imcref, user );
 
         // Get a new Vector:  phonetype_id, typename
         Vector phoneTypesV = new Vector( java.util.Arrays.asList( phonetypesA ) );
@@ -610,7 +612,8 @@ public class AdminUserProps extends Administrator {
             if ( !userFromDatabase.getEmailAddress().equalsIgnoreCase( currentLogin ) ) {
                 newLogin = currentLogin;
             }
-            msg = langproperties.getProperty( "error/servlet/AdminUserProps/username_or_email_already_exists" ) + "<br>";
+            msg = langproperties.getProperty( "error/servlet/AdminUserProps/username_or_email_already_exists" )
+                  + "<br>";
         }
 
         // check that the changed login name don´t already exists
@@ -692,7 +695,7 @@ public class AdminUserProps extends Administrator {
             //save phone numbers from phonesV  ( phonesV : id, number, user_id, phonetype_id )
             if ( null != phonesV && phonesV.size() > 0 ) {
 
-                updateUserPhones(userFromRequest, phonesV);
+                updateUserPhones( userFromRequest, phonesV );
             }
 
         } else {
@@ -718,80 +721,72 @@ public class AdminUserProps extends Administrator {
             String mobilePhone = req.getParameter( "mobilephone" );
             // set new workphone
             if ( null != workPhoneId ) {
-                userFromRequest.setWorkPhone(workPhone);
+                userFromRequest.setWorkPhone( workPhone );
 
             }
 
             // set new mobilephone
-            if ( null !=  mobilePhoneId )  {
-                userFromRequest.setMobilePhone(mobilePhone);
+            if ( null != mobilePhoneId ) {
+                userFromRequest.setMobilePhone( mobilePhone );
             }
         }
 
         ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
 
-        // if we are processing data from a admin template and
-        // if user isSuperadmin or
-        // isUseradmin and not is going to change his own data
-        // then we have to take care of userroles
-        if ( null == req.getParameter( "userTemplate" )
-             && ( user.isSuperAdmin() || user.isUserAdmin() && user.getId() != userFromDatabase.getId() ) ) {
+        boolean processingDataFromAdminTemplate = null != req.getParameter( "userTemplate" );
+        if ( !processingDataFromAdminTemplate ) {
 
-            // Lets get the roles from htmlpage
-            int[] roleIdsFromRequest = this.getRoleIdsFromRequest( "roles", req);
+            int[] roleIdsFromRequest = this.getRoleIdsFromRequest( "roles", req );
 
-            // Lets add the new users roles. but first, delete users current Roles
-            // and then add the new ones
-            Database exceptionUnhandlingDatabase = imcref.getExceptionUnhandlingDatabase();
-            if ( user.isSuperAdmin() ) { // delete all userroles
-                userFromRequest.removeAllRoles() ;
-            } else {  // delete only roles that the useradmin has permission to administrate
-                String[] rolesArr = exceptionUnhandlingDatabase.executeArrayProcedure( "GetUseradminPermissibleRoles", new String[] {
-                                                                                                           ""
-                                                                                                           + user.getId()
-                                                                                                           } );
-                for ( int i = 0; i < rolesArr.length; i += 2 ) {
-                    exceptionUnhandlingDatabase.executeUpdateProcedure( "DelUserRoles", new String[] {""
-                                                                                                                  + userToChangeId,
-                                                                                                    rolesArr[i]} );
+            if ( user.isSuperAdmin() ) {
+                boolean useradminRoleIsSelected = false;
+                for ( int i = 0; i < roleIdsFromRequest.length; i++ ) {
+                    int roleId = roleIdsFromRequest[i];
+                    RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapper.getRoleById( roleId );
+                    userFromRequest.addRole( role );
+                    if ( role.equals( RoleDomainObject.USERADMIN ) ) {
+                        useradminRoleIsSelected = true;
+                    }
                 }
-            }
-
-            boolean useradminRoleIsSelected = false;
-            for ( int i = 0; i < roleIdsFromRequest.length; i++ ) {
-                int roleId = roleIdsFromRequest[i];
-                RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapper.getRoleById( roleId );
-                userFromRequest.addRole( role );
-                if ( role.equals( RoleDomainObject.USERADMIN ) ) {
-                    useradminRoleIsSelected = true;
+                updateUserAdminRolesFromRequest( imcref, userToChangeId, useradminRoleIsSelected, req );
+            } else if (user.isUserAdmin() ) {
+                RoleDomainObject[] rolesFromDatabase = userFromDatabase.getRoles();
+                userFromRequest.setRoles( rolesFromDatabase );
+                String[][] userAdminEditableRoleIdStrings = imcref.getDatabase().execute2dArrayProcedure( "GetUseradminPermissibleRoles", new String[] {
+                                                                                       "" + user.getId()
+                                                                                       } );
+                for ( int i = 0; i < userAdminEditableRoleIdStrings.length; i++ ) {
+                    int userAdminEditableRoleId = Integer.parseInt(userAdminEditableRoleIdStrings[i][0]);
+                    RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapper.getRoleById( userAdminEditableRoleId );
+                    boolean userAdminEditableRoleIsSelectedInRequest = ArrayUtils.contains( roleIdsFromRequest, userAdminEditableRoleId );
+                    if ( userAdminEditableRoleIsSelectedInRequest ) {
+                        userFromRequest.addRole( role );
+                    } else {
+                        userFromRequest.removeRole( role );
+                    }
                 }
-            }
-
-            // Lets add the new useradmin roles. but first, delete the current roles
-            // and then add the new ones
-            // but only if role Useradmin is selected
-
-            exceptionUnhandlingDatabase.executeUpdateProcedure( "DeleteUseradminPermissibleRoles", new String[] {""
-                                                                                                                             + userToChangeId} );
-
-            if ( useradminRoleIsSelected ) {
-
-                // Lets get the useradmin_roles from htmlpage
-                int[] useradminRolesV = this.getRoleIdsFromRequest( "useradmin_roles", req);
-
-                // Lets add the new useradmin roles.
-                addUserAdminRoles( imcref, userToChangeId, useradminRolesV );
             }
         }
 
-        userFromRequest.setId(userFromDatabase.getId()) ;
+        userFromRequest.setId( userFromDatabase.getId() );
         imcmsAuthenticatorAndUserAndRoleMapper.saveUser( userFromRequest, user );
 
         this.goNext( req, res, session );
     }
 
-    private static void addUser( AdminUserProps adminUserProps, HttpSession session, HttpServletRequest req, UserDomainObject userFromRequest,
-                          String password2, HttpServletResponse res, ImcmsServices imcref, UserDomainObject user ) throws IOException {
+    private void updateUserAdminRolesFromRequest( ImcmsServices imcref, int userToChangeId,
+                                                  boolean useradminRoleIsSelected, HttpServletRequest req ) {
+        imcref.getDatabase().executeUpdateProcedure( "DeleteUseradminPermissibleRoles", new String[] {"" + userToChangeId} );
+        if ( useradminRoleIsSelected ) {
+            int[] useradminRolesV = this.getRoleIdsFromRequest( "useradmin_roles", req );
+            addUserAdminRoles( imcref, userToChangeId, useradminRolesV );
+        }
+    }
+
+    private static void addUser( AdminUserProps adminUserProps, HttpSession session, HttpServletRequest req,
+                                 UserDomainObject userFromRequest,
+                                 String password2, HttpServletResponse res, ImcmsServices imcref,
+                                 UserDomainObject user ) throws IOException {
         log.debug( "Lets add a new user to db" );
 
         //get session
@@ -830,9 +825,9 @@ public class AdminUserProps extends Administrator {
         //Lets get phonenumbers from the session if we have a session Attribute
         Vector phonesV = (Vector)session.getAttribute( "Ok_phoneNumbers" );
 
-        int[] roleIdsFromRequest = adminUserProps.getRoleIdsFromRequest( "roles", req);
+        int[] roleIdsFromRequest = adminUserProps.getRoleIdsFromRequest( "roles", req );
         boolean useradminRoleIsSelected = false;
-        for ( int i = 0; roleIdsFromRequest !=null &&  i < roleIdsFromRequest.length; i++ ) {
+        for ( int i = 0; roleIdsFromRequest != null && i < roleIdsFromRequest.length; i++ ) {
             int roleId = roleIdsFromRequest[i];
             RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapperAndRole.getRoleById( roleId );
             userFromRequest.addRole( role );
@@ -852,7 +847,7 @@ public class AdminUserProps extends Administrator {
 
         if ( useradminRoleIsSelected ) {
             // Lets get the useradmin_roles from htmlpage
-            int[] userAdminRoleIdsFromRequest = adminUserProps.getRoleIdsFromRequest( "useradmin_roles", req);
+            int[] userAdminRoleIdsFromRequest = adminUserProps.getRoleIdsFromRequest( "useradmin_roles", req );
             // Lets add the new useradmin roles.
             adminUserProps.addUserAdminRoles( imcref, userFromRequest.getId(), userAdminRoleIdsFromRequest );
         }
@@ -879,10 +874,10 @@ public class AdminUserProps extends Administrator {
 
             String workPhone = req.getParameter( "workphone" );
             String mobilePhone = req.getParameter( "mobilephone" );
-            Database database = imcref.getDatabase() ;
+            Database database = imcref.getDatabase();
             if ( !( "" ).equals( workPhone ) ) {
                 int phoneNumberType = 2;
-                ImcmsAuthenticatorAndUserAndRoleMapper.addPhoneNumber( userFromRequest.getId(), workPhone, phoneNumberType, database);
+                ImcmsAuthenticatorAndUserAndRoleMapper.addPhoneNumber( userFromRequest.getId(), workPhone, phoneNumberType, database );
             }
             if ( !( "" ).equals( mobilePhone ) ) {
                 int phoneNumberType = 3;
@@ -938,7 +933,7 @@ public class AdminUserProps extends Administrator {
 
         log.debug( "test" + req.getParameter( "edit_phones" ) );
 
-        String selectedPhoneId ;
+        String selectedPhoneId;
 
 
 
@@ -1123,9 +1118,7 @@ public class AdminUserProps extends Administrator {
         }
     }
 
-    /**
-     * Removes temporary parameters from the session
-     */
+    /** Removes temporary parameters from the session */
     private void removeSessionParams( HttpServletRequest req ) {
         HttpSession session = req.getSession( false );
         if ( session == null ) {
@@ -1148,14 +1141,13 @@ public class AdminUserProps extends Administrator {
      * a error page will be generated, fore those times the user uses the backstep in
      * the browser
      */
-    private void sendErrorMsg( HttpServletRequest req, HttpServletResponse res, String header, String msg ) throws IOException {
+    private void sendErrorMsg( HttpServletRequest req, HttpServletResponse res, String header,
+                               String msg ) throws IOException {
         new AdminError( req, res, header, msg );
     }
 
-    /**
-     * Returns a Vector, containing the choosed roles from the html page.
-     */
-    private int[] getRoleIdsFromRequest(String name, HttpServletRequest req) {
+    /** Returns a Vector, containing the choosed roles from the html page. */
+    private int[] getRoleIdsFromRequest( String name, HttpServletRequest req ) {
 
         String[] roleIdStrings = req.getParameterValues( name ) == null
                                  ? new String[0] : req.getParameterValues( name );
@@ -1168,9 +1160,7 @@ public class AdminUserProps extends Administrator {
         return roleIds;
     }
 
-    /**
-     * Redirect to next Url
-     */
+    /** Redirect to next Url */
     private void goNext( HttpServletRequest req, HttpServletResponse res, HttpSession session ) throws IOException {
         String nexturl = "AdminUser";  // default if we are processing a admin template
 
@@ -1218,7 +1208,6 @@ public class AdminUserProps extends Administrator {
      * Returns a Properties, containing the user information from the html page. if Something
      * failes, a error page will be generated and null will be returned.
      */
-
     private boolean validateParameters( HttpServletRequest req, HttpServletResponse res,
                                         UserDomainObject user ) throws IOException {
 
@@ -1237,11 +1226,11 @@ public class AdminUserProps extends Administrator {
 
     private boolean assertRequiredFieldsFilledIn( HttpServletRequest req ) {
         String[] requiredFields = {
-            REQUEST_PARAMETER__LOGIN_NAME,
-            REQUEST_PARAMETER__FIRST_NAME,
-            REQUEST_PARAMETER__LAST_NAME,
-            REQUEST_PARAMETER__PASSWORD1,
-            REQUEST_PARAMETER__PASSWORD2,
+                        REQUEST_PARAMETER__LOGIN_NAME,
+                        REQUEST_PARAMETER__FIRST_NAME,
+                        REQUEST_PARAMETER__LAST_NAME,
+                        REQUEST_PARAMETER__PASSWORD1,
+                        REQUEST_PARAMETER__PASSWORD2,
         };
         for ( int i = 0; i < requiredFields.length; i++ ) {
             String requiredField = requiredFields[i];
@@ -1308,10 +1297,10 @@ public class AdminUserProps extends Administrator {
         String[] useradminRoles = null;
         Properties userInfo = null;
 
-        Vector userRolesV ;
+        Vector userRolesV;
         String rolesMenuStr;
 
-        Vector useradminRolesV ;
+        Vector useradminRolesV;
         String rolesMenuUseradminStr = "";
 
         // check if user is a Superadmin, adminRole = 1
@@ -1325,7 +1314,7 @@ public class AdminUserProps extends Administrator {
         }
 
         // Lets get ROLES from DB
-        String[] rolesArr ;
+        String[] rolesArr;
 
         if ( user.isSuperAdmin() ) {
             rolesArr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetAllRoles", new String[0] );
@@ -1497,7 +1486,6 @@ public class AdminUserProps extends Administrator {
      * Returns a String, containing the userID in the request object.If something failes,
      * a error page will be generated and null will be returned.
      */
-
     private String getCurrentUserId( HttpServletRequest req, HttpServletResponse res, ImcmsServices imcref,
                                      UserDomainObject user ) throws IOException {
 
@@ -1525,18 +1513,17 @@ public class AdminUserProps extends Administrator {
     } // End getCurrentUserId
 
     private String doPasswordString( String pwd ) {
-        return StringUtils.repeat( "*", null != pwd ? pwd.length() : 0 ) ;
+        return StringUtils.repeat( "*", null != pwd ? pwd.length() : 0 );
     }
 
     /**
      * Validates the password. Password must contain at least 4 characters
      * Generates an errorpage and returns false if something goes wrong
      */
-
     public static boolean verifyPassword( String password1, String password2, HttpServletRequest req,
                                           HttpServletResponse res ) throws IOException {
 
-        String header ;
+        String header;
 
         if ( !password1.equals( password2 ) ) {
             header = req.getServletPath();
@@ -1554,62 +1541,58 @@ public class AdminUserProps extends Administrator {
 
     } // End verifyPassword
 
-    /**
-     * Creates a sql parameter array used to run sproc updateUserPhones
-     */
+    /** Creates a sql parameter array used to run sproc updateUserPhones */
     public static String[] extractUpdateUserSprocParametersFromProperties( Properties props ) {
 
         Logger log = Logger.getLogger( AdminUserProps.class );
         log.debug( "extractUpdateUserSprocParametersFromProperties + props: " + props.toString() );
 
         String[] params = {
-            props.getProperty( "user_id" ), ( props.getProperty( "login_name" ) ).trim(),
-            ( props.getProperty( "password1" ) ).trim(), ( props.getProperty( "first_name" ) ).trim(),
-            ( props.getProperty( "last_name" ) ).trim(), ( props.getProperty( "title" ) ).trim(),
-            ( props.getProperty( "company" ) ).trim(), ( props.getProperty( "address" ) ).trim(),
-            ( props.getProperty( "city" ) ).trim(), ( props.getProperty( "zip" ) ).trim(),
-            ( props.getProperty( "country" ) ).trim(), ( props.getProperty( "country_council" ) ).trim(),
-            ( props.getProperty( "email" ) ).trim(), "0", "1001", "0", props.getProperty( "lang_id" ),
-            props.getProperty( "active" )
+                        props.getProperty( "user_id" ), ( props.getProperty( "login_name" ) ).trim(),
+                ( props.getProperty( "password1" ) ).trim(), ( props.getProperty( "first_name" ) ).trim(),
+                ( props.getProperty( "last_name" ) ).trim(), ( props.getProperty( "title" ) ).trim(),
+                ( props.getProperty( "company" ) ).trim(), ( props.getProperty( "address" ) ).trim(),
+                ( props.getProperty( "city" ) ).trim(), ( props.getProperty( "zip" ) ).trim(),
+                ( props.getProperty( "country" ) ).trim(), ( props.getProperty( "country_council" ) ).trim(),
+                ( props.getProperty( "email" ) ).trim(), "0", "1001", "0", props.getProperty( "lang_id" ),
+                        props.getProperty( "active" )
         };
 
         return params;
     }
 
-    private void updateUserPhones(UserDomainObject userToChange, Vector phonesV){
+    private void updateUserPhones( UserDomainObject userToChange, Vector phonesV ) {
         final int PHONE_TYPE_OTHER_PHONE = 0;
         final int PHONE_TYPE_HOME_PHONE = 1;
         final int PHONE_TYPE_WORK_PHONE = 2;
         final int PHONE_TYPE_WORK_MOBILE = 3;
         final int PHONE_TYPE_FAX_PHONE = 4;
 
-
-        userToChange.setOtherPhone("");
-        userToChange.setHomePhone("");
-        userToChange.setWorkPhone("");
-        userToChange.setFaxPhone("");
-        userToChange.setMobilePhone("");
-
+        userToChange.setOtherPhone( "" );
+        userToChange.setHomePhone( "" );
+        userToChange.setWorkPhone( "" );
+        userToChange.setFaxPhone( "" );
+        userToChange.setMobilePhone( "" );
 
         for ( int i = 0; i < phonesV.size(); i++ ) {
             String[] aPhone = (String[])phonesV.elementAt( i );
 
-            switch(Integer.parseInt(aPhone[3])){
+            switch ( Integer.parseInt( aPhone[3] ) ) {
 
                 case PHONE_TYPE_OTHER_PHONE:
-                   userToChange.setOtherPhone(aPhone[1]);
-                   break;
+                    userToChange.setOtherPhone( aPhone[1] );
+                    break;
                 case PHONE_TYPE_HOME_PHONE:
-                    userToChange.setHomePhone(aPhone[1]);
+                    userToChange.setHomePhone( aPhone[1] );
                     break;
                 case PHONE_TYPE_WORK_PHONE:
-                    userToChange.setWorkPhone(aPhone[1]);
+                    userToChange.setWorkPhone( aPhone[1] );
                     break;
                 case PHONE_TYPE_WORK_MOBILE:
-                    userToChange.setMobilePhone(aPhone[1]);
+                    userToChange.setMobilePhone( aPhone[1] );
                     break;
                 case PHONE_TYPE_FAX_PHONE:
-                    userToChange.setFaxPhone(aPhone[1]);
+                    userToChange.setFaxPhone( aPhone[1] );
                     break;
             }
         }

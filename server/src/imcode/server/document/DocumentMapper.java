@@ -2,8 +2,12 @@ package imcode.server.document;
 
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import com.imcode.imcms.flow.DocumentPageFlow;
-import imcode.server.*;
-import imcode.server.db.*;
+import imcode.server.Config;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
+import imcode.server.db.Database;
+import imcode.server.db.DatabaseCommand;
+import imcode.server.db.DatabaseConnection;
 import imcode.server.db.commands.CompositeDatabaseCommand;
 import imcode.server.db.commands.DeleteWhereColumnEqualsDatabaseCommand;
 import imcode.server.db.commands.UpdateDatabaseCommand;
@@ -15,7 +19,10 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.*;
+import imcode.util.Clock;
+import imcode.util.DateConstants;
+import imcode.util.Utility;
+import imcode.util.io.FileUtility;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -25,11 +32,11 @@ import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.lang.ref.SoftReference;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.lang.ref.SoftReference;
 
 public class DocumentMapper implements DocumentGetter {
 
@@ -45,7 +52,6 @@ public class DocumentMapper implements DocumentGetter {
 
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
 
-    private final ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper;
     private final Database database;
     private final DocumentPermissionSetMapper documentPermissionSetMapper;
     private final DocumentIndex documentIndex;
@@ -92,14 +98,15 @@ public class DocumentMapper implements DocumentGetter {
     public static final String SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID = "DELETE FROM roles_rights WHERE role_id = ? AND meta_id = ?";
     public static final String SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID = "INSERT INTO roles_rights (role_id, meta_id, set_id) VALUES(?,?,?)";
 
+    public static final String SQL__CATEGORY_TYPE__COLUMNS = "category_types.category_type_id, category_types.name, category_types.max_choices, category_types.inherited";
+
     public DocumentMapper(ImcmsServices services, Database database,
-                          ImcmsAuthenticatorAndUserAndRoleMapper userRegistry,
                           DocumentPermissionSetMapper documentPermissionSetMapper, DocumentIndex documentIndex,
                           Clock clock, Config config) {
+
         this.database = database;
         this.clock = clock;
         this.services = services;
-        this.userAndRoleMapper = userRegistry;
         this.documentPermissionSetMapper = documentPermissionSetMapper;
         this.documentIndex = documentIndex;
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
@@ -120,18 +127,7 @@ public class DocumentMapper implements DocumentGetter {
                 newTextDocument.removeAllImages();
                 newTextDocument.removeAllIncludes();
                 newTextDocument.removeAllMenus();
-                int permissionSetId = user.getPermissionSetIdFor(parent);
-                TemplateDomainObject template = null;
-                if (DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == permissionSetId) {
-                    template = ((TextDocumentPermissionSetDomainObject) newTextDocument.getPermissionSetForRestrictedOneForNewDocuments()).getDefaultTemplate();
-                } else if (DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == permissionSetId) {
-                    template = ((TextDocumentPermissionSetDomainObject) newTextDocument.getPermissionSetForRestrictedTwoForNewDocuments()).getDefaultTemplate();
-                } else if (parent instanceof TextDocumentDomainObject) {
-                    template = ((TextDocumentDomainObject) parent).getDefaultTemplate();
-                }
-                if (null != template) {
-                    newTextDocument.setTemplate(template);
-                }
+                setTemplateForNewTextDocument( newTextDocument, user, parent );
             } else {
                 newDocument = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
                 newDocument.setAttributes((DocumentDomainObject.Attributes) parent.getAttributes().clone());
@@ -139,15 +135,32 @@ public class DocumentMapper implements DocumentGetter {
         } catch (CloneNotSupportedException e) {
             throw new UnhandledException(e);
         }
-        newDocument.setId(0);
-        newDocument.setHeadline("");
-        newDocument.setMenuText("");
-        newDocument.setMenuImage("");
-        makeDocumentLookNew(newDocument, user);
+        newDocument.setId( 0 );
+        newDocument.setHeadline( "" );
+        newDocument.setMenuText( "" );
+        newDocument.setMenuImage( "" );
+        makeDocumentLookNew( newDocument, user );
+        newDocument.removeNonInheritedCategories() ;
         return newDocument;
     }
 
-    private void makeDocumentLookNew(DocumentDomainObject document, UserDomainObject user) {
+    private void setTemplateForNewTextDocument( TextDocumentDomainObject newTextDocument, UserDomainObject user,
+                                                final DocumentDomainObject parent ) {
+        int permissionSetId = user.getPermissionSetIdFor( parent );
+        TemplateDomainObject template = null;
+        if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == permissionSetId ) {
+            template = ( (TextDocumentPermissionSetDomainObject)newTextDocument.getPermissionSetForRestrictedOneForNewDocuments() ).getDefaultTemplate();
+        } else if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == permissionSetId ) {
+            template = ( (TextDocumentPermissionSetDomainObject)newTextDocument.getPermissionSetForRestrictedTwoForNewDocuments() ).getDefaultTemplate();
+        } else if ( parent instanceof TextDocumentDomainObject ) {
+            template = ( (TextDocumentDomainObject)parent ).getDefaultTemplate();
+        }
+        if ( null != template ) {
+            newTextDocument.setTemplate( template );
+        }
+    }
+
+    private void makeDocumentLookNew( DocumentDomainObject document, UserDomainObject user ) {
         Date now = new Date();
         makeDocumentLookCreated(document, user, now);
         document.setPublicationStartDatetime(now);
@@ -191,20 +204,25 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public CategoryTypeDomainObject[] getAllCategoryTypes() {
-        String sqlQuery = "SELECT category_type_id, name, max_choices FROM category_types ORDER BY name";
-        String[] parameters = new String[0];
-        String[][] sqlResult = database.execute2dArrayQuery(sqlQuery, parameters);
+        String sqlQuery = "SELECT " + SQL__CATEGORY_TYPE__COLUMNS + " FROM category_types ORDER BY name";
+        String[][] sqlResult = database.execute2dArrayQuery(sqlQuery, new String[0]);
 
-        CategoryTypeDomainObject[] categoryTypeDomainObjects = new CategoryTypeDomainObject[sqlResult.length];
-        for (int i = 0; i < categoryTypeDomainObjects.length; i++) {
-            int categoryTypeId = Integer.parseInt(sqlResult[i][0]);
-            String typeName = sqlResult[i][1];
-            int maxChoices = Integer.parseInt(sqlResult[i][2]);
-
-            categoryTypeDomainObjects[i] = new CategoryTypeDomainObject(categoryTypeId, typeName, maxChoices);
+        CategoryTypeDomainObject[] categoryTypes = new CategoryTypeDomainObject[sqlResult.length];
+        for ( int i = 0; i < categoryTypes.length; i++ ) {
+            CategoryTypeDomainObject categoryType = createCategoryTypeFromSqlResult( sqlResult[i], 0 );
+            categoryTypes[i] = categoryType;
         }
 
-        return categoryTypeDomainObjects;
+        return categoryTypes;
+    }
+
+    static CategoryTypeDomainObject createCategoryTypeFromSqlResult( String[] sqlRow, int offset ) {
+        int categoryTypeId = Integer.parseInt( sqlRow[offset+0] );
+        String typeName = sqlRow[offset+1];
+        int maxChoices = Integer.parseInt( sqlRow[offset+2] );
+        boolean inherited = 0 != Integer.parseInt( sqlRow[offset+3] ) ;
+        CategoryTypeDomainObject categoryTypeDomainObject = new CategoryTypeDomainObject( categoryTypeId, typeName, maxChoices, inherited );
+        return categoryTypeDomainObject;
     }
 
     public SectionDomainObject[] getAllSections() {
@@ -237,11 +255,11 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    public CategoryDomainObject getCategoryById(int categoryId) {
-        String sqlQuery = "SELECT categories.name, categories.description, categories.image, category_types.category_type_id, category_types.name, category_types.max_choices\n"
-                + "FROM categories\n"
-                + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
-                + "WHERE categories.category_id = ?";
+    public CategoryDomainObject getCategoryById( int categoryId ) {
+        String sqlQuery = "SELECT categories.name, categories.description, categories.image, "+SQL__CATEGORY_TYPE__COLUMNS+"\n"
+                          + "FROM categories\n"
+                          + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
+                          + "WHERE categories.category_id = ?";
 
         String[] params = new String[]{"" + categoryId};
         String[] categorySqlResult = database.executeArrayQuery(sqlQuery, params);
@@ -250,12 +268,7 @@ public class DocumentMapper implements DocumentGetter {
             String categoryName = categorySqlResult[0];
             String categoryDescription = categorySqlResult[1];
             String categoryImage = categorySqlResult[2];
-            int categoryTypeId = Integer.parseInt(categorySqlResult[3]);
-            String categoryTypeName = categorySqlResult[4];
-            int categoryTypeMaxChoices = Integer.parseInt(categorySqlResult[5]);
-
-            CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject(categoryTypeId, categoryTypeName,
-                    categoryTypeMaxChoices);
+            CategoryTypeDomainObject categoryType = createCategoryTypeFromSqlResult( categorySqlResult, 3 ) ;
 
             return new CategoryDomainObject(categoryId, categoryName, categoryDescription, categoryImage, categoryType);
         } else {
@@ -264,33 +277,26 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public CategoryTypeDomainObject getCategoryType(String categoryTypeName) {
-        String sqlStr = "SELECT category_types.category_type_id, category_types.name, category_types.max_choices\n"
-                + "FROM category_types\n"
-                + "WHERE category_types.name = ?";
-        String[] params = new String[]{categoryTypeName};
-        String[] sqlResult = database.executeArrayQuery(sqlStr, params);
+        String sqlStr = "SELECT "+SQL__CATEGORY_TYPE__COLUMNS+"\n"
+                        + "FROM category_types\n"
+                        + "WHERE category_types.name = ?";
+        String[] sqlResult = database.executeArrayQuery(sqlStr, new String[]{categoryTypeName});
 
         if (null == sqlResult || 0 == sqlResult.length) {
             return null;
         } else {
-            int categoryTypeId = Integer.parseInt(sqlResult[0]);
-            String categoryTypeNameFromDb = sqlResult[1];
-            int categoryTypeMaxChoices = Integer.parseInt(sqlResult[2]);
-            return new CategoryTypeDomainObject(categoryTypeId, categoryTypeNameFromDb, categoryTypeMaxChoices);
+            return createCategoryTypeFromSqlResult( sqlResult, 0 ) ;
         }
     }
 
     public CategoryTypeDomainObject getCategoryTypeById(int categoryTypeId) {
-        String sqlStr = "select name, max_choices  from category_types where category_type_id = ? ";
-        String[] params = new String[]{"" + categoryTypeId};
-        String[] sqlResult = database.executeArrayQuery(sqlStr, params);
+        String sqlStr = "select "+SQL__CATEGORY_TYPE__COLUMNS+" from category_types where category_type_id = ? ";
+        String[] sqlResult = database.executeArrayQuery(sqlStr, new String[]{"" + categoryTypeId});
 
         if (null == sqlResult || 0 == sqlResult.length) {
             return null;
         } else {
-            String categoryTypeNameFromDb = sqlResult[0];
-            int categoryTypeMaxChoices = Integer.parseInt(sqlResult[1]);
-            return new CategoryTypeDomainObject(categoryTypeId, categoryTypeNameFromDb, categoryTypeMaxChoices);
+            return createCategoryTypeFromSqlResult( sqlResult, 0 ) ;
         }
     }
 
@@ -300,11 +306,16 @@ public class DocumentMapper implements DocumentGetter {
         database.executeUpdateQuery(sqlstr, params);
     }
 
-    public CategoryTypeDomainObject addCategoryTypeToDb(String name, int max_choices) {
-        String sqlstr = "insert into category_types (name, max_choices) values(?,?) SELECT @@IDENTITY";
-        String[] params = new String[]{name, max_choices + ""};
-        String newId = database.executeStringQuery(sqlstr, params);
-        return getCategoryTypeById(Integer.parseInt(newId));
+    public CategoryTypeDomainObject addCategoryTypeToDb( final CategoryTypeDomainObject categoryType ) {
+        DatabaseCommand addCategoryTypeCommand = new DatabaseCommand() {
+            public Object executeOn(DatabaseConnection connection) throws DatabaseException {
+                String sqlstr = "insert into category_types (name, max_choices, inherited) values(?,?,?)";
+                String[] params = new String[]{categoryType.getName(), categoryType.getMaxChoices() + "", (categoryType.isInherited() ? "1" : "0")};
+                return connection.executeUpdateAndGetGeneratedKey(sqlstr, params) ;
+            }
+        };
+        Number newId = (Number) database.executeCommand(addCategoryTypeCommand) ;
+        return getCategoryTypeById(newId.intValue());
     }
 
     public void updateCategoryType(CategoryTypeDomainObject categoryType) {

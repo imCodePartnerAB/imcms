@@ -2,7 +2,7 @@ package imcode.server.db.impl;
 
 import imcode.server.db.ProcedureExecutor;
 import imcode.util.FileCache;
-import imcode.util.FileUtility;
+import imcode.util.io.FileUtility;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.ArrayUtils;

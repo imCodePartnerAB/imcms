@@ -128,14 +128,15 @@ public class ConnectionDocumentGetter implements DocumentGetter {
     }
 
     public void initDocumentCategories(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {
-        String[] parameters = new String[]{"" + document.getId()};
-        String[][] categories = connection.execute2dArrayQuery("SELECT categories.category_id, categories.name, categories.image, categories.description, category_types.category_type_id, category_types.name, category_types.max_choices"
-                + " FROM document_categories"
-                + " JOIN categories"
-                + "  ON document_categories.category_id = categories.category_id"
-                + " JOIN category_types"
-                + "  ON categories.category_type_id = category_types.category_type_id"
-                + " WHERE document_categories.meta_id = ?", parameters);
+        String[][] categories = connection.execute2dArrayQuery( "SELECT categories.category_id, categories.name, categories.image, categories.description, "+
+                                                              DocumentMapper.SQL__CATEGORY_TYPE__COLUMNS
+                                                              + " FROM document_categories"
+                                                              + " JOIN categories"
+                                                              + "  ON document_categories.category_id = categories.category_id"
+                                                              + " JOIN category_types"
+                                                              + "  ON categories.category_type_id = category_types.category_type_id"
+                                                              + " WHERE document_categories.meta_id = ?",
+                                                              new String[]{"" + document.getId()} );
         for (int i = 0; i < categories.length; i++) {
             String[] categoryArray = categories[i];
 
@@ -143,12 +144,8 @@ public class ConnectionDocumentGetter implements DocumentGetter {
             String categoryName = categoryArray[1];
             String categoryImage = categoryArray[2];
             String categoryDescription = categoryArray[3];
-            int categoryTypeId = Integer.parseInt(categoryArray[4]);
-            String categoryTypeName = categoryArray[5];
-            int categoryTypeMaxChoices = Integer.parseInt(categoryArray[6]);
 
-            CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject(categoryTypeId, categoryTypeName,
-                    categoryTypeMaxChoices);
+            CategoryTypeDomainObject categoryType = DocumentMapper.createCategoryTypeFromSqlResult( categoryArray, 4 ) ;
             CategoryDomainObject category = new CategoryDomainObject(categoryId, categoryName, categoryDescription,
                     categoryImage, categoryType);
             document.addCategory(category);

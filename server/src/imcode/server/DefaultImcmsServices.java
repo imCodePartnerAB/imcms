@@ -10,6 +10,7 @@ import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
 import imcode.util.*;
 import imcode.util.fortune.*;
+import imcode.util.io.FileUtility;
 import imcode.util.net.SMTP;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.poll.PollHandlingSystemImpl;
@@ -181,7 +182,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private void initDocumentMapper() {
         File indexDirectory = new File( getRealContextPath(), "WEB-INF/index" );
         DocumentIndex documentIndex = new AutorebuildingDirectoryIndex( indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes() );
-        documentMapper = new DocumentMapper( this, this.getDatabase(), this.getImcmsAuthenticatorAndUserAndRoleMapper(), new DocumentPermissionSetMapper( database, this ), documentIndex, this.getClock(), this.getConfig() );
+        documentMapper = new DocumentMapper( this, this.getDatabase(), new DocumentPermissionSetMapper( database, this ), documentIndex, this.getClock(), this.getConfig() );
     }
 
     private void initTemplateMapper() {
@@ -239,9 +240,11 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
         boolean userAuthenticates = externalizedImcmsAuthAndMapper.authenticate( login, password );
         UserDomainObject user = externalizedImcmsAuthAndMapper.getUser( login );
-        if ( userAuthenticates ) {
+        if ( userAuthenticates  ) {
             result = user;
-            mainLog.info( "->User '" + login + "' successfully logged in." );
+            if ( !user.isDefaultUser() ) {
+                mainLog.info( "->User '" + login + "' successfully logged in." );
+            }
         } else if ( null == user ) {
             mainLog.info( "->User '" + login + "' failed to log in: User not found." );
         } else if ( !user.isActive() ) {
@@ -462,7 +465,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public imcode.server.db.Database getExceptionUnhandlingDatabase() {
-        return database;
+        return getDatabase();
     }
 
     public Clock getClock() {

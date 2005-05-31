@@ -30,10 +30,16 @@ public class UserService {
         return result;
     }
 
-    public User getUser( String userLoginName ) throws NoPermissionException {
+    /**
+        @param userLoginName
+        @return User with the specified login name, or null if none.
+    **/
+     public User getUser( String userLoginName ) throws NoPermissionException {
         UserDomainObject internalUser = getMapper().getUser( userLoginName );
-        User result = new User( internalUser );
-        return result;
+        if (null == internalUser) {
+            return null ;
+        }
+        return new User( internalUser );
     }
 
     /**
@@ -191,5 +197,27 @@ public class UserService {
         } catch ( imcode.server.user.UserAlreadyExistsException uaee ) {
             throw new UserAlreadyExistsException( "A user with the login name \""+user.getLoginName()+"\" already exists." ) ;
         }
+    }
+
+    /**
+     * Send a password reminder mail
+     *
+     * @param user The user to send mail to
+     * @param fromAddress The address to send from
+     * @param subject The subject of the mail
+     * @param body The body of the mail, containing a placeholder for the password
+     * @param bodyPasswordPlaceHolderRegex Is replaced with the password in the body.
+     * @throws MailException
+     */
+    public void sendPasswordReminderMail(User user, String fromAddress, String subject, String body, String bodyPasswordPlaceHolderRegex) throws MailException {
+        UserDomainObject userDO = user.getInternal();
+        String password = userDO.getPassword();
+        String bodyWithPassword = body.replaceAll(bodyPasswordPlaceHolderRegex, password) ;
+        Mail mail = new Mail(fromAddress);
+        mail.setSubject(subject);
+        mail.setBody(bodyWithPassword);
+        mail.setToAddresses(new String[] {userDO.getEmailAddress()});
+        MailService mailService = contentManagementSystem.getMailService();
+        mailService.sendMail(mail);
     }
 }

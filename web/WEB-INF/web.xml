@@ -379,6 +379,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.MenuRss</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.MenuRss</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.PageDispatcher</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.PageDispatcher</servlet-class>
     </servlet>
@@ -876,6 +881,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.ListDocuments</servlet-name>
         <url-pattern>/servlet/ListDocuments</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.MenuRss</servlet-name>
+        <url-pattern>/servlet/MenuRss</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

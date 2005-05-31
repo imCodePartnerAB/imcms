@@ -1,27 +1,21 @@
 package com.imcode.imcms.servlet;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import java.io.IOException;
-
-import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
-import imcode.server.WebAppGlobalConstants;
-import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class LogOut extends HttpServlet {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+        String language = Utility.getLoggedOnUser(req).getLanguageIso639_2();
 
-        UserDomainObject user = Utility.getLoggedOnUser( req );
-        HttpSession session = req.getSession( true );
-        session.removeAttribute( WebAppGlobalConstants.LOGGED_IN_USER );
+        Utility.makeUserLoggedInAsDefaultUser(req);
 
-        ImcmsServices imcref = Imcms.getServices();
-
-        Utility.setDefaultHtmlContentType( res );
-        res.getOutputStream().print( imcref.getAdminTemplate( "logged_out.html", user, null ) );
+        req.setAttribute("language", language);
+        req.getRequestDispatcher("/login/logged_out.jsp").forward(req, res);
     }
 }

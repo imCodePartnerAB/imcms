@@ -14,7 +14,6 @@ import imcode.util.Utility;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Vector;
@@ -235,10 +234,7 @@ public class ConfLogin extends Conference {
                 return;
             }
 
-            // Valid login.  Make a note in the session object.
-            // Get session
-            HttpSession session = req.getSession( true );
-            session.setAttribute( "logon.isDone", user );  // just a marker object
+            Utility.makeUserLoggedIn(req, user);
             user.setLoginType( "verify" );
 
             //  Lets update the users sessionobject with a ok login to the conference

@@ -27,7 +27,7 @@ public class TestDateTextFieldTextDocumentComparator extends TestCase {
         internalUser.addRole( RoleDomainObject.SUPERADMIN );
         contentManagementSystem.setCurrentInternalUser( internalUser );
         MockImcmsServices imcmsServices = new MockImcmsServices();
-        imcmsServices.setDocumentMapper( new DocumentMapper( imcmsServices, null, null, null, null, null, new Config() ) {
+        imcmsServices.setDocumentMapper( new DocumentMapper( imcmsServices, null, null, null, null, new Config() ) {
             public DocumentDomainObject getDocument( DocumentId metaId ) {
                 TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
                 textDocument.setId( metaId.intValue() );

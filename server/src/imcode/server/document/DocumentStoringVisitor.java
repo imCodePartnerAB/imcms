@@ -6,9 +6,9 @@ import imcode.server.db.Database;
 import imcode.server.db.DatabaseConnection;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
-import imcode.util.FileInputStreamSource;
-import imcode.util.FileUtility;
-import imcode.util.InputStreamSource;
+import imcode.util.io.FileInputStreamSource;
+import imcode.util.io.FileUtility;
+import imcode.util.io.InputStreamSource;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringUtils;
@@ -270,27 +270,24 @@ public class DocumentStoringVisitor extends DocumentVisitor {
     }
 
     private static int sqlImageUpdateQuery(String sqlStr, ImageDomainObject image, int meta_id, int img_no) {
-        ImageDomainObject.ImageSource imageSource = image.getSource();
+        ImageSource imageSource = image.getSource();
         return Imcms.getServices().getExceptionUnhandlingDatabase().executeUpdateQuery( sqlStr, new String[] {
-                                                                                                        imageSource.toStorageString(),
-                                                                                                "" + image.getWidth(),
-                                                                                                "" + image.getHeight(),
-                                                                                                "" + image.getBorder(),
-                                                                                                ""
-                                                                                                + image.getVerticalSpace(),
-                                                                                                ""
-                                                                                                + image.getHorizontalSpace(),
-                                                                                                        image.getName(),
-                                                                                                        image.getTarget(),
-                                                                                                        image.getAlign(),
-                                                                                                        image.getAlternateText(),
-                                                                                                        image.getLowResolutionUrl(),
-                                                                                                        image.getLinkUrl(),
-                                                                                                ""
-                                                                                                + imageSource.getTypeId(),
-                                                                                                "" + meta_id,
-                                                                                                "" + img_no,
-                                                                                                } );
+            imageSource.toStorageString(),
+            "" + image.getWidth(),
+            "" + image.getHeight(),
+            "" + image.getBorder(),
+            "" + image.getVerticalSpace(),
+            "" + image.getHorizontalSpace(),
+            image.getName(),
+            image.getTarget(),
+            image.getAlign(),
+            image.getAlternateText(),
+            image.getLowResolutionUrl(),
+            image.getLinkUrl(),
+            "" + imageSource.getTypeId(),
+            "" + meta_id,
+            "" + img_no,
+        });
     }
 
     public void visitFileDocument( FileDocumentDomainObject fileDocument ) {

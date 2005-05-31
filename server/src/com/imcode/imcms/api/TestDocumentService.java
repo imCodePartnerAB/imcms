@@ -21,15 +21,16 @@ public class TestDocumentService extends TestCase {
         contentManagementSystem.setCurrentUser( user );
         MockImcmsServices imcmsServices = new MockImcmsServices();
         database = new MockDatabase();
-        imcmsServices.setDocumentMapper(new DocumentMapper(imcmsServices, database, null,null,null,null,new Config() )) ;
+        imcmsServices.setDocumentMapper(new DocumentMapper(imcmsServices, database, null,null,null,new Config() )) ;
         contentManagementSystem.setInternal( imcmsServices );
         this.documentService = new DocumentService(contentManagementSystem) ;
     }
 
     public void testSaveCategory() throws CategoryAlreadyExistsException, NoPermissionException {
-        String[][] allCategoryTypesResult = new String[][] { { "1", "test", "0" } };
-        database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "SELECT category_type_id"), allCategoryTypesResult );
+        String[][] allCategoryTypesResult = new String[][] { { "1", "test", "0", "0" } };
+        database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "SELECT category_types.category_type_id"), allCategoryTypesResult );
         CategoryType categoryType = documentService.getAllCategoryTypes()[0] ;
+        assertEquals( false, categoryType.isInherited()) ;
         String categoryName = "name";
         Category category = new Category( categoryName, categoryType );
         category.setDescription( "description" );

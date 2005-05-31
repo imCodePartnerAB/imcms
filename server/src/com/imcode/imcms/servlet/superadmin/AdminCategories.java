@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.servlet.admin.ImageBrowser;
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
+import com.imcode.imcms.servlet.admin.ImageBrowser;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
@@ -40,10 +40,12 @@ public class AdminCategories extends HttpServlet {
     public static final String PARAMETER_MODE__VIEW_CATEGORY = "view_category";
     public static final String PARAMETER_MODE__DEFAULT = "default_mode";
     public static final String PARAMETER_BUTTON__CANCEL = "cancel";
-    public static final String PARAMETER_MAX_CHOICES = "max_choices";
+    public static final String PARAMETER__MAX_CHOICES = "max_choices";
     public static final String PARAMETER_CATEGORY_TYPE_SAVE = "category_type_save";
     public static final String PARAMETER_CATEGORY_TYPE_ADD = "category_type_add";
     private static final String PARAMETER__ADD_CATEGORY_BUTTON = "category_add";
+    public static final String PARAMETER__INHERITED = "inherited";
+    public static final String PARAMETER__CATEGORY_DELETE = "category_delete";
 
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         doPost( request, response );
@@ -72,7 +74,7 @@ public class AdminCategories extends HttpServlet {
 
         AdminCategoriesPage adminCategoriesPage = new AdminCategoriesPage();
 
-        CategoryTypeDomainObject categoryType = getCategoryTypeFromRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW, documentMapper );
+        CategoryTypeDomainObject categoryType = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW, documentMapper );
         CategoryDomainObject category = getCategoryFromIdInRequest( req, documentMapper );
 
         if ( null != req.getParameter( PARAMETER_MODE__ADD_CATEGORY_TYPE ) ){
@@ -109,7 +111,7 @@ public class AdminCategories extends HttpServlet {
         CategoryDomainObject category = null;
         CategoryTypeDomainObject categoryTypeToEdit = null;
         category = getCategoryFromIdInRequest( req, documentMapper );
-        categoryTypeToEdit = getCategoryTypeFromRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW, documentMapper );
+        categoryTypeToEdit = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW, documentMapper );
 
         formBean.setCategoryTypeToEdit( categoryTypeToEdit );
         if ( req.getParameter( PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE ) != null ) {
@@ -125,7 +127,7 @@ public class AdminCategories extends HttpServlet {
             forwardToImageBrowse( formBean, req, res );
         } else if ( req.getParameter( PARAMETER__CATEGORY_SAVE ) != null ) {
             boolean nameWasChanged = !req.getParameter( PARAMETER__OLD_NAME ).toLowerCase().equals( req.getParameter( PARAMETER__NAME ).toLowerCase() );
-            CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, documentMapper );
+            CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, documentMapper );
             if ( nameWasChanged ) {
                 nameIsUnique = null == documentMapper.getCategory( categoryTypeToAddTo, req.getParameter( PARAMETER__NAME ) );
             }
@@ -145,7 +147,7 @@ public class AdminCategories extends HttpServlet {
         category.setName( req.getParameter( PARAMETER__NAME ) );
         category.setDescription( req.getParameter( PARAMETER__DESCRIPTION ) );
         category.setImageUrl( req.getParameter( PARAMETER__ICON ) );
-        CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, documentMapper );
+        CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, documentMapper );
         category.setType( categoryTypeToAddTo );
     }
 
@@ -154,7 +156,7 @@ public class AdminCategories extends HttpServlet {
         adminCategoriesPage.setMode(PARAMETER_MODE__ADD_CATEGORY) ;
 
         CategoryDomainObject newCategory = null;
-        CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, documentMapper );
+        CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, documentMapper );
 
         newCategory = new CategoryDomainObject( 0,
                                                 req.getParameter( PARAMETER__NAME ),
@@ -189,7 +191,7 @@ public class AdminCategories extends HttpServlet {
         return categoryToEdit;
     }
 
-    private CategoryTypeDomainObject getCategoryTypeFromRequest( HttpServletRequest req, String requestParameter,
+    private CategoryTypeDomainObject getCategoryTypeFromIdParameterInRequest( HttpServletRequest req, String requestParameter,
                                                                  DocumentMapper documentMapper ) {
         CategoryTypeDomainObject categoryType = null;
         String categoryTypeIdString = req.getParameter( requestParameter );
@@ -207,7 +209,7 @@ public class AdminCategories extends HttpServlet {
         String[] documentsOfOneCategory = null;
         if ( categoryToEdit != null ) {
             documentsOfOneCategory = documentMapper.getAllDocumentsOfOneCategory( categoryToEdit );
-            if ( req.getParameter( "category_delete" ) != null ) {
+            if ( req.getParameter( PARAMETER__CATEGORY_DELETE ) != null ) {
                 DocumentDomainObject document;
                 for ( int i = 0; i < documentsOfOneCategory.length; i++ ) {
                     document = documentMapper.getDocument( Integer.parseInt( documentsOfOneCategory[i] ) );
@@ -275,30 +277,43 @@ public class AdminCategories extends HttpServlet {
                 formBean.setUniqueCategoryTypeName( documentMapper.isUniqueCategoryTypeName( newName ) );
             }
             if (formBean.isUniqueCategoryTypeName()){
-                int maxChoices = Integer.parseInt( req.getParameter( "max_choices" ) );
+                int maxChoices = Integer.parseInt( req.getParameter( PARAMETER__MAX_CHOICES ) );
                 categoryTypeToEdit.setName( newName );
                 categoryTypeToEdit.setMaxChoices( maxChoices );
+                boolean inherited = getInheritedParameterFromRequest(req);
+                categoryTypeToEdit.setInherited( inherited );
                 documentMapper.updateCategoryType( categoryTypeToEdit );
             }
         }
         formBean.setCategoryTypeToEdit( categoryTypeToEdit );
     }
 
-    private void  addCategoryType( HttpServletRequest req, AdminCategoriesPage formBean, DocumentMapper documentMapper ) {
+    private void addCategoryType( HttpServletRequest req, AdminCategoriesPage formBean, DocumentMapper documentMapper ) {
         formBean.setMode(PARAMETER_MODE__ADD_CATEGORY_TYPE) ;
         if ( req.getParameter( PARAMETER_CATEGORY_TYPE_ADD ) != null
              && !req.getParameter( PARAMETER__NAME ).trim().equals( "" ) ){
 
-            String categoryTypeName = req.getParameter( PARAMETER__NAME ).trim();
-            int maxChoices = Integer.parseInt( req.getParameter( PARAMETER_MAX_CHOICES ) );
+            CategoryTypeDomainObject categoryType = createCategoryTypeFromRequest( req );
 
-            if ( documentMapper.isUniqueCategoryTypeName( categoryTypeName ) ) {
+            if ( documentMapper.isUniqueCategoryTypeName( categoryType.getName() ) ) {
                 formBean.setUniqueCategoryTypeName( true );
-                documentMapper.addCategoryTypeToDb( categoryTypeName, maxChoices );
+                documentMapper.addCategoryTypeToDb( categoryType );
             } else {
                 formBean.setUniqueCategoryTypeName( false );
             }
         }
+    }
+
+    private CategoryTypeDomainObject createCategoryTypeFromRequest( HttpServletRequest req ) {
+        String categoryTypeName = req.getParameter( PARAMETER__NAME ).trim();
+        int maxChoices = Integer.parseInt( req.getParameter( PARAMETER__MAX_CHOICES ) );
+        boolean inherited = getInheritedParameterFromRequest(req ) ;
+        CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject( 0, categoryTypeName, maxChoices, inherited );
+        return categoryType;
+    }
+
+    private boolean getInheritedParameterFromRequest( HttpServletRequest request ) {
+        return null != request.getParameter(PARAMETER__INHERITED) ;
     }
 
     public static String createHtmlOptionListOfCategoryTypes( CategoryTypeDomainObject selectedType ) {

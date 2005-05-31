@@ -71,9 +71,9 @@ public class Html {
         return createOptionList( data, Arrays.asList( new String[]{selected} ) );
     }
 
-    public static String createOptionListOfCategoriesOfTypeForDocument( DocumentMapper documentMapper,
-                                                                        CategoryTypeDomainObject categoryType,
-                                                                        DocumentDomainObject document ) {
+    public static String createOptionListOfCategoriesOfTypeForDocument(DocumentMapper documentMapper,
+                                                                       CategoryTypeDomainObject categoryType,
+                                                                       DocumentDomainObject document, HttpServletRequest request) {
         CategoryDomainObject[] categories = documentMapper.getAllCategoriesOfType( categoryType );
         Arrays.sort( categories );
         CategoryDomainObject[] documentSelectedCategories = document.getCategoriesOfType( categoryType );
@@ -87,8 +87,8 @@ public class Html {
         String categoryOptionList = createOptionList( Arrays.asList( categories ), Arrays.asList( documentSelectedCategories ), categoryToStringPairTransformer );
 
         if ( 1 == categoryType.getMaxChoices() ) {
-            categoryOptionList = "<option></option>" + categoryOptionList;
-        }
+            categoryOptionList = "<option>- " + (new LocalizedMessage("global/None")).toLocalizedString(request) + " -</option>" + categoryOptionList;
+        } 
         return categoryOptionList;
     }
 
@@ -159,7 +159,7 @@ public class Html {
      */
     public static String getAdminButtons( UserDomainObject user, DocumentDomainObject document, HttpServletRequest request,
                                           HttpServletResponse response ) {
-        if ( !( user.canEdit( document ) || user.isUserAdmin() || user.canAccessAdminPages() ) ) {
+        if ( null == document || !( user.canEdit( document ) || user.isUserAdmin() || user.canAccessAdminPages() ) ) {
             return "";
         }
 

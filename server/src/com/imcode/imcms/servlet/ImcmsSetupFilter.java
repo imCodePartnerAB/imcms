@@ -1,11 +1,7 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.ContentManagementSystem;
-import com.imcode.imcms.api.DefaultContentManagementSystem;
-import com.imcode.imcms.api.RequestConstants;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
@@ -31,17 +27,14 @@ public class ImcmsSetupFilter implements Filter {
             setDomainSessionCookie( response, session );
         }
 
-        UserDomainObject user = (UserDomainObject)session.getAttribute( WebAppGlobalConstants.LOGGED_IN_USER );
+        UserDomainObject user = Utility.getLoggedOnUser(httpServletRequest) ;
         if ( user == null ) {
             String ip = request.getRemoteAddr();
             user = getUserUserOrIpLoggedInUser( ip );
-            session.setAttribute( WebAppGlobalConstants.LOGGED_IN_USER, user );
+            Utility.makeUserLoggedIn(httpServletRequest, user);
         }
 
-        // FIXME: Ugly hack to get the contextpath into DefaultImcmsServices.getVelocityContext()
-        user.setCurrentContextPath( ( (HttpServletRequest)request ).getContextPath() );
-
-        initRequestWithApi( user, request );
+        Utility.initRequestWithApi(request, user);
 
         NDC.setMaxDepth( 0 );
         String contextPath = ( (HttpServletRequest)request ).getContextPath();
@@ -86,15 +79,6 @@ public class ImcmsSetupFilter implements Filter {
         }
     }
 
-    private void initRequestWithApi( UserDomainObject currentUser, ServletRequest request ) {
-        NDC.push( "initRequestWithApi" );
-        ContentManagementSystem imcmsSystem;
-        ImcmsServices service = Imcms.getServices();
-        imcmsSystem = DefaultContentManagementSystem.create( service, currentUser );
-        request.setAttribute( RequestConstants.SYSTEM, imcmsSystem );
-        NDC.pop();
-    }
-
     public void init( FilterConfig config ) throws ServletException {
     }
 
@@ -125,10 +109,11 @@ public class ImcmsSetupFilter implements Filter {
             user = imcref.verifyUser( user_data[0], user_data[1] );
             user.setLoginType( "ip_access" );
         } else {
-            user = imcref.verifyUser( "User", "user" );
+            user = Utility.getDefaultUser();
             user.setLoginType( "extern" );
         }
 
         return user;
     }
+
 }

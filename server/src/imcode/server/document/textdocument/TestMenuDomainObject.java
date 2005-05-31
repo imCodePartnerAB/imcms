@@ -24,7 +24,7 @@ public class TestMenuDomainObject extends TestCase {
         user.addRole( RoleDomainObject.SUPERADMIN );
         this.menu = new MenuDomainObject() ;
         MockDatabase database = new MockDatabase();
-        DocumentMapper documentMapper = new DocumentMapper( new MockImcmsServices(), database, null, null, null, null, new Config() ) {
+        DocumentMapper documentMapper = new DocumentMapper( new MockImcmsServices(), database, null, null, null, new Config() ) {
             public DocumentDomainObject getDocument( DocumentId metaId ) {
                 if (1002 == metaId.intValue()) {
                     TextDocumentDomainObject textDocument = new TextDocumentDomainObject();

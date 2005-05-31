@@ -4,7 +4,6 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -16,14 +15,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Writer;
 
 public final class SaveText extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws IOException {
         req.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
         Utility.setDefaultHtmlContentType( res );
-        Writer out = res.getWriter();
 
         // Check if user has permission to be here
         ImcmsServices imcref = Imcms.getServices();
@@ -35,7 +32,7 @@ public final class SaveText extends HttpServlet {
         TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
 
         if ( permissionSet.getEditTexts()
-             && req.getParameter( "ok" ) != null ) {
+             && req.getParameter( "cancel" ) == null ) {
             // get text_no
             int txt_no = Integer.parseInt( req.getParameter( "txt_no" ) );
 
@@ -52,6 +49,11 @@ public final class SaveText extends HttpServlet {
             TextDomainObject text = new TextDomainObject( text_string, text_format );
 
             saveText( documentMapper, text, document, txt_no, text_type, imcref, meta_id, user );
+
+            if (null != req.getParameter( "save" )) {
+                res.sendRedirect( "ChangeText?meta_id="+meta_id+"&txt="+txt_no );
+                return ;
+            }
         }
 
         res.sendRedirect( "AdminDoc?meta_id=" + meta_id + "&flags="

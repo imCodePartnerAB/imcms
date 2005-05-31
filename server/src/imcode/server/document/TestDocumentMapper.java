@@ -48,7 +48,7 @@ public class TestDocumentMapper extends TestCase {
                 return null ;
             }
         }) ;
-        documentMapper = new DocumentMapper( services, database, userRegistry, new DocumentPermissionSetMapper( database, services ), new TestDocumentMapper.MockDocumentIndex(), null, new Config() );
+        documentMapper = new DocumentMapper( services, database, new DocumentPermissionSetMapper( database, services ), new TestDocumentMapper.MockDocumentIndex(), null, new Config() );
         services.setDocumentMapper(documentMapper);
     }
 
@@ -115,6 +115,7 @@ public class TestDocumentMapper extends TestCase {
 
     public void testUpdateDocumentRolePermissionsAllowsNullOldDocument() throws Exception {
         documentMapper.updateDocumentRolePermissions( textDocument, user, null );
+        assertTrue(true);
     }
 
     public void testSaveNewBrowserDocument() throws Exception {

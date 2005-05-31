@@ -42,7 +42,7 @@ public class TestTextDocument extends TestCase {
         menuDO.addMenuItem( new MenuItemDomainObject( documentReference ) );
         contentManagementSystem = new MockContentManagementSystem();
         MockImcmsServices imcmsServices = new MockImcmsServices();
-        imcmsServices.setDocumentMapper( new DocumentMapper(null,null,null,null,null,null,new Config() ));
+        imcmsServices.setDocumentMapper( new DocumentMapper(null,null,null,null,null,new Config() ));
         contentManagementSystem.setInternal( imcmsServices );
         contentManagementSystem.setCurrentUser( new User( internalUser ) );
         textDocument = new TextDocument( this.textDocumentDO, contentManagementSystem );

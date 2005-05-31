@@ -9,7 +9,6 @@ import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetMapper;
 import imcode.server.document.index.DocumentIndex;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.util.Clock;
 import junit.framework.TestCase;
 
@@ -27,7 +26,7 @@ public class TestEditBrowserDocumentPageFlow extends TestCase {
         browserDocument = new BrowserDocumentDomainObject();
         otherBrowser = new BrowserDocumentDomainObject.Browser( 1, "Other", 1 );
         editBrowserDocumentPageFlow = new EditBrowserDocumentPageFlow( browserDocument, null, null );
-        documentMapper = new TestEditBrowserDocumentPageFlow.MockDocumentMapper(null, new MockDatabase(), null, null, null, null, new Config() );
+        documentMapper = new TestEditBrowserDocumentPageFlow.MockDocumentMapper(null, new MockDatabase(), null, null, null, new Config() );
     }
 
     public void testGetAddedBrowsersFromRequest() throws Exception {
@@ -46,10 +45,9 @@ public class TestEditBrowserDocumentPageFlow extends TestCase {
 
 
         public MockDocumentMapper( ImcmsServices services, Database database,
-                                   ImcmsAuthenticatorAndUserAndRoleMapper userRegistry,
                                    DocumentPermissionSetMapper documentPermissionSetMapper,
                                    DocumentIndex documentIndex, Clock clock, Config config ) {
-            super( services, database, userRegistry, documentPermissionSetMapper, documentIndex, clock, config );
+            super( services, database, documentPermissionSetMapper, documentIndex, clock, config );
         }
 
         protected BrowserDocumentDomainObject.Browser createBrowserFromSqlRow( String[] sqlRow ) {

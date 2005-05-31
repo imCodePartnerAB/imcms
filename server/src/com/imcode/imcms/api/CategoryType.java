@@ -27,4 +27,8 @@ public class CategoryType {
     public int getId() {
         return internalCategoryType.getId();
     }
+
+    public boolean isInherited() {
+        return internalCategoryType.isInherited();
+    }
 }
