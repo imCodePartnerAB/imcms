@@ -271,7 +271,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     private static int sqlImageUpdateQuery(String sqlStr, ImageDomainObject image, int meta_id, int img_no) {
         ImageSource imageSource = image.getSource();
-        return Imcms.getServices().getExceptionUnhandlingDatabase().executeUpdateQuery( sqlStr, new String[] {
+        return Imcms.getServices().getDatabase().executeUpdateQuery( sqlStr, new String[] {
             imageSource.toStorageString(),
             "" + image.getWidth(),
             "" + image.getHeight(),

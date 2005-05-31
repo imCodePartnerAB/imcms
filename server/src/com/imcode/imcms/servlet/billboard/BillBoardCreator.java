@@ -78,7 +78,7 @@ public class BillBoardCreator extends BillBoard {//BillBoardCreator
             // we have to check when we add a new billboard that such an meta_id
             // doesnt already exists.
             String metaId = params.getProperty( "META_ID" );
-            String foundMetaId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_FindMetaId", new String[] {metaId} );
+            String foundMetaId = imcref.getDatabase().executeStringProcedure( "B_FindMetaId", new String[] {metaId} );
             if ( !foundMetaId.equals( "1" ) ) {
                 action = "";
                 String header = "BillBoardCreator servlet. ";
@@ -94,7 +94,7 @@ public class BillBoardCreator extends BillBoard {//BillBoardCreator
 
             String subject = confParams.getProperty( "SUBJECT_NAME" );
 
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_AddNewBillBoard", new String[] {metaId,
+            imcref.getDatabase().executeUpdateProcedure( "B_AddNewBillBoard", new String[] {metaId,
                                                                                             confName, subject} );
 
             // Lets add a new section to the billBoard
@@ -103,7 +103,7 @@ public class BillBoardCreator extends BillBoard {//BillBoardCreator
             final String archiveMode = "A";
             final String archiveTime = "30";
             final String daysToShow = "14";
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_AddNewSection", new String[] {metaId,
+            imcref.getDatabase().executeUpdateProcedure( "B_AddNewSection", new String[] {metaId,
                                                                                             confParams.getProperty( "SECTION_NAME" ),
                                                                                             archiveMode, archiveTime,
                                                                                             daysToShow} );

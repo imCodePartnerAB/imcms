@@ -226,7 +226,7 @@ public class BillBoardAdd extends BillBoard {
 
                 // Ok, Lets add the discussion to DB
                 String sqlQuest = "B_AddNewBill";
-                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( sqlQuest, new String[] {aSectionId,
+                imcref.getDatabase().executeUpdateProcedure( sqlQuest, new String[] {aSectionId,
                                                                                                 userId, addHeader,
                                                                                                 addText, addEpost,
                                                                                                 req.getRemoteAddr()} );
@@ -235,7 +235,7 @@ public class BillBoardAdd extends BillBoard {
                 // Ok, Lets get the last discussion in that section
                 // HttpSession session = req.getSession(false) ;
                 if ( session != null ) {
-                    String latestDiscId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetLastDiscussionId", new String[] {params.getProperty( "META_ID" ),
+                    String latestDiscId = imcref.getDatabase().executeStringProcedure( "B_GetLastDiscussionId", new String[] {params.getProperty( "META_ID" ),
                                                                                                                           aSectionId} );
                     session.setAttribute( "BillBoard.disc_id", latestDiscId );
                 }
@@ -296,14 +296,14 @@ public class BillBoardAdd extends BillBoard {
 
 
                 //ok now we have to send the mail to right email adr that we vill get from the db
-                String toEmail = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetEmail", new String[] {discId} );
+                String toEmail = imcref.getDatabase().executeStringProcedure( "B_GetEmail", new String[] {discId} );
                 if ( toEmail == null ) {
                     log( "OBS! No fn email found!" );
                     return;
                 }
 
                 String sqlQuest = "B_GetSubjectStr";
-                String subjectStr = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( sqlQuest, new String[] {discId,
+                String subjectStr = imcref.getDatabase().executeStringProcedure( sqlQuest, new String[] {discId,
                                                                                                                     params.getProperty( "META_ID" ),
                                                                                                                     params.getProperty( "SECTION_ID" )} );
                 try {
@@ -314,7 +314,7 @@ public class BillBoardAdd extends BillBoard {
                     return;
                 }
 
-                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_AddReply", new String[] {discId,
+                imcref.getDatabase().executeUpdateProcedure( "B_AddReply", new String[] {discId,
                                                                                                 userId, addHeader,
                                                                                                 addText, addEpost,
                                                                                                 req.getRemoteAddr()} );
@@ -372,7 +372,7 @@ public class BillBoardAdd extends BillBoard {
             vm.addProperty( "ADD_TYPE", params.getProperty( "ADD_TYPE" ) );
 
             // Lets add the current forum name
-            String currSection = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetSectionName", new String[] {params.getProperty( "SECTION_ID" )} );
+            String currSection = imcref.getDatabase().executeStringProcedure( "B_GetSectionName", new String[] {params.getProperty( "SECTION_ID" )} );
             vm.addProperty( "CURRENT_SECTION_NAME", currSection );
 
             // Lets get the addtype and add it to the page

@@ -178,8 +178,6 @@ public interface ImcmsServices extends Clock {
 
     Config getConfig();
 
-    Database getExceptionUnhandlingDatabase();
-
     Clock getClock();
 
     File getRealContextPath();

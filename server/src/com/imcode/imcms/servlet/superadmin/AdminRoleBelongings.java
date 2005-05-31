@@ -78,7 +78,7 @@ public class AdminRoleBelongings extends Administrator {
         }
 
         // Lets get all ROLES from DB
-        String[][] queryResult = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "RoleAdminGetAll", new String[0] );
+        String[][] queryResult = imcref.getDatabase().execute2dArrayProcedure( "RoleAdminGetAll", new String[0] );
 
         // Lets generate the html page
         String optionList = createListOfOptions( queryResult );
@@ -145,7 +145,7 @@ public class AdminRoleBelongings extends Administrator {
                 curentRoleId = "0";
             }
 
-            String[][] roleQueryResult = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "RoleGetAllApartFromRole", new String[] {
+            String[][] roleQueryResult = imcref.getDatabase().execute2dArrayProcedure( "RoleGetAllApartFromRole", new String[] {
                                                                                                                           curentRoleId
                                                                                                                   } );
 
@@ -336,11 +336,11 @@ public class AdminRoleBelongings extends Administrator {
     private void addUserToRole( String userId, String roleId, ImcmsServices imcref ) {
         // lets be certain that the update process works ( avoid error then row alredy exist )
         removeUserFromRole( userId, roleId, imcref );
-        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "AddUserRole", new String[] {userId, roleId} );
+        imcref.getDatabase().executeUpdateProcedure( "AddUserRole", new String[] {userId, roleId} );
     }
 
     private void removeUserFromRole( String userId, String roleId, ImcmsServices imcref ) {
-        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "RemoveUserFromRole", new String[] {userId,
+        imcref.getDatabase().executeUpdateProcedure( "RemoveUserFromRole", new String[] {userId,
                                                                                         roleId} );
     }
 
@@ -380,6 +380,6 @@ public class AdminRoleBelongings extends Administrator {
     private void setUsersActive( String userId, String state, ImcmsServices imcref ) {
 
         String sqlD = "ChangeUserActiveStatus";
-        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( sqlD, new String[] {userId, state} );
+        imcref.getDatabase().executeUpdateProcedure( sqlD, new String[] {userId, state} );
     }
 }

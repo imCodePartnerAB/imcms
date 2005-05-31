@@ -103,7 +103,7 @@ public class ImcmsSetupFilter implements Filter {
         sqlStr += "and ip_accesses.ip_end >= ?\n";
         sqlStr += "order by ip_access_id desc";
 
-        String user_data[] = imcref.getExceptionUnhandlingDatabase().executeArrayQuery( sqlStr, new String[]{"" + ip, "" + ip} );
+        String user_data[] = imcref.getDatabase().executeArrayQuery( sqlStr, new String[]{"" + ip, "" + ip} );
 
         if ( user_data.length > 0 ) {
             user = imcref.verifyUser( user_data[0], user_data[1] );

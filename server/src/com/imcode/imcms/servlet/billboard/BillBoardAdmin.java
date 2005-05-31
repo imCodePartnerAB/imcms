@@ -136,14 +136,14 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             newLibName = super.verifySqlText( newLibName );
 
             // Lets check if we already have a templateset with that name
-            String libNameExists = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_FindTemplateLib", new String[] {newLibName} );
+            String libNameExists = imcref.getDatabase().executeStringProcedure( "B_FindTemplateLib", new String[] {newLibName} );
             if ( !libNameExists.equalsIgnoreCase( "-1" ) ) {
                 String header = "BillBoardAdmin servlet. ";
                 new BillBoardError( req, res, header, 84, user.getLanguageIso639_2(), user );
                 return;
             }
 
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_AddTemplateLib", new String[] {newLibName} );
+            imcref.getDatabase().executeUpdateProcedure( "B_AddTemplateLib", new String[] {newLibName} );
 
             // Lets copy the original folders to the new foldernames
             int metaId = getMetaId( req );
@@ -188,14 +188,14 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
             // Lets find the selected template in the database and get its id
             // if not found, -1 will be returned
-            String templateId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetTemplateIdFromName", new String[] {newLibName} );
+            String templateId = imcref.getDatabase().executeStringProcedure( "B_GetTemplateIdFromName", new String[] {newLibName} );
             if ( templateId.equalsIgnoreCase( "-1" ) ) {
                 String header = "BillBoardAdmin servlet. ";
                 new BillBoardError( req, res, header, 81, user.getLanguageIso639_2(), user );
                 return;
             }
             // Ok, lets update the conference with this new templateset.
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_SetTemplateLib", new String[] {params.getProperty( "META_ID" ),
+            imcref.getDatabase().executeUpdateProcedure( "B_SetTemplateLib", new String[] {params.getProperty( "META_ID" ),
                                                                                             newLibName} );
 
             res.sendRedirect( "BillBoardAdmin?ADMIN_TYPE=META" );
@@ -211,14 +211,14 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             // Lets delete all marked replies. Observe that the first one wont be deleted!
             // if the user wants to delete the first one then he has to delete the discussion
             if ( repliesId != null ) {
-                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_DeleteBill", new String[] {repliesId} );
+                imcref.getDatabase().executeUpdateProcedure( "B_DeleteBill", new String[] {repliesId} );
             }
 
             //***
             HttpSession session = req.getSession( false );
             String aSectionId = (String)session.getAttribute( "BillBoard.section_id" );
 
-            String aDiscId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetLastDiscussionId", new String[] {params.getProperty( "META_ID" ),
+            String aDiscId = imcref.getDatabase().executeStringProcedure( "B_GetLastDiscussionId", new String[] {params.getProperty( "META_ID" ),
                                                                                                              aSectionId} );
 
             session.setAttribute( "BillBoard.disc_id", aDiscId );
@@ -262,7 +262,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
                 newHeader = super.verifySqlText( newHeader );
                 newText = super.verifySqlText( newText );
 
-                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_UpdateBill", new String[] {updateId,
+                imcref.getDatabase().executeUpdateProcedure( "B_UpdateBill", new String[] {updateId,
                                                                                                 newHeader, newText,
                                                                                                 newEmail} );
             }
@@ -280,7 +280,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             if ( discIds != null ) {
 
                 for ( int i = 0; i < discIds.length; i++ ) {
-                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_DeleteBill", new String[] {discIds[i]} );
+                    imcref.getDatabase().executeUpdateProcedure( "B_DeleteBill", new String[] {discIds[i]} );
                 }
             }
             res.sendRedirect( "BillBoardAdmin?ADMIN_TYPE=DISCUSSION" );
@@ -307,14 +307,14 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
             //Lets move all the bills to the section admin wants
             for ( int i = 0; i < discIds.length; i++ ) {
-                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_ChangeSection", new String[] {discIds[i]
+                imcref.getDatabase().executeUpdateProcedure( "B_ChangeSection", new String[] {discIds[i]
                                                                                                                  + ", "
                                                                                                                  + moveToId} );
             }
 
             //Lets update the session in case we moved the shown bill
             HttpSession session = req.getSession( false );
-            String aDiscId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetLastDiscussionId", new String[] {params.getProperty( "META_ID" ),
+            String aDiscId = imcref.getDatabase().executeStringProcedure( "B_GetLastDiscussionId", new String[] {params.getProperty( "META_ID" ),
                                                                                                              aSectionId} );
             session.setAttribute( "BillBoard.disc_id", aDiscId );
 
@@ -336,14 +336,14 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
             //Lets move all the bills to the section admin wants
 
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_ChangeSection", new String[] {repliesId,
+            imcref.getDatabase().executeUpdateProcedure( "B_ChangeSection", new String[] {repliesId,
                                                                                             moveToId} );
 
 
             //Lets update the session in case we moved the shown bill
             HttpSession session = req.getSession( false );
             String sqlStr = "B_GetLastDiscussionId";
-            String aDiscId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( sqlStr, new String[] {params.getProperty( "META_ID" ),
+            String aDiscId = imcref.getDatabase().executeStringProcedure( sqlStr, new String[] {params.getProperty( "META_ID" ),
                                                                                                              aSectionId} );
             session.setAttribute( "BillBoard.disc_id", aDiscId );
 
@@ -363,18 +363,18 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
             // Lets get all discussions for that setion and delete those before deleting the section
             // B_GetAllBillsInSection @aSectionId int
-            String[] discs = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "B_GetAllBillsInSection", new String[] {aSectionId} );
+            String[] discs = imcref.getDatabase().executeArrayProcedure( "B_GetAllBillsInSection", new String[] {aSectionId} );
             if ( discs != null ) {
                 for ( int i = 0; i < discs.length; i++ ) {
-                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_DeleteBill", new String[] {discs[i]} );
+                    imcref.getDatabase().executeUpdateProcedure( "B_DeleteBill", new String[] {discs[i]} );
                 }
             }
 
             // B_DeleteSection @aSectionId int
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_DeleteSection", new String[] {params.getProperty( "SECTION_ID" )} );
+            imcref.getDatabase().executeUpdateProcedure( "B_DeleteSection", new String[] {params.getProperty( "SECTION_ID" )} );
 
             //ok lets update the session incase we deleted the current one
-            String first = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetFirstSection", new String[] {params.getProperty( "META_ID" )} );
+            String first = imcref.getDatabase().executeStringProcedure( "B_GetFirstSection", new String[] {params.getProperty( "META_ID" )} );
             HttpSession session = req.getSession( false );
             session.setAttribute( "BillBoard.section_id", first );
 
@@ -391,7 +391,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
             // Lets check if a forum with that name exists
 
-            String foundIt = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_FindSectionName", new String[] {params.getProperty( "META_ID" ),
+            String foundIt = imcref.getDatabase().executeStringProcedure( "B_FindSectionName", new String[] {params.getProperty( "META_ID" ),
                                                                                                              params.getProperty( "NEW_SECTION_NAME" )} );
 
             if ( !foundIt.equalsIgnoreCase( "-1" ) ) {
@@ -403,7 +403,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             final String archiveMode = "A";
             final String discussionsToShow = "30";
             final String daysToShow = "14";
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_AddNewSection", new String[] {params.getProperty( "META_ID" ),
+            imcref.getDatabase().executeUpdateProcedure( "B_AddNewSection", new String[] {params.getProperty( "META_ID" ),
                                                                                             params.getProperty( "NEW_SECTION_NAME" ),
                                                                                             archiveMode,
                                                                                             discussionsToShow,
@@ -422,7 +422,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
             // Lets check if a forum with that name exists
 
-            String foundIt = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_FindSectionName", new String[] {params.getProperty( "META_ID" ),
+            String foundIt = imcref.getDatabase().executeStringProcedure( "B_FindSectionName", new String[] {params.getProperty( "META_ID" ),
                                                                                                              params.getProperty( "NEW_SECTION_NAME" )} );
 
             if ( !foundIt.equalsIgnoreCase( "-1" ) ) {
@@ -431,7 +431,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
                 return;
             }
 
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_RenameSection", new String[] {params.getProperty( "SECTION_ID" ),
+            imcref.getDatabase().executeUpdateProcedure( "B_RenameSection", new String[] {params.getProperty( "SECTION_ID" ),
                                                                                             params.getProperty( "NEW_SECTION_NAME" )} );
             this.doGet( req, res );
             return;
@@ -448,7 +448,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
             String sqlSubjAddQ = "B_SetNewSubjectString";
 
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( sqlSubjAddQ, new String[] {meta_id,
+            imcref.getDatabase().executeUpdateProcedure( sqlSubjAddQ, new String[] {meta_id,
                                                                                             new_subject} );
             res.sendRedirect( "BillBoardAdmin?ADMIN_TYPE=SECTION" );
             return;
@@ -459,7 +459,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             // Lets get addForum parameters
             params = this.getShowDiscussionNbrParameters( req, params );
 
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_SetNbrOfDiscsToShow", new String[] {params.getProperty( "SECTION_ID" ),
+            imcref.getDatabase().executeUpdateProcedure( "B_SetNbrOfDiscsToShow", new String[] {params.getProperty( "SECTION_ID" ),
                                                                                             params.getProperty( "NBR_OF_DISCS_TO_SHOW" )} );
             res.sendRedirect( "BillBoardAdmin?ADMIN_TYPE=SECTION" );
             return;
@@ -469,7 +469,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             // Lets get addForum parameters
             params = this.getShowDiscussionDaysParameters( req, params );
 
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "B_SetNbrOfDaysToShow", new String[] {params.getProperty( "SECTION_ID" ),
+            imcref.getDatabase().executeUpdateProcedure( "B_SetNbrOfDaysToShow", new String[] {params.getProperty( "SECTION_ID" ),
                                                                                             params.getProperty( "NBR_OF_DAYS_TO_SHOW" )} );
             res.sendRedirect( "BillBoardAdmin?ADMIN_TYPE=SECTION" );
             return;
@@ -549,10 +549,10 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             } else {
 
                 // Lets get the current template set for this metaid
-                String currTemplateSet = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetTemplateLib", new String[] {params.getProperty( "META_ID" )} );
+                String currTemplateSet = imcref.getDatabase().executeStringProcedure( "B_GetTemplateLib", new String[] {params.getProperty( "META_ID" )} );
 
                 // Lets get all current template sets
-                String[] sqlAnswer = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "B_GetAllTemplateLibs", new String[] {} );
+                String[] sqlAnswer = imcref.getDatabase().executeArrayProcedure( "B_GetAllTemplateLibs", new String[] {} );
                 Vector templateV = super.convert2Vector( sqlAnswer );
 
                 // Lets fill the select box	with forums
@@ -573,17 +573,17 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
         if ( adminWhat.equalsIgnoreCase( "SECTION" ) ) {//FORUM
 
             // Lets get the information from DB
-            String[] sqlAnswer = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "B_GetAllSection", new String[] {params.getProperty( "META_ID" )} );
+            String[] sqlAnswer = imcref.getDatabase().executeArrayProcedure( "B_GetAllSection", new String[] {params.getProperty( "META_ID" )} );
             Vector sectionV = super.convert2Vector( sqlAnswer );
 
             // Lets fill the select box with forums
             String forumList = Html.createOptionList( sectionV, "" );
 
             //lets get all the daysnumber values
-            String[] sqlAllDays = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "B_GetAllNbrOfDaysToShow", new String[] {params.getProperty( "META_ID" )} );
+            String[] sqlAllDays = imcref.getDatabase().executeArrayProcedure( "B_GetAllNbrOfDaysToShow", new String[] {params.getProperty( "META_ID" )} );
 
             //lets get the startstring of the mail subject
-            String subject_name = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetStartSubjectString", new String[] {params.getProperty( "META_ID" )} );
+            String subject_name = imcref.getDatabase().executeStringProcedure( "B_GetStartSubjectString", new String[] {params.getProperty( "META_ID" )} );
             if ( subject_name == null ) subject_name = "";
 
             Vector sqlAllDaysV = new Vector();
@@ -593,7 +593,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             String daysToShowList = Html.createOptionList( sqlAllDaysV, "" );
 
             // Lets get all the showDiscs values
-            String[] sqlAllDiscs = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "B_GetAllNbrOfDiscsToShow", new String[] {params.getProperty( "META_ID" )} );
+            String[] sqlAllDiscs = imcref.getDatabase().executeArrayProcedure( "B_GetAllNbrOfDiscsToShow", new String[] {params.getProperty( "META_ID" )} );
 
             Vector sqlAllDiscsV = new Vector();
             if ( sqlAllDiscs != null ) {
@@ -627,11 +627,11 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
             // Lets get all New Discussions
 
-            String[][] sqlAnswerNew = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "B_GetAllBillsToShow", new String[] {aMetaId,
+            String[][] sqlAnswerNew = imcref.getDatabase().execute2dArrayProcedure( "B_GetAllBillsToShow", new String[] {aMetaId,
                                                                                                                        aSectionId} );
 
             //lets get all the sections and the code for the selectlist
-            String[] sqlSections = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "B_GetAllSection", new String[] {aMetaId} );
+            String[] sqlSections = imcref.getDatabase().executeArrayProcedure( "B_GetAllSection", new String[] {aMetaId} );
             Vector sectionV = super.convert2Vector( sqlSections );
             String sectionListStr = Html.createOptionList( sectionV, aSectionId );
 
@@ -668,11 +668,11 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
             // Lets get all New Discussions
 
-            String[][] sqlAnswerNew = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "B_GetAllOldBills", new String[] {aMetaId,
+            String[][] sqlAnswerNew = imcref.getDatabase().execute2dArrayProcedure( "B_GetAllOldBills", new String[] {aMetaId,
                                                                                                                        aSectionId} );
 
             //lets get all the sections and the code for the selectlist
-            String[] sqlSections = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "B_GetAllSection", new String[] {aMetaId} );
+            String[] sqlSections = imcref.getDatabase().executeArrayProcedure( "B_GetAllSection", new String[] {aMetaId} );
             Vector sectionV = super.convert2Vector( sqlSections );
             String sectionListStr = Html.createOptionList( sectionV, aSectionId );
 
@@ -707,7 +707,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             // Lets get the replylist from DB
             String discId = params.getProperty( "DISC_ID" );
 
-            String[][] sqlAnswer = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "B_GetAdminBill", new String[] {discId} );//GetAllRepliesInDiscAdmin
+            String[][] sqlAnswer = imcref.getDatabase().execute2dArrayProcedure( "B_GetAdminBill", new String[] {discId} );//GetAllRepliesInDiscAdmin
 
             // SYNTAX: date  first_name  last_name  headline   text reply_level
             // Lets build our variable list
@@ -727,7 +727,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             File aSnippetFile = new File( templateLib, adminReplyList );
 
             //lets get all the sections and the code for the selectlist
-            String[] sqlSections = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "B_GetAllSection", new String[] {params.getProperty( "META_ID" )} );
+            String[] sqlSections = imcref.getDatabase().executeArrayProcedure( "B_GetAllSection", new String[] {params.getProperty( "META_ID" )} );
             Vector sectionV = super.convert2Vector( sqlSections );
             String sectionListStr = Html.createOptionList( sectionV, params.getProperty( "SECTION_ID" ) );
 

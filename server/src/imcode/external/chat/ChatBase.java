@@ -77,11 +77,11 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
         ImcmsServices imcref = Imcms.getServices() ;
         //lets get the standard stuff
-        Vector msgTypes = convert2Vector( imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "C_GetTheMsgTypesBase", new String[0] ) );
-        Vector autTypes = convert2Vector( imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "C_GetAuthorizationTypes", new String[0] ) );
+        Vector msgTypes = convert2Vector( imcref.getDatabase().execute2dArrayProcedure( "C_GetTheMsgTypesBase", new String[0] ) );
+        Vector autTypes = convert2Vector( imcref.getDatabase().execute2dArrayProcedure( "C_GetAuthorizationTypes", new String[0] ) );
         Chat myChat = new Chat( metaId, autTypes, msgTypes );
 
-        String[] selAuto = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "C_GetChatAutoTypes", new String[] {""
+        String[] selAuto = imcref.getDatabase().executeArrayProcedure( "C_GetChatAutoTypes", new String[] {""
                                                                                                                               + metaId} );
         if ( selAuto == null ) {
             selAuto = new String[1];
@@ -92,7 +92,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         }
         myChat.setSelectedAuto( selAuto );
 
-        String[][] messages = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "C_GetMsgTypes", new String[] {""
+        String[][] messages = imcref.getDatabase().execute2dArrayProcedure( "C_GetMsgTypes", new String[] {""
                                                                                                                               + metaId} );
         if ( messages != null ) {
             if ( messages.length > 0 ) {
@@ -102,7 +102,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
 
         //updateTime,reload,inOut,privat,publik,dateTime,font
-        String[] params = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "C_GetChatParameters ", new String[] {""
+        String[] params = imcref.getDatabase().executeArrayProcedure( "C_GetChatParameters ", new String[] {""
                                                                                                                                + metaId} );
         if ( params != null ) {
             if ( params.length == 7 ) {
@@ -248,7 +248,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
      */
     //peter uses this
     protected static String getTemplateSetDirectoryName( int meta_id ) {
-        String libName = Imcms.getServices().getExceptionUnhandlingDatabase().executeStringProcedure( "C_GetTemplateLib", new String[] {""
+        String libName = Imcms.getServices().getDatabase().executeStringProcedure( "C_GetTemplateLib", new String[] {""
                                                                                                                                         + meta_id} );
         if ( libName == null ) {
             libName = "original";

@@ -118,7 +118,7 @@ public class SendMailServlet extends HttpServlet {
         //ok lets see if its a shop-mail or not
         if ( param != null ) {//its a shop-mail so lets get the mailTo adress from texts100
             String sql = "Select text from texts where name = 100 and meta_id = ?";
-            mailTo = imcref.getExceptionUnhandlingDatabase().executeStringQuery( sql, new String[]{metaId} );
+            mailTo = imcref.getDatabase().executeStringQuery( sql, new String[]{metaId} );
             mailTextV.add( "#mailTo#" );
             mailTextV.add( mailTo );
             mailTextV.add( "#mailFrom#" );
@@ -129,7 +129,7 @@ public class SendMailServlet extends HttpServlet {
             if ( mailSubject != null ) {
                 //its a mail to the system
                 String sql = "Select text from texts \n where name = 100 \n and meta_id = ?";
-                mailTo = imcref.getExceptionUnhandlingDatabase().executeStringQuery( sql, new String[]{metaId} );
+                mailTo = imcref.getDatabase().executeStringQuery( sql, new String[]{metaId} );
                 mailTextV.add( "#mailTo#" );
                 mailTextV.add( mailTo );
                 mailTextV.add( "#mailFrom#" );

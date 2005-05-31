@@ -168,7 +168,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private Date getSessionCounterDateFromDb() {
         try {
             DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
-            return dateFormat.parse( this.getExceptionUnhandlingDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 2", new String[0] ) );
+            return dateFormat.parse( getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 2", new String[0] ) );
         } catch ( ParseException ex ) {
             log.fatal( "Failed to get SessionCounterDate from db.", ex );
             throw new UnhandledException( ex );
@@ -176,7 +176,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private int getSessionCounterFromDb() {
-        return Integer.parseInt( this.getExceptionUnhandlingDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 1", new String[0] ) );
+        return Integer.parseInt( getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 1", new String[0] ) );
     }
 
     private void initDocumentMapper() {
@@ -259,8 +259,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public synchronized void incrementSessionCounter() {
         sessionCounter++ ;
-        this.getExceptionUnhandlingDatabase().executeUpdateQuery( "UPDATE sys_data SET value = ? WHERE type_id = 1", new String[] {""
-                                                                                                                                   + sessionCounter} );
+        getDatabase().executeUpdateQuery( "UPDATE sys_data SET value = ? WHERE type_id = 1", new String[] {""
+                                                                                                           + sessionCounter} );
     }
 
     private UserAndRoleRegistry initExternalUserAndRoleMapper( String externalUserAndRoleMapperName,
@@ -338,7 +338,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         String htmlStr = null;
         if ( DocumentTypeDomainObject.HTML_ID == getDocType( meta_id ) ) {
             String sqlStr = "select frame_set from frameset_docs where meta_id = ?";
-            htmlStr = this.getExceptionUnhandlingDatabase().executeStringQuery( sqlStr, new String[] {"" + meta_id} );
+            htmlStr = getDatabase().executeStringQuery( sqlStr, new String[] {"" + meta_id} );
         }
         return htmlStr;
 
@@ -464,10 +464,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return config;
     }
 
-    public imcode.server.db.Database getExceptionUnhandlingDatabase() {
-        return getDatabase();
-    }
-
     public Clock getClock() {
         return this;
     }
@@ -518,8 +514,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public String getLanguagePrefixByLangId( int lang_id ) {
-        String lang_prefix = this.getExceptionUnhandlingDatabase().executeStringProcedure( "GetLangPrefixFromId", new String[] {""
-                                                                                                                                + lang_id} );
+        String lang_prefix = getDatabase().executeStringProcedure( "GetLangPrefixFromId", new String[] {""
+                                                                                                        + lang_id} );
         return lang_prefix;
     }
 
@@ -542,8 +538,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void setSessionCounterInDb( int value ) {
-        this.getExceptionUnhandlingDatabase().executeUpdateProcedure( "SetSessionCounterValue", new String[] {""
-                                                                                                              + value} );
+        getDatabase().executeUpdateProcedure( "SetSessionCounterValue", new String[] {""
+                                                                                      + value} );
     }
 
     /**
@@ -556,7 +552,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private void setSessionCounterDateInDb( Date date ) {
         DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
-        this.getExceptionUnhandlingDatabase().executeUpdateProcedure( "SetSessionCounterDate", new String[] {dateFormat.format( date )} );
+        getDatabase().executeUpdateProcedure( "SetSessionCounterDate", new String[] {dateFormat.format( date )} );
     }
 
     /**
@@ -589,15 +585,15 @@ final public class DefaultImcmsServices implements ImcmsServices {
         String sqlStr;
         // check if template exists
         sqlStr = "select template_id from templates where simple_name = ?";
-        String templateId = this.getExceptionUnhandlingDatabase().executeStringQuery( sqlStr, new String[] {name} );
+        String templateId = getDatabase().executeStringQuery( sqlStr, new String[] {name} );
         if ( null == templateId ) {
 
             // get new template_id
             sqlStr = "select max(template_id) + 1 from templates\n";
-            templateId = this.getExceptionUnhandlingDatabase().executeStringQuery( sqlStr, new String[0] );
+            templateId = getDatabase().executeStringQuery( sqlStr, new String[0] );
 
             sqlStr = "insert into templates values (?,?,?,?,0,0,0)";
-            this.getExceptionUnhandlingDatabase().executeUpdateQuery( sqlStr, new String[] {templateId, file_name, name,
+            getDatabase().executeUpdateQuery( sqlStr, new String[] {templateId, file_name, name,
                                                                                       lang_prefix} );
         } else { //update
             if ( !overwrite ) {
@@ -605,7 +601,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             }
 
             sqlStr = "update templates set template_name = ? where template_id = ?";
-            this.getExceptionUnhandlingDatabase().executeUpdateQuery( sqlStr, new String[] {file_name, templateId} );
+            getDatabase().executeUpdateQuery( sqlStr, new String[] {file_name, templateId} );
         }
 
         File f = new File( config.getTemplatePath(), "text/" + templateId + ".html" );
@@ -749,22 +745,22 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
         SystemData sd = new SystemData();
 
-        String startDocument = this.getExceptionUnhandlingDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE sys_id = 0", new String[0] );
+        String startDocument = getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE sys_id = 0", new String[0] );
         sd.setStartDocument( startDocument == null ? DEFAULT_STARTDOCUMENT : Integer.parseInt( startDocument ) );
 
-        String systemMessage = this.getExceptionUnhandlingDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 3", new String[0] );
+        String systemMessage = getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 3", new String[0] );
         sd.setSystemMessage( systemMessage );
 
-        String serverMasterName = this.getExceptionUnhandlingDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 4", new String[0] );
+        String serverMasterName = getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 4", new String[0] );
         sd.setServerMaster( serverMasterName );
 
-        String serverMasterAddress = this.getExceptionUnhandlingDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 5", new String[0] );
+        String serverMasterAddress = getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 5", new String[0] );
         sd.setServerMasterAddress( serverMasterAddress );
 
-        String webMasterName = this.getExceptionUnhandlingDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 6", new String[0] );
+        String webMasterName = getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 6", new String[0] );
         sd.setWebMaster( webMasterName );
 
-        String webMasterAddress = this.getExceptionUnhandlingDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 7", new String[0] );
+        String webMasterAddress = getDatabase().executeStringQuery( "SELECT value FROM sys_data WHERE type_id = 7", new String[0] );
         sd.setWebMasterAddress( webMasterAddress );
 
         return sd;
@@ -778,16 +774,16 @@ final public class DefaultImcmsServices implements ImcmsServices {
         String[] sqlParams;
 
         sqlParams = new String[]{"" + sd.getStartDocument()};
-        this.getExceptionUnhandlingDatabase().executeUpdateProcedure( "StartDocSet", sqlParams );
+        getDatabase().executeUpdateProcedure( "StartDocSet", sqlParams );
 
         sqlParams = new String[]{sd.getWebMaster(), sd.getWebMasterAddress()};
-        this.getExceptionUnhandlingDatabase().executeUpdateProcedure( "WebMasterSet", sqlParams );
+        getDatabase().executeUpdateProcedure( "WebMasterSet", sqlParams );
 
         sqlParams = new String[]{sd.getServerMaster(), sd.getServerMasterAddress()};
-        this.getExceptionUnhandlingDatabase().executeUpdateProcedure( "ServerMasterSet", sqlParams );
+        getDatabase().executeUpdateProcedure( "ServerMasterSet", sqlParams );
 
         sqlParams = new String[]{sd.getSystemMessage()};
-        this.getExceptionUnhandlingDatabase().executeUpdateProcedure( "SystemMessageSet", sqlParams );
+        getDatabase().executeUpdateProcedure( "SystemMessageSet", sqlParams );
 
         /* Update the local copy last, so we stay aware of any database errors */
         this.sysData = sd;
@@ -799,7 +795,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     public void setUserFlag( UserDomainObject user, String flagName ) {
         int userId = user.getId();
 
-        this.getExceptionUnhandlingDatabase().executeUpdateProcedure( "SetUserFlag", new String[] {"" + userId,
+        getDatabase().executeUpdateProcedure( "SetUserFlag", new String[] {"" + userId,
                                                                                       flagName} );
     }
 
@@ -808,7 +804,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * the array consists of pairs of id:, value. Suitable for parsing into select boxes etc.
      */
     public String[][] getAllDocumentTypes( String langPrefixStr ) {
-        return this.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "GetDocTypes", new String[] {langPrefixStr} );
+        return getDatabase().execute2dArrayProcedure( "GetDocTypes", new String[] {langPrefixStr} );
     }
 
     /**
@@ -817,7 +813,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     public void unsetUserFlag( UserDomainObject user, String flagName ) {
         int userId = user.getId();
 
-        this.getExceptionUnhandlingDatabase().executeUpdateProcedure( "UnsetUserFlag", new String[] {"" + userId,
+        getDatabase().executeUpdateProcedure( "UnsetUserFlag", new String[] {"" + userId,
                                                                                       flagName} );
     }
 
@@ -907,7 +903,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * Get all possible userflags
      */
     public Map getUserFlags() {
-        String[] dbData = this.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetUserFlags", new String[0] );
+        String[] dbData = getDatabase().executeArrayProcedure( "GetUserFlags", new String[0] );
 
         return getUserFlags( dbData );
     }
@@ -917,7 +913,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      */
     public Map getUserFlags( UserDomainObject user ) {
         int userId = user.getId();
-        String[] dbData = this.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetUserFlagsForUser", new String[] {String.valueOf( userId )} );
+        String[] dbData = getDatabase().executeArrayProcedure( "GetUserFlagsForUser", new String[] {String.valueOf( userId )} );
 
         return getUserFlags( dbData );
     }
@@ -926,7 +922,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * Get all userflags of a single type
      */
     public Map getUserFlags( int type ) {
-        String[] dbData = this.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetUserFlagsOfType", new String[] {String.valueOf( type )} );
+        String[] dbData = getDatabase().executeArrayProcedure( "GetUserFlagsOfType", new String[] {String.valueOf( type )} );
 
         return getUserFlags( dbData );
     }
@@ -936,7 +932,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      */
     public Map getUserFlags( UserDomainObject user, int type ) {
         int userId = user.getId();
-        String[] dbData = this.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetUserFlagsForUserOfType", new String[] {String.valueOf( userId ),
+        String[] dbData = getDatabase().executeArrayProcedure( "GetUserFlagsForUserOfType", new String[] {String.valueOf( userId ),
                                                                                                        String.valueOf( type )} );
 
         return getUserFlags( dbData );

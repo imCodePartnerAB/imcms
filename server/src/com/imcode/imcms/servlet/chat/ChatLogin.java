@@ -188,7 +188,7 @@ public class ChatLogin extends ChatBase {
             String password = lparams.getProperty( "PASSWORD" );
 
             // Validate loginparams against DB
-            String userId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "GetUserIdFromName", new String[] {userName,
+            String userId = imcref.getDatabase().executeStringProcedure( "GetUserIdFromName", new String[] {userName,
                                                                                                             password} );
             //log("Användarens id var: " + userId) ;
 

@@ -22,7 +22,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
     public ShoppingOrder getShoppingOrderForUserById(UserDomainObject user, int orderId) {
 	int userId = user.getId() ;
 
-	String[] dbData = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "Shop_GetShoppingOrderForUserById", new String[] {String.valueOf( userId ),
+	String[] dbData = imcref.getDatabase().executeArrayProcedure( "Shop_GetShoppingOrderForUserById", new String[] {String.valueOf( userId ),
                                                                                                      String.valueOf( orderId )} );
 
         return getShoppingOrderFromDbData(dbData) ;
@@ -31,7 +31,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
     /** Retrieve a List of all ShoppingOrders for a User, sorted by datetime. **/
     public List getShoppingOrdersForUser(UserDomainObject user) {
 	int userId = user.getId() ;
-	String[][] dbData = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "Shop_GetShoppingOrdersForUser", new String[] {String.valueOf( userId )} );
+	String[][] dbData = imcref.getDatabase().execute2dArrayProcedure( "Shop_GetShoppingOrdersForUser", new String[] {String.valueOf( userId )} );
 
         List theList = new ArrayList(dbData.length) ;
 	for (int i = 0; i < dbData.length; ++i) {
@@ -68,7 +68,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
     }
 
     private void addShoppingItemsToOrder(ShoppingOrder theOrder) {
-	String[][] dbData = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "Shop_GetShoppingItemsForOrder", new String[] {String.valueOf( theOrder.getId() )} );
+	String[][] dbData = imcref.getDatabase().execute2dArrayProcedure( "Shop_GetShoppingItemsForOrder", new String[] {String.valueOf( theOrder.getId() )} );
 
         for ( int i = 0; i < dbData.length; ++i) {
 	    ShoppingItem item = new ShoppingItem() ;
@@ -85,7 +85,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
     }
 
     private Map getDescriptionsForShoppingItem(int itemId) {
-	String[][] dbData = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "Shop_GetDescriptionsForShoppingItem", new String[] {String.valueOf( itemId )} );
+	String[][] dbData = imcref.getDatabase().execute2dArrayProcedure( "Shop_GetDescriptionsForShoppingItem", new String[] {String.valueOf( itemId )} );
 
         Map theDescriptions = new HashMap() ;
 	for (int i = 0; i < dbData.length; ++i) {
@@ -110,7 +110,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
 
 	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
 
-	String orderIdStr = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "Shop_AddShoppingOrder", new String[] {""
+	String orderIdStr = imcref.getDatabase().executeStringProcedure( "Shop_AddShoppingOrder", new String[] {""
                                                                                                                                + theOrder.getUser().getId(),
                                                                                                         dateFormat.format( theOrder.getDatetime() )} );
 
@@ -120,7 +120,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
     private void addShoppingItemsToOrderInDb(String orderIdStr, ShoppingOrder order, ShoppingItem[] items) {
 	for (int i = 0; i < items.length; ++i) {
 	    ShoppingItem item = items[i] ;
-	    String itemIdStr = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "Shop_AddShoppingItemToOrder", new String[] {orderIdStr,
+	    String itemIdStr = imcref.getDatabase().executeStringProcedure( "Shop_AddShoppingItemToOrder", new String[] {orderIdStr,
                                                                                                    "" + item.getPrice(),
                                                                                                    ""
                                                                                                    + order.countItem( item )} );
@@ -133,7 +133,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
 	    Map.Entry entry = (Map.Entry)it.next() ;
 	    Integer descriptionNumber = (Integer) entry.getKey() ;
 	    String  description = (String) entry.getValue() ;
-        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "Shop_AddShoppingItemDescription", new String[] {itemIdStr,
+        imcref.getDatabase().executeUpdateProcedure( "Shop_AddShoppingItemDescription", new String[] {itemIdStr,
                                                                                 "" + descriptionNumber, description} );
 	}
     }

@@ -132,7 +132,7 @@ public class Conference extends HttpServlet {
      * Returns the foldername where the templates are situated for a certain metaid.
      */
     private String getTemplateLibName( int meta_id ) {
-        String libName = Imcms.getServices().getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetTemplateLib", new String[] {""
+        String libName = Imcms.getServices().getDatabase().executeStringProcedure( "A_GetTemplateLib", new String[] {""
                                                                                                                                         + meta_id} );
         if ( libName == null ) {
             libName = "original";
@@ -216,7 +216,7 @@ public class Conference extends HttpServlet {
 
         // Ok, Lets prepare the user for the conference.
         // Lets get his lastLoginDate and update it to today
-        String lastLoginDate = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetLastLoginDate2", new String[] {metaId,
+        String lastLoginDate = imcref.getDatabase().executeStringProcedure( "A_GetLastLoginDate2", new String[] {metaId,
                                                                                                        ""
                                                                                                        + user.getId()} );
 
@@ -228,7 +228,7 @@ public class Conference extends HttpServlet {
         }
 
         // Lets update his logindate and usernames
-        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "A_ConfUsersUpdate", new String[] {metaId,
+        imcref.getDatabase().executeUpdateProcedure( "A_ConfUsersUpdate", new String[] {metaId,
                                                                                 "" + user.getId(),
                                                                                 "" + user.getFirstName(),
                                                                                 "" + user.getLastName()} );
@@ -244,12 +244,12 @@ public class Conference extends HttpServlet {
 
             // Ok, we need to catch a forum_id. Lets get the first one for this meta_id.
             // if not a forumid exists, the sp will return -1
-            String aForumId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetFirstForum", new String[] {""
+            String aForumId = imcref.getDatabase().executeStringProcedure( "A_GetFirstForum", new String[] {""
                                                                                                                                + params.getMetaId()} );
             session.setAttribute( "Conference.forum_id", aForumId );
 
             // Ok, Lets get the last discussion in that forum
-            String aDiscId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetLastDiscussionId", new String[] {""
+            String aDiscId = imcref.getDatabase().executeStringProcedure( "A_GetLastDiscussionId", new String[] {""
                                                                                                                                     + params.getMetaId(),
                                                                                                              aForumId} );
 
@@ -483,7 +483,7 @@ public class Conference extends HttpServlet {
     /** verify that the user is a member of a conference
     */
     boolean userIsMemberOfConference(int metaId, int userId, ImcmsServices imcref){
-        String foundId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_MemberInConf", new String[] {
+        String foundId = imcref.getDatabase().executeStringProcedure( "A_MemberInConf", new String[] {
                                                                                                  "" + metaId,
                                                                                                  "" + userId} );
         if((""+userId).equals(foundId)){
@@ -506,7 +506,7 @@ public class Conference extends HttpServlet {
                 // Lets check that the role id is still valid to use against
                 // the host system
                 if ( user.hasRoleWithPermission(RoleDomainObject.CONFERENCE_REGISTRATION_PERMISSION) ) {
-                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "AddUserRole", new String[] {user.getId()
+                    imcref.getDatabase().executeUpdateProcedure( "AddUserRole", new String[] {user.getId()
                                                                                                                  + "",
                                                                                                     aRoleId} );
                 }
@@ -515,14 +515,14 @@ public class Conference extends HttpServlet {
     }
 
     void addUserToOneConference(UserDomainObject user, String metaId, ImcmsServices imcref){
-        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "A_ConfUsersAdd", new String[] {user.getId()
+        imcref.getDatabase().executeUpdateProcedure( "A_ConfUsersAdd", new String[] {user.getId()
                                                                                                         + "", metaId,
                                                                                         user.getFirstName(),
                                                                                         user.getLastName()} );
     }
 
     String[] getAllSelfregRolesId(String metaId, ImcmsServices imcref) {
-        String[] selfRegRolesId = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "A_SelfRegRoles_GetAll2", new String[] {""
+        String[] selfRegRolesId = imcref.getDatabase().executeArrayProcedure( "A_SelfRegRoles_GetAll2", new String[] {""
                                                                                                                                          + metaId} );
         return selfRegRolesId;
     }

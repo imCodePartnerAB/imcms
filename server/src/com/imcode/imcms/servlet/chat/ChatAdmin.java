@@ -173,7 +173,7 @@ public class ChatAdmin extends Administrator {
             String htmlChatElement = imcref.getAdminTemplate( TEMPLATE_CONF_ELEMENT, user, null );
             String htmlForumElement = imcref.getAdminTemplate( TEMPLATE_FORUM_ELEMENT, user, null );
 
-            String[][] listOfChats = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "ListChats", new String[0] );
+            String[][] listOfChats = imcref.getDatabase().execute2dArrayProcedure( "ListChats", new String[0] );
 
             // lets create chatlist
             StringBuffer chatListTag = new StringBuffer();
@@ -185,7 +185,7 @@ public class ChatAdmin extends Administrator {
             for (int i = 0; i < listOfChats.length; i++) {
 
                 String metaId = listOfChats[i][0];
-                String[][] queryResultForum = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "C_AdminStatistics1", new String[] {metaId,
+                String[][] queryResultForum = imcref.getDatabase().execute2dArrayProcedure( "C_AdminStatistics1", new String[] {metaId,
                                                                                                                                startDate,
                                                                                                                                endDate,
                                                                                                                                listMode} );
@@ -196,7 +196,7 @@ public class ChatAdmin extends Administrator {
                 for (int j = 0; j < queryResultForum.length; j++) {
 
                     String forumId = queryResultForum[j][0];
-                    String[][] queryResultDebate = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "C_AdminStatistics2", new String[] {metaId,
+                    String[][] queryResultDebate = imcref.getDatabase().execute2dArrayProcedure( "C_AdminStatistics2", new String[] {metaId,
                                                                                                                                     forumId,
                                                                                                                                     startDate,
                                                                                                                                     endDate,

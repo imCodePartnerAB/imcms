@@ -21,7 +21,7 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 	public void savePollparameter(String text_type, int meta_id, int text_no, String textstring) {
 
 		// Get a poll by meta_id if it exist
-		String[] poll_param = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "Poll_GetOne ", new String[] {""
+		String[] poll_param = imcref.getDatabase().executeArrayProcedure( "Poll_GetOne ", new String[] {""
                                                                                                                            + meta_id} );
 
         /* Default values for new polls set by db roles
@@ -33,9 +33,9 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 		// if we not already have create a poll in db for this meta
 		// lets do it now and then get the new poll from db.
 		if ( poll_param == null || poll_param.length == 0 ) {
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "Poll_AddNew ", new String[] {""
+            imcref.getDatabase().executeUpdateProcedure( "Poll_AddNew ", new String[] {""
                                                                                                           + meta_id} );
-            poll_param = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "Poll_GetOne ", new String[] {""
+            poll_param = imcref.getDatabase().executeArrayProcedure( "Poll_GetOne ", new String[] {""
                                                                                                                       + meta_id} ) ;
 		}
 
@@ -47,14 +47,14 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 			int question_no = Integer.parseInt( text_type.substring( text_type.indexOf("-")+1 ) );
 
 			if ( question_no > 0 ) {
-				String[] sql_data = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "Poll_GetQuestion ", new String[] {""
+				String[] sql_data = imcref.getDatabase().executeArrayProcedure( "Poll_GetQuestion ", new String[] {""
                                                                                                                                       + poll_id,
                                                                                                            ""
                                                                                                            + question_no} );
 
                 // if we not already have create the question in db lets do it now.
 				if ( sql_data == null || sql_data.length == 0 || ("-1").equals(sql_data[3]) ){
-                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "Poll_AddQuestion ", new String[] {""
+                    imcref.getDatabase().executeUpdateProcedure( "Poll_AddQuestion ", new String[] {""
                                                                                                                        + poll_id,
                                                                                             "" + question_no,
                                                                                             "" + text_no} );
@@ -69,17 +69,17 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 
 			if ( question_no > 0 && option_no > 0 ) {
 
-				String[] sql_data = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "Poll_GetQuestion ", new String[] {""
+				String[] sql_data = imcref.getDatabase().executeArrayProcedure( "Poll_GetQuestion ", new String[] {""
                                                                                                                                       + poll_id,
                                                                                                            ""
                                                                                                            + question_no} );
 
                 // lets create a new question in db if the user don`t have create it before he create the answer.
 				if ( sql_data == null || sql_data.length == 0){
-                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "Poll_AddQuestion ", new String[] {""
+                    imcref.getDatabase().executeUpdateProcedure( "Poll_AddQuestion ", new String[] {""
                                                                                                                        + poll_id,
                                                                                             "" + question_no, "-1"} );
-                    sql_data = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "Poll_GetQuestion ", new String[] {""
+                    sql_data = imcref.getDatabase().executeArrayProcedure( "Poll_GetQuestion ", new String[] {""
                                                                                                                                  + poll_id,
                                                                                                       ""
                                                                                                       + question_no} );
@@ -88,14 +88,14 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 
 				if ( question_id > 0 ) {
 
-                    sql_data = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "Poll_GetAnswer ", new String[] {""
+                    sql_data = imcref.getDatabase().executeArrayProcedure( "Poll_GetAnswer ", new String[] {""
                                                                                                                                + question_id,
                                                                                                       ""
                                                                                                       + option_no} ) ;
 
 					// if we not already have create the answer in db lets do it now.
 					if ( sql_data == null || sql_data.length == 0 ){
-                        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "Poll_AddAnswer ", new String[] {""
+                        imcref.getDatabase().executeUpdateProcedure( "Poll_AddAnswer ", new String[] {""
                                                                                                                          + question_id,
                                                                                                 "" + text_no,
                                                                                                 "" + option_no} );
@@ -111,17 +111,17 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 
 			if ( question_no > 0 && option_no > 0 ) {
 
-				String[] sql_data = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "Poll_GetQuestion ", new String[] {""
+				String[] sql_data = imcref.getDatabase().executeArrayProcedure( "Poll_GetQuestion ", new String[] {""
                                                                                                                                       + poll_id,
                                                                                                            ""
                                                                                                            + question_no} );
 
                 // lets create a new question in db if the user don`t have create it before he create the answer-option.
 				if ( sql_data == null || sql_data.length == 0){
-                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "Poll_AddQuestion ", new String[] {""
+                    imcref.getDatabase().executeUpdateProcedure( "Poll_AddQuestion ", new String[] {""
                                                                                                                        + poll_id,
                                                                                             "" + question_no, "-1"} );
-                    sql_data = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "Poll_GetQuestion ", new String[] {""
+                    sql_data = imcref.getDatabase().executeArrayProcedure( "Poll_GetQuestion ", new String[] {""
                                                                                                                                  + poll_id,
                                                                                                       ""
                                                                                                       + question_no} );
@@ -130,14 +130,14 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 
 				if ( question_id > 0 ) {
 
-                    sql_data = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "Poll_GetAnswer ", new String[] {""
+                    sql_data = imcref.getDatabase().executeArrayProcedure( "Poll_GetAnswer ", new String[] {""
                                                                                                                                + question_id,
                                                                                                       ""
                                                                                                       + option_no} ) ;
 
 					// if we have an answer item in db lets set it´s answerpoint value
 					if ( sql_data != null && sql_data.length > 0 ){
-                        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "Poll_SetAnswerPoint ", new String[] {sql_data[0],
+                        imcref.getDatabase().executeUpdateProcedure( "Poll_SetAnswerPoint ", new String[] {sql_data[0],
                                                                                                         textstring.trim()} );
 					}
 				}
@@ -192,7 +192,7 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 
 
 			if ( sql_param != null ){
-                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "Poll_SetParameter ", sql_param );
+                imcref.getDatabase().executeUpdateProcedure( "Poll_SetParameter ", sql_param );
 			}
 		}
 
@@ -207,21 +207,21 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 	public void increasePollAnswer(String meta_id, String question_no, String option_no){
 
 		// Get poll by meta_id if it exist
-		String[] sql_data = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "Poll_GetOne ", new String[] {meta_id} );
+		String[] sql_data = imcref.getDatabase().executeArrayProcedure( "Poll_GetOne ", new String[] {meta_id} );
         String poll_id;
 
 		if ( sql_data != null && sql_data.length != 0 ) {
 			poll_id = sql_data[0] ;
 
 			//Get question
-            sql_data = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "Poll_GetQuestion ", new String[] {poll_id,
+            sql_data = imcref.getDatabase().executeArrayProcedure( "Poll_GetQuestion ", new String[] {poll_id,
                                                                                                       question_no} );
 
 			if ( sql_data != null && sql_data.length != 0 ) {
 
 				String[] sql_param = new String[] { sql_data[0], option_no }; // question_id, option_no
 
-                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "Poll_IncreaseAnswerOption ", sql_param );
+                imcref.getDatabase().executeUpdateProcedure( "Poll_IncreaseAnswerOption ", sql_param );
 				log.info("Increase answer option (meta_id , question_no, option_no ): " + meta_id + ", " + question_no + ", " + option_no );
 			}
 		}
@@ -243,7 +243,7 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 				@result_template int
 	*/
 	public String[] getPollParameters(String meta_id){
-		String[] poll_data = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "Poll_GetOne ", new String[] {meta_id} );
+		String[] poll_data = imcref.getDatabase().executeArrayProcedure( "Poll_GetOne ", new String[] {meta_id} );
         return poll_data;
 	}
 
@@ -256,7 +256,7 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 			@text_id
 	*/
 	public String[][] getAllPollQuestions(String poll_id){
-		String[][] sql_data = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "Poll_GetAllQuestions ", new String[] {poll_id} );
+		String[][] sql_data = imcref.getDatabase().execute2dArrayProcedure( "Poll_GetAllQuestions ", new String[] {poll_id} );
         return sql_data;
 	}
 
@@ -273,7 +273,7 @@ public class PollHandlingSystemImpl implements PollHandlingSystem {
 
 	*/
 	public String[][] getAllPollAnswers(String question_id){
-		String[][] sql_data = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "Poll_GetAllAnswers ", new String[] {question_id} );
+		String[][] sql_data = imcref.getDatabase().execute2dArrayProcedure( "Poll_GetAllAnswers ", new String[] {question_id} );
         return sql_data;
 	}
 

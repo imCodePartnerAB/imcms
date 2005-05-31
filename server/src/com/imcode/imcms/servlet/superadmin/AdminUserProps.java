@@ -98,7 +98,7 @@ public class AdminUserProps extends Administrator {
     }
 
     private String[] getPhoneTypes( ImcmsServices imcref, UserDomainObject user ) {
-        return imcref.getExceptionUnhandlingDatabase().executeArrayQuery( "SELECT  phonetype_id, typename\n"
+        return imcref.getDatabase().executeArrayQuery( "SELECT  phonetype_id, typename\n"
                                                                           + "FROM phonetypes, lang_prefixes\n"
                                                                           + "WHERE  phonetypes.lang_id = lang_prefixes.lang_id AND lang_prefixes.lang_prefix = ?\n"
                                                                           + "ORDER BY phonetype_id", new String[] {""
@@ -300,7 +300,7 @@ public class AdminUserProps extends Administrator {
     private String getLanguagesHtmlOptionList( UserDomainObject user, ImcmsServices imcref,
                                                UserDomainObject userToChange ) {
         // Lets get the the users language id
-        String[] langList = imcref.getExceptionUnhandlingDatabase().executeArrayQuery( "SELECT lang_prefix, language FROM languages WHERE user_prefix = ?", new String[] {user.getLanguageIso639_2()} );
+        String[] langList = imcref.getDatabase().executeArrayQuery( "SELECT lang_prefix, language FROM languages WHERE user_prefix = ?", new String[] {user.getLanguageIso639_2()} );
         Vector selectedLangV = new Vector();
         selectedLangV.add( userToChange.getLanguageIso639_2() );
         String languagesHtmlOptionList = Html.createOptionList( new Vector( Arrays.asList( langList ) ), selectedLangV );
@@ -862,7 +862,7 @@ public class AdminUserProps extends Administrator {
                 for ( int i = 0; i < phonesV.size(); i++ ) {
                     String[] aPhone = (String[])phonesV.elementAt( i );
 
-                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "PhoneNbrAdd", new String[] {
+                    imcref.getDatabase().executeUpdateProcedure( "PhoneNbrAdd", new String[] {
                                                                                             ""
                                                                                             + userFromRequest.getId(),
                                                                                                     aPhone[1], aPhone[3]
@@ -1109,7 +1109,7 @@ public class AdminUserProps extends Administrator {
             int roleId = useradminRoleIds[i];
             RoleDomainObject role = imcmsAuthenticatorAndUserMapperAndRole.getRoleById( roleId );
             if ( !RoleDomainObject.SUPERADMIN.equals( role ) && !RoleDomainObject.USERADMIN.equals( role ) ) {
-                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "AddUseradminPermissibleRoles", new String[] {
+                imcref.getDatabase().executeUpdateProcedure( "AddUseradminPermissibleRoles", new String[] {
                                                                                         ""
                                                                                         + userIdToAddUserAdminRolesTo,
                                                                                         "" + role.getId()
@@ -1274,7 +1274,7 @@ public class AdminUserProps extends Administrator {
         Enumeration enumeration = phonesArrV.elements();
         while ( enumeration.hasMoreElements() ) {
             String[] tempPhone = (String[])enumeration.nextElement();
-            String[] typename = imcref.getExceptionUnhandlingDatabase().executeArrayQuery( "select typename from phonetypes, lang_prefixes\n"
+            String[] typename = imcref.getDatabase().executeArrayQuery( "select typename from phonetypes, lang_prefixes\n"
                                                                                            + "where phonetype_id = ? and phonetypes.lang_id = lang_prefixes.lang_id\n"
                                                                                            + "AND lang_prefix = ?", new String[] {tempPhone[3],
                                                                                                                                     user.getLanguageIso639_2()} );
@@ -1317,9 +1317,9 @@ public class AdminUserProps extends Administrator {
         String[] rolesArr;
 
         if ( user.isSuperAdmin() ) {
-            rolesArr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetAllRoles", new String[0] );
+            rolesArr = imcref.getDatabase().executeArrayProcedure( "GetAllRoles", new String[0] );
         } else {
-            rolesArr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetUseradminPermissibleRoles", new String[] {""
+            rolesArr = imcref.getDatabase().executeArrayProcedure( "GetUseradminPermissibleRoles", new String[] {""
                                                                                                                                     + user.getId()} );
         }
         for ( int i = 0; i < rolesArr.length; i++ ) {
@@ -1417,7 +1417,7 @@ public class AdminUserProps extends Administrator {
                 // Lets get the information for users roles and put them in a vector
                 // if we don´t have got any roles from session we try to get them from DB
                 if ( userRoles == null ) {
-                    userRoles = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetUserRolesIds", new String[] {""
+                    userRoles = imcref.getDatabase().executeArrayProcedure( "GetUserRolesIds", new String[] {""
                                                                                                                                 + userToChange.getId()} );
                 }
 
@@ -1425,7 +1425,7 @@ public class AdminUserProps extends Administrator {
                     // Lets get the information for usersadmin roles and put them in a vector
                     // if we don´t have got any roles from session we try to get them from DB
                     if ( useradminRoles == null ) {
-                        useradminRoles = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetUseradminPermissibleRoles", new String[] {
+                        useradminRoles = imcref.getDatabase().executeArrayProcedure( "GetUseradminPermissibleRoles", new String[] {
                                                                                                                 ""
                                                                                                                 + userToChange.getId()
                                                                                                                 } );

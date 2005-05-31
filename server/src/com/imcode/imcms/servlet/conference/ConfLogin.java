@@ -113,7 +113,7 @@ public class ConfLogin extends Conference {
             }
 
             // Lets get all users in this conference from db
-            String[] usersArr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "A_GetAllConfUsersInList", new String[] {""
+            String[] usersArr = imcref.getDatabase().executeArrayProcedure( "A_GetAllConfUsersInList", new String[] {""
                                                                                                                                         + params.getMetaId()} );
             Vector usersV = super.convert2Vector( usersArr );
             VariableManager vm = new VariableManager();
@@ -193,7 +193,7 @@ public class ConfLogin extends Conference {
             String password = lparams.getProperty( "PASSWORD" );
 
             // Validate loginparams against DB
-            String userId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "GetUserIdFromName", new String[] {userName,
+            String userId = imcref.getDatabase().executeStringProcedure( "GetUserIdFromName", new String[] {userName,
                                                                                                             password} );
 
             // Lets check that we the found the user. Otherwise send unvailid username password
@@ -319,14 +319,14 @@ public class ConfLogin extends Conference {
             }
 
             // Ok, Lets add the users roles into db, first get the role his in the system with
-            String[] usersRoles = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "GetUserRolesIDs", new String[] {""
+            String[] usersRoles = imcref.getDatabase().executeArrayProcedure( "GetUserRolesIDs", new String[] {""
                                                                                                                                   + user.getId()} );
 
             if ( usersRoles != null ) {
                 for ( int i = 0; i < usersRoles.length; i += 2 ) {
                     // Late change, fix so the superadminrole wont be copied to the new user
                     if ( !usersRoles[i].toString().equals( "1" ) ) {
-                        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "AddUserRole", new String[] {newUser.getId()
+                        imcref.getDatabase().executeUpdateProcedure( "AddUserRole", new String[] {newUser.getId()
                                                                                                                      + "",
                                                                                                         usersRoles[i].toString()} );
                     }
@@ -373,7 +373,7 @@ public class ConfLogin extends Conference {
                 return;
             }
 
-            String[] userInfo = imcref.getExceptionUnhandlingDatabase().executeArrayQuery( "SELECT user_id,\n"
+            String[] userInfo = imcref.getDatabase().executeArrayQuery( "SELECT user_id,\n"
                                                                                            + "login_name,\n"
                                                                                            + "login_password,\n"
                                                                                            + "first_name,\n"
@@ -394,7 +394,7 @@ public class ConfLogin extends Conference {
                                                                                            + "WHERE user_id = @aUserId", new String[] {userId} );
 
             // Lets get the selected users userlevel
-            String level = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_ConfUsersGetUserLevel", new String[] {
+            String level = imcref.getDatabase().executeStringProcedure( "A_ConfUsersGetUserLevel", new String[] {
                                                                                                    ""
                                                                                                    + params.getMetaId(),
                                                                                                            userId
@@ -450,7 +450,7 @@ public class ConfLogin extends Conference {
 
             // Lets add the new information into the conf user db
 
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "A_ConfUsersSetUserLevel", new String[] {
+            imcref.getDatabase().executeUpdateProcedure( "A_ConfUsersSetUserLevel", new String[] {
                                                                                     "" + params.getMetaId(), userId,
                                                                                             userLevel
                                                                                     } );

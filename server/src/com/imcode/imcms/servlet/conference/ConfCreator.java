@@ -56,7 +56,7 @@ public class ConfCreator extends Conference {
             // we have to check when we add a new conference that such an meta_id
             // doesnt already exists.
             String metaId = params.getProperty( "META_ID" );
-            String foundMetaId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_FindMetaId", new String[] {metaId} );
+            String foundMetaId = imcref.getDatabase().executeStringProcedure( "A_FindMetaId", new String[] {metaId} );
             if ( !foundMetaId.equals( "1" ) ) {
                 String header = "ConfCreator servlet. ";
                 ConfError err = new ConfError( req, res, header, 90, user );
@@ -68,13 +68,13 @@ public class ConfCreator extends Conference {
             // AddNewConf @meta_id int, @confName varchar(255)
             String confName = confParams.getProperty( "CONF_NAME" );
             // String sortType = "1" ;	// Default value, unused so far
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "A_AddNewConf", new String[] {metaId,
+            imcref.getDatabase().executeUpdateProcedure( "A_AddNewConf", new String[] {metaId,
                                                                                             confName} );
 
             // Lets add a new forum to the conference
             final String archiveMode = "A";
             final String archiveTime = "30";
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "A_AddNewForum", new String[] {metaId,
+            imcref.getDatabase().executeUpdateProcedure( "A_AddNewForum", new String[] {metaId,
                                                                                             confParams.getProperty( "FORUM_NAME" ),
                                                                                             archiveMode, archiveTime} );
 

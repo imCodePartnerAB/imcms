@@ -67,7 +67,7 @@ public class AdminRoles extends Administrator {
                 || req.getParameter( "CANCEL_ROLE" ) != null ) {
 
             // Lets get all ROLES from DB
-            String[] rolesArr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "RoleAdminGetAll", new String[0] );
+            String[] rolesArr = imcref.getDatabase().executeArrayProcedure( "RoleAdminGetAll", new String[0] );
             Vector rolesV = new Vector( java.util.Arrays.asList( rolesArr ) );
 
 
@@ -95,7 +95,7 @@ public class AdminRoles extends Administrator {
 
         // Lets check if the user is an admin, otherwise throw him out.
         ImcmsServices imcref = Imcms.getServices();
-        Database database = imcref.getExceptionUnhandlingDatabase();
+        Database database = imcref.getDatabase();
         ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         UserDomainObject user = Utility.getLoggedOnUser( req );
 

@@ -54,11 +54,11 @@ public class ListDocuments extends HttpServlet {
     }
 
     private int getMaxDocumentId( ImcmsServices imcref ) {
-        return Integer.parseInt( imcref.getExceptionUnhandlingDatabase().executeStringQuery( "select max(meta_id) from meta", new String[0] ) );
+        return Integer.parseInt( imcref.getDatabase().executeStringQuery( "select max(meta_id) from meta", new String[0] ) );
     }
 
     private int getMinDocumentId( ImcmsServices imcref ) {
-        return Integer.parseInt( imcref.getExceptionUnhandlingDatabase().executeStringQuery( "select min(meta_id) from meta", new String[0] ) );
+        return Integer.parseInt( imcref.getDatabase().executeStringQuery( "select min(meta_id) from meta", new String[0] ) );
     }
 
     public static class FormData {

@@ -2,10 +2,9 @@ package imcode.server.document;
 
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
+import imcode.server.db.ConvenienceDatabaseConnection;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseConnection;
-import imcode.server.db.ExceptionUnhandlingDatabase;
-import imcode.server.db.ConvenienceDatabaseConnection;
 import imcode.server.db.commands.TransactionDatabaseCommand;
 import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -53,8 +52,8 @@ public class DocumentPermissionSetMapper {
     public static final String TABLE_NEW_DOC_PERMISSION_SETS = "new_doc_permission_sets";
     public static final String TABLE_DOC_PERMISSION_SETS = "doc_permission_sets";
 
-    public DocumentPermissionSetMapper( Database service, ImcmsServices services ) {
-        this.database = new ExceptionUnhandlingDatabase( service );
+    public DocumentPermissionSetMapper( Database database, ImcmsServices services ) {
+        this.database = database ;
         this.services = services;
     }
 

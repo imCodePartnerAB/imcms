@@ -122,14 +122,14 @@ public class ChatCreator extends ChatBase {
                         return;
                     }
                     // Lets check if we already have a templateset with that name
-                    String libNameExists = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "C_FindTemplateLib", new String[] {newLibName} );
+                    String libNameExists = imcref.getDatabase().executeStringProcedure( "C_FindTemplateLib", new String[] {newLibName} );
                     if (!libNameExists.equalsIgnoreCase("-1")) {
                         String header = "ChatCreator servlet. ";
                         new ChatError(req, res, header, 84);//obs kolla om rätt nr
                         return;
                     }
                     log("lang_prefix for External Template Folder = " + user.getLanguageIso639_2());
-                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "C_AddTemplateLib", new String[] {newLibName} );
+                    imcref.getDatabase().executeUpdateProcedure( "C_AddTemplateLib", new String[] {newLibName} );
                     // Lets copy the original folders to the new foldernames
                     FileManager fileObj = new FileManager();
                     File templateSrc = new File(imcref.getExternalTemplateFolder(metaId, user), "original");
@@ -153,7 +153,7 @@ public class ChatCreator extends ChatBase {
                     }
                     // Lets find the selected template in the database and get its id
                     // if not found, -1 will be returned
-                    String templateId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "C_GetTemplateIdFromName", new String[] {newLibName} );
+                    String templateId = imcref.getDatabase().executeStringProcedure( "C_GetTemplateIdFromName", new String[] {newLibName} );
                     if (templateId.equalsIgnoreCase("-1")) {
                         String header = "ChatCreator servlet. ";
                         new ChatError(req, res, header, 81);
@@ -161,10 +161,10 @@ public class ChatCreator extends ChatBase {
                     }
                     // Ok, lets update the chat with this new templateset.
                     //but first lets delete the old one.
-                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "C_deleteChatTemplateset", new String[] {""
+                    imcref.getDatabase().executeUpdateProcedure( "C_deleteChatTemplateset", new String[] {""
                                                                                                                              + metaId} );
 
-                    imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "C_SetNewTemplateLib", new String[] {""
+                    imcref.getDatabase().executeUpdateProcedure( "C_SetNewTemplateLib", new String[] {""
                                                                                                                          + metaId,
                                                                                                     newLibName} );
                 }
@@ -193,13 +193,13 @@ public class ChatCreator extends ChatBase {
             if (req.getParameter("adminTemplates") != null) {
                 log("adminTemplates");
                 //ok now lets get the template set name
-                String templateSetName = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "C_GetTemplateLib", new String[] {""
+                String templateSetName = imcref.getDatabase().executeStringProcedure( "C_GetTemplateLib", new String[] {""
                                                                                                                                            + metaId} );
                 if (templateSetName == null) {
                     templateSetName = "";
                 }
                 //ok lets get all the template set there is
-                String[] templateLibs = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "C_GetAllTemplateLibs", new String[] {} );
+                String[] templateLibs = imcref.getDatabase().executeArrayProcedure( "C_GetAllTemplateLibs", new String[] {} );
                 Vector vect = new Vector();
                 if (templateLibs != null) {
                     vect = super.convert2Vector(templateLibs);
@@ -224,28 +224,28 @@ public class ChatCreator extends ChatBase {
                              UserDomainObject user, HttpServletResponse res ) throws IOException {
         log("okChat");
 
-        String result = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "C_FindMetaId", new String[] {""
+        String result = imcref.getDatabase().executeStringProcedure( "C_FindMetaId", new String[] {""
                                                                                                                       + metaId} );
         boolean chatDoesNotExist = result.equals("1");
         if( chatDoesNotExist ) {
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "C_AddNewChat", new String[] {"" + metaId,
+            imcref.getDatabase().executeUpdateProcedure( "C_AddNewChat", new String[] {"" + metaId,
                                                                                             myChat.getChatName(),
                                                                                             "3"} );
         }
 
-        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "C_Delete_MsgTypes", new String[] {""
+        imcref.getDatabase().executeUpdateProcedure( "C_Delete_MsgTypes", new String[] {""
                                                                                                            + metaId} );
 
         //lets connect the standard msgTypes with the chat
-        String[] tempTypes = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "C_GetBaseMsgTypes", new String[] {} );
+        String[] tempTypes = imcref.getDatabase().executeArrayProcedure( "C_GetBaseMsgTypes", new String[] {} );
         for (int i = 0; i < tempTypes.length; i++) {
-            String tempTypeId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "C_GetMsgTypeId", new String[] {tempTypes[i]} );
+            String tempTypeId = imcref.getDatabase().executeStringProcedure( "C_GetMsgTypeId", new String[] {tempTypes[i]} );
             /*TODO
             This is only a temporary blocking of standard message types
             we only select message type " säger till" and "frågar"
             */
             if (MSG_TYPE_SAYS_TO.equals(tempTypeId) || MSG_TYPE_ASKS.equals(tempTypeId)) {
-                imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "C_AddNewChatMsg", new String[] {tempTypeId,
+                imcref.getDatabase().executeUpdateProcedure( "C_AddNewChatMsg", new String[] {tempTypeId,
                                                                                         "" + metaId} );
             }
         }
@@ -253,7 +253,7 @@ public class ChatCreator extends ChatBase {
         // Lets add the new msgTypes to the db /ugly but it works
         Vector msgV = myChat.getMsgTypes();
         for (int i = 0; i < msgV.size(); i += 2) {
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "C_AddMessageType", new String[] {""
+            imcref.getDatabase().executeUpdateProcedure( "C_AddMessageType", new String[] {""
                                                                                                               + metaId,
                                                                                     "" + msgV.get( i ),
                                                                                     "" + msgV.get( i + 1 )} );
@@ -261,7 +261,7 @@ public class ChatCreator extends ChatBase {
 
         //	Vector valuesV = new Vector();
 
-        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "C_AddChatParams", new String[] {
+        imcref.getDatabase().executeUpdateProcedure( "C_AddChatParams", new String[] {
                                                                                 "" + metaId,
                                                                                 "" + myChat.getRefreshTime(),
                                                                                 "" + myChat.isAutoRefreshEnabled(),
@@ -276,18 +276,18 @@ public class ChatCreator extends ChatBase {
 
 
         // lets delete all authorization for one meta
-        imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "C_DeleteAuthorizations", new String[] {""
+        imcref.getDatabase().executeUpdateProcedure( "C_DeleteAuthorizations", new String[] {""
                                                                                                                 + metaId} );
 
         //ok lets add the authorization types
         Vector autoV = myChat.getSelectedAuto();
         for (int i = 0; i < autoV.size(); i++) {
-            imcref.getExceptionUnhandlingDatabase().executeUpdateProcedure( "C_ChatAutoTypes", new String[] {""
+            imcref.getDatabase().executeUpdateProcedure( "C_ChatAutoTypes", new String[] {""
                                                                                                              + autoV.elementAt( i ),
                                                                                     "" + metaId} );
         }
         //ok now we have saved the stuff to the db so lets set up the chat and put it in the context
-        String[][] messages = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "C_GetMsgTypes", new String[] {""
+        String[][] messages = imcref.getDatabase().execute2dArrayProcedure( "C_GetMsgTypes", new String[] {""
                                                                                                                               + metaId} );
         if (messages != null) {
             myChat.setMsgTypes(convert2Vector(messages));

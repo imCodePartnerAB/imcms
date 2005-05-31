@@ -313,7 +313,7 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public Database getExceptionUnhandlingDatabase() {
+    public Database getDatabase() {
         return database ;
     }
 
@@ -327,10 +327,6 @@ public class MockImcmsServices implements ImcmsServices {
 
     public KeyStore getKeyStore() {
         return keyStore;
-    }
-
-    public Database getDatabase() {
-        return database;
     }
 
     public void setImcmsAuthenticatorAndUserAndRoleMapper(

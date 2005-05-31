@@ -121,7 +121,7 @@ public class TemplateAdd extends HttpServlet {
                 String[] list;
                 list = imcref.getDemoTemplateIds();
                 String[] temp;
-                temp = imcref.getExceptionUnhandlingDatabase().executeArrayQuery( "select template_id, simple_name from templates where lang_prefix = ? order by simple_name", new String[] {lang} );
+                temp = imcref.getDatabase().executeArrayQuery( "select template_id, simple_name from templates where lang_prefix = ? order by simple_name", new String[] {lang} );
                 Vector vec = new Vector();
                 vec.add( "#language#" );
                 vec.add( lang );
@@ -270,13 +270,13 @@ public class TemplateAdd extends HttpServlet {
                 vec.add( lang );
                 htmlStr = imcref.getAdminTemplate( "template_upload_file_exists.html", user, vec );
             } else {
-                String t_id = imcref.getExceptionUnhandlingDatabase().executeStringQuery( "select template_id from templates where simple_name = ?", new String[] {simple_name} );
+                String t_id = imcref.getDatabase().executeStringQuery( "select template_id from templates where simple_name = ?", new String[] {simple_name} );
                 String[] temp = mp.getParameterValues( "templategroup" );
                 if ( temp != null ) {
                     for ( int foo = 0; foo < temp.length; foo++ ) {
                         String sqlStr = "delete from templates_cref where group_id = ? and template_id = ?\n"
                                 + "insert into templates_cref (group_id, template_id) values(?,?)\n";
-                        imcref.getExceptionUnhandlingDatabase().executeUpdateQuery( sqlStr, new String[] {temp[foo],
+                        imcref.getDatabase().executeUpdateQuery( sqlStr, new String[] {temp[foo],
                                                                                                     t_id, temp[foo],
                                                                                                     t_id} );
                     }

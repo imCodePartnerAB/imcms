@@ -353,7 +353,7 @@ public class ChatControl extends ChatBase {
         if (true)//(checkboxText == null)
         {
             //we dont have them so we have to get them from db
-            arr = imcref.getExceptionUnhandlingDatabase().executeArrayProcedure( "C_GetChatParameters", new String[] {""
+            arr = imcref.getDatabase().executeArrayProcedure( "C_GetChatParameters", new String[] {""
                                                                                                                       + metaId} );
             if (arr.length != 7) {
                 return;

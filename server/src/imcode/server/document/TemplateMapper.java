@@ -1,7 +1,6 @@
 package imcode.server.document;
 
 import imcode.server.ImcmsServices;
-import imcode.server.db.ExceptionUnhandlingDatabase;
 import imcode.server.db.Database;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.ArrayUtils;
@@ -19,7 +18,7 @@ public class TemplateMapper {
     private ImcmsServices services;
 
     public TemplateMapper( ImcmsServices service ) {
-        this.database = new ExceptionUnhandlingDatabase( service.getDatabase() );
+        this.database = service.getDatabase();
         this.services = service ;
     }
 

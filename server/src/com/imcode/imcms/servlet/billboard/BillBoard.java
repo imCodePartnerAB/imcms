@@ -113,7 +113,7 @@ public class BillBoard extends HttpServlet {
      * Returns the foldername where the templates are situated for a certain metaid.
      */
     private String getTemplateLibName( ImcmsServices imcref, int meta_id ) {
-        String libName = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetTemplateLib", new String[]{"" + meta_id} );
+        String libName = imcref.getDatabase().executeStringProcedure( "B_GetTemplateLib", new String[]{"" + meta_id} );
         if ( libName == null ) {
             libName = "original";
         }
@@ -204,7 +204,7 @@ public class BillBoard extends HttpServlet {
 
             // Ok, we need to catch a forum_id. Lets get the first one for this meta_id.
             // if not a forumid exists, the sp will return -1
-            String aSectionId = Imcms.getServices().getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetFirstSection", new String[]{"" + params.getMetaId()} );
+            String aSectionId = Imcms.getServices().getDatabase().executeStringProcedure( "B_GetFirstSection", new String[]{"" + params.getMetaId()} );
             session.setAttribute( "BillBoard.section_id", aSectionId );//Conference.forum_id
 
             // Lets get the lastdiscussionid for that forum

@@ -87,7 +87,7 @@ public class ConfReply extends Conference {
             String ascSortOrder = ( req.getParameter( "SORT_ORDER" ) == null ) ? "0" : ( req.getParameter( "SORT_ORDER" ) );
 
             // Ok, Lets set the users sortorder preference
-            Imcms.getServices().getExceptionUnhandlingDatabase().executeUpdateProcedure( "A_ConfUsersSetReplyOrder", new String[] {metaId,
+            Imcms.getServices().getDatabase().executeUpdateProcedure( "A_ConfUsersSetReplyOrder", new String[] {metaId,
                                                                                                          userId,
                                                                                                          ascSortOrder} );
             this.doGet( req, res );
@@ -123,11 +123,11 @@ public class ConfReply extends Conference {
         // Lets get serverinformation
         ImcmsServices imcref = Imcms.getServices();
 
-        String[][] sqlAnswer = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "A_GetAllRepliesInDisc", new String[] {discId,
+        String[][] sqlAnswer = imcref.getDatabase().execute2dArrayProcedure( "A_GetAllRepliesInDisc", new String[] {discId,
                                                                                                                 userId} );
 
         // Lets get the discussion header
-        String discHeader = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_GetDiscussionHeader", new String[] {discId} );
+        String discHeader = imcref.getDatabase().executeStringProcedure( "A_GetDiscussionHeader", new String[] {discId} );
         if ( discHeader == null || discId.equalsIgnoreCase( "-1" ) )
             discHeader = " ";
 
@@ -135,7 +135,7 @@ public class ConfReply extends Conference {
         // UsersSortOrderRadioButtons
         String metaId = params.getProperty( "META_ID" );
         int intMetaId = Integer.parseInt( metaId );
-        String sortOrderValue = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "A_ConfUsersGetReplyOrderSel", new String[] {metaId,
+        String sortOrderValue = imcref.getDatabase().executeStringProcedure( "A_ConfUsersGetReplyOrderSel", new String[] {metaId,
                                                                                                                 userId} );
         String ascState = "";
         String descState = "";

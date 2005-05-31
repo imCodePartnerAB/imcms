@@ -97,7 +97,7 @@ public class PasswordMailReminder extends HttpServlet {
 
         if ( validLoginName ) {
 
-            String[] queryResult = imcref.getExceptionUnhandlingDatabase().executeArrayQuery( "select login_password, first_name, last_name, email, min(permissions & ?), lang_prefix \n"
+            String[] queryResult = imcref.getDatabase().executeArrayQuery( "select login_password, first_name, last_name, email, min(permissions & ?), lang_prefix \n"
                                                         + "from users u \n"
                                                         + "join lang_prefixes lp \n"
                                                         + "    on u.language = lp.lang_prefix\n"

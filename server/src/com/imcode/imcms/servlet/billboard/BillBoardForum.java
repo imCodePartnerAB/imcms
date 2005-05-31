@@ -55,7 +55,7 @@ public class BillBoardForum extends BillBoard {//ConfForum
 		String aMetaId = (String) session.getAttribute("BillBoard.meta_id") ;
 
 		// Lets get the information from DB
-        String[] sqlAnswer = Imcms.getServices().getExceptionUnhandlingDatabase().executeArrayProcedure( "B_GetAllSection", new String[] {aMetaId} );
+        String[] sqlAnswer = Imcms.getServices().getDatabase().executeArrayProcedure( "B_GetAllSection", new String[] {aMetaId} );
         Vector sectionV = super.convert2Vector(sqlAnswer) ;
 
 		// Lets fill the select box

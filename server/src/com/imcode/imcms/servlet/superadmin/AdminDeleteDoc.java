@@ -79,7 +79,7 @@ public class AdminDeleteDoc extends Administrator {
 
             // OK, Lets check that the metaid were gonna delete exists in db
             int metaId = Integer.parseInt(params.getProperty("DEL_META_ID"));
-            String foundMetaId = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "FindMetaId", new String[] {""
+            String foundMetaId = imcref.getDatabase().executeStringProcedure( "FindMetaId", new String[] {""
                                                                                                                              + metaId} );
             log.debug("FoundMetaId: " + foundMetaId);
 

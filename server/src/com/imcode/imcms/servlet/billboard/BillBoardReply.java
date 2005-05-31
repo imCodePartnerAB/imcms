@@ -124,7 +124,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
             //log("ok PREVIEW-mode");
             String addHeader = (String)billPrevData.get( header );
             String addText = (String)billPrevData.get( text );
-            String datum = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetTime", new String[] {} );
+            String datum = imcref.getDatabase().executeStringProcedure( "B_GetTime", new String[] {} );
             //log(addHeader+"\n"+addText+"\n"+datum);
             String addType = req.getParameter( "ADDTYPE" );
             String addType2 = req.getParameter( "ADDTYPE" );
@@ -170,10 +170,10 @@ public class BillBoardReply extends BillBoard {//ConfReply
             return;
         }
 
-        String[][] sqlAnswer = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "B_GetCurrentBill", new String[] {discId} );
+        String[][] sqlAnswer = imcref.getDatabase().execute2dArrayProcedure( "B_GetCurrentBill", new String[] {discId} );
 
         // Lets get the discussion header
-        String discHeader = imcref.getExceptionUnhandlingDatabase().executeStringProcedure( "B_GetBillHeader", new String[] {discId} );//GetDiscussionHeader
+        String discHeader = imcref.getDatabase().executeStringProcedure( "B_GetBillHeader", new String[] {discId} );//GetDiscussionHeader
 
         if ( discHeader == null || discId.equalsIgnoreCase( "-1" ) ) {
             discHeader = " ";

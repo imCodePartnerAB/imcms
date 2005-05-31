@@ -119,7 +119,7 @@ public class PostcardServlet extends HttpServlet {
         String imageNr = req.getParameter( "vykort" );
         //lets get the image url from db (we need serverObj, metaId and imageId to do it)
 
-        String imageUrl = imcref.getExceptionUnhandlingDatabase().executeStringQuery( "select imgurl from images where meta_id = ? and name = ?", new String[] {metaId,
+        String imageUrl = imcref.getDatabase().executeStringQuery( "select imgurl from images where meta_id = ? and name = ?", new String[] {metaId,
                                                                                                       imageNr} );
         if ( imageUrl == null ) {
             imageUrl = " ";

@@ -34,7 +34,7 @@ public class ConfForum extends Conference {
         String aMetaId = (String)session.getAttribute( "Conference.meta_id" );
 
         // Lets get the information from DB
-        String[] sqlAnswer = Imcms.getServices().getExceptionUnhandlingDatabase().executeArrayProcedure( "A_GetAllForum", new String[] {aMetaId} );
+        String[] sqlAnswer = Imcms.getServices().getDatabase().executeArrayProcedure( "A_GetAllForum", new String[] {aMetaId} );
         Vector forumV = super.convert2Vector( sqlAnswer );
 
         // Lets fill the select box

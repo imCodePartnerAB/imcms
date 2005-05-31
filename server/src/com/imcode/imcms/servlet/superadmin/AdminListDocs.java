@@ -208,7 +208,7 @@ public class AdminListDocs extends Administrator {
                 StringBuffer listOfDocs = new StringBuffer();
                 String languagePrefix = user.getLanguageIso639_2();
                 for ( int i = 0; i < docTypesToShow.length; i++ ) {
-                    String[][] queryResult = imcref.getExceptionUnhandlingDatabase().execute2dArrayProcedure( "ListDocsByDate", new String[] {
+                    String[][] queryResult = imcref.getDatabase().execute2dArrayProcedure( "ListDocsByDate", new String[] {
                                                                                                                               listMod,
                                                                                                                       ""
                                                                                                                       + docTypesToShow[i],
