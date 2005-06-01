@@ -65,11 +65,6 @@
         </fileset>
     </path>
 
-    <path id="tools-and-libraries">
-        <pathelement path="tools/build"/>
-        <path refid="libraries"/>
-    </path>
-
     <path id="classes-and-libraries">
         <pathelement path="${classes}"/>
         <path refid="libraries"/>
@@ -164,7 +159,6 @@
         <delete dir="${build}"/>
         <delete dir="${tmp}"/>
         <delete dir="${dist}"/>
-        <ant dir="tools" target="clean"/>
 
     </target>
 
@@ -220,6 +214,7 @@
                     <include name="**/Test*.class"/>
                     <exclude name="**/*$*.class"/>
                     <exclude name="**/external/*.class"/>
+                    <exclude name="**/casual/*.class"/>
                 </fileset>
             </batchtest>
         </junit>
@@ -280,13 +275,13 @@
     </target>
 
     <target name="checksumsfile">
-        <taskdef name="checksumfiles" classname="imcode.anttasks.ChecksumFiles" classpathref="tools-and-libraries"/>
+        <taskdef name="checksumfiles" classname="com.imcode.ant.tasks.ChecksumFiles" classpathref="libraries"/>
         <checksumfiles destfile="${checksumsfile}" digest="MD5" append="true">
             <fileset dir="${build}"/>
         </checksumfiles>
     </target>
 
-    <target name="classes" depends="init,tools-util">
+    <target name="classes" depends="init">
 
         <mkdir dir="${classes}"/>
 
@@ -297,7 +292,7 @@
             <exclude name="**/Test*.java" unless="junit-available"/>
             <exclude name="**/*TestCase.java" unless="junit-available"/>
 
-            <classpath refid="tools-and-libraries"/>
+            <classpath refid="libraries"/>
 
         </javac>
 
@@ -344,7 +339,7 @@
 
     </target>
 
-    <target name="sql" depends="init,check-webappname,tools,ddl.sql,drop-sql,taskdef-cat" description="Concatenates the SQL-scripts into one large script.">
+    <target name="sql" depends="init,check-webappname,ddl.sql,drop-sql,taskdef-cat" description="Concatenates the SQL-scripts into one large script.">
 
         <mkdir dir="${tmp}"/>
 
@@ -381,7 +376,7 @@
 
     <target name="sql-lang" depends="init">
 
-        <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
+        <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="libraries"/>
 
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
@@ -394,24 +389,13 @@
 
     </target>
 
-    <!-- Build extra tools needed for building. -->
-    <target name="tools" description="Builds extra tools needed for building.">
-        <ant dir="tools"/>
-    </target>
-
-    <target name="tools-util" depends="tools">
-        <copy todir="${classes}">
-            <fileset dir="tools/build/" includes="*/util/*"/>
-        </copy>
-    </target>
-
     <target name="versionfile">
         <echo message="${version}" file="${versionfile}"/>
     </target>
 
     <!-- Creates the directories and copies the files that are to be public. -->
     <target name="web"
-       depends="init,tools,check-language-property-files-in-sync,changes,addon-web"
+       depends="init,changes,addon-web"
        description="Translates and copies the webfiles.">
 
         <dependset>
@@ -470,7 +454,7 @@
 
     <target name="web-lang" depends="init">
 
-        <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpathref="tools-and-libraries"/>
+        <taskdef name="imtranslate" classname="com.imcode.ant.tasks.Translate" classpathref="libraries"/>
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${templates}/${buildlanguage}" filtering="true">
@@ -644,36 +628,6 @@
 
     </target>
 
-    <target name="check-language-property-files-in-sync" depends="init,check-junit-task-available,tools"
-        unless="no-junit-task-available">
-
-        <junit haltonerror="yes" haltonfailure="yes">
-            <classpath path="tools/build">
-                <path refid="libraries"/>
-            </classpath>
-
-            <formatter type="brief" usefile="false"/>
-
-            <test name="imcode.buildtests.TestLanguagePropertyFilesInSync"/>
-        </junit>
-
-    </target>
-
-    <target name="check-language-properties-in-use" depends="init,check-junit-task-available,tools"
-        unless="no-junit-task-available" description="Test that there are no superfluos language properties.">
-
-        <junit haltonerror="yes" haltonfailure="yes">
-            <classpath path="tools/build">
-                <path refid="libraries"/>
-            </classpath>
-
-            <formatter type="brief" usefile="false"/>
-
-            <test name="imcode.buildtests.TestLanguagePropertiesInUse"/>
-        </junit>
-
-    </target>
-
     <target name="check-web-xml-valid">
         <xmlvalidate file="web/WEB-INF/web.xml" classpathref="libraries">
             <dtd
@@ -688,8 +642,8 @@
 
     </target>
 
-    <target name="taskdef-cat" depends="tools">
-        <taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
+    <target name="taskdef-cat">
+        <taskdef name="cat" classname="com.imcode.ant.tasks.Cat" classpathref="libraries"/>
     </target>
 
 </project>

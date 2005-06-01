@@ -1,4 +1,4 @@
-package imcode.buildtests;
+package com.imcode.imcms.test;
 
 import junit.framework.TestCase;
 

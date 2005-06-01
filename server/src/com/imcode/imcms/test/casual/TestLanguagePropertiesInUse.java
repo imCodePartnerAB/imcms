@@ -1,6 +1,6 @@
-package imcode.buildtests;
+package com.imcode.imcms.test.casual;
 
-import imcode.util.FileTreeTraverser;
+import com.imcode.util.FileTreeTraverser;
 import junit.framework.TestCase;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.SystemUtils;
@@ -16,7 +16,7 @@ import java.util.Iterator;
 public class TestLanguagePropertiesInUse extends TestCase {
 
     private Perl5Util perl5Util = new Perl5Util();
-
+    
     public void testLanguagePropertiesInUse() throws IOException {
         File[] propertiesFiles = new File[]{new File("imcms_swe.properties"), new File("imcms_eng.properties")};
 

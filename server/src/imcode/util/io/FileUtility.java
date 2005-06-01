@@ -1,6 +1,6 @@
 package imcode.util.io;
 
-import imcode.util.FileTreeTraverser;
+import com.imcode.util.FileTreeTraverser;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.io.FileUtils;
