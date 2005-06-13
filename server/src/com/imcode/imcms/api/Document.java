@@ -8,8 +8,9 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
 import java.util.*;
+import java.io.Serializable;
 
-public class Document {
+public class Document implements Serializable {
 
     private DocumentDomainObject internalDocument;
     ContentManagementSystem contentManagementSystem;
