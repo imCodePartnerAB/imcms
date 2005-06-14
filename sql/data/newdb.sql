@@ -12,14 +12,22 @@ INSERT INTO sys_data (sys_id, type_id, value) VALUES(6, 6, '@webmaster-name@');
 INSERT INTO sys_data (sys_id, type_id, value) VALUES(7, 7, '@webmaster-email@');
 -- mssql SET IDENTITY_INSERT sys_data OFF
 
-INSERT INTO users VALUES (1,'admin', 'admin', 'Admin', 'Super','','','','','','','','@servermaster-email@',0,1,
+-- mssql SET IDENTITY_INSERT users ON
+INSERT INTO users (user_id, login_name, login_password, first_name, last_name,
+                   title, company, address, city, zip, country, county_council, email,
+                   external, active, create_date, language)
+VALUES (1,'admin', 'admin', 'Admin', 'Super','','','','','','','','@servermaster-email@',0,1,
 -- mysql NOW()
 -- mssql GETDATE()
 ,'<? sql/default_lang ?>');
-INSERT INTO users VALUES (2,'user', 'user', 'User', 'Extern','','','','','','','','',0,1,
+INSERT INTO users (user_id, login_name, login_password, first_name, last_name,
+                   title, company, address, city, zip, country, county_council, email,
+                   external, active, create_date, language)
+VALUES (2,'user', 'user', 'User', 'Extern','','','','','','','','',0,1,
 -- mysql NOW()
 -- mssql GETDATE()
 ,'<? sql/default_lang ?>');
+-- mssql SET IDENTITY_INSERT users OFF
 
 -- mssql SET IDENTITY_INSERT roles ON
 INSERT INTO roles (role_id, role_name, permissions, admin_role) VALUES(0, 'Superadmin', 0, 1);

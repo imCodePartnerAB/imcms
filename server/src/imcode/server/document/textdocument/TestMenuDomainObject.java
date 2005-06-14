@@ -13,6 +13,9 @@ import junit.framework.TestCase;
 
 import java.util.List;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.varia.NullAppender;
+
 public class TestMenuDomainObject extends TestCase {
 
     private MenuDomainObject menu;
@@ -20,6 +23,7 @@ public class TestMenuDomainObject extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
+        BasicConfigurator.configure(new NullAppender());
         user = new UserDomainObject();
         user.addRole( RoleDomainObject.SUPERADMIN );
         this.menu = new MenuDomainObject() ;

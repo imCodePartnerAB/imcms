@@ -17,7 +17,6 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Clock;
-import imcode.util.DateConstants;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 import org.apache.commons.collections.map.LRUMap;
@@ -32,7 +31,6 @@ import java.io.FileFilter;
 import java.lang.ref.SoftReference;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class DocumentMapper implements DocumentGetter {
@@ -488,16 +486,16 @@ public class DocumentMapper implements DocumentGetter {
             { "shared", makeSqlStringFromBoolean(document.isLinkableByOtherUsers())},
             { "show_meta", makeSqlStringFromBoolean(document.isVisibleInMenusForUnauthorizedUsers())},
             { "lang_prefix", document.getLanguageIso639_2()},
-            { "date_created", makeSqlStringFromDate(document.getCreatedDatetime()) },
-            { "date_modified", makeSqlStringFromDate(document.getModifiedDatetime())},
+            { "date_created", Utility.makeSqlStringFromDate(document.getCreatedDatetime()) },
+            { "date_modified", Utility.makeSqlStringFromDate(document.getModifiedDatetime())},
             { "disable_search", makeSqlStringFromBoolean(document.isSearchDisabled())},
             { "target", document.getTarget()},
             { "activate", "1"},
-            { "archived_datetime", makeSqlStringFromDate(document.getArchivedDatetime())},
+            { "archived_datetime", Utility.makeSqlStringFromDate(document.getArchivedDatetime())},
             { "publisher_id", null != document.getPublisher() ? document.getPublisher().getId() + "" : null},
             { "status", "" + document.getStatus()},
-            { "publication_start_datetime", makeSqlStringFromDate(document.getPublicationStartDatetime())},
-            { "publication_end_datetime", makeSqlStringFromDate(document.getPublicationEndDatetime())}
+            { "publication_start_datetime", Utility.makeSqlStringFromDate(document.getPublicationStartDatetime())},
+            { "publication_end_datetime", Utility.makeSqlStringFromDate(document.getPublicationEndDatetime())}
         }));
         return documentId.intValue();
     }
@@ -738,14 +736,7 @@ public class DocumentMapper implements DocumentGetter {
 
     private static void makeDateSqlUpdateClause(String columnName, Date date, List sqlUpdateColumns,
                                                 List sqlUpdateValues) {
-        makeStringSqlUpdateClause(columnName, makeSqlStringFromDate(date), sqlUpdateColumns, sqlUpdateValues);
-    }
-
-    private static String makeSqlStringFromDate(Date date) {
-        if (null == date) {
-            return null;
-        }
-        return new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING).format(date);
+        makeStringSqlUpdateClause(columnName, Utility.makeSqlStringFromDate(date), sqlUpdateColumns, sqlUpdateValues);
     }
 
     private static void makeIntSqlUpdateClause(String columnName, Integer integer, ArrayList sqlUpdateColumns,

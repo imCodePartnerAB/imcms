@@ -290,6 +290,13 @@ public class Utility {
         return new ArrayMap(array, new ObjectPairToMapEntryTransformer() );
     }
 
+    public static String makeSqlStringFromDate(Date date) {
+        if (null == date) {
+            return null;
+        }
+        return new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING).format(date);
+    }
+
     private static class ObjectPairToMapEntryTransformer implements Transformer {
         public Object transform(Object input) {
             final Object[] pair = (Object[])input ;

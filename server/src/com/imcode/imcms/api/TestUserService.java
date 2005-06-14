@@ -43,7 +43,7 @@ public class TestUserService extends TestCase {
     public void testNewUserCanHaveRoles() throws SaveException, NoPermissionException {
 
         internalUser.addRole( RoleDomainObject.SUPERADMIN );
-        database.addExpectedSqlCall(new MockDatabase.EqualsSqlCallPredicate(ImcmsAuthenticatorAndUserAndRoleMapper.SPROC_GET_HIGHEST_USER_ID), ""+HIGHEST_USER_ID+1) ;
+        database.addExpectedSqlCall(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("users", "test"), new Integer(HIGHEST_USER_ID+1)) ;
 
         User user = userService.createNewUser( "test", "test" );
         user.addRole( new Role( RoleDomainObject.SUPERADMIN ) );
@@ -56,11 +56,11 @@ public class TestUserService extends TestCase {
     public void testNonAdminCantCreateUser() throws SaveException, NoPermissionException {
         User user = userService.createNewUser( "test", "test" ) ;
         user.addRole( new Role( RoleDomainObject.SUPERADMIN ));
-        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( ImcmsAuthenticatorAndUserAndRoleMapper.SPROC_GET_HIGHEST_USER_ID ), ""+HIGHEST_USER_ID+1 );
         try {
             userService.saveUser( user );
             fail() ;
         } catch( NoPermissionException ex ) {}
+        database.verifyExpectedSqlCalls();
     }
 
     public void testNonAdminCantEditOtherUsers() throws NoPermissionException, SaveException {

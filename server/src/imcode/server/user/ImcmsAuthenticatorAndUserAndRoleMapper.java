@@ -9,6 +9,7 @@ import imcode.server.db.commands.*;
 import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.db.exceptions.IntegrityConstraintViolationException;
 import imcode.server.db.exceptions.StringTruncationException;
+import imcode.util.Utility;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -239,47 +240,30 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
 
     public synchronized void addUser( UserDomainObject user, UserDomainObject currentUser ) throws UserAlreadyExistsException {
         try {
-            String newUserId = database.executeStringProcedure( SPROC_GET_HIGHEST_USER_ID, new String[] {} );
-            int newIntUserId = Integer.parseInt( newUserId );
-            user.setId( newIntUserId );
-            String[] usersColumns = new String[] {
-                                    "user_id", "login_name", "login_password",
-                                    "first_name", "last_name", "title",
-                                    "company", "address", "city", "zip",
-                                    "country", "county_council", "email",
-                                    "external", "active",
-                                    "language", "create_date"
-                            };
-
             if ( user.isImcmsExternal() ) {
                 user.setPassword( "" );
             }
-            database.executeUpdateQuery( "INSERT INTO users (" + StringUtils.join( usersColumns, ',' ) + ")\n"
-                                     + "VALUES (" + StringUtils.repeat( "?,", usersColumns.length - 1 )
-                                     + "?)", new Object[] {
-                                                     ""
-                                                     + user.getId(),
-                                                             user.getLoginName(),
-                                                             user.getPassword(),
-                                                             user.getFirstName(),
-                                                             user.getLastName(),
-                                                             user.getTitle(),
-                                                             user.getCompany(),
-                                                             user.getAddress(),
-                                                             user.getCity(),
-                                                             user.getZip(),
-                                                             user.getCountry(),
-                                                             user.getCountyCouncil(),
-                                                             user.getEmailAddress(),
-                                                     user.isImcmsExternal()
-                                                     ? "1"
-                                                     : "0",
-                                                     user.isActive()
-                                                     ? "1"
-                                                     : "0",
-                                                             user.getLanguageIso639_2(),
-                                                             new Date()
-                                                     } );
+            Number newUserId = (Number) database.executeCommand(new InsertIntoTableDatabaseCommand("users", new String[][] {
+                {"login_name", user.getLoginName()},
+                {"login_password", user.getPassword()},
+                {"first_name", user.getFirstName()},
+                {"last_name", user.getLastName()},
+                {"title", user.getTitle()},
+                {"company", user.getCompany()},
+                {"address", user.getAddress()},
+                {"city", user.getCity()},
+                {"zip",user.getZip()},
+                {"country",user.getCountry()},
+                {"county_council",user.getCountyCouncil()},
+                {"email", user.getEmailAddress()},
+                {"external",user.isImcmsExternal() ? "1" : "0"},
+                {"active", user.isActive() ? "1" : "0"},
+                {"language",user.getLanguageIso639_2()},
+                {"create_date", Utility.makeSqlStringFromDate(new Date())}
+            })) ;
+            int newIntUserId = newUserId.intValue() ;
+            user.setId( newIntUserId );
+
             if ( !user.equals( currentUser ) ) {
                 sqlAddRolesToUser( user.getRoles(), user );
             }
