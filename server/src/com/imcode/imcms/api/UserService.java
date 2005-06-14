@@ -31,15 +31,26 @@ public class UserService {
     }
 
     /**
-        @param userLoginName
-        @return User with the specified login name, or null if none.
-    **/
-     public User getUser( String userLoginName ) throws NoPermissionException {
-        UserDomainObject internalUser = getMapper().getUser( userLoginName );
+     @param userId
+     @return User with the specified id, or null if none.
+     **/
+    public User getUser( int userId ) throws NoPermissionException {
+        return wrapUser(getMapper().getUser( userId ));
+    }
+
+    private User wrapUser(UserDomainObject internalUser) {
         if (null == internalUser) {
             return null ;
         }
         return new User( internalUser );
+    }
+
+    /**
+        @param userLoginName
+        @return User with the specified login name, or null if none.
+    **/
+     public User getUser( String userLoginName ) throws NoPermissionException {
+        return wrapUser(getMapper().getUser( userLoginName ));
     }
 
     /**
