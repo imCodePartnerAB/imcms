@@ -11,6 +11,8 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 import org.apache.lucene.search.Query;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.varia.NullAppender;
 
 import java.io.Serializable;
 
@@ -25,6 +27,7 @@ public class TestDocumentMapper extends TestCase {
     private TextDocumentDomainObject oldDocument;
 
     protected void setUp() throws Exception {
+        BasicConfigurator.configure(new NullAppender());
         super.setUp();
         user = new UserDomainObject();
         userRole = new RoleDomainObject( 1, "Userrole", 0 );
@@ -122,6 +125,7 @@ public class TestDocumentMapper extends TestCase {
         BrowserDocumentDomainObject browserDocument = new BrowserDocumentDomainObject();
         browserDocument.setPermissionSetIdForRole( userRole, DocumentPermissionSetDomainObject.TYPE_ID__FULL );
         browserDocument.setBrowserDocumentId( BrowserDocumentDomainObject.Browser.DEFAULT, 1001 );
+        browserDocument.setCreator(new UserDomainObject());
         database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "meta" ), new Integer(1002) );
         documentMapper.saveNewDocument( browserDocument, user );
         database.verifyExpectedSqlCalls();

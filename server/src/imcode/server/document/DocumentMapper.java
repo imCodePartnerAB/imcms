@@ -157,15 +157,15 @@ public class DocumentMapper implements DocumentGetter {
 
     private void makeDocumentLookNew( DocumentDomainObject document, UserDomainObject user ) {
         Date now = new Date();
-        makeDocumentLookCreated(document, user, now);
+        document.setCreator(user);
+        setCreatedAndModifiedDatetimes(document, now);
         document.setPublicationStartDatetime(now);
         document.setArchivedDatetime(null);
         document.setPublicationEndDatetime(null);
         document.setStatus(DocumentDomainObject.STATUS_NEW);
     }
 
-    private void makeDocumentLookCreated(DocumentDomainObject document, UserDomainObject user, Date now) {
-        document.setCreator(user);
+    private void setCreatedAndModifiedDatetimes(DocumentDomainObject document, Date now) {
         document.setCreatedDatetime(now);
         document.setModifiedDatetime(now);
     }
@@ -444,7 +444,7 @@ public class DocumentMapper implements DocumentGetter {
 
         checkMaxDocumentCategoriesOfType(document);
 
-        makeDocumentLookCreated(document, user, new Date());
+        setCreatedAndModifiedDatetimes(document, new Date());
 
         int newMetaId = sqlInsertIntoMeta(document);
 
