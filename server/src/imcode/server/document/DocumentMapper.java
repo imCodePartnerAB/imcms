@@ -16,7 +16,6 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Clock;
@@ -466,7 +465,7 @@ public class DocumentMapper implements DocumentGetter {
 
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(document, user, null);
 
-        document.accept(new DocumentCreatingVisitor(user, database));
+        document.accept(new DocumentCreatingVisitor(user, database, services));
 
         invalidateDocument(document);
     }

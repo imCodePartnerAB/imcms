@@ -1,21 +1,17 @@
 package imcode.server.document;
 
-import imcode.server.db.DatabaseConnection;
+import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
-import imcode.server.db.commands.TransactionDatabaseCommand;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.server.ImcmsServices;
 
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     private DocumentDomainObject oldDocument;
-    private ImcmsServices services;
 
     public DocumentSavingVisitor(UserDomainObject user, DocumentDomainObject documentInDatabase, Database database, ImcmsServices services) {
-        super( user, database );
+        super( user, database, services );
         this.oldDocument = documentInDatabase;
-        this.services = services ;
     }
 
     public void visitHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
@@ -51,12 +47,7 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         boolean menusChanged = !textDocument.getMenus().equals( ( (TextDocumentDomainObject)oldDocument ).getMenus() );
 
         if ( menusChanged ) {
-            database.executeCommand( new TransactionDatabaseCommand() {
-                public Object executeInTransaction( DatabaseConnection connection ) {
-                    updateTextDocumentMenus( connection, textDocument, services );
-                    return null ;
-                }
-            } );
+            updateTextDocumentMenus( textDocument );
         }
     }
 }

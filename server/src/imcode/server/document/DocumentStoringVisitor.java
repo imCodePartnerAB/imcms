@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseConnection;
+import imcode.server.db.commands.TransactionDatabaseCommand;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileInputStreamSource;
@@ -25,13 +26,15 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     protected Database database ;
     protected UserDomainObject user;
+    protected ImcmsServices services;
 
     private static final int FILE_BUFFER_LENGTH = 2048;
     private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
 
-    public DocumentStoringVisitor( UserDomainObject user, Database database ) {
+    public DocumentStoringVisitor( UserDomainObject user, Database database, ImcmsServices services ) {
         this.database = database ;
         this.user = user;
+        this.services = services ;
     }
 
     protected void saveFileDocumentFile( int fileDocumentId, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
@@ -357,5 +360,14 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 "" + document.getId(), "" + metaIdForBrowser, "" + browser.getId()
             } );
         }
+    }
+
+    protected void updateTextDocumentMenus(final TextDocumentDomainObject textDocument) {
+        database.executeCommand( new TransactionDatabaseCommand() {
+            public Object executeInTransaction( DatabaseConnection connection ) {
+                updateTextDocumentMenus( connection, textDocument, services );
+                return null ;
+            }
+        } );
     }
 }

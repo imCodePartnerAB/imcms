@@ -1,13 +1,14 @@
 package imcode.server.document;
 
+import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 public class DocumentCreatingVisitor extends DocumentStoringVisitor {
 
-    public DocumentCreatingVisitor( UserDomainObject user, Database database ) {
-        super( user, database );
+    public DocumentCreatingVisitor( UserDomainObject user, Database database, ImcmsServices services ) {
+        super( user, database, services );
     }
 
     public void visitHtmlDocument( HtmlDocumentDomainObject document ) {
@@ -30,7 +31,7 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
                                              } );
     }
 
-    public void visitTextDocument( TextDocumentDomainObject textDocument ) {
+    public void visitTextDocument( final TextDocumentDomainObject textDocument ) {
         String sqlTextDocsInsertStr = "INSERT INTO text_docs (meta_id, template_id, group_id, default_template, default_template_1, default_template_2) VALUES (?,?,?,?,?,?)";
         TemplateDomainObject textDocumentTemplate = textDocument.getTemplate();
         TemplateDomainObject defaultTemplate = textDocument.getDefaultTemplate();
@@ -53,6 +54,6 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         updateTextDocumentTexts( textDocument );
         updateTextDocumentImages( textDocument );
         updateTextDocumentIncludes( textDocument );
-
+        updateTextDocumentMenus( textDocument );
     }
 }
