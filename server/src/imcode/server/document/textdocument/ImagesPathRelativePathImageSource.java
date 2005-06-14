@@ -13,7 +13,7 @@ public class ImagesPathRelativePathImageSource extends ImageSource {
     private String relativePath;
 
     public ImagesPathRelativePathImageSource( String relativePath ) {
-        this.relativePath = relativePath;
+        this.relativePath = relativePath.replace('\\','/');
     }
 
     public InputStreamSource getInputStreamSource( ) {
