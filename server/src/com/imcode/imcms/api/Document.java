@@ -399,6 +399,14 @@ public class Document implements Serializable {
         return internalDocument.isVisibleInMenusForUnauthorizedUsers();
     }
 
+    public boolean isLinkableByOtherUsers() {
+        return internalDocument.isLinkableByOtherUsers();
+    }
+
+    public void setLinkableByOtherUsers(boolean linkableByOtherUsers) {
+        internalDocument.setLinkableByOtherUsers(linkableByOtherUsers);
+    }
+
     public static class LifeCyclePhase {
         public static final LifeCyclePhase NEW = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.NEW);
         public static final LifeCyclePhase DISAPPROVED = new LifeCyclePhase(DocumentDomainObject.LifeCyclePhase.DISAPPROVED);

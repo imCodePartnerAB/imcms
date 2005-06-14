@@ -7,8 +7,6 @@ import junit.framework.TestCase;
 
 import java.util.*;
 
-import org.apache.commons.lang.ArrayUtils;
-
 public class TestDocument extends TestCase{
 
     public void testGetAllRolesMappedToPermissions() throws NoPermissionException {
@@ -48,5 +46,15 @@ public class TestDocument extends TestCase{
         keywords.add("foo") ;
         documentDO.setKeywords(keywords);
         assertTrue(document.getKeywords().contains("foo")) ;
+    }
+
+    public void testLinkableByOtherUsers() {
+        TextDocumentDomainObject documentDO = new TextDocumentDomainObject();
+        TextDocument document = new TextDocument(documentDO, null);
+        assertFalse(document.isLinkableByOtherUsers()) ;
+        documentDO.setLinkableByOtherUsers(true);
+        assertTrue(document.isLinkableByOtherUsers()) ;
+        document.setLinkableByOtherUsers(false);
+        assertFalse(documentDO.isLinkableByOtherUsers()) ;
     }
 }
