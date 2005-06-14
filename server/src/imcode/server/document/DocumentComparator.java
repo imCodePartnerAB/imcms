@@ -1,6 +1,6 @@
 package imcode.server.document;
 
-import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
+import com.imcode.util.ChainableReversibleNullComparator;
 
 public abstract class DocumentComparator extends ChainableReversibleNullComparator {
 

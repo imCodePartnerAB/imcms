@@ -8,10 +8,11 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.LanguageMapper;
 import imcode.server.ImcmsServices;
 import imcode.util.DateConstants;
+import imcode.util.ArraySet;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -101,13 +102,13 @@ public class ConnectionDocumentGetter implements DocumentGetter {
 
     }
 
-    private String[] getKeywords(ConvenienceDatabaseConnection connection, int meta_id) {
+    private Set getKeywords(ConvenienceDatabaseConnection connection, int meta_id) {
         String sqlStr;
         sqlStr =
-                "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = ?";
+        "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = ?";
         String[] params = new String[]{"" + meta_id};
-        String[] keywords = connection.executeArrayQuery(sqlStr, params);
-        return keywords;
+        final String[] keywords = connection.executeArrayQuery(sqlStr, params);
+        return new ArraySet(keywords);
     }
 
     /**
@@ -129,14 +130,14 @@ public class ConnectionDocumentGetter implements DocumentGetter {
 
     public void initDocumentCategories(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {
         String[][] categories = connection.execute2dArrayQuery( "SELECT categories.category_id, categories.name, categories.image, categories.description, "+
-                                                              DocumentMapper.SQL__CATEGORY_TYPE__COLUMNS
-                                                              + " FROM document_categories"
-                                                              + " JOIN categories"
-                                                              + "  ON document_categories.category_id = categories.category_id"
-                                                              + " JOIN category_types"
-                                                              + "  ON categories.category_type_id = category_types.category_type_id"
-                                                              + " WHERE document_categories.meta_id = ?",
-                                                              new String[]{"" + document.getId()} );
+                                                                DocumentMapper.SQL__CATEGORY_TYPE__COLUMNS
+                                                                + " FROM document_categories"
+                                                                + " JOIN categories"
+                                                                + "  ON document_categories.category_id = categories.category_id"
+                                                                + " JOIN category_types"
+                                                                + "  ON categories.category_type_id = category_types.category_type_id"
+                                                                + " WHERE document_categories.meta_id = ?",
+                                                                new String[]{"" + document.getId()} );
         for (int i = 0; i < categories.length; i++) {
             String[] categoryArray = categories[i];
 
@@ -147,7 +148,7 @@ public class ConnectionDocumentGetter implements DocumentGetter {
 
             CategoryTypeDomainObject categoryType = DocumentMapper.createCategoryTypeFromSqlResult( categoryArray, 4 ) ;
             CategoryDomainObject category = new CategoryDomainObject(categoryId, categoryName, categoryDescription,
-                    categoryImage, categoryType);
+                                                                     categoryImage, categoryType);
             document.addCategory(category);
         }
 
@@ -157,10 +158,10 @@ public class ConnectionDocumentGetter implements DocumentGetter {
 
         String[] parameters = new String[]{"" + document.getId()};
         String[][] sprocResult = connection.execute2dArrayQuery("SELECT "
-                + ImcmsAuthenticatorAndUserAndRoleMapper.SQL_ROLES_COLUMNS
-                + ", rr.set_id\n"
-                + "FROM  roles, roles_rights AS rr\n"
-                + "WHERE rr.role_id = roles.role_id AND rr.meta_id = ?", parameters);
+                                                                + ImcmsAuthenticatorAndUserAndRoleMapper.SQL_ROLES_COLUMNS
+                                                                + ", rr.set_id\n"
+                                                                + "FROM  roles, roles_rights AS rr\n"
+                                                                + "WHERE rr.role_id = roles.role_id AND rr.meta_id = ?", parameters);
 
         for (int i = 0; i < sprocResult.length; ++i) {
             RoleDomainObject role = userAndRoleMapper.getRoleFromSqlResult(sprocResult[i]);

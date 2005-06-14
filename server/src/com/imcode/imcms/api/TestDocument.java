@@ -5,9 +5,9 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
+import org.apache.commons.lang.ArrayUtils;
 
 public class TestDocument extends TestCase{
 
@@ -41,4 +41,12 @@ public class TestDocument extends TestCase{
         assertFalse(documentDO.isSearchDisabled()) ;
     }
 
+    public void testKeywords() {
+        TextDocumentDomainObject documentDO = new TextDocumentDomainObject();
+        TextDocument document = new TextDocument(documentDO, null);
+        Set keywords = new HashSet();
+        keywords.add("foo") ;
+        documentDO.setKeywords(keywords);
+        assertTrue(document.getKeywords().contains("foo")) ;
+    }
 }

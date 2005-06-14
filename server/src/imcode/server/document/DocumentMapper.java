@@ -471,7 +471,23 @@ public class DocumentMapper implements DocumentGetter {
 
         updateDocumentCategories(document);
 
-        updateDocumentKeywords(document.getId(), document.getKeywords());
+        updateDocumentKeywords(document);
+    }
+
+    private void updateDocumentKeywords(DocumentDomainObject document) {
+        int meta_id = document.getId();
+        Set keywords = document.getKeywords();
+        Set allKeywords = new HashSet(Arrays.asList(getAllKeywords()));
+        deleteKeywordsFromDocument(meta_id);
+        for ( Iterator iterator = keywords.iterator(); iterator.hasNext(); ) {
+            String keyword = (String) iterator.next();
+            final boolean keywordExists = allKeywords.contains(keyword);
+            if (!keywordExists) {
+                addKeyword(keyword);
+            }
+            addExistingKeywordToDocument(meta_id, keyword);
+        }
+        deleteUnusedKeywords();
     }
 
     private int sqlInsertIntoMeta(DocumentDomainObject document) {
@@ -677,20 +693,6 @@ public class DocumentMapper implements DocumentGetter {
     public void deleteInclude(int including_meta_id, int include_id) {
         String[] params = new String[]{"" + including_meta_id, "" + include_id};
         database.executeUpdateProcedure("DeleteInclude", params);
-    }
-
-    private void updateDocumentKeywords(int meta_id, String[] keywords) {
-        Set allKeywords = new HashSet(Arrays.asList(getAllKeywords()));
-        deleteKeywordsFromDocument(meta_id);
-        for (int i = 0; i < keywords.length; i++) {
-            String keyword = keywords[i];
-            final boolean keywordExists = allKeywords.contains(keyword);
-            if (!keywordExists) {
-                addKeyword(keyword);
-            }
-            addExistingKeywordToDocument(meta_id, keyword);
-        }
-        deleteUnusedKeywords();
     }
 
     private void addExistingKeywordToDocument(int meta_id, String keyword) {

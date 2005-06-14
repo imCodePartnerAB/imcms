@@ -68,9 +68,9 @@ class IndexDocumentFactory {
             indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__CATEGORY_TYPE_ID, ""+categoryType.getId() )) ;
         }
 
-        String[] documentKeywords = document.getKeywords();
-        for ( int i = 0; i < documentKeywords.length; i++ ) {
-            String documentKeyword = documentKeywords[i];
+        Set documentKeywords = document.getKeywords();
+        for ( Iterator iterator = documentKeywords.iterator(); iterator.hasNext(); ) {
+            String documentKeyword = (String) iterator.next();
             indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__KEYWORD, documentKeyword ) );
         }
 

@@ -142,6 +142,14 @@ public class Document implements Serializable {
         return internalDocument.hashCode();
     }
 
+    public Set getKeywords() {
+        return internalDocument.getKeywords();
+    }
+
+    public void setKeywords(Set keywords) {
+        internalDocument.setKeywords(keywords);
+    }
+
     public DocumentPermissionSet getPermissionSetRestrictedOne() throws NoPermissionException {
         DocumentPermissionSetDomainObject restrictedOne = internalDocument.getPermissionSetForRestrictedOne() ;
         DocumentPermissionSet result = new DocumentPermissionSet( restrictedOne );

@@ -9,10 +9,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.SectionDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.DateConstants;
-import imcode.util.HttpSessionUtils;
-import imcode.util.Utility;
-import imcode.util.LocalizedMessage;
+import imcode.util.*;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.servlet.ServletException;
@@ -224,7 +221,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
         String keywordsString = request.getParameter( REQUEST_PARAMETER__KEYWORDS );
         String[] keywords = parseKeywords( keywordsString );
-        document.setKeywords( keywords );
+        document.setKeywords( new ArraySet(keywords) );
 
         boolean searchDisabled = "1".equals( request.getParameter( REQUEST_PARAMETER__SEARCH_DISABLED ) );
         document.setSearchDisabled( searchDisabled );

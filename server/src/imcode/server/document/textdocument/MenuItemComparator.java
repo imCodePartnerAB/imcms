@@ -1,6 +1,6 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
+import com.imcode.util.ChainableReversibleNullComparator;
 import imcode.server.document.DocumentComparator;
 
 public abstract class MenuItemComparator extends ChainableReversibleNullComparator {

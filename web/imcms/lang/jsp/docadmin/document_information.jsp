@@ -441,7 +441,7 @@ function checkFocus() {
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/35 ?></td>
 		<td class="imcmsAdmText"><%
-		String[] keywords = document.getKeywords();
+		Set documentKeywords = document.getKeywords(); String[] keywords = (String[])documentKeywords.toArray(new String[documentKeywords.size()]);
 		Collator collator = service.getDefaultLanguageCollator() ;
 		Arrays.sort(keywords,collator) ;
 		for ( int i = 0; i < keywords.length; i++ ) {

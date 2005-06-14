@@ -131,12 +131,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.image = v;
     }
 
-    public String[] getKeywords() {
-        return (String[])attributes.keywords.toArray( new String[attributes.keywords.size()] );
+    public Set getKeywords() {
+        return Collections.unmodifiableSet(attributes.keywords) ;
     }
 
-    public void setKeywords( String[] keywords ) {
-        attributes.keywords = new HashSet( Arrays.asList( keywords ) );
+    public void setKeywords( Set keywords ) {
+        attributes.keywords = new HashSet( keywords );
     }
 
     public String getLanguageIso639_2() {
