@@ -8,9 +8,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
 import imcode.server.db.DatabaseConnection;
-import imcode.server.db.commands.CompositeDatabaseCommand;
-import imcode.server.db.commands.DeleteWhereColumnEqualsDatabaseCommand;
-import imcode.server.db.commands.UpdateDatabaseCommand;
+import imcode.server.db.commands.*;
 import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
@@ -479,47 +477,29 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     private int sqlInsertIntoMeta(DocumentDomainObject document) {
-        String[] metaColumnNames = {
-            "doc_type", "meta_headline", "meta_text", "meta_image",
-            "owner_id", "permissions", "shared", "show_meta",
-            "lang_prefix", "date_created", "date_modified", "disable_search",
-            "target", "activate", "archived_datetime", "publisher_id",
-            "status", "publication_start_datetime", "publication_end_datetime"
-        };
 
-        String sqlPlaceHolders = "?" + StringUtils.repeat(",?", metaColumnNames.length - 1);
-        final String sqlStr = "INSERT INTO meta (" + StringUtils.join(metaColumnNames, ",") + ") VALUES ("
-                + sqlPlaceHolders
-                + ")";
-        List sqlColumnValues = new ArrayList();
-        sqlColumnValues.add(document.getDocumentTypeId() + "");
-        sqlColumnValues.add(document.getHeadline());
-        sqlColumnValues.add(document.getMenuText());
-        sqlColumnValues.add(document.getMenuImage());
-        sqlColumnValues.add(document.getCreator().getId() + "");
-        sqlColumnValues.add(makeSqlStringFromBoolean(document.isRestrictedOneMorePrivilegedThanRestrictedTwo()));
-        sqlColumnValues.add(makeSqlStringFromBoolean(document.isLinkableByOtherUsers()));
-        sqlColumnValues.add(makeSqlStringFromBoolean(document.isVisibleInMenusForUnauthorizedUsers()));
-        sqlColumnValues.add(document.getLanguageIso639_2());
-        sqlColumnValues.add(makeSqlStringFromDate(document.getCreatedDatetime()));
-        sqlColumnValues.add(makeSqlStringFromDate(document.getModifiedDatetime()));
-        sqlColumnValues.add(makeSqlStringFromBoolean(document.isSearchDisabled()));
-        sqlColumnValues.add(document.getTarget());
-        sqlColumnValues.add("1");
-        sqlColumnValues.add(makeSqlStringFromDate(document.getArchivedDatetime()));
-        sqlColumnValues.add(null != document.getPublisher() ? document.getPublisher().getId() + "" : null);
-        sqlColumnValues.add("" + document.getStatus());
-        sqlColumnValues.add(makeSqlStringFromDate(document.getPublicationStartDatetime()));
-        sqlColumnValues.add(makeSqlStringFromDate(document.getPublicationEndDatetime()));
-
-        final String[] params = (String[]) sqlColumnValues.toArray(new String[sqlColumnValues.size()]);
-        DatabaseCommand databaseCommand = new DatabaseCommand() {
-            public Object executeOn(DatabaseConnection connection) throws DatabaseException {
-                return connection.executeUpdateAndGetGeneratedKey(sqlStr, params);
-            }
-        };
-        final Number metaId = (Number) database.executeCommand(databaseCommand);
-        return metaId.intValue();
+        final Number documentId = (Number) database.executeCommand(new InsertIntoTableDatabaseCommand("meta", new String[][]{
+            { "doc_type", document.getDocumentTypeId() + ""},
+            { "meta_headline", document.getHeadline()},
+            { "meta_text", document.getMenuText()},
+            { "meta_image", document.getMenuImage()},
+            { "owner_id", document.getCreator().getId() + ""},
+            { "permissions", makeSqlStringFromBoolean(document.isRestrictedOneMorePrivilegedThanRestrictedTwo())},
+            { "shared", makeSqlStringFromBoolean(document.isLinkableByOtherUsers())},
+            { "show_meta", makeSqlStringFromBoolean(document.isVisibleInMenusForUnauthorizedUsers())},
+            { "lang_prefix", document.getLanguageIso639_2()},
+            { "date_created", makeSqlStringFromDate(document.getCreatedDatetime()) },
+            { "date_modified", makeSqlStringFromDate(document.getModifiedDatetime())},
+            { "disable_search", makeSqlStringFromBoolean(document.isSearchDisabled())},
+            { "target", document.getTarget()},
+            { "activate", "1"},
+            { "archived_datetime", makeSqlStringFromDate(document.getArchivedDatetime())},
+            { "publisher_id", null != document.getPublisher() ? document.getPublisher().getId() + "" : null},
+            { "status", "" + document.getStatus()},
+            { "publication_start_datetime", makeSqlStringFromDate(document.getPublicationStartDatetime())},
+            { "publication_end_datetime", makeSqlStringFromDate(document.getPublicationEndDatetime())}
+        }));
+        return documentId.intValue();
     }
 
     private String makeSqlStringFromBoolean(final boolean bool) {

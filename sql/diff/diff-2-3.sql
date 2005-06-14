@@ -61,3 +61,67 @@ DROP TABLE sort_by
 UPDATE meta SET meta_image = REPLACE(meta_image, '../', '')
 
 -- 2005-04-26 Lennart Å
+
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.phones
+    DROP CONSTRAINT FK_phones_users
+GO
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.phones
+    DROP CONSTRAINT DF_phones_phonetype_id
+GO
+CREATE TABLE dbo.Tmp_phones
+(
+    phone_id int NOT NULL IDENTITY (1, 1),
+    number varchar(25) NOT NULL,
+    user_id int NOT NULL,
+    phonetype_id int NOT NULL
+)  ON [PRIMARY]
+GO
+ALTER TABLE dbo.Tmp_phones ADD CONSTRAINT
+    DF_phones_phonetype_id DEFAULT (0) FOR phonetype_id
+GO
+SET IDENTITY_INSERT dbo.Tmp_phones ON
+GO
+IF EXISTS(SELECT * FROM dbo.phones)
+    EXEC('INSERT INTO dbo.Tmp_phones (phone_id, number, user_id, phonetype_id)
+SELECT phone_id, number, user_id, phonetype_id FROM dbo.phones TABLOCKX')
+GO
+SET IDENTITY_INSERT dbo.Tmp_phones OFF
+GO
+DROP TABLE dbo.phones
+GO
+EXECUTE sp_rename N'dbo.Tmp_phones', N'phones', 'OBJECT'
+GO
+ALTER TABLE dbo.phones ADD CONSTRAINT
+PK_phones PRIMARY KEY NONCLUSTERED
+(
+    phone_id,
+    user_id
+) ON [PRIMARY]
+GO
+ALTER TABLE dbo.phones WITH NOCHECK ADD CONSTRAINT
+FK_phones_users FOREIGN KEY
+(
+    user_id
+) REFERENCES dbo.users
+(
+    user_id
+)
+GO
+COMMIT
+
+DROP PROCEDURE PhoneNbrAdd
+
+-- 2005-06-14 Kreiger

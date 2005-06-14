@@ -5,9 +5,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
 import imcode.server.db.DatabaseConnection;
-import imcode.server.db.commands.CompositeDatabaseCommand;
-import imcode.server.db.commands.DeleteWhereColumnEqualsDatabaseCommand;
-import imcode.server.db.commands.TransactionDatabaseCommand;
+import imcode.server.db.commands.*;
 import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.db.exceptions.IntegrityConstraintViolationException;
 import imcode.server.db.exceptions.StringTruncationException;
@@ -27,7 +25,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     private static final String SPROC_GET_USER_ROLES = "GetUserRoles";
     private static final String SPROC_GET_USERS_WHO_BELONGS_TO_ROLE = "GetUsersWhoBelongsToRole";
 
-    private static final String SPROC_PHONE_NBR_ADD = "phoneNbrAdd";
     private static final String SPROC_DEL_PHONE_NR = "DelPhoneNr";
 
     private static final int USER_EXTERN_ID = 2;
@@ -424,12 +421,13 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         }
     }
 
-    public static void addPhoneNumber( int newUserId, String phoneNumber, int phoneNumberType, Database database ) {
-        String[] sprocParameters = new String[] {
-                                String.valueOf( newUserId ), phoneNumber, String.valueOf( phoneNumberType )
-                        };
+    public static void addPhoneNumber( final int newUserId, final String phoneNumber, final int phoneNumberType, Database database ) {
         try {
-            database.executeUpdateProcedure( SPROC_PHONE_NBR_ADD, sprocParameters );
+            database.executeCommand(new InsertIntoTableDatabaseCommand("phones", new String[][] {
+                {"user_id", ""+newUserId},
+                {"number", phoneNumber},
+                {"phonetype_id", ""+phoneNumberType}
+            })) ;
         } catch ( DatabaseException e ) {
             throw new UnhandledException( e );
         }
