@@ -31,4 +31,14 @@ public class TestDocument extends TestCase{
 
     }
 
+    public void testSearchDisabled() {
+        TextDocumentDomainObject documentDO = new TextDocumentDomainObject();
+        TextDocument document = new TextDocument(documentDO, null);
+        assertFalse(document.isSearchDisabled()) ;
+        documentDO.setSearchDisabled(true);
+        assertTrue(document.isSearchDisabled()) ;
+        document.setSearchDisabled(false);
+        assertFalse(documentDO.isSearchDisabled()) ;
+    }
+
 }

@@ -109,6 +109,14 @@ public class Document implements Serializable {
         return result;
     }
 
+    public boolean isSearchDisabled() {
+        return internalDocument.isSearchDisabled();
+    }
+
+    public void setSearchDisabled(boolean searchDisabled) {
+        internalDocument.setSearchDisabled(searchDisabled);
+    }
+
     public DocumentPermissionSet getDocumentPermissionSetForUser() {
         return new DocumentPermissionSet( contentManagementSystem.getCurrentUser().getInternal().getPermissionSetFor( internalDocument ) );
     }
