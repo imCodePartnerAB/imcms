@@ -25,6 +25,7 @@ public class TestDocumentMapper extends TestCase {
     private RoleDomainObject userRole;
     private TextDocumentDomainObject textDocument;
     private TextDocumentDomainObject oldDocument;
+    private TestDocumentMapper.MockDocumentIndex documentIndex;
 
     protected void setUp() throws Exception {
         BasicConfigurator.configure(new NullAppender());
@@ -51,7 +52,8 @@ public class TestDocumentMapper extends TestCase {
                 return null ;
             }
         }) ;
-        documentMapper = new DocumentMapper( services, database, new DocumentPermissionSetMapper( database, services ), new TestDocumentMapper.MockDocumentIndex(), null, new Config() );
+        documentIndex = new MockDocumentIndex();
+        documentMapper = new DocumentMapper( services, database, new DocumentPermissionSetMapper( database, services ), documentIndex, null, new Config() );
         services.setDocumentMapper(documentMapper);
     }
 
@@ -146,6 +148,8 @@ public class TestDocumentMapper extends TestCase {
         documentMapper.deleteDocument( textDocument, user );
         database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( DocumentMapper.SQL_GET_DOCUMENT ), new String[0] );
         assertNull( documentMapper.getDocument( textDocument.getId() ) ) ;
+        assertTrue(documentIndex.removeDocumentCalled) ;
+        assertFalse(documentIndex.indexDocumentCalled) ;
     }
 
     public void testCreateTextDocument() {
@@ -171,11 +175,15 @@ public class TestDocumentMapper extends TestCase {
     }
 
     public class MockDocumentIndex implements DocumentIndex {
+        private boolean indexDocumentCalled;
+        private boolean removeDocumentCalled;
 
         public void indexDocument( DocumentDomainObject document ) throws IndexException {
+            this.indexDocumentCalled = true ;
         }
 
         public void removeDocument( DocumentDomainObject document ) throws IndexException {
+            this.removeDocumentCalled = true ;
         }
 
         public DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IndexException {

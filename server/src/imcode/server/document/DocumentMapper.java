@@ -860,7 +860,8 @@ public class DocumentMapper implements DocumentGetter {
         DatabaseCommand deleteDocumentCommand = createDeleteDocumentCommand(document);
         database.executeCommand(deleteDocumentCommand);
         document.accept(new DocumentDeletingVisitor());
-        invalidateDocument(document);
+        documentIndex.removeDocument(document);
+        documentCache.remove(new DocumentId(document.getId()));
     }
 
     private DatabaseCommand createDeleteDocumentCommand(final DocumentDomainObject document) {
