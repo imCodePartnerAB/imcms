@@ -8,12 +8,11 @@ import java.text.DateFormat;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import imcode.external.diverse.*;
-
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.DateConstants;
+import imcode.util.VariableManager;
 import org.apache.log4j.Logger;
 
 

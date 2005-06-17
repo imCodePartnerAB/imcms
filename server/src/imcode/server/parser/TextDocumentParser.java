@@ -168,7 +168,6 @@ public class TextDocumentParser {
         tags.setProperty( "#serverMasterEmail#", service.getSystemData().getServerMasterAddress() );
 
         tags.setProperty( "#param#", parserParameters.getParameter() );
-        tags.setProperty( "#externalparam#", parserParameters.getExternalParameter() );
 
         if ( parserParameters.getFlags() >= 0 && parserParameters.isAdminButtonsVisible() ) {
             tags.setProperty( "#adminMode#", Html.getAdminButtons( user, document, parserParameters.getDocumentRequest().getHttpServletRequest(), parserParameters.getDocumentRequest().getHttpServletResponse() ) );

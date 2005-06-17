@@ -1,7 +1,10 @@
-package imcode.external.diverse ;
+package imcode.util ;
 
 import java.util.* ;
 
+/**
+ * @deprecated
+ */
 public class VariableManager {
 
     private List tags = new ArrayList();

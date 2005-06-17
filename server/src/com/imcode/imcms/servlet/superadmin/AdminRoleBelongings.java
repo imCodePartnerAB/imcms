@@ -11,7 +11,7 @@ package com.imcode.imcms.servlet.superadmin;
  *
  */
 
-import imcode.external.diverse.VariableManager;
+import imcode.util.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;

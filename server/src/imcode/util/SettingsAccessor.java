@@ -1,4 +1,4 @@
-package imcode.external.diverse;
+package imcode.util;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+/**
+ * @deprecated 
+ */
 public class SettingsAccessor {
 
     private String fileName;

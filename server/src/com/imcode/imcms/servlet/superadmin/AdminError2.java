@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.external.diverse.SettingsAccessor;
-import imcode.external.diverse.VariableManager;
+import imcode.util.SettingsAccessor;
+import imcode.util.VariableManager;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 

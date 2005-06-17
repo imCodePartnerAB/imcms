@@ -214,30 +214,11 @@ public class GetDoc extends HttpServlet {
             return null;
         } else {
             Utility.setDefaultHtmlContentType( res );
-            String externalparam = null;
-            if ( req.getParameter( "externalClass" ) != null || req.getAttribute( "externalClass" ) != null ) {
-                String className;
-                if ( req.getParameter( "externalClass" ) != null ) {
-                    className = req.getParameter( "externalClass" );
-                } else {
-                    className = (String)req.getAttribute( "externalClass" );
-                }
-                try {
-                    Class cl = Class.forName( className );
-                    imcode.external.GetDocControllerInterface obj = (imcode.external.GetDocControllerInterface)cl.newInstance();
-                    externalparam = obj.createString( req );
-                } catch ( Exception e ) {
-                    StringWriter sw = new StringWriter();
-                    e.printStackTrace( new PrintWriter( sw ) );
-                    externalparam = "<!-- Exception: " + sw.toString() + " -->";
-                }
-            }
             user.setTemplateGroup( null );
             ParserParameters paramsToParser = new ParserParameters( documentRequest );
 
             paramsToParser.setTemplate( req.getParameter( "template" ) );
             paramsToParser.setParameter( req.getParameter( "param" ) );
-            paramsToParser.setExternalParameter( externalparam );
             // Log to accesslog
             trackLog.info( documentRequest );
             String result = imcref.parsePage( paramsToParser );
