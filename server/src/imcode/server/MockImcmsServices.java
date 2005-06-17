@@ -11,8 +11,6 @@ import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Clock;
 import imcode.util.net.SMTP;
-import imcode.util.poll.PollHandlingSystem;
-import imcode.util.shop.ShoppingOrderSystem;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
@@ -173,26 +171,6 @@ public class MockImcmsServices implements ImcmsServices {
         return new String[0][];
     }
 
-    public String getFortune( String path ) throws IOException {
-        return null;
-    }
-
-    public List getQuoteList( String quoteListName ) {
-        return null;
-    }
-
-    public void setQuoteList( String quoteListName, List quoteList ) throws IOException {
-
-    }
-
-    public List getPollList( String pollListName ) {
-        return null;
-    }
-
-    public void setPollList( String pollListName, List pollList ) throws IOException {
-
-    }
-
     public int getSessionCounter() {
         return 0;
     }
@@ -223,14 +201,6 @@ public class MockImcmsServices implements ImcmsServices {
 
     public void unsetUserFlag( UserDomainObject user, String flagName ) {
 
-    }
-
-    public PollHandlingSystem getPollHandlingSystem() {
-        return null;
-    }
-
-    public ShoppingOrderSystem getShoppingOrderSystem() {
-        return null;
     }
 
     public void updateMainLog( String logMessage ) {

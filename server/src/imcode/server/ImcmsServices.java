@@ -121,16 +121,6 @@ public interface ImcmsServices extends Clock {
 
     String[][] getAllDocumentTypes(String langPrefixStr)  ;
 
-    String getFortune(String path) throws IOException ;
-
-    List getQuoteList(String quoteListName);
-
-    void setQuoteList(String quoteListName, List quoteList) throws IOException ;
-
-    List getPollList(String pollListName);
-
-    void setPollList(String pollListName, List pollList) throws IOException ;
-
     int getSessionCounter();
 
     String getSessionCounterDateAsString();
@@ -147,12 +137,6 @@ public interface ImcmsServices extends Clock {
     void setUserFlag(UserDomainObject user, String flagName);
 
     void unsetUserFlag(UserDomainObject user, String flagName);
-
-    /** Get an interface to the poll handling system **/
-    imcode.util.poll.PollHandlingSystem getPollHandlingSystem();
-
-    /** Get an interface to the shopping order system **/
-    imcode.util.shop.ShoppingOrderSystem getShoppingOrderSystem() ;
 
     void updateMainLog( String logMessage );
 

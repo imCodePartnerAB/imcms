@@ -64,16 +64,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminFortuneFile</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminFortuneFile</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminFortunes</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminFortunes</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminIpAccess</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminIpAccess</servlet-class>
     </servlet>
@@ -91,26 +81,6 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminManager</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.AdminManager</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminQuestions</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminQuestions</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminQuestionsFile</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminQuestionsFile</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRandomTexts</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminRandomTexts</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRandomTextsFile</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.AdminRandomTextsFile</servlet-class>
     </servlet>
 
     <servlet>
@@ -354,16 +324,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminFortuneFile</servlet-name>
-        <url-pattern>/servlet/AdminFortuneFile</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminFortunes</servlet-name>
-        <url-pattern>/servlet/AdminFortunes</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminIpAccess</servlet-name>
         <url-pattern>/servlet/AdminIpAccess</url-pattern>
     </servlet-mapping>
@@ -381,26 +341,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminManager</servlet-name>
         <url-pattern>/servlet/AdminManager</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminQuestions</servlet-name>
-        <url-pattern>/servlet/AdminQuestions</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminQuestionsFile</servlet-name>
-        <url-pattern>/servlet/AdminQuestionsFile</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRandomTexts</servlet-name>
-        <url-pattern>/servlet/AdminRandomTexts</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.AdminRandomTextsFile</servlet-name>
-        <url-pattern>/servlet/AdminRandomTextsFile</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

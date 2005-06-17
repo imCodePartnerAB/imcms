@@ -9,15 +9,9 @@ import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
 import imcode.util.*;
-import imcode.util.fortune.*;
 import imcode.util.io.FileUtility;
 import imcode.util.net.SMTP;
-import imcode.util.poll.PollHandlingSystem;
-import imcode.util.poll.PollHandlingSystemImpl;
-import imcode.util.shop.ShoppingOrderSystem;
-import imcode.util.shop.ShoppingOrderSystemImpl;
 import org.apache.commons.beanutils.*;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -818,88 +812,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     /**
-     * Return a file relative to the fortune-path.
-     */
-    public String getFortune( String path ) throws IOException {
-        return fileCache.getCachedFileString( new File( config.getFortunePath(), path ) );
-    }
-
-    /**
-     * Get a list of quotes
-     *
-     * @param quoteListName The name of the quote-List.
-     * @return the quote-List.
-     */
-    public List getQuoteList( String quoteListName ) {
-        List theList = new LinkedList();
-        try {
-            File file = new File( config.getFortunePath(), quoteListName );
-            StringReader reader = new StringReader( IOUtils.toString( new BufferedReader( new FileReader( file ) ) ) );
-            QuoteReader quoteReader = new QuoteReader( reader );
-            for ( Quote quote; null != ( quote = quoteReader.readQuote() ); ) {
-                theList.add( quote );
-            }
-            reader.close();
-        } catch ( IOException ignored ) {
-            log.debug( "Failed to load quote-list " + quoteListName );
-        }
-        return theList;
-    }
-
-    /**
-     * Set a quote-list
-     *
-     * @param quoteListName The name of the quote-List.
-     * @param quoteList     The quote-List
-     */
-    public void setQuoteList( String quoteListName, List quoteList ) throws IOException {
-        FileWriter writer = new FileWriter( new File( config.getFortunePath(), quoteListName ) );
-        QuoteWriter quoteWriter = new QuoteWriter( writer );
-        Iterator quotesIterator = quoteList.iterator();
-        while ( quotesIterator.hasNext() ) {
-            quoteWriter.writeQuote( (Quote)quotesIterator.next() );
-        }
-        writer.flush();
-        writer.close();
-    }
-
-    /**
-     * @return a List of Polls
-     */
-    public List getPollList( String pollListName ) {
-        List theList = new LinkedList();
-        try {
-            File file = new File( config.getFortunePath(), pollListName );
-            StringReader reader = new StringReader( IOUtils.toString( new BufferedReader( new FileReader( file ) ) ) );
-            PollReader pollReader = new PollReader( reader );
-            for ( Poll poll; null != ( poll = pollReader.readPoll() ); ) {
-                theList.add( poll );
-            }
-            reader.close();
-        } catch ( IOException ignored ) {
-            log.debug( "Failed to load poll-list " + pollListName );
-        }
-        return theList;
-    }
-
-    /**
-     * Set a poll-list
-     *
-     * @param pollListName The name of the poll-List.
-     * @param pollList     The poll-List
-     */
-    public void setPollList( String pollListName, List pollList ) throws IOException {
-        FileWriter writer = new FileWriter( new File( config.getFortunePath(), pollListName ) );
-        PollWriter pollWriter = new PollWriter( writer );
-        Iterator pollIterator = pollList.iterator();
-        while ( pollIterator.hasNext() ) {
-            pollWriter.writePoll( (Poll)pollIterator.next() );
-        }
-        writer.flush();
-        writer.close();
-    }
-
-    /**
      * Get all possible userflags
      */
     public Map getUserFlags() {
@@ -957,14 +869,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
             theFlags.put( flagName, flag );
         }
         return theFlags;
-    }
-
-    public PollHandlingSystem getPollHandlingSystem() {
-        return new PollHandlingSystemImpl( this );
-    }
-
-    public ShoppingOrderSystem getShoppingOrderSystem() {
-        return new ShoppingOrderSystemImpl( this );
     }
 
     public Properties getLanguageProperties( UserDomainObject user ) {
