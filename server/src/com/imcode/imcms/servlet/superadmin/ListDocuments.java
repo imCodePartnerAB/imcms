@@ -42,7 +42,6 @@ public class ListDocuments extends HttpServlet {
 
         FormData formData = new FormData();
         formData.selectedRange = new IntRange( start, end ) ;
-        formData.allDocumentsRange = allDocumentsRange ;
         DocumentMapper documentMapper = imcref.getDocumentMapper() ;
         if ( req.getParameter( PARAMETER_BUTTON__LIST ) != null ) {
             formData.documentsIterator = documentMapper.getDocumentsIterator(formData.selectedRange) ;
@@ -64,7 +63,6 @@ public class ListDocuments extends HttpServlet {
     public static class FormData {
 
         public IntRange selectedRange;
-        public IntRange allDocumentsRange;
 
         public Iterator documentsIterator;
     }

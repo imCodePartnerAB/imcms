@@ -16,7 +16,6 @@ public class DefaultDatabase implements Database {
 
     QueryRunner queryRunner;
     ProcedureExecutor procedureExecutor;
-    Logger log = Logger.getLogger(DefaultDatabase.class);
 
     public DefaultDatabase( QueryRunner queryRunner, ProcedureExecutor procedureExecutor ) {
         this.queryRunner = queryRunner;

@@ -36,10 +36,6 @@ public interface ImcmsServices extends Clock {
     String isFramesetDoc( int meta_id )
 	;
 
-    // get external template folder
-    File getExternalTemplateFolder(int meta_id, UserDomainObject user)
-	;
-
     void incrementSessionCounter();
 
     // set session counter
@@ -59,41 +55,24 @@ public interface ImcmsServices extends Clock {
                                                  String directory )
 	;
 
-    // parseExternaldoc use template
-    String getTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, java.util.List variables,
-                                                               String directory, String subDirectory )
-	;
-
     // get templatehome
     String getTemplateData(int template_id)
-	throws IOException ;
+    throws IOException ;
 
     // get templatehome
     File getTemplatePath()
 	;
 
-    // get file-path to imcmsimages
-    File getImcmsPath()
-	;
-
     // get language prefix by id
     String getLanguagePrefixByLangId ( int lang_id );
 
-    // get language prefix for user
-    String getUserLangPrefixOrDefaultLanguage( UserDomainObject user )
-    ;
-
     // get doctype
     int getDocType(int meta_id)
-	;
-
-    /** @deprecated Use {@link UserDomainObject#canEdit(imcode.server.document.DocumentDomainObject)} **/
-    boolean checkDocAdminRights(int meta_id, UserDomainObject user)
-	;
+    ;
 
     // save template to disk
      int saveTemplate(String name,String file_name,byte[] data,boolean overwrite,String lang_prefix)
-	;
+    ;
 
     // get demo template data
     Object[] getDemoTemplate(int template_id)
@@ -161,10 +140,6 @@ public interface ImcmsServices extends Clock {
     VelocityContext getVelocityContext( UserDomainObject user );
 
     Config getConfig();
-
-    Clock getClock();
-
-    File getRealContextPath();
 
     KeyStore getKeyStore();
 

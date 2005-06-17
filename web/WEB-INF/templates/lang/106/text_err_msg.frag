@@ -1,1 +1,0 @@
-<? templates/sv/fortunes/text_err_msg.frag/1 ?>

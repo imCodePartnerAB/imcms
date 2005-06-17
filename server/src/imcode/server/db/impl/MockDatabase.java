@@ -4,7 +4,6 @@ import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
 import imcode.server.db.handlers.FlatStringArrayResultSetHandler;
 import imcode.server.db.handlers.MultiStringArrayResultSetHandler;
-import imcode.server.db.handlers.SingleStringResultSetHandler;
 import imcode.server.db.exceptions.DatabaseException;
 import junit.framework.Assert;
 import org.apache.commons.collections.CollectionUtils;
@@ -136,24 +135,14 @@ public class MockDatabase implements Database {
         return result;
     }
 
-    public List getSqlCalls() {
-        return sqlCalls;
-    }
-
     public static class SqlCall {
 
         private String string;
         private Object[] parameters;
-        private Object result;
 
         public SqlCall(String string, Object[] parameters) {
             this.string = string;
             this.parameters = parameters;
-        }
-
-        public SqlCall(String string, String[] parameters, Object result) {
-            this(string, parameters);
-            this.result = result;
         }
 
         public String getString() {
@@ -164,17 +153,10 @@ public class MockDatabase implements Database {
             return parameters;
         }
 
-        public Object getResult() {
-            return result;
-        }
-
         public String toString() {
             return getString() + " " + StringUtils.join(getParameters(), ", ");
         }
 
-        public void setParameters(String[] parameters) {
-            this.parameters = parameters;
-        }
     }
 
     public void assertCalled(SqlCallPredicate predicate) {
@@ -318,24 +300,6 @@ public class MockDatabase implements Database {
 
         String getFailureMessage() {
             return "sql \"" + sql + "\"";
-        }
-    }
-
-    public static class EqualsWithParameterSqlCallPredicate extends EqualsSqlCallPredicate {
-
-        private Object parameterValue;
-
-        public EqualsWithParameterSqlCallPredicate(String sql, Object parameterValue) {
-            super(sql);
-            this.parameterValue = parameterValue;
-        }
-
-        boolean evaluateSqlCall(SqlCall sqlCall) {
-            return super.evaluateSqlCall(sqlCall) && ArrayUtils.contains(sqlCall.getParameters(), parameterValue);
-        }
-
-        String getFailureMessage() {
-            return "parameter value \"" + parameterValue + "\" for sql " + sql;
         }
     }
 

@@ -54,27 +54,6 @@ public class SMTP {
         }
     }
 
-    /**
-     * Composes and sends a mail to the SMTP server, and returns when finished.
-     * <p/>
-     * <BR>Example: <BR><CODE>sendMailWait (	"bill.gates@microsoft.com",
-     * "linus.torvalds@linux.org,steve.jobs@apple.com",
-     * "Microsoft sucks!",
-     * "I really dig you guys! You are my idols!" );</CODE>
-     *
-     * @throws ProtocolException Is thrown whenever an errormessage is received from the server, i.e. an SMTP-protocol error.
-     * @throws IOException       Thrown when an I/O-error occurs, or if the connection times out.
-     * @param	from		The address sent from.
-     * @param	to		The addresses to send to.
-     * @param	subject		The message subject.
-     * @param	body		String containing the message.
-     * @deprecated Use {@link #sendMail(imcode.util.net.SMTP.Mail)} instead.
-     */
-    public void sendMailWait( String from, String[] to, String subject, String body ) throws IOException {
-        Mail mail = new Mail( from, to, subject, body );
-        sendMail( mail );
-    }
-
     public static class Mail {
 
         MultiPartEmail mail = new MultiPartEmail();

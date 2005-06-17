@@ -13,18 +13,12 @@ INSERT INTO doc_types VALUES(5, 'swe', 'Extern länk');
 INSERT INTO doc_types VALUES(6, 'swe', 'Browserkontroll');
 INSERT INTO doc_types VALUES(7, 'swe', 'HTML-dokument');
 INSERT INTO doc_types VALUES(8, 'swe', 'Fil');
-INSERT INTO doc_types VALUES(102, 'swe', 'Konferens');
-INSERT INTO doc_types VALUES(103, 'swe', 'Chatt');
-INSERT INTO doc_types VALUES(104, 'swe', 'Anslagstavla');
 
 INSERT INTO doc_types VALUES(2, 'eng', 'Text page');
 INSERT INTO doc_types VALUES(5, 'eng', 'External link');
 INSERT INTO doc_types VALUES(6, 'eng', 'Browser controlled link');
 INSERT INTO doc_types VALUES(7, 'eng', 'HTML-document');
 INSERT INTO doc_types VALUES(8, 'eng', 'File');
-INSERT INTO doc_types VALUES(102, 'eng', 'Conference');
-INSERT INTO doc_types VALUES(103, 'eng', 'Chat');
-INSERT INTO doc_types VALUES(104, 'eng', 'Billboard');
 
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,2,'swe','Ändra text');
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,5,'swe','Redigera');

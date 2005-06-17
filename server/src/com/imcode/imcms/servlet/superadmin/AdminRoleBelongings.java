@@ -11,7 +11,6 @@ package com.imcode.imcms.servlet.superadmin;
  *
  */
 
-import imcode.util.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -26,6 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Takes care of administration of users by roles.
@@ -83,8 +84,8 @@ public class AdminRoleBelongings extends Administrator {
         // Lets generate the html page
         String optionList = createListOfOptions( queryResult );
 
-        VariableManager vm = new VariableManager();
-        vm.addProperty( "ROLES_MENU", optionList );
+        Map vm = new HashMap();
+        vm.put("ROLES_MENU", optionList) ;
 
         this.sendHtml( req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING );
     }
@@ -153,11 +154,11 @@ public class AdminRoleBelongings extends Administrator {
             String curentRoleName = getRoleName( roleId, imcref );
 
             // Lets generate the html page
-            VariableManager vm = new VariableManager();
-            vm.addProperty( "CURENT_ROLE_ID", roleId );
-            vm.addProperty( "CURENT_ROLE_NAME", curentRoleName );
-            vm.addProperty( "USER_MENU", userOptionListTag );
-            vm.addProperty( "ROLES_MENU", roleOptionList );
+            Map vm = new HashMap();
+            vm.put("CURENT_ROLE_ID", roleId) ;
+            vm.put("CURENT_ROLE_NAME", curentRoleName) ;
+            vm.put("USER_MENU", userOptionListTag) ;
+            vm.put("ROLES_MENU", roleOptionList) ;
 
             this.sendHtml( req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING_EDIT );
 
@@ -181,10 +182,10 @@ public class AdminRoleBelongings extends Administrator {
             String curentRoleName = getRoleName( roleId, imcref );
 
             //Lets generate the html page
-            VariableManager vm = new VariableManager();
-            vm.addProperty( "CURENT_ROLE_ID", roleId );
-            vm.addProperty( "CURENT_ROLE_NAME", curentRoleName );
-            vm.addProperty( "USER_MENU", userOptionListTag );
+            Map vm = new HashMap();
+            vm.put("CURENT_ROLE_ID", roleId) ;
+            vm.put("CURENT_ROLE_NAME", curentRoleName) ;
+            vm.put("USER_MENU", userOptionListTag) ;
 
             this.sendHtml( req, res, vm, AdminRoleBelongings.HTML_ADMIN_ROLE_BELONGING_ACTIVATE );
 

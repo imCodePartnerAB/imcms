@@ -1,1 +1,0 @@
-<? templates/sv/shop/mailformat.txt/1 ?>

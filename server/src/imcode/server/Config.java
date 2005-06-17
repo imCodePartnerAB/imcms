@@ -9,9 +9,7 @@ public class Config {
 
     private File templatePath;
     private File includePath;
-    private File fortunePath;
     private File filePath;
-    private File imcmsPath;
     private File imagePath;
     private String imageUrl;
     private String smtpServer;
@@ -33,16 +31,8 @@ public class Config {
         this.includePath = includePath;
     }
 
-    public void setFortunePath( File fortunePath ) {
-        this.fortunePath = fortunePath;
-    }
-
     public void setFilePath( File filePath ) {
         this.filePath = filePath;
-    }
-
-    public void setImcmsPath( File imcmsPath ) {
-        this.imcmsPath = imcmsPath;
     }
 
     public void setImageUrl( String imageUrl ) {
@@ -88,16 +78,8 @@ public class Config {
         return imageUrl;
     }
 
-    public File getImcmsPath() {
-        return imcmsPath;
-    }
-
     public String getDefaultLanguage() {
         return defaultLanguage;
-    }
-
-    public File getFortunePath() {
-        return fortunePath;
     }
 
     public File getIncludePath() {

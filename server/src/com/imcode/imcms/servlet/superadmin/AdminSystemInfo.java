@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.util.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
@@ -12,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Map;
+import java.util.HashMap;
 
 public class AdminSystemInfo extends Administrator {
 
@@ -41,13 +42,13 @@ public class AdminSystemInfo extends Administrator {
 
 
         // Lets generate the html page
-        VariableManager vm = new VariableManager();
-        vm.addProperty("STARTDOCUMENT", "" + startDoc);
-        vm.addProperty("SYSTEM_MESSAGE", msg);
-        vm.addProperty("WEB_MASTER", webMaster);
-        vm.addProperty("WEB_MASTER_EMAIL", webMasterEmail);
-        vm.addProperty("SERVER_MASTER", serverMaster);
-        vm.addProperty("SERVER_MASTER_EMAIL", serverMasterEmail);
+        Map vm = new HashMap();
+        vm.put("STARTDOCUMENT", "" + startDoc) ;
+        vm.put("SYSTEM_MESSAGE", msg) ;
+        vm.put("WEB_MASTER", webMaster) ;
+        vm.put("WEB_MASTER_EMAIL", webMasterEmail) ;
+        vm.put("SERVER_MASTER", serverMaster) ;
+        vm.put("SERVER_MASTER_EMAIL", serverMasterEmail) ;
 
         this.sendHtml(req, res, vm, HTML_TEMPLATE);
     } // End doGet

@@ -213,8 +213,6 @@ public class AddDoc extends HttpServlet {
                 pageFlow = new CreateDocumentWithEditPageFlow( new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, servletContext, returnCommand, saveDocumentCommand, null ) );
             } else if ( document instanceof BrowserDocumentDomainObject ) {
                 pageFlow = new CreateDocumentWithEditPageFlow( new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, returnCommand, saveDocumentCommand ) );
-            } else if ( document instanceof FormerExternalDocumentDomainObject ) {
-                pageFlow = new CreateFormerExternalDocumentPageFlow( (FormerExternalDocumentDomainObject)document, saveDocumentCommand, returnCommand );
             }
             pageFlow.dispatch( request, response );
         }

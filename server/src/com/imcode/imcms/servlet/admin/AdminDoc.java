@@ -129,26 +129,14 @@ public class AdminDoc extends HttpServlet {
             return GetDoc.getDoc( meta_id, req, res );
         }
 
-        // Lets detect which view the admin wants
-        switch ( doc_type ) {
-
-            case DocumentTypeDomainObject.CONFERENCE_ID:
-            case DocumentTypeDomainObject.BILLBOARD_ID:
-            case DocumentTypeDomainObject.CHAT_ID:
-                GetDoc.redirectToExternalDocumentTypeWithAction( document, req, res, "change" );
-                return null;
-
-            default:
-                DocumentRequest documentRequest = new DocumentRequest( imcref, user, document, null, req, res );
-                ParserParameters parserParameters = new ParserParameters( documentRequest );
-                parserParameters.setFlags( flags );
-                String editingMenuIndexStr = req.getParameter( "editmenu" );
-                if ( null != editingMenuIndexStr ) {
-                    parserParameters.setEditingMenuIndex( Integer.valueOf( editingMenuIndexStr ) );
-                }
-                return imcref.parsePage( parserParameters );
-
+        DocumentRequest documentRequest = new DocumentRequest( imcref, user, document, null, req, res );
+        ParserParameters parserParameters = new ParserParameters( documentRequest );
+        parserParameters.setFlags( flags );
+        String editingMenuIndexStr = req.getParameter( "editmenu" );
+        if ( null != editingMenuIndexStr ) {
+            parserParameters.setEditingMenuIndex( Integer.valueOf( editingMenuIndexStr ) );
         }
+        return imcref.parsePage( parserParameters );
     }
 
     private static class RedirectToDocumentCommand implements DispatchCommand {

@@ -292,3 +292,55 @@ GO
 COMMIT
 
 -- 2005-06-14 Kreiger - Add identity to "phones" and "users" tables primary keys.
+
+DROP TABLE A_conf_forum
+DROP TABLE A_conf_selfreg_crossref
+DROP TABLE A_conf_templates
+DROP TABLE A_conf_users_crossref
+DROP TABLE A_conf_users
+DROP TABLE A_conference
+DROP TABLE A_discussion
+DROP TABLE A_forum
+DROP TABLE A_replies
+DROP TABLE A_selfreg_roles
+DROP TABLE A_templates
+DROP TABLE B_bill
+DROP TABLE B_billboard
+DROP TABLE B_billboard_section
+DROP TABLE B_billboard_templates
+DROP TABLE B_replies
+DROP TABLE B_section
+DROP TABLE B_templates
+DROP TABLE C_authorization_types
+DROP TABLE C_chat
+DROP TABLE C_chatParameters
+DROP TABLE C_chat_authorization
+DROP TABLE C_chat_msg_type
+DROP TABLE C_chat_selfreg_crossref
+DROP TABLE C_chat_templates
+DROP TABLE C_msg_type
+DROP TABLE C_selfreg_roles
+DROP TABLE C_templates
+
+DELETE FROM doc_types WHERE doc_type > 100
+
+DROP TABLE poll_answers
+DROP TABLE poll_questions
+DROP TABLE polls
+
+DROP PROCEDURE poll_addanswer
+DROP PROCEDURE poll_addnew
+DROP PROCEDURE poll_addquestion
+DROP PROCEDURE poll_getall
+DROP PROCEDURE poll_getallanswers
+DROP PROCEDURE poll_getallquestions
+DROP PROCEDURE poll_getanswer
+DROP PROCEDURE poll_getone
+DROP PROCEDURE poll_getquestion
+DROP PROCEDURE poll_increaseansweroption
+DROP PROCEDURE poll_setanswerpoint
+DROP PROCEDURE poll_setparameter
+
+DROP PROCEDURE GetUserIdFromName
+
+-- 2005-06-17 Kreiger - Issue 3347

@@ -131,14 +131,7 @@ public class GetDoc extends HttpServlet {
             return imcref.getAdminTemplate( NO_ACTIVE_DOCUMENT_URL, user, null );
         }
 
-        if ( document instanceof FormerExternalDocumentDomainObject ) {
-            Utility.setDefaultHtmlContentType( res );
-            redirectToExternalDocumentTypeWithAction( document, req, res, "view" );
-            // Log to accesslog
-            trackLog.info( documentRequest );
-            return null;
-
-        } else if ( document instanceof UrlDocumentDomainObject ) {
+        if ( document instanceof UrlDocumentDomainObject ) {
             String url_ref = ( (UrlDocumentDomainObject)document ).getUrl();
             res.sendRedirect( url_ref );
             // Log to accesslog
@@ -237,20 +230,4 @@ public class GetDoc extends HttpServlet {
         return imcref.getAdminTemplate( NO_PAGE_URL, user, vec );
     }
 
-    public static void redirectToExternalDocumentTypeWithAction( DocumentDomainObject document,
-                                                                 HttpServletRequest request, HttpServletResponse res,
-                                                                 String action ) throws IOException {
-        String externalDocumentTypeServlet = "";
-        if ( document instanceof ConferenceDocumentDomainObject ) {
-            externalDocumentTypeServlet = "ConfManager";
-        } else if ( document instanceof ChatDocumentDomainObject ) {
-            externalDocumentTypeServlet = "ChatManager";
-        } else if ( document instanceof BillboardDocumentDomainObject ) {
-            externalDocumentTypeServlet = "BillBoardManager";
-        }
-
-        String paramStr = "?meta_id=" + document.getId() + "&";
-        paramStr += "cookie_id=1A&action=" + action;
-        res.sendRedirect( request.getContextPath()+"/servlet/"+externalDocumentTypeServlet + paramStr );
-    }
 }

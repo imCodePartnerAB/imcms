@@ -33,7 +33,6 @@ Upgrading imCMS:
     - /javascript
     - /jsp
     - /user
-    - /WEB-INF/fortunes
     - /WEB-INF/includes
     - /WEB-INF/logs   (new log files will be created, restore only access.log files used to generate statistics)
     - /WEB-INF/templates/text

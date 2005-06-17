@@ -14,12 +14,10 @@ public class RoleDomainObject implements Serializable, Comparable {
     public final static RoleDomainObject USERS = new ImmutableRoleDomainObject( 2, RoleConstants.USERS, 0 );
 
     public final static RolePermissionDomainObject PASSWORD_MAIL_PERMISSION = new RolePermissionDomainObject( 1, new LocalizedMessage( "role_permission/password_by_email/description" ) ) ;
-    public final static RolePermissionDomainObject CONFERENCE_REGISTRATION_PERMISSION = new RolePermissionDomainObject( 2, new LocalizedMessage( "role_permission/conference_register/description" ) ) ;
     public static final RolePermissionDomainObject ADMIN_PAGES_PERMISSION = new RolePermissionDomainObject( 4, new LocalizedMessage( "role_permission/admin_pages_access/desciption" ) );
 
     private final static RolePermissionDomainObject[] ALL_ROLE_PERMISSIONS = new RolePermissionDomainObject[]{
         PASSWORD_MAIL_PERMISSION,
-        CONFERENCE_REGISTRATION_PERMISSION,
         ADMIN_PAGES_PERMISSION,
     };
 

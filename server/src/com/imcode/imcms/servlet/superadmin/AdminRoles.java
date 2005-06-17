@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.util.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
@@ -72,9 +71,9 @@ public class AdminRoles extends Administrator {
 
 
             // Lets generate the html page
-            VariableManager vm = new VariableManager();
+            Map vm = new HashMap();
             String opt = Html.createOptionList( rolesV, Arrays.asList(new String[] { "" }) );
-            vm.addProperty( "ROLES_MENU", opt );
+            vm.put("ROLES_MENU", opt) ;
 
             this.sendHtml( req, res, vm, HTML_ADMIN_ROLES );
 
@@ -82,7 +81,7 @@ public class AdminRoles extends Administrator {
 
         }
         // *************** GENERATE THE ADMIN ROLE PAGE *****************
-        VariableManager vm = new VariableManager();
+        Map vm = new HashMap();
         this.sendHtml( req, res, vm, HTML_TEMPLATE );
 
     } // End doGet
@@ -116,9 +115,9 @@ public class AdminRoles extends Administrator {
 
 
             // Lets generate the html page
-            VariableManager vm = new VariableManager();
+            Map vm = new HashMap();
             String opt = Html.createOptionList( rolesV, "" );
-            vm.addProperty( "ROLES_MENU", opt );
+            vm.put("ROLES_MENU", opt) ;
 
             this.sendHtml( req, res, vm, HTML_ADMIN_ROLES );
 
@@ -149,8 +148,8 @@ public class AdminRoles extends Administrator {
             // lets get data on permissions and values
             String permissionComponent = createPermissionComponent( req, permissionList );
 
-            VariableManager vm = new VariableManager();
-            vm.addProperty( "ROLE_PERMISSIONS", permissionComponent );
+            Map vm = new HashMap();
+            vm.put("ROLE_PERMISSIONS", permissionComponent) ;
 
             this.sendHtml( req, res, vm, HTML_ADD_ROLE );
 
@@ -168,9 +167,9 @@ public class AdminRoles extends Administrator {
             int roleId = Integer.parseInt( roleIdStr ) ;
             RoleDomainObject role = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getRoleById(roleId );
 
-            VariableManager vm = new VariableManager();
-            vm.addProperty( "CURRENT_ROLE_ID", roleIdStr );
-            vm.addProperty( "CURRENT_ROLE_NAME", "" + role.getName() );
+            Map vm = new HashMap();
+            vm.put("CURRENT_ROLE_ID", roleIdStr) ;
+            vm.put("CURRENT_ROLE_NAME", "" + role.getName()) ;
             this.sendHtml( req, res, vm, HTML_RENAME_ROLE );
             return;
         } else if ( req.getParameter( "VIEW_EDIT_ROLE" ) != null ) {
@@ -211,10 +210,10 @@ public class AdminRoles extends Administrator {
             String permissionComponent = createPermissionComponent( req, permissionList );
 
             /* create output page */
-            VariableManager vm = new VariableManager();
-            vm.addProperty( "CURRENT_ROLE_NAME", role.getName() );
-            vm.addProperty( "CURRENT_ROLE_ID", roleIdStr );
-            vm.addProperty( "ROLE_PERMISSIONS", permissionComponent );
+            Map vm = new HashMap();
+            vm.put("CURRENT_ROLE_NAME", role.getName()) ;
+            vm.put("CURRENT_ROLE_ID", roleIdStr) ;
+            vm.put("ROLE_PERMISSIONS", permissionComponent) ;
             this.sendHtml( req, res, vm, HTML_EDIT_ROLE );
 
             return;
@@ -338,12 +337,12 @@ public class AdminRoles extends Administrator {
                                 return new String[] {""+user.getId(), user.getLastName()+", "+user.getFirstName()+ " ("+user.getLoginName()+")"} ;
                             }
                         } );
-                VariableManager vm = new VariableManager();
-                vm.addProperty( "META_ID_LIST", opt );
-                vm.addProperty( "USER_ID_LIST", users );
-                vm.addProperty( "USER_COUNT", "" + affectedUsers.size() );
-                vm.addProperty( "ROLE_COUNT", ""+affectedDocumentsCount );
-                vm.addProperty( "CURRENT_ROLE_ID", params.get( "ROLE_ID" ) );
+                Map vm = new HashMap();
+                vm.put("META_ID_LIST", opt) ;
+                vm.put("USER_ID_LIST", users) ;
+                vm.put("USER_COUNT", "" + affectedUsers.size()) ;
+                vm.put("ROLE_COUNT", ""+affectedDocumentsCount) ;
+                vm.put("CURRENT_ROLE_ID", params.get( "ROLE_ID" )) ;
                 this.sendHtml( req, res, vm, HTML_DELETE_ROLE_1 );
                 return;
             } else {
@@ -368,8 +367,8 @@ public class AdminRoles extends Administrator {
             }
 
             // Lets generate the last warning html page
-            VariableManager vm = new VariableManager();
-            vm.addProperty( "CURRENT_ROLE_ID", params.get( "ROLE_ID" ) );
+            Map vm = new HashMap();
+            vm.put("CURRENT_ROLE_ID", params.get( "ROLE_ID" )) ;
             this.sendHtml( req, res, vm, HTML_DELETE_ROLE_2 );
             return;
         }
@@ -514,14 +513,14 @@ public class AdminRoles extends Administrator {
             String description = permissionList[i][2];
             boolean isChecked = !( permissionList[i][0].equals( "0" ) );
 
-            VariableManager vm = new VariableManager();
-            vm.addProperty( "PERMISSION_DESCRIPTION", description );
-            vm.addProperty( "PERMISSON_ID", permissionId );
+            Map vm = new HashMap();
+            vm.put("PERMISSION_DESCRIPTION", description) ;
+            vm.put("PERMISSON_ID", permissionId) ;
 
             if ( isChecked ) {
-                vm.addProperty( "PERMISSION_CHECKED", "checked" );
+                vm.put("PERMISSION_CHECKED", "checked") ;
             } else {
-                vm.addProperty( "PERMISSION_CHECKED", "" );
+                vm.put("PERMISSION_CHECKED", "") ;
             }
 
             String rowString = createHtml( req, vm, HTML_EDIT_ROLE_TABLE_ROW );
@@ -531,8 +530,8 @@ public class AdminRoles extends Administrator {
         }
 
         //create component
-        VariableManager vmTable = new VariableManager();
-        vmTable.addProperty( "PERMISSION_ROWS", permissionTableRows.toString() );
+        Map vmTable = new HashMap();
+        vmTable.put("PERMISSION_ROWS", permissionTableRows.toString()) ;
 
         return createHtml( req, vmTable, HTML_EDIT_ROLE_TABLE );
     }

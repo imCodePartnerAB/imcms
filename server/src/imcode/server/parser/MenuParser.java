@@ -106,9 +106,6 @@ class MenuParser {
             DocumentTypeDomainObject.FILE,
             DocumentTypeDomainObject.BROWSER,
             DocumentTypeDomainObject.HTML,
-            DocumentTypeDomainObject.CHAT,
-            DocumentTypeDomainObject.BILLBOARD,
-            DocumentTypeDomainObject.CONFERENCE,
         };
 
         StringBuffer documentTypesHtmlOptionList = new StringBuffer();

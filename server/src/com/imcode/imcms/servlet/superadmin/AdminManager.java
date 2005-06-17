@@ -548,12 +548,6 @@ public class AdminManager extends Administrator {
             url += "FileAdmin";
         } else if ( whichButton.equalsIgnoreCase( "AdminListDocs" ) ) {
             url += "AdminListDocs";
-        } else if ( whichButton.equalsIgnoreCase( "AdminConference" ) ) {
-            url += "AdminConference";
-        } else if ( whichButton.equalsIgnoreCase( "AdminRandomTexts" ) ) {
-            url += "AdminRandomTexts";
-        } else if ( whichButton.equalsIgnoreCase( "AdminQuestions" ) ) {
-            url += "AdminQuestions";
         } else if ( whichButton.equalsIgnoreCase( "AdminSection" ) ) {
             url += "AdminSection";
         } else if ( whichButton.equalsIgnoreCase( "AdminCategories" ) ) {

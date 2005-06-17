@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.util.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -14,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Map;
+import java.util.HashMap;
 
 public class AdminDeleteDoc extends Administrator {
 
@@ -41,7 +42,7 @@ public class AdminDeleteDoc extends Administrator {
             return;
         }
 
-        VariableManager vm = new VariableManager();
+        Map vm = new HashMap();
         super.sendHtml(req, res, vm, HTML_TEMPLATE);
 
     }
@@ -80,7 +81,7 @@ public class AdminDeleteDoc extends Administrator {
             // OK, Lets check that the metaid were gonna delete exists in db
             int metaId = Integer.parseInt(params.getProperty("DEL_META_ID"));
             String foundMetaId = imcref.getDatabase().executeStringProcedure( "FindMetaId", new String[] {""
-                                                                                                                             + metaId} );
+                                                                                                          + metaId} );
             log.debug("FoundMetaId: " + foundMetaId);
 
             if (foundMetaId == null) {
@@ -97,7 +98,7 @@ public class AdminDeleteDoc extends Administrator {
             DocumentDomainObject document = documentMapper.getDocument( metaId ) ;
             documentMapper.deleteDocument( document, user);
             imcref.updateMainLog( "Document  " + "[" + document.getId() +
-                    "] ALL deleted by user: [" + user.getFullName() + "]" );
+                                  "] ALL deleted by user: [" + user.getFullName() + "]" );
 
             this.doGet(req, res);
             //this.goAdminUsers(req, res) ;

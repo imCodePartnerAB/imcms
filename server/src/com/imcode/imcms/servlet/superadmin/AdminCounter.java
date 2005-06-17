@@ -12,7 +12,6 @@ import imcode.server.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.DateConstants;
-import imcode.util.VariableManager;
 import org.apache.log4j.Logger;
 
 
@@ -110,11 +109,11 @@ public class AdminCounter extends Administrator {
         currentDate = imcref.getSessionCounterDate();
 
         // Lets generate the html page
-        VariableManager vm = new VariableManager();
-        vm.addProperty("COUNTER_VALUE", counterValue);
-        vm.addProperty("CURRENT_DATE_VALUE", dateFormat.format(currentDate));
-        vm.addProperty("NEW_DATE_VALUE", newDateStr);
-        vm.addProperty("ERRORMSG", errormsg);
+        Map vm = new HashMap();
+        vm.put("COUNTER_VALUE", counterValue) ;
+        vm.put("CURRENT_DATE_VALUE", dateFormat.format(currentDate)) ;
+        vm.put("NEW_DATE_VALUE", newDateStr) ;
+        vm.put("ERRORMSG", errormsg) ;
         this.sendHtml(req, res, vm, HTML_TEMPLATE);
 
     } // End of doPost

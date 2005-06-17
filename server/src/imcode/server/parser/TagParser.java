@@ -371,33 +371,13 @@ class TagParser {
      * Handle a <?imcms:text ...?> tag
      *
      * @param attributes The attributes of the text tag
-     *                   <p/>
      *                   attributes:
-     *                   - no	( int )   text number in document
-     *                   - label ( String ) lable to show in write mode
-     *                   - mode  ( read | write )
-     *                   - filter ( String )
-     *                   - type   (String)
-     *                   <p/>
-     *                   Supported text_types is:
-     *                   <p/>
-     *                   pollquestion-n	#where n represent the questíon number in this document
-     *                   <p/>
-     *                   pollanswer-n-m		#where n represent the questíon number in this document
-     *                   and m represent the answer number in question number n
-     *                   <p/>
-     *                   pollpointanswer-n-m     #where n represent the questíon number in this document
-     *                   and m represent the answer number in question number n
-     *                   <p/>
-     *                   pollparameter-popup_frequency
-     *                   pollparameter-cookie
-     *                   pollparameter-hideresults
-     *                   pollparameter-confirmation_text
-     *                   pollparameter-email_recipients
-     *                   pollparameter-email_from
-     *                   pollparameter-email_subject
-     *                   pollparameter-result_template     #template to use when return the result
-     *                   pollparameter-name
+     *                   - no  Text number in document
+     *                   - label Label to show in write mode
+     *                   - mode  ( "read" | "write" )
+     *                   - filter
+     *                   - formats
+     *                   - rows
      * @param patMat
      */
     private String tagText(Properties attributes, PatternMatcher patMat) {

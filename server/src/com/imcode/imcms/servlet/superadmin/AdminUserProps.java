@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.util.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
@@ -360,8 +359,6 @@ public class AdminUserProps extends Administrator {
         Utility.setDefaultHtmlContentType( res ); // set content type
         Writer out = res.getWriter();    // to write out html page
 
-        //	VariableManager vm = new VariableManager() ;
-
         vec.add( "#LOGIN_NAME#" );
         vec.add( login_name );
         vec.add( "#PWD1#" );
@@ -490,20 +487,20 @@ public class AdminUserProps extends Administrator {
 
         // Lets get all Userinformation and add it to html page
 
-        VariableManager vm = new VariableManager();
+        Map vm = new HashMap();
 
-        vm.addProperty( "LOGIN_NAME", userFromRequest.getLoginName() );
-        vm.addProperty( "FIRST_NAME", userFromRequest.getFirstName() );
-        vm.addProperty( "LAST_NAME", userFromRequest.getLastName() );
-        vm.addProperty( "TITLE", userFromRequest.getTitle() );
-        vm.addProperty( "COMPANY", userFromRequest.getCompany() );
-        vm.addProperty( "ADDRESS", userFromRequest.getAddress() );
-        vm.addProperty( "CITY", userFromRequest.getCity() );
-        vm.addProperty( "ZIP", userFromRequest.getZip() );
-        vm.addProperty( "COUNTRY", userFromRequest.getCountry() );
-        vm.addProperty( "COUNTRY_COUNCIL", userFromRequest.getCountyCouncil() );
-        vm.addProperty( "EMAIL", userFromRequest.getEmailAddress() );
-        vm.addProperty( "LANG_TYPES", getLanguagesHtmlOptionList( user, imcref, userFromRequest ) );
+        vm.put("LOGIN_NAME", userFromRequest.getLoginName()) ;
+        vm.put("FIRST_NAME", userFromRequest.getFirstName()) ;
+        vm.put("LAST_NAME", userFromRequest.getLastName()) ;
+        vm.put("TITLE", userFromRequest.getTitle()) ;
+        vm.put("COMPANY", userFromRequest.getCompany()) ;
+        vm.put("ADDRESS", userFromRequest.getAddress()) ;
+        vm.put("CITY", userFromRequest.getCity()) ;
+        vm.put("ZIP", userFromRequest.getZip()) ;
+        vm.put("COUNTRY", userFromRequest.getCountry()) ;
+        vm.put("COUNTRY_COUNCIL", userFromRequest.getCountyCouncil()) ;
+        vm.put("EMAIL", userFromRequest.getEmailAddress()) ;
+        vm.put("LANG_TYPES", getLanguagesHtmlOptionList( user, imcref, userFromRequest )) ;
 
         if ( null != req.getParameter( "useradmin_settings" ) ) {
 
@@ -907,7 +904,7 @@ public class AdminUserProps extends Administrator {
 
     private void phoneHandling( String adminTask, UserDomainObject user, String userToChangeId,
                                 ImcmsServices imcref, HttpServletRequest req, HttpServletResponse res,
-                                HttpSession session, VariableManager vm, Vector phoneTypesV,
+                                HttpSession session, Map vm, Vector phoneTypesV,
                                 UserDomainObject userFromRequest, String password2,
                                 UserDomainObject userToChange ) throws IOException {
         if ( adminTask == null ) {
@@ -997,8 +994,8 @@ public class AdminUserProps extends Administrator {
             while ( enumeration.hasMoreElements() && !found ) {
                 String[] temp = (String[])enumeration.nextElement();
                 if ( temp[0].equals( req.getParameter( "user_phones" ) ) ) {
-                    vm.addProperty( "PHONE_ID", temp[0] );
-                    vm.addProperty( "NUMBER", temp[1] );
+                    vm.put("PHONE_ID", temp[0]) ;
+                    vm.put("NUMBER", temp[1]) ;
                     phonetypes_id = temp[3];
                     found = true;
                 }
@@ -1006,14 +1003,14 @@ public class AdminUserProps extends Administrator {
         }
 
         if ( !found ) {
-            vm.addProperty( "PHONE_ID", "" );
-            vm.addProperty( "NUMBER", "" );
+            vm.put("PHONE_ID", "") ;
+            vm.put("NUMBER", "") ;
             phonetypes_id = "1";
         }
 
         // phonetype list
         String phonetypes = Html.createOptionList( phoneTypesV, phonetypes_id );
-        vm.addProperty( "PHONETYPES_MENU", phonetypes );
+        vm.put("PHONETYPES_MENU", phonetypes) ;
 
         selectedPhoneId = req.getParameter( "user_phones" );
         log.debug( "Number: " + selectedPhoneId );
@@ -1057,24 +1054,24 @@ public class AdminUserProps extends Administrator {
         }
         if ( isChanged ) {
             //update hidden fields whith new password
-            vm.addProperty( "NEW_PWD1", userFromRequest.getPassword() );
-            vm.addProperty( "NEW_PWD2", password2 );
+            vm.put("NEW_PWD1", userFromRequest.getPassword()) ;
+            vm.put("NEW_PWD2", password2) ;
         } else {
-            vm.addProperty( "NEW_PWD1", "" );
-            vm.addProperty( "NEW_PWD2", "" );
+            vm.put("NEW_PWD1", "") ;
+            vm.put("NEW_PWD2", "") ;
         }
 
         //update password fields with just ****
-        vm.addProperty( "PWD1", doPasswordString( userFromRequest.getPassword() ) );
-        vm.addProperty( "PWD2", doPasswordString( password2 ) );
+        vm.put("PWD1", doPasswordString( userFromRequest.getPassword() )) ;
+        vm.put("PWD2", doPasswordString( password2 )) ;
 
         // Lets add html for admin_part in AdminUserResp
         if ( user.isSuperAdmin() || ( user.isUserAdmin() && !userToChangeId.equals( "" + user.getId() ) ) ) {
 
-            vm.addProperty( "ADMIN_PART", createAdminPartHtml( user, userToChange, imcref, req, session ) );
+            vm.put("ADMIN_PART", createAdminPartHtml( user, userToChange, imcref, req, session )) ;
 
         } else {
-            vm.addProperty( "ADMIN_PART", "" );
+            vm.put("ADMIN_PART", "") ;
         }
 
         // Get a new Vector: phone_id, (typename) number    ex. { 10, (Hem) 46 498 123456 }
@@ -1091,10 +1088,11 @@ public class AdminUserProps extends Administrator {
         // add phones list
         String phones = Html.createOptionList( phonesV, selectedPhoneId );
         log.debug( "phones stringen: " + phones );
-        vm.addProperty( "PHONES_MENU", phones );
+        vm.put("PHONES_MENU", phones) ;
 
-        vm.addProperty( "ADMIN_TASK", adminTask );
-        vm.addProperty( "CURR_USER_ID", ( userToChangeId == null ? "" : userToChangeId ) );
+        vm.put("ADMIN_TASK", adminTask) ;
+        Object value = ( userToChangeId == null ? "" : userToChangeId );
+        vm.put("CURR_USER_ID", value) ;
 
         session.setAttribute( "Ok_phoneNumbers", phoneNumbers );
 
@@ -1540,26 +1538,6 @@ public class AdminUserProps extends Administrator {
         return true;
 
     } // End verifyPassword
-
-    /** Creates a sql parameter array used to run sproc updateUserPhones */
-    public static String[] extractUpdateUserSprocParametersFromProperties( Properties props ) {
-
-        Logger log = Logger.getLogger( AdminUserProps.class );
-        log.debug( "extractUpdateUserSprocParametersFromProperties + props: " + props.toString() );
-
-        String[] params = {
-                        props.getProperty( "user_id" ), ( props.getProperty( "login_name" ) ).trim(),
-                ( props.getProperty( "password1" ) ).trim(), ( props.getProperty( "first_name" ) ).trim(),
-                ( props.getProperty( "last_name" ) ).trim(), ( props.getProperty( "title" ) ).trim(),
-                ( props.getProperty( "company" ) ).trim(), ( props.getProperty( "address" ) ).trim(),
-                ( props.getProperty( "city" ) ).trim(), ( props.getProperty( "zip" ) ).trim(),
-                ( props.getProperty( "country" ) ).trim(), ( props.getProperty( "country_council" ) ).trim(),
-                ( props.getProperty( "email" ) ).trim(), "0", "1001", "0", props.getProperty( "lang_id" ),
-                        props.getProperty( "active" )
-        };
-
-        return params;
-    }
 
     private void updateUserPhones( UserDomainObject userToChange, Vector phonesV ) {
         final int PHONE_TYPE_OTHER_PHONE = 0;

@@ -1,13 +1,14 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import imcode.util.SettingsAccessor;
-import imcode.util.VariableManager;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
 
 public class AdminError2 extends Administrator {
 
@@ -16,7 +17,7 @@ public class AdminError2 extends Administrator {
     public AdminError2( HttpServletRequest req, HttpServletResponse res, String header, int errorCode )
             throws IOException {
 
-        VariableManager vm = new VariableManager();
+        Map vm = new HashMap();
 
         // Lets get the errormessage from the error file
         UserDomainObject user = Utility.getLoggedOnUser( req );
@@ -30,20 +31,12 @@ public class AdminError2 extends Administrator {
             myErrorMessage = "Missing Errorcode";
         }
 
-        vm.addProperty( "ERROR_HEADER", header );
-        vm.addProperty( "ERROR_MESSAGE", myErrorMessage );
-        vm.addProperty( "ERROR_CODE", "" + errorCode );
+        vm.put("ERROR_HEADER", header) ;
+        vm.put("ERROR_MESSAGE", myErrorMessage) ;
+        vm.put("ERROR_CODE", "" + errorCode) ;
 
         // Lets send a html string to the browser
         super.sendHtml( req, res, vm, "Admin_Error2.htm" );
-    }
-
-    /**
-     * Returns the errormessage for this object
-     */
-
-    public String getErrorMsg() {
-        return myErrorMessage;
     }
 
 } // End of class

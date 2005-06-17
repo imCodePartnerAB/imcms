@@ -45,7 +45,6 @@
     <property name="conf" value="${WEB-INF}/conf"/>
     <property name="classes" value="${tmp}/classes"/>
     <property name="lib" value="${WEB-INF}/lib"/>
-    <property name="fortunes" value="${WEB-INF}/fortunes"/>
     <property name="templates" value="${WEB-INF}/templates"/>
     <property name="sql" value="${WEB-INF}/sql"/>
     <property name="sql-diff" value="${sql}/diff"/>
@@ -346,7 +345,6 @@
         <cat destfile="${tmp}/imcms.sql" orderby="path" filtering="true">
             <fileset file="${tmp}/ddl.sql"/>
             <fileset file="sql/data/types.sql"/>
-            <fileset file="sql/chat/chat_newdb.sql"/>
             <fileset file="sql/data/newdb.sql"/>
         </cat>
 
@@ -444,11 +442,6 @@
         <copy todir="${docs}">
             <fileset dir="${basedir}/docs"/>
         </copy>
-
-        <!-- Create empty files needed by fortune -->
-        <mkdir dir="${fortunes}"/>
-        <touch file="${fortunes}/poll.poll.txt" millis="0"/>
-        <touch file="${fortunes}/quotes.txt" millis="0"/>
 
     </target>
 

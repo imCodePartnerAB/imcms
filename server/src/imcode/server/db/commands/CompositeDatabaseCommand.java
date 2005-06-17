@@ -10,12 +10,6 @@ public class CompositeDatabaseCommand extends TransactionDatabaseCommand {
 
     private final List databaseCommands = new ArrayList();
 
-    CompositeDatabaseCommand() { }
-
-    CompositeDatabaseCommand( DatabaseCommand databaseCommand ) {
-        add(databaseCommand) ;    
-    }
-
     public CompositeDatabaseCommand( DatabaseCommand[] databaseCommands ) {
         this.databaseCommands.addAll( Arrays.asList( databaseCommands ) );
     }
@@ -28,7 +22,4 @@ public class CompositeDatabaseCommand extends TransactionDatabaseCommand {
         return null;
     }
 
-    public boolean add( Object o ) {
-        return databaseCommands.add( o );
-    }
 }

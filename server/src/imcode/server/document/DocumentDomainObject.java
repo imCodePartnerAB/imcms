@@ -57,15 +57,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             case DocumentTypeDomainObject.HTML_ID:
                 document = new HtmlDocumentDomainObject();
                 break;
-            case DocumentTypeDomainObject.CHAT_ID:
-                document = new ChatDocumentDomainObject();
-                break;
-            case DocumentTypeDomainObject.CONFERENCE_ID:
-                document = new ConferenceDocumentDomainObject();
-                break;
-            case DocumentTypeDomainObject.BILLBOARD_ID:
-                document = new BillboardDocumentDomainObject();
-                break;
             default:
                 String errorMessage = "Unknown document-type-id: " + documentTypeId;
                 log.error( errorMessage );

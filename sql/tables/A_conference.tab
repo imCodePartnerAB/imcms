@@ -1,5 +1,0 @@
-	<table name="A_conference">
-        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" />
-        <column name="name" size="255" type="VARCHAR" required="false" />
-        <column default="B" name="sort_type" size="1" type="CHAR" required="false" />
-    </table>

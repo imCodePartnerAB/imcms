@@ -176,7 +176,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private void initDocumentMapper() {
         File indexDirectory = new File( getRealContextPath(), "WEB-INF/index" );
         DocumentIndex documentIndex = new AutorebuildingDirectoryIndex( indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes() );
-        documentMapper = new DocumentMapper( this, this.getDatabase(), new DocumentPermissionSetMapper( database, this ), documentIndex, this.getClock(), this.getConfig() );
+        documentMapper = new DocumentMapper( this, this.getDatabase(), new DatabaseDocumentGetter(this.getDatabase(), this), new DocumentPermissionSetMapper( database, this ), documentIndex, this.getClock(), this.getConfig());
     }
 
     private void initTemplateMapper() {
@@ -375,22 +375,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
                             + adminTemplateName, user, variables );
     }
 
-    /**
-     * Parse doc replace variables with data , use template
-     */
-    public String getTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, List variables,
-                                                          String directory, String subDirectory ) {
-
-        if ( null == user ) {
-            throw new NullArgumentException( "user" );
-        }
-        String langPrefix = this.getUserLangPrefixOrDefaultLanguage( user );
-
-        return getTemplate( langPrefix + "/" + directory + "/" + subDirectory
-                            + "/"
-                            + adminTemplateName, user, variables );
-    }
-
     private String getTemplate( String path, UserDomainObject user, List variables ) {
         try {
             VelocityEngine velocity = getVelocityEngine( user );
@@ -458,7 +442,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return config;
     }
 
-    public Clock getClock() {
+    private Clock getClock() {
         return this;
     }
 
@@ -471,36 +455,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     /**
-     * @deprecated Ugly use {@link ImcmsServices#getTemplateFromDirectory(String,imcode.server.user.UserDomainObject,java.util.List,String)}
-     *             or something else instead.
-     */
-    public File getExternalTemplateFolder( int meta_id, UserDomainObject user ) {
-        int docType = getDocType( meta_id );
-        String langPrefix = getUserLangPrefixOrDefaultLanguage( user );
-        return new File( config.getTemplatePath(), langPrefix + "/" + docType + "/" );
-    }
-
-    /**
      * Return  templatehome.
      */
     public File getTemplatePath() {
         return config.getTemplatePath();
-    }
-
-    /**
-     * @return file-path to imcmsimages
-     *         <p/>
-     *         Return file-path to imcmsimages
-     *         <p/>
-     *         Return file-path to imcmsimages
-     *         <p/>
-     *         Return file-path to imcmsimages
-     *         <p/>
-     *         Return file-path to imcmsimages
-     */
-    // Return file-path to imcmsimages
-    public File getImcmsPath() {
-        return config.getImcmsPath();
     }
 
     public String getDefaultLanguage() {
@@ -511,16 +469,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         String lang_prefix = getDatabase().executeStringProcedure( "GetLangPrefixFromId", new String[] {""
                                                                                                         + lang_id} );
         return lang_prefix;
-    }
-
-    // get language prefix for user
-    public String getUserLangPrefixOrDefaultLanguage( UserDomainObject user ) {
-        String lang_prefix = this.getDefaultLanguage();
-        if ( user != null ) {
-            return user.getLanguageIso639_2();
-        } else {
-            return lang_prefix;
-        }
     }
 
     /**
@@ -566,13 +514,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         } else {
             return 0;
         }
-    }
-
-    /**
-     * checkDocAdminRights
-     */
-    public boolean checkDocAdminRights( int meta_id, UserDomainObject user ) {
-        return user.canEdit( documentMapper.getDocument( meta_id ) );
     }
 
     public int saveTemplate( String name, String file_name, byte[] template, boolean overwrite, String lang_prefix ) {

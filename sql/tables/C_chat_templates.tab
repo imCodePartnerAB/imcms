@@ -1,4 +1,0 @@
-	<table name="C_chat_templates">
-        <column name="chat_id" primaryKey="true" required="true" type="INTEGER" />
-        <column name="template_id" primaryKey="true" required="true" type="INTEGER" />
-    </table>

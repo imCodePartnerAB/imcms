@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.util.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
@@ -16,6 +15,8 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.Map;
+import java.util.HashMap;
 
 public class AdminIpAccess extends Administrator {
 
@@ -53,19 +54,19 @@ public class AdminIpAccess extends Administrator {
         int nbrOfRows = multi.length;
         for (int counter = 0; counter < nbrOfRows; counter++) {
             Vector aRecV = new Vector( java.util.Arrays.asList( multi[counter] ) );
-            VariableManager vmRec = new VariableManager();
+            Map vmRec = new HashMap();
             aRecV.setElementAt( Utility.ipLongToString( Long.parseLong( (String) aRecV.elementAt( 3 ) ) ), 3 );
             aRecV.setElementAt( Utility.ipLongToString( Long.parseLong( (String) aRecV.elementAt( 4 ) ) ), 4 );
             for (int i = 0; i < tags.size(); i++) {
-                vmRec.addProperty( tags.get( i ), aRecV.get( i ) );
+                vmRec.put(tags.get( i ), aRecV.get( i )) ;
             }
-            vmRec.addProperty( "RECORD_COUNTER", "" + counter );
+            vmRec.put("RECORD_COUNTER", "" + counter) ;
             recs += super.createHtml( req, vmRec, HTML_IP_SNIPPET );
         }
 
         // Lets generate the html page
-        VariableManager vm = new VariableManager();
-        vm.addProperty( "ALL_IP_ACCESSES", recs );
+        Map vm = new HashMap();
+        vm.put("ALL_IP_ACCESSES", recs) ;
         super.sendHtml( req, res, vm, HTML_TEMPLATE );
     }
 
@@ -91,8 +92,8 @@ public class AdminIpAccess extends Administrator {
             String usersOption = Html.createUsersOptionList( imcref );
 
             // Lets generate the html page
-            VariableManager vm = new VariableManager();
-            vm.addProperty( "USERS_LIST", usersOption );
+            Map vm = new HashMap();
+            vm.put("USERS_LIST", usersOption) ;
             super.sendHtml( req, res, vm, ADD_IP_TEMPLATE );
             return;
         }
@@ -182,7 +183,7 @@ public class AdminIpAccess extends Administrator {
             }
 
             // Lets generate the last warning html page
-            VariableManager vm = new VariableManager();
+            Map vm = new HashMap();
             super.sendHtml( req, res, vm, WARN_DEL_IP_TEMPLATE );
             return;
         }

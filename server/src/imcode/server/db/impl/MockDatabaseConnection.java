@@ -36,18 +36,6 @@ public class MockDatabaseConnection implements DatabaseConnection {
         return new MockConnection() ;
     }
 
-    public String[] executeArrayQuery(String sql, String[] parameters) throws DatabaseException {
-        throw new NotImplementedException( MockDatabaseConnection.class ) ;
-    }
-
-    public String[][] execute2dArrayQuery(String sql, String[] parameters) throws DatabaseException {
-        throw new NotImplementedException( MockDatabaseConnection.class ) ;
-    }
-
-    public String executeStringQuery(String sqlStr, String[] parameters) {
-        throw new NotImplementedException( MockDatabaseConnection.class ) ;
-    }
-
     public int executeUpdate( String sql, Object[] parameters ) {
         return database.executeUpdateQuery( sql, parameters );
     }

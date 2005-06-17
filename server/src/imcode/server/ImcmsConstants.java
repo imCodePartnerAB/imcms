@@ -51,11 +51,6 @@ public interface ImcmsConstants {
     public final static int PERM_EDIT_TEXT_DOCUMENT_INCLUDES   = (1 << 20) ; // 1048576
 
 
-    /* Document-wide-permissions. */
-
-    /** Permissions of restricted permission-set 1 includes permission to edit restricted permission-set 2. **/
-    public final static int DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 = (1 << 0) ; // 1
-
     /* Log instances. */
 
     /** The access-log, used for keeping track of page hits. **/

@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.util.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentTypeDomainObject;
@@ -70,8 +69,8 @@ public class AdminListDocs extends Administrator {
             optionList.append( Html.option( "" + documentTypeId, documentTypeName, false ) );
         }
 
-        VariableManager vm = new VariableManager();
-        vm.addProperty( "DOCUMENT_TYPES", optionList.toString() );
+        Map vm = new HashMap();
+        vm.put("DOCUMENT_TYPES", optionList.toString()) ;
 
         this.sendHtml( request, response, vm, TEMPLATE_LISTDOC );
 
@@ -229,11 +228,11 @@ public class AdminListDocs extends Administrator {
                 String selectedDocTypesName = getSelectedDocTypeNames( imcref, docTypes, user );
 
                 //Lets generate the html page
-                VariableManager vm = new VariableManager();
-                vm.addProperty( "LIST_DOCUMENT", listOfDocs.toString() );
-                vm.addProperty( "selectedDocTypes", selectedDocTypesName );
-                vm.addProperty( "selectedStartDate", startDate );
-                vm.addProperty( "selectedEndDate", endDate );
+                Map vm = new HashMap();
+                vm.put("LIST_DOCUMENT", listOfDocs.toString()) ;
+                vm.put("selectedDocTypes", selectedDocTypesName) ;
+                vm.put("selectedStartDate", startDate) ;
+                vm.put("selectedEndDate", endDate) ;
                 this.sendHtml( request, response, vm, parseTemplate );
 
             } else {

@@ -9,7 +9,6 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Clock;
 import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -45,16 +44,6 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    // Send a procedure to the database and return a string array
-    public String[] executeArrayProcedure( String procedure, String[] params ) {
-        return database.executeArrayProcedure( procedure, params ) ;
-    }
-
-    // get external template folder
-    public File getExternalTemplateFolder( int meta_id, UserDomainObject user ) {
-        return null;
-    }
-
     public void incrementSessionCounter() {
 
     }
@@ -85,12 +74,6 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    // parseExternaldoc use template
-    public String getTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user,
-                                                          List variables, String directory, String subDirectory ) {
-        return null;
-    }
-
     // get templatehome
     public String getTemplateData( int template_id ) throws IOException {
         return null;
@@ -101,28 +84,14 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    // get file-path to imcmsimages
-    public File getImcmsPath() {
-        return null;
-    }
-
     // get language prefix by id
     public String getLanguagePrefixByLangId( int lang_id ) {
-        return null;
-    }
-
-    // get language prefix for user
-    public String getUserLangPrefixOrDefaultLanguage( UserDomainObject user ) {
         return null;
     }
 
     // get doctype
     public int getDocType( int meta_id ) {
         return 0;
-    }
-
-    public boolean checkDocAdminRights( int meta_id, UserDomainObject user ) {
-        return false;
     }
 
     // save template to disk
@@ -133,10 +102,6 @@ public class MockImcmsServices implements ImcmsServices {
     // get demo template data
     public Object[] getDemoTemplate( int template_id ) throws IOException {
         return new Object[0];
-    }
-
-    public boolean checkDocAdminRights( int meta_id, UserDomainObject user, int permissions ) {
-        return false;
     }
 
     // save demo template
@@ -219,38 +184,6 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public int executeUpdateProcedure( String procedure, String[] params ) {
-        return database.executeUpdateProcedure( procedure, params ) ;
-    }
-
-    public String executeStringProcedure( String procedure, String[] params ) {
-        return database.executeStringProcedure( procedure, params ) ;
-    }
-
-    public int executeUpdateQuery( String sqlStr, Object[] params ) {
-        return database.executeUpdateQuery( sqlStr, params ) ;
-    }
-
-    public String[][] execute2dArrayProcedure( String procedure, String[] params ) {
-        return database.execute2dArrayProcedure( procedure, params );
-    }
-
-    public String[] executeArrayQuery( String sqlStr, String[] params ) {
-        return database.executeArrayQuery( sqlStr, params ) ;
-    }
-
-    public String executeStringQuery( String sqlStr, String[] params ) {
-        return database.executeStringQuery( sqlStr, params ) ;
-    }
-
-    public String[][] execute2dArrayQuery( String sqlstr, String[] params ) {
-        return database.execute2dArrayQuery( sqlstr, params ) ;
-    }
-
-    public Object executeCommand( DatabaseCommand databaseCommand ) {
-        return database.executeCommand( databaseCommand );
-    }
-
     public TemplateMapper getTemplateMapper() {
         return templateMapper;
     }
@@ -285,14 +218,6 @@ public class MockImcmsServices implements ImcmsServices {
 
     public Database getDatabase() {
         return database ;
-    }
-
-    public Clock getClock() {
-        return null;
-    }
-
-    public File getRealContextPath() {
-        return null;
     }
 
     public KeyStore getKeyStore() {

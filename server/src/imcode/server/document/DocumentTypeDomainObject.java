@@ -9,9 +9,6 @@ public class DocumentTypeDomainObject {
     public static final int BROWSER_ID = 6;
     public static final int HTML_ID = 7;
     public static final int FILE_ID = 8;
-    public static final int CONFERENCE_ID = 102;
-    public static final int CHAT_ID = 103;
-    public static final int BILLBOARD_ID = 104;
 
     private static final String DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX = "document_type/name/";
 
@@ -25,24 +22,13 @@ public class DocumentTypeDomainObject {
                                                                                                                        + "html" ) );
     public final static DocumentTypeDomainObject FILE = new DocumentTypeDomainObject( FILE_ID, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
                                                                                                                        + "file" ) );
-    public final static DocumentTypeDomainObject CONFERENCE = new DocumentTypeDomainObject( CONFERENCE_ID, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
-                                                                                                                               + "conference" ) );
-    public final static DocumentTypeDomainObject CHAT = new DocumentTypeDomainObject( CHAT_ID, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
-                                                                                                                         + "chat" ) );
-    public final static DocumentTypeDomainObject BILLBOARD = new DocumentTypeDomainObject( BILLBOARD_ID,
-                                                                                                   new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
-                                                                                                                         + "billboard" ) );
     final static DocumentTypeDomainObject[] ALL_DOCUMENT_TYPES = {
-       BILLBOARD,
        BROWSER,
-       CHAT,
-       CONFERENCE,
        FILE,
        HTML,
        TEXT,
        URL,
     } ;
-    public static final int PSEUDO_DOCTYPE_ID_FORTUNES = 106;
 
     private final int id ;
     private final LocalizedMessage name ;

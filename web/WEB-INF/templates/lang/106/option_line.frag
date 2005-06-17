@@ -1,1 +1,0 @@
-<option value=""><? templates/sv/fortunes/option_line.frag/1 ?></option> 

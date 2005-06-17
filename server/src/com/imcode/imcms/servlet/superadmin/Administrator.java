@@ -10,7 +10,6 @@ package com.imcode.imcms.servlet.superadmin;
  */
 
 import imcode.util.SettingsAccessor;
-import imcode.util.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
@@ -21,7 +20,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -57,46 +55,28 @@ public class Administrator extends HttpServlet {
         return true;
     } // checkparameters
 
-    /**
-     CheckAdminRights, returns true if the user is an admin.
-     False if the user isn't an administrator
-     */
-    public static boolean checkAdminRights(HttpServletRequest req) {
-        UserDomainObject user = Utility.getLoggedOnUser( req );
-        return user.isSuperAdmin();
-    }
-
-    /**
-     GetAdminTemplateFolder. Takes the userobject as argument to detect the language
-     from the user and and returns the base path to the internal folder, hangs on the
-     language prefix and an "/admin/" string afterwards...
-     */
-    File getAdminTemplateFolder( ImcmsServices imcref, imcode.server.user.UserDomainObject user ) {
-
-        // Since our templates are located into the admin folder, we'll have to hang on admin
-        File templateLib = imcref.getTemplatePath();
-
-        // Lets get the users language id. Use the langid to get the lang prefix from db.
-        String langPrefix = user.getLanguageIso639_2();
-        templateLib = new File( templateLib, langPrefix + "/admin" );
-        return templateLib;
-    }
-
 
     /**
      SendHtml. Generates the html page to the browser.
      **/
     String createHtml( HttpServletRequest req,
-                       VariableManager vm, String htmlFile ) throws IOException {
+                       Map vm, String htmlFile ) throws IOException {
 
         // Lets get the path to the admin templates folder
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
         // Lets add the server host
-        vm.addProperty( "SERVLET_URL", "" );
-        vm.addProperty( "SERVLET_URL2", "" );
-        List tagsAndData = vm.getTagsAndData() ;
+        vm.put("SERVLET_URL", "") ;
+        vm.put("SERVLET_URL2", "") ;
+
+        List tagsAndData1 = new ArrayList(vm.size()*2) ;
+        for ( Iterator tagsIterator = vm.entrySet().iterator(); tagsIterator.hasNext(); ) {
+            Map.Entry entry = (Map.Entry)tagsIterator.next();
+            tagsAndData1.add("#"+entry.getKey() +"#") ;
+            tagsAndData1.add(entry.getValue()) ;
+        }
+        List tagsAndData = tagsAndData1 ;
 
         String html = imcref.getAdminTemplate( htmlFile, user, tagsAndData );
         return html;
@@ -106,7 +86,7 @@ public class Administrator extends HttpServlet {
      SendHtml. Generates the html page to the browser.
      */
     protected void sendHtml(HttpServletRequest req, HttpServletResponse res,
-                          VariableManager vm, String htmlFile ) throws IOException {
+                          Map vm, String htmlFile ) throws IOException {
 
         String str = this.createHtml( req, vm, htmlFile );
 

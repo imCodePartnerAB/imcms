@@ -1,1 +1,0 @@
-<? templates/sv/fortunes/qustion_result_err_msg.frag/1 ?>
