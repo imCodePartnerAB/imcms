@@ -13,9 +13,9 @@ User currentLoggedinUser = imcmsSystem.getCurrentUser();
         </p>
         <ul>
             <%
-                String[] roleNames = currentLoggedinUser.getRoleNames() ;
-                for ( int i = 0; i < roleNames.length; i++ ) {
-                    %><li><%= roleNames[i] %></li><%
+                Role[] roles = currentLoggedinUser.getRoles() ;
+                for ( int i = 0; i < roles.length; i++ ) {
+                    %><li><%= roles[i].getName() %></li><%
                 }
             %>
         </ul>

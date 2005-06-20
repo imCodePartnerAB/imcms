@@ -24,10 +24,11 @@ openEditor = true ;
 
 var orgW = 0 ;
 var orgH = 0 ;
-
+<%
+%>
 function initEditor() {
-	editor = new HTMLArea(editorTextareaId);
-	editor.config.metaId      = <%= EDITED_META %> ;
+    editor = new HTMLArea(editorTextareaId);
+    editor.config.metaId      = <%= ( (ChangeText.TextEditPage) request.getAttribute(ChangeText.TextEditPage.REQUEST_ATTRIBUTE__PAGE) ).getDocumentId() %> ;
 	editor.config.servletPath = "<%= SERVLET_PATH %>" ;
 	editor.config.contextPath = "<%= request.getContextPath() %>" ;
 	editor.registerPlugin(TableOperations);

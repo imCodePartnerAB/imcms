@@ -5,12 +5,12 @@
 	        imcode.server.Imcms,
 	        org.apache.oro.text.perl.Perl5Util"
 	
-%><%
+%><%@ page import="com.imcode.imcms.servlet.admin.ChangeText"%><%
 
 String EDITOR_URL   = request.getContextPath() + "/imcms/htmlarea/" ;
 String SERVLET_PATH = request.getContextPath() + "/servlet/" ;
 
-ContentManagementSystem imcmsSystem = (ContentManagementSystem) request.getAttribute(RequestConstants.SYSTEM) ;
+ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest(request) ;
 DocumentService documentService     = imcmsSystem.getDocumentService() ;
 ImcmsServices imcref                = Imcms.getServices() ;
 UserService userService             = imcmsSystem.getUserService() ;
@@ -31,50 +31,50 @@ String[] format = request.getParameterValues("format") ;
 int      rows   = -1 ;
 
 if (format != null) {
-	for (int i = 0; i < format.length; i++) {
-		if (format[i].toLowerCase().matches("none|html")) hasHtml = true ;
-		if (format[i].toLowerCase().matches("text"))      hasText = true ;
-	}
-	if (!(format.length == 1 && format[0].equals(""))) {
-		if (hasHtml && hasText) {
-			showModeText   = true ;
-			showModeHtml   = true ;
-			showModeEditor = false ;
-		} else if (hasHtml) {
-			showModeText   = false ;
-			showModeHtml   = true ;
-			showModeEditor = false ;
-		} else if (hasText) {
-			showModeText   = true ;
-			showModeHtml   = false ;
-			showModeEditor = false ;
-		} else {
-			showModeText   = true ;
-			showModeHtml   = true ;
-			showModeEditor = true ;
-		}
-	}
+    for (int i = 0; i < format.length; i++) {
+        if (format[i].toLowerCase().matches("none|html")) hasHtml = true ;
+        if (format[i].toLowerCase().matches("text"))      hasText = true ;
+    }
+    if (!(format.length == 1 && format[0].equals(""))) {
+        if (hasHtml && hasText) {
+            showModeText   = true ;
+            showModeHtml   = true ;
+            showModeEditor = false ;
+        } else if (hasHtml) {
+            showModeText   = false ;
+            showModeHtml   = true ;
+            showModeEditor = false ;
+        } else if (hasText) {
+            showModeText   = true ;
+            showModeHtml   = false ;
+            showModeEditor = false ;
+        } else {
+            showModeText   = true ;
+            showModeHtml   = true ;
+            showModeEditor = true ;
+        }
+    }
 }
 
 //out.print("showModeEditor:"+showModeEditor+"<br>showModeText:"+showModeText+"<br>") ;
 
 if (request.getParameter("rows") != null) {
-	try {
-		rows = Integer.parseInt(request.getParameter("rows")) ;
-	} catch (NumberFormatException nfe) {}
-	if (showModeEditor && rows < 10) rows = 10 ;
+    try {
+        rows = Integer.parseInt(request.getParameter("rows")) ;
+    } catch (NumberFormatException nfe) {}
+    if (showModeEditor && rows < 10) rows = 10 ;
 }
 
 /* *******************************************************************************************
- *         LANGUAGE                                                                          *
- ******************************************************************************************* */
+*         LANGUAGE                                                                          *
+******************************************************************************************* */
 
 boolean isLangSwe = user.getLanguage().getIsoCode639_2().equals("swe") ;
 boolean isLangEng = !isLangSwe ;
 
 /* *******************************************************************************************
- *         BROWSER SNIFFER  @returns "is[BrowtypeName]" (boolean) / dBrowserVer (double)     *
- ******************************************************************************************* */
+*         BROWSER SNIFFER  @returns "is[BrowtypeName]" (boolean) / dBrowserVer (double)     *
+******************************************************************************************* */
 
 boolean isIE       = true ;
 boolean isNS       = false ;
@@ -103,19 +103,19 @@ isSafari = (re.match("/Safari/i", uAgent) && isMac) ? true : false ;
 String sTempVer    = "" ;
 
 try {
-	if (isIE) {
-		if (re.match("/MSIE (\\d\\.\\d+)/i",uAgent)) dBrowserVer = Double.parseDouble(re.group(1)) ;
-	} else if (isMoz) {
-		if (re.match("/rv:([\\d\\.]+)/i",uAgent)) sTempVer = re.group(1) ;
-		sTempVer = sTempVer.replaceFirst("\\.", ",") ;
-		sTempVer = sTempVer.replaceAll("\\.", "") ;
-		sTempVer = sTempVer.replaceAll(",", "\\.") ;
-		dBrowserVer = Double.parseDouble(sTempVer) ;
-	} else if (isNS6) {
-		if (re.match("/Netscape\\/(\\d\\.\\d+)/i",uAgent)) dBrowserVer = Double.parseDouble(re.group(1)) ;
-	} else if (isNS) {
-		if (re.match("/Mozilla\\/(\\d\\.\\d+)/i",uAgent)) dBrowserVer = Double.parseDouble(re.group(1)) ;
-	}
+    if (isIE) {
+        if (re.match("/MSIE (\\d\\.\\d+)/i",uAgent)) dBrowserVer = Double.parseDouble(re.group(1)) ;
+    } else if (isMoz) {
+        if (re.match("/rv:([\\d\\.]+)/i",uAgent)) sTempVer = re.group(1) ;
+        sTempVer = sTempVer.replaceFirst("\\.", ",") ;
+        sTempVer = sTempVer.replaceAll("\\.", "") ;
+        sTempVer = sTempVer.replaceAll(",", "\\.") ;
+        dBrowserVer = Double.parseDouble(sTempVer) ;
+    } else if (isNS6) {
+        if (re.match("/Netscape\\/(\\d\\.\\d+)/i",uAgent)) dBrowserVer = Double.parseDouble(re.group(1)) ;
+    } else if (isNS) {
+        if (re.match("/Mozilla\\/(\\d\\.\\d+)/i",uAgent)) dBrowserVer = Double.parseDouble(re.group(1)) ;
+    }
 } catch(Exception ex) {}
 
 

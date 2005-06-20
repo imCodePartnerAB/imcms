@@ -12,8 +12,6 @@
 
 ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttribute(ChangeText.TextEditPage.REQUEST_ATTRIBUTE__PAGE);
 
-int EDITED_META  = textEditPage.getDocumentId() ;
-
 boolean imcmsModeHtml    = (textEditPage.getType() == TextDomainObject.TEXT_TYPE_HTML) ;
 boolean imcmsModeText    = !imcmsModeHtml ;
 boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true") ;
