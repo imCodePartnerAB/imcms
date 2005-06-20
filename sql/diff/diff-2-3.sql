@@ -343,4 +343,17 @@ DROP PROCEDURE poll_setparameter
 
 DROP PROCEDURE GetUserIdFromName
 
+DROP TABLE user_flags_crossref
+DROP TABLE user_flags
+
+DROP PROCEDURE getuserflags
+DROP PROCEDURE getuserflagsforuser
+DROP PROCEDURE getuserflagsforuseroftype
+DROP PROCEDURE getuserflagsoftype
+DROP PROCEDURE setuserflag
+DROP PROCEDURE unsetuserflag
+
+DROP PROCEDURE DeleteInclude
+DROP PROCEDURE GetHighestUserId
+
 -- 2005-06-17 Kreiger - Issue 3347

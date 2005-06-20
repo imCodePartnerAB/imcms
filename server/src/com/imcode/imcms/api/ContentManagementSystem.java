@@ -9,6 +9,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 public abstract class ContentManagementSystem {
+    private final static String REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
 
     public abstract UserService getUserService();
 
@@ -50,7 +51,6 @@ public abstract class ContentManagementSystem {
         }
 
         Utility.makeUserLoggedIn(request, user);
-        user.setLoginType("verify");
         return Utility.initRequestWithApi(request, user) ;
     }
 
@@ -59,7 +59,7 @@ public abstract class ContentManagementSystem {
      * @since 2.0
      */
     public static ContentManagementSystem fromRequest(ServletRequest request) {
-        return (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
+        return (ContentManagementSystem)request.getAttribute( REQUEST_ATTRIBUTE );
     }
 
     abstract ImcmsServices getInternal() ;

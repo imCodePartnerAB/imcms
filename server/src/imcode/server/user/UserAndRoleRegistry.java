@@ -8,5 +8,4 @@ public interface UserAndRoleRegistry {
 
     String[] getAllRoleNames();
 
-    RoleDomainObject getRoleByName( String roleName );
 }

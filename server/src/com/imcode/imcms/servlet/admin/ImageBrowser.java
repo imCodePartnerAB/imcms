@@ -14,7 +14,6 @@ public class ImageBrowser extends WebComponent {
     public static final String REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER = "imageBrowser";
 
     private SelectImageUrlCommand selectImageUrlCommand;
-    private boolean nullSelectable;
 
     public void setSelectImageUrlCommand( SelectImageUrlCommand selectImageUrlCommand ) {
         this.selectImageUrlCommand = selectImageUrlCommand;
@@ -27,14 +26,6 @@ public class ImageBrowser extends WebComponent {
 
     public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         selectImageUrlCommand.selectImageUrl( imageUrl, request, response );
-    }
-
-    public boolean isNullSelectable() {
-        return nullSelectable;
-    }
-
-    public void setNullSelectable( boolean nullSelectable ) {
-        this.nullSelectable = nullSelectable;
     }
 
     public static interface SelectImageUrlCommand extends Serializable {

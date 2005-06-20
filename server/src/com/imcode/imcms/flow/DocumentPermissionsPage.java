@@ -29,7 +29,6 @@ public class DocumentPermissionsPage extends OkCancelPage {
     private static final String URL_I15D_PAGE__DOCUMENT_PERMISSIONS = "/jsp/docadmin/document_permissions.jsp";
 
     private DocumentDomainObject document;
-    public static final String NAME = "document_permissions";
 
     public DocumentPermissionsPage( DocumentDomainObject document, DispatchCommand okCommand,
                                     DispatchCommand cancelCommand ) {

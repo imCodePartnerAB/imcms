@@ -156,8 +156,4 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
         return result;
     }
 
-    public RoleDomainObject getRoleByName( String roleName ) {
-        return imcmsAuthenticatorAndUserMapperAndRole.getRoleByName( roleName );
-    }
-
 }

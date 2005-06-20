@@ -39,8 +39,6 @@ public abstract class Page implements Serializable, HttpSessionAttribute {
 
     public abstract void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException ;
 
-    public abstract void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException ;
-
     public String getSessionAttributeName() {
         return sessionAttributeName ;
     }

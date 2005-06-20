@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 public class DocumentStoringVisitor extends DocumentVisitor {
 
     protected Database database ;
-    protected UserDomainObject user;
     protected ImcmsServices services;
 
     private static final int FILE_BUFFER_LENGTH = 2048;
@@ -33,7 +32,6 @@ public class DocumentStoringVisitor extends DocumentVisitor {
 
     public DocumentStoringVisitor( UserDomainObject user, Database database, ImcmsServices services ) {
         this.database = database ;
-        this.user = user;
         this.services = services ;
     }
 

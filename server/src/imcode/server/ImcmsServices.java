@@ -24,12 +24,6 @@ public interface ImcmsServices extends Clock {
     UserDomainObject verifyUser(String login, String password)
 	;
 
-    /**
-       @deprecated Use {@link imcode.server.document.textdocument.TextDocumentDomainObject#getText(int)} instead.
-     **/
-    TextDomainObject getText(int meta_id,int txt_no)
-	;
-
     String parsePage( ParserParameters paramsToParse ) throws IOException ;
 
     /** @deprecated Use {@link imcode.server.document.HtmlDocumentDomainObject#getHtml()} instead. **/
@@ -103,19 +97,6 @@ public interface ImcmsServices extends Clock {
     int getSessionCounter();
 
     String getSessionCounterDateAsString();
-
-    /** Get all possible userflags **/
-    Map getUserFlags() ;
-    /** Get all userflags for a single user **/
-    Map getUserFlags(UserDomainObject user) ;
-    /** Get all userflags of a single type **/
-    Map getUserFlags(int type) ;
-    /** Get all userflags for a single user of a single type **/
-    Map getUserFlags(UserDomainObject user, int type) ;
-
-    void setUserFlag(UserDomainObject user, String flagName);
-
-    void unsetUserFlag(UserDomainObject user, String flagName);
 
     void updateMainLog( String logMessage );
 

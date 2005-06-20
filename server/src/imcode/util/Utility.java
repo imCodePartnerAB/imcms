@@ -2,7 +2,6 @@ package imcode.util;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DefaultContentManagementSystem;
-import com.imcode.imcms.api.RequestConstants;
 import com.imcode.imcms.servlet.VerifyUser;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -376,7 +375,7 @@ public class Utility {
         NDC.push( "initRequestWithApi" );
         ImcmsServices service = Imcms.getServices();
         ContentManagementSystem imcmsSystem = DefaultContentManagementSystem.create( service, currentUser );
-        request.setAttribute( RequestConstants.SYSTEM, imcmsSystem );
+        request.setAttribute( ContentManagementSystem.SYSTEM, imcmsSystem );
         NDC.pop();
         return imcmsSystem ;
     }

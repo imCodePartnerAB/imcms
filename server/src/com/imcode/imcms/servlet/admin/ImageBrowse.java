@@ -50,7 +50,7 @@ public class ImageBrowse extends HttpServlet {
         if ( null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) ) {
             imageBrowser.cancel( request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__OK_BUTTON )
-                    && ( null != imageUrl || imageBrowser.isNullSelectable() ) ) {
+                    && null != imageUrl ) {
             imageBrowser.selectImageUrl( imageUrl, request, response );
         } else {
             browse( imageUrl, request, response );

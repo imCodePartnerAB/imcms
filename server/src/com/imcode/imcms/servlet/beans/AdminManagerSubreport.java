@@ -59,10 +59,6 @@ public class AdminManagerSubreport {
         this.sortorder = sortorder;
     }
 
-    public int getMaxDocumentCount() {
-        return maxDocumentCount;
-    }
-
     public void setMaxDocumentCount( int maxDocumentCount ) {
         this.maxDocumentCount = maxDocumentCount;
     }

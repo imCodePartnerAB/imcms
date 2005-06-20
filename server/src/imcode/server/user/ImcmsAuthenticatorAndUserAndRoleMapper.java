@@ -1,6 +1,5 @@
 package imcode.server.user;
 
-import com.imcode.imcms.api.RoleConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
@@ -19,8 +18,6 @@ import java.util.*;
 
 public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserAndRoleRegistry, Authenticator {
 
-    public static final String SPROC_GET_HIGHEST_USER_ID = "GetHighestUserId";
-
     private static final String SPROC_ADD_USER_ROLE = "AddUserRole";
     private static final String SPROC_GET_ALL_ROLES = "GetAllRoles";
     private static final String SPROC_GET_USER_ROLES = "GetUserRoles";
@@ -31,7 +28,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     private static final int USER_EXTERN_ID = 2;
 
     private Database database;
-    private Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserAndRoleMapper.class );
     private static final String SQL_SELECT_USERS = "SELECT user_id, login_name, login_password, first_name, last_name, "
                                                    + "title, company, address, city, zip, country, county_council, "
                                                    + "email, language, active, "
@@ -326,7 +322,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
                 roleNamesSet.add( roleName );
             }
 
-            roleNamesSet.add( RoleConstants.USERS );
+            roleNamesSet.add( RoleDomainObject.USERS.getName() );
 
             String[] roleNames = (String[])roleNamesSet.toArray( new String[roleNamesSet.size()] );
             Arrays.sort( roleNames );
@@ -344,14 +340,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         }
     }
 
-    public void addRoleToUser( UserDomainObject user,
-                               String roleName ) {
-        addRole( roleName );
-        log.debug( "Trying to assign role " + roleName + " to user " + user.getLoginName() );
-        RoleDomainObject role = getRoleByName( roleName );
-        sqlAddRoleToUser( role, user );
-    }
-
     private void sqlAddRoleToUser( RoleDomainObject role, UserDomainObject user ) {
         try {
             database.executeUpdateProcedure( SPROC_ADD_USER_ROLE, new String[] {
@@ -365,16 +353,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     public UserDomainObject[] getUsers( boolean includeUserExtern, boolean includeInactiveUsers ) {
         String[][] allUsersSqlResult = sqlSelectAllUsers( includeUserExtern, includeInactiveUsers );
         return getUsersFromSqlRows( allUsersSqlResult );
-    }
-
-    public void setUserRoles( UserDomainObject user,
-                              String[] roleNames ) {
-        this.sqlRemoveAllRoles( user );
-
-        for ( int i = 0; i < roleNames.length; i++ ) {
-            String roleName = roleNames[i];
-            this.addRoleToUser( user, roleName );
-        }
     }
 
     private void sqlRemoveAllRoles( UserDomainObject user ) {
@@ -643,18 +621,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
             useradminPermissibleRolesList.add( getRoleById( Integer.parseInt( roleIds[i] ) ) );
         }
         return (RoleDomainObject[])useradminPermissibleRolesList.toArray( new RoleDomainObject[useradminPermissibleRolesList.size()] );
-    }
-
-    public RoleDomainObject[] getAllRolesWithPermission( RolePermissionDomainObject rolePermission ) {
-        RoleDomainObject[] allRoles = getAllRoles();
-        List rolesWithPermissionList = new ArrayList( allRoles.length );
-        for ( int i = 0; i < allRoles.length; i++ ) {
-            RoleDomainObject role = allRoles[i];
-            if ( role.hasPermission( rolePermission ) ) {
-                rolesWithPermissionList.add( role );
-            }
-        }
-        return (RoleDomainObject[])rolesWithPermissionList.toArray( new RoleDomainObject[rolesWithPermissionList.size()] );
     }
 
     public UserDomainObject getDefaultUser() {

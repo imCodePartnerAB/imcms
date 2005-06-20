@@ -46,7 +46,6 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__CREATED_TIME = "created_time";
     public static final String REQUEST_PARAMETER__MODIFIED_DATE = "date_modified";
     public static final String REQUEST_PARAMETER__MODIFIED_TIME = "modified_time";
-    public static final String REQUEST_PARAMETER__PUBLISHER_ID = "publisher_id";
     public static final String REQUEST_PARAMETER__STATUS = "status";
     public static final String REQUEST_PARAMETER__GO_TO_PUBLISHER_BROWSER = "browseForPublisher";
     public static final String REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER = "browseForCreator";

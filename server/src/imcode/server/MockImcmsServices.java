@@ -1,11 +1,9 @@
 package imcode.server;
 
 import imcode.server.db.Database;
-import imcode.server.db.DatabaseCommand;
 import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
@@ -29,10 +27,6 @@ public class MockImcmsServices implements ImcmsServices {
     private DocumentMapper documentMapper;
 
     public UserDomainObject verifyUser( String login, String password ) {
-        return null;
-    }
-
-    public TextDomainObject getText( int meta_id, int txt_no ) {
         return null;
     }
 
@@ -142,30 +136,6 @@ public class MockImcmsServices implements ImcmsServices {
 
     public String getSessionCounterDateAsString() {
         return null;
-    }
-
-    public Map getUserFlags() {
-        return null;
-    }
-
-    public Map getUserFlags( UserDomainObject user ) {
-        return null;
-    }
-
-    public Map getUserFlags( int type ) {
-        return null;
-    }
-
-    public Map getUserFlags( UserDomainObject user, int type ) {
-        return null;
-    }
-
-    public void setUserFlag( UserDomainObject user, String flagName ) {
-
-    }
-
-    public void unsetUserFlag( UserDomainObject user, String flagName ) {
-
     }
 
     public void updateMainLog( String logMessage ) {

@@ -4,7 +4,6 @@ import imcode.server.db.Database;
 import imcode.server.document.*;
 import imcode.server.document.index.AutorebuildingDirectoryIndex;
 import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
@@ -310,17 +309,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
     public String parsePage( ParserParameters paramsToParse )
             throws IOException {
         return textDocParser.parsePage( paramsToParse );
-    }
-
-    /**
-     * Retrieve a text from the db.
-     *
-     * @param meta_id The id of the page.
-     * @param no      The id of the text in the page.
-     * @return The text from the db, or null if there was none.
-     */
-    public TextDomainObject getText( int meta_id, int no ) {
-        return documentMapper.getText( meta_id, no );
     }
 
     public void updateMainLog( String event ) {
@@ -725,91 +713,11 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     /**
-     * Set a user flag
-     */
-    public void setUserFlag( UserDomainObject user, String flagName ) {
-        int userId = user.getId();
-
-        getDatabase().executeUpdateProcedure( "SetUserFlag", new String[] {"" + userId,
-                                                                                      flagName} );
-    }
-
-    /**
      * Returns an array with with all the documenttypes stored in the database
      * the array consists of pairs of id:, value. Suitable for parsing into select boxes etc.
      */
     public String[][] getAllDocumentTypes( String langPrefixStr ) {
         return getDatabase().execute2dArrayProcedure( "GetDocTypes", new String[] {langPrefixStr} );
-    }
-
-    /**
-     * Unset a user flag
-     */
-    public void unsetUserFlag( UserDomainObject user, String flagName ) {
-        int userId = user.getId();
-
-        getDatabase().executeUpdateProcedure( "UnsetUserFlag", new String[] {"" + userId,
-                                                                                      flagName} );
-    }
-
-    /**
-     * Get all possible userflags
-     */
-    public Map getUserFlags() {
-        String[] dbData = getDatabase().executeArrayProcedure( "GetUserFlags", new String[0] );
-
-        return getUserFlags( dbData );
-    }
-
-    /**
-     * Get all userflags for a single user
-     */
-    public Map getUserFlags( UserDomainObject user ) {
-        int userId = user.getId();
-        String[] dbData = getDatabase().executeArrayProcedure( "GetUserFlagsForUser", new String[] {String.valueOf( userId )} );
-
-        return getUserFlags( dbData );
-    }
-
-    /**
-     * Get all userflags of a single type
-     */
-    public Map getUserFlags( int type ) {
-        String[] dbData = getDatabase().executeArrayProcedure( "GetUserFlagsOfType", new String[] {String.valueOf( type )} );
-
-        return getUserFlags( dbData );
-    }
-
-    /**
-     * Get all userflags for a single user of a single type
-     */
-    public Map getUserFlags( UserDomainObject user, int type ) {
-        int userId = user.getId();
-        String[] dbData = getDatabase().executeArrayProcedure( "GetUserFlagsForUserOfType", new String[] {String.valueOf( userId ),
-                                                                                                       String.valueOf( type )} );
-
-        return getUserFlags( dbData );
-    }
-
-    /**
-     * Used by the other getUserFlags*-methods to put the database-data in a Set *
-     */
-    private Map getUserFlags( String[] dbData ) {
-        Map theFlags = new HashMap();
-
-        for ( int i = 0; i < dbData.length; i += 4 ) {
-            String flagName = dbData[i + 1];
-            int flagType = Integer.parseInt( dbData[i + 2] );
-            String flagDescription = dbData[i + 3];
-
-            UserFlag flag = new UserFlag();
-            flag.setName( flagName );
-            flag.setType( flagType );
-            flag.setDescription( flagDescription );
-
-            theFlags.put( flagName, flag );
-        }
-        return theFlags;
     }
 
     public Properties getLanguageProperties( UserDomainObject user ) {

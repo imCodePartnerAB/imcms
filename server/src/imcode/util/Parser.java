@@ -26,7 +26,7 @@ public class Parser {
      * @param sb          The StringBuffer.
      * @param tagsAndData An array of tags and data for each tag. Every even index is a tag, and every odd index is data for the tag before.
      */
-    public static void parseDoc(StringBuffer sb, String[] tagsAndData) {
+    private static void parseDoc(StringBuffer sb, String[] tagsAndData) {
         if (sb == null) {
             return ;
         }

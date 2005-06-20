@@ -35,7 +35,6 @@ public class SearchDocumentsPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__DOCUMENTS_PER_PAGE = "num";
     public static final String REQUEST_PARAMETER__QUERY_STRING = "q";
     public static final String REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX = "start";
-    public static final String REQUEST_ATTRIBUTE__PAGE = "sp";
     public static final String REQUEST_PARAMETER__SELECTED_DOCUMENT_ID = "select";
     public static final String REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID = "toedit";
     public static final String REQUEST_PARAMETER__SEARCH_BUTTON = "search";
@@ -64,7 +63,6 @@ public class SearchDocumentsPage extends OkCancelPage {
     private int documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE;
     private DocumentDomainObject selectedDocument;
     private Query query;
-    private boolean searchButtonPressed;
 
     DocumentFinder documentFinder;
 
@@ -153,7 +151,6 @@ public class SearchDocumentsPage extends OkCancelPage {
             documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE;
         }
         queryString = StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__QUERY_STRING ) );
-        searchButtonPressed = null != request.getParameter( REQUEST_PARAMETER__SEARCH_BUTTON );
 
         query = createQuery( documentFinder, Utility.getLoggedOnUser( request ) );
     }
@@ -322,10 +319,6 @@ public class SearchDocumentsPage extends OkCancelPage {
 
     public Query getQuery() {
         return query;
-    }
-
-    public boolean isSearchButtonPressed() {
-        return searchButtonPressed;
     }
 
     public DocumentFinder getDocumentFinder() {

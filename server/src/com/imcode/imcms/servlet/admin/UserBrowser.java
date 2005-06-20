@@ -18,17 +18,13 @@ import java.util.ArrayList;
 public class UserBrowser extends HttpServlet {
 
     public static final String REQUEST_PARAMETER__USER_ID = "user_id";
-    static final String REQUEST_ATTRIBUTE__USER = "user";
     public final static String REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE = "userBrowse";
-    public static final String REQUEST_PARAMETER__FORWARD_RETURN_URL = "forwardreturnurl";
     public static final String REQUEST_PARAMETER__SHOW_USERS_BUTTON = "showUsers";
     public static final String REQUEST_PARAMETER__SEARCH_STRING = "searchstring";
     public static final String REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS = "includeInactive";
     public static final String REQUEST_ATTRIBUTE__FORM_DATA = "formData";
     private static final String JSP__USER_BROWSER = "/jsp/userbrowser.jsp";
     public static final String REQUEST_PARAMETER__SELECT_USER_BUTTON = "selectUserButton";
-    public static final int SELECT_BUTTON__SELECT_USER = 0;
-    public static final int SELECT_BUTTON__EDIT_USER = 1;
     public static final String REQUEST_PARAMETER__ADD_USER = "addUser";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
 
@@ -100,7 +96,6 @@ public class UserBrowser extends HttpServlet {
 
     public static class UserBrowserPage {
 
-        UserFinder userFinder = new UserFinder() ;
         UserDomainObject[] users = new UserDomainObject[0];
         String searchString = "";
         private boolean includeInactiveUsers;

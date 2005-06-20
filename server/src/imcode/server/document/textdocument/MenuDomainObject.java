@@ -25,7 +25,6 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     public final static int DEFAULT_SORT_KEY = 500;
     private static final int DEFAULT_SORT_KEY_INCREMENT = 10;
-    Logger log = Logger.getLogger(MenuDomainObject.class);
 
     public MenuDomainObject() {
         this( 0, MENU_SORT_ORDER__DEFAULT );
@@ -165,10 +164,6 @@ public class MenuDomainObject implements Cloneable, Serializable {
         }
     }
 
-    public boolean isEmpty() {
-        return menuItems.isEmpty();
-    }
-
     public void removeMenuItemByDocumentId( int childId ) {
         menuItems.remove( new Integer( childId )) ;
     }
@@ -183,10 +178,6 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     public int hashCode() {
         return sortOrder + menuItems.hashCode() ;
-    }
-
-    public int getSize() {
-        return menuItems.size();
     }
 
     public class DocumentReferenceDocumentGetter implements DocumentGetter {

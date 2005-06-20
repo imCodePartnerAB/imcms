@@ -113,11 +113,6 @@ public class Image {
         internalImage.setSource( imageSource );
     }
 
-    /** @deprecated Use {@link #setLinkTarget(java.lang.String)} **/
-    public void setLinkTargetName( String target_name ) {   // use this when target is set to "_other"
-        setLinkTarget( target_name );
-    }
-
     public boolean isEmpty() {
         return internalImage.isEmpty() ;
     }

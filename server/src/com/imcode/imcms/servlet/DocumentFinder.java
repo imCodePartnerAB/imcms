@@ -79,10 +79,6 @@ public class DocumentFinder extends WebComponent {
         this.restrictingQuery = restrictingQuery;
     }
 
-    public Query getRestrictingQuery() {
-        return restrictingQuery;
-    }
-
     public void setQueryParser( QueryParser queryParser ) {
         this.queryParser = queryParser;
     }

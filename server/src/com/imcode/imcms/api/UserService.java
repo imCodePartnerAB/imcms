@@ -67,18 +67,6 @@ public class UserService {
         return roles ;
     }
 
-    /** @deprecated Use {@link #getAllRoles()} instead. */
-    public String[] getAllRolesNames() throws NoPermissionException {
-        getSecurityChecker().isSuperAdmin();
-
-        return getMapper().getAllRoleNames();
-    }
-
-    /** @deprecated Use {@link User#getRoles()} instead */
-    public String[] getRoleNames( User user ) throws NoPermissionException {
-        return user.getRoleNames() ;
-    }
-
     /**
      * @since 2.0
      */
@@ -104,27 +92,6 @@ public class UserService {
         getMapper().deleteRole( role.getInternal() );
     }
 
-    /** @deprecated Use {@link User#setRoles(Role[])} instead. */
-    public void setUserRoles( User user, String[] roleNames ) throws NoPermissionException {
-        getSecurityChecker().isSuperAdmin();
-
-        getMapper().setUserRoles( user.getInternal(), roleNames );
-    }
-
-    /** @deprecated Use {@link #createNewRole(String)} followed by {@link #saveRole(Role)} instead. */
-    public Role addNewRole( String roleName ) throws NoPermissionException, SaveException {
-        Role role = createNewRole( roleName ) ;
-        saveRole( role );
-        return role ;
-    }
-
-    /** @deprecated Use {@link #getAllUsersWithRole(Role)}} instead. */
-    public User[] getAllUserWithRole( String roleName ) throws NoPermissionException {
-        getSecurityChecker().isSuperAdmin();
-
-        return getAllUsersWithRole( getRole( roleName ) );
-    }
-
     /**
      * @since 2.0
      */
@@ -140,14 +107,6 @@ public class UserService {
         }
 
         return users;
-    }
-
-    /** @deprecated Use {@link #deleteRole(Role)} instead. */
-    public void deleteRole( String role ) throws NoPermissionException {
-        getSecurityChecker().isSuperAdmin();
-
-        ImcmsAuthenticatorAndUserAndRoleMapper mapper = getMapper();
-        mapper.deleteRole( mapper.getRoleByName( role ) );
     }
 
     /**

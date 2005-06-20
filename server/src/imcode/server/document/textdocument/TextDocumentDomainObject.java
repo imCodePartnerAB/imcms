@@ -83,10 +83,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return (TextDomainObject)texts.get( new Integer( textFieldIndex ) );
     }
 
-    public void initDocument( DocumentMapper documentMapper ) {
-        // lazily loaded
-    }
-
     public void accept( DocumentVisitor documentVisitor ) {
         documentVisitor.visitTextDocument(this) ;
     }

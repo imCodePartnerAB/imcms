@@ -10,8 +10,6 @@ import java.io.IOException;
 public abstract class CreateDocumentPageFlow extends DocumentPageFlow {
 
     protected EditDocumentInformationPageFlow editDocumentInformationPageFlow;
-    public final static String URL_I15D_PAGE__PREFIX = "/imcms/";
-    public static final String PAGE__EDIT = "edit";
 
     protected CreateDocumentPageFlow( DocumentDomainObject document,
                                       DispatchCommand returnCommand, SaveDocumentCommand saveDocumentCommand ) {

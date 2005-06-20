@@ -29,7 +29,6 @@ public class UserDomainObject extends Hashtable {
     private String languageIso639_2;
 
     private TemplateGroupDomainObject templateGroup;
-    private String loginType;
 
     private boolean imcmsExternal = false;
 
@@ -373,20 +372,6 @@ public class UserDomainObject extends Hashtable {
         this.languageIso639_2 = languageIso639_2;
     }
 
-    /**
-     * Get the login-type.
-     */
-    public String getLoginType() {
-        return this.loginType;
-    }
-
-    /**
-     * Set the login-type.
-     */
-    public void setLoginType( String loginType ) {
-        this.loginType = loginType;
-    }
-
     public boolean isImcmsExternal() {
         return this.imcmsExternal;
     }
@@ -631,7 +616,4 @@ public class UserDomainObject extends Hashtable {
         return document.isVisibleInMenusForUnauthorizedUsers() || canAccess( document );
     }
 
-    public void removeAllRoles() {
-        roles = createRolesSet() ;
-    }
 }

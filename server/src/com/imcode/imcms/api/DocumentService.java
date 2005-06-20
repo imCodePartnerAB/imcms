@@ -175,23 +175,6 @@ public class DocumentService {
         return contentManagementSystem.getSecurityChecker();
     }
 
-    /**
-     * @param name
-     * @param description
-     * @param imageUrl
-     * @param categoryType
-     * @return The newly created category.
-     * @throws NoPermissionException
-     * @throws CategoryAlreadyExistsException
-     * @deprecated Use {@link Category#Category(String, CategoryType)} and {@link #saveCategory(Category)} instead.
-     */
-    public Category createNewCategory( String name, String description, String imageUrl, CategoryType categoryType ) throws NoPermissionException, CategoryAlreadyExistsException {
-        getSecurityChecker().isSuperAdmin();
-        CategoryDomainObject newCategory = new CategoryDomainObject( 0, name, description, imageUrl, categoryType.getInternal() );
-        newCategory = getDocumentMapper().addCategory( newCategory );
-        return new Category( newCategory );
-    }
-
     public Section getSection( int sectionId ) {
         SectionDomainObject section = getDocumentMapper().getSectionById( sectionId );
         if ( null == section ) {

@@ -38,8 +38,6 @@ public class ChangeImage extends HttpServlet {
     public final static String REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON = "goToImageSearch";
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON = "goToImageBrowser";
     public static final String REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON = "goToAddRestrictedImage";
-    public static final String REQUEST_PARAMETER__GO_TO_EDIT_DOCUMENT = "toEdit";
-    public static final String REQUEST_PARAMETER__DOCUMENT_ID_TO_EDIT = "documentIdToEdit";
     public static final String REQUEST_PARAMETER__OK_BUTTON = "ok";
     public static final String REQUEST_PARAMETER__PREVIEW_BUTTON = "show_img";
     public static final String REQUEST_PARAMETER__IMAGE_HEIGHT = "image_height";
@@ -54,7 +52,6 @@ public class ChangeImage extends HttpServlet {
     public static final String REQUEST_PARAMETER__IMAGE_ALIGN = "image_align";
     public static final String REQUEST_PARAMETER__IMAGE_ALT = "alt_text";
     public static final String REQUEST_PARAMETER__IMAGE_LOWSRC = "low_scr";
-    public static final String REQUEST_PARAMETER__DIRECTORY = "directory";
     public static final String REQUEST_PARAMETER__DOCUMENT_ID = "documentId";
     public static final String REQUEST_PARAMETER__LABEL = "label";
     public static final String REQUEST_PARAMETER__LINK_URL = "imageref_link";

@@ -45,10 +45,6 @@ public class ParserParameters implements Cloneable {
         return documentRequest;
     }
 
-    public void setDocumentRequest( DocumentRequest documentRequest ) {
-        this.documentRequest = documentRequest;
-    }
-
     public int getFlags() {
         return flags;
     }

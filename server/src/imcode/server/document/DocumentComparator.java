@@ -62,15 +62,4 @@ public abstract class DocumentComparator extends ChainableReversibleNullComparat
         }
     };
 
-    public final static DocumentComparator CREATED_DATETIME = new DocumentComparator("CREATED_DATETIME") {
-        protected int compareDocuments( DocumentDomainObject d1, DocumentDomainObject d2 ) {
-            return d1.getCreatedDatetime().compareTo( d2.getCreatedDatetime() ) ;
-        }
-    };
-
-    public final static DocumentComparator STATUS = new DocumentComparator("STATUS") {
-        protected int compareDocuments( DocumentDomainObject d1, DocumentDomainObject d2 ) {
-            return d1.getStatus() - d2.getStatus() ;
-        }
-    };
 }

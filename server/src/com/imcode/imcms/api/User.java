@@ -101,12 +101,6 @@ public class User {
         return internalUser.hasRole( role.getInternal() ) ;
     }
 
-    /** @deprecated Use {@link #hasRole(Role)} instead. */
-    public boolean hasRole(String roleName) throws NoPermissionException {
-        RoleDomainObject role = getMapper().getRoleByName( roleName );
-        return internalUser.hasRole(role) ;
-    }
-
     public boolean isDefaultUser() {
         return internalUser.isDefaultUser() ;
     }
@@ -117,10 +111,6 @@ public class User {
 
     public boolean canEdit(Document document) {
         return internalUser.canEdit(document.getInternal()) ;
-    }
-
-    private ImcmsAuthenticatorAndUserAndRoleMapper getMapper() {
-        return Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
     }
 
     public boolean equals( Object o ) {
@@ -179,13 +169,6 @@ public class User {
      */
     public void removeRole(Role role) {
         internalUser.removeRole( role.getInternal() ) ;
-    }
-
-    /** @deprecated Use {@link #getRoles()} instead. */
-    public String[] getRoleNames() {
-        Iterator roleNamesIterator = IteratorUtils.arrayIterator( internalUser.getRoles() );
-        Collection roleNames = CollectionUtils.collect( roleNamesIterator, new RoleToRoleNameTransformer()) ;
-        return (String[])roleNames.toArray( new String[roleNames.size()] );
     }
 
     public void setActive( boolean active ) {
@@ -272,9 +255,4 @@ public class User {
         return Language.getLanguageByISO639_2( internalUser.getLanguageIso639_2() ) ;
     }
 
-    private static class RoleToRoleNameTransformer implements Transformer {
-        public Object transform( Object role ) {
-            return ((RoleDomainObject)role).getName() ;
-        }
-    }
 }

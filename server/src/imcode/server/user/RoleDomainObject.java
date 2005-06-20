@@ -1,6 +1,5 @@
 package imcode.server.user;
 
-import com.imcode.imcms.api.RoleConstants;
 import imcode.util.LocalizedMessage;
 
 import java.io.Serializable;
@@ -9,9 +8,9 @@ import java.util.Set;
 
 public class RoleDomainObject implements Serializable, Comparable {
 
-    public final static RoleDomainObject SUPERADMIN = new ImmutableRoleDomainObject( 0, RoleConstants.SUPER_ADMIN, 1 );
-    public final static RoleDomainObject USERADMIN = new ImmutableRoleDomainObject( 1, RoleConstants.USER_ADMIN, 2 );
-    public final static RoleDomainObject USERS = new ImmutableRoleDomainObject( 2, RoleConstants.USERS, 0 );
+    public final static RoleDomainObject SUPERADMIN = new ImmutableRoleDomainObject( 0, "Superadmin", 1 );
+    public final static RoleDomainObject USERADMIN = new ImmutableRoleDomainObject( 1, "Useradmin", 2 );
+    public final static RoleDomainObject USERS = new ImmutableRoleDomainObject( 2, "Users", 0 );
 
     public final static RolePermissionDomainObject PASSWORD_MAIL_PERMISSION = new RolePermissionDomainObject( 1, new LocalizedMessage( "role_permission/password_by_email/description" ) ) ;
     public static final RolePermissionDomainObject ADMIN_PAGES_PERMISSION = new RolePermissionDomainObject( 4, new LocalizedMessage( "role_permission/admin_pages_access/desciption" ) );

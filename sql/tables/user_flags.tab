@@ -1,9 +1,0 @@
-	<table name="user_flags">
-        <column name="user_flag_id" primaryKey="true" required="true" type="INTEGER" />
-        <column name="name" required="true" size="64" type="VARCHAR" />
-        <column name="type" required="true" type="INTEGER" />
-        <column name="description" required="true" size="256" type="VARCHAR" />
-        <unique>
-            <unique-column name="name"/>
-        </unique>
-    </table>

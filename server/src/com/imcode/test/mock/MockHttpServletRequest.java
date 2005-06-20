@@ -222,22 +222,6 @@ public class MockHttpServletRequest implements HttpServletRequest {
         return null;  // TODO
     }
 
-    public int getRemotePort() {
-        return 0;  // TODO
-    }
-
-    public String getLocalName() {
-        return null;  // TODO
-    }
-
-    public String getLocalAddr() {
-        return null;  // TODO
-    }
-
-    public int getLocalPort() {
-        return 0;  // TODO
-    }
-
     public void setupAddParameter( String parameterName, String[] parameterValues ) {
         parameterMap.put( parameterName, parameterValues ) ;
     }

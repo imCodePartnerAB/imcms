@@ -2,7 +2,6 @@
   import="imcode.server.Imcms,
           imcode.server.ImcmsServices,
           com.imcode.imcms.api.DocumentService,
-          com.imcode.imcms.api.RequestConstants,
           com.imcode.imcms.api.ContentManagementSystem,
           com.imcode.imcms.api.TextDocument,
           java.io.File,

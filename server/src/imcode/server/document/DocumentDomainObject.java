@@ -414,10 +414,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public abstract void accept( DocumentVisitor documentVisitor );
 
-    public String getUrl( HttpServletRequest request ) {
-        return request.getContextPath() + "/servlet/GetDoc?meta_id=" + getId();
-    }
-
     public LifeCyclePhase getLifeCyclePhase() {
         DocumentDomainObject.LifeCyclePhase lifeCyclePhase = null ;
         if ( DocumentDomainObject.STATUS_NEW == getStatus() ) {

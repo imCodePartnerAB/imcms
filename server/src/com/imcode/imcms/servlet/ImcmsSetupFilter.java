@@ -107,10 +107,8 @@ public class ImcmsSetupFilter implements Filter {
 
         if ( user_data.length > 0 ) {
             user = imcref.verifyUser( user_data[0], user_data[1] );
-            user.setLoginType( "ip_access" );
         } else {
             user = Utility.getDefaultUser();
-            user.setLoginType( "extern" );
         }
 
         return user;
