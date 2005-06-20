@@ -1,6 +1,6 @@
 <%@ page
 	
-%><%@ include file="_editor_methods.jsp" %><%
+%><%@ include file="_editor_methods.jsp" %><%@ page import="com.imcode.imcms.servlet.admin.ChangeText"%><%
 
 if (isHtmlAreaSupported && showModeEditor) { %>
 

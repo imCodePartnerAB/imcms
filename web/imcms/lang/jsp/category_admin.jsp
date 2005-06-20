@@ -1,5 +1,4 @@
 <%@ page import="com.imcode.imcms.servlet.superadmin.AdminCategories,
-                 com.imcode.imcms.api.Category,
                  imcode.server.document.CategoryDomainObject,
                  imcode.server.document.CategoryTypeDomainObject"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
@@ -202,7 +201,7 @@ if (inDefaultMode) {
         <% if (null != categoryToEdit) {
             boolean readonly = false;
             if( !AdminCategories.createHtmlOptionListOfCategoryTypes(null).equals("") ){ %>
-                <%@include file="category_admin_category.jsp"%>
+                <%@include file="category_admin_category.included.jsp"%>
             <%}
         }
 
@@ -261,7 +260,7 @@ if (inDefaultMode) {
             if(categoryToEdit != null ){
                 boolean readonly = false;
             %>
-                <%@include file="category_admin_category.jsp"%>
+                <%@include file="category_admin_category.included.jsp"%>
        <%}%>
     <%if( messageToUser.length() > 0 ) { %>
      <tr><td>&nbsp;</td></tr>
@@ -305,7 +304,7 @@ if (inDefaultMode) {
         <%}
         if(null != categoryToEdit) {
             boolean readonly = true ;%>
-            <%@ include file="category_admin_category.jsp"%>
+            <%@ include file="category_admin_category.included.jsp"%>
         <%}%>
     <%}  // ---------- delete category type------------
     else if(inDeleteCategoryTypeMode) {
@@ -381,7 +380,7 @@ if (inDefaultMode) {
         <% }
         if(null != categoryToEdit) {
             boolean readonly = true ;%>
-            <%@ include file="category_admin_category.jsp"%>
+            <%@ include file="category_admin_category.included.jsp"%>
         <%}%>
          <%if( messageToUser.length() > 0 ) { %>
         <tr><td colspan="2">&nbsp;</td></tr>

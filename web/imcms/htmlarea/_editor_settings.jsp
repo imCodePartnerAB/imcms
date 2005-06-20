@@ -1,8 +1,11 @@
 <%@ page
 	
-	import="com.imcode.imcms.api.*,
-	        imcode.server.ImcmsServices,
+	import="com.imcode.imcms.api.ContentManagementSystem,
+	        com.imcode.imcms.api.DocumentService,
+	        com.imcode.imcms.api.User,
+	        com.imcode.imcms.api.UserService,
 	        imcode.server.Imcms,
+	        imcode.server.ImcmsServices,
 	        org.apache.oro.text.perl.Perl5Util"
 	
 %><%@ page import="com.imcode.imcms.servlet.admin.ChangeText"%><%

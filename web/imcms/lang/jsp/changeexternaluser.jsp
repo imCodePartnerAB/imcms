@@ -25,15 +25,26 @@ private static void redirectToAdminUser (HttpServletRequest request, HttpServlet
 	response.sendRedirect( url );
 }
 
-private static void updateUserRoles( HttpServletRequest request, UserService userMapper, User user ) throws NoPermissionException {
+private static void updateUserRoles( HttpServletRequest request, UserService userService, User user ) throws NoPermissionException {
 	String[] roleNames = request.getParameterValues(FORM_SELECT_ROLES) ;
-	userMapper.setUserRoles(user,roleNames) ;
+
+    for(int i = 0; i < roleNames.length; i++) {
+        String roleName = roleNames[i];
+        Role role = userService.getRole(roleName) ;
+        if (null != role) {
+            user.addRole(role);
+        }
+    }
+    try {
+        userService.saveUser(user);
+    } catch(SaveException se) {
+    }
 }
 
 
 %><%
 
-DefaultContentManagementSystem  imcms = (DefaultContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
+ContentManagementSystem  imcms = ContentManagementSystem.fromRequest(request);
 UserService  userMapper = imcms.getUserService();
 
 String userLoginName = request.getParameter( WebAppGlobalConstants.USER_LOGIN_NAME_PARAMETER_NAME );
@@ -61,8 +72,8 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 
 #gui_outer_start()
 #gui_head( "<? install/htdocs/sv/adminuser/changeexternaluser.jsp/1 ?>" )
-<table border="0" cellspacing="0" cellpadding="0">
 <form method="POST" action="$contextPath/imcms/$language/jsp/changeexternaluser.jsp">
+<table border="0" cellspacing="0" cellpadding="0">
 <input type="hidden" name="<%= WebAppGlobalConstants.USER_LOGIN_NAME_PARAMETER_NAME %>" value="<%= userLoginName %>">
 <tr>
 	<td><input type="submit" class="imcmsFormBtn" name="<%= ACTION_CANCEL %>" value="<? global/back ?>"></td>
@@ -173,7 +184,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 	<input type="submit" class="imcmsFormBtn" name="<%= ACTION_SAVE_USER %>" value="<? global/save ?>">
 	<input type="submit" class="imcmsFormBtn" name="<%= ACTION_CANCEL %>" value="<? global/cancel ?>"></td>
 </tr>
-</form>
 </table>
+</form>
 #gui_end_of_page()
 </vel:velocity>

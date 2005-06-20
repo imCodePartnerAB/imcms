@@ -106,7 +106,7 @@ function onCancel() {
 <script src="$contextPath/imcms/swe/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
-<body class="imcmsAdmBgCont" style="border:0; margin:0" onload="Init()">
+<body class="imcmsAdmBgCont" style="border:0; margin:0" onload="Init();">
 
 
 <form>

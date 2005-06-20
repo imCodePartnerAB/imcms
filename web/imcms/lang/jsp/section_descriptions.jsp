@@ -1,16 +1,14 @@
 <%@ page
 	
-	import="com.imcode.imcms.api.*,
-	        imcode.server.Imcms,
-	        imcode.server.ImcmsServices"
+	import="imcode.server.Imcms,
+	        imcode.server.ImcmsServices,
+	        imcode.server.document.SectionDomainObject"
 	
 %><%
 
 ImcmsServices service = Imcms.getServices() ;
 
-String sSql = "SELECT section_id, section_name FROM sections ORDER BY section_name" ;
-
-String[][] sections = service.execute2dArrayQuery(sSql, new String[]{}) ;
+SectionDomainObject[] sections = service.getDocumentMapper().getAllSections() ;
 
 %>
 <html>
@@ -36,8 +34,8 @@ TD { font: 11px Verdana,sans-serif; }
 	</tr><%
 if (sections != null) { 
 	for (int i = 0; i < sections.length; i++) {
-		String id   = sections[i][0] ;
-		String name = sections[i][1] ; %>
+		int id   = sections[i].getId() ;
+		String name = sections[i].getName() ; %>
 	<tr valign="top">
 		<td bgcolor="#ffffff"><%= id %></td>
 		<td bgcolor="#ffffff"><%= name %></td>

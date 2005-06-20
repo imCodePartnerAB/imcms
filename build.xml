@@ -150,7 +150,7 @@
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-       depends="init,jar,test,apidocs,libraries,web,conf,sql,versionfile,checksumsfile,addon"
+       depends="init,jar,test,apidocs,libraries,sql,web,conf,versionfile,checksumsfile"
        description="Builds everything."/>
 
     <target name="clean" description="Deletes everything for a fresh start.">
@@ -196,7 +196,8 @@
         </copy>
     </target>
 
-    <target name="jar" depends="check-webappname,classes,web">
+    <target name="jar" depends="check-webappname,classes">
+        <mkdir dir="${lib}"/>
         <jar destfile="${jar}" basedir="${classes}"/>
     </target>
 
@@ -249,14 +250,6 @@
     </target>
 
     <!-- Component targets used in build -->
-
-    <target name="addon-web" if="addon" depends="classes">
-        <ant antfile="addons/${addon}/build.xml" target="copy-web" inheritall="false" inheritrefs="true"/>
-    </target>
-
-    <target name="addon" if="addon" depends="classes">
-        <ant antfile="addons/${addon}/build.xml" target="build" inheritall="false" inheritrefs="true"/>
-    </target>
 
     <target name="apidocs">
         <javadoc sourcepath="server/src/" destdir="${apidocs}" windowtitle="imCMS API" classpathref="libraries">
@@ -320,7 +313,27 @@
     <target name="ddl.sql" depends="init,ddl.xml">
         <taskdef name="ddl" classname="org.apache.commons.sql.task.DDLTask" classpathref="libraries"/>
         <mkdir dir="${tmp}"/>
-        <ddl xmlfile="${tmp}/ddl.xml" output="${tmp}/ddl.sql" targetdatabase="${db-target}" dodrops="false"/>
+        <ddl xmlfile="${tmp}/ddl.xml" output="${tmp}/ddl.sql"
+             targetdatabase="${db-target}" dodrops="false"/>
+    </target>
+
+    <target name="jspc" depends="init,classes">
+        <taskdef classname="org.apache.jasper.JspC" name="jasper2" classpathref="libraries"/>
+
+        <jasper2
+                validateXml="false"
+                verbose="5"
+                uriroot="web"
+                webXmlFragment="${tmp}/generated_web.xml"
+                outputDir="${tmp}/jsp"
+                classpath="${classes}"/>
+
+        <mkdir dir="${tmp}/jspc"/>
+
+        <javac srcdir="${tmp}/jsp" destdir="${tmp}/jspc"
+               classpathref="classes-and-libraries" fork="yes"
+               excludes="**/*_included_jsp.java"/>
+
     </target>
 
     <!-- Copies the libraries (jar-files) needed for building. -->
@@ -393,7 +406,7 @@
 
     <!-- Creates the directories and copies the files that are to be public. -->
     <target name="web"
-       depends="init,changes,addon-web"
+       depends="init,changes,jspc"
        description="Translates and copies the webfiles.">
 
         <dependset>

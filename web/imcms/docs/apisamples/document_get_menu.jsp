@@ -1,9 +1,9 @@
 <%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %><%!
-    private String makeLink(Document document,HttpServletRequest request) throws NoPermissionException {
+    private String makeLink(Document document,HttpServletRequest request) {
         return "<a href=\""+request.getContextPath()+"/servlet/GetDoc?meta_id="+ document.getId() +"\">document "+ document.getId() + "</a> with headline <b>"+document.getHeadline()+"</b>" ;
     }
 
-    private String getTreeOutput( int treeLevel, int startIndex, TextDocument.MenuItem[] menuItems, HttpServletRequest request ) throws NoPermissionException {
+    private String getTreeOutput( int treeLevel, int startIndex, TextDocument.MenuItem[] menuItems, HttpServletRequest request ) {
         StringBuffer result = new StringBuffer();
         int index = startIndex;
         if( "".equals( menuItems[index].getTreeKey().toString()) ){
