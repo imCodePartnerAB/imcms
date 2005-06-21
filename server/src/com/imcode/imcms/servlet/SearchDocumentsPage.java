@@ -4,7 +4,7 @@ import com.imcode.imcms.flow.*;
 import com.imcode.imcms.servlet.superadmin.AdminManager;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.SectionDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;

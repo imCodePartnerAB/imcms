@@ -3,8 +3,6 @@
                  com.imcode.imcms.servlet.SearchDocumentsPage,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
-                 imcode.server.document.DocumentMapper,
-                 imcode.server.Imcms,
                  imcode.util.Html,
                  com.imcode.imcms.flow.Page"%>
 <%

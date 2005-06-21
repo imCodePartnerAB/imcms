@@ -1,20 +1,24 @@
-package imcode.server.document;
+package com.imcode.imcms.mapping;
 
-import imcode.server.db.DatabaseConnection;
-import imcode.server.db.ConvenienceDatabaseConnection;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.server.user.UserDomainObject;
-import imcode.server.user.RoleDomainObject;
-import imcode.server.LanguageMapper;
 import imcode.server.ImcmsServices;
-import imcode.util.DateConstants;
+import imcode.server.LanguageMapper;
+import imcode.server.db.ConvenienceDatabaseConnection;
+import imcode.server.db.DatabaseConnection;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentId;
+import imcode.server.document.SectionDomainObject;
+import imcode.server.document.DocumentGetter;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
 import imcode.util.ArraySet;
+import imcode.util.DateConstants;
+import org.apache.log4j.Logger;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
-
-import org.apache.log4j.Logger;
+import java.util.Date;
+import java.util.Set;
 
 public class ConnectionDocumentGetter implements DocumentGetter {
     private ConvenienceDatabaseConnection connection;
@@ -37,7 +41,7 @@ public class ConnectionDocumentGetter implements DocumentGetter {
         if (0 != result.length) {
             document = getDocumentFromSqlResultRow(result);
             initDocumentAttributes(connection,document);
-            initDocumentCategories(connection,document);
+            CategoryMapper.initDocumentCategories(connection,document);
             initRolesMappedToDocumentPermissionSetIds(connection,document);
 
             document.accept(new DocumentInitializingVisitor(connection, services));
@@ -69,7 +73,7 @@ public class ConnectionDocumentGetter implements DocumentGetter {
         document.setCreatedDatetime(DocumentMapper.parseDateFormat(dateFormat, result[10]));
         Date modifiedDatetime = DocumentMapper.parseDateFormat(dateFormat, result[11]);
         document.setModifiedDatetime(modifiedDatetime);
-        document.setLastModifiedDatetime(modifiedDatetime);
+        document.setActualModifiedDatetime(modifiedDatetime);
         document.setSearchDisabled(DocumentMapper.getBooleanFromSqlResultString(result[12]));
         document.setTarget(result[13]);
         document.setArchivedDatetime(DocumentMapper.parseDateFormat(dateFormat, result[14]));
@@ -126,32 +130,6 @@ public class ConnectionDocumentGetter implements DocumentGetter {
             sections[i] = new SectionDomainObject(sectionId, sectionName);
         }
         return sections;
-    }
-
-    public void initDocumentCategories(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {
-        String[][] categories = connection.execute2dArrayQuery( "SELECT categories.category_id, categories.name, categories.image, categories.description, "+
-                                                                DocumentMapper.SQL__CATEGORY_TYPE__COLUMNS
-                                                                + " FROM document_categories"
-                                                                + " JOIN categories"
-                                                                + "  ON document_categories.category_id = categories.category_id"
-                                                                + " JOIN category_types"
-                                                                + "  ON categories.category_type_id = category_types.category_type_id"
-                                                                + " WHERE document_categories.meta_id = ?",
-                                                                new String[]{"" + document.getId()} );
-        for (int i = 0; i < categories.length; i++) {
-            String[] categoryArray = categories[i];
-
-            int categoryId = Integer.parseInt(categoryArray[0]);
-            String categoryName = categoryArray[1];
-            String categoryImage = categoryArray[2];
-            String categoryDescription = categoryArray[3];
-
-            CategoryTypeDomainObject categoryType = DocumentMapper.createCategoryTypeFromSqlResult( categoryArray, 4 ) ;
-            CategoryDomainObject category = new CategoryDomainObject(categoryId, categoryName, categoryDescription,
-                                                                     categoryImage, categoryType);
-            document.addCategory(category);
-        }
-
     }
 
     public void initRolesMappedToDocumentPermissionSetIds(ConvenienceDatabaseConnection connection, DocumentDomainObject document) {

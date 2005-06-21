@@ -4,6 +4,7 @@ import com.imcode.imcms.flow.*;
 import com.imcode.imcms.servlet.GetDoc;
 import imcode.server.*;
 import imcode.server.document.*;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -14,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,10 +91,11 @@ public class AdminDoc extends HttpServlet {
                                    HttpServletResponse res ) throws IOException, ServletException {
         ImcmsServices imcref = Imcms.getServices();
 
-        Stack history = (Stack)user.get( "history" );
+        HttpSession session = req.getSession();
+        Stack history = (Stack)session.getAttribute( "history" );
         if ( history == null ) {
             history = new Stack();
-            user.put( "history", history );
+            session.setAttribute( "history", history );
         }
         Integer meta_int = new Integer( meta_id );
         if ( history.empty() || !history.peek().equals( meta_int ) ) {
@@ -106,7 +109,8 @@ public class AdminDoc extends HttpServlet {
 
         int doc_type = document.getDocumentTypeId();
 
-        Integer userflags = (Integer)user.remove( PARAMETER__DISPATCH_FLAGS );		// Get the flags from the user-object
+        Integer userflags = (Integer)session.getAttribute( PARAMETER__DISPATCH_FLAGS );		// Get the flags from the user-object
+        session.removeAttribute(PARAMETER__DISPATCH_FLAGS);
         int flags = userflags == null ? 0 : userflags.intValue();	// Are there flags? Set to 0 if not.
 
 

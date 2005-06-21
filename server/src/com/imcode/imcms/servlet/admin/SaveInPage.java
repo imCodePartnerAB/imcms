@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -72,7 +73,7 @@ public class SaveInPage extends HttpServlet {
             Writer out = res.getWriter();
 
             Utility.setDefaultHtmlContentType( res );
-            user.put( "flags", new Integer( 0 ) );
+            req.getSession().setAttribute( "flags", new Integer( 0 ) );
 
             if ( requestedTemplate == null ) {
                 List vec = new ArrayList();
@@ -101,7 +102,6 @@ public class SaveInPage extends HttpServlet {
             if ( output != null ) {
                 out.write( output );
             }
-            return;
 
         } else if ( req.getParameter( "preview" ) != null ) {
             if ( requestedTemplate == null ) { // If the user didn't select a template
@@ -123,19 +123,17 @@ public class SaveInPage extends HttpServlet {
                 ServletOutputStream out = res.getOutputStream();
                 res.setContentLength( bytes.length );
                 out.write( bytes );
-                return;
             } else {
                 Utility.setDefaultHtmlContentType( res );
                 String htmlStr = services.getAdminTemplate( "no_demotemplate.html", user, null );
                 Writer out = res.getWriter();
                 out.write( htmlStr );
-                return;
             }
         } else if ( req.getParameter( "change_group" ) != null ) {
             Utility.setDefaultHtmlContentType( res );
             Writer out = res.getWriter();
 
-            user.put( "flags", new Integer( imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) );
+            req.getSession().setAttribute( "flags", new Integer( imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) );
 
             if ( null != requestedTemplateGroup ) {
                 user.setTemplateGroup( requestedTemplateGroup );
@@ -145,7 +143,6 @@ public class SaveInPage extends HttpServlet {
             if ( output != null ) {
                 out.write( output );
             }
-            return;
 
         }
     }

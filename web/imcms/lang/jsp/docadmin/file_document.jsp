@@ -1,20 +1,14 @@
 <%@ page contentType="text/html"
-    import="com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher,
-          imcode.server.document.DocumentMapper,
+    import="com.imcode.imcms.mapping.DocumentMapper,
           org.apache.commons.lang.StringEscapeUtils,
           imcode.server.Imcms,
           imcode.server.document.FileDocumentDomainObject,
           org.apache.commons.lang.ObjectUtils,
-          imcode.server.document.HtmlDocumentDomainObject,
           imcode.util.*,
           com.imcode.imcms.flow.*,
-          org.apache.commons.lang.ArrayUtils,
           org.apache.commons.lang.StringUtils,
-          org.apache.commons.collections.Transformer,
           java.util.*,
           com.imcode.imcms.servlet.GetDoc,
-          java.text.DecimalFormat,
-          java.text.DecimalFormatSymbols,
           com.imcode.util.HumanReadable"
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>

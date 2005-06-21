@@ -150,7 +150,7 @@
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-       depends="init,jar,test,apidocs,libraries,sql,web,conf,versionfile,checksumsfile"
+       depends="init,test,sql,web,libraries,conf,versionfile,apidocs,checksumsfile,jar"
        description="Builds everything."/>
 
     <target name="clean" description="Deletes everything for a fresh start.">
@@ -322,7 +322,7 @@
 
         <jasper2
                 validateXml="false"
-                verbose="5"
+                verbose="9"
                 uriroot="web"
                 webXmlFragment="${tmp}/generated_web.xml"
                 outputDir="${tmp}/jsp"

@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.ImcmsServices;
+import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -134,7 +135,7 @@ public class DocumentPermissionSetDomainObject implements Serializable {
         setPermission( EDIT_PERMISSIONS, editPermissions );
     }
 
-    void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
+    public void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
                                int permissionBits, boolean forNewDocuments ) {
         documentPermissionSetMapper.setDocumentPermissionSetFromBits( this, permissionBits ) ;
     }

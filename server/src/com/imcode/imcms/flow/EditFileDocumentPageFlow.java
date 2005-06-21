@@ -2,7 +2,7 @@ package com.imcode.imcms.flow;
 
 import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.Imcms;
-import imcode.server.document.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;

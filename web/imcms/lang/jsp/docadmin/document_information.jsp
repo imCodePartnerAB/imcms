@@ -1,36 +1,40 @@
 <%@ page contentType="text/html; charset=windows-1252"
-    import="imcode.server.Imcms,
-            org.apache.commons.lang.StringEscapeUtils,
-            java.text.SimpleDateFormat,
-            java.text.DateFormat,
-            org.apache.commons.lang.StringUtils,
-            imcode.util.Html,
-            org.apache.commons.collections.iterators.TransformIterator,
-            org.apache.commons.collections.Transformer,
-            imcode.server.LanguageMapper,
-            imcode.server.ImcmsServices,
-            imcode.server.user.UserDomainObject,
-            imcode.server.document.*,
-            com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher,
-            org.apache.commons.lang.ObjectUtils,
-            java.util.regex.Pattern,
-            java.text.Collator,
-            java.util.*,
-            com.imcode.imcms.servlet.admin.UserBrowser,
-            com.imcode.imcms.servlet.admin.UserFinder,
-            imcode.util.*,
-            imcode.server.document.textdocument.TextDocumentDomainObject,
-            com.imcode.imcms.flow.EditDocumentInformationPageFlow,
-            com.imcode.imcms.flow.CreateDocumentPageFlow,
+    import="com.imcode.imcms.flow.CreateDocumentPageFlow,
             com.imcode.imcms.flow.DocumentPageFlow,
+            com.imcode.imcms.flow.EditDocumentInformationPageFlow,
             com.imcode.imcms.flow.PageFlow,
-            java.net.URLEncoder"
+            com.imcode.imcms.mapping.*,
+            imcode.server.Imcms,
+            imcode.server.ImcmsServices,
+            imcode.server.LanguageMapper,
+            imcode.server.document.CategoryDomainObject,
+            imcode.server.document.CategoryTypeDomainObject,
+            imcode.server.document.DocumentDomainObject,
+            imcode.server.document.SectionDomainObject,
+            imcode.server.document.textdocument.TextDocumentDomainObject,
+            imcode.server.user.UserDomainObject,
+            imcode.util.DateConstants,
+            imcode.util.Html,
+            imcode.util.HttpSessionUtils,
+            imcode.util.Utility,
+            org.apache.commons.collections.Transformer,
+            org.apache.commons.lang.ObjectUtils,
+            org.apache.commons.lang.StringEscapeUtils,
+            org.apache.commons.lang.StringUtils,
+            javax.servlet.http.Cookie,
+            java.net.URLEncoder,
+            java.text.Collator,
+            java.text.DateFormat,
+            java.text.SimpleDateFormat,
+            java.util.*,
+            java.util.regex.Pattern"
 
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     final ImcmsServices service = Imcms.getServices();
     final DocumentMapper documentMapper = service.getDocumentMapper();
+    final CategoryMapper categoryMapper = service.getCategoryMapper();
 
     DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
     boolean creatingNewDocument = httpFlow instanceof CreateDocumentPageFlow ;
@@ -357,7 +361,7 @@ function checkFocus() {
 	 ******************************************************************************************* */
 
 
-		CategoryTypeDomainObject[] categoryTypes = documentMapper.getAllCategoryTypes() ;
+		CategoryTypeDomainObject[] categoryTypes = categoryMapper.getAllCategoryTypes() ;
 		Arrays.sort(categoryTypes) ;
 
 
@@ -372,7 +376,7 @@ function checkFocus() {
 		<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%=
 			    URLEncoder.encode(StringEscapeUtils.escapeHtml( categoryType.getName() ),"UTF-8") %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
 		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORIES %>"<% if (1 != categoryType.getMaxChoices()) { %> size="4" multiple<% } else { %> onFocus="selFocused = true;"<% } %>>
-			<%= Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType, document, request) %>
+			<%= Html.createOptionListOfCategoriesOfTypeForDocument( categoryMapper, categoryType, document, request) %>
 		</select></div><%
 			}
 		}
@@ -388,7 +392,7 @@ function checkFocus() {
 			String typeStr = radioButton?"radio":"checkbox";
 			CategoryDomainObject[] documentSelectedCategories = document.getCategoriesOfType(categoryType);
 			Set selectedValuesSet = new HashSet( Arrays.asList(documentSelectedCategories) );
-			CategoryDomainObject[] categories = documentMapper.getAllCategoriesOfType(categoryType);
+			CategoryDomainObject[] categories = categoryMapper.getAllCategoriesOfType(categoryType);
 			for (int k = 0; k < categories.length; k++) {
 				CategoryDomainObject category = categories[k];
 				boolean checked = selectedValuesSet.contains(category);

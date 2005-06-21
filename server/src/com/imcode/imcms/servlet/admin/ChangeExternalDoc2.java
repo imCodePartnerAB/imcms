@@ -4,7 +4,7 @@ import com.imcode.imcms.servlet.GetDoc;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;

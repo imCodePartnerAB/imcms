@@ -3,7 +3,7 @@ package imcode.util;
 import com.imcode.util.ImageSize;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.textdocument.*;
 import org.apache.commons.lang.StringEscapeUtils;

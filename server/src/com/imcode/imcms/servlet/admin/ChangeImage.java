@@ -9,6 +9,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;

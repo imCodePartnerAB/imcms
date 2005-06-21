@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.ImcmsServices;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.db.Database;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.ArrayUtils;

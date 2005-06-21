@@ -1,16 +1,11 @@
-<%@ page contentType="text/html" import="com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher,
-                                         imcode.server.Imcms,
-                                         imcode.server.document.DocumentMapper,
-                                         imcode.server.document.DocumentDomainObject,
+<%@ page contentType="text/html" import="imcode.server.Imcms,
                                          imcode.server.document.BrowserDocumentDomainObject,
                                          org.apache.commons.lang.ObjectUtils,
                                          org.apache.commons.lang.StringEscapeUtils,
                                          java.util.*,
-                                         org.apache.commons.lang.StringUtils,
                                          imcode.util.HttpSessionUtils,
                                          com.imcode.imcms.flow.PageFlow,
                                          com.imcode.imcms.flow.EditBrowserDocumentPageFlow,
-                                         com.imcode.imcms.flow.DocumentPageFlow,
                                          com.imcode.imcms.flow.*"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>

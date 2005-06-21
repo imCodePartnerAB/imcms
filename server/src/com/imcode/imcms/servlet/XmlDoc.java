@@ -2,7 +2,7 @@ package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.XmlDocumentBuilder;
 import imcode.util.Utility;
 import org.w3c.dom.Document;

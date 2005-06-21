@@ -1,4 +1,4 @@
-package imcode.server.document;
+package com.imcode.imcms.mapping;
 
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
@@ -8,6 +8,10 @@ import imcode.server.db.DatabaseConnection;
 import imcode.server.db.commands.TransactionDatabaseCommand;
 import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.user.UserDomainObject;
 
 import java.util.*;
@@ -235,14 +239,14 @@ public class DocumentPermissionSetMapper {
         return table;
     }
 
-    void setDocumentPermissionSetFromBits( DocumentPermissionSetDomainObject documentPermissionSet,
+    public void setDocumentPermissionSetFromBits( DocumentPermissionSetDomainObject documentPermissionSet,
                                            int permissionBits ) {
         documentPermissionSet.setEditDocumentInformation( 0 != ( permissionBits & EDIT_DOCINFO_PERMISSION_ID ) );
         documentPermissionSet.setEditPermissions( 0 != ( permissionBits & EDIT_PERMISSIONS_PERMISSION_ID ) );
         documentPermissionSet.setEdit( 0 != ( permissionBits & EDIT_DOCUMENT_PERMISSION_ID ) );
     }
 
-    void setTextDocumentPermissionSetFromBits( DocumentDomainObject document,
+    public void setTextDocumentPermissionSetFromBits( DocumentDomainObject document,
                                                TextDocumentPermissionSetDomainObject textDocumentPermissionSet,
                                                int permissionBits, boolean forNewDocuments ) {
         setDocumentPermissionSetFromBits( textDocumentPermissionSet, permissionBits );

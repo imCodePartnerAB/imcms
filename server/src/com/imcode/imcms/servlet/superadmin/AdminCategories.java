@@ -5,6 +5,8 @@ import com.imcode.imcms.servlet.admin.ImageBrowser;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
@@ -70,25 +72,25 @@ public class AdminCategories extends HttpServlet {
             return;
         }
 
-        DocumentMapper documentMapper = service.getDocumentMapper();
+        CategoryMapper categoryMapper = service.getCategoryMapper();
 
         AdminCategoriesPage adminCategoriesPage = new AdminCategoriesPage();
 
-        CategoryTypeDomainObject categoryType = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW, documentMapper );
-        CategoryDomainObject category = getCategoryFromIdInRequest( req, documentMapper );
+        CategoryTypeDomainObject categoryType = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW, categoryMapper );
+        CategoryDomainObject category = getCategoryFromIdInRequest( req, categoryMapper );
 
         if ( null != req.getParameter( PARAMETER_MODE__ADD_CATEGORY_TYPE ) ){
-            addCategoryType( req, adminCategoriesPage, documentMapper );
+            addCategoryType( req, adminCategoriesPage, categoryMapper );
         } else if ( null != req.getParameter( PARAMETER_MODE__EDIT_CATEGORY_TYPE ) ) {
-            editCategoryType( categoryType, req, adminCategoriesPage, documentMapper );
+            editCategoryType( categoryType, req, adminCategoriesPage, categoryMapper );
         } else if ( null != req.getParameter( PARAMETER_MODE__DELETE_CATEGORY_TYPE ) ) {
-            deleteCategoryType( categoryType, adminCategoriesPage, documentMapper );
+            deleteCategoryType( categoryType, adminCategoriesPage, categoryMapper );
         } else if ( null != req.getParameter( PARAMETER_MODE__ADD_CATEGORY ) ) {
-            adminCategoriesPage = addCategory( req, res, adminCategoriesPage, documentMapper );
+            adminCategoriesPage = addCategory( req, res, adminCategoriesPage, categoryMapper );
         } else if ( null != req.getParameter( PARAMETER_MODE__EDIT_CATEGORY ) ) {
-            adminCategoriesPage = editCategory( req, res, adminCategoriesPage, documentMapper );
+            adminCategoriesPage = editCategory( req, res, adminCategoriesPage, categoryMapper );
         } else if ( req.getParameter( PARAMETER_MODE__DELETE_CATEGORY ) != null ) {
-            deleteCategory( category, categoryType, req, adminCategoriesPage, documentMapper );
+            deleteCategory( category, categoryType, req, adminCategoriesPage, categoryMapper, service.getDocumentMapper() );
         } else if ( null != req.getParameter( PARAMETER_MODE__VIEW_CATEGORY ) ) {
             viewCategory( categoryType, category, req, adminCategoriesPage );
         }
@@ -105,13 +107,11 @@ public class AdminCategories extends HttpServlet {
     }
 
     private AdminCategoriesPage editCategory( HttpServletRequest req, HttpServletResponse res, AdminCategoriesPage formBean,
-                                   DocumentMapper documentMapper ) throws ServletException, IOException {
+                                   CategoryMapper categoryMapper ) throws ServletException, IOException {
         formBean.setMode(PARAMETER_MODE__EDIT_CATEGORY) ;
 
-        CategoryDomainObject category = null;
-        CategoryTypeDomainObject categoryTypeToEdit = null;
-        category = getCategoryFromIdInRequest( req, documentMapper );
-        categoryTypeToEdit = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW, documentMapper );
+        CategoryDomainObject category = getCategoryFromIdInRequest( req, categoryMapper );
+        CategoryTypeDomainObject categoryTypeToEdit = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW, categoryMapper );
 
         formBean.setCategoryTypeToEdit( categoryTypeToEdit );
         if ( req.getParameter( PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE ) != null ) {
@@ -123,17 +123,17 @@ public class AdminCategories extends HttpServlet {
         boolean nameIsUnique = true;
 
         if ( req.getParameter( PARAMETER__BROWSE_FOR_IMAGE ) != null ) {
-            setCategoryFromRequest( category, req, documentMapper );
+            setCategoryFromRequest( category, req, categoryMapper );
             forwardToImageBrowse( formBean, req, res );
         } else if ( req.getParameter( PARAMETER__CATEGORY_SAVE ) != null ) {
             boolean nameWasChanged = !req.getParameter( PARAMETER__OLD_NAME ).toLowerCase().equals( req.getParameter( PARAMETER__NAME ).toLowerCase() );
-            CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, documentMapper );
+            CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, categoryMapper );
             if ( nameWasChanged ) {
-                nameIsUnique = null == documentMapper.getCategory( categoryTypeToAddTo, req.getParameter( PARAMETER__NAME ) );
+                nameIsUnique = null == categoryMapper.getCategory( categoryTypeToAddTo, req.getParameter( PARAMETER__NAME ) );
             }
             if ( nameIsUnique ) {
-                setCategoryFromRequest( category, req, documentMapper );
-                documentMapper.updateCategory( category );
+                setCategoryFromRequest( category, req, categoryMapper );
+                categoryMapper.updateCategory( category );
                 formBean.setCategoryToEdit( null );
             }
         }
@@ -143,22 +143,21 @@ public class AdminCategories extends HttpServlet {
     }
 
     private void setCategoryFromRequest( CategoryDomainObject category, HttpServletRequest req,
-                                         DocumentMapper documentMapper ) {
+                                         CategoryMapper categoryMapper ) {
         category.setName( req.getParameter( PARAMETER__NAME ) );
         category.setDescription( req.getParameter( PARAMETER__DESCRIPTION ) );
         category.setImageUrl( req.getParameter( PARAMETER__ICON ) );
-        CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, documentMapper );
+        CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, categoryMapper );
         category.setType( categoryTypeToAddTo );
     }
 
     private AdminCategoriesPage addCategory( HttpServletRequest req, HttpServletResponse res, AdminCategoriesPage adminCategoriesPage,
-                                  DocumentMapper documentMapper ) throws ServletException, IOException {
+                                  CategoryMapper categoryMapper ) throws ServletException, IOException {
         adminCategoriesPage.setMode(PARAMETER_MODE__ADD_CATEGORY) ;
 
-        CategoryDomainObject newCategory = null;
-        CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, documentMapper );
+        CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromIdParameterInRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, categoryMapper );
 
-        newCategory = new CategoryDomainObject( 0,
+        CategoryDomainObject newCategory = new CategoryDomainObject( 0,
                                                 req.getParameter( PARAMETER__NAME ),
                                                 req.getParameter( PARAMETER__DESCRIPTION ),
                                                 req.getParameter( PARAMETER__ICON ),
@@ -170,7 +169,7 @@ public class AdminCategories extends HttpServlet {
             forwardToImageBrowse( adminCategoriesPage, req, res );
         } else if ( null != req.getParameter( PARAMETER__ADD_CATEGORY_BUTTON ) && StringUtils.isNotBlank( newCategory.getName() ) ) {
             try {
-                documentMapper.addCategory( newCategory );
+                categoryMapper.addCategory( newCategory );
             } catch ( CategoryAlreadyExistsException ignored ) {}
             adminCategoriesPage.setCategoryToEdit( new CategoryDomainObject( 0, null, "", "", null ) );
             adminCategoriesPage.setUniqueCategoryName( true );
@@ -178,7 +177,7 @@ public class AdminCategories extends HttpServlet {
         return adminCategoriesPage;
     }
 
-    private CategoryDomainObject getCategoryFromIdInRequest( HttpServletRequest req, DocumentMapper documentMapper ) {
+    private CategoryDomainObject getCategoryFromIdInRequest( HttpServletRequest req, CategoryMapper categoryMapper ) {
         CategoryDomainObject categoryToEdit = null;
         String categoryIdString = req.getParameter( PARAMETER__CATEGORIES );
         boolean selectCategoryButtonPressed = req.getParameter( PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE )
@@ -186,36 +185,38 @@ public class AdminCategories extends HttpServlet {
         boolean aCategoryWasSelected = categoryIdString != null && selectCategoryButtonPressed;
         if ( aCategoryWasSelected ) {
             int categoryId = Integer.parseInt( categoryIdString );
-            categoryToEdit = documentMapper.getCategoryById( categoryId );
+            categoryToEdit = categoryMapper.getCategoryById( categoryId );
         }
         return categoryToEdit;
     }
 
     private CategoryTypeDomainObject getCategoryTypeFromIdParameterInRequest( HttpServletRequest req, String requestParameter,
-                                                                 DocumentMapper documentMapper ) {
+                                                                 CategoryMapper categoryMapper ) {
         CategoryTypeDomainObject categoryType = null;
         String categoryTypeIdString = req.getParameter( requestParameter );
         boolean gotCategoryTypeId = null != categoryTypeIdString;
         if ( gotCategoryTypeId ) {
             int categoryTypeId = Integer.parseInt( categoryTypeIdString );
-            categoryType = documentMapper.getCategoryTypeById( categoryTypeId );
+            categoryType = categoryMapper.getCategoryTypeById( categoryTypeId );
         }
         return categoryType;
     }
 
-    private void deleteCategory( CategoryDomainObject categoryToEdit, CategoryTypeDomainObject categoryTypeToEdit,
-                                 HttpServletRequest req, AdminCategoriesPage adminCategoriesPage, DocumentMapper documentMapper ) {
+    private void deleteCategory(CategoryDomainObject categoryToEdit, CategoryTypeDomainObject categoryTypeToEdit,
+                                HttpServletRequest req, AdminCategoriesPage adminCategoriesPage,
+                                CategoryMapper categoryMapper,
+                                DocumentMapper documentMapper) {
         adminCategoriesPage.setMode(PARAMETER_MODE__DELETE_CATEGORY) ;
         String[] documentsOfOneCategory = null;
         if ( categoryToEdit != null ) {
-            documentsOfOneCategory = documentMapper.getAllDocumentsOfOneCategory( categoryToEdit );
+            documentsOfOneCategory = categoryMapper.getAllDocumentsOfOneCategory( categoryToEdit );
             if ( req.getParameter( PARAMETER__CATEGORY_DELETE ) != null ) {
                 DocumentDomainObject document;
                 for ( int i = 0; i < documentsOfOneCategory.length; i++ ) {
                     document = documentMapper.getDocument( Integer.parseInt( documentsOfOneCategory[i] ) );
-                    documentMapper.deleteOneCategoryFromDocument( document, categoryToEdit );
+                    categoryMapper.deleteOneCategoryFromDocument( document, categoryToEdit );
                 }
-                documentMapper.deleteCategoryFromDb( categoryToEdit );
+                categoryMapper.deleteCategoryFromDb( categoryToEdit );
                 categoryToEdit = null;
                 documentsOfOneCategory = null;
             }
@@ -253,13 +254,13 @@ public class AdminCategories extends HttpServlet {
     }
 
     private void deleteCategoryType( CategoryTypeDomainObject categoryTypeToEdit, AdminCategoriesPage formBean,
-                                     DocumentMapper documentMapper ) {
+                                     CategoryMapper categoryMapper ) {
         formBean.setMode(PARAMETER_MODE__DELETE_CATEGORY_TYPE) ;
         int numberOfCategories = 0;
         if ( categoryTypeToEdit != null ) {
-            numberOfCategories = documentMapper.getAllCategoriesOfType( categoryTypeToEdit ).length;
+            numberOfCategories = categoryMapper.getAllCategoriesOfType( categoryTypeToEdit ).length;
             if ( numberOfCategories == 0 ) {
-                documentMapper.deleteCategoryTypeFromDb( categoryTypeToEdit );
+                categoryMapper.deleteCategoryTypeFromDb( categoryTypeToEdit );
             }
         }
         formBean.setCategoryTypeToEdit( categoryTypeToEdit );
@@ -267,14 +268,14 @@ public class AdminCategories extends HttpServlet {
     }
 
     private void editCategoryType( CategoryTypeDomainObject categoryTypeToEdit, HttpServletRequest req,
-                                   AdminCategoriesPage formBean, DocumentMapper documentMapper ) {
+                                   AdminCategoriesPage formBean, CategoryMapper categoryMapper ) {
         formBean.setMode(PARAMETER_MODE__EDIT_CATEGORY_TYPE) ;
         formBean.setUniqueCategoryTypeName( true );
 
         if ( req.getParameter( PARAMETER_CATEGORY_TYPE_SAVE ) != null ) {
             String newName = req.getParameter( PARAMETER__NAME ).trim();
             if ( !newName.equals(categoryTypeToEdit.getName()) ) {
-                formBean.setUniqueCategoryTypeName( documentMapper.isUniqueCategoryTypeName( newName ) );
+                formBean.setUniqueCategoryTypeName( categoryMapper.isUniqueCategoryTypeName( newName ) );
             }
             if (formBean.isUniqueCategoryTypeName()){
                 int maxChoices = Integer.parseInt( req.getParameter( PARAMETER__MAX_CHOICES ) );
@@ -282,22 +283,22 @@ public class AdminCategories extends HttpServlet {
                 categoryTypeToEdit.setMaxChoices( maxChoices );
                 boolean inherited = getInheritedParameterFromRequest(req);
                 categoryTypeToEdit.setInherited( inherited );
-                documentMapper.updateCategoryType( categoryTypeToEdit );
+                categoryMapper.updateCategoryType( categoryTypeToEdit );
             }
         }
         formBean.setCategoryTypeToEdit( categoryTypeToEdit );
     }
 
-    private void addCategoryType( HttpServletRequest req, AdminCategoriesPage formBean, DocumentMapper documentMapper ) {
+    private void addCategoryType( HttpServletRequest req, AdminCategoriesPage formBean, CategoryMapper categoryMapper ) {
         formBean.setMode(PARAMETER_MODE__ADD_CATEGORY_TYPE) ;
         if ( req.getParameter( PARAMETER_CATEGORY_TYPE_ADD ) != null
              && !req.getParameter( PARAMETER__NAME ).trim().equals( "" ) ){
 
             CategoryTypeDomainObject categoryType = createCategoryTypeFromRequest( req );
 
-            if ( documentMapper.isUniqueCategoryTypeName( categoryType.getName() ) ) {
+            if ( categoryMapper.isUniqueCategoryTypeName( categoryType.getName() ) ) {
                 formBean.setUniqueCategoryTypeName( true );
-                documentMapper.addCategoryTypeToDb( categoryType );
+                categoryMapper.addCategoryTypeToDb( categoryType );
             } else {
                 formBean.setUniqueCategoryTypeName( false );
             }
@@ -318,7 +319,7 @@ public class AdminCategories extends HttpServlet {
 
     public static String createHtmlOptionListOfCategoryTypes( CategoryTypeDomainObject selectedType ) {
         ImcmsServices imcref = Imcms.getServices();
-        CategoryTypeDomainObject[] categoryTypes = imcref.getDocumentMapper().getAllCategoryTypes();
+        CategoryTypeDomainObject[] categoryTypes = imcref.getCategoryMapper().getAllCategoryTypes();
         String temps = "";
         for ( int i = 0; i < categoryTypes.length; i++ ) {
             boolean selected = selectedType != null && selectedType.getId() == categoryTypes[i].getId();
@@ -334,9 +335,9 @@ public class AdminCategories extends HttpServlet {
 
     public static String createHtmlOptionListOfCategoriesForOneType( CategoryTypeDomainObject categoryType,
                                                                      CategoryDomainObject selectedCategory ) {
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
 
-        CategoryDomainObject[] categories = documentMapper.getAllCategoriesOfType( categoryType );
+        CategoryDomainObject[] categories = categoryMapper.getAllCategoriesOfType( categoryType );
         String temps = "";
         for ( int i = 0; i < categories.length; i++ ) {
             boolean selected = selectedCategory != null && selectedCategory.equals( categories[i] );

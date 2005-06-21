@@ -2,6 +2,7 @@ package imcode.server.document.index;
 
 import imcode.server.Imcms;
 import imcode.server.document.*;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;

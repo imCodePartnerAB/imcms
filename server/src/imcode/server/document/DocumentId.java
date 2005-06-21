@@ -3,10 +3,10 @@ package imcode.server.document;
 import java.io.Serializable;
 
 public class DocumentId implements Serializable {
-    protected int documentId;
+    protected final int documentId;
 
     public DocumentId(int documentId) {
-        if ( DocumentDomainObject.ID_NEW >= documentId ) {
+        if ( documentId <= DocumentDomainObject.ID_NEW ) {
             throw new IllegalArgumentException( "Bad document id." );
         }
         this.documentId = documentId ;

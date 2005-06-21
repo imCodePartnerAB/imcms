@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.superadmin;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;

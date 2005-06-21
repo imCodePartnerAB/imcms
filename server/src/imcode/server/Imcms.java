@@ -10,11 +10,10 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
 import javax.sql.DataSource;
-import java.io.*;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.sql.DriverManager;
 import java.util.Properties;
 
 public class Imcms {

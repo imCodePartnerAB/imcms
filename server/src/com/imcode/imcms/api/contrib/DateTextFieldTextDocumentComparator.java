@@ -1,7 +1,6 @@
 package com.imcode.imcms.api.contrib;
 
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.NoPermissionException;
 import com.imcode.imcms.api.TextDocument;
 import imcode.util.DateConstants;
 import org.apache.commons.lang.StringUtils;
@@ -65,35 +64,31 @@ public class DateTextFieldTextDocumentComparator extends Document.Comparator {
         return compareDate( date1, date2 );
     }
 
-    protected int compareDocuments( Document d1, Document d2 ) throws NoPermissionException {
-        try {
-            TextDocument textDocument1 = (TextDocument)d1;
-            TextDocument textDocument2 = (TextDocument)d2;
-            int result;
-            if ( textDocument1 == null && textDocument2 == null ) {
-                return 0;
-            }
-            if ( textDocument1 == null ) {
-                return -1;
-            }
-            if ( textDocument2 == null ) {
-                return 1;
-            }
-            result = compareDateStrings( textDocument1.getTextField( this.textFieldNumber ).getText(),
-                                         textDocument2.getTextField( this.textFieldNumber ).getText() );
-            if ( result != 0 ) {
-                return result;
-            }
+    protected int compareDocuments( Document d1, Document d2 ) {
+        TextDocument textDocument1 = (TextDocument) d1;
+        TextDocument textDocument2 = (TextDocument) d2;
+        int result;
+        if ( textDocument1 == null && textDocument2 == null ) {
+            return 0;
+        }
+        if ( textDocument1 == null ) {
+            return -1;
+        }
+        if ( textDocument2 == null ) {
+            return 1;
+        }
+        result = compareDateStrings(textDocument1.getTextField(this.textFieldNumber).getText(),
+                                    textDocument2.getTextField(this.textFieldNumber).getText());
+        if ( result != 0 ) {
+            return result;
+        }
 
-            if ( textDocument1.getId() > textDocument2.getId() ) {
-                return 1;
-            } else if ( textDocument1.getId() < textDocument2.getId() ) {
-                return -1;
-            } else {
-                return 0;
-            }
-        } catch ( NoPermissionException ex ) {
-            throw new RuntimeException( this.getClass().getName() + ".compare(): Failed to get text fields.", ex );
+        if ( textDocument1.getId() > textDocument2.getId() ) {
+            return 1;
+        } else if ( textDocument1.getId() < textDocument2.getId() ) {
+            return -1;
+        } else {
+            return 0;
         }
     }
 }

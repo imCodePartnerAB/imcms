@@ -2,7 +2,7 @@ package com.imcode.imcms.flow;
 
 import imcode.server.Imcms;
 import imcode.server.document.BrowserDocumentDomainObject;
-import imcode.server.document.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;

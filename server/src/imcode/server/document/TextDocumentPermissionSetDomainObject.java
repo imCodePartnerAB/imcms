@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.ImcmsServices;
+import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
 
 import java.io.Serializable;
 

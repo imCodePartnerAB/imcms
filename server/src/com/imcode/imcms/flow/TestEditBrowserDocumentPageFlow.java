@@ -6,8 +6,10 @@ import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.db.impl.MockDatabase;
 import imcode.server.document.BrowserDocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentPermissionSetMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
+import com.imcode.imcms.mapping.DatabaseDocumentGetter;
+import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.index.DocumentIndex;
 import imcode.util.Clock;
 import junit.framework.TestCase;
@@ -47,7 +49,7 @@ public class TestEditBrowserDocumentPageFlow extends TestCase {
         public MockDocumentMapper( ImcmsServices services, Database database,
                                    DocumentPermissionSetMapper documentPermissionSetMapper,
                                    DocumentIndex documentIndex, Clock clock, Config config ) {
-            super( services, database, documentPermissionSetMapper, documentIndex, clock, config );
+            super( services, database, new DatabaseDocumentGetter(database, services), documentPermissionSetMapper, documentIndex, clock, config, new CategoryMapper(database));
         }
 
         protected BrowserDocumentDomainObject.Browser createBrowserFromSqlRow( String[] sqlRow ) {

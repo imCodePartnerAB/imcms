@@ -4,9 +4,9 @@ public class DocumentReference extends DocumentId {
 
     private transient DocumentGetter documentGetter;
 
-    public DocumentReference( int documentId, DocumentGetter documentMapper ) {
+    public DocumentReference( int documentId, DocumentGetter documentGetter ) {
         super(documentId) ;
-        this.documentGetter = documentMapper;
+        this.documentGetter = documentGetter;
     }
 
     public DocumentDomainObject getDocument() {

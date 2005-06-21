@@ -1,20 +1,23 @@
-package imcode.server.document;
+package com.imcode.imcms.mapping;
 
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
 import imcode.server.db.impl.MockDatabase;
+import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.IndexException;
+import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
-import org.apache.lucene.search.Query;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.varia.NullAppender;
+import org.apache.lucene.search.Query;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 public class TestDocumentMapper extends TestCase {
 
@@ -34,10 +37,8 @@ public class TestDocumentMapper extends TestCase {
         userRole = new RoleDomainObject( 1, "Userrole", 0 );
         user.addRole( userRole );
         testRole = new RoleDomainObject( 2, "Testrole", 0 );
-        oldDocument = new TextDocumentDomainObject();
-        oldDocument.setId( 1001 );
-        textDocument = new TextDocumentDomainObject();
-        textDocument.setId( 1002 );
+        oldDocument = createTextDocument(1001);
+        textDocument = createTextDocument(1002);
         database = new MockDatabase();
         ImcmsAuthenticatorAndUserAndRoleMapper userRegistry = new ImcmsAuthenticatorAndUserAndRoleMapper( null, null ) {
             public UserDomainObject getUser( int userId ) {
@@ -53,8 +54,14 @@ public class TestDocumentMapper extends TestCase {
             }
         }) ;
         documentIndex = new MockDocumentIndex();
-        documentMapper = new DocumentMapper( services, database, new DocumentPermissionSetMapper( database, services ), documentIndex, null, new Config() );
+        documentMapper = new DocumentMapper( services, database, new DatabaseDocumentGetter(database, services), new DocumentPermissionSetMapper( database, services ), documentIndex, null, new Config(), new CategoryMapper(database));
         services.setDocumentMapper(documentMapper);
+    }
+
+    private TextDocumentDomainObject createTextDocument(int documentId) {
+        TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
+        textDocument.setId( documentId );
+        return textDocument ;
     }
 
     public void testNotSerializable() {
@@ -74,8 +81,8 @@ public class TestDocumentMapper extends TestCase {
         textDocument.setRolesMappedToPermissionSetIds( oldDocument.getRolesMappedToPermissionSetIds() );
         textDocument.setPermissionSetIdForRole( testRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
         DocumentPermissionSetDomainObject permissionSetForRestrictedOne = new DocumentPermissionSetDomainObject( 1 ) {
-            void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
-                              int permissionBits, boolean forNewDocuments ) {
+            public void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
+                                     int permissionBits, boolean forNewDocuments ) {
             }
         };
         oldDocument.setPermissionSetForRestrictedOne( permissionSetForRestrictedOne );
@@ -111,10 +118,10 @@ public class TestDocumentMapper extends TestCase {
                                                                                              "" + textDocument.getId(),
                                                                                              "" + DocumentPermissionSetDomainObject.TYPE_ID__FULL} ) );
         database.assertNotCalled( new MockDatabase.EqualsWithParametersSqlCallPredicate( DocumentMapper.SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID,
-                                                                                      new String[]{
-                                                                                          "" + userRole.getId(),
-                                                                                          "" + textDocument.getId(),
-                                                                                          "" + DocumentPermissionSetDomainObject.TYPE_ID__NONE} ) );
+                                                                                         new String[]{
+                                                                                             "" + userRole.getId(),
+                                                                                             "" + textDocument.getId(),
+                                                                                             "" + DocumentPermissionSetDomainObject.TYPE_ID__NONE} ) );
         assertEquals( 1, database.getSqlCallCount() );
     }
 
@@ -174,6 +181,63 @@ public class TestDocumentMapper extends TestCase {
         documentMapper.saveNewDocument( document, user );
     }
 
+    public void testDocumentAddedWithoutPermission() {
+        UserDomainObject user = new UserDomainObject();
+        TextDocumentDomainObject document = createTextDocument(1001);
+        TextDocumentDomainObject addedDocument = createTextDocument(1002);
+        document.getMenu(1).addMenuItem(new MenuItemDomainObject(new MockDocumentReference(addedDocument)));
+        TextDocumentDomainObject oldDocument = createTextDocument(1001);
+
+        addedDocument.setLinkableByOtherUsers(true);
+        testDocumentsAddedWithPermission(document, null, user);
+
+        addedDocument.setLinkableByOtherUsers(false);
+        testDocumentsAddedWithoutPermission(document, null, user);
+
+        testDocumentsAddedWithoutPermission(document, oldDocument, user);
+
+        addedDocument.setLinkableByOtherUsers(true);
+        testDocumentsAddedWithPermission(document, oldDocument, user);
+
+        addedDocument.setLinkableByOtherUsers(false);
+        testDocumentsAddedWithoutPermission(document, oldDocument, user);
+
+        addedDocument.setPermissionSetIdForRole(RoleDomainObject.USERS, DocumentPermissionSetDomainObject.TYPE_ID__FULL);
+        testDocumentsAddedWithPermission(document, oldDocument, user);
+
+        addedDocument.setPermissionSetIdForRole(RoleDomainObject.USERS, DocumentPermissionSetDomainObject.TYPE_ID__NONE);
+        testDocumentsAddedWithoutPermission(document, oldDocument, user);
+
+        user.addRole(RoleDomainObject.SUPERADMIN);
+        testDocumentsAddedWithPermission(document, oldDocument, user);
+
+        user.removeRole(RoleDomainObject.SUPERADMIN);
+        testDocumentsAddedWithoutPermission(document, oldDocument, user);
+
+        try {
+            documentMapper.checkDocumentsAddedWithoutPermission(document, oldDocument, user);
+            fail("Expected exception.");
+        } catch(DocumentMapper.DocumentsAddedToMenuWithoutPermissionException e) {}
+    }
+
+    private void testDocumentsAddedWithPermission(TextDocumentDomainObject document,
+                                                  TextDocumentDomainObject oldDocument, UserDomainObject user) {
+        assertEmpty(documentMapper.getDocumentsAddedWithoutPermission(document, oldDocument, user));
+    }
+
+    private void testDocumentsAddedWithoutPermission(TextDocumentDomainObject document,
+                                                     TextDocumentDomainObject oldDocument, UserDomainObject user) {
+        assertNotEmpty(documentMapper.getDocumentsAddedWithoutPermission(document, oldDocument, user));
+    }
+
+    private void assertEmpty(Collection collection) {
+        assertTrue(collection.isEmpty());
+    }
+
+    private void assertNotEmpty(Collection collection) {
+        assertFalse(collection.isEmpty());
+    }
+
     public class MockDocumentIndex implements DocumentIndex {
         private boolean indexDocumentCalled;
         private boolean removeDocumentCalled;
@@ -191,6 +255,19 @@ public class TestDocumentMapper extends TestCase {
         }
 
         public void rebuild() {
+        }
+    }
+
+    private static class MockDocumentReference extends DocumentReference {
+        private DocumentDomainObject document;
+
+        public MockDocumentReference(DocumentDomainObject document) {
+            super(document.getId(), null);
+            this.document = document ;
+        }
+
+        public DocumentDomainObject getDocument() {
+            return document ;
         }
     }
 }

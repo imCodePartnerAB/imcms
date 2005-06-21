@@ -1,12 +1,10 @@
-<%@ page import="imcode.server.Imcms,
-                 imcode.server.document.DocumentMapper,
+<%@ page import="com.imcode.imcms.mapping.DocumentMapper,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  org.apache.commons.lang.StringEscapeUtils,
                  com.imcode.imcms.servlet.admin.AdminDoc,
                  imcode.server.ImcmsConstants,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
-                 com.imcode.imcms.servlet.superadmin.LinkCheck,
                  com.imcode.imcms.servlet.superadmin.DocumentReferences,
                  imcode.util.Html"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%

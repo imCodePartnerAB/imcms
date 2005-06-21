@@ -2,7 +2,8 @@ package imcode.server;
 
 import imcode.server.db.Database;
 import imcode.server.db.impl.MockDatabase;
-import imcode.server.document.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.TemplateMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -25,6 +26,7 @@ public class MockImcmsServices implements ImcmsServices {
     private KeyStore keyStore;
     private TemplateMapper templateMapper;
     private DocumentMapper documentMapper;
+    private CategoryMapper categoryMapper;
 
     public UserDomainObject verifyUser( String login, String password ) {
         return null;
@@ -190,6 +192,10 @@ public class MockImcmsServices implements ImcmsServices {
         return database ;
     }
 
+    public CategoryMapper getCategoryMapper() {
+        return categoryMapper ;
+    }
+
     public KeyStore getKeyStore() {
         return keyStore;
     }
@@ -213,5 +219,9 @@ public class MockImcmsServices implements ImcmsServices {
 
     public void setDocumentMapper( DocumentMapper documentMapper ) {
         this.documentMapper = documentMapper;
+    }
+
+    public void setCategoryMapper(CategoryMapper categoryMapper) {
+        this.categoryMapper = categoryMapper;
     }
 }

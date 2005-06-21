@@ -1,9 +1,10 @@
-package imcode.server.document;
+package com.imcode.imcms.mapping;
 
 import imcode.server.ImcmsServices;
 import imcode.server.db.ConvenienceDatabaseConnection;
 import imcode.server.db.exceptions.DatabaseException;
 import imcode.server.document.textdocument.*;
+import imcode.server.document.*;
 import imcode.util.io.FileInputStreamSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;

@@ -1,8 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.user.UserDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.UrlDocumentDomainObject;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.Imcms;
 import imcode.util.Utility;

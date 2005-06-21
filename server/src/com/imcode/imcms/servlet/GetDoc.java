@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet;
 
 import imcode.server.*;
 import imcode.server.document.*;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -62,10 +63,10 @@ public class GetDoc extends HttpServlet {
         HttpSession session = req.getSession( true );
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        Stack history = (Stack)user.get( "history" );
+        Stack history = (Stack)req.getSession().getAttribute( "history" );
         if ( history == null ) {
             history = new Stack();
-            user.put( "history", history );
+            req.getSession().setAttribute( "history", history );
         }
 
         Integer meta_int = new Integer( meta_id );

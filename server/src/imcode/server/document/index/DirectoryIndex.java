@@ -3,7 +3,7 @@ package imcode.server.document.index;
 import com.imcode.util.HumanReadable;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IntervalSchedule;
 import org.apache.commons.lang.time.DateUtils;

@@ -1,12 +1,14 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.*;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.index.IndexException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 
 public class DocumentService {
 
-    private ContentManagementSystem contentManagementSystem;
+    private final ContentManagementSystem contentManagementSystem;
 
     public DocumentService( ContentManagementSystem contentManagementSystem ) {
         this.contentManagementSystem = contentManagementSystem;
@@ -88,12 +90,13 @@ public class DocumentService {
             }
         } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
             throw new MaxCategoriesOfTypeExceededException( e );
+        } catch (DocumentMapper.DocumentsAddedToMenuWithoutPermissionException e ) {
+            throw new NoPermissionException(e.getMessage());
         }
     }
 
     public Category getCategory( CategoryType categoryType, String categoryName ) {
-        // Allow everyone to get a Category. No security check.
-        final CategoryDomainObject category = getDocumentMapper().getCategory( categoryType.getInternal(), categoryName );
+        final CategoryDomainObject category = getCategoryMapper().getCategory( categoryType.getInternal(), categoryName );
         if ( null != category ) {
             return new Category( category );
         } else {
@@ -101,9 +104,12 @@ public class DocumentService {
         }
     }
 
+    private CategoryMapper getCategoryMapper() {
+        return contentManagementSystem.getInternal().getCategoryMapper() ;
+    }
+
     public Category getCategory( int categoryId ) {
-        // Allow everyone to get a Category. No security check.
-        final CategoryDomainObject category = getDocumentMapper().getCategoryById( categoryId );
+        final CategoryDomainObject category = getCategoryMapper().getCategoryById( categoryId );
         if ( null != category ) {
             return new Category( category );
         } else {
@@ -112,14 +118,12 @@ public class DocumentService {
     }
 
     public CategoryType getCategoryType( int categoryTypeId ) {
-        // Allow everyone to get a CategoryType. No security check.
-        final CategoryTypeDomainObject categoryType = getDocumentMapper().getCategoryTypeById( categoryTypeId );
+        final CategoryTypeDomainObject categoryType = getCategoryMapper().getCategoryTypeById( categoryTypeId );
         return returnCategoryTypeAPIObjectOrNull( categoryType );
     }
 
     public CategoryType getCategoryType( String categoryTypeName ) {
-        // Allow everyone to get a CategoryType. No security check.
-        final CategoryTypeDomainObject categoryType = getDocumentMapper().getCategoryType( categoryTypeName );
+        final CategoryTypeDomainObject categoryType = getCategoryMapper().getCategoryType( categoryTypeName );
         return returnCategoryTypeAPIObjectOrNull( categoryType );
     }
 
@@ -132,7 +136,7 @@ public class DocumentService {
 
     public Category[] getAllCategoriesOfType( CategoryType categoryType ) {
         // Allow everyone to get a CategoryType. No security check.
-        CategoryDomainObject[] categoryDomainObjects = getDocumentMapper().getAllCategoriesOfType( categoryType.getInternal() );
+        CategoryDomainObject[] categoryDomainObjects = getCategoryMapper().getAllCategoriesOfType( categoryType.getInternal() );
         Category[] categories = new Category[categoryDomainObjects.length];
         for ( int i = 0; i < categoryDomainObjects.length; i++ ) {
             CategoryDomainObject categoryDomainObject = categoryDomainObjects[i];
@@ -143,7 +147,7 @@ public class DocumentService {
 
     public CategoryType[] getAllCategoryTypes() {
         // Allow everyone to get a CategoryType. No security check.
-        CategoryTypeDomainObject[] categoryTypeDomainObjects = getDocumentMapper().getAllCategoryTypes();
+        CategoryTypeDomainObject[] categoryTypeDomainObjects = getCategoryMapper().getAllCategoryTypes();
         CategoryType[] categoryTypes = new CategoryType[categoryTypeDomainObjects.length];
         for ( int i = 0; i < categoryTypeDomainObjects.length; i++ ) {
             CategoryTypeDomainObject categoryTypeDomainObject = categoryTypeDomainObjects[i];
@@ -162,9 +166,9 @@ public class DocumentService {
      */
     public CategoryType createNewCategoryType( String name, int maxChoices ) throws NoPermissionException, CategoryTypeAlreadyExistsException {
         getSecurityChecker().isSuperAdmin();
-        if ( getDocumentMapper().isUniqueCategoryTypeName( name ) ) {
+        if ( getCategoryMapper().isUniqueCategoryTypeName( name ) ) {
             CategoryTypeDomainObject newCategoryTypeDO = new CategoryTypeDomainObject( 0, name, maxChoices, false );
-            newCategoryTypeDO = getDocumentMapper().addCategoryTypeToDb( newCategoryTypeDO );
+            newCategoryTypeDO = getCategoryMapper().addCategoryTypeToDb( newCategoryTypeDO );
             return new CategoryType( newCategoryTypeDO );
         } else {
             throw new CategoryTypeAlreadyExistsException( "A category with name " + name + " already exists." );

@@ -3,7 +3,6 @@ package com.imcode.imcms.servlet;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -26,14 +25,13 @@ public class BackDoc extends HttpServlet {
 
         Utility.setDefaultHtmlContentType( res );
 
-        UserDomainObject user = Utility.getLoggedOnUser( req );
-        Stack history = (Stack)user.get( "history" );
+        Stack history = (Stack)req.getSession().getAttribute( "history" );
         boolean useNextToLastTextDocument = req.getParameter( "top" ) == null;
         int lastTextDocumentId = getLastTextDocumentFromHistory( history, useNextToLastTextDocument, imcref );
 
         if ( lastTextDocumentId != 0 ) {
             //	history.push(new Integer(meta_id)) ;
-            user.put( "history", history );
+            req.getSession().setAttribute( "history", history );
             redirectToDocumentId( req, res, lastTextDocumentId );
         } else {
             redirectToDocumentId( req, res, imcref.getSystemData().getStartDocument() );

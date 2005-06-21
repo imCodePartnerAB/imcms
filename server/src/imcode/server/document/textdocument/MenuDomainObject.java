@@ -2,11 +2,12 @@ package imcode.server.document.textdocument;
 
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.*;
+import imcode.server.document.DocumentGetter;
+import imcode.server.document.DocumentReference;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.*;
@@ -178,6 +179,16 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     public int hashCode() {
         return sortOrder + menuItems.hashCode() ;
+    }
+
+    public DocumentDomainObject[] getDocuments() {
+        MenuItemDomainObject[] menuItems = getMenuItems();
+        DocumentDomainObject[] documents = new DocumentDomainObject[menuItems.length];
+        for ( int i = 0; i < menuItems.length; i++ ) {
+            MenuItemDomainObject menuItem = menuItems[i];
+            documents[i] = menuItem.getDocument() ;
+        }
+        return documents ;
     }
 
     public class DocumentReferenceDocumentGetter implements DocumentGetter {

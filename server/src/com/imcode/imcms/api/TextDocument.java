@@ -2,6 +2,8 @@ package com.imcode.imcms.api;
 
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
+import imcode.server.document.DocumentReference;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
@@ -115,8 +117,7 @@ public class TextDocument extends Document {
         return sortedMap;
     }
 
-    public TextField getTextField(int textFieldIndexInDocument) throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission(this);
+    public TextField getTextField(int textFieldIndexInDocument) {
         TextDomainObject imcmsText = getInternalTextDocument().getText(textFieldIndexInDocument);
         TextField textField = new TextField(imcmsText);
         return textField;
@@ -126,58 +127,20 @@ public class TextDocument extends Document {
         return (TextDocumentDomainObject)getInternal();
     }
 
-    public void setPlainTextField(int textFieldIndexInDocument, String newText) throws NoPermissionException {
+    public void setPlainTextField(int textFieldIndexInDocument, String newText) {
         setTextField(textFieldIndexInDocument, newText, TextDomainObject.TEXT_TYPE_PLAIN);
     }
 
-    public void setHtmlTextField(int textFieldIndexInDocument, String newText) throws NoPermissionException {
+    public void setHtmlTextField(int textFieldIndexInDocument, String newText) {
         setTextField(textFieldIndexInDocument, newText, TextDomainObject.TEXT_TYPE_HTML);
     }
 
-    private void setTextField(int textFieldIndexInDocument, String newText, int textType) throws NoPermissionException {
-        getSecurityChecker().hasEditPermission(this);
+    private void setTextField(int textFieldIndexInDocument, String newText, int textType) {
         TextDomainObject imcmsText = new TextDomainObject(newText, textType);
         getInternalTextDocument().setText(textFieldIndexInDocument, imcmsText);
     }
 
-    /**
-     * @deprecated Use {@link #setImage(int, Image)} instead. Will be removed in 3.0.
-     **/
-    public void setImage(int imageIndexInDocument, String image_src, String image_name,
-                         int width, int heigth, int border, int v_space, int h_space, String align,
-                         String link_target, String link_targetname, String link_href,
-                         String alt_text, String low_src) throws NoPermissionException {
-        setImage(imageIndexInDocument, image_src, image_name, width, heigth, border, v_space, h_space, align, link_target, link_href, alt_text, low_src);
-
-    }
-
-    /**
-     * @deprecated Use {@link #setImage(int, Image)} instead.
-     */
-    public void setImage(int imageIndexInDocument, String image_src, String image_name, int width, int heigth,
-                         int border, int v_space,
-                         int h_space, String align, String link_target, String link_href, String alt_text,
-                         String low_src) throws NoPermissionException {
-        getSecurityChecker().hasEditPermission(this);
-        ImageDomainObject internalImage = new ImageDomainObject();
-
-        internalImage.setSource( new ImagesPathRelativePathImageSource( image_src ) );
-        internalImage.setName(image_name);  // html imagetag name
-        internalImage.setWidth(width);
-        internalImage.setHeight(heigth);
-        internalImage.setBorder(border);
-        internalImage.setVerticalSpace(v_space);
-        internalImage.setHorizontalSpace(h_space);
-        internalImage.setTarget(link_target); // link target
-        internalImage.setAlign(align);
-        internalImage.setAlternateText(alt_text);
-        internalImage.setLowResolutionUrl(low_src);
-        internalImage.setLinkUrl(link_href);  // link href
-        DocumentStoringVisitor.saveDocumentImage(this.getId(), imageIndexInDocument, internalImage );
-    }
-
-    public Image getImage(int imageIndexInDocument) throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission(this);
+    public Image getImage(int imageIndexInDocument) {
         ImageDomainObject internalImage = getInternalTextDocument().getImage(imageIndexInDocument);
         if (null != internalImage) {
             return new Image(internalImage);
@@ -192,8 +155,7 @@ public class TextDocument extends Document {
         return result;
     }
 
-    public void setTemplate(TemplateGroup templateGroup, Template template) throws NoPermissionException {
-        getSecurityChecker().hasEditPermission(this);
+    public void setTemplate(TemplateGroup templateGroup, Template template) {
         getInternalTextDocument().setTemplate(template.getInternal());
         if (null != templateGroup) {
             getInternalTextDocument().setTemplateGroupId(templateGroup.getId());
@@ -204,8 +166,7 @@ public class TextDocument extends Document {
         setTemplate(null, template);
     }
 
-    public Document getInclude(int includeIndexInDocument) throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission(this);
+    public Document getInclude(int includeIndexInDocument) {
         Integer includedDocumentId = getInternalTextDocument().getIncludedDocumentId(includeIndexInDocument);
         if (null != includedDocumentId) {
             DocumentDomainObject includedDocument = getDocumentMapper().getDocument(includedDocumentId.intValue());
@@ -216,8 +177,7 @@ public class TextDocument extends Document {
         return null;
     }
 
-    public void setInclude(int includeIndexInDocument, TextDocument documentToBeIncluded) throws NoPermissionException {
-        getSecurityChecker().hasEditPermission(this);
+    public void setInclude(int includeIndexInDocument, TextDocument documentToBeIncluded) {
         if (null == documentToBeIncluded) {
             getInternalTextDocument().removeInclude( includeIndexInDocument );
         } else {
@@ -230,10 +190,8 @@ public class TextDocument extends Document {
      *
      * @param menuIndexInDocument the index of the menu in the owner.
      * @return the menu with the given index in the owner.
-     * @throws NoPermissionException if you lack permission to read this owner.
      */
-    public Menu getMenu(int menuIndexInDocument) throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission(this);
+    public Menu getMenu(int menuIndexInDocument) {
         return new Menu(this, menuIndexInDocument);
     }
 
@@ -391,27 +349,21 @@ public class TextDocument extends Document {
         /**
          * Add a internalTextDocument to the menu.
          *
-         * @param documentToAdd the internalTextDocument to add
-         * @throws NoPermissionException          If you lack permission to edit the menudocument or permission to add the owner.
-         * @throws DocumentAlreadyInMenuException If the owner already is in the menu.
+         * @param documentToAdd the document to add
          */
-        public void addDocument(Document documentToAdd) throws NoPermissionException, DocumentAlreadyInMenuException {
-            contentManagementSystem.getSecurityChecker().hasEditPermission(textDocument);
-            contentManagementSystem.getSecurityChecker().userHasPermissionToAddDocumentToAnyMenu(documentToAdd);
+        public void addDocument(Document documentToAdd) {
             ImcmsServices internal = contentManagementSystem.getInternal();
             DocumentMapper documentMapper = internal.getDocumentMapper();
-            DocumentReference documentReference = documentMapper.getDocumentReference( documentToAdd.getInternal() );
+            DocumentReference documentReference = documentMapper.getDocumentReference( documentMapper.getDocument(documentToAdd.getId()) );
             internalTextDocument.getMenu(menuIndex).addMenuItem(new MenuItemDomainObject(documentReference ));
         }
 
         /**
          * Remove a internalTextDocument from the menu.
          *
-         * @param documentToRemove the internalTextDocument to remove
-         * @throws NoPermissionException If you lack permission to edit the menudocument.
+         * @param documentToRemove the document to remove
          */
-        public void removeDocument(Document documentToRemove) throws NoPermissionException {
-            contentManagementSystem.getSecurityChecker().hasEditPermission(textDocument);
+        public void removeDocument(Document documentToRemove) {
             internalTextDocument.getMenu(menuIndex).removeMenuItemByDocumentId(documentToRemove.getId());
         }
 
@@ -467,7 +419,8 @@ public class TextDocument extends Document {
          * @return the documents returned by {@link #getMenuItems()}.
          */
         public Document[] getDocuments() {
-            return getDocumentsFromMenuItems( getMenuItems() );
+            MenuItem[] menuItems = getMenuItems();
+            return getDocumentsFromMenuItems( menuItems );
         }
 
         private MenuItem[] getMenuItems( DocumentPredicate documentPredicate ) {

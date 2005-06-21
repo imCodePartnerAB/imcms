@@ -1,9 +1,13 @@
 package imcode.util;
 
 import com.imcode.imcms.servlet.admin.AdminDoc;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -71,10 +75,10 @@ public class Html {
         return createOptionList( data, Arrays.asList( new String[]{selected} ) );
     }
 
-    public static String createOptionListOfCategoriesOfTypeForDocument(DocumentMapper documentMapper,
+    public static String createOptionListOfCategoriesOfTypeForDocument(CategoryMapper categoryMapper,
                                                                        CategoryTypeDomainObject categoryType,
                                                                        DocumentDomainObject document, HttpServletRequest request) {
-        CategoryDomainObject[] categories = documentMapper.getAllCategoriesOfType( categoryType );
+        CategoryDomainObject[] categories = categoryMapper.getAllCategoriesOfType( categoryType );
         Arrays.sort( categories );
         CategoryDomainObject[] documentSelectedCategories = document.getCategoriesOfType( categoryType );
 
@@ -88,7 +92,7 @@ public class Html {
 
         if ( 1 == categoryType.getMaxChoices() ) {
             categoryOptionList = "<option>- " + (new LocalizedMessage("global/None")).toLocalizedString(request) + " -</option>" + categoryOptionList;
-        } 
+        }
         return categoryOptionList;
     }
 

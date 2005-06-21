@@ -17,13 +17,9 @@
 
     Document documentToBeAdded = documentService.getDocument(documentToBeAddedId) ;
     if( null != documentToBeAdded ) {
-        try {
-            menu.addDocument(documentToBeAdded) ;
-            documentService.saveChanges( document );
-            %>Done. See <a href="document_get_menu.jsp">document_get_menu.jsp</a>.<%
-        } catch (DocumentAlreadyInMenuException daim) {
-            %>Menu <%= menuIndex %> on document <%= documentId %> already contains document <%= documentToBeAddedId %>.<%
-        }
+        menu.addDocument(documentToBeAdded) ;
+        documentService.saveChanges( document );
+        %>Done. See <a href="document_get_menu.jsp">document_get_menu.jsp</a>.<%
     } else { %>
         No document with id <%= documentToBeAddedId %> exists. Please add a document before running this page again.
   <%}

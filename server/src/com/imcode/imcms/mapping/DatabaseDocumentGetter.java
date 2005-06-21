@@ -1,6 +1,9 @@
-package imcode.server.document;
+package com.imcode.imcms.mapping;
 
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentGetter;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentId;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
 import imcode.server.db.DatabaseConnection;

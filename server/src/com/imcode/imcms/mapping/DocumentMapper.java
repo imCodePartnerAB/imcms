@@ -1,4 +1,4 @@
-package imcode.server.document;
+package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import com.imcode.imcms.flow.DocumentPageFlow;
@@ -7,18 +7,22 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.db.DatabaseCommand;
-import imcode.server.db.DatabaseConnection;
-import imcode.server.db.commands.*;
-import imcode.server.db.exceptions.DatabaseException;
+import imcode.server.db.commands.CompositeDatabaseCommand;
+import imcode.server.db.commands.DeleteWhereColumnEqualsDatabaseCommand;
+import imcode.server.db.commands.InsertIntoTableDatabaseCommand;
+import imcode.server.db.commands.UpdateDatabaseCommand;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.*;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Clock;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -35,14 +39,9 @@ import java.util.*;
 
 public class DocumentMapper implements DocumentGetter {
 
-    private static final int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
-
     private static final int META_HEADLINE_MAX_LENGTH = 255;
     private static final int META_TEXT_MAX_LENGTH = 1000;
 
-    // Stored procedure names used in this class
-    // todo make sure all these is only used in one sprocMethod
-    private static final String SPROC_GET_TEXT = "GetText";
     private static final String SQL_GET_ALL_SECTIONS = "SELECT section_id, section_name FROM sections";
 
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
@@ -53,38 +52,29 @@ public class DocumentMapper implements DocumentGetter {
     private final Map documentCache;
     private final Clock clock;
     private final ImcmsServices services;
-    public static final String SQL_GET_ALL_CATEGORIES_OF_TYPE = "SELECT categories.category_id, categories.name, categories.description, categories.image\n"
-            + "FROM categories\n"
-            + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
-            + "WHERE categories.category_type_id = ?\n"
-            + "ORDER BY categories.name";
-    public static final String SQL_GET_CATEGORY = "SELECT categories.category_id, categories.name, categories.description, categories.image\n"
-            + "FROM categories\n"
-            + "JOIN category_types\n"
-            + "ON categories.category_type_id = category_types.category_type_id\n"
-            + "WHERE category_types.name = ?\n"
-            + "AND categories.name = ?";
+    private final DocumentGetter documentGetter ;
+
     public static final String SQL_GET_DOCUMENT = "SELECT meta_id,\n"
-            + "doc_type,\n"
-            + "meta_headline,\n"
-            + "meta_text,\n"
-            + "meta_image,\n"
-            + "owner_id,\n"
-            + "permissions,\n"
-            + "shared,\n"
-            + "show_meta,\n"
-            + "lang_prefix,\n"
-            + "date_created,\n"
-            + "date_modified,\n"
-            + "disable_search,\n"
-            + "target,\n"
-            + "archived_datetime,\n"
-            + "publisher_id,\n"
-            + "status,\n"
-            + "publication_start_datetime,\n"
-            + "publication_end_datetime\n"
-            + "FROM meta\n"
-            + "WHERE meta_id = ?";
+                                                  + "doc_type,\n"
+                                                  + "meta_headline,\n"
+                                                  + "meta_text,\n"
+                                                  + "meta_image,\n"
+                                                  + "owner_id,\n"
+                                                  + "permissions,\n"
+                                                  + "shared,\n"
+                                                  + "show_meta,\n"
+                                                  + "lang_prefix,\n"
+                                                  + "date_created,\n"
+                                                  + "date_modified,\n"
+                                                  + "disable_search,\n"
+                                                  + "target,\n"
+                                                  + "archived_datetime,\n"
+                                                  + "publisher_id,\n"
+                                                  + "status,\n"
+                                                  + "publication_start_datetime,\n"
+                                                  + "publication_end_datetime\n"
+                                                  + "FROM meta\n"
+                                                  + "WHERE meta_id = ?";
     public static final String SQL_GET_SECTIONS_FOR_DOCUMENT = "SELECT s.section_id, s.section_name\n"
             + " FROM sections s, meta_section ms, meta m\n"
             + "where m.meta_id=ms.meta_id\n"
@@ -93,11 +83,11 @@ public class DocumentMapper implements DocumentGetter {
     public static final String SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID = "DELETE FROM roles_rights WHERE role_id = ? AND meta_id = ?";
     public static final String SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID = "INSERT INTO roles_rights (role_id, meta_id, set_id) VALUES(?,?,?)";
 
-    public static final String SQL__CATEGORY_TYPE__COLUMNS = "category_types.category_type_id, category_types.name, category_types.max_choices, category_types.inherited";
+    public CategoryMapper categoryMapper;
 
-    public DocumentMapper(ImcmsServices services, Database database,
+    public DocumentMapper(ImcmsServices services, Database database, DocumentGetter documentGetter,
                           DocumentPermissionSetMapper documentPermissionSetMapper, DocumentIndex documentIndex,
-                          Clock clock, Config config) {
+                          Clock clock, Config config, CategoryMapper categoryMapper) {
 
         this.database = database;
         this.clock = clock;
@@ -106,6 +96,8 @@ public class DocumentMapper implements DocumentGetter {
         this.documentIndex = documentIndex;
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
         documentCache = Collections.synchronizedMap(new LRUMap(documentCacheMaxSize)) ;
+        this.documentGetter = new CachingDocumentGetter(documentGetter, documentCache);
+        this.categoryMapper = categoryMapper;
     }
 
     public DocumentDomainObject createDocumentOfTypeFromParent(int documentTypeId, final DocumentDomainObject parent,
@@ -115,7 +107,7 @@ public class DocumentMapper implements DocumentGetter {
         }
         DocumentDomainObject newDocument;
         try {
-            if (DocumentTypeDomainObject.TEXT_ID == documentTypeId) {
+            if ( DocumentTypeDomainObject.TEXT_ID == documentTypeId) {
                 newDocument = (DocumentDomainObject) parent.clone();
                 TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject) newDocument;
                 newTextDocument.removeAllTexts();
@@ -170,56 +162,6 @@ public class DocumentMapper implements DocumentGetter {
         document.setModifiedDatetime(now);
     }
 
-    public CategoryDomainObject[] getAllCategoriesOfType(CategoryTypeDomainObject categoryType) {
-        String sqlQuery = SQL_GET_ALL_CATEGORIES_OF_TYPE;
-        String[] parameters = new String[]{"" + categoryType.getId()};
-        String[][] sqlResult = database.execute2dArrayQuery(sqlQuery, parameters);
-        CategoryDomainObject[] categoryDomainObjects = new CategoryDomainObject[sqlResult.length];
-        for (int i = 0; i < sqlResult.length; i++) {
-            int categoryId = Integer.parseInt(sqlResult[i][0]);
-            String categoryName = sqlResult[i][1];
-            String categoryDescription = sqlResult[i][2];
-            String categoryImage = sqlResult[i][3];
-
-            categoryDomainObjects[i] =
-                    new CategoryDomainObject(categoryId, categoryName, categoryDescription, categoryImage, categoryType);
-        }
-        return categoryDomainObjects;
-    }
-
-    public boolean isUniqueCategoryTypeName(String categoryTypeName) {
-        CategoryTypeDomainObject[] categoryTypes = getAllCategoryTypes();
-        for (int i = 0; i < categoryTypes.length; i++) {
-            CategoryTypeDomainObject categoryType = categoryTypes[i];
-            if (categoryType.getName().equalsIgnoreCase(categoryTypeName)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public CategoryTypeDomainObject[] getAllCategoryTypes() {
-        String sqlQuery = "SELECT " + SQL__CATEGORY_TYPE__COLUMNS + " FROM category_types ORDER BY name";
-        String[][] sqlResult = database.execute2dArrayQuery(sqlQuery, new String[0]);
-
-        CategoryTypeDomainObject[] categoryTypes = new CategoryTypeDomainObject[sqlResult.length];
-        for ( int i = 0; i < categoryTypes.length; i++ ) {
-            CategoryTypeDomainObject categoryType = createCategoryTypeFromSqlResult( sqlResult[i], 0 );
-            categoryTypes[i] = categoryType;
-        }
-
-        return categoryTypes;
-    }
-
-    static CategoryTypeDomainObject createCategoryTypeFromSqlResult( String[] sqlRow, int offset ) {
-        int categoryTypeId = Integer.parseInt( sqlRow[offset+0] );
-        String typeName = sqlRow[offset+1];
-        int maxChoices = Integer.parseInt( sqlRow[offset+2] );
-        boolean inherited = 0 != Integer.parseInt( sqlRow[offset+3] ) ;
-        CategoryTypeDomainObject categoryTypeDomainObject = new CategoryTypeDomainObject( categoryTypeId, typeName, maxChoices, inherited );
-        return categoryTypeDomainObject;
-    }
-
     public SectionDomainObject[] getAllSections() {
         String[] parameters = new String[0];
         String[][] sqlRows = database.execute2dArrayQuery(SQL_GET_ALL_SECTIONS, parameters);
@@ -233,158 +175,8 @@ public class DocumentMapper implements DocumentGetter {
         return allSections;
     }
 
-    public CategoryDomainObject getCategory(CategoryTypeDomainObject categoryType, String categoryName) {
-        String sqlQuery = SQL_GET_CATEGORY;
-        String[] params = new String[]{categoryType.getName(), categoryName};
-        String[] sqlResult = database.executeArrayQuery(sqlQuery, params);
-        if (0 != sqlResult.length) {
-            final int categoryId = Integer.parseInt(sqlResult[0]);
-            final String categoryNameFromDb = sqlResult[1];
-            final String categoryDescription = sqlResult[2];
-            final String categoryImge = sqlResult[3];
-
-            return new CategoryDomainObject(categoryId, categoryNameFromDb, categoryDescription, categoryImge,
-                    categoryType);
-        } else {
-            return null;
-        }
-    }
-
-    public CategoryDomainObject getCategoryById( int categoryId ) {
-        String sqlQuery = "SELECT categories.name, categories.description, categories.image, "+SQL__CATEGORY_TYPE__COLUMNS+"\n"
-                          + "FROM categories\n"
-                          + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
-                          + "WHERE categories.category_id = ?";
-
-        String[] params = new String[]{"" + categoryId};
-        String[] categorySqlResult = database.executeArrayQuery(sqlQuery, params);
-
-        if (0 != categorySqlResult.length) {
-            String categoryName = categorySqlResult[0];
-            String categoryDescription = categorySqlResult[1];
-            String categoryImage = categorySqlResult[2];
-            CategoryTypeDomainObject categoryType = createCategoryTypeFromSqlResult( categorySqlResult, 3 ) ;
-
-            return new CategoryDomainObject(categoryId, categoryName, categoryDescription, categoryImage, categoryType);
-        } else {
-            return null;
-        }
-    }
-
-    public CategoryTypeDomainObject getCategoryType(String categoryTypeName) {
-        String sqlStr = "SELECT "+SQL__CATEGORY_TYPE__COLUMNS+"\n"
-                        + "FROM category_types\n"
-                        + "WHERE category_types.name = ?";
-        String[] sqlResult = database.executeArrayQuery(sqlStr, new String[]{categoryTypeName});
-
-        if (null == sqlResult || 0 == sqlResult.length) {
-            return null;
-        } else {
-            return createCategoryTypeFromSqlResult( sqlResult, 0 ) ;
-        }
-    }
-
-    public CategoryTypeDomainObject getCategoryTypeById(int categoryTypeId) {
-        String sqlStr = "select "+SQL__CATEGORY_TYPE__COLUMNS+" from category_types where category_type_id = ? ";
-        String[] sqlResult = database.executeArrayQuery(sqlStr, new String[]{"" + categoryTypeId});
-
-        if (null == sqlResult || 0 == sqlResult.length) {
-            return null;
-        } else {
-            return createCategoryTypeFromSqlResult( sqlResult, 0 ) ;
-        }
-    }
-
-    public void deleteCategoryTypeFromDb(CategoryTypeDomainObject categoryType) {
-        String sqlstr = "delete from category_types where category_type_id = ?";
-        String[] params = new String[]{categoryType.getId() + ""};
-        database.executeUpdateQuery(sqlstr, params);
-    }
-
-    public CategoryTypeDomainObject addCategoryTypeToDb( final CategoryTypeDomainObject categoryType ) {
-        DatabaseCommand addCategoryTypeCommand = new DatabaseCommand() {
-            public Object executeOn(DatabaseConnection connection) throws DatabaseException {
-                String sqlstr = "insert into category_types (name, max_choices, inherited) values(?,?,?)";
-                String[] params = new String[]{categoryType.getName(), categoryType.getMaxChoices() + "", (categoryType.isInherited() ? "1" : "0")};
-                return connection.executeUpdateAndGetGeneratedKey(sqlstr, params) ;
-            }
-        };
-        Number newId = (Number) database.executeCommand(addCategoryTypeCommand) ;
-        return getCategoryTypeById(newId.intValue());
-    }
-
-    public void updateCategoryType(CategoryTypeDomainObject categoryType) {
-        String sqlstr = "update category_types set name= ?, max_choices= ?  where category_type_id = ? ";
-        String[] params = new String[]{
-            categoryType.getName(), categoryType.getMaxChoices() + "",
-            categoryType.getId() + ""
-        };
-        database.executeUpdateQuery(sqlstr, params);
-    }
-
-    public CategoryDomainObject addCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
-        String sqlstr = "insert into categories  (category_type_id, name, description, image) values(?,?,?,?) SELECT @@IDENTITY";
-        String[] params = new String[]{
-            category.getType().getId() + "", category.getName(),
-            category.getDescription(), category.getImageUrl()
-        };
-        String newId = database.executeStringQuery(sqlstr, params);
-        int categoryId = Integer.parseInt(newId);
-        category.setId(categoryId);
-        return getCategoryById(categoryId);
-    }
-
-    public void updateCategory(CategoryDomainObject category) {
-        String sqlstr = "update categories set category_type_id = ?, name= ?, description = ?, image = ?  where category_id = ? ";
-        String[] params = new String[]{
-            category.getType().getId() + "", category.getName(), category.getDescription(),
-            category.getImageUrl(),
-            category.getId() + ""
-        };
-        database.executeUpdateQuery(sqlstr, params);
-    }
-
-    public void deleteCategoryFromDb(CategoryDomainObject category) {
-        String sqlstr = "delete from categories where category_id = ?";
-        String[] params = new String[]{category.getId() + ""};
-        database.executeUpdateQuery(sqlstr, params);
-    }
-
     public DocumentDomainObject getDocument(int documentId) {
         return getDocument(new DocumentId(documentId)) ;
-    }
-
-    public DocumentDomainObject getDocument(DocumentId documentId) {
-        NDC.push("getDocument");
-
-        DocumentDomainObject document;
-        final DatabaseDocumentGetter databaseDocumentGetter = new DatabaseDocumentGetter(database, services);
-        document = getDocumentFromCache(documentId, databaseDocumentGetter);
-
-        NDC.pop();
-        return document;
-    }
-
-    public DocumentDomainObject getDocumentFromCache(DocumentId documentId, final DocumentGetter documentGetter) {
-        try {
-            DocumentDomainObject document = null ;
-            SoftReference[] documentSoftReferenceArray = (SoftReference[]) documentCache.get(documentId);
-            if (null != documentSoftReferenceArray && null != documentSoftReferenceArray[0]) {
-                document = (DocumentDomainObject) documentSoftReferenceArray[0].get();
-            }
-            if (null == document) {
-                documentSoftReferenceArray = new SoftReference[1];
-                documentCache.put(documentId, documentSoftReferenceArray);
-                document = documentGetter.getDocument(documentId);
-                documentSoftReferenceArray[0] = new SoftReference(document);
-            }
-            if (null != document) {
-                document = (DocumentDomainObject) document.clone();
-            }
-            return document;
-        } catch (CloneNotSupportedException e) {
-            throw new UnhandledException(e);
-        }
     }
 
     public DocumentReference getDocumentReference(DocumentDomainObject document) {
@@ -392,7 +184,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     DocumentReference getDocumentReference(int childId) {
-        return new DocumentReference(childId, this);
+        return new DocumentReference(childId, documentGetter);
     }
 
     public SectionDomainObject getSectionById(int sectionId) {
@@ -415,26 +207,6 @@ public class DocumentMapper implements DocumentGetter {
         return new SectionDomainObject(sectionId, sectionName);
     }
 
-    public TextDomainObject getText(int metaId, int no) {
-        String[] results = sprocGetText(metaId, no);
-
-        if (results == null || results.length == 0) {
-            /* There was no text. Return null. */
-            return null;
-        }
-
-        /* Return the text */
-        String text = results[0];
-        int type = Integer.parseInt(results[1]);
-
-        return new TextDomainObject(text, type);
-
-    }
-
-    public void removeInclusion(int includingMetaId, int includeIndex) {
-        deleteInclude(includingMetaId, includeIndex);
-    }
-
     public void saveNewDocument(DocumentDomainObject document, UserDomainObject user)
             throws MaxCategoryDomainObjectsOfTypeExceededException {
 
@@ -442,7 +214,11 @@ public class DocumentMapper implements DocumentGetter {
             return; // TODO: More specific check needed. Throw exception ?
         }
 
-        checkMaxDocumentCategoriesOfType(document);
+        categoryMapper.checkMaxDocumentCategoriesOfType(document);
+
+        if (document instanceof TextDocumentDomainObject) {
+            checkDocumentsAddedWithoutPermission((TextDocumentDomainObject)document, null, user);
+        }
 
         setCreatedAndModifiedDatetimes(document, new Date());
 
@@ -469,7 +245,7 @@ public class DocumentMapper implements DocumentGetter {
     private void updateDocumentSectionsCategoriesKeywords(DocumentDomainObject document) {
         updateDocumentSections(document.getId(), document.getSections());
 
-        updateDocumentCategories(document);
+        categoryMapper.updateDocumentCategories(document);
 
         updateDocumentKeywords(document);
     }
@@ -521,7 +297,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void saveDocument(DocumentDomainObject document,
-                             UserDomainObject user) throws MaxCategoryDomainObjectsOfTypeExceededException {
+                             final UserDomainObject user) throws MaxCategoryDomainObjectsOfTypeExceededException, DocumentsAddedToMenuWithoutPermissionException {
 
         DocumentDomainObject oldDocument = getDocument(document.getId());
 
@@ -529,10 +305,14 @@ public class DocumentMapper implements DocumentGetter {
             return;
         }
 
-        checkMaxDocumentCategoriesOfType(document);
+        if (document instanceof TextDocumentDomainObject) {
+            checkDocumentsAddedWithoutPermission((TextDocumentDomainObject)document, (TextDocumentDomainObject)oldDocument, user);
+        }
+
+        categoryMapper.checkMaxDocumentCategoriesOfType(document);
 
         try {
-            Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getLastModifiedDatetime());
+            Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
             Date modifiedDatetime = Utility.truncateDateToMinutePrecision(document.getModifiedDatetime());
             boolean modifiedDatetimeUnchanged = lastModifiedDatetime.equals(modifiedDatetime);
             if (modifiedDatetimeUnchanged) {
@@ -553,6 +333,51 @@ public class DocumentMapper implements DocumentGetter {
         } finally {
             invalidateDocument(document);
         }
+    }
+
+    void checkDocumentsAddedWithoutPermission(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument,
+                                                      final UserDomainObject user) {
+        Collection documentsAddedWithoutPermission = getDocumentsAddedWithoutPermission(textDocument, oldTextDocument, user);
+        boolean documentsWereAddedWithoutPermission = !documentsAddedWithoutPermission.isEmpty();
+        if (documentsWereAddedWithoutPermission ) {
+            Collection documentIds = CollectionUtils.collect(documentsAddedWithoutPermission, new Transformer() {
+                public Object transform(Object object) {
+                    DocumentDomainObject document = (DocumentDomainObject) object;
+                    return ""+document.getId() ;
+                }
+            });
+            throw new DocumentsAddedToMenuWithoutPermissionException("User is not allowed to add documents "+documentIds +" to document "+textDocument.getId()) ;
+        }
+    }
+
+    Set getDocumentsAddedWithoutPermission(TextDocumentDomainObject textDocument,
+                                                          TextDocumentDomainObject oldTextDocument,
+                                                          final UserDomainObject user) {
+        Set documentsAdded = getDocumentsAdded(textDocument, oldTextDocument);
+        Collection documentsAddedWithoutPermission = CollectionUtils.select(documentsAdded, new Predicate() {
+            public boolean evaluate(Object object) {
+                return !user.canAddDocumentToAnyMenu((DocumentDomainObject) object) ;
+            }
+        }) ;
+        return new HashSet(documentsAddedWithoutPermission);
+    }
+
+    private Set getDocumentsAdded(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument) {
+        Set documentsAdded;
+        if (null != oldTextDocument) {
+            documentsAdded = getChildDocumentsDifference(textDocument, oldTextDocument);
+        } else {
+            documentsAdded = textDocument.getChildDocuments() ;
+        }
+        return documentsAdded;
+    }
+
+    private Set getChildDocumentsDifference(TextDocumentDomainObject minuend, TextDocumentDomainObject subtrahend) {
+        Set minuendChildDocuments = minuend.getChildDocuments() ;
+        Set subtrahendChildDocuments = subtrahend.getChildDocuments() ;
+        Set result = new HashSet(minuendChildDocuments) ;
+        result.removeAll(subtrahendChildDocuments) ;
+        return result ;
     }
 
     public void invalidateDocument(DocumentDomainObject document) {
@@ -590,56 +415,6 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    private void checkMaxDocumentCategoriesOfType(DocumentDomainObject document)
-            throws MaxCategoryDomainObjectsOfTypeExceededException {
-        CategoryTypeDomainObject[] categoryTypes = getAllCategoryTypes();
-        for (int i = 0; i < categoryTypes.length; i++) {
-            CategoryTypeDomainObject categoryType = categoryTypes[i];
-            int maxChoices = categoryType.getMaxChoices();
-            CategoryDomainObject[] documentCategoriesOfType = document.getCategoriesOfType(categoryType);
-            if (UNLIMITED_MAX_CATEGORY_CHOICES != maxChoices && documentCategoriesOfType.length > maxChoices) {
-                throw new MaxCategoryDomainObjectsOfTypeExceededException("Document may have at most " + maxChoices
-                        + " categories of type '"
-                        + categoryType.getName()
-                        + "'");
-            }
-        }
-    }
-
-    private void updateDocumentCategories(DocumentDomainObject document) {
-        removeAllCategoriesFromDocument(document);
-        CategoryDomainObject[] categories = document.getCategories();
-        for (int i = 0; i < categories.length; i++) {
-            CategoryDomainObject category = categories[i];
-            addCategoryToDocument(category, document);
-        }
-    }
-
-    private void addCategoryToDocument(CategoryDomainObject category, DocumentDomainObject document) {
-        int categoryId = category.getId();
-        String[] params = new String[]{"" + document.getId(), "" + categoryId};
-        database.executeUpdateQuery("INSERT INTO document_categories (meta_id, category_id) VALUES(?,?)", params);
-    }
-
-    public String[] getAllDocumentsOfOneCategory(CategoryDomainObject category) {
-
-        String sqlstr = "select meta_id from document_categories where category_id = ? ";
-        String[] params = new String[]{category.getId() + ""};
-        String[] res = database.executeArrayQuery(sqlstr, params);
-
-        return res;
-    }
-
-    private void removeAllCategoriesFromDocument(DocumentDomainObject document) {
-        String[] params = new String[]{"" + document.getId()};
-        database.executeUpdateQuery("DELETE FROM document_categories WHERE meta_id = ?", params);
-    }
-
-    public void deleteOneCategoryFromDocument(DocumentDomainObject document, CategoryDomainObject category) {
-        String[] params = new String[]{document.getId() + "", category.getId() + ""};
-        database.executeUpdateQuery("DELETE FROM document_categories WHERE meta_id = ? and category_id = ?", params);
-    }
-
     private void sqlUpdateMeta(DocumentDomainObject document) {
         String headline = document.getHeadline();
         String text = document.getMenuText();
@@ -654,7 +429,7 @@ public class DocumentMapper implements DocumentGetter {
         makeDateSqlUpdateClause("archived_datetime", document.getArchivedDatetime(), sqlUpdateColumns, sqlUpdateValues);
         makeDateSqlUpdateClause("date_created", document.getCreatedDatetime(), sqlUpdateColumns, sqlUpdateValues);
         String headlineThatFitsInDB = headline.substring(0,
-                Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
+                                                         Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
         makeStringSqlUpdateClause("meta_headline", headlineThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
         makeStringSqlUpdateClause("meta_image", document.getMenuImage(), sqlUpdateColumns, sqlUpdateValues);
         makeDateSqlUpdateClause("date_modified", document.getModifiedDatetime(), sqlUpdateColumns, sqlUpdateValues);
@@ -668,12 +443,12 @@ public class DocumentMapper implements DocumentGetter {
         makeBooleanSqlUpdateClause("permissions", document.isRestrictedOneMorePrivilegedThanRestrictedTwo(), sqlUpdateColumns, sqlUpdateValues);
         UserDomainObject publisher = document.getPublisher();
         makeIntSqlUpdateClause("publisher_id", publisher == null ? null
-                : new Integer(publisher.getId()), sqlUpdateColumns,
-                sqlUpdateValues);
+                                               : new Integer(publisher.getId()), sqlUpdateColumns,
+                                                                                 sqlUpdateValues);
         UserDomainObject creator = document.getCreator();
         if (null != creator) {
             makeIntSqlUpdateClause("owner_id", new Integer(creator.getId()), sqlUpdateColumns,
-                    sqlUpdateValues);
+                                   sqlUpdateValues);
         }
         makeIntSqlUpdateClause("status", new Integer(document.getStatus()), sqlUpdateColumns, sqlUpdateValues);
 
@@ -688,11 +463,6 @@ public class DocumentMapper implements DocumentGetter {
         String procedure = "SetInclude";
         String[] params = new String[]{"" + includingMetaId, "" + includeIndex, "" + includedMetaId};
         database.executeUpdateProcedure(procedure, params);
-    }
-
-    public void deleteInclude(int including_meta_id, int include_id) {
-        String[] params = new String[]{"" + including_meta_id, "" + include_id};
-        database.executeUpdateProcedure("DeleteInclude", params);
     }
 
     private void addExistingKeywordToDocument(int meta_id, String keyword) {
@@ -787,13 +557,6 @@ public class DocumentMapper implements DocumentGetter {
         } catch (ParseException pe) {
             return null;
         }
-    }
-
-    private String[] sprocGetText(int meta_id, int no) {
-        String[] params = new String[]{"" + meta_id, "" + no};
-        String sprocGetText = SPROC_GET_TEXT;
-        String[] results = database.executeArrayProcedure(sprocGetText, params);
-        return results;
     }
 
     public DocumentIndex getDocumentIndex() {
@@ -972,10 +735,6 @@ public class DocumentMapper implements DocumentGetter {
         deleteFileDocumentFilesAccordingToFileFilter(new SuperfluousFileDocumentFilesFileFilter(fileDocument));
     }
 
-    public void clearDocumentCache() {
-        documentCache.clear();
-    }
-
     public int getLowestDocumentId() {
         String[] params = new String[0];
         return Integer.parseInt(database.executeStringQuery("SELECT MIN(meta_id) FROM meta", params));
@@ -995,7 +754,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void saveCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
-        CategoryDomainObject categoryInDb = getCategory(category.getType(), category.getName());
+        CategoryDomainObject categoryInDb = categoryMapper.getCategory(category.getType(), category.getName());
         if (null != categoryInDb && category.getId() != categoryInDb.getId()) {
             throw new CategoryAlreadyExistsException("A category with name \"" + category.getName()
                     + "\" already exists in category type \""
@@ -1003,9 +762,9 @@ public class DocumentMapper implements DocumentGetter {
                     + "\".");
         }
         if (0 == category.getId()) {
-            addCategory(category);
+            categoryMapper.addCategory(category);
         } else {
-            updateCategory(category);
+            categoryMapper.updateCategory(category);
         }
     }
 
@@ -1022,6 +781,10 @@ public class DocumentMapper implements DocumentGetter {
                 return documentIds.length;
             }
         };
+    }
+
+    public DocumentDomainObject getDocument(DocumentId documentId) {
+        return documentGetter.getDocument(documentId);
     }
 
     public static class TextDocumentMenuIndexPair {
@@ -1122,5 +885,52 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-}
+    private static class CachingDocumentGetter implements DocumentGetter {
+        private final DocumentGetter documentGetter;
+        private final Map documentCache;
 
+        CachingDocumentGetter(DocumentGetter documentGetter, Map documentCache) {
+            this.documentGetter = documentGetter;
+            this.documentCache = documentCache ;
+        }
+
+        public DocumentDomainObject getDocument(DocumentId documentId) {
+            NDC.push("getDocument");
+
+            DocumentDomainObject document;
+            document = getDocumentFromCache(documentId, this.documentGetter);
+
+            NDC.pop();
+            return document;
+        }
+
+        public DocumentDomainObject getDocumentFromCache(DocumentId documentId, final DocumentGetter documentGetter) {
+            try {
+                DocumentDomainObject document = null ;
+                SoftReference[] documentSoftReferenceArray = (SoftReference[]) documentCache.get(documentId);
+                if (null != documentSoftReferenceArray && null != documentSoftReferenceArray[0]) {
+                    document = (DocumentDomainObject) documentSoftReferenceArray[0].get();
+                }
+                if (null == document) {
+                    documentSoftReferenceArray = new SoftReference[1];
+                    documentCache.put(documentId, documentSoftReferenceArray);
+                    document = documentGetter.getDocument(documentId);
+                    documentSoftReferenceArray[0] = new SoftReference(document);
+                }
+                if (null != document) {
+                    document = (DocumentDomainObject) document.clone();
+                }
+                return document;
+            } catch (CloneNotSupportedException e) {
+                throw new UnhandledException(e);
+            }
+        }
+
+    }
+
+    public static class DocumentsAddedToMenuWithoutPermissionException extends RuntimeException {
+        public DocumentsAddedToMenuWithoutPermissionException(String s) {
+            super(s);
+        }
+    }
+}

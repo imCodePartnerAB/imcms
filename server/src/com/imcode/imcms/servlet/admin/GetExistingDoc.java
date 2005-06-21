@@ -4,7 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
@@ -186,7 +186,7 @@ public class GetExistingDoc extends HttpServlet {
     private void addDocumentsFromRequestToMenu( UserDomainObject user, HttpServletRequest req,
                                                 ImcmsServices imcref, TextDocumentDomainObject parentDocument,
                                                 int menuIndex, HttpServletResponse res ) throws IOException {
-        user.put( "flags", new Integer( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) );
+        req.getSession().setAttribute( "flags", new Integer( ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) );
 
         // get the seleced existing docs
         String[] values = req.getParameterValues( "existing_meta_id" );

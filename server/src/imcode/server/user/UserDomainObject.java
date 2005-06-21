@@ -2,10 +2,11 @@ package imcode.server.user;
 
 import imcode.server.document.*;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.UnhandledException;
 
 import java.util.*;
 
-public class UserDomainObject extends Hashtable {
+public class UserDomainObject implements Cloneable {
 
     public static final int DEFAULT_USER_ID = 2;
 
@@ -47,9 +48,13 @@ public class UserDomainObject extends Hashtable {
     }
 
     public Object clone() {
-        UserDomainObject clone = (UserDomainObject)super.clone();
-        clone.roles = new HashSet( roles );
-        return clone;
+        try {
+            UserDomainObject clone = (UserDomainObject) super.clone();
+            clone.roles = new HashSet(roles);
+            return clone;
+        } catch ( CloneNotSupportedException e ) {
+            throw new UnhandledException(e);
+        }
     }
 
     /**
@@ -416,17 +421,12 @@ public class UserDomainObject extends Hashtable {
 
         final UserDomainObject userDomainObject = (UserDomainObject)o;
 
-        if ( id != userDomainObject.id ) {
-            return false;
-        }
+        return id == userDomainObject.id;
 
-        return true;
     }
 
     public int hashCode() {
-        int result = super.hashCode();
-        result = 29 * result + id;
-        return result;
+        return id;
     }
 
     public boolean isDefaultUser() {
@@ -570,7 +570,8 @@ public class UserDomainObject extends Hashtable {
     }
 
     public boolean canAddDocumentToAnyMenu( DocumentDomainObject document ) {
-        return canEdit( document ) || document.isLinkableByOtherUsers();
+        boolean canAddDocumentToAnyMenu = canEdit(document) || document.isLinkableByOtherUsers();
+        return canAddDocumentToAnyMenu;
     }
 
     public boolean canSearchFor( DocumentDomainObject document ) {

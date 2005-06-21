@@ -1,10 +1,7 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils,
-                 imcode.server.document.DocumentMapper,
                  imcode.server.document.DocumentDomainObject,
                  imcode.util.Utility,
-                 imcode.server.Imcms,
                  imcode.util.Html,
-                 com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean,
                  imcode.server.user.UserDomainObject"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request"/>
 <%

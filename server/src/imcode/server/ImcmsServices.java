@@ -1,9 +1,9 @@
 package imcode.server ;
 
 import imcode.server.db.Database;
-import imcode.server.document.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
@@ -125,4 +125,6 @@ public interface ImcmsServices extends Clock {
     KeyStore getKeyStore();
 
     Database getDatabase();
+
+    CategoryMapper getCategoryMapper();
 }

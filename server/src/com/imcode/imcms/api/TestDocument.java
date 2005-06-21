@@ -12,7 +12,7 @@ import org.apache.commons.collections.Predicate;
 
 public class TestDocument extends TestCase{
 
-    public void testGetAllRolesMappedToPermissions() throws NoPermissionException {
+    public void testGetAllRolesMappedToPermissions() {
         final MockContentManagementSystem contentManagementSystem = new MockContentManagementSystem();
         contentManagementSystem.setCurrentInternalUser(new UserDomainObject());
         final TextDocumentDomainObject textDocument = new TextDocumentDomainObject();

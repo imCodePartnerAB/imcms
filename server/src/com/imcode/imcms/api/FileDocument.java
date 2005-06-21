@@ -26,18 +26,15 @@ public class FileDocument extends Document {
         return (FileDocumentDomainObject)getInternal() ;
     }
 
-    public FileDocumentFile getFile( String fileId ) throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
+    public FileDocumentFile getFile( String fileId ) {
         return new FileDocumentFile(getInternalFileDocument().getFile( fileId ));
     }
 
-    public FileDocumentFile removeFile( String fileId ) throws NoPermissionException {
-        getSecurityChecker().hasEditPermission( this );
+    public FileDocumentFile removeFile( String fileId ) {
         return new FileDocumentFile( getInternalFileDocument().removeFile( fileId ) );
     }
 
-    public FileDocumentFile[] getFiles() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
+    public FileDocumentFile[] getFiles() {
         Map filesMap = getInternalFileDocument().getFiles();
         List files = TransformedList.decorate(new ArrayList(filesMap.size()), new Transformer() {
             public Object transform( Object input ) {
@@ -48,23 +45,19 @@ public class FileDocument extends Document {
         return (FileDocumentFile[])files.toArray( new FileDocumentFile[files.size()] );
     }
 
-    public FileDocumentFile getFileOrDefault( String fileId ) throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
+    public FileDocumentFile getFileOrDefault( String fileId ) {
         return new FileDocumentFile( getInternalFileDocument().getFileOrDefault( fileId ) );
     }
 
-    public String getDefaultFileId() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
+    public String getDefaultFileId() {
         return getInternalFileDocument().getDefaultFileId();
     }
 
-    public FileDocumentFile getDefaultFile() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission( this );
+    public FileDocumentFile getDefaultFile() {
         return new FileDocumentFile( getInternalFileDocument().getDefaultFile() );
     }
 
-    public void addFile( String fileId, FileDocumentFile file) throws NoPermissionException {
-        getSecurityChecker().hasEditPermission( this );
+    public void addFile( String fileId, FileDocumentFile file) {
         getInternalFileDocument().addFile( fileId, file.getInternal() );
     }
 

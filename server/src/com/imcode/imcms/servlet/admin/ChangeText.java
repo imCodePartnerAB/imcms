@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.Imcms;
 import imcode.server.document.*;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;

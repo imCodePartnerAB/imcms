@@ -6,7 +6,8 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.SectionDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
@@ -162,6 +163,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
         final ImcmsServices service = Imcms.getServices();
         final DocumentMapper documentMapper = service.getDocumentMapper();
+        final CategoryMapper categoryMapper = service.getCategoryMapper();
 
         String headline = request.getParameter( REQUEST_PARAMETER__HEADLINE );
         document.setHeadline( headline );
@@ -205,7 +207,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         for ( int i = 0; null != categoryIds && i < categoryIds.length; i++ ) {
             try {
                 int categoryId = Integer.parseInt( categoryIds[i] );
-                CategoryDomainObject category = documentMapper.getCategoryById( categoryId );
+                CategoryDomainObject category = categoryMapper.getCategoryById( categoryId );
                 document.addCategory( category );
             } catch ( NumberFormatException ignored ) {
                 // OK, empty category id

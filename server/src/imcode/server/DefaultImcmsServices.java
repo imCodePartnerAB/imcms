@@ -2,6 +2,10 @@ package imcode.server;
 
 import imcode.server.db.Database;
 import imcode.server.document.*;
+import com.imcode.imcms.mapping.DatabaseDocumentGetter;
+import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.index.AutorebuildingDirectoryIndex;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.parser.ParserParameters;
@@ -55,6 +59,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private KeyStore keyStore;
 
     private Map velocityEngines = new TreeMap();
+    private CategoryMapper categoryMapper;
 
     static {
         mainLog.info( "Main log started." );
@@ -175,7 +180,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private void initDocumentMapper() {
         File indexDirectory = new File( getRealContextPath(), "WEB-INF/index" );
         DocumentIndex documentIndex = new AutorebuildingDirectoryIndex( indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes() );
-        documentMapper = new DocumentMapper( this, this.getDatabase(), new DatabaseDocumentGetter(this.getDatabase(), this), new DocumentPermissionSetMapper( database, this ), documentIndex, this.getClock(), this.getConfig());
+        categoryMapper = new CategoryMapper(this.getDatabase());
+        documentMapper = new DocumentMapper( this, this.getDatabase(), new DatabaseDocumentGetter(this.getDatabase(), this), new DocumentPermissionSetMapper( database, this ), documentIndex, this.getClock(), this.getConfig(), categoryMapper);
     }
 
     private void initTemplateMapper() {
@@ -750,6 +756,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     public Database getDatabase() {
         return database;
+    }
+
+    public CategoryMapper getCategoryMapper() {
+        return categoryMapper;
     }
 
     private static class WebappRelativeFileConverter implements Converter {

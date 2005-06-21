@@ -3,6 +3,10 @@ package com.imcode.imcms.api;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
 import imcode.server.document.*;
+import imcode.server.document.DocumentGetter;
+import imcode.server.document.DocumentReference;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -23,6 +27,7 @@ public class TestTextDocument extends TestCase {
     private TextDocument textDocument;
     private MockContentManagementSystem contentManagementSystem;
     private TextDocument otherTextDocument;
+    private MockImcmsServices imcmsServices;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -41,8 +46,8 @@ public class TestTextDocument extends TestCase {
         MenuDomainObject menuDO = textDocumentDO.getMenu( menuIndex );
         menuDO.addMenuItem( new MenuItemDomainObject( documentReference ) );
         contentManagementSystem = new MockContentManagementSystem();
-        MockImcmsServices imcmsServices = new MockImcmsServices();
-        imcmsServices.setDocumentMapper( new DocumentMapper(null,null,null,null,null,new Config() ));
+
+        imcmsServices = new MockImcmsServices();
         contentManagementSystem.setInternal( imcmsServices );
         contentManagementSystem.setCurrentUser( new User( internalUser ) );
         textDocument = new TextDocument( this.textDocumentDO, contentManagementSystem );
@@ -60,7 +65,7 @@ public class TestTextDocument extends TestCase {
         assertGettersReturnDocuments();
     }
 
-    public void testMenuGetVisible() throws Exception {
+    public void testMenuGetVisible() {
         internalUser.addRole( readRole );
         otherTextDocumentDO.setPermissionSetIdForRole( readRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
         otherTextDocumentDO.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
@@ -68,7 +73,7 @@ public class TestTextDocument extends TestCase {
         assertGetVisibleReturnDocuments();
     }
 
-    public void testMenuGetVisibleWithArchived() throws Exception {
+    public void testMenuGetVisibleWithArchived() {
         internalUser.addRole( readRole );
         otherTextDocumentDO.setPermissionSetIdForRole( readRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
         otherTextDocumentDO.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
@@ -77,43 +82,43 @@ public class TestTextDocument extends TestCase {
         assertGetVisibleDoNotReturnDocuments();
     }
 
-    public void testMenuGetVisibleWithNothing() throws Exception {
+    public void testMenuGetVisibleWithNothing() {
         assertGetVisibleDoNotReturnDocuments();
     }
 
-    public void testMenuGetVisibleWithRole() throws Exception {
+    public void testMenuGetVisibleWithRole() {
         internalUser.addRole( readRole );
         assertGetVisibleDoNotReturnDocuments();
     }
 
-    public void testMenuGetVisibleWithRoleAndPermission() throws Exception {
+    public void testMenuGetVisibleWithRoleAndPermission() {
         internalUser.addRole( readRole );
         otherTextDocumentDO.setPermissionSetIdForRole( readRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
         assertGetVisibleDoNotReturnDocuments();
     }
 
-    public void testMenuGetVisibleWithApprovedStatus() throws Exception {
+    public void testMenuGetVisibleWithApprovedStatus() {
         otherTextDocumentDO.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
         assertGetVisibleDoNotReturnDocuments();
     }
 
-    public void testMenuGetVisibleWithPublicationStart() throws Exception {
+    public void testMenuGetVisibleWithPublicationStart() {
         otherTextDocumentDO.setPublicationStartDatetime( new Date( 0 ) );
         assertGetVisibleDoNotReturnDocuments();
     }
 
-    public void testMenuGetVisibleWithPublished() throws Exception {
+    public void testMenuGetVisibleWithPublished() {
         otherTextDocumentDO.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
         otherTextDocumentDO.setPublicationStartDatetime( new Date( 0 ) );
         assertGetVisibleDoNotReturnDocuments();
     }
 
-    public void testMenuGetVisibleWithVisibleInMenusForUnauthorizedUsers() throws Exception {
+    public void testMenuGetVisibleWithVisibleInMenusForUnauthorizedUsers() {
         otherTextDocumentDO.setVisibleInMenusForUnauthorizedUsers( true );
         assertGetVisibleDoNotReturnDocuments();
     }
 
-    public void testMenuGetVisibleWithPublishedAndVisibleInMenusForUnauthorizedUsers() throws Exception {
+    public void testMenuGetVisibleWithPublishedAndVisibleInMenusForUnauthorizedUsers() {
         otherTextDocumentDO.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
         otherTextDocumentDO.setPublicationStartDatetime( new Date( 0 ) );
         otherTextDocumentDO.setVisibleInMenusForUnauthorizedUsers( true );
@@ -140,28 +145,33 @@ public class TestTextDocument extends TestCase {
         assertFalse( menu.getVisibleMenuItems().length > 0 );
     }
 
-    public void testAddDocument() throws DocumentAlreadyInMenuException, NoPermissionException {
-        try {
-            menu.addDocument( otherTextDocument );
-            fail();
-        } catch( NoPermissionException npe ) {}
-        internalUser.addRole( readRole );
-        otherTextDocumentDO.setPermissionSetIdForRole( readRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
-        try {
-            menu.addDocument( otherTextDocument );
-            fail() ;
-        } catch( NoPermissionException npe ) {}
-        internalUser.addRole( editRole );
+    public void testAddRemoveDocument() throws DocumentAlreadyInMenuException, NoPermissionException {
+        DocumentGetter documentGetter = new DocumentGetter() {
+            public DocumentDomainObject getDocument(DocumentId documentId) {
+                if (documentId.intValue() == otherTextDocument.getId() ) {
+                    return otherTextDocument.getInternal() ;
+                }
+                return null ;
+            }
+        };
+        DocumentMapper documentMapper = new DocumentMapper(null,null,documentGetter,null,null,null,new Config(), new CategoryMapper(null));
+        imcmsServices.setDocumentMapper( documentMapper );
         menu.addDocument( otherTextDocument );
+        assertEquals(0, menu.getDocuments().length) ;
+        otherTextDocumentDO.setPermissionSetIdForRole(readRole, DocumentPermissionSet.READ);
+        assertEquals(0, menu.getDocuments().length) ;
+        internalUser.addRole(readRole);
+        assertEquals(0, menu.getDocuments().length) ;
+        publish(otherTextDocument) ;
+        assertEquals(1, menu.getDocuments().length) ;
+        assertEquals(otherTextDocument, menu.getDocuments()[0]) ;
+        menu.removeDocument( otherTextDocument );
+        assertEquals(0, menu.getDocuments().length) ;
     }
 
-    public void testRemoveDocument() throws NoPermissionException {
-        try {
-            menu.removeDocument( otherTextDocument );
-            fail() ;
-        } catch( NoPermissionException npe ) {}
-        internalUser.addRole( editRole );
-        menu.removeDocument( otherTextDocument );
+    private void publish(Document document) {
+        document.setStatus(DocumentDomainObject.STATUS_PUBLICATION_APPROVED);
+        document.setPublicationStartDatetime(new Date(0));
     }
 
     private static class MockDocumentReference extends DocumentReference {
@@ -177,4 +187,5 @@ public class TestTextDocument extends TestCase {
             return document ;
         }
     }
+
 }

@@ -59,11 +59,8 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
 
         final CategoryTypeDomainObject categoryTypeDomainObject = (CategoryTypeDomainObject) o;
 
-        if (!name.equals(categoryTypeDomainObject.name)) {
-            return false;
-        }
+        return name.equals(categoryTypeDomainObject.name);
 
-        return true;
     }
 
     public int hashCode() {
@@ -79,7 +76,7 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
     }
 
     public boolean hasImages() {
-        CategoryDomainObject[] categories = Imcms.getServices().getDocumentMapper().getAllCategoriesOfType(this);
+        CategoryDomainObject[] categories = Imcms.getServices().getCategoryMapper().getAllCategoriesOfType(this);
         boolean hasImages = false;
         for (int i = 0; i < categories.length; i++) {
             CategoryDomainObject category = categories[i];

@@ -1,12 +1,12 @@
 package imcode.server.document;
 
-import imcode.server.document.textdocument.TextDocumentDomainObject;
+import com.imcode.imcms.mapping.DocumentPermissionSetMapper;
 import junit.framework.TestCase;
 
 public class TestDocumentPermissionSetDomainObject extends TestCase {
 
     DocumentPermissionSetDomainObject documentPermissionSet = new DocumentPermissionSetDomainObject( 1 ) {
-        void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
+        public void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
                           int permissionBits, boolean forNewDocuments ) {
         }
     };

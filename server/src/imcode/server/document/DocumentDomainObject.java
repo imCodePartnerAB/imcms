@@ -7,7 +7,6 @@ import imcode.util.LocalizedMessage;
 import org.apache.commons.collections.map.TypedMap;
 import org.apache.log4j.Logger;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.*;
 
@@ -154,12 +153,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.modifiedDatetime = v;
     }
 
-    void setLastModifiedDatetime( Date modifiedDatetime ) {
-        this.attributes.lastModifiedDatetime = modifiedDatetime;
+    public void setActualModifiedDatetime( Date modifiedDatetime ) {
+        this.attributes.actualModifiedDatetime = modifiedDatetime;
     }
 
-    Date getLastModifiedDatetime() {
-        return attributes.lastModifiedDatetime;
+    public Date getActualModifiedDatetime() {
+        return attributes.actualModifiedDatetime;
     }
 
     public Date getPublicationEndDatetime() {
@@ -453,7 +452,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private String menuText;
         private int id;
         private Date modifiedDatetime;
-        private Date lastModifiedDatetime;
+        private Date actualModifiedDatetime;
         private boolean restrictedOneMorePrivilegedThanRestrictedTwo;
         private Date publicationStartDatetime;
         private Date publicationEndDatetime;

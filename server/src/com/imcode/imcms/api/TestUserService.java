@@ -53,7 +53,7 @@ public class TestUserService extends TestCase {
         database.assertCalled( new MockDatabase.MatchesRegexSqlCallPredicate( "role" ) ) ;
     }
 
-    public void testNonAdminCantCreateUser() throws SaveException, NoPermissionException {
+    public void testNonAdminCantCreateUser() throws SaveException {
         User user = userService.createNewUser( "test", "test" ) ;
         user.addRole( new Role( RoleDomainObject.SUPERADMIN ));
         try {
@@ -63,7 +63,7 @@ public class TestUserService extends TestCase {
         database.verifyExpectedSqlCalls();
     }
 
-    public void testNonAdminCantEditOtherUsers() throws NoPermissionException, SaveException {
+    public void testNonAdminCantEditOtherUsers() throws SaveException {
         UserDomainObject otherInternalUser = new UserDomainObject();
         otherInternalUser.setId( HIGHEST_USER_ID + 1 );
         User otherUser = new User( otherInternalUser );

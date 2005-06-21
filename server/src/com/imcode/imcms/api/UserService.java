@@ -34,7 +34,7 @@ public class UserService {
      @param userId
      @return User with the specified id, or null if none.
      **/
-    public User getUser( int userId ) throws NoPermissionException {
+    public User getUser( int userId ) {
         return wrapUser(getMapper().getUser( userId ));
     }
 
@@ -49,7 +49,7 @@ public class UserService {
         @param userLoginName
         @return User with the specified login name, or null if none.
     **/
-     public User getUser( String userLoginName ) throws NoPermissionException {
+     public User getUser( String userLoginName ) {
         return wrapUser(getMapper().getUser( userLoginName ));
     }
 
@@ -70,7 +70,7 @@ public class UserService {
     /**
      * @since 2.0
      */
-    public Role getRole( int roleId ) throws NoPermissionException {
+    public Role getRole( int roleId ) {
         RoleDomainObject roleDO = getMapper().getRoleById( roleId );
         return null == roleDO ? null : new Role( roleDO );
     }
@@ -78,7 +78,7 @@ public class UserService {
     /**
      * @since 2.0
      */
-    public Role getRole( String roleName ) throws NoPermissionException {
+    public Role getRole( String roleName ) {
         RoleDomainObject roleDO = getMapper().getRoleByName( roleName );
         return null == roleDO ? null : new Role( roleDO );
     }

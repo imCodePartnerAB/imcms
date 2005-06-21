@@ -1,4 +1,4 @@
-package imcode.server.document;
+package com.imcode.imcms.mapping;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -6,6 +6,10 @@ import imcode.server.db.Database;
 import imcode.server.db.DatabaseConnection;
 import imcode.server.db.commands.TransactionDatabaseCommand;
 import imcode.server.document.textdocument.*;
+import com.imcode.imcms.mapping.ConnectionDocumentGetter;
+import imcode.server.document.DocumentVisitor;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.BrowserDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.FileUtility;

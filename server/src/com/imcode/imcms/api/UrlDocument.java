@@ -1,8 +1,7 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.UrlDocumentDomainObject;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.UrlDocumentDomainObject;
 
 public class UrlDocument extends Document {
 
@@ -12,8 +11,7 @@ public class UrlDocument extends Document {
         super(document, contentManagementSystem);
     }
 
-    public void setUrl(String url ) throws NoPermissionException {
-        contentManagementSystem.getSecurityChecker().hasEditPermission( this );
+    public void setUrl(String url ) {
         UrlDocumentDomainObject urlDocumentDomainObject = getInternalUrlDocument();
         urlDocumentDomainObject.setUrl( url );
     }
@@ -23,8 +21,7 @@ public class UrlDocument extends Document {
         return urlDocumentDomainObject;
     }
 
-    public String getUrl() throws NoPermissionException {
-        contentManagementSystem.getSecurityChecker().hasAtLeastDocumentReadPermission( this );
+    public String getUrl() {
         return getInternalUrlDocument().getUrl();
     }
 }

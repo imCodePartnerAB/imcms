@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;

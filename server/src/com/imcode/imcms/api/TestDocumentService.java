@@ -3,7 +3,9 @@ package com.imcode.imcms.api;
 import imcode.server.Config;
 import imcode.server.MockImcmsServices;
 import imcode.server.db.impl.MockDatabase;
-import imcode.server.document.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DatabaseDocumentGetter;
+import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
@@ -21,7 +23,8 @@ public class TestDocumentService extends TestCase {
         contentManagementSystem.setCurrentUser( user );
         MockImcmsServices imcmsServices = new MockImcmsServices();
         database = new MockDatabase();
-        imcmsServices.setDocumentMapper(new DocumentMapper(imcmsServices, database, null,null,null,new Config() )) ;
+        imcmsServices.setDocumentMapper(new DocumentMapper(imcmsServices, database, new DatabaseDocumentGetter(database, imcmsServices), null,null,null,new Config(), new CategoryMapper(database))) ;
+        imcmsServices.setCategoryMapper(new CategoryMapper(database));
         contentManagementSystem.setInternal( imcmsServices );
         this.documentService = new DocumentService(contentManagementSystem) ;
     }
@@ -45,11 +48,11 @@ public class TestDocumentService extends TestCase {
         database.verifyExpectedSqlCalls();
 
         String[] categoryResult = new String[] { "1", category.getName(), category.getDescription(), category.getImage() };
-        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate(DocumentMapper.SQL_GET_CATEGORY), categoryResult );
+        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate(CategoryMapper.SQL_GET_CATEGORY), categoryResult );
         documentService.saveCategory( category );
         database.verifyExpectedSqlCalls();
 
-        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate(DocumentMapper.SQL_GET_CATEGORY), categoryResult );
+        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate(CategoryMapper.SQL_GET_CATEGORY), categoryResult );
         Category otherCategory = new Category( categoryName, categoryType );
         try {
             documentService.saveCategory( otherCategory );
@@ -65,5 +68,7 @@ public class TestDocumentService extends TestCase {
         documentService.saveCategory( category );
         database.assertCalled( new MockDatabase.UpdateTableSqlCallPredicate( "categories", otherName ));
     }
+
+    
 
 }
