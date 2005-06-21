@@ -161,7 +161,8 @@ public class AddDoc extends HttpServlet {
             this.parentMenuIndex = parentMenuIndex;
         }
 
-        public synchronized void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
+        public synchronized void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException
+        {
             if ( null == savedDocument ) {
                 final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
                 documentMapper.saveNewDocument( document, user );

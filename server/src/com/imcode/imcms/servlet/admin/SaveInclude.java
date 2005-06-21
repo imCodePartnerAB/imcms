@@ -7,6 +7,7 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -43,60 +44,64 @@ public class SaveInclude extends HttpServlet {
             return;
         }
 
-        String included_meta_id = req.getParameter( "include_meta_id" );
-        String include_id = req.getParameter( "include_id" );
+        try {
+            String included_meta_id = req.getParameter("include_meta_id");
+            String include_id = req.getParameter("include_id");
 
-        if ( included_meta_id != null && include_id != null ) {
-            included_meta_id = included_meta_id.trim();
-            include_id = include_id.trim();
-            if ( "".equals( included_meta_id ) ) {
-                document.removeInclude( Integer.parseInt(include_id) );
-                documentMapper.saveDocument( document, user );
-                imcref.updateMainLog( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id + "] on ["
-                              + meta_id_str
-                              + "] removed by user: ["
-                              + user.getFullName()
-                              + "]" );
-            } else {
-                try {
-                    int included_meta_id_int = Integer.parseInt( included_meta_id );
+            if ( included_meta_id != null && include_id != null ) {
+                included_meta_id = included_meta_id.trim();
+                include_id = include_id.trim();
+                if ( "".equals(included_meta_id) ) {
+                    document.removeInclude(Integer.parseInt(include_id));
+                    documentMapper.saveDocument(document, user);
+                    imcref.updateMainLog(dateFormat.format(new java.util.Date()) + "Include nr [" + include_id + "] on ["
+                                         + meta_id_str
+                                         + "] removed by user: ["
+                                         + user.getFullName()
+                                         + "]");
+                } else {
+                    try {
+                        int included_meta_id_int = Integer.parseInt(included_meta_id);
 
-                    String[] docTypeStrArr = imcref.getDatabase().executeArrayProcedure( "GetDocType", new String[]{included_meta_id} );
-                    int docType = Integer.parseInt( docTypeStrArr[0] );
-                    if ( null == docTypeStrArr || 0 == docTypeStrArr.length
-                         || DocumentTypeDomainObject.TEXT_ID != docType ) {
-                        sendBadId( imcref, out, meta_id, user );
+                        String[] docTypeStrArr = imcref.getDatabase().executeArrayProcedure("GetDocType", new String[] { included_meta_id });
+                        int docType = Integer.parseInt(docTypeStrArr[0]);
+                        if ( null == docTypeStrArr || 0 == docTypeStrArr.length
+                             || DocumentTypeDomainObject.TEXT_ID != docType ) {
+                            sendBadId(imcref, out, meta_id, user);
+                            return;
+                        }
+
+                        // Make sure the user has permission to share the included document
+                        DocumentDomainObject includedDocument = documentMapper.getDocument(included_meta_id_int);
+                        if ( user.canAddDocumentToAnyMenu(includedDocument) ) {
+                            document.setInclude(Integer.parseInt(include_id), includedDocument.getId());
+                            documentMapper.saveDocument(document, user);
+                            documentMapper.setInclude(meta_id, Integer.parseInt(include_id), included_meta_id_int);
+                            imcref.updateMainLog(dateFormat.format(new java.util.Date()) + "Include nr [" + include_id
+                                                 + "] on ["
+                                                 + meta_id_str
+                                                 + "] changed to ["
+                                                 + included_meta_id
+                                                 + "]  by user: ["
+                                                 + user.getFullName()
+                                                 + "]");
+                        } else {
+                            sendPermissionDenied(imcref, out, meta_id, user);
+                            return;
+                        }
+                    } catch ( NumberFormatException ignored ) {
+                        sendBadId(imcref, out, meta_id, user);
                         return;
                     }
-
-                    // Make sure the user has permission to share the included document
-                    DocumentDomainObject includedDocument = documentMapper.getDocument( included_meta_id_int );
-                    if ( user.canAddDocumentToAnyMenu( includedDocument ) ) {
-                        document.setInclude( Integer.parseInt(include_id), includedDocument.getId() );
-                        documentMapper.saveDocument( document, user );
-                        documentMapper.setInclude( meta_id, Integer.parseInt( include_id ), included_meta_id_int );
-                        imcref.updateMainLog( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id
-                                      + "] on ["
-                                      + meta_id_str
-                                      + "] changed to ["
-                                      + included_meta_id
-                                      + "]  by user: ["
-                                      + user.getFullName()
-                                      + "]" );
-                    } else {
-                        sendPermissionDenied( imcref, out, meta_id, user );
-                        return;
-                    }
-                } catch ( NumberFormatException ignored ) {
-                    sendBadId( imcref, out, meta_id, user );
-                    return;
                 }
             }
-        }
 
-        String tempstring = AdminDoc.adminDoc( meta_id, user, req, res );
-        if ( tempstring != null ) {
-            out.write( tempstring );
+            String tempstring = AdminDoc.adminDoc(meta_id, user, req, res);
+            if ( tempstring != null ) {
+                out.write(tempstring);
+            }
+        } catch ( NoPermissionToEditDocumentException e ) {
+            throw new ShouldHaveCheckedPermissionsEarlierException(e);
         }
     }
 

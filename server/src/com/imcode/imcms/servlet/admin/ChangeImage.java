@@ -18,6 +18,8 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
+import imcode.util.ShouldNotBeThrownException;
+import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.io.InputStreamSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -91,7 +93,11 @@ public class ChangeImage extends HttpServlet {
             goToImageAdder( documentMapper, document, user, image, imageIndex, request, response );
         } else {
             document.setImage( imageIndex, image );
-            documentMapper.saveDocument( document, user );
+            try {
+                documentMapper.saveDocument( document, user );
+            } catch ( NoPermissionToEditDocumentException e ) {
+                throw new ShouldHaveCheckedPermissionsEarlierException(e);
+            }
             imcref.updateMainLog( "ImageRef " + imageIndex + " =" + image.getUrlPathRelativeToContextPath() +
                                   " in  " + "[" + document.getId() + "] modified by user: [" +
                                   user.getFullName() + "]" );

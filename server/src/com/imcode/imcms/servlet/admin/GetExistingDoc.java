@@ -6,6 +6,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
@@ -231,7 +232,11 @@ public class GetExistingDoc extends HttpServlet {
         if ( canAddToMenu ) {
             final MenuDomainObject parentMenu = parentDocument.getMenu( menuIndex );
             parentMenu.addMenuItem( new MenuItemDomainObject( documentMapper.getDocumentReference( document ) ) );
-            documentMapper.saveDocument( parentDocument, user );
+            try {
+                documentMapper.saveDocument( parentDocument, user );
+            } catch ( NoPermissionToEditDocumentException e ) {
+                throw new ShouldHaveCheckedPermissionsEarlierException(e);
+            }
         }
     }
 

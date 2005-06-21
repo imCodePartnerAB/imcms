@@ -297,12 +297,12 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void saveDocument(DocumentDomainObject document,
-                             final UserDomainObject user) throws MaxCategoryDomainObjectsOfTypeExceededException, DocumentsAddedToMenuWithoutPermissionException {
+                             final UserDomainObject user) throws MaxCategoryDomainObjectsOfTypeExceededException, DocumentsAddedToMenuWithoutPermissionException, NoPermissionToEditDocumentException {
 
         DocumentDomainObject oldDocument = getDocument(document.getId());
 
         if (!user.canEdit(oldDocument)) {
-            return;
+            throw new NoPermissionToEditDocumentException() ;
         }
 
         if (document instanceof TextDocumentDomainObject) {
@@ -584,7 +584,8 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void addToMenu(TextDocumentDomainObject parentDocument, int parentMenuIndex,
-                          DocumentDomainObject documentToAddToMenu, UserDomainObject user) {
+                          DocumentDomainObject documentToAddToMenu, UserDomainObject user) throws NoPermissionToEditDocumentException
+    {
         parentDocument.getMenu(parentMenuIndex).addMenuItem(new MenuItemDomainObject(this.getDocumentReference(documentToAddToMenu)));
         saveDocument(parentDocument, user);
     }
@@ -833,7 +834,7 @@ public class DocumentMapper implements DocumentGetter {
 
     public static class SaveEditedDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
 
-        public void saveDocument(DocumentDomainObject document, UserDomainObject user) {
+        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionToEditDocumentException {
             Imcms.getServices().getDocumentMapper().saveDocument(document, user);
         }
     }
@@ -933,4 +934,5 @@ public class DocumentMapper implements DocumentGetter {
             super(s);
         }
     }
+
 }

@@ -3,6 +3,7 @@ package com.imcode.imcms.api;
 import imcode.server.document.*;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.index.IndexException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 
@@ -81,7 +82,6 @@ public class DocumentService {
      * Saves the changes to a modified document. Note that this method is synchronized.
      */
     public synchronized void saveChanges( Document document ) throws NoPermissionException, SaveException {
-        getSecurityChecker().hasEditPermission( document );
         try {
             if ( 0 == document.getId() ) {
                 getDocumentMapper().saveNewDocument( document.getInternal(), contentManagementSystem.getCurrentUser().getInternal() );
@@ -92,6 +92,8 @@ public class DocumentService {
             throw new MaxCategoriesOfTypeExceededException( e );
         } catch (DocumentMapper.DocumentsAddedToMenuWithoutPermissionException e ) {
             throw new NoPermissionException(e.getMessage());
+        } catch ( NoPermissionToEditDocumentException e ) {
+            throw new NoPermissionException("No permission to edit document "+document.getId()) ;
         }
     }
 

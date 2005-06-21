@@ -1,6 +1,7 @@
 package com.imcode.imcms.flow;
 
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.HttpSessionUtils;
@@ -13,21 +14,21 @@ import java.io.Serializable;
 
 public abstract class DocumentPageFlow extends PageFlow {
 
-    protected CreateDocumentPageFlow.SaveDocumentCommand saveDocumentCommand;
+    protected final CreateDocumentPageFlow.SaveDocumentCommand saveDocumentCommand;
 
     protected DocumentPageFlow( DispatchCommand returnCommand,
-                       SaveDocumentCommand saveDocumentCommand ) {
+                                SaveDocumentCommand saveDocumentCommand ) {
         super( returnCommand );
         this.saveDocumentCommand = saveDocumentCommand;
     }
 
     public abstract DocumentDomainObject getDocument() ;
 
-    protected synchronized void saveDocument( HttpServletRequest request ) throws IOException, ServletException {
+    protected synchronized void saveDocument( HttpServletRequest request ) throws IOException, ServletException, NoPermissionToEditDocumentException {
         saveDocumentCommand.saveDocument( getDocument(), Utility.getLoggedOnUser( request ) );
     }
 
-    protected void saveDocumentAndReturn( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+    protected void saveDocumentAndReturn( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException, NoPermissionToEditDocumentException {
         saveDocument( request );
         dispatchReturn( request, response );
     }
@@ -37,6 +38,6 @@ public abstract class DocumentPageFlow extends PageFlow {
     }
 
     public static interface SaveDocumentCommand extends Serializable {
-        void saveDocument( DocumentDomainObject document, UserDomainObject user ) ;
+        void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException;
     }
 }

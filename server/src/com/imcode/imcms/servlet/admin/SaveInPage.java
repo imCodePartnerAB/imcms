@@ -1,12 +1,14 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
-import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
+import org.apache.commons.lang.UnhandledException;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -92,9 +94,11 @@ public class SaveInPage extends HttpServlet {
             try {
                 documentMapper.saveDocument( textDocument, user );
                 services.updateMainLog( "Text docs  [" + textDocument.getId() + "] updated by user: [" + user.getFullName()
-                                   + "]" );
+                                        + "]" );
             } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
-                throw new RuntimeException( e );
+                throw new UnhandledException(e);
+            } catch ( NoPermissionToEditDocumentException e ) {
+                throw new ShouldHaveCheckedPermissionsEarlierException(e);
             }
 
             // return page

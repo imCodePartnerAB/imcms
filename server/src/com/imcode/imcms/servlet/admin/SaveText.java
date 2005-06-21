@@ -5,10 +5,12 @@ import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -60,7 +62,11 @@ public final class SaveText extends HttpServlet {
                           UserDomainObject user) {
         document.setText( txt_no, text );
 
-        documentMapper.saveDocument( document, user );
+        try {
+            documentMapper.saveDocument( document, user );
+        } catch ( NoPermissionToEditDocumentException e ) {
+            throw new ShouldHaveCheckedPermissionsEarlierException(e);
+        }
 
         imcref.updateMainLog( "Text " + txt_no + " in [" + meta_id + "] modified by user: [" + user.getFullName()
                               + "]" );
