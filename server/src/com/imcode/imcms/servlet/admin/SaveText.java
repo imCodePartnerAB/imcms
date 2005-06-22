@@ -6,16 +6,20 @@ import imcode.server.WebAppGlobalConstants;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
+import imcode.util.ShouldNotBeThrownException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ConcurrentModificationException;
 
 public final class SaveText extends HttpServlet {
 
@@ -66,6 +70,8 @@ public final class SaveText extends HttpServlet {
             documentMapper.saveDocument( document, user );
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
+        } catch ( NoPermissionToAddDocumentToMenuException e ) {
+            throw new ConcurrentDocumentModificationException(e);
         }
 
         imcref.updateMainLog( "Text " + txt_no + " in [" + meta_id + "] modified by user: [" + user.getFullName()

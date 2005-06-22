@@ -1,13 +1,18 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.*;
-import com.imcode.imcms.mapping.DocumentMapper;
+import imcode.server.document.ConcurrentDocumentModificationException;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
+import imcode.util.Utility;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -102,6 +107,8 @@ public class SaveInclude extends HttpServlet {
             }
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
+        } catch ( NoPermissionToAddDocumentToMenuException e ) {
+            throw new ConcurrentDocumentModificationException(e);
         }
     }
 

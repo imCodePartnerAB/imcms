@@ -8,6 +8,7 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.IndexException;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -159,7 +160,7 @@ public class TestDocumentMapper extends TestCase {
         assertFalse(documentIndex.indexDocumentCalled) ;
     }
 
-    public void testCreateTextDocument() {
+    public void testCreateTextDocument() throws NoPermissionToAddDocumentToMenuException, NoPermissionToCreateDocumentException {
         user.addRole( RoleDomainObject.SUPERADMIN );
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.TEXT_ID, textDocument, user );
         document.setTemplate( new TemplateDomainObject( 1, "test", "test" ) );
@@ -167,14 +168,14 @@ public class TestDocumentMapper extends TestCase {
         documentMapper.saveNewDocument( document, user );
     }
 
-    public void testCreateHtmlDocument() {
+    public void testCreateHtmlDocument() throws NoPermissionToAddDocumentToMenuException, NoPermissionToCreateDocumentException {
         user.addRole( RoleDomainObject.SUPERADMIN );
         DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.HTML_ID, textDocument, user );
         database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "meta" ), new Integer(1002));
         documentMapper.saveNewDocument( document, user );
     }
 
-    public void testCreateUrlDocument() {
+    public void testCreateUrlDocument() throws NoPermissionToAddDocumentToMenuException, NoPermissionToCreateDocumentException {
         user.addRole( RoleDomainObject.SUPERADMIN );
         DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.URL_ID, textDocument, user );
         database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "meta" ), new Integer(1002));
@@ -217,7 +218,7 @@ public class TestDocumentMapper extends TestCase {
         try {
             documentMapper.checkDocumentsAddedWithoutPermission(document, oldDocument, user);
             fail("Expected exception.");
-        } catch(DocumentMapper.DocumentsAddedToMenuWithoutPermissionException e) {}
+        } catch( NoPermissionToAddDocumentToMenuException e) {}
     }
 
     private void testDocumentsAddedWithPermission(TextDocumentDomainObject document,

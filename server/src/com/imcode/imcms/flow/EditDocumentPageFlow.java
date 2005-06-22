@@ -1,15 +1,11 @@
 package com.imcode.imcms.flow;
 
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
-import org.apache.commons.lang.UnhandledException;
 
 public abstract class EditDocumentPageFlow extends DocumentPageFlow {
 
@@ -34,11 +30,7 @@ public abstract class EditDocumentPageFlow extends DocumentPageFlow {
     protected void dispatchOk( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {
         dispatchOkFromEditPage( request, response );
         if (!response.isCommitted()) {
-            try {
-                saveDocumentAndReturn( request, response );
-            } catch ( NoPermissionToEditDocumentException e ) {
-                throw new ShouldHaveCheckedPermissionsEarlierException(e);
-            }
+            saveDocumentAndReturn( request, response );
         }
     }
 

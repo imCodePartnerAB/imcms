@@ -14,6 +14,7 @@ import imcode.server.db.commands.UpdateDatabaseCommand;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.*;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -27,7 +28,6 @@ import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
-import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.File;
@@ -83,7 +83,7 @@ public class DocumentMapper implements DocumentGetter {
     public static final String SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID = "DELETE FROM roles_rights WHERE role_id = ? AND meta_id = ?";
     public static final String SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID = "INSERT INTO roles_rights (role_id, meta_id, set_id) VALUES(?,?,?)";
 
-    public CategoryMapper categoryMapper;
+    private CategoryMapper categoryMapper;
 
     public DocumentMapper(ImcmsServices services, Database database, DocumentGetter documentGetter,
                           DocumentPermissionSetMapper documentPermissionSetMapper, DocumentIndex documentIndex,
@@ -101,9 +101,9 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public DocumentDomainObject createDocumentOfTypeFromParent(int documentTypeId, final DocumentDomainObject parent,
-                                                               UserDomainObject user) {
+                                                               UserDomainObject user) throws NoPermissionToCreateDocumentException {
         if (!user.canCreateDocumentOfTypeIdFromParent(documentTypeId, parent)) {
-            throw new SecurityException("User can't create documents from document " + parent.getId());
+            throw new NoPermissionToCreateDocumentException("User can't create documents from document " + parent.getId());
         }
         DocumentDomainObject newDocument;
         try {
@@ -208,13 +208,13 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void saveNewDocument(DocumentDomainObject document, UserDomainObject user)
-            throws MaxCategoryDomainObjectsOfTypeExceededException {
+            throws MaxCategoryDomainObjectsOfTypeExceededException, NoPermissionToAddDocumentToMenuException {
 
         if (!user.canEdit(document)) {
             return; // TODO: More specific check needed. Throw exception ?
         }
 
-        categoryMapper.checkMaxDocumentCategoriesOfType(document);
+        getCategoryMapper().checkMaxDocumentCategoriesOfType(document);
 
         if (document instanceof TextDocumentDomainObject) {
             checkDocumentsAddedWithoutPermission((TextDocumentDomainObject)document, null, user);
@@ -245,7 +245,7 @@ public class DocumentMapper implements DocumentGetter {
     private void updateDocumentSectionsCategoriesKeywords(DocumentDomainObject document) {
         updateDocumentSections(document.getId(), document.getSections());
 
-        categoryMapper.updateDocumentCategories(document);
+        getCategoryMapper().updateDocumentCategories(document);
 
         updateDocumentKeywords(document);
     }
@@ -297,19 +297,20 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void saveDocument(DocumentDomainObject document,
-                             final UserDomainObject user) throws MaxCategoryDomainObjectsOfTypeExceededException, DocumentsAddedToMenuWithoutPermissionException, NoPermissionToEditDocumentException {
+                             final UserDomainObject user) throws MaxCategoryDomainObjectsOfTypeExceededException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException
+    {
 
         DocumentDomainObject oldDocument = getDocument(document.getId());
 
         if (!user.canEdit(oldDocument)) {
-            throw new NoPermissionToEditDocumentException() ;
+            throw new NoPermissionToEditDocumentException("No permission to edit document "+oldDocument.getId()) ;
         }
 
         if (document instanceof TextDocumentDomainObject) {
             checkDocumentsAddedWithoutPermission((TextDocumentDomainObject)document, (TextDocumentDomainObject)oldDocument, user);
         }
 
-        categoryMapper.checkMaxDocumentCategoriesOfType(document);
+        getCategoryMapper().checkMaxDocumentCategoriesOfType(document);
 
         try {
             Date lastModifiedDatetime = Utility.truncateDateToMinutePrecision(document.getActualModifiedDatetime());
@@ -336,7 +337,8 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     void checkDocumentsAddedWithoutPermission(TextDocumentDomainObject textDocument, TextDocumentDomainObject oldTextDocument,
-                                                      final UserDomainObject user) {
+                                                      final UserDomainObject user) throws NoPermissionToAddDocumentToMenuException
+    {
         Collection documentsAddedWithoutPermission = getDocumentsAddedWithoutPermission(textDocument, oldTextDocument, user);
         boolean documentsWereAddedWithoutPermission = !documentsAddedWithoutPermission.isEmpty();
         if (documentsWereAddedWithoutPermission ) {
@@ -346,7 +348,7 @@ public class DocumentMapper implements DocumentGetter {
                     return ""+document.getId() ;
                 }
             });
-            throw new DocumentsAddedToMenuWithoutPermissionException("User is not allowed to add documents "+documentIds +" to document "+textDocument.getId()) ;
+            throw new NoPermissionToAddDocumentToMenuException("User is not allowed to add documents "+documentIds +" to document "+textDocument.getId()) ;
         }
     }
 
@@ -584,8 +586,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void addToMenu(TextDocumentDomainObject parentDocument, int parentMenuIndex,
-                          DocumentDomainObject documentToAddToMenu, UserDomainObject user) throws NoPermissionToEditDocumentException
-    {
+                          DocumentDomainObject documentToAddToMenu, UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException {
         parentDocument.getMenu(parentMenuIndex).addMenuItem(new MenuItemDomainObject(this.getDocumentReference(documentToAddToMenu)));
         saveDocument(parentDocument, user);
     }
@@ -747,7 +748,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void copyDocument(DocumentDomainObject selectedChild,
-                             UserDomainObject user) {
+                             UserDomainObject user) throws NoPermissionToAddDocumentToMenuException {
         String copyHeadlineSuffix = services.getAdminTemplate(COPY_HEADLINE_SUFFIX_TEMPLATE, user, null);
         selectedChild.setHeadline(selectedChild.getHeadline() + copyHeadlineSuffix);
         makeDocumentLookNew(selectedChild, user);
@@ -755,7 +756,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void saveCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
-        CategoryDomainObject categoryInDb = categoryMapper.getCategory(category.getType(), category.getName());
+        CategoryDomainObject categoryInDb = getCategoryMapper().getCategory(category.getType(), category.getName());
         if (null != categoryInDb && category.getId() != categoryInDb.getId()) {
             throw new CategoryAlreadyExistsException("A category with name \"" + category.getName()
                     + "\" already exists in category type \""
@@ -763,9 +764,9 @@ public class DocumentMapper implements DocumentGetter {
                     + "\".");
         }
         if (0 == category.getId()) {
-            categoryMapper.addCategory(category);
+            getCategoryMapper().addCategory(category);
         } else {
-            categoryMapper.updateCategory(category);
+            getCategoryMapper().updateCategory(category);
         }
     }
 
@@ -786,6 +787,10 @@ public class DocumentMapper implements DocumentGetter {
 
     public DocumentDomainObject getDocument(DocumentId documentId) {
         return documentGetter.getDocument(documentId);
+    }
+
+    public CategoryMapper getCategoryMapper() {
+        return categoryMapper;
     }
 
     public static class TextDocumentMenuIndexPair {
@@ -834,7 +839,7 @@ public class DocumentMapper implements DocumentGetter {
 
     public static class SaveEditedDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
 
-        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionToEditDocumentException {
+        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException {
             Imcms.getServices().getDocumentMapper().saveDocument(document, user);
         }
     }
@@ -896,16 +901,7 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         public DocumentDomainObject getDocument(DocumentId documentId) {
-            NDC.push("getDocument");
-
-            DocumentDomainObject document;
-            document = getDocumentFromCache(documentId, this.documentGetter);
-
-            NDC.pop();
-            return document;
-        }
-
-        public DocumentDomainObject getDocumentFromCache(DocumentId documentId, final DocumentGetter documentGetter) {
+            DocumentDomainObject result;
             try {
                 DocumentDomainObject document = null ;
                 SoftReference[] documentSoftReferenceArray = (SoftReference[]) documentCache.get(documentId);
@@ -915,24 +911,19 @@ public class DocumentMapper implements DocumentGetter {
                 if (null == document) {
                     documentSoftReferenceArray = new SoftReference[1];
                     documentCache.put(documentId, documentSoftReferenceArray);
-                    document = documentGetter.getDocument(documentId);
+                    document = this.documentGetter.getDocument(documentId);
                     documentSoftReferenceArray[0] = new SoftReference(document);
                 }
                 if (null != document) {
                     document = (DocumentDomainObject) document.clone();
                 }
-                return document;
+                result = document;
             } catch (CloneNotSupportedException e) {
                 throw new UnhandledException(e);
             }
+            return result;
         }
 
-    }
-
-    public static class DocumentsAddedToMenuWithoutPermissionException extends RuntimeException {
-        public DocumentsAddedToMenuWithoutPermissionException(String s) {
-            super(s);
-        }
     }
 
 }

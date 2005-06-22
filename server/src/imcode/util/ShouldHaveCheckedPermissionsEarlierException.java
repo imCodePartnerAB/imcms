@@ -1,9 +1,9 @@
 package imcode.util;
 
-import imcode.server.document.NoPermissionToEditDocumentException;
+import com.imcode.imcms.api.NoPermissionException;
 
 public class ShouldHaveCheckedPermissionsEarlierException extends ShouldNotBeThrownException {
-    public ShouldHaveCheckedPermissionsEarlierException(NoPermissionToEditDocumentException e) {
+    public ShouldHaveCheckedPermissionsEarlierException(NoPermissionException e) {
         super(e);
     }
 }

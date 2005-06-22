@@ -1,14 +1,21 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.document.*;
-import com.imcode.imcms.mapping.DocumentMapper;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.ConcurrentDocumentModificationException;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.textdocument.MenuDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TreeSortKeyDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
+import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
@@ -17,7 +24,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Save document sorting (date,name,manual)
@@ -123,6 +133,8 @@ public class SaveSort extends HttpServlet {
                              + menuIndex);
         } catch ( NoPermissionToEditDocumentException e ) {
             throw new ShouldHaveCheckedPermissionsEarlierException(e);
+        } catch ( NoPermissionToAddDocumentToMenuException e ) {
+            throw new ConcurrentDocumentModificationException(e);
         }
     }
 

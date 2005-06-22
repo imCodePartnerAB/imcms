@@ -7,11 +7,13 @@ import imcode.server.document.DocumentDomainObject;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 import org.apache.commons.lang.ArrayUtils;
@@ -236,6 +238,8 @@ public class GetExistingDoc extends HttpServlet {
                 documentMapper.saveDocument( parentDocument, user );
             } catch ( NoPermissionToEditDocumentException e ) {
                 throw new ShouldHaveCheckedPermissionsEarlierException(e);
+            } catch ( NoPermissionToAddDocumentToMenuException e ) {
+                throw new ConcurrentDocumentModificationException(e);
             }
         }
     }

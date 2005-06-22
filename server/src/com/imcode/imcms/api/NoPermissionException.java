@@ -5,6 +5,7 @@ package com.imcode.imcms.api;
  * in user dosen't have the apropiate rights to do that operation. See the message for futher information.
  */
 public class NoPermissionException extends Exception {
+
     public NoPermissionException( String message ) {
         super( message );
     }

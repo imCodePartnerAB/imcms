@@ -2,15 +2,11 @@ package com.imcode.imcms.flow;
 
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
-import org.apache.commons.lang.UnhandledException;
 
 public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
 
@@ -26,11 +22,7 @@ public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
             textDocument.setText( 1, new TextDomainObject( textDocument.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN ) );
             textDocument.setText( 2, new TextDomainObject( textDocument.getMenuText(), TextDomainObject.TEXT_TYPE_PLAIN ) );
         }
-        try {
-            saveDocumentAndReturn(request, response ) ;
-        } catch ( NoPermissionToEditDocumentException e ) {
-            throw new ShouldHaveCheckedPermissionsEarlierException(e);
-        }
+        saveDocumentAndReturn(request, response);
     }
 
     protected void dispatchFromEditPage( HttpServletRequest request, HttpServletResponse response, String page ) {

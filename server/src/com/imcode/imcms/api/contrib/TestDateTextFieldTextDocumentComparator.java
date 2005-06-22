@@ -41,7 +41,7 @@ public class TestDateTextFieldTextDocumentComparator extends TestCase {
         this.d2 = (TextDocument)documentService.getDocument( 1002 ) ;
     }
 
-    public void testCompare() throws NoPermissionException {
+    public void testCompare() {
         assertEquals( -1, comparator.compare( d1, d2 ) ) ;
         d1.setPlainTextField( TEXT_FIELD_INDEX, "2000-01-01");
         assertEquals( 1, comparator.compare( d1, d2 ) ) ;

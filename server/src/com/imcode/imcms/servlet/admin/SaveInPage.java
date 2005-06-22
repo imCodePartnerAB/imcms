@@ -5,9 +5,11 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
+import imcode.util.ShouldNotBeThrownException;
 import org.apache.commons.lang.UnhandledException;
 
 import javax.servlet.ServletException;
@@ -99,6 +101,8 @@ public class SaveInPage extends HttpServlet {
                 throw new UnhandledException(e);
             } catch ( NoPermissionToEditDocumentException e ) {
                 throw new ShouldHaveCheckedPermissionsEarlierException(e);
+            } catch ( NoPermissionToAddDocumentToMenuException e ) {
+                throw new ConcurrentDocumentModificationException(e);
             }
 
             // return page

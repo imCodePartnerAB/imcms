@@ -7,6 +7,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 import org.apache.commons.collections.Transformer;
@@ -51,7 +52,11 @@ public class AddDoc extends HttpServlet {
 
             DocumentCreator documentCreator = new DocumentCreator(saveNewDocumentAndAddToMenuCommand,dispatchCommand,getServletContext());
             documentCreator.setTemplate(template) ;
-            documentCreator.createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument, request, response );
+            try {
+                documentCreator.createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument, request, response );
+            } catch ( NoPermissionToCreateDocumentException e ) {
+                throw new ShouldHaveCheckedPermissionsEarlierException(e);
+            }
         }
     }
 
@@ -161,7 +166,7 @@ public class AddDoc extends HttpServlet {
             this.parentMenuIndex = parentMenuIndex;
         }
 
-        public synchronized void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException
+        public synchronized void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException
         {
             if ( null == savedDocument ) {
                 final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
@@ -195,7 +200,7 @@ public class AddDoc extends HttpServlet {
         public void createDocumentAndDispatchToCreatePageFlow( int documentTypeId,
                                                                DocumentDomainObject parentDocument,
                                                                HttpServletRequest request,
-                                                               HttpServletResponse response ) throws IOException, ServletException {
+                                                               HttpServletResponse response ) throws IOException, ServletException, NoPermissionToCreateDocumentException {
             UserDomainObject user = Utility.getLoggedOnUser( request );
             ImcmsServices services = Imcms.getServices();
             DocumentMapper documentMapper = services.getDocumentMapper();

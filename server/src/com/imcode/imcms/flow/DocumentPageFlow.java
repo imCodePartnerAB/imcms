@@ -1,10 +1,13 @@
 package com.imcode.imcms.flow;
 
+import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.HttpSessionUtils;
+import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
+import imcode.util.Utility;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +17,7 @@ import java.io.Serializable;
 
 public abstract class DocumentPageFlow extends PageFlow {
 
-    protected final CreateDocumentPageFlow.SaveDocumentCommand saveDocumentCommand;
+    protected final DocumentPageFlow.SaveDocumentCommand saveDocumentCommand;
 
     protected DocumentPageFlow( DispatchCommand returnCommand,
                                 SaveDocumentCommand saveDocumentCommand ) {
@@ -24,11 +27,17 @@ public abstract class DocumentPageFlow extends PageFlow {
 
     public abstract DocumentDomainObject getDocument() ;
 
-    protected synchronized void saveDocument( HttpServletRequest request ) throws IOException, ServletException, NoPermissionToEditDocumentException {
-        saveDocumentCommand.saveDocument( getDocument(), Utility.getLoggedOnUser( request ) );
+    private synchronized void saveDocument( HttpServletRequest request ) {
+        try {
+            saveDocumentCommand.saveDocument( getDocument(), Utility.getLoggedOnUser( request ) );
+        } catch ( NoPermissionToEditDocumentException e ) {
+            throw new ShouldHaveCheckedPermissionsEarlierException(e);
+        } catch ( NoPermissionToAddDocumentToMenuException e ) {
+            throw new ConcurrentDocumentModificationException(e);
+        }
     }
 
-    protected void saveDocumentAndReturn( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException, NoPermissionToEditDocumentException {
+    protected void saveDocumentAndReturn( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         saveDocument( request );
         dispatchReturn( request, response );
     }
@@ -38,6 +47,6 @@ public abstract class DocumentPageFlow extends PageFlow {
     }
 
     public static interface SaveDocumentCommand extends Serializable {
-        void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException;
+        void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException;
     }
 }

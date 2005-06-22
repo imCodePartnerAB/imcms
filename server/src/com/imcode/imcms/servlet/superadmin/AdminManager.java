@@ -13,14 +13,18 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentComparator;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.NoPermissionToCreateDocumentException;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
@@ -108,8 +112,10 @@ public class AdminManager extends Administrator {
                 }
             } catch ( NumberFormatException nfe ) {
                 createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__NO_PARENT_ID );
-            } catch ( SecurityException ex ) {
+            } catch ( NoPermissionToCreateDocumentException ex ) {
                 createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__NO_CREATE_PERMISSION );
+            } catch ( NoPermissionToAddDocumentToMenuException e ) {
+                throw new UnhandledException(e);
             }
         } else {
             createAndShowAdminManagerPage( request, response, null );
@@ -559,7 +565,7 @@ public class AdminManager extends Administrator {
 
     private static class SaveNewDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
 
-        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
+        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException {
             Imcms.getServices().getDocumentMapper().saveNewDocument( document, user );
         }
     }

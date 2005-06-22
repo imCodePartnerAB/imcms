@@ -55,7 +55,7 @@ public class MenuRss extends HttpServlet {
     }
 
     private Document createRssDocument(HttpServletRequest request, TextDocument document,
-                                       int menuIndex) throws ParserConfigurationException, NoPermissionException {
+                                       int menuIndex) throws ParserConfigurationException {
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = builderFactory.newDocumentBuilder();
         Document xmlDocument = documentBuilder.newDocument();
@@ -68,7 +68,7 @@ public class MenuRss extends HttpServlet {
     }
 
     private Element createRssElement(Document xmlDocument, TextDocument document, int menuIndex,
-                                     HttpServletRequest request) throws NoPermissionException {
+                                     HttpServletRequest request) {
 
         Element rssElement = xmlDocument.createElement("rss");
         rssElement.setAttribute("xmlns:imcms", IMCMS_MENU_NAMESPACE_URI);
@@ -84,7 +84,7 @@ public class MenuRss extends HttpServlet {
     }
 
     private Element createChannelElement(Document xmlDocument, TextDocument document,
-                                         int menuIndex, HttpServletRequest request) throws NoPermissionException {
+                                         int menuIndex, HttpServletRequest request) {
         Element channelElement = xmlDocument.createElement("channel");
 
         channelElement.appendChild(createTextElement(xmlDocument, "title", document.getHeadline()));
@@ -104,7 +104,7 @@ public class MenuRss extends HttpServlet {
     }
 
     private void appendMenuItems(Document xmlDocument, Element channelElement, TextDocument document,
-                                 int menuIndex, HttpServletRequest request) throws NoPermissionException {
+                                 int menuIndex, HttpServletRequest request) {
 
         DateFormat rfc822DateFormat = new SimpleDateFormat(RFC822_DATE_PATTERN, Locale.ENGLISH);
         Format iso8601DateFormat = DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT ;
@@ -120,7 +120,7 @@ public class MenuRss extends HttpServlet {
 
     private Element createItemElement(Document xmlDocument, TextDocument.MenuItem menuItem, HttpServletRequest request,
                                       DateFormat rfc822DateFormat,
-                                      Format iso8601DateFormat) throws NoPermissionException {
+                                      Format iso8601DateFormat) {
         Element itemElement = xmlDocument.createElement("item");
         com.imcode.imcms.api.Document itemDocument = menuItem.getDocument();
 

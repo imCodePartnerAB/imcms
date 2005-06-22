@@ -145,7 +145,7 @@ public class TestTextDocument extends TestCase {
         assertFalse( menu.getVisibleMenuItems().length > 0 );
     }
 
-    public void testAddRemoveDocument() throws DocumentAlreadyInMenuException, NoPermissionException {
+    public void testAddRemoveDocument() throws DocumentAlreadyInMenuException {
         DocumentGetter documentGetter = new DocumentGetter() {
             public DocumentDomainObject getDocument(DocumentId documentId) {
                 if (documentId.intValue() == otherTextDocument.getId() ) {

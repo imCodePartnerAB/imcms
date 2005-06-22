@@ -1,9 +1,8 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.*;
-import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.CategoryMapper;
-import imcode.server.document.NoPermissionToEditDocumentException;
+import com.imcode.imcms.mapping.DocumentMapper;
+import imcode.server.document.*;
 import imcode.server.document.index.IndexException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 
@@ -90,10 +89,6 @@ public class DocumentService {
             }
         } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
             throw new MaxCategoriesOfTypeExceededException( e );
-        } catch (DocumentMapper.DocumentsAddedToMenuWithoutPermissionException e ) {
-            throw new NoPermissionException(e.getMessage());
-        } catch ( NoPermissionToEditDocumentException e ) {
-            throw new NoPermissionException("No permission to edit document "+document.getId()) ;
         }
     }
 
